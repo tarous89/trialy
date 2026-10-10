@@ -172,3 +172,5 @@ Do not mark planned work as implemented. Keep older decisions visible and mark l
 - Added bounded offline XLSX/PPTX extraction; cached/raw spreadsheet values and slide-order text are labelled partial. Originals survive unsupported or failed processing.
 - Build and 29 reported checks passed. The old core-test setup was changed to load every migration, fixing an outdated-schema failure. Recovery rehearsal now includes unaccepted external-file bytes; isolated restore passed (not a managed Render restore).
 - Real ChatGPT host testing, provider-account integrations, production recovery decisions and public brand cutover remain deferred. Generalized review routing/action types and optional record restrictions remain unfinished.
+
+Deployment verification: code `c5015cec1b188c3919e1a0118c8d00fedb938b42` is live on both existing Render services. Web deploy `dep-db5bmlc9v7es738vvc1g`; worker deploy `dep-db5bmlc9v7es738vvbug`. `/join` returned 200 with `index-DrExHbhY.js`; `/ready` returned 200/ready. No private-plugin package change, existing-product change or real external messaging occurred.

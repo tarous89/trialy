@@ -49,3 +49,5 @@ Keep Trialy repository/internal IDs and the existing Trialegions product separat
 - 29 reported checks pass, including invitation signup return/CSRF/scoping/revocation/replay, conditional question validation, immutable file intake/retry/acceptance/export, compatible legacy adoption, and bounded Office extraction order/sparse cells/unsafe XML rejection.
 - Build passes. Recovery rehearsal verifies both document originals and external source bytes after isolated restore, with immutable-history protection. Updated evidence includes migrations 013–014.
 - No real recipients were contacted. New browser workflows and actual ChatGPT host behavior still need user acceptance; they are not claimed proven by API tests.
+
+- Continuation code `c5015ce` is live on both Render services. Read-only live verification: `/join` serves `index-DrExHbhY.js` and `/ready` returns 200/ready. No claim of live browser/ChatGPT workflow acceptance is made.
