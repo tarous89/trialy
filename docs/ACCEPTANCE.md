@@ -32,3 +32,14 @@ Verify a hidden financial field and its dependent calculation are absent from th
 ## Brand cutover
 
 Keep Trialy repository/internal IDs and the existing Trialegions product separate. Before public rename, explicitly select the destination domain and authorize the replacement. Inventory old routes/data, agree migration/redirects, verify backups and OAuth callback/issuer behavior, update brand configuration and plugin listing, perform a synthetic connect/save/read-back check, and retain a rollback route. No current Trialegions data or domain is changed by this development work.
+
+
+## Additional implementation evidence
+
+- MFA: encrypted setup, confirmation, password-plus-code login, replay rejection, single-use recovery and disabling checked using synthetic accounts. Real-user authenticator/browser acceptance remains for later.
+- Permissions: table AI exclusion, document read/write/inspection restrictions and inherited-folder movement-bypass checks pass.
+- External exchange: selected columns only, extra-field rejection, idempotent submission, immutable intake, owner acceptance and link revocation checks pass. Link-holder identity is explicitly unverified.
+- Automations: event batching, grant revocation, authorised draft creation, prevention of self-triggering, and Berlin DST gap/overlap checks pass.
+- Template upgrades: a representative upstream field addition preserves renamed local tables and existing records; conflicting changes require review.
+- Recovery: isolated synthetic data-directory backup and restore passed. Exact schema hashes and evidence are in `recovery-synthetic.json`; this does not replace the managed Render restore drill.
+- Current code deployment: `f9cca6b`, both Render services live. Build and 26 reported checks passed. ChatGPT connection/host acceptance and production recovery expectations remain outstanding.

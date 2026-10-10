@@ -158,3 +158,8 @@ Do not mark planned work as implemented. Keep older decisions visible and mark l
 - Real ChatGPT/plugin testing, provider registration and publication remain deferred by the user. Remaining independent refinements remain listed in DEVELOPMENT.md; this is not a claim that every original scope item is finished.
 
 - Extended the batch with scoped automated draft creation, atomic grant/receipt/run handling, non-cascading worker changes, due-date gating and visible paused failures. Added inherited folder restrictions and owner-only moves across controlled folders, with focused bypass/revocation checks.
+
+### Deployment evidence
+
+- Code commit `f9cca6bcf840e8c3f18224504a2783ded3d111cc` deployed successfully to both Render services. Web deployment `dep-db5b9r3rjlhs73al3oig`; worker deployment `dep-db5b9r3rjlhs73al3on0`.
+- `/ready` returned 200. `/` and `/collect` returned 200 with the current `index-CJeiyYxt.js` bundle. Plugin-host acceptance remains deferred.

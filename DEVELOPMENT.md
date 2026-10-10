@@ -9,7 +9,7 @@ Decision/change log: [HISTORY.md](HISTORY.md)
 
 - Working development application, SQL migrations, background worker, standalone UI and MCP transport are implemented.
 - Render web service, background worker and PostgreSQL are live in the confirmed workspace. Private Trialy plugin created.
-- Previous account-security batch is deployed at `860561d`. The next batch below has passed local checks and is being deployed. Earlier live verification at `97c143f` covered the core save/source flows. Live synthetic save/retry, calculations, original integrity, worker extraction, export and archive checks passed. Remaining account/provider/production decisions and still-unbuilt features are listed separately below; the complete 18-step product is not claimed finished.
+- Current batch is deployed on both Render services at `f9cca6b`; readiness and the new UI bundle are verified. Earlier live verification at `97c143f` covered the core save/source flows. Live synthetic save/retry, calculations, original integrity, worker extraction, export and archive checks passed. Remaining account/provider/production decisions and still-unbuilt features are listed separately below; the complete 18-step product is not claimed finished.
 - Current implementation also includes authenticator MFA, per-table AI controls, document access rules, external forms/shared views, event/local-time summaries and additive template upgrades. Real ChatGPT testing and developer-account integrations are explicitly deferred by the user; they do not block independent code work.
 - Decisions/actions needed later: connect a real ChatGPT account for host acceptance; choose/authorize email/calendar provider credentials; confirm production recovery expectations/resources. No external messages or paid signature subscription will be initiated.
 - No existing Trialegions application, data, infrastructure, or domain has been changed.
@@ -388,7 +388,7 @@ Do not chase coverage percentages, snapshot every UI, test every cosmetic change
 
 ## Next execution dependencies
 
-1. This batch implements the next independent core capabilities: finer table/document/folder controls, authenticator MFA, scoped external forms/shared views, event and local-time summaries, additive template upgrade diffs. Build and 26 reported tests pass; a synthetic database restore passed. Deployment status will be recorded in HISTORY.md.
+1. This batch implements the next independent core capabilities: finer table/document/folder controls, authenticator MFA, scoped external forms/shared views, event and local-time summaries, additive template upgrade diffs. Build and 26 reported tests pass; a synthetic database restore passed. Both services are live at `f9cca6b`; health and current UI bundle verified.
 2. Remaining independent refinements are explicit: account invitations; advanced branching questionnaires/file requests; additional automation actions and review routing; migration/adoption of old untracked template installations; broader Office extraction. Optional record-level restrictions are not yet implemented. These are not silently marked complete.
 3. Deferred by the user: real ChatGPT plugin connection/host acceptance. Automatic workspace opening and embedded host-file behavior remain unproven. Shared external links are a separate browser experience.
 4. Deferred until the end when developer-account setup is required: Microsoft 365/Google Workspace OAuth, transactional email and signature-provider integration. No external messages or provider registrations have been initiated.
