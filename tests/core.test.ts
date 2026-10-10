@@ -144,5 +144,26 @@ test('Shared backend: access, committed history, original preservation and retri
   await assert.rejects(s.documentText({...owner,origin:'ai'},w.id,saved.objects[0].versionId),error('not_found'));
   await assert.rejects(s.documentText(other,w.id,good.id),error('not_found'));
  });
+ await t.test('saved views filter and sort before pagination, version safely and reject hidden criteria',async()=>{
+  const type=(await save({kind:'create_type',name:'View checks',fields:[{key:'name',name:'Name',kind:'text'},{key:'budget',name:'Budget',kind:'money',ai:false},{key:'active',name:'Active',kind:'boolean'},{key:'due',name:'Due',kind:'date'}]})).objects[0].id;
+  for(const data of [{name:'Large',budget:10,active:true,due:'2026-10-20'},{name:'Small',budget:2,active:true,due:'2026-10-15'},{name:'Excluded',budget:1,active:false}])await save({kind:'create_record',typeId:type,data});
+  const operation={kind:'create_view',typeId:type,name:'Active by budget',viewKind:'comparison',config:{columns:['name'],sort:{field:'budget',direction:'asc'},filters:[{field:'active',operator:'equals',value:true}]}};
+  const pending=await s.preview(owner,w.id,operation);assert.equal((await s.views(owner,w.id)).length,0);
+  const committed=await s.commit(owner,pending.id,pending.digest),viewId=committed.objects[0].id;
+  const records=await s.records(owner,w.id,type,{viewId,limit:1});assert.equal(records.total,2);assert.equal(records.rows[0].data.name,'Small');
+  assert.equal((await s.records(owner,w.id,type,{viewId,limit:1,offset:1})).rows[0].data.name,'Large');
+  assert.equal((await s.records(owner,w.id,type,{viewId,q:'Large'})).total,1);
+  const ai:Actor={...owner,origin:'ai'};assert.equal((await s.views(ai,w.id)).length,0);
+  await assert.rejects(s.records(ai,w.id,type,{viewId}),error('not_found'));
+  await assert.rejects(s.preview(ai,w.id,operation),error('invalid_field'));
+  await assert.rejects(s.records(other,w.id,type,{viewId}),error('not_found'));
+  const update={...operation,kind:'update_view',viewId,expectedVersion:0,name:'Missing dates',viewKind:'calendar',config:{columns:['name','due'],dateField:'due',sort:{field:'name',direction:'asc'},filters:[{field:'due',operator:'empty'}]}};
+  const first=await s.preview(owner,w.id,update),stale=await s.preview(owner,w.id,update);await s.commit(owner,first.id,first.digest);
+  await assert.rejects(s.commit(owner,stale.id,stale.digest),error('stale_version'));
+  const visible=await s.views(ai,w.id);assert.equal(visible[0].version,1);
+  assert.equal((await s.records(ai,w.id,type,{viewId})).rows[0].data.name,'Excluded');
+  assert.equal((await db.query("SELECT count(*) AS n FROM revisions WHERE object_id=$1 AND object_kind='view'",[viewId])).rows[0].n,2);
+  await assert.rejects(s.preview(owner,w.id,{...operation,viewKind:'calendar'}),error('date_required'));
+ });
  await db.close();
 });

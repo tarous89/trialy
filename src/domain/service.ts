@@ -1,6 +1,6 @@
 import { randomUUID, createHash } from 'node:crypto';
 import type { Connection, Database } from '../db/database.js';
-import { operationSchema, fail, type Actor, type Field, type Operation } from '../shared/schema.js';
+import { operationSchema, viewFields, viewConfigSchema, fail, type Actor, type Field, type Operation } from '../shared/schema.js';
 import { access, typeAccess, visibleFields, projectData } from './permissions.js';
 import { templates, templateLinks } from './templates.js';
 export type FileOperation={kind:'save_document';filename:string;mime:string;bytes:Buffer;ai:boolean;documentId?:string;expectedVersion?:number};
@@ -37,14 +37,23 @@ export class Service {
   const p=await access(this.db,a,w);const rows=(await this.db.query('SELECT * FROM entity_types WHERE workspace_id=$1 ORDER BY created_at,name',[w])).rows;
   return rows.filter(t=>!p.allowed_types||p.allowed_types.includes(t.id)).map(t=>({...t,fields:visibleFields(t.fields,p,a)}));
  }
- async records(a:Actor,w:string,t:string,opts:{q?:string;limit?:number;offset?:number}={}) {
+ async records(a:Actor,w:string,t:string,opts:{q?:string;limit?:number;offset?:number;viewId?:string}={}) {
   const {type,policy}=await typeAccess(this.db,a,w,t);const fields=visibleFields(type.fields,policy,a);
   const limit=Math.min(100,Math.max(1,opts.limit??50)), offset=Math.max(0,opts.offset??0);
   // Search only visible keys; restricted fields must not leak through matching/counts.
   const args:any[]=[w,t];let where='workspace_id=$1 AND type_id=$2';
   if(opts.q){args.push(fields.map(f=>f.key),opts.q);where+=` AND EXISTS (SELECT 1 FROM jsonb_each_text(data) v WHERE v.key=ANY($3::text[]) AND strpos(lower(v.value),lower($4))>0)`;}
+  let config:any={};
+  if(opts.viewId){const v=(await this.views(a,w)).find(v=>v.id===opts.viewId&&v.type_id===t);if(!v)fail(404,'not_found','View not available');config=v.config;}
+  const bind=(v:unknown)=>{args.push(v);return `$${args.length}`;};
+  for(const f of config.filters??[]){const key=bind(f.field);
+   if(f.operator==='empty')where+=` AND (data->${key}::text IS NULL OR data->${key}::text IN ('null'::jsonb,'""'::jsonb))`;
+   else if(f.operator==='contains')where+=` AND strpos(lower(data->>${key}::text),lower(${bind(String(f.value))}::text))>0`;
+   else where+=` AND data->${key}::text=${bind(json(f.value))}::jsonb`;
+  }
   const total=Number((await this.db.query(`SELECT count(*) AS count FROM records WHERE ${where}`,args)).rows[0].count);
-  const rows=(await this.db.query(`SELECT * FROM records WHERE ${where} ORDER BY created_at,id LIMIT $${args.length+1} OFFSET $${args.length+2}`,[...args,limit,offset])).rows;
+  const order=config.sort?`NULLIF(data->${bind(config.sort.field)}::text,'null'::jsonb) ${config.sort.direction==='desc'?'DESC':'ASC'} NULLS LAST,created_at,id`:'created_at,id';
+  const rows=(await this.db.query(`SELECT * FROM records WHERE ${where} ORDER BY ${order} LIMIT $${args.length+1} OFFSET $${args.length+2}`,[...args,limit,offset])).rows;
   return {rows:rows.map(r=>({...r,data:projectData(r.data,fields)})),total,limit,offset};
  }
  async recordHistory(a:Actor,w:string,recordId:string,offset=0) {
@@ -87,14 +96,30 @@ export class Service {
  }
  async validate(tx:Connection,a:Actor,w:string,op:Operation|FileOperation) {
   const p=await access(tx,a,w,true);
-  if(['create_type','update_type','install_template','create_view'].includes(op.kind)&&p.role!=='owner')fail(403,'owner_required','Only the owner may configure this workspace');
+  if(['create_type','update_type','install_template','create_view','update_view'].includes(op.kind)&&p.role!=='owner')fail(403,'owner_required','Only the owner may configure this workspace');
   if(op.kind==='save_document'&&(p.allowed_types!==null||p.hidden_fields.length))fail(403,'restricted_documents','Document access for restricted views is not enabled');
   if(op.kind==='update_type'){const {type}=await typeAccess(tx,a,w,op.typeId,true);if(a.origin==='ai'&&type.fields.some((f:Field)=>!f.ai))fail(403,'restricted_configuration','Edit tables containing model-restricted fields in the standalone application');if(type.version!==op.expectedVersion)fail(409,'stale_version','Table changed; preview again');const populated=Number((await tx.query('SELECT count(*) AS n FROM records WHERE type_id=$1 AND workspace_id=$2',[op.typeId,w])).rows[0].n)>0;if(populated){for(const old of type.fields){const next=op.fields.find(f=>f.key===old.key);if(!next||next.kind!==old.kind||json(next.options)!==json(old.options)||next.targetTypeId!==old.targetTypeId||(!old.required&&next.required))fail(409,'migration_required','Existing data requires an explicit field migration; use an optional new field instead');}if(op.fields.some(f=>f.required&&!type.fields.some((old:Field)=>old.key===f.key)))fail(409,'migration_required','New fields on populated tables must be optional');}}
   if(op.kind==='restore_record')await this.restoreData(tx,a,w,op);
   if(op.kind==='create_record'){const t=await typeAccess(tx,a,w,op.typeId,true);await this.validateData(tx,a,w,t.type,t.policy,op.data);}
   if(op.kind==='update_record'){const r=(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[op.recordId,w])).rows[0];if(!r)fail(404,'not_found','Record not found');const t=await typeAccess(tx,a,w,r.type_id,true);if(r.version!==op.expectedVersion)fail(409,'stale_version','The record changed. Refresh and preview again.');if(['archived','superseded'].includes(r.state))fail(409,'controlled_record','Controlled record requires a new reviewed revision; direct editing is disabled');await this.validateData(tx,a,w,t.type,t.policy,op.data,true);}
   if(op.kind==='create_automation') {const g=(await tx.query('SELECT * FROM action_grants WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[op.grantId,w,a.userId])).rows[0];if(!g||g.revoked_at||g.used_at||g.action!=='reports.prepare'||g.destination!==w)fail(403,'invalid_grant','Choose an active report permission for this workspace');}
-  if(op.kind==='create_view') {const t=await typeAccess(tx,a,w,op.typeId);const keys=visibleFields(t.type.fields,t.policy,a).map(f=>f.key);if([...(op.config.columns??[]),op.config.dateField,op.config.groupBy].filter(Boolean).some(k=>!keys.includes(k!)))fail(400,'invalid_field','View contains unavailable fields');}
+  if(op.kind==='create_view'||op.kind==='update_view') {
+   const t=await typeAccess(tx,a,w,op.typeId),fields=visibleFields(t.type.fields,t.policy,a),keys=fields.map(f=>f.key);
+   if(viewFields(op.config).some(k=>!keys.includes(k)))fail(400,'invalid_field','View contains unavailable fields');
+   if(op.config.dateField&&fields.find(f=>f.key===op.config.dateField)?.kind!=='date')fail(400,'invalid_date_field','Choose a date field');
+   if(['calendar','timeline'].includes(op.viewKind)&&!op.config.dateField)fail(400,'date_required','Choose a date field for this view');
+   for(const f of op.config.filters){const field=fields.find(x=>x.key===f.field)!;
+    if(f.operator!=='empty'&&f.value===undefined)fail(400,'invalid_filter','A filter value is required');
+    if(f.operator==='contains'&&(typeof f.value!=='string'||['number','money','boolean'].includes(field.kind)))fail(400,'invalid_filter','Contains requires a text field and text value');
+    if(f.operator==='equals'&&f.value!==null){const expected=['number','money'].includes(field.kind)?'number':field.kind==='boolean'?'boolean':'string';if(typeof f.value!==expected)fail(400,'invalid_filter','Filter value does not match the field type');}
+   }
+   if(op.kind==='update_view'){
+    const old=(await tx.query('SELECT * FROM saved_views WHERE id=$1 AND workspace_id=$2',[op.viewId,w])).rows[0];
+    if(!old||old.type_id!==op.typeId)fail(404,'not_found','View not found');
+    if(viewFields(viewConfigSchema.parse(old.config)).some(k=>!keys.includes(k)))fail(403,'restricted_configuration','This view contains restricted fields');
+    if(old.version!==op.expectedVersion)fail(409,'stale_version','View changed. Refresh and preview again.');
+   }
+  }
   if(op.kind==='install_template'&&!templates.some(t=>t.id===op.template))fail(400,'template_unknown','Template not found');
   if(op.kind==='save_document'&&op.documentId){const prev=(await tx.query('SELECT * FROM document_versions WHERE document_id=$1 AND workspace_id=$2 ORDER BY version DESC LIMIT 1',[op.documentId,w])).rows[0];if(!prev)fail(404,'not_found','Document not found');if(prev.version!==op.expectedVersion)fail(409,'stale_version','Document changed; preview again');if(a.origin==='ai'&&!prev.ai_enabled)fail(403,'ai_disabled','Document unavailable');}
   return p;
@@ -157,6 +182,11 @@ export class Service {
    await audit(tx,a,p,'record.restored',op.recordId,{version:op.expectedVersion},{sourceVersion:op.sourceVersion,version:op.expectedVersion+1},op.reason);return result;
   }
   if(op.kind==='create_automation'){const id=randomUUID();await tx.query('INSERT INTO automations(id,workspace_id,owner_id,grant_id,name,interval_minutes,next_run) VALUES($1,$2,$3,$4,$5,$6,now())',[id,w,a.userId,op.grantId,op.name,op.intervalMinutes]);await revision(tx,a,w,id,'automation',0,op);await audit(tx,a,p,'automation.created',id,null,op);return [{id,kind:'automation',version:0}];}
+  if(op.kind==='update_view'){
+   const old=(await tx.query('SELECT * FROM saved_views WHERE id=$1 AND workspace_id=$2',[op.viewId,w])).rows[0],version=old.version+1;
+   await tx.query('UPDATE saved_views SET name=$1,kind=$2,config=$3,version=$4 WHERE id=$5',[op.name,op.viewKind,json(op.config),version,op.viewId]);
+   await revision(tx,a,w,op.viewId,'view',version,op);await audit(tx,a,p,'view.updated',op.viewId,old,op);return [{id:op.viewId,kind:'view',version}];
+  }
   if(op.kind==='create_view'){
    const id=randomUUID();await tx.query('INSERT INTO saved_views(id,workspace_id,name,kind,type_id,config) VALUES($1,$2,$3,$4,$5,$6)',[id,w,op.name,op.viewKind,op.typeId,json(op.config)]);await revision(tx,a,w,id,'view',0,op);await audit(tx,a,p,'view.created',id,null,op);return [{id,kind:'view',version:0}];
   }
@@ -188,7 +218,14 @@ export class Service {
   return {hits,coverage};
  }
  async history(a:Actor,w:string) {const p=await access(this.db,a,w);if(a.origin!=='human'||p.role!=='owner')fail(403,'owner_required','History is available to the human workspace owner');return (await this.db.query('SELECT * FROM audit_events WHERE workspace_id=$1 ORDER BY created_at DESC LIMIT 200',[w])).rows;}
- async views(a:Actor,w:string) {const p=await access(this.db,a,w);const types=await this.types(a,w);return (await this.db.query('SELECT * FROM saved_views WHERE workspace_id=$1 ORDER BY name',[w])).rows.filter(v=>types.some(t=>t.id===v.type_id)).map(v=>({...v,config:{...v.config,columns:(v.config.columns??[]).filter((k:string)=>types.find(t=>t.id===v.type_id)?.fields.some((f:Field)=>f.key===k))}}));}
+ async views(a:Actor,w:string) {
+  const types=await this.types(a,w);
+  // A hidden filter/sort/group must not influence membership, counts or order.
+  return (await this.db.query('SELECT * FROM saved_views WHERE workspace_id=$1 ORDER BY name,id',[w])).rows.filter(v=>{
+   const t=types.find(t=>t.id===v.type_id);if(!t)return false;
+   return viewFields(viewConfigSchema.parse(v.config)).every(k=>t.fields.some((f:Field)=>f.key===k));
+  });
+ }
  async setAi(a:Actor,w:string,enabled:boolean) {return this.db.transaction(async tx=>{await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await access(tx,a,w,true);if(a.origin!=='human'||p.role!=='owner')fail(403,'owner_required','Human owner required');await tx.query('UPDATE workspaces SET ai_enabled=$1 WHERE id=$2',[enabled,w]);await audit(tx,a,p,'workspace.ai_access',w,{enabled:p.ai_enabled},{enabled});return {enabled};});}
  async grant(a:Actor,w:string,action:string,destination:string,future:boolean) {return this.db.transaction(async tx=>{const p=await access(tx,a,w,true);if(a.origin!=='human')fail(403,'human_required','Human authorisation required');const id=randomUUID();await tx.query('INSERT INTO action_grants(id,workspace_id,user_id,action,destination,future) VALUES($1,$2,$3,$4,$5,$6)',[id,w,a.userId,action,destination,future]);await audit(tx,a,p,'permission.granted',id,null,{action,destination,future});return {id};});}
  async grants(a:Actor,w:string) {await access(this.db,a,w);return (await this.db.query('SELECT * FROM action_grants WHERE workspace_id=$1 AND user_id=$2 ORDER BY created_at DESC',[w,a.userId])).rows;}

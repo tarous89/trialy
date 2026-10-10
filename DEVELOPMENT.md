@@ -9,7 +9,7 @@ Decision/change log: [HISTORY.md](HISTORY.md)
 
 - Working development application, SQL migrations, background worker, standalone UI and MCP transport are implemented.
 - Render web service, background worker and PostgreSQL are live in the confirmed workspace. Private Trialy plugin created.
-- Shared document-text/history views, previewed restoration and document replacement UI deployed in commit `89bbf7b`. Next: verify real ChatGPT return/open/save with a connected account, then complete configurable saved views, comparison/calendar and remaining embedded operations.
+- Current batch: configurable saved views and shared table/list/comparison/dashboard/timeline/calendar UI implemented. Deploy next; real ChatGPT connection/automatic opening remains an account-dependent acceptance check.
 - No existing Trialegions application, data, infrastructure, or domain has been changed.
 
 ### Implementation checkpoint — 2026-10-10
@@ -22,8 +22,8 @@ A checked item below means that particular implementation exists; a partially im
 | 2 | Self-hosted sign-up/login, PostgreSQL sessions and MCP OAuth with PKCE, tenant roles, workspace/table/field access, separate AI access, audited sharing | Implement recovery/verification/MFA and verify live session lifecycle; finer record/document/folder/view controls |
 | 3 | Configurable typed fields, required validation, related-record references, pagination and visible-field search, versioned safe schema changes | Formula engine, configurable uniqueness/sorting/bulk operations; migration workflow for incompatible changes; verified person/document reference semantics |
 | 4 | Temporary previews, explicit save/discard, digest binding, transactionally committed version 0/history/jobs, idempotency receipts, stale-edit rejection, shared record history and previewed restoration | Stronger separated database roles, preview infrastructure for multiple web instances; bulk/import previews |
-| 5 | Authenticated MCP wiring with thirteen typed tools and an interactive MCP Apps workspace; transport tested locally | Live ChatGPT OAuth connection, remaining embedded views, cross-conversation proof and UI-only restricted-field path; account availability verification |
-| 6 | Standalone table/list/record form/basic dashboard/timeline, preview modal, field editor, source list, activity and access screens | Comparison matrix/calendar/questionnaires, full saved-view controls and filters, shared embedded components; browser acceptance |
+| 5 | Authenticated MCP wiring with fourteen typed tools and an interactive MCP Apps workspace; transport tested locally | Live ChatGPT OAuth connection, remaining embedded views, cross-conversation proof and UI-only restricted-field path; account availability verification |
+| 6 | Shared table/list/comparison/basic dashboard/timeline/calendar, saved-view editor with columns/filters/sort/group/date configuration, record forms and preview/save in both surfaces | Questionnaires, calculated/group totals across full datasets, record-level view restrictions and browser acceptance |
 | 7 | Share with registered users, viewer/editor scopes, revocation, one-time/future action grants | Email invitations, guest/shared-view links; extend grant execution beyond report summaries |
 | 8 | Original bytea payloads, SHA-256, immutable versions, upload preview/save/download, replacement-version UI and atomic job insertion | Record links, document display/review/expiry controls; separate storage adapter for later migration |
 | 9 | Leased durable jobs, bounded retries, separate worker, isolated extraction subprocess, text/DOCX/PDF and image/scanned-PDF OCR paths, quiet availability states | Best-effort table extraction, richer Office coverage and per-capability statuses; representative OCR/PDF fixture validation |
@@ -61,10 +61,18 @@ A checked item below means that particular implementation exists; a partially im
 - Build and 13 reported tests pass. Two targeted checks cover restricted history, restoration/discard/retry/stale changes, unchanged approval evidence, document restrictions/quiet gaps and old-original preservation. No broad test expansion.
 - No plugin package change needed: its server URL and identity are unchanged. Web deploy `dep-db596tnavr4c73et7vug` and worker deploy `dep-db596tnavr4c73et802g` are live on commit `89bbf7b`; live health returns 200.
 
+### Configurable saved views — 2026-10-10
+
+- Added previewed/versioned view creation and updates, including stale-edit protection. Config supports column selection, typed equals/contains/empty filters, ascending/descending sorting, table/list grouping and date-field selection.
+- Filters and numeric-aware sorting execute in PostgreSQL before pagination; matching counts are for the full filtered set. SQL field keys and values are bound parameters.
+- A view with any currently restricted field reference is omitted and cannot be executed by ID. This includes columns, filters, sorting, grouping and dates, avoiding hidden-field leakage through membership/count/order.
+- Both interfaces use shared table/list/comparison/dashboard/timeline/calendar components and the same view editor. Layouts and groups show the current page, labelled explicitly; whole-result calendar loading and aggregates remain unfinished.
+- One focused test covers filtering/sorting/pagination, versioned updates, stale saves, tenant/model restrictions and date requirements. Build and all 14 reported tests pass. Real host visual acceptance remains pending.
+
 ### Verification and practical boundaries
 
 - `npm run build`: TypeScript check and production frontend bundle passed.
-- `npm test`: 13 reported tests (12 leaf checks plus the parent suite), using the SQL migrations in PGlite. Covers tenant/model access, preview discard/save/retry/concurrency, append-only audit, original preservation after extraction failure, grant revocation, atomic template installation, sharing/review/scheduled summary/export, MCP transport permission filtering, and first-connection identity/workspace onboarding.
+- `npm test`: 14 reported tests (13 leaf checks plus the parent suite), using the SQL migrations in PGlite. Covers tenant/model access, preview discard/save/retry/concurrency, append-only audit, original preservation after extraction failure, grant revocation, atomic template installation, sharing/review/scheduled summary/export, MCP transport permission filtering, and first-connection identity/workspace onboarding.
 - Local demo successfully starts on loopback with persistent synthetic data. Chromium download failed in this environment, so visual browser acceptance is still outstanding. Real PostgreSQL migrations and deployment subsequently passed; real ChatGPT verification is still outstanding.
 - OCR/PDF/Office extraction is bounded and implemented, but the automated source-preservation check uses a text file and an unsupported file. Unsupported or failed extraction leaves the original available.
 - Authentication now runs within Trialy; no external identity-provider credentials are needed. Password recovery, verification and MFA remain incomplete. The MCP resource now provides interactive workspace selection, first-workspace setup, tables, record forms, templates and preview/save. Remaining views and UI-only access are unfinished.
@@ -168,8 +176,10 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 **Depends on:** 3–5.
 
 - [ ] Build table/list, record detail, form/questionnaire, comparison matrix, dashboard/report, timeline, and calendar components.
-- [ ] Add configurable columns, filters, sorting, grouping, calculations, and saved view definitions.
-- [ ] Reuse the same components in both surfaces; tabs are views, not mandatory modules.
+- [x] Add saved view columns, filters, sorting, grouping and date-field configuration through previewed/versioned changes.
+- [ ] Add safe calculations and whole-result group aggregates.
+- [x] Share record layouts, saved-view editor, record history and document text across both surfaces.
+- [ ] Consolidate remaining editors and workflows; tabs remain configurable views.
 - [ ] Add clear preview/save/discard states, quiet processing flags, permission-aware actions, and practical loading/empty states.
 - [x] Persist approved configuration changes through the common commit path.
 
