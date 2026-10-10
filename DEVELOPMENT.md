@@ -9,7 +9,7 @@ Decision/change log: [HISTORY.md](HISTORY.md)
 
 - Working development application, SQL migrations, background worker, standalone UI and MCP transport are implemented.
 - Render web service, background worker and PostgreSQL are live in the confirmed workspace. Private Trialy plugin created.
-- Current task: deploy shared document-text and record-history views, previewed record restoration and document replacement UI. Then connect Trialy to verify the real ChatGPT return/open/save flow; continue reusable configurable views.
+- Shared document-text/history views, previewed restoration and document replacement UI deployed in commit `89bbf7b`. Next: verify real ChatGPT return/open/save with a connected account, then complete configurable saved views, comparison/calendar and remaining embedded operations.
 - No existing Trialegions application, data, infrastructure, or domain has been changed.
 
 ### Implementation checkpoint — 2026-10-10
@@ -59,7 +59,7 @@ A checked item below means that particular implementation exists; a partially im
 - Added embedded document listing, search coverage and bounded exact-version extracted-text reading. Shared text viewer handles partial/unavailable extraction quietly. Original upload/download remains standalone until host file handling is implemented.
 - Standalone now offers New version for latest document originals; bytes, history and previous versions stay intact.
 - Build and 13 reported tests pass. Two targeted checks cover restricted history, restoration/discard/retry/stale changes, unchanged approval evidence, document restrictions/quiet gaps and old-original preservation. No broad test expansion.
-- No plugin package change needed: its server URL and identity are unchanged. New tools and UI are deployed by the existing server repository.
+- No plugin package change needed: its server URL and identity are unchanged. Web deploy `dep-db596tnavr4c73et7vug` and worker deploy `dep-db596tnavr4c73et802g` are live on commit `89bbf7b`; live health returns 200.
 
 ### Verification and practical boundaries
 
