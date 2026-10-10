@@ -185,3 +185,15 @@ Deployment verification: code `c5015cec1b188c3919e1a0118c8d00fedb938b42` is live
 Deployment: `b2dce02b15c602f4c58294836b38dc2283d3ca1f` is live on both existing Render services: web `dep-db5bsuivcj2c73ei7pu0`, worker `dep-db5bsuivcj2c73ei7q20`. No plugin package change or new infrastructure/account was needed.
 
 Live read-only verification for `b2dce02`: home returned 200 with `index-DQkJhY92.js`; `/ready` returned 200/ready. Live browser/ChatGPT review-workflow acceptance remains outstanding.
+
+## Foundation scope correction — 11 October 2026
+
+The user clarified that Trialy is currently only a foundation for ChatGPT to use persistent data, execute code and access tools. Templates and specific workflows are not in the current build scope. The user approved keeping the existing project, correcting the architecture and separating reusable infrastructure from rigid business features.
+
+- Created `foundation-reset` from `87adf5d`; no new repository or live infrastructure.
+- Replaced README.md and DEVELOPMENT.md with the corrected scope and dependency-ordered foundation plan. The old scope/checklist are preserved under `docs/archive/` and explicitly superseded.
+- Added docs/FOUNDATION_ARCHITECTURE.md: responsibility boundaries, proposed execution/broker/data contracts, experiment/commit/function persistence, capability grants, dependency map, retirement/rollback and one generic acceptance example.
+- Froze further template/business-feature expansion. The old remaining-feature list is no longer the active backlog.
+- No arbitrary-code runtime, general tool gateway or saved-function registry is claimed implemented. Runtime-host selection is a later feasibility decision; extraction subprocesses are not a substitute for an untrusted-code sandbox.
+- This checkpoint changes documentation only. No saved records, original files, audit histories, applied migrations, existing schedules or deployed screens are deleted or changed. Last live runtime remains `b2dce02`.
+- Validation: checked local Markdown targets in active root/architecture documents and verified the diff contains documentation only. No application tests or deployment were necessary for this checkpoint.

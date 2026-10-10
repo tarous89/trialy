@@ -1,418 +1,104 @@
-# Trialy — Current Development
+# Trialy — Foundation Development Plan
 
-Updated: 2026-10-10  
-Repository: tarous89/trialy  
-Scope: [README.md](README.md)  
-Decision/change log: [HISTORY.md](HISTORY.md)
+Updated 11 October 2026. This replaces the old 18-step business-feature checklist. [Scope](README.md) · [Architecture](docs/FOUNDATION_ARCHITECTURE.md) · [History](HISTORY.md).
 
 ## Current position
 
-- Working development application, SQL migrations, background worker, standalone UI and MCP transport are implemented.
-- Render web service, background worker and PostgreSQL are live in the confirmed workspace. Private Trialy plugin created.
-- Current code is live on both Render services at `b2dce02`. The latest continuation implements version-bound record review routing and an in-app reminder inbox; build and 30 reported checks pass. This continuation adds invitations, branching questionnaires/file intake, legacy template adoption and XLSX/PPTX extraction; local build and 29 reported checks pass. `/join` serves the current UI bundle and `/ready` returns 200. Earlier live verification at `97c143f` covered the core save/source flows. Live synthetic save/retry, calculations, original integrity, worker extraction, export and archive checks passed. Remaining account/provider/production decisions and still-unbuilt features are listed separately below; the complete 18-step product is not claimed finished.
-- Current implementation also includes authenticator MFA, per-table AI controls, document access rules, external forms/shared views, event/local-time summaries and additive template upgrades. Real ChatGPT testing and developer-account integrations are explicitly deferred by the user; they do not block independent code work.
-- Decisions/actions needed later: connect a real ChatGPT account for host acceptance; choose/authorize email/calendar provider credentials; confirm production recovery expectations/resources. No external messages or paid signature subscription will be initiated.
-- No existing Trialegions application, data, infrastructure, or domain has been changed.
-
-### Implementation checkpoint — 2026-10-10
-
-A checked item below means that particular implementation exists; a partially implemented step is not complete merely because it has code.
-
-| Step | Implemented now | Still needed |
-| --- | --- | --- |
-| 1 | Scaffold, lockfile, SQL migrations, Docker/Render, health/readiness, original-store interface | More adapter contracts when providers are selected |
-| 2 | Self-hosted signup/login/OAuth PKCE, session CSRF, rotation/replay protection, user connection revocation, password change, account-wide session revocation/security activity, notice acceptance, authenticator MFA/recovery codes, tenant/table/field/document/AI access | Provider-backed password recovery/email verification; optional record access; live account acceptance |
-| 3 | Nine field types, validated references, unique fields, filtering/sorting/pagination, atomic bulk writes, permission-aware numeric formulas, previewed schema/data migrations | Larger migrations beyond 200 records/1 MiB; richer expressions if needed |
-| 4 | Temporary previews, explicit atomic save, version/audit/receipt, retry/stale safeguards, schema fingerprints, restoration, bulk previews | Apply separate runtime DB role; multiple-web-instance preview storage |
-| 5 | Typed MCP tools, embedded workspace/forms/views/history/document upload/download and controls | Real ChatGPT OAuth/host files/automatic opening/cross-conversation acceptance; UI-only human data remains unproven |
-| 6 | Shared views/editor, full-result aggregates, calendar month filtering, typed forms, CSV import, field editor and conditional external questionnaires | Optional record restrictions and browser acceptance |
-| 7 | Registered-user sharing and table selectors, scoped grants/revocation, expiring/revocable read-only view links and single-use invitation acceptance after signup/login | Further action types |
-| 8 | Immutable bytea originals, checksums, version replacement, links/reviewers/expiry/folder metadata, review/acknowledgement, storage adapter, per-document and inherited-folder colleague/AI rules across versions | embedded host acceptance |
-| 9 | Durable leased worker, bounded retries, isolated Poppler text/PDF, DOCX, XLSX/PPTX, OCR, CSV/layout-derived tables, quiet text/table status | Legacy/encrypted Office formats and representative customer-format acceptance |
-| 10 | Permission-filtered full-text search, bounded matching page/section passages, source/version IDs, coverage flags, original download | Richer document search filters and alternative model reading paths; vectors remain deferred |
-| 11 | Previewed recurring summaries and filtered due/overdue counts, execution-time permissions, one-time/future grants, pause/resume/history, exact-version internal reviews, record/document event summaries, scoped automated draft creation, local-time daily schedules with DST behavior, owner-routed exact-version record reviews and scoped in-app reminders | Generalized conditions, multi-stage review routing, other-recipient/external notifications and further action types |
-| 12 | Scoped external questionnaires with immutable intake, reviewer preview/acceptance and idempotent submission, conditional questions and immutable file intake/acceptance; no outbound provider activated | Provider/account decision and email/calendar integration |
-| 13 | RFP v2 adds nine linked tables, source-backed weighted evaluations, comparisons/aggregates, selection references, commitments, contracts/change orders, tracked additive template upgrade diffs and explicit compatible legacy adoption | End-to-end acceptance and provider-dependent collection/routing |
-| 14 | Eleven editable configurations; document/person references and exact-source acknowledgements | Workflow-specific refinements and communication integrations |
-| 15 | Human-only inspector access, paged audit filtering, archive/retention/hold policy, append-only evidence, original/revision export in JSON/HTML, signup notice, operations and critical-check matrix | Formal license/customer policies and eventual controlled disposal |
-| 16 | Current provider assessment and conditional deferral documented; internal approvals remain distinct | Provider/cost decision before production signature integration |
-| 17 | DB readiness, expired-auth cleanup, runtime-role SQL, migration credential seam, recovery inventories/export verifier and runbook, successful isolated synthetic database restore | Apply credentials/monitoring settings; agree production RPO/RTO and execute actual managed restore drill |
-| 18 | Focused local checks and synthetic isolated PDF check; acceptance/onboarding/brand-cutover runbook | Real account/browser acceptance, managed Render restore evidence, provider setup and separately authorized publication/cutover |
-
-### Extended implementation checkpoint — 2026-10-10
-
-- Atomic imports and bulk edits are capped at 200 records. Schema migration previews show before/after data, reject stale data, preserve old snapshots and return approved records to review. Migration previews are capped at 1 MiB.
-- Calculations support numeric sum/product/difference/ratio with acyclic dependencies. Missing inputs, division by zero and non-finite results produce null. Calculated fields inherit source permissions and cannot be directly edited. These are ordinary numeric calculations, not a precision accounting engine.
-- Document links, reviewer, folder label and expiry are versioned controls. Human reviews bind to the latest exact original; replacing an approved source returns its current control to review while keeping old evidence. Human read acknowledgements are idempotent per exact version.
-- Workspace archive blocks business writes. Retention dates cannot be shortened; holds and reasons are recorded. There is no destructive customer-record deletion endpoint. Privileged database administration and backup policy still require operational controls.
-- PDF extraction now uses installed Poppler. A synthetic one-page file revealed excessive startup memory in pdf-parse under the worker heap limit, so that dependency was removed. The isolated Poppler check successfully read the expected text and page reference. CSV tables are bounded; PDF layout-derived tables are always partial. Unsupported/failed derived data remains a quiet flag.
-- Due reports use a permitted date field and optional saved-view filter, and evaluate UTC dates through a bounded horizon. They produce in-app counts; they do not send email. Current permissions are checked both at execution and when old runs are read.
-- New operating documentation: [OPERATIONS.md](docs/OPERATIONS.md), [ACCEPTANCE.md](docs/ACCEPTANCE.md), [SIGNATURE_DECISION.md](docs/SIGNATURE_DECISION.md). Database role separation and restore tooling are prepared; no production recovery guarantee is asserted.
-- Deployment verification is recorded in HISTORY.md: both services live, health/readiness 200, matching public bundle, and the synthetic live save/processing/export/archive check passed.
-
-### ChatGPT onboarding implementation — 2026-10-10
-
-- Removed the standalone-sign-in prerequisite for verified MCP users. The same issuer/subject resolves to one account, regardless of which surface is used first.
-- Added `open_workspace` global/thread entrypoints and a self-contained interactive MCP Apps view. New users can confirm their first AI-accessible workspace inside the view. Existing access restrictions stay intact.
-- Added account deduplication, preserved profile data, first-workspace/retry checks and entrypoint metadata checks. Build and nine focused subtests pass.
-- Subsequent checkpoint: Render provisioning and private plugin creation completed. Real ChatGPT connection, browser rendering and post-OAuth auto-opening remain unverified. Full embedded feature parity is outstanding.
-- Next execution instructions and concrete configuration are in [CHATGPT_SETUP.md](docs/CHATGPT_SETUP.md). Render workspace was subsequently confirmed. Existing-app self-hosted sign-in/OAuth is implemented; deployment subsequently completed.
-
-### Self-hosted authentication and database checkpoint — 2026-10-10
-
-- Replaced the external adapter with local signup/login, database sessions, MCP SDK OAuth, one-use codes, exact callbacks, S256 PKCE and rotating hashed tokens. Signup/consent returns directly to the registered ChatGPT callback.
-- Build and 11 reported tests passed (ten leaf checks plus the parent), including the end-to-end local HTTP OAuth flow and rejected CSRF/verifier/code replay/refresh replay/account mismatch.
-- Created Render Postgres `dpg-db58k25ckfvc739bb5f0-a` in Frankfurt. Updated Blueprint to use its exact database identity, generated session secret and built-in Render URL; removed external-provider prompts.
-- Subsequent checkpoint: web/worker deployed through the user-approved dashboard fallback. Real ChatGPT verification remains pending. See [setup checkpoint](docs/CHATGPT_SETUP.md).
-
-### Shared history and document views — 2026-10-10
-
-- Added permission-filtered record version history in standalone and embedded workspaces. Current field restrictions apply to every historical snapshot; raw owner audit is not exposed to the model.
-- Restoration requires all current fields and edit access, an earlier version and a reason. Preview displays the exact restored values. Commit rechecks record/schema versions and permissions, creates a new revision and preserves approvals; approved records return to review.
-- Added embedded document listing, search coverage and bounded exact-version extracted-text reading. Shared text viewer handles partial/unavailable extraction quietly. Original upload/download remains standalone until host file handling is implemented.
-- Standalone now offers New version for latest document originals; bytes, history and previous versions stay intact.
-- Build and 13 reported tests pass. Two targeted checks cover restricted history, restoration/discard/retry/stale changes, unchanged approval evidence, document restrictions/quiet gaps and old-original preservation. No broad test expansion.
-- No plugin package change needed: its server URL and identity are unchanged. Web deploy `dep-db596tnavr4c73et7vug` and worker deploy `dep-db596tnavr4c73et802g` are live on commit `89bbf7b`; live health returns 200.
-
-### Configurable saved views — 2026-10-10
-
-- Added previewed/versioned view creation and updates, including stale-edit protection. Config supports column selection, typed equals/contains/empty filters, ascending/descending sorting, table/list grouping and date-field selection.
-- Filters and numeric-aware sorting execute in PostgreSQL before pagination; matching counts are for the full filtered set. SQL field keys and values are bound parameters.
-- A view with any currently restricted field reference is omitted and cannot be executed by ID. This includes columns, filters, sorting, grouping and dates, avoiding hidden-field leakage through membership/count/order.
-- Both interfaces use shared table/list/comparison/dashboard/timeline/calendar components and the same view editor. Layouts and groups show the current page, labelled explicitly; whole-result calendar loading and aggregates remain unfinished.
-- One focused test covers filtering/sorting/pagination, versioned updates, stale saves, tenant/model restrictions and date requirements. Build and all 14 reported tests pass. Real host visual acceptance remains pending.
-- Deployment confirmed: web `dep-db59hijbc2fs738ijneg`, worker `dep-db59hirbc2fs738ijnig`, commit `5ceb14c`; both live, health 200 and public UI bundle matches the build.
-
-### Verification and practical boundaries
-
-- Current extended batch: production build and 18 reported tests pass (17 leaf checks plus parent). Isolated Poppler PDF extraction passed on a synthetic one-page fixture. This is focused implementation evidence, not full host/regulatory acceptance.
-
-- `npm run build`: TypeScript check and production frontend bundle passed.
-- `npm test`: 14 reported tests (13 leaf checks plus the parent suite), using the SQL migrations in PGlite. Covers tenant/model access, preview discard/save/retry/concurrency, append-only audit, original preservation after extraction failure, grant revocation, atomic template installation, sharing/review/scheduled summary/export, MCP transport permission filtering, and first-connection identity/workspace onboarding.
-- Local demo successfully starts on loopback with persistent synthetic data. Chromium download failed in this environment, so visual browser acceptance is still outstanding. Real PostgreSQL migrations and deployment subsequently passed; real ChatGPT verification is still outstanding.
-- OCR/PDF/Office extraction is bounded and implemented, but the automated source-preservation check uses a text file and an unsupported file. Unsupported or failed extraction leaves the original available.
-- Authentication now runs within Trialy; no external identity-provider credentials are needed. Password recovery, verification and MFA remain incomplete. The MCP resource now provides interactive workspace selection, first-workspace setup, tables, record forms, templates and preview/save. Remaining views and UI-only access are unfinished.
-- Preview storage is in-process with a 24-hour expiry and 100 MiB aggregate limit. Run one web instance. A process restart discards uncommitted previews; saved data remains in the database.
-- Restricted users cannot access workspace documents or raw audit/export until finer document/history controls exist. This conservative boundary avoids exposing unrestricted originals through a restricted view.
-- Action grants are currently executed only by the recurring report-summary worker. Other grant types are configuration groundwork, not automated import/create capabilities.
-- Audit/original immutability is protected by database triggers against ordinary writes. The deployment still needs separate migration/runtime roles and operational administrator controls.
-- The source-preservation guarantee is transaction-level. Production failover, backup retention and restore evidence remain Step 17 work before customer reliance.
-
-This is one dependency-ordered building plan for the complete product, not a release roadmap. Conditional items are identified explicitly. Finish each step's small completion check and continue; do not invent extra approval rounds or broad test programmes.
-
-## Working architecture and defaults
-
-These are implementation defaults, not previously deployed capabilities. Adjust a default if implementation reveals a concrete problem, and record the reason in HISTORY.md.
-
-- TypeScript application and API/MCP service; React shared UI for embedded and standalone surfaces.
-- One modular backend, not a fleet of microservices. Both interfaces call the same domain operations and permission checks.
-- PostgreSQL for tenants, configuration, records, revisions, audit events, jobs, original file bytes, and extracted text. Use typed relational metadata plus validated JSONB record values and explicit relationship records.
-- Separate document payload storage from routine metadata queries. Use bytea for initial files, with a configurable practical upload limit (initial engineering default: 25 MiB).
-- A PostgreSQL-backed job queue and transactional outbox; no Redis dependency initially.
-- One Render web service, one worker when processing is introduced, and modest paid Render Postgres in Frankfurt. Use separate synthetic-data staging before customer production use.
-- Existing maintained authentication/OAuth components; choose the concrete provider/library in Step 2 after checking current SDK compatibility and cost.
-- Temporary previews use the browser or expiring temporary server storage, not authoritative database rows disguised as drafts. Initial preview expiry default: 24 hours where temporary server storage is necessary; previews are explicitly non-durable.
-- Database transactions, audit integrity, permission checks, and safe retries are required from the first persistent writes.
-- API/MCP operations have typed schemas and stable IDs. The model may propose configuration but cannot submit arbitrary executable code, unrestricted SQL, or its own authorisation claims.
-- Brand and public URLs are configuration. Keep the internal Trialy identity stable.
-- Synthetic records and one or a few test documents only during development. Never send test messages to real recipients.
+- Branch: `foundation-reset`, based on `87adf5d` on main.
+- Existing runtime remains deployed at `b2dce02`; no records, migrations, screens or jobs have been removed by this correction.
+- Scope/architecture reset and dependency map are complete. General code execution is not yet built.
+- Next implementation is Step 1 below. Do not resume the old template, multi-stage review, specialized reminder or RFP feature backlog.
 
-## Ordered build steps
+## Ordered implementation steps
 
-### 1. Scaffold the shared application
+### 1. Separate the foundation from legacy business features
 
-**Depends on:** these documents.
+- [ ] Extract reusable record, document, query, permission and commit services from `src/domain/service.ts`, preserving existing callers and behavior.
+- [ ] Separate foundation operation schemas from legacy template/review/automation schemas. Keep the old adapter for existing endpoints until replacement is ready.
+- [ ] Introduce a capability registry for operations available to code. Inputs, outputs, effect class and permission checks must be explicit; no raw database handle or arbitrary service-method dispatch.
+- [ ] Separate the legacy automation poller from the future general job dispatcher in both production and demo entrypoints. Existing rules must not silently disappear or be translated to code.
+- [ ] Add a minimal foundation navigation path. Retire template/business builders from the default experience only with working access to retained records and historical evidence.
 
-- [x] Establish web, server, worker, shared domain/schema, and reusable UI directories in one repository.
-- [x] Add dependency lockfile, environment-variable template without secrets, formatting/type checks, migration commands, and build/start commands.
-- [x] Define common errors/statuses, stable identifiers, timestamps, actor context, tenant context, and request/idempotency IDs.
-- [ ] Define interfaces for storage, processing, authorisation, preview/commit, and external adapters.
-- [x] Add health endpoint, structured logs without document bodies, and synthetic seed data.
+Done when existing data can be read/previewed/committed through the shared foundation API, and legacy entrypoints are thin adapters rather than dependencies of the foundation.
 
-**Done when:** a clean checkout builds and serves the empty application locally. Record commands here.
+### 2. Implement isolated, read-only execution first
 
-### 2. Establish identity, tenants, and foundational permissions
+- [ ] Define a runtime adapter and implement one actual isolation boundary for generated code. Do not use the Express process, Node `vm`, or the existing extraction subprocess as an untrusted-code sandbox.
+- [ ] Run a first supported language against a short-lived, run-scoped capability broker. Make language/runtime/dependency versions explicit and pinned; no arbitrary package installation during a run.
+- [ ] Enforce CPU/wall-time, memory, process, output and temporary-file limits; cancellation must terminate the isolated job.
+- [ ] Deny direct database access, host files, credentials and unrestricted outbound networking. Broker reads under the initiating identity and current permissions.
+- [ ] Return bounded results, artifacts and diagnostics without saving experimental source/data as authoritative records. Record only minimal operational metadata under a documented retention policy.
 
-**Depends on:** 1.
+Done when a synthetic program can query permitted records and compute a result, cannot read another tenant or contact an undeclared destination, and can be stopped. Confirm runtime hosting feasibility before enabling generated-code execution on Render; no paid sandbox/provider provisioning without the required account/budget decision.
 
-- [ ] Integrate maintained authentication, account linking, logout/revocation, and MFA support; do not build password cryptography.
-- [x] Create tenants, users, memberships, workspaces, and owner/editor/viewer roles.
-- [ ] Derive tenant/user identity server-side. Implement permission evaluation for workspace, type/table, field, document/folder, shared view, and action, with record restrictions where needed.
-- [ ] Add separate AI-access grants whose effective scope cannot exceed human access. Enforce permissions for reads, writes, exports, and background operations.
-- [x] Capture membership and permission changes in protected security audit events from this step onward.
-- [x] Implement the standalone sign-in and minimal account/workspace shell.
+### 3. Add generic change proposals and confirmed commits
 
-**Done when:** two synthetic tenants cannot read or change each other's data, and a restricted field is withheld by the server.
+- [ ] Let execution collect data mutations and file artifacts in a temporary proposal without applying them.
+- [ ] Bind the proposal to identity, input/function digest, exact write set, data/configuration versions and expiration.
+- [ ] Reuse the existing commit transaction, permission rechecks, revision/audit records and idempotent receipt. Commit the reviewed write set, not a fresh execution of possibly changed code.
+- [ ] Explicitly distinguish database changes from external actions. An external action cannot be rolled back by a database transaction; reconcile uncertain outcomes and do not blindly retry non-idempotent actions.
+- [ ] Add a confirmation interface usable from the permitted ChatGPT surface, with standalone fallback. Host verification remains deferred.
 
-### 3. Implement the configurable data foundation
+Done when code proposes multiple changes, confirmation atomically commits them, stale/unauthorized proposals fail without partial writes, and a retry returns the original receipt.
 
-**Depends on:** 2.
+### 4. Save and version reusable functions
 
-- [x] Create type definitions, field definitions, records, relationships, and configuration revisions.
-- [x] Support text, numeric/money, date (day precision), boolean, select/status, person, relationship, and document references.
-- [x] Implement schema validation, required fields, uniqueness where configured, pagination, filtering, sorting, and bulk operations.
-- [x] Add safe formulas/aggregations with dependency tracking and permission-aware results; never execute model-provided code.
-- [x] Represent saved views as configuration; avoid fixed modules and duplicate business entities.
-- [x] Add migration handling for field changes, incompatible conversions, removal, and referenced records.
+- [ ] Add immutable function revisions containing source, runtime, declared dependencies, input/output contracts and requested capabilities.
+- [ ] Preview and confirm function persistence separately from granting execution rights. Save no draft simply because ChatGPT generated it.
+- [ ] Invoke an exact revision with validated inputs and results linked to provenance.
+- [ ] Bind side-effect grants to a reviewed revision and destination/resource scope; revisions requiring changed authority need new consent.
 
-**Done when:** a CRO table and study table can be configured and linked, with invalid values rejected and no committed-write bypass.
+Done when ChatGPT can save a function after confirmation and invoke that same revision in another session without recreating it.
 
-### 4. Build preview, commit, versions, and audit together
+### 5. Generalize background execution
 
-**Depends on:** 2–3. No persistent business write ships without this path.
+- [ ] Add general run records, leased jobs, attempts, cancellation, bounded retries, results and recovery after worker interruption.
+- [ ] Reuse scheduling/time-zone and event cursor mechanics, but dispatch saved function revisions instead of hardcoded business action enums.
+- [ ] Permit preview-only scheduled computation or writes covered by an explicit active standing grant. Approval must constrain operations and destinations; it is not blanket permission for generated code.
+- [ ] Recheck permissions/grants at execution and each brokered side effect. Use idempotency/reconciliation appropriate to the effect.
+- [ ] Expose generic schedule/run controls rather than reminder/review-specific builders.
 
-- [ ] Create isolated preview revisions for new structures, records, file selections, imports, and proposed edits.
-- [x] Show exact destination, selected content, and change summary. Bind Save to an authenticated user and exact preview revision.
-- [x] Commit accepted changes, version 0 or next revision, audit event, and any job/outbox entry in one transaction.
-- [x] Include actor, time, old/new values, affected object/version, action origin, and reason where required.
-- [ ] Protect audit history from ordinary application edits/deletion; separate operational administration permissions.
-- [x] Implement idempotency receipt lookup, safe retry after interrupted responses, and optimistic concurrency checks.
-- [x] Discarding previews changes nothing committed. Correction/restoration creates a new revision; approved historical content stays identifiable.
-- [ ] Distinguish saved draft, in review, approved/effective, superseded, and archived states.
-- [x] Clean up temporary previews without promising erasure of independent chat history or infrastructure logs.
+Done when an authorized saved function runs with ChatGPT closed, produces a durable run result, survives a worker retry without duplicate effects, and stops acting after revocation.
 
-**Done when:** preview/discard does not create an official record; confirm creates exactly one revision; retry is not duplicated; stale edits cannot overwrite silently.
+### 6. Add the extensible tool gateway
 
-### 5. Prove the ChatGPT integration early
+- [ ] Define tool registration/discovery, typed invocation, read/write effect classification and credential requirements. Start with existing Trialy capabilities and synthetic external adapters.
+- [ ] Bind tools to tenant/user connections; keep credentials outside generated-code processes. Register outbound destinations through trusted configuration, not arbitrary URLs from source content.
+- [ ] Support once/future invocation scopes, previews where supported, operation receipts and unknown-outcome reconciliation.
+- [ ] Persist approved tool definitions/versions with an explicit review path. Treat returned text/files as data, not permission to call another tool.
+- [ ] Add actual external providers only when selected credentials/accounts are available. Do not assume ChatGPT-connected tools can be invoked by Trialy's worker.
 
-**Depends on:** 2–4.
+Done when code discovers and invokes an allowed tool through the broker, cannot access another connection, and a tool side effect requires the appropriate permission.
 
-- [x] Verify current official SDK/authentication/distribution requirements before implementation.
-- [x] Expose a small set of typed MCP tools: workspace discovery, schema/read/search, preview mutation, commit, and receipt/status lookup.
-- [ ] Register an embedded interactive table/form with the same backend as standalone.
-- [ ] Support authenticated create → preview → confirm → read-back across conversations.
-- [ ] Prove UI-only access for one model-restricted field; omit it from model-visible responses, state, summaries, and tool results.
-- [x] Provide a standalone route where a required embedded capability is unsupported.
-- [ ] Record actual plan/account availability; do not introduce a Trialy organisational-account restriction.
+### 7. Complete the minimal ChatGPT execution experience
 
-**Done when:** one synthetic table can be created and edited inside ChatGPT, persists in standalone, and model-restricted content stays out of model-visible payloads.
+- [ ] Expose create/run/inspect/cancel/propose/commit/save-function/invoke/schedule capabilities through MCP.
+- [ ] Provide data, function, run, result/artifact and permission views in the embedded interface. Reuse generic components; no new business modules or template catalogue.
+- [ ] Support granular data queries/joins and source references needed by actual programs, using authorized operations rather than unrestricted SQL.
+- [ ] Separate trusted user confirmation from model-invoked requests. Do not label an action standalone-only merely because its first endpoint was implemented there.
+- [ ] Retire obsolete business UI and code after dependency checks, while retaining access to records, histories and any active legacy job-management path.
 
-### 6. Complete reusable views and manual interaction
+Done when the complete synthetic code → experiment → proposed changes → confirmation → save function → repeat invocation path works through the shared backend. Real host return/opening/files and cross-conversation behavior require the deferred ChatGPT acceptance session.
 
-**Depends on:** 3–5.
+### 8. Production readiness and final acceptance
 
-- [ ] Build table/list, record detail, form/questionnaire, comparison matrix, dashboard/report, timeline, and calendar components.
-- [x] Add saved view columns, filters, sorting, grouping and date-field configuration through previewed/versioned changes.
-- [x] Add safe calculations and whole-result group aggregates.
-- [x] Share record layouts, saved-view editor, record history and document text across both surfaces.
-- [ ] Consolidate remaining editors and workflows; tabs remain configurable views.
-- [ ] Add clear preview/save/discard states, quiet processing flags, permission-aware actions, and practical loading/empty states.
-- [x] Persist approved configuration changes through the common commit path.
+- [ ] Apply separate runtime credentials, configure monitoring and choose operational retention for code/run artifacts and diagnostics.
+- [ ] Agree recovery expectations, budget/geography and customer policies; perform an actual managed backup restore including new foundation objects.
+- [ ] Complete real ChatGPT/account/browser acceptance, fix observed issues and verify enabled provider connections when available.
+- [ ] Prepare rollout/rollback and only then perform any separately authorized Trialegions name/domain cutover.
 
-**Done when:** a user can configure and operate a tracker manually or conversationally using the same records.
+## What is not in this plan
 
-### 7. Add sharing and one-time/future permissions
+No industry templates, prescribed review states/chains, specialized reminder products, RFP-specific processing or mandatory intake/acceptance processes. No vector service, arbitrary generated UI framework, individual-row permissions or scale infrastructure without a demonstrated foundation requirement. These are not prerequisites disguised as “remaining full scope.”
 
-**Depends on:** 2, 4–6.
+## Lean verification
 
-- [x] Add collaborator invitations, role changes, scoped shared views, and revocation.
-- [ ] Keep hidden fields and underlying unrelated records inaccessible, including through aggregations and exports.
-- [ ] Offer Allow once or Allow future actions of this type; persist scope, destination, actor, workflow, and revocation status.
-- [x] Re-evaluate current permissions at execution time; standing permission never exceeds the granting user's current rights.
-- [x] Keep formal approvals/signatures separate from automation authorisation.
-- [x] Use expiring scoped guest access where external forms or document requests require it.
+Keep the existing essential data/auth tests during extraction. Add focused checks for the new boundaries: tenant/capability isolation; resource limits/cancellation; proposal/commit/staleness/retry; function version/grant binding; job recovery; tool credentials and duplicate effects. One synthetic end-to-end foundation example is enough initially. Do not run every old business-flow test as a permanent product gate after its feature is retired, but preserve relevant data-integrity regression coverage.
 
-**Done when:** a restricted comparison can be shared without its financial fields, and revoking a future-action grant prevents subsequent execution.
+## Decisions that may require the user later
 
-### 8. Save original documents in PostgreSQL
+- Hosting an actual untrusted-code sandbox if the existing environment cannot provide the required isolation; any new account or cost.
+- External provider credentials and permitted destinations.
+- Production recovery/retention/location/budget and publication cutover.
 
-**Depends on:** 4, 7.
-
-- [x] Create document metadata, immutable original versions, bytea payloads, checksums, and record links.
-- [ ] Implement authenticated upload, preview/selection, confirmed commit, download, and document display.
-- [x] Verify complete bytes and integrity before acknowledging Saved; commit metadata/audit with the original.
-- [x] Never describe an external link, unfinished upload, or temporary copy as a saved original.
-- [x] Support new original versions without overwriting older originals, with replacement preview in standalone.
-- [x] Add document review/expiry metadata controls.
-- [x] Keep file storage behind a simple interface for possible later migration.
-
-**Done when:** a saved test document downloads byte-for-byte intact, and an interrupted save never produces a false Saved message.
-
-### 9. Add durable background processing and quiet failure handling
-
-**Depends on:** 8.
-
-- [x] Implement durable jobs, worker leases, timeouts, restart recovery, bounded retries, and duplicate-safe execution.
-- [ ] Add text extraction for supported text/PDF/Office formats, OCR for scanned pages, and best-effort table extraction.
-- [x] Preserve original version references, extraction method/version, page/section references, and per-capability processing status.
-- [x] Default to one attempt plus one retry for transient failures; avoid repeated attempts on unsupported input.
-- [x] After failure, retain the original and show only No extraction available or Partial extraction beside the document.
-- [x] Keep diagnostics internal; no user notifications/toasts/emails for routine regenerable processing failures.
-- [x] Continue other files and independent jobs. Keep only the specific dependent result incomplete/pending.
-- [x] Do not generate content revisions merely for processing retries or publish stale results for a newer source version.
-
-**Done when:** one intentionally unextractable file stays downloadable, shows a quiet flag, and does not prevent another file from completing.
-
-### 10. Add document retrieval with coverage awareness
-
-**Depends on:** 7, 9.
-
-- [ ] Index extracted text for PostgreSQL full-text search; filter by workspace, document, type, version, and permissions.
-- [x] Return exact source/version and page/section references with retrieved passages.
-- [x] Include counts/status for authorised documents with unavailable or partial extraction, even when absent from search results.
-- [x] Apply AI-access restrictions before any content goes to the model; do not disclose restricted document existence through coverage counts.
-- [ ] Allow authorised retrieval of originals when a supported alternative reading path exists.
-- [ ] Keep embeddings/vector indexing deferred; define a replaceable index boundary without provisioning another service.
-
-**Done when:** AI can answer from a permitted passage and accurately distinguish incomplete coverage from no matching information.
-
-### 11. Build rules, scheduled work, and approvals
-
-**Depends on:** 4, 7, 9–10.
-
-- [ ] Implement constrained rule configuration: trigger, conditions, actions, destination, grant, and approval requirements.
-- [ ] Support event triggers and schedules with timezone handling, execution history, pause/resume, retry, and cancellation.
-- [x] Preview rule changes before activation; version configurations and use recorded one-time/future grants.
-- [ ] Add internal reminders, recurring reports, overdue actions, proposal-arrival processing, and review routing.
-- [x] Bind approval to the exact record/configuration version. Changes requiring renewed review invalidate the current approval state, not historical evidence.
-- [x] Run independently of an active ChatGPT conversation; keep all application truth in the backend.
-- [ ] Isolate failures and distinguish quiet derived-data gaps from failed requested actions requiring a concise notice.
-
-**Done when:** a scheduled synthetic workflow runs while chat is closed, honours its grant, and cannot approve itself.
-
-### 12. Connect communications and external collection
-
-**Depends on:** 7, 9, 11.
-
-- [ ] Define email/calendar adapters; integrate the first supported provider using scoped OAuth and safe token storage.
-- [ ] Implement message/thread links, calendar events, draft/send, response capture, and follow-up tracking.
-- [x] Add external questionnaires and document requests using scoped invitations and tenant-safe destinations.
-- [ ] Treat inbound messages/documents as untrusted content, not authority to invoke tools or send messages.
-- [ ] Prevent duplicate sends on retries; apply one-time/future permissions and configured approval steps.
-- [ ] Preserve sources first; extraction failures remain quiet under Step 9.
-
-**Done when:** one end-to-end exchange using controlled test accounts is linked to the correct workspace and no duplicate send occurs.
-
-### 13. Build the template engine and RFP-to-oversight workflow
-
-**Depends on:** 6–12.
-
-- [ ] Package templates as versioned configuration with stable entity references, installation preview, customisation, and explicit upgrade diffs.
-- [ ] Implement RFP requirements/scope, CRO shortlist, proposal/clarification collection, budget/service comparison, scoring, reviews, and selection.
-- [ ] Carry the chosen CRO, proposal, and agreed commitments into study/CRO oversight without duplicate entities.
-- [ ] Implement milestones, responsibilities, deliverables, risks, issues, actions, decisions, budgets, contracts, and change orders.
-- [ ] Add document versions, review requests, missing/expiring document tracking, and study dashboards.
-
-**Done when:** one synthetic RFP becomes an active study tracker with its decision and source history intact.
-
-### 14. Populate the rest of the agreed template library
-
-**Depends on:** 13.
-
-- [ ] Site identification/feasibility/management and PI database/engagement.
-- [ ] SOP management and training coordination, with version-specific acknowledgements.
-- [ ] Expert/KOL and advisory-board management.
-- [ ] Congress and publication planning.
-- [ ] Team tasks/projects, vendor/contracts, and budget/resource tracking.
-- [ ] Email follow-up and recurring management reporting templates.
-- [x] Reuse the primitives; introduce no separate hardcoded products or mandatory navigation modules.
-
-**Done when:** each template installs as editable configuration. Use representative manual inspection, not a separate exhaustive test suite per template.
-
-### 15. Complete controlled records, retention, and inspection support
-
-**Depends on:** 4, 8, 11, 13.
-
-- [ ] Define intended-use/record classes, responsible roles, retention rules, and legal holds.
-- [x] Add audit action search/pagination, access review, controlled corrections, read-only archives and human-only inspector roles. Raw inspection access requires unrestricted workspace scope.
-- [x] Export originals, records, relationships, versions, source references, approval history, and audit data in readable and machine-readable forms.
-- [ ] Define tenant offboarding, archive/export responsibilities, and controlled deletion subject to retention.
-- [x] Maintain a concise requirements-to-critical-checks matrix and evidence for intended regulated workflows.
-- [x] Document essential change, incident, recovery, supplier, training, and corrective-action responsibilities.
-- [ ] Include licence/onboarding patient-data limitation without adding content screening.
-- [ ] Record changes requiring customer configuration assessment; never imply arbitrary user configurations are automatically validated.
-
-**Done when:** one study can be exported with interpretable history and retention controls prevent inappropriate destruction.
-
-### 16. Decide and conditionally implement electronic signatures
-
-**Depends on:** 11, 15.
-
-- [ ] Compare suitable providers' production API pricing, minimum commitments, identity controls, evidence export, and regulatory fit.
-- [ ] Distinguish sandbox access from usable production terms.
-- [ ] If suitable and affordable, integrate explicit human signing bound to an exact version, signed evidence retention, and duplicate-safe callback handling.
-- [x] Otherwise record formal signatures as deferred; preserve internal approvals without labelling them regulated signatures.
-- [x] Keep this conditional decision from blocking unrelated product completion.
-
-**Done when:** the documented decision is supported by current terms; any implemented signature can be verified against its exact source version.
-
-### 17. Establish production durability and operational readiness
-
-**Depends on:** 8–16; conditional signatures may remain explicitly deferred.
-
-- [ ] Measure actual storage, worker load, and backup/restore behaviour using representative modest data.
-- [ ] Agree acceptable recovery time and explicit failure scenarios for no loss of acknowledged saves.
-- [ ] Evaluate whether Render's available database arrangement meets that requirement; asynchronous HA alone is insufficient for strict zero-loss failover.
-- [ ] Prefer existing infrastructure; add/replace infrastructure only when justified before customer reliance, with a documented migration and rollback path.
-- [ ] Configure controlled production deployment, secret management, monitoring, restore procedure, support contacts, and production/staging isolation.
-- [ ] Perform one representative restore and reconcile originals, records, revisions, and audit entries.
-- [ ] Rehearse migration only if a migration is actually required; do not build a general migration platform.
-
-**Done when:** actual recovery evidence supports the stated durability limits and no untested absolute guarantee is advertised.
-
-### 18. Final integrated acceptance and publication preparation
-
-**Depends on:** all required previous steps.
-
-- [ ] Walk through RFP → proposals → selection → oversight in ChatGPT and standalone with synthetic data.
-- [ ] Check permissions/model exclusion, preview/commit, history, quiet extraction failure, automation authorisation, and export using the lean checks below.
-- [ ] Fix concrete failures; repeat only affected checks.
-- [ ] Complete user onboarding/help and app distribution requirements.
-- [ ] Prepare configurable Trialegions branding and a separate controlled cutover plan for the existing product/domain.
-- [x] Record actual completion, remaining conditional items, and any customer-use limitations in this file and HISTORY.md.
-
-**Done when:** the agreed product works end-to-end and is ready for hands-on testing/improvement. Publication and replacement of the existing Trialegions service are separately executed actions, not side effects of changing a label.
-
-## Lean verification policy
-
-Run ordinary build/type checks and these reusable critical checks as their capabilities are introduced:
-
-1. **Access:** tenant separation, restricted fields/documents, and no model-visible leakage.
-2. **Commit:** discard leaves no record; save creates one version/audit entry; retry and stale edit are safe.
-3. **Sources:** save/download integrity; failed source save is not acknowledged; failed extraction keeps source and lets other work continue.
-4. **Permissions/jobs:** standing-grant revocation, duplicate-safe execution, and no automatic human approval.
-5. **Recovery/export:** one representative restore and complete study export.
-6. **Experience:** one end-to-end synthetic RFP-to-oversight walkthrough across both interfaces.
-
-Do not chase coverage percentages, snapshot every UI, test every cosmetic change, repeat full suites after unrelated edits, or build elaborate load/chaos infrastructure for a handful of test files. Add checks only for a concrete risk, observed regression, or applicable required gate. Lean testing still needs credible evidence for the authoritative-record claims.
-
-## Maintenance after each work session
-
-- Mark only completed boxes; leave unimplemented work unchecked.
-- Update Current position with the active step, concrete next action, and actual blocker if any.
-- Append a short dated HISTORY.md entry for meaningful changes.
-- Record executed check results and deployment/commit references without inventing them.
-- Update README.md only when scope or decisions change.
-- Do not start work in the existing Trialegions repository or infrastructure.
-
-
-## Next execution dependencies
-
-1. Current continuation is live at `b2dce02` on web and worker. Build and 30 reported checks pass; the synthetic database restore also preserves unaccepted external originals. Current UI bundle and DB readiness are verified. Earlier capabilities (MFA, finer permissions, event/local-time summaries, additive upgrades) remain implemented.
-2. This continuation implements account invitations, ordered conditional questionnaires with external file intake, compatible legacy template adoption, and bounded XLSX/PPTX extraction. Remaining independent work: multi-stage/automatic review routing, richer source search filters, workflow-specific refinements and interface consolidation. Manual single-reviewer routing and self-reminder automations are now implemented; provider-backed notifications remain deferred. Optional record-level restrictions and multi-instance preview storage remain unimplemented. Legacy/encrypted Office formats are unsupported. None are silently marked complete.
-3. Deferred by the user: real ChatGPT plugin connection/host acceptance. Automatic workspace opening and embedded host-file behavior remain unproven. Shared external links are a separate browser experience.
-4. Deferred until the end when developer-account setup is required: Microsoft 365/Google Workspace OAuth, transactional email and signature-provider integration. No external messages or provider registrations have been initiated.
-5. Production decision: confirm recovery time/data-loss expectations, retention/geography and budget before changing credentials/backup/HA settings or relying on saved customer work. The local synthetic restore does not establish managed Render recovery or zero-loss failover. Runtime-role SQL is updated but not applied.
-6. Formal signatures remain conditional/deferred; publication/Trialegions replacement remains a separately authorized cutover.
-
-## Current feature limits
-
-- Folder policies inherit along slash-separated paths and intersect with document rules; only human owners can move documents into/out of controlled folders.
-- Document policies apply to every version, in addition to each original version's AI flag. Owner human access is retained. Restricted table/field users still cannot browse documents without a separately designed document-scope model. Inspectors with restricted documents cannot use full-history/export endpoints.
-- External links are bearer capabilities, shown once, expiring after 1–90 days and revocable. Tokens stay in URL fragments and request headers. Shared view responses expose selected simple columns, never raw record IDs or unrelated fields. Schema/view edits disable the link until a new one is issued. Already downloaded information cannot be recalled.
-- External forms accept simple fields and optional source files, not person or relationship selectors. Ordered question conditions use equality against an earlier visible answer; the server rejects hidden answers and enforces required visible questions. File intake is capped at three 5 MiB files per response / 100 MiB per link, stored atomically in PostgreSQL with immutable checksums and unverified provenance. Owners separately preview/confirm each source into the document register; processing starts on acceptance. Sources are saved only after recipient preview/confirmation and explicitly labelled as an unverified link holder. Acceptance into working records requires the human owner and a separate standard preview/commit. Capacity: 1,000 responses per link, 100 KB per response; owner intake lists latest 100.
-- MFA supports manual authenticator setup, replay-protected TOTP and eight single-use recovery codes. Changing MFA revokes other sessions and app connections. No email-based recovery is claimed.
-- Event summaries batch up to 200 matching committed events and poll every 30 seconds; actions prepare reports or create fixed-value draft records under a scoped permission. Worker-created changes do not trigger rules. Failed actions pause the rule without consuming its grant; unmatched due-date conditions take no action. Daily schedules use IANA zones, skip nonexistent DST times and run repeated times once per local date. Worker outages coalesce overdue daily work into one run, then schedule the next future time.
-- Automatic template upgrades require a tracked baseline and a newer template version. They add optional fields/tables while preserving local edits; incompatible field changes require migration. Prior installations can be adopted by explicitly mapping compatible tables to the current template; incompatible schemas require a reviewed migration, and record data is never rewritten by adoption.
-
-- Invitations require explicit owner configuration and recipient acceptance, expire in 1–30 days (UI: seven), and start with AI disabled and selected-table-only access. They are bearer links, not email-verified identity. Replaying an accepted invitation does not reinstate access after removal.
-- XLSX/PPTX extraction runs offline within bounded resources and is always partial; no formula recalculation, external links, slide notes/images/charts or legacy Office support is claimed.
-
-## Review routing and reminders — 2026-10-11
-
-- A human owner previews a request with the exact saved record, reviewer, instructions and optional due date. Confirmation creates an in-review revision and immutable assignment. Eligible reviewers require full workspace editing access.
-- Approve/request changes requires the assigned human and the exact requested record version. Current permissions are rechecked. Editing makes the request stale; an owner must cancel it explicitly before routing a fresh version. Direct state transitions cannot bypass routing. Decisions are immutable and idempotent, and exports retain requests/decisions. These remain internal reviews, not electronic signatures.
-- Reviews & reminders shows up to 100 requests, latest assigned document versions, and up to 100 self-reminders. Reminder details use current permissions; recent-run content currently covers the latest 50 runs. No email is sent.
-- `reminders.create` grants target the workspace and support once/future authorization. The owner may configure `remind_me` on existing interval/daily/event schedules, optionally filtered by due dates. Empty due-date matches consume no grant. The run, reminder and permission consumption commit atomically; revocation/archiving blocks execution. Read receipts never delete reminders.
-- Generalized multi-reviewer chains, automatic review assignment, reminders to other users and provider messages remain unimplemented. ChatGPT host testing remains deferred; human review controls run in standalone.
-- Build and 30 reported checks pass, including assigned-reviewer bypass protection, stale-version rejection, changes requested, cancellation/rerouting, decision retry, restricted inbox, once-only reminders and revoked grants. The prior isolated restore evidence covers migrations through 014; it is not refreshed or presented as production backup evidence by this batch.
+No decision is needed to start separating the foundation interfaces. Record feasibility findings before asking for any runtime/provider decision; do not provision speculative infrastructure.
