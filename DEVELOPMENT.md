@@ -9,7 +9,7 @@ Decision/change log: [HISTORY.md](HISTORY.md)
 
 - Working development application, SQL migrations, background worker, standalone UI and MCP transport are implemented.
 - Render web service, background worker and PostgreSQL are live in the confirmed workspace. Private Trialy plugin created.
-- Current batch: configurable saved views and shared table/list/comparison/dashboard/timeline/calendar UI implemented. Deploy next; real ChatGPT connection/automatic opening remains an account-dependent acceptance check.
+- Configurable saved views and shared table/list/comparison/dashboard/timeline/calendar layouts are live on commit `5ceb14c`. Next: remaining embedded editors/file handling and full-result date/aggregate queries; real ChatGPT connection/automatic opening remains an account-dependent acceptance check.
 - No existing Trialegions application, data, infrastructure, or domain has been changed.
 
 ### Implementation checkpoint — 2026-10-10
@@ -68,6 +68,7 @@ A checked item below means that particular implementation exists; a partially im
 - A view with any currently restricted field reference is omitted and cannot be executed by ID. This includes columns, filters, sorting, grouping and dates, avoiding hidden-field leakage through membership/count/order.
 - Both interfaces use shared table/list/comparison/dashboard/timeline/calendar components and the same view editor. Layouts and groups show the current page, labelled explicitly; whole-result calendar loading and aggregates remain unfinished.
 - One focused test covers filtering/sorting/pagination, versioned updates, stale saves, tenant/model restrictions and date requirements. Build and all 14 reported tests pass. Real host visual acceptance remains pending.
+- Deployment confirmed: web `dep-db59hijbc2fs738ijneg`, worker `dep-db59hirbc2fs738ijnig`, commit `5ceb14c`; both live, health 200 and public UI bundle matches the build.
 
 ### Verification and practical boundaries
 
