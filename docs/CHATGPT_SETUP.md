@@ -1,6 +1,6 @@
 # ChatGPT connection and workspace onboarding
 
-Updated: 2026-10-10. Implemented locally; live connection and automatic opening are not yet verified.
+Updated: 2026-10-10. Deployed on Render; private plugin created. Live ChatGPT connection and automatic opening are not yet verified.
 
 ## Intended experience
 
@@ -42,13 +42,18 @@ Read-only source inspection found:
 - Add plugin instructions to invoke `open_workspace` when the user opens Trialy and after successful connection, and to require explicit preview confirmation before `commit_change`.
 - Do not create a plugin pointing to a guessed or unverified deployment endpoint.
 
-### Deployment checkpoint
+### Deployment checkpoint — 2026-10-10
 
-- Created `trialy-db`: `dpg-db58k25ckfvc739bb5f0-a`, PostgreSQL 17, paid basic 256 MB, 1 GB storage, Frankfurt, private networking only. This resource is provisioned even while web/worker deployment is pending.
-- `render.yaml` uses the same existing database name, databaseName `trialy_db`, user `trialy_db_user` and version 17. Review the Blueprint plan to ensure adoption rather than duplicate creation.
-- The current Render connector cannot apply a Blueprint, create a background worker, or expose the database connection credentials for direct wiring. The next operation is to apply the ready Blueprint in the Render Dashboard. Browser fallback requires user approval under the tool's instructions.
-- Dashboard link: https://dashboard.render.com/blueprint/new?repo=https://github.com/tarous89/trialy
-- Web/worker services and the ChatGPT plugin have not been created. Do not register an invented MCP URL; verify the deployed endpoint first.
+- Blueprint `exs-db58pdnlk1mc7394rk5g` applied after user-approved browser fallback. Existing database was associated, not duplicated.
+- `trialy-web`: `srv-db58ppo473hc73a9ds10`, Starter, Frankfurt; live deploy `dep-db58pqg473hc73a9dtu0` from commit `ea0cd4064026178d1aa511b4eb0bfb4958ab47e2`.
+- `trialy-worker`: `srv-db58ppo473hc73a9ds00`, Starter, Frankfurt; live deploy `dep-db58pq0473hc73a9dt0g`.
+- `trialy-db`: `dpg-db58k25ckfvc739bb5f0-a`, PostgreSQL 17, basic 256 MB, 1 GB, Frankfurt, private networking. Both service pre-deploy migrations completed.
+- Base URL: https://trialy-web.onrender.com. MCP: https://trialy-web.onrender.com/mcp.
+- Live smoke checks: health 200; OAuth authorization-server and protected-resource discovery 200 with correct HTTPS URLs; login 200; unauthenticated MCP POST 401 with correct resource-metadata challenge. GET /mcp returns 405 as expected for the POST-only transport.
+- Dashboard: https://dashboard.render.com/blueprint/exs-db58pdnlk1mc7394rk5g/resources.
+- Private workspace plugin: https://chatgpt.com/plugins/Plugin_145611061ed08191b8c73a391b6c6806.
+- Plugin ID `Plugin_145611061ed08191b8c73a391b6c6806`; release `pluginrel_6aca8d839e908191a19121a10e4c0c5d`; version 0.1.0. Source package: `plugin/trialy/`. Preserve these IDs on updates; do not create a duplicate.
+- Creation is not installation or OAuth connection. User account connection and real host automatic opening remain unverified. This is a development deployment; production recovery/security gates remain open.
 
 ## Minimal live acceptance
 

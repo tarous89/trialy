@@ -8,8 +8,8 @@ Decision/change log: [HISTORY.md](HISTORY.md)
 ## Current position
 
 - Working development application, SQL migrations, background worker, standalone UI and MCP transport are implemented.
-- PostgreSQL development instance created in the confirmed Render workspace. Web/worker deployment and plugin registration remain pending.
-- Current task: apply the updated Blueprint to deploy web/worker alongside the created database, then register and verify the real ChatGPT connection.
+- Render web service, background worker and PostgreSQL are live in the confirmed workspace. Private Trialy plugin created.
+- Current task: connect the private Trialy plugin and verify signup → return to ChatGPT → workspace opening, then preview/save/read-back.
 - No existing Trialegions application, data, infrastructure, or domain has been changed.
 
 ### Implementation checkpoint — 2026-10-10
@@ -18,7 +18,7 @@ A checked item below means that particular implementation exists; a partially im
 
 | Step | Implemented now | Still needed |
 | --- | --- | --- |
-| 1 | TypeScript/React/API/worker scaffold, lockfile, migrations, health, CI, Docker and Render staging definition | Live clean PostgreSQL/Render boot; broader adapter contracts as integrations are added |
+| 1 | TypeScript/React/API/worker scaffold, lockfile, migrations, health, CI, Docker and Render staging definition | Broader adapter contracts as integrations are added; live PostgreSQL migrations and Render boot verified |
 | 2 | Self-hosted sign-up/login, PostgreSQL sessions and MCP OAuth with PKCE, tenant roles, workspace/table/field access, separate AI access, audited sharing | Implement recovery/verification/MFA and verify live session lifecycle; finer record/document/folder/view controls |
 | 3 | Configurable typed fields, required validation, related-record references, pagination and visible-field search, versioned safe schema changes | Formula engine, configurable uniqueness/sorting/bulk operations; migration workflow for incompatible changes; verified person/document reference semantics |
 | 4 | Temporary previews, explicit save/discard, digest binding, transactionally committed version 0/history/jobs, idempotency receipts, stale-edit rejection | Restoration UI, stronger separated database roles, preview infrastructure for multiple web instances; bulk/import previews |
