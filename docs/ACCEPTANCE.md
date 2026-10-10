@@ -57,3 +57,5 @@ Keep Trialy repository/internal IDs and the existing Trialegions product separat
 - Build and 30 reported checks pass. Focused synthetic flow covers assignment bypass, stale edits, return to draft, owner cancellation/rerouting, exact-version approval and duplicate-safe decisions. Restricted colleagues cannot obtain the full review inbox.
 - A one-time self-reminder creates one immutable inbox entry; replayed worker work cannot create another. Revoking a standing grant prevents a new reminder. Mark-read persists separately.
 - Live human/browser acceptance is still outstanding. These controls are internal review evidence, not signature-provider integration.
+
+Live read-only verification for `b2dce02`: home returned 200 with `index-DQkJhY92.js`; `/ready` returned 200/ready. Live browser/ChatGPT review-workflow acceptance remains outstanding.
