@@ -1,3 +1,4 @@
+import {addInvitations} from './invitations.js';
 import {addExternal} from './external.js';
 import express, { type RequestHandler, type ErrorRequestHandler } from 'express';
 import helmet from 'helmet';
@@ -16,6 +17,7 @@ export function baseApp() {
 }
 export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  addExternal(app,s,human);
+ addInvitations(app,s,human);
  app.get('/api/config',(_req,res)=>res.json({brand:process.env.BRAND_NAME??'Trialy',demo:process.env.LOCAL_DEMO==='true'&&process.env.NODE_ENV!=='production'}));
  app.use('/api',human);app.use('/api',(_req,res,next)=>{res.set('Cache-Control','no-store');next();});
  app.get('/api/me',async(req,res)=>{const u=(await s.db.query('SELECT id,name,email FROM users WHERE id=$1',[req.actor!.userId])).rows[0];res.json({user:u,csrf:req.session?.csrf,workspaces:await s.workspaces(req.actor!)});});

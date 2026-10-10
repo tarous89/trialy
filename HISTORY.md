@@ -163,3 +163,12 @@ Do not mark planned work as implemented. Keep older decisions visible and mark l
 
 - Code commit `f9cca6bcf840e8c3f18224504a2783ded3d111cc` deployed successfully to both Render services. Web deployment `dep-db5b9r3rjlhs73al3oig`; worker deployment `dep-db5b9r3rjlhs73al3on0`.
 - `/ready` returned 200. `/` and `/collect` returned 200 with the current `index-CJeiyYxt.js` bundle. Plugin-host acceptance remains deferred.
+
+## Full-scope continuation — 2026-10-10
+
+- Added owner-created, expiring/revocable single-use colleague invitations, signup/login return to invitation review, explicit recipient acceptance and table-scoped access with AI disabled. No email provider or messages required.
+- Added ordered conditional questionnaire rules/help/required answers, server-side hidden-answer rejection, recipient file preview/confirmation, atomic immutable PostgreSQL source intake, duplicate-safe retry and owner acceptance into versioned documents. Exports retain external sources and provenance.
+- Added explicit adoption of compatible older template installations, preserving renamed tables/custom extra fields and requiring migration for conflicts.
+- Added bounded offline XLSX/PPTX extraction; cached/raw spreadsheet values and slide-order text are labelled partial. Originals survive unsupported or failed processing.
+- Build and 29 reported checks passed. The old core-test setup was changed to load every migration, fixing an outdated-schema failure. Recovery rehearsal now includes unaccepted external-file bytes; isolated restore passed (not a managed Render restore).
+- Real ChatGPT host testing, provider-account integrations, production recovery decisions and public brand cutover remain deferred. Generalized review routing/action types and optional record restrictions remain unfinished.

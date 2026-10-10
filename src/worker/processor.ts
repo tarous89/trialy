@@ -1,3 +1,4 @@
+import {officeText} from './office.js';
 import {pdfText} from './pdf.js';
 import {csvRows} from '../shared/csv.js';
 import { randomUUID } from 'node:crypto';
@@ -8,6 +9,8 @@ export type Extraction={text:string;sections:{page?:number;text:string}[];method
 export async function extract(bytes:Buffer,mime:string):Promise<Extraction> {
  if(['text/plain','text/csv','text/markdown','application/json'].includes(mime)) {const text=new TextDecoder('utf-8',{fatal:true}).decode(bytes);let tables:Extraction['tables']=[],tableStatus:Extraction['tableStatus']='unavailable';if(mime==='text/csv'){try{const rows=csvRows(text);tables=[{rows:rows.slice(0,50).map(r=>r.slice(0,30).map(c=>c.slice(0,500)))}];tableStatus=rows.length>50||rows.some(r=>r.length>30||r.some(c=>c.length>500))?'partial':'ready';}catch{}}return {text,sections:[{text}],method:'utf8',tables,tableStatus};}
  if(mime==='application/vnd.openxmlformats-officedocument.wordprocessingml.document') {const mammoth=await import('mammoth');const result=await mammoth.extractRawText({buffer:bytes});return {text:result.value,sections:[{text:result.value}],method:'mammoth',partial:result.messages.length>0};}
+ if(mime==='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')return officeText(bytes,'xlsx');
+ if(mime==='application/vnd.openxmlformats-officedocument.presentationml.presentation')return officeText(bytes,'pptx');
  if(['image/png','image/jpeg','image/tiff'].includes(mime))return ocr(bytes,mime);
  if(mime==='application/pdf')return pdfText(bytes);
  const e=new Error('unsupported_format') as Error&{permanent:boolean};e.permanent=true;throw e;

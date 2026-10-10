@@ -43,3 +43,9 @@ Keep Trialy repository/internal IDs and the existing Trialegions product separat
 - Template upgrades: a representative upstream field addition preserves renamed local tables and existing records; conflicting changes require review.
 - Recovery: isolated synthetic data-directory backup and restore passed. Exact schema hashes and evidence are in `recovery-synthetic.json`; this does not replace the managed Render restore drill.
 - Current code deployment: `f9cca6b`, both Render services live. Build and 26 reported checks passed. ChatGPT connection/host acceptance and production recovery expectations remain outstanding.
+
+### Continuation evidence
+
+- 29 reported checks pass, including invitation signup return/CSRF/scoping/revocation/replay, conditional question validation, immutable file intake/retry/acceptance/export, compatible legacy adoption, and bounded Office extraction order/sparse cells/unsafe XML rejection.
+- Build passes. Recovery rehearsal verifies both document originals and external source bytes after isolated restore, with immutable-history protection. Updated evidence includes migrations 013–014.
+- No real recipients were contacted. New browser workflows and actual ChatGPT host behavior still need user acceptance; they are not claimed proven by API tests.

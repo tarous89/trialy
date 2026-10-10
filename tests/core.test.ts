@@ -6,7 +6,7 @@ import { baseApp, errors } from '../src/server/app.js';
 import { addMcp } from '../src/server/mcp.js';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { readFile } from 'node:fs/promises';
+import { readFile,readdir } from 'node:fs/promises';
 import { PGlite } from '@electric-sql/pglite';
 import type { Database, Connection } from '../src/db/database.js';
 import { Service } from '../src/domain/service.js';
@@ -15,7 +15,7 @@ import { runOne } from '../src/worker/processor.js';
 import { AppError, type Actor } from '../src/shared/schema.js';
 const error=(code:string)=>(e:unknown)=>e instanceof AppError&&e.code===code;
 test('Shared backend: access, committed history, original preservation and retrieval',async t=>{
- const pg=new PGlite();await pg.exec(await readFile('migrations/001_core.sql','utf8'));await pg.exec(await readFile('migrations/002_controlled_work.sql','utf8'));await pg.exec(await readFile('migrations/004_governance.sql','utf8'));await pg.exec(await readFile('migrations/006_permissions.sql','utf8'));await pg.exec(await readFile('migrations/008_external_exchange.sql','utf8'));await pg.exec(await readFile('migrations/009_automation_schedules.sql','utf8'));await pg.exec(await readFile('migrations/010_template_upgrades.sql','utf8'));await pg.exec(await readFile('migrations/011_automation_actions.sql','utf8'));await pg.exec(await readFile('migrations/012_folder_access.sql','utf8'));
+ const pg=new PGlite();for(const f of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+f,'utf8'));
  const db:Database={query:(sql,v)=>pg.query(sql,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
  const s=new Service(db);const owner:Actor={userId:randomUUID(),origin:'human'},other:Actor={userId:randomUUID(),origin:'human'};
  for(const a of [owner,other])await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[a.userId,a.userId,'test@example.invalid','Test']);
@@ -249,6 +249,15 @@ test('Shared backend: access, committed history, original preservation and retri
   await save({kind:'update_type',typeId:type.id,expectedVersion:type.version,name:'Our publications',fields:type.fields});
   template.version++;template.tables[0]!.fields.push({key:'optional_note',name:'Optional note',kind:'text',required:false,ai:true});
   try{const p=await s.preview(owner,w.id,{kind:'upgrade_template',template:template.id,expectedVersion:oldVersion});assert.equal(p.summary.diff.additions.length,1);await s.commit(owner,p.id,p.digest);const updated=(await s.types(owner,w.id)).find(t=>t.id===type.id);assert.equal(updated.name,'Our publications');assert.ok(updated.fields.some((f:any)=>f.key==='optional_note'));assert.equal((await s.records(owner,w.id,type.id)).rows[0].data.name,'Existing paper');}finally{template.version=oldVersion;template.tables[0]!.fields.pop();}
+ });
+ await t.test('legacy template adoption maps renamed tables without rewriting records',async()=>{
+  const legacy=await s.createWorkspace(owner,'Legacy adoption');const template=templates.find(t=>t.id==='rfp')??templates[0]!;
+  const install=await s.preview(owner,legacy.id,{kind:'install_template',template:template.id});await s.commit(owner,install.id,install.digest);
+  const tracked=(await db.query('SELECT * FROM template_installations WHERE workspace_id=$1',[legacy.id])).rows[0];const mapping=Object.fromEntries(tracked.tables.map((t:any)=>[t.name,t.id]));
+  await db.query('DELETE FROM template_installations WHERE workspace_id=$1',[legacy.id]);const first=tracked.tables[0];await db.query('UPDATE entity_types SET name=$2,version=version+1 WHERE id=$1',[first.id,'Locally renamed']);
+  const preview=await s.preview(owner,legacy.id,{kind:'adopt_template',template:template.id,mapping});assert.equal(preview.summary.diff.conflicts.length,0);
+  await s.commit(owner,preview.id,preview.digest);assert.equal((await db.query('SELECT name FROM entity_types WHERE id=$1',[first.id])).rows[0].name,'Locally renamed');
+  await assert.rejects(s.preview(owner,legacy.id,{kind:'adopt_template',template:template.id,mapping}),error('template_tracked'));
  });
  await t.test('automated drafts consume scoped permission and cannot trigger themselves',async()=>{
   const grant=await s.grant(owner,w.id,'records.create',typeId,true);

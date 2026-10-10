@@ -51,3 +51,20 @@ External links are bearer capabilities. Only share with intended recipients; rec
 Migrations 006–012 add permission rules, MFA state, external exchange, an audit event sequence tracked template baselines, record automation actions and folder rules. Apply migrations before new code. Apply the updated runtime-role grants when that role is introduced, including sequence usage. These migrations preserve existing original/history rows. A rollback of MFA-enabled application code must never reintroduce password-only login; roll forward or restrict sign-in while repairing.
 
 `npm run recovery:rehearse` performs a fully isolated synthetic PGlite backup/restore and updates `docs/recovery-synthetic.json`. It never accesses Render. The successful rehearsal covers original byte integrity, record/history/audit/receipt/job correspondence and append-only protection. The managed Render restore procedure above remains unexecuted.
+
+## Invitation links and external file intake
+
+- Owners create single-use invitation links for explicit existing tables and a viewer/editor/inspector role. Initial AI and document browsing are disabled. These are bearer invitations, not email-verified identities; share them privately through an existing channel. Revocation stops unused links; remove colleague access after acceptance. Retries never reapply removed access.
+- Invitation tokens are hashed server-side and carried in fragments/headers. The join page temporarily keeps the token in tab session storage while signup/login completes and clears it after acceptance. Invitations expire within 1–30 days (UI: seven). No email provider is needed.
+- Form rules support ordered questions, help text, required-when-visible answers and equality conditions on earlier visible answers. Required table fields cannot be conditional. Hidden answers are dropped in the browser and rejected at the API. Schema changes still invalidate existing links.
+- Optional file requests accept up to three files per response, at most 5 MiB each; each link has a 100 MiB cumulative file cap. Original bytes, checksums and immutable intake save in the same transaction as the response. A receipt is returned only after commit. Retrying a nonce with changed answers/files fails.
+- Source files stay outside the working document register until an owner previews/confirms acceptance. Acceptance creates version zero, preserves the unverified external provenance and starts normal quiet extraction. Files start AI-disabled. Revoke a filled request and issue a new one if capacity is needed; no automatic source deletion occurs.
+- JSON/HTML inspection exports include external intake and original attachments. Export verification checks attachment checksums too. Restricted runtime SQL grants insert/read only for immutable intake; apply separately when runtime credentials are provisioned.
+
+## Office extraction additions
+
+The worker image includes Python 3 for offline XLSX/PPTX reading. Limits: ZIP 5,000 parts / 50 MiB expanded; XML part 8 MiB; 128 MiB process address space / 45 CPU seconds; 60-second child timeout. No XML entity declarations, formulas, macros or external relationships execute. XLSX reads up to 50 sheets / 5,000 cells each, retaining sparse cell positions and cached formula values (no recalculation or display-format/date conversion). PPTX reads up to 200 slides in presentation order; notes, images and chart internals are not extracted. Output is capped and always marked partial. Unsupported/encrypted/corrupt files retain their originals under the existing bounded-retry, quiet-unavailable behavior.
+
+## Adopting legacy templates
+
+An owner explicitly maps every canonical template table to a different existing workspace table, then previews/commits. Adoption requires compatibility with current template field definitions/relationships, preserves renamed tables and additional local fields, and changes only the tracked baseline. Conflicts require a separately reviewed schema migration; no historic template version is invented. A concurrent schema change invalidates the preview.
