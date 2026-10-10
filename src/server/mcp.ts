@@ -9,7 +9,7 @@ export function addMcp(app:Express,s:Service,authenticate:RequestHandler) {
  app.post('/mcp',authenticate,async(req,res)=>{
   const actor=req.actor!;const server=new McpServer({name:'trialy',version:'0.1.0'});
   const resource='ui://trialy/workspace.html';
-  const metadata={ui:{resourceUri:resource},'openai/widgetAccessible':true,securitySchemes:[{type:'oauth2',scopes:[process.env.MCP_SCOPE??'trialy']}], 'openai/outputTemplate':resource};
+  const metadata={ui:{resourceUri:resource},'openai/widgetAccessible':true,securitySchemes:[{type:'oauth2',scopes:['trialy']}], 'openai/outputTemplate':resource};
   const result=(data:unknown)=>({content:[{type:'text' as const,text:JSON.stringify(data)}],structuredContent:{result:data}});
   const safe=(fn:(v:any)=>Promise<any>)=>async(v:any)=>{try{return result(await fn(v));}catch(e){return {isError:true,content:[{type:'text' as const,text:e instanceof AppError?e.message:'The action could not complete. Check its status before retrying.'}]};}};
   server.registerResource('workspace',resource,{mimeType:'text/html;profile=mcp-app'},async()=>({contents:[{uri:resource,mimeType:'text/html;profile=mcp-app',text:await readFile(new URL('../../dist/embed.html',import.meta.url),'utf8'),_meta:{ui:{prefersBorder:true,csp:{connectDomains:[],resourceDomains:[]}},'openai/widgetDescription':'The Trialy workspace: tables, forms, templates and confirmed saves inside ChatGPT.','openai/ui':{availableDisplayModes:['inline','fullscreen'],preferredDisplayMode:'fullscreen'}}}]}));

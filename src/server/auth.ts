@@ -1,59 +1,46 @@
-import type { Express, Request, RequestHandler } from 'express';
+import express,{type Express,type RequestHandler} from 'express';
 import session from 'express-session';
 import connectPg from 'connect-pg-simple';
-import * as oidc from 'openid-client';
-import { createRemoteJWKSet, jwtVerify } from 'jose';
-import { randomBytes } from 'node:crypto';
-import type { Postgres } from '../db/database.js';
-import type { Actor } from '../shared/schema.js';
-import { fail } from '../shared/schema.js';
-declare module 'express-session' {interface SessionData {userId:string;csrf:string;oidc?:{verifier:string;state:string;nonce:string}}}
-declare global {namespace Express {interface Request {actor?:Actor}}}
-import { upsertIdentity } from './identity.js';
-export function configureAuth(app:Express,db:Postgres,env:NodeJS.ProcessEnv) {
- const url=new URL(env.PUBLIC_URL??'http://localhost:3000');const production=env.NODE_ENV==='production';
- const demo=env.LOCAL_DEMO==='true';
- if(demo&&(production||!['localhost','127.0.0.1'].includes(url.hostname)))throw new Error('LOCAL_DEMO requires a loopback development origin');
- if(!env.SESSION_SECRET||env.SESSION_SECRET.length<32)throw new Error('SESSION_SECRET must have at least 32 characters');
- if(production&&url.protocol!=='https:')throw new Error('Production PUBLIC_URL must use HTTPS');
- if(env.OIDC_ISSUER&&env.MCP_ISSUER&&env.OIDC_ISSUER!==env.MCP_ISSUER)throw new Error('OIDC_ISSUER and MCP_ISSUER must use the same exact issuer');
- if(production)app.set('trust proxy',1);
- const PgStore=connectPg(session);
- app.use(session({name:'trialy_session',secret:env.SESSION_SECRET,store:new PgStore({pool:db.pool,tableName:'session',createTableIfMissing:false}),resave:false,saveUninitialized:false,cookie:{httpOnly:true,secure:production,sameSite:'lax',maxAge:8*3600000}}));
- let configPromise:Promise<oidc.Configuration>|undefined;
- const config=()=>{if(!env.OIDC_ISSUER||!env.OIDC_CLIENT_ID)fail(503,'auth_unconfigured','Sign-in provider is not configured');return configPromise??=oidc.discovery(new URL(env.OIDC_ISSUER),env.OIDC_CLIENT_ID,env.OIDC_CLIENT_SECRET);};
- app.get('/auth/login',async(req,res)=>{
-  const c=await config(), verifier=oidc.randomPKCECodeVerifier(),state=oidc.randomState(),nonce=oidc.randomNonce();req.session.oidc={verifier,state,nonce};
-  const destination=oidc.buildAuthorizationUrl(c,{redirect_uri:new URL('/auth/callback',url).href,scope:'openid profile email',code_challenge:await oidc.calculatePKCECodeChallenge(verifier),code_challenge_method:'S256',state,nonce});
-  req.session.save(e=>{if(e){res.status(503).send('Sign-in unavailable');return;}res.redirect(destination.href);});
+import {randomBytes,randomUUID,scrypt as derive,timingSafeEqual} from 'node:crypto';
+import {promisify} from 'node:util';
+import {rateLimit} from 'express-rate-limit';
+import {z} from 'zod';
+import {mcpAuthRouter} from '@modelcontextprotocol/sdk/server/auth/router.js';
+import type {Postgres,Database} from '../db/database.js';
+import type {Actor} from '../shared/schema.js';
+import {fail} from '../shared/schema.js';
+import {localOAuth,token,hash} from './local-oauth.js';
+const scrypt=promisify(derive);
+const esc=(s:string)=>s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
+declare module 'express-session'{interface SessionData{userId:string;csrf:string;connect?:string}}
+declare global{namespace Express{interface Request{actor?:Actor}}}
+export async function passwordHash(value:string){const salt=randomBytes(16).toString('hex');return salt+':'+((await scrypt(value,salt,64)) as Buffer).toString('hex');}
+async function validPassword(value:string,encoded:string){const [salt,digest]=encoded.split(':');const actual=await scrypt(value,salt!,64) as Buffer;const expected=Buffer.from(digest!,'hex');return actual.length===expected.length&&timingSafeEqual(actual,expected);}
+function page(body:string){return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Trialy account</title><style>body{font:16px system-ui;background:#f4f7f5;color:#163a32;margin:0;padding:40px 18px}main{max-width:440px;margin:auto;background:white;padding:28px;border-radius:14px}input,button{box-sizing:border-box;display:block;width:100%;font:inherit;padding:12px;margin:8px 0 20px;border:1px solid #afc6bb;border-radius:6px}button{background:#17634c;color:white;cursor:pointer}small{color:#52685f}a{color:#17634c}</style></head><body><main>${body}</main></body></html>`;}
+export function configureAuth(app:Express,db:Postgres,env:NodeJS.ProcessEnv){
+ const production=env.NODE_ENV==='production',base=(env.PUBLIC_URL??env.RENDER_EXTERNAL_URL??'http://localhost:3000').replace(/\/$/,'');
+ if(production&&!base.startsWith('https://'))throw new Error('Production requires HTTPS');if(!env.SESSION_SECRET||env.SESSION_SECRET.length<32)throw new Error('SESSION_SECRET must have 32 characters');if(production)app.set('trust proxy',1);
+ const Store=connectPg(session);app.use(session({name:'trialy_session',secret:env.SESSION_SECRET,store:new Store({pool:db.pool,tableName:'session'}),resave:false,saveUninitialized:false,cookie:{httpOnly:true,secure:production,sameSite:'lax',maxAge:8*3600000}}));
+ return addLocalAuth(app,db,base);
+}
+// Sessions may be injected by focused tests; production always uses PostgreSQL above.
+export function addLocalAuth(app:Express,db:Database,base:string){
+ const provider=localOAuth(db,base);app.use('/auth',express.urlencoded({extended:false,limit:'8kb'}));app.use('/auth',(_req,res,next)=>{res.set('Cache-Control','no-store');res.set('Referrer-Policy','no-referrer');next();});
+ const limited=rateLimit({windowMs:15*60000,limit:20,standardHeaders:true,legacyHeaders:false});
+ const csrf=(req:express.Request)=>{if(!req.session.csrf||req.body.csrf!==req.session.csrf)fail(403,'csrf','This form expired. Start again.');};
+ const persist=(req:express.Request)=>new Promise<void>((resolve,reject)=>req.session.save(e=>e?reject(e):resolve()));
+ const pending=async(ticket:string)=>{const r=(await db.query('SELECT data FROM oauth_data WHERE id=$1 AND kind=$2 AND expires_at>$3',[hash(ticket),'pending',Date.now()])).rows[0];if(!r)fail(410,'connection_expired','Connection expired. Return to ChatGPT and connect again.');return r.data;};
+ app.get('/auth/login',async(req,res)=>{if(req.query.connect){const t=z.string().regex(/^[A-Za-z0-9_-]{43}$/).parse(req.query.connect);await pending(t);req.session.connect=t;}if(req.session.userId){await persist(req);res.redirect(req.session.connect?'/auth/consent':'/');return;}req.session.csrf??=token();await persist(req);const signup=req.query.mode==='signup';res.type('html').send(page(`<h1>${signup?'Create your Trialy account':'Sign in to Trialy'}</h1>${req.session.connect?'<p>After connecting, you will return to ChatGPT.</p>':''}<form method="post" action="/auth/${signup?'signup':'login'}"><input type="hidden" name="csrf" value="${esc(req.session.csrf)}"><label>Email<input type="email" name="email" required maxlength="254" autocomplete="email"></label><label>Password<input type="password" name="password" required ${signup?'minlength="12"':''} maxlength="128" autocomplete="${signup?'new-password':'current-password'}"></label>${signup?'<small>Use at least 12 characters. Trialy is not fit for patient-level data.</small>':''}<button>${signup?'Create account':'Sign in'}</button></form><a href="/auth/login?mode=${signup?'login':'signup'}">${signup?'Already registered? Sign in':'Create an account'}</a>`));});
+ for(const mode of ['login','signup'])app.post('/auth/'+mode,limited,async(req,res)=>{csrf(req);const input=z.object({email:z.email().max(254),password:z.string().min(mode==='signup'?12:1).max(128)}).parse(req.body);const email=input.email.trim().toLowerCase();let userId:string;
+  if(mode==='signup'){const encoded=await passwordHash(input.password);userId=await db.transaction(async tx=>{const id=randomUUID();await tx.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[id,'local|'+id,email,email.split('@')[0]]);await tx.query('INSERT INTO local_accounts VALUES($1,$2,$3)',[id,email,encoded]);return id;});}
+  else{const r=(await db.query('SELECT * FROM local_accounts WHERE email=$1',[email])).rows[0];const valid=await validPassword(input.password,r?.password_hash??'00000000000000000000000000000000:'+ '0'.repeat(128));if(!r||!valid){res.status(401).type('html').send(page('<h1>Sign-in unsuccessful</h1><p>Email or password is incorrect.</p><a href="/auth/login">Try again</a>'));return;}userId=r.user_id;}
+  const connect=req.session.connect;await new Promise<void>((resolve,reject)=>req.session.regenerate(e=>e?reject(e):resolve()));req.session.userId=userId;req.session.csrf=token();req.session.connect=connect;await persist(req);res.redirect(303,connect?'/auth/consent':'/');
  });
- app.get('/auth/callback',async(req,res)=>{
-  const pending=req.session.oidc;if(!pending)fail(400,'login_expired','Please restart sign-in');delete req.session.oidc;
-  const tokens=await oidc.authorizationCodeGrant(await config(),new URL(req.originalUrl,url),{pkceCodeVerifier:pending.verifier,expectedState:pending.state,expectedNonce:pending.nonce,idTokenExpected:true});
-  const claims=tokens.claims();if(!claims)fail(401,'invalid_identity','Identity could not be verified');
-  const uid=await upsertIdentity(db,env.OIDC_ISSUER!,claims.sub,String(claims.email??''),String(claims.name??'User'));
-  await new Promise<void>((resolve,reject)=>req.session.regenerate(e=>e?reject(e):resolve()));req.session.userId=uid;req.session.csrf=randomBytes(32).toString('hex');req.session.save(e=>{if(e){res.status(503).send('Sign-in unavailable');return;}res.redirect('/');});
- });
- app.post('/auth/logout',(req,res)=>{if(!req.session.csrf||req.get('x-csrf-token')!==req.session.csrf)fail(403,'csrf','Refresh and retry');req.session.destroy(()=>{res.clearCookie('trialy_session');res.json({ok:true});});});
- if(demo)app.post('/auth/demo',async(req,res)=>{
-  if(req.get('origin')!==url.origin||!['127.0.0.1','::1','::ffff:127.0.0.1'].includes(req.socket.remoteAddress??''))fail(403,'local_only','Local demo only');
-  const uid=await upsertIdentity(db,'local','demo','demo@example.invalid','Demo user');await new Promise<void>((resolve,reject)=>req.session.regenerate(e=>e?reject(e):resolve()));req.session.userId=uid;req.session.csrf=randomBytes(32).toString('hex');req.session.save(e=>{if(e){res.status(503).end();return;}res.json({ok:true});});
- });
+ app.get('/auth/consent',async(req,res)=>{if(!req.session.userId){res.redirect('/auth/login');return;}if(!req.session.connect)fail(400,'missing_connection','Start the connection from ChatGPT');const d=await pending(req.session.connect);const bound=await db.transaction(async tx=>{const r=(await tx.query('SELECT data FROM oauth_data WHERE id=$1 FOR UPDATE',[hash(req.session.connect!)])).rows[0];if(!r)return false;if(r.data.userId&&r.data.userId!==req.session.userId)return false;await tx.query('UPDATE oauth_data SET data=$2 WHERE id=$1',[hash(req.session.connect!),JSON.stringify({...r.data,userId:req.session.userId})]);return true;});if(!bound)fail(409,'account_changed','Account changed. Restart the connection.');req.session.csrf??=token();await persist(req);res.set('Content-Security-Policy',`default-src 'none'; style-src 'unsafe-inline'; form-action 'self' ${new URL(d.redirectUri).origin}; base-uri 'none'; frame-ancestors 'none'`);res.type('html').send(page(`<h1>Connect Trialy</h1><p>Allow ${esc(d.clientName)} to use your permitted Trialy workspaces. Existing AI access restrictions remain in effect.</p><p>Return destination: ${esc(new URL(d.redirectUri).origin)}</p><form method="post" action="/auth/consent"><input type="hidden" name="csrf" value="${esc(req.session.csrf)}"><button name="decision" value="approve">Connect and return</button><button name="decision" value="deny">Cancel</button></form>`));});
+ app.post('/auth/consent',async(req,res)=>{csrf(req);if(!req.session.userId||!req.session.connect)fail(401,'sign_in','Restart the connection');const decision=z.enum(['approve','deny']).parse(req.body.decision);const redirect=await db.transaction(async tx=>{const r=(await tx.query('DELETE FROM oauth_data WHERE id=$1 AND kind=$2 AND expires_at>$3 RETURNING data',[hash(req.session.connect!),'pending',Date.now()])).rows[0];if(!r||r.data.userId!==req.session.userId)fail(409,'account_changed','Connection expired or account changed; reconnect');const d=r.data;const target=new URL(d.redirectUri);target.searchParams.set('state',d.state);if(decision==='approve'){const code=token();await tx.query('INSERT INTO oauth_data VALUES($1,$2,$3,$4)',[hash(code),'code',Date.now()+60000,JSON.stringify(d)]);target.searchParams.set('code',code);}else target.searchParams.set('error','access_denied');return target.href;});delete req.session.connect;await persist(req);res.redirect(303,redirect);});
+ app.post('/auth/logout',(req,res)=>{if(!req.session.csrf||(!req.session.csrf||req.get('x-csrf-token')!==req.session.csrf))fail(403,'csrf','Refresh and retry');req.session.destroy(()=>{res.clearCookie('trialy_session');res.json({ok:true});});});
+ app.use(mcpAuthRouter({provider,issuerUrl:new URL(base),resourceServerUrl:new URL(base+'/mcp'),scopesSupported:['trialy'],resourceName:'Trialy'}));
  const human:RequestHandler=(req,_res,next)=>{if(!req.session.userId)fail(401,'unauthenticated','Sign in to Trialy');if(!['GET','HEAD','OPTIONS'].includes(req.method)&&(!req.session.csrf||req.get('x-csrf-token')!==req.session.csrf))fail(403,'csrf','Refresh and retry');req.actor={userId:req.session.userId,origin:'human'};next();};
- const jwks=env.MCP_JWKS_URL?createRemoteJWKSet(new URL(env.MCP_JWKS_URL)):undefined;
- const ai:RequestHandler=async(req,res,next)=>{
-  if(!jwks||!env.MCP_ISSUER||!env.MCP_AUDIENCE)fail(503,'mcp_auth_unconfigured','MCP authentication is not configured');
-  res.set('Cache-Control','no-store');
-  const challenge=`Bearer resource_metadata="${url.origin}/.well-known/oauth-protected-resource"`;
-  const token=req.get('authorization')?.match(/^Bearer (.+)$/i)?.[1];
-  if(!token){res.set('WWW-Authenticate',`Bearer resource_metadata="${url.origin}/.well-known/oauth-protected-resource"`);fail(401,'unauthenticated','Connect your Trialy account');}
-  let claims;try{claims=(await jwtVerify(token,jwks,{issuer:env.MCP_ISSUER,audience:env.MCP_AUDIENCE,algorithms:['RS256','ES256'],requiredClaims:['sub','exp','iat']})).payload;}catch{res.set('WWW-Authenticate',challenge);fail(401,'invalid_token','Connect your Trialy account again');}
-  if(!claims.sub||!String(claims.scope??'').split(' ').includes(env.MCP_SCOPE??'trialy'))fail(403,'insufficient_scope','Required scope is missing');
-  if(claims.gty==='client-credentials'||claims.sub.endsWith('@clients'))fail(403,'user_required','Connect with a personal Trialy identity');
-  // First connection creates the same account used by standalone sign-in. No web detour.
-  const uid=await upsertIdentity(db,env.MCP_ISSUER,claims.sub);
-  req.actor={userId:uid,origin:'ai'};next();
- };
- app.get('/.well-known/oauth-protected-resource',(_req,res)=>res.json({resource:env.MCP_AUDIENCE??`${url.origin}/mcp`,authorization_servers:env.MCP_ISSUER?[env.MCP_ISSUER]:[],scopes_supported:[env.MCP_SCOPE??'trialy']}));
- return {human,ai};
+ const ai:RequestHandler=async(req,res,next)=>{res.set('Cache-Control','no-store');const value=req.get('authorization')?.match(/^Bearer (.+)$/i)?.[1];try{if(!value)throw Error();const info=await provider.verifyAccessToken(value);req.actor={userId:String(info.extra!.userId),origin:'ai'};next();}catch{res.set('WWW-Authenticate',`Bearer resource_metadata="${base}/.well-known/oauth-protected-resource/mcp"`);res.status(401).json({error:'unauthenticated',message:'Connect your Trialy account'});}};
+ return {human,ai,provider};
 }

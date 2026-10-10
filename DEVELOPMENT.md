@@ -8,8 +8,8 @@ Decision/change log: [HISTORY.md](HISTORY.md)
 ## Current position
 
 - Working development application, SQL migrations, background worker, standalone UI and MCP transport are implemented.
-- Infrastructure files exist; no cloud services have been provisioned or deployed.
-- Current task: adapt existing-app self-hosted sign-in/OAuth patterns to Trialy, deploy to the confirmed Render workspace, and prove the live ChatGPT connection.
+- PostgreSQL development instance created in the confirmed Render workspace. Web/worker deployment and plugin registration remain pending.
+- Current task: apply the updated Blueprint to deploy web/worker alongside the created database, then register and verify the real ChatGPT connection.
 - No existing Trialegions application, data, infrastructure, or domain has been changed.
 
 ### Implementation checkpoint — 2026-10-10
@@ -19,7 +19,7 @@ A checked item below means that particular implementation exists; a partially im
 | Step | Implemented now | Still needed |
 | --- | --- | --- |
 | 1 | TypeScript/React/API/worker scaffold, lockfile, migrations, health, CI, Docker and Render staging definition | Live clean PostgreSQL/Render boot; broader adapter contracts as integrations are added |
-| 2 | OIDC PKCE/session wiring, bearer JWT verification, tenant roles, workspace/table/field access, separate AI access, audited sharing | Configure provider and verify account linking/MFA/session lifecycle; finer record/document/folder/view controls |
+| 2 | Self-hosted sign-up/login, PostgreSQL sessions and MCP OAuth with PKCE, tenant roles, workspace/table/field access, separate AI access, audited sharing | Implement recovery/verification/MFA and verify live session lifecycle; finer record/document/folder/view controls |
 | 3 | Configurable typed fields, required validation, related-record references, pagination and visible-field search, versioned safe schema changes | Formula engine, configurable uniqueness/sorting/bulk operations; migration workflow for incompatible changes; verified person/document reference semantics |
 | 4 | Temporary previews, explicit save/discard, digest binding, transactionally committed version 0/history/jobs, idempotency receipts, stale-edit rejection | Restoration UI, stronger separated database roles, preview infrastructure for multiple web instances; bulk/import previews |
 | 5 | Authenticated MCP wiring with ten typed tools and an interactive MCP Apps workspace; transport tested locally | Live ChatGPT OAuth connection, remaining embedded views, cross-conversation proof and UI-only restricted-field path; account availability verification |
@@ -42,8 +42,15 @@ A checked item below means that particular implementation exists; a partially im
 - Removed the standalone-sign-in prerequisite for verified MCP users. The same issuer/subject resolves to one account, regardless of which surface is used first.
 - Added `open_workspace` global/thread entrypoints and a self-contained interactive MCP Apps view. New users can confirm their first AI-accessible workspace inside the view. Existing access restrictions stay intact.
 - Added account deduplication, preserved profile data, first-workspace/retry checks and entrypoint metadata checks. Build and nine focused subtests pass.
-- Live provider setup, Render provisioning, plugin registration, browser rendering and post-OAuth auto-opening are still unverified. Full embedded feature parity remains outstanding.
-- Next execution instructions and concrete configuration are in [CHATGPT_SETUP.md](docs/CHATGPT_SETUP.md). Render workspace was subsequently confirmed. Existing-app inspection selected self-hosted sign-in/OAuth; replacing the external adapter is the next implementation task.
+- Live ChatGPT connection, remaining Render provisioning, plugin registration, browser rendering and post-OAuth auto-opening are still unverified. Full embedded feature parity remains outstanding.
+- Next execution instructions and concrete configuration are in [CHATGPT_SETUP.md](docs/CHATGPT_SETUP.md). Render workspace was subsequently confirmed. Existing-app self-hosted sign-in/OAuth is implemented; deployment is now the next task.
+
+### Self-hosted authentication and database checkpoint — 2026-10-10
+
+- Replaced the external adapter with local signup/login, database sessions, MCP SDK OAuth, one-use codes, exact callbacks, S256 PKCE and rotating hashed tokens. Signup/consent returns directly to the registered ChatGPT callback.
+- Build and 11 reported tests passed (ten leaf checks plus the parent), including the end-to-end local HTTP OAuth flow and rejected CSRF/verifier/code replay/refresh replay/account mismatch.
+- Created Render Postgres `dpg-db58k25ckfvc739bb5f0-a` in Frankfurt. Updated Blueprint to use its exact database identity, generated session secret and built-in Render URL; removed external-provider prompts.
+- No web/worker deployment or real ChatGPT verification yet. Connector capability gap requires dashboard Blueprint application. See [setup checkpoint](docs/CHATGPT_SETUP.md).
 
 ### Verification and practical boundaries
 
@@ -51,7 +58,7 @@ A checked item below means that particular implementation exists; a partially im
 - `npm test`: nine focused subtests (ten including their parent suite), using the SQL migrations in PGlite. Covers tenant/model access, preview discard/save/retry/concurrency, append-only audit, original preservation after extraction failure, grant revocation, atomic template installation, sharing/review/scheduled summary/export, MCP transport permission filtering, and first-connection identity/workspace onboarding.
 - Local demo successfully starts on loopback with persistent synthetic data. Chromium download failed in this environment, so visual browser acceptance is still outstanding. This is not a claim of live OIDC, real PostgreSQL deployment or real ChatGPT verification.
 - OCR/PDF/Office extraction is bounded and implemented, but the automated source-preservation check uses a text file and an unsupported file. Unsupported or failed extraction leaves the original available.
-- Authentication depends on an external OIDC/OAuth provider; no provider or production credentials were invented. The MCP resource now provides interactive workspace selection, first-workspace setup, tables, record forms, templates and preview/save. Remaining views and UI-only access are unfinished.
+- Authentication now runs within Trialy; no external identity-provider credentials are needed. Password recovery, verification and MFA remain incomplete. The MCP resource now provides interactive workspace selection, first-workspace setup, tables, record forms, templates and preview/save. Remaining views and UI-only access are unfinished.
 - Preview storage is in-process with a 24-hour expiry and 100 MiB aggregate limit. Run one web instance. A process restart discards uncommitted previews; saved data remains in the database.
 - Restricted users cannot access workspace documents or raw audit/export until finer document/history controls exist. This conservative boundary avoids exposing unrestricted originals through a restricted view.
 - Action grants are currently executed only by the recurring report-summary worker. Other grant types are configuration groundwork, not automated import/create capabilities.

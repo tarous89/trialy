@@ -14,22 +14,6 @@ services:
           property: connectionString
       - key: SESSION_SECRET
         generateValue: true
-      - key: PUBLIC_URL
-        sync: false
-      - key: OIDC_ISSUER
-        sync: false
-      - key: OIDC_CLIENT_ID
-        sync: false
-      - key: OIDC_CLIENT_SECRET
-        sync: false
-      - key: MCP_ISSUER
-        sync: false
-      - key: MCP_JWKS_URL
-        sync: false
-      - key: MCP_AUDIENCE
-        sync: false
-      - key: MCP_SCOPE
-        value: trialy
       - key: BRAND_NAME
         value: Trialy
   - type: worker
@@ -38,6 +22,7 @@ services:
     region: frankfurt
     plan: starter
     dockerCommand: npm run worker
+    preDeployCommand: npm run db:migrate
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -47,6 +32,8 @@ databases:
   - name: trialy-db
     region: frankfurt
     plan: basic-256mb
-    databaseName: trialy
-    user: trialy
+    databaseName: trialy_db
+    user: trialy_db_user
+    postgresMajorVersion: "17"
+    diskSizeGB: 1
     ipAllowList: []

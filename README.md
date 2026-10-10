@@ -21,9 +21,9 @@ npm run demo
 
 Open http://127.0.0.1:4317. This loopback-only harness uses local PGlite under `.data/demo`, seeds an example workspace, and runs the worker. It deliberately bypasses sign-in for synthetic local exploration; it refuses production mode. Do not use customer data in it. PDF OCR needs Poppler and Tesseract; the Docker image includes both.
 
-**Authentication transition:** existing-app inspection selected self-hosted sign-in/OAuth rather than requiring Auth0. The code still has its original external OIDC adapter; the commands below describe that current adapter until replacement is complete. See [the setup decision](docs/CHATGPT_SETUP.md).
+**Authentication:** Trialy now hosts its own email/password sign-in and MCP OAuth connection. No Auth0 or external OIDC account is needed. See [ChatGPT setup](docs/CHATGPT_SETUP.md).
 
-For the real PostgreSQL application, copy `.env.example` to `.env`, provide DATABASE_URL, a random SESSION_SECRET of at least 32 characters, PUBLIC_URL, and OIDC configuration. Then run:
+For the real PostgreSQL application, copy `.env.example` to `.env`, provide DATABASE_URL, a random SESSION_SECRET of at least 32 characters, and PUBLIC_URL. Then run:
 
 ```sh
 npm run db:migrate
@@ -35,9 +35,9 @@ npm run worker
 
 For UI development, use `npm run dev` and `npm run dev:ui` together. `npm run check`, `npm run build`, and `npm test` are the focused verification commands.
 
-Register `${PUBLIC_URL}/auth/callback` with the identity provider. Configure the MCP resource audience, issuer, JWKS URL and `trialy` scope for `/mcp`. Sign-in and MCP must use the same issuer and subject identity. A verified first ChatGPT connection creates the local account directly; a standalone visit is not required. See [ChatGPT onboarding setup](docs/CHATGPT_SETUP.md) for the separate OAuth callbacks and deployment checklist. The external provider must support the OAuth client-registration/distribution flow required by the intended ChatGPT connection; that live setup is still pending. MFA and organisation policy belong to that provider and have not yet been verified.
+Sign in at `/auth/login`; new users can register there. MCP clients discover the authorization server and register an HTTPS callback with `token_endpoint_auth_method: none`. The server requires S256 PKCE and the `trialy` scope, preserves the pending connection across sign-up/login and consent, and redirects to the exact registered ChatGPT callback. Standalone sign-in opens the standalone app. Password reset, email verification, MFA and customer-ready account administration are not implemented yet.
 
-`render.yaml` and `Dockerfile` provide a staging starting point: web, worker and paid Postgres in Frankfurt. They have not been deployed or provider-validated. Confirm current plan availability and enter provider settings before deployment. Migrations must finish before the worker starts processing. This configuration does not establish production no-loss guarantees.
+`render.yaml` and `Dockerfile` define the web service, worker and paid Postgres in Frankfurt. The database `trialy-db` has been created; web/worker deployment is pending Blueprint application. The Blueprint matches the existing database's name/user/version, generates SESSION_SECRET and wires DATABASE_URL. On Render, the app uses RENDER_EXTERNAL_URL unless PUBLIC_URL is explicitly set for a custom domain. Both services run migrations before startup. This configuration does not establish production no-loss guarantees.
 
 Previews expire after 24 hours, live in one web process, and may disappear on restart. Confirmed data is transactional in PostgreSQL. Keep one web instance until shared temporary previews or routing are implemented. Preview loss is not loss of a confirmed save. The initial upload limit is 25 MiB and pending previews share a 100 MiB process budget.
 
