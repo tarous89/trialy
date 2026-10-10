@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises';
 import type { Express, RequestHandler } from 'express';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
@@ -8,10 +9,17 @@ export function addMcp(app:Express,s:Service,authenticate:RequestHandler) {
  app.post('/mcp',authenticate,async(req,res)=>{
   const actor=req.actor!;const server=new McpServer({name:'trialy',version:'0.1.0'});
   const resource='ui://trialy/workspace.html';
-  const metadata={securitySchemes:[{type:'oauth2',scopes:[process.env.MCP_SCOPE??'trialy']}], 'openai/outputTemplate':resource};
+  const metadata={ui:{resourceUri:resource},'openai/widgetAccessible':true,securitySchemes:[{type:'oauth2',scopes:[process.env.MCP_SCOPE??'trialy']}], 'openai/outputTemplate':resource};
   const result=(data:unknown)=>({content:[{type:'text' as const,text:JSON.stringify(data)}],structuredContent:{result:data}});
   const safe=(fn:(v:any)=>Promise<any>)=>async(v:any)=>{try{return result(await fn(v));}catch(e){return {isError:true,content:[{type:'text' as const,text:e instanceof AppError?e.message:'The action could not complete. Check its status before retrying.'}]};}};
-  server.registerResource('workspace',resource,{mimeType:'text/html+skybridge'},async()=>({contents:[{uri:resource,mimeType:'text/html+skybridge',text:widget,_meta:{'openai/widgetDescription':'Trialy workspace results and save previews.','openai/widgetPrefersBorder':true,'openai/widgetCSP':{connect_domains:[],resource_domains:[]}}}]}));
+  server.registerResource('workspace',resource,{mimeType:'text/html;profile=mcp-app'},async()=>({contents:[{uri:resource,mimeType:'text/html;profile=mcp-app',text:await readFile(new URL('../../dist/embed.html',import.meta.url),'utf8'),_meta:{ui:{prefersBorder:true,csp:{connectDomains:[],resourceDomains:[]}},'openai/widgetDescription':'The Trialy workspace: tables, forms, templates and confirmed saves inside ChatGPT.','openai/ui':{availableDisplayModes:['inline','fullscreen'],preferredDisplayMode:'fullscreen'}}}]}));
+  server.registerTool('open_workspace',{title:'Trialy workspace',description:'Open the interactive Trialy workspace inside ChatGPT. Use when the user opens Trialy and after connecting their account. No standalone sign-in is needed. New users see workspace onboarding; existing users see only AI-authorised workspaces.',inputSchema:{workspaceId:id.optional()},annotations:{readOnlyHint:true},_meta:{...metadata,'openai/ui':{entrypoints:[{type:'global'},{type:'thread'}]}}},safe(async v=>{
+   const workspaces=await s.workspaces(actor);const workspaceId=v.workspaceId??workspaces[0]?.id;
+   const types=workspaceId?await s.types(actor,workspaceId):[];
+   const memberships=await s.db.query('SELECT user_id FROM memberships WHERE user_id=$1 LIMIT 1',[actor.userId]);
+   return {workspaces,workspaceId,types,templates:(await import('../domain/templates.js')).templates,canCreateInitialWorkspace:memberships.rows.length===0};
+  }));
+  server.registerTool('create_initial_workspace',{title:'Create first Trialy workspace',description:'Only after the user confirms the name and AI access, create their first workspace. Never enables access to existing workspaces.',inputSchema:{name:z.string().trim().min(1).max(100),confirmed:z.literal(true),allowAi:z.literal(true)},annotations:{readOnlyHint:false,destructiveHint:false,openWorldHint:false},_meta:metadata},safe(v=>s.createWorkspace(actor,v.name,{initialAiWorkspace:true})));
   server.registerTool('list_workspaces',{title:'Open Trialy',description:'List workspaces the connected user has explicitly permitted AI to access.',inputSchema:{},annotations:{readOnlyHint:true},_meta:metadata},safe(()=>s.workspaces(actor)));
   server.registerTool('list_tables',{title:'List tables',description:'Get table schemas with inaccessible fields removed.',inputSchema:{workspaceId:id},annotations:{readOnlyHint:true},_meta:metadata},safe(v=>s.types(actor,v.workspaceId)));
   server.registerTool('read_records',{title:'Read records',description:'Read and search permitted records. Search only covers fields the model may access.',inputSchema:{workspaceId:id,typeId:id,q:z.string().max(500).optional(),limit:z.number().int().min(1).max(100).optional(),offset:z.number().int().min(0).optional()},annotations:{readOnlyHint:true},_meta:metadata},safe(v=>s.records(actor,v.workspaceId,v.typeId,v)));
@@ -25,4 +33,3 @@ export function addMcp(app:Express,s:Service,authenticate:RequestHandler) {
  });
  app.get('/mcp',(_req,res)=>res.status(405).set('Allow','POST').end());
 }
-const widget=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font:14px system-ui;color:#183934;background:#f5f8f6;margin:0;padding:20px}h2{font-size:18px;margin:0 0 12px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:16px;border-radius:12px;max-height:480px;overflow:auto}small{color:#58726b}</style></head><body><h2>Trialy workspace</h2><small id="status">Connected workspace results</small><pre id="result"></pre><script>function draw(){const d=window.openai?.toolOutput?.result??window.openai?.toolOutput??{};document.getElementById('result').textContent=JSON.stringify(d,null,2);document.getElementById('status').textContent=d.status==='preview'?'Preview · not saved':d.status==='saved'?'Saved to Trialy':'Authorised workspace results';}window.addEventListener('openai:set_globals',draw);draw();</script></body></html>`;

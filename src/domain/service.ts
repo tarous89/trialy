@@ -21,15 +21,16 @@ export class Service {
   const rows=(await this.db.query(`SELECT w.id,w.name,w.ai_enabled,m.role FROM workspaces w JOIN memberships m ON m.tenant_id=w.tenant_id AND m.user_id=$1 LEFT JOIN workspace_access wa ON wa.workspace_id=w.id AND wa.user_id=$1 WHERE m.role='owner' OR wa.user_id IS NOT NULL ORDER BY w.created_at`,[a.userId])).rows;
   const result=[];for(const w of rows) {try {await access(this.db,a,w.id);result.push(w);}catch {}}return result;
  }
- async createWorkspace(a:Actor,name:string) {
-  if(a.origin!=='human') fail(403,'human_required','Create the workspace in the application');
+ async createWorkspace(a:Actor,name:string,options:{initialAiWorkspace?:boolean}={}) {
+  if(a.origin!=='human'&&!options.initialAiWorkspace) fail(403,'human_required','Confirm creation of your first AI-accessible workspace');
   return this.db.transaction(async tx=>{
    const user=(await tx.query('SELECT id FROM users WHERE id=$1 FOR UPDATE',[a.userId])).rows[0];if(!user)fail(401,'unauthenticated','Sign in required');
+   if(options.initialAiWorkspace&&(await tx.query('SELECT user_id FROM memberships WHERE user_id=$1',[a.userId])).rows.length)fail(409,'workspace_exists','Your account already has a workspace. Open an authorised workspace or manage its AI access.');
    const member=(await tx.query("SELECT tenant_id FROM memberships WHERE user_id=$1 AND role='owner' ORDER BY tenant_id LIMIT 1",[a.userId])).rows[0];
    const tenantId=member?.tenant_id??randomUUID();
    if(!member){await tx.query('INSERT INTO tenants(id,name) VALUES($1,$2)',[tenantId,`${name} organisation`]);await tx.query("INSERT INTO memberships VALUES($1,$2,'owner')",[tenantId,a.userId]);}
-   const id=randomUUID();await tx.query('INSERT INTO workspaces(id,tenant_id,name) VALUES($1,$2,$3)',[id,tenantId,name]);
-   await audit(tx,a,{id,tenant_id:tenantId},'workspace.created',id,null,{name});return {id,name};
+   const id=randomUUID();await tx.query('INSERT INTO workspaces(id,tenant_id,name,ai_enabled) VALUES($1,$2,$3,$4)',[id,tenantId,name,!!options.initialAiWorkspace]);
+   await audit(tx,a,{id,tenant_id:tenantId},'workspace.created',id,null,{name,ai_enabled:!!options.initialAiWorkspace});return {id,name};
   });
  }
  async types(a:Actor,w:string) {

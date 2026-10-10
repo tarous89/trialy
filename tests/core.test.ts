@@ -1,5 +1,6 @@
 import { test } from 'node:test';
 import request from 'supertest';
+import { upsertIdentity } from '../src/server/identity.js';
 import { baseApp, errors } from '../src/server/app.js';
 import { addMcp } from '../src/server/mcp.js';
 import assert from 'node:assert/strict';
@@ -82,6 +83,26 @@ test('Shared backend: access, committed history, original preservation and retri
   assert.equal(response.body.result.structuredContent.result.rows[0].data.budget,undefined);
   const denied=await request(app).post('/mcp').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:2,method:'tools/call',params:{name:'list_tables',arguments:{workspaceId:w2.id}}});
   assert.equal(denied.body.result.isError,true);
+ });
+ await t.test('ChatGPT-first identity and first workspace need no standalone detour',async()=>{
+  const issuer='https://identity.example.invalid/';
+  const uid=await upsertIdentity(db,issuer,'new-user');
+  assert.equal(await upsertIdentity(db,issuer,'new-user','person@example.invalid','Example Person'),uid);
+  assert.equal(await upsertIdentity(db,issuer,'new-user'),uid);
+  assert.equal((await db.query('SELECT name FROM users WHERE id=$1',[uid])).rows[0].name,'Example Person');
+  assert.notEqual(await upsertIdentity(db,issuer,'different-user','person@example.invalid'),uid);
+  const actor:Actor={userId:uid,origin:'ai'};
+  const app=baseApp();addMcp(app,s,(req,_res,next)=>{req.actor=actor;next();});app.use(errors);
+  const invoke=(name:string,args={})=>request(app).post('/mcp').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:1,method:'tools/call',params:{name,arguments:args}});
+  const welcome=await invoke('open_workspace');assert.equal(welcome.body.result.structuredContent.result.canCreateInitialWorkspace,true);
+  assert.equal((await s.workspaces(actor)).length,0);
+  const created=await invoke('create_initial_workspace',{name:'My study',confirmed:true,allowAi:true});assert.equal(created.body.result.isError,undefined);
+  const opened=await invoke('open_workspace');assert.equal(opened.body.result.structuredContent.result.workspaces.length,1);
+  const again=await invoke('create_initial_workspace',{name:'Duplicate',confirmed:true,allowAi:true});assert.equal(again.body.result.isError,true);assert.equal((await s.workspaces(actor)).length,1);
+  const listed=await request(app).post('/mcp').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:2,method:'tools/list',params:{}});
+  const entry=listed.body.result.tools.find((t:any)=>t.name==='open_workspace');assert.deepEqual(entry._meta['openai/ui'].entrypoints,[{type:'global'},{type:'thread'}]);
+  await s.setAi({...actor,origin:'human'},opened.body.result.structuredContent.result.workspaceId,false);
+  const restricted=await invoke('open_workspace');assert.equal(restricted.body.result.structuredContent.result.workspaces.length,0);assert.equal(restricted.body.result.structuredContent.result.canCreateInitialWorkspace,false);
  });
  await db.close();
 });

@@ -22,7 +22,7 @@ A checked item below means that particular implementation exists; a partially im
 | 2 | OIDC PKCE/session wiring, bearer JWT verification, tenant roles, workspace/table/field access, separate AI access, audited sharing | Configure provider and verify account linking/MFA/session lifecycle; finer record/document/folder/view controls |
 | 3 | Configurable typed fields, required validation, related-record references, pagination and visible-field search, versioned safe schema changes | Formula engine, configurable uniqueness/sorting/bulk operations; migration workflow for incompatible changes; verified person/document reference semantics |
 | 4 | Temporary previews, explicit save/discard, digest binding, transactionally committed version 0/history/jobs, idempotency receipts, stale-edit rejection | Restoration UI, stronger separated database roles, preview infrastructure for multiple web instances; bulk/import previews |
-| 5 | Authenticated MCP wiring with eight typed tools and a minimal rendered result resource; transport tested locally | Live ChatGPT OAuth connection, full interactive embedded app, cross-conversation proof and UI-only restricted-field path; account availability verification |
+| 5 | Authenticated MCP wiring with ten typed tools and an interactive MCP Apps workspace; transport tested locally | Live ChatGPT OAuth connection, remaining embedded views, cross-conversation proof and UI-only restricted-field path; account availability verification |
 | 6 | Standalone table/list/record form/basic dashboard/timeline, preview modal, field editor, source list, activity and access screens | Comparison matrix/calendar/questionnaires, full saved-view controls and filters, shared embedded components; browser acceptance |
 | 7 | Share with registered users, viewer/editor scopes, revocation, one-time/future action grants | Email invitations, guest/shared-view links; extend grant execution beyond report summaries |
 | 8 | Original bytea payloads, SHA-256, immutable versions, upload preview/save/download and atomic job insertion | Replacement-version UI, record links, document display/review/expiry controls; separate storage adapter for later migration |
@@ -37,13 +37,21 @@ A checked item below means that particular implementation exists; a partially im
 | 17 | Docker/Render staging blueprint, transaction integrity and restartable jobs | Actual provisioning, least-privilege database roles, monitoring, backup/restore and production durability decision |
 | 18 | Synthetic local app and focused backend/MCP checks | Full representative ChatGPT/standalone acceptance, onboarding, distribution and controlled brand cutover |
 
+### ChatGPT onboarding implementation — 2026-10-10
+
+- Removed the standalone-sign-in prerequisite for verified MCP users. The same issuer/subject resolves to one account, regardless of which surface is used first.
+- Added `open_workspace` global/thread entrypoints and a self-contained interactive MCP Apps view. New users can confirm their first AI-accessible workspace inside the view. Existing access restrictions stay intact.
+- Added account deduplication, preserved profile data, first-workspace/retry checks and entrypoint metadata checks. Build and nine focused subtests pass.
+- Live provider setup, Render provisioning, plugin registration, browser rendering and post-OAuth auto-opening are still unverified. Full embedded feature parity remains outstanding.
+- Next execution instructions and concrete configuration are in [CHATGPT_SETUP.md](docs/CHATGPT_SETUP.md). Render requires explicit workspace confirmation; identity-provider access is not available yet.
+
 ### Verification and practical boundaries
 
 - `npm run build`: TypeScript check and production frontend bundle passed.
-- `npm test`: eight focused subtests (nine including their parent suite), using the SQL migrations in PGlite. Covers tenant/model access, preview discard/save/retry/concurrency, append-only audit, original preservation after extraction failure, grant revocation, atomic template installation, sharing/review/scheduled summary/export, and MCP transport permission filtering.
+- `npm test`: nine focused subtests (ten including their parent suite), using the SQL migrations in PGlite. Covers tenant/model access, preview discard/save/retry/concurrency, append-only audit, original preservation after extraction failure, grant revocation, atomic template installation, sharing/review/scheduled summary/export, MCP transport permission filtering, and first-connection identity/workspace onboarding.
 - Local demo successfully starts on loopback with persistent synthetic data. Chromium download failed in this environment, so visual browser acceptance is still outstanding. This is not a claim of live OIDC, real PostgreSQL deployment or real ChatGPT verification.
 - OCR/PDF/Office extraction is bounded and implemented, but the automated source-preservation check uses a text file and an unsupported file. Unsupported or failed extraction leaves the original available.
-- Authentication depends on an external OIDC/OAuth provider; no provider or production credentials were invented. The MCP resource currently displays structured results, not the full requested embedded app.
+- Authentication depends on an external OIDC/OAuth provider; no provider or production credentials were invented. The MCP resource now provides interactive workspace selection, first-workspace setup, tables, record forms, templates and preview/save. Remaining views and UI-only access are unfinished.
 - Preview storage is in-process with a 24-hour expiry and 100 MiB aggregate limit. Run one web instance. A process restart discards uncommitted previews; saved data remains in the database.
 - Restricted users cannot access workspace documents or raw audit/export until finer document/history controls exist. This conservative boundary avoids exposing unrestricted originals through a restricted view.
 - Action grants are currently executed only by the recurring report-summary worker. Other grant types are configuration groundwork, not automated import/create capabilities.

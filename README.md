@@ -33,7 +33,7 @@ npm run worker
 
 For UI development, use `npm run dev` and `npm run dev:ui` together. `npm run check`, `npm run build`, and `npm test` are the focused verification commands.
 
-Register `${PUBLIC_URL}/auth/callback` with the identity provider. Configure the MCP resource audience, issuer, JWKS URL and `trialy` scope for `/mcp`. Sign-in and MCP must use the same issuer and subject identity. The external provider must support the OAuth client-registration/distribution flow required by the intended ChatGPT connection; that live setup is still pending. MFA and organisation policy belong to that provider and have not yet been verified.
+Register `${PUBLIC_URL}/auth/callback` with the identity provider. Configure the MCP resource audience, issuer, JWKS URL and `trialy` scope for `/mcp`. Sign-in and MCP must use the same issuer and subject identity. A verified first ChatGPT connection creates the local account directly; a standalone visit is not required. See [ChatGPT onboarding setup](docs/CHATGPT_SETUP.md) for the separate OAuth callbacks and deployment checklist. The external provider must support the OAuth client-registration/distribution flow required by the intended ChatGPT connection; that live setup is still pending. MFA and organisation policy belong to that provider and have not yet been verified.
 
 `render.yaml` and `Dockerfile` provide a staging starting point: web, worker and paid Postgres in Frankfurt. They have not been deployed or provider-validated. Confirm current plan availability and enter provider settings before deployment. Migrations must finish before the worker starts processing. This configuration does not establish production no-loss guarantees.
 
