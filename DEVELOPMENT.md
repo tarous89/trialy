@@ -9,8 +9,8 @@ Decision/change log: [HISTORY.md](HISTORY.md)
 
 - Working development application, SQL migrations, background worker, standalone UI and MCP transport are implemented.
 - Render web service, background worker and PostgreSQL are live in the confirmed workspace. Private Trialy plugin created.
-- Latest batch is deployed and verified on Render at commit `97c143f`. Live synthetic save/retry, calculations, original integrity, worker extraction, export and archive checks passed. Remaining account/provider/production decisions and still-unbuilt features are listed separately below; the complete 18-step product is not claimed finished.
-- Current implementation adds password changes, account-wide browser/app revocation and immutable security activity. Real ChatGPT testing and developer-account integrations are explicitly deferred by the user; they do not block independent code work.
+- Previous account-security batch is deployed at `860561d`. The next batch below has passed local checks and is being deployed. Earlier live verification at `97c143f` covered the core save/source flows. Live synthetic save/retry, calculations, original integrity, worker extraction, export and archive checks passed. Remaining account/provider/production decisions and still-unbuilt features are listed separately below; the complete 18-step product is not claimed finished.
+- Current implementation also includes authenticator MFA, per-table AI controls, document access rules, external forms/shared views, event/local-time summaries and additive template upgrades. Real ChatGPT testing and developer-account integrations are explicitly deferred by the user; they do not block independent code work.
 - Decisions/actions needed later: connect a real ChatGPT account for host acceptance; choose/authorize email/calendar provider credentials; confirm production recovery expectations/resources. No external messages or paid signature subscription will be initiated.
 - No existing Trialegions application, data, infrastructure, or domain has been changed.
 
@@ -21,23 +21,23 @@ A checked item below means that particular implementation exists; a partially im
 | Step | Implemented now | Still needed |
 | --- | --- | --- |
 | 1 | Scaffold, lockfile, SQL migrations, Docker/Render, health/readiness, original-store interface | More adapter contracts when providers are selected |
-| 2 | Self-hosted signup/login/OAuth PKCE, session CSRF, rotation/replay protection, user connection revocation, password change, account-wide session revocation/security activity, notice acceptance, tenant/table/field/AI access | Recovery/verification/MFA, finer document/folder/record access, live account acceptance |
+| 2 | Self-hosted signup/login/OAuth PKCE, session CSRF, rotation/replay protection, user connection revocation, password change, account-wide session revocation/security activity, notice acceptance, authenticator MFA/recovery codes, tenant/table/field/document/AI access | Provider-backed password recovery/email verification; optional record access; live account acceptance |
 | 3 | Nine field types, validated references, unique fields, filtering/sorting/pagination, atomic bulk writes, permission-aware numeric formulas, previewed schema/data migrations | Larger migrations beyond 200 records/1 MiB; richer expressions if needed |
 | 4 | Temporary previews, explicit atomic save, version/audit/receipt, retry/stale safeguards, schema fingerprints, restoration, bulk previews | Apply separate runtime DB role; multiple-web-instance preview storage |
 | 5 | Typed MCP tools, embedded workspace/forms/views/history/document upload/download and controls | Real ChatGPT OAuth/host files/automatic opening/cross-conversation acceptance; UI-only human data remains unproven |
-| 6 | Shared views/editor, full-result aggregates, calendar month filtering, typed forms, CSV import and field editor | Advanced questionnaires, record/view-specific permissions and browser acceptance |
-| 7 | Registered-user sharing, scoped grants/revocation | Invitations, external shared-view links; execution beyond reports |
-| 8 | Immutable bytea originals, checksums, version replacement, links/reviewers/expiry/folder metadata, review/acknowledgement, storage adapter | Finer per-document/folder permission rules; embedded host acceptance |
+| 6 | Shared views/editor, full-result aggregates, calendar month filtering, typed forms, CSV import and field editor | Advanced branching questionnaires, optional record restrictions and browser acceptance |
+| 7 | Registered-user sharing and table selectors, scoped grants/revocation, expiring/revocable read-only view links | Account invitations and further action types |
+| 8 | Immutable bytea originals, checksums, version replacement, links/reviewers/expiry/folder metadata, review/acknowledgement, storage adapter, per-document and inherited-folder colleague/AI rules across versions | embedded host acceptance |
 | 9 | Durable leased worker, bounded retries, isolated Poppler text/PDF, DOCX, OCR, CSV/layout-derived tables, quiet text/table status | Broader Office formats and representative customer-format acceptance |
 | 10 | Permission-filtered full-text search, bounded matching page/section passages, source/version IDs, coverage flags, original download | Richer document search filters and alternative model reading paths; vectors remain deferred |
-| 11 | Previewed recurring summaries and filtered due/overdue counts, execution-time permissions, one-time/future grants, pause/resume/history, exact-version internal reviews | General event triggers/actions, local-time schedules, review routing and external notifications |
-| 12 | No outbound provider activated; sources and typed records can be linked internally | Provider/account decision, email/calendar integration, external questionnaires/inbound exchange |
-| 13 | RFP v2 adds nine linked tables, source-backed weighted evaluations, comparisons/aggregates, selection references, commitments, contracts/change orders | Template upgrade diffs, end-to-end acceptance and provider-dependent collection/routing |
+| 11 | Previewed recurring summaries and filtered due/overdue counts, execution-time permissions, one-time/future grants, pause/resume/history, exact-version internal reviews, record/document event summaries, scoped automated draft creation, local-time daily schedules with DST behavior | Additional action types, generalized conditions, review routing and external notifications |
+| 12 | Scoped external questionnaires with immutable intake, reviewer preview/acceptance and idempotent submission; no outbound provider activated | Provider/account decision, email/calendar integration and external file requests |
+| 13 | RFP v2 adds nine linked tables, source-backed weighted evaluations, comparisons/aggregates, selection references, commitments, contracts/change orders, tracked additive template upgrade diffs | Adoption of older untracked installations, end-to-end acceptance and provider-dependent collection/routing |
 | 14 | Eleven editable configurations; document/person references and exact-source acknowledgements | Workflow-specific refinements and communication integrations |
 | 15 | Human-only inspector access, paged audit filtering, archive/retention/hold policy, append-only evidence, original/revision export in JSON/HTML, signup notice, operations and critical-check matrix | Formal license/customer policies and eventual controlled disposal |
 | 16 | Current provider assessment and conditional deferral documented; internal approvals remain distinct | Provider/cost decision before production signature integration |
-| 17 | DB readiness, expired-auth cleanup, runtime-role SQL, migration credential seam, recovery inventories/export verifier and runbook | Apply credentials/monitoring settings; agree production RPO/RTO and execute actual managed restore drill |
-| 18 | Focused local checks and synthetic isolated PDF check; acceptance/onboarding/brand-cutover runbook | Real account/browser acceptance, recovery evidence, provider setup and separately authorized publication/cutover |
+| 17 | DB readiness, expired-auth cleanup, runtime-role SQL, migration credential seam, recovery inventories/export verifier and runbook, successful isolated synthetic database restore | Apply credentials/monitoring settings; agree production RPO/RTO and execute actual managed restore drill |
+| 18 | Focused local checks and synthetic isolated PDF check; acceptance/onboarding/brand-cutover runbook | Real account/browser acceptance, managed Render restore evidence, provider setup and separately authorized publication/cutover |
 
 ### Extended implementation checkpoint — 2026-10-10
 
@@ -124,7 +124,7 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 **Depends on:** these documents.
 
 - [x] Establish web, server, worker, shared domain/schema, and reusable UI directories in one repository.
-- [ ] Add dependency lockfile, environment-variable template without secrets, formatting/type checks, migration commands, and build/start commands.
+- [x] Add dependency lockfile, environment-variable template without secrets, formatting/type checks, migration commands, and build/start commands.
 - [x] Define common errors/statuses, stable identifiers, timestamps, actor context, tenant context, and request/idempotency IDs.
 - [ ] Define interfaces for storage, processing, authorisation, preview/commit, and external adapters.
 - [x] Add health endpoint, structured logs without document bodies, and synthetic seed data.
@@ -193,7 +193,7 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 
 - [ ] Build table/list, record detail, form/questionnaire, comparison matrix, dashboard/report, timeline, and calendar components.
 - [x] Add saved view columns, filters, sorting, grouping and date-field configuration through previewed/versioned changes.
-- [ ] Add safe calculations and whole-result group aggregates.
+- [x] Add safe calculations and whole-result group aggregates.
 - [x] Share record layouts, saved-view editor, record history and document text across both surfaces.
 - [ ] Consolidate remaining editors and workflows; tabs remain configurable views.
 - [ ] Add clear preview/save/discard states, quiet processing flags, permission-aware actions, and practical loading/empty states.
@@ -210,7 +210,7 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 - [ ] Offer Allow once or Allow future actions of this type; persist scope, destination, actor, workflow, and revocation status.
 - [x] Re-evaluate current permissions at execution time; standing permission never exceeds the granting user's current rights.
 - [x] Keep formal approvals/signatures separate from automation authorisation.
-- [ ] Use expiring scoped guest access where external forms or document requests require it.
+- [x] Use expiring scoped guest access where external forms or document requests require it.
 
 **Done when:** a restricted comparison can be shared without its financial fields, and revoking a future-action grant prevents subsequent execution.
 
@@ -218,7 +218,7 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 
 **Depends on:** 4, 7.
 
-- [ ] Create document metadata, immutable original versions, bytea payloads, checksums, and record links.
+- [x] Create document metadata, immutable original versions, bytea payloads, checksums, and record links.
 - [ ] Implement authenticated upload, preview/selection, confirmed commit, download, and document display.
 - [x] Verify complete bytes and integrity before acknowledging Saved; commit metadata/audit with the original.
 - [x] Never describe an external link, unfinished upload, or temporary copy as a saved original.
@@ -248,7 +248,7 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 **Depends on:** 7, 9.
 
 - [ ] Index extracted text for PostgreSQL full-text search; filter by workspace, document, type, version, and permissions.
-- [ ] Return exact source/version and page/section references with retrieved passages.
+- [x] Return exact source/version and page/section references with retrieved passages.
 - [x] Include counts/status for authorised documents with unavailable or partial extraction, even when absent from search results.
 - [x] Apply AI-access restrictions before any content goes to the model; do not disclose restricted document existence through coverage counts.
 - [ ] Allow authorised retrieval of originals when a supported alternative reading path exists.
@@ -331,7 +331,7 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 - [ ] Compare suitable providers' production API pricing, minimum commitments, identity controls, evidence export, and regulatory fit.
 - [ ] Distinguish sandbox access from usable production terms.
 - [ ] If suitable and affordable, integrate explicit human signing bound to an exact version, signed evidence retention, and duplicate-safe callback handling.
-- [ ] Otherwise record formal signatures as deferred; preserve internal approvals without labelling them regulated signatures.
+- [x] Otherwise record formal signatures as deferred; preserve internal approvals without labelling them regulated signatures.
 - [x] Keep this conditional decision from blocking unrelated product completion.
 
 **Done when:** the documented decision is supported by current terms; any implemented signature can be verified against its exact source version.
@@ -388,8 +388,19 @@ Do not chase coverage percentages, snapshot every UI, test every cosmetic change
 
 ## Next execution dependencies
 
-1. Continue independent implementation: MFA; record/document/view permission granularity; external forms; generalized event-driven automation/local-time schedules; template upgrade diffs and remaining workflow refinements. Password change and account-wide revocation are now implemented; the wider step remains unfinished.
-2. Deferred by the user: real ChatGPT plugin connection/host acceptance. Do not require this before further backend/UI development. Automatic workspace opening and embedded host-file behavior remain unproven.
-3. Deferred until the end when developer-account setup is required: Microsoft 365/Google Workspace OAuth, transactional email and signature-provider integration. Account-free options may proceed when useful. No external messages or provider registrations have been initiated.
-4. Production decision: confirm recovery time/data-loss expectations, retention/geography and budget before changing credentials/backup/HA settings or relying on saved customer work. Runtime-role SQL and the restore/inventory procedure are ready but not applied/proven.
-5. Formal signatures remain conditional/deferred as documented; publication/Trialegions replacement remains a separately authorized cutover.
+1. This batch implements the next independent core capabilities: finer table/document/folder controls, authenticator MFA, scoped external forms/shared views, event and local-time summaries, additive template upgrade diffs. Build and 26 reported tests pass; a synthetic database restore passed. Deployment status will be recorded in HISTORY.md.
+2. Remaining independent refinements are explicit: account invitations; advanced branching questionnaires/file requests; additional automation actions and review routing; migration/adoption of old untracked template installations; broader Office extraction. Optional record-level restrictions are not yet implemented. These are not silently marked complete.
+3. Deferred by the user: real ChatGPT plugin connection/host acceptance. Automatic workspace opening and embedded host-file behavior remain unproven. Shared external links are a separate browser experience.
+4. Deferred until the end when developer-account setup is required: Microsoft 365/Google Workspace OAuth, transactional email and signature-provider integration. No external messages or provider registrations have been initiated.
+5. Production decision: confirm recovery time/data-loss expectations, retention/geography and budget before changing credentials/backup/HA settings or relying on saved customer work. The local synthetic restore does not establish managed Render recovery or zero-loss failover. Runtime-role SQL is updated but not applied.
+6. Formal signatures remain conditional/deferred; publication/Trialegions replacement remains a separately authorized cutover.
+
+## Current feature limits
+
+- Folder policies inherit along slash-separated paths and intersect with document rules; only human owners can move documents into/out of controlled folders.
+- Document policies apply to every version, in addition to each original version's AI flag. Owner human access is retained. Restricted table/field users still cannot browse documents without a separately designed document-scope model. Inspectors with restricted documents cannot use full-history/export endpoints.
+- External links are bearer capabilities, shown once, expiring after 1–90 days and revocable. Tokens stay in URL fragments and request headers. Shared view responses expose selected simple columns, never raw record IDs or unrelated fields. Schema/view edits disable the link until a new one is issued. Already downloaded information cannot be recalled.
+- External forms accept simple fields, not files, person selectors or relationship selectors. Sources are saved only after recipient preview/confirmation and explicitly labelled as an unverified link holder. Acceptance into working records requires the human owner and a separate standard preview/commit. Capacity: 1,000 responses per link, 100 KB per response; owner intake lists latest 100.
+- MFA supports manual authenticator setup, replay-protected TOTP and eight single-use recovery codes. Changing MFA revokes other sessions and app connections. No email-based recovery is claimed.
+- Event summaries batch up to 200 matching committed events and poll every 30 seconds; actions prepare reports or create fixed-value draft records under a scoped permission. Worker-created changes do not trigger rules. Failed actions pause the rule without consuming its grant; unmatched due-date conditions take no action. Daily schedules use IANA zones, skip nonexistent DST times and run repeated times once per local date. Worker outages coalesce overdue daily work into one run, then schedule the next future time.
+- Automatic template upgrades require a tracked baseline and a newer template version. They add optional fields/tables while preserving local edits; incompatible field changes require migration. Prior installations without a baseline remain untouched.

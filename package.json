@@ -18,7 +18,8 @@
     "check": "tsc --noEmit",
     "demo": "node --env-file-if-exists=.env --import tsx scripts/demo.ts",
     "export:verify": "node --import tsx scripts/verify-export.ts",
-    "recovery:inventory": "node --env-file-if-exists=.env --import tsx scripts/recovery-inventory.ts"
+    "recovery:inventory": "node --env-file-if-exists=.env --import tsx scripts/recovery-inventory.ts",
+    "recovery:rehearse": "node --import tsx scripts/rehearse-recovery.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/ext-apps": "^2.0.3",
@@ -29,6 +30,7 @@
     "express-session": "^1.19.0",
     "helmet": "^8.3.0",
     "mammoth": "^1.13.0",
+    "otplib": "^13.5.0",
     "pg": "^8.23.1",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",

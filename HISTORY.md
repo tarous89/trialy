@@ -144,3 +144,17 @@ Do not mark planned work as implemented. Keep older decisions visible and mark l
 - Session epochs prevent a stale browser session from becoming valid again. OAuth exchanges and consent serialize with account revocation to prevent concurrent token issuance escaping revocation. Already-authorized requests in flight may finish; these controls apply at subsequent authorization checks.
 - Added append-only account security activity without storing credentials; latest 20 events are visible only to the account owner. Migration 005 and the prepared runtime role include the new table.
 - Basic checks: build passed; existing test suite passed (18 reported), extended for incorrect-password/CSRF rejection, old-password failure after change, other-session invalidation, token invalidation and immutable security activity. MFA and provider-backed recovery/verification remain unfinished. No new provider account or email sending was required.
+
+## Remaining core implementation batch — 2026-10-10
+
+- Added independent table AI exclusions, table-scoped field keys, colleague table selectors/editing, version-checked permission changes, and document-level user/AI rules across reads, search, original downloads, writes and reviews. Restricted inspectors cannot bypass rules through inspection exports/history.
+- Added authenticator MFA using maintained otplib, encrypted secrets, replay prevention, single-use hashed recovery codes, enrollment confirmation, login challenges and disable confirmation. No new provider account required.
+- Added expiring/revocable bearer links for selected-column saved views and external forms. Immutable source submissions identify respondents as unverified link holders. Duplicate-safe submission and separate owner preview/acceptance preserve the source and create versioned working records atomically. No emails sent.
+- Added record/document event-triggered reports and daily schedules in local IANA time zones. Existing grant revocation and execution-time access remain enforced. DST gaps skip a day; repeated times run once.
+- Added tracked template baselines and explicit additive upgrade previews, conflict detection and preservation of customer modifications and records. Older untracked installations remain untouched.
+- Seven additive migrations (006–012); prepared runtime-role grants and recovery inventory updated. No runtime role/production credential changes applied.
+- Build passed. 26 reported checks passed, including focused new access, MFA, intake/shared view, event summary, DST and template upgrade checks. Fixed an old flaky check to inspect protected fields instead of searching random identifiers for a numeric substring.
+- Isolated PGlite data-directory backup/restore passed: records, originals, revisions, audits, receipts and queued jobs matched; original bytes and history protection verified. Evidence: docs/recovery-synthetic.json. This is not evidence of a Render managed-backup restore or production RPO/RTO.
+- Real ChatGPT/plugin testing, provider registration and publication remain deferred by the user. Remaining independent refinements remain listed in DEVELOPMENT.md; this is not a claim that every original scope item is finished.
+
+- Extended the batch with scoped automated draft creation, atomic grant/receipt/run handling, non-cascading worker changes, due-date gating and visible paused failures. Added inherited folder restrictions and owner-only moves across controlled folders, with focused bypass/revocation checks.

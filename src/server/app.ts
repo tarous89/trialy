@@ -1,3 +1,4 @@
+import {addExternal} from './external.js';
 import express, { type RequestHandler, type ErrorRequestHandler } from 'express';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
@@ -14,12 +15,14 @@ export function baseApp() {
  app.get('/health',(_req,res)=>res.json({status:'ok',service:'trialy'}));return app;
 }
 export function addApi(app:express.Express,s:Service,human:RequestHandler) {
+ addExternal(app,s,human);
  app.get('/api/config',(_req,res)=>res.json({brand:process.env.BRAND_NAME??'Trialy',demo:process.env.LOCAL_DEMO==='true'&&process.env.NODE_ENV!=='production'}));
  app.use('/api',human);app.use('/api',(_req,res,next)=>{res.set('Cache-Control','no-store');next();});
  app.get('/api/me',async(req,res)=>{const u=(await s.db.query('SELECT id,name,email FROM users WHERE id=$1',[req.actor!.userId])).rows[0];res.json({user:u,csrf:req.session?.csrf,workspaces:await s.workspaces(req.actor!)});});
  app.post('/api/workspaces',async(req,res)=>res.status(201).json(await s.createWorkspace(req.actor!,z.string().trim().min(1).max(100).parse(req.body.name))));
  app.get('/api/templates',(_req,res)=>res.json(templates));
  app.param('workspaceId',(req,_res,next,value)=>{id.parse(value);next();});
+ app.get('/api/workspaces/:workspaceId/template-upgrades',async(req,res)=>res.json(await s.templateUpgrades(req.actor!,String(req.params.workspaceId))));
  app.get('/api/workspaces/:workspaceId/types',async(req,res)=>res.json(await s.types(req.actor!,String(req.params.workspaceId))));
  app.get('/api/workspaces/:workspaceId/types/:typeId/records',async(req,res)=>{const opts=recordQuerySchema.parse(req.query);res.json(await s.records(req.actor!,String(req.params.workspaceId),id.parse(req.params.typeId),opts));});
  app.get('/api/workspaces/:workspaceId/records/:recordId/versions',async(req,res)=>res.json(await s.recordHistory(req.actor!,String(req.params.workspaceId),id.parse(req.params.recordId),z.coerce.number().int().min(0).default(0).parse(req.query.offset))));
@@ -44,8 +47,10 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  app.post('/api/workspaces/:workspaceId/documents/:versionId/review',async(req,res)=>{const b=z.object({expectedVersion:z.number().int().min(-1),state:z.enum(['in_review','approved']),meaning:z.string().trim().min(1).max(1000),confirmed:z.literal(true)}).parse(req.body);res.json(await s.reviewDocument(req.actor!,String(req.params.workspaceId),id.parse(req.params.versionId),b.expectedVersion,b.state,b.meaning));});
  app.get('/api/workspaces/:workspaceId/history',async(req,res)=>res.json(await s.history(req.actor!,String(req.params.workspaceId),z.object({offset:z.coerce.number().int().min(0).optional(),action:z.string().max(100).optional(),actorId:id.optional()}).parse(req.query))));
  app.post('/api/workspaces/:workspaceId/ai-access',async(req,res)=>res.json(await s.setAi(req.actor!,String(req.params.workspaceId),z.boolean().parse(req.body.enabled))));
+ app.get('/api/workspaces/:workspaceId/access-rules',async(req,res)=>res.json(await s.accessRules(req.actor!,String(req.params.workspaceId))));
+ app.post('/api/workspaces/:workspaceId/access-rules',async(req,res)=>{const input=z.object({expectedVersion:z.number().int().min(0),aiHiddenTypes:z.array(id).max(500),folder:z.object({name:z.string().min(1).max(100),allowedUsers:z.array(id).max(500).nullable(),ai:z.boolean()}).optional(),document:z.object({documentId:id,allowedUsers:z.array(id).max(500).nullable(),ai:z.boolean(),expectedVersion:z.number().int().min(-1)}).optional()}).parse(req.body);res.json(await s.setAccessRules(req.actor!,String(req.params.workspaceId),input));});
  app.get('/api/workspaces/:workspaceId/members',async(req,res)=>res.json(await s.members(req.actor!,String(req.params.workspaceId))));
- app.post('/api/workspaces/:workspaceId/members',async(req,res)=>{const p=z.object({userId:id,role:z.enum(['editor','viewer','inspector']),hiddenFields:z.array(z.string()).max(100),allowedTypes:z.array(id).nullable(),ai:z.boolean()}).parse(req.body);res.json(await s.share(req.actor!,String(req.params.workspaceId),p.userId,p.role,p.hiddenFields,p.allowedTypes,p.ai));});
+ app.post('/api/workspaces/:workspaceId/members',async(req,res)=>{const p=z.object({userId:id,role:z.enum(['editor','viewer','inspector']),hiddenFields:z.array(z.string().max(160)).max(10000),allowedTypes:z.array(id).nullable(),ai:z.boolean()}).parse(req.body);res.json(await s.share(req.actor!,String(req.params.workspaceId),p.userId,p.role,p.hiddenFields,p.allowedTypes,p.ai));});
  app.delete('/api/workspaces/:workspaceId/members/:userId',async(req,res)=>res.json(await s.unshare(req.actor!,String(req.params.workspaceId),id.parse(req.params.userId))));
  app.post('/api/workspaces/:workspaceId/records/:recordId/state',async(req,res)=>{const p=z.object({expectedVersion:z.number().int().min(0),state:z.enum(['in_review','approved','archived']),meaning:z.string().min(1).max(1000)}).parse(req.body);res.json(await s.transition(req.actor!,String(req.params.workspaceId),id.parse(req.params.recordId),p.expectedVersion,p.state,p.meaning));});
  app.get('/api/workspaces/:workspaceId/export',async(req,res)=>{const data=await s.exportWorkspace(req.actor!,String(req.params.workspaceId));if(req.query.format==='html'){res.set('Content-Disposition','attachment; filename="trialy-inspection.html"');res.type('html').send(inspectionHtml(data));}else{res.set('Content-Disposition','attachment; filename="trialy-workspace-export.json"');res.json(data);}});

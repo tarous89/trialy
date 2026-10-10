@@ -40,3 +40,14 @@ The customer designates an accountable workspace owner, reviewers, access approv
 Review hosting, AI-host and future communications/signature suppliers for the actual contracted services, regions, access, subprocessors, incident contacts and recoverability. Record the assessment, contract versions and responsible owner; this code repository is not evidence of executed supplier agreements. Log corrective actions with an owner, cause, change and verification when an incident requires them.
 
 For offboarding, confirm an authorized owner, remove AI and colleague access, export and verify originals/history, archive the workspace, and retain data/backups according to the recorded retention/hold requirements. This application intentionally has no destructive customer-record deletion endpoint. Any eventual disposal workflow needs documented authorization, hold checks, due-date checks and treatment of backup copies; do not bypass preservation triggers or erase history during ordinary support.
+
+
+## MFA encryption and new access surfaces
+
+MFA uses otplib TOTP and AES-256-GCM encryption bound to the account ID. `MFA_ENCRYPTION_KEY` may supply a stable secret of at least 32 characters; otherwise the stable `SESSION_SECRET` is used through a domain-separated HKDF. Preserve that source key separately with recovery material. Do not rotate it blindly: existing encrypted authenticator secrets need controlled re-encryption before a key change. Secret decryption failure must not bypass MFA. Manual authenticator setup avoids sending secrets to external QR services. Recovery codes are shown once and stored only as hashes. Email/password recovery is still provider-dependent.
+
+External links are bearer capabilities. Only share with intended recipients; recipients can forward them. Tokens are shown once, placed in URL fragments and sent in a dedicated request header. Do not log that header. Revocation stops future fetches/submissions, not copies already downloaded. External responses are unverified statements, not authenticated approvals or signatures.
+
+Migrations 006–012 add permission rules, MFA state, external exchange, an audit event sequence tracked template baselines, record automation actions and folder rules. Apply migrations before new code. Apply the updated runtime-role grants when that role is introduced, including sequence usage. These migrations preserve existing original/history rows. A rollback of MFA-enabled application code must never reintroduce password-only login; roll forward or restrict sign-in while repairing.
+
+`npm run recovery:rehearse` performs a fully isolated synthetic PGlite backup/restore and updates `docs/recovery-synthetic.json`. It never accesses Render. The successful rehearsal covers original byte integrity, record/history/audit/receipt/job correspondence and append-only protection. The managed Render restore procedure above remains unexecuted.

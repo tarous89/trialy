@@ -1,3 +1,4 @@
+import {templates} from '../src/domain/templates.js';
 import { test } from 'node:test';
 import request from 'supertest';
 import { upsertIdentity } from '../src/server/identity.js';
@@ -14,7 +15,7 @@ import { runOne } from '../src/worker/processor.js';
 import { AppError, type Actor } from '../src/shared/schema.js';
 const error=(code:string)=>(e:unknown)=>e instanceof AppError&&e.code===code;
 test('Shared backend: access, committed history, original preservation and retrieval',async t=>{
- const pg=new PGlite();await pg.exec(await readFile('migrations/001_core.sql','utf8'));await pg.exec(await readFile('migrations/002_controlled_work.sql','utf8'));await pg.exec(await readFile('migrations/004_governance.sql','utf8'));
+ const pg=new PGlite();await pg.exec(await readFile('migrations/001_core.sql','utf8'));await pg.exec(await readFile('migrations/002_controlled_work.sql','utf8'));await pg.exec(await readFile('migrations/004_governance.sql','utf8'));await pg.exec(await readFile('migrations/006_permissions.sql','utf8'));await pg.exec(await readFile('migrations/008_external_exchange.sql','utf8'));await pg.exec(await readFile('migrations/009_automation_schedules.sql','utf8'));await pg.exec(await readFile('migrations/010_template_upgrades.sql','utf8'));await pg.exec(await readFile('migrations/011_automation_actions.sql','utf8'));await pg.exec(await readFile('migrations/012_folder_access.sql','utf8'));
  const db:Database={query:(sql,v)=>pg.query(sql,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
  const s=new Service(db);const owner:Actor={userId:randomUUID(),origin:'human'},other:Actor={userId:randomUUID(),origin:'human'};
  for(const a of [owner,other])await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[a.userId,a.userId,'test@example.invalid','Test']);
@@ -130,7 +131,7 @@ test('Shared backend: access, committed history, original preservation and retri
   await assert.rejects(s.commit(owner,stale.id,stale.digest),error('stale_version'));
   const app=baseApp();addMcp(app,s,(req,_res,next)=>{req.actor=ai;next();});app.use(errors);
   const response=await request(app).post('/mcp').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:1,method:'tools/call',params:{name:'record_versions',arguments:{workspaceId:w.id,recordId}}});
-  assert.equal(response.body.result.isError,undefined);assert.ok(!JSON.stringify(response.body.result).includes('5000'));
+  assert.equal(response.body.result.isError,undefined);assert.ok(response.body.result.structuredContent.result.revisions.every((v:any)=>!Object.hasOwn(v.data,'budget')));assert.ok(JSON.parse(response.body.result.content[0].text).revisions.every((v:any)=>!Object.hasOwn(v.data,'budget')));
  });
  await t.test('document text preserves source coverage and excludes AI-restricted originals',async()=>{
   const docs=await s.documents(owner,w.id),bad=docs.find(d=>d.filename==='unsupported.bin'),good=docs.find(d=>d.filename==='proposal.txt');
@@ -220,6 +221,50 @@ test('Shared backend: access, committed history, original preservation and retri
   await save({kind:'set_workspace_policy',expectedVersion:1,archived:false,legalHold:true,retentionUntil:'2030-01-01',reason:'Resume editing under hold'});
   await s.share(owner,w.id,other.userId,'inspector',[],null,true);assert.ok((await s.history(other,w.id,{action:'document.'})).length);assert.ok((await s.exportWorkspace(other,w.id)).documents.length);
   await assert.rejects(s.preview(other,w.id,{kind:'create_record',typeId,data:{name:'No'}}),error('forbidden'));await assert.rejects(s.documents({...other,origin:'ai'},w.id),error('ai_disabled'));await s.unshare(owner,w.id,other.userId);
+ });
+ await t.test('table AI exclusion and document policy cover reads, writes and inspection',async()=>{
+  const ai={...owner,origin:'ai' as const};
+  await s.setAccessRules(owner,w.id,{expectedVersion:0,aiHiddenTypes:[typeId]});assert.ok(!(await s.types(ai,w.id)).some(t=>t.id===typeId));await assert.rejects(s.records(ai,w.id,typeId),error('not_found'));assert.ok((await s.types(owner,w.id)).some(t=>t.id===typeId));
+  const doc=(await s.documents(owner,w.id))[0];await s.share(owner,w.id,other.userId,'editor',[],null,true);
+  await s.setAccessRules(owner,w.id,{expectedVersion:1,aiHiddenTypes:[],document:{documentId:doc.document_id,allowedUsers:[],ai:false,expectedVersion:-1}});
+  assert.ok(!(await s.documents(other,w.id)).some(d=>d.document_id===doc.document_id));await assert.rejects(s.original(other,w.id,doc.id),error('not_found'));await assert.rejects(s.acknowledgeDocument(other,w.id,doc.id,'Read'),error('not_found'));
+  await assert.rejects(s.previewFile(other,w.id,{documentId:doc.document_id,expectedVersion:doc.version,filename:'attempt.txt',mime:'text/plain',bytes:Buffer.from('attempt'),ai:true}),error('not_found'));
+  assert.ok(!(await s.documents(ai,w.id)).some(d=>d.document_id===doc.document_id));assert.ok((await s.original(owner,w.id,doc.id)).bytes.length);
+  await s.share(owner,w.id,other.userId,'inspector',[],null,false);await assert.rejects(s.exportWorkspace(other,w.id),error('restricted_inspection'));await s.unshare(owner,w.id,other.userId);
+ });
+ await t.test('event summaries run once per change batch; revoked grants stop them',async()=>{
+  const grant=await s.grant(owner,w.id,'reports.prepare',w.id,true);
+  const rule=(await save({kind:'create_automation',name:'After changes',grantId:grant.id,intervalMinutes:60,schedule:{kind:'records.changed'}})).objects[0]!;
+  await db.query('UPDATE automations SET paused=true WHERE id<>$1',[rule.id]);await runAutomation(db);
+  assert.equal((await db.query('SELECT count(*) AS n FROM automation_runs WHERE automation_id=$1',[rule.id])).rows[0].n,0);
+  await save({kind:'create_record',typeId,data:{name:'Event source'}});await db.query('UPDATE automations SET next_run=now() WHERE id=$1',[rule.id]);await runAutomation(db);
+  assert.equal((await db.query('SELECT count(*) AS n FROM automation_runs WHERE automation_id=$1',[rule.id])).rows[0].n,1);
+  await db.query('UPDATE automations SET next_run=now() WHERE id=$1',[rule.id]);await runAutomation(db);assert.equal((await db.query('SELECT count(*) AS n FROM automation_runs WHERE automation_id=$1',[rule.id])).rows[0].n,1);
+  await s.revoke(owner,w.id,grant.id);await save({kind:'create_record',typeId,data:{name:'Revoked event'}});await db.query('UPDATE automations SET next_run=now() WHERE id=$1',[rule.id]);await runAutomation(db);assert.equal((await db.query('SELECT paused FROM automations WHERE id=$1',[rule.id])).rows[0].paused,true);
+ });
+ await t.test('template upgrade preserves local configuration and existing records',async()=>{
+  const template=templates.find(t=>t.id==='publications')!,oldVersion=template.version;
+  await save({kind:'install_template',template:template.id});const type=(await s.types(owner,w.id)).find(t=>t.name==='Publications');
+  await save({kind:'create_record',typeId:type.id,data:{name:'Existing paper'}});
+  await save({kind:'update_type',typeId:type.id,expectedVersion:type.version,name:'Our publications',fields:type.fields});
+  template.version++;template.tables[0]!.fields.push({key:'optional_note',name:'Optional note',kind:'text',required:false,ai:true});
+  try{const p=await s.preview(owner,w.id,{kind:'upgrade_template',template:template.id,expectedVersion:oldVersion});assert.equal(p.summary.diff.additions.length,1);await s.commit(owner,p.id,p.digest);const updated=(await s.types(owner,w.id)).find(t=>t.id===type.id);assert.equal(updated.name,'Our publications');assert.ok(updated.fields.some((f:any)=>f.key==='optional_note'));assert.equal((await s.records(owner,w.id,type.id)).rows[0].data.name,'Existing paper');}finally{template.version=oldVersion;template.tables[0]!.fields.pop();}
+ });
+ await t.test('automated drafts consume scoped permission and cannot trigger themselves',async()=>{
+  const grant=await s.grant(owner,w.id,'records.create',typeId,true);
+  const rule=(await save({kind:'create_automation',name:'Follow-up task',grantId:grant.id,intervalMinutes:60,schedule:{kind:'records.changed'},action:{kind:'create_record',typeId,data:{name:'Automated follow-up'}}})).objects[0]!;
+  await db.query('UPDATE automations SET paused=true WHERE id<>$1',[rule.id]);await save({kind:'create_record',typeId,data:{name:'Human trigger'}});const before=(await s.records(owner,w.id,typeId)).total;await runAutomation(db);assert.equal((await s.records(owner,w.id,typeId)).total,before+1);
+  await db.query('UPDATE automations SET next_run=now() WHERE id=$1',[rule.id]);await runAutomation(db);assert.equal((await s.records(owner,w.id,typeId)).total,before+1);
+  await s.revoke(owner,w.id,grant.id);await save({kind:'create_record',typeId,data:{name:'Revoked trigger'}});await db.query('UPDATE automations SET next_run=now() WHERE id=$1',[rule.id]);await runAutomation(db);assert.equal((await s.records(owner,w.id,typeId)).total,before+2);assert.equal((await db.query('SELECT paused FROM automations WHERE id=$1',[rule.id])).rows[0].paused,true);
+ });
+ await t.test('folder restrictions inherit and moving documents cannot bypass them',async()=>{
+  const upload=await s.previewFile(owner,w.id,{filename:'folder-source.txt',mime:'text/plain',bytes:Buffer.from('Folder source'),ai:true});const receipt=await s.commit(owner,upload.id,upload.digest),doc=receipt.objects[0] as any;
+  await save({kind:'document_controls',documentId:doc.id,expectedVersion:-1,linkedRecordId:null,reviewerId:null,expiresOn:null,folder:'Private/Study'});
+  const rules=await s.accessRules(owner,w.id);await s.setAccessRules(owner,w.id,{expectedVersion:rules.version,aiHiddenTypes:rules.aiHiddenTypes,folder:{name:'Private',allowedUsers:[other.userId],ai:false}});
+  await s.share(owner,w.id,other.userId,'editor',[],null,true);
+  assert.ok((await s.original(other,w.id,doc.versionId)).bytes.length);assert.ok(!(await s.documents({...owner,origin:'ai'},w.id)).some(d=>d.document_id===doc.id));
+  await assert.rejects(s.preview(other,w.id,{kind:'document_controls',documentId:doc.id,expectedVersion:0,linkedRecordId:null,reviewerId:null,expiresOn:null,folder:'Public'}),error('owner_required'));
+  const latest=await s.accessRules(owner,w.id);await s.setAccessRules(owner,w.id,{expectedVersion:latest.version,aiHiddenTypes:[],folder:{name:'Private',allowedUsers:[],ai:false}});await assert.rejects(s.original(other,w.id,doc.versionId),error('not_found'));await s.unshare(owner,w.id,other.userId);
  });
  await db.close();
 });
