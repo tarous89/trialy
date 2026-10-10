@@ -1,3 +1,4 @@
+import {addReviews} from './reviews.js';
 import {addInvitations} from './invitations.js';
 import {addExternal} from './external.js';
 import express, { type RequestHandler, type ErrorRequestHandler } from 'express';
@@ -20,6 +21,7 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  addInvitations(app,s,human);
  app.get('/api/config',(_req,res)=>res.json({brand:process.env.BRAND_NAME??'Trialy',demo:process.env.LOCAL_DEMO==='true'&&process.env.NODE_ENV!=='production'}));
  app.use('/api',human);app.use('/api',(_req,res,next)=>{res.set('Cache-Control','no-store');next();});
+ addReviews(app,s);
  app.get('/api/me',async(req,res)=>{const u=(await s.db.query('SELECT id,name,email FROM users WHERE id=$1',[req.actor!.userId])).rows[0];res.json({user:u,csrf:req.session?.csrf,workspaces:await s.workspaces(req.actor!)});});
  app.post('/api/workspaces',async(req,res)=>res.status(201).json(await s.createWorkspace(req.actor!,z.string().trim().min(1).max(100).parse(req.body.name))));
  app.get('/api/templates',(_req,res)=>res.json(templates));
@@ -60,7 +62,7 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  app.get('/api/workspaces/:workspaceId/runs',async(req,res)=>res.json(await s.runs(req.actor!,String(req.params.workspaceId))));
  app.post('/api/workspaces/:workspaceId/automations/:automationId/pause',async(req,res)=>res.json(await s.pause(req.actor!,String(req.params.workspaceId),id.parse(req.params.automationId),z.boolean().parse(req.body.paused))));
  app.get('/api/workspaces/:workspaceId/grants',async(req,res)=>res.json(await s.grants(req.actor!,String(req.params.workspaceId))));
- app.post('/api/workspaces/:workspaceId/grants',async(req,res)=>{const g=z.object({action:z.enum(['records.create','documents.import','reports.prepare']),destination:z.string().min(1).max(200),future:z.boolean()}).parse(req.body);res.json(await s.grant(req.actor!,String(req.params.workspaceId),g.action,g.destination,g.future));});
+ app.post('/api/workspaces/:workspaceId/grants',async(req,res)=>{const g=z.object({action:z.enum(['records.create','documents.import','reports.prepare','reminders.create']),destination:z.string().min(1).max(200),future:z.boolean()}).parse(req.body);res.json(await s.grant(req.actor!,String(req.params.workspaceId),g.action,g.destination,g.future));});
  app.delete('/api/workspaces/:workspaceId/grants/:grantId',async(req,res)=>res.json(await s.revoke(req.actor!,String(req.params.workspaceId),id.parse(req.params.grantId))));
 }
 export const errors:ErrorRequestHandler=(error,_req,res,_next)=>{

@@ -68,3 +68,11 @@ The worker image includes Python 3 for offline XLSX/PPTX reading. Limits: ZIP 5,
 ## Adopting legacy templates
 
 An owner explicitly maps every canonical template table to a different existing workspace table, then previews/commits. Adoption requires compatibility with current template field definitions/relationships, preserves renamed tables and additional local fields, and changes only the tracked baseline. Conflicts require a separately reviewed schema migration; no historic template version is invented. A concurrent schema change invalidates the preview.
+
+## Review routing and self-reminders
+
+Use Reviews & reminders to choose a saved record and eligible reviewer, then preview/confirm the request. Routing creates a new in-review record version. The assignment remains open when the record is edited and becomes stale; owners cancel it before requesting a new review. Existing approval routes enforce this assignment. Request changes returns the exact reviewed record to draft with a new revision. Cancellation preserves the current record. All outcomes remain immutable. Only unrestricted human editors/owners can decide; formal electronic signatures are not provided.
+
+For scheduled in-app reminders, create a `reminders.create` permission for the workspace in Access, choose once/future, and configure a Remind me in Trialy automation. Only the owner configures this action; it targets the same user, not colleagues or external recipients. The worker stores the run and reminder in one transaction with grant consumption. Empty due-date conditions take no action. Revoked access/grants pause the rule. The inbox rechecks current permissions and only marks entries read, never deletes them. Latest-run detail is bounded to 50 runs, while the inbox shows up to 100 reminders. No derived extraction failures generate these reminders.
+
+Migration 015 adds immutable request, decision, reminder and read-receipt tables. Include them in recovery inventories and future managed restore checks. The previous synthetic restore evidence ends at migration 014 and remains labelled accordingly.

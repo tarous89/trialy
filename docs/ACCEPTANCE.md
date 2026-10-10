@@ -51,3 +51,9 @@ Keep Trialy repository/internal IDs and the existing Trialegions product separat
 - No real recipients were contacted. New browser workflows and actual ChatGPT host behavior still need user acceptance; they are not claimed proven by API tests.
 
 - Continuation code `c5015ce` is live on both Render services. Read-only live verification: `/join` serves `index-DrExHbhY.js` and `/ready` returns 200/ready. No claim of live browser/ChatGPT workflow acceptance is made.
+
+### Review/reminder continuation
+
+- Build and 30 reported checks pass. Focused synthetic flow covers assignment bypass, stale edits, return to draft, owner cancellation/rerouting, exact-version approval and duplicate-safe decisions. Restricted colleagues cannot obtain the full review inbox.
+- A one-time self-reminder creates one immutable inbox entry; replayed worker work cannot create another. Revoking a standing grant prevents a new reminder. Mark-read persists separately.
+- Live human/browser acceptance is still outstanding. These controls are internal review evidence, not signature-provider integration.

@@ -174,3 +174,10 @@ Do not mark planned work as implemented. Keep older decisions visible and mark l
 - Real ChatGPT host testing, provider-account integrations, production recovery decisions and public brand cutover remain deferred. Generalized review routing/action types and optional record restrictions remain unfinished.
 
 Deployment verification: code `c5015cec1b188c3919e1a0118c8d00fedb938b42` is live on both existing Render services. Web deploy `dep-db5bmlc9v7es738vvc1g`; worker deploy `dep-db5bmlc9v7es738vvbug`. `/join` returned 200 with `index-DrExHbhY.js`; `/ready` returned 200/ready. No private-plugin package change, existing-product change or real external messaging occurred.
+
+## Review routing and in-app reminders — 2026-10-11
+
+- Added previewed owner routing to a named reviewer, creating an exact-version in-review revision. Added immutable approve/request-changes/cancel outcomes and idempotent decision retries. Enforced the assignment on the existing approval endpoint too; stale requests cannot approve edited records.
+- Added a Reviews & reminders screen with saved-record selection, review instructions/due dates, assigned document reviews and reminder read receipts. Fixed legacy template adoption previews to display the mapping/diff instead of an empty generic record preview.
+- Added workspace-scoped once/future self-reminder automations on existing schedule/event/condition machinery. Execution rechecks grants/access; completion and inbox storage are atomic. No external notifications or real recipient messages sent.
+- Updated inspection exports, runtime-role SQL and recovery inventory for migration 015. Build and 30 reported tests pass. Managed backup testing, ChatGPT host acceptance and provider setup remain deferred.
