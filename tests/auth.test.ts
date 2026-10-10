@@ -11,7 +11,7 @@ import {addLocalAuth} from '../src/server/auth.js';
 import {addMcp} from '../src/server/mcp.js';
 import {Service} from '../src/domain/service.js';
 test('signup returns to OAuth; PKCE, replay, refresh and revocation are enforced',async()=>{
- const pg=new PGlite();for(const f of ['001_core','002_controlled_work','003_local_auth'])await pg.exec(await readFile(`migrations/${f}.sql`,'utf8'));
+ const pg=new PGlite();for(const f of ['001_core','002_controlled_work','003_local_auth','004_governance'])await pg.exec(await readFile(`migrations/${f}.sql`,'utf8'));
  const db:Database={query:(sql,v)=>pg.query(sql,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
  const app=baseApp();app.use(session({secret:'synthetic-session-secret-for-testing-only',resave:false,saveUninitialized:false}));const auth=addLocalAuth(app,db,'https://trialy.example');addMcp(app,new Service(db),auth.ai);app.use(errors);
  const client=await request(app).post('/register').send({client_name:'Synthetic ChatGPT',redirect_uris:['https://chatgpt.com/connector/oauth/synthetic'],token_endpoint_auth_method:'none',grant_types:['authorization_code','refresh_token'],response_types:['code']});assert.equal(client.status,201,client.text);
@@ -19,8 +19,8 @@ test('signup returns to OAuth; PKCE, replay, refresh and revocation are enforced
  const browser=request.agent(app);const start=await browser.get('/authorize').query({response_type:'code',client_id:client.body.client_id,redirect_uri:redirect,scope:'trialy',resource:'https://trialy.example/mcp',state:'original-chatgpt-state',code_challenge:challenge,code_challenge_method:'S256'});assert.equal(start.status,302,start.text);
  const login=await browser.get(new URL(start.headers.location).pathname+new URL(start.headers.location).search);assert.equal(login.status,200);
  const csrf=login.text.match(/name="csrf" value="([^"]+)"/)![1];
- assert.equal((await browser.post('/auth/signup').type('form').send({email:'test@example.invalid',password:'synthetic-password-123',csrf:'wrong'})).status,403);
- const signup=await browser.post('/auth/signup').type('form').send({email:'test@example.invalid',password:'synthetic-password-123',csrf});assert.equal(signup.headers.location,'/auth/consent');
+ assert.equal((await browser.post('/auth/signup').type('form').send({email:'test@example.invalid',password:'synthetic-password-123',intendedUse:'accepted',csrf:'wrong'})).status,403);
+ const signup=await browser.post('/auth/signup').type('form').send({email:'test@example.invalid',password:'synthetic-password-123',intendedUse:'accepted',csrf});assert.equal(signup.headers.location,'/auth/consent');
  const consent=await browser.get('/auth/consent');assert.equal(consent.status,200,consent.text);assert.ok(consent.headers['content-security-policy'].includes('https://chatgpt.com'));
  const approval=await browser.post('/auth/consent').type('form').send({decision:'approve',csrf:consent.text.match(/name="csrf" value="([^"]+)"/)![1]});assert.equal(approval.status,303);const callback=new URL(approval.headers.location);assert.equal(callback.origin,'https://chatgpt.com');assert.equal(callback.searchParams.get('state'),'original-chatgpt-state');
  const exchange={grant_type:'authorization_code',client_id:client.body.client_id,code:callback.searchParams.get('code'),redirect_uri:redirect,resource:'https://trialy.example/mcp',code_verifier:verifier};

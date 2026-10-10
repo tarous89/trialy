@@ -14,7 +14,7 @@ import { runOne } from '../src/worker/processor.js';
 import { AppError, type Actor } from '../src/shared/schema.js';
 const error=(code:string)=>(e:unknown)=>e instanceof AppError&&e.code===code;
 test('Shared backend: access, committed history, original preservation and retrieval',async t=>{
- const pg=new PGlite();await pg.exec(await readFile('migrations/001_core.sql','utf8'));await pg.exec(await readFile('migrations/002_controlled_work.sql','utf8'));
+ const pg=new PGlite();await pg.exec(await readFile('migrations/001_core.sql','utf8'));await pg.exec(await readFile('migrations/002_controlled_work.sql','utf8'));await pg.exec(await readFile('migrations/004_governance.sql','utf8'));
  const db:Database={query:(sql,v)=>pg.query(sql,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
  const s=new Service(db);const owner:Actor={userId:randomUUID(),origin:'human'},other:Actor={userId:randomUUID(),origin:'human'};
  for(const a of [owner,other])await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[a.userId,a.userId,'test@example.invalid','Test']);
@@ -58,8 +58,8 @@ test('Shared backend: access, committed history, original preservation and retri
   const g=await s.grant(owner,w.id,'documents.import','proposals',true);await s.revoke(owner,w.id,g.id);assert.ok((await s.grants(owner,w.id))[0].revoked_at);
  });
  await t.test('template installation is atomic and does not overwrite collisions',async()=>{
-  const p=await s.preview(other,w2.id,{kind:'install_template',template:'rfp-oversight'});const r=await s.commit(other,p.id,p.digest);assert.equal(r.objects.length,6);
-  const again=await s.preview(other,w2.id,{kind:'install_template',template:'rfp-oversight'});await assert.rejects(s.commit(other,again.id,again.digest));assert.equal((await s.types(other,w2.id)).length,6);
+  const p=await s.preview(other,w2.id,{kind:'install_template',template:'rfp-oversight'});const r=await s.commit(other,p.id,p.digest);assert.equal(r.objects.length,9);
+  const again=await s.preview(other,w2.id,{kind:'install_template',template:'rfp-oversight'});await assert.rejects(s.commit(other,again.id,again.digest));assert.equal((await s.types(other,w2.id)).length,9);
  });
  await t.test('scoped colleague access, reviewed revisions, schedules and export',async()=>{
   await s.share(owner,w.id,other.userId,'viewer',['budget'],[typeId],true);
@@ -164,6 +164,58 @@ test('Shared backend: access, committed history, original preservation and retri
   assert.equal((await s.records(ai,w.id,type,{viewId})).rows[0].data.name,'Excluded');
   assert.equal((await db.query("SELECT count(*) AS n FROM revisions WHERE object_id=$1 AND object_kind='view'",[viewId])).rows[0].n,2);
   await assert.rejects(s.preview(owner,w.id,{...operation,viewKind:'calendar'}),error('date_required'));
+ });
+ await t.test('bulk saves are atomic; calendar and aggregates cover full matching data',async()=>{
+  const type=(await save({kind:'create_type',name:'Bulk checks',fields:[{key:'name',name:'Name',kind:'text',unique:true},{key:'cost',name:'Cost',kind:'money'},{key:'due',name:'Due',kind:'date'},{key:'team',name:'Team',kind:'text'}]})).objects[0].id;
+  const pending=await s.preview(owner,w.id,{kind:'bulk_records',changes:[1,2].map(n=>({kind:'create_record',typeId:type,data:{name:'Duplicate',cost:n}}))});
+  await assert.rejects(s.commit(owner,pending.id,pending.digest),error('duplicate_value'));
+  assert.equal((await s.records(owner,w.id,type)).total,0);
+  await save({kind:'bulk_records',changes:[{name:'A',cost:2,due:'2026-11-02',team:'Ops'},{name:'B',cost:8,due:'2026-10-02',team:'Ops'},{name:'C',cost:3,due:'2026-11-15',team:'Med'}].map(data=>({kind:'create_record',typeId:type,data}))});
+  const calendar=await s.records(owner,w.id,type,{dateField:'due',month:'2026-11',limit:1});assert.equal(calendar.total,2);assert.equal(calendar.rows.length,1);
+  const sums=await s.aggregate(owner,w.id,type,{metric:'cost',groupBy:'team',limit:1});assert.equal(sums.totals.count,3);assert.equal(Number(sums.totals.sum),13);assert.equal(Number(sums.groups.find((g:any)=>g.label==='Ops').sum),10);
+  assert.equal((await s.aggregate(owner,w.id,type,{})).totals.count,3);
+  const grant=await s.grant(owner,w.id,'reports.prepare',w.id,false);await save({kind:'create_automation',name:'Due work',grantId:grant.id,intervalMinutes:1440,conditions:{typeId:type,dateField:'due',daysAhead:90}});assert.equal(await runAutomation(db),true);assert.equal((await s.runs(owner,w.id))[0].summary.due.count,3);
+  await assert.rejects(s.aggregate({...owner,origin:'ai'},w.id,typeId,{metric:'budget'}),error('invalid_field'));
+  await assert.rejects(s.preview(owner,w.id,{kind:'create_record',typeId:type,data:{name:'D',due:'2026-02-30'}}),error('invalid_value'));
+ });
+ await t.test('calculated fields inherit source permissions and cannot change after preview',async()=>{
+  const fields=[{key:'hours',name:'Hours',kind:'number'},{key:'rate',name:'Rate',kind:'money',ai:false},{key:'cost',name:'Cost',kind:'money',formula:{operator:'product',fields:['hours','rate']}}];
+  const type=(await save({kind:'create_type',name:'Calculated checks',fields})).objects[0].id;
+  const p=await s.preview(owner,w.id,{kind:'create_record',typeId:type,data:{hours:3,rate:10}});assert.equal(p.summary.data.cost,30);const saved=await s.commit(owner,p.id,p.digest);
+  assert.equal((await s.records(owner,w.id,type)).rows[0].data.cost,30);
+  const ai:Actor={...owner,origin:'ai'};assert.equal((await s.records(ai,w.id,type)).rows[0].data.cost,undefined);assert.equal((await s.types(ai,w.id)).find(x=>x.id===type).fields.length,1);
+  await assert.rejects(s.preview(owner,w.id,{kind:'update_record',recordId:saved.objects[0].id,expectedVersion:0,data:{cost:99}}),error('invalid_field'));
+  const pending=await s.preview(owner,w.id,{kind:'create_record',typeId:type,data:{hours:2,rate:10}});
+  await save({kind:'update_type',typeId:type,expectedVersion:0,name:'Renamed calculations',fields});
+  await assert.rejects(s.commit(owner,pending.id,pending.digest),error('stale_version'));
+  await assert.rejects(s.preview(owner,w.id,{kind:'create_type',name:'Cycle',fields:[{key:'a',name:'A',kind:'number',formula:{operator:'sum',fields:['b','b']}},{key:'b',name:'B',kind:'number',formula:{operator:'sum',fields:['a','a']}}]}),error('formula_cycle'));
+ });
+ await t.test('field migration previews every record and preserves old values atomically',async()=>{
+  const type=(await save({kind:'create_type',name:'Migration checks',fields:[{key:'cost',name:'Cost as entered',kind:'text'}]})).objects[0].id;
+  const r=(await save({kind:'create_record',typeId:type,data:{cost:'12.5'}})).objects[0].id;
+  const operation={kind:'migrate_type',typeId:type,expectedVersion:0,name:'Migration checks',fields:[{key:'amount',name:'Amount',kind:'money'}],mappings:{amount:{from:'cost',conversion:'number'}},reason:'Use numeric amounts'};
+  const p=await s.preview(owner,w.id,operation);assert.equal(p.summary.records[0].data.amount,12.5);assert.equal((await s.records(owner,w.id,type)).rows[0].data.cost,'12.5');
+  await save({kind:'update_record',recordId:r,expectedVersion:0,data:{cost:'15'}});await assert.rejects(s.commit(owner,p.id,p.digest),error('stale_version'));
+  await save(operation);assert.equal((await s.records(owner,w.id,type)).rows[0].data.amount,15);
+  assert.equal((await db.query("SELECT snapshot FROM revisions WHERE object_id=$1 AND object_kind='record' AND version=0",[r])).rows[0].snapshot.data.cost,'12.5');
+  await assert.rejects(s.preview({...owner,origin:'ai'},w.id,{...operation,expectedVersion:1}),error('owner_required'));
+ });
+ await t.test('document review, acknowledgements and workspace preservation retain exact evidence',async()=>{
+  const d=(await s.documents(owner,w.id)).find(d=>d.filename==='proposal-v2.txt');
+  await save({kind:'document_controls',documentId:d.document_id,expectedVersion:-1,linkedRecordId:recordId,reviewerId:owner.userId,expiresOn:'2027-10-10',folder:'Proposals'});
+  await assert.rejects(s.reviewDocument({...owner,origin:'ai'},w.id,d.id,0,'in_review','Review'),error('human_required'));
+  await s.reviewDocument(owner,w.id,d.id,0,'in_review','Review original');await s.reviewDocument(owner,w.id,d.id,1,'approved','Reviewed exact source');
+  const ack=await s.acknowledgeDocument(owner,w.id,d.id,'Read original');assert.equal((await s.acknowledgeDocument(owner,w.id,d.id,'Read again')).id,ack.id);
+  await assert.rejects(db.query('DELETE FROM acknowledgements'),/append-only/);
+  const next=await s.previewFile(owner,w.id,{filename:'next.txt',mime:'text/plain',bytes:Buffer.from('New version'),ai:true,documentId:d.document_id,expectedVersion:d.version});await s.commit(owner,next.id,next.digest);
+  const latest=(await s.documents(owner,w.id)).find(x=>x.filename==='next.txt');assert.equal(latest.review_status,'in_review');assert.equal(latest.reviewed_version_id,d.id);
+  await save({kind:'set_workspace_policy',expectedVersion:0,archived:true,legalHold:true,retentionUntil:'2030-01-01',reason:'Preserve study'});
+  await assert.rejects(s.preview(owner,w.id,{kind:'create_record',typeId,data:{name:'Blocked'}}),error('workspace_archived'));
+  const exp=await s.exportWorkspace(owner,w.id);assert.equal(exp.acknowledgements.length,1);assert.equal(exp.workspace_policies[0].legalHold,true);
+  await assert.rejects(s.preview(owner,w.id,{kind:'set_workspace_policy',expectedVersion:1,archived:false,legalHold:true,retentionUntil:null,reason:'Remove date'}),error('retention_protected'));
+  await save({kind:'set_workspace_policy',expectedVersion:1,archived:false,legalHold:true,retentionUntil:'2030-01-01',reason:'Resume editing under hold'});
+  await s.share(owner,w.id,other.userId,'inspector',[],null,true);assert.ok((await s.history(other,w.id,{action:'document.'})).length);assert.ok((await s.exportWorkspace(other,w.id)).documents.length);
+  await assert.rejects(s.preview(other,w.id,{kind:'create_record',typeId,data:{name:'No'}}),error('forbidden'));await assert.rejects(s.documents({...other,origin:'ai'},w.id),error('ai_disabled'));await s.unshare(owner,w.id,other.userId);
  });
  await db.close();
 });

@@ -9,7 +9,8 @@ Decision/change log: [HISTORY.md](HISTORY.md)
 
 - Working development application, SQL migrations, background worker, standalone UI and MCP transport are implemented.
 - Render web service, background worker and PostgreSQL are live in the confirmed workspace. Private Trialy plugin created.
-- Configurable saved views and shared table/list/comparison/dashboard/timeline/calendar layouts are live on commit `5ceb14c`. Next: remaining embedded editors/file handling and full-result date/aggregate queries; real ChatGPT connection/automatic opening remains an account-dependent acceptance check.
+- Active execution: deploy and verify the extended implementation batch. Remaining account/provider/production decisions and still-unbuilt advanced features are listed separately below; no step is marked complete solely because scaffolding exists.
+- Decisions/actions needed later: connect a real ChatGPT account for host acceptance; choose/authorize email/calendar provider credentials; confirm production recovery expectations/resources. No external messages or paid signature subscription will be initiated.
 - No existing Trialegions application, data, infrastructure, or domain has been changed.
 
 ### Implementation checkpoint — 2026-10-10
@@ -18,24 +19,35 @@ A checked item below means that particular implementation exists; a partially im
 
 | Step | Implemented now | Still needed |
 | --- | --- | --- |
-| 1 | TypeScript/React/API/worker scaffold, lockfile, migrations, health, CI, Docker and Render staging definition | Broader adapter contracts as integrations are added; live PostgreSQL migrations and Render boot verified |
-| 2 | Self-hosted sign-up/login, PostgreSQL sessions and MCP OAuth with PKCE, tenant roles, workspace/table/field access, separate AI access, audited sharing | Implement recovery/verification/MFA and verify live session lifecycle; finer record/document/folder/view controls |
-| 3 | Configurable typed fields, required validation, related-record references, pagination and visible-field search, versioned safe schema changes | Formula engine, configurable uniqueness/sorting/bulk operations; migration workflow for incompatible changes; verified person/document reference semantics |
-| 4 | Temporary previews, explicit save/discard, digest binding, transactionally committed version 0/history/jobs, idempotency receipts, stale-edit rejection, shared record history and previewed restoration | Stronger separated database roles, preview infrastructure for multiple web instances; bulk/import previews |
-| 5 | Authenticated MCP wiring with fourteen typed tools and an interactive MCP Apps workspace; transport tested locally | Live ChatGPT OAuth connection, remaining embedded views, cross-conversation proof and UI-only restricted-field path; account availability verification |
-| 6 | Shared table/list/comparison/basic dashboard/timeline/calendar, saved-view editor with columns/filters/sort/group/date configuration, record forms and preview/save in both surfaces | Questionnaires, calculated/group totals across full datasets, record-level view restrictions and browser acceptance |
-| 7 | Share with registered users, viewer/editor scopes, revocation, one-time/future action grants | Email invitations, guest/shared-view links; extend grant execution beyond report summaries |
-| 8 | Original bytea payloads, SHA-256, immutable versions, upload preview/save/download, replacement-version UI and atomic job insertion | Record links, document display/review/expiry controls; separate storage adapter for later migration |
-| 9 | Leased durable jobs, bounded retries, separate worker, isolated extraction subprocess, text/DOCX/PDF and image/scanned-PDF OCR paths, quiet availability states | Best-effort table extraction, richer Office coverage and per-capability statuses; representative OCR/PDF fixture validation |
-| 10 | PostgreSQL full-text search, source/version references, bounded exact-version text reading and permission-filtered coverage gaps | Advanced filters, exact hit-to-page mapping and alternative original-reading tools |
-| 11 | Previewed recurring summary configuration, current-rights checks, one-time/future grants, pause/resume, run history, exact-version internal approval | General triggers/conditions/actions, timezone schedules, reminders/routing and requested-action notifications |
-| 12 | Not implemented | Email/calendar OAuth, external forms and inbound processing |
-| 13 | Atomic versioned template installation; related CRO/RFP/proposal/study/commitment/risk tables | Complete proposal scoring/comparison/selection workflow, contract/change-order links, upgrades and workflow dashboards |
-| 14 | Eleven editable template configurations cover the principal subject areas | Workflow-specific behaviours, training acknowledgements, communication/report integrations; these are starter configurations |
-| 15 | Owner audit view and JSON export of originals, records, versions, approvals and audit; app suitability notice | Retention/legal-hold enforcement, inspection roles, readable inspection package, formal licence acceptance, operating procedures and evidence matrix |
-| 16 | Internal approvals clearly separate from e-signatures | Provider pricing/suitability decision and conditional integration |
-| 17 | Docker/Render staging blueprint, transaction integrity and restartable jobs | Least-privilege database roles, monitoring, backup/restore and production durability decision |
-| 18 | Synthetic local app and focused backend/MCP checks | Full representative ChatGPT/standalone acceptance, onboarding, distribution and controlled brand cutover |
+| 1 | Scaffold, lockfile, SQL migrations, Docker/Render, health/readiness, original-store interface | More adapter contracts when providers are selected |
+| 2 | Self-hosted signup/login/OAuth PKCE, session CSRF, rotation/replay protection, user connection revocation, notice acceptance, tenant/table/field/AI access | Recovery/verification/MFA, finer document/folder/record access, live account acceptance |
+| 3 | Nine field types, validated references, unique fields, filtering/sorting/pagination, atomic bulk writes, permission-aware numeric formulas, previewed schema/data migrations | Larger migrations beyond 200 records/1 MiB; richer expressions if needed |
+| 4 | Temporary previews, explicit atomic save, version/audit/receipt, retry/stale safeguards, schema fingerprints, restoration, bulk previews | Apply separate runtime DB role; multiple-web-instance preview storage |
+| 5 | Typed MCP tools, embedded workspace/forms/views/history/document upload/download and controls | Real ChatGPT OAuth/host files/automatic opening/cross-conversation acceptance; UI-only human data remains unproven |
+| 6 | Shared views/editor, full-result aggregates, calendar month filtering, typed forms, CSV import and field editor | Advanced questionnaires, record/view-specific permissions and browser acceptance |
+| 7 | Registered-user sharing, scoped grants/revocation | Invitations, external shared-view links; execution beyond reports |
+| 8 | Immutable bytea originals, checksums, version replacement, links/reviewers/expiry/folder metadata, review/acknowledgement, storage adapter | Finer per-document/folder permission rules; embedded host acceptance |
+| 9 | Durable leased worker, bounded retries, isolated Poppler text/PDF, DOCX, OCR, CSV/layout-derived tables, quiet text/table status | Broader Office formats and representative customer-format acceptance |
+| 10 | Permission-filtered full-text search, bounded matching page/section passages, source/version IDs, coverage flags, original download | Richer document search filters and alternative model reading paths; vectors remain deferred |
+| 11 | Previewed recurring summaries and filtered due/overdue counts, execution-time permissions, one-time/future grants, pause/resume/history, exact-version internal reviews | General event triggers/actions, local-time schedules, review routing and external notifications |
+| 12 | No outbound provider activated; sources and typed records can be linked internally | Provider/account decision, email/calendar integration, external questionnaires/inbound exchange |
+| 13 | RFP v2 adds nine linked tables, source-backed weighted evaluations, comparisons/aggregates, selection references, commitments, contracts/change orders | Template upgrade diffs, end-to-end acceptance and provider-dependent collection/routing |
+| 14 | Eleven editable configurations; document/person references and exact-source acknowledgements | Workflow-specific refinements and communication integrations |
+| 15 | Human-only inspector access, paged audit filtering, archive/retention/hold policy, append-only evidence, original/revision export in JSON/HTML, signup notice, operations and critical-check matrix | Formal license/customer policies and eventual controlled disposal |
+| 16 | Current provider assessment and conditional deferral documented; internal approvals remain distinct | Provider/cost decision before production signature integration |
+| 17 | DB readiness, expired-auth cleanup, runtime-role SQL, migration credential seam, recovery inventories/export verifier and runbook | Apply credentials/monitoring settings; agree production RPO/RTO and execute actual managed restore drill |
+| 18 | Focused local checks and synthetic isolated PDF check; acceptance/onboarding/brand-cutover runbook | Real account/browser acceptance, recovery evidence, provider setup and separately authorized publication/cutover |
+
+### Extended implementation checkpoint — 2026-10-10
+
+- Atomic imports and bulk edits are capped at 200 records. Schema migration previews show before/after data, reject stale data, preserve old snapshots and return approved records to review. Migration previews are capped at 1 MiB.
+- Calculations support numeric sum/product/difference/ratio with acyclic dependencies. Missing inputs, division by zero and non-finite results produce null. Calculated fields inherit source permissions and cannot be directly edited. These are ordinary numeric calculations, not a precision accounting engine.
+- Document links, reviewer, folder label and expiry are versioned controls. Human reviews bind to the latest exact original; replacing an approved source returns its current control to review while keeping old evidence. Human read acknowledgements are idempotent per exact version.
+- Workspace archive blocks business writes. Retention dates cannot be shortened; holds and reasons are recorded. There is no destructive customer-record deletion endpoint. Privileged database administration and backup policy still require operational controls.
+- PDF extraction now uses installed Poppler. A synthetic one-page file revealed excessive startup memory in pdf-parse under the worker heap limit, so that dependency was removed. The isolated Poppler check successfully read the expected text and page reference. CSV tables are bounded; PDF layout-derived tables are always partial. Unsupported/failed derived data remains a quiet flag.
+- Due reports use a permitted date field and optional saved-view filter, and evaluate UTC dates through a bounded horizon. They produce in-app counts; they do not send email. Current permissions are checked both at execution and when old runs are read.
+- New operating documentation: [OPERATIONS.md](docs/OPERATIONS.md), [ACCEPTANCE.md](docs/ACCEPTANCE.md), [SIGNATURE_DECISION.md](docs/SIGNATURE_DECISION.md). Database role separation and restore tooling are prepared; no production recovery guarantee is asserted.
+- Deployment verification for this batch is recorded in HISTORY.md after the code is pushed.
 
 ### ChatGPT onboarding implementation — 2026-10-10
 
@@ -71,6 +83,8 @@ A checked item below means that particular implementation exists; a partially im
 - Deployment confirmed: web `dep-db59hijbc2fs738ijneg`, worker `dep-db59hirbc2fs738ijnig`, commit `5ceb14c`; both live, health 200 and public UI bundle matches the build.
 
 ### Verification and practical boundaries
+
+- Current extended batch: production build and 18 reported tests pass (17 leaf checks plus parent). Isolated Poppler PDF extraction passed on a synthetic one-page fixture. This is focused implementation evidence, not full host/regulatory acceptance.
 
 - `npm run build`: TypeScript check and production frontend bundle passed.
 - `npm test`: 14 reported tests (13 leaf checks plus the parent suite), using the SQL migrations in PGlite. Covers tenant/model access, preview discard/save/retry/concurrency, append-only audit, original preservation after extraction failure, grant revocation, atomic template installation, sharing/review/scheduled summary/export, MCP transport permission filtering, and first-connection identity/workspace onboarding.
@@ -134,11 +148,11 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 **Depends on:** 2.
 
 - [x] Create type definitions, field definitions, records, relationships, and configuration revisions.
-- [ ] Support text, numeric/money, date/time, boolean, select/status, person, relationship, and document references.
-- [ ] Implement schema validation, required fields, uniqueness where configured, pagination, filtering, sorting, and bulk operations.
-- [ ] Add safe formulas/aggregations with dependency tracking and permission-aware results; never execute model-provided code.
+- [x] Support text, numeric/money, date (day precision), boolean, select/status, person, relationship, and document references.
+- [x] Implement schema validation, required fields, uniqueness where configured, pagination, filtering, sorting, and bulk operations.
+- [x] Add safe formulas/aggregations with dependency tracking and permission-aware results; never execute model-provided code.
 - [x] Represent saved views as configuration; avoid fixed modules and duplicate business entities.
-- [ ] Add migration handling for field changes, incompatible conversions, removal, and referenced records.
+- [x] Add migration handling for field changes, incompatible conversions, removal, and referenced records.
 
 **Done when:** a CRO table and study table can be configured and linked, with invalid values rejected and no committed-write bypass.
 
@@ -208,8 +222,8 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 - [x] Verify complete bytes and integrity before acknowledging Saved; commit metadata/audit with the original.
 - [x] Never describe an external link, unfinished upload, or temporary copy as a saved original.
 - [x] Support new original versions without overwriting older originals, with replacement preview in standalone.
-- [ ] Add document review/expiry metadata controls.
-- [ ] Keep file storage behind a simple interface for possible later migration.
+- [x] Add document review/expiry metadata controls.
+- [x] Keep file storage behind a simple interface for possible later migration.
 
 **Done when:** a saved test document downloads byte-for-byte intact, and an interrupted save never produces a false Saved message.
 
@@ -219,7 +233,7 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 
 - [x] Implement durable jobs, worker leases, timeouts, restart recovery, bounded retries, and duplicate-safe execution.
 - [ ] Add text extraction for supported text/PDF/Office formats, OCR for scanned pages, and best-effort table extraction.
-- [ ] Preserve original version references, extraction method/version, page/section references, and per-capability processing status.
+- [x] Preserve original version references, extraction method/version, page/section references, and per-capability processing status.
 - [x] Default to one attempt plus one retry for transient failures; avoid repeated attempts on unsupported input.
 - [x] After failure, retain the original and show only No extraction available or Partial extraction beside the document.
 - [x] Keep diagnostics internal; no user notifications/toasts/emails for routine regenerable processing failures.
@@ -299,11 +313,11 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 **Depends on:** 4, 8, 11, 13.
 
 - [ ] Define intended-use/record classes, responsible roles, retention rules, and legal holds.
-- [ ] Add audit search/review, access review, controlled corrections, read-only archives, and restricted inspector access.
-- [ ] Export originals, records, relationships, versions, source references, approval history, and audit data in readable and machine-readable forms.
+- [x] Add audit action search/pagination, access review, controlled corrections, read-only archives and human-only inspector roles. Raw inspection access requires unrestricted workspace scope.
+- [x] Export originals, records, relationships, versions, source references, approval history, and audit data in readable and machine-readable forms.
 - [ ] Define tenant offboarding, archive/export responsibilities, and controlled deletion subject to retention.
-- [ ] Maintain a concise requirements-to-critical-checks matrix and evidence for intended regulated workflows.
-- [ ] Document essential change, incident, recovery, supplier, training, and corrective-action responsibilities.
+- [x] Maintain a concise requirements-to-critical-checks matrix and evidence for intended regulated workflows.
+- [x] Document essential change, incident, recovery, supplier, training, and corrective-action responsibilities.
 - [ ] Include licence/onboarding patient-data limitation without adding content screening.
 - [ ] Record changes requiring customer configuration assessment; never imply arbitrary user configurations are automatically validated.
 

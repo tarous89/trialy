@@ -4,6 +4,7 @@ export function DocumentText({document,busy,onClose,onPage}:{document:any;busy:b
  return <section className="document-text"><h2>{document.filename} · v{document.version}</h2><p>{extractionLabel(document.status)} · Original saved</p><button type="button" onClick={onClose}>Close text</button>
  {document.status==='partial'&&<p>Some source content may be missing from this extraction.</p>}
  {document.text?<pre>{document.text}</pre>:<p>No extracted text is available to read yet. The original remains stored.</p>}
+ {document.offset===0&&<><p>Table extraction: {document.tableStatus==='ready'?'Available':document.tableStatus==='partial'?'Partial; verify against the original':'No table extraction available'}</p>{document.tables?.map((t:any,i:number)=><section key={i}><h3>Table {i+1}{t.page?` · page ${t.page}`:''}</h3><div className="record-scroll"><table><tbody>{t.rows.map((row:string[],j:number)=><tr key={j}>{row.map((cell,k)=><td key={k}>{cell}</td>)}</tr>)}</tbody></table></div></section>)}</>}
  <footer><button type="button" disabled={busy||document.offset===0} onClick={()=>onPage(Math.max(0,document.offset-12000))}>Previous text</button><button type="button" disabled={busy||!document.hasMore} onClick={()=>onPage(document.offset+12000)}>More text</button></footer>
  </section>;
 }

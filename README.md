@@ -473,3 +473,9 @@ Then develop a coherent implementation plan that distinguishes:
 
 These references inform implementation and validation planning; this scope is not a certification of compliance.
 
+
+## Extended development capabilities
+
+The current implementation includes previewed CSV imports and schema migrations, permission-aware numeric calculations and aggregates, source-linked RFP evaluations, version-specific document review/acknowledgements, archive/retention policies, inspector access and portable inspection copies. See [DEVELOPMENT.md](DEVELOPMENT.md) for exact limits and unfinished work; do not equate this development environment with a validated production system.
+
+Operational setup and recovery: [docs/OPERATIONS.md](docs/OPERATIONS.md). Focused acceptance and customer onboarding: [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md). Conditional signature decision: [docs/SIGNATURE_DECISION.md](docs/SIGNATURE_DECISION.md).
