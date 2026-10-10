@@ -136,3 +136,11 @@ Do not mark planned work as implemented. Keep older decisions visible and mark l
 - Live synthetic signup/notice acceptance, authenticated workspace/table/record creation, preview/confirmation, identical retry receipt, formula read-back and full-result numeric aggregate passed against Render PostgreSQL.
 - One small synthetic text original downloaded byte-for-byte, matched the exported SHA-256 and reached extraction status ready. JSON and HTML inspection exports succeeded. The synthetic workspace `f405a932-635e-43a7-b581-37d6f7adc241` was archived after verification. No external messages were sent.
 - This verifies the deployed basic save/processing/export path, not managed disaster recovery or the real ChatGPT connection/automatic opening. No existing Trialegions service, data or domain was changed.
+
+## Account security and integration sequencing — 2026-10-10
+
+- User deferred real plugin testing and integrations requiring developer accounts until the end. Independent implementation continues without those prerequisites.
+- Added standalone account-security controls for password changes and explicit account-wide revocation. Both require the current password and CSRF protection, invalidate all browser sessions, revoke connected-app tokens and account-bound pending OAuth codes/consents, and require a fresh sign-in. Saved clinical work is untouched.
+- Session epochs prevent a stale browser session from becoming valid again. OAuth exchanges and consent serialize with account revocation to prevent concurrent token issuance escaping revocation. Already-authorized requests in flight may finish; these controls apply at subsequent authorization checks.
+- Added append-only account security activity without storing credentials; latest 20 events are visible only to the account owner. Migration 005 and the prepared runtime role include the new table.
+- Basic checks: build passed; existing test suite passed (18 reported), extended for incorrect-password/CSRF rejection, old-password failure after change, other-session invalidation, token invalidation and immutable security activity. MFA and provider-backed recovery/verification remain unfinished. No new provider account or email sending was required.

@@ -11,7 +11,7 @@ import {addLocalAuth} from '../src/server/auth.js';
 import {addMcp} from '../src/server/mcp.js';
 import {Service} from '../src/domain/service.js';
 test('signup returns to OAuth; PKCE, replay, refresh and revocation are enforced',async()=>{
- const pg=new PGlite();for(const f of ['001_core','002_controlled_work','003_local_auth','004_governance'])await pg.exec(await readFile(`migrations/${f}.sql`,'utf8'));
+ const pg=new PGlite();for(const f of ['001_core','002_controlled_work','003_local_auth','004_governance','005_account_security'])await pg.exec(await readFile(`migrations/${f}.sql`,'utf8'));
  const db:Database={query:(sql,v)=>pg.query(sql,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
  const app=baseApp();app.use(session({secret:'synthetic-session-secret-for-testing-only',resave:false,saveUninitialized:false}));const auth=addLocalAuth(app,db,'https://trialy.example');addMcp(app,new Service(db),auth.ai);app.use(errors);
  const client=await request(app).post('/register').send({client_name:'Synthetic ChatGPT',redirect_uris:['https://chatgpt.com/connector/oauth/synthetic'],token_endpoint_auth_method:'none',grant_types:['authorization_code','refresh_token'],response_types:['code']});assert.equal(client.status,201,client.text);
@@ -37,5 +37,24 @@ test('signup returns to OAuth; PKCE, replay, refresh and revocation are enforced
  const secondConsent=await browser.get('/auth/consent');assert.equal(secondConsent.status,200);
  await db.query("UPDATE oauth_data SET data=jsonb_set(data,'{userId}',to_jsonb($1::text)) WHERE kind='pending'",['different-user']);
  assert.equal((await browser.post('/auth/consent').type('form').send({decision:'approve',csrf:secondConsent.text.match(/name="csrf" value="([^"]+)"/)![1]})).status,409);
+ // Account-wide revocation covers browser sessions, tokens and pending consent.
+ const securityCsrf=secondConsent.text.match(/name="csrf" value="([^"]+)"/)![1];
+ const other=request.agent(app);
+ const otherLogin=await other.get('/auth/login');
+ const loginCsrf=otherLogin.text.match(/name="csrf" value="([^"]+)"/)![1];
+ assert.equal((await other.post('/auth/login').type('form').send({email:'test@example.invalid',password:'synthetic-password-123',csrf:loginCsrf})).status,303);
+ const user=(await db.query('SELECT user_id FROM local_accounts')).rows[0];
+ await db.query('INSERT INTO oauth_tokens(hash,user_id,client_id,kind,family,expires_at) VALUES($1,$2,$3,$4,$5,$6)',[createHash('sha256').update('synthetic-live-token').digest('hex'),user.user_id,client.body.client_id,'access','synthetic-family',Date.now()+60000]);
+ assert.equal((await browser.post('/auth/security').set('x-csrf-token',securityCsrf).send({action:'password_changed',currentPassword:'wrong-password',newPassword:'new-synthetic-password-456'})).status,403);
+ assert.equal((await db.query('SELECT count(*) FROM account_security_events')).rows[0].count,0);
+ assert.equal((await browser.post('/auth/security').send({action:'access_revoked',currentPassword:'synthetic-password-123'})).status,403);
+ assert.equal((await browser.post('/auth/security').set('x-csrf-token',securityCsrf).send({action:'password_changed',currentPassword:'synthetic-password-123',newPassword:'new-synthetic-password-456'})).status,200);
+ assert.equal((await other.get('/auth/connections')).status,401);
+ await assert.rejects(auth.provider.verifyAccessToken('synthetic-live-token'));
+ const again=await browser.get('/auth/login');const againCsrf=again.text.match(/name="csrf" value="([^"]+)"/)![1];
+ assert.equal((await browser.post('/auth/login').type('form').send({email:'test@example.invalid',password:'synthetic-password-123',csrf:againCsrf})).status,401);
+ assert.equal((await browser.post('/auth/login').type('form').send({email:'test@example.invalid',password:'new-synthetic-password-456',csrf:againCsrf})).status,303);
+ const history=await browser.get('/auth/security');assert.equal(history.body.events[0].action,'password_changed');
+ await assert.rejects(db.query('DELETE FROM account_security_events'));
  await db.close();
 });

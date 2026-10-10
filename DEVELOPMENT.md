@@ -10,6 +10,7 @@ Decision/change log: [HISTORY.md](HISTORY.md)
 - Working development application, SQL migrations, background worker, standalone UI and MCP transport are implemented.
 - Render web service, background worker and PostgreSQL are live in the confirmed workspace. Private Trialy plugin created.
 - Latest batch is deployed and verified on Render at commit `97c143f`. Live synthetic save/retry, calculations, original integrity, worker extraction, export and archive checks passed. Remaining account/provider/production decisions and still-unbuilt features are listed separately below; the complete 18-step product is not claimed finished.
+- Current implementation adds password changes, account-wide browser/app revocation and immutable security activity. Real ChatGPT testing and developer-account integrations are explicitly deferred by the user; they do not block independent code work.
 - Decisions/actions needed later: connect a real ChatGPT account for host acceptance; choose/authorize email/calendar provider credentials; confirm production recovery expectations/resources. No external messages or paid signature subscription will be initiated.
 - No existing Trialegions application, data, infrastructure, or domain has been changed.
 
@@ -20,7 +21,7 @@ A checked item below means that particular implementation exists; a partially im
 | Step | Implemented now | Still needed |
 | --- | --- | --- |
 | 1 | Scaffold, lockfile, SQL migrations, Docker/Render, health/readiness, original-store interface | More adapter contracts when providers are selected |
-| 2 | Self-hosted signup/login/OAuth PKCE, session CSRF, rotation/replay protection, user connection revocation, notice acceptance, tenant/table/field/AI access | Recovery/verification/MFA, finer document/folder/record access, live account acceptance |
+| 2 | Self-hosted signup/login/OAuth PKCE, session CSRF, rotation/replay protection, user connection revocation, password change, account-wide session revocation/security activity, notice acceptance, tenant/table/field/AI access | Recovery/verification/MFA, finer document/folder/record access, live account acceptance |
 | 3 | Nine field types, validated references, unique fields, filtering/sorting/pagination, atomic bulk writes, permission-aware numeric formulas, previewed schema/data migrations | Larger migrations beyond 200 records/1 MiB; richer expressions if needed |
 | 4 | Temporary previews, explicit atomic save, version/audit/receipt, retry/stale safeguards, schema fingerprints, restoration, bulk previews | Apply separate runtime DB role; multiple-web-instance preview storage |
 | 5 | Typed MCP tools, embedded workspace/forms/views/history/document upload/download and controls | Real ChatGPT OAuth/host files/automatic opening/cross-conversation acceptance; UI-only human data remains unproven |
@@ -387,8 +388,8 @@ Do not chase coverage percentages, snapshot every UI, test every cosmetic change
 
 ## Next execution dependencies
 
-1. User account action: connect the existing private Trialy plugin and exercise signup → return to ChatGPT → workspace opening. This needs the user's actual host account; server metadata alone does not prove it.
-2. Provider decision/account setup: choose Microsoft 365 or Google Workspace for customer mailbox/calendar integration, and a transactional-email sender/domain for verification, recovery and invitations. Provider-specific OAuth registration, token storage and controlled test recipients follow that choice. No production email integration is claimed yet.
-3. Production decision: confirm recovery time/data-loss expectations, retention/geography and budget before changing credentials/backup/HA settings or relying on saved customer work. Runtime-role SQL and the restore/inventory procedure are ready but not applied/proven.
-4. Independent implementation still open: MFA and identity hardening; record/document/view permission granularity; external forms; generalized event-driven automation/local-time schedules; template upgrade diffs and remaining workflow refinements. These are unfinished code, not all blocked by the above decisions. Continue them from the checklist without treating this deployment as full product completion.
+1. Continue independent implementation: MFA; record/document/view permission granularity; external forms; generalized event-driven automation/local-time schedules; template upgrade diffs and remaining workflow refinements. Password change and account-wide revocation are now implemented; the wider step remains unfinished.
+2. Deferred by the user: real ChatGPT plugin connection/host acceptance. Do not require this before further backend/UI development. Automatic workspace opening and embedded host-file behavior remain unproven.
+3. Deferred until the end when developer-account setup is required: Microsoft 365/Google Workspace OAuth, transactional email and signature-provider integration. Account-free options may proceed when useful. No external messages or provider registrations have been initiated.
+4. Production decision: confirm recovery time/data-loss expectations, retention/geography and budget before changing credentials/backup/HA settings or relying on saved customer work. Runtime-role SQL and the restore/inventory procedure are ready but not applied/proven.
 5. Formal signatures remain conditional/deferred as documented; publication/Trialegions replacement remains a separately authorized cutover.
