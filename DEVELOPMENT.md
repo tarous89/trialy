@@ -9,7 +9,7 @@ Decision/change log: [HISTORY.md](HISTORY.md)
 
 - Working development application, SQL migrations, background worker, standalone UI and MCP transport are implemented.
 - Render web service, background worker and PostgreSQL are live in the confirmed workspace. Private Trialy plugin created.
-- Active execution: deploy and verify the extended implementation batch. Remaining account/provider/production decisions and still-unbuilt advanced features are listed separately below; no step is marked complete solely because scaffolding exists.
+- Latest batch is deployed and verified on Render at commit `97c143f`. Live synthetic save/retry, calculations, original integrity, worker extraction, export and archive checks passed. Remaining account/provider/production decisions and still-unbuilt features are listed separately below; the complete 18-step product is not claimed finished.
 - Decisions/actions needed later: connect a real ChatGPT account for host acceptance; choose/authorize email/calendar provider credentials; confirm production recovery expectations/resources. No external messages or paid signature subscription will be initiated.
 - No existing Trialegions application, data, infrastructure, or domain has been changed.
 
@@ -47,7 +47,7 @@ A checked item below means that particular implementation exists; a partially im
 - PDF extraction now uses installed Poppler. A synthetic one-page file revealed excessive startup memory in pdf-parse under the worker heap limit, so that dependency was removed. The isolated Poppler check successfully read the expected text and page reference. CSV tables are bounded; PDF layout-derived tables are always partial. Unsupported/failed derived data remains a quiet flag.
 - Due reports use a permitted date field and optional saved-view filter, and evaluate UTC dates through a bounded horizon. They produce in-app counts; they do not send email. Current permissions are checked both at execution and when old runs are read.
 - New operating documentation: [OPERATIONS.md](docs/OPERATIONS.md), [ACCEPTANCE.md](docs/ACCEPTANCE.md), [SIGNATURE_DECISION.md](docs/SIGNATURE_DECISION.md). Database role separation and restore tooling are prepared; no production recovery guarantee is asserted.
-- Deployment verification for this batch is recorded in HISTORY.md after the code is pushed.
+- Deployment verification is recorded in HISTORY.md: both services live, health/readiness 200, matching public bundle, and the synthetic live save/processing/export/archive check passed.
 
 ### ChatGPT onboarding implementation — 2026-10-10
 
@@ -384,3 +384,11 @@ Do not chase coverage percentages, snapshot every UI, test every cosmetic change
 - Update README.md only when scope or decisions change.
 - Do not start work in the existing Trialegions repository or infrastructure.
 
+
+## Next execution dependencies
+
+1. User account action: connect the existing private Trialy plugin and exercise signup → return to ChatGPT → workspace opening. This needs the user's actual host account; server metadata alone does not prove it.
+2. Provider decision/account setup: choose Microsoft 365 or Google Workspace for customer mailbox/calendar integration, and a transactional-email sender/domain for verification, recovery and invitations. Provider-specific OAuth registration, token storage and controlled test recipients follow that choice. No production email integration is claimed yet.
+3. Production decision: confirm recovery time/data-loss expectations, retention/geography and budget before changing credentials/backup/HA settings or relying on saved customer work. Runtime-role SQL and the restore/inventory procedure are ready but not applied/proven.
+4. Independent implementation still open: MFA and identity hardening; record/document/view permission granularity; external forms; generalized event-driven automation/local-time schedules; template upgrade diffs and remaining workflow refinements. These are unfinished code, not all blocked by the above decisions. Continue them from the checklist without treating this deployment as full product completion.
+5. Formal signatures remain conditional/deferred as documented; publication/Trialegions replacement remains a separately authorized cutover.
