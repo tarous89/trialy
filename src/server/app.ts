@@ -21,6 +21,8 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  app.param('workspaceId',(req,_res,next,value)=>{id.parse(value);next();});
  app.get('/api/workspaces/:workspaceId/types',async(req,res)=>res.json(await s.types(req.actor!,String(req.params.workspaceId))));
  app.get('/api/workspaces/:workspaceId/types/:typeId/records',async(req,res)=>{const opts=z.object({q:z.string().max(500).optional(),limit:z.coerce.number().int().min(1).max(100).optional(),offset:z.coerce.number().int().min(0).optional()}).parse(req.query);res.json(await s.records(req.actor!,String(req.params.workspaceId),id.parse(req.params.typeId),opts));});
+ app.get('/api/workspaces/:workspaceId/records/:recordId/versions',async(req,res)=>res.json(await s.recordHistory(req.actor!,String(req.params.workspaceId),id.parse(req.params.recordId),z.coerce.number().int().min(0).default(0).parse(req.query.offset))));
+ app.get('/api/workspaces/:workspaceId/documents/:versionId/text',async(req,res)=>res.json(await s.documentText(req.actor!,String(req.params.workspaceId),id.parse(req.params.versionId),z.coerce.number().int().min(0).default(0).parse(req.query.offset))));
  app.get('/api/workspaces/:workspaceId/views',async(req,res)=>res.json(await s.views(req.actor!,String(req.params.workspaceId))));
  app.post('/api/workspaces/:workspaceId/previews',async(req,res)=>res.status(201).json(await s.preview(req.actor!,String(req.params.workspaceId),req.body)));
  app.post('/api/previews/:previewId/commit',async(req,res)=>{const body=z.object({digest:z.string().length(64),confirmed:z.literal(true)}).parse(req.body);res.json(await s.commit(req.actor!,id.parse(req.params.previewId),body.digest));});

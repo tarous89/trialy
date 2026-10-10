@@ -9,7 +9,7 @@ Updated: 2026-10-10. Deployed on Render; private plugin created. Live ChatGPT co
 3. After consent, Trialy redirects to the exact registered **ChatGPT OAuth callback**, completing the connection. Standalone login returns to `/` when no connection is pending.
 4. The opaque access token identifies the Trialy user who signed in and approved consent. It is stored only as a hash, with client, scope/resource policy and expiry enforced by the local provider. No prior standalone visit is required.
 5. `open_workspace` displays accessible workspaces inside ChatGPT. A new account gets in-app onboarding and explicitly confirms its first workspace name and AI access. Existing workspaces never become AI-accessible simply because the account connects.
-6. Tables, record forms, template previews and confirmed saves operate through the same service and database. More of the complete app remains to port into the embedded surface.
+6. Tables, record forms, permission-filtered saved versions, previewed restoration, document search/text, template previews and confirmed saves operate through the same service and database. More of the complete app remains to port into the embedded surface.
 
 The workspace tool advertises both global and thread entrypoints and prefers fullscreen. On opening, the view loads its workspace through the host SDK. These declarations do not guarantee that every host/account opens a view immediately after OAuth. The live acceptance check must verify that the original open request resumes; if it does not, use the host's workspace entrypoint as the fallback. Do not claim automatic opening has been proven or redirect to invented ChatGPT URLs.
 

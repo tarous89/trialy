@@ -9,7 +9,7 @@ Decision/change log: [HISTORY.md](HISTORY.md)
 
 - Working development application, SQL migrations, background worker, standalone UI and MCP transport are implemented.
 - Render web service, background worker and PostgreSQL are live in the confirmed workspace. Private Trialy plugin created.
-- Current task: connect the private Trialy plugin and verify signup → return to ChatGPT → workspace opening, then preview/save/read-back.
+- Current task: deploy shared document-text and record-history views, previewed record restoration and document replacement UI. Then connect Trialy to verify the real ChatGPT return/open/save flow; continue reusable configurable views.
 - No existing Trialegions application, data, infrastructure, or domain has been changed.
 
 ### Implementation checkpoint — 2026-10-10
@@ -21,20 +21,20 @@ A checked item below means that particular implementation exists; a partially im
 | 1 | TypeScript/React/API/worker scaffold, lockfile, migrations, health, CI, Docker and Render staging definition | Broader adapter contracts as integrations are added; live PostgreSQL migrations and Render boot verified |
 | 2 | Self-hosted sign-up/login, PostgreSQL sessions and MCP OAuth with PKCE, tenant roles, workspace/table/field access, separate AI access, audited sharing | Implement recovery/verification/MFA and verify live session lifecycle; finer record/document/folder/view controls |
 | 3 | Configurable typed fields, required validation, related-record references, pagination and visible-field search, versioned safe schema changes | Formula engine, configurable uniqueness/sorting/bulk operations; migration workflow for incompatible changes; verified person/document reference semantics |
-| 4 | Temporary previews, explicit save/discard, digest binding, transactionally committed version 0/history/jobs, idempotency receipts, stale-edit rejection | Restoration UI, stronger separated database roles, preview infrastructure for multiple web instances; bulk/import previews |
-| 5 | Authenticated MCP wiring with ten typed tools and an interactive MCP Apps workspace; transport tested locally | Live ChatGPT OAuth connection, remaining embedded views, cross-conversation proof and UI-only restricted-field path; account availability verification |
+| 4 | Temporary previews, explicit save/discard, digest binding, transactionally committed version 0/history/jobs, idempotency receipts, stale-edit rejection, shared record history and previewed restoration | Stronger separated database roles, preview infrastructure for multiple web instances; bulk/import previews |
+| 5 | Authenticated MCP wiring with thirteen typed tools and an interactive MCP Apps workspace; transport tested locally | Live ChatGPT OAuth connection, remaining embedded views, cross-conversation proof and UI-only restricted-field path; account availability verification |
 | 6 | Standalone table/list/record form/basic dashboard/timeline, preview modal, field editor, source list, activity and access screens | Comparison matrix/calendar/questionnaires, full saved-view controls and filters, shared embedded components; browser acceptance |
 | 7 | Share with registered users, viewer/editor scopes, revocation, one-time/future action grants | Email invitations, guest/shared-view links; extend grant execution beyond report summaries |
-| 8 | Original bytea payloads, SHA-256, immutable versions, upload preview/save/download and atomic job insertion | Replacement-version UI, record links, document display/review/expiry controls; separate storage adapter for later migration |
+| 8 | Original bytea payloads, SHA-256, immutable versions, upload preview/save/download, replacement-version UI and atomic job insertion | Record links, document display/review/expiry controls; separate storage adapter for later migration |
 | 9 | Leased durable jobs, bounded retries, separate worker, isolated extraction subprocess, text/DOCX/PDF and image/scanned-PDF OCR paths, quiet availability states | Best-effort table extraction, richer Office coverage and per-capability statuses; representative OCR/PDF fixture validation |
-| 10 | PostgreSQL full-text search, source/version references and permission-filtered coverage gaps | Advanced filters, exact hit-to-page mapping and alternative original-reading tools |
+| 10 | PostgreSQL full-text search, source/version references, bounded exact-version text reading and permission-filtered coverage gaps | Advanced filters, exact hit-to-page mapping and alternative original-reading tools |
 | 11 | Previewed recurring summary configuration, current-rights checks, one-time/future grants, pause/resume, run history, exact-version internal approval | General triggers/conditions/actions, timezone schedules, reminders/routing and requested-action notifications |
 | 12 | Not implemented | Email/calendar OAuth, external forms and inbound processing |
 | 13 | Atomic versioned template installation; related CRO/RFP/proposal/study/commitment/risk tables | Complete proposal scoring/comparison/selection workflow, contract/change-order links, upgrades and workflow dashboards |
 | 14 | Eleven editable template configurations cover the principal subject areas | Workflow-specific behaviours, training acknowledgements, communication/report integrations; these are starter configurations |
 | 15 | Owner audit view and JSON export of originals, records, versions, approvals and audit; app suitability notice | Retention/legal-hold enforcement, inspection roles, readable inspection package, formal licence acceptance, operating procedures and evidence matrix |
 | 16 | Internal approvals clearly separate from e-signatures | Provider pricing/suitability decision and conditional integration |
-| 17 | Docker/Render staging blueprint, transaction integrity and restartable jobs | Actual provisioning, least-privilege database roles, monitoring, backup/restore and production durability decision |
+| 17 | Docker/Render staging blueprint, transaction integrity and restartable jobs | Least-privilege database roles, monitoring, backup/restore and production durability decision |
 | 18 | Synthetic local app and focused backend/MCP checks | Full representative ChatGPT/standalone acceptance, onboarding, distribution and controlled brand cutover |
 
 ### ChatGPT onboarding implementation — 2026-10-10
@@ -42,21 +42,30 @@ A checked item below means that particular implementation exists; a partially im
 - Removed the standalone-sign-in prerequisite for verified MCP users. The same issuer/subject resolves to one account, regardless of which surface is used first.
 - Added `open_workspace` global/thread entrypoints and a self-contained interactive MCP Apps view. New users can confirm their first AI-accessible workspace inside the view. Existing access restrictions stay intact.
 - Added account deduplication, preserved profile data, first-workspace/retry checks and entrypoint metadata checks. Build and nine focused subtests pass.
-- Live ChatGPT connection, remaining Render provisioning, plugin registration, browser rendering and post-OAuth auto-opening are still unverified. Full embedded feature parity remains outstanding.
-- Next execution instructions and concrete configuration are in [CHATGPT_SETUP.md](docs/CHATGPT_SETUP.md). Render workspace was subsequently confirmed. Existing-app self-hosted sign-in/OAuth is implemented; deployment is now the next task.
+- Subsequent checkpoint: Render provisioning and private plugin creation completed. Real ChatGPT connection, browser rendering and post-OAuth auto-opening remain unverified. Full embedded feature parity is outstanding.
+- Next execution instructions and concrete configuration are in [CHATGPT_SETUP.md](docs/CHATGPT_SETUP.md). Render workspace was subsequently confirmed. Existing-app self-hosted sign-in/OAuth is implemented; deployment subsequently completed.
 
 ### Self-hosted authentication and database checkpoint — 2026-10-10
 
 - Replaced the external adapter with local signup/login, database sessions, MCP SDK OAuth, one-use codes, exact callbacks, S256 PKCE and rotating hashed tokens. Signup/consent returns directly to the registered ChatGPT callback.
 - Build and 11 reported tests passed (ten leaf checks plus the parent), including the end-to-end local HTTP OAuth flow and rejected CSRF/verifier/code replay/refresh replay/account mismatch.
 - Created Render Postgres `dpg-db58k25ckfvc739bb5f0-a` in Frankfurt. Updated Blueprint to use its exact database identity, generated session secret and built-in Render URL; removed external-provider prompts.
-- No web/worker deployment or real ChatGPT verification yet. Connector capability gap requires dashboard Blueprint application. See [setup checkpoint](docs/CHATGPT_SETUP.md).
+- Subsequent checkpoint: web/worker deployed through the user-approved dashboard fallback. Real ChatGPT verification remains pending. See [setup checkpoint](docs/CHATGPT_SETUP.md).
+
+### Shared history and document views — 2026-10-10
+
+- Added permission-filtered record version history in standalone and embedded workspaces. Current field restrictions apply to every historical snapshot; raw owner audit is not exposed to the model.
+- Restoration requires all current fields and edit access, an earlier version and a reason. Preview displays the exact restored values. Commit rechecks record/schema versions and permissions, creates a new revision and preserves approvals; approved records return to review.
+- Added embedded document listing, search coverage and bounded exact-version extracted-text reading. Shared text viewer handles partial/unavailable extraction quietly. Original upload/download remains standalone until host file handling is implemented.
+- Standalone now offers New version for latest document originals; bytes, history and previous versions stay intact.
+- Build and 13 reported tests pass. Two targeted checks cover restricted history, restoration/discard/retry/stale changes, unchanged approval evidence, document restrictions/quiet gaps and old-original preservation. No broad test expansion.
+- No plugin package change needed: its server URL and identity are unchanged. New tools and UI are deployed by the existing server repository.
 
 ### Verification and practical boundaries
 
 - `npm run build`: TypeScript check and production frontend bundle passed.
-- `npm test`: nine focused subtests (ten including their parent suite), using the SQL migrations in PGlite. Covers tenant/model access, preview discard/save/retry/concurrency, append-only audit, original preservation after extraction failure, grant revocation, atomic template installation, sharing/review/scheduled summary/export, MCP transport permission filtering, and first-connection identity/workspace onboarding.
-- Local demo successfully starts on loopback with persistent synthetic data. Chromium download failed in this environment, so visual browser acceptance is still outstanding. This is not a claim of live OIDC, real PostgreSQL deployment or real ChatGPT verification.
+- `npm test`: 13 reported tests (12 leaf checks plus the parent suite), using the SQL migrations in PGlite. Covers tenant/model access, preview discard/save/retry/concurrency, append-only audit, original preservation after extraction failure, grant revocation, atomic template installation, sharing/review/scheduled summary/export, MCP transport permission filtering, and first-connection identity/workspace onboarding.
+- Local demo successfully starts on loopback with persistent synthetic data. Chromium download failed in this environment, so visual browser acceptance is still outstanding. Real PostgreSQL migrations and deployment subsequently passed; real ChatGPT verification is still outstanding.
 - OCR/PDF/Office extraction is bounded and implemented, but the automated source-preservation check uses a text file and an unsupported file. Unsupported or failed extraction leaves the original available.
 - Authentication now runs within Trialy; no external identity-provider credentials are needed. Password recovery, verification and MFA remain incomplete. The MCP resource now provides interactive workspace selection, first-workspace setup, tables, record forms, templates and preview/save. Remaining views and UI-only access are unfinished.
 - Preview storage is in-process with a 24-hour expiry and 100 MiB aggregate limit. Run one web instance. A process restart discards uncommitted previews; saved data remains in the database.
@@ -134,7 +143,7 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 - [x] Include actor, time, old/new values, affected object/version, action origin, and reason where required.
 - [ ] Protect audit history from ordinary application edits/deletion; separate operational administration permissions.
 - [x] Implement idempotency receipt lookup, safe retry after interrupted responses, and optimistic concurrency checks.
-- [ ] Discarding previews changes nothing committed. Correction/restoration creates a new revision; approved historical content stays identifiable.
+- [x] Discarding previews changes nothing committed. Correction/restoration creates a new revision; approved historical content stays identifiable.
 - [ ] Distinguish saved draft, in review, approved/effective, superseded, and archived states.
 - [x] Clean up temporary previews without promising erasure of independent chat history or infrastructure logs.
 
@@ -187,7 +196,8 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 - [ ] Implement authenticated upload, preview/selection, confirmed commit, download, and document display.
 - [x] Verify complete bytes and integrity before acknowledging Saved; commit metadata/audit with the original.
 - [x] Never describe an external link, unfinished upload, or temporary copy as a saved original.
-- [ ] Support new versions without overwriting older originals; record review/expiry metadata.
+- [x] Support new original versions without overwriting older originals, with replacement preview in standalone.
+- [ ] Add document review/expiry metadata controls.
 - [ ] Keep file storage behind a simple interface for possible later migration.
 
 **Done when:** a saved test document downloads byte-for-byte intact, and an interrupted save never produces a false Saved message.

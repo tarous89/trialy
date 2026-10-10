@@ -47,6 +47,30 @@ export class Service {
   const rows=(await this.db.query(`SELECT * FROM records WHERE ${where} ORDER BY created_at,id LIMIT $${args.length+1} OFFSET $${args.length+2}`,[...args,limit,offset])).rows;
   return {rows:rows.map(r=>({...r,data:projectData(r.data,fields)})),total,limit,offset};
  }
+ async recordHistory(a:Actor,w:string,recordId:string,offset=0) {
+  const r=(await this.db.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[recordId,w])).rows[0];
+  if(!r)fail(404,'not_found','Record not found');
+  const {type,policy}=await typeAccess(this.db,a,w,r.type_id);
+  const fields=visibleFields(type.fields,policy,a);
+  const revisions=(await this.db.query("SELECT version,snapshot,actor_id,created_at FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='record' ORDER BY version DESC LIMIT 51 OFFSET $3",[w,recordId,offset])).rows;
+  return {recordId,typeId:r.type_id,currentVersion:r.version,typeVersion:type.version,fields,
+   canRestore:policy.role!=='viewer'&&fields.length===type.fields.length&&!['archived','superseded'].includes(r.state),
+   offset,hasMore:revisions.length>50,revisions:revisions.slice(0,50).map(v=>({version:v.version,actorId:v.actor_id,createdAt:v.created_at,state:v.snapshot.state,data:projectData(v.snapshot.data??{},fields)}))};
+ }
+ private async restoreData(tx:Connection,a:Actor,w:string,op:Extract<Operation,{kind:'restore_record'}>) {
+  const r=(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[op.recordId,w])).rows[0];
+  if(!r)fail(404,'not_found','Record not found');
+  const {type,policy}=await typeAccess(tx,a,w,r.type_id,true);
+  if(r.version!==op.expectedVersion||type.version!==op.expectedTypeVersion)fail(409,'stale_version','Record or fields changed. Refresh and preview again.');
+  if(['archived','superseded'].includes(r.state))fail(409,'controlled_record','Archived records cannot be restored here');
+  if(visibleFields(type.fields,policy,a).length!==type.fields.length)fail(403,'restricted_restore','Restoring requires access to every current field');
+  if(op.sourceVersion>=r.version)fail(400,'invalid_revision','Choose an earlier version');
+  const source=(await tx.query("SELECT snapshot FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='record' AND version=$3",[w,op.recordId,op.sourceVersion])).rows[0];
+  if(!source)fail(404,'not_found','Version not found');
+  const data=Object.fromEntries(type.fields.map((f:Field)=>[f.key,source.snapshot.data[f.key]??null]));
+  await this.validateData(tx,a,w,type,policy,data);
+  return {data,state:r.state==='approved'?'in_review':r.state};
+ }
  async validateData(tx:Connection,a:Actor,w:string,type:any,policy:any,data:Record<string,any>,partial=false) {
   const fields=visibleFields(type.fields,policy,a);
   for(const key of Object.keys(data)) if(!fields.some(f=>f.key===key))fail(400,'invalid_field','A field is unavailable or unknown');
@@ -66,6 +90,7 @@ export class Service {
   if(['create_type','update_type','install_template','create_view'].includes(op.kind)&&p.role!=='owner')fail(403,'owner_required','Only the owner may configure this workspace');
   if(op.kind==='save_document'&&(p.allowed_types!==null||p.hidden_fields.length))fail(403,'restricted_documents','Document access for restricted views is not enabled');
   if(op.kind==='update_type'){const {type}=await typeAccess(tx,a,w,op.typeId,true);if(a.origin==='ai'&&type.fields.some((f:Field)=>!f.ai))fail(403,'restricted_configuration','Edit tables containing model-restricted fields in the standalone application');if(type.version!==op.expectedVersion)fail(409,'stale_version','Table changed; preview again');const populated=Number((await tx.query('SELECT count(*) AS n FROM records WHERE type_id=$1 AND workspace_id=$2',[op.typeId,w])).rows[0].n)>0;if(populated){for(const old of type.fields){const next=op.fields.find(f=>f.key===old.key);if(!next||next.kind!==old.kind||json(next.options)!==json(old.options)||next.targetTypeId!==old.targetTypeId||(!old.required&&next.required))fail(409,'migration_required','Existing data requires an explicit field migration; use an optional new field instead');}if(op.fields.some(f=>f.required&&!type.fields.some((old:Field)=>old.key===f.key)))fail(409,'migration_required','New fields on populated tables must be optional');}}
+  if(op.kind==='restore_record')await this.restoreData(tx,a,w,op);
   if(op.kind==='create_record'){const t=await typeAccess(tx,a,w,op.typeId,true);await this.validateData(tx,a,w,t.type,t.policy,op.data);}
   if(op.kind==='update_record'){const r=(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[op.recordId,w])).rows[0];if(!r)fail(404,'not_found','Record not found');const t=await typeAccess(tx,a,w,r.type_id,true);if(r.version!==op.expectedVersion)fail(409,'stale_version','The record changed. Refresh and preview again.');if(['archived','superseded'].includes(r.state))fail(409,'controlled_record','Controlled record requires a new reviewed revision; direct editing is disabled');await this.validateData(tx,a,w,t.type,t.policy,op.data,true);}
   if(op.kind==='create_automation') {const g=(await tx.query('SELECT * FROM action_grants WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[op.grantId,w,a.userId])).rows[0];if(!g||g.revoked_at||g.used_at||g.action!=='reports.prepare'||g.destination!==w)fail(403,'invalid_grant','Choose an active report permission for this workspace');}
@@ -84,7 +109,7 @@ export class Service {
   await this.validate(this.db,a,w,op);this.sweep();
   const memory=Array.from(this.previews.values()).reduce((sum,p)=>sum+(p.operation.kind==='save_document'?p.operation.bytes.length:Buffer.byteLength(json(p.operation))),0);
   if(this.previews.size>=1000||memory+(op.kind==='save_document'?op.bytes.length:Buffer.byteLength(json(op)))>100*1024*1024)fail(503,'preview_capacity','Preview capacity reached; discard old previews and retry');
-  const summary=op.kind==='save_document'?{...op,bytes:undefined,byteSize:op.bytes.length,checksum:checksum(op.bytes)}:op;
+  const summary=op.kind==='restore_record'?{...op,...await this.restoreData(this.db,a,w,op)}:op.kind==='save_document'?{...op,bytes:undefined,byteSize:op.bytes.length,checksum:checksum(op.bytes)}:op;
   const p:Preview={id:randomUUID(),actorId:a.userId,workspaceId:w,operation:op,digest:checksum(json(summary)),expires:Date.now()+24*3600000};this.previews.set(p.id,p);
   return {id:p.id,digest:p.digest,workspaceId:w,expiresAt:new Date(p.expires).toISOString(),status:'preview',summary};
  }
@@ -126,6 +151,11 @@ export class Service {
    else await tx.query('INSERT INTO records(id,type_id,workspace_id,data) VALUES($1,$2,$3,$4)',[id,op.kind==='create_record'?op.typeId:null,w,json(data)]);
    await revision(tx,a,w,id,'record',version,{data,state});await audit(tx,a,p,before?'record.updated':'record.created',id,before?{data:before.data,state:before.state}:null,{data,state},op.kind==='update_record'?op.reason:undefined);return [{id,kind:'record',version}];
   }
+  if(op.kind==='restore_record'){
+   const restored=await this.restoreData(tx,a,w,op);
+   const result=await this.apply(tx,a,w,{kind:'update_record',recordId:op.recordId,expectedVersion:op.expectedVersion,data:restored.data,reason:op.reason},p);
+   await audit(tx,a,p,'record.restored',op.recordId,{version:op.expectedVersion},{sourceVersion:op.sourceVersion,version:op.expectedVersion+1},op.reason);return result;
+  }
   if(op.kind==='create_automation'){const id=randomUUID();await tx.query('INSERT INTO automations(id,workspace_id,owner_id,grant_id,name,interval_minutes,next_run) VALUES($1,$2,$3,$4,$5,$6,now())',[id,w,a.userId,op.grantId,op.name,op.intervalMinutes]);await revision(tx,a,w,id,'automation',0,op);await audit(tx,a,p,'automation.created',id,null,op);return [{id,kind:'automation',version:0}];}
   if(op.kind==='create_view'){
    const id=randomUUID();await tx.query('INSERT INTO saved_views(id,workspace_id,name,kind,type_id,config) VALUES($1,$2,$3,$4,$5,$6)',[id,w,op.name,op.viewKind,op.typeId,json(op.config)]);await revision(tx,a,w,id,'view',0,op);await audit(tx,a,p,'view.created',id,null,op);return [{id,kind:'view',version:0}];
@@ -144,6 +174,12 @@ export class Service {
  async original(a:Actor,w:string,id:string) {
   const docs=await this.documents(a,w);const d=docs.find(x=>x.id===id);if(!d)fail(404,'not_found','Document not found');
   const b=(await this.db.query('SELECT bytes FROM document_payloads WHERE version_id=$1',[id])).rows[0];const bytes=Buffer.from(b.bytes);if(checksum(bytes)!==d.checksum)fail(500,'integrity_failure','The original failed its integrity check');return {...d,bytes};
+ }
+ async documentText(a:Actor,w:string,versionId:string,offset=0) {
+  const d=(await this.documents(a,w)).find(d=>d.id===versionId);if(!d)fail(404,'not_found','Document not found');
+  const e=(await this.db.query('SELECT status,text_content FROM extractions WHERE version_id=$1',[versionId])).rows[0];
+  const text=['ready','partial'].includes(e?.status)?e.text_content??'':'';
+  return {documentId:d.document_id,versionId,version:d.version,filename:d.filename,status:e?.status??'pending',offset,text:text.slice(offset,offset+12000),hasMore:offset+12000<text.length};
  }
  async search(a:Actor,w:string,q:string) {
   const docs=await this.documents(a,w);const ids=docs.map(d=>d.id);
