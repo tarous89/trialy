@@ -9,7 +9,7 @@ Decision/change log: [HISTORY.md](HISTORY.md)
 
 - Working development application, SQL migrations, background worker, standalone UI and MCP transport are implemented.
 - Infrastructure files exist; no cloud services have been provisioned or deployed.
-- Current task: finish live identity/ChatGPT integration, then continue the incomplete items below.
+- Current task: adapt existing-app self-hosted sign-in/OAuth patterns to Trialy, deploy to the confirmed Render workspace, and prove the live ChatGPT connection.
 - No existing Trialegions application, data, infrastructure, or domain has been changed.
 
 ### Implementation checkpoint — 2026-10-10
@@ -43,7 +43,7 @@ A checked item below means that particular implementation exists; a partially im
 - Added `open_workspace` global/thread entrypoints and a self-contained interactive MCP Apps view. New users can confirm their first AI-accessible workspace inside the view. Existing access restrictions stay intact.
 - Added account deduplication, preserved profile data, first-workspace/retry checks and entrypoint metadata checks. Build and nine focused subtests pass.
 - Live provider setup, Render provisioning, plugin registration, browser rendering and post-OAuth auto-opening are still unverified. Full embedded feature parity remains outstanding.
-- Next execution instructions and concrete configuration are in [CHATGPT_SETUP.md](docs/CHATGPT_SETUP.md). Render requires explicit workspace confirmation; identity-provider access is not available yet.
+- Next execution instructions and concrete configuration are in [CHATGPT_SETUP.md](docs/CHATGPT_SETUP.md). Render workspace was subsequently confirmed. Existing-app inspection selected self-hosted sign-in/OAuth; replacing the external adapter is the next implementation task.
 
 ### Verification and practical boundaries
 

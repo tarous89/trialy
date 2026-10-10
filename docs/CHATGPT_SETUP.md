@@ -13,22 +13,31 @@ Updated: 2026-10-10. Implemented locally; live connection and automatic opening 
 
 The workspace tool advertises both global and thread entrypoints and prefers fullscreen. On opening, the view loads its workspace through the host SDK. These declarations do not guarantee that every host/account opens a view immediately after OAuth. The live acceptance check must verify that the original open request resumes; if it does not, use the host's workspace entrypoint as the fallback. Do not claim automatic opening has been proven or redirect to invented ChatGPT URLs.
 
-## Provider setup
+## Authentication decision — reuse the existing self-hosted approach
 
-Auth0 is the proposed initial hosted provider because the official OpenAI authentication guide lists its MCP support. No Auth0 account has been created or selected. Confirm its current development terms and tenant capabilities before provisioning; do not assume optional enterprise controls are included.
+The user confirmed the Render workspace and asked us to inspect existing apps before introducing Auth0. Auth0 is not required and is no longer the proposed prerequisite.
 
-- Use a development tenant with hosted sign-up/login enabled and an approved connection for end users.
-- Configure a regular web application for standalone sign-in. Its exact allowed callback is `PUBLIC_URL/auth/callback`.
-- Configure the MCP API/resource audience and `trialy` scope. The resource audience must match what ChatGPT requests and what the access token contains.
-- Configure the provider's supported MCP client registration method (prefer supported CIMD; DCR or predefined client registration where appropriate). Use the exact callback URI shown by the real ChatGPT connection setup. Never wildcard all callback URLs.
-- Ensure issuer discovery, S256 PKCE, resource/audience handling, user consent and scoped user access tokens work. Do not allow machine-client credentials to be used as end-user access.
-- Set OIDC_ISSUER and MCP_ISSUER to the same exact canonical issuer, including trailing slash. Configure OIDC_CLIENT_ID/OIDC_CLIENT_SECRET, MCP_JWKS_URL, MCP_AUDIENCE and MCP_SCOPE in Render secrets/settings, not git or chat.
-- The server currently accepts RS256 or ES256 access tokens and requires subject, expiry and issued-at claims. Token failures return a reauthentication challenge. Token scope and tenant/workspace permissions are independently checked.
+Read-only source inspection found:
+
+- **Atablez:** `server/index.ts` implements email/password registration and login using Node scrypt and database-backed credentials. `server/oauth.ts` implements the MCP SDK `OAuthServerProvider`; `mcpAuthRouter` supplies the OAuth endpoints. Authorization preserves a pending connection ticket across login/signup and returns a one-use code plus the original state to the registered callback. Token exchange, refresh rotation and revocation are implemented locally.
+- **Intel:** `app/lib/auth.ts` uses salted scrypt password hashes, database-backed session token hashes and HTTP-only cookies. `app/oauth/authorize/route.ts` preserves a validated local return path through sign-up/login, displays account-bound consent and redirects to the registered ChatGPT callback with code/state. The MCP service validates access through its existing authorization backend.
+- These are observed code paths, not a new live acceptance test. Existing apps were not modified. Their user databases, cookies, token audiences and payment entitlements must not be shared with Trialy by default.
+
+### Next implementation
+
+1. Adapt the self-hosted approach to Trialy's existing PostgreSQL users/session infrastructure. Keep registration and sign-in within Trialy, using maintained cryptographic primitives rather than inventing password cryptography.
+2. Implement a Trialy-specific MCP SDK OAuth provider with persistent client registration, expiring authorization requests, one-use codes, S256 PKCE, exact registered redirects, scoped/resource-bound tokens, refresh rotation and revocation.
+3. Preserve the validated pending connection across signup/login. Bind consent to the current user and reject account switches or replay. Return directly to the registered ChatGPT callback; standalone visits still open the standalone workspace normally.
+4. Add login throttling, CSRF protection, recovery/verification and session revocation as needed for customer use. Do not blindly copy the small-app password policies or assume existing implementations satisfy every Trialy requirement.
+5. Replace the current externally issued JWT requirement with the local provider's access-token verification. Keep identity resolution and workspace permissions server-side. Retain the external OIDC adapter only if deliberately useful; do not leave external provider settings mandatory.
+6. Run one signup → consent → token → workspace flow, plus bad PKCE/replay/account-switch checks. Then perform the real ChatGPT return-and-open acceptance.
+
+**Current code status:** Trialy still uses the external OIDC/JWT adapter from the initial foundation. Its replacement has not yet been implemented. No Auth0 account, subscription or tenant has been created. The interactive workspace and first-workspace confirmation built earlier remain reusable.
 
 ## Hosting and registration
 
-- Render inventory showed one workspace, **Tarek Roustom's Workspace** (`tea-cspqipl6l47c739nslfg`). No workspace was selected. The Render connector explicitly requires user confirmation before acting on that workspace.
-- Deploy the repo's staging blueprint only after confirming the workspace. Run migrations before serving requests/starting the worker. Keep one web instance because previews are temporarily in memory.
+- Render inventory showed one workspace, **Tarek Roustom's Workspace** (`tea-cspqipl6l47c739nslfg`). The user explicitly confirmed this workspace on 2026-10-10. No further workspace permission request is needed for the authorised Trialy development setup.
+- Deploy the repo's staging blueprint to the confirmed workspace after adapting the authentication settings. Run migrations before serving requests/starting the worker. Keep one web instance because previews are temporarily in memory.
 - Build includes the self-contained MCP Apps HTML bundle at `dist/embed.html`; serve it as an MCP UI resource, not as a public authenticated standalone session.
 - Register the deployed `/mcp` endpoint using plugin creator / ChatGPT connection setup. Preserve this repository and Render hosting; no second implementation in Sites is needed.
 - Add plugin instructions to invoke `open_workspace` when the user opens Trialy and after successful connection, and to require explicit preview confirmation before `commit_change`.
@@ -48,5 +57,3 @@ The embedded surface currently uses AI-scoped tools only. It does not yet displa
 
 - https://developers.openai.com/plugins/build/auth
 - https://github.com/openai/mcp-extensions/blob/main/docs/spec.md
-- https://auth0.com/docs/authenticate/login/auth0-universal-login
-- https://auth0.com/blog/auth0-auth-for-mcp-servers-generally-available/

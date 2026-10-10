@@ -21,6 +21,8 @@ npm run demo
 
 Open http://127.0.0.1:4317. This loopback-only harness uses local PGlite under `.data/demo`, seeds an example workspace, and runs the worker. It deliberately bypasses sign-in for synthetic local exploration; it refuses production mode. Do not use customer data in it. PDF OCR needs Poppler and Tesseract; the Docker image includes both.
 
+**Authentication transition:** existing-app inspection selected self-hosted sign-in/OAuth rather than requiring Auth0. The code still has its original external OIDC adapter; the commands below describe that current adapter until replacement is complete. See [the setup decision](docs/CHATGPT_SETUP.md).
+
 For the real PostgreSQL application, copy `.env.example` to `.env`, provide DATABASE_URL, a random SESSION_SECRET of at least 32 characters, PUBLIC_URL, and OIDC configuration. Then run:
 
 ```sh
