@@ -7,7 +7,39 @@ Repository: `tarous89/trialy`. Development name: **Trialy**. Intended publicatio
 - [Development plan and current status](DEVELOPMENT.md)
 - [Project history](HISTORY.md)
 
-Current status: planning documents only; application implementation has not started. These documents describe requirements, not implemented or certified capabilities.
+Current status: a working development foundation is implemented. See DEVELOPMENT.md for the exact implemented subset and remaining work. The scope below remains the target product; it is not a statement of production readiness or regulatory certification.
+
+## Run the development application
+
+Requires Node.js 24 and npm. For a self-contained synthetic-data demo:
+
+```sh
+npm ci
+npm run build
+npm run demo
+```
+
+Open http://127.0.0.1:4317. This loopback-only harness uses local PGlite under `.data/demo`, seeds an example workspace, and runs the worker. It deliberately bypasses sign-in for synthetic local exploration; it refuses production mode. Do not use customer data in it. PDF OCR needs Poppler and Tesseract; the Docker image includes both.
+
+For the real PostgreSQL application, copy `.env.example` to `.env`, provide DATABASE_URL, a random SESSION_SECRET of at least 32 characters, PUBLIC_URL, and OIDC configuration. Then run:
+
+```sh
+npm run db:migrate
+npm run build
+npm start
+# In a second terminal:
+npm run worker
+```
+
+For UI development, use `npm run dev` and `npm run dev:ui` together. `npm run check`, `npm run build`, and `npm test` are the focused verification commands.
+
+Register `${PUBLIC_URL}/auth/callback` with the identity provider. Configure the MCP resource audience, issuer, JWKS URL and `trialy` scope for `/mcp`. Sign-in and MCP must use the same issuer and subject identity. The external provider must support the OAuth client-registration/distribution flow required by the intended ChatGPT connection; that live setup is still pending. MFA and organisation policy belong to that provider and have not yet been verified.
+
+`render.yaml` and `Dockerfile` provide a staging starting point: web, worker and paid Postgres in Frankfurt. They have not been deployed or provider-validated. Confirm current plan availability and enter provider settings before deployment. Migrations must finish before the worker starts processing. This configuration does not establish production no-loss guarantees.
+
+Previews expire after 24 hours, live in one web process, and may disappear on restart. Confirmed data is transactional in PostgreSQL. Keep one web instance until shared temporary previews or routing are implemented. Preview loss is not loss of a confirmed save. The initial upload limit is 25 MiB and pending previews share a 100 MiB process budget.
+
+The patient-data suitability notice is displayed in the app. Formal licence acceptance, production recovery, retention policy enforcement, email/calendar and full embedded ChatGPT interaction remain unfinished.
 
 ## 1. Product Vision
 

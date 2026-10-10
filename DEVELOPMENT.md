@@ -7,12 +7,48 @@ Decision/change log: [HISTORY.md](HISTORY.md)
 
 ## Current position
 
-- Planning documentation: complete.
-- Application implementation: not started.
-- Infrastructure provisioning and deployment: not started.
-- Current task: Step 1, application foundation.
-- Next action: scaffold the repository, record selected dependencies and commands, and implement the common service contracts.
-- No existing Trialegions application, data, infrastructure, or domain is part of this work.
+- Working development application, SQL migrations, background worker, standalone UI and MCP transport are implemented.
+- Infrastructure files exist; no cloud services have been provisioned or deployed.
+- Current task: finish live identity/ChatGPT integration, then continue the incomplete items below.
+- No existing Trialegions application, data, infrastructure, or domain has been changed.
+
+### Implementation checkpoint — 2026-10-10
+
+A checked item below means that particular implementation exists; a partially implemented step is not complete merely because it has code.
+
+| Step | Implemented now | Still needed |
+| --- | --- | --- |
+| 1 | TypeScript/React/API/worker scaffold, lockfile, migrations, health, CI, Docker and Render staging definition | Live clean PostgreSQL/Render boot; broader adapter contracts as integrations are added |
+| 2 | OIDC PKCE/session wiring, bearer JWT verification, tenant roles, workspace/table/field access, separate AI access, audited sharing | Configure provider and verify account linking/MFA/session lifecycle; finer record/document/folder/view controls |
+| 3 | Configurable typed fields, required validation, related-record references, pagination and visible-field search, versioned safe schema changes | Formula engine, configurable uniqueness/sorting/bulk operations; migration workflow for incompatible changes; verified person/document reference semantics |
+| 4 | Temporary previews, explicit save/discard, digest binding, transactionally committed version 0/history/jobs, idempotency receipts, stale-edit rejection | Restoration UI, stronger separated database roles, preview infrastructure for multiple web instances; bulk/import previews |
+| 5 | Authenticated MCP wiring with eight typed tools and a minimal rendered result resource; transport tested locally | Live ChatGPT OAuth connection, full interactive embedded app, cross-conversation proof and UI-only restricted-field path; account availability verification |
+| 6 | Standalone table/list/record form/basic dashboard/timeline, preview modal, field editor, source list, activity and access screens | Comparison matrix/calendar/questionnaires, full saved-view controls and filters, shared embedded components; browser acceptance |
+| 7 | Share with registered users, viewer/editor scopes, revocation, one-time/future action grants | Email invitations, guest/shared-view links; extend grant execution beyond report summaries |
+| 8 | Original bytea payloads, SHA-256, immutable versions, upload preview/save/download and atomic job insertion | Replacement-version UI, record links, document display/review/expiry controls; separate storage adapter for later migration |
+| 9 | Leased durable jobs, bounded retries, separate worker, isolated extraction subprocess, text/DOCX/PDF and image/scanned-PDF OCR paths, quiet availability states | Best-effort table extraction, richer Office coverage and per-capability statuses; representative OCR/PDF fixture validation |
+| 10 | PostgreSQL full-text search, source/version references and permission-filtered coverage gaps | Advanced filters, exact hit-to-page mapping and alternative original-reading tools |
+| 11 | Previewed recurring summary configuration, current-rights checks, one-time/future grants, pause/resume, run history, exact-version internal approval | General triggers/conditions/actions, timezone schedules, reminders/routing and requested-action notifications |
+| 12 | Not implemented | Email/calendar OAuth, external forms and inbound processing |
+| 13 | Atomic versioned template installation; related CRO/RFP/proposal/study/commitment/risk tables | Complete proposal scoring/comparison/selection workflow, contract/change-order links, upgrades and workflow dashboards |
+| 14 | Eleven editable template configurations cover the principal subject areas | Workflow-specific behaviours, training acknowledgements, communication/report integrations; these are starter configurations |
+| 15 | Owner audit view and JSON export of originals, records, versions, approvals and audit; app suitability notice | Retention/legal-hold enforcement, inspection roles, readable inspection package, formal licence acceptance, operating procedures and evidence matrix |
+| 16 | Internal approvals clearly separate from e-signatures | Provider pricing/suitability decision and conditional integration |
+| 17 | Docker/Render staging blueprint, transaction integrity and restartable jobs | Actual provisioning, least-privilege database roles, monitoring, backup/restore and production durability decision |
+| 18 | Synthetic local app and focused backend/MCP checks | Full representative ChatGPT/standalone acceptance, onboarding, distribution and controlled brand cutover |
+
+### Verification and practical boundaries
+
+- `npm run build`: TypeScript check and production frontend bundle passed.
+- `npm test`: eight focused subtests (nine including their parent suite), using the SQL migrations in PGlite. Covers tenant/model access, preview discard/save/retry/concurrency, append-only audit, original preservation after extraction failure, grant revocation, atomic template installation, sharing/review/scheduled summary/export, and MCP transport permission filtering.
+- Local demo successfully starts on loopback with persistent synthetic data. Chromium download failed in this environment, so visual browser acceptance is still outstanding. This is not a claim of live OIDC, real PostgreSQL deployment or real ChatGPT verification.
+- OCR/PDF/Office extraction is bounded and implemented, but the automated source-preservation check uses a text file and an unsupported file. Unsupported or failed extraction leaves the original available.
+- Authentication depends on an external OIDC/OAuth provider; no provider or production credentials were invented. The MCP resource currently displays structured results, not the full requested embedded app.
+- Preview storage is in-process with a 24-hour expiry and 100 MiB aggregate limit. Run one web instance. A process restart discards uncommitted previews; saved data remains in the database.
+- Restricted users cannot access workspace documents or raw audit/export until finer document/history controls exist. This conservative boundary avoids exposing unrestricted originals through a restricted view.
+- Action grants are currently executed only by the recurring report-summary worker. Other grant types are configuration groundwork, not automated import/create capabilities.
+- Audit/original immutability is protected by database triggers against ordinary writes. The deployment still needs separate migration/runtime roles and operational administrator controls.
+- The source-preservation guarantee is transaction-level. Production failover, backup retention and restore evidence remain Step 17 work before customer reliance.
 
 This is one dependency-ordered building plan for the complete product, not a release roadmap. Conditional items are identified explicitly. Finish each step's small completion check and continue; do not invent extra approval rounds or broad test programmes.
 
@@ -39,11 +75,11 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 
 **Depends on:** these documents.
 
-- [ ] Establish web, server, worker, shared domain/schema, and reusable UI directories in one repository.
+- [x] Establish web, server, worker, shared domain/schema, and reusable UI directories in one repository.
 - [ ] Add dependency lockfile, environment-variable template without secrets, formatting/type checks, migration commands, and build/start commands.
-- [ ] Define common errors/statuses, stable identifiers, timestamps, actor context, tenant context, and request/idempotency IDs.
+- [x] Define common errors/statuses, stable identifiers, timestamps, actor context, tenant context, and request/idempotency IDs.
 - [ ] Define interfaces for storage, processing, authorisation, preview/commit, and external adapters.
-- [ ] Add health endpoint, structured logs without document bodies, and synthetic seed data.
+- [x] Add health endpoint, structured logs without document bodies, and synthetic seed data.
 
 **Done when:** a clean checkout builds and serves the empty application locally. Record commands here.
 
@@ -52,11 +88,11 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 **Depends on:** 1.
 
 - [ ] Integrate maintained authentication, account linking, logout/revocation, and MFA support; do not build password cryptography.
-- [ ] Create tenants, users, memberships, workspaces, and owner/editor/viewer roles.
+- [x] Create tenants, users, memberships, workspaces, and owner/editor/viewer roles.
 - [ ] Derive tenant/user identity server-side. Implement permission evaluation for workspace, type/table, field, document/folder, shared view, and action, with record restrictions where needed.
 - [ ] Add separate AI-access grants whose effective scope cannot exceed human access. Enforce permissions for reads, writes, exports, and background operations.
-- [ ] Capture membership and permission changes in protected security audit events from this step onward.
-- [ ] Implement the standalone sign-in and minimal account/workspace shell.
+- [x] Capture membership and permission changes in protected security audit events from this step onward.
+- [x] Implement the standalone sign-in and minimal account/workspace shell.
 
 **Done when:** two synthetic tenants cannot read or change each other's data, and a restricted field is withheld by the server.
 
@@ -64,11 +100,11 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 
 **Depends on:** 2.
 
-- [ ] Create type definitions, field definitions, records, relationships, and configuration revisions.
+- [x] Create type definitions, field definitions, records, relationships, and configuration revisions.
 - [ ] Support text, numeric/money, date/time, boolean, select/status, person, relationship, and document references.
 - [ ] Implement schema validation, required fields, uniqueness where configured, pagination, filtering, sorting, and bulk operations.
 - [ ] Add safe formulas/aggregations with dependency tracking and permission-aware results; never execute model-provided code.
-- [ ] Represent saved views as configuration; avoid fixed modules and duplicate business entities.
+- [x] Represent saved views as configuration; avoid fixed modules and duplicate business entities.
 - [ ] Add migration handling for field changes, incompatible conversions, removal, and referenced records.
 
 **Done when:** a CRO table and study table can be configured and linked, with invalid values rejected and no committed-write bypass.
@@ -78,14 +114,14 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 **Depends on:** 2–3. No persistent business write ships without this path.
 
 - [ ] Create isolated preview revisions for new structures, records, file selections, imports, and proposed edits.
-- [ ] Show exact destination, selected content, and change summary. Bind Save to an authenticated user and exact preview revision.
-- [ ] Commit accepted changes, version 0 or next revision, audit event, and any job/outbox entry in one transaction.
-- [ ] Include actor, time, old/new values, affected object/version, action origin, and reason where required.
+- [x] Show exact destination, selected content, and change summary. Bind Save to an authenticated user and exact preview revision.
+- [x] Commit accepted changes, version 0 or next revision, audit event, and any job/outbox entry in one transaction.
+- [x] Include actor, time, old/new values, affected object/version, action origin, and reason where required.
 - [ ] Protect audit history from ordinary application edits/deletion; separate operational administration permissions.
-- [ ] Implement idempotency receipt lookup, safe retry after interrupted responses, and optimistic concurrency checks.
+- [x] Implement idempotency receipt lookup, safe retry after interrupted responses, and optimistic concurrency checks.
 - [ ] Discarding previews changes nothing committed. Correction/restoration creates a new revision; approved historical content stays identifiable.
 - [ ] Distinguish saved draft, in review, approved/effective, superseded, and archived states.
-- [ ] Clean up temporary previews without promising erasure of independent chat history or infrastructure logs.
+- [x] Clean up temporary previews without promising erasure of independent chat history or infrastructure logs.
 
 **Done when:** preview/discard does not create an official record; confirm creates exactly one revision; retry is not duplicated; stale edits cannot overwrite silently.
 
@@ -93,12 +129,12 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 
 **Depends on:** 2–4.
 
-- [ ] Verify current official SDK/authentication/distribution requirements before implementation.
-- [ ] Expose a small set of typed MCP tools: workspace discovery, schema/read/search, preview mutation, commit, and receipt/status lookup.
+- [x] Verify current official SDK/authentication/distribution requirements before implementation.
+- [x] Expose a small set of typed MCP tools: workspace discovery, schema/read/search, preview mutation, commit, and receipt/status lookup.
 - [ ] Register an embedded interactive table/form with the same backend as standalone.
 - [ ] Support authenticated create → preview → confirm → read-back across conversations.
 - [ ] Prove UI-only access for one model-restricted field; omit it from model-visible responses, state, summaries, and tool results.
-- [ ] Provide a standalone route where a required embedded capability is unsupported.
+- [x] Provide a standalone route where a required embedded capability is unsupported.
 - [ ] Record actual plan/account availability; do not introduce a Trialy organisational-account restriction.
 
 **Done when:** one synthetic table can be created and edited inside ChatGPT, persists in standalone, and model-restricted content stays out of model-visible payloads.
@@ -111,7 +147,7 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 - [ ] Add configurable columns, filters, sorting, grouping, calculations, and saved view definitions.
 - [ ] Reuse the same components in both surfaces; tabs are views, not mandatory modules.
 - [ ] Add clear preview/save/discard states, quiet processing flags, permission-aware actions, and practical loading/empty states.
-- [ ] Persist approved configuration changes through the common commit path.
+- [x] Persist approved configuration changes through the common commit path.
 
 **Done when:** a user can configure and operate a tracker manually or conversationally using the same records.
 
@@ -122,8 +158,8 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 - [ ] Add collaborator invitations, role changes, scoped shared views, and revocation.
 - [ ] Keep hidden fields and underlying unrelated records inaccessible, including through aggregations and exports.
 - [ ] Offer Allow once or Allow future actions of this type; persist scope, destination, actor, workflow, and revocation status.
-- [ ] Re-evaluate current permissions at execution time; standing permission never exceeds the granting user's current rights.
-- [ ] Keep formal approvals/signatures separate from automation authorisation.
+- [x] Re-evaluate current permissions at execution time; standing permission never exceeds the granting user's current rights.
+- [x] Keep formal approvals/signatures separate from automation authorisation.
 - [ ] Use expiring scoped guest access where external forms or document requests require it.
 
 **Done when:** a restricted comparison can be shared without its financial fields, and revoking a future-action grant prevents subsequent execution.
@@ -134,8 +170,8 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 
 - [ ] Create document metadata, immutable original versions, bytea payloads, checksums, and record links.
 - [ ] Implement authenticated upload, preview/selection, confirmed commit, download, and document display.
-- [ ] Verify complete bytes and integrity before acknowledging Saved; commit metadata/audit with the original.
-- [ ] Never describe an external link, unfinished upload, or temporary copy as a saved original.
+- [x] Verify complete bytes and integrity before acknowledging Saved; commit metadata/audit with the original.
+- [x] Never describe an external link, unfinished upload, or temporary copy as a saved original.
 - [ ] Support new versions without overwriting older originals; record review/expiry metadata.
 - [ ] Keep file storage behind a simple interface for possible later migration.
 
@@ -145,14 +181,14 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 
 **Depends on:** 8.
 
-- [ ] Implement durable jobs, worker leases, timeouts, restart recovery, bounded retries, and duplicate-safe execution.
+- [x] Implement durable jobs, worker leases, timeouts, restart recovery, bounded retries, and duplicate-safe execution.
 - [ ] Add text extraction for supported text/PDF/Office formats, OCR for scanned pages, and best-effort table extraction.
 - [ ] Preserve original version references, extraction method/version, page/section references, and per-capability processing status.
-- [ ] Default to one attempt plus one retry for transient failures; avoid repeated attempts on unsupported input.
-- [ ] After failure, retain the original and show only No extraction available or Partial extraction beside the document.
-- [ ] Keep diagnostics internal; no user notifications/toasts/emails for routine regenerable processing failures.
-- [ ] Continue other files and independent jobs. Keep only the specific dependent result incomplete/pending.
-- [ ] Do not generate content revisions merely for processing retries or publish stale results for a newer source version.
+- [x] Default to one attempt plus one retry for transient failures; avoid repeated attempts on unsupported input.
+- [x] After failure, retain the original and show only No extraction available or Partial extraction beside the document.
+- [x] Keep diagnostics internal; no user notifications/toasts/emails for routine regenerable processing failures.
+- [x] Continue other files and independent jobs. Keep only the specific dependent result incomplete/pending.
+- [x] Do not generate content revisions merely for processing retries or publish stale results for a newer source version.
 
 **Done when:** one intentionally unextractable file stays downloadable, shows a quiet flag, and does not prevent another file from completing.
 
@@ -162,8 +198,8 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 
 - [ ] Index extracted text for PostgreSQL full-text search; filter by workspace, document, type, version, and permissions.
 - [ ] Return exact source/version and page/section references with retrieved passages.
-- [ ] Include counts/status for authorised documents with unavailable or partial extraction, even when absent from search results.
-- [ ] Apply AI-access restrictions before any content goes to the model; do not disclose restricted document existence through coverage counts.
+- [x] Include counts/status for authorised documents with unavailable or partial extraction, even when absent from search results.
+- [x] Apply AI-access restrictions before any content goes to the model; do not disclose restricted document existence through coverage counts.
 - [ ] Allow authorised retrieval of originals when a supported alternative reading path exists.
 - [ ] Keep embeddings/vector indexing deferred; define a replaceable index boundary without provisioning another service.
 
@@ -175,10 +211,10 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 
 - [ ] Implement constrained rule configuration: trigger, conditions, actions, destination, grant, and approval requirements.
 - [ ] Support event triggers and schedules with timezone handling, execution history, pause/resume, retry, and cancellation.
-- [ ] Preview rule changes before activation; version configurations and use recorded one-time/future grants.
+- [x] Preview rule changes before activation; version configurations and use recorded one-time/future grants.
 - [ ] Add internal reminders, recurring reports, overdue actions, proposal-arrival processing, and review routing.
-- [ ] Bind approval to the exact record/configuration version. Changes requiring renewed review invalidate the current approval state, not historical evidence.
-- [ ] Run independently of an active ChatGPT conversation; keep all application truth in the backend.
+- [x] Bind approval to the exact record/configuration version. Changes requiring renewed review invalidate the current approval state, not historical evidence.
+- [x] Run independently of an active ChatGPT conversation; keep all application truth in the backend.
 - [ ] Isolate failures and distinguish quiet derived-data gaps from failed requested actions requiring a concise notice.
 
 **Done when:** a scheduled synthetic workflow runs while chat is closed, honours its grant, and cannot approve itself.
@@ -218,7 +254,7 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 - [ ] Congress and publication planning.
 - [ ] Team tasks/projects, vendor/contracts, and budget/resource tracking.
 - [ ] Email follow-up and recurring management reporting templates.
-- [ ] Reuse the primitives; introduce no separate hardcoded products or mandatory navigation modules.
+- [x] Reuse the primitives; introduce no separate hardcoded products or mandatory navigation modules.
 
 **Done when:** each template installs as editable configuration. Use representative manual inspection, not a separate exhaustive test suite per template.
 
@@ -245,7 +281,7 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 - [ ] Distinguish sandbox access from usable production terms.
 - [ ] If suitable and affordable, integrate explicit human signing bound to an exact version, signed evidence retention, and duplicate-safe callback handling.
 - [ ] Otherwise record formal signatures as deferred; preserve internal approvals without labelling them regulated signatures.
-- [ ] Keep this conditional decision from blocking unrelated product completion.
+- [x] Keep this conditional decision from blocking unrelated product completion.
 
 **Done when:** the documented decision is supported by current terms; any implemented signature can be verified against its exact source version.
 
@@ -272,7 +308,7 @@ These are implementation defaults, not previously deployed capabilities. Adjust 
 - [ ] Fix concrete failures; repeat only affected checks.
 - [ ] Complete user onboarding/help and app distribution requirements.
 - [ ] Prepare configurable Trialegions branding and a separate controlled cutover plan for the existing product/domain.
-- [ ] Record actual completion, remaining conditional items, and any customer-use limitations in this file and HISTORY.md.
+- [x] Record actual completion, remaining conditional items, and any customer-use limitations in this file and HISTORY.md.
 
 **Done when:** the agreed product works end-to-end and is ready for hands-on testing/improvement. Publication and replacement of the existing Trialegions service are separately executed actions, not side effects of changing a label.
 
