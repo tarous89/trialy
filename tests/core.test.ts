@@ -209,6 +209,10 @@ test('Shared backend: access, committed history, original preservation and retri
   await assert.rejects(db.query('DELETE FROM acknowledgements'),/append-only/);
   const next=await s.previewFile(owner,w.id,{filename:'next.txt',mime:'text/plain',bytes:Buffer.from('New version'),ai:true,documentId:d.document_id,expectedVersion:d.version});await s.commit(owner,next.id,next.digest);
   const latest=(await s.documents(owner,w.id)).find(x=>x.filename==='next.txt');assert.equal(latest.review_status,'in_review');assert.equal(latest.reviewed_version_id,d.id);
+  const restricted=await s.previewFile(owner,w.id,{filename:'restricted-next.txt',mime:'text/plain',bytes:Buffer.from('Restricted new original'),ai:false,documentId:d.document_id,expectedVersion:latest.version});await s.commit(owner,restricted.id,restricted.digest);
+  const aiDocs=await s.documents({...owner,origin:'ai'},w.id);assert.equal(aiDocs.find(x=>x.id===d.id).folder,null);assert.equal(aiDocs.find(x=>x.id===d.id).reviewed_version_id,null);
+  await assert.rejects(s.preview({...owner,origin:'ai'},w.id,{kind:'document_controls',documentId:d.document_id,expectedVersion:latest.control_version+1,linkedRecordId:null,reviewerId:null,expiresOn:null,folder:'Attempt'}),error('not_found'));
+
   await save({kind:'set_workspace_policy',expectedVersion:0,archived:true,legalHold:true,retentionUntil:'2030-01-01',reason:'Preserve study'});
   await assert.rejects(s.preview(owner,w.id,{kind:'create_record',typeId,data:{name:'Blocked'}}),error('workspace_archived'));
   const exp=await s.exportWorkspace(owner,w.id);assert.equal(exp.acknowledgements.length,1);assert.equal(exp.workspace_policies[0].legalHold,true);

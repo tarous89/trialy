@@ -12,6 +12,7 @@ export async function runAutomation(db:Database):Promise<boolean>{return db.tran
  const id=randomUUID();let summary:any={reason};let due:any;
  if(!reason&&rule.conditions){try{const scoped:Database={query:(q,v)=>tx.query(q,v),transaction:fn=>fn(tx),close:async()=>{}};const service=new Service(scoped),c=rule.conditions;const until=new Date(Date.now()+c.daysAhead*86400000).toISOString().slice(0,10);due={count:(await service.aggregate(actor,rule.workspace_id,c.typeId,{dateField:c.dateField,viewId:c.viewId,dueBefore:until})).totals.count,through:until,typeId:c.typeId,dateField:c.dateField};}catch{reason='permission_unavailable';}}
 
+ if(reason)summary={reason};
  if(!reason){
   const tables=(await tx.query('SELECT t.id,t.name,count(r.id)::int AS records FROM entity_types t LEFT JOIN records r ON r.type_id=t.id AND r.workspace_id=t.workspace_id WHERE t.workspace_id=$1 GROUP BY t.id,t.name ORDER BY t.name',[rule.workspace_id])).rows.filter(t=>!p.allowed_types||p.allowed_types.includes(t.id));
   summary={title:rule.name,tables:due?undefined:tables,due,generatedAt:new Date().toISOString(),source:'Committed workspace records; no AI inference'};
