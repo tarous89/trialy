@@ -256,3 +256,5 @@ Documentation-only update; no application behavior or deployment changes.
 - Added conservative full-data-access checks for saved source, including AI field restrictions; generated HTML/JavaScript remains inert.
 - Extended MCP/REST, export and synthetic restore coverage. Build and all 33 reported tests pass. Full ChatGPT rendering and production backup restoration remain unverified.
 - Granular project/component sharing and generated interface execution remain next; no new provider, infrastructure cost, or fixed workflow was introduced.
+
+Deployment: `ec9c67e` is live on the existing Render web and worker services. Initial error-log check is empty. No plugin package change or new resources were required; existing ChatGPT connections may need a tool refresh to discover the component read tools.

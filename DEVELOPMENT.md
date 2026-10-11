@@ -4,7 +4,7 @@ Updated 11 October 2026 following the shared-database and saved-component clarif
 
 ## Current position
 
-Existing foundation: PostgreSQL data/originals, authentication, human/AI permissions, transactional changes and audit, previews, bounded JavaScript execution, saved function revisions, grants and background runs. Runtime `55dbeaf` is deployed, including the project/maintenance increment. [EXECUTION.md](docs/EXECUTION.md) describes actual capabilities and limits. The earlier execution checklist is preserved in [the archive](docs/archive/development-execution-foundation-2026-10-11.md); its completed checkboxes do not mean the expanded product is complete.
+Existing foundation: PostgreSQL data/originals, authentication, human/AI permissions, transactional changes and audit, previews, bounded JavaScript execution, saved function revisions, grants and background runs. Runtime `ec9c67e` is deployed on the existing Render web and worker, including project/maintenance and saved component storage. [EXECUTION.md](docs/EXECUTION.md) describes actual capabilities and limits. The earlier execution checklist is preserved in [the archive](docs/archive/development-execution-foundation-2026-10-11.md); its completed checkboxes do not mean the expanded product is complete.
 
 Not yet complete: a shared cross-import entity layer with reversible reconciliation; general generated-interface hosting; movable folders/projects/components; live external adapters. Existing views, forms and sharing are reusable foundations, not evidence that all these targets work already. User-driven ChatGPT testing has started; full host acceptance remains open.
 
