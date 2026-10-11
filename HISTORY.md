@@ -278,3 +278,5 @@ Moved the remaining ordinary data/file previews from process memory into Postgre
 Previews expire after 24 hours and remain outside authoritative revisions/inspection exports. Limits are 1,000 previews/100 MiB per workspace, serialized against concurrent admissions. Periodic cleanup failures are logged without unhandled promise rejections. Infrastructure backups can retain staged content until those backups expire. Existing in-memory drafts from the old process cannot be migrated and require re-preparation on this one-time rollout; previously confirmed records are unaffected. No new resources, paid accounts or plugin package changes.
 
 Validation: production build and focused service-replacement/file-integrity/expiry/permission tests, alongside the existing suite. Real ChatGPT/browser acceptance and managed-backup recovery remain open.
+
+Runtime commit: `a8c0002`, additive migration 021. The existing 36 tests passed; the new focused persistence test passed after correcting its test-fixture parameter types. Build passed. No browser/ChatGPT acceptance claimed.
