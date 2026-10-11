@@ -4,7 +4,7 @@ const genericOptions=operationSchema.options.filter(option=>!['request_review','
 export const foundationOperationSchema=z.union(genericOptions as [typeof genericOptions[number],typeof genericOptions[number],...typeof genericOptions[number][]]);
 const schemaOptions=operationSchema.options.filter(option=>['create_type','update_type','migrate_type','create_view','update_view'].includes(option.shape.kind.value));
 export const schemaChangeSchema=z.union(schemaOptions as [typeof schemaOptions[number],typeof schemaOptions[number],...typeof schemaOptions[number][]]);
-export const capabilityNames=['tables.list','entities.read','entities.search','records.read','records.aggregate','views.list','documents.list','documents.text','documents.search','changes.propose','schema.propose','test.echo'] as const;
+export const capabilityNames=['tables.list','entities.read','entities.search','entities.facts','records.read','records.aggregate','views.list','documents.list','documents.text','documents.search','changes.propose','schema.propose','test.echo'] as const;
 export const scopeSchema=z.object({capabilities:z.array(z.enum(capabilityNames)).max(20),typeIds:z.array(id).max(100),documents:z.boolean().default(false)}).strict();
 export const contractSchema=z.object({type:z.enum(['object','array','string','number','boolean','null','any']),required:z.array(z.string().max(100)).max(100).default([])}).strict();
 const json=z.unknown().refine(v=>{try{return JSON.stringify(v??null).length<=262144;}catch{return false;}},'Input exceeds limit');

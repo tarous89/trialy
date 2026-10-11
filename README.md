@@ -119,3 +119,7 @@ ChatGPT writes frontend code; Trialy saves, versions, organizes and hosts that c
 Unchanged new database entries can be archived after review while retaining every value and historical change. Referenced or later-edited entries require an explicit correction. A reviewed restore is available for these retained creations. Archived entries are excluded from active lists and summaries; their history remains accessible.
 
 Projects and folders can also be archived by their owner, with an exact preview of affected contents. This preserves source, shared data and history, revokes task scopes, clears attached function bindings and pauses attached schedules. Restoring organization does not silently reactivate execution or long-term write authority.
+
+### Shared data across projects
+
+Projects can reference the same records without copying them. Candidate field values retain their source labels, optional project/date context and exact approval; selecting a main value is a separate reviewed edit. Withdrawing a candidate preserves its evidence. ChatGPT can prepare missing-value backfill from permitted sources under an approved task scope; backfill always requires review and cannot replace existing non-empty values. See [shared-data behavior](docs/SHARED_DATA.md) for capabilities and limits.

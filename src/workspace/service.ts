@@ -97,9 +97,9 @@ export class WorkspaceFoundation {
      // Project in PostgreSQL and bound each row before materializing it in the web process.
      const rows=(await this.db.query(`SELECT id,version,CASE WHEN octet_length(selected::text)<=100000 THEN selected ELSE NULL END AS data FROM (
       SELECT id,version,(SELECT coalesce(jsonb_object_agg(key,value),'{}'::jsonb) FROM jsonb_each(data) WHERE key=ANY($3::text[])) AS selected
-      FROM records WHERE workspace_id=$1 AND type_id=$2 ORDER BY created_at,id LIMIT $4 OFFSET $5) page`,[w,v.typeId,binding.fields,v.limit,v.offset])).rows;
+      FROM records WHERE workspace_id=$1 AND type_id=$2 AND state<>'archived' ORDER BY created_at,id LIMIT $4 OFFSET $5) page`,[w,v.typeId,binding.fields,v.limit,v.offset])).rows;
      if(rows.some(r=>r.data===null))fail(400,'read_limit','A record exceeds the interface read budget');
-     const total=Number((await this.db.query('SELECT count(*) AS n FROM records WHERE workspace_id=$1 AND type_id=$2',[w,v.typeId])).rows[0].n);
+     const total=Number((await this.db.query("SELECT count(*) AS n FROM records WHERE workspace_id=$1 AND type_id=$2 AND state<>'archived'",[w,v.typeId])).rows[0].n);
      return {rows,total,limit:v.limit,offset:v.offset};
     }
     if(name==='records.propose'){
@@ -157,6 +157,47 @@ export class WorkspaceFoundation {
   const types=[];for(const b of body.bindings){const {type,policy}=await typeAccess(tx,a,w,b.typeId,true);const fields=visibleFields(type.fields,policy,a);if(new Set(b.fields).size!==b.fields.length||b.fields.some(k=>!fields.some(f=>f.key===k&&!f.formula)))fail(403,'field_scope','Scope includes unavailable or calculated fields');types.push({id:type.id,version:type.version,fields:type.fields});}
   const restricted=chain.filter(n=>n.allowed_users!==null||!n.ai_enabled);return checksum(J(restricted.length?{types,access:restricted.map(n=>({id:n.id,users:n.allowed_users,ai:n.ai_enabled}))}:types));
  }
+ async recordFacts(a:Actor,w:string,recordId:string,offset=0){
+  const record=await this.record(this.db,a,w,recordId);if(!Number.isInteger(offset)||offset<0)fail(400,'invalid_offset','Invalid page');
+  const rows=(await this.db.query('SELECT f.*,r.reason AS retraction_reason,r.actor_id AS retracted_by,r."authorization" AS retraction_authorization,r.created_at AS retracted_at FROM record_facts f LEFT JOIN record_fact_retractions r ON r.fact_id=f.id WHERE f.workspace_id=$1 AND f.record_id=$2 ORDER BY f.created_at DESC,f.id DESC LIMIT 100 OFFSET $3',[w,recordId,offset])).rows;
+  const facts=[];for(const fact of rows){if(!record.fields.some((f:any)=>f.key===fact.field_key))continue;try{if(fact.project_id)await this.nodeAccess(this.db,a,w,fact.project_id);facts.push(fact);}catch{}}
+  return {recordId,recordVersion:record.version,currentValues:record.data,facts,nextOffset:rows.length===100?offset+100:null,interpretation:'Candidate values preserve source labels and context. Current values change only through a separately reviewed preference. Labels are supplied evidence descriptions, not independent verification.'};
+ }
+ private async factReview(tx:Connection,a:Actor,w:string,op:Extract<WorkspaceOperation,{kind:'record_fact'|'prefer_record_fact'|'retract_record_fact'}>){
+  const fact=op.kind==='record_fact'?null:(await tx.query('SELECT f.* FROM record_facts f LEFT JOIN record_fact_retractions r ON r.fact_id=f.id WHERE f.id=$1 AND f.workspace_id=$2 AND r.fact_id IS NULL',[op.factId,w])).rows[0];
+  if(op.kind!=='record_fact'&&!fact)fail(404,'not_found','Active fact not found');
+  const record=await this.record(tx,a,w,op.kind==='record_fact'?op.recordId:fact.record_id,true),field=op.kind==='record_fact'?op.field:fact.field_key;
+  if(!record.fields.some((f:any)=>f.key===field&&!f.formula))fail(403,'field_scope','Field is unavailable or calculated');
+  if(op.kind!=='retract_record_fact'&&(record.version!==op.expectedVersion||['archived','superseded','approved'].includes(record.state)))fail(409,'stale_version','Choose the current editable record');
+  const projectId=op.kind==='record_fact'?op.projectId:fact.project_id;
+  if(projectId){const project=(await this.activeNode(tx,a,w,projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project context');}
+  if(op.kind==='record_fact'&&op.validFrom&&op.validUntil&&op.validFrom>op.validUntil)fail(400,'date_range','Start must precede end');
+  if(op.kind==='prefer_record_fact'&&(fact.project_id||fact.valid_from||fact.valid_until))fail(400,'contextual_fact','Contextual or dated facts stay contextual. Prepare a separate explicit current-value correction if appropriate.');
+  const value=op.kind==='record_fact'?op.value:fact.value;
+  if(op.kind!=='retract_record_fact'){const {type,policy}=await typeAccess(tx,a,w,record.type_id,true);await new Service(adapter(tx)).validateData(tx,a,w,type,policy,{[field]:value},true,record.id);}
+  return {recordId:record.id,typeId:record.type_id,recordVersion:record.version,field,before:record.data[field]??null,value,fact:fact??{projectId:op.kind==='record_fact'?op.projectId:null,validFrom:op.kind==='record_fact'?op.validFrom:null,validUntil:op.kind==='record_fact'?op.validUntil:null},effect:op.kind==='prefer_record_fact'?'Update the current value, retaining all alternatives and history':op.kind==='retract_record_fact'?'Mark this candidate withdrawn; do not change the current value':'Store a candidate value; do not change the current value'};
+ }
+ async projectRecords(a:Actor,w:string,projectId:string,offset=0){
+  const project=(await this.nodeAccess(this.db,a,w,projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');
+  if(!Number.isInteger(offset)||offset<0)fail(400,'invalid_offset','Invalid page');
+  const rows=(await this.db.query('SELECT * FROM project_records WHERE workspace_id=$1 AND project_id=$2 AND revoked_at IS NULL ORDER BY created_at,id LIMIT 100 OFFSET $3',[w,projectId,offset])).rows;
+  const records=[];for(const link of rows){try{const record=await this.record(this.db,a,w,link.record_id);records.push({link,record});}catch{}}
+  return {projectId,records,nextOffset:rows.length===100?offset+100:null,shared:true};
+ }
+ private async projectLinksReview(tx:Connection,a:Actor,w:string,op:Extract<WorkspaceOperation,{kind:'link_project_records'|'unlink_project_record'}>){
+  if(op.kind==='unlink_project_record'){
+   const link=(await tx.query('SELECT * FROM project_records WHERE id=$1 AND workspace_id=$2',[op.linkId,w])).rows[0];if(!link||link.revoked_at||link.version!==op.expectedVersion)fail(409,'stale_version','Project link changed');
+   const project=(await this.activeNode(tx,a,w,link.project_id))[0];const record=await this.record(tx,a,w,link.record_id,true);
+   return {projectId:project.id,projectName:project.name,records:[{id:record.id,typeId:record.type_id,version:record.version,state:record.state}],action:'unlink',retains:'The shared record and its history remain available in the workspace and other projects.'};
+  }
+  const project=(await this.activeNode(tx,a,w,op.projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');if(project.version!==op.expectedProjectVersion)fail(409,'stale_version','Project changed');
+  if(new Set(op.records.map(r=>r.recordId)).size!==op.records.length)fail(400,'duplicate_record','Select each record only once');
+  const records=[];for(const entry of op.records){const record=await this.record(tx,a,w,entry.recordId,true);if(record.version!==entry.expectedVersion||['archived','superseded'].includes(record.state))fail(409,'stale_version','Choose the current active record');
+   if((await tx.query('SELECT id FROM project_records WHERE workspace_id=$1 AND project_id=$2 AND record_id=$3 AND revoked_at IS NULL',[w,project.id,record.id])).rows.length)fail(409,'already_linked','A selected record is already linked to this project');
+   records.push({id:record.id,typeId:record.type_id,version:record.version,state:record.state});
+  }
+  return {projectId:project.id,projectName:project.name,records,action:'link',retains:'Records are shared references, not copies. Project sharing does not grant additional access to record data.'};
+ }
  private async nodeArchive(tx:Connection,a:Actor,w:string,op:Extract<WorkspaceOperation,{kind:'archive_node'}>){
   const policy=await this.policy(tx,a,w,true);if(policy.role!=='owner')fail(403,'owner_required','Only the workspace owner may archive a project or folder');
   const chain=await this.nodeAccess(tx,a,w,op.nodeId),node=chain[0];
@@ -181,6 +222,8 @@ export class WorkspaceFoundation {
  }
  private async validate(tx:Connection,a:Actor,w:string,op:WorkspaceOperation){
   await this.policy(tx,a,w,true);
+  if(['record_fact','prefer_record_fact','retract_record_fact'].includes(op.kind))await this.factReview(tx,a,w,op as Extract<WorkspaceOperation,{kind:'record_fact'|'prefer_record_fact'|'retract_record_fact'}>);
+  if(op.kind==='link_project_records'||op.kind==='unlink_project_record')await this.projectLinksReview(tx,a,w,op);
   if(op.kind==='archive_node')await this.nodeArchive(tx,a,w,op);
   if(op.kind==='copy_component')await this.componentCopy(tx,a,w,op);
   if(op.kind==='apply_maintenance'){const scope=await this.scope(tx,a,w,op.batch.scopeId);if(scope.revoked_at||scope.version!==op.batch.expectedScopeVersion)fail(409,'scope_changed','Maintenance scope changed');if(scope.schema_stamp!==await this.scopeStamp(tx,{...a,origin:'ai'},w,maintenanceSchema.parse(scope.body)))fail(409,'schema_changed','Scope requires renewed review');}
@@ -243,6 +286,7 @@ export class WorkspaceFoundation {
  private async accessStamp(tx:Connection,w:string){return checksum(J((await tx.query('SELECT id,allowed_users,ai_enabled,parent_id,archived FROM workspace_nodes WHERE workspace_id=$1 ORDER BY id',[w])).rows)+J((await tx.query('SELECT id,allowed_users,ai_enabled,project_id FROM workspace_components WHERE workspace_id=$1 ORDER BY id',[w])).rows));}
  async previewFieldChanges(a:Actor,w:string,body:WorkspaceOperation){
   const service=new Service(this.db);
+  if(body.kind==='prefer_record_fact'){const review=await this.factReview(this.db,a,w,body);return service.fieldDiff(this.db,a,w,{kind:'update_record',recordId:review.recordId,expectedVersion:body.expectedVersion,data:{[review.field]:review.value},reason:body.reason});}
   if(body.kind==='apply_component_records'||body.kind==='apply_maintenance')return service.fieldDiff(this.db,a,w,{kind:'bulk_records',changes:body.kind==='apply_maintenance'?body.batch.changes:body.changes});
   if(body.kind==='edit_component_record')return service.fieldDiff(this.db,a,w,{kind:'update_record',recordId:body.recordId,expectedVersion:body.recordVersion,data:{[body.field]:body.value}});
   return [];
@@ -252,10 +296,10 @@ export class WorkspaceFoundation {
   await this.db.query('DELETE FROM workspace_previews WHERE expires_at<now()');
   const n=Number((await this.db.query('SELECT count(*) AS n FROM workspace_previews WHERE user_id=$1',[a.userId])).rows[0].n);if(n>=50)fail(429,'preview_limit','Too many pending previews');
   const schemaStamp=body.kind==='save_scope'?await this.scopeStamp(this.db,{...a,origin:'ai'},w,body.scope):null;
-  const fieldChanges=await this.previewFieldChanges(a,w,body);const accessStamp=await this.accessStamp(this.db,w);const projectArchive=body.kind==='archive_node'?await this.nodeArchive(this.db,a,w,body):undefined;const componentCopy=body.kind==='copy_component'?await this.componentCopy(this.db,a,w,body):undefined;const envelope={operation:body,schemaStamp,accessStamp,fieldChanges,componentCopy,projectArchive};const draft={id:randomUUID(),workspaceId:w,workspaceFoundation:true,temporary:true,body,fieldChanges,componentCopy,projectArchive,digest:checksum(J(envelope))};
+  const fieldChanges=await this.previewFieldChanges(a,w,body);const accessStamp=await this.accessStamp(this.db,w);const factReview=['record_fact','prefer_record_fact','retract_record_fact'].includes(body.kind)?await this.factReview(this.db,a,w,body as Extract<WorkspaceOperation,{kind:'record_fact'|'prefer_record_fact'|'retract_record_fact'}>):undefined;const projectLinks=body.kind==='link_project_records'||body.kind==='unlink_project_record'?await this.projectLinksReview(this.db,a,w,body):undefined;const projectArchive=body.kind==='archive_node'?await this.nodeArchive(this.db,a,w,body):undefined;const componentCopy=body.kind==='copy_component'?await this.componentCopy(this.db,a,w,body):undefined;const envelope={operation:body,schemaStamp,accessStamp,fieldChanges,componentCopy,projectArchive,projectLinks,factReview};const draft={id:randomUUID(),workspaceId:w,workspaceFoundation:true,temporary:true,body,fieldChanges,componentCopy,projectArchive,projectLinks,factReview,digest:checksum(J(envelope))};
   await this.db.query('INSERT INTO workspace_previews(id,workspace_id,user_id,body,digest) VALUES($1,$2,$3,$4,$5)',[draft.id,w,a.userId,J(envelope),draft.digest]);return draft;
  }
- async pending(a:Actor,w:string){await this.policy(this.db,a,w);const rows=(await this.db.query('SELECT * FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND expires_at>now() ORDER BY expires_at',[w,a.userId])).rows;const visible=[];for(const r of rows){try{await this.validate(this.db,a,w,r.body.operation);visible.push({id:r.id,workspaceId:w,workspaceFoundation:true,body:r.body.operation,componentCopy:r.body.componentCopy,projectArchive:r.body.projectArchive,fieldChanges:r.body.fieldChanges??[],digest:r.digest,expiresAt:r.expires_at});}catch{}}return visible;}
+ async pending(a:Actor,w:string){await this.policy(this.db,a,w);const rows=(await this.db.query('SELECT * FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND expires_at>now() ORDER BY expires_at',[w,a.userId])).rows;const visible=[];for(const r of rows){try{await this.validate(this.db,a,w,r.body.operation);visible.push({id:r.id,workspaceId:w,workspaceFoundation:true,body:r.body.operation,componentCopy:r.body.componentCopy,projectArchive:r.body.projectArchive,projectLinks:r.body.projectLinks,factReview:r.body.factReview,fieldChanges:r.body.fieldChanges??[],digest:r.digest,expiresAt:r.expires_at});}catch{}}return visible;}
  async discard(a:Actor,w:string,id:string){await this.policy(this.db,a,w);await this.db.query('DELETE FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[id,w,a.userId]);return {discarded:true};}
  private async replay(tx:Connection,a:Actor,w:string,id:string,digest:string){const r=(await tx.query('SELECT * FROM workspace_receipts WHERE id=$1',[id])).rows[0];if(r){if(r.user_id!==a.userId||r.workspace_id!==w||r.digest!==digest)fail(409,'receipt_conflict','Request does not match its saved receipt');return r.result;}}
  async confirm(a:Actor,w:string,id:string,digest:string){requireHuman(a);return this.db.transaction(async tx=>{
@@ -265,6 +309,8 @@ export class WorkspaceFoundation {
   if(draft.body.accessStamp!==await this.accessStamp(tx,w))fail(409,'access_changed','Project access or organization changed; prepare a new preview');
   if(op.kind==='save_scope'&&draft.body.schemaStamp!==await this.scopeStamp(tx,{...a,origin:'ai'},w,op.scope))fail(409,'schema_changed','Schema changed; prepare scope again');
   if(draft.body.fieldChanges&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.fieldChanges),J(await new WorkspaceFoundation(adapter(tx)).previewFieldChanges(a,w,op))])).rows[0].same)fail(409,'stale_version','Field changes differ; prepare again');
+  if(['record_fact','prefer_record_fact','retract_record_fact'].includes(op.kind)&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.factReview),J(await this.factReview(tx,a,w,op as Extract<WorkspaceOperation,{kind:'record_fact'|'prefer_record_fact'|'retract_record_fact'}>))])).rows[0].same)fail(409,'stale_version','Fact or current value changed; prepare again');
+  if((op.kind==='link_project_records'||op.kind==='unlink_project_record')&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.projectLinks),J(await this.projectLinksReview(tx,a,w,op))])).rows[0].same)fail(409,'stale_version','Linked records changed; prepare again');
   if(op.kind==='archive_node'&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.projectArchive),J(await this.nodeArchive(tx,a,w,op))])).rows[0].same)fail(409,'stale_version','Project contents changed; prepare archival again');
   if(op.kind==='copy_component'&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.componentCopy),J(await this.componentCopy(tx,a,w,op))])).rows[0].same)fail(409,'stale_version','Copy contents changed; prepare again');
   const result=await this.apply(tx,a,w,p,op,{kind:'approval',id,digest,context:'workspace_preview'});await tx.query('INSERT INTO workspace_receipts(id,workspace_id,user_id,digest,result) VALUES($1,$2,$3,$4,$5)',[id,w,a.userId,digest,J(result)]);await tx.query('DELETE FROM workspace_previews WHERE id=$1',[id]);return result;
@@ -279,6 +325,23 @@ export class WorkspaceFoundation {
   if(op.kind==='edit_component_record'){
    const service=new Service(adapter(tx));const draft=await service.preview(a,w,{kind:'update_record',recordId:op.recordId,expectedVersion:op.recordVersion,data:{[op.field]:op.value}});
    const saved=await service.commit(a,draft.id,draft.digest,authorization);return {workspaceId:w,workspaceFoundation:true,status:'saved',id:op.componentId,recordId:op.recordId,receipt:saved};
+  }
+  if(op.kind==='record_fact'||op.kind==='prefer_record_fact'||op.kind==='retract_record_fact'){
+   const review=await this.factReview(tx,a,w,op),factId=op.kind==='record_fact'?randomUUID():op.factId;
+   if(op.kind==='record_fact')await tx.query('INSERT INTO record_facts(id,workspace_id,record_id,type_id,field_key,value,project_id,valid_from,valid_until,source_label,rationale,record_version,actor_id,"authorization") VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)',[factId,w,review.recordId,review.typeId,review.field,J(op.value),op.projectId??null,op.validFrom??null,op.validUntil??null,op.sourceLabel,op.rationale,review.recordVersion,a.userId,J(authorization)]);
+   else if(op.kind==='retract_record_fact')await tx.query('INSERT INTO record_fact_retractions(fact_id,workspace_id,actor_id,reason,"authorization") VALUES($1,$2,$3,$4,$5)',[factId,w,a.userId,op.reason,J(authorization)]);
+   else {const service=new Service(adapter(tx)),draft=await service.preview(a,w,{kind:'update_record',recordId:review.recordId,expectedVersion:op.expectedVersion,data:{[review.field]:review.value},reason:op.reason});await service.commit(a,draft.id,draft.digest,authorization);}
+   await audit(tx,a,p,'workspace.'+op.kind,factId,null,{...review,authorization},op.kind==='record_fact'?op.rationale:op.reason);
+   return {workspaceId:w,workspaceFoundation:true,status:'saved',id:factId,recordId:review.recordId};
+  }
+  if(op.kind==='link_project_records'||op.kind==='unlink_project_record'){
+   const review=await this.projectLinksReview(tx,a,w,op),links=[];
+   for(const record of review.records){const linkId=op.kind==='unlink_project_record'?op.linkId:randomUUID(),version=op.kind==='unlink_project_record'?op.expectedVersion+1:0;
+    if(op.kind==='unlink_project_record')await tx.query('UPDATE project_records SET revoked_at=now(),version=version+1 WHERE id=$1',[linkId]);
+    else await tx.query('INSERT INTO project_records(id,workspace_id,project_id,record_id,created_by,reason) VALUES($1,$2,$3,$4,$5,$6)',[linkId,w,review.projectId,record.id,a.userId,op.reason]);
+    const snapshot={projectId:review.projectId,recordId:record.id,version,active:op.kind==='link_project_records',authorization};
+    await revision(tx,a,w,linkId,'project_record',version,snapshot);await audit(tx,a,p,'workspace.'+op.kind,linkId,null,snapshot,op.reason);links.push({id:linkId,recordId:record.id,version});
+   }return {workspaceId:w,workspaceFoundation:true,status:'saved',projectId:review.projectId,links};
   }
   let objectId:string=randomUUID(),version=0,before:any=null,after:any;
   if(op.kind==='archive_node'){
@@ -324,7 +387,12 @@ export class WorkspaceFoundation {
  async scope(tx:Connection,a:Actor,w:string,id:string){const s=(await tx.query('SELECT * FROM maintenance_scopes WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[id,w,a.userId])).rows[0];if(!s)fail(404,'not_found','Maintenance scope not found');await this.nodeAccess(tx,a,w,s.project_id);return s;}
  async scopes(a:Actor,w:string){await this.policy(this.db,a,w);const rows=(await this.db.query('SELECT * FROM maintenance_scopes WHERE workspace_id=$1 AND user_id=$2 ORDER BY created_at',[w,a.userId])).rows;const result=[];for(const r of rows){try{const stamp=await this.scopeStamp(this.db,{...a,origin:'ai'},w,maintenanceSchema.parse(r.body),true);result.push({...r,schemaChanged:stamp!==r.schema_stamp});}catch{/* Do not expose inaccessible field names or scope text. */}}return result;}
  async revoke(a:Actor,w:string,id:string){return this.db.transaction(async tx=>{await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await this.policy(tx,a,w,true),before=await this.scope(tx,a,w,id);if(before.revoked_at)return {id,revoked:true};await tx.query('UPDATE maintenance_scopes SET revoked_at=now(),version=version+1 WHERE id=$1',[id]);await revision(tx,a,w,id,'maintenance_scope',before.version+1,{...before,revoked:true});await audit(tx,a,p,'maintenance.revoked',id,null,{revoked:true});return {id,revoked:true};});}
- async maintain(a:Actor,w:string,input:unknown,approval?:WriteAuthorization){
+ async prepareBackfill(a:Actor,w:string,input:unknown){
+  const batch=maintenanceBatch.parse(input);if(batch.links.length||batch.changes.some(c=>c.kind!=='update_record'))fail(400,'backfill_scope','Backfill fills approved fields on existing records; it does not create records or identity links');
+  for(const change of batch.changes){if(change.kind!=='update_record')continue;const record=await this.record(this.db,a,w,change.recordId,true);for(const field of Object.keys(change.data)){if(record.data[field]!==undefined&&record.data[field]!==null&&record.data[field]!=='')fail(409,'existing_value','Backfill does not replace existing values; prepare an explicit correction');}}
+  return this.maintain(a,w,batch,undefined,true);
+ }
+ async maintain(a:Actor,w:string,input:unknown,approval?:WriteAuthorization,previewOnly=false){
   const v=maintenanceBatch.parse(input),digest=checksum(J(v));const actor:Actor={...a,origin:'ai'};
   return this.db.transaction(async tx=>{
    await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await this.policy(tx,actor,w,true);
@@ -340,7 +408,7 @@ export class WorkspaceFoundation {
    for(const l of v.links){await this.validate(tx,actor,w,l);const r=await this.record(tx,actor,w,l.sourceRecordId);if(!body.bindings.some(b=>b.typeId===r.type_id))fail(403,'maintenance_scope','Identity outside scope');}
    if(v.changes.length)await service.validate(tx,actor,w,{kind:'bulk_records',changes:v.changes});
    const permitted=body.autoWrite&&body.bindings.length===1&&!!body.expiresAt&&Date.parse(body.expiresAt)>Date.now();
-   if(!approval&&!permitted){
+   if(!approval&&(previewOnly||!permitted)){
     const priorDraft=(await tx.query("SELECT * FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND body->'operation'->'batch'->>'requestKey'=$3 AND expires_at>now() LIMIT 1",[w,a.userId,v.requestKey])).rows[0];
     if(priorDraft){if(!(await tx.query("SELECT $1::jsonb=$2::jsonb AS same",[J(priorDraft.body.operation.batch),J(v)])).rows[0].same)fail(409,'request_conflict','Request already has a different pending proposal');return {workspaceId:w,workspaceFoundation:true,temporary:true,id:priorDraft.id,body:priorDraft.body.operation,fieldChanges:priorDraft.body.fieldChanges,digest:priorDraft.digest};}
     return new WorkspaceFoundation(adapter(tx)).preview(actor,w,{kind:'apply_maintenance',batch:v});

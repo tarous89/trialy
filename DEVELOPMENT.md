@@ -26,8 +26,8 @@ Implemented the core [write authorization and field-change history contract](doc
 
 ## Remaining work at this checkpoint
 
-1. Complete broader shared-data semantics: platform project relationships, contextual/historical facts, preferred-value decisions and schema-semantic reconciliation. Accepted same-table identity groups, candidate search, preserved conflicts and references are now readable.
-2. Finish setup/capture orchestration and reviewed backfill around the implemented task scopes. Default writes require approval; type-specific standing permission is explicit and expiring.
+1. Finish broader shared-data semantics: cross-table semantic mapping, contextual relationship queries and per-alias value propagation. Stable project-record links, dated/project-scoped candidate facts, reviewed main-value selection and immutable withdrawal are implemented; see docs/SHARED_DATA.md.
+2. Finish richer setup/capture orchestration. ChatGPT-directed reviewed backfill now fills missing approved fields on existing records under current task scopes, always requiring review. It does not independently crawl sources. Default writes require approval; type-specific standing permission remains explicit and expiring.
 3. Finish component assets, partial-data component access and external collection/sharing. Name search, reviewed copies and project/folder archive/restore are implemented. Exact function attachment, generic run/status/cancel and component-aware worker/schedule enforcement are implemented.
 4. Extend the generated-code bridge for files/providers and richer application hosting as needed. Validate current HTML/CSS/event hosting in the real ChatGPT/browser environment; unmodified React/npm apps remain unsupported.
 5. Verify the approval and recovery journey in the real host. Reviewed new-entry archive/restore, selected field-batch reversal and history filters are implemented. Later edits or linked work require explicit correction; embedded approval uses a secure standalone handoff.
