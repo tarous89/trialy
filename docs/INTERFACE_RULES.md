@@ -21,7 +21,7 @@ Route edits by what the value represents, not by whether the author entered it i
 | Project-specific value | Edit its contextual record | Project relationship/activity; do not overwrite the shared person's or organization's fact |
 | Unbound new input | Establish whether it is presentation content or new structured data before saving | Component configuration or an explicit field/record binding; never silently discard it |
 
-Before saving, make the target clear with concise language such as “Update shared record” or “Save this view.” Do not ask the same broad question for every cell if its binding already determines the answer. The user's explicit Save can confirm a manual edit; typing into a field alone is not an authoritative commit. Keep existing preview/grant rules for generated batch changes and later background maintenance.
+Before saving, make the target clear with concise language such as “Update shared record” or “Save this view.” Do not ask the same broad question for every cell if its binding already determines the answer. The user's explicit Save can confirm a manual edit; typing into a field alone is not an authoritative commit. Apply the superseding WRITE_AUTHORIZATION.md contract: visible exact review/approval by default; only explicit longer-term data-type permission can waive repeat clicks. Every committed field change must remain inspectable with its authorization and a safe reversal action.
 
 Avoid silent per-view overrides of shared facts. If an override is needed later, make it explicit and visibly labeled, retain its source relationship and define how source updates affect it. Do not add automatic fallback copies as a default editing strategy.
 
@@ -39,3 +39,7 @@ No editing-policy runtime change is authorized or claimed by this document updat
 ## Implemented interface subset — 11 October 2026
 
 For `trialy-ui-v1` tables, inline edits explicitly review/save to the shared database record with optimistic concurrency and audit. Configuration edits only change the component. Formula fields and read-only actors cannot edit cells. No silent local value overrides. Other proposed editing semantics remain pending. Component sharing/history/configuration use separate detail screens.
+
+## Superseding approval and history requirement — 11 October 2026
+
+Follow [WRITE_AUTHORIZATION.md](WRITE_AUTHORIZATION.md). Provide a fixed Changes and permissions area in both surfaces, with Approve changes controls, field-level before/after values and the applicable permission. Showing an editable field does not authorize silent persistence. This interface and the new enforcement contract are planned, not yet deployed.

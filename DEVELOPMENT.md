@@ -22,12 +22,13 @@ Scope correction: do not extend a Trialy UI block catalogue. ChatGPT authors fro
 
 Added migration 021: ordinary data/file previews now use shared PostgreSQL staging, including exact binary uploads, expiry, per-workspace capacity limits and atomic draft deletion with save receipts. Confirmation still rechecks permissions and current versions. Previews remain temporary and do not enter official history before confirmation.
 
-Next: verify browser/ChatGPT code hosting and extend code-runtime/tool integration; shared identity-aware queries/project relationships; granular project sharing; scheduled maintenance integration. Project organization currently requires unrestricted workspace access. Semantic inclusion/source-policy judgment remains ChatGPT's responsibility, with structural/grant/permission enforcement in the backend. See [WORKSPACE_FOUNDATION.md](docs/WORKSPACE_FOUNDATION.md).
+Next priority: implement the superseding [write authorization and field-change history contract](docs/WRITE_AUTHORIZATION.md) before extending automatic maintenance. Then verify browser/ChatGPT code hosting and extend code-runtime/tool integration; shared identity-aware queries/project relationships; granular project sharing; scheduled maintenance integration. Project organization currently requires unrestricted workspace access. Semantic inclusion/source-policy judgment remains ChatGPT's responsibility, with structural/grant/permission enforcement in the backend. See [WORKSPACE_FOUNDATION.md](docs/WORKSPACE_FOUNDATION.md).
 
 ## Remaining work at this checkpoint
 
+0. Implement visible approval by default for every database change, optional explicit data-type-specific longer-term permission, permanent field-level authorization history and reviewed reversal (see implementation sequence below).
 1. Complete shared entity identity and contextual relationships across imports/projects, preferred facts, conflicts and reversible corrections; expose permission-filtered reconciliation queries to ChatGPT.
-2. Finish task-driven setup/capture integration: reuse existing structure, review initial setup, maintain only qualifying fields/records under the approved scope, and support reviewed expansion/backfill.
+2. Finish task-driven setup/capture integration: reuse existing structure, review initial setup, propose only qualifying fields/records, saving after approval or under explicit longer-term data-type permission, and support reviewed expansion/backfill.
 3. Connect saved interfaces to exact function revisions, worker schedules, grants, status and cancellation; recheck authority after sharing changes and moves.
 4. Extend the generated-code bridge to files and authorized tools; finish source/edit-target metadata, assets, component organization/search and granular sharing/collection. Keep frontend authorship in ChatGPT; no fixed UI block catalogue.
 5. Add the first external provider once selected and accessible, with scoped connections, confirmation and duplicate-effect protection. Signatures remain conditional on provider requirements/cost.
@@ -35,6 +36,18 @@ Next: verify browser/ChatGPT code hosting and extend code-runtime/tool integrati
 7. Verify the complete synthetic journey and real ChatGPT login return, rendering, persistence and revocation; fix observed issues. Customer reliance/publication and the final name change remain separate readiness decisions.
 
 These are remaining capabilities, not seven releases. Existing partial implementations are recorded below; an unchecked broad item can include working subparts.
+
+## Immediate implementation sequence: write approval and history
+
+- [ ] Inventory every write path and current standing grant, including MCP, manual edits, generated interfaces, imports, reconciliation and workers. Update plugin guidance alongside backend enforcement. Keep existing records/history intact; do not treat old task/setup approval as future write authority.
+- [ ] Implement a common exact field-diff proposal contract and trusted confirmation path. Show every before/after value and additions/removals, with visible Approve changes / Discard controls in both surfaces. A clearly reviewed batch can use one approval. Recheck permissions and versions at commit.
+- [ ] Implement explicit versioned longer-term grants for individual data types, with visible field/action/source/actor bounds, validity and revocation. Separate schema approval from future-write permission; reject blanket and silently expanded grants. Assess existing grants and require renewed approval where incompatible.
+- [ ] Persist every committed field delta and its approval/grant reference atomically with the write/receipt, including derived changes and AI/code/worker attribution. Expose completed changes under grants as well as individually approved changes; enforce current permissions on historical values.
+- [ ] Add a fixed Changes and permissions area for pending reviews, saved field changes and grant management, shared by web and embedded workspace. Include filtering and source/authorization detail without exposing human-only data to ChatGPT.
+- [ ] Implement reviewed field/change-set reversal as a new audited transaction. Preserve original history, detect later edits/dependencies and reject unsafe overwrites. Do not imply reversal of external actions.
+- [ ] Run focused checks for approval enforcement, type/field scope, expiry/revocation, atomic evidence, hidden-value protection, idempotency and safe reversal; verify actual approval UI in ChatGPT when host testing is available.
+
+This is a newly approved requirement, not a claim that the current deployed runtime already implements it.
 
 ## Ordered implementation steps
 
@@ -57,11 +70,11 @@ These are remaining capabilities, not seven releases. Existing partial implement
 ### 3. Implement reversible AI-led reconciliation
 
 - [ ] Implement task-driven setup: repeated/multiple-entry tracking or expected reuse qualifies, including one starting record; inspect/reuse first, preview the structure and initial import, then require setup approval.
-- [ ] Implement automatic extraction, qualifying additions and updates under the approved maintenance scope. Do not persist unrelated mentions, new columns or entire communications by default; preserve relevant provenance and explicitly saved originals.
+- [ ] Implement automatic proposal preparation for qualifying additions/updates; require visible approval for each change set unless an explicit longer-term data-type permission covers it. Do not persist unrelated mentions, new columns or entire communications by default; preserve relevant provenance and explicitly saved originals.
 - [x] Implement reviewed schema/inclusion-scope expansion and permitted backfill (for example addresses), then ongoing maintenance of newly approved fields. Do not silently broaden sources or fabricate missing values.
 - [ ] Let ChatGPT propose match/link/merge, preferred-value and conflict decisions, including rationale and source references.
 - [ ] Preserve original entries and alternatives, record accepted decisions, and implement undo/split/correction without losing relationships or audit evidence.
-- [x] Apply initial confirmed imports or scoped future-maintenance grants atomically with permission/concurrency checks and idempotent receipts.
+- [ ] Adapt existing atomic imports/maintenance writes and idempotent receipts to approval-by-default and explicit data-type-specific longer-term grants. Existing transaction support is implemented; the superseding authorization contract is pending.
 - [ ] Keep uncertain alternatives local to facts/entities; do not create whole-database branches. Do not require a rigid matching rulebook or prompt for every minor normalization.
 - [ ] Ensure a merge cannot expose hidden data, infer permissions, or silently retarget an external action.
 
@@ -97,6 +110,8 @@ These are remaining capabilities, not seven releases. Existing partial implement
 - [ ] Keep electronic signatures conditional on provider cost/requirements; do not label internal confirmations as regulated signatures. Backend workers do not inherit ChatGPT's other connections automatically.
 
 ### 8. Complete integrity, access and recovery across the whole product
+
+- [ ] Complete field-level before/after history linked to exact authorization, the fixed Changes and permissions area, and reviewed reversal described above.
 
 - [ ] Extend audit/export/restore to entity observations and reconciliation, projects/components/assets, access changes, grants and execution evidence.
 - [x] Move remaining in-memory data/file previews to shared temporary storage; retain clear draft expiry and never claim an unsaved preview is durable saved work.

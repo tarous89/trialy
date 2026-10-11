@@ -280,3 +280,9 @@ Previews expire after 24 hours and remain outside authoritative revisions/inspec
 Validation: production build and focused service-replacement/file-integrity/expiry/permission tests, alongside the existing suite. Real ChatGPT/browser acceptance and managed-backup recovery remain open.
 
 Runtime commit: `a8c0002`, additive migration 021. The existing 36 tests passed; the new focused persistence test passed after correcting its test-fixture parameter types. Build passed. No browser/ChatGPT acceptance claimed.
+
+## Scope correction: explicit database-write approval — 11 October 2026
+
+The user superseded automatic maintenance by default. Every database change must have a visible exact review and approval unless the user explicitly granted longer-term permission for that data type. Existing schema/task approval is not future-write authority. Longer-term permissions cannot be general workspace-wide write permissions. Every changed field value must retain before/after history linked to the exact approval or versioned grant, including changes made under longer-term permission. A fixed Changes and permissions area in both surfaces must support inspection, permission management and reviewed reversal as a new audited change.
+
+Updated README, DEVELOPMENT, INTERFACE_RULES and the detailed WRITE_AUTHORIZATION contract. Moved enforcement, field-level authorization evidence, shared UI and safe reversal ahead of further automatic-maintenance work. This update changes scope/roadmap only; runtime and plugin enforcement are pending implementation. No customer data, grants or deployed runtime were changed by this documentation update.
