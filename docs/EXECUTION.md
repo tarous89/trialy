@@ -50,3 +50,9 @@ JSON/HTML inspection exports include saved functions/revisions/grants/schedules/
 - Public name/domain cutover and any regulated electronic-signature provider are separate decisions.
 
 Do not create new paid resources or claim production/clinical validation to fill these gaps.
+
+## Authorization and component bindings update
+
+Human confirmations now require the authenticated standalone session; the embedded interface opens the review portal. App-only metadata is not relied on as proof of a user click. Function, grant and schedule previews are recoverable in Changes & permissions. New once/future grants are single-type, field/schema-pinned, expiring and revocable; legacy grants cannot write. All committed record-data field deltas retain the precise approval/grant.
+
+Saved components may bind exact function revisions. invoke_function and schedules support componentContext; workers recheck it before tools, after execution, on result reads and before commits. Old component versions/archived components cannot authorize an effect. `entities.search` and `entities.read` provide bounded identity-aware queries within declared types; the latter excludes incoming cross-table relationships.

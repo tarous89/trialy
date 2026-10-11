@@ -40,3 +40,9 @@ This is an HTML/CSS/JavaScript **render/event runtime**, not an unmodified brows
 General source access is still conservative: full workspace field/document access plus project/component restrictions. A separate human-only channel within ChatGPT is not implemented. Historical `trialy-ui` objects can still be read/edited; they are not the product authoring model.
 
 Verification: backend tests cover read-only draft execution, bound reads, missing host/network APIs, reviewed writes, stale changes, failure cleanup and revocation. The frame response is checked for its hash-only script and HTTP sandbox. Local Chromium could not launch because the execution environment denied a required socket operation; actual browser interaction/isolation and real ChatGPT embedding remain unverified. Do not describe this as production security validation.
+
+## Bound workers — migration 023
+
+Reviewed component execution bindings name exact owned function revisions and optional existing type-scoped grants. tools.call('functions.invoke',{binding,input,requestKey}) stages a request; up to three requests and any data proposal are admitted atomically after successful render and access recheck. No queued request survives a failed render/admission. The immediate guest response is pending_render_completion; the HTTP response includes queued run IDs. Use functions.status with the same requestKey on a later event for its result. Unsaved previews cannot enqueue. Component changes/archive/access loss invalidate its runs. Restoring source clears execution bindings.
+
+The component configuration screen also has generic run/status/cancel controls. Schedules use the existing reviewed function schedule with componentContext:{id,version,binding}. Function-generated writes remain proposals unless an explicit attached data-type grant authorizes them. No provider credentials or direct network are exposed.

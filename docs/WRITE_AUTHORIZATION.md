@@ -1,6 +1,6 @@
 # Database write approval and change history
 
-Agreed 11 October 2026. This supersedes earlier automatic-maintenance defaults. It is the target specification; runtime enforcement and the shared history interface still need implementation.
+Agreed 11 October 2026. This supersedes earlier automatic-maintenance defaults. The runtime now enforces default human approval, explicit type-scoped standing permission, field-delta logging and a shared Changes & permissions area. Remaining limits are listed below.
 
 ## Default: propose, review, approve, save
 
@@ -33,3 +33,13 @@ Offer Reverse change for a field or selected change set, with a preview and expl
 ## Lean acceptance checks
 
 Verify that ordinary writes require approval, correct type-scoped grants permit only their stated writes, revocation/expiry stops writes, field diffs and authorization are committed atomically, hidden values remain hidden, and reversal preserves history and rejects stale overwrites. Reuse existing transaction, permission and receipt tests; no broad cosmetic test expansion.
+
+## Implemented checkpoint
+
+Migrations 022–023 introduce immutable record-data field deltas, exact authorization references, pending review recovery and component execution context. Old execution grants have authorization_version 0 and cannot write; old maintenance scopes parse as autoWrite false. Legacy fixed record-writing jobs pause rather than bypass the new contract. New execution grants name one type and snapshot readable non-derived fields/schema, default to a visible 30-day expiry, and are pinned to a function revision. Maintenance autoWrite grants explicitly name one type, fields, actions, project/source constraints and expiry.
+
+Web and embedded surfaces have Changes & permissions. Embedded approval opens the authenticated Trialy app; MCP actor origin stays AI and cannot call human confirmations. Exact pending schema/file/record/component/function/control proposals are recoverable there. Current conservative data-preview access requires full workspace field visibility; partial-access users can still review a newly prepared permitted edit directly, but the pending-list feature may omit it.
+
+Field-level reversal is implemented for a currently editable, non-derived field at its exact record version. Later edits, removed/required fields or controlled state require a reviewed correction; change-set reversal and creation archival are not yet implemented. Derived field changes are logged automatically. Earlier history is not backfilled with invented approvals; it remains in existing revisions/audit. Historical values obey current access; the unrestricted human owner can inspect removed-field deltas.
+
+Remaining: richer history filters, selected change-set reversal, record-create archival, fully embedded human-only confirmation, and real browser/ChatGPT verification. Pending drafts expire; completed field history is immutable and included in export/recovery.

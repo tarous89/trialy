@@ -18,6 +18,8 @@ export async function runAutomation(db:Database):Promise<boolean>{return db.tran
  if((rule.action||(rule.schedule&&rule.schedule.kind!=='daily'))&&p?.role!=='owner')reason='permission_unavailable';
  const grant=(await tx.query('SELECT * FROM action_grants WHERE id=$1 FOR UPDATE',[rule.grant_id])).rows[0];
  if(!grant||grant.revoked_at||grant.used_at||grant.user_id!==rule.owner_id||grant.workspace_id!==rule.workspace_id||grant.action!==(rule.action?.kind==='create_record'?'records.create':rule.action?.kind==='remind_me'?'reminders.create':'reports.prepare')||grant.destination!==(rule.action?.kind==='create_record'?rule.action.typeId:rule.workspace_id))reason='permission_unavailable';
+ // Legacy grants are not upgraded into the new write authorization contract.
+ if(rule.action?.kind==='create_record')reason='permission_unavailable';
  const id=randomUUID();let summary:any={reason};let due:any;
  if(!reason&&rule.conditions){try{const scoped:Database={query:(q,v)=>tx.query(q,v),transaction:fn=>fn(tx),close:async()=>{}};const service=new Service(scoped),c=rule.conditions;const today=localDay(new Date(),rule.schedule?.timeZone??'UTC');const until=new Date(Date.parse(today+'T00:00:00Z')+c.daysAhead*86400000).toISOString().slice(0,10);due={count:(await service.aggregate(actor,rule.workspace_id,c.typeId,{dateField:c.dateField,viewId:c.viewId,dueBefore:until})).totals.count,through:until,typeId:c.typeId,dateField:c.dateField};}catch{reason='permission_unavailable';}}
 

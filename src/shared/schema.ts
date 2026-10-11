@@ -19,6 +19,7 @@ export const recordWriteSchema=z.discriminatedUnion('kind',[
 export const recordQuerySchema=z.object({q:z.string().max(500).optional(),viewId:id.optional(),limit:z.coerce.number().int().min(1).max(100).optional(),offset:z.coerce.number().int().min(0).optional(),dateField:z.string().max(64).optional(),dueBefore:z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),month:z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/).optional()});
 export type RecordQuery=z.infer<typeof recordQuerySchema>;
 export const operationSchema = z.discriminatedUnion('kind', [
+ z.object({kind:z.literal('reverse_field_change'),changeId:id,expectedVersion:z.number().int().min(0),reason:z.string().trim().min(1).max(1000)}),
  z.object({kind:z.literal('request_review'),recordId:id,expectedVersion:z.number().int().min(0),reviewerId:id,note:z.string().trim().min(1).max(1000),dueOn:z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable()}),
  z.object({kind:z.literal('accept_submission'),submissionId:id,typeId:id,data:values}),
  z.object({kind:z.literal('create_type'), name:z.string().min(1).max(100), fields:fieldsSchema}),

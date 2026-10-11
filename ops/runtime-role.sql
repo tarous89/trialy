@@ -23,3 +23,5 @@ GRANT UPDATE ON workspace_nodes,workspace_components,maintenance_scopes,identity
 GRANT DELETE ON workspace_previews TO trialy_runtime;
 
 GRANT INSERT, DELETE ON data_previews TO trialy_runtime;
+
+GRANT INSERT ON record_field_changes TO trialy_runtime;

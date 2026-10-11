@@ -259,12 +259,12 @@ test('Shared backend: access, committed history, original preservation and retri
   await s.commit(owner,preview.id,preview.digest);assert.equal((await db.query('SELECT name FROM entity_types WHERE id=$1',[first.id])).rows[0].name,'Locally renamed');
   await assert.rejects(s.preview(owner,legacy.id,{kind:'adopt_template',template:template.id,mapping}),error('template_tracked'));
  });
- await t.test('automated drafts consume scoped permission and cannot trigger themselves',async()=>{
+ await t.test('legacy automated drafts cannot bypass the new write-approval contract',async()=>{
   const grant=await s.grant(owner,w.id,'records.create',typeId,true);
   const rule=(await save({kind:'create_automation',name:'Follow-up task',grantId:grant.id,intervalMinutes:60,schedule:{kind:'records.changed'},action:{kind:'create_record',typeId,data:{name:'Automated follow-up'}}})).objects[0]!;
-  await db.query('UPDATE automations SET paused=true WHERE id<>$1',[rule.id]);await save({kind:'create_record',typeId,data:{name:'Human trigger'}});const before=(await s.records(owner,w.id,typeId)).total;await runAutomation(db);assert.equal((await s.records(owner,w.id,typeId)).total,before+1);
-  await db.query('UPDATE automations SET next_run=now() WHERE id=$1',[rule.id]);await runAutomation(db);assert.equal((await s.records(owner,w.id,typeId)).total,before+1);
-  await s.revoke(owner,w.id,grant.id);await save({kind:'create_record',typeId,data:{name:'Revoked trigger'}});await db.query('UPDATE automations SET next_run=now() WHERE id=$1',[rule.id]);await runAutomation(db);assert.equal((await s.records(owner,w.id,typeId)).total,before+2);assert.equal((await db.query('SELECT paused FROM automations WHERE id=$1',[rule.id])).rows[0].paused,true);
+  await db.query('UPDATE automations SET paused=true WHERE id<>$1',[rule.id]);await save({kind:'create_record',typeId,data:{name:'Human trigger'}});const before=(await s.records(owner,w.id,typeId)).total;await runAutomation(db);assert.equal((await s.records(owner,w.id,typeId)).total,before);
+  await db.query('UPDATE automations SET next_run=now() WHERE id=$1',[rule.id]);await runAutomation(db);assert.equal((await s.records(owner,w.id,typeId)).total,before);
+  await s.revoke(owner,w.id,grant.id);await save({kind:'create_record',typeId,data:{name:'Revoked trigger'}});await db.query('UPDATE automations SET next_run=now() WHERE id=$1',[rule.id]);await runAutomation(db);assert.equal((await s.records(owner,w.id,typeId)).total,before+1);assert.equal((await db.query('SELECT paused FROM automations WHERE id=$1',[rule.id])).rows[0].paused,true);
  });
  await t.test('folder restrictions inherit and moving documents cannot bypass them',async()=>{
   const upload=await s.previewFile(owner,w.id,{filename:'folder-source.txt',mime:'text/plain',bytes:Buffer.from('Folder source'),ai:true});const receipt=await s.commit(owner,upload.id,upload.digest),doc=receipt.objects[0] as any;

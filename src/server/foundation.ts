@@ -9,6 +9,9 @@ export function addFoundationApi(app:Express,s:Service){
  addWorkspaceApi(app,new WorkspaceFoundation(s.db));
  const f=new Foundation(s.db,s),base='/api/workspaces/:workspaceId/foundation';
  const confirmation=z.object({digest:z.string().length(64),confirmed:z.literal(true)}).strict();
+ app.get(`${base}/approvals`,async(req,res)=>res.json(await f.pendingApprovals(req.actor!,id.parse(req.params.workspaceId))));
+ app.post(`${base}/approvals`,async(req,res)=>{const kind=z.enum(['grant','schedule']).parse(req.body.kind);res.json(await f.prepareControl(req.actor!,id.parse(req.params.workspaceId),kind,req.body.config));});
+ app.post(`${base}/approvals/:previewId/confirm`,async(req,res)=>{const v=confirmation.parse(req.body);res.json(await f.confirmControl(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.previewId),v.digest));});
  app.post(`${base}/runs`,async(req,res)=>res.status(202).json(await f.enqueue(req.actor!,id.parse(req.params.workspaceId),req.body.program,id.parse(req.body.requestKey))));
  app.get(`${base}/runs`,async(req,res)=>res.json(await f.runs(req.actor!,id.parse(req.params.workspaceId))));
  app.get(`${base}/runs/:runId`,async(req,res)=>res.json(await f.run(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.runId))));

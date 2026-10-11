@@ -1,0 +1,73 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {randomUUID} from 'node:crypto';
+import {readFile,readdir} from 'node:fs/promises';
+import {PGlite} from '@electric-sql/pglite';
+import type {Database,Connection} from '../src/db/database.js';
+import {Service} from '../src/domain/service.js';
+import {WorkspaceFoundation} from '../src/workspace/service.js';
+import {Foundation} from '../src/foundation/service.js';
+import {runFoundation} from '../src/foundation/worker.js';
+import type {Actor} from '../src/shared/schema.js';
+test('Approval default, single-type standing permission, per-field evidence and reversible corrections',async()=>{
+ const pg=new PGlite();try{
+  for(const f of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+f,'utf8'));
+  const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
+  const a:Actor={userId:randomUUID(),origin:'human'},ai:Actor={...a,origin:'ai'};
+  await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[a.userId,a.userId,'test@example.invalid','Tester']);
+  const s=new Service(db),f=new WorkspaceFoundation(db),w=await s.createWorkspace(a,'Approvals');await s.setAi(a,w.id,true);
+  const save=async(op:any)=>{const p=await s.preview(a,w.id,op);return s.commit(a,p.id,p.digest);};
+  const confirm=async(op:any)=>{const p=await f.preview(ai,w.id,op);await assert.rejects(f.confirm(ai,w.id,p.id,p.digest),/cannot approve/);return f.confirm(a,w.id,p.id,p.digest);};
+  const type=(await save({kind:'create_type',name:'Partners',fields:[{key:'name',name:'Name',kind:'text'},{key:'note',name:'Note',kind:'text'},{key:'secret',name:'Secret',kind:'text',ai:false}]})).objects[0].id;
+  const project=await confirm({kind:'create_node',nodeKind:'project',name:'Tracking'});
+  const scope={projectId:project.id,purpose:'Track partners',inclusionCriteria:'Selected partners',sourcePolicy:'User supplied updates',basis:'tracking',bindings:[{typeId:type,fields:['name','note']}],allowCreate:true,allowUpdate:true};
+  const permission=await confirm({kind:'save_scope',scope});
+  const batch={requestKey:randomUUID(),scopeId:permission.id,expectedScopeVersion:0,sourceLabel:'User input',interpretation:'Named partner',changes:[{kind:'create_record',typeId:type,data:{name:'Original',note:null}}]};
+  const draft=await f.maintain(ai,w.id,batch);assert.equal(draft.temporary,true);assert.equal((await s.records(a,w.id,type)).total,0);
+  assert.equal((await f.maintain(ai,w.id,batch)).id,draft.id);assert.equal(draft.fieldChanges.length,2);
+  const saved=await f.confirm(a,w.id,draft.id,draft.digest),recordId=saved.recordIds[0];
+  let history=(await s.fieldChanges(a,w.id)).changes;assert.equal(history.length,2);assert.equal(history[0].authorization.id,draft.id);assert.equal(history[0].authorization.kind,'approval');
+  const p=await s.preview(ai,w.id,{kind:'update_record',recordId,expectedVersion:0,data:{name:'Revised'}});assert.equal(p.summary.fieldChanges[0].before,'Original');await assert.rejects(s.commit(ai,p.id,p.digest),/cannot approve/);await s.commit(a,p.id,p.digest);
+  const delta=(await s.fieldChanges(a,w.id)).changes.find(c=>c.field_key==='name'&&c.record_version===1)!;
+  await save({kind:'reverse_field_change',changeId:delta.id,expectedVersion:1,reason:'Correct change'});
+  assert.equal((await s.records(a,w.id,type)).rows[0].data.name,'Original');history=(await s.fieldChanges(a,w.id)).changes;assert.ok(history.some(c=>c.authorization.reverses===delta.id));
+  await assert.rejects(s.preview(a,w.id,{kind:'reverse_field_change',changeId:delta.id,expectedVersion:2,reason:'Cannot overwrite later work'}),/Later changes/);
+  await save({kind:'update_record',recordId,expectedVersion:2,data:{secret:'Hidden'}});assert.ok(!(await s.fieldChanges(ai,w.id)).changes.some(c=>c.field_key==='secret'));
+  await assert.rejects(db.query('DELETE FROM record_field_changes WHERE id=$1',[delta.id]),/append-only/);
+  await assert.rejects(f.preview(a,w.id,{kind:'save_scope',scope:{...scope,autoWrite:true,expiresAt:new Date(Date.now()+86400000).toISOString(),bindings:[...scope.bindings,{typeId:randomUUID(),fields:['name']}]}}),/one data type/);
+  const standing=await confirm({kind:'save_scope',scope:{...scope,autoWrite:true,expiresAt:new Date(Date.now()+86400000).toISOString()}});
+  const automatic=await f.maintain(ai,w.id,{...batch,requestKey:randomUUID(),scopeId:standing.id,changes:[{kind:'update_record',recordId,expectedVersion:3,data:{name:'Allowed'}}]});assert.equal(automatic.status,'saved');
+  assert.ok((await s.fieldChanges(a,w.id)).changes.some(c=>c.authorization.kind==='maintenance_grant'&&c.authorization.id===standing.id));
+  await f.revoke(a,w.id,standing.id);await assert.rejects(f.maintain(ai,w.id,{...batch,requestKey:randomUUID(),scopeId:standing.id}),/permission changed/);
+  await assert.rejects(new Foundation(db).grant(ai,w.id,{revisionId:randomUUID(),typeIds:[type],maxChanges:1,future:true}),/cannot approve/);
+
+  const cleanType=(await save({kind:'create_type',name:'Organizations',fields:[{key:'name',name:'Name',kind:'text'}]})).objects[0].id;
+  const x=(await save({kind:'create_record',typeId:cleanType,data:{name:'Example Ltd'}})).objects[0].id;
+  const y=(await save({kind:'create_record',typeId:cleanType,data:{name:'Example'}})).objects[0].id;
+  const linked=await confirm({kind:'link_identity',sourceRecordId:y,preferredRecordId:x,sourceVersion:0,preferredVersion:0,rationale:'User reviewed the same organization'});
+  const entity=await f.identity(ai,w.id,y);assert.equal(entity.preferredRecordId,x);assert.equal(entity.originals.length,2);assert.equal(entity.conflicts[0].field,'name');
+  assert.equal((await f.candidates(ai,w.id,[cleanType],'Example')).groups[0].total,2);
+  await confirm({kind:'unlink_identity',linkId:linked.id,expectedVersion:0,reason:'Keep separate'});assert.equal((await f.identity(ai,w.id,y)).preferredRecordId,y);assert.equal((await s.records(a,w.id,cleanType)).total,2);
+  await assert.rejects(f.identity(ai,w.id,recordId),/all fields/);
+
+  const engine=new Foundation(db);const functionPreview=await engine.prepareFunction(ai,w.id,{name:'Create candidate',source:'tools.call("changes.propose",[{kind:"create_record",typeId:input.typeId,data:{name:"Queued candidate"}}]);return {ready:true};',scope:{capabilities:['changes.propose'],typeIds:[cleanType],documents:false},inputContract:{type:'object'},outputContract:{type:'object'}});
+  await assert.rejects(engine.saveFunction(ai,w.id,functionPreview.id,functionPreview.digest),/cannot approve/);
+  const fn=await engine.saveFunction(a,w.id,functionPreview.id,functionPreview.digest);
+  // Full-source access intentionally excludes human-only fields; keep the execution fixture in its own workspace.
+  const ew=await s.createWorkspace(a,'Execution components');await s.setAi(a,ew.id,true);
+  const ep=await f.preview(a,ew.id,{kind:'create_node',nodeKind:'project',name:'Functions'});const eproject=await f.confirm(a,ew.id,ep.id,ep.digest);
+  const fp=await engine.prepareFunction(a,ew.id,{name:'Echo',source:'return input;',scope:{capabilities:[],typeIds:[],documents:false},inputContract:{type:'any'},outputContract:{type:'any'}});const echo=await engine.saveFunction(a,ew.id,fp.id,fp.digest);
+  const componentDraft=await f.preview(a,ew.id,{kind:'save_component',projectId:eproject.id,content:{name:'Runnable code',format:'frontend-js',source:'return {html:"<p>Ready</p>"};',execution:[{name:'echo',revisionId:echo.revisionId}]}});
+  const component=await f.confirm(a,ew.id,componentDraft.id,componentDraft.digest);
+  const run=await f.invokeComponent(ai,ew.id,{componentId:component.id,expectedVersion:0,binding:'echo',input:{test:42},requestKey:randomUUID()});await runFoundation(db);assert.deepEqual((await engine.run(a,ew.id,run.id)).result,{test:42});
+  const archive=await f.preview(a,ew.id,{kind:'archive_component',componentId:component.id,expectedVersion:0,archived:true});await f.confirm(a,ew.id,archive.id,archive.digest);
+  await assert.rejects(engine.run(ai,ew.id,run.id),/Component changed/);
+  await assert.rejects(f.invokeComponent(ai,ew.id,{componentId:component.id,expectedVersion:0,binding:'echo',input:null,requestKey:randomUUID()}),/current component/);
+  const duplicateKey=randomUUID();
+  const source=`tools.call('functions.invoke',{binding:'echo',requestKey:'${duplicateKey}',input:1});tools.call('functions.invoke',{binding:'echo',requestKey:'${duplicateKey}',input:2});return {html:'<p>Test</p>'};`;
+  const atomicDraft=await f.preview(a,ew.id,{kind:'save_component',projectId:eproject.id,content:{name:'Atomic requests',format:'frontend-js',source,execution:[{name:'echo',revisionId:echo.revisionId}]}});const atomic=await f.confirm(a,ew.id,atomicDraft.id,atomicDraft.digest);
+  await assert.rejects(f.runFrontend(ai,ew.id,{componentId:atomic.id,expectedVersion:0}));assert.equal((await db.query('SELECT id FROM foundation_runs WHERE request_key=$1',[duplicateKey])).rows.length,0);
+  const control=await engine.prepareControl(ai,w.id,'grant',{revisionId:fn.revisionId,typeIds:[cleanType],maxChanges:2,future:true});await assert.rejects(engine.confirmControl(ai,w.id,control.id,control.digest),/cannot approve/);const g=await engine.confirmControl(a,w.id,control.id,control.digest);assert.equal(g.fields[0],'name');assert.deepEqual(await engine.confirmControl(a,w.id,control.id,control.digest),g);
+  assert.ok((await s.exportWorkspace(a,w.id)).record_field_changes.length>0);
+ }finally{await pg.close();}
+});

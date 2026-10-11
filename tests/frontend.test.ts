@@ -28,15 +28,15 @@ test('Frontend code: read-only drafts, bound reads, reviewed atomic writes, stal
  const draft=await f.preview(ai,w.id,{kind:'save_component',projectId:project.id,content});
  const initial=await f.runFrontend(ai,w.id,{previewId:draft.id});assert.deepEqual((initial.state as any).data,{name:'Original'});assert.equal((initial.state as any).host,'undefined/undefined/undefined');assert.equal(initial.proposal,null);assert.equal((await f.components(ai,w.id)).length,0);
  await assert.rejects(f.runFrontend(ai,w.id,{previewId:draft.id,event:{kind:'submit',action:'rename'}}));
- const saved=await f.confirm(ai,w.id,draft.id,draft.digest);
+ const saved=await f.confirm(a,w.id,draft.id,draft.digest);
  const request={componentId:saved.id,expectedVersion:0,event:{kind:'submit',action:'rename'}};
  const run=await f.runFrontend(ai,w.id,request);assert.ok(run.proposal);assert.equal((await f.record(db,a,w.id,record)).data.name,'Original');
- const receipt=await f.confirm(ai,w.id,run.proposal.id,run.proposal.digest);assert.deepEqual(await f.confirm(ai,w.id,run.proposal.id,run.proposal.digest),receipt);assert.equal((await f.record(db,a,w.id,record)).data.name,'Renamed');
+ const receipt=await f.confirm(a,w.id,run.proposal.id,run.proposal.digest);assert.deepEqual(await f.confirm(a,w.id,run.proposal.id,run.proposal.digest),receipt);assert.equal((await f.record(db,a,w.id,record)).data.name,'Renamed');
  await assert.rejects(f.runFrontend(viewer,w.id,request));
  await assert.rejects(f.runFrontend(ai,w.id,{...request,event:{kind:'click',action:'bad'}}),/bindings/);
  const before=(await f.pending(ai,w.id)).length;await assert.rejects(f.runFrontend(ai,w.id,{...request,event:{kind:'click',action:'fail'}}));assert.equal((await f.pending(ai,w.id)).length,before);
  await assert.rejects(f.runFrontend(ai,w.id,{...request,expectedVersion:1}),/revision/);
- const stale=await f.runFrontend(ai,w.id,request);assert.ok(stale.proposal);const staleProposal=stale.proposal;await save({kind:'update_record',recordId:record,expectedVersion:1,data:{name:'Concurrent update'}});await assert.rejects(f.confirm(ai,w.id,staleProposal.id,staleProposal.digest),/changed/);
+ const stale=await f.runFrontend(ai,w.id,request);assert.ok(stale.proposal);const staleProposal=stale.proposal;await save({kind:'update_record',recordId:record,expectedVersion:1,data:{name:'Concurrent update'}});await assert.rejects(f.confirm(a,w.id,staleProposal.id,staleProposal.digest),/changed/);
  await change({kind:'set_project_access',nodeId:project.id,expectedVersion:0,allowedUsers:null,ai:false});await assert.rejects(f.runFrontend(ai,w.id,request));
  const final=await f.runFrontend(a,w.id,{componentId:saved.id,expectedVersion:0});assert.equal((final.state as any).data.name,'Concurrent update');
  }finally{await db.close();}

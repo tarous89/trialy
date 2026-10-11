@@ -30,7 +30,7 @@ test('Data/file previews survive service replacement, retain bytes, expire and r
   assert.equal((await db.query('SELECT id FROM data_previews')).rows.length,0);
   const ai={...a,origin:'ai'} as Actor;
   const revoked=await first.preview(ai,w.id,{kind:'create_record',typeId:saved.objects[0].id,data:{name:'Example'}});
-  await first.setAi(a,w.id,false);await assert.rejects(second.commit(ai,revoked.id,revoked.digest),error('ai_disabled'));
+  await first.setAi(a,w.id,false);await assert.rejects(second.commit(ai,revoked.id,revoked.digest),error('human_approval_required'));
   assert.equal((await second.records(a,w.id,saved.objects[0].id)).rows.length,0);
   await second.discard(a,revoked.id);
   const expired=await first.previewFile(a,w.id,{filename:'temporary.bin',mime:'application/octet-stream',bytes,ai:false});

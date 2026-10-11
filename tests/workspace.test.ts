@@ -15,9 +15,9 @@ test('Workspace: exact setup, bounded maintenance, source preservation, reversib
  for(const u of [a,other])await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[u.userId,u.userId,'synthetic@example.invalid','Synthetic']);
  const w=await s.createWorkspace(a,'Workspace'),outside=await s.createWorkspace(other,'Other');await s.setAi(a,w.id,true);
  const save=async(op:any)=>{const p=await s.preview(a,w.id,op);return s.commit(a,p.id,p.digest);};
- const change=async(op:any)=>{const p=await f.preview(ai,w.id,op);return f.confirm(ai,w.id,p.id,p.digest);};
+ const change=async(op:any)=>{const p=await f.preview(ai,w.id,op);return f.confirm(a,w.id,p.id,p.digest);};
  const draft=await f.preview(ai,w.id,{kind:'create_node',nodeKind:'folder',name:'Research'});assert.equal((await f.nodes(ai,w.id)).nodes.length,0);
- const folder=await f.confirm(ai,w.id,draft.id,draft.digest);assert.deepEqual(await f.confirm(ai,w.id,draft.id,draft.digest),folder);
+ const folder=await f.confirm(a,w.id,draft.id,draft.digest);assert.deepEqual(await f.confirm(a,w.id,draft.id,draft.digest),folder);
  const project=await change({kind:'create_node',nodeKind:'project',name:'Partner engagement',parentId:folder.id});
  await assert.rejects(change({kind:'move_node',nodeId:folder.id,expectedVersion:0,parentId:folder.id}),/itself/);
  await assert.rejects(f.nodes(other,w.id));await assert.rejects(f.preview(a,outside.id,{kind:'create_node',nodeKind:'project',name:'No'}));
@@ -25,7 +25,7 @@ test('Workspace: exact setup, bounded maintenance, source preservation, reversib
  // Component previews are durable drafts; saving source never executes it.
  const componentInput={kind:'save_component',projectId:project.id,content:{name:'Outreach view',format:'html',source:'<script>throw new Error("must stay inert")</script>',bindings:[{typeId:table,fields:['name']}]}};
  const componentDraft=await f.preview(ai,w.id,componentInput);assert.equal((await f.components(ai,w.id)).length,0);
- const fresh=new WorkspaceFoundation(db);const component=await fresh.confirm(ai,w.id,componentDraft.id,componentDraft.digest);
+ const fresh=new WorkspaceFoundation(db);const component=await fresh.confirm(a,w.id,componentDraft.id,componentDraft.digest);
  assert.equal((await f.readComponent(ai,w.id,component.id)).component.source,componentInput.content.source);
  assert.equal((await f.componentHistory(ai,w.id,component.id)).length,1);
  await assert.rejects(f.readComponent(other,w.id,component.id));await assert.rejects(f.readComponent(a,outside.id,component.id));
@@ -39,7 +39,7 @@ test('Workspace: exact setup, bounded maintenance, source preservation, reversib
  assert.equal((await f.componentHistory(a,w.id,component.id)).length,5);
  await assert.rejects(change({...componentInput,projectId:folder.id}),/Choose a project/);
  await assert.rejects(change({...componentInput,content:{...componentInput.content,format:'json',source:'not JSON'}}),/valid JSON/);
- const body={projectId:project.id,purpose:'CRO outreach',inclusionCriteria:'CROs involved in this project',sourcePolicy:'Information supplied in authorized project work',basis:'tracking',bindings:[{typeId:table,fields:['name']}],allowCreate:true,allowUpdate:true,allowIdentityLinks:true,maxChanges:5};
+ const body={autoWrite:true,expiresAt:new Date(Date.now()+86400000).toISOString(),projectId:project.id,purpose:'CRO outreach',inclusionCriteria:'CROs involved in this project',sourcePolicy:'Information supplied in authorized project work',basis:'tracking',bindings:[{typeId:table,fields:['name']}],allowCreate:true,allowUpdate:true,allowIdentityLinks:true,maxChanges:5};
  const scope=await change({kind:'save_scope',scope:body});
  const batch={requestKey:randomUUID(),scopeId:scope.id,expectedScopeVersion:0,sourceLabel:'User supplied shortlist',interpretation:'Two eligible CRO name observations',changes:[{kind:'create_record',typeId:table,data:{name:'Example CRO Ltd'}},{kind:'create_record',typeId:table,data:{name:'Example CRO'}}]};
  const receipt=await f.maintain(ai,w.id,batch);assert.equal(receipt.recordIds.length,2);assert.deepEqual(await f.maintain(ai,w.id,batch),receipt);assert.equal((await s.records(a,w.id,table)).total,2);
@@ -66,7 +66,7 @@ test('Workspace: exact setup, bounded maintenance, source preservation, reversib
  const rendered=await f.renderComponent(ai,w.id,component.id,1);assert.equal(rendered.rows.length,2);assert.deepEqual(Object.keys(rendered.rows[0].data),['name']);
  const row=rendered.rows[0];const edit={kind:'edit_component_record',componentId:component.id,expectedVersion:6,recordId:row.id,recordVersion:row.version,field:'name',value:'Inline correction'};
  await assert.rejects(change({...edit,field:'address'}),/not editable/);
- const editPreview=await f.preview(ai,w.id,edit);const edited=await f.confirm(ai,w.id,editPreview.id,editPreview.digest);assert.deepEqual(await f.confirm(ai,w.id,editPreview.id,editPreview.digest),edited);
+ const editPreview=await f.preview(ai,w.id,edit);const edited=await f.confirm(a,w.id,editPreview.id,editPreview.digest);assert.deepEqual(await f.confirm(a,w.id,editPreview.id,editPreview.digest),edited);
  assert.equal((await f.record(db,a,w.id,row.id)).data.name,'Inline correction');await assert.rejects(change(edit),/changed/);
  await assert.rejects(change({kind:'save_component',componentId:component.id,expectedVersion:6,projectId:destination.id,content:{name:'Bad binding',format:'trialy-ui',source:uiSource,bindings:[]}}),/declared/);
  const exported=await s.exportWorkspace(a,w.id);assert.equal(exported.workspace_nodes.length,3);assert.equal(exported.workspace_components.length,1);assert.equal(exported.maintenance_scopes.length,1);assert.equal(exported.identity_links.length,1);assert.equal(exported.record_observations.length,4);

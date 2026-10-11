@@ -55,3 +55,11 @@ Limitations: forms/charts/actions, arbitrary frontend code, asset packages, prov
 ## Frontend scope correction
 
 The user rejected a proprietary component catalogue. `trialy-ui` is now compatibility-only; new UI authoring uses ChatGPT-written `frontend-js` code. The supported runtime and honest limitations are described in [FRONTEND_CODE.md](FRONTEND_CODE.md). Prior text/table implementation notes above describe historical behavior, not a plan to build more UI block types.
+
+## 11 October update: approval, identity reads and execution bindings
+
+Earlier descriptions of automatic maintenance are superseded by WRITE_AUTHORIZATION.md. Scopes are now preview-only by default. Long-term writes require reviewed autoWrite:true, exactly one type and expiry. maintain_workspace_records otherwise returns a durable apply_maintenance proposal. Confirmation commits observations, records and receipts together; fields retain exact approval/grant evidence.
+
+read_shared_identity resolves an accepted same-table star into preferred values, retained originals, conflicts, authorized observations and up to 100 incoming relationships. find_identity_candidates searches up to ten permitted types, 25 results each. These are search/read primitives: ChatGPT decides semantics; no fuzzy match automatically becomes a merge. Runtime entities.read excludes cross-table relationships to respect declared capabilities.
+
+Component content includes execution:[{name,revisionId,grantId?}]. Functions remain owned by their author, not delegated to everyone who can view a component. Bindings require all currently readable fields of the function's declared types. Workers and commits recheck current component version/access and attached grant. Moves/edits/archive invalidate prior execution contexts; source restore clears execution bindings. Generic schedules can include componentContext and pause if it becomes invalid.

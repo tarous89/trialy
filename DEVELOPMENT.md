@@ -4,7 +4,7 @@ Updated 11 October 2026 following the shared-database and saved-component clarif
 
 ## Current position
 
-Existing foundation: PostgreSQL data/originals, authentication, human/AI permissions, transactional changes and audit, previews, bounded JavaScript execution, saved function revisions, grants and background runs. Runtime `a8c0002` is deployed on the existing Render web and worker, including project/maintenance, saved components, inherited access restrictions and initial ChatGPT-written frontend code hosting and durable data/file staging. Private plugin instructions are version 0.2.4. The custom block renderer is compatibility-only. [EXECUTION.md](docs/EXECUTION.md) describes actual capabilities and limits. The earlier execution checklist is preserved in [the archive](docs/archive/development-execution-foundation-2026-10-11.md); its completed checkboxes do not mean the expanded product is complete.
+Existing foundation: PostgreSQL data/originals, authentication, human/AI permissions, transactional changes and audit, previews, bounded JavaScript execution, saved function revisions, grants and background runs. Runtime `a8c0002` is deployed on the existing Render web and worker, including project/maintenance, saved components, inherited access restrictions and initial ChatGPT-written frontend code hosting and durable data/file staging. Private plugin source is updated to 0.2.5 for the new approval and execution contract; deployment results are recorded in HISTORY. The custom block renderer is compatibility-only. [EXECUTION.md](docs/EXECUTION.md) describes actual capabilities and limits. The earlier execution checklist is preserved in [the archive](docs/archive/development-execution-foundation-2026-10-11.md); its completed checkboxes do not mean the expanded product is complete.
 
 Not yet complete: the full shared cross-import entity layer, unrestricted generated-interface hosting, advanced component organization and live external adapters. Basic folders/project/component moves, restricted sharing and initial isolated frontend code hosting are implemented. Existing views, forms and sharing are reusable foundations, not evidence that all these targets work already. User-driven ChatGPT testing has started; full host acceptance remains open.
 
@@ -22,42 +22,43 @@ Scope correction: do not extend a Trialy UI block catalogue. ChatGPT authors fro
 
 Added migration 021: ordinary data/file previews now use shared PostgreSQL staging, including exact binary uploads, expiry, per-workspace capacity limits and atomic draft deletion with save receipts. Confirmation still rechecks permissions and current versions. Previews remain temporary and do not enter official history before confirmation.
 
-Next priority: implement the superseding [write authorization and field-change history contract](docs/WRITE_AUTHORIZATION.md) before extending automatic maintenance. Then verify browser/ChatGPT code hosting and extend code-runtime/tool integration; shared identity-aware queries/project relationships; granular project sharing; scheduled maintenance integration. Project organization currently requires unrestricted workspace access. Semantic inclusion/source-policy judgment remains ChatGPT's responsibility, with structural/grant/permission enforcement in the backend. See [WORKSPACE_FOUNDATION.md](docs/WORKSPACE_FOUNDATION.md).
+Implemented the core [write authorization and field-change history contract](docs/WRITE_AUTHORIZATION.md), identity-aware reads and component worker bindings. Next: verify browser/ChatGPT code hosting and extend code-runtime/tool integration; shared identity-aware queries/project relationships; granular project sharing; scheduled maintenance integration. Project organization currently requires unrestricted workspace access. Semantic inclusion/source-policy judgment remains ChatGPT's responsibility, with structural/grant/permission enforcement in the backend. See [WORKSPACE_FOUNDATION.md](docs/WORKSPACE_FOUNDATION.md).
 
 ## Remaining work at this checkpoint
 
-0. Implement visible approval by default for every database change, optional explicit data-type-specific longer-term permission, permanent field-level authorization history and reviewed reversal (see implementation sequence below).
-1. Complete shared entity identity and contextual relationships across imports/projects, preferred facts, conflicts and reversible corrections; expose permission-filtered reconciliation queries to ChatGPT.
-2. Finish task-driven setup/capture integration: reuse existing structure, review initial setup, propose only qualifying fields/records, saving after approval or under explicit longer-term data-type permission, and support reviewed expansion/backfill.
-3. Connect saved interfaces to exact function revisions, worker schedules, grants, status and cancellation; recheck authority after sharing changes and moves.
-4. Extend the generated-code bridge to files and authorized tools; finish source/edit-target metadata, assets, component organization/search and granular sharing/collection. Keep frontend authorship in ChatGPT; no fixed UI block catalogue.
-5. Add the first external provider once selected and accessible, with scoped connections, confirmation and duplicate-effect protection. Signatures remain conditional on provider requirements/cost.
-6. Finish production integrity: export/recovery coverage, restricted runtime credentials, essential monitoring and a real managed-backup restore after recovery/retention decisions. Shared temporary data/file storage is now complete.
-7. Verify the complete synthetic journey and real ChatGPT login return, rendering, persistence and revocation; fix observed issues. Customer reliance/publication and the final name change remain separate readiness decisions.
+1. Complete broader shared-data semantics: platform project relationships, contextual/historical facts, preferred-value decisions and schema-semantic reconciliation. Accepted same-table identity groups, candidate search, preserved conflicts and references are now readable.
+2. Finish setup/capture orchestration and reviewed backfill around the implemented task scopes. Default writes require approval; type-specific standing permission is explicit and expiring.
+3. Finish component organization (search, project/folder archive, fork/assets), partial-data component access and external collection/sharing. Exact function attachment, generic run/status/cancel and component-aware worker/schedule enforcement are implemented.
+4. Extend the generated-code bridge for files/providers and richer application hosting as needed. Validate current HTML/CSS/event hosting in the real ChatGPT/browser environment; unmodified React/npm apps remain unsupported.
+5. Finish selected change-set reversal/creation archival and richer history filtering. Individual current-field reversal is implemented; later edits require explicit correction. Embedded approval currently uses a secure standalone handoff.
+6. Add the first external provider after provider/account selection, with scoped credentials, effect previews and duplicate-effect handling. Electronic signatures remain conditional on provider requirements/cost.
+7. Finish restricted production credentials, monitoring and actual managed-backup recovery after retention/recovery decisions. Complete the real-host end-to-end journey before customer reliance/public publication.
 
-These are remaining capabilities, not seven releases. Existing partial implementations are recorded below; an unchecked broad item can include working subparts.
+These are remaining capabilities, not releases. Broad unchecked items below can include working subparts. No new provider account or paid resource has been created.
 
 ## Immediate implementation sequence: write approval and history
 
-- [ ] Inventory every write path and current standing grant, including MCP, manual edits, generated interfaces, imports, reconciliation and workers. Update plugin guidance alongside backend enforcement. Keep existing records/history intact; do not treat old task/setup approval as future write authority.
-- [ ] Implement a common exact field-diff proposal contract and trusted confirmation path. Show every before/after value and additions/removals, with visible Approve changes / Discard controls in both surfaces. A clearly reviewed batch can use one approval. Recheck permissions and versions at commit.
-- [ ] Implement explicit versioned longer-term grants for individual data types, with visible field/action/source/actor bounds, validity and revocation. Separate schema approval from future-write permission; reject blanket and silently expanded grants. Assess existing grants and require renewed approval where incompatible.
-- [ ] Persist every committed field delta and its approval/grant reference atomically with the write/receipt, including derived changes and AI/code/worker attribution. Expose completed changes under grants as well as individually approved changes; enforce current permissions on historical values.
-- [ ] Add a fixed Changes and permissions area for pending reviews, saved field changes and grant management, shared by web and embedded workspace. Include filtering and source/authorization detail without exposing human-only data to ChatGPT.
-- [ ] Implement reviewed field/change-set reversal as a new audited transaction. Preserve original history, detect later edits/dependencies and reject unsafe overwrites. Do not imply reversal of external actions.
-- [ ] Run focused checks for approval enforcement, type/field scope, expiry/revocation, atomic evidence, hidden-value protection, idempotency and safe reversal; verify actual approval UI in ChatGPT when host testing is available.
+- [x] Inventory every record-data write path and current standing grant, including MCP, manual edits, generated interfaces, imports, reconciliation and workers. Update plugin guidance alongside backend enforcement. Keep existing records/history intact; do not treat old task/setup approval as future write authority.
+- [x] Implement record field-diff previews and a trusted authenticated human confirmation path (embedded buttons open the standalone review). Show every before/after value and additions/removals, with visible Approve changes / Discard controls in both surfaces. A clearly reviewed batch can use one approval. Recheck permissions and versions at commit.
+- [x] Implement explicit versioned longer-term grants for individual data types, with visible field/action/source/actor bounds, validity and revocation. Separate schema approval from future-write permission; reject blanket and silently expanded grants. Assess existing grants and require renewed approval where incompatible.
+- [x] Persist every committed record-data field delta and its approval/grant reference atomically with the write/receipt, including derived changes and AI/code/worker attribution. Expose completed changes under grants as well as individually approved changes; enforce current permissions on historical values.
+- [x] Add a fixed Changes and permissions area for pending reviews, saved field changes and grant management, shared by web and embedded workspace. Include filtering and source/authorization detail without exposing human-only data to ChatGPT.
+- [x] Implement reviewed individual current-field reversal as a new audited transaction.
+- [ ] Extend reversal to selected change sets and safe record-creation archival. Preserve original history, detect later edits/dependencies and reject unsafe overwrites. Do not imply reversal of external actions.
+- [x] Run focused backend checks for approval enforcement, type/field scope, expiry/revocation, atomic evidence, hidden-value protection, idempotency and safe reversal.
+- [ ] Verify actual approval UI and code hosting in ChatGPT when host testing is available.
 
-This is a newly approved requirement, not a claim that the current deployed runtime already implements it.
+Migrations 022–023 implement the checked items. Human-only confirmation uses the standalone authenticated session; no in-chat-only consent or regulated signature is claimed. Older history remains available but is not backfilled with invented authorizations.
 
 ## Ordered implementation steps
 
 ### 1. Define and separate the shared data and component contracts
 
 - [ ] Implement the three-layer contract: fixed platform, extensible person/organization/project/location concepts, and customer-designed schema. Use the platform project identity for project relationships; studies are optional extensions.
-- [ ] Define a versioned maintenance scope: task purpose, inclusion criteria, approved schema/relationships, authorized sources, actor and revocable permission. Keep schema/setup approval distinct from routine data maintenance.
+- [x] Define a versioned maintenance scope: task purpose, inclusion criteria, approved schema/relationships, authorized sources, actor and revocable permission. Keep schema/setup approval distinct from routine data maintenance.
 - [ ] Inventory actual entity, relationship, project, view, file, permission and execution primitives and their legacy callers.
 - [ ] Define stable IDs and contracts for shared entities/observations, project-specific relationships, folders/projects, saved components/revisions, data bindings and execution references.
-- [ ] Separate data identity from display location; moving a component must not move or duplicate its underlying shared entities.
+- [x] Separate data identity from display location; moving a component must not move or duplicate its underlying shared entities.
 - [ ] Finish extracting reusable commit/permission services where needed. Use additive migrations and compatible adapters; preserve existing records and histories.
 
 ### 2. Build shared entity identity and source provenance
@@ -74,7 +75,7 @@ This is a newly approved requirement, not a claim that the current deployed runt
 - [x] Implement reviewed schema/inclusion-scope expansion and permitted backfill (for example addresses), then ongoing maintenance of newly approved fields. Do not silently broaden sources or fabricate missing values.
 - [ ] Let ChatGPT propose match/link/merge, preferred-value and conflict decisions, including rationale and source references.
 - [ ] Preserve original entries and alternatives, record accepted decisions, and implement undo/split/correction without losing relationships or audit evidence.
-- [ ] Adapt existing atomic imports/maintenance writes and idempotent receipts to approval-by-default and explicit data-type-specific longer-term grants. Existing transaction support is implemented; the superseding authorization contract is pending.
+- [x] Adapt existing atomic imports/maintenance writes and idempotent receipts to approval-by-default and explicit data-type-specific longer-term grants. Human approval is enforced; standing permissions are explicit and expiring.
 - [ ] Keep uncertain alternatives local to facts/entities; do not create whole-database branches. Do not require a rigid matching rulebook or prompt for every minor normalization.
 - [ ] Ensure a merge cannot expose hidden data, infer permissions, or silently retarget an external action.
 
@@ -103,8 +104,8 @@ This is a newly approved requirement, not a claim that the current deployed runt
 
 ### 7. Bind components to tools and background execution
 
-- [ ] Attach saved components to exact function revisions, triggers and scoped grants using the existing worker infrastructure.
-- [ ] Expose generic run/status/cancel/schedule controls; do not add a hardcoded business automation catalogue.
+- [x] Attach saved components to exact function revisions and optional type-specific grants; support componentContext on generic schedules and recheck it in workers/commits.
+- [x] Expose generic run/status/cancel/schedule controls; do not add a hardcoded business automation catalogue.
 - [ ] Implement tenant/user provider connections and trusted adapter registration. Start with the first selected external service, then add email/calendar or other requested capabilities as accounts allow.
 - [ ] Add external-effect previews where possible, receipts, idempotency and unknown-outcome reconciliation. Database rollback cannot undo a sent email or calendar invitation.
 - [ ] Keep electronic signatures conditional on provider cost/requirements; do not label internal confirmations as regulated signatures. Backend workers do not inherit ChatGPT's other connections automatically.

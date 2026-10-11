@@ -19,30 +19,37 @@
     "017_workspace_foundation.sql": "93b734f4ff6d8c4df9094933cc739f33313a05677085b789dafa3c3e1307e381",
     "018_saved_components.sql": "81750a8e218fe35c7089f517dbdc014a120c090192d673473586b997af45f383",
     "019_project_access.sql": "3a5880431b8ebb051b43d2fb0958a2fa9173ac8286c4417ddec006da6c318737",
-    "020_frontend_code.sql": "73ca631773e2b3264888fb45ac465e62cbc713660157549dcd890a1aa4ccf480"
+    "020_frontend_code.sql": "73ca631773e2b3264888fb45ac465e62cbc713660157549dcd890a1aa4ccf480",
+    "021_durable_data_previews.sql": "4cd9fb077e8de3a8b708c2a8472c8c9da7232c3079da41d61f5e8365916e0e9c",
+    "022_write_history.sql": "1ad85cfba4be81052dca636c43698703011afe227216c7ac850cca54df855799",
+    "023_component_execution.sql": "d005641ac3f666d5a7c398c436d160477f25a3d7d47235b546b2a436f0222f13"
   },
-  "date": "2026-10-11T13:47:43.253Z",
+  "date": "2026-10-11T17:24:55.120Z",
   "environment": "Isolated PGlite synthetic data-directory backup and restore",
   "status": "passed",
-  "backupBytes": 5098260,
-  "restoreMilliseconds": 510,
-  "totalMilliseconds": 2917,
+  "backupBytes": 5131745,
+  "restoreMilliseconds": 516,
+  "totalMilliseconds": 2991,
   "inventory": {
+    "record_field_changes": {
+      "count": 3,
+      "sha256": "0c8342877bc3bfd12eb3b511dbe5285657250248a235fc1640d9d2694de1d87c"
+    },
     "workspace_nodes": {
       "count": 1,
-      "sha256": "84883bdb2f5ed1b0e809347b4f35ecef591c6e3c5c8a32f99f34c2d0e4dd7dfa"
+      "sha256": "60e36de3cd4b57025c869225ff8b75a147134d63c622c6586cc857eded9d4a38"
     },
     "workspace_components": {
       "count": 1,
-      "sha256": "747b4e4a7c7051c497953b0b657bd7de47d8c0caa1682a650715b30b3b69ad39"
+      "sha256": "6afed64928b266c2a2b9a77ed8605d6e137ac783057d7bc00f21a2a6de5279e0"
     },
     "maintenance_scopes": {
       "count": 1,
-      "sha256": "6f59273cbe7d2909ae0b65c1bdbe5da51ff32aaa4f307a481039f93e8aa9a7d3"
+      "sha256": "10241e6beb3adbd3953792719eee192ffd135ff78b51c08417cc2cfda070eeb2"
     },
     "workspace_receipts": {
-      "count": 4,
-      "sha256": "0fadb1e94a35da72cebfcec863f9758f84db480a4dd164902a6e2915bba262c7"
+      "count": 5,
+      "sha256": "15048b590d1bf3efb926bf7f08dc05952286cb91d4eba1566ac5dde5057f7a27"
     },
     "identity_links": {
       "count": 0,
@@ -50,59 +57,59 @@
     },
     "record_observations": {
       "count": 1,
-      "sha256": "20fc68b83a5e88f7a9b554109245b0f3b0cb8df15061046a5bf0d93f415d0ac7"
+      "sha256": "e1d1d86a67933ccfcac3e7051e34712e0ece4d86a56bbe72ae0cd80962451a10"
     },
     "records": {
       "count": 2,
-      "sha256": "31ec420ba56ec7dc6f1dd2821dd92b567ccdac7925065b463219e819113f0a32"
+      "sha256": "0a0d1ea77691c2beb627bc33fcf7bd0c36d7f4c87fece70d4d84c2f8fcd37444"
     },
     "document_versions": {
       "count": 1,
-      "sha256": "5e161d734d308856c4965d306874204cd6cf7e0d6ce4f5894ac569a50d4e2a74"
+      "sha256": "392d1cb371ffd49ebda8e58f8e5963cca2096b8a072297a921239997ca883f98"
     },
     "document_payloads": {
       "count": 1,
-      "sha256": "31cff4f696cfdbdad61436783198382134eca77e519ad739cee290eb0975b39e"
+      "sha256": "b1335c69d97af95987d0b3346655b0d8bb57d574a06eccab4813743a977e5bba"
     },
     "revisions": {
       "count": 8,
-      "sha256": "1c8575709c69c870c63efb312c08d972bd41a1a49a0888ee4aa664724e1933f7"
+      "sha256": "daab51284a4f52e26b81c39a1e9fdb703ca48c9f0c77cc347942a80e481b23a7"
     },
     "audit_events": {
       "count": 12,
-      "sha256": "b706633ea06aaf3dd63888677b4b2f83ff39804d1ec29fa8d2eff04eda821b3c"
+      "sha256": "4f875ec0b8fa4961f7e7dc4990221dab0442d207130fe64f24ad2d6ca5ab69fc"
     },
     "commit_receipts": {
       "count": 5,
-      "sha256": "cd26caa47a42e0ee8d37bbd31acdd8b1594612cb79a422351608b63c5365b03f"
+      "sha256": "2299915e5cafdc68059af5a88e0f868096436edc7f34b5480ed57bb7a9f0c88f"
     },
     "jobs": {
       "count": 1,
-      "sha256": "557c9510b22789d05fc6818da6a937380151d5ab97ee183335537fcd66d3ee64"
+      "sha256": "2054f9c74111d5749b28993774350113227644beb5bc2a999749095f3f51ef83"
     },
     "external_links": {
       "count": 1,
-      "sha256": "f50ed2a567e6f82ec21fa783fb81dae984e6e7b8bc050d4a6940fe4ce6a0c151"
+      "sha256": "e52d74cfddbea788f13911ffc0b1fdaf2ef868ac4664d101e06ead4c90f0dbd0"
     },
     "form_submissions": {
       "count": 1,
-      "sha256": "14983e932306487ad2069aa0bd837d6eb1dfc5d4fed88846cbf7f654675c035b"
+      "sha256": "a62fa96d1aae1b9104ff8a38fe6f2afbbd17a6ca26318689abdcb29c6563a597"
     },
     "submission_files": {
       "count": 1,
-      "sha256": "d0a0995357671905ea47a0f97d3abaabfcb1939857dc7269c896cc4359c342b7"
+      "sha256": "8c3ccb711dc4b9cb17d752fb7260db41eb149f2cc307aab1083d8460caa88369"
     },
     "foundation_functions": {
       "count": 1,
-      "sha256": "30afdd1f1165687b794824cdd5ddd5aa8c7e0fc742f252124c108df38fc46776"
+      "sha256": "de35843fe1b761cda5ec804a00042af60f9956c329951cfa3d8873d17d7ce338"
     },
     "foundation_revisions": {
       "count": 1,
-      "sha256": "936e807155b52b83dfce945520cde43aac17e26b13dcc0b27531cd886a91811e"
+      "sha256": "a3eea003d9952a0a9eebf3c41160c7e902c0d3fbd1d4557677303aa2a837f270"
     },
     "foundation_receipts": {
       "count": 1,
-      "sha256": "ee5884d5ee161210a33b968d4fd3308f962d874c00f1ae0834d7c2ce561c6456"
+      "sha256": "8a70177916f73ab7352ba43ec5898c167174ee51989aeb94c7778c5b981651b8"
     }
   },
   "originalBytesVerified": true,
