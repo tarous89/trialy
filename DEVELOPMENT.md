@@ -4,7 +4,7 @@ Updated 11 October 2026. This replaces the old 18-step business-feature checklis
 
 ## Current position
 
-The foundation execution path is implemented on `foundation-reset`; no legacy rows or histories were deleted. See [EXECUTION.md](docs/EXECUTION.md) for the implemented limits and remaining boundaries. The original new-scope checklist below remains a detailed contract; checked items are implemented, not a claim of production validation.
+The foundation execution path is implemented and merged from `foundation-reset` to main. Runtime `3234b5b` is live on both existing Render services; no legacy rows or histories were deleted. See [EXECUTION.md](docs/EXECUTION.md) for the implemented limits and remaining boundaries. The original new-scope checklist below remains a detailed contract; checked items are implemented, not a claim of production validation.
 
 ## Ordered implementation steps
 
