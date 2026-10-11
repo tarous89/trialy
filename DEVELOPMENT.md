@@ -26,7 +26,7 @@ Implemented the core [write authorization and field-change history contract](doc
 
 ## Remaining work at this checkpoint
 
-1. Finish broader shared-data semantics: cross-table semantic mapping, contextual relationship queries and per-alias value propagation. Stable project-record links, dated/project-scoped candidate facts, reviewed main-value selection and immutable withdrawal are implemented; see docs/SHARED_DATA.md.
+1. Finish broader shared-data semantics: reusable table-level mapping definitions, contextual relationship queries and per-alias value propagation. Reviewed direct cross-table identity claims with explicit field correspondence and withdrawal are implemented. Stable project-record links, dated/project-scoped candidate facts, reviewed main-value selection and immutable withdrawal are implemented; see docs/SHARED_DATA.md.
 2. Finish richer setup/capture orchestration. ChatGPT-directed reviewed backfill now fills missing approved fields on existing records under current task scopes, always requiring review. It does not independently crawl sources. Default writes require approval; type-specific standing permission remains explicit and expiring.
 3. Finish component assets, partial-data component access and external collection/sharing. Name search, reviewed copies and project/folder archive/restore are implemented. Exact function attachment, generic run/status/cancel and component-aware worker/schedule enforcement are implemented.
 4. Extend the generated-code bridge for files/providers and richer application hosting as needed. Validate current HTML/CSS/event hosting in the real ChatGPT/browser environment; unmodified React/npm apps remain unsupported.
@@ -138,3 +138,7 @@ No fixed clinical templates, review chains, prescribed business workflows or har
 Use focused checks for reconciliation undo/source preservation, tenant/AI access, move/sharing boundaries, generated UI isolation, atomic saves/retries and external duplicate effects, plus the single end-to-end example above. Reuse existing meaningful checks; avoid exhaustive cosmetic or template tests.
 
 Proceed without further product decisions on the shared data/component foundation. Ask only when a concrete external provider/account, new paid infrastructure, production recovery policy or publication decision is required. No new account or cost has been approved by this documentation update.
+
+## Next checkpoint — direct cross-table reconciliation
+
+Implemented reviewed cross-table identity claims, per-pair compatible field mappings, schema-change detection, permission-filtered comparisons, withdrawal and preserved originals. The shared project record page opens comparisons as a separate screen. Both new operations always require human approval; same-table grants and code reads do not gain cross-table authority. Migration 026, export/runtime-role coverage and synthetic restore coverage are included. Reusable table-level mapping, contextual relationship queries and per-alias correction remain next; this checkpoint does not complete the entire shared entity layer.

@@ -123,3 +123,5 @@ Projects and folders can also be archived by their owner, with an exact preview 
 ### Shared data across projects
 
 Projects can reference the same records without copying them. Candidate field values retain their source labels, optional project/date context and exact approval; selecting a main value is a separate reviewed edit. Withdrawing a candidate preserves its evidence. ChatGPT can prepare missing-value backfill from permitted sources under an approved task scope; backfill always requires review and cannot replace existing non-empty values. See [shared-data behavior](docs/SHARED_DATA.md) for capabilities and limits.
+
+Cross-table reconciliation now supports reviewed direct identity claims with explicit field mappings between two differently structured records. Both originals remain intact; comparisons and withdrawal are available from project record details. Mapping approval does not authorize future writes or apply to every row in a table. See [shared data](docs/SHARED_DATA.md) for boundaries and remaining work.

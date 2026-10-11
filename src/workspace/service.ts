@@ -220,8 +220,38 @@ export class WorkspaceFoundation {
   const keep=await this.moveRestrictions(tx,a,w,source.project_id,source);
   return {name:op.name,format:source.format,source:source.source,bindings:source.bindings,execution:[],allowed_users:keep.users,ai_enabled:keep.ai,archived:false,copiedFrom:{componentId:source.id,version:source.version}};
  }
+ private async crossTableReview(tx:Connection,a:Actor,w:string,op:Extract<WorkspaceOperation,{kind:'link_cross_table_identity'|'unlink_cross_table_identity'}>){
+  const old=op.kind==='unlink_cross_table_identity'?(await tx.query('SELECT * FROM cross_table_links WHERE id=$1 AND workspace_id=$2',[op.linkId,w])).rows[0]:null;
+  if(op.kind==='unlink_cross_table_identity'&&(!old||old.revoked_at||old.version!==op.expectedVersion))fail(409,'stale_version','Cross-table link changed');
+  const source=await this.record(tx,a,w,old?.source_record_id??(op as any).sourceRecordId,true,true),preferred=await this.record(tx,a,w,old?.preferred_record_id??(op as any).preferredRecordId,true,true);
+  const pairs=op.kind==='link_cross_table_identity'?op.fieldPairs:old.field_pairs;
+  const schemaStamp=checksum(J([source.type_id,source.fields,preferred.type_id,preferred.fields]));
+  if(op.kind==='link_cross_table_identity'){
+   if(source.type_id===preferred.type_id)fail(400,'identity_type','Use same-table identity links for records of the same type');
+   if(source.version!==op.sourceVersion||preferred.version!==op.preferredVersion)fail(409,'stale_version','Cross-table source changed');
+   if([source,preferred].some(r=>r.state==='archived'||r.state==='superseded'))fail(409,'inactive_record','Choose active records');
+   if(new Set(pairs.map((v:any)=>v.sourceField)).size!==pairs.length||new Set(pairs.map((v:any)=>v.preferredField)).size!==pairs.length)fail(400,'mapping_duplicate','Map each field at most once');
+   for(const pair of pairs){const s=source.fields.find((f:any)=>f.key===pair.sourceField),t=preferred.fields.find((f:any)=>f.key===pair.preferredField);
+    if(!s||!t||s.kind!==t.kind||s.formula||t.formula||s.targetTypeId!==t.targetTypeId)fail(400,'mapping_fields','Choose compatible visible fields; computed fields and relationship retargeting are not supported');
+   }
+   if((await tx.query('SELECT id FROM cross_table_links WHERE workspace_id=$1 AND revoked_at IS NULL AND ((source_record_id=$2 AND preferred_record_id=$3) OR (source_record_id=$3 AND preferred_record_id=$2))',[w,source.id,preferred.id])).rows.length)fail(409,'identity_conflict','These records already have an active cross-table link');
+  }
+  return {source:{id:source.id,typeId:source.type_id,version:source.version,data:source.data},preferred:{id:preferred.id,typeId:preferred.type_id,version:preferred.version,data:preferred.data},fieldPairs:pairs,schemaStamp,effect:op.kind==='link_cross_table_identity'?'Record a direct identity claim and field correspondence; preserve both records and every value':'Withdraw this identity claim; preserve both records and history'};
+ }
+ async crossTableLinks(a:Actor,w:string,recordId:string,offset=0){
+  await this.record(this.db,a,w,recordId,false,true);
+  const rows=(await this.db.query('SELECT * FROM cross_table_links WHERE workspace_id=$1 AND (source_record_id=$2 OR preferred_record_id=$2) ORDER BY created_at,id LIMIT 101 OFFSET $3',[w,recordId,offset])).rows,links=[];
+  for(const link of rows.slice(0,100)){
+   let source:any,preferred:any;
+   try{source=await this.record(this.db,a,w,link.source_record_id,false,true);preferred=await this.record(this.db,a,w,link.preferred_record_id,false,true);}catch(e){if([403,404].includes((e as any).status))continue;throw e;}
+   const schemaChanged=link.schema_stamp!==checksum(J([source.type_id,source.fields,preferred.type_id,preferred.fields]));
+   links.push({...link,schemaChanged,source:{id:source.id,typeId:source.type_id,version:source.version,data:source.data},preferred:{id:preferred.id,typeId:preferred.type_id,version:preferred.version,data:preferred.data},comparisons:schemaChanged?[]:link.field_pairs.map((pair:any)=>({...pair,sourcePresent:Object.hasOwn(source.data,pair.sourceField),preferredPresent:Object.hasOwn(preferred.data,pair.preferredField),sourceValue:source.data[pair.sourceField]??null,preferredValue:preferred.data[pair.preferredField]??null,conflict:J(source.data[pair.sourceField])!==J(preferred.data[pair.preferredField])}))});
+  }
+  return {recordId,links,nextOffset:rows.length>100?offset+100:null,interpretation:'Direct reviewed identity claims only. No transitive merge, value propagation, permission grant or relationship/action retargeting. Changed schemas require a new mapping review.'};
+ }
  private async validate(tx:Connection,a:Actor,w:string,op:WorkspaceOperation){
   await this.policy(tx,a,w,true);
+  if(op.kind==='link_cross_table_identity'||op.kind==='unlink_cross_table_identity')await this.crossTableReview(tx,a,w,op);
   if(['record_fact','prefer_record_fact','retract_record_fact'].includes(op.kind))await this.factReview(tx,a,w,op as Extract<WorkspaceOperation,{kind:'record_fact'|'prefer_record_fact'|'retract_record_fact'}>);
   if(op.kind==='link_project_records'||op.kind==='unlink_project_record')await this.projectLinksReview(tx,a,w,op);
   if(op.kind==='archive_node')await this.nodeArchive(tx,a,w,op);
@@ -296,10 +326,10 @@ export class WorkspaceFoundation {
   await this.db.query('DELETE FROM workspace_previews WHERE expires_at<now()');
   const n=Number((await this.db.query('SELECT count(*) AS n FROM workspace_previews WHERE user_id=$1',[a.userId])).rows[0].n);if(n>=50)fail(429,'preview_limit','Too many pending previews');
   const schemaStamp=body.kind==='save_scope'?await this.scopeStamp(this.db,{...a,origin:'ai'},w,body.scope):null;
-  const fieldChanges=await this.previewFieldChanges(a,w,body);const accessStamp=await this.accessStamp(this.db,w);const factReview=['record_fact','prefer_record_fact','retract_record_fact'].includes(body.kind)?await this.factReview(this.db,a,w,body as Extract<WorkspaceOperation,{kind:'record_fact'|'prefer_record_fact'|'retract_record_fact'}>):undefined;const projectLinks=body.kind==='link_project_records'||body.kind==='unlink_project_record'?await this.projectLinksReview(this.db,a,w,body):undefined;const projectArchive=body.kind==='archive_node'?await this.nodeArchive(this.db,a,w,body):undefined;const componentCopy=body.kind==='copy_component'?await this.componentCopy(this.db,a,w,body):undefined;const envelope={operation:body,schemaStamp,accessStamp,fieldChanges,componentCopy,projectArchive,projectLinks,factReview};const draft={id:randomUUID(),workspaceId:w,workspaceFoundation:true,temporary:true,body,fieldChanges,componentCopy,projectArchive,projectLinks,factReview,digest:checksum(J(envelope))};
+  const fieldChanges=await this.previewFieldChanges(a,w,body);const accessStamp=await this.accessStamp(this.db,w);const factReview=['record_fact','prefer_record_fact','retract_record_fact'].includes(body.kind)?await this.factReview(this.db,a,w,body as Extract<WorkspaceOperation,{kind:'record_fact'|'prefer_record_fact'|'retract_record_fact'}>):undefined;const projectLinks=body.kind==='link_project_records'||body.kind==='unlink_project_record'?await this.projectLinksReview(this.db,a,w,body):undefined;const projectArchive=body.kind==='archive_node'?await this.nodeArchive(this.db,a,w,body):undefined;const componentCopy=body.kind==='copy_component'?await this.componentCopy(this.db,a,w,body):undefined;const crossTableReview=body.kind==='link_cross_table_identity'||body.kind==='unlink_cross_table_identity'?await this.crossTableReview(this.db,a,w,body):undefined;const envelope={crossTableReview,operation:body,schemaStamp,accessStamp,fieldChanges,componentCopy,projectArchive,projectLinks,factReview};const draft={id:randomUUID(),workspaceId:w,workspaceFoundation:true,temporary:true,body,crossTableReview,fieldChanges,componentCopy,projectArchive,projectLinks,factReview,digest:checksum(J(envelope))};
   await this.db.query('INSERT INTO workspace_previews(id,workspace_id,user_id,body,digest) VALUES($1,$2,$3,$4,$5)',[draft.id,w,a.userId,J(envelope),draft.digest]);return draft;
  }
- async pending(a:Actor,w:string){await this.policy(this.db,a,w);const rows=(await this.db.query('SELECT * FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND expires_at>now() ORDER BY expires_at',[w,a.userId])).rows;const visible=[];for(const r of rows){try{await this.validate(this.db,a,w,r.body.operation);visible.push({id:r.id,workspaceId:w,workspaceFoundation:true,body:r.body.operation,componentCopy:r.body.componentCopy,projectArchive:r.body.projectArchive,projectLinks:r.body.projectLinks,factReview:r.body.factReview,fieldChanges:r.body.fieldChanges??[],digest:r.digest,expiresAt:r.expires_at});}catch{}}return visible;}
+ async pending(a:Actor,w:string){await this.policy(this.db,a,w);const rows=(await this.db.query('SELECT * FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND expires_at>now() ORDER BY expires_at',[w,a.userId])).rows;const visible=[];for(const r of rows){try{await this.validate(this.db,a,w,r.body.operation);if((r.body.operation.kind==='link_cross_table_identity'||r.body.operation.kind==='unlink_cross_table_identity')&&!(await this.db.query('SELECT $1::jsonb=$2::jsonb AS same',[J(r.body.crossTableReview),J(await this.crossTableReview(this.db,a,w,r.body.operation))])).rows[0].same)continue;visible.push({id:r.id,workspaceId:w,workspaceFoundation:true,body:r.body.operation,crossTableReview:r.body.crossTableReview,componentCopy:r.body.componentCopy,projectArchive:r.body.projectArchive,projectLinks:r.body.projectLinks,factReview:r.body.factReview,fieldChanges:r.body.fieldChanges??[],digest:r.digest,expiresAt:r.expires_at});}catch{}}return visible;}
  async discard(a:Actor,w:string,id:string){await this.policy(this.db,a,w);await this.db.query('DELETE FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[id,w,a.userId]);return {discarded:true};}
  private async replay(tx:Connection,a:Actor,w:string,id:string,digest:string){const r=(await tx.query('SELECT * FROM workspace_receipts WHERE id=$1',[id])).rows[0];if(r){if(r.user_id!==a.userId||r.workspace_id!==w||r.digest!==digest)fail(409,'receipt_conflict','Request does not match its saved receipt');return r.result;}}
  async confirm(a:Actor,w:string,id:string,digest:string){requireHuman(a);return this.db.transaction(async tx=>{
@@ -307,6 +337,7 @@ export class WorkspaceFoundation {
   const draft=(await tx.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[id,w,a.userId])).rows[0];if(!draft||draft.digest!==digest)fail(409,'preview_expired','Preview unavailable');
   const op=workspaceOperation.parse(draft.body.operation);await this.validate(tx,a,w,op);
   if(draft.body.accessStamp!==await this.accessStamp(tx,w))fail(409,'access_changed','Project access or organization changed; prepare a new preview');
+  if((op.kind==='link_cross_table_identity'||op.kind==='unlink_cross_table_identity')&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.crossTableReview),J(await this.crossTableReview(tx,a,w,op))])).rows[0].same)fail(409,'stale_version','Cross-table mapping or values changed; prepare again');
   if(op.kind==='save_scope'&&draft.body.schemaStamp!==await this.scopeStamp(tx,{...a,origin:'ai'},w,op.scope))fail(409,'schema_changed','Schema changed; prepare scope again');
   if(draft.body.fieldChanges&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.fieldChanges),J(await new WorkspaceFoundation(adapter(tx)).previewFieldChanges(a,w,op))])).rows[0].same)fail(409,'stale_version','Field changes differ; prepare again');
   if(['record_fact','prefer_record_fact','retract_record_fact'].includes(op.kind)&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.factReview),J(await this.factReview(tx,a,w,op as Extract<WorkspaceOperation,{kind:'record_fact'|'prefer_record_fact'|'retract_record_fact'}>))])).rows[0].same)fail(409,'stale_version','Fact or current value changed; prepare again');
@@ -316,6 +347,14 @@ export class WorkspaceFoundation {
   const result=await this.apply(tx,a,w,p,op,{kind:'approval',id,digest,context:'workspace_preview'});await tx.query('INSERT INTO workspace_receipts(id,workspace_id,user_id,digest,result) VALUES($1,$2,$3,$4,$5)',[id,w,a.userId,digest,J(result)]);await tx.query('DELETE FROM workspace_previews WHERE id=$1',[id]);return result;
  });}
  private async apply(tx:Connection,a:Actor,w:string,p:any,op:WorkspaceOperation,authorization?:WriteAuthorization):Promise<any>{
+  if(op.kind==='link_cross_table_identity'||op.kind==='unlink_cross_table_identity'){
+   const review=await this.crossTableReview(tx,a,w,op),linkId=op.kind==='unlink_cross_table_identity'?op.linkId:randomUUID(),version=op.kind==='unlink_cross_table_identity'?op.expectedVersion+1:0;
+   if(op.kind==='link_cross_table_identity')await tx.query('INSERT INTO cross_table_links(id,workspace_id,source_record_id,preferred_record_id,field_pairs,schema_stamp,rationale,created_by,"authorization") VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',[linkId,w,review.source.id,review.preferred.id,J(op.fieldPairs),review.schemaStamp,op.rationale,a.userId,J(authorization)]);
+   else await tx.query('UPDATE cross_table_links SET revoked_at=now(),version=version+1,revoked_by=$2,revocation_reason=$3,revocation_authorization=$4 WHERE id=$1',[linkId,a.userId,op.reason,J(authorization)]);
+   const snapshot={...review,version,active:op.kind==='link_cross_table_identity',authorization};
+   await revision(tx,a,w,linkId,'cross_table_link',version,snapshot);await audit(tx,a,p,'workspace.'+op.kind,linkId,null,snapshot,op.kind==='link_cross_table_identity'?op.rationale:op.reason);
+   return {workspaceId:w,workspaceFoundation:true,status:'saved',id:linkId,version};
+  }
   if(op.kind==='apply_maintenance')return new WorkspaceFoundation(adapter(tx)).maintain(a,w,op.batch,authorization);
   if(op.kind==='apply_component_records'){
    const service=new Service(adapter(tx));const draft=await service.preview(a,w,{kind:'bulk_records',changes:op.changes});const saved=await service.commit(a,draft.id,draft.digest,authorization);

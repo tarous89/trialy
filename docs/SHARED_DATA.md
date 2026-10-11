@@ -27,3 +27,15 @@ This is a tool for ChatGPT-directed extraction and review, not an autonomous sou
 ## Remaining boundaries
 
 Cross-table semantic mapping, automatic interpretation of history, per-alias preferred-value propagation, original-file citations, generalized contextual relationship queries and richer partial-data sharing remain future work. Existing same-table identity links and these candidate facts are complementary primitives. Browser/ChatGPT interaction acceptance remains pending.
+
+## Reviewed cross-table identity claims
+
+Migration 026 adds `link_cross_table_identity` and `unlink_cross_table_identity` through the existing workspace preview/confirmation path. ChatGPT proposes the two records, their current versions, explicit `fieldPairs` (`sourceField` / `preferredField`) and a rationale. Each pair describes semantic correspondence; it is not a conversion or a matching rule. Fields must have compatible kinds, cannot be computed, and relationship targets cannot change. Mapping approval applies to this record pair only, not all future records in either table.
+
+Every link and withdrawal requires human confirmation. Existing single-table maintenance grants cannot authorize these operations. The preview includes both original records, mappings and schema fingerprints; confirmation rejects changed records, schemas or permissions. This adds an audited identity claim without rewriting any record field, changing any relationship or transferring execution authority. Audit/revision evidence and the link retain the exact approval. Withdrawal preserves originals and previous evidence, including who withdrew the claim, why and with which approval.
+
+`list_cross_table_links` and the project record's **Connections across tables** page show direct links, mapped comparisons, original values and withdrawals. Both endpoints require full current field access to both records; inaccessible counterpart links are omitted. Changed table definitions suspend comparisons until a new mapping is reviewed (withdraw the old link and propose its replacement). No transitive group or automatically resolved canonical value is inferred. Existing same-table `entities.read` stays within its existing scope and does not follow these links.
+
+The new table is included in workspace exports, runtime-role provisioning and synthetic restore verification. Active links prevent treating a linked record as an unused reversible creation.
+
+Still pending: reusable table-level mapping definitions, contextual relationship traversal, per-alias reviewed value propagation and exact document/source citations. Users can already propose explicit ordinary field corrections, but cross-table linking itself never copies values. The live ChatGPT/browser interaction remains to be tested.

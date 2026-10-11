@@ -28,3 +28,5 @@ GRANT INSERT ON record_field_changes TO trialy_runtime;
 
 GRANT SELECT,INSERT,UPDATE ON project_records TO trialy_runtime;
 GRANT SELECT,INSERT ON record_facts,record_fact_retractions TO trialy_runtime;
+
+GRANT SELECT,INSERT,UPDATE ON cross_table_links TO trialy_runtime;
