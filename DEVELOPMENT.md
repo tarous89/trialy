@@ -13,7 +13,7 @@ Updated 11 October 2026. Development steps for the flexible shared-data/code fou
 7. **Integrity and visible control.** Exact field diffs, human approval boundary, per-value history with approval/grant evidence, fixed Changes & permissions area, reviewed reversal and safe archival. Temporary data/file previews persist across process replacement. Source bytes survive quiet extraction failures. Audit/export/recovery coverage includes the new shared-data, assets and collection state.
 8. **Operational groundwork.** Existing Render web/worker/Postgres reused. Owner-only operational status includes worker heartbeat, job states and saved-original counts. Non-owner runtime-role SQL and recovery inventory are prepared. Synthetic backup/restore verifies retained original bytes and populated new state; it is not a managed Render recovery test.
 
-These capabilities are implemented, not a claim of production acceptance. Deployment evidence belongs in HISTORY.md. The previous detailed working checklist is retained in docs/archive/development-before-completion-2026-10-11.md.
+These capabilities are implemented, not a claim of production acceptance. Runtime 4552f77 is live on the existing Render web/worker; private plugin 0.2.6 is published. Deployment evidence is in HISTORY.md. The previous detailed working checklist is retained in docs/archive/development-before-completion-2026-10-11.md.
 
 ## Remaining execution gates
 

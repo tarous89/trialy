@@ -353,8 +353,17 @@ Deployment: runtime `3f1fdafd7a9d3f5c49f3ce9bc315aea01d50cdf3` is live on the ex
 
 Health, readiness and root each returned HTTP 200 after deployment; the root serves the new `index-Bw7JulAV.js` bundle.
 
-## 11 October 2026 — remaining foundation implementation (deployment pending)
+## 11 October 2026 — remaining foundation implementation and deployment
 
 Migrations 028–031 add component document-version assets, owner-reviewed binding-scoped source release, worker health and optional common concept tags. Added atomic reviewed tracking setup; project relationship queries and bound frontend project/file reads; selected direct linked-value corrections; reviewed collection links/response acceptance; component drag/drop and owner operational status. Preserved approval-by-default, exact per-field history, original files and generic ChatGPT-authored code. No provider accounts, paid infrastructure, patient screening or templates introduced.
 
 Roadmap consolidated into implemented foundation and explicit host/provider/production gates. Plugin source prepared as 0.2.6, preserving presentation, private audience, MCP binding and default prompt. Focused checks and populated synthetic recovery are recorded with final deployment evidence below.
+
+### Verified deployment closeout
+
+- Foundation commit `d91cbecf9565700e8654685c27c5acda08e7749a`; final runtime `4552f771a5647381d46b573a3ad5f825ea4773d3` (adds a tested AI guard for retired fields in historical collection responses). Both main and foundation-reset contain the changes.
+- Render web deploy `dep-db5vdmvavr4c73fhg9v0` live 20:52:50 UTC; worker `dep-db5vdmvavr4c73fhg9rg` live 20:52:36 UTC. Migration predeploy succeeded through 031. Web bundle `index-C3KIO62n.js`; health/readiness and root return 200.
+- Private workspace plugin 0.2.6 published as `pluginrel_6acbf6e9976c8191b2c42fef0dad7f89`. Readback verifies version, updated guidance, unchanged MCP endpoint and default prompt “Open my Trialy workspace.” Audience remains private. Updating this package does not refresh a separately configured custom app's tool metadata automatically.
+- Build/type-check passed. Eight nearby focused scenarios passed; final combined and cross-table scenarios passed after bridge changes; the retired-field regression passed. Populated synthetic backup/restore passed through migration 031, including concept metadata, assets/source access, task setup and accepted responses. Evidence: docs/recovery-synthetic.json. No broad cosmetic testing added.
+- Direct production SQL inspection was unavailable because the database's external allowlist is empty; networking was not broadened. Deployment and migration logs were inspected. No actual managed-backup restoration, production credential rotation or real ChatGPT/browser acceptance is claimed.
+- Remaining gates and known runtime limits are in DEVELOPMENT.md. No new paid infrastructure, external provider account, recipient message or public publication occurred.
