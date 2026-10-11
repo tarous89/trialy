@@ -2,6 +2,7 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown)=
  const b=`/api/workspaces/${v.workspaceId}/foundation`;
  const o=`/api/workspaces/${v.workspaceId}/organization`;
  const routes:Record<string,[string,string?,unknown?]>={
+ run_component_frontend:[`${o}/frontend/run`,'POST',v.request],
  render_project_component:[`${o}/components/${v.componentId}/render?block=${v.block}&offset=${v.offset??0}`],
  list_project_sharing_members:[`${o}/sharing-members`],
  list_project_components:[`${o}/components${v.projectId?'?projectId='+encodeURIComponent(v.projectId):''}`],read_project_component:[`${o}/components/${v.componentId}`],read_component_history:[`${o}/components/${v.componentId}/history`],

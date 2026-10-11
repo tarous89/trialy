@@ -18,7 +18,9 @@ Added migration 018: reviewed component source/configuration saves, stable IDs, 
 
 Added migration 019: inherited human/AI project and component restrictions, owner-reviewed sharing, access-preserving moves, export/observation protections, and the first trusted `trialy-ui-v1` renderer (text/layout/live editable tables). Arbitrary frontend code, richer blocks and partial-data component access remain pending.
 
-Next: extend generated interface blocks and execution bindings; shared identity-aware queries/project relationships; granular project sharing; scheduled maintenance integration. Project organization currently requires unrestricted workspace access. Semantic inclusion/source-policy judgment remains ChatGPT's responsibility, with structural/grant/permission enforcement in the backend. See [WORKSPACE_FOUNDATION.md](docs/WORKSPACE_FOUNDATION.md).
+Scope correction: do not extend a Trialy UI block catalogue. ChatGPT authors frontend code; Trialy provides persistence, isolation and a controlled data/tool bridge. Added the initial `frontend-js` HTML/CSS/JavaScript render/event runtime, read-only pre-save code execution and reviewed bound record writes. Historical `trialy-ui` remains readable but cannot be newly authored. See [FRONTEND_CODE.md](docs/FRONTEND_CODE.md).
+
+Next: verify browser/ChatGPT code hosting and extend code-runtime/tool integration; shared identity-aware queries/project relationships; granular project sharing; scheduled maintenance integration. Project organization currently requires unrestricted workspace access. Semantic inclusion/source-policy judgment remains ChatGPT's responsibility, with structural/grant/permission enforcement in the backend. See [WORKSPACE_FOUNDATION.md](docs/WORKSPACE_FOUNDATION.md).
 
 ## Ordered implementation steps
 
@@ -58,11 +60,11 @@ Next: extend generated interface blocks and execution bindings; shared identity-
 
 ### 5. Host ChatGPT-generated interfaces
 
-- [x] Choose and document the first supported UI contract: `trialy-ui-v1`, rendered by trusted React without executing arbitrary generated browser code. Basic text/layout/table support is implemented; real ChatGPT acceptance remains open.
+- [x] Implement the first code-hosting contract: `trialy-frontend-js-v1` runs ChatGPT-written JavaScript that renders HTML/CSS and handles events. No fixed UI block schema. Browser/ChatGPT acceptance remains open; standard React/npm applications remain pending.
 - [ ] Define component binding metadata for sources, live versus snapshot values, edit targets and calculations. Resolve the proposed editing semantics in INTERFACE_RULES.md before implementing them.
 - [ ] Provide a permission-checked bridge for queries, previews/commits, files, authorized tools and run status. Keep tokens and raw database connections out of generated code.
 - [ ] Support provisional rendering, explicit save, reopen by exact revision, updates and recovery of an earlier component version.
-- [ ] Support user-created forms, tables, charts and mixed interfaces without shipping a fixed template catalogue. Validate host capabilities before promising unrestricted rendering.
+- [ ] Verify freely coded forms, tables, SVG graphics and mixed interfaces through the general HTML/CSS/event bridge. Do not add proprietary block types or a template catalogue. Validate host capabilities before promising unrestricted rendering.
 
 ### 6. Build the project workspace and collection/sharing experience
 

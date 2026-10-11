@@ -59,6 +59,8 @@ test('Workspace: exact setup, bounded maintenance, source preservation, reversib
  await f.revoke(a,w.id,scope.id);await assert.rejects(f.maintain(ai,w.id,{...batch,requestKey:randomUUID(),expectedScopeVersion:1}),/permission changed/);
  await assert.rejects(db.query('UPDATE record_observations SET source_label=$1',['changed']),/append-only/);
  await change({kind:'archive_component',componentId:component.id,expectedVersion:4,archived:false});
+ // Fixture represents a legacy interface saved before code-only authoring.
+ await db.query("UPDATE workspace_components SET format='trialy-ui' WHERE id=$1",[component.id]);
  const uiSource=JSON.stringify({runtime:'trialy-ui-v1',blocks:[{kind:'text',text:'<script>inert text</script>'},{kind:'table',title:'Organizations',typeId:table,fields:['name']}]});
  await change({kind:'save_component',componentId:component.id,expectedVersion:5,projectId:destination.id,content:{name:'Live organizations',format:'trialy-ui',source:uiSource,bindings:[{typeId:table,fields:['name']}]}});
  const rendered=await f.renderComponent(ai,w.id,component.id,1);assert.equal(rendered.rows.length,2);assert.deepEqual(Object.keys(rendered.rows[0].data),['name']);
@@ -66,7 +68,7 @@ test('Workspace: exact setup, bounded maintenance, source preservation, reversib
  await assert.rejects(change({...edit,field:'address'}),/not editable/);
  const editPreview=await f.preview(ai,w.id,edit);const edited=await f.confirm(ai,w.id,editPreview.id,editPreview.digest);assert.deepEqual(await f.confirm(ai,w.id,editPreview.id,editPreview.digest),edited);
  assert.equal((await f.record(db,a,w.id,row.id)).data.name,'Inline correction');await assert.rejects(change(edit),/changed/);
- await assert.rejects(change({kind:'save_component',projectId:destination.id,content:{name:'Bad binding',format:'trialy-ui',source:uiSource,bindings:[]}}),/declared/);
+ await assert.rejects(change({kind:'save_component',componentId:component.id,expectedVersion:6,projectId:destination.id,content:{name:'Bad binding',format:'trialy-ui',source:uiSource,bindings:[]}}),/declared/);
  const exported=await s.exportWorkspace(a,w.id);assert.equal(exported.workspace_nodes.length,3);assert.equal(exported.workspace_components.length,1);assert.equal(exported.maintenance_scopes.length,1);assert.equal(exported.identity_links.length,1);assert.equal(exported.record_observations.length,4);
  await save({kind:'update_type',typeId:table,expectedVersion:1,name:'Organizations',fields:[{key:'name',name:'Name',kind:'text',ai:true},{key:'address',name:'Address',kind:'text',ai:true},{key:'city',name:'City',kind:'text',ai:true},{key:'private',name:'Private',kind:'text',ai:false}]});
  await assert.rejects(f.readComponent(ai,w.id,component.id),/every workspace field/);

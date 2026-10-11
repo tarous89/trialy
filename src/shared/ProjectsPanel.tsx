@@ -1,8 +1,10 @@
+import {FrontendCodeRuntime} from './FrontendCodeRuntime.js';
 import {ProjectSharing} from './ProjectSharing.js';
 import {ComponentEditor} from './ComponentEditor.js';
 import React,{useEffect,useState} from 'react';
 type Call=(name:string,args:Record<string,unknown>)=>Promise<any>;
 export function ProjectsPanel({workspaceId,types,call,incoming}:{workspaceId:string;types:any[];call:Call;incoming?:any}){
+ const [codePreview,setCodePreview]=useState(false);
  const [sharing,setSharing]=useState<any>(null);
  const [components,setComponents]=useState<any[]>([]),[component,setComponent]=useState<any>(null);
  const [nodes,setNodes]=useState<any[]>([]),[scopes,setScopes]=useState<any[]>([]),[previews,setPreviews]=useState<any[]>([]);
@@ -19,10 +21,10 @@ export function ProjectsPanel({workspaceId,types,call,incoming}:{workspaceId:str
  const folderName=(id:string|null)=>nodes.find(n=>n.id===id)?.name??'Workspace';
  function openNode(n:any){setSelected(n);setName(n.name);setDestination(n.parent_id??'');setPurpose('');setCriteria('');setFieldKeys([]);}
  const move=async(n:any,parentId:string)=>prepare({kind:'move_node',nodeId:n.id,expectedVersion:n.version,parentId:parentId||null});
- const closePreview=()=>setPreview(null);
+ const closePreview=()=>{setPreview(null);setCodePreview(false);};
  return <section><h2>Projects & maintenance</h2><p>Organize ongoing work and review what Trialy may keep updated. Project and folder restrictions apply in addition to workspace permissions. Moves retain existing restrictions.</p>
  {error&&<p role="alert" className="error">{error}</p>}{notice&&<p role="status">{notice}</p>}
- {preview?<section aria-label="Review workspace change"><button onClick={closePreview}>← Back</button><h3>Review before saving</h3><p>Not saved yet. Maintenance permissions authorize future matching additions and updates, within the purpose and fields below.</p><pre style={{whiteSpace:'pre-wrap',overflowWrap:'anywhere'}}>{JSON.stringify(preview.body,null,2)}</pre><button disabled={busy} onClick={()=>act(async()=>{await invoke('discard_workspace_preview',{previewId:preview.id});setPreview(null);await refresh();})}>Discard</button><button disabled={busy} onClick={()=>act(async()=>{await invoke('confirm_workspace_change',{previewId:preview.id,digest:preview.digest,confirmed:true});setPreview(null);setComponent(null);setSelected(null);setSharing(null);setNotice('Saved');await refresh();})}>Confirm save</button></section>
+ {preview&&codePreview?<section><button onClick={()=>setCodePreview(false)}>← Review code</button><FrontendCodeRuntime key={preview.id} previewId={preview.id} call={invoke} onProposal={setPreview}/></section>:preview?<section aria-label="Review workspace change"><button onClick={closePreview}>← Back</button><h3>Review before saving</h3>{preview.body.kind==='save_component'&&preview.body.content.format==='frontend-js'&&<button onClick={()=>setCodePreview(true)}>Try interface before saving</button>}<p>Not saved yet. Maintenance permissions authorize future matching additions and updates, within the purpose and fields below.</p><pre style={{whiteSpace:'pre-wrap',overflowWrap:'anywhere'}}>{JSON.stringify(preview.body,null,2)}</pre><button disabled={busy} onClick={()=>act(async()=>{await invoke('discard_workspace_preview',{previewId:preview.id});setPreview(null);await refresh();})}>Discard</button><button disabled={busy} onClick={()=>act(async()=>{await invoke('confirm_workspace_change',{previewId:preview.id,digest:preview.digest,confirmed:true});setPreview(null);setComponent(null);setSelected(null);setSharing(null);setNotice('Saved');await refresh();})}>Confirm save</button></section>
  :sharing?<ProjectSharing target={sharing} call={invoke} onPreview={setPreview} onBack={()=>setSharing(null)}/>
  :component?<ComponentEditor key={component.id??'new'} component={component} projects={nodes.filter(n=>n.kind==='project')} call={invoke} onBack={()=>setComponent(null)} onPreview={setPreview}/>
  :selected?.scopeDetail?<section aria-label="Maintenance permission"><button onClick={()=>setSelected({...selected,scopeDetail:null})}>← Project</button><h3>Maintenance permission</h3><pre style={{whiteSpace:'pre-wrap'}}>{JSON.stringify(selected.scopeDetail.body,null,2)}</pre></section>

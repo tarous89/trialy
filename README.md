@@ -109,3 +109,7 @@ For PostgreSQL, configure `.env` from `.env.example`, including DATABASE_URL, SE
 Existing `/auth/login` provides sign-in/signup. OAuth uses PKCE; MFA/recovery codes exist, but email verification/password recovery are still absent. [ChatGPT setup](docs/CHATGPT_SETUP.md) and [operations](docs/OPERATIONS.md) describe existing behavior; their legacy feature instructions are operational history, not the future product backlog.
 
 Legacy data/file previews live in one web process for up to 24 hours and may disappear on restart. New experiment/proposal/function-preview staging lives in PostgreSQL with a 24-hour expiry. Confirmed data is in PostgreSQL. Keep one web instance until shared temporary preview storage is implemented. Production recovery targets, actual managed backup restoration, restricted runtime credentials and monitoring remain unfinished; no zero-loss or blanket clinical-compliance claim is made.
+
+## Frontend scope correction — 11 October 2026
+
+ChatGPT writes frontend code; Trialy saves, versions, organizes and hosts that code with authorized data/tool access. Trialy is not a UI block catalogue or a template/workflow builder. The initial executable contract is `frontend-js` / `trialy-frontend-js-v1`: JavaScript renders arbitrary supported HTML/CSS and handles events inside a bounded runtime. The earlier `trialy-ui` schema is legacy compatibility only. See [FRONTEND_CODE.md](docs/FRONTEND_CODE.md) for the exact contract and remaining browser/host verification. Unmodified React/npm applications are not supported yet.

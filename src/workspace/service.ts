@@ -1,3 +1,5 @@
+import {execute} from '../foundation/runtime.js';
+import {frontendRequest,frontendOutput,frontendRead,componentRecordChanges} from './frontend.js';
 import {interfaceSchema} from './ui.js';
 import {randomUUID} from 'node:crypto';
 import type {Database,Connection} from '../db/database.js';
@@ -7,6 +9,7 @@ import {audit,revision,checksum} from '../domain/evidence.js';
 import {fail,type Actor} from '../shared/schema.js';
 import {maintenanceSchema,maintenanceBatch,workspaceOperation,type WorkspaceOperation} from './schema.js';
 const J=JSON.stringify;
+const activeFrontends=new Set<string>();
 const adapter=(tx:Connection):Database=>({query:tx.query.bind(tx),transaction:fn=>fn(tx),close:async()=>{}});
 export class WorkspaceFoundation {
  constructor(public db:Database){}
@@ -58,6 +61,41 @@ export class WorkspaceFoundation {
   const result=[];for(const c of rows){if(projectId&&c.project_id!==projectId)continue;try{await this.component(this.db,a,w,c.id);const {source,...metadata}=c;result.push(metadata);}catch{}}
   return result;
  }
+ async runFrontend(a:Actor,w:string,input:unknown){
+  const request=frontendRequest.parse(input);if(Buffer.byteLength(J(request))>150000)fail(400,'input_limit','Interface input is too large');
+  let content:any,version:number|undefined;
+  if(request.componentId){const c=await this.component(this.db,a,w,request.componentId);if(c.archived||c.format!=='frontend-js'||c.version!==request.expectedVersion)fail(409,'component_changed','Open the current active code revision');content=c;version=c.version;}
+  else {const draft=(await this.db.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[request.previewId,w,a.userId])).rows[0];if(!draft||draft.body.operation.kind!=='save_component'||draft.body.operation.content.format!=='frontend-js')fail(404,'not_found','Code preview unavailable');await this.validate(this.db,a,w,draft.body.operation);content=draft.body.operation.content;}
+  const key=w+':'+a.userId;if(activeFrontends.size>=2||activeFrontends.has(key))fail(429,'runtime_busy','Another interface is running; try again shortly');activeFrontends.add(key);
+  const changes:any[]=[];
+  try{
+   const output=frontendOutput.parse(await execute(content.source,{state:request.state,event:request.event},async(name,value)=>{
+    if(name==='records.read'){
+     const v=frontendRead.parse(value),binding=content.bindings.find((b:any)=>b.typeId===v.typeId);if(!binding)fail(403,'binding_required','Table is not bound to this component');
+     if(request.componentId)await this.component(this.db,a,w,request.componentId);
+     await typeAccess(this.db,a,w,v.typeId);
+     // Project in PostgreSQL and bound each row before materializing it in the web process.
+     const rows=(await this.db.query(`SELECT id,version,CASE WHEN octet_length(selected::text)<=100000 THEN selected ELSE NULL END AS data FROM (
+      SELECT id,version,(SELECT coalesce(jsonb_object_agg(key,value),'{}'::jsonb) FROM jsonb_each(data) WHERE key=ANY($3::text[])) AS selected
+      FROM records WHERE workspace_id=$1 AND type_id=$2 ORDER BY created_at,id LIMIT $4 OFFSET $5) page`,[w,v.typeId,binding.fields,v.limit,v.offset])).rows;
+     if(rows.some(r=>r.data===null))fail(400,'read_limit','A record exceeds the interface read budget');
+     const total=Number((await this.db.query('SELECT count(*) AS n FROM records WHERE workspace_id=$1 AND type_id=$2',[w,v.typeId])).rows[0].n);
+     return {rows,total,limit:v.limit,offset:v.offset};
+    }
+    if(name==='records.propose'){
+     if(!request.componentId)fail(403,'preview_read_only','Unsaved interface previews cannot propose database changes');
+     const next=componentRecordChanges.parse(value);if(changes.length+next.length>50)fail(400,'change_limit','Too many proposed changes');changes.push(...next);return {status:'proposed',count:next.length};
+    }
+    fail(403,'capability_unavailable','This interface capability is unavailable');
+   }));
+   if(Buffer.byteLength(J(output.state))>100000)fail(400,'state_limit','Interface state is too large');
+   // Recheck after execution; a concurrent revoke/edit must not release its output.
+   if(request.componentId){const current=await this.component(this.db,a,w,request.componentId);if(current.version!==version||current.archived)fail(409,'component_changed','Interface changed while running');}
+   else {const draft=(await this.db.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[request.previewId,w,a.userId])).rows[0];if(!draft)fail(409,'preview_expired','Preview unavailable');await this.validate(this.db,a,w,draft.body.operation);}
+   const proposal=changes.length?await this.preview(a,w,{kind:'apply_component_records',componentId:request.componentId,expectedVersion:version,changes}):null;
+   return {runtime:'trialy-frontend-js-v1',frameUrl:new URL('/frontend/frame',process.env.PUBLIC_URL??process.env.RENDER_EXTERNAL_URL??'http://localhost:3000').toString(),...output,proposal,temporary:!request.componentId};
+  }finally{activeFrontends.delete(key);}
+ }
  private parseInterface(content:any){
   let spec;try{spec=interfaceSchema.parse(JSON.parse(content.source));}catch{fail(400,'invalid_interface','Use a valid trialy-ui-v1 interface description');}
   for(const b of spec.blocks)if(b.kind==='table'&&!content.bindings.some((v:any)=>v.typeId===b.typeId&&b.fields.every(k=>v.fields.includes(k))))fail(400,'invalid_binding','Every interface table field must have a declared data binding');
@@ -104,12 +142,22 @@ export class WorkspaceFoundation {
    if(op.componentId){const c=await this.component(tx,a,w,op.componentId);if(c.version!==op.expectedVersion)fail(409,'stale_version','Component changed');}
    else if(op.kind==='save_component'&&op.expectedVersion!==undefined)fail(400,'invalid_version','New components have no expected version');
    if(op.kind==='save_component'){
-    if(op.content.format==='trialy-ui')this.parseInterface(op.content);
+    if(op.content.format==='trialy-ui'){if(!op.componentId||(await this.component(tx,a,w,op.componentId)).format!=='trialy-ui')fail(400,'legacy_format','Save ChatGPT-written code using frontend-js; trialy-ui is retained only for existing items');this.parseInterface(op.content);}
     if(op.componentId&&(await this.component(tx,a,w,op.componentId)).project_id!==op.projectId)fail(400,'move_required','Use the explicit move operation to change project');
     await this.componentBindings(tx,a,w,op.content.bindings);
     if(op.content.format==='json'){try{JSON.parse(op.content.source);}catch{fail(400,'invalid_json','Component source must be valid JSON');}}
    }
    if(op.kind==='restore_component'){const old=await this.componentRevision(tx,w,op.componentId,op.revisionVersion);await this.nodeAccess(tx,a,w,old.project_id);await this.componentBindings(tx,a,w,old.bindings);}
+  }
+  if(op.kind==='apply_component_records'){
+   const c=await this.component(tx,a,w,op.componentId);if(c.archived||c.format!=='frontend-js'||c.version!==op.expectedVersion)fail(409,'component_changed','Interface changed');
+   for(const change of op.changes){
+    const record=change.kind==='update_record'?await this.record(tx,a,w,change.recordId,true):null;
+    if(record&&change.kind==='update_record'&&record.version!==change.expectedVersion)fail(409,'stale_version','Record changed');
+    const typeId=change.kind==='create_record'?change.typeId:record!.type_id;
+    const binding=c.bindings.find((b:any)=>b.typeId===typeId);const {type,policy}=await typeAccess(tx,a,w,typeId,true);const fields=visibleFields(type.fields,policy,a);
+    if(!binding||Object.keys(change.data).some(k=>!binding.fields.includes(k)||!fields.some(f=>f.key===k&&!f.formula)))fail(403,'binding_required','Write exceeds component data bindings');
+   }
   }
   if(op.kind==='edit_component_record'){
    const c=await this.component(tx,a,w,op.componentId);if(c.archived||c.version!==op.expectedVersion||c.format!=='trialy-ui')fail(409,'component_changed','Interface changed');
@@ -158,6 +206,11 @@ export class WorkspaceFoundation {
   const result=await this.apply(tx,a,w,p,op);await tx.query('INSERT INTO workspace_receipts(id,workspace_id,user_id,digest,result) VALUES($1,$2,$3,$4,$5)',[id,w,a.userId,digest,J(result)]);await tx.query('DELETE FROM workspace_previews WHERE id=$1',[id]);return result;
  });}
  private async apply(tx:Connection,a:Actor,w:string,p:any,op:WorkspaceOperation):Promise<any>{
+  if(op.kind==='apply_component_records'){
+   const service=new Service(adapter(tx));const draft=await service.preview(a,w,{kind:'bulk_records',changes:op.changes});const saved=await service.commit(a,draft.id,draft.digest);
+   await audit(tx,a,p,'component.records_applied',op.componentId,null,{componentVersion:op.expectedVersion,records:saved.objects});
+   return {workspaceId:w,workspaceFoundation:true,status:'saved',id:op.componentId,receipt:saved};
+  }
   if(op.kind==='edit_component_record'){
    const service=new Service(adapter(tx));const draft=await service.preview(a,w,{kind:'update_record',recordId:op.recordId,expectedVersion:op.recordVersion,data:{[op.field]:op.value}});
    const saved=await service.commit(a,draft.id,draft.digest);return {workspaceId:w,workspaceFoundation:true,status:'saved',id:op.componentId,recordId:op.recordId,receipt:saved};
