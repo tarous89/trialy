@@ -108,7 +108,7 @@ For PostgreSQL, configure `.env` from `.env.example`, including DATABASE_URL, SE
 
 Existing `/auth/login` provides sign-in/signup. OAuth uses PKCE; MFA/recovery codes exist, but email verification/password recovery are still absent. [ChatGPT setup](docs/CHATGPT_SETUP.md) and [operations](docs/OPERATIONS.md) describe existing behavior; their legacy feature instructions are operational history, not the future product backlog.
 
-Legacy data/file previews live in one web process for up to 24 hours and may disappear on restart. New experiment/proposal/function-preview staging lives in PostgreSQL with a 24-hour expiry. Confirmed data is in PostgreSQL. Keep one web instance until shared temporary preview storage is implemented. Production recovery targets, actual managed backup restoration, restricted runtime credentials and monitoring remain unfinished; no zero-loss or blanket clinical-compliance claim is made.
+Data/file previews and experiment/proposal/function-preview staging live in PostgreSQL with a 24-hour expiry, surviving web process replacement. Original upload bytes stay in temporary staging until confirmation atomically saves the original and receipt. Staging is not authoritative saved work or immutable history; database backups may retain staging until backup expiry. Data/file staging is limited to 1,000 previews and 100 MiB per workspace. This removes the in-memory preview barrier, but does not establish multi-instance readiness for all other services. Confirmed data is in PostgreSQL. Production recovery targets, actual managed backup restoration, restricted runtime credentials and monitoring remain unfinished; no zero-loss or blanket clinical-compliance claim is made.
 
 ## Frontend scope correction — 11 October 2026
 

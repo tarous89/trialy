@@ -21,3 +21,5 @@ GRANT DELETE ON foundation_runs,foundation_previews TO trialy_runtime;
 GRANT INSERT ON workspace_nodes,workspace_components,maintenance_scopes,workspace_previews,workspace_receipts,identity_links,record_observations TO trialy_runtime;
 GRANT UPDATE ON workspace_nodes,workspace_components,maintenance_scopes,identity_links TO trialy_runtime;
 GRANT DELETE ON workspace_previews TO trialy_runtime;
+
+GRANT INSERT, DELETE ON data_previews TO trialy_runtime;

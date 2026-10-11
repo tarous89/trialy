@@ -1,0 +1,41 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {randomUUID} from 'node:crypto';
+import {readFile,readdir} from 'node:fs/promises';
+import {PGlite} from '@electric-sql/pglite';
+import type {Database,Connection} from '../src/db/database.js';
+import {Service} from '../src/domain/service.js';
+import {AppError,type Actor} from '../src/shared/schema.js';
+const error=(code:string)=>(e:unknown)=>e instanceof AppError&&e.code===code;
+test('Data/file previews survive service replacement, retain bytes, expire and recheck access',async()=>{
+ const pg=new PGlite();
+ try {
+  for(const f of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+f,'utf8'));
+  const db:Database={query:(sql,v)=>pg.query(sql,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
+  const a:Actor={userId:randomUUID(),origin:'human'},other:Actor={userId:randomUUID(),origin:'human'};
+  for(const u of [a,other])await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[u.userId,u.userId,'preview@example.invalid','Preview tester']);
+  const first=new Service(db),w=await first.createWorkspace(a,'Durable previews');await first.setAi(a,w.id,true);
+  const data=await first.preview(a,w.id,{kind:'create_type',name:'Partners',fields:[{key:'name',name:'Name',kind:'text'}]});
+  const bytes=Buffer.from([0,255,128,1,13,10]);
+  const file=await first.previewFile(a,w.id,{filename:'original.bin',mime:'application/octet-stream',bytes,ai:true});
+  assert.equal((await first.types(a,w.id)).length,0);assert.equal((await first.documents(a,w.id)).length,0);
+  const second=new Service(db);
+  await assert.rejects(second.commit(other,data.id,data.digest),error('preview_expired'));
+  await assert.rejects(second.discard(other,file.id),error('not_found'));
+  await assert.rejects(second.commit(a,data.id,'0'.repeat(64)),error('preview_mismatch'));
+  const saved=await second.commit(a,data.id,data.digest);assert.deepEqual(await first.commit(a,data.id,data.digest),saved);
+  const savedFile=await second.commit(a,file.id,file.digest);
+  const docs=await second.documents(a,w.id);assert.equal(docs.length,1);assert.deepEqual((await second.original(a,w.id,docs[0].id)).bytes,bytes);
+  assert.deepEqual(await new Service(db).receipt(a,file.id),savedFile);
+  assert.equal((await db.query('SELECT id FROM data_previews')).rows.length,0);
+  const ai={...a,origin:'ai'} as Actor;
+  const revoked=await first.preview(ai,w.id,{kind:'create_record',typeId:saved.objects[0].id,data:{name:'Example'}});
+  await first.setAi(a,w.id,false);await assert.rejects(second.commit(ai,revoked.id,revoked.digest),error('ai_disabled'));
+  assert.equal((await second.records(a,w.id,saved.objects[0].id)).rows.length,0);
+  await second.discard(a,revoked.id);
+  const expired=await first.previewFile(a,w.id,{filename:'temporary.bin',mime:'application/octet-stream',bytes,ai:false});
+  await db.query("UPDATE data_previews SET expires_at=now()-interval '1 second' WHERE id=$1",[expired.id]);
+  await assert.rejects(second.commit(a,expired.id,expired.digest),error('preview_expired'));
+  await second.sweep();assert.equal((await db.query('SELECT id FROM data_previews')).rows.length,0);
+ } finally {await pg.close();}
+});

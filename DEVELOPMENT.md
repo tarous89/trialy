@@ -6,7 +6,7 @@ Updated 11 October 2026 following the shared-database and saved-component clarif
 
 Existing foundation: PostgreSQL data/originals, authentication, human/AI permissions, transactional changes and audit, previews, bounded JavaScript execution, saved function revisions, grants and background runs. Runtime `bba0be6` is deployed on the existing Render web and worker, including project/maintenance, saved components, inherited access restrictions and initial ChatGPT-written frontend code hosting. Private plugin instructions are version 0.2.4. The custom block renderer is compatibility-only. [EXECUTION.md](docs/EXECUTION.md) describes actual capabilities and limits. The earlier execution checklist is preserved in [the archive](docs/archive/development-execution-foundation-2026-10-11.md); its completed checkboxes do not mean the expanded product is complete.
 
-Not yet complete: the full shared cross-import entity layer, unrestricted generated-interface hosting, advanced component organization and live external adapters. Basic folders/project/component moves, restricted sharing and a text/table interface renderer are implemented. Existing views, forms and sharing are reusable foundations, not evidence that all these targets work already. User-driven ChatGPT testing has started; full host acceptance remains open.
+Not yet complete: the full shared cross-import entity layer, unrestricted generated-interface hosting, advanced component organization and live external adapters. Basic folders/project/component moves, restricted sharing and initial isolated frontend code hosting are implemented. Existing views, forms and sharing are reusable foundations, not evidence that all these targets work already. User-driven ChatGPT testing has started; full host acceptance remains open.
 
 Database layering and the common vocabulary are agreed in [README](README.md). [Interface rules](docs/INTERFACE_RULES.md) separates agreed usability direction from the proposed edit-routing policy.
 
@@ -19,6 +19,8 @@ Added migration 018: reviewed component source/configuration saves, stable IDs, 
 Added migration 019: inherited human/AI project and component restrictions, owner-reviewed sharing, access-preserving moves, export/observation protections, and the first trusted `trialy-ui-v1` renderer (text/layout/live editable tables). Arbitrary frontend code, richer blocks and partial-data component access remain pending.
 
 Scope correction: do not extend a Trialy UI block catalogue. ChatGPT authors frontend code; Trialy provides persistence, isolation and a controlled data/tool bridge. Added the initial `frontend-js` HTML/CSS/JavaScript render/event runtime, read-only pre-save code execution and reviewed bound record writes. Historical `trialy-ui` remains readable but cannot be newly authored. See [FRONTEND_CODE.md](docs/FRONTEND_CODE.md).
+
+Added migration 021: ordinary data/file previews now use shared PostgreSQL staging, including exact binary uploads, expiry, per-workspace capacity limits and atomic draft deletion with save receipts. Confirmation still rechecks permissions and current versions. Previews remain temporary and do not enter official history before confirmation.
 
 Next: verify browser/ChatGPT code hosting and extend code-runtime/tool integration; shared identity-aware queries/project relationships; granular project sharing; scheduled maintenance integration. Project organization currently requires unrestricted workspace access. Semantic inclusion/source-policy judgment remains ChatGPT's responsibility, with structural/grant/permission enforcement in the backend. See [WORKSPACE_FOUNDATION.md](docs/WORKSPACE_FOUNDATION.md).
 
@@ -85,7 +87,7 @@ Next: verify browser/ChatGPT code hosting and extend code-runtime/tool integrati
 ### 8. Complete integrity, access and recovery across the whole product
 
 - [ ] Extend audit/export/restore to entity observations and reconciliation, projects/components/assets, access changes, grants and execution evidence.
-- [ ] Move remaining in-memory data/file previews to shared temporary storage; retain clear draft expiry and never claim an unsaved preview is durable saved work.
+- [x] Move remaining in-memory data/file previews to shared temporary storage; retain clear draft expiry and never claim an unsaved preview is durable saved work.
 - [ ] Provision restricted runtime credentials and essential monitoring; resolve production retention/recovery/location/budget and demonstrate an actual managed backup restore.
 - [ ] Preserve original files on extraction failure with quiet availability flags. Failed authoritative saves must remain visibly unsaved and retryable.
 - [ ] Retire obsolete fixed business UI/code only after dependency checks, retaining historical evidence and management of any active legacy jobs.

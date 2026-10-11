@@ -14,9 +14,8 @@ export type FileOperation={kind:'save_document';filename:string;mime:string;byte
 type Preview={id:string;actorId:string;workspaceId:string;operation:Operation|FileOperation;digest:string;expires:number;schemaFingerprint?:string;migrationFingerprint?:string};
 const json=(v:unknown)=>JSON.stringify(v);
 export class Service extends DataService {
- private previews=new Map<string,Preview>();
  constructor(db:Database,maxFileBytes=25*1024*1024,originals:OriginalStore=new PostgresOriginalStore()) {super(db,maxFileBytes,originals);}
- sweep() {for(const [k,p] of this.previews) if(p.expires<Date.now()) this.previews.delete(k);}
+ async sweep() {await this.db.query('DELETE FROM data_previews WHERE expires_at<=now()');}
  async createWorkspace(a:Actor,name:string,options:{initialAiWorkspace?:boolean}={}) {
   if(a.origin!=='human'&&!options.initialAiWorkspace) fail(403,'human_required','Confirm creation of your first AI-accessible workspace');
   return this.db.transaction(async tx=>{
@@ -151,9 +150,7 @@ export class Service extends DataService {
  }
  private async prepare(a:Actor,w:string,op:Operation|FileOperation) {
   const schemaFingerprint=['create_record','update_record','bulk_records','accept_submission','upgrade_template','adopt_template'].includes(op.kind)?checksum(json((await this.db.query('SELECT id,version FROM entity_types WHERE workspace_id=$1 ORDER BY id',[w])).rows)):undefined;
-  await this.validate(this.db,a,w,op);this.sweep();
-  const memory=Array.from(this.previews.values()).reduce((sum,p)=>sum+(p.operation.kind==='save_document'?p.operation.bytes.length:Buffer.byteLength(json(p.operation))),0);
-  if(this.previews.size>=1000||memory+(op.kind==='save_document'?op.bytes.length:Buffer.byteLength(json(op)))>100*1024*1024)fail(503,'preview_capacity','Preview capacity reached; discard old previews and retry');
+  await this.validate(this.db,a,w,op);await this.sweep();
   let summary:any=op.kind==='restore_record'?{...op,...await this.restoreData(this.db,a,w,op)}:op.kind==='save_document'?{...op,bytes:undefined,byteSize:op.bytes.length,checksum:checksum(op.bytes)}:op;
   if(op.kind==='create_record'||op.kind==='update_record'||op.kind==='accept_submission'){
    const before=op.kind==='update_record'?(await this.db.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[op.recordId,w])).rows[0]:null;
@@ -165,10 +162,20 @@ export class Service extends DataService {
   if(op.kind==='adopt_template')summary={...op,diff:await adoptionDiff(this.db,w,op.template,op.mapping)};
   if(op.kind==='request_review'){const r=(await this.db.query('SELECT data,state FROM records WHERE id=$1 AND workspace_id=$2',[op.recordId,w])).rows[0];const u=(await this.db.query('SELECT name FROM users WHERE id=$1',[op.reviewerId])).rows[0];summary={...op,reviewerName:u.name,record:r.data,resultingVersion:op.expectedVersion+1};}
   if(op.kind==='upgrade_template')summary={...op,diff:await templateDiff(this.db,w,op.template)};
-  const p:Preview={id:randomUUID(),actorId:a.userId,workspaceId:w,operation:op,schemaFingerprint,migrationFingerprint:migration?.fingerprint,digest:checksum(json(summary)),expires:Date.now()+24*3600000};this.previews.set(p.id,p);
+  const p:Preview={id:randomUUID(),actorId:a.userId,workspaceId:w,operation:op,schemaFingerprint,migrationFingerprint:migration?.fingerprint,digest:checksum(json(summary)),expires:Date.now()+24*3600000};
+  await this.db.transaction(async tx=>{
+   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);
+   await this.validate(tx,a,w,op);
+   const body=op.kind==='save_document'?{...op,bytes:undefined}:op;
+   const bytes=op.kind==='save_document'?op.bytes:null;
+   const size=Buffer.byteLength(json(body))+(bytes?.length??0);
+   const usage=(await tx.query('SELECT count(*) AS n,coalesce(sum(byte_size),0) AS bytes FROM data_previews WHERE workspace_id=$1 AND expires_at>now()',[w])).rows[0];
+   if(Number(usage.n)>=1000||Number(usage.bytes)+size>100*1024*1024)fail(503,'preview_capacity','Workspace preview capacity reached; discard old previews and retry');
+   await tx.query('INSERT INTO data_previews(id,workspace_id,actor_id,body,file_bytes,digest,schema_fingerprint,migration_fingerprint,expires_at,byte_size) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)',[p.id,w,a.userId,json(body),bytes,p.digest,p.schemaFingerprint??null,p.migrationFingerprint??null,new Date(p.expires),size]);
+  });
   return {id:p.id,digest:p.digest,workspaceId:w,expiresAt:new Date(p.expires).toISOString(),status:'preview',summary};
  }
- async discard(a:Actor,id:string) {const p=this.previews.get(id);if(p?.actorId!==a.userId)fail(404,'not_found','Preview not found');this.previews.delete(id);return {status:'discarded'};}
+ async discard(a:Actor,id:string) {const r=await this.db.query('DELETE FROM data_previews WHERE id=$1 AND actor_id=$2 RETURNING id',[id,a.userId]);if(!r.rows.length)fail(404,'not_found','Preview not found');return {status:'discarded'};}
  async receipt(a:Actor,id:string) {const r=(await this.db.query('SELECT * FROM commit_receipts WHERE preview_id=$1 AND actor_id=$2',[id,a.userId])).rows[0];if(!r)fail(404,'not_found','Save receipt not found');await access(this.db,a,r.workspace_id);return r.result;}
  async commit(a:Actor,id:string,digest:string) {
   const result=await this.db.transaction(async tx=>{
@@ -176,7 +183,9 @@ export class Service extends DataService {
    await tx.query('SELECT pg_advisory_xact_lock(hashtext($1))',[id]);
    const existing=(await tx.query('SELECT * FROM commit_receipts WHERE preview_id=$1',[id])).rows[0];
    if(existing){if(existing.actor_id!==a.userId||existing.digest!==digest)fail(409,'receipt_mismatch','Save does not match this confirmation');await access(tx,a,existing.workspace_id);return existing.result;}
-   const p=this.previews.get(id);if(!p||p.actorId!==a.userId||p.expires<Date.now())fail(410,'preview_expired','Preview expired; prepare it again');
+   const row=(await tx.query('SELECT * FROM data_previews WHERE id=$1 AND actor_id=$2 AND expires_at>now() FOR UPDATE',[id,a.userId])).rows[0];
+   if(!row)fail(410,'preview_expired','Preview expired; prepare it again');
+   const p:Preview={id:row.id,actorId:row.actor_id,workspaceId:row.workspace_id,operation:row.body.kind==='save_document'?{...row.body,bytes:Buffer.from(row.file_bytes)}:row.body,digest:row.digest,expires:new Date(row.expires_at).getTime(),schemaFingerprint:row.schema_fingerprint,migrationFingerprint:row.migration_fingerprint};
    if(p.digest!==digest)fail(409,'preview_mismatch','Preview changed; review it again');
    // Workspace lock serialises permissions/configuration changes with commits.
    await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[p.workspaceId]);
@@ -185,8 +194,9 @@ export class Service extends DataService {
    if(p.operation.kind==='migrate_type'&&p.migrationFingerprint!==(await this.migrationData(tx,a,p.workspaceId,p.operation)).fingerprint)fail(409,'stale_version','Records changed since migration preview');
    const objects=await this.apply(tx,a,p.workspaceId,p.operation,policy);
    const result={status:'saved',previewId:id,objects,savedAt:new Date().toISOString()};
-   await tx.query('INSERT INTO commit_receipts(preview_id,actor_id,workspace_id,digest,result) VALUES($1,$2,$3,$4,$5)',[id,a.userId,p.workspaceId,digest,json(result)]);return result;
-  });this.previews.delete(id);return result;
+   await tx.query('INSERT INTO commit_receipts(preview_id,actor_id,workspace_id,digest,result) VALUES($1,$2,$3,$4,$5)',[id,a.userId,p.workspaceId,digest,json(result)]);
+   await tx.query('DELETE FROM data_previews WHERE id=$1',[id]);return result;
+  });return result;
  }
  private async apply(tx:Connection,a:Actor,w:string,op:Operation|FileOperation,p:any):Promise<any[]> {
   if(op.kind==='request_review'){
