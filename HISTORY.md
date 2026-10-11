@@ -262,3 +262,5 @@ Deployment: `ec9c67e` is live on the existing Render web and worker services. In
 ## 11 October 2026 — Project permissions and initial live interfaces
 
 Added migration 019, inherited human/AI restrictions, owner-reviewed sharing and restriction-preserving moves. Pending confirmations, maintenance, observations, history and export honor the new boundaries. Added the generic `trialy-ui-v1` runtime for composed text/layout and live editable tables; confirmed cell edits update shared records. HTML/JavaScript remain inert source. Richer blocks, arbitrary frontend code, partial-data component access and provider/function integration remain pending. No new paid resources.
+
+Deployment: `cb220b8` is live on the existing Render web and worker. Build, 34 reported tests, focused live-edit/access checks and synthetic restore passed; health/readiness returned 200 and the new interface bundle was verified. Initial deployment error logs are empty. Private plugin 0.2.3 (`pluginrel_6acb8fdc26e88191a143c0b25448c9ec`) was updated and read back; identity, audience, connection and default prompt were preserved. Actual ChatGPT/browser interaction remains unverified.
