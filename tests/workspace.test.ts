@@ -58,10 +58,46 @@ test('Workspace: exact setup, bounded maintenance, source preservation, reversib
  await f.maintain(ai,w.id,{...batch,requestKey:randomUUID(),expectedScopeVersion:1,changes:[{kind:'update_record',recordId:receipt.recordIds[0],expectedVersion:1,data:{address:'Approved address'}}]});
  await f.revoke(a,w.id,scope.id);await assert.rejects(f.maintain(ai,w.id,{...batch,requestKey:randomUUID(),expectedScopeVersion:1}),/permission changed/);
  await assert.rejects(db.query('UPDATE record_observations SET source_label=$1',['changed']),/append-only/);
+ await change({kind:'archive_component',componentId:component.id,expectedVersion:4,archived:false});
+ const uiSource=JSON.stringify({runtime:'trialy-ui-v1',blocks:[{kind:'text',text:'<script>inert text</script>'},{kind:'table',title:'Organizations',typeId:table,fields:['name']}]});
+ await change({kind:'save_component',componentId:component.id,expectedVersion:5,projectId:destination.id,content:{name:'Live organizations',format:'trialy-ui',source:uiSource,bindings:[{typeId:table,fields:['name']}]}});
+ const rendered=await f.renderComponent(ai,w.id,component.id,1);assert.equal(rendered.rows.length,2);assert.deepEqual(Object.keys(rendered.rows[0].data),['name']);
+ const row=rendered.rows[0];const edit={kind:'edit_component_record',componentId:component.id,expectedVersion:6,recordId:row.id,recordVersion:row.version,field:'name',value:'Inline correction'};
+ await assert.rejects(change({...edit,field:'address'}),/not editable/);
+ const editPreview=await f.preview(ai,w.id,edit);const edited=await f.confirm(ai,w.id,editPreview.id,editPreview.digest);assert.deepEqual(await f.confirm(ai,w.id,editPreview.id,editPreview.digest),edited);
+ assert.equal((await f.record(db,a,w.id,row.id)).data.name,'Inline correction');await assert.rejects(change(edit),/changed/);
+ await assert.rejects(change({kind:'save_component',projectId:destination.id,content:{name:'Bad binding',format:'trialy-ui',source:uiSource,bindings:[]}}),/declared/);
  const exported=await s.exportWorkspace(a,w.id);assert.equal(exported.workspace_nodes.length,3);assert.equal(exported.workspace_components.length,1);assert.equal(exported.maintenance_scopes.length,1);assert.equal(exported.identity_links.length,1);assert.equal(exported.record_observations.length,4);
  await save({kind:'update_type',typeId:table,expectedVersion:1,name:'Organizations',fields:[{key:'name',name:'Name',kind:'text',ai:true},{key:'address',name:'Address',kind:'text',ai:true},{key:'city',name:'City',kind:'text',ai:true},{key:'private',name:'Private',kind:'text',ai:false}]});
  await assert.rejects(f.readComponent(ai,w.id,component.id),/every workspace field/);
  assert.equal((await f.readComponent(a,w.id,component.id)).component.id,component.id);
  await s.setAccessRules(a,w.id,{expectedVersion:0,aiHiddenTypes:[table]});await assert.rejects(f.nodes(ai,w.id));await assert.rejects(f.readComponent(ai,w.id,component.id));await assert.rejects(f.evidence(ai,w.id,receipt.recordIds[0]));
+ }finally{await db.close();}
+});
+test('Project access: inherited restrictions, sticky moves, stale approval, AI revocation and inspection',async()=>{
+ const pg=new PGlite();for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
+ const db:Database={query:(s,v)=>pg.query(s,v) as any,transaction:f=>pg.transaction(tx=>f(tx as Connection)),close:()=>pg.close()};
+ try{
+ const s=new Service(db),f=new WorkspaceFoundation(db),owner:Actor={userId:randomUUID(),origin:'human'},member:Actor={userId:randomUUID(),origin:'human'},ai:Actor={...owner,origin:'ai'};
+ for(const a of [owner,member])await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[a.userId,a.userId,'test@example.invalid','Test']);
+ const w=await s.createWorkspace(owner,'Access');await s.setAi(owner,w.id,true);await s.share(owner,w.id,member.userId,'editor',[],null,true);
+ const change=async(op:any)=>{const p=await f.preview(owner,w.id,op);return f.confirm(owner,w.id,p.id,p.digest);};
+ const folder=await change({kind:'create_node',nodeKind:'folder',name:'Restricted'}),project=await change({kind:'create_node',nodeKind:'project',name:'Project',parentId:folder.id}),publicProject=await change({kind:'create_node',nodeKind:'project',name:'Public'});
+ const c=await change({kind:'save_component',projectId:project.id,content:{name:'Saved',format:'text',source:'Sensitive content'}});
+ assert.equal((await f.components(member,w.id)).length,1);
+ const stale=await f.preview(member,w.id,{kind:'rename_node',nodeId:publicProject.id,expectedVersion:0,name:'Changed'});
+ await change({kind:'set_project_access',nodeId:folder.id,expectedVersion:0,allowedUsers:[],ai:false});
+ assert.equal((await f.nodes(member,w.id)).nodes.length,1);assert.equal((await f.nodes(ai,w.id)).nodes.length,1);assert.equal((await f.components(member,w.id)).length,0);
+ await assert.rejects(f.readComponent(ai,w.id,c.id));await assert.rejects(f.componentHistory(member,w.id,c.id));await assert.rejects(f.confirm(member,w.id,stale.id,stale.digest),/changed/);
+ await assert.rejects(f.preview(member,w.id,{kind:'set_project_access',nodeId:publicProject.id,expectedVersion:0,allowedUsers:null,ai:true}),/owner/);
+ await change({kind:'move_component',componentId:c.id,expectedVersion:0,projectId:publicProject.id});
+ await assert.rejects(f.readComponent(member,w.id,c.id));await assert.rejects(f.readComponent(ai,w.id,c.id));
+ await change({kind:'move_node',nodeId:project.id,expectedVersion:0,parentId:null});
+ assert.equal((await f.nodes(member,w.id)).nodes.length,1);
+ await change({kind:'set_component_access',componentId:c.id,expectedVersion:1,allowedUsers:[member.userId],ai:true});
+ assert.equal((await f.readComponent(member,w.id,c.id)).component.id,c.id);
+ assert.equal((await f.componentHistory(member,w.id,c.id)).length,2); // old restricted-project source revision is hidden
+ await s.share(owner,w.id,member.userId,'inspector',[],null,false);await assert.rejects(s.exportWorkspace(member,w.id),/restricted/);await assert.rejects(s.history(member,w.id),/restricted/);
+ assert.equal((await s.exportWorkspace(owner,w.id)).workspace_components.length,1);
  }finally{await db.close();}
 });

@@ -35,3 +35,7 @@ A same-session edit is not inherently safe and a cross-session edit is not inher
 - Include basic acceptance checks for inline edit destinations, calculated/snapshot protection, source permissions and returning from detail pages. No broad cosmetic test expansion.
 
 No editing-policy runtime change is authorized or claimed by this document update. Resolve the proposed semantics before treating them as final implementation requirements.
+
+## Implemented interface subset — 11 October 2026
+
+For `trialy-ui-v1` tables, inline edits explicitly review/save to the shared database record with optimistic concurrency and audit. Configuration edits only change the component. Formula fields and read-only actors cannot edit cells. No silent local value overrides. Other proposed editing semantics remain pending. Component sharing/history/configuration use separate detail screens.

@@ -6,7 +6,7 @@ Updated 11 October 2026 following the shared-database and saved-component clarif
 
 Existing foundation: PostgreSQL data/originals, authentication, human/AI permissions, transactional changes and audit, previews, bounded JavaScript execution, saved function revisions, grants and background runs. Runtime `ec9c67e` is deployed on the existing Render web and worker, including project/maintenance and saved component storage. [EXECUTION.md](docs/EXECUTION.md) describes actual capabilities and limits. The earlier execution checklist is preserved in [the archive](docs/archive/development-execution-foundation-2026-10-11.md); its completed checkboxes do not mean the expanded product is complete.
 
-Not yet complete: a shared cross-import entity layer with reversible reconciliation; general generated-interface hosting; movable folders/projects/components; live external adapters. Existing views, forms and sharing are reusable foundations, not evidence that all these targets work already. User-driven ChatGPT testing has started; full host acceptance remains open.
+Not yet complete: the full shared cross-import entity layer, unrestricted generated-interface hosting, advanced component organization and live external adapters. Basic folders/project/component moves, restricted sharing and a text/table interface renderer are implemented. Existing views, forms and sharing are reusable foundations, not evidence that all these targets work already. User-driven ChatGPT testing has started; full host acceptance remains open.
 
 Database layering and the common vocabulary are agreed in [README](README.md). [Interface rules](docs/INTERFACE_RULES.md) separates agreed usability direction from the proposed edit-routing policy.
 
@@ -16,7 +16,9 @@ Added migration 017, project/folder CRUD/moves and shared web/embed Projects UI;
 
 Added migration 018: reviewed component source/configuration saves, stable IDs, move/archive/recovery, immutable revisions, shared source editor, MCP/REST reads and export/restore coverage. Source remains inert; generated interfaces and project-level sharing are not yet enabled.
 
-Next: granular project/component access and isolated UI hosting; shared identity-aware queries/project relationships; granular project sharing; scheduled maintenance integration. Project organization currently requires unrestricted workspace access. Semantic inclusion/source-policy judgment remains ChatGPT's responsibility, with structural/grant/permission enforcement in the backend. See [WORKSPACE_FOUNDATION.md](docs/WORKSPACE_FOUNDATION.md).
+Added migration 019: inherited human/AI project and component restrictions, owner-reviewed sharing, access-preserving moves, export/observation protections, and the first trusted `trialy-ui-v1` renderer (text/layout/live editable tables). Arbitrary frontend code, richer blocks and partial-data component access remain pending.
+
+Next: extend generated interface blocks and execution bindings; shared identity-aware queries/project relationships; granular project sharing; scheduled maintenance integration. Project organization currently requires unrestricted workspace access. Semantic inclusion/source-policy judgment remains ChatGPT's responsibility, with structural/grant/permission enforcement in the backend. See [WORKSPACE_FOUNDATION.md](docs/WORKSPACE_FOUNDATION.md).
 
 ## Ordered implementation steps
 
@@ -56,7 +58,7 @@ Next: granular project/component access and isolated UI hosting; shared identity
 
 ### 5. Host ChatGPT-generated interfaces
 
-- [ ] Choose and document one supported UI package/runtime contract, then implement isolated rendering for generated interfaces in the workspace and compatible ChatGPT surface.
+- [x] Choose and document the first supported UI contract: `trialy-ui-v1`, rendered by trusted React without executing arbitrary generated browser code. Basic text/layout/table support is implemented; real ChatGPT acceptance remains open.
 - [ ] Define component binding metadata for sources, live versus snapshot values, edit targets and calculations. Resolve the proposed editing semantics in INTERFACE_RULES.md before implementing them.
 - [ ] Provide a permission-checked bridge for queries, previews/commits, files, authorized tools and run status. Keep tokens and raw database connections out of generated code.
 - [ ] Support provisional rendering, explicit save, reopen by exact revision, updates and recovery of an earlier component version.

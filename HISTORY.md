@@ -258,3 +258,7 @@ Documentation-only update; no application behavior or deployment changes.
 - Granular project/component sharing and generated interface execution remain next; no new provider, infrastructure cost, or fixed workflow was introduced.
 
 Deployment: `ec9c67e` is live on the existing Render web and worker services. Initial error-log check is empty. No plugin package change or new resources were required; existing ChatGPT connections may need a tool refresh to discover the component read tools.
+
+## 11 October 2026 — Project permissions and initial live interfaces
+
+Added migration 019, inherited human/AI restrictions, owner-reviewed sharing and restriction-preserving moves. Pending confirmations, maintenance, observations, history and export honor the new boundaries. Added the generic `trialy-ui-v1` runtime for composed text/layout and live editable tables; confirmed cell edits update shared records. HTML/JavaScript remain inert source. Richer blocks, arbitrary frontend code, partial-data component access and provider/function integration remain pending. No new paid resources.
