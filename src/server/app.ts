@@ -44,6 +44,7 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  app.get('/api/workspaces/:workspaceId/types/:typeId/aggregate',async(req,res)=>res.json(await s.aggregate(req.actor!,String(req.params.workspaceId),id.parse(req.params.typeId),recordQuerySchema.extend({groupBy:z.string().optional(),metric:z.string().optional()}).parse(req.query))));
  app.get('/api/workspaces/:workspaceId/views',async(req,res)=>res.json(await s.views(req.actor!,String(req.params.workspaceId))));
  app.get('/api/workspaces/:workspaceId/previews',async(req,res)=>res.json(await s.pendingChanges(req.actor!,id.parse(req.params.workspaceId))));
+ app.get('/api/workspaces/:workspaceId/creation-archives',async(req,res)=>res.json(await s.creationArchives(req.actor!,id.parse(req.params.workspaceId),z.coerce.number().int().min(0).default(0).parse(req.query.offset))));
  app.get('/api/workspaces/:workspaceId/field-changes',async(req,res)=>res.json(await s.fieldChanges(req.actor!,id.parse(req.params.workspaceId),fieldChangeQuerySchema.parse(req.query))));
  app.post('/api/workspaces/:workspaceId/previews',async(req,res)=>res.status(201).json(await s.preview(req.actor!,String(req.params.workspaceId),req.body)));
  app.post('/api/previews/:previewId/commit',async(req,res)=>{const body=z.object({digest:z.string().length(64),confirmed:z.literal(true)}).parse(req.body);res.json(await s.commit(req.actor!,id.parse(req.params.previewId),body.digest));});

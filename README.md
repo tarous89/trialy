@@ -113,3 +113,9 @@ Data/file previews and experiment/proposal/function-preview staging live in Post
 ## Frontend scope correction — 11 October 2026
 
 ChatGPT writes frontend code; Trialy saves, versions, organizes and hosts that code with authorized data/tool access. Trialy is not a UI block catalogue or a template/workflow builder. The initial executable contract is `frontend-js` / `trialy-frontend-js-v1`: JavaScript renders arbitrary supported HTML/CSS and handles events inside a bounded runtime. The earlier `trialy-ui` schema is legacy compatibility only. See [FRONTEND_CODE.md](docs/FRONTEND_CODE.md) for the exact contract and remaining browser/host verification. Unmodified React/npm applications are not supported yet.
+
+### Archival behavior
+
+Unchanged new database entries can be archived after review while retaining every value and historical change. Referenced or later-edited entries require an explicit correction. A reviewed restore is available for these retained creations. Archived entries are excluded from active lists and summaries; their history remains accessible.
+
+Projects and folders can also be archived by their owner, with an exact preview of affected contents. This preserves source, shared data and history, revokes task scopes, clears attached function bindings and pauses attached schedules. Restoring organization does not silently reactivate execution or long-term write authority.

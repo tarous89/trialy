@@ -28,7 +28,7 @@ export class Foundation {
  async checkComponent(a:Actor,w:string,context:{id:string;version:number;binding:string}|undefined|null,revisionId?:string|null,grantId?:string|null){
   if(!context)return;
   const c=(await new WorkspaceFoundation(this.db).readComponent(ai(a),w,context.id)).component;
-  if(c.archived||c.version!==context.version)fail(409,'component_changed','Component changed or was archived; review its execution binding again');
+  if(c.archived||c.project_archived||c.version!==context.version)fail(409,'component_changed','Component changed or was archived; review its execution binding again');
   const binding=c.execution.find((b:any)=>b.name===context.binding);
   if(!binding||binding.revisionId!==revisionId||(binding.grantId??null)!==(grantId??null))fail(403,'component_binding','Function or permission differs from reviewed component binding');
   const r=await this.revision(a,w,binding.revisionId);for(const typeId of r.body.scope.typeIds){const {type,policy}=await typeAccess(this.db,ai(a),w,typeId);const declared=c.bindings.find((b:any)=>b.typeId===typeId);if(!declared||visibleFields(type.fields,policy,ai(a)).some(f=>!declared.fields.includes(f.key)))fail(403,'component_binding','Function reads exceed current component bindings');}

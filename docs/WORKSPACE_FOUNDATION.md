@@ -67,3 +67,9 @@ Component content includes execution:[{name,revisionId,grantId?}]. Functions rem
 ### Reviewed copies and organization search
 
 Projects includes name search over currently accessible projects, folders and component metadata. Component configuration can preview a copy of its saved source into a selected project. Copies have a new ID and version-zero history; linked data stays shared rather than duplicated. Source and inherited access restrictions are retained, destination restrictions also apply, and function bindings/grants are cleared. Copy provenance records the original component/version in the new revision. Source version and current access are rechecked at approval. Legacy block components cannot be copied into new catalogue instances.
+
+### Project and folder archive
+
+Migration 024 adds retained node archival. An owner reviews the exact descendant nodes, component versions, task scopes and attached schedules before saving. Changes to the reviewed contents require a fresh preview. The archived state is inherited; source/history stay readable under current access, while editing, moves, generated interfaces, task maintenance and component-bound execution are blocked. Archival gives each descendant component a new revision with empty function bindings, revokes active task scopes and pauses attached schedules. Old queued/running component contexts fail their repeated permission/version checks.
+
+Restoration reopens organization only. It never restarts scopes, bindings or schedules; these require new reviewed setup. Individually archived descendants remain archived. Shared database records and independently invoked workspace functions are unaffected by project organization. The Projects UI hides archived work by default and offers Show archived and reviewed restore.

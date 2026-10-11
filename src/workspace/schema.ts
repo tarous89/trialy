@@ -40,6 +40,7 @@ export const workspaceOperation=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('set_component_access'),componentId:id,expectedVersion:z.number().int().min(0),allowedUsers:z.array(id).max(500).nullable(),ai:z.boolean()}).strict(),
  z.object({kind:z.literal('apply_maintenance'),batch:maintenanceBatch}).strict(),
  z.object({kind:z.literal('restore_component'),componentId:id,expectedVersion:z.number().int().min(0),revisionVersion:z.number().int().min(0)}).strict(),
+ z.object({kind:z.literal('archive_node'),nodeId:id,expectedVersion:z.number().int().min(0),archived:z.boolean(),reason:z.string().trim().min(1).max(1000)}).strict(),
  z.object({kind:z.literal('copy_component'),sourceComponentId:id,expectedVersion:z.number().int().min(0),projectId:id,name:z.string().trim().min(1).max(100)}).strict()
 ]);
 export type WorkspaceOperation=z.infer<typeof workspaceOperation>;

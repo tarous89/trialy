@@ -20,6 +20,7 @@ export class DataService {
 
   // Search only visible keys; restricted fields must not leak through matching/counts.
   const args:any[]=[w,t];let where='workspace_id=$1 AND type_id=$2';
+  if(opts.state==='archived')where+=" AND state='archived'";else if(opts.state!=='all')where+=" AND state<>'archived'";
   if(opts.q){args.push(fields.map(f=>f.key),opts.q);where+=` AND EXISTS (SELECT 1 FROM jsonb_each_text(data) v WHERE v.key=ANY($3::text[]) AND strpos(lower(v.value),lower($4))>0)`;}
   let config:any={};
   if(opts.viewId){const v=(await connection.query('SELECT * FROM saved_views WHERE id=$1 AND workspace_id=$2 AND type_id=$3',[opts.viewId,w,t])).rows[0];if(!v||viewFields(viewConfigSchema.parse(v.config)).some(k=>!fields.some(f=>f.key===k)))fail(404,'not_found','View not available');config=v.config;}

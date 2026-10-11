@@ -113,6 +113,7 @@ export class Service extends DataService {
   if(op.kind==='save_document'&&op.documentId)await this.documentPermission(tx,a,w,op.documentId);
   if(op.kind==='save_document'&&(!p.document_scope))fail(403,'restricted_documents','Document access for restricted views is not enabled');
   if(op.kind==='create_type'||op.kind==='update_type')formulaOrder(op.fields);
+  if(op.kind==='archive_created_record'||op.kind==='restore_archived_creation')await this.creationArchive(tx,a,w,op);
   if(op.kind==='reverse_field_change'||op.kind==='reverse_field_changes')await this.reverseBatch(tx,a,w,op);
   if(op.kind==='update_type'){const {type}=await typeAccess(tx,a,w,op.typeId,true);if(a.origin==='ai'&&type.fields.some((f:Field)=>!f.ai))fail(403,'restricted_configuration','Edit tables containing model-restricted fields in the standalone application');if(type.version!==op.expectedVersion)fail(409,'stale_version','Table changed; preview again');const populated=Number((await tx.query('SELECT count(*) AS n FROM records WHERE type_id=$1 AND workspace_id=$2',[op.typeId,w])).rows[0].n)>0;if(populated){for(const old of type.fields){const next=op.fields.find(f=>f.key===old.key);if(!next||next.kind!==old.kind||json([next.formula?.operator,next.formula?.fields])!==json([old.formula?.operator,old.formula?.fields])||json(next.options)!==json(old.options)||next.targetTypeId!==old.targetTypeId||(!old.required&&next.required))fail(409,'migration_required','Existing data requires an explicit field migration; use an optional new field instead');}if(op.fields.some(f=>(f.required||f.formula)&&!type.fields.some((old:Field)=>old.key===f.key)))fail(409,'migration_required','New fields on populated tables must be optional');}}
   if(op.kind==='bulk_records'){for(const change of op.changes)await this.validate(tx,a,w,change);}
@@ -164,6 +165,36 @@ export class Service extends DataService {
   const result=[];for(const r of rows){if(!r.summary)continue;if(r.schema_fingerprint&&r.schema_fingerprint!==checksum(json((await this.db.query('SELECT id,version FROM entity_types WHERE workspace_id=$1 ORDER BY id',[w])).rows)))continue;try{await this.validate(this.db,a,w,r.body.kind==='save_document'?{...r.body,bytes:Buffer.alloc(1)}:r.body);result.push({id:r.id,digest:r.digest,summary:r.summary,workspaceId:w,status:'preview',expiresAt:r.expires_at});}catch{}}
   return result;
  }
+ private async creationArchive(tx:Connection,a:Actor,w:string,op:Extract<Operation,{kind:'archive_created_record'|'restore_archived_creation'}>){
+  const event=op.kind==='restore_archived_creation'?(await tx.query("SELECT * FROM audit_events WHERE id=$1 AND workspace_id=$2 AND action='record.creation_archived'",[op.archiveEventId,w])).rows[0]:null;
+  if(op.kind==='restore_archived_creation'&&!event)fail(404,'not_found','Archive event not found');
+  const record=(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[op.kind==='archive_created_record'?op.recordId:event.object_id,w])).rows[0];if(!record)fail(404,'not_found','Record not found');
+  const {type,policy}=await typeAccess(tx,a,w,record.type_id,true);
+  if(visibleFields(type.fields,policy,a).length!==type.fields.length)fail(403,'full_record_required','Reviewing a whole-record archive requires access to every field');
+  if(record.version!==op.expectedVersion)fail(409,'stale_version','Record changed; review its current history');
+  if(op.kind==='archive_created_record'){
+   if(record.version!==0||record.state!=='draft')fail(409,'controlled_record','Only an unchanged new draft can be archived as a creation reversal');
+   // Inspect dependencies across the workspace without exposing restricted values or object names.
+   const dependencies=(await tx.query(`SELECT 1 FROM records r JOIN entity_types t ON t.id=r.type_id CROSS JOIN LATERAL jsonb_array_elements(t.fields) f
+    WHERE r.workspace_id=$1 AND r.id<>$2 AND f->>'kind'='relationship' AND (f->>'targetTypeId'=$3 OR f->>'targetTypeId' IS NULL) AND r.data->>(f->>'key')=$4
+    UNION ALL SELECT 1 FROM identity_links WHERE workspace_id=$1 AND revoked_at IS NULL AND (source_record_id=$2 OR preferred_record_id=$2)
+    UNION ALL SELECT 1 FROM document_controls WHERE workspace_id=$1 AND linked_record_id=$2
+    UNION ALL SELECT 1 FROM record_review_requests WHERE workspace_id=$1 AND record_id=$2
+    UNION ALL SELECT 1 FROM submission_acceptances WHERE workspace_id=$1 AND record_id=$2 LIMIT 1`,[w,record.id,record.type_id,record.id])).rows;
+   if(dependencies.length)fail(409,'record_dependencies','This entry has linked work. Review that work before choosing an archival action.');
+   if(!(await tx.query("SELECT id FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='record' AND version=0",[w,record.id])).rows.length)fail(409,'creation_unavailable','Original creation evidence is unavailable');
+  }else{
+   if(record.state!=='archived'||record.version!==event.after_value.version)fail(409,'stale_version','This archive is no longer the current record version');
+   await this.validateData(tx,a,w,type,policy,editableData(type.fields,record.data),false,record.id);
+  }
+  return {record,typeName:type.name,beforeState:record.state,afterState:op.kind==='archive_created_record'?'archived':'draft',archiveEventId:event?.id??null};
+ }
+ async creationArchives(a:Actor,w:string,offset=0){
+  await access(this.db,a,w);if(!Number.isInteger(offset)||offset<0)fail(400,'invalid_offset','Invalid page');
+  const rows=(await this.db.query(`SELECT e.id,e.object_id AS record_id,e.actor_id,e.created_at,e.reason,e.action,e.before_value,e.after_value,r.type_id,r.version AS current_version,r.state AS current_state FROM audit_events e JOIN records r ON r.id=e.object_id AND r.workspace_id=e.workspace_id WHERE e.workspace_id=$1 AND e.action IN ('record.creation_archived','record.creation_restored') ORDER BY e.created_at DESC,e.id DESC LIMIT 100 OFFSET $2`,[w,offset])).rows;
+  const events=[];for(const row of rows){try{const {type,policy}=await typeAccess(this.db,a,w,row.type_id);if(visibleFields(type.fields,policy,a).length!==type.fields.length)continue;events.push({...row,typeName:type.name});}catch{}}
+  return {events,nextOffset:rows.length===100?offset+100:null};
+ }
  private async reverseBatch(tx:Connection,a:Actor,w:string,op:Extract<Operation,{kind:'reverse_field_change'|'reverse_field_changes'}>){
   const entries=op.kind==='reverse_field_change'?[op]:op.changes;
   if(new Set(entries.map(e=>e.changeId)).size!==entries.length)fail(400,'duplicate_change','Select each change only once');
@@ -181,7 +212,7 @@ export class Service extends DataService {
    if(change.before_present)group.data[change.field_key]=change.before_value;else delete group.data[change.field_key];
   }
   // Compose all selected fields first, then validate the resulting records before any write.
-  for(const g of grouped.values()){const {type,policy}=await typeAccess(tx,a,w,g.record.type_id,true);await this.validateData(tx,a,w,type,policy,g.data,false,g.record.id);g.data=calculate(type.fields,g.data);}
+  for(const g of grouped.values()){const {type,policy}=await typeAccess(tx,a,w,g.record.type_id,true);await this.validateData(tx,a,w,type,policy,editableData(type.fields,g.data),false,g.record.id);g.data=calculate(type.fields,g.data);}
   return [...grouped.values()];
  }
  async fieldChanges(a:Actor,w:string,query:Partial<FieldChangeQuery>={}){
@@ -198,7 +229,7 @@ export class Service extends DataService {
   return this.prepare(a,w,{kind:'save_document',...input});
  }
  private async prepare(a:Actor,w:string,op:Operation|FileOperation) {
-  const schemaFingerprint=['create_record','update_record','bulk_records','accept_submission','upgrade_template','adopt_template','reverse_field_change','reverse_field_changes'].includes(op.kind)?checksum(json((await this.db.query('SELECT id,version FROM entity_types WHERE workspace_id=$1 ORDER BY id',[w])).rows)):undefined;
+  const schemaFingerprint=['create_record','update_record','bulk_records','accept_submission','upgrade_template','adopt_template','reverse_field_change','reverse_field_changes','archive_created_record','restore_archived_creation'].includes(op.kind)?checksum(json((await this.db.query('SELECT id,version FROM entity_types WHERE workspace_id=$1 ORDER BY id',[w])).rows)):undefined;
   await this.validate(this.db,a,w,op);await this.sweep();
   let summary:any=op.kind==='restore_record'?{...op,...await this.restoreData(this.db,a,w,op)}:op.kind==='save_document'?{...op,bytes:undefined,byteSize:op.bytes.length,checksum:checksum(op.bytes)}:op;
   if(op.kind==='create_record'||op.kind==='update_record'||op.kind==='accept_submission'){
@@ -211,6 +242,7 @@ export class Service extends DataService {
   if(op.kind==='adopt_template')summary={...op,diff:await adoptionDiff(this.db,w,op.template,op.mapping)};
   if(op.kind==='request_review'){const r=(await this.db.query('SELECT data,state FROM records WHERE id=$1 AND workspace_id=$2',[op.recordId,w])).rows[0];const u=(await this.db.query('SELECT name FROM users WHERE id=$1',[op.reviewerId])).rows[0];summary={...op,reviewerName:u.name,record:r.data,resultingVersion:op.expectedVersion+1};}
   if(op.kind==='upgrade_template')summary={...op,diff:await templateDiff(this.db,w,op.template)};
+  if(op.kind==='archive_created_record'||op.kind==='restore_archived_creation'){const review=await this.creationArchive(this.db,a,w,op);summary={...op,typeName:review.typeName,recordId:review.record.id,data:review.record.data,beforeState:review.beforeState,afterState:review.afterState,retains:'Original values, files, references and history are retained. External actions are not undone.'};}
   const fieldChanges=await this.fieldDiff(this.db,a,w,op);
   if(fieldChanges.length)summary={...summary,fieldChanges};
   const p:Preview={id:randomUUID(),actorId:a.userId,workspaceId:w,operation:op,schemaFingerprint,migrationFingerprint:migration?.fingerprint,digest:checksum(json(summary)),expires:Date.now()+24*3600000};
@@ -252,6 +284,14 @@ export class Service extends DataService {
   });return result;
  }
  private async apply(tx:Connection,a:Actor,w:string,op:Operation|FileOperation,p:any):Promise<any[]> {
+  if(op.kind==='archive_created_record'||op.kind==='restore_archived_creation'){
+   const change=await this.creationArchive(tx,a,w,op),record=change.record,version=record.version+1;
+   const authorization=(await tx.query("SELECT current_setting('trialy.write_authorization',true) AS value")).rows[0].value;
+   await tx.query('UPDATE records SET state=$1,version=$2,updated_at=now() WHERE id=$3',[change.afterState,version,record.id]);
+   await revision(tx,a,w,record.id,'record',version,{data:record.data,state:change.afterState});
+   await audit(tx,a,p,op.kind==='archive_created_record'?'record.creation_archived':'record.creation_restored',record.id,{state:record.state,version:record.version},{state:change.afterState,version,archiveEventId:change.archiveEventId,authorization:authorization?JSON.parse(authorization):null},op.reason);
+   return [{id:record.id,kind:'record',version,state:change.afterState}];
+  }
   if(op.kind==='request_review'){
    const r=(await tx.query('SELECT * FROM records WHERE id=$1',[op.recordId])).rows[0],version=r.version+1,id=randomUUID();
    await tx.query("UPDATE records SET state='in_review',version=$2,updated_at=now() WHERE id=$1",[r.id,version]);

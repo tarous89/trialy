@@ -28,9 +28,9 @@ Implemented the core [write authorization and field-change history contract](doc
 
 1. Complete broader shared-data semantics: platform project relationships, contextual/historical facts, preferred-value decisions and schema-semantic reconciliation. Accepted same-table identity groups, candidate search, preserved conflicts and references are now readable.
 2. Finish setup/capture orchestration and reviewed backfill around the implemented task scopes. Default writes require approval; type-specific standing permission is explicit and expiring.
-3. Finish component organization (project/folder archive and assets; name search and reviewed component copies are implemented), partial-data component access and external collection/sharing. Exact function attachment, generic run/status/cancel and component-aware worker/schedule enforcement are implemented.
+3. Finish component assets and richer organization; name search, reviewed copies and project/folder archive/restore are implemented, partial-data component access and external collection/sharing. Exact function attachment, generic run/status/cancel and component-aware worker/schedule enforcement are implemented.
 4. Extend the generated-code bridge for files/providers and richer application hosting as needed. Validate current HTML/CSS/event hosting in the real ChatGPT/browser environment; unmodified React/npm apps remain unsupported.
-5. Finish safe creation archival. Selected field-batch reversal, saved-batch lookup and actor/date/record/authorization filters are implemented; later edits require explicit correction. Embedded approval currently uses a secure standalone handoff.
+5. Verify the approval and recovery journey in the real host. Reviewed new-entry archive/restore, selected field-batch reversal and history filters are implemented. Later edits or linked work require explicit correction; embedded approval uses a secure standalone handoff.
 6. Add the first external provider after provider/account selection, with scoped credentials, effect previews and duplicate-effect handling. Electronic signatures remain conditional on provider requirements/cost.
 7. Finish restricted production credentials, monitoring and actual managed-backup recovery after retention/recovery decisions. Complete the real-host end-to-end journey before customer reliance/public publication.
 
@@ -45,11 +45,11 @@ These are remaining capabilities, not releases. Broad unchecked items below can 
 - [x] Add a fixed Changes and permissions area for pending reviews, saved field changes and grant management, shared by web and embedded workspace. Include filtering and source/authorization detail without exposing human-only data to ChatGPT.
 - [x] Implement reviewed individual current-field reversal as a new audited transaction.
 - [x] Extend reversal to selected fields across records with atomic reviewed correction, per-record version checks and saved-batch/actor/date/record/authorization history filters.
-- [ ] Add safe record-creation archival. Preserve original history, detect later edits/dependencies and reject unsafe overwrites. Do not imply reversal of external actions.
+- [x] Add reviewed archival/restoration for unchanged new drafts. Preserve original history, detect later edits/dependencies and reject unsafe overwrites. Do not imply reversal of external actions.
 - [x] Run focused backend checks for approval enforcement, type/field scope, expiry/revocation, atomic evidence, hidden-value protection, idempotency and safe reversal.
 - [ ] Verify actual approval UI and code hosting in ChatGPT when host testing is available.
 
-Migrations 022–023 implement the checked items. Human-only confirmation uses the standalone authenticated session; no in-chat-only consent or regulated signature is claimed. Older history remains available but is not backfilled with invented authorizations.
+Migrations 022–024 implement the checked items. Human-only confirmation uses the standalone authenticated session; no in-chat-only consent or regulated signature is claimed. Older history remains available but is not backfilled with invented authorizations.
 
 ## Ordered implementation steps
 
@@ -82,9 +82,9 @@ Migrations 022–023 implement the checked items. Human-only confirmation uses t
 
 ### 4. Add projects, folders and durable saved components
 
-- [ ] Implement project/folder/component create, rename, organize, archive and move APIs with stable IDs and revision history.
+- [x] Implement project/folder/component create, rename, organize, archive and move APIs with stable IDs and revision history. Project/folder archival is owner-reviewed, inherited by descendants and clears attached execution; restore does not revive old authority.
 - [ ] Save component source/configuration, entrypoint, data bindings, assets, runtime and capability requirements after preview confirmation.
-- [ ] Allow many components to reference the same shared entities. Distinguish an organizational move from an explicit duplicate/fork.
+- [x] Allow many components to reference the same shared entities. Distinguish an organizational move from an explicit reviewed copy; copies retain data bindings without duplicating records.
 - [ ] Make moves permission-aware; preserve references, version history and jobs, while pausing affected execution if its authority is no longer valid.
 
 ### 5. Host ChatGPT-generated interfaces
