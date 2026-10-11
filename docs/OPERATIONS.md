@@ -84,3 +84,9 @@ See [EXECUTION.md](EXECUTION.md). Migrate before deploying the web/worker pair. 
 Rollout: push the tested foundation branch, fast-forward main, verify both Render deployments, `/health`, `/ready`, and recent worker logs. Rollback application code to `b2dce02` if needed, leaving additive migration 016 and its saved data intact. Pause foundation schedules first when the new API is available; the older worker does not process those schedules. Never drop saved-function/history tables to roll back a UI.
 
 The latest synthetic restore evidence includes migration 016 and saved functions. It still does not establish managed Render restore success, production RPO/RTO, no-loss failover or clinical validation. Temporary run staging can occur in infrastructure backups; retention/erasure policies must account for their lifecycle before onboarding customers.
+
+## Operational health and current production gates
+
+Migration 030 adds a worker heartbeat every 15 seconds and last success/error times. Human owners can open Projects → Operational status to see worker freshness (90-second threshold), workspace run/extraction counts and stored-original bytes. These are operational indicators, not proof of backup integrity or guaranteed job completion. Quiet extraction failures stay available as source-coverage flags. Production alert delivery remains dependent on a configured provider.
+
+Apply `ops/runtime-role.sql` with a migration/table-owner connection, then grant the role to a separately provisioned non-owner login and use that login for web/worker runtime. Run migrations with separate owner credentials. Do not assume merely committing this SQL changes deployed credentials. The connected Render SQL tool is read-only. Choose retention/RPO/RTO and an isolated restore target before a real managed recovery rehearsal. `npm run recovery:inventory` is read-only; `npm run recovery:rehearse` uses synthetic local PGlite, never customer data.

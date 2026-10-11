@@ -8,7 +8,7 @@ import type {WorkspaceOperation} from './schema.js';
 const J=JSON.stringify;
 type Pair={sourceField:string;preferredField:string};
 type MappingOperation=Extract<WorkspaceOperation,{kind:'save_table_mapping'|'revoke_table_mapping'}>;
-export const mappingStamp=(sourceId:string,source:Field[],preferredId:string,preferred:Field[])=>checksum(J([sourceId,source,preferredId,preferred]));
+export const mappingStamp=(sourceId:string,source:Field[],preferredId:string,preferred:Field[],sourceConcept?:string|null,preferredConcept?:string|null)=>checksum(J(sourceConcept||preferredConcept?[sourceId,source,preferredId,preferred,sourceConcept??null,preferredConcept??null]:[sourceId,source,preferredId,preferred]));
 export function validatePairs(pairs:Pair[],source:Field[],preferred:Field[]){
  if(!pairs.length)fail(400,'mapping_fields','Provide field pairs or a reviewed mapping');
  if(new Set(pairs.map(v=>v.sourceField)).size!==pairs.length||new Set(pairs.map(v=>v.preferredField)).size!==pairs.length)fail(400,'mapping_duplicate','Map each field at most once');
@@ -21,7 +21,7 @@ export class TableMappings {
  private async tables(a:Actor,w:string,sourceId:string,preferredId:string,write=false){
   const source=await typeAccess(this.db,a,w,sourceId,write),preferred=await typeAccess(this.db,a,w,preferredId,write);
   for(const t of [source,preferred])if(visibleFields(t.type.fields,t.policy,a).length!==t.type.fields.length)fail(403,'mapping_scope','Mapping decisions require access to all fields of both tables');
-  return {source:source.type,preferred:preferred.type,schemaStamp:mappingStamp(sourceId,source.type.fields,preferredId,preferred.type.fields)};
+  return {source:source.type,preferred:preferred.type,schemaStamp:mappingStamp(sourceId,source.type.fields,preferredId,preferred.type.fields,source.type.concept,preferred.type.concept)};
  }
  private async row(w:string,mappingId:string){
   const m=(await this.db.query('SELECT m.*,r.created_at AS revoked_at,r.actor_id AS revoked_by,r.reason AS revocation_reason,r."authorization" AS revocation_authorization FROM table_mappings m LEFT JOIN table_mapping_revocations r ON r.mapping_id=m.id WHERE m.workspace_id=$1 AND m.id=$2',[w,mappingId])).rows[0];

@@ -32,3 +32,5 @@ GRANT SELECT,INSERT ON record_facts,record_fact_retractions TO trialy_runtime;
 GRANT SELECT,INSERT,UPDATE ON cross_table_links TO trialy_runtime;
 
 GRANT SELECT,INSERT ON table_mappings,table_mapping_revocations TO trialy_runtime;
+
+GRANT SELECT,INSERT,UPDATE,DELETE ON worker_health TO trialy_runtime;

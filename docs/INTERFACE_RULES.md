@@ -42,4 +42,6 @@ For `trialy-ui-v1` tables, inline edits explicitly review/save to the shared dat
 
 ## Superseding approval and history requirement — 11 October 2026
 
-Follow [WRITE_AUTHORIZATION.md](WRITE_AUTHORIZATION.md). Provide a fixed Changes and permissions area in both surfaces, with Approve changes controls, field-level before/after values and the applicable permission. Showing an editable field does not authorize silent persistence. This interface and the new enforcement contract are planned, not yet deployed.
+Follow [WRITE_AUTHORIZATION.md](WRITE_AUTHORIZATION.md). Provide a fixed Changes and permissions area in both surfaces, with Approve changes controls, field-level before/after values and the applicable permission. Showing an editable field does not authorize silent persistence. This interface and the core enforcement contract are implemented; real-host acceptance remains pending.
+
+Generated frontend code now uses the same bound shared-record proposal/approval path. Project/component details, relationships, collection review and operational status open as separate panels. Source configuration edits create component revisions. Broader snapshot/override conventions above remain recommendations.

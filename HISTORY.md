@@ -352,3 +352,9 @@ Verification: production build and both focused cross-table/mapping scenarios pa
 Deployment: runtime `3f1fdafd7a9d3f5c49f3ce9bc315aea01d50cdf3` is live on the existing Render web (`dep-db5uvk3rjlhs73b6ngg0`, 20:22:48 UTC) and worker (`dep-db5uvk3rjlhs73b6ng9g`, 20:22:39 UTC), with migration 027. The initial post-deploy error-log window 20:22:39–20:22:58 UTC is empty. Private plugin package 0.2.5, identity and audience remain unchanged; MCP changes are served by the existing endpoint. No new paid resource/account or user decision is needed for the next step.
 
 Health, readiness and root each returned HTTP 200 after deployment; the root serves the new `index-Bw7JulAV.js` bundle.
+
+## 11 October 2026 — remaining foundation implementation (deployment pending)
+
+Migrations 028–031 add component document-version assets, owner-reviewed binding-scoped source release, worker health and optional common concept tags. Added atomic reviewed tracking setup; project relationship queries and bound frontend project/file reads; selected direct linked-value corrections; reviewed collection links/response acceptance; component drag/drop and owner operational status. Preserved approval-by-default, exact per-field history, original files and generic ChatGPT-authored code. No provider accounts, paid infrastructure, patient screening or templates introduced.
+
+Roadmap consolidated into implemented foundation and explicit host/provider/production gates. Plugin source prepared as 0.2.6, preserving presentation, private audience, MCP binding and default prompt. Focused checks and populated synthetic recovery are recorded with final deployment evidence below.

@@ -1,6 +1,7 @@
+import {exchangeSchema} from '../domain/exchange.js';
 import {componentRecordChanges} from './frontend.js';
 import {z} from 'zod';
-import {id,recordWriteSchema} from '../shared/schema.js';
+import {id,recordWriteSchema,fieldsSchema,dataConceptSchema} from '../shared/schema.js';
 const text=z.string().trim().min(1).max(1000);
 export const maintenanceSchema=z.object({
  autoWrite:z.boolean().default(false),expiresAt:z.iso.datetime().optional(),
@@ -12,8 +13,10 @@ export const maintenanceSchema=z.object({
 }).strict().refine(v=>new Set(v.bindings.map(b=>b.typeId)).size===v.bindings.length,'Duplicate table bindings').refine(v=>!v.autoWrite||(v.bindings.length===1&&!!v.expiresAt),'Longer-term permission requires exactly one data type and an expiry');
 export const componentContent=z.object({
  name:z.string().trim().min(1).max(100),
+ sourceAccess:z.enum(['workspace','bindings']).default('workspace'),
  format:z.enum(['text','markdown','json','javascript','html','trialy-ui','frontend-js']),
  source:z.string().max(200000),
+ assets:z.array(z.object({name:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),versionId:id}).strict()).max(20).default([]),
  execution:z.array(z.object({name:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),revisionId:id,grantId:id.optional()}).strict()).max(20).default([]),
  bindings:z.array(z.object({typeId:id,fields:z.array(z.string().min(1).max(64)).min(1).max(100)}).strict()).max(100).default([])
 }).strict();
@@ -31,6 +34,11 @@ export const workspaceOperation=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('rename_node'),nodeId:id,expectedVersion:z.number().int().min(0),name:z.string().trim().min(1).max(100)}).strict(),
  z.object({kind:z.literal('save_scope'),scope:maintenanceSchema,scopeId:id.optional(),expectedVersion:z.number().int().min(0).optional()}).strict(),
  identityLinkSchema,
+ z.object({kind:z.literal('accept_collection_response'),submissionId:id,data:z.record(z.string(),z.union([z.string().max(50000),z.number().finite(),z.boolean(),z.null()]))}).strict(),
+ z.object({kind:z.literal('create_collection_link'),config:exchangeSchema}).strict(),
+ z.object({kind:z.literal('revoke_collection_link'),linkId:id,reason:text}).strict(),
+ z.object({kind:z.literal('setup_tracking'),projectId:id,expectedProjectVersion:z.number().int().min(0),purpose:text,inclusionCriteria:text,sourcePolicy:text,basis:z.enum(['multiple_entries','repeated_actions','tracking','expected_reuse']),table:z.discriminatedUnion('kind',[z.object({kind:z.literal('new'),concept:dataConceptSchema,name:z.string().min(1).max(100),fields:fieldsSchema}).strict(),z.object({kind:z.literal('existing'),typeId:id,expectedVersion:z.number().int().min(0),fields:z.array(z.string().min(1).max(64)).min(1).max(100)}).strict()]),initialRows:z.array(z.record(z.string(),z.union([z.string().max(50000),z.number().finite(),z.boolean(),z.null()]))).max(200).default([])}).strict(),
+ z.object({kind:z.literal('propagate_linked_values'),sourceRecordId:id,sourceVersion:z.number().int().min(0),fields:z.array(z.string().min(1).max(64)).min(1).max(100),targets:z.array(z.object({recordId:id,expectedVersion:z.number().int().min(0),linkId:id,linkKind:z.enum(['same_table','cross_table'])}).strict()).min(1).max(50),reason:text}).strict(),
  z.object({kind:z.literal('save_table_mapping'),sourceTypeId:id,preferredTypeId:id,name:z.string().trim().min(1).max(100),fieldPairs:fieldPairsSchema,rationale:text}).strict(),
  z.object({kind:z.literal('revoke_table_mapping'),mappingId:id,reason:text}).strict(),
  z.object({kind:z.literal('link_cross_table_identity'),sourceRecordId:id,preferredRecordId:id,sourceVersion:z.number().int().min(0),preferredVersion:z.number().int().min(0),mappingId:id.optional(),fieldPairs:fieldPairsSchema.optional(),rationale:text}).strict(),

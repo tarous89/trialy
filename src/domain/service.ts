@@ -339,10 +339,10 @@ export class Service extends DataService {
    await audit(tx,a,p,'template.installed',null,null,{template:template.id,version:template.version});return result;
   }
   if(op.kind==='create_type'){
-   const id=randomUUID();await tx.query('INSERT INTO entity_types(id,workspace_id,name,fields) VALUES($1,$2,$3,$4)',[id,w,op.name,json(op.fields)]);
+   const id=randomUUID();await tx.query('INSERT INTO entity_types(id,workspace_id,name,fields,concept) VALUES($1,$2,$3,$4,$5)',[id,w,op.name,json(op.fields),op.concept??null]);
    await revision(tx,a,w,id,'type',0,op);await audit(tx,a,p,'type.created',id,null,op);return [{id,kind:'type',version:0,name:op.name}];
   }
-  if(op.kind==='update_type'){const old=(await tx.query('SELECT * FROM entity_types WHERE id=$1 AND workspace_id=$2',[op.typeId,w])).rows[0];const version=old.version+1;await tx.query('UPDATE entity_types SET name=$1,fields=$2,version=$3 WHERE id=$4',[op.name,json(op.fields),version,op.typeId]);await revision(tx,a,w,op.typeId,'type',version,op);await audit(tx,a,p,'type.updated',op.typeId,{name:old.name,fields:old.fields},op);return [{id:op.typeId,kind:'type',version}];}
+  if(op.kind==='update_type'){const old=(await tx.query('SELECT * FROM entity_types WHERE id=$1 AND workspace_id=$2',[op.typeId,w])).rows[0];const version=old.version+1;await tx.query('UPDATE entity_types SET name=$1,fields=$2,version=$3,concept=$5 WHERE id=$4',[op.name,json(op.fields),version,op.typeId,op.concept===undefined?old.concept:op.concept]);await revision(tx,a,w,op.typeId,'type',version,{...op,concept:op.concept===undefined?old.concept:op.concept});await audit(tx,a,p,'type.updated',op.typeId,{name:old.name,fields:old.fields,concept:old.concept},{...op,concept:op.concept===undefined?old.concept:op.concept});return [{id:op.typeId,kind:'type',version}];}
   if(op.kind==='create_record'||op.kind==='update_record'){
    const before=op.kind==='update_record'?(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2 FOR UPDATE',[op.recordId,w])).rows[0]:null;
    const id=before?.id??randomUUID(), version=before?before.version+1:0, rawData={...before?.data,...op.data};

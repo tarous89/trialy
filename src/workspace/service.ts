@@ -1,3 +1,4 @@
+import {exchangeReview,createExchange} from '../domain/exchange.js';
 import {TableMappings,mappingStamp,validatePairs} from './mappings.js';
 import {Foundation} from '../foundation/service.js';
 import {z} from 'zod';
@@ -26,7 +27,7 @@ export class WorkspaceFoundation {
  }
  async node(tx:Connection,w:string,id:string){const r=(await tx.query('SELECT * FROM workspace_nodes WHERE id=$1 AND workspace_id=$2',[id,w])).rows[0];if(!r)fail(404,'not_found','Project or folder not found');return r;}
  async nodeAccess(tx:Connection,a:Actor,w:string,id:string){
-  const p=await this.policy(tx,a,w);let current:string|null=id;const chain:any[]=[];
+  const p=await access(tx,a,w);let current:string|null=id;const chain:any[]=[];
   while(current){const n=await this.node(tx,w,current);if(chain.some(v=>v.id===n.id))fail(409,'folder_cycle','Invalid folder hierarchy');
    if((p.role!=='owner'&&n.allowed_users!==null&&!n.allowed_users.includes(a.userId))||(a.origin==='ai'&&!n.ai_enabled))fail(404,'not_found','Project or folder not found');chain.push(n);current=n.parent_id;}
   return chain;
@@ -38,14 +39,14 @@ export class WorkspaceFoundation {
   for(const n of chain){users=this.intersect(users,n.allowed_users);ai=ai&&n.ai_enabled;}return {users,ai};
  }
  async sharingMembers(a:Actor,w:string){const p=await this.policy(this.db,a,w);if(p.role!=='owner')fail(403,'owner_required','Only the workspace owner may change sharing');return (await this.db.query('SELECT u.id,u.name FROM users u JOIN memberships m ON m.user_id=u.id WHERE m.tenant_id=$1 ORDER BY u.name,u.id',[p.tenant_id])).rows;}
- async nodes(a:Actor,w:string){await this.policy(this.db,a,w);const nodes=[];for(const n of (await this.db.query('SELECT * FROM workspace_nodes WHERE workspace_id=$1 ORDER BY name,id',[w])).rows){try{const chain=await this.nodeAccess(this.db,a,w,n.id);nodes.push({...n,effective_archived:chain.some(n=>n.archived)});}catch{}}return {workspaceId:w,workspaceFoundation:true,nodes};}
+ async nodes(a:Actor,w:string){const p=await access(this.db,a,w);let allowed:Set<string>|undefined;if(p.allowed_types!==null||p.hidden_fields.length){allowed=new Set();for(const c of await this.components(a,w)){for(const n of await this.nodeAccess(this.db,a,w,c.project_id))allowed.add(n.id);}}const nodes=[];for(const n of (await this.db.query('SELECT * FROM workspace_nodes WHERE workspace_id=$1 ORDER BY name,id',[w])).rows){if(allowed&&!allowed.has(n.id))continue;try{const chain=await this.nodeAccess(this.db,a,w,n.id);nodes.push({...n,effective_archived:chain.some(n=>n.archived)});}catch{}}return {workspaceId:w,workspaceFoundation:true,nodes};}
  async component(tx:Connection,a:Actor,w:string,id:string){
-  await this.componentSourcePolicy(tx,a,w);
   const c=(await tx.query('SELECT * FROM workspace_components WHERE id=$1 AND workspace_id=$2',[id,w])).rows[0];
   if(!c)fail(404,'not_found','Component not found');
-  const p=await this.policy(tx,a,w);const chain=await this.nodeAccess(tx,a,w,c.project_id);
+  if(c.source_access!=='bindings')await this.componentSourcePolicy(tx,a,w);
+  const p=await access(tx,a,w);const chain=await this.nodeAccess(tx,a,w,c.project_id);
   if((p.role!=='owner'&&c.allowed_users!==null&&!c.allowed_users.includes(a.userId))||(a.origin==='ai'&&!c.ai_enabled))fail(404,'not_found','Component not found');
-  await this.componentBindings(tx,a,w,c.bindings);return {...c,project_archived:chain.some(n=>n.archived)};
+  await this.componentBindings(tx,a,w,c.bindings);await this.componentAssets(tx,a,w,c.assets);return {...c,project_archived:chain.some(n=>n.archived)};
  }
  private async componentSourcePolicy(tx:Connection,a:Actor,w:string){
   const p=await this.policy(tx,a,w);
@@ -57,12 +58,18 @@ export class WorkspaceFoundation {
   const types=(await tx.query('SELECT fields FROM entity_types WHERE workspace_id=$1',[w])).rows;
   if(types.some(t=>visibleFields(t.fields,p,a).length!==t.fields.length))fail(403,'component_scope','Saved source currently requires access to every workspace field');
  }
+ private async componentAssets(tx:Connection,a:Actor,w:string,assets:any[]=[]){
+  if(!assets.length)return [];
+  if(new Set(assets.map(v=>v.name)).size!==assets.length)fail(400,'asset_name','Asset names must be unique');
+  const docs=await new Service(adapter(tx)).documents(a,w);
+  return assets.map(asset=>{const file=docs.find(d=>d.id===asset.versionId);if(!file)fail(403,'asset_scope','An attached file is unavailable');return {name:asset.name,versionId:file.id,documentId:file.document_id,filename:file.filename,mime:file.mime,checksum:file.checksum,byteSize:file.byte_size};});
+ }
  private async componentBindings(tx:Connection,a:Actor,w:string,bindings:any[]){
   for(const b of bindings){const {type,policy}=await typeAccess(tx,a,w,b.typeId);const fields=visibleFields(type.fields,policy,a);
    if(new Set(b.fields).size!==b.fields.length||b.fields.some((k:string)=>!fields.some(f=>f.key===k)))fail(403,'component_binding','Component references unavailable fields');}
  }
  async components(a:Actor,w:string,projectId?:string){
-  await this.componentSourcePolicy(this.db,a,w);if(projectId)await this.nodeAccess(this.db,a,w,projectId);
+  await access(this.db,a,w);if(projectId)await this.nodeAccess(this.db,a,w,projectId);
   const rows=(await this.db.query('SELECT * FROM workspace_components WHERE workspace_id=$1 ORDER BY name,id',[w])).rows;
   const result=[];for(const c of rows){if(projectId&&c.project_id!==projectId)continue;try{const checked=await this.component(this.db,a,w,c.id);const {source,...metadata}=checked;result.push(metadata);}catch{}}
   return result;
@@ -76,11 +83,29 @@ export class WorkspaceFoundation {
   const request=frontendRequest.parse(input);if(Buffer.byteLength(J(request))>150000)fail(400,'input_limit','Interface input is too large');
   let content:any,version:number|undefined;
   if(request.componentId){const c=await this.component(this.db,a,w,request.componentId);if(c.archived||c.project_archived||c.format!=='frontend-js'||c.version!==request.expectedVersion)fail(409,'component_changed','Open the current active code revision');content=c;version=c.version;}
-  else {const draft=(await this.db.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[request.previewId,w,a.userId])).rows[0];if(!draft||draft.body.operation.kind!=='save_component'||draft.body.operation.content.format!=='frontend-js')fail(404,'not_found','Code preview unavailable');await this.validate(this.db,a,w,draft.body.operation);content=draft.body.operation.content;}
+  else {const draft=(await this.db.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[request.previewId,w,a.userId])).rows[0];if(!draft||draft.body.operation.kind!=='save_component'||draft.body.operation.content.format!=='frontend-js')fail(404,'not_found','Code preview unavailable');await this.validate(this.db,a,w,draft.body.operation);content={...draft.body.operation.content,project_id:draft.body.operation.projectId};}
   const key=w+':'+a.userId;if(activeFrontends.size>=2||activeFrontends.has(key))fail(429,'runtime_busy','Another interface is running; try again shortly');activeFrontends.add(key);
   const changes:any[]=[],invocations:any[]=[];
   try{
    const output=frontendOutput.parse(await execute(content.source,{state:request.state,event:request.event},async(name,value)=>{
+    if(name==='project.records'||name==='project.relationships'){
+     const v=z.object({offset:z.number().int().min(0).max(1000000).default(0)}).strict().parse(value);
+     const typeIds=content.bindings.map((b:any)=>b.typeId),projectId=content.project_id;
+     const projectRecord=(record:any)=>{const binding=content.bindings.find((b:any)=>b.typeId===(record.type_id??record.typeId));return {id:record.id,typeId:record.type_id??record.typeId,version:record.version,data:Object.fromEntries(Object.entries(record.data).filter(([k])=>binding.fields.includes(k)))};};
+     if(name==='project.records'){const page=await this.projectRecords(a,w,projectId,v.offset,typeIds);return {projectId,records:page.records.map(r=>projectRecord(r.record)),nextOffset:page.nextOffset};}
+     const page=await this.projectRelationships(a,w,projectId,v.offset,typeIds);return {projectId,relationships:page.relationships.filter(r=>content.bindings.find((b:any)=>b.typeId===r.source.typeId)?.fields.includes(r.field)).map(r=>({field:r.field,label:r.label,source:projectRecord(r.source),target:projectRecord(r.target)})),nextOffset:page.nextOffset};
+    }
+    if(name==='files.list')return this.componentAssets(this.db,a,w,content.assets);
+    if(name==='files.text'||name==='files.image'){
+     const v=z.object({name:z.string().max(64),offset:z.number().int().min(0).default(0)}).strict().parse(value);
+     const asset=(content.assets??[]).find((v:any)=>v.name===(value as any).name);if(!asset)fail(403,'asset_scope','File is not attached to this component');
+     const files=await this.componentAssets(this.db,a,w,content.assets),file=files.find(f=>f.name===v.name)!,service=new Service(this.db);
+     if(name==='files.text'){const result=await service.documentText(a,w,asset.versionId,v.offset);return {...result,tables:[]};}
+     if(file.byteSize>120000||!['image/png','image/jpeg','image/gif','image/webp'].includes(file.mime))fail(400,'asset_size','Inline images must be PNG, JPEG, GIF or WebP and at most 120 KB');
+     const original=await service.original(a,w,asset.versionId);const b=original.bytes;
+     const raster=(file.mime==='image/png'&&b.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])))||(file.mime==='image/jpeg'&&b[0]===255&&b[1]===216&&b[2]===255)||(file.mime==='image/gif'&&['GIF87a','GIF89a'].includes(b.subarray(0,6).toString()))||(file.mime==='image/webp'&&b.subarray(0,4).toString()==='RIFF'&&b.subarray(8,12).toString()==='WEBP');
+     if(!raster)fail(400,'asset_format','File does not match its raster image type');return {name:v.name,versionId:asset.versionId,checksum:file.checksum,dataUrl:'data:'+file.mime+';base64,'+b.toString('base64')};
+    }
     if(name==='functions.invoke'){
      if(!request.componentId)fail(403,'preview_read_only','Unsaved interfaces cannot queue functions');
      const v=z.object({binding:z.string().min(1).max(64),input:z.unknown().default(null),requestKey:id}).strict().parse(value);
@@ -137,7 +162,7 @@ export class WorkspaceFoundation {
  async componentHistory(a:Actor,w:string,id:string){
   await this.component(this.db,a,w,id);
   const rows=(await this.db.query("SELECT * FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='workspace_component' ORDER BY version DESC",[w,id])).rows;
-  const result=[];for(const r of rows){try{await this.nodeAccess(this.db,a,w,r.snapshot.project_id);await this.componentBindings(this.db,a,w,r.snapshot.bindings);result.push(r);}catch{}}return result;
+  const result=[];for(const r of rows){try{if(r.snapshot.source_access!=='bindings')await this.componentSourcePolicy(this.db,a,w);await this.nodeAccess(this.db,a,w,r.snapshot.project_id);await this.componentBindings(this.db,a,w,r.snapshot.bindings);await this.componentAssets(this.db,a,w,r.snapshot.assets);result.push(r);}catch{}}return result;
  }
  private async componentRevision(tx:Connection,w:string,id:string,version:number){
   const r=(await tx.query("SELECT snapshot FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='workspace_component' AND version=$3",[w,id,version])).rows[0];
@@ -151,7 +176,7 @@ export class WorkspaceFoundation {
   const r=(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[id,w])).rows[0];if(!r)fail(404,'not_found','Record not found');
   const {type,policy}=await typeAccess(tx,a,w,r.type_id,write);const fields=visibleFields(type.fields,policy,a);
   if(full&&fields.length!==type.fields.length)fail(403,'record_scope','Identity decisions require access to all fields of both records');
-  return {...r,data:projectData(r.data,fields),fields};
+  return {...r,data:projectData(r.data,fields),fields,typeConcept:type.concept??null};
  }
  private async scopeStamp(tx:Connection,a:Actor,w:string,body:ReturnType<typeof maintenanceSchema.parse>,allowArchived=false){
   const chain=await (allowArchived?this.nodeAccess(tx,a,w,body.projectId):this.activeNode(tx,a,w,body.projectId));const project=chain[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');
@@ -178,10 +203,10 @@ export class WorkspaceFoundation {
   if(op.kind!=='retract_record_fact'){const {type,policy}=await typeAccess(tx,a,w,record.type_id,true);await new Service(adapter(tx)).validateData(tx,a,w,type,policy,{[field]:value},true,record.id);}
   return {recordId:record.id,typeId:record.type_id,recordVersion:record.version,field,before:record.data[field]??null,value,fact:fact??{projectId:op.kind==='record_fact'?op.projectId:null,validFrom:op.kind==='record_fact'?op.validFrom:null,validUntil:op.kind==='record_fact'?op.validUntil:null},effect:op.kind==='prefer_record_fact'?'Update the current value, retaining all alternatives and history':op.kind==='retract_record_fact'?'Mark this candidate withdrawn; do not change the current value':'Store a candidate value; do not change the current value'};
  }
- async projectRecords(a:Actor,w:string,projectId:string,offset=0){
+ async projectRecords(a:Actor,w:string,projectId:string,offset=0,typeIds?:string[]){
   const project=(await this.nodeAccess(this.db,a,w,projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');
   if(!Number.isInteger(offset)||offset<0)fail(400,'invalid_offset','Invalid page');
-  const rows=(await this.db.query('SELECT * FROM project_records WHERE workspace_id=$1 AND project_id=$2 AND revoked_at IS NULL ORDER BY created_at,id LIMIT 100 OFFSET $3',[w,projectId,offset])).rows;
+  const rows=(await this.db.query('SELECT p.* FROM project_records p JOIN records r ON r.id=p.record_id WHERE p.workspace_id=$1 AND p.project_id=$2 AND p.revoked_at IS NULL AND ($4::uuid[] IS NULL OR r.type_id=ANY($4::uuid[])) ORDER BY p.created_at,p.id LIMIT 100 OFFSET $3',[w,projectId,offset,typeIds??null])).rows;
   const records=[];for(const link of rows){try{const record=await this.record(this.db,a,w,link.record_id);records.push({link,record});}catch{}}
   return {projectId,records,nextOffset:rows.length===100?offset+100:null,shared:true};
  }
@@ -219,7 +244,81 @@ export class WorkspaceFoundation {
   if(source.format==='trialy-ui')fail(400,'legacy_format','Create frontend-js code instead of copying the legacy renderer');
   const project=(await this.activeNode(tx,a,w,op.projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');
   const keep=await this.moveRestrictions(tx,a,w,source.project_id,source);
-  return {name:op.name,format:source.format,source:source.source,bindings:source.bindings,execution:[],allowed_users:keep.users,ai_enabled:keep.ai,archived:false,copiedFrom:{componentId:source.id,version:source.version}};
+  return {name:op.name,format:source.format,source:source.source,bindings:source.bindings,assets:source.assets??[],source_access:source.source_access,execution:[],allowed_users:keep.users,ai_enabled:keep.ai,archived:false,copiedFrom:{componentId:source.id,version:source.version}};
+ }
+ async projectRelationships(a:Actor,w:string,projectId:string,offset=0,typeIds?:string[]){
+  await this.nodeAccess(this.db,a,w,projectId);
+  const rows=(await this.db.query(`SELECT r.id AS source_id,t.id AS target_id,e.key AS field
+   FROM project_records p JOIN records r ON r.id=p.record_id AND r.workspace_id=p.workspace_id
+   CROSS JOIN LATERAL jsonb_each_text(r.data) e
+   JOIN records t ON t.id::text=e.value AND t.workspace_id=r.workspace_id
+   JOIN project_records q ON q.record_id=t.id AND q.project_id=p.project_id AND q.workspace_id=p.workspace_id AND q.revoked_at IS NULL
+   WHERE p.workspace_id=$1 AND p.project_id=$2 AND p.revoked_at IS NULL AND r.state<>'archived' AND t.state<>'archived' AND ($4::uuid[] IS NULL OR (r.type_id=ANY($4::uuid[]) AND t.type_id=ANY($4::uuid[])))
+   ORDER BY r.id,e.key,t.id LIMIT 101 OFFSET $3`,[w,projectId,offset,typeIds??null])).rows,relationships=[];
+  for(const edge of rows.slice(0,100)){
+   let source:any,target:any;try{source=await this.record(this.db,a,w,edge.source_id);target=await this.record(this.db,a,w,edge.target_id);}catch(e){if([403,404].includes((e as any).status))continue;throw e;}
+   const field=source.fields.find((f:any)=>f.key===edge.field&&f.kind==='relationship'&&f.targetTypeId===target.type_id);if(!field)continue;
+   relationships.push({field:field.key,label:field.name,source:{id:source.id,typeId:source.type_id,version:source.version,data:source.data},target:{id:target.id,typeId:target.type_id,version:target.version,data:target.data}});
+  }
+  return {projectId,relationships,nextOffset:rows.length>100?offset+100:null,interpretation:'Explicit relationship fields between records linked to this project. No inferred identity edges or links to records outside this project. Contextual roles/affiliations can be customer-defined relationship records linked to the project.'};
+ }
+ async collectionResponses(a:Actor,w:string,offset=0){
+  const p=await access(this.db,a,w);if(p.role!=='owner')fail(403,'owner_required','Owner required');
+  const rows=(await this.db.query('SELECT s.id,s.type_id,s.link_id,s.data,s.created_at,a.record_id FROM form_submissions s LEFT JOIN submission_acceptances a ON a.submission_id=s.id WHERE s.workspace_id=$1 ORDER BY s.created_at,s.id LIMIT 101 OFFSET $2',[w,offset])).rows,responses=[];
+  for(const row of rows){try{const {type,policy}=await typeAccess(this.db,a,w,row.type_id);const fields=visibleFields(type.fields,policy,a);responses.push({...row,data:projectData(row.data,fields),typeName:type.name});}catch(e){if(![403,404].includes((e as any).status))throw e;}}
+  const links=[];for(const link of (await this.db.query('SELECT id,name,kind,type_id,fields,expires_at,revoked_at FROM external_links WHERE workspace_id=$1 ORDER BY created_at DESC LIMIT 100',[w])).rows){try{const {type,policy}=await typeAccess(this.db,a,w,link.type_id);if(link.fields.every((k:string)=>visibleFields(type.fields,policy,a).some(f=>f.key===k)))links.push(link);}catch(e){if(![403,404].includes((e as any).status))throw e;}}
+  return {links,responses,nextOffset:rows.length>100?offset+100:null,interpretation:'Unverified external statements. Acceptance requires human review. Original attachments are reviewed separately in standalone Access settings.'};
+ }
+ private async responseReview(tx:Connection,a:Actor,w:string,op:Extract<WorkspaceOperation,{kind:'accept_collection_response'}>){
+  if((await access(tx,a,w,true)).role!=='owner')fail(403,'owner_required','Owner required');
+  const row=(await tx.query('SELECT s.* FROM form_submissions s LEFT JOIN submission_acceptances accepted ON accepted.submission_id=s.id WHERE s.workspace_id=$1 AND s.id=$2 AND accepted.submission_id IS NULL',[w,op.submissionId])).rows[0];if(!row)fail(409,'response_unavailable','Response is unavailable or already accepted');
+  const {type,policy}=await typeAccess(tx,a,w,row.type_id);if(visibleFields(type.fields,policy,a).length!==type.fields.length)fail(403,'response_scope','Acceptance requires visibility of every table field');
+  await new Service(adapter(tx)).validate(tx,a,w,{kind:'create_record',typeId:type.id,data:op.data});
+  return {submissionId:row.id,typeId:type.id,typeVersion:type.version,original:row.data,proposed:op.data,effect:'Create one authoritative record with reviewed values; preserve the unverified original response'};
+ }
+ private async collectionReview(tx:Connection,a:Actor,w:string,op:Extract<WorkspaceOperation,{kind:'create_collection_link'|'revoke_collection_link'}>){
+  if(op.kind==='create_collection_link')return exchangeReview(tx,a,w,op.config);
+  if((await access(tx,a,w,true)).role!=='owner')fail(403,'owner_required','Owner required');
+  const link=(await tx.query('SELECT id,type_id,kind,name,fields,expires_at,revoked_at FROM external_links WHERE id=$1 AND workspace_id=$2',[op.linkId,w])).rows[0];
+  if(!link||link.revoked_at)fail(409,'link_unavailable','Collection link unavailable');const {type,policy}=await typeAccess(tx,a,w,link.type_id);const fields=visibleFields(type.fields,policy,a);if(link.fields.some((k:string)=>!fields.some(f=>f.key===k)))fail(403,'field_scope','Collection fields unavailable');return {link,effect:'Stop future access and submissions; preserve previous responses and originals'};
+ }
+ private async trackingReview(tx:Connection,a:Actor,w:string,op:Extract<WorkspaceOperation,{kind:'setup_tracking'}>){
+  const project=(await this.activeNode(tx,a,w,op.projectId))[0];if(project.kind!=='project'||project.version!==op.expectedProjectVersion)fail(409,'stale_version','Project changed');
+  const service=new Service(adapter(tx)),policy=await this.policy(tx,a,w,true);if(policy.role!=='owner')fail(403,'owner_required','Only the owner can establish a capture scope');
+  let type:any,fields:string[];
+  if(op.table.kind==='new'){await service.validate(tx,a,w,{kind:'create_type',name:op.table.name,fields:op.table.fields,concept:op.table.concept});type={id:'00000000-0000-4000-8000-000000000000',name:op.table.name,fields:op.table.fields,concept:op.table.concept??null};fields=op.table.fields.filter(f=>f.ai&&!f.formula).map(f=>f.key);}
+  else {type=(await typeAccess(tx,a,w,op.table.typeId,true)).type;if(type.version!==op.table.expectedVersion)fail(409,'stale_version','Table changed');fields=op.table.fields;}
+  const permitted=visibleFields(type.fields,policy,{...a,origin:'ai'});if(!fields.length||new Set(fields).size!==fields.length||fields.some(k=>!permitted.some(f=>f.key===k&&!f.formula)))fail(403,'scope_fields','Capture scope needs distinct AI-accessible writable fields');
+  for(const data of op.initialRows){if(Object.keys(data).some(k=>!fields.includes(k)))fail(400,'scope_fields','Initial rows must fit the reviewed capture fields');await service.validateData(tx,a,w,type,{...policy,typeId:type.id},data);}
+  for(const field of type.fields.filter((f:any)=>f.unique)){const values=op.initialRows.map(r=>r[field.key]).filter(v=>v!==undefined&&v!==null&&v!=='');if(new Set(values.map(v=>J(v))).size!==values.length)fail(409,'duplicate_value','Initial rows contain duplicate unique values');}
+  return {projectId:project.id,projectVersion:project.version,table:op.table.kind==='new'?{name:type.name,concept:type.concept,fields:type.fields,new:true}:{id:type.id,name:type.name,concept:type.concept,fields:type.fields,version:type.version,new:false},captureFields:fields,initialRows:op.initialRows,permission:'Review every subsequent write; this setup grants no standing write permission',purpose:op.purpose,inclusionCriteria:op.inclusionCriteria,sourcePolicy:op.sourcePolicy,basis:op.basis};
+ }
+ private async linkedValueReview(tx:Connection,a:Actor,w:string,op:Extract<WorkspaceOperation,{kind:'propagate_linked_values'}>){
+  const source=await this.record(tx,a,w,op.sourceRecordId,false,true);
+  if(source.version!==op.sourceVersion||['archived','superseded'].includes(source.state))fail(409,'stale_version','Source record changed or is inactive');
+  if(new Set(op.fields).size!==op.fields.length||new Set(op.targets.map(t=>t.recordId)).size!==op.targets.length)fail(400,'duplicate_target','Select unique fields and target records');
+  if(op.fields.some(k=>!Object.hasOwn(source.data,k)||!source.fields.some((f:any)=>f.key===k&&!f.formula)))fail(400,'source_field','Choose present, non-computed source values');
+  const changes:any[]=[],links=[];
+  for(const target of op.targets){
+   const record=await this.record(tx,a,w,target.recordId,true,true);if(record.id===source.id||record.version!==target.expectedVersion)fail(409,'stale_version','Target record changed or is the source');
+   const table=target.linkKind==='same_table'?'identity_links':'cross_table_links';
+   const link=(await tx.query(`SELECT * FROM ${table} WHERE id=$1 AND workspace_id=$2`,[target.linkId,w])).rows[0];
+   if(!link||link.revoked_at||!((link.source_record_id===source.id&&link.preferred_record_id===record.id)||(link.preferred_record_id===source.id&&link.source_record_id===record.id)))fail(409,'link_changed','Choose an active direct link between these exact records');
+   let pairs:{sourceField:string;preferredField:string}[];
+   if(target.linkKind==='same_table'){if(source.type_id!==record.type_id)fail(400,'identity_type','Same-table link has different record types');pairs=op.fields.map(k=>({sourceField:k,preferredField:k}));}
+   else {
+    const forward=link.source_record_id===source.id;
+    const stamp=forward?mappingStamp(source.type_id,source.fields,record.type_id,record.fields,source.typeConcept,record.typeConcept):mappingStamp(record.type_id,record.fields,source.type_id,source.fields,record.typeConcept,source.typeConcept);
+    if(link.schema_stamp!==stamp)fail(409,'mapping_schema_changed','Review the link for the changed table structure before copying values');
+    const mapped=forward?link.field_pairs:link.field_pairs.map((p:any)=>({sourceField:p.preferredField,preferredField:p.sourceField}));
+    pairs=op.fields.map(k=>{const pair=mapped.find((p:any)=>p.sourceField===k);if(!pair)fail(400,'mapping_fields','Every selected source field needs an explicit link mapping');return pair;});
+   }
+   validatePairs(pairs,source.fields,record.fields);
+   changes.push({kind:'update_record',recordId:record.id,expectedVersion:record.version,data:Object.fromEntries(pairs.map(p=>[p.preferredField,source.data[p.sourceField]])),reason:op.reason});
+   links.push({id:link.id,kind:target.linkKind,version:link.version,fieldPairs:pairs});
+  }
+  const operation={kind:'bulk_records' as const,changes};await new Service(adapter(tx)).validate(tx,a,w,operation);
+  return {sourceRecordId:source.id,sourceVersion:source.version,links,operation,effect:'Copy only the listed source values into the selected directly linked records. Preserve original revisions and record every field change. Other aliases remain unchanged.'};
  }
  private async crossTableReview(tx:Connection,a:Actor,w:string,op:Extract<WorkspaceOperation,{kind:'link_cross_table_identity'|'unlink_cross_table_identity'}>){
   const old=op.kind==='unlink_cross_table_identity'?(await tx.query('SELECT * FROM cross_table_links WHERE id=$1 AND workspace_id=$2',[op.linkId,w])).rows[0]:null;
@@ -228,7 +327,7 @@ export class WorkspaceFoundation {
   const mapping=op.kind==='link_cross_table_identity'&&op.mappingId?await new TableMappings(tx).resolve(a,w,op.mappingId,source.type_id,preferred.type_id):null;
   if(mapping&&op.kind==='link_cross_table_identity'&&op.fieldPairs&&J(op.fieldPairs)!==J(mapping.field_pairs))fail(400,'mapping_pairs','Use the exact approved mapping or prepare a new one');
   const pairs=op.kind==='link_cross_table_identity'?(mapping?.field_pairs??op.fieldPairs??[]):old.field_pairs;
-  const schemaStamp=mappingStamp(source.type_id,source.fields,preferred.type_id,preferred.fields);
+  const schemaStamp=mappingStamp(source.type_id,source.fields,preferred.type_id,preferred.fields,source.typeConcept,preferred.typeConcept);
   if(op.kind==='link_cross_table_identity'){
    if(source.type_id===preferred.type_id)fail(400,'identity_type','Use same-table identity links for records of the same type');
    if(source.version!==op.sourceVersion||preferred.version!==op.preferredVersion)fail(409,'stale_version','Cross-table source changed');
@@ -244,13 +343,17 @@ export class WorkspaceFoundation {
   for(const link of rows.slice(0,100)){
    let source:any,preferred:any;
    try{source=await this.record(this.db,a,w,link.source_record_id,false,true);preferred=await this.record(this.db,a,w,link.preferred_record_id,false,true);}catch(e){if([403,404].includes((e as any).status))continue;throw e;}
-   const schemaChanged=link.schema_stamp!==mappingStamp(source.type_id,source.fields,preferred.type_id,preferred.fields);
+   const schemaChanged=link.schema_stamp!==mappingStamp(source.type_id,source.fields,preferred.type_id,preferred.fields,source.typeConcept,preferred.typeConcept);
    links.push({...link,schemaChanged,source:{id:source.id,typeId:source.type_id,version:source.version,data:source.data},preferred:{id:preferred.id,typeId:preferred.type_id,version:preferred.version,data:preferred.data},comparisons:schemaChanged?[]:link.field_pairs.map((pair:any)=>({...pair,sourcePresent:Object.hasOwn(source.data,pair.sourceField),preferredPresent:Object.hasOwn(preferred.data,pair.preferredField),sourceValue:source.data[pair.sourceField]??null,preferredValue:preferred.data[pair.preferredField]??null,conflict:J(source.data[pair.sourceField])!==J(preferred.data[pair.preferredField])}))});
   }
   return {recordId,links,nextOffset:rows.length>100?offset+100:null,interpretation:'Direct reviewed identity claims only. No transitive merge, value propagation, permission grant or relationship/action retargeting. Changed schemas require a new mapping review.'};
  }
  private async validate(tx:Connection,a:Actor,w:string,op:WorkspaceOperation){
-  await this.policy(tx,a,w,true);
+  if(op.kind==='apply_component_records'||op.kind==='edit_component_record'||(op.kind==='save_component'&&op.content.sourceAccess==='bindings'))await access(tx,a,w,true);else await this.policy(tx,a,w,true);
+  if(op.kind==='create_collection_link'||op.kind==='revoke_collection_link')await this.collectionReview(tx,a,w,op);
+  if(op.kind==='accept_collection_response')await this.responseReview(tx,a,w,op);
+  if(op.kind==='setup_tracking')await this.trackingReview(tx,a,w,op);
+  if(op.kind==='propagate_linked_values')await this.linkedValueReview(tx,a,w,op);
   if(op.kind==='save_table_mapping'||op.kind==='revoke_table_mapping')await new TableMappings(tx).review(a,w,op);
   if(op.kind==='link_cross_table_identity'||op.kind==='unlink_cross_table_identity')await this.crossTableReview(tx,a,w,op);
   if(['record_fact','prefer_record_fact','retract_record_fact'].includes(op.kind))await this.factReview(tx,a,w,op as Extract<WorkspaceOperation,{kind:'record_fact'|'prefer_record_fact'|'retract_record_fact'}>);
@@ -261,21 +364,22 @@ export class WorkspaceFoundation {
   if(op.kind==='create_node'){await this.parent(tx,w,op.parentId);if(op.parentId)await this.activeNode(tx,a,w,op.parentId);}
   if(op.kind==='move_node'||op.kind==='rename_node'){const n=(await this.activeNode(tx,a,w,op.nodeId))[0];if(n.version!==op.expectedVersion)fail(409,'stale_version','Project or folder changed');if(op.kind==='move_node'){await this.parent(tx,w,op.parentId,op.nodeId);if(op.parentId)await this.activeNode(tx,a,w,op.parentId);}}
   if(op.kind==='save_component'||op.kind==='move_component'||op.kind==='archive_component'||op.kind==='restore_component'){
-   await this.componentSourcePolicy(tx,a,w);
+   if(op.kind!=='save_component'||op.content.sourceAccess!=='bindings')await this.componentSourcePolicy(tx,a,w);
+   else if((await access(tx,a,w,true)).role!=='owner')fail(403,'owner_required','Only an owner can approve source sharing with a restricted data audience');
    if(op.kind==='save_component'||op.kind==='move_component'){const project=(await this.activeNode(tx,a,w,op.projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');}
    if(op.componentId){const c=await this.component(tx,a,w,op.componentId);if(c.project_archived)fail(409,'project_archived','Restore the project before editing components');if(c.version!==op.expectedVersion)fail(409,'stale_version','Component changed');}
    else if(op.kind==='save_component'&&op.expectedVersion!==undefined)fail(400,'invalid_version','New components have no expected version');
    if(op.kind==='save_component'){
     if(op.content.format==='trialy-ui'){if(!op.componentId||(await this.component(tx,a,w,op.componentId)).format!=='trialy-ui')fail(400,'legacy_format','Save ChatGPT-written code using frontend-js; trialy-ui is retained only for existing items');this.parseInterface(op.content);}
     if(op.componentId&&(await this.component(tx,a,w,op.componentId)).project_id!==op.projectId)fail(400,'move_required','Use the explicit move operation to change project');
-    await this.componentBindings(tx,a,w,op.content.bindings);
+    await this.componentBindings(tx,a,w,op.content.bindings);await this.componentAssets(tx,a,w,op.content.assets);
     if(new Set(op.content.execution.map(e=>e.name)).size!==op.content.execution.length)fail(400,'duplicate_binding','Function binding names must be unique');
     const foundation=new Foundation(adapter(tx));
-    for(const e of op.content.execution){const r=await foundation.revision(a,w,e.revisionId);for(const typeId of r.body.scope.typeIds){const {type,policy}=await typeAccess(tx,{...a,origin:'ai'},w,typeId);const binding=op.content.bindings.find(b=>b.typeId===typeId);if(!binding||visibleFields(type.fields,policy,{...a,origin:'ai'}).some(f=>!binding.fields.includes(f.key)))fail(403,'function_binding','Function execution needs explicit bindings for every readable field of its declared tables');}if(e.grantId){const g=(await foundation.grants(a,w)).find(g=>g.id===e.grantId);if(!g||g.authorization_version!==1||g.revoked_at||new Date(g.expires_at).getTime()<=Date.now()||g.revision_id!==e.revisionId)fail(403,'grant_unavailable','Choose a current permission for this function revision');}}
+    for(const e of op.content.execution){const r=await foundation.revision(a,w,e.revisionId);if(op.content.sourceAccess==='bindings'&&r.body.scope.documents)fail(403,'function_binding','Bound-audience components cannot attach functions with workspace-wide document access');for(const typeId of r.body.scope.typeIds){const {type,policy}=await typeAccess(tx,{...a,origin:'ai'},w,typeId);const binding=op.content.bindings.find(b=>b.typeId===typeId);if(!binding||visibleFields(type.fields,policy,{...a,origin:'ai'}).some(f=>!binding.fields.includes(f.key)))fail(403,'function_binding','Function execution needs explicit bindings for every readable field of its declared tables');}if(e.grantId){const g=(await foundation.grants(a,w)).find(g=>g.id===e.grantId);if(!g||g.authorization_version!==1||g.revoked_at||new Date(g.expires_at).getTime()<=Date.now()||g.revision_id!==e.revisionId)fail(403,'grant_unavailable','Choose a current permission for this function revision');}}
 
     if(op.content.format==='json'){try{JSON.parse(op.content.source);}catch{fail(400,'invalid_json','Component source must be valid JSON');}}
    }
-   if(op.kind==='restore_component'){const old=await this.componentRevision(tx,w,op.componentId,op.revisionVersion);await this.nodeAccess(tx,a,w,old.project_id);await this.componentBindings(tx,a,w,old.bindings);}
+   if(op.kind==='restore_component'){const old=await this.componentRevision(tx,w,op.componentId,op.revisionVersion);await this.nodeAccess(tx,a,w,old.project_id);await this.componentBindings(tx,a,w,old.bindings);await this.componentAssets(tx,a,w,old.assets);}
   }
   if(op.kind==='apply_component_records'){
    const c=await this.component(tx,a,w,op.componentId);if(c.archived||c.project_archived||c.format!=='frontend-js'||c.version!==op.expectedVersion)fail(409,'component_changed','Interface changed');
@@ -317,6 +421,8 @@ export class WorkspaceFoundation {
  private async accessStamp(tx:Connection,w:string){return checksum(J((await tx.query('SELECT id,allowed_users,ai_enabled,parent_id,archived FROM workspace_nodes WHERE workspace_id=$1 ORDER BY id',[w])).rows)+J((await tx.query('SELECT id,allowed_users,ai_enabled,project_id FROM workspace_components WHERE workspace_id=$1 ORDER BY id',[w])).rows));}
  async previewFieldChanges(a:Actor,w:string,body:WorkspaceOperation){
   const service=new Service(this.db);
+  if(body.kind==='accept_collection_response'){const review=await this.responseReview(this.db,a,w,body);return service.fieldDiff(this.db,a,w,{kind:'create_record',typeId:review.typeId,data:body.data});}
+  if(body.kind==='propagate_linked_values')return service.fieldDiff(this.db,a,w,(await this.linkedValueReview(this.db,a,w,body)).operation);
   if(body.kind==='prefer_record_fact'){const review=await this.factReview(this.db,a,w,body);return service.fieldDiff(this.db,a,w,{kind:'update_record',recordId:review.recordId,expectedVersion:body.expectedVersion,data:{[review.field]:review.value},reason:body.reason});}
   if(body.kind==='apply_component_records'||body.kind==='apply_maintenance')return service.fieldDiff(this.db,a,w,{kind:'bulk_records',changes:body.kind==='apply_maintenance'?body.batch.changes:body.changes});
   if(body.kind==='edit_component_record')return service.fieldDiff(this.db,a,w,{kind:'update_record',recordId:body.recordId,expectedVersion:body.recordVersion,data:{[body.field]:body.value}});
@@ -327,19 +433,23 @@ export class WorkspaceFoundation {
   await this.db.query('DELETE FROM workspace_previews WHERE expires_at<now()');
   const n=Number((await this.db.query('SELECT count(*) AS n FROM workspace_previews WHERE user_id=$1',[a.userId])).rows[0].n);if(n>=50)fail(429,'preview_limit','Too many pending previews');
   const schemaStamp=body.kind==='save_scope'?await this.scopeStamp(this.db,{...a,origin:'ai'},w,body.scope):null;
-  const fieldChanges=await this.previewFieldChanges(a,w,body);const accessStamp=await this.accessStamp(this.db,w);const factReview=['record_fact','prefer_record_fact','retract_record_fact'].includes(body.kind)?await this.factReview(this.db,a,w,body as Extract<WorkspaceOperation,{kind:'record_fact'|'prefer_record_fact'|'retract_record_fact'}>):undefined;const projectLinks=body.kind==='link_project_records'||body.kind==='unlink_project_record'?await this.projectLinksReview(this.db,a,w,body):undefined;const projectArchive=body.kind==='archive_node'?await this.nodeArchive(this.db,a,w,body):undefined;const componentCopy=body.kind==='copy_component'?await this.componentCopy(this.db,a,w,body):undefined;const crossTableReview=body.kind==='link_cross_table_identity'||body.kind==='unlink_cross_table_identity'?await this.crossTableReview(this.db,a,w,body):undefined;const tableMappingReview=body.kind==='save_table_mapping'||body.kind==='revoke_table_mapping'?await new TableMappings(this.db).review(a,w,body):undefined;const envelope={tableMappingReview,crossTableReview,operation:body,schemaStamp,accessStamp,fieldChanges,componentCopy,projectArchive,projectLinks,factReview};const draft={id:randomUUID(),workspaceId:w,workspaceFoundation:true,temporary:true,body,tableMappingReview,crossTableReview,fieldChanges,componentCopy,projectArchive,projectLinks,factReview,digest:checksum(J(envelope))};
+  const fieldChanges=await this.previewFieldChanges(a,w,body);const accessStamp=await this.accessStamp(this.db,w);const factReview=['record_fact','prefer_record_fact','retract_record_fact'].includes(body.kind)?await this.factReview(this.db,a,w,body as Extract<WorkspaceOperation,{kind:'record_fact'|'prefer_record_fact'|'retract_record_fact'}>):undefined;const projectLinks=body.kind==='link_project_records'||body.kind==='unlink_project_record'?await this.projectLinksReview(this.db,a,w,body):undefined;const projectArchive=body.kind==='archive_node'?await this.nodeArchive(this.db,a,w,body):undefined;const componentCopy=body.kind==='copy_component'?await this.componentCopy(this.db,a,w,body):undefined;const crossTableReview=body.kind==='link_cross_table_identity'||body.kind==='unlink_cross_table_identity'?await this.crossTableReview(this.db,a,w,body):undefined;const tableMappingReview=body.kind==='save_table_mapping'||body.kind==='revoke_table_mapping'?await new TableMappings(this.db).review(a,w,body):undefined;const linkedValueReview=body.kind==='propagate_linked_values'?await this.linkedValueReview(this.db,a,w,body):undefined;const trackingReview=body.kind==='setup_tracking'?await this.trackingReview(this.db,a,w,body):undefined;const collectionReview=body.kind==='create_collection_link'||body.kind==='revoke_collection_link'?await this.collectionReview(this.db,a,w,body):undefined;const responseReview=body.kind==='accept_collection_response'?await this.responseReview(this.db,a,w,body):undefined;const envelope={responseReview,collectionReview,trackingReview,linkedValueReview,tableMappingReview,crossTableReview,operation:body,schemaStamp,accessStamp,fieldChanges,componentCopy,projectArchive,projectLinks,factReview};const draft={id:randomUUID(),workspaceId:w,workspaceFoundation:true,temporary:true,body,responseReview,collectionReview,trackingReview,linkedValueReview,tableMappingReview,crossTableReview,fieldChanges,componentCopy,projectArchive,projectLinks,factReview,digest:checksum(J(envelope))};
   await this.db.query('INSERT INTO workspace_previews(id,workspace_id,user_id,body,digest) VALUES($1,$2,$3,$4,$5)',[draft.id,w,a.userId,J(envelope),draft.digest]);return draft;
  }
- async pending(a:Actor,w:string){await this.policy(this.db,a,w);const rows=(await this.db.query('SELECT * FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND expires_at>now() ORDER BY expires_at',[w,a.userId])).rows;const visible=[];for(const r of rows){try{await this.validate(this.db,a,w,r.body.operation);if((r.body.operation.kind==='save_table_mapping'||r.body.operation.kind==='revoke_table_mapping')&&!(await this.db.query('SELECT $1::jsonb=$2::jsonb AS same',[J(r.body.tableMappingReview),J(await new TableMappings(this.db).review(a,w,r.body.operation))])).rows[0].same)continue;if((r.body.operation.kind==='link_cross_table_identity'||r.body.operation.kind==='unlink_cross_table_identity')&&!(await this.db.query('SELECT $1::jsonb=$2::jsonb AS same',[J(r.body.crossTableReview),J(await this.crossTableReview(this.db,a,w,r.body.operation))])).rows[0].same)continue;visible.push({id:r.id,workspaceId:w,workspaceFoundation:true,body:r.body.operation,tableMappingReview:r.body.tableMappingReview,crossTableReview:r.body.crossTableReview,componentCopy:r.body.componentCopy,projectArchive:r.body.projectArchive,projectLinks:r.body.projectLinks,factReview:r.body.factReview,fieldChanges:r.body.fieldChanges??[],digest:r.digest,expiresAt:r.expires_at});}catch{}}return visible;}
- async discard(a:Actor,w:string,id:string){await this.policy(this.db,a,w);await this.db.query('DELETE FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[id,w,a.userId]);return {discarded:true};}
+ async pending(a:Actor,w:string){await access(this.db,a,w);const rows=(await this.db.query('SELECT * FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND expires_at>now() ORDER BY expires_at',[w,a.userId])).rows;const visible=[];for(const r of rows){try{await this.validate(this.db,a,w,r.body.operation);if((r.body.operation.kind==='save_table_mapping'||r.body.operation.kind==='revoke_table_mapping')&&!(await this.db.query('SELECT $1::jsonb=$2::jsonb AS same',[J(r.body.tableMappingReview),J(await new TableMappings(this.db).review(a,w,r.body.operation))])).rows[0].same)continue;if((r.body.operation.kind==='link_cross_table_identity'||r.body.operation.kind==='unlink_cross_table_identity')&&!(await this.db.query('SELECT $1::jsonb=$2::jsonb AS same',[J(r.body.crossTableReview),J(await this.crossTableReview(this.db,a,w,r.body.operation))])).rows[0].same)continue;visible.push({id:r.id,workspaceId:w,workspaceFoundation:true,body:r.body.operation,responseReview:r.body.responseReview,collectionReview:r.body.collectionReview,trackingReview:r.body.trackingReview,linkedValueReview:r.body.linkedValueReview,tableMappingReview:r.body.tableMappingReview,crossTableReview:r.body.crossTableReview,componentCopy:r.body.componentCopy,projectArchive:r.body.projectArchive,projectLinks:r.body.projectLinks,factReview:r.body.factReview,fieldChanges:r.body.fieldChanges??[],digest:r.digest,expiresAt:r.expires_at});}catch{}}return visible;}
+ async discard(a:Actor,w:string,id:string){await access(this.db,a,w);await this.db.query('DELETE FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[id,w,a.userId]);return {discarded:true};}
  private async replay(tx:Connection,a:Actor,w:string,id:string,digest:string){const r=(await tx.query('SELECT * FROM workspace_receipts WHERE id=$1',[id])).rows[0];if(r){if(r.user_id!==a.userId||r.workspace_id!==w||r.digest!==digest)fail(409,'receipt_conflict','Request does not match its saved receipt');return r.result;}}
  async confirm(a:Actor,w:string,id:string,digest:string){requireHuman(a);return this.db.transaction(async tx=>{
-  await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await this.policy(tx,a,w,true);const prior=await this.replay(tx,a,w,id,digest);if(prior)return prior;
+  await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await access(tx,a,w,true);const prior=await this.replay(tx,a,w,id,digest);if(prior)return prior;
   const draft=(await tx.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[id,w,a.userId])).rows[0];if(!draft||draft.digest!==digest)fail(409,'preview_expired','Preview unavailable');
   const op=workspaceOperation.parse(draft.body.operation);await this.validate(tx,a,w,op);
   if(draft.body.accessStamp!==await this.accessStamp(tx,w))fail(409,'access_changed','Project access or organization changed; prepare a new preview');
   if((op.kind==='link_cross_table_identity'||op.kind==='unlink_cross_table_identity')&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.crossTableReview),J(await this.crossTableReview(tx,a,w,op))])).rows[0].same)fail(409,'stale_version','Cross-table mapping or values changed; prepare again');
   if((op.kind==='save_table_mapping'||op.kind==='revoke_table_mapping')&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.tableMappingReview),J(await new TableMappings(tx).review(a,w,op))])).rows[0].same)fail(409,'mapping_schema_changed','Table mapping review changed; prepare again');
+  if(op.kind==='propagate_linked_values'&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.linkedValueReview),J(await this.linkedValueReview(tx,a,w,op))])).rows[0].same)fail(409,'link_changed','Source or link changed; prepare again');
+  if(op.kind==='setup_tracking'&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.trackingReview),J(await this.trackingReview(tx,a,w,op))])).rows[0].same)fail(409,'stale_version','Tracking setup changed; prepare again');
+  if((op.kind==='create_collection_link'||op.kind==='revoke_collection_link')&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.collectionReview),J(await this.collectionReview(tx,a,w,op))])).rows[0].same)fail(409,'stale_version','Collection configuration changed; prepare again');
+  if(op.kind==='accept_collection_response'&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.responseReview),J(await this.responseReview(tx,a,w,op))])).rows[0].same)fail(409,'stale_version','Response review changed');
   if(op.kind==='save_scope'&&draft.body.schemaStamp!==await this.scopeStamp(tx,{...a,origin:'ai'},w,op.scope))fail(409,'schema_changed','Schema changed; prepare scope again');
   if(draft.body.fieldChanges&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.fieldChanges),J(await new WorkspaceFoundation(adapter(tx)).previewFieldChanges(a,w,op))])).rows[0].same)fail(409,'stale_version','Field changes differ; prepare again');
   if(['record_fact','prefer_record_fact','retract_record_fact'].includes(op.kind)&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.factReview),J(await this.factReview(tx,a,w,op as Extract<WorkspaceOperation,{kind:'record_fact'|'prefer_record_fact'|'retract_record_fact'}>))])).rows[0].same)fail(409,'stale_version','Fact or current value changed; prepare again');
@@ -358,6 +468,25 @@ export class WorkspaceFoundation {
    return {workspaceId:w,workspaceFoundation:true,status:'saved',id:linkId,version};
   }
   if(op.kind==='save_table_mapping'||op.kind==='revoke_table_mapping')return new TableMappings(tx).apply(a,w,p,op,authorization);
+  if(op.kind==='propagate_linked_values'){
+   const review=await this.linkedValueReview(tx,a,w,op),service=new Service(adapter(tx));const preview=await service.preview(a,w,review.operation);const receipt=await service.commit(a,preview.id,preview.digest,authorization);
+   await audit(tx,a,p,'workspace.propagate_linked_values',op.sourceRecordId,null,{...review,authorization},op.reason);return {workspaceId:w,workspaceFoundation:true,status:'saved',receipt};
+  }
+  if(op.kind==='setup_tracking'){
+   const review=await this.trackingReview(tx,a,w,op),service=new Service(adapter(tx));
+   const save=async(operation:any)=>{const draft=await service.preview(a,w,operation);return service.commit(a,draft.id,draft.digest,authorization);};
+   const typeId=op.table.kind==='existing'?op.table.typeId:(await save({kind:'create_type',name:op.table.name,fields:op.table.fields,concept:op.table.concept})).objects[0].id;
+   const receipt=op.initialRows.length?await save({kind:'bulk_records',changes:op.initialRows.map(data=>({kind:'create_record',typeId,data}))}):null;
+   const scope=maintenanceSchema.parse({projectId:op.projectId,purpose:op.purpose,inclusionCriteria:op.inclusionCriteria,sourcePolicy:op.sourcePolicy,basis:op.basis,bindings:[{typeId,fields:review.captureFields}],allowCreate:true,allowUpdate:true,autoWrite:false});
+   const savedScope=await this.apply(tx,a,w,p,{kind:'save_scope',scope},authorization);
+   const records=receipt?.objects.map((r:any)=>({recordId:r.id,expectedVersion:0}))??[];
+   if(records.length)await this.apply(tx,a,w,p,{kind:'link_project_records',projectId:op.projectId,expectedProjectVersion:op.expectedProjectVersion,records,reason:'Link initial rows from reviewed tracking setup'},authorization);
+   await audit(tx,a,p,'workspace.setup_tracking',savedScope.id,null,{...review,typeId,scopeId:savedScope.id,recordIds:records.map((r:any)=>r.recordId),authorization});
+   return {workspaceId:w,workspaceFoundation:true,status:'saved',typeId,scopeId:savedScope.id,recordIds:records.map((r:any)=>r.recordId)};
+  }
+  if(op.kind==='create_collection_link')return {workspaceId:w,workspaceFoundation:true,status:'saved',...await createExchange(tx,a,w,op.config,authorization)};
+  if(op.kind==='revoke_collection_link'){await this.collectionReview(tx,a,w,op);await tx.query('UPDATE external_links SET revoked_at=now() WHERE id=$1',[op.linkId]);await audit(tx,a,p,'external_link.revoked',op.linkId,null,{authorization},op.reason);return {workspaceId:w,workspaceFoundation:true,status:'saved',id:op.linkId,revoked:true};}
+  if(op.kind==='accept_collection_response'){const review=await this.responseReview(tx,a,w,op),service=new Service(adapter(tx));const draft=await service.preview(a,w,{kind:'accept_submission',submissionId:op.submissionId,typeId:review.typeId,data:op.data});return {workspaceId:w,workspaceFoundation:true,status:'saved',receipt:await service.commit(a,draft.id,draft.digest,authorization)};}
   if(op.kind==='apply_maintenance')return new WorkspaceFoundation(adapter(tx)).maintain(a,w,op.batch,authorization);
   if(op.kind==='apply_component_records'){
    const service=new Service(adapter(tx));const draft=await service.preview(a,w,{kind:'bulk_records',changes:op.changes});const saved=await service.commit(a,draft.id,draft.digest,authorization);
@@ -398,7 +527,7 @@ export class WorkspaceFoundation {
   else if(op.kind==='create_node'){after={id:objectId,kind:op.nodeKind,name:op.name,parent_id:op.parentId,version};await tx.query('INSERT INTO workspace_nodes(id,workspace_id,kind,name,parent_id) VALUES($1,$2,$3,$4,$5)',[objectId,w,op.nodeKind,op.name,op.parentId]);}
   else if(op.kind==='copy_component'){
    const content=await this.componentCopy(tx,a,w,op);after={...content,id:objectId,workspace_id:w,project_id:op.projectId,version};
-   await tx.query('INSERT INTO workspace_components(id,workspace_id,project_id,name,format,source,bindings,created_by,execution,allowed_users,ai_enabled) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',[objectId,w,op.projectId,content.name,content.format,content.source,J(content.bindings),a.userId,J([]),content.allowed_users===null?null:J(content.allowed_users),content.ai_enabled]);
+   await tx.query('INSERT INTO workspace_components(id,workspace_id,project_id,name,format,source,bindings,created_by,execution,allowed_users,ai_enabled,assets,source_access) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)',[objectId,w,op.projectId,content.name,content.format,content.source,J(content.bindings),a.userId,J([]),content.allowed_users===null?null:J(content.allowed_users),content.ai_enabled,J(content.assets),content.source_access]);
   }
   else if(op.kind==='set_project_access'||op.kind==='set_component_access'){
    const table=op.kind==='set_project_access'?'workspace_nodes':'workspace_components';objectId=op.kind==='set_project_access'?op.nodeId:op.componentId;
@@ -408,12 +537,12 @@ export class WorkspaceFoundation {
   else if(op.kind==='move_node'||op.kind==='rename_node'){objectId=op.nodeId;before=await this.node(tx,w,objectId);version=before.version+1;after={...before,version,...(op.kind==='move_node'?{parent_id:op.parentId}:{name:op.name})};const keep=op.kind==='move_node'?await this.moveRestrictions(tx,a,w,objectId,before):{users:before.allowed_users,ai:before.ai_enabled};after={...after,allowed_users:keep.users,ai_enabled:keep.ai};await tx.query('UPDATE workspace_nodes SET name=$1,parent_id=$2,version=$3,allowed_users=$5,ai_enabled=$6 WHERE id=$4',[after.name,after.parent_id,version,objectId,keep.users===null?null:J(keep.users),keep.ai]);}
   else if(op.kind==='save_component'||op.kind==='move_component'||op.kind==='archive_component'||op.kind==='restore_component'){
    if(op.componentId){objectId=op.componentId;before=await this.component(tx,a,w,objectId);version=before.version+1;}
-   if(op.kind==='save_component')after={...before,id:objectId,workspace_id:w,project_id:op.projectId,...op.content,version,archived:before?.archived??false};
+   if(op.kind==='save_component')after={...before,id:objectId,workspace_id:w,project_id:op.projectId,...op.content,source_access:op.content.sourceAccess,version,archived:before?.archived??false};
    else if(op.kind==='move_component'){const keep=await this.moveRestrictions(tx,a,w,before.project_id,before);after={...before,project_id:op.projectId,version,allowed_users:keep.users,ai_enabled:keep.ai};}
    else if(op.kind==='archive_component')after={...before,archived:op.archived,version};
-   else {const old=await this.componentRevision(tx,w,objectId,op.revisionVersion);after={...before,name:old.name,format:old.format,source:old.source,bindings:old.bindings,execution:[],version};}
-   if(before)await tx.query('UPDATE workspace_components SET project_id=$1,name=$2,format=$3,source=$4,bindings=$5,version=$6,archived=$7,allowed_users=$9,ai_enabled=$10,execution=$11 WHERE id=$8',[after.project_id,after.name,after.format,after.source,J(after.bindings),version,after.archived,objectId,after.allowed_users==null?null:J(after.allowed_users),after.ai_enabled??true,J(after.execution??[])]);
-   else await tx.query('INSERT INTO workspace_components(id,workspace_id,project_id,name,format,source,bindings,created_by,execution) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',[objectId,w,after.project_id,after.name,after.format,after.source,J(after.bindings),a.userId,J(after.execution??[])]);
+   else {const old=await this.componentRevision(tx,w,objectId,op.revisionVersion);after={...before,name:old.name,format:old.format,source:old.source,bindings:old.bindings,assets:old.assets??[],source_access:before.source_access==='bindings'&&old.source_access==='bindings'?'bindings':'workspace',execution:[],version};}
+   if(before)await tx.query('UPDATE workspace_components SET project_id=$1,name=$2,format=$3,source=$4,bindings=$5,version=$6,archived=$7,allowed_users=$9,ai_enabled=$10,execution=$11,assets=$12,source_access=$13 WHERE id=$8',[after.project_id,after.name,after.format,after.source,J(after.bindings),version,after.archived,objectId,after.allowed_users==null?null:J(after.allowed_users),after.ai_enabled??true,J(after.execution??[]),J(after.assets??[]),after.source_access??'workspace']);
+   else await tx.query('INSERT INTO workspace_components(id,workspace_id,project_id,name,format,source,bindings,created_by,execution,assets,source_access) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',[objectId,w,after.project_id,after.name,after.format,after.source,J(after.bindings),a.userId,J(after.execution??[]),J(after.assets??[]),after.source_access??'workspace']);
   }
   else if(op.kind==='save_scope'){
    const stamp=await this.scopeStamp(tx,{...a,origin:'ai'},w,op.scope);
@@ -427,7 +556,7 @@ export class WorkspaceFoundation {
   return {workspaceId:w,workspaceFoundation:true,status:'saved',id:objectId,version};
  }
  async scope(tx:Connection,a:Actor,w:string,id:string){const s=(await tx.query('SELECT * FROM maintenance_scopes WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[id,w,a.userId])).rows[0];if(!s)fail(404,'not_found','Maintenance scope not found');await this.nodeAccess(tx,a,w,s.project_id);return s;}
- async scopes(a:Actor,w:string){await this.policy(this.db,a,w);const rows=(await this.db.query('SELECT * FROM maintenance_scopes WHERE workspace_id=$1 AND user_id=$2 ORDER BY created_at',[w,a.userId])).rows;const result=[];for(const r of rows){try{const stamp=await this.scopeStamp(this.db,{...a,origin:'ai'},w,maintenanceSchema.parse(r.body),true);result.push({...r,schemaChanged:stamp!==r.schema_stamp});}catch{/* Do not expose inaccessible field names or scope text. */}}return result;}
+ async scopes(a:Actor,w:string){await access(this.db,a,w);const rows=(await this.db.query('SELECT * FROM maintenance_scopes WHERE workspace_id=$1 AND user_id=$2 ORDER BY created_at',[w,a.userId])).rows;const result=[];for(const r of rows){try{const stamp=await this.scopeStamp(this.db,{...a,origin:'ai'},w,maintenanceSchema.parse(r.body),true);result.push({...r,schemaChanged:stamp!==r.schema_stamp});}catch{/* Do not expose inaccessible field names or scope text. */}}return result;}
  async revoke(a:Actor,w:string,id:string){return this.db.transaction(async tx=>{await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await this.policy(tx,a,w,true),before=await this.scope(tx,a,w,id);if(before.revoked_at)return {id,revoked:true};await tx.query('UPDATE maintenance_scopes SET revoked_at=now(),version=version+1 WHERE id=$1',[id]);await revision(tx,a,w,id,'maintenance_scope',before.version+1,{...before,revoked:true});await audit(tx,a,p,'maintenance.revoked',id,null,{revoked:true});return {id,revoked:true};});}
  async prepareBackfill(a:Actor,w:string,input:unknown){
   const batch=maintenanceBatch.parse(input);if(batch.links.length||batch.changes.some(c=>c.kind!=='update_record'))fail(400,'backfill_scope','Backfill fills approved fields on existing records; it does not create records or identity links');

@@ -45,5 +45,19 @@ test('Cross-table claims preserve originals, require exact human approval and ne
   assert.ok((await f.crossTableLinks(a,w.id,r1)).links[0].revoked_at);assert.equal((await s.records(a,w.id,t1)).rows[0].data.name,'Updated Example');
   const stale=await f.preview(a,w.id,{...op,preferredVersion:1});await save({kind:'update_record',recordId:r2,expectedVersion:0,data:{label:'Changed source'}});await assert.rejects(f.confirm(a,w.id,stale.id,stale.digest),/changed/);
   const exported=await s.exportWorkspace(a,w.id);assert.equal(exported.cross_table_links.length,1);assert.ok(exported.revisions.filter((v:any)=>v.object_kind==='cross_table_link').length===2);
+  // Explicit mapped propagation changes only selected target values; withdrawing the
+  // identity link invalidates an already reviewed second correction.
+  const freshSource=(await save({kind:'create_record',typeId:t2,data:{label:'Mapped value',count:2}})).objects[0].id;
+  const freshTarget=(await save({kind:'create_record',typeId:t1,data:{name:'Before'}})).objects[0].id;
+  const pairDraft=await f.preview(a,w.id,{...op,sourceRecordId:freshSource,preferredRecordId:freshTarget});
+  const pair=await f.confirm(a,w.id,pairDraft.id,pairDraft.digest);
+  const correction={kind:'propagate_linked_values',sourceRecordId:freshSource,sourceVersion:0,fields:['label'],targets:[{recordId:freshTarget,expectedVersion:0,linkId:pair.id,linkKind:'cross_table'}],reason:'Use selected reviewed source value'};
+  const correctionDraft=await f.preview(a,w.id,correction);assert.equal(correctionDraft.fieldChanges?.[0].field,'name');
+  await f.confirm(a,w.id,correctionDraft.id,correctionDraft.digest);
+  assert.equal((await s.records(a,w.id,t1)).rows.find(r=>r.id===freshTarget)?.data.name,'Mapped value');
+  await save({kind:'update_record',recordId:freshSource,expectedVersion:0,data:{label:'Next value'}});
+  const nextDraft=await f.preview(a,w.id,{...correction,sourceVersion:1,targets:[{...correction.targets[0],expectedVersion:1}]});
+  const unlink=await f.preview(a,w.id,{kind:'unlink_cross_table_identity',linkId:pair.id,expectedVersion:0,reason:'Withdraw matching decision'});await f.confirm(a,w.id,unlink.id,unlink.digest);
+  await assert.rejects(f.confirm(a,w.id,nextDraft.id,nextDraft.digest),/link|changed/i);
  }finally{await pg.close();}
 });

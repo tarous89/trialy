@@ -73,7 +73,7 @@ test('Workspace: exact setup, bounded maintenance, source preservation, reversib
  await save({kind:'update_type',typeId:table,expectedVersion:1,name:'Organizations',fields:[{key:'name',name:'Name',kind:'text',ai:true},{key:'address',name:'Address',kind:'text',ai:true},{key:'city',name:'City',kind:'text',ai:true},{key:'private',name:'Private',kind:'text',ai:false}]});
  await assert.rejects(f.readComponent(ai,w.id,component.id),/every workspace field/);
  assert.equal((await f.readComponent(a,w.id,component.id)).component.id,component.id);
- await s.setAccessRules(a,w.id,{expectedVersion:0,aiHiddenTypes:[table]});await assert.rejects(f.nodes(ai,w.id));await assert.rejects(f.readComponent(ai,w.id,component.id));await assert.rejects(f.evidence(ai,w.id,receipt.recordIds[0]));
+ await s.setAccessRules(a,w.id,{expectedVersion:0,aiHiddenTypes:[table]});assert.deepEqual((await f.nodes(ai,w.id)).nodes,[]);await assert.rejects(f.readComponent(ai,w.id,component.id));await assert.rejects(f.evidence(ai,w.id,receipt.recordIds[0]));
  }finally{await db.close();}
 });
 test('Project access: inherited restrictions, sticky moves, stale approval, AI revocation and inspection',async()=>{

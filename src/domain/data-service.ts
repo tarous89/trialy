@@ -85,7 +85,7 @@ export class DataService {
   const d=(await this.documents(a,w)).find(d=>d.id===versionId);if(!d)fail(404,'not_found','Document not found');
   const e=(await this.db.query('SELECT status,text_content,tables,table_status FROM extractions WHERE version_id=$1',[versionId])).rows[0];
   const text=['ready','partial'].includes(e?.status)?e.text_content??'':'';
-  return {documentId:d.document_id,versionId,version:d.version,filename:d.filename,status:e?.status??'pending',tables:offset===0?(e.tables??[]):[],tableStatus:e.table_status,offset,text:text.slice(offset,offset+12000),hasMore:offset+12000<text.length};
+  return {documentId:d.document_id,versionId,version:d.version,filename:d.filename,status:e?.status??'pending',tables:offset===0?(e?.tables??[]):[],tableStatus:e?.table_status??'unavailable',offset,text:text.slice(offset,offset+12000),hasMore:offset+12000<text.length};
  }
  async search(a:Actor,w:string,q:string) {
   const docs=await this.documents(a,w);const ids=docs.map(d=>d.id);

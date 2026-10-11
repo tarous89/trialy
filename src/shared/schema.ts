@@ -1,6 +1,7 @@
 import { z } from 'zod';
 export const id = z.string().uuid();
 export const fieldSchema = z.object({ key: z.string().regex(/^[a-z][a-z0-9_]{0,63}$/), name: z.string().min(1).max(100), kind: z.enum(['text','number','money','date','boolean','select','relationship','person','document']), required: z.boolean().default(false), ai: z.boolean().default(true), options: z.array(z.string().max(100)).max(100).optional(), targetTypeId: id.optional(), unique:z.boolean().optional(), formula:z.object({operator:z.enum(['sum','product','difference','ratio']),fields:z.array(z.string()).min(2).max(10)}).strict().optional() }).strict();
+export const dataConceptSchema=z.enum(['person','organization','project','location']).nullable().optional();
 export const fieldsSchema = z.array(fieldSchema).min(1).max(100).refine(f => new Set(f.map(x=>x.key)).size===f.length, 'Duplicate field keys');
 export type Field = z.infer<typeof fieldSchema>;
 const values = z.record(z.string(), z.union([z.string().max(50000),z.number().finite(),z.boolean(),z.null()]));
@@ -24,8 +25,8 @@ export const operationSchema = z.discriminatedUnion('kind', [
  z.object({kind:z.literal('reverse_field_change'),changeId:id,expectedVersion:z.number().int().min(0),reason:z.string().trim().min(1).max(1000)}),
  z.object({kind:z.literal('request_review'),recordId:id,expectedVersion:z.number().int().min(0),reviewerId:id,note:z.string().trim().min(1).max(1000),dueOn:z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable()}),
  z.object({kind:z.literal('accept_submission'),submissionId:id,typeId:id,data:values}),
- z.object({kind:z.literal('create_type'), name:z.string().min(1).max(100), fields:fieldsSchema}),
- z.object({kind:z.literal('update_type'), typeId:id, expectedVersion:z.number().int().min(0), name:z.string().min(1).max(100), fields:fieldsSchema}),
+ z.object({kind:z.literal('create_type'),concept:dataConceptSchema, name:z.string().min(1).max(100), fields:fieldsSchema}),
+ z.object({kind:z.literal('update_type'),concept:dataConceptSchema, typeId:id, expectedVersion:z.number().int().min(0), name:z.string().min(1).max(100), fields:fieldsSchema}),
  z.object({kind:z.literal('create_record'), typeId:id, data:values}),
  z.object({kind:z.literal('update_record'), recordId:id, expectedVersion:z.number().int().min(0), data:values, reason:z.string().max(1000).optional()}),
  z.object({kind:z.literal('migrate_type'),typeId:id,expectedVersion:z.number().int().min(0),name:z.string().min(1).max(100),fields:fieldsSchema,mappings:z.record(z.string(),z.object({from:z.string(),conversion:z.enum(['copy','text','number','boolean'])})).default({}),reason:z.string().trim().min(1).max(1000)}),
