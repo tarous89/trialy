@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "trialy": {
+      "type": "streamable-http",
+      "url": "https://trialy-web.onrender.com/mcp",
+      "headers": {}
+    }
+  }
+}

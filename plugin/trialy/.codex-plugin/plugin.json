@@ -1,0 +1,23 @@
+{
+  "interface": {
+    "capabilities": [
+      "Interactive"
+    ],
+    "category": "Productivity",
+    "defaultPrompt": "Open my Trialy workspace.",
+    "developerName": "Tarek Roustom",
+    "displayName": "Trialy",
+    "longDescription": "Open a clinical operations workspace in ChatGPT. Browse and edit trackers, install starter templates, preview changes and explicitly confirm saves. Development version: not fit for patient-level data; regulatory validation and the complete embedded experience remain in development.",
+    "shortDescription": "Clinical team workspaces"
+  },
+  "name": "trialy",
+  "version": "0.2.0",
+  "description": "Clinical team workspaces with configurable trackers, document sources, explicit save previews and record history.",
+  "author": {
+    "name": "Tarek Roustom",
+    "email": "t.roustom.login@gmail.com"
+  },
+  "keywords": [],
+  "skills": "./skills",
+  "mcpServers": "./.mcp.json"
+}

@@ -76,3 +76,11 @@ Use Reviews & reminders to choose a saved record and eligible reviewer, then pre
 For scheduled in-app reminders, create a `reminders.create` permission for the workspace in Access, choose once/future, and configure a Remind me in Trialy automation. Only the owner configures this action; it targets the same user, not colleagues or external recipients. The worker stores the run and reminder in one transaction with grant consumption. Empty due-date conditions take no action. Revoked access/grants pause the rule. The inbox rechecks current permissions and only marks entries read, never deletes them. Latest-run detail is bounded to 50 runs, while the inbox shows up to 100 reminders. No derived extraction failures generate these reminders.
 
 Migration 015 adds immutable request, decision, reminder and read-receipt tables. Include them in recovery inventories and future managed restore checks. The previous synthetic restore evidence ends at migration 014 and remains labelled accordingly.
+
+## Foundation execution (migration 016)
+
+See [EXECUTION.md](EXECUTION.md). Migrate before deploying the web/worker pair. The existing worker now dispatches code jobs separately from legacy rules; no additional resources are provisioned. Forward migration 016 only adds foundation tables and an audit provenance column. Existing approvals, sources and histories remain intact.
+
+Rollout: push the tested foundation branch, fast-forward main, verify both Render deployments, `/health`, `/ready`, and recent worker logs. Rollback application code to `b2dce02` if needed, leaving additive migration 016 and its saved data intact. Pause foundation schedules first when the new API is available; the older worker does not process those schedules. Never drop saved-function/history tables to roll back a UI.
+
+The latest synthetic restore evidence includes migration 016 and saved functions. It still does not establish managed Render restore success, production RPO/RTO, no-loss failover or clinical validation. Temporary run staging can occur in infrastructure backups; retention/erasure policies must account for their lifecycle before onboarding customers.

@@ -1,3 +1,6 @@
+import {DataService} from './data-service.js';
+import {checksum,audit,revision} from './evidence.js';
+export {checksum,audit} from './evidence.js';
 import {templateDiff,adoptionDiff} from './template-upgrades.js';
 import {nextDaily} from '../shared/schedules.js';
 import {calculate,formulaOrder,editableData} from '../shared/formulas.js';
@@ -10,21 +13,10 @@ import { templates, templateLinks } from './templates.js';
 export type FileOperation={kind:'save_document';filename:string;mime:string;bytes:Buffer;ai:boolean;documentId?:string;expectedVersion?:number;submissionFileId?:string};
 type Preview={id:string;actorId:string;workspaceId:string;operation:Operation|FileOperation;digest:string;expires:number;schemaFingerprint?:string;migrationFingerprint?:string};
 const json=(v:unknown)=>JSON.stringify(v);
-export const checksum=(b:Buffer|string)=>createHash('sha256').update(b).digest('hex');
-export async function audit(tx:Connection,a:Actor,p:any,action:string,objectId:string|null,before:unknown,after:unknown,reason?:string) {
- await tx.query('INSERT INTO audit_events(id,workspace_id,tenant_id,actor_id,action,object_id,origin,before_value,after_value,reason) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)',[randomUUID(),p.id,p.tenant_id,a.userId,action,objectId,a.origin,json(before),json(after),reason??null]);
-}
-async function revision(tx:Connection,a:Actor,w:string,id:string,kind:string,version:number,snapshot:unknown) {
- await tx.query('INSERT INTO revisions(id,workspace_id,object_id,object_kind,version,snapshot,actor_id) VALUES($1,$2,$3,$4,$5,$6,$7)',[randomUUID(),w,id,kind,version,json(snapshot),a.userId]);
-}
-export class Service {
+export class Service extends DataService {
  private previews=new Map<string,Preview>();
- constructor(public db:Database,public maxFileBytes=25*1024*1024,private originals:OriginalStore=new PostgresOriginalStore()) {}
+ constructor(db:Database,maxFileBytes=25*1024*1024,originals:OriginalStore=new PostgresOriginalStore()) {super(db,maxFileBytes,originals);}
  sweep() {for(const [k,p] of this.previews) if(p.expires<Date.now()) this.previews.delete(k);}
- async workspaces(a:Actor) {
-  const rows=(await this.db.query(`SELECT w.id,w.name,w.ai_enabled,m.role FROM workspaces w JOIN memberships m ON m.tenant_id=w.tenant_id AND m.user_id=$1 LEFT JOIN workspace_access wa ON wa.workspace_id=w.id AND wa.user_id=$1 WHERE m.role='owner' OR wa.user_id IS NOT NULL ORDER BY w.created_at`,[a.userId])).rows;
-  const result=[];for(const w of rows) {try {await access(this.db,a,w.id);result.push(w);}catch {}}return result;
- }
  async createWorkspace(a:Actor,name:string,options:{initialAiWorkspace?:boolean}={}) {
   if(a.origin!=='human'&&!options.initialAiWorkspace) fail(403,'human_required','Confirm creation of your first AI-accessible workspace');
   return this.db.transaction(async tx=>{
@@ -36,59 +28,6 @@ export class Service {
    const id=randomUUID();await tx.query('INSERT INTO workspaces(id,tenant_id,name,ai_enabled) VALUES($1,$2,$3,$4)',[id,tenantId,name,!!options.initialAiWorkspace]);
    await audit(tx,a,{id,tenant_id:tenantId},'workspace.created',id,null,{name,ai_enabled:!!options.initialAiWorkspace});return {id,name};
   });
- }
- async types(a:Actor,w:string) {
-  const p=await access(this.db,a,w);const rows=(await this.db.query('SELECT * FROM entity_types WHERE workspace_id=$1 ORDER BY created_at,name',[w])).rows;
-  return rows.filter(t=>!p.allowed_types||p.allowed_types.includes(t.id)).map(t=>({...t,fields:visibleFields(t.fields,{...p,typeId:t.id},a)}));
- }
- private async recordQuery(a:Actor,w:string,t:string,opts:RecordQuery={},connection:Connection=this.db) {
-  const {type,policy}=await typeAccess(connection,a,w,t);const fields=visibleFields(type.fields,policy,a);
-
-  // Search only visible keys; restricted fields must not leak through matching/counts.
-  const args:any[]=[w,t];let where='workspace_id=$1 AND type_id=$2';
-  if(opts.q){args.push(fields.map(f=>f.key),opts.q);where+=` AND EXISTS (SELECT 1 FROM jsonb_each_text(data) v WHERE v.key=ANY($3::text[]) AND strpos(lower(v.value),lower($4))>0)`;}
-  let config:any={};
-  if(opts.viewId){const v=(await connection.query('SELECT * FROM saved_views WHERE id=$1 AND workspace_id=$2 AND type_id=$3',[opts.viewId,w,t])).rows[0];if(!v||viewFields(viewConfigSchema.parse(v.config)).some(k=>!fields.some(f=>f.key===k)))fail(404,'not_found','View not available');config=v.config;}
-  const bind=(v:unknown)=>{args.push(v);return `$${args.length}`;};
-  for(const f of config.filters??[]){const key=bind(f.field);
-   if(f.operator==='empty')where+=` AND (data->${key}::text IS NULL OR data->${key}::text IN ('null'::jsonb,'""'::jsonb))`;
-   else if(f.operator==='contains')where+=` AND strpos(lower(data->>${key}::text),lower(${bind(String(f.value))}::text))>0`;
-   else where+=` AND data->${key}::text=${bind(json(f.value))}::jsonb`;
-  }
-  if(opts.dueBefore){const field=opts.dateField??config.dateField;if(!field||!fields.some(f=>f.key===field&&f.kind==='date'))fail(400,'invalid_date_field','Choose an accessible date field');where+=` AND NULLIF(data->>${bind(field)}::text,'')<=${bind(opts.dueBefore)}::text`; }
-  if(opts.month){const field=opts.dateField??config.dateField;if(!field||!fields.some(f=>f.key===field&&f.kind==='date'))fail(400,'invalid_date_field','Choose an accessible date field');where+=` AND left(data->>${bind(field)}::text,7)=${bind(opts.month)}::text`;}
-  return {args,where,fields,config};
- }
- async records(a:Actor,w:string,t:string,opts:RecordQuery={}) {
-  const {args,where,fields,config}=await this.recordQuery(a,w,t,opts);
-  const limit=Math.min(100,Math.max(1,opts.limit??50)),offset=Math.max(0,opts.offset??0);
-  const total=Number((await this.db.query(`SELECT count(*) AS count FROM records WHERE ${where}`,args)).rows[0].count);
-  const bind=(v:unknown)=>{args.push(v);return `$${args.length}`;};
-  const order=config.sort?`NULLIF(data->${bind(config.sort.field)}::text,'null'::jsonb) ${config.sort.direction==='desc'?'DESC':'ASC'} NULLS LAST,created_at,id`:'created_at,id';
-  const rows=(await this.db.query(`SELECT * FROM records WHERE ${where} ORDER BY ${order} LIMIT $${args.length+1} OFFSET $${args.length+2}`,[...args,limit,offset])).rows;
-  return {rows:rows.map(r=>({...r,data:projectData(r.data,fields)})),total,limit,offset,month:opts.month};
- }
- async aggregate(a:Actor,w:string,t:string,opts:RecordQuery&{groupBy?:string;metric?:string}={}) {
-  const {args,where,fields}=await this.recordQuery(a,w,t,opts);
-  if(opts.groupBy&&!fields.some(f=>f.key===opts.groupBy))fail(400,'invalid_field','Group field unavailable');
-  if(opts.metric&&!fields.some(f=>f.key===opts.metric&&['number','money'].includes(f.kind)))fail(400,'invalid_field','Numeric field unavailable');
-  const bind=(v:unknown)=>{args.push(v);return `$${args.length}`;};
-  const metric=opts.metric?bind(opts.metric):null;
-  const numeric=metric?`CASE WHEN jsonb_typeof(data->${metric}::text)='number' THEN (data->>${metric}::text)::numeric END`:'NULL::numeric';
-  const group=opts.groupBy?`data->>${bind(opts.groupBy)}::text`:'NULL::text';
-  const totals=(await this.db.query(`SELECT count(*)::int AS count,sum(${numeric}) AS sum,avg(${numeric}) AS average,min(${numeric}) AS minimum,max(${numeric}) AS maximum FROM records WHERE ${where}`,args.slice(0,opts.groupBy?-1:undefined))).rows[0];
-  const groups=opts.groupBy?(await this.db.query(`SELECT ${group} AS label,count(*)::int AS count,sum(${numeric}) AS sum,avg(${numeric}) AS average FROM records WHERE ${where} GROUP BY ${group} ORDER BY count(*) DESC,${group} NULLS LAST LIMIT 201`,args)).rows:[];
-  return {totals,groups:groups.slice(0,200),groupsTruncated:groups.length>200,metric:opts.metric??null,scope:'All matching authorised records'};
- }
- async recordHistory(a:Actor,w:string,recordId:string,offset=0) {
-  const r=(await this.db.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[recordId,w])).rows[0];
-  if(!r)fail(404,'not_found','Record not found');
-  const {type,policy}=await typeAccess(this.db,a,w,r.type_id);
-  const fields=visibleFields(type.fields,policy,a);
-  const revisions=(await this.db.query("SELECT version,snapshot,actor_id,created_at FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='record' ORDER BY version DESC LIMIT 51 OFFSET $3",[w,recordId,offset])).rows;
-  return {recordId,typeId:r.type_id,currentVersion:r.version,typeVersion:type.version,fields,
-   canRestore:!['viewer','inspector'].includes(policy.role)&&fields.length===type.fields.length&&!['archived','superseded'].includes(r.state),
-   offset,hasMore:revisions.length>50,revisions:revisions.slice(0,50).map(v=>({version:v.version,actorId:v.actor_id,createdAt:v.created_at,state:v.snapshot.state,data:projectData(v.snapshot.data??{},fields)}))};
  }
  private async restoreData(tx:Connection,a:Actor,w:string,op:Extract<Operation,{kind:'restore_record'}>) {
   const r=(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[op.recordId,w])).rows[0];
@@ -331,11 +270,6 @@ export class Service {
   await revision(tx,a,w,documentId,'document',version,meta);await audit(tx,a,p,'document.saved',documentId,null,meta);return [{id:documentId,versionId:id,kind:'document',version}];
  }
  async inspectionAccess(tx:Connection,a:Actor,w:string){const p=await access(tx,a,w);if(p.role==='owner')return;const rules=(await tx.query('SELECT allowed_users FROM document_access WHERE workspace_id=$1 UNION ALL SELECT allowed_users FROM folder_access WHERE workspace_id=$1',[w])).rows;if(rules.some(r=>r.allowed_users!==null&&!r.allowed_users.includes(a.userId)))fail(403,'restricted_inspection','Full inspection is unavailable with restricted documents');}
- async documentPermission(tx:Connection,a:Actor,w:string,documentId:string,version=false){
-  const p=await access(tx,a,w);const rules=(await tx.query(`SELECT r.* FROM document_access r WHERE r.workspace_id=$1 AND r.document_id=${version?'(SELECT document_id FROM document_versions WHERE id::text=$2 AND workspace_id=$1)':'$2::uuid'}`,[w,documentId])).rows[0];
-  if(rules&&((p.role!=='owner'&&rules.allowed_users!==null&&!rules.allowed_users.includes(a.userId))||(a.origin==='ai'&&!rules.ai_enabled)))fail(404,'not_found','Document not found');
-  const control=(await tx.query(`SELECT folder FROM document_controls WHERE workspace_id=$1 AND document_id=${version?'(SELECT document_id FROM document_versions WHERE id::text=$2 AND workspace_id=$1)':'$2::uuid'}`,[w,documentId])).rows[0];const folders=(await tx.query('SELECT * FROM folder_access WHERE workspace_id=$1',[w])).rows;if(!folderAllowed(control?.folder??'',folders,a,p.role))fail(404,'not_found','Document not found');
- }
  async templateUpgrades(a:Actor,w:string){const p=await access(this.db,a,w);if(a.origin!=='human'||p.role!=='owner')fail(403,'owner_required','Human owner required');const installed=(await this.db.query('SELECT template_id FROM template_installations WHERE workspace_id=$1',[w])).rows;return Promise.all(installed.map(t=>templateDiff(this.db,w,t.template_id)));}
  async accessRules(a:Actor,w:string){const p=await access(this.db,a,w);if(a.origin!=='human'||p.role!=='owner')fail(403,'owner_required','Human owner required');return {version:p.access_version,aiHiddenTypes:p.ai_hidden_types,folders:(await this.db.query('SELECT * FROM folder_access WHERE workspace_id=$1',[w])).rows,documents:(await this.db.query('SELECT * FROM document_access WHERE workspace_id=$1',[w])).rows};}
  async setAccessRules(a:Actor,w:string,input:{expectedVersion:number;aiHiddenTypes:string[];folder?:{name:string;allowedUsers:string[]|null;ai:boolean};document?:{documentId:string;allowedUsers:string[]|null;ai:boolean;expectedVersion:number}}){return this.db.transaction(async tx=>{
@@ -354,38 +288,7 @@ export class Service {
   }
   await audit(tx,a,p,'tables.ai_access',w,{aiHiddenTypes:p.ai_hidden_types},{aiHiddenTypes:input.aiHiddenTypes});return {ok:true};
  });}
- async documents(a:Actor,w:string) {
-  const p=await access(this.db,a,w);if(!p.document_scope)fail(403,'restricted_documents','Document access for restricted views is not enabled');
-  const rows=(await this.db.query(`SELECT d.*,e.status AS extraction_status,c.linked_record_id AS control_record_id,c.reviewer_id,c.expires_on,c.folder,c.status AS review_status,c.reviewed_version_id,c.version AS control_version FROM document_versions d JOIN extractions e ON e.version_id=d.id LEFT JOIN document_controls c ON c.document_id=d.document_id AND ($2=false OR ((SELECT latest.ai_enabled FROM document_versions latest WHERE latest.document_id=d.document_id ORDER BY latest.version DESC LIMIT 1)=true AND (c.reviewed_version_id IS NULL OR EXISTS(SELECT 1 FROM document_versions reviewed WHERE reviewed.id=c.reviewed_version_id AND reviewed.ai_enabled=true)))) WHERE d.workspace_id=$1 ${a.origin==='ai'?'AND d.ai_enabled=true':''} ORDER BY d.created_at DESC`,[w,a.origin==='ai'])).rows;
-  const rules=(await this.db.query('SELECT * FROM document_access WHERE workspace_id=$1',[w])).rows;
-  const folders=(await this.db.query('SELECT * FROM folder_access WHERE workspace_id=$1',[w])).rows,controls=(await this.db.query('SELECT document_id,folder FROM document_controls WHERE workspace_id=$1',[w])).rows;
-  return rows.filter(d=>{const rule=rules.find(r=>r.document_id===d.document_id);return folderAllowed(controls.find(c=>c.document_id===d.document_id)?.folder??'',folders,a,p.role)&&(!rule||((p.role==='owner'||rule.allowed_users===null||rule.allowed_users.includes(a.userId))&&(a.origin!=='ai'||rule.ai_enabled)));});
- }
- async original(a:Actor,w:string,id:string) {
-  const docs=await this.documents(a,w);const d=docs.find(x=>x.id===id);if(!d)fail(404,'not_found','Document not found');
-  const bytes=await this.originals.get(this.db,id);if(!bytes)fail(500,'source_missing','Original is unavailable');if(checksum(bytes)!==d.checksum)fail(500,'integrity_failure','The original failed its integrity check');return {...d,bytes};
- }
- async documentText(a:Actor,w:string,versionId:string,offset=0) {
-  const d=(await this.documents(a,w)).find(d=>d.id===versionId);if(!d)fail(404,'not_found','Document not found');
-  const e=(await this.db.query('SELECT status,text_content,tables,table_status FROM extractions WHERE version_id=$1',[versionId])).rows[0];
-  const text=['ready','partial'].includes(e?.status)?e.text_content??'':'';
-  return {documentId:d.document_id,versionId,version:d.version,filename:d.filename,status:e?.status??'pending',tables:offset===0?(e.tables??[]):[],tableStatus:e.table_status,offset,text:text.slice(offset,offset+12000),hasMore:offset+12000<text.length};
- }
- async search(a:Actor,w:string,q:string) {
-  const docs=await this.documents(a,w);const ids=docs.map(d=>d.id);
-  const coverage={total:docs.length,pending:docs.filter(d=>d.extraction_status==='pending').length,unavailable:docs.filter(d=>d.extraction_status==='unavailable').length,partial:docs.filter(d=>d.extraction_status==='partial').length};
-  const hits=(await this.db.query(`SELECT d.id AS version_id,d.document_id,d.filename,d.version,(SELECT coalesce(jsonb_agg(hit),'[]'::jsonb) FROM (SELECT jsonb_build_object('page',section->'page','text',ts_headline('simple',section->>'text',plainto_tsquery('simple',$2),'StartSel=,StopSel=,MaxWords=60,MinWords=15')) AS hit FROM jsonb_array_elements(e.sections) section WHERE to_tsvector('simple',coalesce(section->>'text','')) @@ plainto_tsquery('simple',$2) LIMIT 5) evidence) AS sections,ts_headline('simple',e.text_content,plainto_tsquery('simple',$2),'StartSel=,StopSel=,MaxWords=60,MinWords=15') AS passage FROM extractions e JOIN document_versions d ON d.id=e.version_id WHERE e.version_id=ANY($1::uuid[]) AND e.status IN ('ready','partial') AND e.search_vector @@ plainto_tsquery('simple',$2) ORDER BY ts_rank(e.search_vector,plainto_tsquery('simple',$2)) DESC LIMIT 20`,[ids,q])).rows;
-  return {hits,coverage};
- }
  async history(a:Actor,w:string,opts:{offset?:number;action?:string;actorId?:string}={}) {await this.inspectionAccess(this.db,a,w);const p=await access(this.db,a,w);if(a.origin!=='human'||!['owner','inspector'].includes(p.role)||!p.document_scope)fail(403,'owner_required','Audit is available to unrestricted human owners and inspectors');return (await this.db.query('SELECT * FROM audit_events WHERE workspace_id=$1 AND ($2::text IS NULL OR strpos(action,$2)>0) AND ($3::uuid IS NULL OR actor_id=$3) ORDER BY created_at DESC,id DESC LIMIT 200 OFFSET $4',[w,opts.action??null,opts.actorId??null,opts.offset??0])).rows;}
- async views(a:Actor,w:string) {
-  const types=await this.types(a,w);
-  // A hidden filter/sort/group must not influence membership, counts or order.
-  return (await this.db.query('SELECT * FROM saved_views WHERE workspace_id=$1 ORDER BY name,id',[w])).rows.filter(v=>{
-   const t=types.find(t=>t.id===v.type_id);if(!t)return false;
-   return viewFields(viewConfigSchema.parse(v.config)).every(k=>t.fields.some((f:Field)=>f.key===k));
-  });
- }
  async setAi(a:Actor,w:string,enabled:boolean) {return this.db.transaction(async tx=>{await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await access(tx,a,w,enabled);if(a.origin!=='human'||p.role!=='owner')fail(403,'owner_required','Human owner required');await tx.query('UPDATE workspaces SET ai_enabled=$1 WHERE id=$2',[enabled,w]);await audit(tx,a,p,'workspace.ai_access',w,{enabled:p.ai_enabled},{enabled});return {enabled};});}
  async grant(a:Actor,w:string,action:string,destination:string,future:boolean) {return this.db.transaction(async tx=>{await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await access(tx,a,w,true);if(a.origin!=='human')fail(403,'human_required','Human authorisation required');const id=randomUUID();await tx.query('INSERT INTO action_grants(id,workspace_id,user_id,action,destination,future) VALUES($1,$2,$3,$4,$5,$6)',[id,w,a.userId,action,destination,future]);await audit(tx,a,p,'permission.granted',id,null,{action,destination,future});return {id};});}
  async grants(a:Actor,w:string) {await access(this.db,a,w);return (await this.db.query('SELECT * FROM action_grants WHERE workspace_id=$1 AND user_id=$2 ORDER BY created_at DESC',[w,a.userId])).rows;}
@@ -445,6 +348,8 @@ export class Service {
   result.workspace_invitations=(await tx.query('SELECT id,workspace_id,owner_id,label,role,allowed_types,expires_at,revoked_at,accepted_by,accepted_at,created_at FROM workspace_invitations WHERE workspace_id=$1',[w])).rows;
   result.workspace_policies=[{archived:p.archived,legalHold:p.legal_hold,retentionUntil:p.retention_until,version:p.policy_version}];
   for(const table of ['document_controls','document_access','folder_access','acknowledgements','form_submissions','submission_acceptances','submission_file_acceptances','record_review_requests','record_review_decisions','inbox_reminders','template_installations','entity_types','records','saved_views','revisions','approvals','audit_events','automations','automation_runs'])result[table]=(await tx.query(`SELECT * FROM ${table} WHERE workspace_id=$1`,[w])).rows;
+  for(const table of ['foundation_functions','foundation_grants','foundation_schedules','foundation_receipts'])result[table]=(await tx.query(`SELECT * FROM ${table} WHERE workspace_id=$1`,[w])).rows;
+  result.foundation_revisions=(await tx.query('SELECT r.* FROM foundation_revisions r JOIN foundation_functions f ON f.id=r.function_id WHERE f.workspace_id=$1',[w])).rows;
   await audit(tx,a,p,'workspace.exported',w,null,{formatVersion:1,documents:documents.length});return result;
  });}
  async automations(a:Actor,w:string){await access(this.db,a,w);const rows=(await this.db.query('SELECT * FROM automations WHERE workspace_id=$1 AND owner_id=$2 ORDER BY created_at',[w,a.userId])).rows;const result=[];for(const r of rows){if(r.conditions){try{await this.recordQuery(a,w,r.conditions.typeId,{viewId:r.conditions.viewId,dateField:r.conditions.dateField,dueBefore:'9999-12-31'});}catch{continue;}}if(r.action?.kind==='create_record'){try{const {type,policy}=await typeAccess(this.db,a,w,r.action.typeId);if(Object.keys(r.action.data).some(k=>!visibleFields(type.fields,policy,a).some(f=>f.key===k)))continue;}catch{continue;}}result.push(r);}return result;}

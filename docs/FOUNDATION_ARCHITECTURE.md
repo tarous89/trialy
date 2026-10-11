@@ -1,6 +1,6 @@
 # Foundation architecture correction
 
-Decision date: 11 October 2026. Status: accepted direction; proposed contracts below are not implemented APIs. Active scope: [README](../README.md). Build order: [DEVELOPMENT](../DEVELOPMENT.md).
+Decision date: 11 October 2026. Status: accepted direction, with the first execution implementation now complete; see [EXECUTION.md](EXECUTION.md) for actual supported contracts and limits. Active scope: [README](../README.md). Build order: [DEVELOPMENT](../DEVELOPMENT.md).
 
 ## Responsibility boundary
 
@@ -81,7 +81,7 @@ The first branch checkpoint is documentation only. Runtime refactoring comes nex
 
 The isolated runtime is the main missing capability and the principal new security boundary. Its adapter must support bounded process execution, constrained networking, no host/tenant cross-access, cancellation and deterministic identification of the runtime image/dependencies.
 
-No hosting product or language is selected by this document. Investigate a concrete supported option before implementing or provisioning it. Existing Render web/worker deployment is retained; whether generated code runs there or through an external execution service is a feasibility/cost decision, not permission to weaken isolation. If a new account/budget is necessary, present the concrete option and tradeoffs to the user then.
+The implementation selects pinned QuickJS/WASM JavaScript in the existing Render worker, with a fixed WASM memory maximum, bounded guest heap, JSON-only broker and disposable process. No additional provider account is needed. The original feasibility requirements below remain applicable. Investigate a concrete supported option before implementing or provisioning it. Existing Render web/worker deployment is retained; whether generated code runs there or through an external execution service is a feasibility/cost decision, not permission to weaken isolation. If a new account/budget is necessary, present the concrete option and tradeoffs to the user then.
 
 ## First acceptance example (synthetic, no clinical workflow)
 

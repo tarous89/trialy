@@ -20,7 +20,7 @@ export function ViewPicker({views,selectedId,fields,typeId,busy,onSelect,onPrepa
  </section>;
 }
 
-export function RecordView({rows,fields,kind,config={},total,busy,onEdit,onHistory,summary,month:requestedMonth,onMonth}:{rows:any[];fields:Field[];kind:string;config?:Partial<ViewConfig>;total:number;busy:boolean;onEdit:(record:any)=>void;onHistory:(record:any)=>void;summary?:any;month?:string;onMonth?:(month:string)=>void}) {
+export function RecordView({showLegacyState=false,rows,fields,kind,config={},total,busy,onEdit,onHistory,summary,month:requestedMonth,onMonth}:{showLegacyState?:boolean;rows:any[];fields:Field[];kind:string;config?:Partial<ViewConfig>;total:number;busy:boolean;onEdit:(record:any)=>void;onHistory:(record:any)=>void;summary?:any;month?:string;onMonth?:(month:string)=>void}) {
  const shown=config.columns?config.columns.map(k=>fields.find(f=>f.key===k)).filter((f):f is Field=>!!f):fields;
  const title=(r:any)=>String(r.data[shown[0]?.key]??'Record');
  const actions=(r:any)=><span className="view-actions"><button disabled={busy} onClick={()=>onEdit(r)}>Open</button><button disabled={busy} onClick={()=>onHistory(r)}>History</button></span>;
@@ -28,7 +28,7 @@ export function RecordView({rows,fields,kind,config={},total,busy,onEdit,onHisto
  const [localMonth,setLocalMonth]=useState(()=>{const now=new Date();return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;});
  const month=requestedMonth??localMonth;const setMonth=(value:string)=>{setLocalMonth(value);onMonth?.(value);};
  const [year,monthNumber]=month.split('-').map(Number),days=new Date(Date.UTC(year,monthNumber,0)).getUTCDate(),leading=(new Date(Date.UTC(year,monthNumber-1,1)).getUTCDay()+6)%7;
- const table=(items:any[])=><div className="record-scroll"><table><thead><tr>{shown.map(f=><th key={f.key}>{f.name}</th>)}<th>State</th><th>Version</th><th/></tr></thead><tbody>{items.map(r=><tr key={r.id}>{shown.map(f=><td key={f.key}>{String(r.data[f.key]??'—')}</td>)}<td>{r.state.replaceAll('_',' ')}</td><td>{r.version}</td><td>{actions(r)}</td></tr>)}</tbody></table></div>;
+ const table=(items:any[])=><div className="record-scroll"><table><thead><tr>{shown.map(f=><th key={f.key}>{f.name}</th>)}{showLegacyState&&<th>State</th>}<th>Version</th><th/></tr></thead><tbody>{items.map(r=><tr key={r.id}>{shown.map(f=><td key={f.key}>{String(r.data[f.key]??'—')}</td>)}{showLegacyState&&<td>{r.state.replaceAll('_',' ')}</td>}<td>{r.version}</td><td>{actions(r)}</td></tr>)}</tbody></table></div>;
  const list=(items:any[])=><div className="record-cards">{items.map(r=><article key={r.id}><h3>{title(r)}</h3>{shown.slice(1).map(f=><p key={f.key}>{f.name}: {String(r.data[f.key]??'—')}</p>)}{actions(r)}</article>)}</div>;
  let content;
  if(kind==='comparison')content=<div className="record-scroll"><table><thead><tr><th>Field</th>{rows.map(r=><th key={r.id}>{title(r)}</th>)}</tr></thead><tbody>{shown.map(f=><tr key={f.key}><th>{f.name}</th>{rows.map(r=><td key={r.id}>{String(r.data[f.key]??'—')}</td>)}</tr>)}<tr><th>Record</th>{rows.map(r=><td key={r.id}>{actions(r)}</td>)}</tr></tbody></table></div>;

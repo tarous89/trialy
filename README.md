@@ -49,9 +49,9 @@ Custom UI generation beyond this minimal interface is not a prerequisite for the
 
 The existing app has transactional records, originals, extraction, permissions, auth, audit/version history, MCP and deployed web/worker services. It also has legacy business-specific screens, templates and rules. Those are frozen pending separation, not newly endorsed product requirements.
 
-**General generated-code execution, a saved-function registry and a general tool gateway are not implemented.** Document extraction child processes are not a suitable security boundary for arbitrary generated code. The current worker only runs predefined actions. See the architecture for the proposed boundaries; these are design contracts, not claims of callable APIs.
+The code execution foundation is implemented: bounded QuickJS/WASM JavaScript, permission-filtered tools, exact proposals and atomic commit receipts, immutable saved functions, leased jobs, once/future grants, schedules, result-file saves and shared standalone/embedded controls. Template/business builders are absent from the default experience; existing management remains at `/?legacy=1`. No historical data is removed.
 
-Last verified runtime: `b2dce02`, both existing Render services live. Last main documentation commit before this correction: `87adf5d`. Build and 30 reported checks passed for that implementation. This architecture correction changes documentation only and does not deploy or remove features.
+See [the implemented execution contract](docs/EXECUTION.md) for APIs, limits, temporary retention and remaining boundaries. Live external providers and real ChatGPT host acceptance remain deferred. The existing Render services are reused, without a new sandbox account or infrastructure service.
 
 ## Development and operation
 
@@ -61,4 +61,4 @@ For PostgreSQL, configure `.env` from `.env.example`, including DATABASE_URL, SE
 
 Existing `/auth/login` provides sign-in/signup. OAuth uses PKCE; MFA/recovery codes exist, but email verification/password recovery are still absent. [ChatGPT setup](docs/CHATGPT_SETUP.md) and [operations](docs/OPERATIONS.md) describe existing behavior; their legacy feature instructions are operational history, not the future product backlog.
 
-Current previews live in one web process for up to 24 hours and may disappear on restart. Confirmed data is in PostgreSQL. Keep one web instance until shared temporary preview storage is implemented. Production recovery targets, actual managed backup restoration, restricted runtime credentials and monitoring remain unfinished; no zero-loss or blanket clinical-compliance claim is made.
+Legacy data/file previews live in one web process for up to 24 hours and may disappear on restart. New experiment/proposal/function-preview staging lives in PostgreSQL with a 24-hour expiry. Confirmed data is in PostgreSQL. Keep one web instance until shared temporary preview storage is implemented. Production recovery targets, actual managed backup restoration, restricted runtime credentials and monitoring remain unfinished; no zero-loss or blanket clinical-compliance claim is made.

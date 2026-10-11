@@ -13,3 +13,7 @@ GRANT DELETE ON session,oauth_data,oauth_tokens,workspace_access TO trialy_runti
 -- No table ownership, CREATE, TRUNCATE or role administration for this role.
 
 GRANT USAGE, SELECT ON SEQUENCE audit_events_event_sequence_seq TO trialy_runtime;
+
+GRANT INSERT ON foundation_functions,foundation_revisions,foundation_grants,foundation_schedules,foundation_receipts,foundation_runs,foundation_previews TO trialy_runtime;
+GRANT UPDATE ON foundation_functions,foundation_grants,foundation_schedules,foundation_runs TO trialy_runtime;
+GRANT DELETE ON foundation_runs,foundation_previews TO trialy_runtime;

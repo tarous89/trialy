@@ -1,0 +1,27 @@
+import type {Express} from 'express';
+import {z} from 'zod';
+import {id} from '../shared/schema.js';
+import {Foundation,grantSchema} from '../foundation/service.js';
+import type {Service} from '../domain/service.js';
+export function addFoundationApi(app:Express,s:Service){
+ const f=new Foundation(s.db,s),base='/api/workspaces/:workspaceId/foundation';
+ const confirmation=z.object({digest:z.string().length(64),confirmed:z.literal(true)}).strict();
+ app.post(`${base}/runs`,async(req,res)=>res.status(202).json(await f.enqueue(req.actor!,id.parse(req.params.workspaceId),req.body.program,id.parse(req.body.requestKey))));
+ app.get(`${base}/runs`,async(req,res)=>res.json(await f.runs(req.actor!,id.parse(req.params.workspaceId))));
+ app.get(`${base}/runs/:runId`,async(req,res)=>res.json(await f.run(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.runId))));
+ app.post(`${base}/runs/:runId/cancel`,async(req,res)=>res.json(await f.cancel(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.runId))));
+ app.post(`${base}/runs/:runId/commit`,async(req,res)=>{const b=confirmation.parse(req.body);res.json(await f.commit(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.runId),b.digest));});
+ app.post(`${base}/runs/:runId/artifact`,async(req,res)=>{const b=z.object({filename:z.string().min(1).max(250),index:z.number().int().min(0).max(100).optional()}).strict().parse(req.body);res.json(await f.previewArtifact(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.runId),b.filename,b.index));});
+ app.get(`${base}/functions`,async(req,res)=>res.json(await f.functions(req.actor!,id.parse(req.params.workspaceId))));
+ app.get(`${base}/revisions/:revisionId`,async(req,res)=>res.json(await f.revision(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.revisionId))));
+ app.post(`${base}/functions/preview`,async(req,res)=>res.json(await f.prepareFunction(req.actor!,id.parse(req.params.workspaceId),req.body)));
+ app.delete(`${base}/functions/previews/:previewId`,async(req,res)=>res.json(await f.discardFunction(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.previewId))));
+ app.post(`${base}/functions/:previewId/save`,async(req,res)=>{const b=confirmation.parse(req.body);res.json(await f.saveFunction(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.previewId),b.digest));});
+ app.post(`${base}/invoke`,async(req,res)=>res.status(202).json(await f.invoke(req.actor!,id.parse(req.params.workspaceId),req.body.invocation,id.parse(req.body.requestKey))));
+ app.get(`${base}/grants`,async(req,res)=>res.json(await f.grants(req.actor!,id.parse(req.params.workspaceId))));
+ app.post(`${base}/grants`,async(req,res)=>{const b=grantSchema.extend({confirmed:z.literal(true)}).parse(req.body);const {confirmed,...grant}=b;res.json(await f.grant(req.actor!,id.parse(req.params.workspaceId),grant));});
+ app.delete(`${base}/grants/:grantId`,async(req,res)=>res.json(await f.revoke(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.grantId))));
+ app.get(`${base}/schedules`,async(req,res)=>res.json(await f.schedules(req.actor!,id.parse(req.params.workspaceId))));
+ app.post(`${base}/schedules`,async(req,res)=>{if(req.body.confirmed!==true)throw new Error('confirmation_required');res.json(await f.schedule(req.actor!,id.parse(req.params.workspaceId),req.body.schedule));});
+ app.post(`${base}/schedules/:scheduleId/pause`,async(req,res)=>res.json(await f.pause(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.scheduleId),z.boolean().parse(req.body.paused))));
+}

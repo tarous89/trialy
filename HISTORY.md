@@ -197,3 +197,9 @@ The user clarified that Trialy is currently only a foundation for ChatGPT to use
 - No arbitrary-code runtime, general tool gateway or saved-function registry is claimed implemented. Runtime-host selection is a later feasibility decision; extraction subprocesses are not a substitute for an untrusted-code sandbox.
 - This checkpoint changes documentation only. No saved records, original files, audit histories, applied migrations, existing schedules or deployed screens are deleted or changed. Last live runtime remains `b2dce02`.
 - Validation: checked local Markdown targets in active root/architecture documents and verified the diff contains documentation only. No application tests or deployment were necessary for this checkpoint.
+
+## 2026-10-11 — Foundation execution implementation
+
+Implemented the corrected data/code/tools scope on foundation-reset: extracted permission-filtered data/query/document service; added bounded QuickJS/WASM runtime with JSON-only capability broker, temporary run/proposal staging, exact atomic commits, immutable function revisions, once/future grants, leased jobs/cancellation/recovery, interval/daily/event schedules, source-run audit provenance, result/artifact original-file saves, and shared web/MCP/embedded controls. Generic schema proposals are supported; predefined clinical workflows are not expanded. Legacy management remains explicitly available and existing rules/history/data are preserved.
+
+Migration 016 is additive. No new provider account or Render service is needed. Updated inspection exports, runtime-role SQL and synthetic recovery evidence include saved functions. Pinned runtime: quickjs-wasm-0.32.0-v1. Plugin skill updated in place to the new scope, preserving identity and connection configuration. Actual host acceptance, live external providers, production credentials/recovery policies and managed backup restore remain deferred/open as documented in EXECUTION.md.
