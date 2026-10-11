@@ -1,9 +1,12 @@
+import {addWorkspaceApi} from './workspace-foundation.js';
+import {WorkspaceFoundation} from '../workspace/service.js';
 import type {Express} from 'express';
 import {z} from 'zod';
 import {id} from '../shared/schema.js';
 import {Foundation,grantSchema} from '../foundation/service.js';
 import type {Service} from '../domain/service.js';
 export function addFoundationApi(app:Express,s:Service){
+ addWorkspaceApi(app,new WorkspaceFoundation(s.db));
  const f=new Foundation(s.db,s),base='/api/workspaces/:workspaceId/foundation';
  const confirmation=z.object({digest:z.string().length(64),confirmed:z.literal(true)}).strict();
  app.post(`${base}/runs`,async(req,res)=>res.status(202).json(await f.enqueue(req.actor!,id.parse(req.params.workspaceId),req.body.program,id.parse(req.body.requestKey))));

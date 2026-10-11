@@ -66,7 +66,7 @@ Interface preferences and the proposed edit-routing policy are tracked separatel
 - Distinguish a plan, an inference and an observed action. Drafting is not sending; a prospective invitee is not a confirmed attendee. Retain prior observations and reversible decisions when information conflicts or changes over time.
 - Give concise maintenance summaries and preserve audit/version history. Permission revocation, schema revision and stale data checks apply to automatic maintenance as to manual changes. Uncertain inclusion can remain provisional rather than silently expanding the capture scope.
 
-This is the agreed target behavior. Current schema creation, confirmed storage and execution grants are foundations; the integrated automatic capture/reconciliation path and its approved-scope contract are still to be implemented.
+This is the agreed target behavior. Task-driven maintenance is now exposed through scoped MCP writes, reviewed table/field permissions and preserved observations. ChatGPT evaluates semantic inclusion; the backend enforces tenant, field, schema-version and grant boundaries. General merged-entity views and scheduled maintenance integration remain to be built.
 
 ## Reconciliation and saving decisions
 
@@ -98,7 +98,7 @@ The existing app has transactional records, originals, extraction, permissions, 
 
 The code execution foundation is implemented: bounded QuickJS/WASM JavaScript, permission-filtered tools, exact proposals and atomic commit receipts, immutable saved functions, leased jobs, once/future grants, schedules, result-file saves and shared standalone/embedded controls. Template/business builders are absent from the default experience; existing management remains at `/?legacy=1`. No historical data is removed.
 
-See [the implemented execution contract](docs/EXECUTION.md) for APIs, limits, temporary retention and remaining boundaries. Shared cross-import entity reconciliation, general saved UI hosting and movable project/component organization remain to be built. External service adapters are not connected; complete real ChatGPT host acceptance is still pending. The existing Render services are reused, without a new sandbox account or infrastructure service.
+See [the implemented execution contract](docs/EXECUTION.md) for APIs, limits, temporary retention and remaining boundaries. Projects/folders can now be created, renamed and moved, including drag and drop. Reviewed maintenance scopes support qualifying record additions/updates with provenance, and reversible same-table identity links preserve both records. General merged-entity queries, generated UI hosting and movable saved components remain to be built. See [workspace implementation boundaries](docs/WORKSPACE_FOUNDATION.md). External service adapters are not connected; complete real ChatGPT host acceptance is still pending. The existing Render services are reused, without a new sandbox account or infrastructure service.
 
 ## Development and operation
 

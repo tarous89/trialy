@@ -1,3 +1,5 @@
+import {addWorkspaceMcp} from './workspace-foundation.js';
+import {WorkspaceFoundation} from '../workspace/service.js';
 import {addFoundationMcp} from './foundation-mcp.js';
 import {Foundation} from '../foundation/service.js';
 import {foundationOperationSchema} from '../foundation/schema.js';
@@ -15,6 +17,7 @@ export function addMcp(app:Express,s:Service,authenticate:RequestHandler) {
   const metadata={ui:{resourceUri:resource},'openai/widgetAccessible':true,securitySchemes:[{type:'oauth2',scopes:['trialy']}], 'openai/outputTemplate':resource};
   const result=(data:unknown)=>({content:[{type:'text' as const,text:JSON.stringify(data)}],structuredContent:{result:data}});
   const safe=(fn:(v:any)=>Promise<any>)=>async(v:any)=>{try{return result(await fn(v));}catch(e){return {isError:true,content:[{type:'text' as const,text:e instanceof AppError?e.message:'The action could not complete. Check its status before retrying.'}]};}};
+  addWorkspaceMcp(server,new WorkspaceFoundation(s.db),actor,safe,metadata);
   addFoundationMcp(server,new Foundation(s.db,s),actor,safe,metadata);
   server.registerResource('workspace',resource,{mimeType:'text/html;profile=mcp-app'},async()=>({contents:[{uri:resource,mimeType:'text/html;profile=mcp-app',text:await readFile(new URL('../../dist/embed.html',import.meta.url),'utf8'),_meta:{ui:{prefersBorder:true,csp:{connectDomains:[],resourceDomains:[]}},'openai/widgetDescription':'The Trialy workspace: data, code, functions and confirmed saves inside ChatGPT.','openai/ui':{availableDisplayModes:['inline','fullscreen'],preferredDisplayMode:'fullscreen'}}}]}));
   server.registerTool('open_workspace',{title:'Trialy workspace',description:'Open the interactive Trialy workspace inside ChatGPT. Use when the user opens Trialy and after connecting their account. No standalone sign-in is needed. New users see workspace onboarding; existing users see only AI-authorised workspaces.',inputSchema:{workspaceId:id.optional()},annotations:{readOnlyHint:true},_meta:{...metadata,'openai/ui':{entrypoints:[{type:'global'},{type:'thread'}]}}},safe(async v=>{

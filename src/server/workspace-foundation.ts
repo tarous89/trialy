@@ -1,0 +1,30 @@
+import type {Express} from 'express';
+import type {McpServer} from '@modelcontextprotocol/sdk/server/mcp.js';
+import {z} from 'zod';
+import {id,type Actor} from '../shared/schema.js';
+import {WorkspaceFoundation} from '../workspace/service.js';
+import {workspaceOperation,maintenanceBatch} from '../workspace/schema.js';
+export function addWorkspaceApi(app:Express,f:WorkspaceFoundation){
+ const b='/api/workspaces/:workspaceId/organization';
+ app.get(b,async(req,res)=>res.json(await f.nodes(req.actor!,id.parse(req.params.workspaceId))));
+ app.get(`${b}/previews`,async(req,res)=>res.json(await f.pending(req.actor!,id.parse(req.params.workspaceId))));
+ app.post(`${b}/previews`,async(req,res)=>res.json(await f.preview(req.actor!,id.parse(req.params.workspaceId),req.body)));
+ app.delete(`${b}/previews/:previewId`,async(req,res)=>res.json(await f.discard(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.previewId))));
+ app.post(`${b}/previews/:previewId/confirm`,async(req,res)=>{const v=z.object({digest:z.string().length(64),confirmed:z.literal(true)}).strict().parse(req.body);res.json(await f.confirm(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.previewId),v.digest));});
+ app.get(`${b}/scopes`,async(req,res)=>res.json(await f.scopes(req.actor!,id.parse(req.params.workspaceId))));
+ app.delete(`${b}/scopes/:scopeId`,async(req,res)=>res.json(await f.revoke(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.scopeId))));
+ app.post(`${b}/maintain`,async(req,res)=>res.json(await f.maintain(req.actor!,id.parse(req.params.workspaceId),req.body)));
+ app.get(`${b}/evidence/:recordId`,async(req,res)=>res.json(await f.evidence(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.recordId))));
+}
+export function addWorkspaceMcp(server:McpServer,f:WorkspaceFoundation,a:Actor,safe:any,metadata:any){
+ const register=(name:string,description:string,schema:Record<string,z.ZodType>,readOnly:boolean,fn:(v:any)=>Promise<any>,appOnly=false)=>server.registerTool(name,{title:name.replaceAll('_',' '),description,inputSchema:schema,annotations:{readOnlyHint:readOnly,destructiveHint:!readOnly,openWorldHint:false},_meta:appOnly?{...metadata,ui:{resourceUri:metadata.ui.resourceUri,visibility:['app']}}:metadata},safe(fn));
+ register('list_workspace_projects','List stable projects/folders. Currently requires full workspace access; project-specific sharing is not implemented.',{workspaceId:id},true,v=>f.nodes(a,v.workspaceId));
+ register('prepare_workspace_change','Prepare project/folder creation, move/rename, a maintenance scope or reversible identity link/unlink. Inspect existing tables first. A scope is justified by tracking, repeated work or expected reuse. Include purpose, inclusion criteria and permitted source policy. Saving requires the review button. Identity links keep both records; they do not rewrite facts or relationships.',{workspaceId:id,operation:workspaceOperation},false,v=>f.preview(a,v.workspaceId,v.operation));
+ register('list_workspace_previews','List your currently valid organization and maintenance-scope previews for review.',{workspaceId:id},true,v=>f.pending(a,v.workspaceId));
+ register('confirm_workspace_change','App review button: confirm exact workspace proposal. Saving a maintenance scope grants automatic additions/updates only within its fields, purpose, source policy and inclusion criteria. Schema expansion needs renewed approval.',{workspaceId:id,previewId:id,digest:z.string().length(64),confirmed:z.literal(true)},false,v=>f.confirm(a,v.workspaceId,v.previewId,v.digest),true);
+ register('discard_workspace_preview','Discard an unsaved workspace proposal.',{workspaceId:id,previewId:id},false,v=>f.discard(a,v.workspaceId,v.previewId));
+ register('list_maintenance_scopes','Read your approved capture scopes. Do not capture passing mentions or full conversations. schemaChanged means stop maintenance and prepare renewed approval.',{workspaceId:id},true,v=>f.scopes(a,v.workspaceId));
+ register('maintain_workspace_records','Apply facts and new records automatically ONLY under an existing active approved scope. Assess semantic inclusion and source policy first; matching column names alone is insufficient. Use read_records/search to reuse candidates. Supply concise sourceLabel and interpretation (including uncertainty), not full messages. No new fields/types or external actions. Preserve source values in immutable observations. UUID requestKey makes retries idempotent; reuse it only for the identical request. Identity links require scope permission and existing same-type records; no destructive merge.',{workspaceId:id,batch:maintenanceBatch},false,v=>f.maintain(a,v.workspaceId,v.batch));
+ register('revoke_maintenance_scope','Stop future automatic capture under this permission.',{workspaceId:id,scopeId:id},false,v=>f.revoke(a,v.workspaceId,v.scopeId));
+ register('read_record_evidence','Read source observations and active/revoked identity links. Requires access to all fields of the record and each linked record. Original records remain individually readable using existing record tools.',{workspaceId:id,recordId:id},true,v=>f.evidence(a,v.workspaceId,v.recordId));
+}

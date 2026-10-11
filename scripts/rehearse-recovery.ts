@@ -1,3 +1,4 @@
+import {WorkspaceFoundation} from '../src/workspace/service.js';
 import {Foundation} from '../src/foundation/service.js';
 // Isolated synthetic engine rehearsal. Does not connect to or claim recovery of Render backups.
 import {PGlite} from '@electric-sql/pglite';
@@ -23,7 +24,13 @@ const original=Buffer.from('Synthetic original retained across backup and restor
 await service.setAi(actor,workspace.id,true);const foundation=new Foundation(db,service);
 const functionPreview=await foundation.prepareFunction(actor,workspace.id,{name:'Synthetic restore function',source:'return input;',scope:{capabilities:[],typeIds:[],documents:false},inputContract:{type:'any',required:[]},outputContract:{type:'any',required:[]}});
 const savedFunction=await foundation.saveFunction(actor,workspace.id,functionPreview.id,functionPreview.digest);
-const tables=['records','document_versions','document_payloads','revisions','audit_events','commit_receipts','jobs','external_links','form_submissions','submission_files','foundation_functions','foundation_revisions','foundation_receipts'];
+const organization=new WorkspaceFoundation(db);
+const projectPreview=await organization.preview(actor,workspace.id,{kind:'create_node',nodeKind:'project',name:'Recovery project'});
+const project=await organization.confirm(actor,workspace.id,projectPreview.id,projectPreview.digest);
+const scopePreview=await organization.preview(actor,workspace.id,{kind:'save_scope',scope:{projectId:project.id,purpose:'Track milestones',inclusionCriteria:'Project milestones',sourcePolicy:'Synthetic authorized input',basis:'tracking',bindings:[{typeId:type.id,fields:['name']}],allowCreate:true,allowUpdate:true}});
+const scope=await organization.confirm(actor,workspace.id,scopePreview.id,scopePreview.digest);
+await organization.maintain(actor,workspace.id,{requestKey:randomUUID(),scopeId:scope.id,expectedScopeVersion:0,sourceLabel:'Synthetic source',interpretation:'New project milestone',changes:[{kind:'create_record',typeId:type.id,data:{name:'Second milestone'}}]});
+const tables=['workspace_nodes','maintenance_scopes','workspace_receipts','identity_links','record_observations','records' ,'document_versions','document_payloads','revisions','audit_events','commit_receipts','jobs','external_links','form_submissions','submission_files','foundation_functions','foundation_revisions','foundation_receipts'];
 async function inventory(conn:Database){const result:Record<string,any>={};for(const table of tables){const rows=(await conn.query(`SELECT * FROM ${table} ORDER BY ${table==='document_payloads'?'version_id':table==='commit_receipts'?'preview_id':'id'}`)).rows;result[table]={count:rows.length,sha256:createHash('sha256').update(JSON.stringify(rows)).digest('hex')};}return result;}
 const before=await inventory(db),archive=await source.dumpDataDir();await source.close();const restoreStarted=Date.now();const restored=new PGlite({loadDataDir:archive}),restoredDb=adapter(restored);await restored.waitReady;const after=await inventory(restoredDb);assert.deepEqual(after,before);
 const restoredService=new Service(restoredDb);assert.deepEqual((await restoredService.original(actor,workspace.id,document.versionId)).bytes,original);assert.equal((await restoredService.records(actor,workspace.id,type.id)).rows[0].data.name,'Reviewed milestone');await assert.rejects(restoredDb.query('DELETE FROM audit_events'));assert.deepEqual(Buffer.from((await restoredDb.query('SELECT bytes FROM submission_files WHERE id=$1',[fileId])).rows[0].bytes),externalBytes);await assert.rejects(restoredDb.query('DELETE FROM submission_files'));

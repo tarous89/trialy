@@ -239,3 +239,12 @@ Documentation-only update; no application behavior or deployment changes.
 - Passing mentions do not create tables/columns or whole-message archives. Explicitly stored original files remain preserved. Scope applies to information available through authorized work, not every ChatGPT conversation.
 - Explicitly requested structure changes require reviewed expansion; approved new fields can be populated from permitted sources and maintained thereafter. Preserve uncertainty, prior facts and reversible reconciliation.
 - Updated active scope, architecture and roadmap, with focused capture-boundary acceptance checks. Existing implemented status and separately proposed interface edit semantics are unchanged.
+
+## Projects and approved maintenance implementation — 2026-10-11
+
+- Added additive migration 017: project/folder nodes, temporary database-backed workspace previews, maintenance scopes, durable receipts, immutable record observations and reversible identity links. No legacy records are deleted.
+- Added shared Projects UI to standalone and embedded clients, separate detail/review screens, drag/drop and explicit moves, setup review and revocation. New project organization requires full workspace access until finer project permissions exist.
+- Maintenance pins approved schema versions, tables, writable fields, operations and batch limit. Atomic writes reuse existing validation/audit/revisions and receipts; schema changes/revocation stop subsequent maintenance. Inclusion/source meaning is judged by ChatGPT, not a deterministic semantic classifier.
+- Identity linking is non-destructive, same-table and reversible. It does not merge query output, rewrite historical relationships or implement general canonical-entity resolution yet.
+- Added REST/MCP tools, source-evidence reads, export/inspection coverage and runtime-role grants. Plugin instruction update 0.2.2 preserves identity, audience, endpoint and default prompt.
+- Basic validation: production build and 33 reported tests passed, including a synthetic capture/identity/permission/rollback scenario. Real ChatGPT UI acceptance remains unverified. Deployment status will be recorded after rollout.

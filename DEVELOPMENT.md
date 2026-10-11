@@ -10,6 +10,12 @@ Not yet complete: a shared cross-import entity layer with reversible reconciliat
 
 Database layering and the common vocabulary are agreed in [README](README.md). [Interface rules](docs/INTERFACE_RULES.md) separates agreed usability direction from the proposed edit-routing policy.
 
+## Implementation checkpoint — 11 October 2026
+
+Added migration 017, project/folder CRUD/moves and shared web/embed Projects UI; durable reviewed maintenance scopes, atomic scoped record writes with receipts and immutable observations; same-table reversible identity links and evidence reads; REST/MCP tools and export coverage. These are partial implementations of steps 1–4 and 6, not completion of the full roadmap. Existing schema tools handle initial table setup separately from scope approval.
+
+Next: saved component source/configuration and isolated UI hosting; shared identity-aware queries/project relationships; granular project sharing; scheduled maintenance integration. Project organization currently requires unrestricted workspace access. Semantic inclusion/source-policy judgment remains ChatGPT's responsibility, with structural/grant/permission enforcement in the backend. See [WORKSPACE_FOUNDATION.md](docs/WORKSPACE_FOUNDATION.md).
+
 ## Ordered implementation steps
 
 ### 1. Define and separate the shared data and component contracts
@@ -32,10 +38,10 @@ Database layering and the common vocabulary are agreed in [README](README.md). [
 
 - [ ] Implement task-driven setup: repeated/multiple-entry tracking or expected reuse qualifies, including one starting record; inspect/reuse first, preview the structure and initial import, then require setup approval.
 - [ ] Implement automatic extraction, qualifying additions and updates under the approved maintenance scope. Do not persist unrelated mentions, new columns or entire communications by default; preserve relevant provenance and explicitly saved originals.
-- [ ] Implement reviewed schema/inclusion-scope expansion and permitted backfill (for example addresses), then ongoing maintenance of newly approved fields. Do not silently broaden sources or fabricate missing values.
+- [x] Implement reviewed schema/inclusion-scope expansion and permitted backfill (for example addresses), then ongoing maintenance of newly approved fields. Do not silently broaden sources or fabricate missing values.
 - [ ] Let ChatGPT propose match/link/merge, preferred-value and conflict decisions, including rationale and source references.
 - [ ] Preserve original entries and alternatives, record accepted decisions, and implement undo/split/correction without losing relationships or audit evidence.
-- [ ] Apply initial confirmed imports or scoped future-maintenance grants atomically with permission/concurrency checks and idempotent receipts.
+- [x] Apply initial confirmed imports or scoped future-maintenance grants atomically with permission/concurrency checks and idempotent receipts.
 - [ ] Keep uncertain alternatives local to facts/entities; do not create whole-database branches. Do not require a rigid matching rulebook or prompt for every minor normalization.
 - [ ] Ensure a merge cannot expose hidden data, infer permissions, or silently retarget an external action.
 
