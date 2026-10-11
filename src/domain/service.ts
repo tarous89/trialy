@@ -1,3 +1,4 @@
+import {fieldChangeQuerySchema,type FieldChangeQuery} from '../shared/schema.js';
 import {requireHuman,setWriteAuthorization,type WriteAuthorization} from './write-authorization.js';
 import {DataService} from './data-service.js';
 import {checksum,audit,revision} from './evidence.js';
@@ -112,7 +113,7 @@ export class Service extends DataService {
   if(op.kind==='save_document'&&op.documentId)await this.documentPermission(tx,a,w,op.documentId);
   if(op.kind==='save_document'&&(!p.document_scope))fail(403,'restricted_documents','Document access for restricted views is not enabled');
   if(op.kind==='create_type'||op.kind==='update_type')formulaOrder(op.fields);
-  if(op.kind==='reverse_field_change')await this.reverseData(tx,a,w,op);
+  if(op.kind==='reverse_field_change'||op.kind==='reverse_field_changes')await this.reverseBatch(tx,a,w,op);
   if(op.kind==='update_type'){const {type}=await typeAccess(tx,a,w,op.typeId,true);if(a.origin==='ai'&&type.fields.some((f:Field)=>!f.ai))fail(403,'restricted_configuration','Edit tables containing model-restricted fields in the standalone application');if(type.version!==op.expectedVersion)fail(409,'stale_version','Table changed; preview again');const populated=Number((await tx.query('SELECT count(*) AS n FROM records WHERE type_id=$1 AND workspace_id=$2',[op.typeId,w])).rows[0].n)>0;if(populated){for(const old of type.fields){const next=op.fields.find(f=>f.key===old.key);if(!next||next.kind!==old.kind||json([next.formula?.operator,next.formula?.fields])!==json([old.formula?.operator,old.formula?.fields])||json(next.options)!==json(old.options)||next.targetTypeId!==old.targetTypeId||(!old.required&&next.required))fail(409,'migration_required','Existing data requires an explicit field migration; use an optional new field instead');}if(op.fields.some(f=>(f.required||f.formula)&&!type.fields.some((old:Field)=>old.key===f.key)))fail(409,'migration_required','New fields on populated tables must be optional');}}
   if(op.kind==='bulk_records'){for(const change of op.changes)await this.validate(tx,a,w,change);}
   if(op.kind==='restore_record')await this.restoreData(tx,a,w,op);
@@ -146,7 +147,7 @@ export class Service extends DataService {
  }
  async fieldDiff(tx:Connection,a:Actor,w:string,op:Operation|FileOperation):Promise<any[]> {
   if(op.kind==='bulk_records')return (await Promise.all(op.changes.map(c=>this.fieldDiff(tx,a,w,c)))).flat();
-  if(op.kind==='reverse_field_change'){const r=await this.reverseData(tx,a,w,op);const {type,policy}=await typeAccess(tx,a,w,r.record.type_id);return visibleFields(type.fields,policy,a).filter(f=>Object.hasOwn(r.record.data,f.key)!==Object.hasOwn(r.data,f.key)||json(r.record.data[f.key])!==json(r.data[f.key])).map(f=>({typeId:r.record.type_id,recordId:r.record.id,field:f.key,label:f.name,derived:!!f.formula,beforePresent:Object.hasOwn(r.record.data,f.key),before:r.record.data[f.key]??null,afterPresent:Object.hasOwn(r.data,f.key),after:r.data[f.key]??null}));}
+  if(op.kind==='reverse_field_change'||op.kind==='reverse_field_changes'){const records=await this.reverseBatch(tx,a,w,op);return (await Promise.all(records.map(async r=>{const {type,policy}=await typeAccess(tx,a,w,r.record.type_id);return visibleFields(type.fields,policy,a).filter(f=>Object.hasOwn(r.record.data,f.key)!==Object.hasOwn(r.data,f.key)||json(r.record.data[f.key])!==json(r.data[f.key])).map(f=>({typeId:r.record.type_id,recordId:r.record.id,field:f.key,label:f.name,derived:!!f.formula,beforePresent:Object.hasOwn(r.record.data,f.key),before:r.record.data[f.key]??null,afterPresent:Object.hasOwn(r.data,f.key),after:r.data[f.key]??null}));}))).flat();}
   if(op.kind!=='create_record'&&op.kind!=='update_record'&&op.kind!=='restore_record')return [];
   const record=op.kind==='create_record'?null:(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[op.recordId,w])).rows[0];
   const typeId=op.kind==='create_record'?op.typeId:record.type_id;
@@ -163,18 +164,30 @@ export class Service extends DataService {
   const result=[];for(const r of rows){if(!r.summary)continue;if(r.schema_fingerprint&&r.schema_fingerprint!==checksum(json((await this.db.query('SELECT id,version FROM entity_types WHERE workspace_id=$1 ORDER BY id',[w])).rows)))continue;try{await this.validate(this.db,a,w,r.body.kind==='save_document'?{...r.body,bytes:Buffer.alloc(1)}:r.body);result.push({id:r.id,digest:r.digest,summary:r.summary,workspaceId:w,status:'preview',expiresAt:r.expires_at});}catch{}}
   return result;
  }
- private async reverseData(tx:Connection,a:Actor,w:string,op:Extract<Operation,{kind:'reverse_field_change'}>){
-  const change=(await tx.query('SELECT * FROM record_field_changes WHERE id=$1 AND workspace_id=$2',[op.changeId,w])).rows[0];if(!change)fail(404,'not_found','Change not found');
-  const {type,policy}=await typeAccess(tx,a,w,change.type_id,true);const f=visibleFields(type.fields,policy,a).find(f=>f.key===change.field_key);if(!f||f.formula)fail(403,'field_scope','This field cannot be reversed directly');
-  const record=(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[change.record_id,w])).rows[0];
-  if(record.version!==op.expectedVersion||record.version!==change.record_version)fail(409,'stale_version','Later changes exist. Prepare an explicit correction instead.');
-  if(['archived','superseded','approved'].includes(record.state))fail(409,'controlled_record','This record requires a reviewed revision');
-  const data={...record.data};if(change.before_present)data[change.field_key]=change.before_value;else delete data[change.field_key];
-  await this.validateData(tx,a,w,type,policy,data,false,record.id);return {record,change,data:calculate(type.fields,data)};
+ private async reverseBatch(tx:Connection,a:Actor,w:string,op:Extract<Operation,{kind:'reverse_field_change'|'reverse_field_changes'}>){
+  const entries=op.kind==='reverse_field_change'?[op]:op.changes;
+  if(new Set(entries.map(e=>e.changeId)).size!==entries.length)fail(400,'duplicate_change','Select each change only once');
+  const grouped=new Map<string,{record:any;data:any;changeIds:string[];keys:Set<string>}>();
+  for(const entry of entries){
+   const change=(await tx.query('SELECT * FROM record_field_changes WHERE id=$1 AND workspace_id=$2',[entry.changeId,w])).rows[0];if(!change)fail(404,'not_found','Change not found');
+   const {type,policy}=await typeAccess(tx,a,w,change.type_id,true);const f=visibleFields(type.fields,policy,a).find(f=>f.key===change.field_key);if(!f||f.formula)fail(403,'field_scope','This field cannot be reversed directly');
+   let group=grouped.get(change.record_id);
+   if(!group){const record=(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[change.record_id,w])).rows[0];group={record,data:{...record.data},changeIds:[],keys:new Set()};grouped.set(record.id,group);}
+   const {record}=group;
+   if(record.version!==entry.expectedVersion||record.version!==change.record_version)fail(409,'stale_version','Later changes exist. Prepare an explicit correction instead.');
+   if(['archived','superseded','approved'].includes(record.state))fail(409,'controlled_record','This record requires a reviewed revision');
+   if(group.keys.has(change.field_key))fail(400,'duplicate_field','Select only one change per field');
+   group.keys.add(change.field_key);group.changeIds.push(change.id);
+   if(change.before_present)group.data[change.field_key]=change.before_value;else delete group.data[change.field_key];
+  }
+  // Compose all selected fields first, then validate the resulting records before any write.
+  for(const g of grouped.values()){const {type,policy}=await typeAccess(tx,a,w,g.record.type_id,true);await this.validateData(tx,a,w,type,policy,g.data,false,g.record.id);g.data=calculate(type.fields,g.data);}
+  return [...grouped.values()];
  }
- async fieldChanges(a:Actor,w:string,query:{typeId?:string;recordId?:string;offset?:number}={}){
-  await access(this.db,a,w);const offset=query.offset??0;
-  const rows=(await this.db.query('SELECT * FROM record_field_changes WHERE workspace_id=$1 AND ($2::uuid IS NULL OR type_id=$2) AND ($3::uuid IS NULL OR record_id=$3) ORDER BY created_at DESC,id DESC LIMIT 100 OFFSET $4',[w,query.typeId??null,query.recordId??null,offset])).rows;
+ async fieldChanges(a:Actor,w:string,query:Partial<FieldChangeQuery>={}){
+  query=fieldChangeQuerySchema.parse(query);await access(this.db,a,w);const offset=query.offset??0;
+  if(query.since&&query.until&&query.since>query.until)fail(400,'date_range','Start must precede end');
+  const rows=(await this.db.query(`SELECT * FROM record_field_changes WHERE workspace_id=$1 AND ($2::uuid IS NULL OR type_id=$2) AND ($3::uuid IS NULL OR record_id=$3) AND ($5::uuid IS NULL OR actor_id=$5) AND ($6::text IS NULL OR "authorization"->>'id'=$6) AND ($7::text IS NULL OR coalesce("authorization"->>'kind','unattributed')=$7) AND ($8::timestamptz IS NULL OR created_at >= $8) AND ($9::timestamptz IS NULL OR created_at <= $9) AND ($10::text IS NULL OR "authorization"->>'changeSetId'=$10) ORDER BY created_at DESC,id DESC LIMIT 100 OFFSET $4`,[w,query.typeId??null,query.recordId??null,offset,query.actorId??null,query.authorizationId??null,query.authorizationKind??null,query.since??null,query.until??null,query.changeSetId??null])).rows;
   const visible=[];for(const r of rows){try{const {type,policy}=await typeAccess(this.db,a,w,r.type_id);const field=visibleFields(type.fields,policy,a).find(f=>f.key===r.field_key);if(!field&&!(a.origin==='human'&&policy.role==='owner'&&!type.fields.some((f:Field)=>f.key===r.field_key)))continue;visible.push({...r,typeName:type.name,fieldName:field?.name??r.field_key,derived:!!field?.formula});}catch{}}
   return {changes:visible,nextOffset:rows.length===100?offset+100:null};
  }
@@ -185,7 +198,7 @@ export class Service extends DataService {
   return this.prepare(a,w,{kind:'save_document',...input});
  }
  private async prepare(a:Actor,w:string,op:Operation|FileOperation) {
-  const schemaFingerprint=['create_record','update_record','bulk_records','accept_submission','upgrade_template','adopt_template'].includes(op.kind)?checksum(json((await this.db.query('SELECT id,version FROM entity_types WHERE workspace_id=$1 ORDER BY id',[w])).rows)):undefined;
+  const schemaFingerprint=['create_record','update_record','bulk_records','accept_submission','upgrade_template','adopt_template','reverse_field_change','reverse_field_changes'].includes(op.kind)?checksum(json((await this.db.query('SELECT id,version FROM entity_types WHERE workspace_id=$1 ORDER BY id',[w])).rows)):undefined;
   await this.validate(this.db,a,w,op);await this.sweep();
   let summary:any=op.kind==='restore_record'?{...op,...await this.restoreData(this.db,a,w,op)}:op.kind==='save_document'?{...op,bytes:undefined,byteSize:op.bytes.length,checksum:checksum(op.bytes)}:op;
   if(op.kind==='create_record'||op.kind==='update_record'||op.kind==='accept_submission'){
@@ -231,7 +244,7 @@ export class Service extends DataService {
    if(p.schemaFingerprint&&p.schemaFingerprint!==checksum(json((await tx.query('SELECT id,version FROM entity_types WHERE workspace_id=$1 ORDER BY id',[p.workspaceId])).rows)))fail(409,'stale_version','Table configuration changed. Prepare the preview again.');
    const policy=await this.validate(tx,a,p.workspaceId,p.operation);
    if(p.operation.kind==='migrate_type'&&p.migrationFingerprint!==(await this.migrationData(tx,a,p.workspaceId,p.operation)).fingerprint)fail(409,'stale_version','Records changed since migration preview');
-   await setWriteAuthorization(tx,a,authorization??{kind:'approval',id,digest,context:'data_preview',...(p.operation.kind==='reverse_field_change'?{reverses:p.operation.changeId}:{})});
+   await setWriteAuthorization(tx,a,{...(authorization??{kind:'approval',id,digest,context:'data_preview'}),changeSetId:id,...(p.operation.kind==='reverse_field_change'?{reverses:p.operation.changeId}:p.operation.kind==='reverse_field_changes'?{reverses:p.operation.changes.map(c=>c.changeId)}:{})});
    const objects=await this.apply(tx,a,p.workspaceId,p.operation,policy);
    const result={status:'saved',previewId:id,objects,savedAt:new Date().toISOString()};
    await tx.query('INSERT INTO commit_receipts(preview_id,actor_id,workspace_id,digest,result) VALUES($1,$2,$3,$4,$5)',[id,a.userId,p.workspaceId,digest,json(result)]);
@@ -296,10 +309,12 @@ export class Service extends DataService {
    else await tx.query('INSERT INTO records(id,type_id,workspace_id,data) VALUES($1,$2,$3,$4)',[id,op.kind==='create_record'?op.typeId:null,w,json(data)]);
    await revision(tx,a,w,id,'record',version,{data,state});await audit(tx,a,p,before?'record.updated':'record.created',id,before?{data:before.data,state:before.state}:null,{data,state},op.kind==='update_record'?op.reason:undefined);return [{id,kind:'record',version}];
   }
-  if(op.kind==='reverse_field_change'){
-   const {record,data}=await this.reverseData(tx,a,w,op);const version=record.version+1;
-   await tx.query('UPDATE records SET data=$1,version=$2,updated_at=now() WHERE id=$3',[json(data),version,record.id]);
-   await revision(tx,a,w,record.id,'record',version,{data,state:record.state});await audit(tx,a,p,'record.reversed',record.id,{data:record.data},{data,changeId:op.changeId},op.reason);return [{id:record.id,kind:'record',version}];
+  if(op.kind==='reverse_field_change'||op.kind==='reverse_field_changes'){
+   const groups=await this.reverseBatch(tx,a,w,op),objects=[];
+   for(const {record,data,changeIds} of groups){const version=record.version+1;
+    await tx.query('UPDATE records SET data=$1,version=$2,updated_at=now() WHERE id=$3',[json(data),version,record.id]);
+    await revision(tx,a,w,record.id,'record',version,{data,state:record.state});await audit(tx,a,p,'record.reversed',record.id,{data:record.data},{data,changeIds},op.reason);objects.push({id:record.id,kind:'record',version});
+   }return objects;
   }
   if(op.kind==='restore_record'){
    const restored=await this.restoreData(tx,a,w,op);

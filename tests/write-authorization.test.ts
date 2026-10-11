@@ -60,14 +60,59 @@ test('Approval default, single-type standing permission, per-field evidence and 
   const componentDraft=await f.preview(a,ew.id,{kind:'save_component',projectId:eproject.id,content:{name:'Runnable code',format:'frontend-js',source:'return {html:"<p>Ready</p>"};',execution:[{name:'echo',revisionId:echo.revisionId}]}});
   const component=await f.confirm(a,ew.id,componentDraft.id,componentDraft.digest);
   const run=await f.invokeComponent(ai,ew.id,{componentId:component.id,expectedVersion:0,binding:'echo',input:{test:42},requestKey:randomUUID()});await runFoundation(db);assert.deepEqual((await engine.run(a,ew.id,run.id)).result,{test:42});
+  const staleCopy=await f.preview(ai,ew.id,{kind:'copy_component',sourceComponentId:component.id,expectedVersion:0,projectId:eproject.id,name:'Stale copy'});
   const archive=await f.preview(a,ew.id,{kind:'archive_component',componentId:component.id,expectedVersion:0,archived:true});await f.confirm(a,ew.id,archive.id,archive.digest);
+  await assert.rejects(f.confirm(a,ew.id,staleCopy.id,staleCopy.digest),/Source component changed/);
   await assert.rejects(engine.run(ai,ew.id,run.id),/Component changed/);
   await assert.rejects(f.invokeComponent(ai,ew.id,{componentId:component.id,expectedVersion:0,binding:'echo',input:null,requestKey:randomUUID()}),/current component/);
   const duplicateKey=randomUUID();
   const source=`tools.call('functions.invoke',{binding:'echo',requestKey:'${duplicateKey}',input:1});tools.call('functions.invoke',{binding:'echo',requestKey:'${duplicateKey}',input:2});return {html:'<p>Test</p>'};`;
   const atomicDraft=await f.preview(a,ew.id,{kind:'save_component',projectId:eproject.id,content:{name:'Atomic requests',format:'frontend-js',source,execution:[{name:'echo',revisionId:echo.revisionId}]}});const atomic=await f.confirm(a,ew.id,atomicDraft.id,atomicDraft.digest);
   await assert.rejects(f.runFrontend(ai,ew.id,{componentId:atomic.id,expectedVersion:0}));assert.equal((await db.query('SELECT id FROM foundation_runs WHERE request_key=$1',[duplicateKey])).rows.length,0);
+  const destDraft=await f.preview(a,ew.id,{kind:'create_node',nodeKind:'project',name:'Copies'});const dest=await f.confirm(a,ew.id,destDraft.id,destDraft.digest);
+  const restrict=await f.preview(a,ew.id,{kind:'set_project_access',nodeId:eproject.id,expectedVersion:0,allowedUsers:[a.userId],ai:false});await f.confirm(a,ew.id,restrict.id,restrict.digest);
+  const copyOp={kind:'copy_component',sourceComponentId:component.id,expectedVersion:1,projectId:dest.id,name:'Independent copy'};
+  await assert.rejects(f.preview(ai,ew.id,copyOp),/not found/);
+  const copyPreview=await f.preview(a,ew.id,copyOp);assert.deepEqual(copyPreview.componentCopy?.execution,[]);assert.equal(copyPreview.componentCopy?.ai_enabled,false);
+  const copy=await f.confirm(a,ew.id,copyPreview.id,copyPreview.digest);assert.notEqual(copy.id,component.id);assert.equal(copy.version,0);
+  const copied=await f.component(db,a,ew.id,copy.id);assert.deepEqual(copied.execution,[]);assert.deepEqual(copied.allowed_users,[a.userId]);assert.equal(copied.archived,false);assert.equal(copied.ai_enabled,false);assert.equal(copied.source,'return {html:"<p>Ready</p>"};');
+  await assert.rejects(f.component(db,ai,ew.id,copy.id),/not found/);
+  assert.deepEqual(await f.confirm(a,ew.id,copyPreview.id,copyPreview.digest),copy);
   const control=await engine.prepareControl(ai,w.id,'grant',{revisionId:fn.revisionId,typeIds:[cleanType],maxChanges:2,future:true});await assert.rejects(engine.confirmControl(ai,w.id,control.id,control.digest),/cannot approve/);const g=await engine.confirmControl(a,w.id,control.id,control.digest);assert.equal(g.fields[0],'name');assert.deepEqual(await engine.confirmControl(a,w.id,control.id,control.digest),g);
   assert.ok((await s.exportWorkspace(a,w.id)).record_field_changes.length>0);
+ }finally{await pg.close();}
+});
+
+test('Selected reversal is atomic, groups fields per record, and retains filtered authorization evidence',async()=>{
+ const pg=new PGlite();try{
+  for(const f of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+f,'utf8'));
+  const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
+  const a:Actor={userId:randomUUID(),origin:'human'},ai:Actor={...a,origin:'ai'};
+  await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[a.userId,a.userId,'batch@example.invalid','Tester']);
+  const s=new Service(db),w=await s.createWorkspace(a,'Batch reversal');await s.setAi(a,w.id,true);
+  const save=async(op:any)=>{const p=await s.preview(a,w.id,op);return s.commit(a,p.id,p.digest);};
+  const typeId=(await save({kind:'create_type',name:'Values',fields:[{key:'name',name:'Name',kind:'text'},{key:'note',name:'Note',kind:'text'},{key:'secret',name:'Secret',kind:'text',ai:false}]})).objects[0].id;
+  const first=(await save({kind:'create_record',typeId,data:{name:'First',note:'Old',secret:'Private'}})).objects[0].id;
+  const second=(await save({kind:'create_record',typeId,data:{name:'Second'}})).objects[0].id;
+  const update=await save({kind:'bulk_records',changes:[{kind:'update_record',recordId:first,expectedVersion:0,data:{name:'Changed',note:'New',secret:'New private'}},{kind:'update_record',recordId:second,expectedVersion:0,data:{name:'Also changed'}}]});
+  const query={changeSetId:update.previewId};const all=(await s.fieldChanges(a,w.id,query)).changes;assert.equal(all.length,4);
+  assert.equal((await s.fieldChanges(ai,w.id,query)).changes.length,3);
+  assert.equal((await s.fieldChanges(a,w.id,{...query,actorId:randomUUID()})).changes.length,0);
+  assert.equal((await s.fieldChanges(a,w.id,{...query,authorizationKind:'maintenance_grant'})).changes.length,0);
+  assert.equal((await s.fieldChanges(a,w.id,{...query,since:'2100-01-01T00:00:00.000Z'})).changes.length,0);
+  const operation={kind:'reverse_field_changes',changes:all.map(c=>({changeId:c.id,expectedVersion:c.record_version})),reason:'Undo reviewed batch'};
+  await assert.rejects(s.preview(ai,w.id,operation),/cannot be reversed/);
+  await assert.rejects(s.preview(a,w.id,{...operation,changes:[operation.changes[0],operation.changes[0]]}),/only once/);
+  const preview=await s.preview(a,w.id,operation);assert.equal(preview.summary.fieldChanges.length,4);
+  await assert.rejects(s.commit(ai,preview.id,preview.digest),/cannot approve/);
+  const undone=await s.commit(a,preview.id,preview.digest);assert.equal(undone.objects.length,2);assert.ok(undone.objects.every((o:any)=>o.version===2));
+  assert.deepEqual(await s.commit(a,preview.id,preview.digest),undone);
+  const records=(await s.records(a,w.id,typeId)).rows;assert.equal(records.find(r=>r.id===first).data.note,'Old');assert.equal(records.find(r=>r.id===second).data.name,'Second');
+  const ledger=(await s.fieldChanges(a,w.id,{changeSetId:preview.id})).changes;assert.equal(ledger.length,4);assert.deepEqual(new Set(ledger[0].authorization.reverses),new Set(all.map(c=>c.id)));
+  const stale=await s.preview(a,w.id,{...operation,changes:ledger.map(c=>({changeId:c.id,expectedVersion:2}))});
+  await save({kind:'update_record',recordId:second,expectedVersion:2,data:{name:'Later work'}});
+  await assert.rejects(s.commit(a,stale.id,stale.digest),/Later changes/);
+  assert.equal((await s.records(a,w.id,typeId)).rows.find(r=>r.id===first).version,2);
+  assert.equal((await s.fieldChanges(a,w.id,{changeSetId:stale.id})).changes.length,0);
  }finally{await pg.close();}
 });

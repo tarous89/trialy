@@ -28,9 +28,9 @@ Implemented the core [write authorization and field-change history contract](doc
 
 1. Complete broader shared-data semantics: platform project relationships, contextual/historical facts, preferred-value decisions and schema-semantic reconciliation. Accepted same-table identity groups, candidate search, preserved conflicts and references are now readable.
 2. Finish setup/capture orchestration and reviewed backfill around the implemented task scopes. Default writes require approval; type-specific standing permission is explicit and expiring.
-3. Finish component organization (search, project/folder archive, fork/assets), partial-data component access and external collection/sharing. Exact function attachment, generic run/status/cancel and component-aware worker/schedule enforcement are implemented.
+3. Finish component organization (project/folder archive and assets; name search and reviewed component copies are implemented), partial-data component access and external collection/sharing. Exact function attachment, generic run/status/cancel and component-aware worker/schedule enforcement are implemented.
 4. Extend the generated-code bridge for files/providers and richer application hosting as needed. Validate current HTML/CSS/event hosting in the real ChatGPT/browser environment; unmodified React/npm apps remain unsupported.
-5. Finish selected change-set reversal/creation archival and richer history filtering. Individual current-field reversal is implemented; later edits require explicit correction. Embedded approval currently uses a secure standalone handoff.
+5. Finish safe creation archival. Selected field-batch reversal, saved-batch lookup and actor/date/record/authorization filters are implemented; later edits require explicit correction. Embedded approval currently uses a secure standalone handoff.
 6. Add the first external provider after provider/account selection, with scoped credentials, effect previews and duplicate-effect handling. Electronic signatures remain conditional on provider requirements/cost.
 7. Finish restricted production credentials, monitoring and actual managed-backup recovery after retention/recovery decisions. Complete the real-host end-to-end journey before customer reliance/public publication.
 
@@ -44,7 +44,8 @@ These are remaining capabilities, not releases. Broad unchecked items below can 
 - [x] Persist every committed record-data field delta and its approval/grant reference atomically with the write/receipt, including derived changes and AI/code/worker attribution. Expose completed changes under grants as well as individually approved changes; enforce current permissions on historical values.
 - [x] Add a fixed Changes and permissions area for pending reviews, saved field changes and grant management, shared by web and embedded workspace. Include filtering and source/authorization detail without exposing human-only data to ChatGPT.
 - [x] Implement reviewed individual current-field reversal as a new audited transaction.
-- [ ] Extend reversal to selected change sets and safe record-creation archival. Preserve original history, detect later edits/dependencies and reject unsafe overwrites. Do not imply reversal of external actions.
+- [x] Extend reversal to selected fields across records with atomic reviewed correction, per-record version checks and saved-batch/actor/date/record/authorization history filters.
+- [ ] Add safe record-creation archival. Preserve original history, detect later edits/dependencies and reject unsafe overwrites. Do not imply reversal of external actions.
 - [x] Run focused backend checks for approval enforcement, type/field scope, expiry/revocation, atomic evidence, hidden-value protection, idempotency and safe reversal.
 - [ ] Verify actual approval UI and code hosting in ChatGPT when host testing is available.
 

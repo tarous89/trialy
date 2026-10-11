@@ -9,7 +9,7 @@ import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 import { z, ZodError } from 'zod';
 import { randomUUID } from 'node:crypto';
-import { AppError, id, recordQuerySchema } from '../shared/schema.js';
+import { AppError, id, recordQuerySchema, fieldChangeQuerySchema } from '../shared/schema.js';
 import { Service } from '../domain/service.js';
 import {inspectionHtml} from '../domain/inspection.js';
 import { templates } from '../domain/templates.js';
@@ -44,7 +44,7 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  app.get('/api/workspaces/:workspaceId/types/:typeId/aggregate',async(req,res)=>res.json(await s.aggregate(req.actor!,String(req.params.workspaceId),id.parse(req.params.typeId),recordQuerySchema.extend({groupBy:z.string().optional(),metric:z.string().optional()}).parse(req.query))));
  app.get('/api/workspaces/:workspaceId/views',async(req,res)=>res.json(await s.views(req.actor!,String(req.params.workspaceId))));
  app.get('/api/workspaces/:workspaceId/previews',async(req,res)=>res.json(await s.pendingChanges(req.actor!,id.parse(req.params.workspaceId))));
- app.get('/api/workspaces/:workspaceId/field-changes',async(req,res)=>res.json(await s.fieldChanges(req.actor!,id.parse(req.params.workspaceId),z.object({typeId:id.optional(),recordId:id.optional(),offset:z.coerce.number().int().min(0).default(0)}).parse(req.query))));
+ app.get('/api/workspaces/:workspaceId/field-changes',async(req,res)=>res.json(await s.fieldChanges(req.actor!,id.parse(req.params.workspaceId),fieldChangeQuerySchema.parse(req.query))));
  app.post('/api/workspaces/:workspaceId/previews',async(req,res)=>res.status(201).json(await s.preview(req.actor!,String(req.params.workspaceId),req.body)));
  app.post('/api/previews/:previewId/commit',async(req,res)=>{const body=z.object({digest:z.string().length(64),confirmed:z.literal(true)}).parse(req.body);res.json(await s.commit(req.actor!,id.parse(req.params.previewId),body.digest));});
  app.delete('/api/previews/:previewId',async(req,res)=>res.json(await s.discard(req.actor!,id.parse(req.params.previewId))));

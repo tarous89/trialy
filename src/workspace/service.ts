@@ -156,8 +156,17 @@ export class WorkspaceFoundation {
   const types=[];for(const b of body.bindings){const {type,policy}=await typeAccess(tx,a,w,b.typeId,true);const fields=visibleFields(type.fields,policy,a);if(new Set(b.fields).size!==b.fields.length||b.fields.some(k=>!fields.some(f=>f.key===k&&!f.formula)))fail(403,'field_scope','Scope includes unavailable or calculated fields');types.push({id:type.id,version:type.version,fields:type.fields});}
   const restricted=chain.filter(n=>n.allowed_users!==null||!n.ai_enabled);return checksum(J(restricted.length?{types,access:restricted.map(n=>({id:n.id,users:n.allowed_users,ai:n.ai_enabled}))}:types));
  }
+ private async componentCopy(tx:Connection,a:Actor,w:string,op:Extract<WorkspaceOperation,{kind:'copy_component'}>){
+  const source=await this.component(tx,a,w,op.sourceComponentId);
+  if(source.version!==op.expectedVersion)fail(409,'stale_version','Source component changed; prepare a new copy');
+  if(source.format==='trialy-ui')fail(400,'legacy_format','Create frontend-js code instead of copying the legacy renderer');
+  const project=(await this.nodeAccess(tx,a,w,op.projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');
+  const keep=await this.moveRestrictions(tx,a,w,source.project_id,source);
+  return {name:op.name,format:source.format,source:source.source,bindings:source.bindings,execution:[],allowed_users:keep.users,ai_enabled:keep.ai,archived:false,copiedFrom:{componentId:source.id,version:source.version}};
+ }
  private async validate(tx:Connection,a:Actor,w:string,op:WorkspaceOperation){
   await this.policy(tx,a,w,true);
+  if(op.kind==='copy_component')await this.componentCopy(tx,a,w,op);
   if(op.kind==='apply_maintenance'){const scope=await this.scope(tx,a,w,op.batch.scopeId);if(scope.revoked_at||scope.version!==op.batch.expectedScopeVersion)fail(409,'scope_changed','Maintenance scope changed');if(scope.schema_stamp!==await this.scopeStamp(tx,{...a,origin:'ai'},w,maintenanceSchema.parse(scope.body)))fail(409,'schema_changed','Scope requires renewed review');}
   if(op.kind==='create_node'){await this.parent(tx,w,op.parentId);if(op.parentId)await this.nodeAccess(tx,a,w,op.parentId);}
   if(op.kind==='move_node'||op.kind==='rename_node'){const n=(await this.nodeAccess(tx,a,w,op.nodeId))[0];if(n.version!==op.expectedVersion)fail(409,'stale_version','Project or folder changed');if(op.kind==='move_node'){await this.parent(tx,w,op.parentId,op.nodeId);if(op.parentId)await this.nodeAccess(tx,a,w,op.parentId);}}
@@ -227,10 +236,10 @@ export class WorkspaceFoundation {
   await this.db.query('DELETE FROM workspace_previews WHERE expires_at<now()');
   const n=Number((await this.db.query('SELECT count(*) AS n FROM workspace_previews WHERE user_id=$1',[a.userId])).rows[0].n);if(n>=50)fail(429,'preview_limit','Too many pending previews');
   const schemaStamp=body.kind==='save_scope'?await this.scopeStamp(this.db,{...a,origin:'ai'},w,body.scope):null;
-  const fieldChanges=await this.previewFieldChanges(a,w,body);const accessStamp=await this.accessStamp(this.db,w);const envelope={operation:body,schemaStamp,accessStamp,fieldChanges};const draft={id:randomUUID(),workspaceId:w,workspaceFoundation:true,temporary:true,body,fieldChanges,digest:checksum(J(envelope))};
+  const fieldChanges=await this.previewFieldChanges(a,w,body);const accessStamp=await this.accessStamp(this.db,w);const componentCopy=body.kind==='copy_component'?await this.componentCopy(this.db,a,w,body):undefined;const envelope={operation:body,schemaStamp,accessStamp,fieldChanges,componentCopy};const draft={id:randomUUID(),workspaceId:w,workspaceFoundation:true,temporary:true,body,fieldChanges,componentCopy,digest:checksum(J(envelope))};
   await this.db.query('INSERT INTO workspace_previews(id,workspace_id,user_id,body,digest) VALUES($1,$2,$3,$4,$5)',[draft.id,w,a.userId,J(envelope),draft.digest]);return draft;
  }
- async pending(a:Actor,w:string){await this.policy(this.db,a,w);const rows=(await this.db.query('SELECT * FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND expires_at>now() ORDER BY expires_at',[w,a.userId])).rows;const visible=[];for(const r of rows){try{await this.validate(this.db,a,w,r.body.operation);visible.push({id:r.id,workspaceId:w,workspaceFoundation:true,body:r.body.operation,fieldChanges:r.body.fieldChanges??[],digest:r.digest,expiresAt:r.expires_at});}catch{}}return visible;}
+ async pending(a:Actor,w:string){await this.policy(this.db,a,w);const rows=(await this.db.query('SELECT * FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND expires_at>now() ORDER BY expires_at',[w,a.userId])).rows;const visible=[];for(const r of rows){try{await this.validate(this.db,a,w,r.body.operation);visible.push({id:r.id,workspaceId:w,workspaceFoundation:true,body:r.body.operation,componentCopy:r.body.componentCopy,fieldChanges:r.body.fieldChanges??[],digest:r.digest,expiresAt:r.expires_at});}catch{}}return visible;}
  async discard(a:Actor,w:string,id:string){await this.policy(this.db,a,w);await this.db.query('DELETE FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[id,w,a.userId]);return {discarded:true};}
  private async replay(tx:Connection,a:Actor,w:string,id:string,digest:string){const r=(await tx.query('SELECT * FROM workspace_receipts WHERE id=$1',[id])).rows[0];if(r){if(r.user_id!==a.userId||r.workspace_id!==w||r.digest!==digest)fail(409,'receipt_conflict','Request does not match its saved receipt');return r.result;}}
  async confirm(a:Actor,w:string,id:string,digest:string){requireHuman(a);return this.db.transaction(async tx=>{
@@ -240,6 +249,7 @@ export class WorkspaceFoundation {
   if(draft.body.accessStamp!==await this.accessStamp(tx,w))fail(409,'access_changed','Project access or organization changed; prepare a new preview');
   if(op.kind==='save_scope'&&draft.body.schemaStamp!==await this.scopeStamp(tx,{...a,origin:'ai'},w,op.scope))fail(409,'schema_changed','Schema changed; prepare scope again');
   if(draft.body.fieldChanges&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.fieldChanges),J(await new WorkspaceFoundation(adapter(tx)).previewFieldChanges(a,w,op))])).rows[0].same)fail(409,'stale_version','Field changes differ; prepare again');
+  if(op.kind==='copy_component'&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.componentCopy),J(await this.componentCopy(tx,a,w,op))])).rows[0].same)fail(409,'stale_version','Copy contents changed; prepare again');
   const result=await this.apply(tx,a,w,p,op,{kind:'approval',id,digest,context:'workspace_preview'});await tx.query('INSERT INTO workspace_receipts(id,workspace_id,user_id,digest,result) VALUES($1,$2,$3,$4,$5)',[id,w,a.userId,digest,J(result)]);await tx.query('DELETE FROM workspace_previews WHERE id=$1',[id]);return result;
  });}
  private async apply(tx:Connection,a:Actor,w:string,p:any,op:WorkspaceOperation,authorization?:WriteAuthorization):Promise<any>{
@@ -255,6 +265,10 @@ export class WorkspaceFoundation {
   }
   let objectId:string=randomUUID(),version=0,before:any=null,after:any;
   if(op.kind==='create_node'){after={id:objectId,kind:op.nodeKind,name:op.name,parent_id:op.parentId,version};await tx.query('INSERT INTO workspace_nodes(id,workspace_id,kind,name,parent_id) VALUES($1,$2,$3,$4,$5)',[objectId,w,op.nodeKind,op.name,op.parentId]);}
+  else if(op.kind==='copy_component'){
+   const content=await this.componentCopy(tx,a,w,op);after={...content,id:objectId,workspace_id:w,project_id:op.projectId,version};
+   await tx.query('INSERT INTO workspace_components(id,workspace_id,project_id,name,format,source,bindings,created_by,execution,allowed_users,ai_enabled) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',[objectId,w,op.projectId,content.name,content.format,content.source,J(content.bindings),a.userId,J([]),content.allowed_users===null?null:J(content.allowed_users),content.ai_enabled]);
+  }
   else if(op.kind==='set_project_access'||op.kind==='set_component_access'){
    const table=op.kind==='set_project_access'?'workspace_nodes':'workspace_components';objectId=op.kind==='set_project_access'?op.nodeId:op.componentId;
    before=(await tx.query(`SELECT * FROM ${table} WHERE id=$1 AND workspace_id=$2`,[objectId,w])).rows[0];version=before.version+1;after={...before,allowed_users:op.allowedUsers,ai_enabled:op.ai,version};

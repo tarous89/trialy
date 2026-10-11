@@ -9,7 +9,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { z } from 'zod';
 import type { Service } from '../domain/service.js';
-import { operationSchema, recordQuerySchema, id, AppError } from '../shared/schema.js';
+import { operationSchema, recordQuerySchema, fieldChangeQuerySchema, id, AppError } from '../shared/schema.js';
 export function addMcp(app:Express,s:Service,authenticate:RequestHandler) {
  app.post('/mcp',authenticate,async(req,res)=>{
   const actor=req.actor!;const server=new McpServer({name:'trialy',version:'0.1.0'});
@@ -19,7 +19,7 @@ export function addMcp(app:Express,s:Service,authenticate:RequestHandler) {
   const safe=(fn:(v:any)=>Promise<any>)=>async(v:any)=>{try{return result(await fn(v));}catch(e){return {isError:true,content:[{type:'text' as const,text:e instanceof AppError?e.message:'The action could not complete. Check its status before retrying.'}]};}};
   server.registerTool('approval_portal',{description:'Open the authenticated human review surface. A model cannot approve its own proposal. No data is saved by opening this link.',inputSchema:{workspaceId:id.optional()},annotations:{readOnlyHint:true}},safe(async v=>({url:new URL('/?tab=changes'+(v.workspaceId?'&workspaceId='+encodeURIComponent(v.workspaceId):''),process.env.PUBLIC_URL??'https://trialy-web.onrender.com').href})));
   server.registerTool('list_pending_changes',{description:'List your visible pending data/file reviews; these are not saved records.',inputSchema:{workspaceId:id},annotations:{readOnlyHint:true},_meta:metadata},safe(v=>s.pendingChanges(actor,v.workspaceId)));
-  server.registerTool('list_field_changes',{description:'Read immutable field-level before/after changes with their authorization. Current field permissions apply.',inputSchema:{workspaceId:id,typeId:id.optional(),recordId:id.optional(),offset:z.number().int().min(0).default(0)},annotations:{readOnlyHint:true},_meta:metadata},safe(v=>s.fieldChanges(actor,v.workspaceId,v)));
+  server.registerTool('list_field_changes',{description:'Read immutable field-level before/after changes with their authorization. Current field permissions apply.',inputSchema:{workspaceId:id,...fieldChangeQuerySchema.shape},annotations:{readOnlyHint:true},_meta:metadata},safe(v=>s.fieldChanges(actor,v.workspaceId,v)));
   addWorkspaceMcp(server,new WorkspaceFoundation(s.db),actor,safe,metadata);
   addFoundationMcp(server,new Foundation(s.db,s),actor,safe,metadata);
   server.registerResource('workspace',resource,{mimeType:'text/html;profile=mcp-app'},async()=>({contents:[{uri:resource,mimeType:'text/html;profile=mcp-app',text:await readFile(new URL('../../dist/embed.html',import.meta.url),'utf8'),_meta:{ui:{prefersBorder:true,csp:{connectDomains:[],resourceDomains:[],frameDomains:[new URL(process.env.PUBLIC_URL??process.env.RENDER_EXTERNAL_URL??'http://localhost:3000').origin]}},'openai/widgetDescription':'The Trialy workspace: data, code, functions and confirmed saves inside ChatGPT.','openai/ui':{availableDisplayModes:['inline','fullscreen'],preferredDisplayMode:'fullscreen'}}}]}));

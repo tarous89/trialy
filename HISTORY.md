@@ -300,3 +300,13 @@ Saved components now declare exact owned function bindings and optional existing
 Production build, all 38 reported tests, the focused duplicate-run admission rollback check, and isolated synthetic backup/restore passed for this checkpoint. Real browser/ChatGPT acceptance and managed production backup restore remain unverified.
 
 Deployment: `f79f269` is live on the existing Render web and worker, migrations through 023. Web deploy `dep-db5sdmn40ujc73cq6o9g`, worker `dep-db5sdmn40ujc73cq6odg`. Health/readiness/root returned 200 and the current bundle is `index-BcT69dvP.js`. Private plugin 0.2.5 (`pluginrel_6acbc73edba48191bfded228547ac363`) was published and its changed files matched on readback; identity, audience, connection and default prompt were preserved. Rollout error entries were SIGTERM shutdowns of the old 14:07 instances, not failures of the new runtime. Real ChatGPT/browser acceptance remains open.
+
+## 11 October 2026 — Reviewed batch reversal and history filters
+
+Implemented selected field reversal across records through the same durable preview/human approval path. Multiple selected fields on one record become one validated correction/version; all records succeed together or none are changed. Later edits, hidden/derived fields, controlled records and invalid resulting values are rejected. Original history remains immutable and the reversal records the original change IDs.
+
+New saved field deltas include a unique data-commit receipt ID, independent of a reused standing permission. REST/MCP and Changes & permissions support record, actor, date range, authorization kind/ID and saved-batch filters. Selection is explicit and limited to the current visible page. No schema migration, new infrastructure or external provider was introduced. Creation archival and real browser/ChatGPT verification remain open.
+
+Added name search across accessible projects/folders/components and reviewed saved-component copies. Copies retain inherited source restrictions and destination access, preserve data bindings, have independent version-zero history with source provenance, and clear all function bindings. They never duplicate records, worker grants or schedules. Focused checks cover stale source rejection, AI access denial, sticky restrictions, cleared execution authority and idempotent save.
+
+Validation: production build passed. The full 39-test suite passed after the history changes; the four focused authorization/workspace checks passed again after component copying. Browser/ChatGPT acceptance is still pending.

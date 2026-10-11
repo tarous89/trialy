@@ -17,6 +17,8 @@ export const recordWriteSchema=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('update_record'),recordId:id,expectedVersion:z.number().int().min(0),data:values,reason:z.string().max(1000).optional()})
 ]);
 export const recordQuerySchema=z.object({q:z.string().max(500).optional(),viewId:id.optional(),limit:z.coerce.number().int().min(1).max(100).optional(),offset:z.coerce.number().int().min(0).optional(),dateField:z.string().max(64).optional(),dueBefore:z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),month:z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/).optional()});
+export const fieldChangeQuerySchema=z.object({typeId:id.optional(),recordId:id.optional(),actorId:id.optional(),authorizationId:id.optional(),changeSetId:id.optional(),authorizationKind:z.enum(['approval','maintenance_grant','execution_grant','unattributed']).optional(),since:z.string().datetime().optional(),until:z.string().datetime().optional(),offset:z.coerce.number().int().min(0).default(0)});
+export type FieldChangeQuery=z.infer<typeof fieldChangeQuerySchema>;
 export type RecordQuery=z.infer<typeof recordQuerySchema>;
 export const operationSchema = z.discriminatedUnion('kind', [
  z.object({kind:z.literal('reverse_field_change'),changeId:id,expectedVersion:z.number().int().min(0),reason:z.string().trim().min(1).max(1000)}),
@@ -37,6 +39,7 @@ export const operationSchema = z.discriminatedUnion('kind', [
  z.object({kind:z.literal('adopt_template'),template:z.string().min(1).max(100),mapping:z.record(z.string().max(100),id)}),
  z.object({kind:z.literal('upgrade_template'),template:z.string().min(1).max(100),expectedVersion:z.number().int().min(1)}),
  z.object({kind:z.literal('install_template'), template:z.string().min(1).max(100)}),
+ z.object({kind:z.literal('reverse_field_changes'),changes:z.array(z.object({changeId:id,expectedVersion:z.number().int().min(0)})).min(1).max(200),reason:z.string().trim().min(1).max(1000)}),
 ]);
 export type Operation = z.infer<typeof operationSchema>;
 export type Actor = {userId:string; origin:'human'|'ai'|'worker'};
