@@ -22,6 +22,23 @@ test('Workspace: exact setup, bounded maintenance, source preservation, reversib
  await assert.rejects(change({kind:'move_node',nodeId:folder.id,expectedVersion:0,parentId:folder.id}),/itself/);
  await assert.rejects(f.nodes(other,w.id));await assert.rejects(f.preview(a,outside.id,{kind:'create_node',nodeKind:'project',name:'No'}));
  const table=(await save({kind:'create_type',name:'Organizations',fields:[{key:'name',name:'Name',kind:'text',ai:true},{key:'address',name:'Address',kind:'text',ai:true}]})).objects[0].id;
+ // Component previews are durable drafts; saving source never executes it.
+ const componentInput={kind:'save_component',projectId:project.id,content:{name:'Outreach view',format:'html',source:'<script>throw new Error("must stay inert")</script>',bindings:[{typeId:table,fields:['name']}]}};
+ const componentDraft=await f.preview(ai,w.id,componentInput);assert.equal((await f.components(ai,w.id)).length,0);
+ const fresh=new WorkspaceFoundation(db);const component=await fresh.confirm(ai,w.id,componentDraft.id,componentDraft.digest);
+ assert.equal((await f.readComponent(ai,w.id,component.id)).component.source,componentInput.content.source);
+ assert.equal((await f.componentHistory(ai,w.id,component.id)).length,1);
+ await assert.rejects(f.readComponent(other,w.id,component.id));await assert.rejects(f.readComponent(a,outside.id,component.id));
+ await change({...componentInput,componentId:component.id,expectedVersion:0,content:{...componentInput.content,source:'New version'}});
+ await assert.rejects(change({...componentInput,componentId:component.id,expectedVersion:0}),/changed/);
+ const destination=await change({kind:'create_node',nodeKind:'project',name:'Conference'});
+ await change({kind:'move_component',componentId:component.id,expectedVersion:1,projectId:destination.id});
+ await change({kind:'restore_component',componentId:component.id,expectedVersion:2,revisionVersion:0});
+ const restored=(await f.readComponent(a,w.id,component.id)).component;assert.equal(restored.source,componentInput.content.source);assert.equal(restored.project_id,destination.id);assert.equal(restored.version,3);
+ await change({kind:'archive_component',componentId:component.id,expectedVersion:3,archived:true});
+ assert.equal((await f.componentHistory(a,w.id,component.id)).length,5);
+ await assert.rejects(change({...componentInput,projectId:folder.id}),/Choose a project/);
+ await assert.rejects(change({...componentInput,content:{...componentInput.content,format:'json',source:'not JSON'}}),/valid JSON/);
  const body={projectId:project.id,purpose:'CRO outreach',inclusionCriteria:'CROs involved in this project',sourcePolicy:'Information supplied in authorized project work',basis:'tracking',bindings:[{typeId:table,fields:['name']}],allowCreate:true,allowUpdate:true,allowIdentityLinks:true,maxChanges:5};
  const scope=await change({kind:'save_scope',scope:body});
  const batch={requestKey:randomUUID(),scopeId:scope.id,expectedScopeVersion:0,sourceLabel:'User supplied shortlist',interpretation:'Two eligible CRO name observations',changes:[{kind:'create_record',typeId:table,data:{name:'Example CRO Ltd'}},{kind:'create_record',typeId:table,data:{name:'Example CRO'}}]};
@@ -41,7 +58,10 @@ test('Workspace: exact setup, bounded maintenance, source preservation, reversib
  await f.maintain(ai,w.id,{...batch,requestKey:randomUUID(),expectedScopeVersion:1,changes:[{kind:'update_record',recordId:receipt.recordIds[0],expectedVersion:1,data:{address:'Approved address'}}]});
  await f.revoke(a,w.id,scope.id);await assert.rejects(f.maintain(ai,w.id,{...batch,requestKey:randomUUID(),expectedScopeVersion:1}),/permission changed/);
  await assert.rejects(db.query('UPDATE record_observations SET source_label=$1',['changed']),/append-only/);
- const exported=await s.exportWorkspace(a,w.id);assert.equal(exported.workspace_nodes.length,2);assert.equal(exported.maintenance_scopes.length,1);assert.equal(exported.identity_links.length,1);assert.equal(exported.record_observations.length,4);
- await s.setAccessRules(a,w.id,{expectedVersion:0,aiHiddenTypes:[table]});await assert.rejects(f.nodes(ai,w.id));await assert.rejects(f.evidence(ai,w.id,receipt.recordIds[0]));
+ const exported=await s.exportWorkspace(a,w.id);assert.equal(exported.workspace_nodes.length,3);assert.equal(exported.workspace_components.length,1);assert.equal(exported.maintenance_scopes.length,1);assert.equal(exported.identity_links.length,1);assert.equal(exported.record_observations.length,4);
+ await save({kind:'update_type',typeId:table,expectedVersion:1,name:'Organizations',fields:[{key:'name',name:'Name',kind:'text',ai:true},{key:'address',name:'Address',kind:'text',ai:true},{key:'city',name:'City',kind:'text',ai:true},{key:'private',name:'Private',kind:'text',ai:false}]});
+ await assert.rejects(f.readComponent(ai,w.id,component.id),/every workspace field/);
+ assert.equal((await f.readComponent(a,w.id,component.id)).component.id,component.id);
+ await s.setAccessRules(a,w.id,{expectedVersion:0,aiHiddenTypes:[table]});await assert.rejects(f.nodes(ai,w.id));await assert.rejects(f.readComponent(ai,w.id,component.id));await assert.rejects(f.evidence(ai,w.id,receipt.recordIds[0]));
  }finally{await db.close();}
 });

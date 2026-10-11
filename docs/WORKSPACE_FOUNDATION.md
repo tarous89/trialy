@@ -29,3 +29,13 @@ General canonical entities and relationship-aware queries; schema-semantic recon
 `tests/workspace.test.ts` exercises setup without implicit writes, exact retries, out-of-scope fields, preserved observations, unlinking, stale-write rollback, schema expansion/reapproval, revocation, isolation and immutable evidence. Existing regression tests remain intact. Synthetic backup rehearsal includes these tables; it is not an actual Render backup restore.
 
 Migration 017 is additive. Roll back application code if necessary while retaining the new tables and evidence; never delete saved nodes, scopes, observations or links as a rollback shortcut.
+
+## Saved components (migration 018)
+
+Projects now hold saved source/configuration (`text`, `markdown`, `json`, `javascript`, or `html`) with stable component IDs and declared table/field bindings. `prepare_workspace_change` supports save, move, archive/unarchive and recovery operations. Confirmation atomically saves a revision, audit entry and idempotent receipt. Drafts remain in PostgreSQL for 24 hours and do not enter saved history until confirmed.
+
+`list_project_components`, `read_project_component`, and `read_component_history` reopen this work across sessions. The shared Projects screen includes a source editor, explicit project moves and revision recovery. Recovery creates a new revision of the old content while retaining the current project/archive state. Moving or archiving does not modify shared records or execute code. Existing jobs are not yet attached to components.
+
+**Current boundary:** this is source storage, not generated-interface execution. HTML/JavaScript are escaped text in React, with no iframe, eval, network bridge or token access. The full generated UI host remains on the roadmap; no fixed template catalogue was added. Component access conservatively requires unrestricted workspace data access, including every field and original document for AI, because source may contain copied values beyond declared bindings. Bindings are references, not an authority grant. Granular project/component sharing, source provenance-aware disclosure, assets, live binding editing, drag-and-drop component moves and function attachment remain pending.
+
+Export/inspection includes components and their immutable generic revisions. The synthetic restore rehearsal covers a saved component; it is not a managed production backup restore.

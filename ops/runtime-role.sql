@@ -18,6 +18,6 @@ GRANT INSERT ON foundation_functions,foundation_revisions,foundation_grants,foun
 GRANT UPDATE ON foundation_functions,foundation_grants,foundation_schedules,foundation_runs TO trialy_runtime;
 GRANT DELETE ON foundation_runs,foundation_previews TO trialy_runtime;
 
-GRANT INSERT ON workspace_nodes,maintenance_scopes,workspace_previews,workspace_receipts,identity_links,record_observations TO trialy_runtime;
-GRANT UPDATE ON workspace_nodes,maintenance_scopes,identity_links TO trialy_runtime;
+GRANT INSERT ON workspace_nodes,workspace_components,maintenance_scopes,workspace_previews,workspace_receipts,identity_links,record_observations TO trialy_runtime;
+GRANT UPDATE ON workspace_nodes,workspace_components,maintenance_scopes,identity_links TO trialy_runtime;
 GRANT DELETE ON workspace_previews TO trialy_runtime;

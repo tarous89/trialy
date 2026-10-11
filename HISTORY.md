@@ -248,3 +248,11 @@ Documentation-only update; no application behavior or deployment changes.
 - Identity linking is non-destructive, same-table and reversible. It does not merge query output, rewrite historical relationships or implement general canonical-entity resolution yet.
 - Added REST/MCP tools, source-evidence reads, export/inspection coverage and runtime-role grants. Plugin instruction update 0.2.2 preserves identity, audience, endpoint and default prompt.
 - Basic validation: production build and 33 reported tests passed, including a synthetic capture/identity/permission/rollback scenario. Real ChatGPT UI acceptance remains unverified. Runtime `55dbeaf` is live on the existing Render web and worker services. Migration 017 applied successfully. Web deployment: `dep-db5oh0c9v7es7399vulg`; worker: `dep-db5oh0c9v7es7399vupg`. Private plugin 0.2.2 release `pluginrel_6acb88bb19c08191aa2022aebafded77` was read back with preserved endpoint, audience and default prompt. Initial runtime error scan was empty.
+
+## 11 October 2026 — Saved component foundation
+
+- Added durable source/configuration in projects, reviewed saves/moves/archive/recovery, immutable revision history, and source editor in web/ChatGPT workspace.
+- Recovery creates a new revision without moving the component or duplicating shared records.
+- Added conservative full-data-access checks for saved source, including AI field restrictions; generated HTML/JavaScript remains inert.
+- Extended MCP/REST, export and synthetic restore coverage. Build and all 33 reported tests pass. Full ChatGPT rendering and production backup restoration remain unverified.
+- Granular project/component sharing and generated interface execution remain next; no new provider, infrastructure cost, or fixed workflow was introduced.

@@ -14,7 +14,9 @@ Database layering and the common vocabulary are agreed in [README](README.md). [
 
 Added migration 017, project/folder CRUD/moves and shared web/embed Projects UI; durable reviewed maintenance scopes, atomic scoped record writes with receipts and immutable observations; same-table reversible identity links and evidence reads; REST/MCP tools and export coverage. These are partial implementations of steps 1–4 and 6, not completion of the full roadmap. Existing schema tools handle initial table setup separately from scope approval.
 
-Next: saved component source/configuration and isolated UI hosting; shared identity-aware queries/project relationships; granular project sharing; scheduled maintenance integration. Project organization currently requires unrestricted workspace access. Semantic inclusion/source-policy judgment remains ChatGPT's responsibility, with structural/grant/permission enforcement in the backend. See [WORKSPACE_FOUNDATION.md](docs/WORKSPACE_FOUNDATION.md).
+Added migration 018: reviewed component source/configuration saves, stable IDs, move/archive/recovery, immutable revisions, shared source editor, MCP/REST reads and export/restore coverage. Source remains inert; generated interfaces and project-level sharing are not yet enabled.
+
+Next: granular project/component access and isolated UI hosting; shared identity-aware queries/project relationships; granular project sharing; scheduled maintenance integration. Project organization currently requires unrestricted workspace access. Semantic inclusion/source-policy judgment remains ChatGPT's responsibility, with structural/grant/permission enforcement in the backend. See [WORKSPACE_FOUNDATION.md](docs/WORKSPACE_FOUNDATION.md).
 
 ## Ordered implementation steps
 
