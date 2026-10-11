@@ -30,3 +30,5 @@ GRANT SELECT,INSERT,UPDATE ON project_records TO trialy_runtime;
 GRANT SELECT,INSERT ON record_facts,record_fact_retractions TO trialy_runtime;
 
 GRANT SELECT,INSERT,UPDATE ON cross_table_links TO trialy_runtime;
+
+GRANT SELECT,INSERT ON table_mappings,table_mapping_revocations TO trialy_runtime;

@@ -17,6 +17,7 @@ export const componentContent=z.object({
  execution:z.array(z.object({name:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),revisionId:id,grantId:id.optional()}).strict()).max(20).default([]),
  bindings:z.array(z.object({typeId:id,fields:z.array(z.string().min(1).max(64)).min(1).max(100)}).strict()).max(100).default([])
 }).strict();
+export const fieldPairsSchema=z.array(z.object({sourceField:z.string().min(1).max(64),preferredField:z.string().min(1).max(64)}).strict()).min(1).max(100);
 const identityLinkSchema=z.object({kind:z.literal('link_identity'),sourceRecordId:id,preferredRecordId:id,sourceVersion:z.number().int().min(0),preferredVersion:z.number().int().min(0),rationale:text}).strict();
 export const maintenanceBatch=z.object({
  requestKey:id,scopeId:id,expectedScopeVersion:z.number().int().min(0),
@@ -30,7 +31,9 @@ export const workspaceOperation=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('rename_node'),nodeId:id,expectedVersion:z.number().int().min(0),name:z.string().trim().min(1).max(100)}).strict(),
  z.object({kind:z.literal('save_scope'),scope:maintenanceSchema,scopeId:id.optional(),expectedVersion:z.number().int().min(0).optional()}).strict(),
  identityLinkSchema,
- z.object({kind:z.literal('link_cross_table_identity'),sourceRecordId:id,preferredRecordId:id,sourceVersion:z.number().int().min(0),preferredVersion:z.number().int().min(0),fieldPairs:z.array(z.object({sourceField:z.string().min(1).max(64),preferredField:z.string().min(1).max(64)}).strict()).min(1).max(100),rationale:text}).strict(),
+ z.object({kind:z.literal('save_table_mapping'),sourceTypeId:id,preferredTypeId:id,name:z.string().trim().min(1).max(100),fieldPairs:fieldPairsSchema,rationale:text}).strict(),
+ z.object({kind:z.literal('revoke_table_mapping'),mappingId:id,reason:text}).strict(),
+ z.object({kind:z.literal('link_cross_table_identity'),sourceRecordId:id,preferredRecordId:id,sourceVersion:z.number().int().min(0),preferredVersion:z.number().int().min(0),mappingId:id.optional(),fieldPairs:fieldPairsSchema.optional(),rationale:text}).strict(),
  z.object({kind:z.literal('unlink_cross_table_identity'),linkId:id,expectedVersion:z.number().int().min(0),reason:text}).strict(),
  z.object({kind:z.literal('unlink_identity'),linkId:id,expectedVersion:z.number().int().min(0),reason:text}).strict(),
  z.object({kind:z.literal('save_component'),projectId:id,componentId:id.optional(),expectedVersion:z.number().int().min(0).optional(),content:componentContent}).strict(),

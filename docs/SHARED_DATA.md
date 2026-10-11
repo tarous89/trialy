@@ -30,7 +30,7 @@ Cross-table semantic mapping, automatic interpretation of history, per-alias pre
 
 ## Reviewed cross-table identity claims
 
-Migration 026 adds `link_cross_table_identity` and `unlink_cross_table_identity` through the existing workspace preview/confirmation path. ChatGPT proposes the two records, their current versions, explicit `fieldPairs` (`sourceField` / `preferredField`) and a rationale. Each pair describes semantic correspondence; it is not a conversion or a matching rule. Fields must have compatible kinds, cannot be computed, and relationship targets cannot change. Mapping approval applies to this record pair only, not all future records in either table.
+Migration 026 adds `link_cross_table_identity` and `unlink_cross_table_identity` through the existing workspace preview/confirmation path. ChatGPT proposes the two records, their current versions, explicit `fieldPairs` (`sourceField` / `preferredField`) and a rationale. Each pair describes semantic correspondence; it is not a conversion or a matching rule. Fields must have compatible kinds, cannot be computed, and relationship targets cannot change. The identity claim applies to this record pair only, not all future records in either table. Reusable mappings can now supply its field correspondence, as described below.
 
 Every link and withdrawal requires human confirmation. Existing single-table maintenance grants cannot authorize these operations. The preview includes both original records, mappings and schema fingerprints; confirmation rejects changed records, schemas or permissions. This adds an audited identity claim without rewriting any record field, changing any relationship or transferring execution authority. Audit/revision evidence and the link retain the exact approval. Withdrawal preserves originals and previous evidence, including who withdrew the claim, why and with which approval.
 
@@ -38,4 +38,14 @@ Every link and withdrawal requires human confirmation. Existing single-table mai
 
 The new table is included in workspace exports, runtime-role provisioning and synthetic restore verification. Active links prevent treating a linked record as an unused reversible creation.
 
-Still pending: reusable table-level mapping definitions, contextual relationship traversal, per-alias reviewed value propagation and exact document/source citations. Users can already propose explicit ordinary field corrections, but cross-table linking itself never copies values. The live ChatGPT/browser interaction remains to be tested.
+Still pending: contextual relationship traversal, per-alias reviewed value propagation and exact document/source citations. Users can already propose explicit ordinary field corrections, but cross-table linking itself never copies values. The live ChatGPT/browser interaction remains to be tested.
+
+## Reusable table mappings
+
+Migration 027 adds immutable `table_mappings`, append-only `table_mapping_revocations` and an optional mapping reference on cross-table links. ChatGPT proposes `save_table_mapping` with a name, source/preferred table IDs, field pairs and rationale. Human approval saves the exact correspondence and the current table definitions. This is a field correspondence, not an identity matching algorithm or future write permission.
+
+Use `list_table_mappings` to inspect authorized definitions and their current status, then pass a usable `mappingId` to `link_cross_table_identity` with the two record versions and row-specific rationale. `fieldPairs` may be omitted when reusing a mapping. Both table direction and current schema fingerprints must match. Every proposed record link still gets its own preview, human approval and approval reference. One-type standing grants cannot approve mapping creation, revocation or cross-table links.
+
+The **Reusable field mappings** screen in Projects lists definitions and opens their fields, approval and revocation history on a separate page. `revoke_table_mapping` uses the same review/confirmation path. Revocation prevents future reuse, including pending link previews, without changing previously accepted links or records. To correct a mapping, approve a new definition and revoke the old one; history is never edited in place. A schema change blocks reuse until a new mapping is reviewed. Existing pair-specific links retain their mapping snapshot and continue to be independently withdrawable.
+
+Reads and approvals check current access to both tables and all their fields. Hidden counterpart tables/fields hide the mapping; stale mapping/schema previews cannot be confirmed. Existing original data is unchanged. Exports, runtime-role provisioning, recovery inventory and populated synthetic restore coverage include both new tables. Some earlier unsaved cross-table previews may need to be prepared again because their review envelope predates mapping references; saved links remain compatible.
