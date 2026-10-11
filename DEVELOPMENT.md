@@ -8,10 +8,13 @@ Existing foundation: PostgreSQL data/originals, authentication, human/AI permiss
 
 Not yet complete: a shared cross-import entity layer with reversible reconciliation; general generated-interface hosting; movable folders/projects/components; live external adapters. Existing views, forms and sharing are reusable foundations, not evidence that all these targets work already. User-driven ChatGPT testing has started; full host acceptance remains open.
 
+Database layering and the common vocabulary are agreed in [README](README.md). [Interface rules](docs/INTERFACE_RULES.md) separates agreed usability direction from the proposed edit-routing policy.
+
 ## Ordered implementation steps
 
 ### 1. Define and separate the shared data and component contracts
 
+- [ ] Implement the three-layer contract: fixed platform, extensible person/organization/project/location concepts, and customer-designed schema. Use the platform project identity for project relationships; studies are optional extensions.
 - [ ] Inventory actual entity, relationship, project, view, file, permission and execution primitives and their legacy callers.
 - [ ] Define stable IDs and contracts for shared entities/observations, project-specific relationships, folders/projects, saved components/revisions, data bindings and execution references.
 - [ ] Separate data identity from display location; moving a component must not move or duplicate its underlying shared entities.
@@ -21,6 +24,7 @@ Not yet complete: a shared cross-import entity layer with reversible reconciliat
 
 - [ ] Support canonical entity references across imports/projects, aliases and original source observations with timestamps and attribution.
 - [ ] Represent project-specific facts independently of shared person/organization facts; allow historical affiliations and conflicting observations without forced overwrite.
+- [ ] Inspect existing authorized schema before creating types/fields; support schema-semantic reconciliation, stable field renames and loss-preserving type migrations. Model roles and contextual facts as relationships rather than duplicated people.
 - [ ] Expose permission-filtered candidate search, entity/relationship reads and proposals to ChatGPT, using flexible user-defined types rather than a clinical ontology.
 
 ### 3. Implement reversible AI-led reconciliation
@@ -41,12 +45,14 @@ Not yet complete: a shared cross-import entity layer with reversible reconciliat
 ### 5. Host ChatGPT-generated interfaces
 
 - [ ] Choose and document one supported UI package/runtime contract, then implement isolated rendering for generated interfaces in the workspace and compatible ChatGPT surface.
+- [ ] Define component binding metadata for sources, live versus snapshot values, edit targets and calculations. Resolve the proposed editing semantics in INTERFACE_RULES.md before implementing them.
 - [ ] Provide a permission-checked bridge for queries, previews/commits, files, authorized tools and run status. Keep tokens and raw database connections out of generated code.
 - [ ] Support provisional rendering, explicit save, reopen by exact revision, updates and recovery of an earlier component version.
 - [ ] Support user-created forms, tables, charts and mixed interfaces without shipping a fixed template catalogue. Validate host capabilities before promising unrestricted rendering.
 
 ### 6. Build the project workspace and collection/sharing experience
 
+- [ ] Make interfaces editable by default within permissions, with authorized source inspection; implement details as pages or short modals instead of appended sections. Preserve view state on return.
 - [ ] Show folders, projects and their components; support drag and drop plus explicit move controls, search and reopening across chats.
 - [ ] Apply granular human and AI access to saved components and underlying data; displaying data to a person must not implicitly disclose it to the model.
 - [ ] Reuse existing sharing primitives for team/external access and scoped information collection. Implement revocation and explicit submit/save semantics without mandatory business approval stages.

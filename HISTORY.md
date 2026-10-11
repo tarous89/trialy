@@ -219,3 +219,13 @@ Documentation-only update following explicit user agreement. No runtime, migrati
 - Removed the minimal execution UI as the completion target and the exclusion of generated UI hosting. Retained the exclusion of fixed templates, business workflows and hardcoded action catalogues; user-generated workflows remain in scope.
 - Retained Render/Postgres/original-file storage, self-hosted auth, preview/save and scoped future permissions, quiet extraction failure, source preservation, existing histories and lean testing. Provider accounts, conditional signatures, production recovery and publication remain explicit dependencies.
 - Marked user-driven ChatGPT testing as started, without asserting complete host acceptance or treating unbuilt features as implemented.
+
+## Database layers and interface behavior clarification — 2026-10-11
+
+Documentation only; no runtime/deployment changes.
+
+- Accepted platform/common/customer-specific schema layers, flexible ChatGPT-designed fields/types, inspect-before-create, contextual roles, record/schema reconciliation and logical customer isolation in shared PostgreSQL.
+- Replaced study as a proposed common concept with general-purpose project; study remains an optional specialization. Project containers and their semantic relationships use one identity. Retained optional location; no required education concept.
+- Recorded editable-by-default interfaces within permissions, authorized source inspection, and detail pages or short modals instead of below-content expansion.
+- Added INTERFACE_RULES.md to separate these preferences from a proposed binding-based edit policy: live record updates versus presentation edits, protected calculations/snapshots and no silent overrides. Same-session versus later-session editing is not recommended as the authority boundary. Detailed editing semantics await user feedback.
+- Updated roadmap contracts and UI tasks; preserved historical checklists and existing implementation status.

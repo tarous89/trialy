@@ -5,6 +5,7 @@ Updated 11 October 2026. This is the active scope. It supersedes the previous te
 Repository: `tarous89/trialy`. Development name: **Trialy**. A future public rename to **Trialegions** is a separate cutover. Do not change the existing Trialegions, TrialAgents or Intel applications.
 
 - [Current development steps](DEVELOPMENT.md)
+- [Interface behavior decisions and proposals](docs/INTERFACE_RULES.md)
 - [Foundation architecture and dependency map](docs/FOUNDATION_ARCHITECTURE.md)
 - [Decision and implementation history](HISTORY.md)
 - [Historical scope](docs/archive/scope-before-foundation-reset.md)
@@ -30,6 +31,26 @@ The full permitted experience belongs in ChatGPT, with the standalone app on the
 6. Saved functions, general jobs, schedules/events, cancellation and recovery so authorized components can run while ChatGPT is closed.
 7. Granular human and AI permissions, team/external sharing, once/future authorization and scoped access for collecting information from others.
 8. Preview before official saving, exact commits, audit/version history and recoverability of saved data, code, components and relationship decisions.
+
+## Database design decisions — agreed 11 October 2026
+
+Three layers define the flexibility boundary:
+
+| Layer | Content | Control |
+| --- | --- | --- |
+| Platform foundation | Customer/workspace, users/memberships, access, projects/folders, component code/revisions, sources, audit and jobs | Trialy enforces stable contracts |
+| Common concepts | Person, organization, project and location, with extensible relationships | Small starting vocabulary, not mandatory business fields or fixed templates |
+| Customer-specific model | Fields, additional types, classifications, activities, forms, calculations and workflows | ChatGPT designs against the existing authorized schema |
+
+Use **project**, not study, as the general work concept: investor outreach, regulator engagement, conferences and clinical studies can all be projects. Study-specific attributes/types are optional customer extensions. A project is the same stable platform project when it is both a work container and the subject of relationships; do not create a duplicate generic Project entity for the same thing. Its operational fields are extensible while its identity/access/organization contracts remain platform-controlled. Location remains optional; education is not a required common concept.
+
+A person is not duplicated for each role: investigator, consultant, speaker and expert are contextual roles/relationships. Organization locations and trial participation can be separate linked records. Keep shared facts, dated affiliations and project-specific facts distinct. Few business fields are mandatory; incomplete records are valid.
+
+Require stable IDs, workspace ownership, typed fields, revision/actor attribution, permission enforcement and stable relationship references. Preserve source provenance where available. ChatGPT must inspect permitted schema and candidates before adding types or importing entities; reconcile both records and schema meaning, never merge fields solely because their labels sound similar. Renames preserve field identity; type conversions preserve non-convertible originals and need a safe change proposal.
+
+Start with logical customer isolation in shared PostgreSQL, not a physical database/table set for every client. Shared information is within authorized customer boundaries. No implicit cross-customer reconciliation or data access.
+
+Interface preferences and the proposed edit-routing policy are tracked separately in [INTERFACE_RULES.md](docs/INTERFACE_RULES.md). These are development targets, not claims that generated interfaces already implement them.
 
 ## Reconciliation and saving decisions
 

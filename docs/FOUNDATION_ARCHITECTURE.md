@@ -15,6 +15,12 @@ Target additions (not yet implemented):
 
 Initial persistence still requires confirmation. Subsequent AI maintenance may operate under a scoped standing grant, with preserved sources and audited reversible changes. See the active roadmap for dependency order; the execution architecture below remains applicable as a subsystem.
 
+## Approved schema boundary
+
+Use the three-layer model in README: platform invariants, extensible common person/organization/project/location concepts, and customer-specific schema. Project is general-purpose; a study is an optional specialization. Reuse the stable platform project ID for both organization and project relationships. Do not hardcode clinical roles into separate person tables. Schema and record reconciliation must preserve meanings and originals, operate only on authorized data, and maintain logical customer isolation within shared PostgreSQL.
+
+Generated component contracts must capture field bindings and provenance so editing can target the correct shared record, project-specific relationship or presentation configuration. See INTERFACE_RULES.md for approved navigation/editability preferences and the still-proposed detailed editing policy. Session age must not be mistaken for record identity or revision state.
+
 ## Responsibility boundary
 
 ChatGPT creates code and application logic. Trialy supplies persistent data, isolated execution and authorized tools. A generic table view is a useful client; it does not constrain the logic that may run. A user may create a review process in their own data/code, but that process is not a platform-wide requirement.
