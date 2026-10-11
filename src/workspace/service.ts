@@ -273,6 +273,7 @@ export class WorkspaceFoundation {
   if((await access(tx,a,w,true)).role!=='owner')fail(403,'owner_required','Owner required');
   const row=(await tx.query('SELECT s.* FROM form_submissions s LEFT JOIN submission_acceptances accepted ON accepted.submission_id=s.id WHERE s.workspace_id=$1 AND s.id=$2 AND accepted.submission_id IS NULL',[w,op.submissionId])).rows[0];if(!row)fail(409,'response_unavailable','Response is unavailable or already accepted');
   const {type,policy}=await typeAccess(tx,a,w,row.type_id);if(visibleFields(type.fields,policy,a).length!==type.fields.length)fail(403,'response_scope','Acceptance requires visibility of every table field');
+  if(a.origin==='ai'&&Object.keys(row.data).some(k=>!visibleFields(type.fields,policy,a).some(f=>f.key===k)))fail(403,'response_scope','Original response includes retired or unavailable fields; use human source review');
   await new Service(adapter(tx)).validate(tx,a,w,{kind:'create_record',typeId:type.id,data:op.data});
   return {submissionId:row.id,typeId:type.id,typeVersion:type.version,original:row.data,proposed:op.data,effect:'Create one authoritative record with reviewed values; preserve the unverified original response'};
  }
