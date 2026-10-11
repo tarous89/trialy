@@ -207,3 +207,15 @@ Migration 016 is additive. No new provider account or Render service is needed. 
 Deployment verified: runtime commit `3234b5b12a08db4147bd4f9c1d35e25bb5ce32dd`; Render web deploy `dep-db5ikdjbc2fs738pn0gg` and worker deploy `dep-db5ikdjbc2fs738pn0kg` both live. `/health`, `/ready`, and root returned 200; served bundle `index-D4Z-BT8U.js` matches the built implementation. Initial post-deploy error-log scan was empty. Existing 32 reported regression checks passed; final focused foundation acceptance and production build passed after boundary fixes. Synthetic recovery evidence includes migration 016 and saved functions. No real ChatGPT host session or external provider was exercised.
 
 Private plugin identity and audience preserved. Instructions updated and obsolete template claims removed from its listing. Version `0.2.1`, release `pluginrel_6acb2b134dc881918d6f4fce33d9e84e`; source read-back confirmed the skill, connection and default prompt.
+
+## Shared database and saved-component product clarification — 2026-10-11
+
+Documentation-only update following explicit user agreement. No runtime, migration, deployment or customer-data change in this task.
+
+- Expanded the active product definition to connected shared data maintained during normal work, projects/folders hosting ChatGPT-created components, and tools/workers with granular access and audit/version history.
+- Added source observations, aliases, project-specific facts and reversible AI-led reconciliation. Preserve originals and alternatives; scoped ongoing maintenance need not ask about every normalization. Ambiguous identity never grants access or external-action authority.
+- Added stable component identities/revisions, arbitrary generated-interface hosting within a supported isolated runtime, permission-aware moves/drag and drop, shared data bindings, external collection and cross-chat reopening.
+- Replaced the execution-only roadmap with nine dependency-ordered development steps for the full clarified product. Archived the earlier execution checklist without changing historical completion evidence.
+- Removed the minimal execution UI as the completion target and the exclusion of generated UI hosting. Retained the exclusion of fixed templates, business workflows and hardcoded action catalogues; user-generated workflows remain in scope.
+- Retained Render/Postgres/original-file storage, self-hosted auth, preview/save and scoped future permissions, quiet extraction failure, source preservation, existing histories and lean testing. Provider accounts, conditional signatures, production recovery and publication remain explicit dependencies.
+- Marked user-driven ChatGPT testing as started, without asserting complete host acceptance or treating unbuilt features as implemented.

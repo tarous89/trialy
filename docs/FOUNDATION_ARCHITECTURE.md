@@ -2,6 +2,19 @@
 
 Decision date: 11 October 2026. Status: accepted direction, with the first execution implementation now complete; see [EXECUTION.md](EXECUTION.md) for actual supported contracts and limits. Active scope: [README](../README.md). Build order: [DEVELOPMENT](../DEVELOPMENT.md).
 
+## Product expansion: shared entities and saved applications
+
+Accepted clarification, 11 October 2026: the execution foundation is a subsystem of a larger persistent workspace, not the complete product. ChatGPT authors interfaces, logic and reconciliation decisions; Trialy hosts and organizes saved components, maintains connected authorized data and runs approved actions.
+
+Target additions (not yet implemented):
+
+- Shared stable entity identities with original observations, aliases, project-specific relationships and preferred interpretations. Preserve conflicting values and reversible link/merge/split history; avoid whole-database branching.
+- A projects/folders/component layer that organizes presentation without duplicating data. Component revisions bind source, assets, data references and execution capabilities. Moves preserve identity and check destination access and active grants.
+- A generated-interface host with its own isolation boundary and brokered access. Existing QuickJS server execution does not establish browser UI isolation. Generated clients cannot hold provider secrets or directly access database connections.
+- Team/external sharing and collection bounded by both component and underlying data permissions. Reconciliation must not become a route to hidden facts or new action authority.
+
+Initial persistence still requires confirmation. Subsequent AI maintenance may operate under a scoped standing grant, with preserved sources and audited reversible changes. See the active roadmap for dependency order; the execution architecture below remains applicable as a subsystem.
+
 ## Responsibility boundary
 
 ChatGPT creates code and application logic. Trialy supplies persistent data, isolated execution and authorized tools. A generic table view is a useful client; it does not constrain the logic that may run. A user may create a review process in their own data/code, but that process is not a platform-wide requirement.
@@ -79,7 +92,7 @@ The first branch checkpoint is documentation only. Runtime refactoring comes nex
 
 ## Runtime feasibility decision
 
-The isolated runtime is the main missing capability and the principal new security boundary. Its adapter must support bounded process execution, constrained networking, no host/tenant cross-access, cancellation and deterministic identification of the runtime image/dependencies.
+The isolated runtime was the principal missing capability in the earlier execution phase and remains a critical security boundary. Its adapter must support bounded process execution, constrained networking, no host/tenant cross-access, cancellation and deterministic identification of the runtime image/dependencies.
 
 The implementation selects pinned QuickJS/WASM JavaScript in the existing Render worker, with a fixed WASM memory maximum, bounded guest heap, JSON-only broker and disposable process. No additional provider account is needed. The original feasibility requirements below remain applicable. Investigate a concrete supported option before implementing or provisioning it. Existing Render web/worker deployment is retained; whether generated code runs there or through an external execution service is a feasibility/cost decision, not permission to weaken isolation. If a new account/budget is necessary, present the concrete option and tradeoffs to the user then.
 

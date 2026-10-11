@@ -1,4 +1,4 @@
-# Trialy — Database, Code Execution and Tools for ChatGPT
+# Trialy — Shared Data and a Home for What ChatGPT Builds
 
 Updated 11 October 2026. This is the active scope. It supersedes the previous template/workflow-led scope and roadmap; the uploaded initial brief remains a historical source, subject to the user's subsequent decisions.
 
@@ -12,24 +12,34 @@ Repository: `tarous89/trialy`. Development name: **Trialy**. A future public ren
 
 ## Product boundary
 
-Build a persistent foundation that ChatGPT can use as a database, run code against, and access tools through. ChatGPT designs the user's application and logic. Trialy supplies data, isolated execution, authorized tool access and durable evidence.
+Trialy is the persistent workspace behind the things ChatGPT builds. ChatGPT designs interfaces, application logic and data reconciliation. Trialy supplies a connected database, an organized home for saved components, authorized tools and background execution, with access control and traceable changes throughout.
 
-We are **not currently building templates, specific clinical workflows, a fixed review engine, or a catalogue of business automation actions**. Do not add those to the implementation plan unless the user explicitly changes the scope. Biotech teams remain the intended audience; their use cases do not dictate database schemas, approval stages or mandatory screens.
+Users build their database while doing their work; database maintenance is not a separate routine they must perform. A study tracker and a conference tracker can reference the same investigator and organization, while retaining separate study participation and conference follow-up records. Shared means connected within the authorized workspace, never globally merged across customers or permissions.
 
-The first complete path is: generate code → run it on permitted data without authoritative writes → inspect results and proposed changes → confirm the exact proposal → persist changes and/or the executable version → invoke again or schedule within explicitly approved permissions.
+Projects and folders organize saved components: forms, trackers, visualizations, presentations/files, mixed interfaces and workflows with actions. These are examples of user-created content, not platform templates or a fixed component catalogue. Users can move projects between folders and components between projects without copying shared entities or breaking stable references. Moves must recheck access and must not silently expose data or expand execution grants.
+
+The full permitted experience belongs in ChatGPT, with the standalone app on the same backend as backup/admin and for data deliberately excluded from AI. A durable generated interface host is part of the product scope; a minimal data/function/run panel alone does not complete it.
 
 ## Foundation responsibilities
 
-1. Persistent user-defined data, relationships, originals, queries and controlled mutations.
-2. Isolated execution of user/ChatGPT-generated code; bounded compute, temporary storage and network/tool access.
-3. Saved, versioned functions with input/output contracts and declared capabilities.
-4. General execution jobs, status/results, cancellation, schedules/events and recovery.
-5. A tool registry and gateway shared by interactive and background execution.
-6. Authentication, tenant isolation, scoped credentials and once/future authorization.
-7. Temporary experimentation, exact proposal confirmation, transactional writes, audit and provenance.
-8. A minimal ChatGPT interface for data, functions, runs, results and permissions; standalone as backup/admin and for deliberately excluded data/actions.
+1. Connected, user-defined data with stable entity identities, relationships, originals and provenance across projects.
+2. AI-proposed normalization and reconciliation: preferred values, aliases, source observations, conflicts and reversible match/merge decisions.
+3. Projects, folders and saved components with stable IDs, versioned source/configuration, shared-data bindings and organization controls including drag and drop.
+4. Isolated hosting of ChatGPT-generated interfaces, plus bounded server-side code execution. Saved UI must not receive host credentials or bypass human/AI permissions.
+5. A trusted tool gateway for authorized services, including future email, calendar and conditional signature adapters.
+6. Saved functions, general jobs, schedules/events, cancellation and recovery so authorized components can run while ChatGPT is closed.
+7. Granular human and AI permissions, team/external sharing, once/future authorization and scoped access for collecting information from others.
+8. Preview before official saving, exact commits, audit/version history and recoverability of saved data, code, components and relationship decisions.
 
-Custom UI generation beyond this minimal interface is not a prerequisite for the first foundation milestone. Existing generic table/form views remain usable clients, not the limit of what code may produce.
+## Reconciliation and saving decisions
+
+- ChatGPT may judge that two differently named entries represent the same entity; do not require hardcoded business matching rules or a confirmation for every spelling variation.
+- Preserve each original observation, source and competing value. Store a preferred interpretation plus reversible links/merge decisions and their rationale. Correction must be able to separate an incorrect match without losing source facts or project-specific context.
+- Do not branch the entire database for every possible interpretation. Keep uncertainty and alternatives at the relevant entity, fact or relationship. This is an implementation direction, not an already implemented capability.
+- Experiments remain provisional. Initial imports/components require confirmation before becoming saved work. Later maintenance can use a scoped, revocable standing permission; it is not unrestricted permission to rewrite data.
+- A likely identity match does not itself authorize contacting someone, changing recipients, sharing restricted information or granting access. Reconciliation operates only on data the acting identity and AI may access.
+
+We are not building industry templates, prescribed review chains or fixed business workflow modules. User-created workflows are in scope as code and components on the shared foundation. Biotech teams remain the intended audience without dictating database schemas or mandatory screens.
 
 ## Decisions retained
 
@@ -42,8 +52,8 @@ Custom UI generation beyond this minimal interface is not a prerequisite for the
 - Preserve originals even when extraction/OCR fails. Derived-data failures remain quiet availability flags. Never claim a source or data change is saved before durable commit.
 - Allow one execution or future executions within a defined scope. A material code, tool or permission change must not inherit broader approval silently.
 - Preserve existing records, revisions and audit evidence during refactoring. No automatic migration of old business rules into new executable code.
-- Keep integrations requiring new developer accounts and real ChatGPT host testing deferred as requested. Backend access to tools connected in ChatGPT is not automatic.
-- No real-recipient test messages. Signature providers and brand cutover are outside this foundation correction.
+- Defer integrations requiring new developer accounts until provider/account selection is needed. ChatGPT testing has begun with user-driven connection/use; full host acceptance is still pending. Backend access to tools connected in ChatGPT is not automatic.
+- No real-recipient test messages. Electronic signatures remain conditional on provider requirements and cost; they are not implemented. Brand cutover remains separate.
 
 ## Current implementation versus target
 
@@ -51,7 +61,7 @@ The existing app has transactional records, originals, extraction, permissions, 
 
 The code execution foundation is implemented: bounded QuickJS/WASM JavaScript, permission-filtered tools, exact proposals and atomic commit receipts, immutable saved functions, leased jobs, once/future grants, schedules, result-file saves and shared standalone/embedded controls. Template/business builders are absent from the default experience; existing management remains at `/?legacy=1`. No historical data is removed.
 
-See [the implemented execution contract](docs/EXECUTION.md) for APIs, limits, temporary retention and remaining boundaries. Live external providers and real ChatGPT host acceptance remain deferred. The existing Render services are reused, without a new sandbox account or infrastructure service.
+See [the implemented execution contract](docs/EXECUTION.md) for APIs, limits, temporary retention and remaining boundaries. Shared cross-import entity reconciliation, general saved UI hosting and movable project/component organization remain to be built. External service adapters are not connected; complete real ChatGPT host acceptance is still pending. The existing Render services are reused, without a new sandbox account or infrastructure service.
 
 ## Development and operation
 

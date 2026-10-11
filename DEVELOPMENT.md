@@ -1,107 +1,86 @@
-# Trialy — Foundation Development Plan
+# Trialy — Current Development Roadmap
 
-Updated 11 October 2026. This replaces the old 18-step business-feature checklist. [Scope](README.md) · [Architecture](docs/FOUNDATION_ARCHITECTURE.md) · [History](HISTORY.md).
+Updated 11 October 2026 following the shared-database and saved-component clarification. This is an ordered building plan for one complete product, not a release plan. [Product context](README.md) · [Architecture](docs/FOUNDATION_ARCHITECTURE.md) · [History](HISTORY.md).
 
 ## Current position
 
-The foundation execution path is implemented and merged from `foundation-reset` to main. Runtime `3234b5b` is live on both existing Render services; no legacy rows or histories were deleted. See [EXECUTION.md](docs/EXECUTION.md) for the implemented limits and remaining boundaries. The original new-scope checklist below remains a detailed contract; checked items are implemented, not a claim of production validation.
+Existing foundation: PostgreSQL data/originals, authentication, human/AI permissions, transactional changes and audit, previews, bounded JavaScript execution, saved function revisions, grants and background runs. Runtime `3234b5b` is deployed. [EXECUTION.md](docs/EXECUTION.md) describes actual capabilities and limits. The earlier execution checklist is preserved in [the archive](docs/archive/development-execution-foundation-2026-10-11.md); its completed checkboxes do not mean the expanded product is complete.
+
+Not yet complete: a shared cross-import entity layer with reversible reconciliation; general generated-interface hosting; movable folders/projects/components; live external adapters. Existing views, forms and sharing are reusable foundations, not evidence that all these targets work already. User-driven ChatGPT testing has started; full host acceptance remains open.
 
 ## Ordered implementation steps
 
-### 1. Separate the foundation from legacy business features
+### 1. Define and separate the shared data and component contracts
 
-Shared data/query/document implementations and the capability facade are extracted. The legacy commit/validation engine remains shared to preserve evidence and permission behavior; it is not fully physically split yet.
+- [ ] Inventory actual entity, relationship, project, view, file, permission and execution primitives and their legacy callers.
+- [ ] Define stable IDs and contracts for shared entities/observations, project-specific relationships, folders/projects, saved components/revisions, data bindings and execution references.
+- [ ] Separate data identity from display location; moving a component must not move or duplicate its underlying shared entities.
+- [ ] Finish extracting reusable commit/permission services where needed. Use additive migrations and compatible adapters; preserve existing records and histories.
 
-- [ ] Extract reusable record, document, query, permission and commit services from `src/domain/service.ts`, preserving existing callers and behavior.
-- [x] Separate foundation operation schemas from legacy template/review/automation schemas. Keep the old adapter for existing endpoints until replacement is ready.
-- [x] Introduce a capability registry for operations available to code. Inputs, outputs, effect class and permission checks must be explicit; no raw database handle or arbitrary service-method dispatch.
-- [x] Separate the legacy automation poller from the future general job dispatcher in both production and demo entrypoints. Existing rules must not silently disappear or be translated to code.
-- [x] Add a minimal foundation navigation path. Retire template/business builders from the default experience only with working access to retained records and historical evidence.
+### 2. Build shared entity identity and source provenance
 
-Done when existing data can be read/previewed/committed through the shared foundation API, and legacy entrypoints are thin adapters rather than dependencies of the foundation.
+- [ ] Support canonical entity references across imports/projects, aliases and original source observations with timestamps and attribution.
+- [ ] Represent project-specific facts independently of shared person/organization facts; allow historical affiliations and conflicting observations without forced overwrite.
+- [ ] Expose permission-filtered candidate search, entity/relationship reads and proposals to ChatGPT, using flexible user-defined types rather than a clinical ontology.
 
-### 2. Implement isolated, read-only execution first
+### 3. Implement reversible AI-led reconciliation
 
-- [x] Define a runtime adapter and implement one actual isolation boundary for generated code. Do not use the Express process, Node `vm`, or the existing extraction subprocess as an untrusted-code sandbox.
-- [x] Run a first supported language against a short-lived, run-scoped capability broker. Make language/runtime/dependency versions explicit and pinned; no arbitrary package installation during a run.
-- [x] Enforce CPU/wall-time, memory, process, output and temporary-file limits; cancellation must terminate the isolated job.
-- [x] Deny direct database access, host files, credentials and unrestricted outbound networking. Broker reads under the initiating identity and current permissions.
-- [x] Return bounded results, artifacts and diagnostics without saving experimental source/data as authoritative records. Record only minimal operational metadata under a documented retention policy.
+- [ ] Let ChatGPT propose match/link/merge, preferred-value and conflict decisions, including rationale and source references.
+- [ ] Preserve original entries and alternatives, record accepted decisions, and implement undo/split/correction without losing relationships or audit evidence.
+- [ ] Apply initial confirmed imports or scoped future-maintenance grants atomically with permission/concurrency checks and idempotent receipts.
+- [ ] Keep uncertain alternatives local to facts/entities; do not create whole-database branches. Do not require a rigid matching rulebook or prompt for every minor normalization.
+- [ ] Ensure a merge cannot expose hidden data, infer permissions, or silently retarget an external action.
 
-Done when a synthetic program can query permitted records and compute a result, cannot read another tenant or contact an undeclared destination, and can be stopped. Confirm runtime hosting feasibility before enabling generated-code execution on Render; no paid sandbox/provider provisioning without the required account/budget decision.
+### 4. Add projects, folders and durable saved components
 
-### 3. Add generic change proposals and confirmed commits
+- [ ] Implement project/folder/component create, rename, organize, archive and move APIs with stable IDs and revision history.
+- [ ] Save component source/configuration, entrypoint, data bindings, assets, runtime and capability requirements after preview confirmation.
+- [ ] Allow many components to reference the same shared entities. Distinguish an organizational move from an explicit duplicate/fork.
+- [ ] Make moves permission-aware; preserve references, version history and jobs, while pausing affected execution if its authority is no longer valid.
 
-- [x] Let execution collect data mutations and file artifacts in a temporary proposal without applying them.
-- [x] Bind the proposal to identity, input/function digest, exact write set, data/configuration versions and expiration.
-- [x] Reuse the existing commit transaction, permission rechecks, revision/audit records and idempotent receipt. Commit the reviewed write set, not a fresh execution of possibly changed code.
-- [ ] Explicitly distinguish database changes from external actions. An external action cannot be rolled back by a database transaction; reconcile uncertain outcomes and do not blindly retry non-idempotent actions.
-- [x] Add a confirmation interface usable from the permitted ChatGPT surface, with standalone fallback. Host verification remains deferred.
+### 5. Host ChatGPT-generated interfaces
 
-Done when code proposes multiple changes, confirmation atomically commits them, stale/unauthorized proposals fail without partial writes, and a retry returns the original receipt.
+- [ ] Choose and document one supported UI package/runtime contract, then implement isolated rendering for generated interfaces in the workspace and compatible ChatGPT surface.
+- [ ] Provide a permission-checked bridge for queries, previews/commits, files, authorized tools and run status. Keep tokens and raw database connections out of generated code.
+- [ ] Support provisional rendering, explicit save, reopen by exact revision, updates and recovery of an earlier component version.
+- [ ] Support user-created forms, tables, charts and mixed interfaces without shipping a fixed template catalogue. Validate host capabilities before promising unrestricted rendering.
 
-### 4. Save and version reusable functions
+### 6. Build the project workspace and collection/sharing experience
 
-- [x] Add immutable function revisions containing source, runtime, declared dependencies, input/output contracts and requested capabilities.
-- [x] Preview and confirm function persistence separately from granting execution rights. Save no draft simply because ChatGPT generated it.
-- [x] Invoke an exact revision with validated inputs and results linked to provenance.
-- [x] Bind side-effect grants to a reviewed revision and destination/resource scope; revisions requiring changed authority need new consent.
+- [ ] Show folders, projects and their components; support drag and drop plus explicit move controls, search and reopening across chats.
+- [ ] Apply granular human and AI access to saved components and underlying data; displaying data to a person must not implicitly disclose it to the model.
+- [ ] Reuse existing sharing primitives for team/external access and scoped information collection. Implement revocation and explicit submit/save semantics without mandatory business approval stages.
+- [ ] Verify moving, sharing or embedding a component cannot expand its data access. Keep standalone and ChatGPT backed by the same saved state.
 
-Done when ChatGPT can save a function after confirmation and invoke that same revision in another session without recreating it.
+### 7. Bind components to tools and background execution
 
-### 5. Generalize background execution
+- [ ] Attach saved components to exact function revisions, triggers and scoped grants using the existing worker infrastructure.
+- [ ] Expose generic run/status/cancel/schedule controls; do not add a hardcoded business automation catalogue.
+- [ ] Implement tenant/user provider connections and trusted adapter registration. Start with the first selected external service, then add email/calendar or other requested capabilities as accounts allow.
+- [ ] Add external-effect previews where possible, receipts, idempotency and unknown-outcome reconciliation. Database rollback cannot undo a sent email or calendar invitation.
+- [ ] Keep electronic signatures conditional on provider cost/requirements; do not label internal confirmations as regulated signatures. Backend workers do not inherit ChatGPT's other connections automatically.
 
-- [x] Add general run records, leased jobs, attempts, cancellation, bounded retries, results and recovery after worker interruption.
-- [x] Reuse scheduling/time-zone and event cursor mechanics, but dispatch saved function revisions instead of hardcoded business action enums.
-- [x] Permit preview-only scheduled computation or writes covered by an explicit active standing grant. Approval must constrain operations and destinations; it is not blanket permission for generated code.
-- [x] Recheck permissions/grants at execution and each brokered side effect. Use idempotency/reconciliation appropriate to the effect.
-- [x] Expose generic schedule/run controls rather than reminder/review-specific builders.
+### 8. Complete integrity, access and recovery across the whole product
 
-Done when an authorized saved function runs with ChatGPT closed, produces a durable run result, survives a worker retry without duplicate effects, and stops acting after revocation.
+- [ ] Extend audit/export/restore to entity observations and reconciliation, projects/components/assets, access changes, grants and execution evidence.
+- [ ] Move remaining in-memory data/file previews to shared temporary storage; retain clear draft expiry and never claim an unsaved preview is durable saved work.
+- [ ] Provision restricted runtime credentials and essential monitoring; resolve production retention/recovery/location/budget and demonstrate an actual managed backup restore.
+- [ ] Preserve original files on extraction failure with quiet availability flags. Failed authoritative saves must remain visibly unsaved and retryable.
+- [ ] Retire obsolete fixed business UI/code only after dependency checks, retaining historical evidence and management of any active legacy jobs.
 
-### 6. Add the extensible tool gateway
+### 9. Verify the complete user journey and improve
 
-Internal typed discovery/invocation and synthetic echo are implemented. Remote connections, write adapters and provider reconciliation are intentionally not advertised as available; they need a selected provider and credentials.
+- [ ] Use one synthetic investigator/study/conference/organization scenario: confirmed import, reuse shared identities, preserve a conflicting fact, reverse an incorrect match, create/reopen two different components, move one, share restricted access and run an authorized background action.
+- [ ] Verify the real ChatGPT sign-in return, workspace opening, component rendering, confirmations, cross-chat persistence and revocation. Do not infer success from backend tests alone.
+- [ ] Verify one enabled provider with safe test destinations; no real-recipient test messages.
+- [ ] Fix observed defects, record limitations and verify recovery before customer reliance. Public publication and Trialegions rename remain separate decisions.
 
-- [x] Define typed tool discovery/invocation and read/proposal effect classification for Trialy data and synthetic echo. These adapters require no external credentials.
-- [ ] Bind tools to tenant/user connections; keep credentials outside generated-code processes. Register outbound destinations through trusted configuration, not arbitrary URLs from source content.
-- [ ] Support once/future invocation scopes, previews where supported, operation receipts and unknown-outcome reconciliation.
-- [ ] Persist approved tool definitions/versions with an explicit review path. Treat returned text/files as data, not permission to call another tool.
-- [ ] Add actual external providers only when selected credentials/accounts are available. Do not assume ChatGPT-connected tools can be invoked by Trialy's worker.
+## Removed from the active plan
 
-Done when code discovers and invokes an allowed tool through the broker, cannot access another connection, and a tool side effect requires the appropriate permission.
+No fixed clinical templates, review chains, prescribed business workflows or hardcoded action catalogue. The minimal execution panel is no longer the final product target, and generated UI hosting is no longer excluded. No whole-database branching for every ambiguous match, automatic destructive deduplication, or unrestricted maintenance authority. No speculative vector service or scaling infrastructure.
 
-### 7. Complete the minimal ChatGPT execution experience
+## Lean verification and user dependencies
 
-- [x] Expose create/run/inspect/cancel/propose/commit/save-function/invoke/schedule capabilities through MCP.
-- [x] Provide data, function, run, result/artifact and permission views in the embedded interface. Reuse generic components; no new business modules or template catalogue.
-- [x] Support granular data queries/joins and source references needed by actual programs, using authorized operations rather than unrestricted SQL.
-- [x] Provide app-only confirmation controls, with standalone fallback. Actual host enforcement and human-origin assurance still require the deferred host acceptance; visibility metadata alone is not proof.
-- [ ] Retire obsolete business UI and code after dependency checks, while retaining access to records, histories and any active legacy job-management path.
+Use focused checks for reconciliation undo/source preservation, tenant/AI access, move/sharing boundaries, generated UI isolation, atomic saves/retries and external duplicate effects, plus the single end-to-end example above. Reuse existing meaningful checks; avoid exhaustive cosmetic or template tests.
 
-Done when the complete synthetic code → experiment → proposed changes → confirmation → save function → repeat invocation path works through the shared backend. Real host return/opening/files and cross-conversation behavior require the deferred ChatGPT acceptance session.
-
-### 8. Production readiness and final acceptance
-
-Updated runtime-role grants, export coverage, rollout/rollback instructions and synthetic restore evidence exist. Actual production role provisioning, managed restore and real-host acceptance remain open. No new account or paid resource was required for the JavaScript runtime.
-
-- [ ] Apply separate runtime credentials, configure monitoring and choose operational retention for code/run artifacts and diagnostics.
-- [ ] Agree recovery expectations, budget/geography and customer policies; perform an actual managed backup restore including new foundation objects.
-- [ ] Complete real ChatGPT/account/browser acceptance, fix observed issues and verify enabled provider connections when available.
-- [ ] Prepare rollout/rollback and only then perform any separately authorized Trialegions name/domain cutover.
-
-## What is not in this plan
-
-No industry templates, prescribed review states/chains, specialized reminder products, RFP-specific processing or mandatory intake/acceptance processes. No vector service, arbitrary generated UI framework, individual-row permissions or scale infrastructure without a demonstrated foundation requirement. These are not prerequisites disguised as “remaining full scope.”
-
-## Lean verification
-
-Keep the existing essential data/auth tests during extraction. Add focused checks for the new boundaries: tenant/capability isolation; resource limits/cancellation; proposal/commit/staleness/retry; function version/grant binding; job recovery; tool credentials and duplicate effects. One synthetic end-to-end foundation example is enough initially. Do not run every old business-flow test as a permanent product gate after its feature is retired, but preserve relevant data-integrity regression coverage.
-
-## Decisions that may require the user later
-
-- Hosting an actual untrusted-code sandbox if the existing environment cannot provide the required isolation; any new account or cost.
-- External provider credentials and permitted destinations.
-- Production recovery/retention/location/budget and publication cutover.
-
-No decision is needed to start separating the foundation interfaces. Record feasibility findings before asking for any runtime/provider decision; do not provision speculative infrastructure.
+Proceed without further product decisions on the shared data/component foundation. Ask only when a concrete external provider/account, new paid infrastructure, production recovery policy or publication decision is required. No new account or cost has been approved by this documentation update.
