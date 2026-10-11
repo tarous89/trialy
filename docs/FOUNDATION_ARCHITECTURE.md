@@ -21,6 +21,14 @@ Use the three-layer model in README: platform invariants, extensible common pers
 
 Generated component contracts must capture field bindings and provenance so editing can target the correct shared record, project-specific relationship or presentation configuration. See INTERFACE_RULES.md for approved navigation/editability preferences and the still-proposed detailed editing policy. Session age must not be mistaken for record identity or revision state.
 
+## Approved capture and maintenance boundary
+
+Task-driven setup requires reviewed purpose, inclusion criteria, schema and maintenance permission. A multi-entry/repeated tracking task can start with one record; reuse existing structures before proposing new ones. Record the scope and schema revision so the broker can constrain routine writes to approved types/fields/actions and authorized sources. ChatGPT evaluates semantic fit and reconciliation; uncertain fit must not silently expand the scope. Do not replace semantic judgment with a hardcoded clinical workflow catalogue.
+
+After setup approval, routine qualifying additions and updates use the scoped standing permission. Schema and inclusion-scope expansion require a new reviewed proposal. Approved new fields can be backfilled from permitted sources. Maintain previous observations, provenance and correction history; do not archive whole conversations or add fields from passing mentions. Explicitly saved original files remain preserved. An accepted maintenance scope is not automatically a scheduled job or access to every chat; available sources and triggers must be explicit.
+
+This capture contract is a target layered onto existing proposals, grants and receipts, not already-complete behavior. Current execution-grant limitations remain documented in EXECUTION.md until the implementation changes.
+
 ## Responsibility boundary
 
 ChatGPT creates code and application logic. Trialy supplies persistent data, isolated execution and authorized tools. A generic table view is a useful client; it does not constrain the logic that may run. A user may create a review process in their own data/code, but that process is not a platform-wide requirement.

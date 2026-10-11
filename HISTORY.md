@@ -229,3 +229,13 @@ Documentation only; no runtime/deployment changes.
 - Recorded editable-by-default interfaces within permissions, authorized source inspection, and detail pages or short modals instead of below-content expansion.
 - Added INTERFACE_RULES.md to separate these preferences from a proposed binding-based edit policy: live record updates versus presentation edits, protected calculations/snapshots and no silent overrides. Same-session versus later-session editing is not recommended as the authority boundary. Detailed editing semantics await user feedback.
 - Updated roadmap contracts and UI tasks; preserved historical checklists and existing implementation status.
+
+## Task-driven setup and scoped automatic maintenance approved — 2026-10-11
+
+Documentation-only update; no application behavior or deployment changes.
+
+- New structures are justified by multiple entries, repeated steps/actions, tracking/workflows or expected future growth, even with one initial record. Reuse existing authorized structures first; review and approve setup and maintenance scope.
+- Within approved fields, relationships, purpose and inclusion criteria, automatically extract relevant facts, add eligible records and reconcile/update existing ones under revocable permission, without per-entry approval.
+- Passing mentions do not create tables/columns or whole-message archives. Explicitly stored original files remain preserved. Scope applies to information available through authorized work, not every ChatGPT conversation.
+- Explicitly requested structure changes require reviewed expansion; approved new fields can be populated from permitted sources and maintained thereafter. Preserve uncertainty, prior facts and reversible reconciliation.
+- Updated active scope, architecture and roadmap, with focused capture-boundary acceptance checks. Existing implemented status and separately proposed interface edit semantics are unchanged.

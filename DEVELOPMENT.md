@@ -15,6 +15,7 @@ Database layering and the common vocabulary are agreed in [README](README.md). [
 ### 1. Define and separate the shared data and component contracts
 
 - [ ] Implement the three-layer contract: fixed platform, extensible person/organization/project/location concepts, and customer-designed schema. Use the platform project identity for project relationships; studies are optional extensions.
+- [ ] Define a versioned maintenance scope: task purpose, inclusion criteria, approved schema/relationships, authorized sources, actor and revocable permission. Keep schema/setup approval distinct from routine data maintenance.
 - [ ] Inventory actual entity, relationship, project, view, file, permission and execution primitives and their legacy callers.
 - [ ] Define stable IDs and contracts for shared entities/observations, project-specific relationships, folders/projects, saved components/revisions, data bindings and execution references.
 - [ ] Separate data identity from display location; moving a component must not move or duplicate its underlying shared entities.
@@ -29,6 +30,9 @@ Database layering and the common vocabulary are agreed in [README](README.md). [
 
 ### 3. Implement reversible AI-led reconciliation
 
+- [ ] Implement task-driven setup: repeated/multiple-entry tracking or expected reuse qualifies, including one starting record; inspect/reuse first, preview the structure and initial import, then require setup approval.
+- [ ] Implement automatic extraction, qualifying additions and updates under the approved maintenance scope. Do not persist unrelated mentions, new columns or entire communications by default; preserve relevant provenance and explicitly saved originals.
+- [ ] Implement reviewed schema/inclusion-scope expansion and permitted backfill (for example addresses), then ongoing maintenance of newly approved fields. Do not silently broaden sources or fabricate missing values.
 - [ ] Let ChatGPT propose match/link/merge, preferred-value and conflict decisions, including rationale and source references.
 - [ ] Preserve original entries and alternatives, record accepted decisions, and implement undo/split/correction without losing relationships or audit evidence.
 - [ ] Apply initial confirmed imports or scoped future-maintenance grants atomically with permission/concurrency checks and idempotent receipts.
@@ -76,6 +80,7 @@ Database layering and the common vocabulary are agreed in [README](README.md). [
 
 ### 9. Verify the complete user journey and improve
 
+- [ ] Add focused capture-boundary checks to the synthetic scenario: one-off mention creates no structure; approved tracking adds/reconciles qualifying data; unrelated facts and out-of-scope entities are not captured; new fields need approval; revoked grants stop maintenance.
 - [ ] Use one synthetic investigator/study/conference/organization scenario: confirmed import, reuse shared identities, preserve a conflicting fact, reverse an incorrect match, create/reopen two different components, move one, share restricted access and run an authorized background action.
 - [ ] Verify the real ChatGPT sign-in return, workspace opening, component rendering, confirmations, cross-chat persistence and revocation. Do not infer success from backend tests alone.
 - [ ] Verify one enabled provider with safe test destinations; no real-recipient test messages.

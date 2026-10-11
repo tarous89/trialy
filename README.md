@@ -52,12 +52,28 @@ Start with logical customer isolation in shared PostgreSQL, not a physical datab
 
 Interface preferences and the proposed edit-routing policy are tracked separately in [INTERFACE_RULES.md](docs/INTERFACE_RULES.md). These are development targets, not claims that generated interfaces already implement them.
 
+## Task-driven capture and automatic maintenance — agreed 11 October 2026
+
+**The task determines the structure; the approved structure and inclusion criteria determine what Trialy maintains.** Capture, structuring and reconciliation are distinct decisions, not permission to record everything mentioned.
+
+- Establish or extend a table when the requested work involves multiple entries, repeated actions, tracking, a workflow or expected future additions. A task can qualify with only one initial person/site if it will track repeated interactions or develop over time. A one-off draft or passing mention alone does not justify creating a structure.
+- Inspect and reuse existing authorized structures and entities first. Propose only the fields, relationships and additional types needed for the task. Show the purpose, inclusion criteria, initial records and ongoing maintenance scope in the setup preview; save the setup after review and approval.
+- Approval of ongoing maintenance supplies scoped, revocable permission for routine additions, matching, reconciliation and updates within that approved structure. Do not ask again for each qualifying record or fact. This does not grant new external actions, data access or arbitrary schema changes.
+- Extract relevant facts from information made available to Trialy through authorized work. Update existing entities and add qualifying new entities automatically, preserving shared identity across projects. Do not imply access to all ChatGPT conversations or continuous background discovery without an enabled trigger/source.
+- Fit is both structural and semantic: a company having a name/email does not make it eligible for a project-specific CRO tracker. Maintain fields and relationships only where the information concerns an eligible entity and the approved purpose.
+- Do not create columns, tables or source archives simply because additional facts were mentioned. Do not save entire messages or communication histories by default; extract only relevant facts and retain proportionate provenance. Communication records are appropriate only when explicitly included in the reviewed tracking structure. Original files explicitly accepted for storage remain preserved under the existing original-file policy.
+- A request such as “add addresses to this tracker” initiates a reviewed schema expansion. After approval, populate from available permitted sources and maintain the new field like the existing fields. Missing values remain missing and uncertainty remains explicit; broader research requires an authorized source/task scope.
+- Distinguish a plan, an inference and an observed action. Drafting is not sending; a prospective invitee is not a confirmed attendee. Retain prior observations and reversible decisions when information conflicts or changes over time.
+- Give concise maintenance summaries and preserve audit/version history. Permission revocation, schema revision and stale data checks apply to automatic maintenance as to manual changes. Uncertain inclusion can remain provisional rather than silently expanding the capture scope.
+
+This is the agreed target behavior. Current schema creation, confirmed storage and execution grants are foundations; the integrated automatic capture/reconciliation path and its approved-scope contract are still to be implemented.
+
 ## Reconciliation and saving decisions
 
 - ChatGPT may judge that two differently named entries represent the same entity; do not require hardcoded business matching rules or a confirmation for every spelling variation.
 - Preserve each original observation, source and competing value. Store a preferred interpretation plus reversible links/merge decisions and their rationale. Correction must be able to separate an incorrect match without losing source facts or project-specific context.
 - Do not branch the entire database for every possible interpretation. Keep uncertainty and alternatives at the relevant entity, fact or relationship. This is an implementation direction, not an already implemented capability.
-- Experiments remain provisional. Initial imports/components require confirmation before becoming saved work. Later maintenance can use a scoped, revocable standing permission; it is not unrestricted permission to rewrite data.
+- Experiments remain provisional. Initial setup/imports/components require confirmation before becoming saved work. Subsequent qualifying additions and updates use the approved maintenance scope without per-entry confirmation; structure or inclusion-scope expansion requires review. This is not unrestricted permission to rewrite data.
 - A likely identity match does not itself authorize contacting someone, changing recipients, sharing restricted information or granting access. Reconciliation operates only on data the acting identity and AI may access.
 
 We are not building industry templates, prescribed review chains or fixed business workflow modules. User-created workflows are in scope as code and components on the shared foundation. Biotech teams remain the intended audience without dictating database schemas or mandatory screens.
