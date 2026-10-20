@@ -21,6 +21,9 @@ test('anonymous preview → account review → atomic durable save with no dupli
  assert.equal((await mcp('open_workspace')).body.result.structuredContent.result.guestWelcome,true);
  assert.equal((await mcp('list_workspaces')).body.result.isError,true);
  assert.equal((await request(app).post('/mcp').set('Authorization','Bearer invalid').send({jsonrpc:'2.0',id:1,method:'tools/call',params:{name:'open_workspace',arguments:{}}})).status,401);
+ const listed=await request(app).post('/mcp').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:2,method:'tools/list',params:{}});
+ assert.deepEqual(listed.body.result.tools.find((t:any)=>t.name==='preview_tracker').securitySchemes,[{type:'noauth'}]);
+ assert.deepEqual(listed.body.result.tools.find((t:any)=>t.name==='read_records').securitySchemes,[{type:'oauth2',scopes:['trialy']}]);
  const tid=randomUUID(),rowId=randomUUID();
  const bundle={name:'Launch tracker',tables:[{id:tid,name:'Tasks',fields:[{key:'name',name:'Name',kind:'text',required:true,ai:true}],rows:[{id:rowId,data:{name:'Prepare protocol'}}]}],components:[{name:'Launch',format:'frontend-js',bindings:[{typeId:tid,fields:['name']}],source:`const data=tools.call('records.read',{typeId:'${tid}'});return {html:'<h1>'+data.rows[0].data.name+'</h1>',state:null};`}]};
  const response=await mcp('preview_tracker',{bundle});assert.equal(response.body.result.isError,undefined,JSON.stringify(response.body));const draft=response.body.result.structuredContent.result;
