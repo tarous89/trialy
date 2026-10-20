@@ -4,7 +4,7 @@ import {randomUUID} from 'node:crypto';
 import {readFile,readdir} from 'node:fs/promises';
 import {PGlite} from '@electric-sql/pglite';
 import {Service} from '../src/domain/service.js';
-import {pureCode} from '../src/domain/derived-fields.js';
+import {pureCode,DerivedReader} from '../src/domain/derived-fields.js';
 import type {Database,Connection} from '../src/db/database.js';
 import type {Actor} from '../src/shared/schema.js';
 
@@ -37,6 +37,13 @@ test('CRO comparison: reviewed references, current computed values, views and is
  });
  await t.test('execution scope cannot read a linked table without its capability',async()=>{
   const r=(await s.records(owner,w.id,study,{},[study])).rows[0];assert.equal(r.data.budget,undefined);assert.equal(r.derived.budget.status,'error');
+ });
+ await t.test('frontend field bindings constrain transitive calculation inputs',async()=>{
+  const row=(await db.query('SELECT * FROM records WHERE id=$1',[record])).rows[0];
+  const restricted=new DerivedReader(db,owner,w.id,[study,cro],{[study]:['variance'],[cro]:['budget']});
+  assert.equal((await restricted.read(row)).data.variance,undefined);
+  const bound=new DerivedReader(db,owner,w.id,[study,cro],{[study]:['variance','budget','target','cros'],[cro]:['budget']});
+  assert.equal((await bound.read(row)).data.variance,100);
  });
  await t.test('read-only fields and human approval enforced across MCP proposals',async()=>{
   await assert.rejects(s.preview(owner,w.id,{kind:'update_record',recordId:record,expectedVersion:0,data:{variance:42}}),/unavailable/);

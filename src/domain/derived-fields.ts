@@ -45,6 +45,14 @@ export async function validateDerived(db:Connection,a:Actor,w:string,typeId:stri
    if(f.kind!==output&&!(['number','money'].includes(f.kind)&&['number','money'].includes(output)))fail(400,'invalid_lookup','Lookup output type does not match its source/aggregation');
   }
  }
+ if(typeId){
+  const previous=types.find(t=>t.id===typeId)?.fields??[];
+  const removed=previous.filter((f:Field)=>!fields.some(n=>n.key===f.key)).map((f:Field)=>f.key);
+  if(removed.length)for(const t of types)for(const f of t.fields as Field[])if(f.kind==='field'&&f.targetTypeId===typeId){
+   const used=(await db.query("SELECT id FROM records WHERE workspace_id=$1 AND type_id=$2 AND (data->>$3::text=ANY($4::text[]) OR EXISTS(SELECT 1 FROM jsonb_array_elements_text(CASE WHEN jsonb_typeof(data->$3::text)='array' THEN data->$3::text ELSE '[]'::jsonb END) v WHERE v=ANY($4::text[]))) LIMIT 1",[w,t.id,f.key,removed])).rows;
+   if(used.length)fail(409,'field_dependency','A referenced field cannot be removed; update its references first');
+  }
+ }
  // Validate the whole graph, including existing lookups that point into an edited table.
  const active=new Set<string>(),done=new Set<string>();
  function visit(t:string,key:string){const tag=t+':'+key;if(done.has(tag))return;if(active.has(tag))fail(400,'formula_cycle','Circular derived-field dependency');
@@ -68,8 +76,8 @@ export class DerivedReader{
  private values=new Map<string,Promise<any>>();
  private budget=0;
  private deadline=Date.now()+2500;
- constructor(private db:Connection,private actor:Actor,private workspace:string,private allowedTypes?:string[]){}
- private schema(t:string){if(this.allowedTypes&&!this.allowedTypes.includes(t))throw Error('source_unavailable');if(!this.schemas.has(t))this.schemas.set(t,(async()=>{const {type,policy}=await typeAccess(this.db,this.actor,this.workspace,t);return {type,fields:visibleFields(type.fields,policy,this.actor)};})());return this.schemas.get(t)!;}
+ constructor(private db:Connection,private actor:Actor,private workspace:string,private allowedTypes?:string[],private allowedFields?:Record<string,string[]>){}
+ private schema(t:string){if(this.allowedTypes&&!this.allowedTypes.includes(t))throw Error('source_unavailable');if(!this.schemas.has(t))this.schemas.set(t,(async()=>{const {type,policy}=await typeAccess(this.db,this.actor,this.workspace,t);return {type,fields:visibleFields(type.fields,policy,this.actor).filter(f=>!this.allowedFields||this.allowedFields[t]?.includes(f.key))};})());return this.schemas.get(t)!;}
  private row(id:string){if(!this.rows.has(id))this.rows.set(id,(async()=>{if(++this.budget>3000||Date.now()>this.deadline)throw Error('evaluation_limit');return (await this.db.query("SELECT * FROM records WHERE workspace_id=$1 AND id::text=$2 AND state NOT IN ('archived','superseded')",[this.workspace,id])).rows[0];})());return this.rows.get(id)!;}
  private async value(row:any,key:string,stack:Set<string>):Promise<any>{
   const tag=row.id+':'+key;if(stack.has(tag))throw Error('dependency_cycle');if(this.values.has(tag))return this.values.get(tag)!;

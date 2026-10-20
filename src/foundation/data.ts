@@ -18,7 +18,7 @@ export class DataCapabilities {
  private table(value:unknown){const t=id.parse(value);if(!this.scope.typeIds.includes(t))fail(403,'capability_denied','Table outside declared scope');return t;}
  async invoke(name:string,input:unknown):Promise<unknown>{
   const s=this.service,a=this.actor,w=this.workspaceId;
-  if(name==='entities.search'){const p=dataInputSchemas[name].parse(input) as {typeIds:string[];query:string};p.typeIds.forEach(t=>this.table(t));return new WorkspaceFoundation(s.db).candidates(a,w,p.typeIds,p.query);}
+  if(name==='entities.search'){const p=dataInputSchemas[name].parse(input) as {typeIds:string[];query:string};p.typeIds.forEach(t=>this.table(t));return new WorkspaceFoundation(s.db).candidates(a,w,p.typeIds,p.query,this.scope.typeIds);}
   if(name==='entities.facts'){const p=dataInputSchemas[name].parse(input) as {typeId:string;recordId:string;offset:number};this.table(p.typeId);const f=new WorkspaceFoundation(s.db),record=await f.record(s.db,a,w,p.recordId);if(record.type_id!==p.typeId)fail(403,'capability_denied','Record outside declared table');return f.recordFacts(a,w,p.recordId,p.offset);}
   if(name==='entities.read'){const p=dataInputSchemas[name].parse(input) as {typeId:string;recordId:string};this.table(p.typeId);const f=new WorkspaceFoundation(s.db),r=await f.record(s.db,a,w,p.recordId);if(r.type_id!==p.typeId)fail(403,'capability_denied','Record outside declared table');return f.identity(a,w,p.recordId,false);}
   if(name==='tables.list')return (await s.types(a,w)).filter(t=>this.scope.typeIds.includes(t.id));

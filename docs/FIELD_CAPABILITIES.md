@@ -13,7 +13,7 @@ Approved capability upgrade, 20 October 2026. Extends the shared foundation; no 
 
 JavaScript receives only declared inputs. It runs in a fresh QuickJS/WASM context with a 4 MiB guest heap, bounded stack and 40 ms execution deadline. It has no Node, network, tools or write capabilities. Date.parse and Date.UTC are available for explicit date inputs; current time, zero-argument Date and random values are unavailable. For days remaining, use an explicit as-of date field. Non-finite numbers, wrong output types and execution failures are explicit errors.
 
-Dependency validation rejects local/cross-table cycles and removal or incompatible changes to lookup source fields. Source permissions are checked on every read. Functions also need the linked table in their execution scope; access to the destination table alone does not widen that scope.
+Dependency validation rejects local/cross-table cycles and removal or incompatible changes to lookup source fields. Source permissions are checked on every read. Saved frontend code must bind calculation input fields and linked source fields; field-level bindings are enforced transitively. Functions also need the linked table in their execution scope; access to the destination table alone does not widen that scope.
 
 ## Read and query behavior
 

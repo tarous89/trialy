@@ -1,3 +1,4 @@
+import {DerivedReader} from '../domain/derived-fields.js';
 import {derived} from '../shared/formulas.js';
 import {exchangeReview,createExchange} from '../domain/exchange.js';
 import {TableMappings,mappingStamp,validatePairs} from './mappings.js';
@@ -127,7 +128,7 @@ export class WorkspaceFoundation {
       FROM records WHERE workspace_id=$1 AND type_id=$2 AND state<>'archived' ORDER BY created_at,id LIMIT $4 OFFSET $5) page`,[w,v.typeId,binding.fields,v.limit,v.offset])).rows;
      if(rows.some(r=>r.data===null))fail(400,'read_limit','A record exceeds the interface read budget');
      const total=Number((await this.db.query("SELECT count(*) AS n FROM records WHERE workspace_id=$1 AND type_id=$2 AND state<>'archived'",[w,v.typeId])).rows[0].n);
-     return {rows,total,limit:v.limit,offset:v.offset};
+     const bound=Object.fromEntries(content.bindings.map((b:any)=>[b.typeId,b.fields]));const reader=new DerivedReader(this.db,a,w,Object.keys(bound),bound);return {rows:await Promise.all(rows.map(r=>reader.read({...r,type_id:v.typeId}))),total,limit:v.limit,offset:v.offset};
     }
     if(name==='records.propose'){
      if(!request.componentId)fail(403,'preview_read_only','Unsaved interface previews cannot propose database changes');
@@ -156,7 +157,8 @@ export class WorkspaceFoundation {
  async renderComponent(a:Actor,w:string,id:string,blockIndex:number,offset=0){
   const c=await this.component(this.db,a,w,id);if(c.archived||c.project_archived||c.format!=='trialy-ui')fail(400,'not_runnable','Choose an active Trialy interface');
   const spec=this.parseInterface(c),block=spec.blocks[blockIndex];if(!block||block.kind!=='table')fail(400,'invalid_block','Choose a table block');
-  const result=await new Service(this.db).records(a,w,block.typeId,{limit:50,offset});const {type,policy}=await typeAccess(this.db,a,w,block.typeId);
+  const result=await new Service(this.db).records(a,w,block.typeId,{limit:50,offset},c.bindings.map((b:any)=>b.typeId));const {type,policy}=await typeAccess(this.db,a,w,block.typeId);
+  const bound=Object.fromEntries(c.bindings.map((b:any)=>[b.typeId,b.fields]));const reader=new DerivedReader(this.db,a,w,Object.keys(bound),bound);result.rows=await Promise.all(result.rows.map(r=>reader.read(r)));
   return {componentVersion:c.version,fields:type.fields.filter((f:any)=>block.fields.includes(f.key)),editable:block.editable&&!['viewer','inspector'].includes(policy.role)&&!policy.archived,...result,rows:result.rows.map(r=>({...r,data:Object.fromEntries(block.fields.map(k=>[k,r.data[k]??null]))}))};
  }
  async readComponent(a:Actor,w:string,id:string){return {workspaceId:w,workspaceFoundation:true,component:await this.component(this.db,a,w,id)};}
@@ -618,9 +620,9 @@ export class WorkspaceFoundation {
   }
   return {recordId,preferredRecordId:preferred.id,typeId:root.type_id,preferredValues:preferred.data,originals:originals.map(r=>({id:r.id,version:r.version,data:r.data})),links:aliases,conflicts,observations,relationships,relationshipsLimit:100,interpretation:'Preferred record is an accepted interpretation, not a destructive merge. Original facts and relationship destinations remain unchanged.'};
  }
- async candidates(a:Actor,w:string,typeIds:string[],query:string){
+ async candidates(a:Actor,w:string,typeIds:string[],query:string,allowedTypes?:string[]){
   const service=new Service(this.db),groups=[];
-  for(const typeId of typeIds){const {type}=await typeAccess(this.db,a,w,typeId);const rows=await service.records(a,w,typeId,{q:query,limit:25});groups.push({typeId,typeName:type.name,candidates:rows.rows,total:rows.total});}
+  for(const typeId of typeIds){const {type}=await typeAccess(this.db,a,w,typeId);const rows=await service.records(a,w,typeId,{q:query,limit:25},allowedTypes);groups.push({typeId,typeName:type.name,candidates:rows.rows,total:rows.total});}
   return {groups,meaning:'Text candidates only; ChatGPT must assess semantic identity and propose any link for approval. Similar names are not proof.'};
  }
  async evidence(a:Actor,w:string,recordId:string){
