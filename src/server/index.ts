@@ -1,3 +1,5 @@
+import {addGuestRoutes} from './guest-drafts.js';
+import {GuestDrafts} from '../workspace/guest-drafts.js';
 import express from 'express';
 import { Postgres } from '../db/database.js';
 import { Service } from '../domain/service.js';
@@ -6,9 +8,10 @@ import { configureAuth } from './auth.js';
 import { addMcp } from './mcp.js';
 if(!process.env.DATABASE_URL)throw new Error('DATABASE_URL required');
 const db=new Postgres(process.env.DATABASE_URL);const service=new Service(db,Number(process.env.MAX_FILE_BYTES??26214400));
-const app=baseApp();app.get('/ready',async(_req,res)=>{try{await db.query('SELECT 1');res.json({status:'ready'});}catch{res.status(503).json({status:'unavailable'});}});const auth=configureAuth(app,db,process.env);addApi(app,service,auth.human);addMcp(app,service,auth.ai);
+const app=baseApp();app.get('/ready',async(_req,res)=>{try{await db.query('SELECT 1');res.json({status:'ready'});}catch{res.status(503).json({status:'unavailable'});}});const auth=configureAuth(app,db,process.env);addGuestRoutes(app,new GuestDrafts(db),process.env.PUBLIC_URL??process.env.RENDER_EXTERNAL_URL??'http://localhost:3000');addApi(app,service,auth.human);addMcp(app,service,auth.ai);
 app.use(express.static('dist/web'));app.get('/{*path}',(req,res)=>{if(req.path.startsWith('/api/')||req.path.startsWith('/auth/')){res.status(404).json({error:'not_found'});return;}res.sendFile('index.html',{root:'dist/web'});});app.use(errors);
 const cleanup=setInterval(()=>{void service.sweep().catch(()=>console.error(JSON.stringify({event:"preview_cleanup_failed"})));},60000);cleanup.unref();
 const host=process.env.LOCAL_DEMO==='true'?'127.0.0.1':'0.0.0.0';
 const server=app.listen(Number(process.env.PORT??3000),host,()=>console.log(JSON.stringify({event:'listening',host,port:Number(process.env.PORT??3000)})));
 for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>{clearInterval(cleanup);server.close(()=>{void db.close().then(()=>process.exit(0));});setTimeout(()=>process.exit(1),15000).unref();});
+

@@ -79,10 +79,10 @@ test('Shared backend: access, committed history, original preservation and retri
  });
  await t.test('MCP transport calls the permission-filtered shared backend',async()=>{
   const app=baseApp();addMcp(app,s,(req,_res,next)=>{req.actor={...owner,origin:'ai'};next();});app.use(errors);
-  const response=await request(app).post('/mcp').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:1,method:'tools/call',params:{name:'read_records',arguments:{workspaceId:w.id,typeId}}});
+  const response=await request(app).post('/mcp').set('Authorization','Bearer synthetic-test').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:1,method:'tools/call',params:{name:'read_records',arguments:{workspaceId:w.id,typeId}}});
   assert.equal(response.status,200);assert.equal(response.body.result.isError,undefined);
   assert.equal(response.body.result.structuredContent.result.rows[0].data.budget,undefined);
-  const denied=await request(app).post('/mcp').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:2,method:'tools/call',params:{name:'list_tables',arguments:{workspaceId:w2.id}}});
+  const denied=await request(app).post('/mcp').set('Authorization','Bearer synthetic-test').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:2,method:'tools/call',params:{name:'list_tables',arguments:{workspaceId:w2.id}}});
   assert.equal(denied.body.result.isError,true);
  });
  await t.test('ChatGPT-first identity and first workspace need no standalone detour',async()=>{
@@ -94,13 +94,13 @@ test('Shared backend: access, committed history, original preservation and retri
   assert.notEqual(await upsertIdentity(db,issuer,'different-user','person@example.invalid'),uid);
   const actor:Actor={userId:uid,origin:'ai'};
   const app=baseApp();addMcp(app,s,(req,_res,next)=>{req.actor=actor;next();});app.use(errors);
-  const invoke=(name:string,args={})=>request(app).post('/mcp').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:1,method:'tools/call',params:{name,arguments:args}});
+  const invoke=(name:string,args={})=>request(app).post('/mcp').set('Authorization','Bearer synthetic-test').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:1,method:'tools/call',params:{name,arguments:args}});
   const welcome=await invoke('open_workspace');assert.equal(welcome.body.result.structuredContent.result.canCreateInitialWorkspace,true);
   assert.equal((await s.workspaces(actor)).length,0);
   const created=await invoke('create_initial_workspace',{name:'My study',confirmed:true,allowAi:true});assert.equal(created.body.result.isError,undefined);
   const opened=await invoke('open_workspace');assert.equal(opened.body.result.structuredContent.result.workspaces.length,1);
   const again=await invoke('create_initial_workspace',{name:'Duplicate',confirmed:true,allowAi:true});assert.equal(again.body.result.isError,true);assert.equal((await s.workspaces(actor)).length,1);
-  const listed=await request(app).post('/mcp').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:2,method:'tools/list',params:{}});
+  const listed=await request(app).post('/mcp').set('Authorization','Bearer synthetic-test').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:2,method:'tools/list',params:{}});
   const entry=listed.body.result.tools.find((t:any)=>t.name==='open_workspace');assert.deepEqual(entry._meta['openai/ui'].entrypoints,[{type:'global'},{type:'thread'}]);
   await s.setAi({...actor,origin:'human'},opened.body.result.structuredContent.result.workspaceId,false);
   const restricted=await invoke('open_workspace');assert.equal(restricted.body.result.structuredContent.result.workspaces.length,0);assert.equal(restricted.body.result.structuredContent.result.canCreateInitialWorkspace,false);
@@ -130,7 +130,7 @@ test('Shared backend: access, committed history, original preservation and retri
   await save({kind:'update_record',recordId,expectedVersion:history.currentVersion,data:{name:'Concurrent edit'}});
   await assert.rejects(s.commit(owner,stale.id,stale.digest),error('stale_version'));
   const app=baseApp();addMcp(app,s,(req,_res,next)=>{req.actor=ai;next();});app.use(errors);
-  const response=await request(app).post('/mcp').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:1,method:'tools/call',params:{name:'record_versions',arguments:{workspaceId:w.id,recordId}}});
+  const response=await request(app).post('/mcp').set('Authorization','Bearer synthetic-test').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:1,method:'tools/call',params:{name:'record_versions',arguments:{workspaceId:w.id,recordId}}});
   assert.equal(response.body.result.isError,undefined);assert.ok(response.body.result.structuredContent.result.revisions.every((v:any)=>!Object.hasOwn(v.data,'budget')));assert.ok(JSON.parse(response.body.result.content[0].text).revisions.every((v:any)=>!Object.hasOwn(v.data,'budget')));
  });
  await t.test('document text preserves source coverage and excludes AI-restricted originals',async()=>{
@@ -277,3 +277,4 @@ test('Shared backend: access, committed history, original preservation and retri
  });
  await db.close();
 });
+

@@ -372,3 +372,7 @@ Roadmap consolidated into implemented foundation and explicit host/provider/prod
 ## 20 October 2026 — Approved field capability upgrade
 
 Extended the existing foundation with permission-aware multi-reference fields, stable table/field references, typed read-time QuickJS computations and cross-table lookups, dependency checks, current-value queries, column renderers and graphical timelines. Shared app/embedded selectors and bulk editing retain exact review and version checks. Stored records are not rewritten by derived reads. Definitions are versioned through existing schema/view revisions. See docs/FIELD_CAPABILITIES.md for limits and host acceptance boundaries.
+
+## 2026-10-20 — Anonymous tracker-to-account transition
+
+Added isolated 24-hour tracker/page previews, persistent workspace save footer, account signup/sign-in return, explicit human account review, atomic import through existing audit/version paths and idempotent save receipts. Reused Intel connection/recovery behavior with the requested one-day retention. Protected account tools still require OAuth; no new grants or existing-data access. Guest-save integration test and full build/backend suite cover the change; real ChatGPT/browser acceptance remains unverified. See docs/GUEST_SAVE_FLOW.md.

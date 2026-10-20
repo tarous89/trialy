@@ -1,0 +1,105 @@
+import {randomBytes,randomUUID} from 'node:crypto';
+import {z} from 'zod';
+import type {Database} from '../db/database.js';
+import {id,fieldsSchema,fail,type Actor} from '../shared/schema.js';
+import {componentContent} from './schema.js';
+import {frontendOutput,frontendRead,frontendRequest} from './frontend.js';
+import {execute} from '../foundation/runtime.js';
+import {Service} from '../domain/service.js';
+import {WorkspaceFoundation} from './service.js';
+import {checksum} from '../domain/evidence.js';
+import {requireHuman} from '../domain/write-authorization.js';
+const draftValues=z.record(z.string(),z.union([z.string().max(50000),z.number().finite(),z.boolean(),z.array(z.string().max(200)).max(100),z.null()]));
+export const guestHandle=z.object({id,token:z.string().regex(/^[A-Za-z0-9_-]{43}$/)}).strict();
+export const guestBundle=z.object({
+ name:z.string().trim().min(1).max(100),
+ tables:z.array(z.object({id,name:z.string().min(1).max(100),fields:fieldsSchema,
+ rows:z.array(z.object({id,data:draftValues}).strict()).max(200).default([])}).strict()).max(10).default([]),
+ components:z.array(componentContent).min(1).max(10)
+}).strict().superRefine((v,ctx)=>{
+ const ids=v.tables.flatMap(t=>[t.id,...t.rows.map(r=>r.id)]);
+ if(new Set(ids).size!==ids.length)ctx.addIssue({code:'custom',message:'Use distinct draft table and record IDs'});
+ if(v.tables.reduce((n,t)=>n+t.rows.length,0)>200)ctx.addIssue({code:'custom',message:'A temporary tracker supports up to 200 initial records'});
+ for(const t of v.tables)for(const f of t.fields)if(['person','document','relationship','table','field'].includes(f.kind)||f.lookup)ctx.addIssue({code:'custom',message:'Create account-linked reference fields after saving the temporary tracker'});
+ for(const c of v.components){
+  if(c.assets.length||c.execution.length||c.sourceAccess!=='workspace')ctx.addIssue({code:'custom',message:'Connect and save before attaching account files, execution or sharing permissions'});
+  if(!['frontend-js','text','markdown','json','html','javascript'].includes(c.format))ctx.addIssue({code:'custom',message:'Use frontend-js for an interactive temporary interface'});
+  for(const b of c.bindings){const t=v.tables.find(t=>t.id===b.typeId);if(!t||b.fields.some(k=>!t.fields.some(f=>f.key===k)))ctx.addIssue({code:'custom',message:'Bind only fields included in this temporary tracker'});}
+ }
+});
+export type GuestBundle=z.infer<typeof guestBundle>;
+const active=new Set<string>();
+export class GuestDrafts{
+ constructor(readonly db:Database){}
+ async create(input:unknown){
+  const body=guestBundle.parse(input),raw=JSON.stringify(body);
+  if(Buffer.byteLength(raw)>512000)fail(413,'draft_limit','Temporary trackers support up to 500 KB');
+  const handle={id:randomUUID(),token:randomBytes(32).toString('base64url')};
+  await this.db.transaction(async tx=>{
+   await tx.query('SELECT pg_advisory_xact_lock(873468)');
+   await tx.query('DELETE FROM guest_drafts WHERE expires_at<=now() AND receipt IS NULL');
+   const usage=(await tx.query('SELECT count(*) AS n,coalesce(sum(octet_length(body::text)),0) AS bytes FROM guest_drafts WHERE receipt IS NULL')).rows[0];
+   if(Number(usage.n)>=1000||Number(usage.bytes)+Buffer.byteLength(raw)>100*1024*1024)fail(429,'draft_capacity','Temporary storage is busy. Retry shortly.');
+   await tx.query('INSERT INTO guest_drafts(id,capability_hash,body,digest) VALUES($1,$2,$3,$4)',[handle.id,checksum(handle.token),raw,checksum(raw)]);
+  });return this.read(handle);
+ }
+ async read(input:unknown){
+  const handle=guestHandle.parse(input);
+  const row=(await this.db.query('SELECT * FROM guest_drafts WHERE id=$1 AND capability_hash=$2',[handle.id,checksum(handle.token)])).rows[0];
+  if(!row)fail(404,'draft_missing','This temporary tracker is unavailable');
+  // Capability holders get a receipt, never access to the saved account contents.
+  if(row.receipt)return {guestDraft:true,handle,status:'saved',receipt:row.receipt};
+  if(new Date(row.expires_at).getTime()<=Date.now())fail(410,'draft_expired','This temporary tracker expired. Ask ChatGPT to prepare it again.');
+  return {guestDraft:true,handle,status:'temporary',bundle:row.body as GuestBundle,digest:row.digest,expiresAt:new Date(row.expires_at).toISOString(),saveUrl:new URL('/save-preview',process.env.PUBLIC_URL??'https://trialy-web.onrender.com').href+'#preview='+encodeURIComponent(JSON.stringify(handle))};
+ }
+ async run(input:unknown){
+  const v=z.object({handle:guestHandle,component:z.number().int().min(0).max(9),request:frontendRequest}).strict().parse(input);
+  const draft=await this.read(v.handle);if(!draft.bundle)fail(409,'already_saved','Open the saved tracker to continue');
+  const c=draft.bundle.components[v.component];if(!c||c.format!=='frontend-js')fail(400,'not_executable','Choose frontend-js code');
+  if(Buffer.byteLength(JSON.stringify(v.request))>150000)fail(413,'input_limit','Interface input is too large');
+  if(active.size>=2||active.has(v.handle.id))fail(429,'runtime_busy','Another preview is running. Retry shortly.');active.add(v.handle.id);
+  try{
+   const output=frontendOutput.parse(await execute(c.source,{state:v.request.state,event:v.request.event},async(name,args)=>{
+    if(name!=='records.read')fail(403,'preview_read_only','Temporary code can only read its bound preview tables. Save before proposing database changes.');
+    const q=frontendRead.parse(args),binding=c.bindings.find(b=>b.typeId===q.typeId),t=draft.bundle!.tables.find(t=>t.id===q.typeId);
+    if(!binding||!t)fail(403,'binding_required','Table is not bound to this preview');
+    return {rows:t.rows.slice(q.offset,q.offset+q.limit).map(r=>({id:r.id,version:0,data:Object.fromEntries(Object.entries(r.data).filter(([k])=>binding.fields.includes(k)))})),total:t.rows.length,limit:q.limit,offset:q.offset};
+   }));
+   return {...output,temporary:true,frameUrl:new URL('/frontend/frame',process.env.PUBLIC_URL??'http://localhost:3000').href};
+  }finally{active.delete(v.handle.id);}
+ }
+ async claim(a:Actor,input:unknown,digest:string){
+  requireHuman(a);const handle=guestHandle.parse(input);
+  return this.db.transaction(async tx=>{
+   const r=(await tx.query('SELECT * FROM guest_drafts WHERE id=$1 AND capability_hash=$2 FOR UPDATE',[handle.id,checksum(handle.token)])).rows[0];
+   if(!r)fail(404,'draft_missing','Temporary tracker unavailable');
+   if(r.digest!==digest)fail(409,'draft_changed','Review the exact tracker before saving');
+   if(r.receipt){if(r.claimed_by!==a.userId)fail(409,'account_changed','This tracker was saved to a different account. No work was transferred.');return r.receipt;}
+   if(new Date(r.expires_at).getTime()<=Date.now())fail(410,'draft_expired','Temporary tracker expired');
+   const body=guestBundle.parse(r.body);
+   const db:Database={query:(sql,v)=>tx.query(sql,v),transaction:fn=>fn(tx),close:async()=>{}};
+   const service=new Service(db),f=new WorkspaceFoundation(db);
+   // Every operation uses existing validation, write authorization, revisions and audit.
+   // The outer transaction makes the whole import and receipt atomic.
+   const w=await service.createWorkspace(a,body.name,{initialAiWorkspace:false});
+   await service.setAi(a,w.id,true);
+   const change=async(op:unknown)=>{const p=await service.preview(a,w.id,op);return service.commit(a,p.id,p.digest);};
+   const organization=async(op:unknown)=>{const p=await f.preview(a,w.id,op);return f.confirm(a,w.id,p.id,p.digest);};
+   const project=await organization({kind:'create_node',nodeKind:'project',name:body.name});
+   const mapping=new Map<string,string>(),records=[];
+   for(const t of body.tables){
+    const saved=await change({kind:'create_type',name:t.name,fields:t.fields});const tableId=saved.objects[0].id;mapping.set(t.id,tableId);
+    for(const row of t.rows){const saved=await change({kind:'create_record',typeId:tableId,data:row.data});mapping.set(row.id,saved.objects[0].id);records.push({recordId:saved.objects[0].id,expectedVersion:0});}
+   }
+   if(records.length)await organization({kind:'link_project_records',projectId:project.id,expectedProjectVersion:0,records,reason:'Initial tracker saved by its account owner'});
+   const components=[];
+   for(const c of body.components){
+    const source=c.source.replace(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/gi,x=>mapping.get(x)??x);
+    const result=await organization({kind:'save_component',projectId:project.id,content:{...c,source,bindings:c.bindings.map(b=>({...b,typeId:mapping.get(b.typeId)!}))}});components.push(result.id);
+   }
+   const receipt={status:'saved',workspaceId:w.id,projectId:project.id,componentIds:components,savedAt:new Date().toISOString()};
+   await tx.query('UPDATE guest_drafts SET claimed_by=$2,receipt=$3,body=NULL WHERE id=$1',[handle.id,a.userId,JSON.stringify(receipt)]);
+   return receipt;
+  });
+ }
+}
