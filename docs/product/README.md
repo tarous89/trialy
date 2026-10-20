@@ -14,7 +14,7 @@ A feature here is a **customer-facing use case** assembled from customer-defined
 
 | Section | ID | Candidate feature | Priority |
 | --- | --- | --- | --- |
-| [A. Clinical development planning](01-clinical-development-planning.md) | DEV-01 | Development program tracker | P1 |
+| [A. Clinical development planning](01-clinical-development-planning.md) | DEV-01 | [Development program tracker — detailed researched scope](DEV-01-development-program-tracker-scope.md) | P1 |
 | | DEV-02 | Trial planning tracker | P1 |
 | | DEV-03 | Regulatory submission readiness | P2 |
 | | DEV-04 | Study feasibility assessment | P2 |
