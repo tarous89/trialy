@@ -19,7 +19,7 @@ Dependency validation rejects local/cross-table cycles and removal or incompatib
 
 New computed and lookup values are evaluated on read from current permitted records, without writing results back to business records. Refresh reads to observe committed source changes. Archived/missing/inaccessible references fail explicitly. Missing values are null; failures are not zero or successful blanks. Each derived result carries status and schema-definition version.
 
-Search, saved filters, sorting and aggregation evaluate before pagination. To bound request cost, derived-table queries support up to 1,000 source records and 3,000 dependency evaluations, with a 2.5-second request evaluation budget. Above the table limit the request fails rather than returning partial totals. Runtime failures are shown per field; numeric summaries disclose unavailable calculations. Large-scale materialized calculations are not part of this release.
+Search, saved filters, sorting and aggregation evaluate before pagination. To bound request cost, derived-table queries support up to 1,000 source records (8 MiB total, 256 KiB per record) and 3,000 dependency evaluations, with a 2.5-second request evaluation budget. Above the table limit the request fails rather than returning partial totals. Runtime failures are shown per field; numeric summaries disclose unavailable calculations. Large-scale materialized calculations are not part of this release.
 
 Historical record revisions preserve stored values. Live-derived values are not retrospective snapshots; calculation definitions remain in the existing immutable schema revisions. Approving a definition authorizes its read-time evaluation, not writes or external actions.
 
