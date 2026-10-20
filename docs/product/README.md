@@ -1,4 +1,4 @@
-# Trialy — Clinical-operations use-case catalog
+# Trialy — Demo templates and clinical-operations research catalog
 
 **Status:** Product discovery / candidate use cases, **not approved functional specifications or implemented modules**.  
 **Recorded:** 20 October 2026.  
@@ -10,7 +10,15 @@ This catalog organizes **examples of applications users could ask ChatGPT to cre
 
 A feature here is a **customer-facing use case** assembled from customer-defined data types, records, relationships, authorized documents, generated code, views and actions. Records can be shared across projects subject to permissions. Use the generic platform `project` concept; a clinical study is one possible project, not a mandatory platform entity.
 
-## Four product sections — 18 candidate features
+## Current demo template plan — eleven functional starting points
+
+**The agreed showcase is one editable demonstration per function**, each with a short name: Translational Research, CMC, Nonclinical, Regulatory, Clinical, Medical Affairs, Vendors & CROs, Quality & Compliance, Finance, Business Development, and Board & Funding.
+
+See **[11-function demo template showcase](TEMPLATE_SHOWCASE_PLAN.md)** for the names, internal deliverable/workstream/asset rollup model, the four components (trackers, forms, visualizations and automations), the single committed-data source of truth, and the current implementation/gap assessment. This is a product demonstration plan only; do not hardcode eleven modules or assume those demos are already built.
+
+The four sections and eighteen detailed use cases **below are retained as underlying research/reference**, not the proposed template navigation and not eighteen separate build targets.
+
+## Previous research sections — 18 candidate use cases
 
 | Section | ID | Candidate feature | Priority |
 | --- | --- | --- | --- |

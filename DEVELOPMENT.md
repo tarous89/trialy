@@ -15,6 +15,10 @@ Updated 11 October 2026. Development steps for the flexible shared-data/code fou
 
 These capabilities are implemented, not a claim of production acceptance. Runtime 4552f77 is live on the existing Render web/worker; private plugin 0.2.6 is published. Deployment evidence is in HISTORY.md. The previous detailed working checklist is retained in docs/archive/development-before-completion-2026-10-11.md.
 
+## Product demonstration plan (planning only)
+
+The newly agreed [11-function demo template showcase](docs/product/TEMPLATE_SHOWCASE_PLAN.md) is the product-facing discovery and demonstration plan. Each functional entry is a short, editable example, not a fixed application module or automatic template installation. One shared database supports trackers, forms, read-only visualizations and approved event/scheduled automations. The former 18 use cases remain research inputs. **No demos/gallery have been marked implemented** by this documentation decision, and this entry does not alter the remaining execution gates below.
+
 ## Remaining execution gates
 
 | Step | Remaining work | Needed to proceed |

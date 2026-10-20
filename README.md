@@ -5,6 +5,7 @@ Updated 11 October 2026. This is the active scope. It supersedes the previous te
 Repository: `tarous89/trialy`. Development name: **Trialy**. A future public rename to **Trialegions** is a separate cutover. Do not change the existing Trialegions, TrialAgents or Intel applications.
 
 - [Current development steps](DEVELOPMENT.md)
+- [Proposed 11-function demo template showcase](docs/product/TEMPLATE_SHOWCASE_PLAN.md)
 - [Interface behavior decisions and proposals](docs/INTERFACE_RULES.md)
 - [Foundation architecture and dependency map](docs/FOUNDATION_ARCHITECTURE.md)
 - [Decision and implementation history](HISTORY.md)
