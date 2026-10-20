@@ -18,7 +18,7 @@ type Preview={id:string;actorId:string;workspaceId:string;operation:Operation|Fi
 const json=(v:unknown)=>JSON.stringify(v);
 export class Service extends DataService {
  constructor(db:Database,maxFileBytes=25*1024*1024,originals:OriginalStore=new PostgresOriginalStore()) {super(db,maxFileBytes,originals);}
- async sweep() {await this.db.query('DELETE FROM data_previews WHERE expires_at<=now()');}
+ async sweep() {await this.db.query('DELETE FROM data_previews WHERE expires_at<=now()');await this.db.query('DELETE FROM guest_drafts WHERE expires_at<=now() AND receipt IS NULL');}
  async createWorkspace(a:Actor,name:string,options:{initialAiWorkspace?:boolean}={}) {
   if(a.origin!=='human'&&!options.initialAiWorkspace) fail(403,'human_required','Confirm creation of your first AI-accessible workspace');
   return this.db.transaction(async tx=>{

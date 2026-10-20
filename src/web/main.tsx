@@ -31,13 +31,13 @@ import {ViewPicker,RecordView} from '../shared/WorkspaceViews.js';
 let csrf='';
 async function api(path:string,method='GET',body?:unknown){const r=await fetch(path,{method,credentials:'same-origin',headers:{'Content-Type':'application/json','X-CSRF-Token':csrf},body:body===undefined?undefined:JSON.stringify(body)});const data=await r.json();if(!r.ok)throw new Error(data.message??'This action could not complete');return data;}
 const queryParams=new URLSearchParams(location.search);if(queryParams.get('tab')==='changes')sessionStorage.setItem('trialy.review',location.search);
-const reviewParams=new URLSearchParams(sessionStorage.getItem('trialy.review')??location.search);
+const reviewParams=new URLSearchParams(location.search||sessionStorage.getItem('trialy.review')||'');
 const legacy=queryParams.get('legacy')==='1';
 const foundationCall=foundationClient(api);
 function App(){
  const [me,setMe]=useState<any>(null),[boot,setBoot]=useState(true),[config,setConfig]=useState({brand:'Trialy',demo:false});
  const [workspaces,setWorkspaces]=useState<any[]>([]),[workspace,setWorkspace]=useState(''),[types,setTypes]=useState<any[]>([]),[typeId,setTypeId]=useState('');
- const [tab,setTab]=useState(reviewParams.get('tab')==='changes'?'changes':'data'),[rows,setRows]=useState<any[]>([]),[total,setTotal]=useState(0),[offset,setOffset]=useState(0),[query,setQuery]=useState(''),[auditAction,setAuditAction]=useState(''),[auditOffset,setAuditOffset]=useState(0),[mode,setMode]=useState('table');
+ const [tab,setTab]=useState(['changes','projects'].includes(reviewParams.get('tab')??'')?reviewParams.get('tab')!:'data'),[rows,setRows]=useState<any[]>([]),[total,setTotal]=useState(0),[offset,setOffset]=useState(0),[query,setQuery]=useState(''),[auditAction,setAuditAction]=useState(''),[auditOffset,setAuditOffset]=useState(0),[mode,setMode]=useState('table');
  const [documents,setDocuments]=useState<any[]>([]),[history,setHistory]=useState<any[]>([]),[templates,setTemplates]=useState<any[]>([]),[preview,setPreview]=useState<any>(null),[form,setForm]=useState<any>(null),[draft,setDraft]=useState<Record<string,any>>({});
  const [error,setError]=useState(''),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false),[search,setSearch]=useState<any>(null),[grants,setGrants]=useState<any[]>([]),[automations,setAutomations]=useState<any[]>([]),[runs,setRuns]=useState<any[]>([]),[members,setMembers]=useState<any[]>([]),[relations,setRelations]=useState<Record<string,any[]>>({});
  const [versions,setVersions]=useState<any>(null),[documentText,setDocumentText]=useState<any>(null);
