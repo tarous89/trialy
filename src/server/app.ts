@@ -37,6 +37,7 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  app.get('/api/templates',(_req,res)=>res.json(templates));
  app.param('workspaceId',(req,_res,next,value)=>{id.parse(value);next();});
  app.get('/api/workspaces/:workspaceId/template-upgrades',async(req,res)=>res.json(await s.templateUpgrades(req.actor!,String(req.params.workspaceId))));
+ app.get('/api/workspaces/:workspaceId/types/:typeId/references/:field',async(req,res)=>res.json(await s.referenceOptions(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.typeId),z.string().max(64).parse(req.params.field),z.string().max(500).default('').parse(req.query.q),z.coerce.number().int().min(0).default(0).parse(req.query.offset))));
  app.get('/api/workspaces/:workspaceId/types',async(req,res)=>res.json(await s.types(req.actor!,String(req.params.workspaceId))));
  app.get('/api/workspaces/:workspaceId/types/:typeId/records',async(req,res)=>{const opts=recordQuerySchema.parse(req.query);res.json(await s.records(req.actor!,String(req.params.workspaceId),id.parse(req.params.typeId),opts));});
  app.get('/api/workspaces/:workspaceId/records/:recordId/versions',async(req,res)=>res.json(await s.recordHistory(req.actor!,String(req.params.workspaceId),id.parse(req.params.recordId),z.coerce.number().int().min(0).default(0).parse(req.query.offset))));
@@ -85,3 +86,4 @@ export const errors:ErrorRequestHandler=(error,_req,res,_next)=>{
  if(error?.type==='entity.too.large'){res.status(413).json({error:'too_large',message:'Upload exceeds the configured limit.'});return;}
  console.error(JSON.stringify({event:'request_failed',code:error?.code??'unknown'}));res.status(500).json({error:'unavailable',message:'This action was not confirmed. Refresh its status before retrying.'});
 };
+

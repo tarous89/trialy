@@ -367,3 +367,8 @@ Roadmap consolidated into implemented foundation and explicit host/provider/prod
 - Build/type-check passed. Eight nearby focused scenarios passed; final combined and cross-table scenarios passed after bridge changes; the retired-field regression passed. Populated synthetic backup/restore passed through migration 031, including concept metadata, assets/source access, task setup and accepted responses. Evidence: docs/recovery-synthetic.json. No broad cosmetic testing added.
 - Direct production SQL inspection was unavailable because the database's external allowlist is empty; networking was not broadened. Deployment and migration logs were inspected. No actual managed-backup restoration, production credential rotation or real ChatGPT/browser acceptance is claimed.
 - Remaining gates and known runtime limits are in DEVELOPMENT.md. No new paid infrastructure, external provider account, recipient message or public publication occurred.
+
+
+## 20 October 2026 — Approved field capability upgrade
+
+Extended the existing foundation with permission-aware multi-reference fields, stable table/field references, typed read-time QuickJS computations and cross-table lookups, dependency checks, current-value queries, column renderers and graphical timelines. Shared app/embedded selectors and bulk editing retain exact review and version checks. Stored records are not rewritten by derived reads. Definitions are versioned through existing schema/view revisions. See docs/FIELD_CAPABILITIES.md for limits and host acceptance boundaries.

@@ -1,3 +1,4 @@
+import {derived} from '../shared/formulas.js';
 import {exchangeReview,createExchange} from '../domain/exchange.js';
 import {TableMappings,mappingStamp,validatePairs} from './mappings.js';
 import {Foundation} from '../foundation/service.js';
@@ -180,7 +181,7 @@ export class WorkspaceFoundation {
  }
  private async scopeStamp(tx:Connection,a:Actor,w:string,body:ReturnType<typeof maintenanceSchema.parse>,allowArchived=false){
   const chain=await (allowArchived?this.nodeAccess(tx,a,w,body.projectId):this.activeNode(tx,a,w,body.projectId));const project=chain[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');
-  const types=[];for(const b of body.bindings){const {type,policy}=await typeAccess(tx,a,w,b.typeId,true);const fields=visibleFields(type.fields,policy,a);if(new Set(b.fields).size!==b.fields.length||b.fields.some(k=>!fields.some(f=>f.key===k&&!f.formula)))fail(403,'field_scope','Scope includes unavailable or calculated fields');types.push({id:type.id,version:type.version,fields:type.fields});}
+  const types=[];for(const b of body.bindings){const {type,policy}=await typeAccess(tx,a,w,b.typeId,true);const fields=visibleFields(type.fields,policy,a);if(new Set(b.fields).size!==b.fields.length||b.fields.some(k=>!fields.some(f=>f.key===k&&!derived(f))))fail(403,'field_scope','Scope includes unavailable or calculated fields');types.push({id:type.id,version:type.version,fields:type.fields});}
   const restricted=chain.filter(n=>n.allowed_users!==null||!n.ai_enabled);return checksum(J(restricted.length?{types,access:restricted.map(n=>({id:n.id,users:n.allowed_users,ai:n.ai_enabled}))}:types));
  }
  async recordFacts(a:Actor,w:string,recordId:string,offset=0){
@@ -193,7 +194,7 @@ export class WorkspaceFoundation {
   const fact=op.kind==='record_fact'?null:(await tx.query('SELECT f.* FROM record_facts f LEFT JOIN record_fact_retractions r ON r.fact_id=f.id WHERE f.id=$1 AND f.workspace_id=$2 AND r.fact_id IS NULL',[op.factId,w])).rows[0];
   if(op.kind!=='record_fact'&&!fact)fail(404,'not_found','Active fact not found');
   const record=await this.record(tx,a,w,op.kind==='record_fact'?op.recordId:fact.record_id,true),field=op.kind==='record_fact'?op.field:fact.field_key;
-  if(!record.fields.some((f:any)=>f.key===field&&!f.formula))fail(403,'field_scope','Field is unavailable or calculated');
+  if(!record.fields.some((f:any)=>f.key===field&&!derived(f)))fail(403,'field_scope','Field is unavailable or calculated');
   if(op.kind!=='retract_record_fact'&&(record.version!==op.expectedVersion||['archived','superseded','approved'].includes(record.state)))fail(409,'stale_version','Choose the current editable record');
   const projectId=op.kind==='record_fact'?op.projectId:fact.project_id;
   if(projectId){const project=(await this.activeNode(tx,a,w,projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project context');}
@@ -287,9 +288,9 @@ export class WorkspaceFoundation {
   const project=(await this.activeNode(tx,a,w,op.projectId))[0];if(project.kind!=='project'||project.version!==op.expectedProjectVersion)fail(409,'stale_version','Project changed');
   const service=new Service(adapter(tx)),policy=await this.policy(tx,a,w,true);if(policy.role!=='owner')fail(403,'owner_required','Only the owner can establish a capture scope');
   let type:any,fields:string[];
-  if(op.table.kind==='new'){await service.validate(tx,a,w,{kind:'create_type',name:op.table.name,fields:op.table.fields,concept:op.table.concept});type={id:'00000000-0000-4000-8000-000000000000',name:op.table.name,fields:op.table.fields,concept:op.table.concept??null};fields=op.table.fields.filter(f=>f.ai&&!f.formula).map(f=>f.key);}
+  if(op.table.kind==='new'){await service.validate(tx,a,w,{kind:'create_type',name:op.table.name,fields:op.table.fields,concept:op.table.concept});type={id:'00000000-0000-4000-8000-000000000000',name:op.table.name,fields:op.table.fields,concept:op.table.concept??null};fields=op.table.fields.filter(f=>f.ai&&!derived(f)).map(f=>f.key);}
   else {type=(await typeAccess(tx,a,w,op.table.typeId,true)).type;if(type.version!==op.table.expectedVersion)fail(409,'stale_version','Table changed');fields=op.table.fields;}
-  const permitted=visibleFields(type.fields,policy,{...a,origin:'ai'});if(!fields.length||new Set(fields).size!==fields.length||fields.some(k=>!permitted.some(f=>f.key===k&&!f.formula)))fail(403,'scope_fields','Capture scope needs distinct AI-accessible writable fields');
+  const permitted=visibleFields(type.fields,policy,{...a,origin:'ai'});if(!fields.length||new Set(fields).size!==fields.length||fields.some(k=>!permitted.some(f=>f.key===k&&!derived(f))))fail(403,'scope_fields','Capture scope needs distinct AI-accessible writable fields');
   for(const data of op.initialRows){if(Object.keys(data).some(k=>!fields.includes(k)))fail(400,'scope_fields','Initial rows must fit the reviewed capture fields');await service.validateData(tx,a,w,type,{...policy,typeId:type.id},data);}
   for(const field of type.fields.filter((f:any)=>f.unique)){const values=op.initialRows.map(r=>r[field.key]).filter(v=>v!==undefined&&v!==null&&v!=='');if(new Set(values.map(v=>J(v))).size!==values.length)fail(409,'duplicate_value','Initial rows contain duplicate unique values');}
   return {projectId:project.id,projectVersion:project.version,table:op.table.kind==='new'?{name:type.name,concept:type.concept,fields:type.fields,new:true}:{id:type.id,name:type.name,concept:type.concept,fields:type.fields,version:type.version,new:false},captureFields:fields,initialRows:op.initialRows,permission:'Review every subsequent write; this setup grants no standing write permission',purpose:op.purpose,inclusionCriteria:op.inclusionCriteria,sourcePolicy:op.sourcePolicy,basis:op.basis};
@@ -298,7 +299,7 @@ export class WorkspaceFoundation {
   const source=await this.record(tx,a,w,op.sourceRecordId,false,true);
   if(source.version!==op.sourceVersion||['archived','superseded'].includes(source.state))fail(409,'stale_version','Source record changed or is inactive');
   if(new Set(op.fields).size!==op.fields.length||new Set(op.targets.map(t=>t.recordId)).size!==op.targets.length)fail(400,'duplicate_target','Select unique fields and target records');
-  if(op.fields.some(k=>!Object.hasOwn(source.data,k)||!source.fields.some((f:any)=>f.key===k&&!f.formula)))fail(400,'source_field','Choose present, non-computed source values');
+  if(op.fields.some(k=>!Object.hasOwn(source.data,k)||!source.fields.some((f:any)=>f.key===k&&!derived(f))))fail(400,'source_field','Choose present, non-computed source values');
   const changes:any[]=[],links=[];
   for(const target of op.targets){
    const record=await this.record(tx,a,w,target.recordId,true,true);if(record.id===source.id||record.version!==target.expectedVersion)fail(409,'stale_version','Target record changed or is the source');
@@ -389,13 +390,13 @@ export class WorkspaceFoundation {
     if(record&&change.kind==='update_record'&&record.version!==change.expectedVersion)fail(409,'stale_version','Record changed');
     const typeId=change.kind==='create_record'?change.typeId:record!.type_id;
     const binding=c.bindings.find((b:any)=>b.typeId===typeId);const {type,policy}=await typeAccess(tx,a,w,typeId,true);const fields=visibleFields(type.fields,policy,a);
-    if(!binding||Object.keys(change.data).some(k=>!binding.fields.includes(k)||!fields.some(f=>f.key===k&&!f.formula)))fail(403,'binding_required','Write exceeds component data bindings');
+    if(!binding||Object.keys(change.data).some(k=>!binding.fields.includes(k)||!fields.some(f=>f.key===k&&!derived(f))))fail(403,'binding_required','Write exceeds component data bindings');
    }
   }
   if(op.kind==='edit_component_record'){
    const c=await this.component(tx,a,w,op.componentId);if(c.archived||c.project_archived||c.version!==op.expectedVersion||c.format!=='trialy-ui')fail(409,'component_changed','Interface changed');
    const record=await this.record(tx,a,w,op.recordId,true);if(record.version!==op.recordVersion)fail(409,'stale_version','Record changed');
-   const spec=this.parseInterface(c);if(!spec.blocks.some(b=>b.kind==='table'&&b.editable&&b.typeId===record.type_id&&b.fields.includes(op.field))||!record.fields.some((f:any)=>f.key===op.field&&!f.formula))fail(403,'field_scope','This field is not editable in this interface');
+   const spec=this.parseInterface(c);if(!spec.blocks.some(b=>b.kind==='table'&&b.editable&&b.typeId===record.type_id&&b.fields.includes(op.field))||!record.fields.some((f:any)=>f.key===op.field&&!derived(f)))fail(403,'field_scope','This field is not editable in this interface');
   }
   if(op.kind==='set_project_access'||op.kind==='set_component_access'){
    const p=await this.policy(tx,a,w,true);if(p.role!=='owner')fail(403,'owner_required','Only the workspace owner may change sharing');
@@ -631,3 +632,4 @@ export class WorkspaceFoundation {
   return {recordId,links:safe,observations:allowed,historyAvailable:true};
  }
 }
+

@@ -1,3 +1,4 @@
+import {derived} from '../shared/formulas.js';
 import {randomUUID,randomBytes} from 'node:crypto';
 import {z} from 'zod';
 import {questionsSchema,questionProblem} from '../shared/questions.js';
@@ -10,7 +11,7 @@ export const exchangeSchema=z.object({kind:z.enum(['form','view']),name:z.string
 export async function exchangeReview(tx:Connection,a:Actor,w:string,input:z.infer<typeof exchangeSchema>){
  const p=await access(tx,a,w,true);if(p.role!=='owner')fail(403,'owner_required','Owner required');
  const {type,policy}=await typeAccess(tx,a,w,input.typeId),fields=visibleFields(type.fields,policy,a);
- if(new Set(input.fields).size!==input.fields.length||input.fields.some(k=>!fields.some(f=>f.key===k&&!['document','relationship','person'].includes(f.kind)&&!(input.kind==='form'&&f.formula))))fail(400,'invalid_field','Choose distinct permitted simple fields');
+ if(new Set(input.fields).size!==input.fields.length||input.fields.some(k=>!fields.some(f=>f.key===k&&!['document','relationship','person'].includes(f.kind)&&!(input.kind==='form'&&derived(f)))))fail(400,'invalid_field','Choose distinct permitted simple fields');
  if(input.kind==='form'&&fields.some(f=>f.required&&!input.fields.includes(f.key)))fail(400,'required_field','Include every required field');
  const view=input.viewId?(await tx.query('SELECT * FROM saved_views WHERE id=$1 AND workspace_id=$2 AND type_id=$3',[input.viewId,w,input.typeId])).rows[0]:null;
  if(input.kind==='view'&&!view)fail(400,'view_required','Choose a saved view');
@@ -26,3 +27,4 @@ export async function createExchange(tx:Connection,a:Actor,w:string,input:z.infe
  await tx.query('INSERT INTO external_links(id,workspace_id,owner_id,token_hash,kind,name,type_id,type_version,fields,view_id,view_version,questions,file_request,expires_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,now()+$14*interval \'1 day\')',[linkId,w,a.userId,checksum(raw),input.kind,input.name,input.typeId,review.typeVersion,JSON.stringify(input.fields),review.view?.id??null,review.view?.version??null,JSON.stringify(review.questions),input.fileRequest?JSON.stringify(input.fileRequest):null,input.days]);
  await audit(tx,a,p,'external_link.created',linkId,null,{...review,authorization});return {id:linkId,path:'/collect#'+raw,url:new URL('/collect#'+raw,process.env.PUBLIC_URL??process.env.RENDER_EXTERNAL_URL??'http://localhost:3000').toString()};
 }
+

@@ -35,3 +35,17 @@ These capabilities are implemented, not a claim of production acceptance. Runtim
 ## Verification kept to basics
 
 Build/type-check; focused scenarios for new setup, linked corrections, source/binding permissions, saved assets, collection acceptance and worker status; existing nearby workspace/frontend/exchange/mapping scenarios; populated synthetic recovery rehearsal. Real browser/ChatGPT acceptance and managed recovery remain separate gates. Do not expand tests just to mirror implementation.
+
+
+## 20 October 2026 capability release
+
+- [x] Typed computed/lookup fields, cross-table dependency validation and read-only enforcement.
+- [x] Multiple record/user/document/table/field references with shared searchable selectors.
+- [x] Current derived reads, permission and execution-scope checks, filtering/sorting/aggregation before pagination.
+- [x] Field default and view-specific renderers; custom pure-code displays and graphical timeline bars.
+- [x] Reviewed bulk editing, multi-reference CSV values, versioned configuration and existing authorization/audit contracts.
+- [x] Synthetic CRO comparison and security regression tests.
+- [ ] Trusted in-chat human approval channel: retain authenticated portal until verified.
+- [ ] Real ChatGPT host acceptance of new schema/tool discovery; refresh the connector after deployment.
+
+Precise implementation limits are recorded in docs/FIELD_CAPABILITIES.md; these are not claims of unlimited table evaluation or retrospective computed snapshots.

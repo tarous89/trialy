@@ -1,3 +1,4 @@
+import {validateDerived,DerivedReader,validateRenderer} from './derived-fields.js';
 import {fieldChangeQuerySchema,type FieldChangeQuery} from '../shared/schema.js';
 import {requireHuman,setWriteAuthorization,type WriteAuthorization} from './write-authorization.js';
 import {DataService} from './data-service.js';
@@ -5,7 +6,7 @@ import {checksum,audit,revision} from './evidence.js';
 export {checksum,audit} from './evidence.js';
 import {templateDiff,adoptionDiff} from './template-upgrades.js';
 import {nextDaily} from '../shared/schedules.js';
-import {calculate,formulaOrder,editableData} from '../shared/formulas.js';
+import {calculate,formulaOrder,editableData,derived} from '../shared/formulas.js';
 import { randomUUID, createHash } from 'node:crypto';
 import type { Connection, Database } from '../db/database.js';
 import { operationSchema, viewFields, viewConfigSchema, fail, type Actor, type Field, type Operation, type RecordQuery } from '../shared/schema.js';
@@ -40,18 +41,18 @@ export class Service extends DataService {
   if(op.sourceVersion>=r.version)fail(400,'invalid_revision','Choose an earlier version');
   const source=(await tx.query("SELECT snapshot FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='record' AND version=$3",[w,op.recordId,op.sourceVersion])).rows[0];
   if(!source)fail(404,'not_found','Version not found');
-  const data=Object.fromEntries(type.fields.filter((f:Field)=>!f.formula).map((f:Field)=>[f.key,source.snapshot.data[f.key]??null]));
+  const data=Object.fromEntries(type.fields.filter((f:Field)=>!derived(f)).map((f:Field)=>[f.key,source.snapshot.data[f.key]??null]));
   await this.validateData(tx,a,w,type,policy,data,false,op.recordId);
   return {data,state:r.state==='approved'?'in_review':r.state};
  }
  private async migrationData(tx:Connection,a:Actor,w:string,op:Extract<Operation,{kind:'migrate_type'}>){
   const {type,policy}=await typeAccess(tx,a,w,op.typeId,true);if(a.origin!=='human'||policy.role!=='owner')fail(403,'owner_required','Field migrations require the human owner');
-  if(type.version!==op.expectedVersion)fail(409,'stale_version','Table changed');formulaOrder(op.fields);
-  for(const [key,map] of Object.entries(op.mappings)){if(!op.fields.some(f=>f.key===key&&!f.formula)||!type.fields.some((f:Field)=>f.key===map.from))fail(400,'invalid_mapping','Choose current source fields and editable destination fields');}
+  if(type.version!==op.expectedVersion)fail(409,'stale_version','Table changed');await validateDerived(tx,a,w,op.typeId,op.fields);
+  for(const [key,map] of Object.entries(op.mappings)){if(!op.fields.some(f=>f.key===key&&!derived(f))||!type.fields.some((f:Field)=>f.key===map.from))fail(400,'invalid_mapping','Choose current source fields and editable destination fields');}
   const records=(await tx.query('SELECT * FROM records WHERE workspace_id=$1 AND type_id=$2 ORDER BY id LIMIT 201',[w,op.typeId])).rows;if(records.length>200)fail(409,'migration_limit','Interactive migrations support at most 200 records');
   if(records.some(r=>['archived','superseded'].includes(r.state)))fail(409,'controlled_record','Archived or superseded records cannot be migrated here');
   const nextType={...type,fields:op.fields.map(f=>({...f,unique:false}))};const changed=[];
-  for(const r of records){const data:Record<string,any>={};for(const f of op.fields.filter(f=>!f.formula)){const mapping=op.mappings[f.key],source=mapping?.from??f.key;let value=r.data[source]??null;
+  for(const r of records){const data:Record<string,any>={};for(const f of op.fields.filter(f=>!derived(f))){const mapping=op.mappings[f.key],source=mapping?.from??f.key;let value=r.data[source]??null;
    if(value!==null&&value!==''){switch(mapping?.conversion??'copy'){case 'text':value=String(value);break;case 'number':if(typeof value!=='number'&&(typeof value!=='string'||!value.trim()))fail(400,'invalid_conversion','Numeric conversion has an empty or non-text input');value=Number(value);if(!Number.isFinite(value))fail(400,'invalid_conversion','A value cannot convert to a finite number');break;case 'boolean':if(!['true','false','yes','no',true,false].includes(value))fail(400,'invalid_conversion','Boolean conversion requires true/false or yes/no');value=value===true||value==='true'||value==='yes';break;}}
    data[f.key]=value;
   }await this.validateData(tx,a,w,nextType,policy,data,false,r.id);changed.push({id:r.id,version:r.version,before:r.data,data:calculate(op.fields,data),state:r.state==='approved'?'in_review':r.state});}
@@ -61,9 +62,17 @@ export class Service extends DataService {
  }
  async validateData(tx:Connection,a:Actor,w:string,type:any,policy:any,data:Record<string,any>,partial=false,recordId?:string) {
   const fields=visibleFields(type.fields,policy,a);
-  for(const key of Object.keys(data)) if(!fields.some(f=>f.key===key&&!f.formula))fail(400,'invalid_field','A field is unavailable or unknown');
-  for(const f of fields){if(f.formula)continue;const v=data[f.key];if(partial&&v===undefined)continue;
+  for(const key of Object.keys(data)) if(!fields.some(f=>f.key===key&&!derived(f)))fail(400,'invalid_field','A field is unavailable or unknown');
+  for(const f of fields){if(derived(f))continue;const v=data[f.key];if(partial&&v===undefined)continue;
    if(v===undefined||v===null||v===''){if(f.required)fail(400,'required_field',`${f.name} is required`);continue;}
+   if(f.multiple){
+    if(!Array.isArray(v)||v.length>100||new Set(v).size!==v.length||v.some(x=>typeof x!=='string'))fail(400,'invalid_reference','Use up to 100 distinct reference IDs');
+    if(f.required&&!v.length)fail(400,'required_field',`${f.name} is required`);
+    for(const value of v)await this.validateData(tx,a,w,{...type,fields:[{...f,multiple:false,required:false,unique:false}]},policy,{[f.key]:value},true,recordId);
+    continue;
+   }
+   if(f.kind==='table')await typeAccess(tx,a,w,String(v));
+   if(f.kind==='field'){const t=await typeAccess(tx,a,w,f.targetTypeId!);if(!visibleFields(t.type.fields,t.policy,a).some(x=>x.key===v))fail(400,'invalid_reference','Field is unavailable');}
    if(['number','money'].includes(f.kind)&&typeof v!=='number')fail(400,'invalid_value',`${f.name} must be a number`);
    if(f.kind==='boolean'&&typeof v!=='boolean')fail(400,'invalid_value',`${f.name} must be true or false`);
    if(!['number','money','boolean'].includes(f.kind)&&typeof v!=='string')fail(400,'invalid_value',`${f.name} must be text`);
@@ -72,7 +81,7 @@ export class Service extends DataService {
    if(f.unique){const duplicate=(await tx.query("SELECT id FROM records WHERE workspace_id=$1 AND type_id=$2 AND data->$3::text=$4::jsonb AND ($5::uuid IS NULL OR id<>$5) LIMIT 1",[w,type.id,f.key,json(v),recordId??null])).rows[0];if(duplicate)fail(409,'duplicate_value',`${f.name} must be unique`);}
    if(f.kind==='person'){const person=(await tx.query('SELECT u.id FROM users u JOIN memberships m ON m.user_id=u.id WHERE u.id::text=$1 AND m.tenant_id=$2',[v,policy.tenant_id])).rows[0];if(!person)fail(400,'invalid_reference','Person is not a member of this organisation');}
    if(f.kind==='document'){await this.documentPermission(tx,a,w,String(v),true);if(!policy.document_scope)fail(403,'restricted_documents','Document references are unavailable for this access scope');const doc=(await tx.query('SELECT id FROM document_versions WHERE id::text=$1 AND workspace_id=$2 AND ($3=false OR ai_enabled=true)',[v,w,a.origin==='ai'])).rows[0];if(!doc)fail(400,'invalid_reference','Document version is unavailable');}
-   if(f.kind==='relationship'){const r=(await tx.query('SELECT id,type_id FROM records WHERE id::text=$1 AND workspace_id=$2',[v,w])).rows[0];if(!r||(f.targetTypeId&&r.type_id!==f.targetTypeId))fail(400,'invalid_reference','Related record is unavailable');await typeAccess(tx,a,w,r.type_id);}
+   if(f.kind==='relationship'){const r=(await tx.query("SELECT id,type_id FROM records WHERE id::text=$1 AND workspace_id=$2 AND state NOT IN ('archived','superseded')",[v,w])).rows[0];if(!r||(f.targetTypeId&&r.type_id!==f.targetTypeId))fail(400,'invalid_reference','Related record is unavailable');await typeAccess(tx,a,w,r.type_id);}
   }
   if(!partial && type.fields.some((f:Field)=>f.required&&!fields.some(x=>x.key===f.key)))fail(403,'restricted_required','Creation requires a field you cannot access');
  }
@@ -112,10 +121,10 @@ export class Service extends DataService {
   if(op.kind==='save_document'&&op.submissionFileId){if(a.origin!=='human'||p.role!=='owner')fail(403,'owner_required','Human owner required');const source=(await tx.query('SELECT f.checksum FROM submission_files f LEFT JOIN submission_file_acceptances accepted ON accepted.file_id=f.id WHERE f.id=$1 AND f.workspace_id=$2 AND accepted.file_id IS NULL',[op.submissionFileId,w])).rows[0];if(!source||source.checksum!==checksum(op.bytes)||op.documentId)fail(409,'source_unavailable','Source is unavailable or already accepted');}
   if(op.kind==='save_document'&&op.documentId)await this.documentPermission(tx,a,w,op.documentId);
   if(op.kind==='save_document'&&(!p.document_scope))fail(403,'restricted_documents','Document access for restricted views is not enabled');
-  if(op.kind==='create_type'||op.kind==='update_type')formulaOrder(op.fields);
+  if(op.kind==='create_type'||op.kind==='update_type')await validateDerived(tx,a,w,op.kind==='update_type'?op.typeId:undefined,op.fields);
   if(op.kind==='archive_created_record'||op.kind==='restore_archived_creation')await this.creationArchive(tx,a,w,op);
   if(op.kind==='reverse_field_change'||op.kind==='reverse_field_changes')await this.reverseBatch(tx,a,w,op);
-  if(op.kind==='update_type'){const {type}=await typeAccess(tx,a,w,op.typeId,true);if(a.origin==='ai'&&type.fields.some((f:Field)=>!f.ai))fail(403,'restricted_configuration','Edit tables containing model-restricted fields in the standalone application');if(type.version!==op.expectedVersion)fail(409,'stale_version','Table changed; preview again');const populated=Number((await tx.query('SELECT count(*) AS n FROM records WHERE type_id=$1 AND workspace_id=$2',[op.typeId,w])).rows[0].n)>0;if(populated){for(const old of type.fields){const next=op.fields.find(f=>f.key===old.key);if(!next||next.kind!==old.kind||json([next.formula?.operator,next.formula?.fields])!==json([old.formula?.operator,old.formula?.fields])||json(next.options)!==json(old.options)||next.targetTypeId!==old.targetTypeId||(!old.required&&next.required))fail(409,'migration_required','Existing data requires an explicit field migration; use an optional new field instead');}if(op.fields.some(f=>(f.required||f.formula)&&!type.fields.some((old:Field)=>old.key===f.key)))fail(409,'migration_required','New fields on populated tables must be optional');}}
+  if(op.kind==='update_type'){const {type}=await typeAccess(tx,a,w,op.typeId,true);if(a.origin==='ai'&&type.fields.some((f:Field)=>!f.ai))fail(403,'restricted_configuration','Edit tables containing model-restricted fields in the standalone application');if(type.version!==op.expectedVersion)fail(409,'stale_version','Table changed; preview again');const populated=Number((await tx.query('SELECT count(*) AS n FROM records WHERE type_id=$1 AND workspace_id=$2',[op.typeId,w])).rows[0].n)>0;if(populated){for(const old of type.fields){const next=op.fields.find(f=>f.key===old.key);if(!next||next.kind!==old.kind||json([next.formula?.operator,next.formula?.fields])!==json([old.formula?.operator,old.formula?.fields])||json(next.options)!==json(old.options)||next.targetTypeId!==old.targetTypeId||!!next.multiple!==!!old.multiple||!!next.computed!==!!old.computed||!!next.lookup!==!!old.lookup||(!old.required&&next.required))fail(409,'migration_required','Existing data requires an explicit field migration; use an optional new field instead');}if(op.fields.some(f=>(f.required||f.formula)&&!type.fields.some((old:Field)=>old.key===f.key)))fail(409,'migration_required','New fields on populated tables must be optional');}}
   if(op.kind==='bulk_records'){for(const change of op.changes)await this.validate(tx,a,w,change);}
   if(op.kind==='restore_record')await this.restoreData(tx,a,w,op);
   if(op.kind==='update_type'){for(const f of op.fields.filter(f=>f.unique)){const rows=(await tx.query("SELECT 1 FROM records WHERE workspace_id=$1 AND type_id=$2 AND data->$3::text IS NOT NULL AND data->$3::text NOT IN ('null'::jsonb,'\"\"'::jsonb) GROUP BY data->$3::text HAVING count(*)>1 LIMIT 1",[w,op.typeId,f.key])).rows;if(rows.length)fail(409,'duplicate_value','Existing values must be unique before enabling this rule');}}
@@ -127,6 +136,8 @@ export class Service extends DataService {
   if(op.kind==='create_view'||op.kind==='update_view') {
    const t=await typeAccess(tx,a,w,op.typeId),fields=visibleFields(t.type.fields,t.policy,a),keys=fields.map(f=>f.key);
    if(viewFields(op.config).some(k=>!keys.includes(k)))fail(400,'invalid_field','View contains unavailable fields');
+   for(const [key,r] of Object.entries(op.config.renderers??{}))validateRenderer(fields.find(f=>f.key===key)!,r);
+   if(op.config.endDateField&&fields.find(f=>f.key===op.config.endDateField)?.kind!=='date')fail(400,'invalid_date_field','Choose an end-date field');
    if(op.config.metric&&!fields.some(f=>f.key===op.config.metric&&['number','money'].includes(f.kind)))fail(400,'invalid_field','Choose an accessible numeric metric');
    if(op.config.dateField&&fields.find(f=>f.key===op.config.dateField)?.kind!=='date')fail(400,'invalid_date_field','Choose a date field');
    if(['calendar','timeline'].includes(op.viewKind)&&!op.config.dateField)fail(400,'date_required','Choose a date field for this view');
@@ -148,13 +159,13 @@ export class Service extends DataService {
  }
  async fieldDiff(tx:Connection,a:Actor,w:string,op:Operation|FileOperation):Promise<any[]> {
   if(op.kind==='bulk_records')return (await Promise.all(op.changes.map(c=>this.fieldDiff(tx,a,w,c)))).flat();
-  if(op.kind==='reverse_field_change'||op.kind==='reverse_field_changes'){const records=await this.reverseBatch(tx,a,w,op);return (await Promise.all(records.map(async r=>{const {type,policy}=await typeAccess(tx,a,w,r.record.type_id);return visibleFields(type.fields,policy,a).filter(f=>Object.hasOwn(r.record.data,f.key)!==Object.hasOwn(r.data,f.key)||json(r.record.data[f.key])!==json(r.data[f.key])).map(f=>({typeId:r.record.type_id,recordId:r.record.id,field:f.key,label:f.name,derived:!!f.formula,beforePresent:Object.hasOwn(r.record.data,f.key),before:r.record.data[f.key]??null,afterPresent:Object.hasOwn(r.data,f.key),after:r.data[f.key]??null}));}))).flat();}
+  if(op.kind==='reverse_field_change'||op.kind==='reverse_field_changes'){const records=await this.reverseBatch(tx,a,w,op);return (await Promise.all(records.map(async r=>{const {type,policy}=await typeAccess(tx,a,w,r.record.type_id);return visibleFields(type.fields,policy,a).filter(f=>Object.hasOwn(r.record.data,f.key)!==Object.hasOwn(r.data,f.key)||json(r.record.data[f.key])!==json(r.data[f.key])).map(f=>({typeId:r.record.type_id,recordId:r.record.id,field:f.key,label:f.name,derived:!!derived(f),beforePresent:Object.hasOwn(r.record.data,f.key),before:r.record.data[f.key]??null,afterPresent:Object.hasOwn(r.data,f.key),after:r.data[f.key]??null}));}))).flat();}
   if(op.kind!=='create_record'&&op.kind!=='update_record'&&op.kind!=='restore_record')return [];
   const record=op.kind==='create_record'?null:(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[op.recordId,w])).rows[0];
   const typeId=op.kind==='create_record'?op.typeId:record.type_id;
   const {type,policy}=await typeAccess(tx,a,w,typeId);const fields=visibleFields(type.fields,policy,a);
   const before=record?.data??{},input=op.kind==='restore_record'?(await this.restoreData(tx,a,w,op)).data:op.data,after=calculate(type.fields,{...before,...input});
-  return fields.filter(f=>Object.hasOwn(before,f.key)!==Object.hasOwn(after,f.key)||json(before[f.key])!==json(after[f.key])).map(f=>({typeId,recordId:record?.id??null,field:f.key,label:f.name,derived:!!f.formula,beforePresent:Object.hasOwn(before,f.key),before:before[f.key]??null,afterPresent:Object.hasOwn(after,f.key),after:after[f.key]??null}));
+  return fields.filter(f=>Object.hasOwn(before,f.key)!==Object.hasOwn(after,f.key)||json(before[f.key])!==json(after[f.key])).map(f=>({typeId,recordId:record?.id??null,field:f.key,label:f.name,derived:!!derived(f),beforePresent:Object.hasOwn(before,f.key),before:before[f.key]??null,afterPresent:Object.hasOwn(after,f.key),after:after[f.key]??null}));
  }
  async pendingChanges(a:Actor,w:string){
   const policy=await access(this.db,a,w);const rows=(await this.db.query('SELECT id,digest,summary,body,expires_at,schema_fingerprint FROM data_previews WHERE workspace_id=$1 AND actor_id=$2 AND expires_at>now() ORDER BY expires_at LIMIT 100',[w,a.userId])).rows;
@@ -176,7 +187,7 @@ export class Service extends DataService {
    if(record.version!==0||record.state!=='draft')fail(409,'controlled_record','Only an unchanged new draft can be archived as a creation reversal');
    // Inspect dependencies across the workspace without exposing restricted values or object names.
    const dependencies=(await tx.query(`SELECT 1 FROM records r JOIN entity_types t ON t.id=r.type_id CROSS JOIN LATERAL jsonb_array_elements(t.fields) f
-    WHERE r.workspace_id=$1 AND r.id<>$2 AND f->>'kind'='relationship' AND (f->>'targetTypeId'=$3 OR f->>'targetTypeId' IS NULL) AND r.data->>(f->>'key')=$4
+    WHERE r.workspace_id=$1 AND r.id<>$2 AND f->>'kind'='relationship' AND (f->>'targetTypeId'=$3 OR f->>'targetTypeId' IS NULL) AND (r.data->>(f->>'key')=$4 OR r.data->(f->>'key') @> to_jsonb(ARRAY[$4::text]))
     UNION ALL SELECT 1 FROM cross_table_links WHERE workspace_id=$1 AND (source_record_id=$2 OR preferred_record_id=$2) AND revoked_at IS NULL
     UNION ALL SELECT 1 FROM record_facts WHERE workspace_id=$1 AND record_id=$2
     UNION ALL SELECT 1 FROM project_records WHERE workspace_id=$1 AND record_id=$2 AND revoked_at IS NULL
@@ -204,7 +215,7 @@ export class Service extends DataService {
   const grouped=new Map<string,{record:any;data:any;changeIds:string[];keys:Set<string>}>();
   for(const entry of entries){
    const change=(await tx.query('SELECT * FROM record_field_changes WHERE id=$1 AND workspace_id=$2',[entry.changeId,w])).rows[0];if(!change)fail(404,'not_found','Change not found');
-   const {type,policy}=await typeAccess(tx,a,w,change.type_id,true);const f=visibleFields(type.fields,policy,a).find(f=>f.key===change.field_key);if(!f||f.formula)fail(403,'field_scope','This field cannot be reversed directly');
+   const {type,policy}=await typeAccess(tx,a,w,change.type_id,true);const f=visibleFields(type.fields,policy,a).find(f=>f.key===change.field_key);if(!f||derived(f))fail(403,'field_scope','This field cannot be reversed directly');
    let group=grouped.get(change.record_id);
    if(!group){const record=(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[change.record_id,w])).rows[0];group={record,data:{...record.data},changeIds:[],keys:new Set()};grouped.set(record.id,group);}
    const {record}=group;
@@ -232,7 +243,7 @@ export class Service extends DataService {
   return this.prepare(a,w,{kind:'save_document',...input});
  }
  private async prepare(a:Actor,w:string,op:Operation|FileOperation) {
-  const schemaFingerprint=['create_record','update_record','bulk_records','accept_submission','upgrade_template','adopt_template','reverse_field_change','reverse_field_changes','archive_created_record','restore_archived_creation'].includes(op.kind)?checksum(json((await this.db.query('SELECT id,version FROM entity_types WHERE workspace_id=$1 ORDER BY id',[w])).rows)):undefined;
+  const schemaFingerprint=['create_type','update_type','migrate_type','create_view','update_view','create_record','update_record','bulk_records','accept_submission','upgrade_template','adopt_template','reverse_field_change','reverse_field_changes','archive_created_record','restore_archived_creation'].includes(op.kind)?checksum(json((await this.db.query('SELECT id,version FROM entity_types WHERE workspace_id=$1 ORDER BY id',[w])).rows)):undefined;
   await this.validate(this.db,a,w,op);await this.sweep();
   let summary:any=op.kind==='restore_record'?{...op,...await this.restoreData(this.db,a,w,op)}:op.kind==='save_document'?{...op,bytes:undefined,byteSize:op.bytes.length,checksum:checksum(op.bytes)}:op;
   if(op.kind==='create_record'||op.kind==='update_record'||op.kind==='accept_submission'){
@@ -246,6 +257,11 @@ export class Service extends DataService {
   if(op.kind==='request_review'){const r=(await this.db.query('SELECT data,state FROM records WHERE id=$1 AND workspace_id=$2',[op.recordId,w])).rows[0];const u=(await this.db.query('SELECT name FROM users WHERE id=$1',[op.reviewerId])).rows[0];summary={...op,reviewerName:u.name,record:r.data,resultingVersion:op.expectedVersion+1};}
   if(op.kind==='upgrade_template')summary={...op,diff:await templateDiff(this.db,w,op.template)};
   if(op.kind==='archive_created_record'||op.kind==='restore_archived_creation'){const review=await this.creationArchive(this.db,a,w,op);summary={...op,typeName:review.typeName,recordId:review.record.id,data:review.record.data,beforeState:review.beforeState,afterState:review.afterState,retains:'Original values, files, references and history are retained. External actions are not undone.'};}
+  if(op.kind==='update_type'){
+   const rows=(await this.db.query('SELECT * FROM records WHERE workspace_id=$1 AND type_id=$2 ORDER BY id LIMIT 5',[w,op.typeId])).rows;
+   const proxy:Connection={query:async(sql,values)=>{const result=await this.db.query(sql,values);return {...result,rows:result.rows.map((r:any)=>r.id===op.typeId&&r.fields?{...r,fields:op.fields}:r)};} };
+   const reader=new DerivedReader(proxy,a,w);summary={...summary,calculationPreview:await Promise.all(rows.map(r=>reader.read(r)))};
+  }
   const fieldChanges=await this.fieldDiff(this.db,a,w,op);
   if(fieldChanges.length)summary={...summary,fieldChanges};
   const p:Preview={id:randomUUID(),actorId:a.userId,workspaceId:w,operation:op,schemaFingerprint,migrationFingerprint:migration?.fingerprint,digest:checksum(json(summary)),expires:Date.now()+24*3600000};
@@ -470,3 +486,4 @@ export class Service extends DataService {
  async pause(a:Actor,w:string,id:string,paused:boolean){return this.db.transaction(async tx=>{await tx.query('SELECT id FROM automations WHERE id=$1 AND workspace_id=$2 AND owner_id=$3 FOR UPDATE',[id,w,a.userId]);await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await access(tx,a,w,!paused);if(a.origin!=='human')fail(403,'human_required','Human authorisation required');const before=(await tx.query('UPDATE automations SET paused=$1,version=version+1 WHERE id=$2 AND workspace_id=$3 AND owner_id=$4 RETURNING *',[paused,id,w,a.userId])).rows[0];if(!before)fail(404,'not_found','Automation not found');await revision(tx,a,w,id,'automation',before.version,before);await audit(tx,a,p,'automation.paused',id,null,{paused});return {id,paused};});}
 
 }
+

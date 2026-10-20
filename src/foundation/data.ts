@@ -23,8 +23,8 @@ export class DataCapabilities {
   if(name==='entities.read'){const p=dataInputSchemas[name].parse(input) as {typeId:string;recordId:string};this.table(p.typeId);const f=new WorkspaceFoundation(s.db),r=await f.record(s.db,a,w,p.recordId);if(r.type_id!==p.typeId)fail(403,'capability_denied','Record outside declared table');return f.identity(a,w,p.recordId,false);}
   if(name==='tables.list')return (await s.types(a,w)).filter(t=>this.scope.typeIds.includes(t.id));
   if(name==='views.list')return (await s.views(a,w)).filter(v=>this.scope.typeIds.includes(v.type_id));
-  if(name==='records.read'){const p=recordQuerySchema.extend({typeId:id}).strict().parse(input);return s.records(a,w,this.table(p.typeId),p);}
-  if(name==='records.aggregate'){const p=recordQuerySchema.extend({typeId:id,groupBy:z.string().max(64).optional(),metric:z.string().max(64).optional()}).strict().parse(input);return s.aggregate(a,w,this.table(p.typeId),p);}
+  if(name==='records.read'){const p=recordQuerySchema.extend({typeId:id}).strict().parse(input);return s.records(a,w,this.table(p.typeId),p,this.scope.typeIds);}
+  if(name==='records.aggregate'){const p=recordQuerySchema.extend({typeId:id,groupBy:z.string().max(64).optional(),metric:z.string().max(64).optional()}).strict().parse(input);return s.aggregate(a,w,this.table(p.typeId),p,this.scope.typeIds);}
   if(name.startsWith('documents.')){
    if(!this.scope.documents)fail(403,'capability_denied','Documents outside declared scope');
    if(name==='documents.list')return s.documents(a,w);
@@ -34,3 +34,4 @@ export class DataCapabilities {
   fail(400,'unknown_tool','Unknown data capability');
  }
 }
+
