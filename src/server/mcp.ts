@@ -32,6 +32,7 @@ export function addMcp(app:Express,s:Service,authenticate:RequestHandler) {
   }));
   server.registerTool('create_initial_workspace',{title:'Create first Trialy workspace',description:'Only after the user confirms the name and AI access, create their first workspace. Never enables access to existing workspaces.',inputSchema:{name:z.string().trim().min(1).max(100),confirmed:z.literal(true),allowAi:z.literal(true)},annotations:{readOnlyHint:false,destructiveHint:false,openWorldHint:false},_meta:metadata},safe(v=>s.createWorkspace(actor,v.name,{initialAiWorkspace:true})));
   server.registerTool('list_workspaces',{title:'Open Trialy',description:'List workspaces the connected user has explicitly permitted AI to access.',inputSchema:{},annotations:{readOnlyHint:true},_meta:metadata},safe(()=>s.workspaces(actor)));
+  server.registerTool('reference_options',{description:'Search permitted targets for a reference field. Returns stable IDs and labels; does not write data.',inputSchema:{workspaceId:id,typeId:id,field:z.string().max(64),query:z.string().max(500).default(''),offset:z.number().int().min(0).default(0)},annotations:{readOnlyHint:true}},safe(v=>s.referenceOptions(actor,v.workspaceId,v.typeId,v.field,v.query,v.offset)));
   server.registerTool('list_tables',{title:'List tables',description:'Get table schemas with inaccessible fields removed.',inputSchema:{workspaceId:id},annotations:{readOnlyHint:true},_meta:metadata},safe(v=>s.types(actor,v.workspaceId)));
   server.registerTool('list_views',{title:'Saved workspace views',description:'List authorised saved views. Views referencing restricted fields are excluded, including restricted sorting or filtering.',inputSchema:{workspaceId:id},annotations:{readOnlyHint:true},_meta:metadata},safe(v=>s.views(actor,v.workspaceId)));
   server.registerTool('read_records',{title:'Read records',description:'Read and search permitted records. Archived entries are excluded by default; use state archived or all for retained entries. Search only covers fields the model may access.',inputSchema:{workspaceId:id,typeId:id,...recordQuerySchema.shape},annotations:{readOnlyHint:true},_meta:metadata},safe(v=>s.records(actor,v.workspaceId,v.typeId,v)));
@@ -51,3 +52,4 @@ export function addMcp(app:Express,s:Service,authenticate:RequestHandler) {
  });
  app.get('/mcp',(_req,res)=>res.status(405).set('Allow','POST').end());
 }
+

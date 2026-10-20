@@ -131,3 +131,8 @@ Reusable table mappings now let ChatGPT reuse approved column correspondence whe
 ## Foundation completion checkpoint — 11 October 2026
 
 Optional common-concept tags now support person, organization, project and location without fixed domain tables. Task setup can atomically create/reuse a schema, save its reviewed scope and initial rows, and link those records to the project. This does not grant future write permission. Direct linked-value corrections, project relationship reads, named saved file assets and owner-reviewed source release for restricted audiences are implemented. External collection links and acceptance are integrated with the same review/history boundary. Owner operational status shows worker/job health. See DEVELOPMENT.md for precise remaining host, provider and production gates.
+
+
+## Field capabilities — 20 October 2026
+
+Typed JavaScript computations, cross-table lookups, multiple references, searchable linked selectors, reviewed bulk edits, field/view renderers and graphical timelines extend the shared data foundation. See [field capabilities and limits](docs/FIELD_CAPABILITIES.md). New derived values are read-time results, not silent database writes; all stored changes retain the approval and audit contract.

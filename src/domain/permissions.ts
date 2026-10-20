@@ -1,3 +1,4 @@
+import {dependencies} from '../shared/formulas.js';
 import type { Connection } from '../db/database.js';
 import type { Actor, Field } from '../shared/schema.js';
 import { fail } from '../shared/schema.js';
@@ -21,7 +22,8 @@ export async function typeAccess(db:Connection, actor:Actor, workspaceId:string,
  if(!t) fail(404,'not_found','Table not found');
  return {type:t,policy:{...p,typeId}};
 }
-export function visibleFields(fields:Field[], policy:any, actor:Actor) {let visible=fields.filter(f=>!policy.hidden_fields.includes(f.key) && !policy.hidden_fields.includes(`${policy.typeId}:${f.key}`) && (!f.targetTypeId||!policy.allowed_types||policy.allowed_types.includes(f.targetTypeId)) && (actor.origin!=='ai'||f.ai));for(let i=0;i<fields.length;i++){const next=visible.filter(f=>!f.formula||f.formula.fields.every(k=>visible.some(v=>v.key===k)));if(next.length===visible.length)break;visible=next;}return visible;}
+export function visibleFields(fields:Field[], policy:any, actor:Actor) {let visible=fields.filter(f=>!policy.hidden_fields.includes(f.key) && !policy.hidden_fields.includes(`${policy.typeId}:${f.key}`) && (!f.targetTypeId||!policy.allowed_types||policy.allowed_types.includes(f.targetTypeId)) && (actor.origin!=='ai'||f.ai));for(let i=0;i<fields.length;i++){const next=visible.filter(f=>dependencies(f).every(k=>visible.some(v=>v.key===k)));if(next.length===visible.length)break;visible=next;}return visible;}
 export function projectData(data:Record<string,unknown>, fields:Field[]) {return Object.fromEntries(fields.filter(f=>Object.hasOwn(data,f.key)).map(f=>[f.key,data[f.key]]));}
 
 export function folderAllowed(folder:string,rules:any[],actor:Actor,role:string){return rules.filter(r=>folder===r.folder||folder.startsWith(r.folder+'/')).every(r=>(role==='owner'||r.allowed_users===null||r.allowed_users.includes(actor.userId))&&(actor.origin!=='ai'||r.ai_enabled));}
+

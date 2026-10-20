@@ -1,3 +1,4 @@
+import {DerivedReader} from './derived-fields.js';
 import type {Connection,Database} from '../db/database.js';
 import {PostgresOriginalStore,type OriginalStore} from '../db/originals.js';
 import {access,typeAccess,visibleFields,projectData,folderAllowed} from './permissions.js';
@@ -34,16 +35,27 @@ export class DataService {
   if(opts.month){const field=opts.dateField??config.dateField;if(!field||!fields.some(f=>f.key===field&&f.kind==='date'))fail(400,'invalid_date_field','Choose an accessible date field');where+=` AND left(data->>${bind(field)}::text,7)=${bind(opts.month)}::text`;}
   return {args,where,fields,config};
  }
- async records(a:Actor,w:string,t:string,opts:RecordQuery={}) {
+ async records(a:Actor,w:string,t:string,opts:RecordQuery={},allowedTypes?:string[]) {
+  const dynamic=await this.dynamicRows(a,w,t,opts,allowedTypes);
+  if(dynamic){const limit=Math.min(100,Math.max(1,opts.limit??50)),offset=Math.max(0,opts.offset??0);return {rows:dynamic.rows.slice(offset,offset+limit),total:dynamic.rows.length,limit,offset,month:opts.month};}
   const {args,where,fields,config}=await this.recordQuery(a,w,t,opts);
   const limit=Math.min(100,Math.max(1,opts.limit??50)),offset=Math.max(0,opts.offset??0);
   const total=Number((await this.db.query(`SELECT count(*) AS count FROM records WHERE ${where}`,args)).rows[0].count);
   const bind=(v:unknown)=>{args.push(v);return `$${args.length}`;};
   const order=config.sort?`NULLIF(data->${bind(config.sort.field)}::text,'null'::jsonb) ${config.sort.direction==='desc'?'DESC':'ASC'} NULLS LAST,created_at,id`:'created_at,id';
   const rows=(await this.db.query(`SELECT * FROM records WHERE ${where} ORDER BY ${order} LIMIT $${args.length+1} OFFSET $${args.length+2}`,[...args,limit,offset])).rows;
-  return {rows:rows.map(r=>({...r,data:projectData(r.data,fields)})),total,limit,offset,month:opts.month};
+  const reader=new DerivedReader(this.db,a,w,allowedTypes);return {rows:await Promise.all(rows.map(r=>reader.read(r,config.renderers))),total,limit,offset,month:opts.month};
  }
- async aggregate(a:Actor,w:string,t:string,opts:RecordQuery&{groupBy?:string;metric?:string}={}) {
+ async aggregate(a:Actor,w:string,t:string,opts:RecordQuery&{groupBy?:string;metric?:string}={},allowedTypes?:string[]) {
+  const dynamic=await this.dynamicRows(a,w,t,opts,allowedTypes);
+  if(dynamic){
+   const {rows,fields}=dynamic;
+   if(opts.groupBy&&!fields.some(f=>f.key===opts.groupBy))fail(400,'invalid_field','Group field unavailable');
+   if(opts.metric&&!fields.some(f=>f.key===opts.metric&&['number','money'].includes(f.kind)))fail(400,'invalid_field','Numeric field unavailable');
+   const stats=(items:any[])=>{const nums=opts.metric?items.map(r=>r.data[opts.metric!]).filter(v=>typeof v==='number'&&Number.isFinite(v)):[];return {count:items.length,unavailable:opts.metric?items.filter(r=>r.derived?.[opts.metric!]?.status==='error').length:0,sum:nums.length?nums.reduce((a,b)=>a+b,0):null,average:nums.length?nums.reduce((a,b)=>a+b,0)/nums.length:null,minimum:nums.length?Math.min(...nums):null,maximum:nums.length?Math.max(...nums):null};};
+   const groups=new Map<string,any[]>();if(opts.groupBy)for(const r of rows){const label=String(r.data[opts.groupBy]??'');groups.set(label,[...(groups.get(label)??[]),r]);}
+   return {totals:stats(rows),groups:[...groups].map(([label,items])=>({label,...stats(items)})).sort((a,b)=>b.count-a.count).slice(0,200),groupsTruncated:groups.size>200,metric:opts.metric??null,scope:'All matching authorised records'};
+  }
   const {args,where,fields}=await this.recordQuery(a,w,t,opts);
   if(opts.groupBy&&!fields.some(f=>f.key===opts.groupBy))fail(400,'invalid_field','Group field unavailable');
   if(opts.metric&&!fields.some(f=>f.key===opts.metric&&['number','money'].includes(f.kind)))fail(400,'invalid_field','Numeric field unavailable');
@@ -54,6 +66,40 @@ export class DataService {
   const totals=(await this.db.query(`SELECT count(*)::int AS count,sum(${numeric}) AS sum,avg(${numeric}) AS average,min(${numeric}) AS minimum,max(${numeric}) AS maximum FROM records WHERE ${where}`,args.slice(0,opts.groupBy?-1:undefined))).rows[0];
   const groups=opts.groupBy?(await this.db.query(`SELECT ${group} AS label,count(*)::int AS count,sum(${numeric}) AS sum,avg(${numeric}) AS average FROM records WHERE ${where} GROUP BY ${group} ORDER BY count(*) DESC,${group} NULLS LAST LIMIT 201`,args)).rows:[];
   return {totals,groups:groups.slice(0,200),groupsTruncated:groups.length>200,metric:opts.metric??null,scope:'All matching authorised records'};
+ }
+ /** Derived queries evaluate before filtering/sorting/pagination; never return a partial total. */
+ private async dynamicRows(a:Actor,w:string,t:string,opts:RecordQuery,allowedTypes?:string[]){
+  const {type,policy}=await typeAccess(this.db,a,w,t);const fields=visibleFields(type.fields,policy,a);
+  if(!fields.some(f=>f.computed||f.lookup))return null;
+  let config:any={};if(opts.viewId){const v=(await this.db.query('SELECT * FROM saved_views WHERE id=$1 AND workspace_id=$2 AND type_id=$3',[opts.viewId,w,t])).rows[0];if(!v||viewFields(viewConfigSchema.parse(v.config)).some(k=>!fields.some(f=>f.key===k)))fail(404,'not_found','View unavailable');config=v.config;}
+  for(const key of [opts.dueBefore?opts.dateField??config.dateField:null,opts.month?opts.dateField??config.dateField:null])if(key&&!fields.some(f=>f.key===key&&f.kind==='date'))fail(400,'invalid_date_field','Choose an accessible date field');
+  const source=(await this.db.query("SELECT id,type_id,version,state,created_at,CASE WHEN sum(octet_length(data::text)) OVER ()<=8388608 AND octet_length(data::text)<=262144 THEN data ELSE NULL END AS data FROM records WHERE workspace_id=$1 AND type_id=$2 AND ($3='all' OR ($3='archived' AND state='archived') OR ($3='active' AND state<>'archived')) ORDER BY created_at,id LIMIT 1001",[w,t,opts.state??'active'])).rows;
+  if(source.length>1000)fail(409,'derived_query_limit','This derived table exceeds the 1,000-record evaluation limit; no partial result was returned');
+  if(source.some(r=>r.data===null))fail(409,'derived_query_limit','Derived evaluation exceeds the 8 MiB table or 256 KiB record budget; no partial result was returned');
+  const reader=new DerivedReader(this.db,a,w,allowedTypes);let rows=[];for(const r of source)rows.push(await reader.read(r,config.renderers));
+  if(opts.q)rows=rows.filter(r=>Object.values(r.data).some(v=>v!==null&&String(v).toLowerCase().includes(opts.q!.toLowerCase())));
+  for(const f of config.filters??[])rows=rows.filter(r=>{if(r.derived[f.field]?.status==='error')return false;const v=r.data[f.field];return f.operator==='empty'?v===null||v===undefined||v==='':f.operator==='contains'?String(v??'').toLowerCase().includes(String(f.value).toLowerCase()):v===f.value;});
+  const date=opts.dateField??config.dateField;
+  if(opts.dueBefore)rows=rows.filter(r=>r.data[date]&&r.data[date]<=opts.dueBefore!);
+  if(opts.month)rows=rows.filter(r=>String(r.data[date]??'').slice(0,7)===opts.month);
+  if(config.sort)rows.sort((a,b)=>{const x=a.data[config.sort.field],y=b.data[config.sort.field];if(x==null)return y==null?0:1;if(y==null)return -1;return (typeof x==='number'&&typeof y==='number'?x-y:String(x).localeCompare(String(y)))*(config.sort.direction==='desc'?-1:1);});
+  return {rows,fields};
+ }
+ async referenceOptions(a:Actor,w:string,t:string,key:string,q='',offset=0){
+  const {type,policy}=await typeAccess(this.db,a,w,t);const field=visibleFields(type.fields,policy,a).find(f=>f.key===key);if(!field)fail(404,'not_found','Field unavailable');
+  let options:any[]=[];let hasMore=false;
+  if(field.kind==='relationship'){
+   if(!field.targetTypeId)return {options:[],hasMore:false};
+   const target=await typeAccess(this.db,a,w,field.targetTypeId),visible=visibleFields(target.type.fields,target.policy,a);
+   const page=await this.records(a,w,field.targetTypeId,{q,offset,limit:50});hasMore=offset+page.rows.length<page.total;
+   options=page.rows.map(r=>({id:r.id,label:String(r.data[visible.find(f=>f.kind==='text')?.key??visible[0]?.key]??r.id)}));
+  }else if(field.kind==='table')options=(await this.types(a,w)).map(v=>({id:v.id,label:v.name}));
+  else if(field.kind==='field'&&field.targetTypeId){const target=await typeAccess(this.db,a,w,field.targetTypeId);options=visibleFields(target.type.fields,target.policy,a).map(f=>({id:f.key,label:f.name}));}
+  else if(field.kind==='document')options=(await this.documents(a,w)).map(d=>({id:d.id,label:d.filename+' · v'+d.version}));
+  else if(field.kind==='person')options=(await this.db.query('SELECT u.id,u.name FROM users u JOIN memberships m ON m.user_id=u.id WHERE m.tenant_id=$1 ORDER BY u.name,u.id',[policy.tenant_id])).rows.map(u=>({id:u.id,label:u.name}));
+  else fail(400,'invalid_reference','Choose a reference field');
+  if(field.kind!=='relationship'){options=options.filter(o=>o.label.toLowerCase().includes(q.toLowerCase()));hasMore=offset+50<options.length;options=options.slice(offset,offset+50);}
+  return {options,hasMore,offset};
  }
  async recordHistory(a:Actor,w:string,recordId:string,offset=0) {
   const r=(await this.db.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[recordId,w])).rows[0];
@@ -102,3 +148,4 @@ export class DataService {
   });
  }
 }
+
