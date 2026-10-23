@@ -1,0 +1,24 @@
+import React,{useState} from 'react';
+import {createRoot} from 'react-dom/client';
+import {WorkspaceShell,type Destination} from '../shared/ui/WorkspaceShell.js';
+import {HomeView,initialHomeState,type HomeResource,type HomeProject} from '../shared/ui/HomeView.js';
+import {Button} from '../shared/ui/Controls.js';
+import {Icon} from '../shared/ui/Icon.js';
+import './preview.css';
+const projects:HomeProject[]=[{id:'axiom',name:'AX-101 · Phase I',description:'Clinical development',icon:'molecule'},{id:'cmc',name:'CMC & manufacturing',description:'Process development',icon:'flask'},{id:'operations',name:'Company operations',description:'People, finance & partners',icon:'dna'}];
+function TrackerPreview(){return <div className="sample-paper"><strong>Vendor selection</strong><div className="sample-tabs"><span>Overview</span><span>Vendors</span><span>Contracting</span></div><div className="sample-stats"><b>8<small>Vendors</small></b><b>3/4<small>Proposals</small></b><b>2<small>Next steps</small></b></div><div className="sample-table">{['CRO #1','CRO #2','CRO #3'].map((x,i)=><div key={x}><span>{x}</span><i/><em>{i?'Received':'Shortlisted'}</em></div>)}</div></div>;}
+function ChartPreview(){return <div className="sample-paper"><strong>Study milestones</strong><small>Progress across workstreams</small><div className="sample-chart">{[42,65,50,85,68,95,76].map((n,i)=><span key={i} style={{height:n+'%',background:['#967bb5','#b5a2cb','#735298'][i%3]}}/>)}</div><div className="sample-axis"><span>Oct</span><span>Nov</span><span>Dec</span></div></div>;}
+function FormPreview(){return <div className="sample-paper"><strong>Partner questionnaire</strong><small>Tell us about your capabilities</small><div className="sample-field"><span>Company name</span><i/></div><div className="sample-field"><span>Areas of expertise</span><i/></div><div className="sample-submit">Continue <Icon name="arrow" size={10}/></div></div>;}
+function AutomationPreview(){return <div className="sample-flow"><div><Icon name="clock" size={15}/><span>Every Monday<small>09:00 · Weekly</small></span></div><i/><div><Icon name="database" size={15}/><span>Check deliverables<small>Read project milestones</small></span></div><i/><div><Icon name="logs" size={15}/><span>Prepare summary<small>Open items & next steps</small></span></div></div>;}
+const resources:HomeResource[]=[
+ {id:'vendor',name:'Vendor selection',description:'Compare proposals and find the right partner.',kind:'tracker',projectIds:['axiom'],updatedAt:'2026-10-23T09:00:00Z',preview:<TrackerPreview/>},
+ {id:'milestones',name:'Study milestones',description:'A clear view of progress across workstreams.',kind:'visualization',projectIds:['axiom'],updatedAt:'2026-10-23T08:00:00Z',preview:<ChartPreview/>},
+ {id:'partner',name:'Partner questionnaire',description:'Collect capabilities, experience and proposals.',kind:'form',projectIds:['axiom'],updatedAt:'2026-10-22T12:00:00Z',preview:<FormPreview/>},
+ {id:'weekly',name:'Weekly project summary',description:'Keep your team aligned on what comes next.',kind:'automation',projectIds:['axiom'],updatedAt:'2026-10-22T10:00:00Z',preview:<AutomationPreview/>},
+ {id:'manufacturing',name:'Manufacturing readiness',description:'Track batches, deliverables and dependencies.',kind:'tracker',projectIds:['cmc'],updatedAt:'2026-10-21T12:00:00Z',preview:<TrackerPreview/>},
+ {id:'spend',name:'Budget overview',description:'Understand commitments across your projects.',kind:'visualization',projectIds:['operations'],updatedAt:'2026-10-20T12:00:00Z',preview:<ChartPreview/>},
+];
+function DesignPreview(){const [state,setState]=useState(initialHomeState),[destination,setDestination]=useState<Destination>('home'),[opened,setOpened]=useState('');const embedded=new URLSearchParams(location.search).get('embedded')==='1';return <><div className="design-notice">Design preview · sample content · no database changes</div><WorkspaceShell selected={destination} onNavigate={d=>{setDestination(d);setOpened('');}} workspaceName="Axiom Biotech" accountName="Alex Morgan" embedded={embedded} onOpenApp={()=>setOpened('Open app')}>
+ {destination==='home'&&!opened?<HomeView projects={projects} resources={resources} state={state} onChange={setState} onOpen={r=>setOpened(r.name)} onCreate={()=>setOpened('Create a tool')} onProjects={()=>setOpened('Manage projects')}/>:<section className="ty-empty"><Icon name={destination==='home'?'folder':destination} size={34}/><h3>{opened||destination[0].toUpperCase()+destination.slice(1)}</h3><p>This design preview demonstrates navigation. Connected screens are being implemented separately.</p><Button icon="home" onClick={()=>{setDestination('home');setOpened('');}}>Back to Home</Button></section>}
+ </WorkspaceShell></>;}
+createRoot(document.getElementById('root')!).render(<DesignPreview/>);
