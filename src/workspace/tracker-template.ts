@@ -11,7 +11,7 @@ export const trackerSetup=z.object({
  extendTables:z.array(z.object({typeId:id,expectedVersion:z.number().int().min(0),newFields:fieldsSchema}).strict()).max(8).default([]),
  newTables:z.array(z.object({id,name:z.string().trim().min(1).max(100),fields:fieldsSchema}).strict()).max(8).default([]),
  scope:z.enum(['workspace','project']).default('workspace'),
- tabs:z.array(z.object({name:z.string().min(1).max(60),typeId:id,columns:z.array(z.object({field:key,label:z.string().min(1).max(100).optional(),visible:z.boolean().default(true),editable:z.boolean().default(true)}).strict()).min(1).max(30)}).strict()).min(1).max(8),
+ tabs:z.array(z.object({name:z.string().min(1).max(60),typeId:id,example:z.record(key,z.union([z.string().max(500),z.number(),z.boolean(),z.null()])).optional(),columns:z.array(z.object({field:key,label:z.string().min(1).max(100).optional(),visible:z.boolean().optional(),editable:z.boolean().default(true)}).strict()).min(1).max(30)}).strict()).min(1).max(8),
  example:z.record(key,z.union([z.string().max(500),z.number(),z.boolean(),z.null()])).optional(),
  showExample:z.boolean().default(true),omitSource:z.boolean().default(false)
 }).strict();
@@ -33,17 +33,19 @@ export async function trackerOperation(f:WorkspaceFoundation,a:Actor,w:string,in
   const columns=tab.columns.map((c,columnIndex)=>{const field=allowed.find((x:any)=>x.key===c.field);if(!field)fail(403,'field_unavailable','Choose an authorized existing field');
    const fieldId='f_'+i+'_'+columnIndex,mode=c.editable&&!derived(field)?'write':'read';
    fields.push({id:fieldId,typeId:tab.typeId,field:c.field,schemaVersion:type.version,kind:field.kind,mode,label:c.label??field.name});
-   return {...c,label:c.label??field.name,fieldId,kind:field.kind,options:field.options??[],editable:mode==='write',required:!!field.required};});
+   const requested=(input as any).tabs[i].columns[columnIndex];const visible=requested.visible??(columnIndex<5||/^(source|sources|provenance)$/i.test(c.field)||/^source$/i.test(c.label??field.name));
+   return {...c,visible,label:c.label??field.name,fieldId,kind:field.kind,options:field.options??[],editable:mode==='write',required:!!field.required};});
   if(!v.omitSource&&!columns.some(c=>/^(source|sources|provenance)$/i.test(c.field)||/^source$/i.test(c.label)))fail(400,'source_required','Include a compatible Source field, or set omitSource only for an explicit user customization. Do not invent source values.');
   const binding=bindings.find(b=>b.typeId===tab.typeId);if(binding)binding.fields=[...new Set([...binding.fields,...columns.map(c=>c.field)])];else bindings.push({typeId:tab.typeId,fields:columns.map(c=>c.field)});
-  tabs.push({name:tab.name,typeId:tab.typeId,columns});
+  if(tab.example&&Object.keys(tab.example).some(k=>!columns.some(c=>c.field===k)))fail(400,'example_field','Example fields must belong to their tab');
+  tabs.push({name:tab.name,typeId:tab.typeId,columns,...(tab.example?{example:Object.fromEntries(Object.entries(tab.example).sort(([a],[b])=>a.localeCompare(b)))}:{})});
  }
  if(v.example&&Object.keys(v.example).some(k=>!tabs[0].columns.some((c:any)=>c.field===k)))fail(400,'example_field','Example fields must belong to the first tab');
  const root=new URL('../../plugin/trialy/skills/trialy-tracker-design/assets/',import.meta.url);
  const reference=await readFile(new URL('approved-theme2-reference.html',root),'utf8');
  const css=[...reference.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map(m=>m[1]).join('\n');
  const runtime=await readFile(new URL('connected-tracker.js',root),'utf8');
- const config={name:v.name,description:v.description,tabs,exampleTypeId:tabs[0].typeId,example:v.example?Object.fromEntries(Object.entries(v.example).sort(([a],[b])=>a.localeCompare(b))):{[tabs[0].columns[0].field]:'Example organization'},showExample:v.showExample};
+ const config={name:v.name,description:v.description,tabs,exampleTypeId:tabs[0].typeId,example:v.example?Object.fromEntries(Object.entries(v.example).sort(([a],[b])=>a.localeCompare(b))):{},showExample:v.showExample};
  return {kind:'save_component' as const,projectId:v.projectId,content:{name:v.name,format:'frontend-js' as const,resourceKind:'tracker' as const,sourceAccess:'workspace' as const,bindings,manifest:{version:1 as const,scope:v.scope,fields},source:`const config=${JSON.stringify(config)};\nconst theme=${JSON.stringify(css)};\n${runtime}`}};
 }
 export const trackerLayout=z.object({name:z.string().trim().min(1).max(100),description:z.string().max(500),tabs:z.array(z.object({typeId:id,name:z.string().trim().min(1).max(60),visible:z.boolean(),columns:z.array(z.object({field:key,label:z.string().trim().min(1).max(100),visible:z.boolean()}).strict()).min(1).max(30)}).strict()).min(1).max(8)}).strict();

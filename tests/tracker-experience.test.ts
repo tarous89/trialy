@@ -12,9 +12,14 @@ test('designed outreach tracker excludes unrelated PI records, persists bindings
  const setup={name:'Biotech outreach',description:'Companies and people for LinkedIn and email outreach.',tabs:[{name:'Companies',typeId:companies,columns:[{field:'name'},{field:'source'}]},{name:'Contacts',typeId:contacts,columns:[{field:'name'},{field:'source'}]}],example:{name:'Example biotech',source:null}};
  const op=await trackerOperation(f,a,w.id,setup),p=await f.preview(a,w.id,op);
  let rendered:any=await f.runFrontend(a,w.id,{previewId:p.id});assert.match(rendered.html,/Example biotech/);assert.doesNotMatch(rendered.html,/University fixture/);assert.match(rendered.css,/#102022/);assert.equal((await service.records(a,w.id,companies,{limit:50,offset:0})).total,0);
+ const emptyContacts:any=await f.runFrontend(a,w.id,{previewId:p.id,event:{kind:'click',action:'tab:1'}});assert.match(emptyContacts.html,/Alex Morgan \(example\)/);assert.ok(emptyContacts.tracker);assert.equal(emptyContacts.tracker.pages.length,2);assert.equal(emptyContacts.controls.length,0);
+ const firstLine=op.content.source.split('\n')[0],reorderedConfig=JSON.parse(firstLine.slice(13,-1));reorderedConfig.tabs.reverse();
+ const reordered=await f.preview(a,w.id,{...op,content:{...op.content,source:'const config='+JSON.stringify(reorderedConfig)+';\n'+op.content.source.slice(firstLine.length+1)}});
+ const reorderedContacts=await f.runFrontend(a,w.id,{previewId:reordered.id,event:{kind:'click',action:'tab:0'}});assert.match(reorderedContacts.html,/Alex Morgan \(example\)/);assert.doesNotMatch(reorderedContacts.html,/Example biotech/);await f.discard(a,w.id,reordered.id);
  const receipt=await f.confirm(a,w.id,p.id,p.digest);let component=(await f.readComponent(a,w.id,receipt.id)).component;assert.equal(component.project_id,null);
  const row=(await save({kind:'create_record',typeId:companies,data:{name:'Real authorized company',source:'User'}})).objects[0].id;
  rendered=await f.runFrontend(a,w.id,{componentId:receipt.id,expectedVersion:0,event:{kind:'click',action:'tab:0'}});assert.doesNotMatch(rendered.html,/Example biotech|University fixture/);assert.equal(rendered.controls[0].value,'Real authorized company');
+ const contactsWithOtherData:any=await f.runFrontend(a,w.id,{componentId:receipt.id,expectedVersion:0,event:{kind:'click',action:'tab:1'}});assert.match(contactsWithOtherData.html,/Alex Morgan \(example\)/);assert.doesNotMatch(contactsWithOtherData.html,/Real authorized company/);assert.equal(contactsWithOtherData.controls.length,2);
  const edit=await f.runFrontend(a,w.id,{componentId:receipt.id,expectedVersion:0,event:{kind:'submit',action:'bound-batch',form:{['bound:f_0_0:'+row+':0']:'Updated company',['bound:f_0_1:'+row+':0']:'Reviewed source'}}});assert.ok(edit.proposal);assert.equal((await f.record(db,a,w.id,row)).data.name,'Real authorized company');await f.confirm(a,w.id,edit.proposal!.id,edit.proposal!.digest);assert.equal((await f.record(db,a,w.id,row)).data.name,'Updated company');
  await assert.rejects(f.runFrontend(a,w.id,{componentId:receipt.id,expectedVersion:0,event:{kind:'submit',action:'bound-batch',form:{['bound:f_0_0:'+row+':0']:'Stale'}}}),/changed/);
  const opened=await f.runFrontend(a,w.id,{componentId:receipt.id,expectedVersion:0,event:{kind:'click',action:'settings'}});const state=opened.state as any;state.layoutDraft.name='Outreach revised';state.layoutDraft.tabs[0].columns[0].label='Company';
@@ -57,4 +62,12 @@ test('empty account previews missing tables without writes; save is atomic, idem
  const output:any=await f.runFrontend(a,w.id,{previewId:ep.id,event:{kind:'click',action:'tab:0'}});assert.equal(output.controls?.find((c:any)=>c.label==='Follow-up')?.editable,false);assert.equal((await service.types(a,w.id))[0].fields.some((x:any)=>x.key==='follow_up'),false);
  await f.confirm(a,w.id,ep.id,ep.digest);assert.equal((await service.types(a,w.id))[0].fields.some((x:any)=>x.key==='follow_up'),true);assert.equal((await service.records(a,w.id,c.bindings[0].typeId,{limit:10,offset:0})).rows[0].data.name,'Real company');
  }finally{await db.close();}
+});
+
+test('only exact approved source receives the local renderer; custom overrides remain isolated',async()=>{
+ const {standardTracker,trackerRenderer}=await import('../src/workspace/standard-tracker.js');
+ const source='const config='+JSON.stringify({name:'Custom label',tabs:[]})+';\nconst theme="";\n'+trackerRenderer;
+ assert.equal(standardTracker(source)?.config.name,'Custom label');
+ assert.equal(standardTracker(source+'\n// user modification'),null);
+ assert.equal(standardTracker('const config={};\nconst theme="";\nreturn {html:"Custom"};'),null);
 });

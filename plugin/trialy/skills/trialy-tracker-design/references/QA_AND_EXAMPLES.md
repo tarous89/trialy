@@ -44,7 +44,7 @@ Read before declaring a tracker done. This is a *testing contract* and reusable 
 - [ ] Clicking a data cell edits; it does not open details. Clicking the right Details expand control opens drawer.
 - [ ] Drawer can be dragged wider and does **not** cast side shadow; it has a thin separator line.
 - [ ] Details supports editing of allowed fields; fields agree with table values and layout bindings.
-- [ ] Edited fields turn green immediately; Save edits and Ignore edits appear **beside Add record**.
+- [ ] Edited fields turn green immediately; Save edits appears in the **dark floating footer** with one action sentence and an accessible dismiss control.
 - [ ] Ignore restores *exact* last saved values. Save persists only authorized exact changes; success status appears only after receipt.
 - [ ] Failed saves (missing access, stale version, invalid data) do not discard pending edits or claim success.
 - [ ] Drawer supports Duplicate and Delete; new duplicate ID; unique keys/audit never cloned; confirmation and linked-record protection for Delete.
@@ -132,3 +132,11 @@ For requested HTML builds, **deliver the working HTML**, not just the plan. Pres
 - For content-only changes, the shell's HTML/CSS/widgets/settings/access model should remain equivalent; domain data, tabs, labels, filters, validations and business decision logic are allowed to differ.
 - For a narrow behavior change, check all core flows plus target regression; avoid unrelated refactoring or unsolicited UX improvements.
 - Never say browser QA passed if browser tool was unavailable or navigation was blocked; run static sanity tests and call the limitation out accurately.
+
+## Connected template regression gates
+
+- [ ] Each empty data tab has one unsaved fictional example; real data in another tab does not suppress it. Examples never enter database writes/counts.
+- [ ] Tabs, details, search/sort and layout controls perform zero MCP runtime calls on the loaded snapshot.
+- [ ] A one-row tracker opens a viewport-height details surface; only the document scrolls vertically.
+- [ ] Fixed dark footer, mobile layout, settings sections, keyboard/drag order and pending edits survive tab navigation.
+- [ ] Only exact known template code gets the browser path; user-customized source remains isolated.

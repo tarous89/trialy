@@ -1,3 +1,4 @@
+import {standardTracker} from './standard-tracker.js';
 import {isDeepStrictEqual} from 'node:util';
 import {applyTrackerLayout,trackerOperation} from './tracker-template.js';
 import {validateResource,requireManifestWrite} from './resource-contract.js';
@@ -116,7 +117,9 @@ export class WorkspaceFoundation {
   const changes:any[]=[],invocations:any[]=[];let layoutProposal:any=null;
   try{
    const currentPolicy=await access(this.db,a,w);
-   const output=frontendOutput.parse(await execute(content.source,{state:request.state,event:request.event,saved:!!request.componentId,writable:!!request.componentId&&!currentPolicy.archived&&!['viewer','inspector'].includes(currentPolicy.role)},async(name,value)=>{
+   const tracker=standardTracker(content.source),pages:any[]=[];
+   const writable=!!request.componentId&&!currentPolicy.archived&&!['viewer','inspector'].includes(currentPolicy.role);
+   const handler=async(name:string,value:unknown)=>{
     if(name==='project.records'||name==='project.relationships'){
      const v=z.object({offset:z.number().int().min(0).max(1000000).default(0)}).strict().parse(value);
      const typeIds=content.bindings.map((b:any)=>b.typeId),projectId=content.project_id;
@@ -173,20 +176,23 @@ export class WorkspaceFoundation {
      const next=componentRecordChanges.parse(value);if(changes.length+next.length>50)fail(400,'change_limit','Too many proposed changes');changes.push(...next);return {status:'proposed',count:next.length};
     }
     fail(403,'capability_unavailable','This interface capability is unavailable');
-   }));
+   };
+   const output=frontendOutput.parse(await execute(tracker?.source??content.source,{state:request.state,event:request.event,saved:!!request.componentId,writable},async(name,value)=>{const result=await handler(name,value);if(tracker&&name==='records.read')pages.push({request:value,result});return result;}));
+   if(!tracker&&(output.controls?.length??0)>100)fail(400,'control_limit','Custom interfaces support at most 100 controls');
    if(Buffer.byteLength(J(output.state))>100000)fail(400,'state_limit','Interface state is too large');
    // Recheck after execution; a concurrent revoke/edit must not release its output.
    if(request.componentId){const current=await this.component(this.db,a,w,request.componentId);if(current.version!==version||current.archived||current.project_archived)fail(409,'component_changed','Interface changed while running');}
    else {const draft=(await this.db.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[request.previewId,w,a.userId])).rows[0];if(!draft)fail(409,'preview_expired','Preview unavailable');await this.validate(this.db,a,w,draft.body.operation);}
-   const controls=[];
+   const controls=[];const recordCache=new Map<string,any>(),resolvedCache=new Map<string,any>();
+   const controlReader=new DerivedReader(this.db,a,w,content.bindings.map((b:any)=>b.typeId),Object.fromEntries(content.bindings.map((b:any)=>[b.typeId,b.fields])));
    for(const item of output.controls??[]){
     const definition=content.manifest?.fields.find((f:any)=>f.id===item.fieldId);
     if(!definition)fail(400,'invalid_control','Every displayed data control needs a manifest field');
-    const record=await this.record(this.db,a,w,item.recordId);if(record.type_id!==definition.typeId)fail(400,'invalid_control','Control record belongs to another table');
+    const record=recordCache.get(item.recordId)??await this.record(this.db,a,w,item.recordId);recordCache.set(item.recordId,record);if(record.type_id!==definition.typeId)fail(400,'invalid_control','Control record belongs to another table');
     if(content.manifest.scope==='project'&&!(await this.db.query('SELECT id FROM project_records WHERE workspace_id=$1 AND project_id=$2 AND record_id=$3 AND revoked_at IS NULL',[w,content.project_id,record.id])).rows.length)fail(403,'project_scope','Control record is outside this project');
     const field=record.fields.find((f:any)=>f.key===definition.field);if(!field&&draftSchema&&!request.componentId){controls.push({slot:item.slot,label:definition.label??definition.field,kind:definition.kind,value:null,options:[],editable:false,action:''});continue;}if(!field)fail(403,'invalid_control','Control field is unavailable');
-    const policy=await access(this.db,a,w);
-    const resolved=await new DerivedReader(this.db,a,w,content.bindings.map((b:any)=>b.typeId),Object.fromEntries(content.bindings.map((b:any)=>[b.typeId,b.fields]))).read(record);
+    const policy=currentPolicy;
+    const resolved=resolvedCache.get(record.id)??await controlReader.read(record);resolvedCache.set(record.id,resolved);
     controls.push({slot:item.slot,label:definition.label??field.name,kind:field.kind,value:resolved.data[field.key]??null,options:field.options??[],editable:!!request.componentId&&definition.mode==='write'&&!policy.archived&&!['viewer','inspector'].includes(policy.role)&&['text','number','money','date','boolean','select'].includes(field.kind),action:'bound:'+definition.id+':'+record.id+':'+record.version});
    }
    if(new Set(controls.map(c=>c.slot)).size!==controls.length)fail(400,'duplicate_control','Control slots must be unique');
@@ -197,7 +203,7 @@ export class WorkspaceFoundation {
     const proposal=layoutProposal?await f.preview(a,w,layoutProposal):changes.length?await f.preview(a,w,{kind:'apply_component_records',componentId:request.componentId,expectedVersion:version,changes}):null;
     const queued=[];for(const v of invocations)queued.push(await f.invokeComponent(a,w,{...v,componentId:request.componentId,expectedVersion:version}));return {proposal,queued};
    });
-   return {queued,runtime:'trialy-frontend-js-v1',frameUrl:new URL('/frontend/frame',process.env.PUBLIC_URL??process.env.RENDER_EXTERNAL_URL??'http://localhost:3000').toString(),...output,controls,connected:!!content.manifest,proposal,temporary:!request.componentId};
+   return {queued,runtime:'trialy-frontend-js-v1',frameUrl:new URL('/frontend/frame',process.env.PUBLIC_URL??process.env.RENDER_EXTERNAL_URL??'http://localhost:3000').toString(),...output,controls,connected:!!content.manifest,proposal,temporary:!request.componentId,...(tracker?{tracker:{config:tracker.config,theme:tracker.theme,pages,saved:!!request.componentId,writable}}:{})};
   }finally{activeFrontends.delete(key);}
  }
  private parseInterface(content:any){
