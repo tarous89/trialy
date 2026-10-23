@@ -1,3 +1,4 @@
+import {withActor,setDatabaseContext} from '../src/db/context.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,readdir} from 'node:fs/promises';
@@ -13,7 +14,8 @@ test('external forms preserve submissions and shared views expose only explicit 
  const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()},s=new Service(db),actor={userId:randomUUID(),origin:'human' as const};
  await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,'external-test@example.invalid','Synthetic']);const w=await s.createWorkspace(actor,'Exchange');const save=async(op:any)=>{const p=await s.preview(actor,w.id,op);return s.commit(actor,p.id,p.digest);};
  const t=(await save({kind:'create_type',name:'Responses',fields:[{key:'name',name:'Name',kind:'text',required:true},{key:'secret',name:'Private',kind:'text'}]})).objects[0]!;
- const app=baseApp();addExternal(app,s,(req,_res,next)=>{req.actor=actor;next();});app.use(errors);const root=`/api/workspaces/${w.id}/exchange`;
+ await pg.exec(await readFile('ops/runtime-role.sql','utf8'));const runtime:Database={query:(q,v)=>runtime.transaction(tx=>tx.query(q,v)),transaction:f=>pg.transaction(async tx=>{await tx.exec('SET LOCAL ROLE trialy_runtime');await setDatabaseContext(tx as Connection);return f(tx as Connection);}),close:async()=>{}};
+ const app=baseApp();addExternal(app,new Service(runtime),(req,_res,next)=>{req.actor=actor;withActor(actor,next);});app.use(errors);const root=`/api/workspaces/${w.id}/exchange`;
  const projectId=randomUUID();await db.query("INSERT INTO workspace_nodes(id,workspace_id,kind,name) VALUES($1,$2,'project','Project')",[projectId,w.id]);
  const created=await request(app).post(root).send({kind:'form',name:'Questionnaire',projectId,typeId:t.id,fields:['name'],days:7,confirmed:true});assert.equal(created.status,200,created.text);const token=created.body.path.split('#')[1],nonce=randomUUID();
  assert.equal((await request(app).post('/external-data').set('x-trialy-link',token).send({nonce,confirmed:true,data:{name:'Test',secret:'Injected'}})).status,400);

@@ -1,3 +1,4 @@
+import {setDatabaseContext} from './context.js';
 import pg from 'pg';
 import { readFile, readdir } from 'node:fs/promises';
 export interface Connection { query<T = any>(sql: string, values?: any[]): Promise<{ rows: T[]; rowCount?: number | null }> }
@@ -5,10 +6,10 @@ export interface Database extends Connection { transaction<T>(fn: (tx: Connectio
 export class Postgres implements Database {
   pool: pg.Pool;
   constructor(url: string) { this.pool = new pg.Pool({ connectionString: url, max: 10, connectionTimeoutMillis: 10000 }); }
-  async query<T = any>(sql: string, values: any[] = []) { const r = await this.pool.query(sql, values); return { rows: r.rows as T[], rowCount: r.rowCount }; }
+  async query<T = any>(sql: string, values: any[] = []) { return this.transaction(async tx=>{const r=await tx.query<T>(sql,values);return {rows:r.rows,rowCount:r.rowCount};}); }
   async transaction<T>(fn: (tx: Connection) => Promise<T>): Promise<T> {
     const c = await this.pool.connect();
-    try { await c.query('BEGIN'); const result = await fn(c); await c.query('COMMIT'); return result; }
+    try { await c.query('BEGIN'); await setDatabaseContext(c); const result = await fn(c); await c.query('COMMIT'); return result; }
     catch (e) { await c.query('ROLLBACK'); throw e; } finally { c.release(); }
   }
   async close() { await this.pool.end(); }

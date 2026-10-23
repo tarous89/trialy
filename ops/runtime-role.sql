@@ -37,3 +37,15 @@ GRANT SELECT,INSERT,UPDATE,DELETE ON worker_health TO trialy_runtime;
 
 -- Anonymous preview lifecycle and durable claim receipts (migration 032).
 GRANT SELECT,INSERT,UPDATE,DELETE ON guest_drafts TO trialy_runtime;
+
+-- RLS helpers have fixed search paths and expose booleans, never row contents.
+GRANT USAGE ON SCHEMA trialy_security TO trialy_runtime;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA trialy_security TO trialy_runtime;
+DO $$ BEGIN
+ IF NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname='trialy_worker') THEN CREATE ROLE trialy_worker NOLOGIN; END IF;
+END $$;
+GRANT trialy_runtime TO trialy_worker;
+-- Only the separately provisioned worker login gets trialy_worker membership.
+-- PostgreSQL requires an UPDATE privilege for SELECT ... FOR UPDATE on reviews.
+-- Limit it to the identifier column; application code never edits review bodies.
+GRANT UPDATE(id) ON data_previews,workspace_previews,foundation_previews TO trialy_runtime;

@@ -1,3 +1,4 @@
+import {setDatabaseContext} from '../src/db/context.js';
 /** Isolated acceptance: real login/CSRF/routes, synthetic data, no production writes.
  * npm run build; PLAYWRIGHT_IMPORT=/absolute/path/to/playwright/index.mjs CHROMIUM_PATH=/path/to/chromium node --import tsx scripts/test-connected-browser.ts
  */
@@ -7,10 +8,12 @@ if(!process.env.PLAYWRIGHT_IMPORT)throw Error('Set PLAYWRIGHT_IMPORT to an insta
 process.env.NODE_ENV='test';const pg=new PGlite();const db:Database={query:(s,v)=>pg.query(s,v) as any,transaction:f=>pg.transaction(tx=>f(tx as Connection)),close:()=>pg.close()};
 const app=baseApp();app.use(session({secret:randomUUID()+randomUUID(),resave:false,saveUninitialized:false}));
 const server=app.listen(0,'127.0.0.1');await new Promise<void>(r=>server.once('listening',r));const base='http://127.0.0.1:'+(server.address() as any).port;process.env.PUBLIC_URL=base;
-const auth=addLocalAuth(app,db,base);const service=new Service(db);addApi(app,service,auth.human);app.use(express.static('dist/web'));app.get('/{*path}',(_req,res)=>res.sendFile('index.html',{root:'dist/web'}));app.use(errors);
+const requestDb:Database={query:(s,v)=>requestDb.transaction(tx=>tx.query(s,v)),transaction:f=>pg.transaction(async tx=>{await tx.exec('SET LOCAL ROLE trialy_runtime');await setDatabaseContext(tx as Connection);return f(tx as Connection);}),close:async()=>{}};
+const auth=addLocalAuth(app,requestDb,base);const service=new Service(db);addApi(app,new Service(requestDb),auth.human);app.use(express.static('dist/web'));app.get('/{*path}',(_req,res)=>res.sendFile('index.html',{root:'dist/web'}));app.use(errors);
 let browser:any;
 try{
  for(const f of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+f,'utf8'));
+ await pg.exec(await readFile('ops/runtime-role.sql','utf8'));
  browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||undefined,args:['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'],headless:true});
  const page=await browser.newPage(),exceptions:string[]=[];page.on('pageerror',(e:Error)=>exceptions.push(e.message));
  await page.goto(base+'/auth/login?mode=signup');await page.getByLabel('Email',{exact:true}).fill('browser@example.invalid');await page.getByLabel('Password',{exact:true}).fill('synthetic-browser-password-123');await page.locator('input[name=intendedUse]').check();await page.getByRole('button',{name:'Create account',exact:true}).click();await page.waitForURL(base+'/');
@@ -34,5 +37,5 @@ try{
  for(const name of ['Forms','Visualizations','Automations','Projects']){await page.getByRole('button',{name,exact:true}).click();}
  // Revoke the authenticated session while the browser still has a populated cache.
  await db.query('UPDATE local_accounts SET session_version=session_version+1 WHERE user_id=$1',[actor.userId]);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await page.getByRole('link',{name:/sign in/i}).first().waitFor();assert.equal(await page.getByRole('button',{name:'Database',exact:true}).count(),0);
- assert.deepEqual(exceptions,[]);console.log(JSON.stringify({passed:true,checks:['real signup and cookie session','CSRF-backed routes','connected frame displays stored value','field revocation clears frame and source editor','revision recheck clears stale frame','resource navigation','session revocation clears app'],databaseRequests:timings},null,2));
+ assert.deepEqual(exceptions,[]);console.log(JSON.stringify({passed:true,checks:['restricted SQL role and RLS on all app requests','real signup and cookie session','CSRF-backed routes','connected frame displays stored value','field revocation clears frame and source editor','revision recheck clears stale frame','resource navigation','session revocation clears app'],databaseRequests:timings},null,2));
 }finally{await browser?.close();await new Promise<void>(r=>server.close(()=>r()));await pg.close();}

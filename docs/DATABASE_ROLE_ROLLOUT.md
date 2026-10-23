@@ -1,26 +1,29 @@
-# Database-role rollout and remaining isolation work
+# PostgreSQL runtime isolation
 
-## Current boundary
+Migration 035 enables row-level security on workspace-bearing tables and parent-scoped revisions, payloads and extractions. Every pooled application query runs in a transaction with transaction-local actor/origin/capability context. Missing context denies workspace rows; commit/rollback clears context before connection reuse. Authenticated API/MCP, account claims, public links and invitations establish their own validated context.
 
-Trialy checks workspace, table, field, project/resource and grant permissions in shared backend services. The deployed database connection remains the original owner connection. The SQL role in `ops/runtime-role.sql` restricts database operations and protects history, but does not implement tenant/field row-level security. Do not describe either the role or the startup audit as RLS.
+Record policies additionally enforce workspace/table membership and AI table restrictions. Authorized members can still discover table schema without reading records. Public form submissions are limited to the presented link and response nonce. Quota helpers return only capacity booleans while counting all submissions. Public view projection, JSON field restrictions, document/folder rules, resource/project scopes and write approvals remain enforced in the shared backend. This is not SQL-level JSON-field masking. Authentication/session and anonymous draft storage remain service-level tables protected by their backend handlers.
 
-On 23 October 2026 the connected Render SQL operation could not reach `trialy-db`: its external IP allowlist is empty, and the hosted MCP server has no published source IP to allowlist. That operation is read-only in any case. Leave the private database private. Provision credentials and apply SQL from an authorized private-network shell/job or another approved administrative connection. No credential should be pasted into chat or committed.
+The web role cannot obtain worker authority by setting a context variable. Worker context is accepted only for a login inheriting `trialy_worker`. That service role processes jobs across workspaces; each automation/function still applies its existing actor/grant checks. RLS trusts authenticated context set by backend code; it is not protection against arbitrary code execution with application credentials.
 
-## Concrete rollout sequence
+## Deployment
 
-1. Establish a dedicated migration job with the database-owner credential. Run `npm run db:migrate`, then apply `ops/runtime-role.sql` against that same database. Keep this credential out of the long-running web/worker environment. Reapply/review role grants after schema additions.
-2. Provision a separate login with a generated secret using the database administration interface. It must have NOSUPERUSER, NOBYPASSRLS, NOCREATEDB and NOCREATEROLE, no ownership/owner-role membership, and membership in `trialy_runtime`. Store its connection string in deployment secret storage.
-3. Run `npm run db:runtime-audit` with `DATABASE_URL` set to that login. It prints only the role name and privilege findings, never the URL or password. It must return `restricted:true` and exit zero. An owner connection, inherited ownership, schema CREATE, TRUNCATE, or update/delete on protected history fails the audit.
-4. Run synthetic account/session, read, reviewed save, original download, public form intake, guest claim, export and worker smoke checks using the restricted login in a staging environment. No production business records should be used as test fixtures.
-5. Configure the web and worker with the restricted `DATABASE_URL` and `REQUIRE_RESTRICTED_DATABASE_ROLE=true`. The startup guard then refuses an overprivileged connection. Remove their owner-dependent `preDeployCommand: npm run db:migrate` after moving migrations to the dedicated job; do not make the runtime role a migration owner to bypass this dependency. Deploy both services, verify `/ready`, worker heartbeat, reviewed writes and runtime logs.
-6. Keep the dedicated migration job available for roll-forward fixes. Do not automatically restore owner privileges on runtime failures. No schema rollback is required for this additive audit/guard change.
+The existing Render pre-deploy hook has private-network database access. `npm run db:migrate` applies migrations and, when configured, provisions a restricted login through `scripts/provision-runtime.ts`. The database remains private; external SQL access is not required.
 
-The current Render blueprint still describes the existing owner-backed development setup. It has not been silently switched to credentials that do not exist. The guard remains opt-in until the preceding steps have been verified.
+Each service receives a distinct random URL-safe secret (43–128 characters) in `TRIALY_RUNTIME_PASSWORD`, plus `TRIALY_RUNTIME_KIND=web` or `worker`. Provisioning is serialized and idempotent. It applies `ops/runtime-role.sql`, creates/updates `trialy_web_login` or `trialy_worker_login`, and grants only the corresponding runtime group. Provisioning errors expose a SQLSTATE, never the password or statement. Keep secrets in Render, never Git or chat.
 
-## Tenant/row isolation is a separate remaining implementation
+At startup `runtimeConnection` uses the database host/name from `DATABASE_URL` with the restricted login, replaces the JavaScript environment URL, removes bootstrap secret variables and enables the mandatory runtime audit. The audit rejects owner authority, elevated role flags, schema CREATE, TRUNCATE, mutable protected history and missing workspace RLS. A successful startup logs `runtime_role_verified` with only the role name. `npm run db:runtime-audit` uses the same connection selection.
 
-A non-owner role alone still has service-wide permitted table access. Before enabling PostgreSQL RLS, define and test trusted per-transaction actor/workspace context across authenticated API/MCP requests, background workers, public bearer-link submissions, anonymous draft claims, authentication/session storage and exports. Defaults must fail closed, worker/service authority must be explicit, and connection-pool reuse must reset context. Do not enable a partial RLS policy that breaks public forms or gives every worker implicit owner authority. Field projection and resource/record scope checks remain necessary alongside RLS.
+Roll out code first, then merge the per-service secret variables into Render and deploy both services. Verify pre-deploy success, both role-verification log entries, `/ready`, worker processing and authenticated MCP reads. Do not silently restore owner privileges if the restricted connection fails. Reapply grants through migrations after schema changes. New workspace tables must have RLS policies or startup fails.
 
-## Validation
+**Credential boundary:** the owner URL still exists in Render service configuration for the pre-deploy hook and inherited bootstrap environment. Removing it from `process.env` does not remove platform-level access or erase the original OS environment. Complete owner-secret separation requires moving migrations to a dedicated job and configuring only restricted URLs on web/worker. This rollout restricts the connections actually used by application queries; it does not claim that stronger credential separation.
 
-`tests/runtime-role.test.ts` applies all migrations and the real grant script to isolated PostgreSQL-compatible PGlite, switches roles, verifies denied DDL/TRUNCATE/history mutations and permitted reads, then deliberately grants TRUNCATE and confirms the audit detects the regression. This validates SQL privileges locally, not the production credential rollout or tenant isolation.
+## Verification
+
+- `tests/database-isolation.test.ts`: missing actor, two-workspace reads/writes, mismatched table/workspace, restricted-table schema discovery, concurrent transaction context, web/worker separation, reviewed writes, extraction jobs, public nonce isolation and aggregate quotas.
+- `tests/runtime-role.test.ts`: actual denied DDL/TRUNCATE/history mutations and audit regression detection.
+- `tests/runtime-provision.test.ts`: idempotent provisioning, both login groups, secret replacement and privilege audits.
+- Exchange, invitation and guest-claim HTTP tests run their handlers under the real restricted SQL role, including signup, review, retries, revocation, public file intake and existing-table reuse.
+- `scripts/test-connected-browser.ts` uses the restricted role for real app requests, cookie sessions and CSRF, then checks tracker rendering, field/revision revalidation and session revocation in Chromium.
+
+PGlite tests exercise PostgreSQL policy semantics locally. Live role logs and authenticated reads verify deployment separately. Manual ChatGPT iframe/navigation and approval-return acceptance is a distinct host check; a passing standalone browser test does not prove that UI flow.
