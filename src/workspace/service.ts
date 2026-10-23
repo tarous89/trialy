@@ -104,6 +104,7 @@ export class WorkspaceFoundation {
     if(record.type_id!==control.typeId)fail(403,'manifest_binding','Record does not belong to this control');
     const field=record.fields.find((f:any)=>f.key===control.field);let value:any=rawValue;
     if(value===''&&!field.required)value=null;
+    else if(field.multiple&&typeof value==='string'&&value.trim().startsWith('[')){try{value=JSON.parse(value);}catch{fail(400,'invalid_value','Enter a valid list of values');}if(!Array.isArray(value))fail(400,'invalid_value','Enter a list of values');}
     else if(['number','money'].includes(field.kind)){if(typeof value!=='string'||!value.trim()||!Number.isFinite(Number(value)))fail(400,'invalid_value','Enter a valid number');value=Number(value);}
     else if(field.kind==='boolean'&&typeof value!=='boolean')fail(400,'invalid_value','Choose a boolean value');
     let change=changes.find(c=>c.recordId===recordId);if(!change){change={kind:'update_record',recordId,expectedVersion:Number(versionText),data:{}};changes.push(change);}
@@ -193,7 +194,7 @@ export class WorkspaceFoundation {
     const field=record.fields.find((f:any)=>f.key===definition.field);if(!field&&draftSchema&&!request.componentId){controls.push({slot:item.slot,label:definition.label??definition.field,kind:definition.kind,value:null,options:[],editable:false,action:''});continue;}if(!field)fail(403,'invalid_control','Control field is unavailable');
     const policy=currentPolicy;
     const resolved=resolvedCache.get(record.id)??await controlReader.read(record);resolvedCache.set(record.id,resolved);
-    controls.push({slot:item.slot,label:definition.label??field.name,kind:field.kind,value:resolved.data[field.key]??null,options:field.options??[],editable:!!request.componentId&&definition.mode==='write'&&!policy.archived&&!['viewer','inspector'].includes(policy.role)&&['text','number','money','date','boolean','select'].includes(field.kind),action:'bound:'+definition.id+':'+record.id+':'+record.version});
+    controls.push({slot:item.slot,label:definition.label??field.name,kind:field.kind,multiple:!!field.multiple,value:resolved.data[field.key]??null,options:field.options??[],editable:!!request.componentId&&definition.mode==='write'&&!policy.archived&&!['viewer','inspector'].includes(policy.role)&&['text','number','money','date','boolean','select'].includes(field.kind),action:'bound:'+definition.id+':'+record.id+':'+record.version});
    }
    if(new Set(controls.map(c=>c.slot)).size!==controls.length)fail(400,'duplicate_control','Control slots must be unique');
    const {proposal,queued}=await this.db.transaction(async tx=>{

@@ -23,6 +23,12 @@ export async function workspaceHome(db:Database,a:Actor,w:string,input:unknown={
  for(let i=resources.length-1;i>=0;i--){const r=resources[i],placement=placements.find(x=>x.source===r.source&&x.tool_id===r.id);r.placementVersion=placement?.version??0;r.canMove=p.role==='owner'||p.role==='editor';
   if(placement){try{if(placement.project_id)await f.activeNode(db,a,w,placement.project_id);r.projectIds=placement.project_id?[placement.project_id]:[];}catch{resources.splice(i,1);}}
  }
+ const previews=await f.pending(a,w);
+ for(const draft of previews){const op=draft.body;
+  if(!['create_tracker','save_component'].includes(op.kind)||op.componentId||op.content?.format!=='frontend-js')continue;
+  const content=op.content,projectId=op.setup?.projectId??op.projectId;
+  resources.push({id:draft.id,name:content.name,kind:content.resourceKind??'generic',source:'preview',status:'Preview',projectIds:projectId?[projectId]:[],updatedAt:new Date(new Date(draft.expiresAt).getTime()-86400000).toISOString(),description:'Not saved',canMove:false,expiresAt:draft.expiresAt});
+ }
  const matches=resources.filter(r=>(!q.projectId||(q.projectId==='unassigned'?r.projectIds.length===0:r.projectIds.includes(q.projectId)))&&(q.kind==='all'||r.kind===q.kind)&&(!q.query||`${r.name} ${r.description}`.toLowerCase().includes(q.query.toLowerCase()))).sort((a,b)=>q.sort==='name'?a.name.localeCompare(b.name)||a.id.localeCompare(b.id):new Date(b.updatedAt).getTime()-new Date(a.updatedAt).getTime()||a.id.localeCompare(b.id));
  const page=matches.slice(q.offset,q.offset+q.limit);
  // Read-only schema previews contain field names, never sampled values or executable HTML.

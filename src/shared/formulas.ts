@@ -6,13 +6,13 @@ export function formulaOrder(fields:Field[]):Field[]{
  const visit=(f:Field)=>{if(done.has(f.key))return;if(active.has(f.key))fail(400,'formula_cycle','Calculated fields cannot have circular dependencies');active.add(f.key);
   if([f.formula,f.computed,f.lookup].filter(Boolean).length>1)fail(400,'invalid_formula','Choose one calculation definition');
   if(f.multiple&&f.unique)fail(400,'invalid_reference','Multiple references cannot be marked unique');
-  if(f.multiple&&!['relationship','person','document','table','field'].includes(f.kind))fail(400,'invalid_reference','Only references can contain multiple values');
+  if(f.multiple&&['date','boolean'].includes(f.kind))fail(400,'invalid_value','Dates and booleans must be single values');
   if(f.computed||f.lookup){
    if(f.required||f.unique||f.multiple||!['text','number','money','date','boolean'].includes(f.kind))fail(400,'invalid_formula','Derived fields must have a scalar output type and cannot be required or unique');
    for(const key of dependencies(f)){const source=fields.find(s=>s.key===key);if(!source)fail(400,'invalid_formula','Unknown dependency');visit(source);}
    if(f.lookup){const ref=fields.find(s=>s.key===f.lookup!.reference);if(ref?.kind!=='relationship'||!ref.targetTypeId)fail(400,'invalid_lookup','A lookup needs a typed record reference');}
   }
-  if(f.formula){if(!['number','money'].includes(f.kind)||f.required||f.unique)fail(400,'invalid_formula','Calculated fields must be optional numeric fields without uniqueness');for(const key of f.formula.fields){const source=fields.find(s=>s.key===key);if(!source||source.computed||source.lookup||!['number','money'].includes(source.kind))fail(400,'invalid_formula','Calculation requires numeric fields from this table');visit(source);}order.push(f);}
+  if(f.formula){if(!['number','money'].includes(f.kind)||f.required||f.unique||f.multiple)fail(400,'invalid_formula','Calculated fields must be optional numeric fields without uniqueness');for(const key of f.formula.fields){const source=fields.find(s=>s.key===key);if(!source||source.computed||source.lookup||source.multiple||!['number','money'].includes(source.kind))fail(400,'invalid_formula','Calculation requires numeric fields from this table');visit(source);}order.push(f);}
   active.delete(f.key);done.add(f.key);
  };fields.forEach(visit);return order;
 }

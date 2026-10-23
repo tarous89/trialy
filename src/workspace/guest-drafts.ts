@@ -10,7 +10,7 @@ import {WorkspaceFoundation} from './service.js';
 import {checksum} from '../domain/evidence.js';
 import {access,typeAccess} from '../domain/permissions.js';
 import {requireHuman} from '../domain/write-authorization.js';
-const draftValues=z.record(z.string(),z.union([z.string().max(50000),z.number().finite(),z.boolean(),z.array(z.string().max(200)).max(100),z.null()]));
+const draftValues=z.record(z.string(),z.union([z.string().max(50000),z.number().finite(),z.boolean(),z.array(z.union([z.string().max(50000),z.number().finite()])).max(100),z.null()]));
 export const guestHandle=z.object({id,token:z.string().regex(/^[A-Za-z0-9_-]{43}$/)}).strict();
 export const guestBundle=z.object({
  name:z.string().trim().min(1).max(100),

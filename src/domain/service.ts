@@ -76,8 +76,8 @@ export class Service extends DataService {
   for(const key of Object.keys(data)) if(!fields.some(f=>f.key===key&&!derived(f)))fail(400,'invalid_field','A field is unavailable or unknown');
   for(const f of fields){if(derived(f))continue;const v=data[f.key];if(partial&&v===undefined)continue;
    if(v===undefined||v===null||v===''){if(f.required)fail(400,'required_field',`${f.name} is required`);continue;}
-   if(f.multiple){
-    if(!Array.isArray(v)||v.length>100||new Set(v).size!==v.length||v.some(x=>typeof x!=='string'))fail(400,'invalid_reference','Use up to 100 distinct reference IDs');
+   if(f.multiple&&Array.isArray(v)){
+    if(v.length>100||new Set(v).size!==v.length||v.some(x=>!['string','number'].includes(typeof x)))fail(400,'invalid_value','Use up to 100 distinct values');
     if(f.required&&!v.length)fail(400,'required_field',`${f.name} is required`);
     for(const value of v)await this.validateData(tx,a,w,{...type,fields:[{...f,multiple:false,required:false,unique:false}]},policy,{[f.key]:value},true,recordId);
     continue;

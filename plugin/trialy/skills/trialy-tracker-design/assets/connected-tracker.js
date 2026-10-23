@@ -35,7 +35,7 @@ const pages=config.tabs.map((t,i)=>tools.call('records.read',{typeId:t.typeId,li
 const controls=[];
 config.tabs.forEach((t,i)=>pages[i].rows.forEach((r,j)=>t.columns.forEach((c,k)=>controls.push({slot:'slot_'+i+'_'+j+'_'+k,fieldId:c.fieldId,recordId:r.id}))));
 const tone=v=>/fail|blocked|overdue|high|reject/i.test(String(v))?'red':/done|complete|active|approved|yes|ready/i.test(String(v))?'green':/pending|progress|medium|review|contact/i.test(String(v))?'amber':'blue';
-const display=(c,v)=>v==null||v===''?'<span class="empty-source">—</span>':['select','boolean','multi_select'].includes(c.kind)?'<span class="pill '+tone(v)+'">'+esc(v===true?'Yes':v===false?'No':v)+'</span>':esc(v);
+const display=(c,v)=>Array.isArray(v)?'<span class="multi">'+v.map(x=>'<span class="tag">'+esc(x)+'</span>').join('')+'</span>':v==null||v===''?'<span class="empty-source">—</span>':['select','boolean','multi_select'].includes(c.kind)?'<span class="pill '+tone(v)+'">'+esc(v===true?'Yes':v===false?'No':v)+'</span>':esc(v);
 const sampleFor=(t,i)=>{
  const given=t.example||(t.typeId===(config.exampleTypeId||config.tabs[0].typeId)?config.example:null)||{};
  return Object.fromEntries(t.columns.map((c,j)=>{
@@ -53,7 +53,7 @@ const sampleFor=(t,i)=>{
    else if(/priority/.test(key))v='Medium';
    else if(/note|description|next/.test(key))v='Example: review and plan the next step';
    else v=j===0?'Example '+t.name.toLowerCase().replace(/s$/,''):'Example '+c.label.toLowerCase();
-  }return [c.field,v];
+  }return [c.field,c.multiple&&v!=null&&!Array.isArray(v)?[v]:v];
  }));
 };
 const cell=(c,r,ti)=>{
