@@ -37,7 +37,7 @@ config.tabs.forEach((t,i)=>pages[i].rows.forEach((r,j)=>t.columns.forEach((c,k)=
 const tone=v=>/fail|blocked|overdue|high|reject/i.test(String(v))?'red':/done|complete|active|approved|yes|ready/i.test(String(v))?'green':/pending|progress|medium|review|contact/i.test(String(v))?'amber':'blue';
 const display=(c,v)=>v==null||v===''?'<span class="empty-source">—</span>':['select','boolean','multi_select'].includes(c.kind)?'<span class="pill '+tone(v)+'">'+esc(v===true?'Yes':v===false?'No':v)+'</span>':esc(v);
 const sampleFor=(t,i)=>{
- const given=t.example||(i===0?config.example:null)||{};
+ const given=t.example||(t.typeId===(config.exampleTypeId||config.tabs[0].typeId)?config.example:null)||{};
  return Object.fromEntries(t.columns.map((c,j)=>{
   let v=given[c.field];if(v===undefined){const key=(c.field+' '+c.label).toLowerCase();
    if(/source|provenance/.test(key))v=null;

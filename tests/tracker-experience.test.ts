@@ -13,6 +13,9 @@ test('designed outreach tracker excludes unrelated PI records, persists bindings
  const op=await trackerOperation(f,a,w.id,setup),p=await f.preview(a,w.id,op);
  let rendered:any=await f.runFrontend(a,w.id,{previewId:p.id});assert.match(rendered.html,/Example biotech/);assert.doesNotMatch(rendered.html,/University fixture/);assert.match(rendered.css,/#102022/);assert.equal((await service.records(a,w.id,companies,{limit:50,offset:0})).total,0);
  const emptyContacts:any=await f.runFrontend(a,w.id,{previewId:p.id,event:{kind:'click',action:'tab:1'}});assert.match(emptyContacts.html,/Alex Morgan \(example\)/);assert.ok(emptyContacts.tracker);assert.equal(emptyContacts.tracker.pages.length,2);assert.equal(emptyContacts.controls.length,0);
+ const firstLine=op.content.source.split('\n')[0],reorderedConfig=JSON.parse(firstLine.slice(13,-1));reorderedConfig.tabs.reverse();
+ const reordered=await f.preview(a,w.id,{...op,content:{...op.content,source:'const config='+JSON.stringify(reorderedConfig)+';\n'+op.content.source.slice(firstLine.length+1)}});
+ const reorderedContacts=await f.runFrontend(a,w.id,{previewId:reordered.id,event:{kind:'click',action:'tab:0'}});assert.match(reorderedContacts.html,/Alex Morgan \(example\)/);assert.doesNotMatch(reorderedContacts.html,/Example biotech/);await f.discard(a,w.id,reordered.id);
  const receipt=await f.confirm(a,w.id,p.id,p.digest);let component=(await f.readComponent(a,w.id,receipt.id)).component;assert.equal(component.project_id,null);
  const row=(await save({kind:'create_record',typeId:companies,data:{name:'Real authorized company',source:'User'}})).objects[0].id;
  rendered=await f.runFrontend(a,w.id,{componentId:receipt.id,expectedVersion:0,event:{kind:'click',action:'tab:0'}});assert.doesNotMatch(rendered.html,/Example biotech|University fixture/);assert.equal(rendered.controls[0].value,'Real authorized company');
