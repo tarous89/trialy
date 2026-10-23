@@ -1,3 +1,4 @@
+import {applyTrackerLayout} from './tracker-template.js';
 import {validateResource,requireManifestWrite} from './resource-contract.js';
 import {DerivedReader} from '../domain/derived-fields.js';
 import {derived} from '../shared/formulas.js';
@@ -88,24 +89,33 @@ export class WorkspaceFoundation {
   if(request.componentId){const c=await this.component(this.db,a,w,request.componentId);if(c.archived||c.project_archived||c.format!=='frontend-js'||c.version!==request.expectedVersion)fail(409,'component_changed','Open the current active code revision');content=c;version=c.version;}
   else {const draft=(await this.db.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[request.previewId,w,a.userId])).rows[0];if(!draft||draft.body.operation.kind!=='save_component'||draft.body.operation.content.format!=='frontend-js')fail(404,'not_found','Code preview unavailable');await this.validate(this.db,a,w,draft.body.operation);content={...draft.body.operation.content,project_id:draft.body.operation.projectId};}
   await validateResource(this.db,a,w,content);
-  if(request.event.action.startsWith('bound:')){
+  if(request.event.action.startsWith('bound:')||request.event.action==='bound-batch'){
    if(!request.componentId||!content.manifest)fail(403,'preview_read_only','Open a saved connected resource');
-   const [,controlId,recordId,versionText]=request.event.action.split(':');
-   const control=content.manifest.fields.find((f:any)=>f.id===controlId&&f.mode==='write');
-   if(!control||!recordId||!/^\d+$/.test(versionText??''))fail(400,'invalid_control','Choose a bound writable field');
-   const record=await this.record(this.db,a,w,id.parse(recordId),true);
-   if(record.type_id!==control.typeId)fail(403,'manifest_binding','Record does not belong to this control');
-   const field=record.fields.find((f:any)=>f.key===control.field);let value:any=request.event.value;
-   if(value===''&&!field.required)value=null;
-   else if(['number','money'].includes(field.kind)){if(typeof value!=='string'||!value.trim()||!Number.isFinite(Number(value)))fail(400,'invalid_value','Enter a valid number');value=Number(value);}
-   else if(field.kind==='boolean'&&typeof value!=='boolean')fail(400,'invalid_value','Choose a boolean value');
-   const proposal=await this.preview(a,w,{kind:'apply_component_records',componentId:request.componentId,expectedVersion:version,changes:[{kind:'update_record',recordId,expectedVersion:Number(versionText),data:{[control.field]:value}}]});
+   const edits=request.event.action==='bound-batch'?Object.entries(request.event.form):[[request.event.action,request.event.value]];
+   if(!edits.length||edits.length>50)fail(400,'edit_limit','Save between one and 50 field edits');
+   const changes:any[]=[];
+   for(const [action,rawValue] of edits){
+    const [prefix,controlId,recordId,versionText]=String(action).split(':');
+    const control=content.manifest.fields.find((f:any)=>f.id===controlId&&f.mode==='write');
+    if(prefix!=='bound'||!control||!recordId||!/^\d+$/.test(versionText??''))fail(400,'invalid_control','Choose a bound writable field');
+    const record=await this.record(this.db,a,w,id.parse(recordId),true);
+    if(record.type_id!==control.typeId)fail(403,'manifest_binding','Record does not belong to this control');
+    const field=record.fields.find((f:any)=>f.key===control.field);let value:any=rawValue;
+    if(value===''&&!field.required)value=null;
+    else if(['number','money'].includes(field.kind)){if(typeof value!=='string'||!value.trim()||!Number.isFinite(Number(value)))fail(400,'invalid_value','Enter a valid number');value=Number(value);}
+    else if(field.kind==='boolean'&&typeof value!=='boolean')fail(400,'invalid_value','Choose a boolean value');
+    let change=changes.find(c=>c.recordId===recordId);if(!change){change={kind:'update_record',recordId,expectedVersion:Number(versionText),data:{}};changes.push(change);}
+    if(change.expectedVersion!==Number(versionText))fail(409,'stale_version','Edit versions disagree');
+    change.data[control.field]=value;
+   }
+   const proposal=await this.preview(a,w,{kind:'apply_component_records',componentId:request.componentId,expectedVersion:version,changes});
    return {boundEdit:true,proposal,state:request.state,html:'',css:''};
   }
   const key=w+':'+a.userId;if(activeFrontends.size>=2||activeFrontends.has(key))fail(429,'runtime_busy','Another interface is running; try again shortly');activeFrontends.add(key);
-  const changes:any[]=[],invocations:any[]=[];
+  const changes:any[]=[],invocations:any[]=[];let layoutProposal:any=null;
   try{
-   const output=frontendOutput.parse(await execute(content.source,{state:request.state,event:request.event},async(name,value)=>{
+   const currentPolicy=await access(this.db,a,w);
+   const output=frontendOutput.parse(await execute(content.source,{state:request.state,event:request.event,saved:!!request.componentId,writable:!!request.componentId&&!currentPolicy.archived&&!['viewer','inspector'].includes(currentPolicy.role)},async(name,value)=>{
     if(name==='project.records'||name==='project.relationships'){
      const v=z.object({offset:z.number().int().min(0).max(1000000).default(0)}).strict().parse(value);
      const typeIds=content.bindings.map((b:any)=>b.typeId),projectId=content.project_id;
@@ -148,6 +158,13 @@ export class WorkspaceFoundation {
      const total=Number((await this.db.query("SELECT count(*) AS n FROM records WHERE workspace_id=$1 AND type_id=$2 AND state<>'archived' AND ($3::uuid IS NULL OR EXISTS(SELECT 1 FROM project_records pr WHERE pr.workspace_id=$1 AND pr.project_id=$3 AND pr.record_id=records.id AND pr.revoked_at IS NULL))",[w,v.typeId,content.manifest?.scope==='project'?content.project_id:null])).rows[0].n);
      const bound=Object.fromEntries(content.bindings.map((b:any)=>[b.typeId,b.fields]));const reader=new DerivedReader(this.db,a,w,Object.keys(bound),bound);return {rows:await Promise.all(rows.map(r=>reader.read({...r,type_id:v.typeId}))),total,limit:v.limit,offset:v.offset};
     }
+    if(name==='layout.propose'){
+     if(!request.componentId)fail(403,'preview_read_only','Save the tracker before changing its layout');
+     if(layoutProposal)fail(400,'layout_limit','One layout proposal per action');
+     const update=applyTrackerLayout(content,value);
+     layoutProposal={kind:'save_component',componentId:request.componentId,expectedVersion:version,projectId:content.project_id,content:{name:update.name,source:update.source,format:content.format,sourceAccess:content.source_access,resourceKind:content.resource_kind,manifest:update.manifest,bindings:content.bindings,assets:content.assets??[],execution:content.execution??[]}};
+     return {status:'proposed'};
+    }
     if(name==='records.propose'){
      if(content.resource_kind==='visualization'||content.resourceKind==='visualization')fail(403,'read_only','Visualizations cannot propose changes');
      if(!request.componentId)fail(403,'preview_read_only','Unsaved interface previews cannot propose database changes');
@@ -174,7 +191,8 @@ export class WorkspaceFoundation {
    const {proposal,queued}=await this.db.transaction(async tx=>{
     await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const f=new WorkspaceFoundation(adapter(tx));
     if(request.componentId){const c=await f.component(tx,a,w,request.componentId);if(c.version!==version||c.archived||c.project_archived)fail(409,'component_changed','Interface changed');}
-    const proposal=changes.length?await f.preview(a,w,{kind:'apply_component_records',componentId:request.componentId,expectedVersion:version,changes}):null;
+    if(layoutProposal&&(changes.length||invocations.length))fail(400,'mixed_changes','Review layout and data changes separately');
+    const proposal=layoutProposal?await f.preview(a,w,layoutProposal):changes.length?await f.preview(a,w,{kind:'apply_component_records',componentId:request.componentId,expectedVersion:version,changes}):null;
     const queued=[];for(const v of invocations)queued.push(await f.invokeComponent(a,w,{...v,componentId:request.componentId,expectedVersion:version}));return {proposal,queued};
    });
    return {queued,runtime:'trialy-frontend-js-v1',frameUrl:new URL('/frontend/frame',process.env.PUBLIC_URL??process.env.RENDER_EXTERNAL_URL??'http://localhost:3000').toString(),...output,controls,connected:!!content.manifest,proposal,temporary:!request.componentId};

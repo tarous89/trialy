@@ -14,6 +14,12 @@ Read [Trialy integration](references/TRIALY_INTEGRATION.md) before implementatio
 3. Use this skill as a skeleton to fill remaining gaps. When neither instructions nor existing data are supplied, use the approved HTML as the default visual and interaction template. Its vendor-selection content is illustrative, never evidence or saved real records.
 4. This package defines the opened tracker only. The host owns the persistent Trialy header with its logo and Open app button. Do not duplicate global navigation inside a tracker.
 
+## Default implementation
+
+Use `prepare_tracker` after compatible database fields exist. It compiles `assets/connected-tracker.js` with the approved HTML stylesheet and server-validated bindings. Follow the sibling workspace skill’s creation path, including `open_tracker_draft`, confirmed save and `open_tracker`. Do not replace this default with a technical table editor. For explicit custom requirements, adapt the source while retaining the applicable visual and interaction contract.
+
+Schema availability alone does not make existing records relevant. If there is no relevant data, show exactly one labelled fictional example, excluded from real records and metrics. Do not populate unrelated university/PI/vendor information. User requests override this example default.
+
 ## Mission and precedence
 
 Produce **credible, minimal, domain-specific content inside a stable, reusable tracker experience**. The common UI/interaction standard is fixed; business semantics are tailored to the actual objective. Build a compelling example that users can recognize and extend, rather than a complex enterprise application or a blank technical database editor.
