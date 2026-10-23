@@ -95,7 +95,7 @@ export class GuestDrafts{
    const components=[];
    for(const c of body.components){
     const source=c.source.replace(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/gi,x=>mapping.get(x)??x);
-    const result=await organization({kind:'save_component',projectId:project.id,content:{...c,source,bindings:c.bindings.map(b=>({...b,typeId:mapping.get(b.typeId)!}))}});components.push(result.id);
+    const result=await organization({kind:'save_component',projectId:project.id,content:{...c,source,...(c.manifest?{manifest:{...c.manifest,fields:c.manifest.fields.map(f=>({...f,typeId:mapping.get(f.typeId)!}))}}:{}),bindings:c.bindings.map(b=>({...b,typeId:mapping.get(b.typeId)!}))}});components.push(result.id);
    }
    const receipt={status:'saved',workspaceId:w.id,projectId:project.id,componentIds:components,savedAt:new Date().toISOString()};
    await tx.query('UPDATE guest_drafts SET claimed_by=$2,receipt=$3,body=NULL WHERE id=$1',[handle.id,a.userId,JSON.stringify(receipt)]);

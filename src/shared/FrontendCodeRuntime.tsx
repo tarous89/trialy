@@ -4,11 +4,11 @@ export function FrontendCodeRuntime({component,previewId,call,onProposal}:{compo
  const frame=useRef<HTMLIFrameElement>(null),output=useRef<any>(null),state=useRef<any>(null),busyRef=useRef(false),channel=useRef(crypto.randomUUID()),live=useRef(true);
  const [ready,setReady]=useState(false);
  const [frameUrl,setFrameUrl]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false),[proposal,setProposal]=useState<any>(null);
- const send=()=>{if(output.current)frame.current?.contentWindow?.postMessage({kind:'trialy.render',channel:channel.current,html:output.current.html,css:output.current.css},'*');};
+ const send=()=>{if(output.current)frame.current?.contentWindow?.postMessage({kind:'trialy.render',channel:channel.current,html:output.current.html,css:output.current.css,controls:output.current.controls,connected:output.current.connected},'*');};
  async function run(event:any={kind:'open'}){
   if(busyRef.current)return;busyRef.current=true;setBusy(true);setError('');
   try{const result=await call('run_component_frontend',{request:{...(previewId?{previewId}:{componentId:component.id,expectedVersion:component.version}),state:state.current,event}});
-   if(!live.current)return;output.current=result;setFrameUrl(result.frameUrl);state.current=result.state;setProposal(result.proposal);send();
+   if(!live.current)return;if(result.boundEdit){setProposal(result.proposal);return;}output.current=result;setFrameUrl(result.frameUrl);state.current=result.state;setProposal(result.proposal);send();
   }catch(e){if(live.current)setError((e as Error).message);}finally{busyRef.current=false;if(live.current)setBusy(false);}
  }
  useEffect(()=>{live.current=true;void run();return()=>{live.current=false;};},[]);
