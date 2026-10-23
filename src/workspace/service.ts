@@ -109,6 +109,7 @@ export class WorkspaceFoundation {
     if(name==='project.records'||name==='project.relationships'){
      const v=z.object({offset:z.number().int().min(0).max(1000000).default(0)}).strict().parse(value);
      const typeIds=content.bindings.map((b:any)=>b.typeId),projectId=content.project_id;
+     if(!projectId)fail(400,'project_required','This independent tool has no project data scope. Use bound records.read instead.');
      const projectRecord=(record:any)=>{const binding=content.bindings.find((b:any)=>b.typeId===(record.type_id??record.typeId));return {id:record.id,typeId:record.type_id??record.typeId,version:record.version,data:Object.fromEntries(Object.entries(record.data).filter(([k])=>binding.fields.includes(k)))};};
      if(name==='project.records'){const page=await this.projectRecords(a,w,projectId,v.offset,typeIds);return {projectId,records:page.records.map(r=>projectRecord(r.record)),nextOffset:page.nextOffset};}
      const page=await this.projectRelationships(a,w,projectId,v.offset,typeIds);return {projectId,relationships:page.relationships.filter(r=>content.bindings.find((b:any)=>b.typeId===r.source.typeId)?.fields.includes(r.field)).map(r=>({field:r.field,label:r.label,source:projectRecord(r.source),target:projectRecord(r.target)})),nextOffset:page.nextOffset};
@@ -401,10 +402,12 @@ export class WorkspaceFoundation {
   if(op.kind==='save_component'||op.kind==='move_component'||op.kind==='archive_component'||op.kind==='restore_component'){
    if(op.kind!=='save_component'||op.content.sourceAccess!=='bindings')await this.componentSourcePolicy(tx,a,w);
    else if((await access(tx,a,w,true)).role!=='owner')fail(403,'owner_required','Only an owner can approve source sharing with a restricted data audience');
-   if(op.kind==='save_component'||op.kind==='move_component'){const project=(await this.activeNode(tx,a,w,op.projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');}
+   if((op.kind==='save_component'||op.kind==='move_component')&&op.projectId){const project=(await this.activeNode(tx,a,w,op.projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');}
    if(op.componentId){const c=await this.component(tx,a,w,op.componentId);if(c.project_archived)fail(409,'project_archived','Restore the project before editing components');if(c.version!==op.expectedVersion)fail(409,'stale_version','Component changed');}
-   else if(op.kind==='save_component'&&op.expectedVersion!==undefined)fail(400,'invalid_version','New components have no expected version');
+   if(op.kind==='move_component'&&(await this.component(tx,a,w,op.componentId)).manifest?.scope==='project')fail(400,'use_tool_move','Use move_tool to organize this tool without changing its data scope');
+   if(op.kind==='save_component'&&!op.componentId&&op.expectedVersion!==undefined)fail(400,'invalid_version','New components have no expected version');
    if(op.kind==='save_component'){
+    if(!op.projectId&&op.content.manifest?.scope==='project')fail(400,'project_scope','A project-scoped data binding needs a project. Use workspace scope for an independent tool.');
     if(op.content.format==='trialy-ui'){if(!op.componentId||(await this.component(tx,a,w,op.componentId)).format!=='trialy-ui')fail(400,'legacy_format','Save ChatGPT-written code using frontend-js; trialy-ui is retained only for existing items');this.parseInterface(op.content);}
     if(op.componentId&&(await this.component(tx,a,w,op.componentId)).project_id!==op.projectId)fail(400,'move_required','Use the explicit move operation to change project');
     await this.componentBindings(tx,a,w,op.content.bindings);

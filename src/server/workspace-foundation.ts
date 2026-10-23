@@ -1,3 +1,4 @@
+import {moveTool,moveToolInput} from '../workspace/tool-placement.js';
 import {workspaceHome,homeQuery} from '../workspace/home.js';
 import {activityPage,activityQuery} from '../workspace/activity.js';
 import {databasePage,databaseRequest} from '../workspace/database-browser.js';
@@ -13,6 +14,7 @@ import {frontendRequest} from '../workspace/frontend.js';
 import {workspaceOperation,maintenanceBatch} from '../workspace/schema.js';
 export function addWorkspaceApi(app:Express,f:WorkspaceFoundation){
  const b='/api/workspaces/:workspaceId/organization';
+ app.post(`${b}/tools/move`,async(req,res)=>res.json(await moveTool(f.db,req.actor!,id.parse(req.params.workspaceId),req.body)));
  app.get(`${b}/components/:componentId/access`,async(req,res)=>res.json(await f.checkComponentAccess(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.componentId))));
  app.post(`${b}/database`,async(req,res)=>res.json(await databasePage(f.db,req.actor!,id.parse(req.params.workspaceId),req.body)));
  app.post(`${b}/schema`,async(req,res)=>res.json(await schemaCatalog(f.db,req.actor!,id.parse(req.params.workspaceId),req.body)));
@@ -48,6 +50,7 @@ export function addWorkspaceApi(app:Express,f:WorkspaceFoundation){
 }
 export function addWorkspaceMcp(server:McpServer,f:WorkspaceFoundation,a:Actor,safe:any,metadata:any){
  const register=(name:string,description:string,schema:Record<string,z.ZodType>,readOnly:boolean,fn:(v:any)=>Promise<any>,appOnly=false)=>server.registerTool(name,{title:name.replaceAll('_',' '),description,inputSchema:schema,annotations:{readOnlyHint:readOnly,destructiveHint:!readOnly,openWorldHint:false},_meta:appOnly?{...metadata,ui:{resourceUri:metadata.ui.resourceUri,visibility:['app']}}:metadata},safe(fn));
+ register('move_tool','Move a tool into a project, between projects, or out to No project (projectId:null). Only after the user requests this move. Changes organization only: data bindings, original project data scope, sharing and automation grants remain unchanged. Use placementVersion from read_workspace_home as expectedVersion.',{workspaceId:id,...moveToolInput.shape},false,({workspaceId,...v})=>moveTool(f.db,{...a,actionConfirmed:true},workspaceId,v));
  register('read_workspace_home','List authorized project and resource metadata for Home. Never executes code or returns source, records or bearer links.',{workspaceId:id,...homeQuery.shape},true,({workspaceId,...v})=>workspaceHome(f.db,a,workspaceId,v));
  register('read_workspace_activity','Read paginated permission-filtered event metadata. Includes automation failures. No record values, source, or infrastructure logs. Use the same filters and before timestamp across export pages.',{workspaceId:id,...activityQuery.shape},true,({workspaceId,...v})=>activityPage(f.db,a,workspaceId,v));
  register('read_database_table','Browse one table with bounded pagination, optional project context, permitted-value search and sort. Restricted tables return schema only, never entries or counts.',{workspaceId:id,...databaseRequest.shape},true,({workspaceId,...v})=>databasePage(f.db,a,workspaceId,v));

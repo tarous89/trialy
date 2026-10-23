@@ -138,6 +138,6 @@ Optional common-concept tags now support person, organization, project and locat
 
 Typed JavaScript computations, cross-table lookups, multiple references, searchable linked selectors, reviewed bulk edits, field/view renderers and graphical timelines extend the shared data foundation. See [field capabilities and limits](docs/FIELD_CAPABILITIES.md). New derived values are read-time results, not silent database writes; all stored changes retain the approval and audit contract.
 
-## Anonymous preview and save
+## Account, projects and tools
 
-Start with a 24-hour temporary tracker or page, then use the workspace footer to connect and save the exact work to your account. Saved work persists beyond preview expiry. See [the workflow, limits and verification](docs/GUEST_SAVE_FLOW.md).
+Connect an account before creating a project or tool (tracker, form, visualization or automation). Account storage initializes automatically; there is no workspace-creation step. Tools can be independent or organized into projects with drag-and-drop or Move to. Organization preserves data scope and permissions. Public forms remain usable without login; previously issued temporary previews remain recoverable until expiry. See [implementation and verification](docs/design/ACCOUNT_PROJECT_TOOLS.md).

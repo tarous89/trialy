@@ -95,11 +95,11 @@ test('Shared backend: access, committed history, original preservation and retri
   const actor:Actor={userId:uid,origin:'ai'};
   const app=baseApp();addMcp(app,s,(req,_res,next)=>{req.actor=actor;next();});app.use(errors);
   const invoke=(name:string,args={})=>request(app).post('/mcp').set('Authorization','Bearer synthetic-test').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:1,method:'tools/call',params:{name,arguments:args}});
-  const welcome=await invoke('open_workspace');assert.equal(welcome.body.result.structuredContent.result.canCreateInitialWorkspace,true);
-  assert.equal((await s.workspaces(actor)).length,0);
+  const welcome=await invoke('open_workspace');assert.equal(welcome.body.result.structuredContent.result.canCreateInitialWorkspace,false);
+  assert.equal((await s.workspaces(actor)).length,1);
   const created=await invoke('create_initial_workspace',{name:'My study',confirmed:true,allowAi:true});assert.equal(created.body.result.isError,undefined);
   const opened=await invoke('open_workspace');assert.equal(opened.body.result.structuredContent.result.workspaces.length,1);
-  const again=await invoke('create_initial_workspace',{name:'Duplicate',confirmed:true,allowAi:true});assert.equal(again.body.result.isError,true);assert.equal((await s.workspaces(actor)).length,1);
+  const again=await invoke('create_initial_workspace',{name:'Duplicate',confirmed:true,allowAi:true});assert.equal(again.body.result.isError,undefined);assert.equal((await s.workspaces(actor)).length,1);
   const listed=await request(app).post('/mcp').set('Authorization','Bearer synthetic-test').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:2,method:'tools/list',params:{}});
   const entry=listed.body.result.tools.find((t:any)=>t.name==='open_workspace');assert.deepEqual(entry._meta['openai/ui'].entrypoints,[{type:'global'},{type:'thread'}]);
   await s.setAi({...actor,origin:'human'},opened.body.result.structuredContent.result.workspaceId,false);

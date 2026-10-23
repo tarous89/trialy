@@ -1,6 +1,6 @@
 ---
 name: trialy-workspace
-description: Use when the user opens Trialy or works with its workspaces, data, generated code, saved functions, tools or document sources.
+description: Use when the user opens Trialy or creates or organizes projects and tools (trackers, forms, visualizations and automations), or works with account data and sources.
 ---
 
 # Trialy workspace
@@ -9,9 +9,9 @@ For tracker creation or revision, read ../trialy-tracker-design/SKILL.md and its
 
 Call `open_workspace` when the user opens Trialy and after a successful connection, resuming their original workspace request. Render its interactive view. If authentication is needed, use the host connection flow; never request passwords or tokens in chat. Trialy signup and consent return to the registered host callback.
 
-For a new account, use the view's onboarding to obtain the workspace name and explicit AI-access confirmation. Do not create extra workspaces or silently enable AI access for existing workspaces.
+Require a connected account before creating any project or tool. Discuss requirements before connection if useful, but use the host authentication flow before creation. `open_workspace` initializes a new account database automatically and returns its internal workspaceId. Never ask the user to create or name a workspace. Reuse the returned workspaceId; never bypass existing access restrictions or enable AI access on an existing restricted account.
 
-Access saved account data only through authenticated tools. Anonymous tracker drafts use preview_tracker and expire after 24 hours; public design guidance uses read_tracker_design. Backend permissions apply to every operation. Never route restricted fields through chat, hidden model context or another tool. The current embedded view uses only AI-accessible data; human-only fields are not supported here yet.
+Access saved account data only through authenticated tools. Do not use preview_tracker to create new drafts: it is a retired compatibility entry point. Public design guidance remains available through read_tracker_design; external public forms remain usable without login. Backend permissions apply to every operation. Never route restricted fields through chat, hidden model context or another tool. The current embedded view uses only AI-accessible data; human-only fields are not supported here yet.
 
 For changes, use the user's current instructions to discuss and settle the action in the conversation, then prepare and confirm the exact change using its returned digest. Call confirmation tools only for an action the user authorized; never imply that a preview is saved. Use the returned receipt (or `save_status` after an interruption) as evidence. Do not create a deferred approval task, “Needs review” badge or retrospective review inbox. A completed action is complete; later corrections are new actions. Confirmation retains the AI actor and all current backend permissions, version checks and expiry checks. Background code cannot confirm its own proposals: automatic recurring writes still require a scoped, unexpired execution or maintenance grant. Owner-only account/security operations remain in Settings when the backend requires a human session.
 
@@ -84,4 +84,10 @@ Automations: use `execution_capabilities` for supported tools/triggers. Use `pla
 
 Navigation is Home, Database and Logs, with Settings at the bottom (opens the app from ChatGPT). Home combines project banners, type filters, search, preview grid and detailed list. Open saved resources from Home; custom resource styles remain independent. Automation failure highlights belong in Logs only. There is no pending-review navigation or notification center. Database loads a table/page on demand using `read_database_table`; schema-only access reveals no row counts or values. The global project filter applies to resource listings and Database; the public-links inbox explicitly covers the whole workspace. Keep generated resource HTML/CSS inside its frame; shell colors do not override it.
 
-Anonymous previews still expire after 24 hours. The account save page offers compatible destination tables and explicit new-table reasons. Reuse currently requires matching field keys/types; differently named fields require a reviewed adaptation before saving. Saving draft rows does not deduplicate or overwrite existing records.
+Previously issued temporary previews can still be recovered before their expiry and saved through their existing account handoff. Do not create new anonymous previews.
+
+## Projects and tools
+
+Call trackers, forms, visualizations and automations **tools**. Projects are optional organizational containers. Create an independent component with `save_component` and `projectId:null` (or omitted); use a workspace-scoped manifest and existing permitted database bindings. Do not invent an empty project to satisfy creation. Public form links and saved functions can also be created independently. For new tools that need a project-specific data scope, obtain that project explicitly.
+
+Use Home to drag a tool onto a project or onto **No project**. The Move to menu provides the same operation without dragging. In chat, obtain the tool's `source`, `id` and `placementVersion` from `read_workspace_home`, then call `move_tool` with `toolId`, `source`, `expectedVersion`, `projectId` (null to remove), and `confirmed:true` only for the user-requested move. Refresh after a stale-version failure. Organization does not change record scopes, inherited access restrictions, public-link behavior, function bindings or execution grants. Never claim that moving a tool shares its data. Data scope and sharing changes require their own explicit authorized operations.
