@@ -4,7 +4,9 @@ import {ComponentRuntime} from './ComponentRuntime.js';
 import {ProjectSharing} from './ProjectSharing.js';
 import React,{useState,useEffect} from 'react';
 type Call=(name:string,args:Record<string,unknown>)=>Promise<any>;
-export function ComponentEditor({component,projects,call,onBack,onPreview}:{component:any;projects:any[];call:Call;onBack:()=>void;onPreview:(p:any)=>void}){
+export function ComponentEditor({component:initialComponent,projects,call,onBack,onPreview}:{component:any;projects:any[];call:Call;onBack:()=>void;onPreview:(p:any)=>void}){
+ const [component,setComponent]=useState(initialComponent);
+ useEffect(()=>{setComponent(initialComponent);},[initialComponent]);
  const [showInterface,setShowInterface]=useState(!component.project_archived&&!component.archived&&['frontend-js','trialy-ui'].includes(component.format));
  const [resourceKind,setResourceKind]=useState(component.resource_kind??'generic'),[manifest,setManifest]=useState(JSON.stringify(component.manifest??null,null,2));
  const [sourceAccess,setSourceAccess]=useState(component.source_access??'workspace');
@@ -27,7 +29,7 @@ export function ComponentEditor({component,projects,call,onBack,onPreview}:{comp
 
  if(unavailable)return <section><button onClick={leave}>← Home</button><p role="alert">{unavailable}</p></section>;
  if(sharing)return <ProjectSharing target={component} component call={call} onPreview={onPreview} onBack={()=>setSharing(false)}/>;
- if(showInterface)return <section className="ty-opened-tracker"><div className="ty-tracker-navigation"><button onClick={leave}>← Home</button><details hidden={component.source?.startsWith('const config=')}><summary>Configuration</summary><button onClick={()=>setSharing(true)}>Access control</button><button onClick={()=>setShowInterface(false)}>Edit configuration / history</button></details></div>{component.format==='frontend-js'?<FrontendCodeRuntime key={component.id+':'+component.version} component={component} call={call} onProposal={onPreview} onAccess={()=>setSharing(true)} onUnavailable={revoke}/>:<ComponentRuntime component={component} call={call} onPreview={onPreview}/>}</section>;
+ if(showInterface)return <section className="ty-opened-tracker"><div className="ty-tracker-navigation"><button onClick={leave}>← Home</button><details hidden={component.source?.startsWith('const config=')}><summary>Configuration</summary><button onClick={()=>setSharing(true)}>Access control</button><button onClick={()=>setShowInterface(false)}>Edit configuration / history</button></details></div>{component.format==='frontend-js'?<FrontendCodeRuntime key={component.id} component={component} onUpdated={updated=>{setComponent(updated);if(updated.source?.startsWith('const config=')){setName(updated.name??'');setSource(updated.source??'');setManifest(JSON.stringify(updated.manifest??null,null,2));}}} call={call} onProposal={onPreview} onAccess={()=>setSharing(true)} onUnavailable={revoke}/>:<ComponentRuntime component={component} call={call} onPreview={onPreview}/>}</section>;
  return <section aria-label="Saved component"><button onClick={leave}>← Home</button>{error&&<p role="alert">{error}</p>}
  {revision?<><button onClick={()=>setRevision(null)}>← Revision list</button><h3>Revision {revision.version}</h3><pre style={{whiteSpace:'pre-wrap',overflowWrap:'anywhere'}}>{revision.snapshot.source}</pre><p>Recovery creates a new revision. It keeps the current project and archive state. Execution bindings are cleared and must be reviewed again.</p><button disabled={busy} onClick={()=>act(()=>prepare({kind:'restore_component',...target,revisionVersion:revision.version}))}>Review recovery</button></>
  :history?<><button onClick={()=>setHistory(null)}>← Component</button><h3>Revision history</h3>{history.map(r=><p key={r.id}><button onClick={()=>setRevision(r)}>Revision {r.version} · {r.snapshot.name}</button></p>)}</>
