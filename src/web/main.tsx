@@ -1,3 +1,4 @@
+import {useAccessRecheck} from '../shared/useAccessRecheck.js';
 import {ResourcesPanel} from '../shared/ResourcesPanel.js';
 import {DatabasePanel} from '../shared/DatabasePanel.js';
 import {WorkspaceNavigation,ProjectFilter} from '../shared/WorkspaceNavigation.js';
@@ -56,7 +57,8 @@ function App(){
  const base=`/api/workspaces/${workspace}`;
  useEffect(()=>{setVisited(v=>v.includes(tab)?v:[...v,tab]);},[tab]);
  useEffect(()=>{setProjectId('');setVisited([tab]);},[workspace]);
- async function loadMe(){try{const d=await api('/api/me');csrf=d.csrf;sessionStorage.removeItem('trialy.review');setMe(d.user);setWorkspaces(d.workspaces);setWorkspace(current=>current||d.workspaces.find((w:any)=>w.id===reviewParams.get('workspaceId'))?.id||d.workspaces[0]?.id||'');}catch{setMe(null);}finally{setBoot(false);}}
+ useAccessRecheck(()=>{void loadMe();},!!me);
+ async function loadMe(){try{const d=await api('/api/me');csrf=d.csrf;sessionStorage.removeItem('trialy.review');setMe(d.user);setWorkspaces(d.workspaces);setWorkspace(current=>d.workspaces.some((w:any)=>w.id===current)?current:d.workspaces.find((w:any)=>w.id===reviewParams.get('workspaceId'))?.id||d.workspaces[0]?.id||'');}catch{setMe(null);setWorkspace('');setTypes([]);setRows([]);setDocuments([]);setHistory([]);setPreview(null);setVisited([]);}finally{setBoot(false);}}
  useEffect(()=>{void api('/api/config').then(setConfig);void loadMe();},[]);
  async function run(fn:()=>Promise<void>){setBusy(true);setError('');setNotice('');try{await fn();}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
  async function loadTypes(){const ts=await api(`${base}/types`);setViews(await api(`${base}/views`));setTypes(ts);setTypeId(old=>ts.some((t:any)=>t.id===old)?old:ts[0]?.id||'');}

@@ -19,7 +19,8 @@
     "demo": "node --env-file-if-exists=.env --import tsx scripts/demo.ts",
     "export:verify": "node --import tsx scripts/verify-export.ts",
     "recovery:inventory": "node --env-file-if-exists=.env --import tsx scripts/recovery-inventory.ts",
-    "recovery:rehearse": "node --import tsx scripts/rehearse-recovery.ts"
+    "recovery:rehearse": "node --import tsx scripts/rehearse-recovery.ts",
+    "db:runtime-audit": "node --env-file-if-exists=.env --import tsx scripts/runtime-audit.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/ext-apps": "^2.0.3",
