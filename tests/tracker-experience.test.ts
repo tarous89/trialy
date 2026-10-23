@@ -71,3 +71,27 @@ test('only exact approved source receives the local renderer; custom overrides r
  assert.equal(standardTracker(source+'\n// user modification'),null);
  assert.equal(standardTracker('const config={};\nconst theme="";\nreturn {html:"Custom"};'),null);
 });
+
+test('Home resumes private previews; saves remove preview and retain all visible fields and typed multiple values',async()=>{
+ const {workspaceHome}=await import('../src/workspace/home.js');
+ const pg=new PGlite();const db:Database={query:(s,v)=>pg.query(s,v) as any,transaction:f=>pg.transaction(tx=>f(tx as Connection)),close:()=>pg.close()};try{
+ for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
+ const a={userId:randomUUID(),origin:'human' as const};await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[a.userId,a.userId,'defaults@example.invalid','Defaults']);
+ const s=new Service(db),f=new WorkspaceFoundation(db),w=await s.createWorkspace(a,'Defaults'),typeId=randomUUID();
+ const fields=[{key:'name',name:'Company',kind:'text'},{key:'source',name:'Source',kind:'text'},{key:'status',name:'Status',kind:'select',options:['Pending','Active']},{key:'due',name:'Due',kind:'date'},{key:'active',name:'Active',kind:'boolean'},{key:'channel',name:'Channels',kind:'select',options:['Email','LinkedIn']},{key:'amount',name:'Amounts',kind:'number'},{key:'notes',name:'Notes',kind:'text'}];
+ const setup={name:'Visible preview',description:'Typed values',newTables:[{id:typeId,name:'Companies',fields}],tabs:[{name:'Companies',typeId,columns:fields.map(f=>({field:f.key}))}]};
+ const op=await trackerOperation(f,a,w.id,setup),p=await f.preview(a,w.id,{kind:'create_tracker',setup,content:op.content});
+ let home=await workspaceHome(db,a,w.id);assert.equal(home.resources.length,1);assert.equal(home.resources[0].status,'Preview');assert.equal(home.resources[0].source,'preview');assert.equal(home.resources[0].canMove,false);assert.ok(!JSON.stringify(home).includes('const config='));assert.equal((await s.types(a,w.id)).length,0);
+ const other={userId:randomUUID(),origin:'human' as const};await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[other.userId,other.userId,'other@example.invalid','Other']);await db.query("INSERT INTO memberships(tenant_id,user_id,role) VALUES($1,$2,'owner')",[(await db.query('SELECT tenant_id FROM workspaces WHERE id=$1',[w.id])).rows[0].tenant_id,other.userId]);assert.equal((await workspaceHome(db,other,w.id)).resources.length,0);await assert.rejects(f.runFrontend(other,w.id,{previewId:p.id}));
+ const config=JSON.parse(op.content.source.split('\n')[0].slice(13,-1));assert.ok(config.tabs[0].columns.every((c:any)=>c.visible));assert.deepEqual(config.tabs[0].columns.map((c:any)=>c.multiple),[true,true,false,false,false,true,true,true]);
+ const saved=await f.confirm(a,w.id,p.id,p.digest),component=(await f.readComponent(a,w.id,saved.id)).component;home=await workspaceHome(db,a,w.id);assert.equal(home.resources.length,1);assert.equal(home.resources[0].source,'component');assert.equal(home.resources[0].status,undefined);assert.equal(component.project_id,null);
+ const table=component.bindings[0].typeId;
+ const data={name:['Example, Inc.','Trading name'],source:['https://example.invalid','User supplied'],status:'Active',due:'2026-10-23',active:true,channel:['Email','LinkedIn'],amount:[12.5,30],notes:['A long note, with a comma','Another note']};
+ const rp=await s.preview(a,w.id,{kind:'create_record',typeId:table,data}),row=(await s.commit(a,rp.id,rp.digest)).objects[0].id;assert.deepEqual((await f.record(db,a,w.id,row)).data,data);
+ const rendered:any=await f.runFrontend(a,w.id,{componentId:saved.id,expectedVersion:0});assert.equal(rendered.controls?.find((c:any)=>c.label==='Amounts')?.multiple,true);
+ const edit=await f.runFrontend(a,w.id,{componentId:saved.id,expectedVersion:0,event:{kind:'submit',action:'bound-batch',form:{['bound:f_0_6:'+row+':0']:'[4.5,9]'}}});await f.confirm(a,w.id,edit.proposal!.id,edit.proposal!.digest);assert.deepEqual((await f.record(db,a,w.id,row)).data.amount,[4.5,9]);
+ await assert.rejects(s.preview(a,w.id,{kind:'create_record',typeId:table,data:{amount:['wrong']}}),/number/);await assert.rejects(s.preview(a,w.id,{kind:'create_record',typeId:table,data:{channel:['Fax']}}),/option/);await assert.rejects(s.preview(a,w.id,{kind:'create_record',typeId:table,data:{status:['Active','Pending']}}),/text/);await assert.rejects(s.preview(a,w.id,{kind:'create_record',typeId:table,data:{name:['duplicate','duplicate']}}),/distinct/);
+ const hidden=await trackerOperation(f,a,w.id,{name:'Custom',description:'Override',tabs:[{name:'Companies',typeId:table,columns:fields.map(x=>({field:x.key,visible:x.key!=='notes'}))}]});assert.equal(JSON.parse(hidden.content.source.split('\n')[0].slice(13,-1)).tabs[0].columns[7].visible,false);
+ const expired=await f.preview(a,w.id,hidden);await db.query("UPDATE workspace_previews SET expires_at=now()-interval '1 second' WHERE id=$1",[expired.id]);assert.ok(!(await workspaceHome(db,a,w.id)).resources.some(r=>r.id===expired.id));
+ }finally{await db.close();}
+});

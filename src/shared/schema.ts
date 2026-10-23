@@ -14,7 +14,9 @@ export const fieldSchema = z.object({ key: z.string().regex(/^[a-z][a-z0-9_]{0,6
 export const dataConceptSchema=z.enum(['person','organization','project','location']).nullable().optional();
 export const fieldsSchema = z.array(fieldSchema).min(1).max(100).refine(f => new Set(f.map(x=>x.key)).size===f.length, 'Duplicate field keys');
 export type Field = z.infer<typeof fieldSchema>;
-const values = z.record(z.string(), z.union([z.string().max(50000),z.number().finite(),z.boolean(),z.array(z.string().max(200)).max(100),z.null()]));
+export const defaultMultiple=(f:Partial<Field>)=>!['date','boolean'].includes(f.kind??'text')&&!/\bstatus\b/i.test((f.key??'').replace(/_/g,' ')+' '+(f.name??''))&&!f.formula&&!f.computed&&!f.lookup&&!f.unique;
+export const newFieldsSchema=fieldsSchema.transform((fields):Field[]=>fields.map(f=>({...f,multiple:f.multiple??(defaultMultiple(f)&&!fields.some(d=>d.formula?.fields.includes(f.key)))})));
+const values = z.record(z.string(), z.union([z.string().max(50000),z.number().finite(),z.boolean(),z.array(z.union([z.string().max(50000),z.number().finite()])).max(100),z.null()]));
 export const viewKindSchema=z.enum(['table','list','form','comparison','dashboard','timeline','calendar']);
 export const viewConfigSchema=z.object({
  endDateField:z.string().optional(),renderers:z.record(z.string(),rendererSchema).optional(),

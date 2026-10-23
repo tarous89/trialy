@@ -1,6 +1,6 @@
 import {readFile} from 'node:fs/promises';
 import {z} from 'zod';
-import {id,fail,fieldsSchema,type Actor} from '../shared/schema.js';
+import {id,fail,fieldsSchema,newFieldsSchema,type Actor} from '../shared/schema.js';
 import {typeAccess,visibleFields} from '../domain/permissions.js';
 import {derived} from '../shared/formulas.js';
 import {Service} from '../domain/service.js';
@@ -8,11 +8,11 @@ import type {WorkspaceFoundation} from './service.js';
 const key=z.string().regex(/^[a-z][a-z0-9_]{0,63}$/);
 export const trackerSetup=z.object({
  name:z.string().trim().min(1).max(100),description:z.string().max(500),projectId:id.nullable().default(null),
- extendTables:z.array(z.object({typeId:id,expectedVersion:z.number().int().min(0),newFields:fieldsSchema}).strict()).max(8).default([]),
- newTables:z.array(z.object({id,name:z.string().trim().min(1).max(100),fields:fieldsSchema}).strict()).max(8).default([]),
+ extendTables:z.array(z.object({typeId:id,expectedVersion:z.number().int().min(0),newFields:newFieldsSchema}).strict()).max(8).default([]),
+ newTables:z.array(z.object({id,name:z.string().trim().min(1).max(100),fields:newFieldsSchema}).strict()).max(8).default([]),
  scope:z.enum(['workspace','project']).default('workspace'),
- tabs:z.array(z.object({name:z.string().min(1).max(60),typeId:id,example:z.record(key,z.union([z.string().max(500),z.number(),z.boolean(),z.null()])).optional(),columns:z.array(z.object({field:key,label:z.string().min(1).max(100).optional(),visible:z.boolean().optional(),editable:z.boolean().default(true)}).strict()).min(1).max(30)}).strict()).min(1).max(8),
- example:z.record(key,z.union([z.string().max(500),z.number(),z.boolean(),z.null()])).optional(),
+ tabs:z.array(z.object({name:z.string().min(1).max(60),typeId:id,example:z.record(key,z.union([z.string().max(500),z.number(),z.boolean(),z.array(z.union([z.string().max(500),z.number()])).max(100),z.null()])).optional(),columns:z.array(z.object({field:key,label:z.string().min(1).max(100).optional(),visible:z.boolean().optional(),editable:z.boolean().default(true)}).strict()).min(1).max(30)}).strict()).min(1).max(8),
+ example:z.record(key,z.union([z.string().max(500),z.number(),z.boolean(),z.array(z.union([z.string().max(500),z.number()])).max(100),z.null()])).optional(),
  showExample:z.boolean().default(true),omitSource:z.boolean().default(false)
 }).strict();
 export async function trackerOperation(f:WorkspaceFoundation,a:Actor,w:string,input:unknown){
@@ -33,8 +33,8 @@ export async function trackerOperation(f:WorkspaceFoundation,a:Actor,w:string,in
   const columns=tab.columns.map((c,columnIndex)=>{const field=allowed.find((x:any)=>x.key===c.field);if(!field)fail(403,'field_unavailable','Choose an authorized existing field');
    const fieldId='f_'+i+'_'+columnIndex,mode=c.editable&&!derived(field)?'write':'read';
    fields.push({id:fieldId,typeId:tab.typeId,field:c.field,schemaVersion:type.version,kind:field.kind,mode,label:c.label??field.name});
-   const requested=(input as any).tabs[i].columns[columnIndex];const visible=requested.visible??(columnIndex<5||/^(source|sources|provenance)$/i.test(c.field)||/^source$/i.test(c.label??field.name));
-   return {...c,visible,label:c.label??field.name,fieldId,kind:field.kind,options:field.options??[],editable:mode==='write',required:!!field.required};});
+   const requested=(input as any).tabs[i].columns[columnIndex];const visible=requested.visible??true;
+   return {...c,visible,label:c.label??field.name,fieldId,kind:field.kind,multiple:!!field.multiple,options:field.options??[],editable:mode==='write',required:!!field.required};});
   if(!v.omitSource&&!columns.some(c=>/^(source|sources|provenance)$/i.test(c.field)||/^source$/i.test(c.label)))fail(400,'source_required','Include a compatible Source field, or set omitSource only for an explicit user customization. Do not invent source values.');
   const binding=bindings.find(b=>b.typeId===tab.typeId);if(binding)binding.fields=[...new Set([...binding.fields,...columns.map(c=>c.field)])];else bindings.push({typeId:tab.typeId,fields:columns.map(c=>c.field)});
   if(tab.example&&Object.keys(tab.example).some(k=>!columns.some(c=>c.field===k)))fail(400,'example_field','Example fields must belong to their tab');

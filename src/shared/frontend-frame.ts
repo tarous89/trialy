@@ -37,6 +37,22 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
    for(const c of controls){
     if(!/^[a-z][a-z0-9_]{0,63}$/.test(c.slot))continue;
     for(const slot of root.querySelectorAll('[data-trialy-slot="'+c.slot+'"]')){
+     if(c.editable&&c.multiple){
+      const stored=c.action in pending?JSON.parse(pending[c.action]):c.value;
+      const values=Array.isArray(stored)?stored:stored==null||stored===''?[]:[stored];
+      original[c.action]=JSON.stringify(Array.isArray(c.value)?c.value:c.value==null||c.value===''?[]:[c.value]);
+      const group=document.createElement('span');group.className='multi-value-editor';
+      const render=()=>{group.replaceChildren();const rows=values.length?values:[''];
+       rows.forEach((value,i)=>{const row=document.createElement('span');row.className='multi-value-row';const input=document.createElement(c.kind==='select'?'select':'input');
+        if(c.kind==='select'){const blank=document.createElement('option');blank.value='';blank.textContent='Choose…';input.append(blank);for(const v of c.options){const o=document.createElement('option');o.value=v;o.textContent=v;input.append(o);}}else{input.type=['number','money'].includes(c.kind)?'number':'text';input.step='any';}
+        input.value=String(value);input.setAttribute('aria-label',i?c.label+' '+(i+1):c.label);input.style.background=c.action in pending?'#e5f6e9':'';
+        const stage=()=>{const raw=input.value;values[i]=raw===''?'':['number','money'].includes(c.kind)?Number(raw):raw;const wire=JSON.stringify(values.filter(v=>v!==''));if(wire===original[c.action])delete pending[c.action];else pending[c.action]=wire;input.style.background=c.action in pending?'#e5f6e9':'';footer();};
+        input.addEventListener(c.kind==='select'?'change':'input',stage);row.append(input);
+        if(rows.length>1){const remove=document.createElement('button');remove.type='button';remove.textContent='×';remove.setAttribute('aria-label','Remove '+c.label+' '+(i+1));remove.onclick=()=>{values.splice(i,1);const wire=JSON.stringify(values.filter(v=>v!==''));if(wire===original[c.action])delete pending[c.action];else pending[c.action]=wire;render();footer();};row.append(remove);}group.append(row);
+       });
+       const add=document.createElement('button');add.type='button';add.textContent='+ Add value';add.setAttribute('aria-label','Add '+c.label+' value');add.disabled=values.length>=100;add.onclick=()=>{if(!values.length)values.push('');values.push('');render();group.querySelectorAll('input,select')[values.length-1]?.focus();};group.append(add);
+      };render();slot.replaceChildren(group);continue;
+     }
      const el=document.createElement(c.editable?(c.kind==='select'?'select':'input'):'span');
      if(c.editable){
       if(c.kind==='select'){const blank=document.createElement('option');blank.value='';blank.textContent='Choose…';el.append(blank);for(const option of c.options){const o=document.createElement('option');o.value=option;o.textContent=option;el.append(o);}}
@@ -113,7 +129,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   const handle=e.target.closest('[data-reorder]');
   if(handle&&e.altKey&&['ArrowUp','ArrowDown'].includes(e.key)){e.preventDefault();dispatch({kind:'click',action:'move-'+handle.dataset.reorder+':'+(e.key==='ArrowUp'?-1:1)});}
   if(e.key==='Escape'&&uiState?.detail){e.preventDefault();dispatch({kind:'click',action:'close-details'});}
-  if(e.key==='Tab'&&uiState?.detail){const els=Array.from(root.querySelectorAll('.drawer button,.drawer input,.drawer select,.drawer [tabindex]')).filter(x=>!x.disabled);if(e.shiftKey&&e.target===els[0]){e.preventDefault();els.at(-1)?.focus();}else if(!e.shiftKey&&e.target===els.at(-1)){e.preventDefault();els[0]?.focus();}}
+  if(e.key==='Tab'&&uiState?.detail){const els=Array.from(root.querySelectorAll('.drawer button,.drawer input,.drawer select,.drawer textarea,.drawer [tabindex]')).filter(x=>!x.disabled);if(e.shiftKey&&e.target===els[0]){e.preventDefault();els.at(-1)?.focus();}else if(!e.shiftKey&&e.target===els.at(-1)){e.preventDefault();els[0]?.focus();}}
   if(e.target.matches('.drawer-resizer')&&['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();document.documentElement.style.setProperty('--drawer-width',Math.max(365,Math.min(innerWidth,root.querySelector('.drawer').offsetWidth+(e.key==='ArrowLeft'?20:-20)))+'px');}
  });
  let dragged=null;
@@ -128,5 +144,5 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
 export async function frontendFrameDocument(){
  const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(FRAME_SCRIPT));
  const hash=btoa(String.fromCharCode(...new Uint8Array(bytes)));
- return `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-${hash}'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font:15px system-ui;margin:0;color:#183d32}*{box-sizing:border-box}table{border-collapse:collapse}th,td{padding:8px;border:1px solid #ddd}input,button,select,textarea{font:inherit}</style><style id="appearance"></style></head><body><div id="surface"></div><script>${FRAME_SCRIPT}</script></body></html>`;
+ return `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-${hash}'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font:15px system-ui;margin:0;color:#183d32}*{box-sizing:border-box}table{border-collapse:collapse}th,td{padding:8px;border:1px solid #ddd}input,button,select,textarea{font:inherit}.multi-value-editor{display:grid;gap:5px;min-width:150px}.multi-value-row{display:flex;gap:4px;align-items:center}.multi-value-row input,.multi-value-row select{width:100%;min-width:0}.multi-value-editor>button{justify-self:start;width:auto}.multi-value-editor button{font-size:12px;padding:3px 6px;color:#128269;background:#eaf7ed;border:1px solid #cde4d9;border-radius:6px;text-align:left}</style><style id="appearance"></style></head><body><div id="surface"></div><script>${FRAME_SCRIPT}</script></body></html>`;
 }

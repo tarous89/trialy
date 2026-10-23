@@ -3,7 +3,7 @@ import {resourceKind,resourceManifest} from './resource-contract.js';
 import {exchangeSchema} from '../domain/exchange.js';
 import {componentRecordChanges} from './frontend.js';
 import {z} from 'zod';
-import {id,recordWriteSchema,fieldsSchema,dataConceptSchema} from '../shared/schema.js';
+import {id,recordWriteSchema,fieldsSchema,newFieldsSchema,dataConceptSchema} from '../shared/schema.js';
 const text=z.string().trim().min(1).max(1000);
 export const maintenanceSchema=z.object({
  autoWrite:z.boolean().default(false),expiresAt:z.iso.datetime().optional(),
@@ -37,10 +37,10 @@ export const workspaceOperation=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('rename_node'),nodeId:id,expectedVersion:z.number().int().min(0),name:z.string().trim().min(1).max(100)}).strict(),
  z.object({kind:z.literal('save_scope'),scope:maintenanceSchema,scopeId:id.optional(),expectedVersion:z.number().int().min(0).optional()}).strict(),
  identityLinkSchema,
- z.object({kind:z.literal('accept_collection_response'),submissionId:id,data:z.record(z.string(),z.union([z.string().max(50000),z.number().finite(),z.boolean(),z.array(z.string().max(200)).max(100),z.null()]))}).strict(),
+ z.object({kind:z.literal('accept_collection_response'),submissionId:id,data:z.record(z.string(),z.union([z.string().max(50000),z.number().finite(),z.boolean(),z.array(z.union([z.string().max(50000),z.number().finite()])).max(100),z.null()]))}).strict(),
  z.object({kind:z.literal('create_collection_link'),config:exchangeSchema}).strict(),
  z.object({kind:z.literal('revoke_collection_link'),linkId:id,reason:text}).strict(),
- z.object({kind:z.literal('setup_tracking'),projectId:id,expectedProjectVersion:z.number().int().min(0),purpose:text,inclusionCriteria:text,sourcePolicy:text,basis:z.enum(['multiple_entries','repeated_actions','tracking','expected_reuse']),table:z.discriminatedUnion('kind',[z.object({kind:z.literal('new'),concept:dataConceptSchema,name:z.string().min(1).max(100),fields:fieldsSchema}).strict(),z.object({kind:z.literal('existing'),typeId:id,expectedVersion:z.number().int().min(0),fields:z.array(z.string().min(1).max(64)).min(1).max(100)}).strict()]),initialRows:z.array(z.record(z.string(),z.union([z.string().max(50000),z.number().finite(),z.boolean(),z.array(z.string().max(200)).max(100),z.null()]))).max(200).default([])}).strict(),
+ z.object({kind:z.literal('setup_tracking'),projectId:id,expectedProjectVersion:z.number().int().min(0),purpose:text,inclusionCriteria:text,sourcePolicy:text,basis:z.enum(['multiple_entries','repeated_actions','tracking','expected_reuse']),table:z.discriminatedUnion('kind',[z.object({kind:z.literal('new'),concept:dataConceptSchema,name:z.string().min(1).max(100),fields:newFieldsSchema}).strict(),z.object({kind:z.literal('existing'),typeId:id,expectedVersion:z.number().int().min(0),fields:z.array(z.string().min(1).max(64)).min(1).max(100)}).strict()]),initialRows:z.array(z.record(z.string(),z.union([z.string().max(50000),z.number().finite(),z.boolean(),z.array(z.union([z.string().max(50000),z.number().finite()])).max(100),z.null()]))).max(200).default([])}).strict(),
  z.object({kind:z.literal('propagate_linked_values'),sourceRecordId:id,sourceVersion:z.number().int().min(0),fields:z.array(z.string().min(1).max(64)).min(1).max(100),targets:z.array(z.object({recordId:id,expectedVersion:z.number().int().min(0),linkId:id,linkKind:z.enum(['same_table','cross_table'])}).strict()).min(1).max(50),reason:text}).strict(),
  z.object({kind:z.literal('save_table_mapping'),sourceTypeId:id,preferredTypeId:id,name:z.string().trim().min(1).max(100),fieldPairs:fieldPairsSchema,rationale:text}).strict(),
  z.object({kind:z.literal('revoke_table_mapping'),mappingId:id,reason:text}).strict(),
@@ -52,7 +52,7 @@ export const workspaceOperation=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('move_component'),componentId:id,expectedVersion:z.number().int().min(0),projectId:id.nullable()}).strict(),
  z.object({kind:z.literal('archive_component'),componentId:id,expectedVersion:z.number().int().min(0),archived:z.boolean()}).strict(),
  z.object({kind:z.literal('apply_component_records'),componentId:id,expectedVersion:z.number().int().min(0),changes:componentRecordChanges}).strict(),
- z.object({kind:z.literal('edit_component_record'),componentId:id,expectedVersion:z.number().int().min(0),recordId:id,recordVersion:z.number().int().min(0),field:z.string().min(1).max(64),value:z.union([z.string().max(50000),z.number().finite(),z.boolean(),z.array(z.string().max(200)).max(100),z.null()])}).strict(),
+ z.object({kind:z.literal('edit_component_record'),componentId:id,expectedVersion:z.number().int().min(0),recordId:id,recordVersion:z.number().int().min(0),field:z.string().min(1).max(64),value:z.union([z.string().max(50000),z.number().finite(),z.boolean(),z.array(z.union([z.string().max(50000),z.number().finite()])).max(100),z.null()])}).strict(),
  z.object({kind:z.literal('set_project_access'),nodeId:id,expectedVersion:z.number().int().min(0),allowedUsers:z.array(id).max(500).nullable(),ai:z.boolean()}).strict(),
  z.object({kind:z.literal('set_component_access'),componentId:id,expectedVersion:z.number().int().min(0),allowedUsers:z.array(id).max(500).nullable(),ai:z.boolean()}).strict(),
  z.object({kind:z.literal('apply_maintenance'),batch:maintenanceBatch}).strict(),
@@ -60,7 +60,7 @@ export const workspaceOperation=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('archive_node'),nodeId:id,expectedVersion:z.number().int().min(0),archived:z.boolean(),reason:z.string().trim().min(1).max(1000)}).strict(),
  z.object({kind:z.literal('link_project_records'),projectId:id,expectedProjectVersion:z.number().int().min(0),records:z.array(z.object({recordId:id,expectedVersion:z.number().int().min(0)}).strict()).min(1).max(200),reason:text}).strict(),
  z.object({kind:z.literal('unlink_project_record'),linkId:id,expectedVersion:z.number().int().min(0),reason:text}).strict(),
- z.object({kind:z.literal('record_fact'),recordId:id,expectedVersion:z.number().int().min(0),field:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),value:z.union([z.string().max(50000),z.number().finite(),z.boolean(),z.array(z.string().max(200)).max(100),z.null()]),projectId:id.optional(),validFrom:z.string().datetime().optional(),validUntil:z.string().datetime().optional(),sourceLabel:text,rationale:text}).strict(),
+ z.object({kind:z.literal('record_fact'),recordId:id,expectedVersion:z.number().int().min(0),field:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),value:z.union([z.string().max(50000),z.number().finite(),z.boolean(),z.array(z.union([z.string().max(50000),z.number().finite()])).max(100),z.null()]),projectId:id.optional(),validFrom:z.string().datetime().optional(),validUntil:z.string().datetime().optional(),sourceLabel:text,rationale:text}).strict(),
  z.object({kind:z.literal('prefer_record_fact'),factId:id,expectedVersion:z.number().int().min(0),reason:text}).strict(),
  z.object({kind:z.literal('retract_record_fact'),factId:id,reason:text}).strict(),
  z.object({kind:z.literal('copy_component'),sourceComponentId:id,expectedVersion:z.number().int().min(0),projectId:id,name:z.string().trim().min(1).max(100)}).strict()
