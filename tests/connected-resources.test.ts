@@ -37,7 +37,7 @@ test('connected resources enforce schema/value separation, shared edits, project
  const source=`const page=tools.call('records.read',{typeId:'${table}'});return {html:'<div data-trialy-slot="name"></div>',state:{total:page.total},controls:[{slot:'name',fieldId:'vendor_name',recordId:page.rows[0].id}]};`;
  const content={name:'Selection tracker',format:'frontend-js',source,sourceAccess:'bindings',resourceKind:'tracker',manifest,bindings:[{typeId:table,fields:['name']}]};
  const c=await change({kind:'save_component',projectId:project.id,content});
- const first=await f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:0});assert.equal(first.state.total,1);assert.ok('controls' in first);assert.equal(first.controls?.[0].value,'Vendor one');
+ const first=await f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:0});assert.equal((first.state as any).total,1);assert.ok('controls' in first);assert.equal(first.controls?.[0].value,'Vendor one');
  const other=await change({kind:'save_component',projectId:project.id,content:{...content,name:'Second tracker'}});
  const edit=await f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:0,event:{kind:'change',action:`bound:vendor_name:${row}:0`,value:'Updated vendor'}});assert.ok(edit.proposal);await f.confirm(owner,w.id,edit.proposal!.id,edit.proposal!.digest);
  const second=await f.runFrontend(ai,w.id,{componentId:other.id,expectedVersion:0});assert.ok('controls' in second);assert.equal(second.controls?.[0].value,'Updated vendor');
