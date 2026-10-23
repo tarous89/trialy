@@ -14,12 +14,13 @@ test('external forms preserve submissions and shared views expose only explicit 
  await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,'external-test@example.invalid','Synthetic']);const w=await s.createWorkspace(actor,'Exchange');const save=async(op:any)=>{const p=await s.preview(actor,w.id,op);return s.commit(actor,p.id,p.digest);};
  const t=(await save({kind:'create_type',name:'Responses',fields:[{key:'name',name:'Name',kind:'text',required:true},{key:'secret',name:'Private',kind:'text'}]})).objects[0]!;
  const app=baseApp();addExternal(app,s,(req,_res,next)=>{req.actor=actor;next();});app.use(errors);const root=`/api/workspaces/${w.id}/exchange`;
- const created=await request(app).post(root).send({kind:'form',name:'Questionnaire',typeId:t.id,fields:['name'],days:7,confirmed:true});assert.equal(created.status,200,created.text);const token=created.body.path.split('#')[1],nonce=randomUUID();
+ const projectId=randomUUID();await db.query("INSERT INTO workspace_nodes(id,workspace_id,kind,name) VALUES($1,$2,'project','Project')",[projectId,w.id]);
+ const created=await request(app).post(root).send({kind:'form',name:'Questionnaire',projectId,typeId:t.id,fields:['name'],days:7,confirmed:true});assert.equal(created.status,200,created.text);const token=created.body.path.split('#')[1],nonce=randomUUID();
  assert.equal((await request(app).post('/external-data').set('x-trialy-link',token).send({nonce,confirmed:true,data:{name:'Test',secret:'Injected'}})).status,400);
  const submitted=await request(app).post('/external-data').set('x-trialy-link',token).send({nonce,confirmed:true,data:{name:'Response'}});assert.equal(submitted.status,200,submitted.text);
  assert.equal((await s.records(actor,w.id,t.id)).total,0);
  const retry=await request(app).post('/external-data').set('x-trialy-link',token).send({nonce,confirmed:true,data:{name:'Response'}});assert.equal(retry.body.id,submitted.body.id);
- await save({kind:'accept_submission',submissionId:submitted.body.id,typeId:t.id,data:{name:'Response',secret:'Internal'}});assert.equal((await s.records(actor,w.id,t.id)).total,1);
+ await save({kind:'accept_submission',submissionId:submitted.body.id,typeId:t.id,data:{name:'Response',secret:'Internal'}});assert.equal((await s.records(actor,w.id,t.id)).total,1);assert.equal((await db.query('SELECT record_id FROM project_records WHERE project_id=$1',[projectId])).rows.length,1);
  await assert.rejects(s.preview(actor,w.id,{kind:'accept_submission',submissionId:submitted.body.id,typeId:t.id,data:{name:'Again'}}));await assert.rejects(db.query('DELETE FROM form_submissions'));
  const v=(await save({kind:'create_view',name:'Public subset',typeId:t.id,viewKind:'table',config:{columns:['name'],filters:[]}})).objects[0]!;
  const share=await request(app).post(root).send({kind:'view',name:'Read-only',typeId:t.id,viewId:v.id,fields:['name'],days:7,confirmed:true});const shareToken=share.body.path.split('#')[1];

@@ -3,7 +3,7 @@ import {rateLimit} from 'express-rate-limit';
 import {z} from 'zod';
 import type {McpServer} from '@modelcontextprotocol/sdk/server/mcp.js';
 import {readFile} from 'node:fs/promises';
-import {GuestDrafts,guestHandle,guestBundle} from '../workspace/guest-drafts.js';
+import {GuestDrafts,guestHandle,guestBundle,guestDestination} from '../workspace/guest-drafts.js';
 import {frontendRequest} from '../workspace/frontend.js';
 import {AppError,fail} from '../shared/schema.js';
 import {token} from './local-oauth.js';
@@ -25,14 +25,14 @@ export function addGuestRoutes(app:Express,d:GuestDrafts,base:string){
   const draft=await d.read(req.body.handle);
   const account=req.session.userId?(await d.db.query('SELECT email FROM local_accounts WHERE user_id=$1',[req.session.userId])).rows[0]:null;
   req.session.csrf??=token();await persist(req);
-  res.set('Cache-Control','no-store').json({...draft,csrf:req.session.csrf,account:account?{email:account.email,userId:req.session.userId}:null});
+  res.set('Cache-Control','no-store').json({...draft,csrf:req.session.csrf,destinations:account?await d.destinations({userId:req.session.userId!,origin:'human'},req.body.handle):[],account:account?{email:account.email,userId:req.session.userId}:null});
  });
  app.post('/guest/save',limit,async(req,res)=>{
   if(req.get('origin')!==new URL(base).origin||!req.session.csrf||req.get('x-csrf-token')!==req.session.csrf)fail(403,'csrf','Refresh the review before saving');
-  const body=z.object({handle:guestHandle,digest:z.string().length(64),accountId:z.string().uuid(),confirmed:z.literal(true),allowAi:z.literal(true)}).strict().parse(req.body);
+  const body=z.object({handle:guestHandle,digest:z.string().length(64),accountId:z.string().uuid(),confirmed:z.literal(true),allowAi:z.literal(true),destination:guestDestination.optional()}).strict().parse(req.body);
   if(!req.session.userId)fail(401,'sign_in','Connect your account to save');
   if(body.accountId!==req.session.userId)fail(409,'account_changed','The signed-in account changed. Review the destination account again.');
-  const receipt=await d.claim({userId:req.session.userId,origin:'human'},body.handle,body.digest);
+  const receipt=await d.claim({userId:req.session.userId,origin:'human'},body.handle,body.digest,body.destination);
   delete req.session.draftReturn;await persist(req);res.set('Cache-Control','no-store').json(receipt);
  });
 }

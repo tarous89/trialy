@@ -34,6 +34,9 @@ export class Foundation {
   const r=await this.revision(a,w,binding.revisionId);if(c.source_access==='bindings'&&r.body.scope.documents)fail(403,'component_binding','Function document reads exceed component bindings');for(const typeId of r.body.scope.typeIds){const {type,policy}=await typeAccess(this.db,ai(a),w,typeId);const declared=c.bindings.find((b:any)=>b.typeId===typeId);if(!declared||visibleFields(type.fields,policy,ai(a)).some(f=>!declared.fields.includes(f.key)))fail(403,'component_binding','Function reads exceed current component bindings');}
 
  }
+ async validatePlanScope(a:Actor,w:string,scope:Scope){
+  await this.policy(a,w);for(const typeId of scope.typeIds)if(!(await this.db.query('SELECT id FROM entity_types WHERE id=$1 AND workspace_id=$2',[typeId,w])).rows.length)fail(404,'not_found','Schema table unavailable');
+ }
  async validateScope(a:Actor,w:string,scope:Scope){await this.policy(a,w);for(const t of scope.typeIds)await typeAccess(this.db,ai(a),w,t);}
  async enqueue(a:Actor,w:string,input:unknown,requestKey:string,revisionId?:string,scheduleId?:string,grantId?:string,componentContext?:{id:string;version:number;binding:string}){
   await this.checkComponent(a,w,componentContext,revisionId,grantId);
@@ -67,7 +70,7 @@ export class Foundation {
  async runs(a:Actor,w:string){await this.policy(a,w);return (await this.db.query('SELECT r.id,r.revision_id,r.status,r.created_at,r.finished_at,r.expires_at,r.diagnostic,r.proposal_digest,EXISTS(SELECT 1 FROM foundation_receipts c WHERE c.id=r.id) AS committed FROM foundation_runs r WHERE r.workspace_id=$1 AND r.user_id=$2 ORDER BY r.created_at DESC LIMIT 100',[w,a.userId])).rows;}
  async cancel(a:Actor,w:string,runId:string){await this.policy(a,w);await this.db.query("UPDATE foundation_runs SET cancel_requested=true,status='cancelled',finished_at=now() WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND status IN ('queued','running')",[runId,w,a.userId]);return {id:runId};}
  async prepareFunction(a:Actor,w:string,input:unknown){
-  const body=functionSchema.parse(input);await this.policy(a,w,true);await this.validateScope(a,w,body.scope);
+  const body=functionSchema.parse(input);await this.policy(a,w,true);await (body.planningOnly?this.validatePlanScope(a,w,body.scope):this.validateScope(a,w,body.scope));
   if(body.functionId)await this.ownedFunction(a,w,body.functionId);
   if(Number((await this.db.query('SELECT count(*) AS n FROM foundation_previews WHERE user_id=$1 AND expires_at>now()',[a.userId])).rows[0].n)>=50)fail(429,'preview_limit','At most 50 pending function previews');
   const preview={id:randomUUID(),workspaceId:w,digest:checksum(J({body,runtime:RUNTIME})),body,runtime:RUNTIME,temporary:true};
@@ -75,7 +78,7 @@ export class Foundation {
  }
  async pendingApprovals(a:Actor,w:string){
   await this.policy(a,w);const rows=(await this.db.query('SELECT * FROM foundation_previews WHERE workspace_id=$1 AND user_id=$2 AND expires_at>now() ORDER BY expires_at',[w,a.userId])).rows;const result=[];
-  for(const r of rows){try{if(r.kind==='function')await this.validateScope(a,w,r.body.scope);else {await this.revision(a,w,r.body.revisionId);if(r.kind==='grant'){const {type,policy}=await typeAccess(this.db,ai(a),w,r.body.typeIds[0]);const visible=visibleFields(type.fields,policy,ai(a));if(r.body.fields.some((k:string)=>!visible.some(f=>f.key===k)))continue;}}result.push({id:r.id,kind:r.kind,workspaceId:w,body:r.body,digest:r.digest,expiresAt:r.expires_at});}catch{}}
+  for(const r of rows){try{if(r.kind==='function')await (r.body.planningOnly?this.validatePlanScope(a,w,r.body.scope):this.validateScope(a,w,r.body.scope));else {await this.revision(a,w,r.body.revisionId);if(r.kind==='grant'){const {type,policy}=await typeAccess(this.db,ai(a),w,r.body.typeIds[0]);const visible=visibleFields(type.fields,policy,ai(a));if(r.body.fields.some((k:string)=>!visible.some(f=>f.key===k)))continue;}}result.push({id:r.id,kind:r.kind,workspaceId:w,body:r.body,digest:r.digest,expiresAt:r.expires_at});}catch{}}
   return result;
  }
  async prepareControl(a:Actor,w:string,kind:'grant'|'schedule',input:unknown){
@@ -97,7 +100,7 @@ export class Foundation {
  async discardFunction(a:Actor,w:string,previewId:string){await this.policy(a,w);await this.db.query('DELETE FROM foundation_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[previewId,w,a.userId]);return {id:previewId,discarded:true};}
  private async ownedFunction(a:Actor,w:string,functionId:string){const f=(await this.db.query('SELECT * FROM foundation_functions WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[functionId,w,a.userId])).rows[0];if(!f)fail(404,'not_found','Function not found');return f;}
  async functions(a:Actor,w:string){await this.policy(a,w);return (await this.db.query('SELECT f.*,r.id AS revision_id,r.digest,r.runtime FROM foundation_functions f JOIN foundation_revisions r ON r.function_id=f.id AND r.version=f.version WHERE f.workspace_id=$1 AND f.user_id=$2 ORDER BY f.created_at DESC',[w,a.userId])).rows;}
- async revision(a:Actor,w:string,revisionId:string){await this.policy(a,w);const r=(await this.db.query('SELECT r.* FROM foundation_revisions r JOIN foundation_functions f ON f.id=r.function_id WHERE r.id=$1 AND f.workspace_id=$2 AND f.user_id=$3',[revisionId,w,a.userId])).rows[0];if(!r)fail(404,'not_found','Revision not found');await this.validateScope(a,w,r.body.scope);return r;}
+ async revision(a:Actor,w:string,revisionId:string){await this.policy(a,w);const r=(await this.db.query('SELECT r.* FROM foundation_revisions r JOIN foundation_functions f ON f.id=r.function_id WHERE r.id=$1 AND f.workspace_id=$2 AND f.user_id=$3',[revisionId,w,a.userId])).rows[0];if(!r)fail(404,'not_found','Revision not found');await (r.body.planningOnly?this.validatePlanScope(a,w,r.body.scope):this.validateScope(a,w,r.body.scope));return r;}
  async saveFunction(a:Actor,w:string,previewId:string,digest:string){
   requireHuman(a);
   return this.db.transaction(async tx=>{
@@ -105,7 +108,7 @@ export class Foundation {
    const receipt=await this.receipt(tx,a,w,previewId,digest);if(receipt)return receipt;
    const draft=(await tx.query('SELECT * FROM foundation_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[previewId,w,a.userId])).rows[0];
    if(!draft||draft.kind!=='function'||draft.digest!==digest)fail(409,'preview_unavailable','Preview expired or changed');
-   const body=functionSchema.parse(draft.body);const f=new Foundation(this.adapter(tx));await f.validateScope(a,w,body.scope);
+   const body=functionSchema.parse(draft.body);const f=new Foundation(this.adapter(tx));await (body.planningOnly?f.validatePlanScope(a,w,body.scope):f.validateScope(a,w,body.scope));
    const functionId=body.functionId??randomUUID();let version=0;
    if(body.functionId){const current=await f.ownedFunction(a,w,functionId);if(current.version!==body.expectedVersion)fail(409,'stale_version','Function changed');version=current.version+1;await tx.query('UPDATE foundation_functions SET name=$1,version=$2 WHERE id=$3',[body.name,version,functionId]);}
    else await tx.query('INSERT INTO foundation_functions(id,workspace_id,user_id,name) VALUES($1,$2,$3,$4)',[functionId,w,a.userId,body.name]);
@@ -114,7 +117,7 @@ export class Foundation {
    await this.storeReceipt(tx,a,w,previewId,digest,'function',result);await tx.query('DELETE FROM foundation_previews WHERE id=$1',[previewId]);return result;
   });
  }
- async invoke(a:Actor,w:string,input:unknown,requestKey:string){const v=invokeSchema.parse(input),r=await this.revision(a,w,v.revisionId);if(r.runtime!==RUNTIME)fail(409,'runtime_unavailable','This function runtime is unavailable');checkContract(r.body.inputContract,v.input);if(v.grantId){const g=(await this.grants(a,w)).find(g=>g.id===v.grantId);if(!g||g.authorization_version!==1||new Date(g.expires_at).getTime()<=Date.now()||g.revoked_at||(!g.future&&g.used_at)||g.revision_id!==r.id)fail(403,'grant_unavailable','Permission unavailable');}return this.enqueue(a,w,{source:r.body.source,scope:r.body.scope,toolCatalog:r.body.toolCatalog,dependencies:r.body.dependencies,input:v.input},requestKey,r.id,undefined,v.grantId,v.componentContext);}
+ async invoke(a:Actor,w:string,input:unknown,requestKey:string){const v=invokeSchema.parse(input),r=await this.revision(a,w,v.revisionId);if(r.body.planningOnly)fail(403,'awaiting_authorization','This is a schema-only automation plan. Save an authorized executable revision before running it');if(r.runtime!==RUNTIME)fail(409,'runtime_unavailable','This function runtime is unavailable');checkContract(r.body.inputContract,v.input);if(v.grantId){const g=(await this.grants(a,w)).find(g=>g.id===v.grantId);if(!g||g.authorization_version!==1||new Date(g.expires_at).getTime()<=Date.now()||g.revoked_at||(!g.future&&g.used_at)||g.revision_id!==r.id)fail(403,'grant_unavailable','Permission unavailable');}return this.enqueue(a,w,{source:r.body.source,scope:r.body.scope,toolCatalog:r.body.toolCatalog,dependencies:r.body.dependencies,input:v.input},requestKey,r.id,undefined,v.grantId,v.componentContext);}
  adapter(tx:Connection):Database{return {query:tx.query.bind(tx),transaction:fn=>fn(tx),close:async()=>{}};}
  private async receipt(tx:Connection,a:Actor,w:string,receiptId:string,digest:string){const r=(await tx.query('SELECT * FROM foundation_receipts WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[receiptId,w,a.userId])).rows[0];if(r&&r.digest!==digest)fail(409,'digest_mismatch','Confirmation does not match');return r?.result;}
  private async storeReceipt(tx:Connection,a:Actor,w:string,receiptId:string,digest:string,kind:string,result:unknown){await tx.query('INSERT INTO foundation_receipts(id,workspace_id,user_id,digest,kind,result) VALUES($1,$2,$3,$4,$5,$6)',[receiptId,w,a.userId,digest,kind,J(result)]);}
@@ -143,7 +146,7 @@ export class Foundation {
  });}
  async grants(a:Actor,w:string){await this.policy(a,w);const rows=(await this.db.query('SELECT * FROM foundation_grants WHERE workspace_id=$1 AND user_id=$2 ORDER BY created_at DESC',[w,a.userId])).rows;const result=[];for(const g of rows){try{for(const id of g.type_ids){const {type,policy}=await typeAccess(this.db,ai(a),w,id);const fields=visibleFields(type.fields,policy,ai(a));if(g.field_scope?.some((k:string)=>!fields.some(f=>f.key===k)))throw new Error('hidden');}result.push(g);}catch{}}return result;}
  async grant(a:Actor,w:string,input:unknown){
-  requireHuman(a);const v=grantSchema.parse(input);const r=await this.revision(a,w,v.revisionId);const p=await this.policy(a,w,true);
+  requireHuman(a);const v=grantSchema.parse(input);const r=await this.revision(a,w,v.revisionId);if(r.body.planningOnly)fail(403,'awaiting_authorization','Schema-only automation plans cannot be activated or granted execution');const p=await this.policy(a,w,true);
   if(!r.body.scope.capabilities.includes('changes.propose')||v.typeIds.some(t=>!r.body.scope.typeIds.includes(t)))fail(400,'grant_scope','Grant exceeds function scope');
   const expires=v.expiresAt?new Date(v.expiresAt):new Date(Date.now()+30*86400000);if(expires.getTime()<=Date.now())fail(400,'grant_expired','Choose a future expiry');
   const grantId=randomUUID();return this.db.transaction(async tx=>{
@@ -154,7 +157,7 @@ export class Foundation {
   });
  }
  async revoke(a:Actor,w:string,grantId:string){const p=await this.policy(a,w);return this.db.transaction(async tx=>{await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const r=await tx.query('UPDATE foundation_grants SET revoked_at=now() WHERE id=$1 AND workspace_id=$2 AND user_id=$3 RETURNING id',[grantId,w,a.userId]);if(!r.rows.length)fail(404,'not_found','Grant not found');await audit(tx,a,p,'execution.revoked',grantId,null,{});return {id:grantId};});}
- async schedule(a:Actor,w:string,input:unknown){requireHuman(a);const v=scheduleSchema.parse(input);await this.checkComponent(a,w,v.componentContext,v.revisionId,v.grantId);await this.policy(a,w,true);const r=await this.revision(a,w,v.revisionId);checkContract(r.body.inputContract,v.input);if(v.grantId){const g=(await this.grants(a,w)).find(g=>g.id===v.grantId);if(!g||g.authorization_version!==1||new Date(g.expires_at).getTime()<=Date.now()||g.revoked_at||g.revision_id!==r.id||!g.future)fail(403,'grant_unavailable','Choose an active future permission for this revision');}
+ async schedule(a:Actor,w:string,input:unknown){requireHuman(a);const v=scheduleSchema.parse(input);await this.checkComponent(a,w,v.componentContext,v.revisionId,v.grantId);await this.policy(a,w,true);const r=await this.revision(a,w,v.revisionId);if(r.body.planningOnly)fail(403,'awaiting_authorization','Schema-only automation plans cannot be activated or granted execution');checkContract(r.body.inputContract,v.input);if(v.grantId){const g=(await this.grants(a,w)).find(g=>g.id===v.grantId);if(!g||g.authorization_version!==1||new Date(g.expires_at).getTime()<=Date.now()||g.revoked_at||g.revision_id!==r.id||!g.future)fail(403,'grant_unavailable','Choose an active future permission for this revision');}
   const scheduleId=randomUUID();const p=await this.policy(a,w,true);return this.db.transaction(async tx=>{const cursor=(await tx.query('SELECT coalesce(max(event_sequence),0) AS cursor FROM audit_events WHERE workspace_id=$1',[w])).rows[0].cursor;
   const next=v.trigger?.kind==='daily'?nextDaily(v.trigger,new Date()):new Date();await tx.query('INSERT INTO foundation_schedules(id,workspace_id,user_id,revision_id,input,grant_id,interval_minutes,trigger,event_cursor,next_at,component_context) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',[scheduleId,w,a.userId,r.id,J(v.input),v.grantId??null,v.intervalMinutes,v.trigger?J(v.trigger):null,cursor,next,v.componentContext?J(v.componentContext):null]);await audit(tx,a,p,'execution.scheduled',scheduleId,null,v);return {id:scheduleId,...v};});}
  async schedules(a:Actor,w:string){await this.policy(a,w);return (await this.db.query('SELECT id,revision_id,interval_minutes,paused,next_at,grant_id,trigger,component_context FROM foundation_schedules WHERE workspace_id=$1 AND user_id=$2 ORDER BY created_at DESC',[w,a.userId])).rows;}

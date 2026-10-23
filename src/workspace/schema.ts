@@ -1,3 +1,4 @@
+import {resourceKind,resourceManifest} from './resource-contract.js';
 import {exchangeSchema} from '../domain/exchange.js';
 import {componentRecordChanges} from './frontend.js';
 import {z} from 'zod';
@@ -12,6 +13,7 @@ export const maintenanceSchema=z.object({
  maxChanges:z.number().int().min(1).max(200).default(50)
 }).strict().refine(v=>new Set(v.bindings.map(b=>b.typeId)).size===v.bindings.length,'Duplicate table bindings').refine(v=>!v.autoWrite||(v.bindings.length===1&&!!v.expiresAt),'Longer-term permission requires exactly one data type and an expiry');
 export const componentContent=z.object({
+ resourceKind:resourceKind.optional(),manifest:resourceManifest.nullable().optional(),
  name:z.string().trim().min(1).max(100),
  sourceAccess:z.enum(['workspace','bindings']).default('workspace'),
  format:z.enum(['text','markdown','json','javascript','html','trialy-ui','frontend-js']),
