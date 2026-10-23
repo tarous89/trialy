@@ -32,7 +32,29 @@ test('MCP exposes a single registered tracker draft tool and no navigation metad
  const {default:request}=await import('supertest'),{baseApp}=await import('../src/server/app.js'),{addMcp}=await import('../src/server/mcp.js');
  const app=baseApp();addMcp(app,new Service({} as Database),(_q,_r,next)=>next());
  const response=await request(app).post('/mcp').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:1,method:'tools/list'});assert.equal(response.status,200);const tools=response.body.result.tools;
- for(const name of ['read_workspace_schema','find_field_candidates','prepare_tracker','prepare_change']){const t=tools.find((t:any)=>t.name===name);assert.ok(t);assert.equal(t._meta['openai/outputTemplate'],undefined);}
- for(const name of ['open_workspace','open_tracker','open_tracker_draft'])assert.match(tools.find((t:any)=>t.name===name)._meta['openai/outputTemplate'],/workspace-[a-f0-9]{16}\.html$/);
+ for(const name of ['initialize_account','read_workspace_schema','find_field_candidates','prepare_change']){const t=tools.find((t:any)=>t.name===name);assert.ok(t);assert.equal(t._meta['openai/outputTemplate'],undefined);}
+ for(const name of ['open_workspace','open_tracker','open_tracker_draft','prepare_tracker'])assert.match(tools.find((t:any)=>t.name===name)._meta['openai/outputTemplate'],/workspace-[a-f0-9]{16}\.html$/);
  assert.equal(tools.filter((t:any)=>t.name==='open_tracker_preview').length,1,'Preserve legacy preview recovery');
+});
+
+test('empty account previews missing tables without writes; save is atomic, idempotent and project optional',async()=>{
+ const pg=new PGlite();const db:Database={query:(s,v)=>pg.query(s,v) as any,transaction:f=>pg.transaction(tx=>f(tx as Connection)),close:()=>pg.close()};try{
+ for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
+ const a={userId:randomUUID(),origin:'human' as const};await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[a.userId,a.userId,'preview@example.invalid','Preview']);
+ const service=new Service(db),f=new WorkspaceFoundation(db),w=await service.createWorkspace(a,'Fixture'),typeId=randomUUID();
+ const setup={name:'New tracker',description:'Preview before saving',newTables:[{id:typeId,name:'Companies',fields:[{key:'name',name:'Company',kind:'text',ai:true},{key:'source',name:'Source',kind:'text',ai:true}]}],tabs:[{name:'Companies',typeId,columns:[{field:'name'},{field:'source'}]}],example:{name:'Example biotech',source:null}};
+ const generated=await trackerOperation(f,a,w.id,setup),operation={kind:'create_tracker',setup,content:generated.content};
+ const preview=await f.preview(a,w.id,operation),rendered=await f.runFrontend(a,w.id,{previewId:preview.id});assert.match(rendered.html,/Example biotech/);assert.deepEqual(await service.types(a,w.id),[]);assert.equal((await f.nodes(a,w.id)).nodes.length,0);assert.equal((await f.components(a,w.id)).length,0);
+ await f.discard(a,w.id,preview.id);assert.deepEqual(await service.types(a,w.id),[]);
+ const tampered=structuredClone(operation);tampered.content.source+='malicious';await assert.rejects(f.preview(a,w.id,tampered),/changed/);
+ const failing=await f.preview(a,w.id,operation);const failingDb:Database={...db,transaction:fn=>db.transaction(tx=>fn({query:async(q:string,v?:any[])=>{if(q.includes('INSERT INTO workspace_components'))throw Error('Injected save failure');return tx.query(q,v);}} as Connection))};await assert.rejects(new WorkspaceFoundation(failingDb).confirm(a,w.id,failing.id,failing.digest),/Injected save failure/);assert.deepEqual(await service.types(a,w.id),[]);await f.discard(a,w.id,failing.id);
+ const p=await f.preview(a,w.id,operation),receipt=await f.confirm(a,w.id,p.id,p.digest);assert.deepEqual(await f.confirm(a,w.id,p.id,p.digest),receipt);
+ const c=(await f.readComponent(a,w.id,receipt.id)).component;assert.equal(c.project_id,null);assert.equal((await service.types(a,w.id)).length,1);assert.notEqual(c.bindings[0].typeId,typeId);assert.equal((await service.records(a,w.id,c.bindings[0].typeId,{limit:10,offset:0})).total,0);assert.equal((await f.nodes(a,w.id)).nodes.length,0);
+ const node=await f.preview(a,w.id,{kind:'create_node',nodeKind:'project',name:'Outreach',parentId:null}),project=await f.confirm(a,w.id,node.id,node.digest);
+ const existingSetup={...setup,newTables:[],projectId:project.id,tabs:[{...setup.tabs[0],typeId:c.bindings[0].typeId}]};const existing=await trackerOperation(f,a,w.id,existingSetup);const pp=await f.preview(a,w.id,{kind:'create_tracker',setup:existingSetup,content:existing.content});const pr=await f.confirm(a,w.id,pp.id,pp.digest);assert.equal((await f.readComponent(a,w.id,pr.id)).component.project_id,project.id);assert.equal((await service.types(a,w.id)).length,1);
+ const rowPreview=await service.preview(a,w.id,{kind:'create_record',typeId:c.bindings[0].typeId,data:{name:'Real company'}});await service.commit(a,rowPreview.id,rowPreview.digest);
+ const extendedSetup={...existingSetup,projectId:null,extendTables:[{typeId:c.bindings[0].typeId,expectedVersion:0,newFields:[{key:'follow_up',name:'Follow-up',kind:'date',ai:true}]}],tabs:[{...existingSetup.tabs[0],columns:[{field:'name'},{field:'source'},{field:'follow_up'}]}]};const extended=await trackerOperation(f,a,w.id,extendedSetup),ep=await f.preview(a,w.id,{kind:'create_tracker',setup:extendedSetup,content:extended.content});
+ const output:any=await f.runFrontend(a,w.id,{previewId:ep.id,event:{kind:'click',action:'tab:0'}});assert.equal(output.controls?.find((c:any)=>c.label==='Follow-up')?.editable,false);assert.equal((await service.types(a,w.id))[0].fields.some((x:any)=>x.key==='follow_up'),false);
+ await f.confirm(a,w.id,ep.id,ep.digest);assert.equal((await service.types(a,w.id))[0].fields.some((x:any)=>x.key==='follow_up'),true);assert.equal((await service.records(a,w.id,c.bindings[0].typeId,{limit:10,offset:0})).rows[0].data.name,'Real company');
+ }finally{await db.close();}
 });

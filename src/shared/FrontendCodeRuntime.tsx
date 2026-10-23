@@ -2,7 +2,7 @@ import {TrackerRecordForm} from './TrackerRecordForm.js';
 import React,{useEffect,useRef,useState} from 'react';
 import {useAccessRecheck} from './useAccessRecheck.js';
 type Call=(name:string,args:Record<string,unknown>)=>Promise<any>;
-export function FrontendCodeRuntime({component,previewId,call,onProposal,onUnavailable,onAccess,onBusyChange}:{component?:any;previewId?:string;call:Call;onProposal:(p:any)=>void;onUnavailable?:(message:string)=>void;onAccess?:()=>void;onBusyChange?:(busy:boolean)=>void}){
+export function FrontendCodeRuntime({component,previewId,call,onProposal,onUnavailable,onAccess,onBusyChange,onRendered}:{component?:any;previewId?:string;call:Call;onProposal:(p:any)=>void;onUnavailable?:(message:string)=>void;onAccess?:()=>void;onBusyChange?:(busy:boolean)=>void;onRendered?:()=>void}){
  const frame=useRef<HTMLIFrameElement>(null),output=useRef<any>(null),state=useRef<any>(null),busyRef=useRef(false),channel=useRef(crypto.randomUUID()),live=useRef(true);
  const standard=component?.source?.startsWith('const config=');
  const [ready,setReady]=useState(false),[height,setHeight]=useState(620),[adding,setAdding]=useState(false);
@@ -20,6 +20,7 @@ export function FrontendCodeRuntime({component,previewId,call,onProposal,onUnava
  }
  useEffect(()=>{live.current=true;void run();return()=>{live.current=false;};},[]);
  useEffect(()=>{const receive=(e:MessageEvent)=>{if(e.source!==frame.current?.contentWindow)return;if(e.data?.kind==='trialy.ready'){setReady(true);send();}
+  else if(e.data?.kind==='trialy.rendered'&&e.data.channel===channel.current){onRendered?.();}
   else if(e.data?.kind==='trialy.resize'&&e.data.channel===channel.current&&Number.isFinite(e.data.height)){setHeight(Math.max(200,Math.min(20000,e.data.height)));}
   else if(e.data?.kind==='trialy.event'&&e.data.channel===channel.current&&!proposal)void run(e.data.event);
  };window.addEventListener('message',receive);return()=>window.removeEventListener('message',receive);},[proposal]);

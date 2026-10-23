@@ -1,3 +1,4 @@
+import {trackerSetup} from './tracker-template.js';
 import {resourceKind,resourceManifest} from './resource-contract.js';
 import {exchangeSchema} from '../domain/exchange.js';
 import {componentRecordChanges} from './frontend.js';
@@ -46,6 +47,7 @@ export const workspaceOperation=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('link_cross_table_identity'),sourceRecordId:id,preferredRecordId:id,sourceVersion:z.number().int().min(0),preferredVersion:z.number().int().min(0),mappingId:id.optional(),fieldPairs:fieldPairsSchema.optional(),rationale:text}).strict(),
  z.object({kind:z.literal('unlink_cross_table_identity'),linkId:id,expectedVersion:z.number().int().min(0),reason:text}).strict(),
  z.object({kind:z.literal('unlink_identity'),linkId:id,expectedVersion:z.number().int().min(0),reason:text}).strict(),
+ z.object({kind:z.literal('create_tracker'),setup:trackerSetup,content:componentContent}).strict(),
  z.object({kind:z.literal('save_component'),projectId:id.nullable().default(null),componentId:id.optional(),expectedVersion:z.number().int().min(0).optional(),content:componentContent}).strict(),
  z.object({kind:z.literal('move_component'),componentId:id,expectedVersion:z.number().int().min(0),projectId:id.nullable()}).strict(),
  z.object({kind:z.literal('archive_component'),componentId:id,expectedVersion:z.number().int().min(0),archived:z.boolean()}).strict(),
