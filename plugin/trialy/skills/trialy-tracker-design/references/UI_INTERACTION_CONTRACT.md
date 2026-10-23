@@ -25,7 +25,7 @@ Default composition:
 
 [Optional overview metrics and urgent next-actions; Overview only]
 
-[Search] [relevant filter(s)] [sort/rank if appropriate]   [Save edits] [Ignore edits] [+ Add record]
+[Search] [relevant filter(s)] [sort/rank if appropriate]   [+ Add record]
 [Table: immediately meaningful visible columns ...] [Details (fixed right)]
 [complete rows; full page scrolls vertically]
 ```
@@ -55,7 +55,7 @@ Default composition:
 - Every *permitted* table field and permitted detail field is directly editable by clicking it, including the **first column**. Non-editable derived values, identity keys, audit evidence and permission-blocked fields are visibly read-only.
 - Editing a cell must NOT implicitly open its Details drawer. Editing the drawer must NOT cause a second independent copy to diverge.
 - Mark pending changes with the approved **light green fill** (`#e5f6e9` in original base, or closest existing theme green for pending state) and subtle inset border. Pending changes remain obvious in both table and drawer.
-- Show **Save edits** and **Ignore edits** as a compact action pair near the existing **Add record** button whenever one or more edits are pending. Use `+ Add record` consistently rather than “Add vendor,” “Add RFP,” etc. Tab context supplies the record type. Do not add Save buttons to every cell.
+- Show save/update/merge actions in a **dark floating footer**, fixed below the content: one concise sentence, one primary CTA, and a quiet accessible dismiss control whenever edits are pending. No Advanced/reload panel or extra instructions above the title. Use `+ Add record` consistently rather than “Add vendor,” “Add RFP,” etc. Tab context supplies the record type. Do not add Save buttons to every cell.
 - `Ignore edits` must restore the exact pre-edit values and clear the pending highlight and controls; `Save edits` must commit only the reviewed, permitted changed fields and update all bound views. Retain errors/pending drafts on failed authorization or stale values—never claim success early.
 - In the standalone HTML demo, memory-local persistence is an illustration only; explicit messages must not imply a database commit. In Trialy-connected usage, every change requires the platform's exact approval path or an applicable revocable, narrowly scoped data-type grant. Manual typing is not a backend commit.
 - Use appropriate editors for data type: text, numeric, date, boolean, select, relationship reference, URL/source and computed code where allowed. Do not sprinkle unrelated date/calendar icons or superfluous dropdown chevrons just for aesthetics.
@@ -163,3 +163,7 @@ Do not introduce new permission colors. Color remains secondary to explicit word
 - For local HTML demos, editable in-memory data is permitted as clearly marked sample behavior. For connected Trialy, use backend services that enforce current actor identity, rights, stale-write prevention and exact approvals.
 - Recompute permissions after every membership, project move, component edit, schema change and source binding change; revocation is not just UI styling.
 - When modifying previously approved HTML, preserve existing UX details **byte-for-byte wherever possible**. A seemingly small style change must not rearrange action controls, resurrect unused tabs or silently change business logic.
+
+### Current host refinement
+
+Keep the host header and dark action footer fixed. The tracker document is the only vertical scroller; tables may scroll horizontally but must not have an independent vertical height/scrollbar. The row-details surface fills at least the full available viewport, even for a one-row table. Its content uses that same document scroller. Local tabs/search/sort/details/layout interactions must not wait for the server. Each empty data tab gets one clearly labeled, display-only fictional example with typed values and meaningful tint pills. User instructions override these defaults.
