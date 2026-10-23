@@ -5,11 +5,13 @@ description: Use when the user opens Trialy or works with its workspaces, data, 
 
 # Trialy workspace
 
+For tracker creation or revision, read ../trialy-tracker-design/SKILL.md and its integration reference first (or call read_tracker_design). User instructions and existing authorized data guide the result; defaults fill gaps. The reference is only an opened tracker, never the entire plugin UI.
+
 Call `open_workspace` when the user opens Trialy and after a successful connection, resuming their original workspace request. Render its interactive view. If authentication is needed, use the host connection flow; never request passwords or tokens in chat. Trialy signup and consent return to the registered host callback.
 
 For a new account, use the view's onboarding to obtain the workspace name and explicit AI-access confirmation. Do not create extra workspaces or silently enable AI access for existing workspaces.
 
-Read and write only through the authenticated tools. Backend permissions apply to every operation. Never route restricted fields through chat, hidden model context or another tool. The current embedded view uses only AI-accessible data; human-only fields are not supported here yet.
+Access saved account data only through authenticated tools. Anonymous tracker drafts use preview_tracker and expire after 24 hours; public design guidance uses read_tracker_design. Backend permissions apply to every operation. Never route restricted fields through chat, hidden model context or another tool. The current embedded view uses only AI-accessible data; human-only fields are not supported here yet.
 
 For EVERY database change, prepare a visible exact review before saving, unless an explicit, unexpired permission for that one data type covers the change. An existing table, prior task approval or a connected account is not permission for future writes. Show before/after fields and never call confirmation tools as the model. `approval_portal` opens authenticated Trialy Changes & permissions: the human approves there. The embedded approval buttons use this secure handoff because app-only tool visibility is not proof of a human click. No save occurs merely by opening the portal. Use `list_pending_changes`, `list_workspace_previews` and `list_execution_approvals` to recover reviews. Do not claim in-chat-only approval is verified. Use `save_status` for interrupted save receipts.
 

@@ -1,3 +1,4 @@
+import {addTrackerDesignMcp} from './tracker-design.js';
 import {rateLimit} from 'express-rate-limit';
 import {addGuestMcp} from './guest-drafts.js';
 import {GuestDrafts} from '../workspace/guest-drafts.js';
@@ -17,6 +18,7 @@ export function addMcp(app:Express,s:Service,authenticate:RequestHandler) {
  const createLimit=rateLimit({windowMs:60000,limit:10,standardHeaders:'draft-8',legacyHeaders:false});
  app.post('/mcp',(req,res,next)=>req.body?.method==='tools/call'&&req.body?.params?.name==='preview_tracker'?createLimit(req,res,next):next(),(req,res,next)=>{if(req.get('authorization'))return authenticate(req,res,next);res.set('Cache-Control','no-store');next();},async(req,res)=>{
   const actor=req.actor!;const server=new McpServer({name:'trialy',version:'0.1.0'});
+  addTrackerDesignMcp(server);
   const resource='ui://trialy/workspace.html';
   const metadata={ui:{resourceUri:resource},'openai/widgetAccessible':true,securitySchemes:[{type:'oauth2',scopes:['trialy']}], 'openai/outputTemplate':resource};
   const result=(data:unknown)=>({content:[{type:'text' as const,text:JSON.stringify(data)}],structuredContent:{result:data}});
