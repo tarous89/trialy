@@ -1,5 +1,5 @@
 import {WorkspaceFoundation} from '../workspace/service.js';
-import {requireHuman} from '../domain/write-authorization.js';
+import {requireCurrentAction,requireHuman} from '../domain/write-authorization.js';
 import {nextDaily} from '../shared/schedules.js';
 import {randomUUID} from 'node:crypto';
 import {z} from 'zod';
@@ -91,7 +91,7 @@ export class Foundation {
   const result={id:randomUUID(),workspaceId:w,kind,body,digest:checksum(J({kind,body})),temporary:true};
   await this.db.query('INSERT INTO foundation_previews(id,workspace_id,user_id,kind,body,digest) VALUES($1,$2,$3,$4,$5,$6)',[result.id,w,a.userId,kind,J(body),result.digest]);return result;
  }
- async confirmControl(a:Actor,w:string,id:string,digest:string){requireHuman(a);return this.db.transaction(async tx=>{
+ async confirmControl(a:Actor,w:string,id:string,digest:string){requireCurrentAction(a);return this.db.transaction(async tx=>{
   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);await access(tx,a,w,true);const replay=await this.receipt(tx,a,w,id,digest);if(replay)return replay;
   const r=(await tx.query('SELECT * FROM foundation_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[id,w,a.userId])).rows[0];if(!r||r.digest!==digest||!['grant','schedule'].includes(r.kind))fail(409,'preview_unavailable','Review expired or changed');
   const f=new Foundation(this.adapter(tx));const result=r.kind==='grant'?await f.grant(a,w,r.body):await f.schedule(a,w,r.body);
@@ -102,7 +102,7 @@ export class Foundation {
  async functions(a:Actor,w:string){await this.policy(a,w);return (await this.db.query('SELECT f.*,r.id AS revision_id,r.digest,r.runtime FROM foundation_functions f JOIN foundation_revisions r ON r.function_id=f.id AND r.version=f.version WHERE f.workspace_id=$1 AND f.user_id=$2 ORDER BY f.created_at DESC',[w,a.userId])).rows;}
  async revision(a:Actor,w:string,revisionId:string){await this.policy(a,w);const r=(await this.db.query('SELECT r.* FROM foundation_revisions r JOIN foundation_functions f ON f.id=r.function_id WHERE r.id=$1 AND f.workspace_id=$2 AND f.user_id=$3',[revisionId,w,a.userId])).rows[0];if(!r)fail(404,'not_found','Revision not found');await (r.body.planningOnly?this.validatePlanScope(a,w,r.body.scope):this.validateScope(a,w,r.body.scope));return r;}
  async saveFunction(a:Actor,w:string,previewId:string,digest:string){
-  requireHuman(a);
+  requireCurrentAction(a);
   return this.db.transaction(async tx=>{
    const p=await access(tx,ai(a),w,true);await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);
    const receipt=await this.receipt(tx,a,w,previewId,digest);if(receipt)return receipt;
@@ -121,7 +121,7 @@ export class Foundation {
  adapter(tx:Connection):Database{return {query:tx.query.bind(tx),transaction:fn=>fn(tx),close:async()=>{}};}
  private async receipt(tx:Connection,a:Actor,w:string,receiptId:string,digest:string){const r=(await tx.query('SELECT * FROM foundation_receipts WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[receiptId,w,a.userId])).rows[0];if(r&&r.digest!==digest)fail(409,'digest_mismatch','Confirmation does not match');return r?.result;}
  private async storeReceipt(tx:Connection,a:Actor,w:string,receiptId:string,digest:string,kind:string,result:unknown){await tx.query('INSERT INTO foundation_receipts(id,workspace_id,user_id,digest,kind,result) VALUES($1,$2,$3,$4,$5,$6)',[receiptId,w,a.userId,digest,kind,J(result)]);}
- async commit(a:Actor,w:string,runId:string,digest:string,standingGrantId?:string){if(!standingGrantId)requireHuman(a);return this.db.transaction(async tx=>{
+ async commit(a:Actor,w:string,runId:string,digest:string,standingGrantId?:string){if(!standingGrantId)requireCurrentAction(a);return this.db.transaction(async tx=>{
   const p=await access(tx,ai(a),w,true);await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);
   const receipt=await this.receipt(tx,a,w,runId,digest);if(receipt)return receipt;
   const r=(await tx.query("SELECT * FROM foundation_runs WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND status='succeeded' AND NOT cancel_requested AND expires_at>now() FOR UPDATE",[runId,w,a.userId])).rows[0];
@@ -146,7 +146,7 @@ export class Foundation {
  });}
  async grants(a:Actor,w:string){await this.policy(a,w);const rows=(await this.db.query('SELECT * FROM foundation_grants WHERE workspace_id=$1 AND user_id=$2 ORDER BY created_at DESC',[w,a.userId])).rows;const result=[];for(const g of rows){try{for(const id of g.type_ids){const {type,policy}=await typeAccess(this.db,ai(a),w,id);const fields=visibleFields(type.fields,policy,ai(a));if(g.field_scope?.some((k:string)=>!fields.some(f=>f.key===k)))throw new Error('hidden');}result.push(g);}catch{}}return result;}
  async grant(a:Actor,w:string,input:unknown){
-  requireHuman(a);const v=grantSchema.parse(input);const r=await this.revision(a,w,v.revisionId);if(r.body.planningOnly)fail(403,'awaiting_authorization','Schema-only automation plans cannot be activated or granted execution');const p=await this.policy(a,w,true);
+  requireCurrentAction(a);const v=grantSchema.parse(input);const r=await this.revision(a,w,v.revisionId);if(r.body.planningOnly)fail(403,'awaiting_authorization','Schema-only automation plans cannot be activated or granted execution');const p=await this.policy(a,w,true);
   if(!r.body.scope.capabilities.includes('changes.propose')||v.typeIds.some(t=>!r.body.scope.typeIds.includes(t)))fail(400,'grant_scope','Grant exceeds function scope');
   const expires=v.expiresAt?new Date(v.expiresAt):new Date(Date.now()+30*86400000);if(expires.getTime()<=Date.now())fail(400,'grant_expired','Choose a future expiry');
   const grantId=randomUUID();return this.db.transaction(async tx=>{
@@ -157,7 +157,7 @@ export class Foundation {
   });
  }
  async revoke(a:Actor,w:string,grantId:string){const p=await this.policy(a,w);return this.db.transaction(async tx=>{await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const r=await tx.query('UPDATE foundation_grants SET revoked_at=now() WHERE id=$1 AND workspace_id=$2 AND user_id=$3 RETURNING id',[grantId,w,a.userId]);if(!r.rows.length)fail(404,'not_found','Grant not found');await audit(tx,a,p,'execution.revoked',grantId,null,{});return {id:grantId};});}
- async schedule(a:Actor,w:string,input:unknown){requireHuman(a);const v=scheduleSchema.parse(input);await this.checkComponent(a,w,v.componentContext,v.revisionId,v.grantId);await this.policy(a,w,true);const r=await this.revision(a,w,v.revisionId);if(r.body.planningOnly)fail(403,'awaiting_authorization','Schema-only automation plans cannot be activated or granted execution');checkContract(r.body.inputContract,v.input);if(v.grantId){const g=(await this.grants(a,w)).find(g=>g.id===v.grantId);if(!g||g.authorization_version!==1||new Date(g.expires_at).getTime()<=Date.now()||g.revoked_at||g.revision_id!==r.id||!g.future)fail(403,'grant_unavailable','Choose an active future permission for this revision');}
+ async schedule(a:Actor,w:string,input:unknown){requireCurrentAction(a);const v=scheduleSchema.parse(input);await this.checkComponent(a,w,v.componentContext,v.revisionId,v.grantId);await this.policy(a,w,true);const r=await this.revision(a,w,v.revisionId);if(r.body.planningOnly)fail(403,'awaiting_authorization','Schema-only automation plans cannot be activated or granted execution');checkContract(r.body.inputContract,v.input);if(v.grantId){const g=(await this.grants(a,w)).find(g=>g.id===v.grantId);if(!g||g.authorization_version!==1||new Date(g.expires_at).getTime()<=Date.now()||g.revoked_at||g.revision_id!==r.id||!g.future)fail(403,'grant_unavailable','Choose an active future permission for this revision');}
   const scheduleId=randomUUID();const p=await this.policy(a,w,true);return this.db.transaction(async tx=>{const cursor=(await tx.query('SELECT coalesce(max(event_sequence),0) AS cursor FROM audit_events WHERE workspace_id=$1',[w])).rows[0].cursor;
   const next=v.trigger?.kind==='daily'?nextDaily(v.trigger,new Date()):new Date();await tx.query('INSERT INTO foundation_schedules(id,workspace_id,user_id,revision_id,input,grant_id,interval_minutes,trigger,event_cursor,next_at,component_context) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',[scheduleId,w,a.userId,r.id,J(v.input),v.grantId??null,v.intervalMinutes,v.trigger?J(v.trigger):null,cursor,next,v.componentContext?J(v.componentContext):null]);await audit(tx,a,p,'execution.scheduled',scheduleId,null,v);return {id:scheduleId,...v};});}
  async schedules(a:Actor,w:string){await this.policy(a,w);return (await this.db.query('SELECT id,revision_id,interval_minutes,paused,next_at,grant_id,trigger,component_context FROM foundation_schedules WHERE workspace_id=$1 AND user_id=$2 ORDER BY created_at DESC',[w,a.userId])).rows;}

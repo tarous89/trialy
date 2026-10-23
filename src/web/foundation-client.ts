@@ -2,6 +2,8 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown)=
  const b=`/api/workspaces/${v.workspaceId}/foundation`;
  const o=`/api/workspaces/${v.workspaceId}/organization`;
  const routes:Record<string,[string,string?,unknown?]>={
+ read_workspace_home:[`${o}/home`,'POST',Object.fromEntries(Object.entries(v).filter(([k])=>k!=='workspaceId'))],
+ read_workspace_activity:[`${o}/activity`,'POST',Object.fromEntries(Object.entries(v).filter(([k])=>k!=='workspaceId'))],
  check_component_access:[`${o}/components/${v.componentId}/access`],
  read_database_table:[`${o}/database`,'POST',Object.fromEntries(Object.entries(v).filter(([k])=>k!=='workspaceId'))],
  read_workspace_schema:[`${o}/schema`,'POST',{offset:v.offset??0,limit:v.limit??10,...(v.typeId?{typeId:v.typeId}:{})}],find_field_candidates:[`${o}/field-candidates`,'POST',Object.fromEntries(Object.entries(v).filter(([k])=>k!=='workspaceId'))],

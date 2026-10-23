@@ -1,0 +1,43 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {randomUUID} from 'node:crypto';
+import {readFile,readdir} from 'node:fs/promises';
+import {PGlite} from '@electric-sql/pglite';
+import type {Database,Connection} from '../src/db/database.js';
+import {Service} from '../src/domain/service.js';
+import {WorkspaceFoundation} from '../src/workspace/service.js';
+import {Foundation} from '../src/foundation/service.js';
+import {workspaceHome} from '../src/workspace/home.js';
+import {activityPage} from '../src/workspace/activity.js';
+import type {Actor} from '../src/shared/schema.js';
+test('Home and activity honor current access; conversation saves are exact, idempotent and not worker approval',async()=>{
+ const pg=new PGlite();try{
+ for(const f of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+f,'utf8'));
+ const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:f=>pg.transaction(tx=>f(tx as Connection)),close:()=>pg.close()};
+ const owner:Actor={userId:randomUUID(),origin:'human'},ai:Actor={...owner,origin:'ai'},action:Actor={...ai,actionConfirmed:true};
+ await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[owner.userId,owner.userId,'synthetic@example.invalid','Synthetic owner']);
+ const s=new Service(db),f=new WorkspaceFoundation(db),engine=new Foundation(db),w=await s.createWorkspace(owner,'Synthetic workspace');await s.setAi(owner,w.id,true);
+ const projectDraft=await f.preview(ai,w.id,{kind:'create_node',nodeKind:'project',name:'Discovery'});
+ await assert.rejects(f.confirm(ai,w.id,projectDraft.id,projectDraft.digest),/cannot approve/);
+ await assert.rejects(f.confirm({...action,origin:'worker'},w.id,projectDraft.id,projectDraft.digest),/cannot approve/);
+ const project=await f.confirm(action,w.id,projectDraft.id,projectDraft.digest);assert.deepEqual(await f.confirm(action,w.id,projectDraft.id,projectDraft.digest),project);
+ const cp=await f.preview(ai,w.id,{kind:'save_component',projectId:project.id,content:{name:'Synthetic tracker',format:'frontend-js',source:'throw new Error("Home must never run this");'}});
+ const c=await f.confirm(action,w.id,cp.id,cp.digest);
+ const fnp=await engine.prepareFunction(ai,w.id,{name:'Synthetic automation',source:'return null;',scope:{capabilities:[],typeIds:[],documents:false},inputContract:{type:'any'},outputContract:{type:'any'}});
+ const fn=await engine.saveFunction(action,w.id,fnp.id,fnp.digest);
+ let home=await workspaceHome(db,ai,w.id);assert.equal(home.projects.length,1);assert.equal(home.resources.length,2);assert.ok(home.resources.some(r=>r.id===c.id));assert.ok(home.resources.some(r=>r.id===fn.functionId));assert.ok(!JSON.stringify(home).includes('throw new Error'));assert.equal(home.resources.find(r=>r.id===c.id).kind,'generic');assert.equal((await workspaceHome(db,ai,w.id,{kind:'automation'})).resources.length,1);const hp=await workspaceHome(db,ai,w.id,{limit:1});assert.equal(hp.nextOffset,1);assert.equal(hp.resources.length,1);
+ const d=await s.preview(ai,w.id,{kind:'create_type',name:'Contacts',fields:[{key:'name',name:'Name',kind:'text',ai:true}]});
+ await assert.rejects(s.commit(action,d.id,'0'.repeat(64)),/changed/);const type=(await s.commit(action,d.id,d.digest)).objects[0].id;
+ const formPreview=await f.preview(ai,w.id,{kind:'create_collection_link',config:{kind:'form',name:'Public intake',typeId:type,fields:['name'],days:7,projectId:project.id}});const link=await f.confirm(action,w.id,formPreview.id,formPreview.digest);assert.ok(link.url);const withForm=await workspaceHome(db,ai,w.id,{kind:'form'});assert.equal(withForm.resources.length,1);assert.ok(!JSON.stringify(withForm).includes(link.url));
+ const r=await s.preview(ai,w.id,{kind:'create_record',typeId:type,data:{name:'private payload sentinel'}});await s.commit(action,r.id,r.digest);
+ const run=await engine.enqueue(ai,w.id,{source:'throw Error("private diagnostic sentinel")',input:null,scope:{capabilities:[],typeIds:[],documents:false}},randomUUID(),fn.revisionId);
+ await db.query("UPDATE foundation_runs SET status='failed',diagnostic='private diagnostic sentinel' WHERE id=$1",[run.id]);
+ const failed=await activityPage(db,ai,w.id,{outcome:'failed'});assert.equal(failed.rows.length,1);assert.equal(failed.rows[0].resource_name,'Synthetic automation');assert.ok(!JSON.stringify(failed).includes('private diagnostic sentinel'));
+ await db.query('DELETE FROM foundation_runs WHERE id=$1',[run.id]);assert.equal((await activityPage(db,ai,w.id,{outcome:'failed'})).rows.length,1);
+ const all=await activityPage(db,owner,w.id,{limit:200});assert.ok(!JSON.stringify(all).includes('private payload sentinel'));
+ const first=await activityPage(db,owner,w.id,{limit:1});assert.equal(first.nextOffset,1);let offset:number|null=0;const ids:string[]=[];do{const page=await activityPage(db,owner,w.id,{limit:1,offset,before:first.before});ids.push(...page.rows.map(r=>r.id));offset=page.nextOffset;}while(offset!==null);assert.equal(ids.length,new Set(ids).size);assert.equal(ids.length,all.rows.length);
+ const restricted=await f.preview(owner,w.id,{kind:'set_project_access',nodeId:project.id,expectedVersion:0,allowedUsers:[owner.userId],ai:false});await f.confirm(owner,w.id,restricted.id,restricted.digest);
+ home=await workspaceHome(db,ai,w.id);assert.ok(!home.resources.some(r=>r.id===c.id));assert.equal(home.projects.length,0);const logs=await activityPage(db,ai,w.id,{projectId:project.id});assert.equal(logs.rows.length,0);
+ await s.setAi(owner,w.id,false);await assert.rejects(workspaceHome(db,ai,w.id),/not permitted/);await assert.rejects(activityPage(db,ai,w.id,{}),/not permitted/);
+ }finally{await pg.close();}
+});
