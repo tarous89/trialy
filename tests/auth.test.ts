@@ -27,7 +27,8 @@ test('signup returns to OAuth; PKCE, replay, refresh and revocation are enforced
  assert.equal((await request(app).post('/token').type('form').send({...exchange,code_verifier:'b'.repeat(43)})).status,400);
  const tokens=await request(app).post('/token').type('form').send(exchange);assert.equal(tokens.status,200,tokens.text);
  assert.equal((await request(app).post('/token').type('form').send(exchange)).status,400);
- const opened=await request(app).post('/mcp').set('Authorization','Bearer '+tokens.body.access_token).set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:1,method:'tools/call',params:{name:'open_workspace',arguments:{}}});assert.equal(opened.status,200);assert.equal(opened.body.result.structuredContent.result.canCreateInitialWorkspace,true);
+ const opened=await request(app).post('/mcp').set('Authorization','Bearer '+tokens.body.access_token).set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:1,method:'tools/call',params:{name:'open_workspace',arguments:{}}});assert.equal(opened.status,200);assert.equal(opened.body.result.structuredContent.result.canCreateInitialWorkspace,false);
+ assert.equal(opened.body.result.structuredContent.result.workspaces.length,1);assert.ok(opened.body.result.structuredContent.result.workspaceId);
  const refreshed=await request(app).post('/token').type('form').send({grant_type:'refresh_token',client_id:client.body.client_id,refresh_token:tokens.body.refresh_token});assert.equal(refreshed.status,200,refreshed.text);
  assert.equal((await request(app).post('/token').type('form').send({grant_type:'refresh_token',client_id:client.body.client_id,refresh_token:tokens.body.refresh_token})).status,400);
  await assert.rejects(auth.provider.verifyAccessToken(refreshed.body.access_token));

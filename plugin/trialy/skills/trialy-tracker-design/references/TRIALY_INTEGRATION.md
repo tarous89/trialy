@@ -8,7 +8,7 @@ The app owns identity, account connection and cross-tracker navigation. A persis
 
 Access policy is stored and enforced by the backend independently of generated source. The trusted Access control entry opens the existing component sharing review. Component access currently supports eligible-user allowlists and AI access, constrained by project/workspace/data permissions. Owner/Editor/Viewer badges and per-tab/per-column overrides in the reference are a design model, not a claim of implemented enforcement. Do not expose active-looking unsupported permission toggles. Implement additional policy semantics on the backend before offering them. Hiding columns is presentation, never authorization. Replacing tracker source cannot grant permissions or reset policies.
 
-Anonymous preview_tracker drafts last 24 hours. No account connection is required to preview. The workspace footer offers Save to your account; connection alone does not save. The human reviews the destination and confirms saving; verify the receipt. Saved trackers retain stable component IDs and separately managed backend policies. Account-linked references and persistent edits require the appropriate existing tools and review or narrowly scoped grants.
+Require a connected account before creating a tracker or other tool. Call open_workspace to initialize account storage automatically; do not ask for workspace creation. Projects are optional: use projectId:null and a workspace-scoped manifest for independent tools. Reuse existing authorized fields. Organization through move_tool never changes data bindings or access. Previously issued temporary previews retain their recovery path until expiry, but preview_tracker no longer creates new drafts.
 
 ## Connected resource contract
 

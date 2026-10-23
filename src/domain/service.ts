@@ -20,6 +20,16 @@ const json=(v:unknown)=>JSON.stringify(v);
 export class Service extends DataService {
  constructor(db:Database,maxFileBytes=25*1024*1024,originals:OriginalStore=new PostgresOriginalStore()) {super(db,maxFileBytes,originals);}
  async sweep() {await this.db.query('DELETE FROM data_previews WHERE expires_at<=now()');await this.db.query('DELETE FROM guest_drafts WHERE expires_at<=now() AND receipt IS NULL');}
+ async ensureAccount(a:Actor){
+  if(!['human','ai'].includes(a.origin))fail(403,'account_required','Connect your account first');
+  await this.db.transaction(async tx=>{
+   const user=(await tx.query('SELECT id FROM users WHERE id=$1 FOR UPDATE',[a.userId])).rows[0];if(!user)fail(401,'unauthenticated','Sign in required');
+   if((await tx.query('SELECT user_id FROM memberships WHERE user_id=$1 LIMIT 1',[a.userId])).rows.length)return;
+   const db:Database={query:(q,v)=>tx.query(q,v),transaction:fn=>fn(tx),close:async()=>{}};
+   await new Service(db).createWorkspace(a,'My account',{initialAiWorkspace:true});
+  });
+  return this.workspaces(a);
+ }
  async createWorkspace(a:Actor,name:string,options:{initialAiWorkspace?:boolean}={}) {
   if(a.origin!=='human'&&!options.initialAiWorkspace) fail(403,'human_required','Confirm creation of your first AI-accessible workspace');
   return this.db.transaction(async tx=>{

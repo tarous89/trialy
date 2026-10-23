@@ -32,7 +32,7 @@ Migration 017 is additive. Roll back application code if necessary while retaini
 
 ## Saved components (migration 018)
 
-Projects now hold saved source/configuration (`text`, `markdown`, `json`, `javascript`, or `html`) with stable component IDs and declared table/field bindings. `prepare_workspace_change` supports save, move, archive/unarchive and recovery operations. Confirmation atomically saves a revision, audit entry and idempotent receipt. Drafts remain in PostgreSQL for 24 hours and do not enter saved history until confirmed.
+Tools can exist independently or within projects and hold saved source/configuration (`text`, `markdown`, `json`, `javascript`, or `html`) with stable component IDs and declared table/field bindings. `prepare_workspace_change` supports save, move, archive/unarchive and recovery operations. Confirmation atomically saves a revision, audit entry and idempotent receipt. Drafts remain in PostgreSQL for 24 hours and do not enter saved history until confirmed.
 
 `list_project_components`, `read_project_component`, and `read_component_history` reopen this work across sessions. The shared Projects screen includes a source editor, explicit project moves and revision recovery. Recovery creates a new revision of the old content while retaining the current project/archive state. Moving or archiving does not modify shared records or execute code. Existing jobs are not yet attached to components.
 

@@ -1,3 +1,5 @@
+> Legacy recovery only as of 23 October 2026. New projects and tools require a connected account. No new anonymous drafts are created. The flow below is retained for previously issued previews until their existing expiry. See [account and tool organization](design/ACCOUNT_PROJECT_TOOLS.md).
+
 # Temporary trackers and account saving
 
 Trialy now supports an anonymous start on the existing MCP endpoint. `open_workspace` opens onboarding without an account; `preview_tracker` creates an immutable temporary package containing authored pages, scalar-field tables and up to 200 initial records. It lives for 24 hours from creation, independent of sign-in. Each revision is a separate preview; approving a design in conversation does not persist account data.

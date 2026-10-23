@@ -1,8 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "author": {
-    "email": "t.roustom.login@gmail.com",
-    "name": "Tarek Roustom"
+    "name": "Atlas Consulting"
   },
   "description": "Persistent data, isolated JavaScript, saved functions and authorized tools for ChatGPT.",
   "extensions": {
@@ -13,7 +12,7 @@
         ],
         "category": "Productivity",
         "defaultPrompt": "Open my Trialy workspace.",
-        "developerName": "Tarek Roustom",
+        "developerName": "Atlas Consulting",
         "displayName": "Trialy",
         "longDescription": "Use a persistent workspace for data, documents, isolated JavaScript and saved functions inside ChatGPT. Experiment with scoped tools, review exact proposed changes and explicitly confirm saves. Optional once/future permissions support scheduled functions. Development version: not fit for patient-level data; live external providers, regulatory validation and real-host acceptance remain pending.",
         "shortDescription": "Data, code and tools for ChatGPT"
@@ -21,5 +20,5 @@
     }
   },
   "name": "trialy",
-  "version": "0.2.10"
+  "version": "0.2.11"
 }

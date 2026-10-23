@@ -1,4 +1,4 @@
-import {randomBytes,randomUUID} from 'node:crypto';
+import {randomUUID} from 'node:crypto';
 import {z} from 'zod';
 import type {Database} from '../db/database.js';
 import {id,fieldsSchema,fail,type Actor} from '../shared/schema.js';
@@ -34,17 +34,8 @@ export type GuestBundle=z.infer<typeof guestBundle>;
 const active=new Set<string>();
 export class GuestDrafts{
  constructor(readonly db:Database){}
- async create(input:unknown){
-  const body=guestBundle.parse(input),raw=JSON.stringify(body);
-  if(Buffer.byteLength(raw)>512000)fail(413,'draft_limit','Temporary trackers support up to 500 KB');
-  const handle={id:randomUUID(),token:randomBytes(32).toString('base64url')};
-  await this.db.transaction(async tx=>{
-   await tx.query('SELECT pg_advisory_xact_lock(873468)');
-   await tx.query('DELETE FROM guest_drafts WHERE expires_at<=now() AND receipt IS NULL');
-   const usage=(await tx.query('SELECT count(*) AS n,coalesce(sum(octet_length(body::text)),0) AS bytes FROM guest_drafts WHERE receipt IS NULL')).rows[0];
-   if(Number(usage.n)>=1000||Number(usage.bytes)+Buffer.byteLength(raw)>100*1024*1024)fail(429,'draft_capacity','Temporary storage is busy. Retry shortly.');
-   await tx.query('INSERT INTO guest_drafts(id,capability_hash,body,digest) VALUES($1,$2,$3,$4)',[handle.id,checksum(handle.token),raw,checksum(raw)]);
-  });return this.read(handle);
+ async create(_input:unknown){
+  fail(401,'account_required','Connect your Trialy account before creating a project or tool.');
  }
  async read(input:unknown){
   const handle=guestHandle.parse(input);
