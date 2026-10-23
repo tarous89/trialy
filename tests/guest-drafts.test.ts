@@ -1,3 +1,4 @@
+import {withActor,setDatabaseContext} from '../src/db/context.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,readdir} from 'node:fs/promises';
@@ -16,7 +17,8 @@ import {addMcp} from '../src/server/mcp.js';
 test('anonymous preview → account review → atomic durable save with no duplicate or cross-account claim',async t=>{
  const pg=new PGlite();t.after(()=>pg.close());for(const f of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+f,'utf8'));
  const db:Database={query:(sql,v)=>pg.query(sql,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
- const drafts=new GuestDrafts(db),service=new Service(db),app=baseApp();app.use(session({secret:'guest-preview-test-secret-long-enough',resave:false,saveUninitialized:false}));const auth=addLocalAuth(app,db,'https://trialy.example');addGuestRoutes(app,drafts,'https://trialy.example');addMcp(app,service,auth.ai);app.use(errors);
+ await pg.exec(await readFile('ops/runtime-role.sql','utf8'));const runtime:Database={query:(q,v)=>runtime.transaction(tx=>tx.query(q,v)),transaction:f=>pg.transaction(async tx=>{await tx.exec('SET LOCAL ROLE trialy_runtime');await setDatabaseContext(tx as Connection);return f(tx as Connection);}),close:async()=>{}};
+ const drafts=new GuestDrafts(runtime),service=new Service(db),app=baseApp();app.use(session({secret:'guest-preview-test-secret-long-enough',resave:false,saveUninitialized:false}));const auth=addLocalAuth(app,runtime,'https://trialy.example');addGuestRoutes(app,drafts,'https://trialy.example');addMcp(app,new Service(runtime),auth.ai);app.use(errors);
  const mcp=(name:string,args:any={})=>request(app).post('/mcp').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:1,method:'tools/call',params:{name,arguments:args}});
  assert.equal((await mcp('open_workspace')).body.result.structuredContent.result.guestWelcome,true);
  assert.equal((await mcp('list_workspaces')).body.result.isError,true);
@@ -52,12 +54,12 @@ test('anonymous preview → account review → atomic durable save with no dupli
  await assert.rejects(drafts.claim({userId:randomUUID(),origin:'human'},draft.handle,draft.digest));
  await assert.rejects(drafts.claim({...actor,origin:'ai'},draft.handle,draft.digest));
  const expired=await drafts.create(bundle);await db.query("UPDATE guest_drafts SET expires_at=now()-interval '1 second' WHERE id=$1",[expired.handle.id]);await assert.rejects(drafts.read(expired.handle));await assert.rejects(drafts.claim(actor,expired.handle,expired.digest!));
- const bad=await drafts.create({...bundle,tables:[{...bundle.tables[0],rows:[{id:randomUUID(),data:{name:123}}]}]});await assert.rejects(drafts.claim(actor,bad.handle,bad.digest!));assert.equal((await service.workspaces(actor)).length,1,'Failed import rolls back the entire workspace');
- const reusable=await drafts.create(bundle),destinations=await drafts.destinations(actor,reusable.handle);assert.equal(destinations.length,1);const candidate=destinations[0].tables[0].candidates[0];assert.ok(candidate);
+ const bad=await drafts.create({...bundle,tables:[{...bundle.tables[0],rows:[{id:randomUUID(),data:{name:123}}]}]});await assert.rejects(withActor(actor,()=>drafts.claim(actor,bad.handle,bad.digest!)));assert.equal((await service.workspaces(actor)).length,1,'Failed import rolls back the entire workspace');
+ const reusable=await drafts.create(bundle),destinations=await withActor(actor,()=>drafts.destinations(actor,reusable.handle));assert.equal(destinations.length,1);const candidate=destinations[0].tables[0].candidates[0];assert.ok(candidate);
  const destination={workspaceId:saved.body.workspaceId,tables:[{draftTypeId:tid,typeId:candidate.id,expectedVersion:candidate.version}]};
- await assert.rejects(drafts.claim(actor,reusable.handle,reusable.digest!,{...destination,tables:[{...destination.tables[0],expectedVersion:999}]}));
- const reused=await drafts.claim(actor,reusable.handle,reusable.digest!,destination);assert.equal(reused.workspaceId,saved.body.workspaceId);assert.equal((await service.workspaces(actor)).length,1);assert.equal((await db.query('SELECT count(*) AS n FROM entity_types WHERE workspace_id=$1',[reused.workspaceId])).rows[0].n,1);
- const unmapped=await drafts.create(bundle);await assert.rejects(drafts.claim(actor,unmapped.handle,unmapped.digest!,{workspaceId:saved.body.workspaceId,tables:[{draftTypeId:tid}]}),/Explain why/);
+ await assert.rejects(withActor(actor,()=>drafts.claim(actor,reusable.handle,reusable.digest!,{...destination,tables:[{...destination.tables[0],expectedVersion:999}]})));
+ const reused=await withActor(actor,()=>drafts.claim(actor,reusable.handle,reusable.digest!,destination));assert.equal(reused.workspaceId,saved.body.workspaceId);assert.equal((await service.workspaces(actor)).length,1);assert.equal((await db.query('SELECT count(*) AS n FROM entity_types WHERE workspace_id=$1',[reused.workspaceId])).rows[0].n,1);
+ const unmapped=await drafts.create(bundle);await assert.rejects(withActor(actor,()=>drafts.claim(actor,unmapped.handle,unmapped.digest!,{workspaceId:saved.body.workspaceId,tables:[{draftTypeId:tid}]})),/Explain why/);
  await db.query("UPDATE guest_drafts SET expires_at=now()-interval '1 second' WHERE id=$1",[draft.handle.id]);assert.equal((await drafts.read(draft.handle)).status,'saved','Saved receipt survives draft expiry');
 
 });

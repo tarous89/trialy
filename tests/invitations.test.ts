@@ -1,3 +1,4 @@
+import {withActor,setDatabaseContext} from '../src/db/context.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,readdir} from 'node:fs/promises';
@@ -14,9 +15,10 @@ test('invitation signup returns to review, acceptance is scoped and replay canno
  const pg=new PGlite();for(const f of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+f,'utf8'));
  const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()},s=new Service(db),owner={userId:randomUUID(),origin:'human' as const};
  await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[owner.userId,owner.userId,'owner@example.invalid','Owner']);const w=await s.createWorkspace(owner,'Invitations');const p=await s.preview(owner,w.id,{kind:'create_type',name:'Tasks',fields:[{key:'name',name:'Name',kind:'text'}]}),t=(await s.commit(owner,p.id,p.digest)).objects[0]!;
- const ownerApp=baseApp();addInvitations(ownerApp,s,(req,_res,next)=>{req.actor=owner;next();});ownerApp.use(errors);const root=`/api/workspaces/${w.id}/invitations`;
+ await pg.exec(await readFile('ops/runtime-role.sql','utf8'));const runtime:Database={query:(q,v)=>runtime.transaction(tx=>tx.query(q,v)),transaction:f=>pg.transaction(async tx=>{await tx.exec('SET LOCAL ROLE trialy_runtime');await setDatabaseContext(tx as Connection);return f(tx as Connection);}),close:async()=>{}};
+ const ownerApp=baseApp();addInvitations(ownerApp,new Service(runtime),(req,_res,next)=>{req.actor=owner;withActor(owner,next);});ownerApp.use(errors);const root=`/api/workspaces/${w.id}/invitations`;
  const create=()=>request(ownerApp).post(root).send({label:'Synthetic colleague',role:'viewer',allowedTypes:[t.id],days:7,confirmed:true});const created=await create();assert.equal(created.status,200,created.text);const token=created.body.path.split('#')[1];
- const app=baseApp();app.use(session({secret:'synthetic-session-secret-for-invitation',resave:false,saveUninitialized:false}));const auth=addLocalAuth(app,db,'https://trialy.example');addInvitations(app,s,auth.human);app.get('/test/session',(req,res)=>res.json({csrf:req.session.csrf,userId:req.session.userId}));app.use(errors);
+ const app=baseApp();app.use(session({secret:'synthetic-session-secret-for-invitation',resave:false,saveUninitialized:false}));const auth=addLocalAuth(app,runtime,'https://trialy.example');addInvitations(app,new Service(runtime),auth.human);app.get('/test/session',(req,res)=>res.json({csrf:req.session.csrf,userId:req.session.userId}));app.use(errors);
  const browser=request.agent(app);assert.equal((await browser.get('/api/invitation').set('x-trialy-invitation',token)).status,401);
  const login=await browser.get('/auth/login?join=1');const csrf=login.text.match(/name="csrf" value="([^"]+)"/)![1];const signup=await browser.post('/auth/signup').type('form').send({email:'invitee@example.invalid',password:'synthetic-password-123',intendedUse:'accepted',csrf});assert.equal(signup.headers.location,'/join');
  const current=(await browser.get('/test/session')).body;assert.equal((await s.workspaces({userId:current.userId,origin:'human'})).length,0);

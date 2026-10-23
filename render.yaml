@@ -12,6 +12,10 @@ services:
         fromDatabase:
           name: trialy-db
           property: connectionString
+      - key: TRIALY_RUNTIME_KIND
+        value: web
+      - key: TRIALY_RUNTIME_PASSWORD
+        sync: false
       - key: SESSION_SECRET
         generateValue: true
       - key: BRAND_NAME
@@ -28,6 +32,10 @@ services:
         fromDatabase:
           name: trialy-db
           property: connectionString
+      - key: TRIALY_RUNTIME_KIND
+        value: worker
+      - key: TRIALY_RUNTIME_PASSWORD
+        sync: false
 databases:
   - name: trialy-db
     region: frankfurt
