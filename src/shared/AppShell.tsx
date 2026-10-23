@@ -1,5 +1,8 @@
-import React from 'react';
-/** Trusted app navigation, deliberately outside generated tracker frames. */
-export function AppShell({children,onOpenApp}:{children:React.ReactNode;onOpenApp:()=>void}){
- return <><header aria-label="Trialy navigation" style={{position:'sticky',top:0,zIndex:50,margin:0,padding:'12px 24px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:16,background:'#fff',borderBottom:'1px solid #dce5df',color:'#123941'}}><strong aria-label="Trialy">Trialy</strong><button type="button" onClick={onOpenApp}>Open app</button></header>{children}</>;
+import React,{useEffect,useRef,useState} from 'react';
+/** Trusted shell stays outside generated tracker frames. */
+export function AppShell({children,onOpenApp,navigation}:{children:React.ReactNode;onOpenApp:()=>void;navigation?:React.ReactNode}){
+ const [open,setOpen]=useState(false),toggle=useRef<HTMLButtonElement>(null),drawer=useRef<HTMLElement>(null);
+ function close(){setOpen(false);toggle.current?.focus();}
+ useEffect(()=>{if(!open)return;drawer.current?.querySelector<HTMLButtonElement>('button')?.focus();const key=(e:KeyboardEvent)=>{if(e.key==='Escape'){e.preventDefault();close();}if(e.key==='Tab'){const items=drawer.current?.querySelectorAll<HTMLButtonElement>('button:not([disabled])');if(!items?.length)return;const first=items[0],last=items[items.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}};window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key);},[open]);
+ return <div className="trialy-shell"><header className="trialy-app-header" aria-label="Trialy navigation"><div><strong aria-label="Trialy">Trialy</strong>{navigation&&<button ref={toggle} type="button" aria-label="Open workspace navigation" aria-expanded={open} aria-controls="trialy-drawer" onClick={()=>setOpen(!open)}>☰</button>}</div><button type="button" onClick={onOpenApp}>Open app</button></header>{open&&<><button className="trialy-drawer-backdrop" aria-label="Close navigation" onClick={close}/><aside ref={drawer} id="trialy-drawer" className="trialy-drawer" role="dialog" aria-modal="true" aria-label="Workspace navigation"><button type="button" onClick={close}>Close navigation</button><div onClick={e=>{if((e.target as HTMLElement).closest('button'))close();}}>{navigation}</div></aside></>}{children}</div>;
 }

@@ -8,6 +8,7 @@ import {Foundation} from '../src/foundation/service.js';
 import {Service} from '../src/domain/service.js';
 import {WorkspaceFoundation} from '../src/workspace/service.js';
 import {schemaCatalog,fieldCandidates} from '../src/workspace/catalog.js';
+import {databasePage} from '../src/workspace/database-browser.js';
 import type {Actor} from '../src/shared/schema.js';
 test('connected resources enforce schema/value separation, shared edits, project scope and read-only manifests',async()=>{
  const pg=new PGlite();for(const f of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+f,'utf8'));
@@ -33,6 +34,10 @@ test('connected resources enforce schema/value separation, shared edits, project
  await assert.rejects(foundation.schedule({...member,origin:'human'},w.id,{revisionId:savedPlan.revisionId,intervalMinutes:60}),/Schema-only/);
  const project=await change({kind:'create_node',nodeKind:'project',name:'Selection'});
  await change({kind:'link_project_records',projectId:project.id,expectedProjectVersion:0,records:[{recordId:row,expectedVersion:0}],reason:'Shared vendor'});
+ const locked=await databasePage(db,member,w.id,{typeId:table});assert.equal(locked.schemaOnly,true);assert.equal(locked.total,null);assert.deepEqual(locked.rows,[]);
+ const page=await databasePage(db,ai,w.id,{typeId:table,projectId:project.id});assert.equal(page.total,1);assert.equal(page.rows[0].data.secret,undefined);
+ assert.equal((await databasePage(db,ai,w.id,{typeId:table,query:'12345'})).total,0);
+ await assert.rejects(databasePage(db,ai,w.id,{typeId:table,sortField:'secret'}));
  const manifest={version:1,scope:'project',fields:[{id:'vendor_name',typeId:table,field:'name',schemaVersion:0,kind:'text',mode:'write'}]};
  const source=`const page=tools.call('records.read',{typeId:'${table}'});return {html:'<div data-trialy-slot="name"></div>',state:{total:page.total},controls:[{slot:'name',fieldId:'vendor_name',recordId:page.rows[0].id}]};`;
  const content={name:'Selection tracker',format:'frontend-js',source,sourceAccess:'bindings',resourceKind:'tracker',manifest,bindings:[{typeId:table,fields:['name']}]};

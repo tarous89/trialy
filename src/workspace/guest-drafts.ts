@@ -8,6 +8,7 @@ import {execute} from '../foundation/runtime.js';
 import {Service} from '../domain/service.js';
 import {WorkspaceFoundation} from './service.js';
 import {checksum} from '../domain/evidence.js';
+import {access,typeAccess} from '../domain/permissions.js';
 import {requireHuman} from '../domain/write-authorization.js';
 const draftValues=z.record(z.string(),z.union([z.string().max(50000),z.number().finite(),z.boolean(),z.array(z.string().max(200)).max(100),z.null()]));
 export const guestHandle=z.object({id,token:z.string().regex(/^[A-Za-z0-9_-]{43}$/)}).strict();
@@ -27,6 +28,8 @@ export const guestBundle=z.object({
   for(const b of c.bindings){const t=v.tables.find(t=>t.id===b.typeId);if(!t||b.fields.some(k=>!t.fields.some(f=>f.key===k)))ctx.addIssue({code:'custom',message:'Bind only fields included in this temporary tracker'});}
  }
 });
+export const guestDestination=z.object({workspaceId:id,tables:z.array(z.object({draftTypeId:id,typeId:id.optional(),expectedVersion:z.number().int().min(0).optional(),reason:z.string().trim().min(1).max(500).optional()}).strict()).max(10)}).strict();
+function compatible(draft:any,existing:any){return draft.fields.every((f:any)=>{const e=existing.fields.find((x:any)=>x.key===f.key);return e&&e.kind===f.kind&&!!e.multiple===!!f.multiple&&JSON.stringify(e.options??[])===JSON.stringify(f.options??[])&&!e.computed&&!e.lookup;})&&existing.fields.every((e:any)=>!e.required||draft.fields.some((f:any)=>f.key===e.key));}
 export type GuestBundle=z.infer<typeof guestBundle>;
 const active=new Set<string>();
 export class GuestDrafts{
@@ -65,11 +68,20 @@ export class GuestDrafts{
     if(!binding||!t)fail(403,'binding_required','Table is not bound to this preview');
     return {rows:t.rows.slice(q.offset,q.offset+q.limit).map(r=>({id:r.id,version:0,data:Object.fromEntries(Object.entries(r.data).filter(([k])=>binding.fields.includes(k)))})),total:t.rows.length,limit:q.limit,offset:q.offset};
    }));
-   return {...output,temporary:true,frameUrl:new URL('/frontend/frame',process.env.PUBLIC_URL??'http://localhost:3000').href};
+   const controls=(output.controls??[]).map(item=>{const f=c.manifest?.fields.find(f=>f.id===item.fieldId),table=draft.bundle!.tables.find(t=>t.id===f?.typeId),row=table?.rows.find(r=>r.id===item.recordId),field=table?.fields.find(x=>x.key===f?.field);if(!f||!row||!field||!c.bindings.some(b=>b.typeId===table!.id&&b.fields.includes(field.key)))fail(400,'invalid_control','Preview control must refer to a bound draft field');return {slot:item.slot,label:f.label??field.name,kind:field.kind,value:row.data[field.key]??null,options:field.options??[],editable:false,action:''};});
+   return {...output,controls,connected:!!c.manifest,temporary:true,frameUrl:new URL('/frontend/frame',process.env.PUBLIC_URL??'http://localhost:3000').href};
   }finally{active.delete(v.handle.id);}
  }
- async claim(a:Actor,input:unknown,digest:string){
-  requireHuman(a);const handle=guestHandle.parse(input);
+ async destinations(a:Actor,input:unknown){
+  requireHuman(a);const draft=await this.read(input);if(!draft.bundle)return [];
+  const spaces=await new Service(this.db).workspaces(a),result=[];
+  for(const space of spaces){const policy=await access(this.db,a,space.id);if(policy.role!=='owner'||policy.archived||!policy.ai_enabled)continue;
+   const tables=(await this.db.query('SELECT id,name,fields,version FROM entity_types WHERE workspace_id=$1',[space.id])).rows;
+   result.push({id:space.id,name:space.name,tables:draft.bundle.tables.map(t=>({draftTypeId:t.id,candidates:tables.filter(e=>compatible(t,e)&&t.fields.every(f=>e.fields.find((x:any)=>x.key===f.key)?.ai)).map(e=>({id:e.id,name:e.name,version:e.version}))}))});
+  }return result;
+ }
+ async claim(a:Actor,input:unknown,digest:string,destinationInput?:unknown){
+  requireHuman(a);const handle=guestHandle.parse(input),destination=destinationInput?guestDestination.parse(destinationInput):null;
   return this.db.transaction(async tx=>{
    const r=(await tx.query('SELECT * FROM guest_drafts WHERE id=$1 AND capability_hash=$2 FOR UPDATE',[handle.id,checksum(handle.token)])).rows[0];
    if(!r)fail(404,'draft_missing','Temporary tracker unavailable');
@@ -81,23 +93,31 @@ export class GuestDrafts{
    const service=new Service(db),f=new WorkspaceFoundation(db);
    // Every operation uses existing validation, write authorization, revisions and audit.
    // The outer transaction makes the whole import and receipt atomic.
-   const w=await service.createWorkspace(a,body.name,{initialAiWorkspace:false});
-   await service.setAi(a,w.id,true);
+   let w:any;
+   if(destination){const p=await access(db,a,destination.workspaceId,true);if(p.role!=='owner'||!p.ai_enabled)fail(403,'destination_access','Choose an owned workspace with ChatGPT access already enabled');w={id:destination.workspaceId};
+    if(destination.tables.length!==body.tables.length||new Set(destination.tables.map(t=>t.draftTypeId)).size!==body.tables.length||destination.tables.some(t=>!body.tables.some(b=>b.id===t.draftTypeId)))fail(400,'destination_mapping','Review every draft table exactly once');
+   }else{w=await service.createWorkspace(a,body.name,{initialAiWorkspace:false});await service.setAi(a,w.id,true);}
    const change=async(op:unknown)=>{const p=await service.preview(a,w.id,op);return service.commit(a,p.id,p.digest);};
    const organization=async(op:unknown)=>{const p=await f.preview(a,w.id,op);return f.confirm(a,w.id,p.id,p.digest);};
    const project=await organization({kind:'create_node',nodeKind:'project',name:body.name});
-   const mapping=new Map<string,string>(),records=[];
+   const mapping=new Map<string,string>(),versions=new Map<string,number>(),records=[];
    for(const t of body.tables){
-    const saved=await change({kind:'create_type',name:t.name,fields:t.fields});const tableId=saved.objects[0].id;mapping.set(t.id,tableId);
+    const chosen=destination?.tables.find(v=>v.draftTypeId===t.id);let tableId:string;
+    if(chosen?.typeId){const {type}=await typeAccess(db,a,w.id,chosen.typeId,true);
+     if(type.version!==chosen.expectedVersion||!compatible(t,type)||!t.fields.every(f=>type.fields.find((x:any)=>x.key===f.key)?.ai))fail(409,'destination_changed','Destination schema changed or is incompatible; review the mapping again');
+     tableId=type.id;versions.set(t.id,type.version);
+    }else{if(destination&&!chosen?.reason)fail(400,'mapping_reason','Explain why existing fields cannot represent this draft before creating a table');
+     const saved=await change({kind:'create_type',name:t.name,fields:t.fields});tableId=saved.objects[0].id;versions.set(t.id,0);
+    }mapping.set(t.id,tableId);
     for(const row of t.rows){const saved=await change({kind:'create_record',typeId:tableId,data:row.data});mapping.set(row.id,saved.objects[0].id);records.push({recordId:saved.objects[0].id,expectedVersion:0});}
    }
    if(records.length)await organization({kind:'link_project_records',projectId:project.id,expectedProjectVersion:0,records,reason:'Initial tracker saved by its account owner'});
    const components=[];
    for(const c of body.components){
     const source=c.source.replace(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/gi,x=>mapping.get(x)??x);
-    const result=await organization({kind:'save_component',projectId:project.id,content:{...c,source,...(c.manifest?{manifest:{...c.manifest,fields:c.manifest.fields.map(f=>({...f,typeId:mapping.get(f.typeId)!}))}}:{}),bindings:c.bindings.map(b=>({...b,typeId:mapping.get(b.typeId)!}))}});components.push(result.id);
+    const result=await organization({kind:'save_component',projectId:project.id,content:{...c,source,...(c.manifest?{manifest:{...c.manifest,fields:c.manifest.fields.map(f=>({...f,typeId:mapping.get(f.typeId)!,schemaVersion:versions.get(f.typeId)!}))}}:{}),bindings:c.bindings.map(b=>({...b,typeId:mapping.get(b.typeId)!}))}});components.push(result.id);
    }
-   const receipt={status:'saved',workspaceId:w.id,projectId:project.id,componentIds:components,savedAt:new Date().toISOString()};
+   const receipt={destinationReview:destination,status:'saved',workspaceId:w.id,projectId:project.id,componentIds:components,savedAt:new Date().toISOString()};
    await tx.query('UPDATE guest_drafts SET claimed_by=$2,receipt=$3,body=NULL WHERE id=$1',[handle.id,a.userId,JSON.stringify(receipt)]);
    return receipt;
   });

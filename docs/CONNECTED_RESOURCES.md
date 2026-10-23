@@ -11,3 +11,21 @@ Project-scoped reads and edits are restricted to linked records; new records cre
 Backend access policies remain separate from generated code. This change does not grant SQL access to any client or bypass existing value checks. PostgreSQL schema constraints validate persisted classification; business permission checks currently live in the shared backend service. Production runtime role separation is prepared in ops/runtime-role.sql but the existing owner connection must be replaced through a separately verified credential rollout. Do not call this full PostgreSQL-level tenant/field isolation.
 
 Restricted-data automation execution is not silently delegated: schema discovery enables planning, but existing execution checks continue to deny unauthorized value access. A separately approved executor/output authorization model is required before arbitrary code can run with stronger data access than its requesting actor.
+
+
+## Resource screens and release boundaries
+
+The shared shell provides Projects, Trackers, Forms, Visualizations, Database, Automations and Changes & permissions. App Settings stays outside the plugin; generated frames retain their own styles. Database loads metadata first and one selected page at a time, projects permitted columns before search/sort, hides restricted table counts, bounds pages and rechecks access before returning. The table editor is explicitly workspace-wide. Public-link review currently covers the whole workspace.
+
+Public forms submit once without a visitor preview step; team acceptance remains reviewed and creates a new record linked to the form project. Existing-record response editing is not exposed. Published form definitions are immutable: replace a link and revoke the old one after review. Schedules can be paused/resumed or replaced with a separately reviewed schedule.
+
+Guest save defaults to an existing eligible owned workspace when available. Compatible table reuse requires matching field keys, kinds, cardinality, declared options and required fields, with a reviewed schema version. The owner confirms semantic suitability. New tables in that destination need an explicit reason. Different-key mappings need adaptation before import; no unsafe generated-source string rewrite of field names is attempted. Rows are new records, never implicit merges. The atomic receipt records the destination mapping.
+
+Remaining release acceptance: production least-privileged role rollout and PostgreSQL isolation; real authenticated browser/ChatGPT host acceptance and measured payload/latency baselines. Service-level permission integration tests are not substitutes for these checks.
+
+## Validation evidence — 23 October 2026
+
+- All 59 backend tests pass, including migration replay, authorization/grant revocation, shared tracker edits, schema-only catalog/Database, hidden search/sort, project-linked public intake and atomic guest reuse. Guest/connected tests were rerun after the final preview-control change (2/2 pass).
+- TypeScript and production web/embed builds pass. Web JS is approximately 522 KB minified / 146 KB gzip; Vite flags the existing single-chunk size. Database rows are not preloaded by its navigation entry.
+- A real headless Chromium browser against the actual shared shell/Database components with synthetic API responses passed: collapsed initial drawer, retained draft input across navigation, Escape focus restoration, schema-only view with no count, permitted data display and 390px mobile drawer. The observed calls were one schema request and one row request for each of the two explicitly selected tables. This fixture is not an authenticated whole-app or ChatGPT-host acceptance run.
+- Exports retain resource_kind/manifest through workspace_components and include external_links.project_id. Existing recovery inventory covers both tables. Runtime-role SQL now includes the existing guest_drafts lifecycle table; applying the role and isolating production queries remain operational follow-up work.

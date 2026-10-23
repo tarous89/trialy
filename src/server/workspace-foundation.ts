@@ -1,3 +1,4 @@
+import {databasePage,databaseRequest} from '../workspace/database-browser.js';
 import {schemaCatalog,fieldCandidates,catalogRequest,matchRequest} from '../workspace/catalog.js';
 import {operationalStatus} from '../domain/operations.js';
 import {TableMappings} from '../workspace/mappings.js';
@@ -10,6 +11,7 @@ import {frontendRequest} from '../workspace/frontend.js';
 import {workspaceOperation,maintenanceBatch} from '../workspace/schema.js';
 export function addWorkspaceApi(app:Express,f:WorkspaceFoundation){
  const b='/api/workspaces/:workspaceId/organization';
+ app.post(`${b}/database`,async(req,res)=>res.json(await databasePage(f.db,req.actor!,id.parse(req.params.workspaceId),req.body)));
  app.post(`${b}/schema`,async(req,res)=>res.json(await schemaCatalog(f.db,req.actor!,id.parse(req.params.workspaceId),req.body)));
  app.post(`${b}/field-candidates`,async(req,res)=>res.json(await fieldCandidates(f.db,req.actor!,id.parse(req.params.workspaceId),req.body)));
  app.get(b,async(req,res)=>res.json(await f.nodes(req.actor!,id.parse(req.params.workspaceId))));
@@ -41,6 +43,7 @@ export function addWorkspaceApi(app:Express,f:WorkspaceFoundation){
 }
 export function addWorkspaceMcp(server:McpServer,f:WorkspaceFoundation,a:Actor,safe:any,metadata:any){
  const register=(name:string,description:string,schema:Record<string,z.ZodType>,readOnly:boolean,fn:(v:any)=>Promise<any>,appOnly=false)=>server.registerTool(name,{title:name.replaceAll('_',' '),description,inputSchema:schema,annotations:{readOnlyHint:readOnly,destructiveHint:!readOnly,openWorldHint:false},_meta:appOnly?{...metadata,ui:{resourceUri:metadata.ui.resourceUri,visibility:['app']}}:metadata},safe(fn));
+ register('read_database_table','Browse one table with bounded pagination, optional project context, permitted-value search and sort. Restricted tables return schema only, never entries or counts.',{workspaceId:id,...databaseRequest.shape},true,({workspaceId,...v})=>databasePage(f.db,a,workspaceId,v));
  register('read_workspace_schema','Read paginated schema including restricted fields, without entries, counts, defaults or field code. Schema discovery does not grant value access or execution. Use before creating fields.',{workspaceId:id,...catalogRequest.shape},true,({workspaceId,...v})=>schemaCatalog(f.db,a,workspaceId,v));
  register('find_field_candidates','Prefer existing compatible fields. These ranked schema-only suggestions require semantic review of context, units and cardinality; never auto-merge. Continue pagination before proposing a new field.',{workspaceId:id,...matchRequest.shape},true,({workspaceId,...v})=>fieldCandidates(f.db,a,workspaceId,v));
  register('read_operational_status','Human owner view of worker heartbeat and workspace run/extraction counts. No original contents or provider credentials. A recent heartbeat is not proof of backup recoverability.',{workspaceId:id},true,v=>operationalStatus(f.db,a,v.workspaceId),true);

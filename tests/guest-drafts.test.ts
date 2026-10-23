@@ -53,6 +53,11 @@ test('anonymous preview → account review → atomic durable save with no dupli
  await assert.rejects(drafts.claim({...actor,origin:'ai'},draft.handle,draft.digest));
  const expired=await drafts.create(bundle);await db.query("UPDATE guest_drafts SET expires_at=now()-interval '1 second' WHERE id=$1",[expired.handle.id]);await assert.rejects(drafts.read(expired.handle));await assert.rejects(drafts.claim(actor,expired.handle,expired.digest!));
  const bad=await drafts.create({...bundle,tables:[{...bundle.tables[0],rows:[{id:randomUUID(),data:{name:123}}]}]});await assert.rejects(drafts.claim(actor,bad.handle,bad.digest!));assert.equal((await service.workspaces(actor)).length,1,'Failed import rolls back the entire workspace');
+ const reusable=await drafts.create(bundle),destinations=await drafts.destinations(actor,reusable.handle);assert.equal(destinations.length,1);const candidate=destinations[0].tables[0].candidates[0];assert.ok(candidate);
+ const destination={workspaceId:saved.body.workspaceId,tables:[{draftTypeId:tid,typeId:candidate.id,expectedVersion:candidate.version}]};
+ await assert.rejects(drafts.claim(actor,reusable.handle,reusable.digest!,{...destination,tables:[{...destination.tables[0],expectedVersion:999}]}));
+ const reused=await drafts.claim(actor,reusable.handle,reusable.digest!,destination);assert.equal(reused.workspaceId,saved.body.workspaceId);assert.equal((await service.workspaces(actor)).length,1);assert.equal((await db.query('SELECT count(*) AS n FROM entity_types WHERE workspace_id=$1',[reused.workspaceId])).rows[0].n,1);
+ const unmapped=await drafts.create(bundle);await assert.rejects(drafts.claim(actor,unmapped.handle,unmapped.digest!,{workspaceId:saved.body.workspaceId,tables:[{draftTypeId:tid}]}),/Explain why/);
  await db.query("UPDATE guest_drafts SET expires_at=now()-interval '1 second' WHERE id=$1",[draft.handle.id]);assert.equal((await drafts.read(draft.handle)).status,'saved','Saved receipt survives draft expiry');
 
 });

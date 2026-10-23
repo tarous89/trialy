@@ -166,7 +166,8 @@ export class WorkspaceFoundation {
     if(content.manifest.scope==='project'&&!(await this.db.query('SELECT id FROM project_records WHERE workspace_id=$1 AND project_id=$2 AND record_id=$3 AND revoked_at IS NULL',[w,content.project_id,record.id])).rows.length)fail(403,'project_scope','Control record is outside this project');
     const field=record.fields.find((f:any)=>f.key===definition.field);if(!field)fail(403,'invalid_control','Control field is unavailable');
     const policy=await access(this.db,a,w);
-    controls.push({slot:item.slot,label:definition.label??field.name,kind:field.kind,value:record.data[field.key]??null,options:field.options??[],editable:!!request.componentId&&definition.mode==='write'&&!policy.archived&&!['viewer','inspector'].includes(policy.role)&&['text','number','money','date','boolean','select'].includes(field.kind),action:'bound:'+definition.id+':'+record.id+':'+record.version});
+    const resolved=await new DerivedReader(this.db,a,w,content.bindings.map((b:any)=>b.typeId),Object.fromEntries(content.bindings.map((b:any)=>[b.typeId,b.fields]))).read(record);
+    controls.push({slot:item.slot,label:definition.label??field.name,kind:field.kind,value:resolved.data[field.key]??null,options:field.options??[],editable:!!request.componentId&&definition.mode==='write'&&!policy.archived&&!['viewer','inspector'].includes(policy.role)&&['text','number','money','date','boolean','select'].includes(field.kind),action:'bound:'+definition.id+':'+record.id+':'+record.version});
    }
    if(new Set(controls.map(c=>c.slot)).size!==controls.length)fail(400,'duplicate_control','Control slots must be unique');
    const {proposal,queued}=await this.db.transaction(async tx=>{
