@@ -1,3 +1,5 @@
+import {AppShell} from '../shared/AppShell.js';
+declare const __TRIALY_APP_URL__:string;
 import {GuestPreview} from '../shared/GuestPreview.js';
 import {ReferenceInput} from '../shared/ReferenceInput.js';
 import {ChangesPanel} from '../shared/ChangesPanel.js';
@@ -60,5 +62,5 @@ function Workspace(){
  {preview&&<section className="panel"><small>PREVIEW · NOT SAVED</small><h2>Review before saving</h2><p>Destination: {state.workspaces.find((w:any)=>w.id===preview.workspaceId)?.name??preview.workspaceId}</p><pre>{JSON.stringify(preview.summary,null,2)}</pre><footer><button disabled={busy} onClick={()=>run(async()=>{await call('discard_preview',{previewId:preview.id});setPreview(null);})}>Discard</button><button disabled={busy} onClick={()=>run(async()=>{await call('commit_change',{previewId:preview.id,digest:preview.digest,confirmed:true});setPreview(null);setNotice('Saved to Trialy.');await open(preview.workspaceId);})}>Confirm and save</button></footer></section>}
  <small className="footnote">This workspace shows information permitted for ChatGPT. Saved changes are versioned. Preview changes are temporary.</small></main>;
 }
-createRoot(document.getElementById('root')!).render(<Workspace/>);
+createRoot(document.getElementById('root')!).render(<AppShell onOpenApp={()=>{void bridge.openLink({url:__TRIALY_APP_URL__});}}><Workspace/></AppShell>);
 

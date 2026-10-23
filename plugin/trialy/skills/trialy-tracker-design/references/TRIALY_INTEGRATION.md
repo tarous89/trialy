@@ -1,0 +1,11 @@
+# Trialy runtime integration
+
+The HTML and screenshot are preserved reference assets, not the whole plugin interface. Start from their Theme 2 styling and interaction patterns unless the user specifies otherwise. Adapt business labels, tabs and fields to instructions and authorized data. Do not populate unrelated trackers with fictional vendors. If showing example rows, label them as examples and keep them separate from real data.
+
+Read the sibling trialy-workspace skill and current frontend/execution contracts before implementation. The browser HTML example uses DOM event handlers and local memory. Trialy frontend-js uses the isolated trialy-frontend-js-v1 render/event contract; port interactions to supported data-action events and state. Do not paste the HTML script into QuickJS, relax the sandbox, or imply local Save is a database commit. Read all paginated design resources to completion through read_tracker_design if this package is not locally available.
+
+The app owns identity, account connection and cross-tracker navigation. A persistent header outside the generated tracker contains Trialy and Open app. Tracker title, tabs, Layout and Access control belong to the tracker surface.
+
+Access policy is stored and enforced by the backend independently of generated source. The trusted Access control entry opens the existing component sharing review. Component access currently supports eligible-user allowlists and AI access, constrained by project/workspace/data permissions. Owner/Editor/Viewer badges and per-tab/per-column overrides in the reference are a design model, not a claim of implemented enforcement. Do not expose active-looking unsupported permission toggles. Implement additional policy semantics on the backend before offering them. Hiding columns is presentation, never authorization. Replacing tracker source cannot grant permissions or reset policies.
+
+Anonymous preview_tracker drafts last 24 hours. No account connection is required to preview. The workspace footer offers Save to your account; connection alone does not save. The human reviews the destination and confirms saving; verify the receipt. Saved trackers retain stable component IDs and separately managed backend policies. Account-linked references and persistent edits require the appropriate existing tools and review or narrowly scoped grants.

@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vendor Selection — Phase I PK/PD | Trialy</title><style>
+:root{--ink:#20383d;--muted:#71858b;--accent:#0a8065;--line:#e5ece9;--light:#f8faf9;--paper:#fff;--soft:#ecf6f2}
+*{box-sizing:border-box}
+body{margin:0;background:var(--light);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:var(--ink)}
+button,input,select,textarea{font:inherit}button{cursor:pointer}a{color:inherit}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,tr:focus-visible{outline:2px solid #30ae8b;outline-offset:2px}
+main{max-width:1240px;margin:0 auto;padding:42px 28px 75px}h1{font-size:31px;letter-spacing:-1px;line-height:1.2;margin:0 0 8px;font-weight:760}.subtitle{color:var(--muted);font-size:13px;margin:0}
+.tabs{display:flex;gap:27px;border-bottom:1px solid var(--line);overflow-x:auto;margin-top:32px;scrollbar-width:thin}.tab{appearance:none;border:0;background:transparent;padding:0 0 15px;white-space:nowrap;color:#7c9093;font-size:13px;font-weight:660;border-bottom:3px solid transparent}.tab:hover{color:var(--ink)}.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:23px}.stat{background:white;border:1px solid var(--line);border-radius:10px;padding:17px 18px;text-align:left;min-width:0;color:var(--ink)}.stat:hover{border-color:#b6d9ca;background:#fcfffd}.stat .number{font-size:25px;line-height:1.2;font-weight:745;letter-spacing:-.6px}.stat .label{font-size:12px;color:#71878a;margin-top:4px}.stat .hint{font-size:11px;color:#93a2a4;margin-top:4px}
+.toolbar{display:flex;align-items:center;gap:9px;margin:23px 0 15px;flex-wrap:wrap}.search{display:flex;align-items:center;gap:10px;padding:0 13px;height:40px;min-width:190px;max-width:390px;flex:1;border:1px solid var(--line);background:white;border-radius:9px}.search svg{color:#879a9b;flex:none}.search input{border:0;background:transparent;outline:0;min-width:0;width:100%;font-size:12.5px;color:var(--ink)}.search input::placeholder{color:#97a6a8}.filter,.sort{background:white;border:1px solid var(--line);border-radius:9px;height:40px;color:#526970;padding:0 10px;font-size:12px;max-width:240px}.sort{min-width:155px}.push{flex:1}.primary{height:40px;background:var(--accent);color:white;border:1px solid var(--accent);border-radius:9px;font-size:12px;font-weight:680;padding:0 16px;white-space:nowrap}.primary:hover{background:#086b55}.secondary{color:#526970;background:white;border:1px solid #dce6e2;border-radius:9px;padding:9px 13px;font-size:12px;font-weight:650}.secondary:hover{background:var(--light)}
+.card{background:white;border:1px solid var(--line);border-radius:12px;overflow:hidden}.scroll{overflow-x:auto;width:100%}table{border-collapse:collapse;text-align:left;width:100%;min-width:790px}thead th{background:#fbfcfb;font-size:11px;color:#778a8d;font-weight:680;border-bottom:1px solid var(--line);padding:13px 15px;white-space:nowrap}thead button{border:0;background:transparent;color:inherit;font-size:inherit;font-weight:inherit;padding:0;text-align:left;white-space:nowrap}thead button:hover{color:var(--accent)}thead button[aria-sort="ascending"],thead button[aria-sort="descending"]{color:var(--accent)}tbody td{padding:14px 15px;border-bottom:1px solid #edf2ef;line-height:1.45;font-size:12px;color:#53696d;vertical-align:middle}tbody tr:last-child td{border-bottom:0}tbody tr[data-row]{cursor:pointer}tbody tr[data-row]:hover{background:#f7fbf9}tbody td:first-child{font-weight:670;color:#28434a}.pill{display:inline-block;border-radius:999px;background:#f0f4f4;color:#647579;padding:3px 9px;font-size:10.5px;font-weight:650;white-space:nowrap}.pill.green{background:#e8f7f0;color:#19755e}.pill.amber{background:#fff5e7;color:#9d751f}.pill.red{background:#fff0ed;color:#ac554e}.pill.blue{background:#eef5ff;color:#4e7496}.small-note{font-size:10.5px;color:#8c9b9e}.mono{font-variant-numeric:tabular-nums}.next{color:#38555a;font-weight:520;min-width:190px;max-width:280px}.muted{color:#9babae}.blank{padding:33px 16px;color:#82969a;text-align:center;font-size:12px}.mini-link{font-size:11px;color:var(--accent);font-weight:650;margin-top:4px}.multi{display:flex;gap:4px;flex-wrap:wrap;min-width:90px;max-width:220px}.tag{font-size:10px;background:#eff5f3;color:#617c7b;padding:2px 7px;border-radius:5px;white-space:nowrap}.rank{color:var(--accent);font-weight:760}.tablefoot{padding:11px 16px;border-top:1px solid var(--line);font-size:11px;color:#9aabaa;display:flex;justify-content:space-between;gap:10px}
+.backdrop{position:fixed;inset:0;z-index:20;background:rgba(14,36,39,.28);opacity:0;visibility:hidden;transition:opacity .18s}.backdrop.open{opacity:1;visibility:visible}.drawer{position:absolute;top:0;right:0;width:min(470px,100%);height:100%;background:#fff;box-shadow:none;border-left:1px solid var(--line);display:flex;flex-direction:column}.drawer-head{padding:24px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.drawer-head h2{font-size:19px;letter-spacing:-.4px;margin:0;overflow-wrap:anywhere}.iconbutton{border:0;background:#f3f6f5;color:#647b80;border-radius:8px;height:32px;width:32px;font-size:21px;line-height:1}.drawer-main{flex:1;overflow:auto;padding:22px 24px}.drawer-actions{display:flex;justify-content:flex-end;gap:8px;padding:17px 24px;border-top:1px solid var(--line)}.details{display:grid;gap:14px;margin:0}.detail dt{font-size:11px;color:#8b9c9e;margin-bottom:4px}.detail dd{font-size:13px;color:#29484b;margin:0;overflow-wrap:anywhere}.drawer h3{font-size:12px;font-weight:750;margin:24px 0 12px;color:#395357;letter-spacing:.1px}.field{display:block;margin-bottom:15px}.field span{display:block;font-size:11px;font-weight:675;color:#687d82;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;min-height:39px;border:1px solid #dfe8e5;border-radius:8px;background:#fff;padding:9px 10px;color:#294248;font-size:12.5px}.field textarea{resize:vertical;min-height:80px}.hint{font-size:11px;color:#8a9fa1;margin:-4px 0 15px}.error{font-size:12px;color:#b64c42;min-height:16px}.note{border-left:3px solid #cbe7db;background:#f7fbf9;padding:10px 12px;color:#58726f;font-size:11px;margin:10px 0}.events{display:grid;gap:9px}.event{border:1px solid var(--line);border-radius:8px;padding:10px 11px;font-size:12px}.event small{display:block;color:#83999a;margin-bottom:3px}.inline{display:flex;gap:8px;align-items:center}.inline>*{flex:1}
+@media(max-width:900px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:680px){main{padding:29px 16px 55px}h1{font-size:27px}.tabs{gap:19px;margin-top:25px}.search{max-width:none;flex-basis:100%}.filter,.sort{flex:1;min-width:120px}.push{display:none}.primary{margin-left:auto}.stats{gap:8px}.stat{padding:13px}.stat .number{font-size:23px}.drawer-head,.drawer-main,.drawer-actions{padding-left:18px;padding-right:18px}}
+
+
+:root{--ink:#252c32;--muted:#64727c;--accent:#128269;--line:#e4e8e6;--light:#f8faf9;--soft:#eaf7ed;--editable:#ecf9ed}
+main{max-width:1440px;padding-top:42px}h1{font-size:34px;font-weight:690;letter-spacing:-.95px}.subtitle{font-size:15px}.tabs{gap:27px}.tab{font-size:15px;font-weight:620;padding-bottom:13px}
+button,input,select,textarea{font-family:inherit;font-size:15px}.primary,.secondary,.filter,.sort,.search{height:42px;font-size:14px;border-radius:10px}.search input{font-size:15px}.primary,.secondary{font-weight:620}.toolbar{margin-top:21px;gap:10px}.toolbar #add{margin-left:0}.toolbar .changed-actions{display:flex;gap:8px;align-items:center}.toolbar .changed-actions[hidden]{display:none!important}.toolbar #settingsBtn{padding:0 15px}.primary{font-size:14px}.secondary{font-size:14px;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap}
+table{min-width:850px;table-layout:fixed}thead th{font-size:14px;font-weight:660;padding:15px 15px;position:relative;overflow:visible}thead button{font-size:14px}tbody td{font-size:15.5px;padding:14px 15px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;line-height:1.46;min-width:0;overflow-wrap:anywhere}tbody td:first-child{font-weight:650}.pill{font-size:12px;padding:4px 10px}.small-note,.tablefoot{font-size:12px}.next{font-size:14px}.tag{font-size:12px}.rank{font-size:15px}.multi{max-width:none}tbody td[data-cell="next"]{white-space:normal;min-width:260px;line-height:1.4}.scroll{overflow:auto}
+tbody td.editable-cell{cursor:text}tbody td.editable-cell:hover{background:#f2f8f5}tbody td.changed-cell{background:#e5f6e9!important;box-shadow:inset 0 0 0 1px #c0e8ca}tbody td.is-editing{background:#f6fcf8!important;padding:6px 8px}.cell-editor{width:100%;border:1px solid #b8d9cb;border-radius:7px;padding:8px;font:inherit;color:var(--ink);min-height:34px;background:#fff}.cell-editor[type=number]{min-width:85px}.source-link{color:#168268;text-decoration:underline;text-underline-offset:2px}.resize-column{display:block;position:absolute;top:7px;bottom:7px;right:-5px;width:10px;cursor:col-resize;z-index:2;touch-action:none}.resize-column::after{content:'';position:absolute;left:5px;top:17%;height:66%;width:1px;background:#dce5e0}.resize-column:hover::after{background:var(--accent);width:2px}.row-resize{display:block;position:absolute;bottom:-4px;right:5px;width:18px;height:9px;cursor:row-resize;z-index:3;opacity:0}tr:hover .row-resize{opacity:1}.row-resize::before{content:'';display:block;border-top:2px solid #7eaf9d;position:relative;top:4px}tbody tr{position:relative}
+.stats{gap:12px}.stat{background:#243b40;border:1px solid #2e494d;color:#f5faf8;padding:17px 18px;transition:border-color .15s,background .15s}.stat:hover{background:#2e4c50;border-color:#4b686b}.stat .number{font-size:29px;color:#fff}.stat .label{color:#d6e2df;font-size:14px}.stat .hint{color:#aac0bb;font-size:12px}.stat-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.stat svg{color:#b9dad0;width:22px;height:22px;stroke-width:1.65}
+.drawer{width:min(var(--drawer-width,520px),calc(100vw - 12px));min-width:min(365px,100vw);transition:none}.drawer-resizer{position:absolute;left:-7px;top:0;bottom:0;width:15px;cursor:col-resize;z-index:4;touch-action:none}.drawer-resizer::after{content:'';position:absolute;left:7px;top:30%;bottom:30%;border-left:2px solid #b7c9c5;border-radius:2px}.drawer-resizer:hover::after{border-color:var(--accent)}.drawer-head h2{font-size:21px;font-weight:660;letter-spacing:-.4px}.drawer-main{padding-top:24px}.drawer-main .detail dt{font-size:13px}.drawer-main .detail dd{font-size:15px;line-height:1.5}.drawer-main .details{gap:8px}.drawer-main .detail{padding:9px 10px;margin:0 -10px;border:1px solid transparent;border-radius:9px;cursor:text}.drawer-main .detail:hover{background:#f5faf7;border-color:#e4f0e9}.drawer-main .detail.is-changed{background:var(--editable);border-color:#b9e5c8}.drawer-main .detail.is-editing{border-color:#a4d0b5;background:#f7fcf9}.drawer-main .field span{font-size:13px}.drawer-main .field input,.drawer-main .field textarea,.drawer-main .field select{font-size:15px;min-height:42px}.drawer-main .hint{font-size:13px}.drawer-main h3{font-size:15px}.iconbutton{font-size:22px;width:38px;height:38px}.drawer-resize-note{font-size:12px;color:#8a9c9a;margin-top:4px}.drawer-actions button{height:40px}
+.settings-pane{display:grid;gap:16px}.settings-pane h3{margin:8px 0 3px;font-size:16px}.settings-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(110px,145px);align-items:center;gap:10px}.settings-row{display:contents}.settings-row label{font-size:14px;color:#40575a}.settings-row input,.settings-row select{min-height:38px;width:100%;padding:7px 9px;background:#fff;border:1px solid #dbe6df;border-radius:8px;color:#263f43}.settings-note{font-size:13px;color:#74878c;background:#f6f9f7;border:1px solid #e4ece7;border-radius:9px;padding:12px}.settings-pane .field{margin:0}.settings-pane .field textarea{min-height:78px}
+.empty-source{color:#829397}.inline-helper{color:#819190;font-size:12px;margin-top:6px}.changed-count{font-size:13px;color:#2e765c;font-weight:650;white-space:nowrap}.record-error{color:#af3939;font-size:14px;margin:9px 0}.source-editbox{width:100%;min-height:70px}.input-row{display:flex;gap:9px;align-items:center}.input-row select{flex:1}.inline-create{flex:none!important}
+@media(max-width:900px){main{padding:34px 16px 64px}table{min-width:850px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:680px){main{padding-top:28px}h1{font-size:28px}.subtitle{font-size:14px}.tab{font-size:14px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stat .number{font-size:25px}.toolbar .changed-actions{order:3;flex-basis:100%}.toolbar #settingsBtn{margin-left:0}.drawer{width:100vw!important;min-width:0}.drawer-resizer{display:none}.filter,.sort{min-width:110px;flex:1}.primary{margin-left:0}.tabs{gap:19px}.settings-grid{grid-template-columns:1fr 122px}}
+
+/* Interaction and full-page settings refinement */
+.tabs-shell{display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line);margin-top:31px}
+.tabs{margin-top:0;border-bottom:0;flex:1;min-width:0}
+.tab-settings{flex:none;margin:0 0 7px;background:transparent;border:1px solid transparent;color:#60777b;border-radius:9px;width:38px;height:38px;padding:7px}
+.tab-settings svg{height:21px;width:21px}.tab-settings:hover{background:#edf6f1;border-color:#d9e8df;color:var(--accent)}
+.scroll{overflow-x:auto;overflow-y:visible;max-height:none;height:auto}
+.card{overflow:visible}.card .scroll{border-radius:12px 12px 0 0}
+#trackerTable{border-collapse:separate;border-spacing:0}#trackerTable thead th{background:#fbfcfb}#trackerTable tbody td{background:#fff}
+#trackerTable tbody tr:hover td{background:#f7fbf9}
+#trackerTable th.action-col,#trackerTable td.action-col{position:sticky;right:0;z-index:3;width:58px;min-width:58px;max-width:58px;text-align:center;padding:7px 9px;background:#fbfcfb;box-shadow:-5px 0 12px -11px #355a54}
+#trackerTable tbody td.action-col{background:white}#trackerTable tbody tr:hover td.action-col{background:#f7fbf9}
+#trackerTable th.action-col{z-index:5}
+#trackerTable .expand-row{display:inline-flex;align-items:center;justify-content:center;border:1px solid #dce8e2;border-radius:8px;background:#fff;color:#57716f;width:34px;height:34px;padding:7px}
+#trackerTable .expand-row:hover{border-color:#9fc9b6;background:#ecf7f1;color:#0b8065}
+#trackerTable .expand-row svg{width:17px;height:17px;pointer-events:none}
+#trackerTable .action-col .row-resize{right:21px;bottom:-4px}
+#settingsPage[hidden],#trackerView[hidden]{display:none!important}
+.settings-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:36px}.settings-top-actions{display:flex;gap:9px}
+.settings-tabs{display:flex;gap:28px;border-bottom:1px solid var(--line);margin-top:28px}
+.settings-tabs button{padding:0 3px 13px;border:0;border-bottom:3px solid transparent;background:none;color:#6c8183;font-size:16px;font-weight:610}
+.settings-tabs button.active{color:var(--accent);border-bottom-color:var(--accent)}
+.settings-content{padding:25px 0 50px;max-width:1140px;min-height:420px}
+.settings-section{margin-bottom:28px;padding:20px 22px;background:#fff;border:1px solid var(--line);border-radius:12px}
+.settings-section h2{font-size:19px;font-weight:660;margin:0 0 17px;letter-spacing:-.3px}
+.settings-section p{color:#738489;font-size:14px;margin:0 0 14px}
+.settings-settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.settings-section label{display:block;font-size:14px;font-weight:580;color:#4b6265}
+.settings-section input,.settings-section textarea,.settings-section select{display:block;width:100%;margin-top:6px;min-height:41px;padding:8px 11px;border:1px solid #dce7e1;border-radius:9px;background:white;color:#293f42;font-size:15px}
+.settings-section textarea{min-height:86px;resize:vertical}
+.settings-section .settings-line{display:grid;grid-template-columns:minmax(175px,1.2fr) minmax(120px,1fr) 120px 105px;gap:11px;align-items:center;margin-bottom:10px}
+.settings-section .settings-line.permissions{grid-template-columns:minmax(175px,1.5fr) minmax(185px,1fr)}
+.settings-section .settings-line .cell-label{font-size:15px;color:#2d4346;font-weight:590}
+.settings-section .settings-line button{height:41px}
+.settings-section .settings-line select,.settings-section .settings-line input{margin:0}
+.settings-page-note{border:1px solid var(--line);background:#f6f9f7;color:#768889;font-size:13px;padding:12px 14px;border-radius:10px;max-width:1140px}
+.detail-danger{color:#ad514b;border-color:#efcbc6}.detail-danger:hover{background:#fff3f2}
+.drawer-actions{flex-wrap:wrap}.drawer-actions .danger-button{margin-right:auto}
+@media(max-width:700px){.settings-top{flex-wrap:wrap}.settings-top-actions{margin-left:auto}.settings-content{padding-top:17px}.settings-settings-grid{grid-template-columns:1fr}.settings-section{padding:15px}.settings-section .settings-line{grid-template-columns:1fr 1fr}.settings-section .settings-line .cell-label{grid-column:1/-1}.settings-tabs{gap:18px}.settings-tabs button{font-size:14px}}
+.sr-only{position:absolute;width:1px;height:1px;clip:rect(0,0,0,0);white-space:nowrap;overflow:hidden}
+/* Revised lean settings: consistent spacing, linked columns, per-person access. */
+.tab-settings{background:#edf3f0;border:1px solid #cbdad3;color:#274b45;width:42px;height:42px;border-radius:11px;margin-bottom:6px;display:inline-flex;align-items:center;justify-content:center}
+.tab-settings svg{width:23px;height:23px;stroke-width:1.9}
+.tab-settings:hover{background:#e0f0e8;color:#0b725d;border-color:#a6cbbb}
+.drawer{box-shadow:none!important;border-left:1px solid #d9e3de}
+.settings-content{max-width:1100px}.settings-section{margin-bottom:26px;padding:22px 24px}.settings-section h2{margin-bottom:20px}
+.settings-stack{display:grid;gap:21px;max-width:780px}.settings-field{display:block;width:100%;max-width:780px;margin-bottom:16px}
+.settings-stack .settings-field{margin:0}.settings-field input,.settings-field textarea,.settings-field select{margin-top:9px!important}
+.settings-inline-name{font-weight:560}.settings-section .layout-entry{display:grid;align-items:center;gap:17px;margin:0 0 11px}
+.settings-section .tab-layout-row{grid-template-columns:minmax(240px,1fr) 83px 132px}
+.settings-section .column-layout-row{grid-template-columns:minmax(220px,1.6fr) minmax(155px,.85fr) 123px 78px}
+.settings-section .layout-head{color:#7d908c;font-size:13px;font-weight:650;padding:0 0 6px;border-bottom:1px solid #eff1f0;margin-bottom:13px}
+.settings-section .layout-head span{white-space:nowrap}.settings-section .layout-head{display:grid;align-items:center;gap:17px}.settings-section .layout-head.tab-layout-row{grid-template-columns:minmax(240px,1fr) 83px 132px}.settings-section .layout-head.column-layout-row{grid-template-columns:minmax(220px,1.6fr) minmax(155px,.85fr) 123px 78px}.settings-section .layout-entry input,.settings-section .layout-entry select{margin-top:0;min-width:0}
+.settings-section input.order-input{max-width:83px;text-align:center;padding-left:7px;padding-right:7px}
+.settings-section select:disabled{background:#f4f7f5;color:#798983;cursor:not-allowed}
+.settings-add{border-top:1px solid #edf1ee;margin-top:20px;padding-top:19px}.settings-add label{display:block;margin:0 0 10px;font-size:14px;font-weight:630}
+.settings-add-inline{display:flex;gap:13px;align-items:center;max-width:780px}
+.settings-add-inline input{flex:1;min-width:0}.settings-add-inline select{width:174px;flex:none}
+.settings-add-inline button{height:42px;flex:none}
+.settings-section .settings-add-inline input,.settings-section .settings-add-inline select{margin:0}
+.settings-help{font-size:13px;color:#73827f;line-height:1.5;margin:15px 0 2px}
+.columns-list{margin-top:27px}
+.settings-section .access-person,.settings-section .access-override-row{display:grid;grid-template-columns:minmax(200px,1fr) minmax(190px,240px);gap:28px;align-items:center;padding:11px 0;border-bottom:1px solid #edf1ef}
+.settings-section .access-person:last-child,.settings-section .access-override-row:last-child{border-bottom:0}
+.settings-section .access-person select,.settings-section .access-override-row select{margin:0}
+.person-identity{display:flex;align-items:center;gap:12px;min-width:0}.person-identity strong{font-size:15px;font-weight:650}.person-identity small{display:block;color:#718782;font-size:12px;margin-top:3px}
+.avatar{display:grid;place-items:center;flex:none;background:#e5efeb;color:#345e54;border:1px solid #d5e3dc;border-radius:50%;width:37px;height:37px;font-size:12px;font-weight:740}
+.settings-section .access-people{max-width:840px}.settings-section .column-permission-list{margin-top:16px}.settings-section .access-override-row{max-width:840px}
+@media(max-width:780px){
+ .settings-section .tab-layout-row{grid-template-columns:minmax(130px,1fr) 67px 106px;gap:10px}
+ .settings-section .column-layout-row{grid-template-columns:minmax(135px,1fr) minmax(120px,1fr);gap:10px}
+ .settings-section .column-layout-row .order-input{max-width:none}
+ .settings-section .layout-head{display:none}
+ .settings-section .layout-entry.column-layout-row{padding-bottom:12px;border-bottom:1px solid #edf1ee}
+ .settings-section .access-person,.settings-section .access-override-row{grid-template-columns:minmax(100px,1fr) minmax(130px,180px);gap:12px}
+ .settings-section{padding:16px}
+ .settings-add-inline{flex-wrap:wrap}.settings-add-inline button{margin-left:auto}
+}
+
+/* Latest refinements: muted controls, visible Details label, permission colors, drag ordering. */
+.tab-settings,.tab-settings:hover{background:transparent;border-color:transparent;box-shadow:none}
+.tab-settings:hover{color:var(--accent)}
+#trackerTable th.action-col,#trackerTable td.action-col{width:84px;min-width:84px;max-width:84px;box-shadow:none;border-left:1px solid #edf1ef}
+#trackerTable .details-col-label{display:block;font-size:inherit;color:inherit;font-weight:inherit}
+#trackerTable .expand-row,#trackerTable .expand-row:hover{background:transparent;border:1px solid transparent;box-shadow:none;color:#526d6b}
+#trackerTable .expand-row:hover{color:var(--accent)}
+#trackerTable .expand-row{width:40px;height:40px;padding:3px}
+#trackerTable .expand-row svg{width:24px;height:24px}
+.settings-section select[data-setting-visibility]:has(option[value="hide"]:checked),.settings-section select[data-setting-col-visible]:has(option[value="hide"]:checked){background:#edf0ef;color:#60716d;border-color:#cdd5d2}
+.settings-section .tab-layout-row,.settings-section .layout-head.tab-layout-row{grid-template-columns:34px minmax(220px,1fr) 132px}
+.settings-section .column-layout-row,.settings-section .layout-head.column-layout-row{grid-template-columns:34px minmax(220px,1.6fr) minmax(155px,.85fr) 123px}
+.settings-section .layout-entry{border-radius:9px;padding:3px 6px;margin-left:-6px}
+.settings-section .layout-entry.drop-target{outline:2px dashed #188a70;background:#edf8f3}
+.settings-section .layout-entry.is-dragging{opacity:.48}
+.drag-grip{display:flex;align-items:center;justify-content:center;cursor:grab;width:32px;height:39px;border:0;border-radius:7px;background:transparent;color:#879b97;touch-action:none}
+.drag-grip:hover{color:#177861;background:#f1f7f3}.drag-grip:active{cursor:grabbing}.drag-grip svg{width:17px;height:23px}
+.settings-section .role-select,.settings-section .permission-select{font-weight:610;transition:background .12s,border-color .12s;color:#334b46}
+.settings-section .role-owner,.settings-section .role-select.role-owner{background:#263e48;color:#fff;border-color:#263e48}
+.settings-section .role-editor,.settings-section .role-select.role-editor,.settings-section .permission-select.can-edit{background:#e9f7ef;color:#1c7453;border-color:#b8dec9}
+.settings-section .role-viewer,.settings-section .role-select.role-viewer,.settings-section .permission-select.can-view{background:#ebf3ff;color:#3f6d9c;border-color:#bed2ed}
+.settings-section .role-custom,.settings-section .role-select.role-custom{background:#f2eefe;color:#7653a8;border-color:#d5c4ef}
+.settings-section .permission-select.is-restricted{background:#fff1ee;color:#aa5349;border-color:#efc8c0}
+.settings-section .permission-select.is-overridden{border-width:2px;box-shadow:0 0 0 1px rgba(117,83,168,.12)}
+.custom-marker{display:inline-block;font-size:11px;font-weight:680;color:#7954a8;background:#f2eefe;border-radius:5px;padding:2px 7px;margin-left:9px}
+@media(max-width:780px){
+ .settings-section .tab-layout-row,.settings-section .layout-head.tab-layout-row{grid-template-columns:30px minmax(120px,1fr) 104px;gap:9px}
+ .settings-section .column-layout-row,.settings-section .layout-head.column-layout-row{grid-template-columns:30px minmax(115px,1fr) minmax(112px,1fr);gap:9px}
+ .settings-section .column-layout-row select[data-setting-col-visible]{grid-column:2/-1}
+ .settings-section .column-layout-row .drag-grip{grid-row:1/3}
+}
+
+/* TRIALY COLOR-ONLY VARIANT: Vivid Tints | no changes to structure/behavior */
+
+/* Text: keep the existing typeface and dimensions; strengthen ink contrast. */
+:root{--ink:#102022;--muted:#46585b;--accent:#087b58}
+body,h1,.drawer-head h2,.settings-section h2{color:#102022}
+.subtitle,.small-note,.tablefoot,.hint,.inline-helper,.settings-help,.settings-section p,.person-identity small{color:#46585b}
+.tab,.settings-tabs button{color:#4c6264}
+.search input,.filter,.sort,.secondary,.field input,.field textarea,.field select,.settings-section input,.settings-section textarea,.settings-section select{color:#1a3535}
+.search input::placeholder{color:#627877}
+thead th,#trackerTable th.action-col,.settings-section .layout-head{color:#34484a}
+tbody td{color:#253c40}
+tbody td:first-child,.next,.settings-section .layout-entry .cell-label,.settings-section label,.settings-row label{color:#102d32}
+.drawer-main .detail dd,.field span,.detail dt,.settings-section .settings-line .cell-label{color:#284243}
+.stat .label{color:#f0f6f2}.stat .hint{color:#d5e5df}.stat svg{color:#c7f0e1}
+.rank,.mini-link,.source-link{color:#087b58}
+/* Existing status families: neutral, emerald, amber, red and blue. */
+.pill{background-color:#d8e4e1;color:#324a4b}
+.pill.green{background-color:#b9edcd;color:#075a39}
+.pill.amber{background-color:#ffe09b;color:#75500b}
+.pill.red{background-color:#ffcfc8;color:#932b25}
+.pill.blue{background-color:#c4ddff;color:#1d5186}
+.tag{background-color:#bfe8d5;color:#095a41}
+/* Existing permission families: owner, editor, viewer, custom and restricted. */
+.settings-section .role-owner,.settings-section .role-select.role-owner{background-color:#123941;color:#ffffff;border-color:#123941}
+.settings-section .role-editor,.settings-section .role-select.role-editor,.settings-section .permission-select.can-edit{background-color:#b9edcd;color:#075a39;border-color:#8bcba8}
+.settings-section .role-viewer,.settings-section .role-select.role-viewer,.settings-section .permission-select.can-view{background-color:#c4ddff;color:#1d5186;border-color:#8cbaeb}
+.settings-section .role-custom,.settings-section .role-select.role-custom{background-color:#e3d3ff;color:#59308f;border-color:#c3a0ef}
+.settings-section .permission-select.is-restricted{background-color:#ffcfc8;color:#932b25;border-color:#e6a69c}
+.settings-section select[data-setting-visibility]:has(option[value="hide"]:checked),.settings-section select[data-setting-col-visible]:has(option[value="hide"]:checked){background-color:#dce5e1;color:#455956;border-color:#b4c4bc}
+
+</style></head>
+<body><main>
+<div id="trackerView">
+<h1 id="trackerTitle">Vendor Selection</h1>
+<p class="subtitle" id="trackerDesc">AX-101 · Phase I PK/PD study · Select a CRO for clinical conduct, PK sampling and analysis</p>
+<div class="tabs-shell"><div id="tabs" class="tabs" role="tablist" aria-label="Vendor selection tabs"></div><button id="settingsBtn" type="button" class="tab-settings iconbutton" aria-label="Tracker settings" title="Tracker settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="7" r="2.2" fill="white"/><circle cx="15" cy="12" r="2.2" fill="white"/><circle cx="10" cy="17" r="2.2" fill="white"/></svg></button></div>
+<div id="stats" class="stats" hidden></div>
+<div class="toolbar">
+<label class="search" aria-label="Search current tab"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="search" type="search" placeholder="Search records" autocomplete="off"></label>
+<select id="statusFilter" class="filter" aria-label="Filter by status"></select>
+<select id="regionFilter" class="filter" aria-label="Filter by geographic coverage"></select>
+<select id="sort" class="sort" aria-label="Sort or rank table"></select>
+<span class="push"></span>
+<div class="changed-actions" id="changedActions" hidden><span class="changed-count" id="changedCount"></span><button type="button" class="secondary" id="discardEdits">Ignore edits</button><button type="button" class="primary" id="saveEdits">Save edits</button></div>
+<button id="add" class="primary" type="button">+ Add record</button>
+</div>
+<section class="card" aria-label="Current tracker table"><div class="scroll"><table id="trackerTable"><colgroup id="colGroup"></colgroup><thead id="head"></thead><tbody id="rows"></tbody></table></div><div class="blank" id="empty" hidden>No matching records.</div><div class="tablefoot"><span id="count"></span><span id="feedback">Sample data · Changes are local to this preview</span></div></section>
+</div>
+<section id="settingsPage" hidden aria-label="Tracker settings">
+  <div class="settings-top"><button type="button" id="settingsBack" class="secondary">← Back to tracker</button><div class="settings-top-actions"><button type="button" class="secondary" id="settingsCancel">Discard changes</button><button type="button" class="primary" id="settingsSave">Save settings</button></div></div>
+  <h1>Tracker settings</h1><p class="subtitle">Manage the layout, shared fields, and who can access this tracker.</p>
+  <div class="settings-tabs" role="tablist" aria-label="Settings sections">
+  <button type="button" data-settings-tab="Layout" role="tab">Layout</button><button type="button" data-settings-tab="Access" role="tab">Access control</button>
+  </div><div id="settingsContent" class="settings-content"></div>
+</section>
+</main>
+<div class="backdrop" id="backdrop" aria-hidden="true"><section class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle"><div class="drawer-resizer" role="separator" aria-orientation="vertical" aria-label="Drag to resize details panel" tabindex="0" id="drawerResizer"></div><div class="drawer-head"><div><h2 id="drawerTitle"></h2><div class="drawer-resize-note">Drag the left edge to widen this panel</div></div><button type="button" id="close" class="iconbutton" aria-label="Close">×</button></div><div class="drawer-main" id="drawerBody"></div><div class="drawer-actions" id="drawerActions"></div></section></div>
+<script>
+const db = {
+ vendors:[
+  {id:'v1',name:'CRO #1',regions:['US','EU'],experience:'Phase I PK/PD; 9 studies',capacity:'Jan 2027',shortlist:'Shortlisted',contact:'Alex Morgan',email:'alex@example.invalid',notes:'Strong early-phase track record; confirm PD assay coverage.'},
+  {id:'v2',name:'CRO #2',regions:['EU','EMEA'],experience:'Phase I PK/PD; 14 studies',capacity:'Dec 2026',shortlist:'Shortlisted',contact:'Sam Lee',email:'sam@example.invalid',notes:'Covers unit, bioanalysis and planned PK analyses.'},
+  {id:'v3',name:'CRO #3',regions:['APAC','Japan'],experience:'Phase I PK/PD; 6 studies',capacity:'Feb 2027',shortlist:'Shortlisted',contact:'Mika Tan',email:'mika@example.invalid',notes:'Credible bioanalytical capabilities; unit availability to confirm.'},
+  {id:'v4',name:'CRO #4',regions:['US','APAC'],experience:'Phase I clinical pharmacology',capacity:'Jan 2027',shortlist:'Shortlisted',contact:'Jamie Park',email:'jamie@example.invalid',notes:'Awaiting response to study-specific RFP.'},
+  {id:'v5',name:'CRO #5',regions:['EU'],experience:'Phase II–III operations',capacity:'Not confirmed',shortlist:'Not shortlisted',contact:'Taylor Reed',email:'taylor@example.invalid',notes:'Limited evidence of PK/PD unit experience.'},
+  {id:'v6',name:'CRO #6',regions:['EMEA'],experience:'Bioanalysis; no clinical unit',capacity:'Jan 2027',shortlist:'Not shortlisted',contact:'Chris Patel',email:'chris@example.invalid',notes:'Could be a separate bioanalysis specialist, not a full study CRO.'},
+  {id:'v7',name:'CRO #7',regions:['Japan','APAC'],experience:'Phase I unit and PK sampling',capacity:'Mar 2027',shortlist:'Potential',contact:'Robin Chen',email:'robin@example.invalid',notes:'Investigate earlier start window if needed.'},
+  {id:'v8',name:'CRO #8',regions:['US','EU','APAC'],experience:'Clinical pharmacology services',capacity:'Unconfirmed',shortlist:'Not shortlisted',contact:'Casey Rivera',email:'casey@example.invalid',notes:'Full PK/PD package and feasibility not yet established.'}
+ ],
+ rfps:[
+  {id:'r1',vendorId:'v1',contact:'Alex Morgan',sentAt:'2026-10-08T09:20',receivedAt:'2026-10-17T16:10',status:'Received',followups:[{date:'2026-10-13T14:00',note:'Confirmed receipt and requested response schedule.'},{date:'2026-10-20T10:15',note:'Requested quote for excluded PD assay validation.'}],nextFollowup:'2026-10-26',quote:690000,proposedStart:'2027-01-11',scope:'Phase I conduct and PK analysis; PD assay validation excluded',pkExperience:'9 relevant PK/PD studies',sampling:'Dense 0–24 h PK; PD at 3 visits',bioanalysis:'LC-MS/MS; PD assay validation excluded',pdAssays:'PD biomarkers available; validation excluded',pkAnalysis:'NCA and PK tables included',unitCapacity:'EU unit; Jan 2027 slot',staffing:'Named PI; statistician to confirm',qualityEvidence:'GCP system described; audit summary requested',notes:'Check omitted PD assay cost before comparing totals.'},
+  {id:'r2',vendorId:'v2',contact:'Sam Lee',sentAt:'2026-10-08T09:35',receivedAt:'2026-10-16T11:40',status:'Received',followups:[{date:'2026-10-19T15:00',note:'Clarified sampling schedule and site capacity.'}],nextFollowup:'2026-10-27',quote:755000,proposedStart:'2026-12-14',scope:'Unit, PK sampling, PK/PD bioanalysis and NCA',pkExperience:'14 comparable Phase I PK/PD studies',sampling:'Dense PK 0–48 h; serial PD sampling',bioanalysis:'LC-MS/MS and PD assay validation included',pdAssays:'Validated PD biomarker workflow proposed',pkAnalysis:'NCA, PK parameters and integrated report',unitCapacity:'EU clinical pharmacology unit; Dec 2026 slot',staffing:'Named PI, clinical PM and PK scientist',qualityEvidence:'GCP SOPs provided; QA review pending',notes:'Scope broadly complete; finalize QA review and assumptions.'},
+  {id:'r3',vendorId:'v3',contact:'Mika Tan',sentAt:'2026-10-08T10:05',receivedAt:'2026-10-19T08:50',status:'Received',followups:[{date:'2026-10-21T09:45',note:'Asked to confirm unit slot and PK reporting turnaround.'}],nextFollowup:'2026-10-28',quote:720000,proposedStart:'2027-02-08',scope:'PK/PD conduct; PK reporting timeline unclear',pkExperience:'6 relevant early-phase PK/PD studies',sampling:'PK 0–24 h; sparse PD sampling',bioanalysis:'LC-MS/MS; partner bioanalytical lab',pdAssays:'PD analysis via subcontracted laboratory',pkAnalysis:'NCA included; integrated report pending',unitCapacity:'Japan unit; Feb 2027 earliest',staffing:'Clinical PM named; PK analyst pending',qualityEvidence:'GCP SOP summary requested',notes:'Confirm subcontractor and regulatory handoff.'},
+  {id:'r4',vendorId:'v4',contact:'Jamie Park',sentAt:'2026-10-09T13:20',receivedAt:'',status:'Sent',followups:[{date:'2026-10-15T11:15',note:'Followed up on expected proposal date.'}],nextFollowup:'2026-10-23',quote:null,proposedStart:'',scope:'',pkExperience:'',sampling:'',bioanalysis:'',pdAssays:'',pkAnalysis:'',unitCapacity:'',staffing:'',qualityEvidence:'',notes:'No proposal received; request update.'}
+ ],
+ qualifications:[
+  {id:'q1',vendorId:'v1',rank:2,decision:'Backup',quality:'Evidence pending',nextStep:'Clarify excluded PD validation and obtain QA summary',notes:'Lower headline quote excludes an important PD work package.'},
+  {id:'q2',vendorId:'v2',rank:1,decision:'Preferred',quality:'Review pending',nextStep:'Complete GCP / QMS review before final award',notes:'Most complete PK/PD proposal; preferred subject to mandatory quality review and contract.'},
+  {id:'q3',vendorId:'v3',rank:3,decision:'Consider',quality:'Evidence pending',nextStep:'Confirm clinical unit and subcontractor capability',notes:'Later start and subcontracted PD analysis need clarification.'}
+ ],
+ contracting:[
+  {id:'c1',vendorId:'v2',step:'Finalize PK/PD scope and responsibilities',owner:'Clinical Operations',due:'2026-10-26',status:'Completed',notes:'Confirm included sampling, bioanalysis, PD endpoints and NCA outputs.'},
+  {id:'c2',vendorId:'v2',step:'Agree budget and payment milestones',owner:'Finance',due:'2026-10-29',status:'Completed',notes:'Align payment triggers to evidence-based deliverables.'},
+  {id:'c3',vendorId:'v2',step:'Review statement of work',owner:'Clinical Operations',due:'2026-11-04',status:'In review',notes:'Ensure PK/PD sampling, unit slot, data transfers and reporting are covered.'},
+  {id:'c4',vendorId:'v2',step:'Review master services agreement',owner:'Legal',due:'2026-11-06',status:'In review',notes:'Liability, data rights, subcontracting and change controls.'},
+  {id:'c5',vendorId:'v2',step:'Resolve applicable quality agreement',owner:'Quality',due:'2026-11-09',status:'Pending',notes:'Perform risk-based qualification and agree delegated GCP responsibilities.'},
+  {id:'c6',vendorId:'v2',step:'Execute agreement',owner:'Signatories',due:'2026-11-12',status:'Pending',notes:'Only after the necessary quality, commercial and legal approvals.'}
+ ]
+};
+
+// Fictional scenario; all records and organizations are examples and never transmitted.
+const tabs=['Overview','Vendors','RFP','Qualification','Contracting'];
+let active='Overview',query='',statusFilter='All',regionFilter='All',sortBy='',drawerState=null,focusBefore=null,returnToForm=null;
+const $=id=>document.getElementById(id);
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=v=>v===null||v===''||v===undefined?'—':new Intl.NumberFormat('en-GB',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(v));
+const date=v=>!v?'—':new Date(v.slice(0,10)+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+const datetime=v=>!v?'—':new Date(v).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',hour12:false});
+const tone=v=>/declined|not shortlisted|not selected|failed|blocked|withdrawn/i.test(v||'')?'red':/shortlisted|received|completed|passed|signed|preferred/i.test(v||'')?'green':/pending|review|sent|awaiting|potential|consider|backup|evidence|progress/i.test(v||'')?'amber':'blue';
+const pill=s=>`<span class="pill ${tone(s)}">${esc(s||'—')}</span>`;
+const aspects=[['pkExperience','PK/PD experience'],['sampling','PK/PD sampling plan'],['bioanalysis','Bioanalysis'],['pdAssays','PD endpoints / assays'],['pkAnalysis','PK analysis & reporting'],['unitCapacity','Clinical unit / capacity'],['staffing','Proposed study team'],['qualityEvidence','GCP / quality evidence']];
+const defs={
+ Vendors:{key:'vendors',name:'CRO',fields:[['name','CRO name','text'],['regions','Coverage (US, EU, EMEA, APAC, Japan, etc.)','regions'],['experience','Relevant PK/PD experience','text'],['capacity','Earliest capacity','text'],['shortlist','Shortlisting','select',['Potential','Shortlisted','Not shortlisted']],['contact','Contact','text'],['email','Email','email'],['notes','Notes','textarea'],['source','Source','source']]},
+ RFP:{key:'rfps',name:'RFP',fields:[['vendorId','CRO','vendor'],['contact','Contact person','text'],['sentAt','Sent (date / time)','datetime-local'],['receivedAt','Proposal received (date / time)','datetime-local'],['status','RFP status','select',['Draft','Sent','Received','Declined','Withdrawn']],['nextFollowup','Next follow-up','date'],['quote','Proposal budget (EUR)','money'],['proposedStart','Proposed start','date'],['scope','Scope / exclusions','textarea'],...aspects.map(([k,l])=>[k,l,'text']),['notes','Clarifications / notes','textarea'],['source','Source','source']]},
+ Qualification:{key:'qualifications',name:'qualification',fields:[['vendorId','CRO','proposalVendor'],['rank','Preference rank','rank'],['decision','Decision','select',['Evaluating','Consider','Preferred','Backup','Not selected']],['quality','Mandatory quality review','select',['Not started','Review pending','Evidence pending','Passed','Failed']],['nextStep','Next action','text'],['notes','Reasoning / notes','textarea'],['source','Source','source']]},
+ Contracting:{key:'contracting',name:'contracting step',fields:[['vendorId','CRO','selectedVendor'],['step','Contract step','text'],['owner','Owner','text'],['due','Due date','date'],['status','Status','select',['Pending','In review','Blocked','Completed']],['notes','Notes','textarea'],['source','Source','source']]}
+};
+const columns={
+ Overview:[['vendor','CRO'],['regions','Coverage','regions'],['shortlist','Shortlist','pill'],['rfpStatus','RFP','pill'],['rank','Rank','rank'],['decision','Qualification','pill'],['contractStatus','Contracting'],['next','Next action'],['source','Source','source']],
+ Vendors:[['name','CRO'],['regions','Coverage','regions'],['experience','PK/PD experience'],['capacity','Capacity'],['shortlist','Shortlist','pill'],['source','Source','source']],
+ RFP:[['vendorName','CRO'],['contact','Contact'],['sentAt','Sent','datetime'],['receivedAt','Received','datetime'],['nextFollowup','Next follow-up','date'],['quote','Budget','money'],['status','Status','pill'],['source','Source','source']],
+ Qualification:[['vendorName','CRO'],['pkExperience','Phase I PK/PD'],['sampling','PK sampling'],['bioanalysis','Bioanalysis'],['pdAssays','PD assays'],['pkAnalysis','PK analysis'],['unitCapacity','Capacity'],['quote','Budget','money'],['quality','Quality','pill'],['rank','Rank','rank'],['decision','Decision','pill'],['source','Source','source']],
+ Contracting:[['vendorName','CRO'],['step','Contract step'],['owner','Owner'],['due','Due','date'],['status','Status','pill'],['source','Source','source']]
+};
+const config={title:'Vendor Selection',description:'AX-101 · Phase I PK/PD study · Select a CRO for clinical conduct, PK sampling and analysis',tabLabels:Object.fromEntries(tabs.map(t=>[t,t])),columnLabels:{},colWidths:{},rowHeight:54,rowHeights:{},hiddenTabs:[],tabOrder:{},hiddenColumns:{},columnOrder:{},columnTypes:{},access:{people:[{id:'me',name:'You',role:'Owner'},{id:'p1',name:'Dr. Maya Chen',role:'Editor'},{id:'p2',name:'Jordan Patel',role:'Viewer'}],overrides:{tabs:{},columns:{}}}};
+for(const [kind,d] of Object.entries(defs)){for(const r of db[d.key])if(!('source' in r))r.source=kind==='Vendors'?'Internal CRO shortlist':kind==='RFP'?(r.receivedAt?'Proposal document / email':'RFP correspondence'):kind==='Qualification'?'Proposal and team review':'SOW / legal review notes'};
+const fieldTypeOptions=[['text','Text'],['number','Number'],['date','Date'],['datetime-local','Date & time'],['source','File link / source'],['money','Currency'],['select','Status / choice'],['regions','Multiple regions'],['email','Email'],['rank','Rank'],['code','Code / calculated'],['vendor','Linked record']];
+const friendlyTypes={pill:'select',datetime:'datetime-local',proposalVendor:'vendor',selectedVendor:'vendor',textarea:'text'};
+const canonicalType=(type)=>friendlyTypes[type]||type||'text';
+const fieldForColumn=(tab,key)=>{
+ if(tab==='Overview')return fieldDef('Vendors',key);
+ let found=defs[tab]?.fields.find(f=>f[0]===key);
+ if(!found&&tab==='Qualification')found=defs.RFP.fields.find(f=>f[0]===key);
+ return found;
+};
+function allColumns(tab){
+ const base=columns[tab]||[], result=base.map(entry=>[...entry]);
+ const seen=new Set(result.map(x=>x[0]));
+ const catalog=[...(defs[tab]?.fields||[]),...(tab==='Qualification'?defs.RFP.fields:[])].filter(([key])=>!(tab==='Qualification'&&key==='vendorId'));
+ for(const [key,label,type] of catalog){if(seen.has(key))continue;seen.add(key);result.push([key,label,canonicalType(type)]);}
+ return result;
+}
+for(const t of tabs){for(const [key] of allColumns(t)){if(!(columns[t]||[]).some(c=>c[0]===key))config.hiddenColumns[t+':'+key]=true;}}
+function shownColumns(tab){
+ return allColumns(tab).filter(([key])=>!config.hiddenColumns[tab+':'+key]).sort((a,b)=>{
+  const ax=config.columnOrder[tab+':'+a[0]],bx=config.columnOrder[tab+':'+b[0]];
+  return (ax===undefined?allColumns(tab).findIndex(x=>x[0]===a[0]):ax)-(bx===undefined?allColumns(tab).findIndex(x=>x[0]===b[0]):bx);
+ });
+}
+function effectiveColumnType(tab,key,defaultType){return config.columnTypes[tab+':'+key]||canonicalType(defaultType||fieldForColumn(tab,key)?.[2]);}
+function columnDisplayValue(tab,row,key){const val=row[key];if(key==='vendorId')return vname(val);return val;}
+const pending=new Map();
+const rowKey=(kind,id)=>`${kind}:${id}`;
+const patchKey=(kind,id,field)=>`${kind}:${id}:${field}`;
+const original=(kind,id)=>db[defs[kind].key].find(r=>r.id===id);
+function record(kind,id){const r=original(kind,id);if(!r)return null;const v={...r};for(const [key,delta] of pending){const p=key.split(':');if(p[0]===kind&&p[1]===id)v[p.slice(2).join(':')]=delta}return v}
+const records=kind=>db[defs[kind].key].map(r=>record(kind,r.id));
+const vendor=id=>records('Vendors').find(v=>v.id===id);
+const rfp=id=>records('RFP').find(v=>v.vendorId===id);
+const qual=id=>records('Qualification').find(v=>v.vendorId===id);
+const contracts=id=>records('Contracting').filter(c=>c.vendorId===id);
+const vname=id=>vendor(id)?.name||'Unassigned';
+function nextAction(v){const q=qual(v.id),r=rfp(v.id),c=contracts(v.id),open=c.find(x=>x.status!=='Completed');
+ if(q?.decision==='Preferred'&&q.quality!=='Passed')return q.nextStep||'Complete mandatory quality review';
+ if(q?.decision==='Preferred'&&open)return `${open.step} · ${date(open.due)}`;
+ if(q?.nextStep&&q.decision!=='Not selected')return q.nextStep;
+ if(r&&!r.receivedAt&&!['Declined','Withdrawn'].includes(r.status))return `Follow up on RFP${r.nextFollowup?' · '+date(r.nextFollowup):''}`;
+ if(r?.receivedAt&&!q)return 'Qualify received proposal';
+ if(v.shortlist==='Shortlisted'&&!r)return 'Send RFP';
+ if(v.shortlist==='Potential')return 'Review shortlist';
+ return '';
+}
+function overviewRows(){return records('Vendors').map(v=>{const r=rfp(v.id),q=qual(v.id),c=contracts(v.id);return {...v,id:v.id,vendorId:v.id,vendor:v.name,regions:v.regions,shortlist:v.shortlist,rfpStatus:r?(r.receivedAt?'Received':r.status):'Not invited',rank:q?.rank||null,decision:q?.decision||'Not evaluated',contractStatus:c.length?`${c.filter(x=>x.status==='Completed').length}/${c.length} steps`:'—',next:nextAction(v),source:v.source}}).filter(x=>!!x.next)}
+function rowsFor(tab){switch(tab){case'Overview':return overviewRows();case'Vendors':return records('Vendors');case'RFP':return records('RFP').map(r=>({...r,vendorName:vname(r.vendorId)}));case'Qualification':return records('Qualification').map(q=>({...rfp(q.vendorId),...q,id:q.id,vendorName:vname(q.vendorId)}));case'Contracting':return records('Contracting').map(c=>({...c,vendorName:vname(c.vendorId)}));default:return defs[tab]?records(tab):[]}}
+function statusOf(row,tab){return tab==='Vendors'||tab==='Overview'?row.shortlist:tab==='Qualification'?row.decision:row.status}
+function regionChoices(){return [...new Set(records('Vendors').flatMap(v=>v.regions||[]))].sort()}
+const defaultSort={Overview:'rank:asc',Vendors:'name:asc',RFP:'nextFollowup:asc',Qualification:'rank:asc',Contracting:'due:asc'};
+function compare(a,b,k,dir){let x=a[k],y=b[k];if(Array.isArray(x))x=x.join(', ');if(Array.isArray(y))y=y.join(', ');const xn=x===undefined||x===null||x==='',yn=y===undefined||y===null||y==='';if(xn!==yn)return xn?1:-1;if(xn)return 0;const n=(typeof x==='number'&&typeof y==='number')?x-y:String(x).localeCompare(String(y),undefined,{numeric:true,sensitivity:'base'});return dir==='desc'?-n:n}
+function visibleRows(){const q=query.toLowerCase().trim();const items=rowsFor(active).filter(row=>{const vid=active==='Vendors'||active==='Overview'?row.id:row.vendorId,v=vendor(vid);if(statusFilter!=='All'&&statusOf(row,active)!==statusFilter)return false;if(regionFilter!=='All'&&!v?.regions?.includes(regionFilter))return false;return !q||[...Object.values(row),...Object.values(v||{}),...Object.values(rfp(vid)||{})].join(' ').toLowerCase().includes(q)});const [key,dir]=(sortBy||defaultSort[active]).split(':');items.sort((a,b)=>compare(a,b,key,dir)||compare(a,b,'name','asc')||compare(a,b,'vendorName','asc'));return items}
+function displayValue(v,type){if(type==='pill'||type==='select')return pill(v);if(type==='code')return '<span class="tag">Calculated field</span>';if(type==='vendor')return esc(v);if(type==='number')return esc(v==null?'—':v);if(type==='datetime-local')return esc(datetime(v));if(type==='regions')return `<div class="multi">${(v||[]).map(x=>`<span class="tag">${esc(x)}</span>`).join('')}</div>`;if(type==='date')return esc(date(v));if(type==='datetime')return esc(datetime(v));if(type==='rank')return v?`<span class="rank">#${esc(v)}</span>`:'—';if(type==='money')return esc(money(v));if(type==='source'){if(!v)return'<span class="empty-source">—</span>';if(/^https?:\/\/\S+$/i.test(v))return `<a class="source-link" href="${esc(v)}" target="_blank" rel="noopener noreferrer">${esc(v)}</a>`;return esc(v)};return esc(v===undefined||v===null||v===''?'—':v)}
+const statIcons={Vendors:'<circle cx="11" cy="8" r="3"/><path d="M4 20v-2a7 7 0 0 1 14 0v2"/><path d="M20 9v6"/>',RFP:'<path d="M5 3h10l4 4v14H5z"/><path d="M15 3v5h4M8 12h8M8 16h8"/>',Qualification:'<path d="M9 12l2 2 4-4"/><rect x="3" y="3" width="18" height="18" rx="3"/>',Contracting:'<path d="M7 3h10l4 4v14H3V3h4"/><path d="M8 14l2 2 5-6"/>'};
+function renderStats(){const r=records('RFP'),v=records('Vendors'),q=records('Qualification'),c=records('Contracting');const s=[['Vendors',v.length,'considered',v.filter(x=>x.shortlist==='Shortlisted').length+' shortlisted'],['RFP',r.filter(x=>x.receivedAt).length+'/'+r.length,'proposals received',r.filter(x=>x.sentAt).length+' sent'],['Qualification',q.length,'evaluations',q.filter(x=>x.quality!=='Passed').length+' quality reviews open'],['Contracting',c.filter(x=>x.status==='Completed').length+'/'+c.length,'steps completed','Preferred: '+vname(q.find(x=>x.decision==='Preferred')?.vendorId)]];
+ $('stats').hidden=active!=='Overview';$('stats').innerHTML=active==='Overview'?s.map(([id,n,label,hint])=>`<button type="button" class="stat" data-jump="${id}"><div class="stat-head"><span class="number">${esc(n)}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${statIcons[id]}</svg></div><div class="label">${label}</div><div class="hint">${esc(hint)}</div></button>`).join(''):''}
+function renderTabs(){$('tabs').innerHTML=[...tabs].sort((a,b)=>(config.tabOrder[a]??tabs.indexOf(a))-(config.tabOrder[b]??tabs.indexOf(b))).filter(t=>!config.hiddenTabs.includes(t)).map(t=>`<button class="tab ${t===active?'active':''}" type="button" role="tab" aria-selected="${t===active}" data-tab="${t}">${esc(config.tabLabels[t])}</button>`).join('')}
+function renderFilters(){const ss=[...new Set(rowsFor(active).map(r=>statusOf(r,active)).filter(Boolean))];if(!ss.includes(statusFilter))statusFilter='All';$('statusFilter').innerHTML='<option value="All">All statuses</option>'+ss.map(v=>`<option value="${esc(v)}" ${statusFilter===v?'selected':''}>${esc(v)}</option>`).join('');$('regionFilter').innerHTML='<option value="All">All regions</option>'+regionChoices().map(v=>`<option value="${esc(v)}" ${regionFilter===v?'selected':''}>${esc(v)}</option>`).join('');const keys=[...shownColumns(active).map(([k])=>k)];if(!keys.includes(sortBy.split(':')[0]))sortBy='';$('sort').innerHTML='<option value="">Default sort</option>'+shownColumns(active).map(([k,l])=>`<option value="${esc(k)}:asc" ${sortBy===k+':asc'?'selected':''}>${esc(config.columnLabels[active+':'+k]||l)} A–Z / low first</option><option value="${esc(k)}:desc" ${sortBy===k+':desc'?'selected':''}>${esc(config.columnLabels[active+':'+k]||l)} Z–A / high first</option>`).join('')}
+function editDestination(tab,row,key){const vid=tab==='Overview'||tab==='Vendors'?row.id:row.vendorId;
+ if(tab==='Vendors')return {kind:'Vendors',id:row.id,key};
+ if(tab==='RFP'){if(key==='vendorName')return {kind:'Vendors',id:vid,key:'name'};return {kind:'RFP',id:row.id,key}}
+ if(tab==='Qualification'){if(key==='vendorName')return {kind:'Vendors',id:vid,key:'name'};if(!defs.Qualification.fields.some(f=>f[0]===key)&&defs.RFP.fields.some(f=>f[0]===key)){const r=rfp(vid);return r?{kind:'RFP',id:r.id,key}:null}return{kind:'Qualification',id:row.id,key}}
+ if(tab==='Contracting'){if(key==='vendorName')return{kind:'Vendors',id:vid,key:'name'};return{kind:'Contracting',id:row.id,key}}
+ if(tab==='Overview'){if(['vendor','regions','shortlist','source'].includes(key))return{kind:'Vendors',id:vid,key:key==='vendor'?'name':key};if(key==='rfpStatus'){const r=rfp(vid);return r?{kind:'RFP',id:r.id,key:'status'}:null}if(['rank','decision'].includes(key)){const q=qual(vid);return q?{kind:'Qualification',id:q.id,key}:null}if(key==='next'){const q=qual(vid);return q?{kind:'Qualification',id:q.id,key:'nextStep'}:null}if(key==='contractStatus'){const c=contracts(vid).find(x=>x.status!=='Completed');return c?{kind:'Contracting',id:c.id,key:'status'}:null}}
+ if(defs[tab])return{kind:tab,id:row.id,key};return null}
+function fieldDef(kind,key){return defs[kind]?.fields.find(f=>f[0]===key)}
+function pendingFor(d){return d&&pending.has(patchKey(d.kind,d.id,d.key))}
+function colWidth(t,k,count){if(config.colWidths[t+':'+k])return Number(config.colWidths[t+':'+k]);if(k==='next')return 295;if(['experience','scope','pkExperience','sampling','bioanalysis','pdAssays','pkAnalysis','unitCapacity','step'].includes(k))return 235;if(k==='source')return 210;if(k==='regions')return 150;return Math.max(135,Math.min(190,Math.floor(1180/count)))}
+function renderTable(){const rows=visibleRows(),cols=shownColumns(active);$('colGroup').innerHTML=cols.map(([k])=>`<col style="width:${colWidth(active,k,cols.length)}px">`).join('')+'<col style="width:84px">';const min=cols.reduce((v,[k])=>v+(colWidth(active,k,cols.length)),84);$('trackerTable').style.minWidth=min+'px';
+ $('head').innerHTML='<tr>'+cols.map(([k,l])=>`<th><button type="button" data-sort="${esc(k)}">${esc(config.columnLabels[active+':'+k]||l)}${sortBy.split(':')[0]===k?(sortBy.endsWith('desc')?' ↓':' ↑'):''}</button><span class="resize-column" data-col-resize="${esc(k)}" title="Drag to resize column"></span></th>`).join('')+'<th class="action-col" scope="col"><span class="details-col-label">Details</span></th></tr>';
+ $('rows').innerHTML=rows.map(row=>`<tr data-row="${esc(row.id)}" style="height:${Number(config.rowHeights[active+':'+row.id])||config.rowHeight}px">`+cols.map(([key,,type],i)=>{const d=editDestination(active,row,key),change=pendingFor(d);return `<td class="${d?'editable-cell':''} ${change?'changed-cell':''}" data-cell="${esc(key)}" ${d?`data-edit-kind="${d.kind}" data-edit-id="${esc(d.id)}" data-edit-field="${esc(d.key)}" title="Click to edit"`:'title="Open row for source details"'}>${displayValue(columnDisplayValue(active,row,key),effectiveColumnType(active,key,type))}</td>`}).join('')+`<td class="action-col"><button type="button" class="expand-row" data-open-row="${esc(row.id)}" aria-label="Expand details for ${esc(row.vendorName||row.vendor||row.name||row.step||'record')}" title="Expand details"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14 19 5M12 5h7v7M19 15v4H5V5h4"/></svg></button><span class="row-resize" data-row-resize="${esc(row.id)}" title="Drag to resize row"></span></td></tr>`).join('');$('empty').hidden=!!rows.length;$('count').textContent=`${rows.length} of ${rowsFor(active).length} records`}
+function renderEdits(){const n=pending.size;$('changedActions').hidden=!n;$('changedCount').textContent=`${n} unsaved ${n===1?'edit':'edits'}`}
+function render(){renderTabs();renderStats();renderFilters();renderTable();renderEdits();$('search').value=query;$('add').textContent='+ Add record';$('trackerTitle').textContent=config.title;$('trackerDesc').textContent=config.description}
+function setTab(t){if(!tabs.includes(t)||config.hiddenTabs.includes(t))return;active=t;query='';statusFilter='All';regionFilter='All';sortBy='';render()}
+function parseField(type,value){if(type==='regions')return [...new Set(String(value||'').split(',').map(s=>s.trim()).filter(Boolean))];if(['money','rank','number'].includes(type))return value===''||value==null?null:Number(value);return String(value??'').trim()}
+function stage(kind,id,key,value){const d=fieldDef(kind,key);if(!d)return;const val=parseField(d[2],value),orig=original(kind,id)?.[key],k=patchKey(kind,id,key);if(JSON.stringify(val)===JSON.stringify(orig===undefined?'':orig))pending.delete(k);else pending.set(k,val);renderEdits()}
+function savePending(){const temp={Vendors:records('Vendors'),RFP:records('RFP'),Qualification:records('Qualification'),Contracting:records('Contracting')};for(const r of temp.Qualification){if(r.rank!=null&&(!Number.isInteger(r.rank)||r.rank<1||r.rank>99))return alert('Preference ranks must be whole numbers from 1 to 99.');if(r.decision==='Preferred'&&r.quality==='Failed')return alert('A CRO that failed mandatory quality review cannot be preferred.')}const ranks=temp.Qualification.filter(x=>x.rank!=null).map(x=>x.rank);if(new Set(ranks).size!==ranks.length)return alert('Two CROs have the same rank. Please give each a different rank.');if(temp.Qualification.filter(x=>x.decision==='Preferred').length>1)return alert('Only one preferred CRO is allowed.');if(temp.RFP.some(x=>x.receivedAt&&!x.sentAt))return alert('An RFP must have a sent time before the proposal-received time.');
+ for(const [key,value] of pending){const [kind,id,...rest]=key.split(':'),field=rest.join(':'),rec=original(kind,id);if(rec)rec[field]=value;}pending.clear();render();if(drawerState?.type==='detail')renderDetails();$('feedback').textContent='Edits saved in this browser preview (not in Trialy)'}
+function discardPending(){pending.clear();render();if(drawerState?.type==='detail')renderDetails();$('feedback').textContent='Unsaved edits ignored'}
+function editControl(kind,id,key,value,forForm=false){const f=fieldDef(kind,key);if(!f)return'';if(f[2]==='code')return '<span class="inline-helper">Calculated field — configure code in Trialy</span>';const type=f[2],options=f[3],val=value??'',attrib=`data-input-kind="${kind}" data-input-id="${esc(id||'')}" data-input-key="${esc(key)}"`;
+ if(type==='select')return `<select class="cell-editor" ${attrib}>${options.map(o=>`<option value="${esc(o)}" ${val===o?'selected':''}>${esc(o)}</option>`).join('')}</select>`;
+ if(['vendor','proposalVendor','selectedVendor'].includes(type)){const vs=records('Vendors');return `<select class="cell-editor" ${attrib} data-related="vendor"><option value="">Choose CRO</option>${vs.map(v=>`<option value="${esc(v.id)}" ${v.id===val?'selected':''}>${esc(v.name)}</option>`).join('')}<option value="__create__">+ Create new CRO</option></select>`}
+ if(type==='regions')return `<input class="cell-editor" ${attrib} type="text" value="${esc(Array.isArray(val)?val.join(', '):val)}" placeholder="EU, US, Japan">`;
+ if(type==='textarea'||type==='source')return `<textarea class="cell-editor ${type==='source'?'source-editbox':''}" ${attrib} rows="${forForm?3:2}" placeholder="${type==='source'?'https://drive.google.com/... or source reference':''}">${esc(val)}</textarea>${type==='source'&&forForm?`<div class="inline-helper">Link an existing document in Drive, SharePoint, or another file system. Access remains managed by that system.</div>`:''}`;
+ const inputType=['money','rank','number'].includes(type)?'number':type;return `<input class="cell-editor" ${attrib} type="${inputType}" ${type==='money'?'min="0" step="1"':type==='rank'?'min="1" step="1"':''} value="${esc(val)}">`;
+}
+function beginCellEdit(cell){if(!cell||cell.querySelector('.cell-editor'))return;const kind=cell.dataset.editKind,id=cell.dataset.editId,key=cell.dataset.editField,d=fieldDef(kind,key);if(!d){const r=cell.closest('tr[data-row]');if(r)showRow(r.dataset.row);return}const rec=record(kind,id);cell.classList.add('is-editing');cell.innerHTML=editControl(kind,id,key,rec?.[key]);const input=cell.querySelector('.cell-editor');if(input){input.focus();if(input.select&&input.tagName==='INPUT'&&!['date','datetime-local'].includes(input.type))input.select();}}
+function finishInline(editor,commit){if(!editor?.isConnected)return;const td=editor.closest('td'),detail=editor.closest('.detail'),kind=editor.dataset.inputKind,id=editor.dataset.inputId,key=editor.dataset.inputKey;if(!kind||!id)return;
+ if(commit&&editor.value==='__create__'&&editor.dataset.related==='vendor'){createRelatedVendor(editor);return}
+ if(commit)stage(kind,id,key,editor.value);
+ if(td){renderStats();renderTable();}
+ if(detail){renderDetails();renderStats();renderTable();}
+}
+function showDrawer(title,body,actions){$('drawerTitle').textContent=title;$('drawerBody').innerHTML=body;$('drawerActions').innerHTML=actions;$('backdrop').classList.add('open');$('backdrop').setAttribute('aria-hidden','false');$('close').focus()}
+function closeDrawer(){drawerState=null;returnToForm=null;$('backdrop').classList.remove('open');$('backdrop').setAttribute('aria-hidden','true');if(focusBefore?.isConnected)focusBefore.focus()}
+const detailValue=(kind,id,f)=>{const v=record(kind,id)?.[f[0]];if(['vendor','proposalVendor','selectedVendor'].includes(f[2]))return vname(v);return f[2]==='money'?money(v):f[2]==='regions'?(v||[]).join(', '):f[2]==='date'?date(v):f[2]==='datetime-local'?datetime(v):f[2]==='rank'&&v?'#'+v:v??'—'};
+function detailField(kind,id,f){const [key,label,type]=f,d={kind,id,key};const displayLabel=config.columnLabels[kind+':'+key]||label;return `<div class="detail ${pendingFor(d)?'is-changed':''}" data-detail-kind="${kind}" data-detail-id="${esc(id)}" data-detail-key="${key}" title="Click to edit"><dt>${esc(displayLabel)}</dt><dd>${displayValue(detailValue(kind,id,f),'source'===type?'source':type==='select'?'pill':'text')}</dd></div>`}
+function detailSection(kind,id){return `<dl class="details">${defs[kind].fields.map(f=>detailField(kind,id,f)).join('')}</dl>`}
+function showRow(id){if(active==='Overview'||active==='Vendors'){showDetails('Vendors',id);return}showDetails(active,id)}
+function showDetails(kind,id){if(!original(kind,id))return;drawerState={type:'detail',kind,id};renderDetails();}
+function renderDetails(){if(!drawerState||drawerState.type!=='detail')return;const scroll=$('drawerBody').scrollTop;const{kind,id}=drawerState,rec=record(kind,id);if(!rec)return;let title=kind==='Vendors'?rec.name:kind==='RFP'?'RFP · '+vname(rec.vendorId):kind==='Qualification'?'Qualification · '+vname(rec.vendorId):rec.step;
+ let body=detailSection(kind,id);if(kind==='RFP'){body+='<h3>RFP follow-up history</h3>'+(rec.followups?.length?`<div class="events">${rec.followups.map(f=>`<div class="event"><small>${esc(datetime(f.date))}</small>${esc(f.note)}</div>`).join('')}</div>`:'<p class="hint">No follow-ups yet.</p>')}
+ if(kind==='Qualification'){const r=rfp(rec.vendorId);body+='<h3>Proposal evidence (edit directly)</h3>'+(r?`<dl class="details">${[['quote','Proposal budget (EUR)','money'],...aspects.map(([k,l])=>[k,l,'text'])].map(f=>detailField('RFP',r.id,f)).join('')}</dl>`:'<p class="hint">No proposal yet. Add it under RFP.</p>')}
+ if(kind==='Vendors'){const r=rfp(id),q=qual(id);body+=`<h3>Linked records</h3><p class="hint">RFP: ${esc(r?.status||'Not sent')} · Qualification: ${esc(q?.decision||'Not evaluated')}</p>`}
+ const actions=`<button class="secondary detail-danger danger-button" type="button" data-delete-record>Delete</button><button class="secondary" type="button" data-duplicate-record>Duplicate</button><button class="secondary" type="button" data-close>Close</button>${kind==='RFP'?'<button class="secondary" type="button" data-followup>Add follow-up</button>':''}${pending.size?'<button class="secondary" type="button" data-discard-pending>Ignore edits</button><button class="primary" type="button" data-save-pending>Save edits</button>':''}`;
+ showDrawer(title,body,actions);$('drawerBody').scrollTop=scroll;}
+function duplicateSelected(){
+ if(drawerState?.type!=='detail')return;
+ const {kind,id}=drawerState,originalRow=record(kind,id);if(!originalRow)return;
+ const vals={...originalRow};delete vals.id;
+ // Duplication is a NEW DRAFT, never a second record automatically created with another vendor's evidence.
+ if(kind==='Vendors'){vals.name=(vals.name||'CRO')+' (copy)';vals.source='';}
+ if(kind==='RFP'){vals.vendorId='';vals.sentAt='';vals.receivedAt='';vals.nextFollowup='';vals.status='Draft';vals.source='';vals.notes='';}
+ if(kind==='Qualification'){vals.vendorId='';vals.rank=null;vals.decision='Evaluating';vals.quality='Not started';vals.source='';}
+ if(kind==='Contracting'){vals.status='Pending';vals.source='';}
+ editForm(kind,null,vals);
+}
+function deleteSelected(){
+ if(drawerState?.type!=='detail')return;
+ const {kind,id}=drawerState,row=original(kind,id);if(!row)return;
+ if(kind==='Vendors'){
+  const linked=Object.entries({RFP:db.rfps.filter(r=>r.vendorId===id).length,Qualification:db.qualifications.filter(r=>r.vendorId===id).length,Contracting:db.contracting.filter(r=>r.vendorId===id).length}).filter(([,n])=>n);
+  if(linked.length){alert('This CRO has linked records ('+linked.map(([k,n])=>n+' '+k).join(', ')+'). Delete or reassign those records first. Nothing was deleted.');return;}
+ }
+ if(kind==='RFP'&&db.qualifications.some(q=>q.vendorId===row.vendorId)){
+  alert('A qualification references this RFP proposal. Delete the qualification first to avoid orphaned evidence.');return;
+ }
+ const name=kind==='Vendors'?row.name:kind==='RFP'?`RFP for ${vname(row.vendorId)}`:kind==='Qualification'?`Qualification for ${vname(row.vendorId)}`:row.step;
+ if(!confirm(`Delete ${name}? This removes the record from this preview and cannot be undone.`))return;
+ const arr=db[defs[kind].key],idx=arr.findIndex(r=>r.id===id);if(idx===-1)return;
+ arr.splice(idx,1);
+ for(const k of [...pending.keys()])if(k.startsWith(`${kind}:${id}:`))pending.delete(k);
+ closeDrawer();render();$('feedback').textContent='Record deleted from this browser preview';
+}
+function beginDetailEdit(el){if(!el||el.classList.contains('is-editing'))return;const{detailKind:kind,detailId:id,detailKey:key}=el.dataset;const f=fieldDef(kind,key);if(!f)return;const v=record(kind,id)?.[key];el.classList.add('is-editing');el.innerHTML=`<dt>${esc(config.columnLabels[kind+':'+key]||f[1])}</dt><dd>${editControl(kind,id,key,v,true)}</dd>`;const input=el.querySelector('.cell-editor');input?.focus();}
+function editForm(kind,id=null,preserve=null){const row=id?record(kind,id):null;drawerState={type:'form',kind,id};const fields=defs[kind].fields;const vals=preserve||row||{};let body=`<form id="recordForm" data-kind="${kind}">`+fields.map(f=>`<label class="field"><span>${esc(f[1])}</span>${editControl(kind,id||'',f[0],vals[f[0]]||'',true)}</label>`).join('')+'<p class="record-error" id="recordError" role="alert"></p></form>';
+ showDrawer(id?'Edit '+defs[kind].name:'Add '+defs[kind].name,body,`<button type="button" class="secondary" data-close>Cancel</button><button class="primary" type="submit" form="recordForm">${id?'Save record':'Add record'}</button>`)}
+function saveNewRecord(form){const kind=drawerState.kind,id=drawerState.id,fields=defs[kind].fields,vals={};for(const [key,,type] of fields){const el=[...form.querySelectorAll('[data-input-key]')].find(x=>x.dataset.inputKey===key);vals[key]=parseField(type,el?.value??'')}
+ const invalid=s=>{form.querySelector('#recordError').textContent=s;return false};
+ if(kind==='Vendors'&&!vals.name)return invalid('Enter a CRO name.');if(kind==='RFP'){if(!vals.vendorId)return invalid('Choose a CRO.');if(vals.receivedAt&&!vals.sentAt)return invalid('Enter when the RFP was sent before recording receipt.');if(vals.receivedAt&&vals.status==='Sent')vals.status='Received';if(records('RFP').some(r=>r.vendorId===vals.vendorId&&r.id!==id))return invalid('This CRO already has an RFP record.');}
+ if(kind==='Qualification'){if(!vals.vendorId)return invalid('Select a CRO.');if(records('Qualification').some(x=>x.vendorId===vals.vendorId&&x.id!==id))return invalid('This CRO already has a qualification record.');if(vals.decision==='Preferred'&&vals.quality==='Failed')return invalid('A vendor with failed quality review cannot be preferred.');if(vals.rank&&records('Qualification').some(x=>x.id!==id&&x.rank===vals.rank))return invalid('Rank already used by another CRO.');}
+ if(kind==='Contracting'&&!vals.step)return invalid('Enter a contracting step.');
+ let savedId=id;
+ if(id){Object.assign(original(kind,id),vals)}else{savedId='rec'+Math.random().toString(36).slice(2,11);db[defs[kind].key].push({id:savedId,...vals,...(kind==='RFP'?{followups:[]}:{} )})}
+ if(returnToForm&&kind==='Vendors'){const ret=returnToForm;returnToForm=null;setTab(ret.active);editForm(ret.kind,ret.id,{...ret.values,[ret.field]:savedId});return true}
+ closeDrawer();render();$('feedback').textContent='Record added to this browser preview';return true}
+function createRelatedVendor(input){const form=input.closest('#recordForm'),inTable=!form;if(inTable){const kind=input.dataset.inputKind,id=input.dataset.inputId,key=input.dataset.inputKey;returnToForm={kind,id,active,field:key,values:{}};editForm('Vendors',null);return}
+ const vals={};form.querySelectorAll('[data-input-key]').forEach(i=>{if(i.value!=='__create__')vals[i.dataset.inputKey]=i.value});returnToForm={kind:drawerState.kind,id:drawerState.id,active,field:input.dataset.inputKey,values:vals};editForm('Vendors',null)}
+function followupForm(){if(drawerState?.kind!=='RFP')return;const rec=record('RFP',drawerState.id);drawerState={type:'followup',kind:'RFP',id:rec.id};showDrawer('Add follow-up · '+vname(rec.vendorId),`<form id="followupForm"><label class="field"><span>Date and time</span><input required type="datetime-local" name="date" value="2026-10-22T16:00"></label><label class="field"><span>Update</span><textarea required name="note" placeholder="Request or clarification"></textarea></label><label class="field"><span>Next follow-up</span><input type="date" name="next" value="${esc(rec.nextFollowup||'')}"></label><p class="record-error" id="recordError"></p></form>`, '<button type="button" class="secondary" data-close>Cancel</button><button type="submit" form="followupForm" class="primary">Save follow-up</button>')}
+function saveFollowup(form){const raw=Object.fromEntries(new FormData(form)),r=original('RFP',drawerState.id);if(!raw.date||!String(raw.note).trim()){form.querySelector('#recordError').textContent='Date and update are required.';return}r.followups.push({date:raw.date,note:raw.note.trim()});r.followups.sort((a,b)=>a.date.localeCompare(b.date));r.nextFollowup=raw.next||'';const id=r.id;drawerState={type:'detail',kind:'RFP',id};renderDetails();render()}
+let settingsDraft=null,settingsActive='Layout',settingsColumnTab='Vendors',settingsSelectedPerson='p1';
+const cloneConfig=()=>JSON.parse(JSON.stringify(config));
+const settingField=(label,input)=>`<label class="settings-field">${label}${input}</label>`;
+const settingSection=(title,body,info='')=>`<section class="settings-section"><h2>${title}</h2>${info?`<p>${info}</p>`:''}${body}</section>`;
+const draftTabs=()=>[...tabs,...(settingsDraft?.addedTabs||[])];
+function draftColumns(tab){
+ const base=allColumns(tab);
+ return [...base,...((settingsDraft?.addedColumns||{})[tab]||[])];
+}
+function orderedDraftTabs(){
+ const items=draftTabs();return [...items].sort((a,b)=>(settingsDraft?.tabOrder[a]??items.indexOf(a))-(settingsDraft?.tabOrder[b]??items.indexOf(b)));
+}
+function orderedDraftColumns(tab){
+ const items=draftColumns(tab);return [...items].sort((a,b)=>(settingsDraft?.columnOrder[tab+':'+a[0]]??items.indexOf(a))-(settingsDraft?.columnOrder[tab+':'+b[0]]??items.indexOf(b)));
+}
+const accessTerms={edit:'Can edit',view:'Can view',restricted:'Restricted'};
+function roleBaseline(person){const r=person?.role==='Custom'?(person?.baseRole||'Viewer'):person?.role;return r==='Owner'||r==='Editor'?'edit':r==='Viewer'?'view':'view'}
+function effectiveTabAccess(d,person,tab){return d.access.overrides.tabs[person.id+':'+tab]||roleBaseline(person)}
+function effectiveColumnAccess(d,person,tab,key){return d.access.overrides.columns[person.id+':'+tab+':'+key]||effectiveTabAccess(d,person,tab)}
+function permissionSelectOptions(value){return Object.entries(accessTerms).map(([key,label])=>`<option value="${key}" ${value===key?'selected':''}>${label}</option>`).join('')}
+function accessClass(v){return v==='edit'?'can-edit':v==='view'?'can-view':'is-restricted'}
+function roleClass(r){return 'role-'+String(r||'Viewer').toLowerCase()}
+function hasOverrides(d,personId){return Object.keys(d.access.overrides.tabs).some(k=>k.startsWith(personId+':'))||Object.keys(d.access.overrides.columns).some(k=>k.startsWith(personId+':'))}
+function clearAccessOverrides(d,id){for(const kind of ['tabs','columns'])for(const k of Object.keys(d.access.overrides[kind]))if(k.startsWith(id+':'))delete d.access.overrides[kind][k]}
+function changedAccess(kind,targetKey,value){
+ const d=settingsDraft,p=d.access.people.find(x=>x.id===settingsSelectedPerson);if(!p||p.role==='Owner')return;
+ const obj=d.access.overrides[kind];const k=p.id+':'+targetKey;
+ const prior=kind==='tabs'?roleBaseline(p):effectiveTabAccess(d,p,settingsColumnTab);
+ if(value===prior)delete obj[k];else obj[k]=value;
+ if(hasOverrides(d,p.id)){
+  if(p.role!=='Custom')p.baseRole=p.role;
+  p.role='Custom';
+ }else if(p.role==='Custom'&&p.baseRole){p.role=p.baseRole;}
+ renderSettings();
+}
+function changePersonRole(id,role){
+ const d=settingsDraft,p=d.access.people.find(x=>x.id===id);if(!p)return;
+ if(role==='Custom'){if(p.role!=='Custom')p.baseRole=p.role==='Owner'?'Viewer':p.role;p.role='Custom'}
+ else{p.role=role;p.baseRole=role;clearAccessOverrides(d,id)}
+ renderSettings();
+}
+function dragHandle(kind,key,label){return `<button type="button" class="drag-grip" draggable="true" data-drag-kind="${kind}" data-drag-key="${esc(key)}" aria-label="Reorder ${esc(label)}. Drag or use arrow keys." title="Drag to reorder; arrow keys also work"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="5" r="1.4"/><circle cx="15" cy="5" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="9" cy="19" r="1.4"/><circle cx="15" cy="19" r="1.4"/></svg></button>`}
+function moveDraft(kind,from,to,after=false){
+ if(from===to)return;const d=settingsDraft;
+ const items=kind==='tab'?orderedDraftTabs():orderedDraftColumns(settingsColumnTab).map(x=>x[0]);
+ if(!items.includes(from)||!items.includes(to))return;
+ const next=items.filter(x=>x!==from),at=next.indexOf(to)+(after?1:0);next.splice(at,0,from);
+ next.forEach((key,i)=>{if(kind==='tab')d.tabOrder[key]=i;else d.columnOrder[settingsColumnTab+':'+key]=i});
+ renderSettings();
+}
+
+function settings(){
+ settingsDraft=cloneConfig();settingsDraft.addedTabs=[];settingsDraft.addedColumns={};
+ settingsActive='Layout';settingsColumnTab=active==='Overview'?'Vendors':active;settingsSelectedPerson='p1';
+ $('trackerView').hidden=true;$('settingsPage').hidden=false;window.scrollTo(0,0);renderSettings();
+}
+function leaveSettings(){settingsDraft=null;$('settingsPage').hidden=true;$('trackerView').hidden=false;render();window.scrollTo(0,0)}
+function settingsType(tab,key,current){const f=fieldForColumn(tab,key);return settingsDraft.columnTypes[tab+':'+key]||canonicalType(f?.[2]||current)}
+function renderSettings(){
+ if(!settingsDraft)return;
+ $('settingsPage').querySelectorAll('[data-settings-tab]').forEach(b=>{const selected=b.dataset.settingsTab===settingsActive;b.classList.toggle('active',selected);b.setAttribute('aria-selected',String(selected))});
+ const d=settingsDraft,allTabs=draftTabs();let html='';
+ if(settingsActive==='Layout'){
+  html+=settingSection('Tracker',`<div class="settings-stack">${settingField('Name',`<input name="title" value="${esc(d.title)}">`)}${settingField('Description',`<textarea name="description">${esc(d.description)}</textarea>`)}</div>`);
+  const trs=orderedDraftTabs().map(t=>`<div class="layout-entry tab-layout-row" data-reorder-kind="tab" data-reorder-key="${esc(t)}">${dragHandle('tab',t,d.tabLabels[t]||t)}<input class="settings-inline-name" data-setting-tab-label="${esc(t)}" aria-label="Tab name" value="${esc(d.tabLabels[t]||t)}"><select data-setting-visibility="${esc(t)}" aria-label="Show or hide tab"><option value="show" ${d.hiddenTabs.includes(t)?'':'selected'}>Shown</option><option value="hide" ${d.hiddenTabs.includes(t)?'selected':''}>Hidden</option></select></div>`).join('');
+  html+=settingSection('Tabs',`<div class="layout-head tab-layout-row"><span></span><span>Tab name</span><span>Visibility</span></div>${trs}<div class="settings-add"><label for="newTabInput">New tab</label><div class="settings-add-inline"><input id="newTabInput" placeholder="Name your new tab" aria-label="New tab name"><button type="button" class="secondary" id="addTabNow">Add tab</button></div></div>`);
+  const tc=orderedDraftColumns(settingsColumnTab);
+  const crs=tc.map(([key,label,type],i)=>{
+    const defaultHidden=!columns[settingsColumnTab]?.some(c=>c[0]===key);
+    const hidden=d.hiddenColumns[settingsColumnTab+':'+key]??defaultHidden;
+    const typ=settingsType(settingsColumnTab,key,type);
+    const linked=!!fieldForColumn(settingsColumnTab,key)||settingsColumnTab==='Overview';
+    const types=fieldTypeOptions.map(([value,title])=>`<option value="${value}" ${typ===value?'selected':''}>${title}</option>`).join('');
+    return `<div class="layout-entry column-layout-row" data-reorder-kind="column" data-reorder-key="${esc(key)}">${dragHandle('column',key,d.columnLabels[settingsColumnTab+':'+key]||label)}<input class="settings-inline-name" data-setting-col-label="${esc(key)}" aria-label="Display name for ${esc(label)}" value="${esc(d.columnLabels[settingsColumnTab+':'+key]||label)}"><select data-setting-col-type="${esc(key)}" aria-label="Value type for ${esc(label)}" ${linked?'disabled title="Linked field: change the database type through an approved schema change"':''}>${types}</select><select data-setting-col-visible="${esc(key)}" aria-label="Visibility for ${esc(label)}"><option value="show" ${hidden?'':'selected'}>Shown</option><option value="hide" ${hidden?'selected':''}>Hidden</option></select></div>`;
+  }).join('');
+  html+=settingSection('Columns',`${settingField('Tab',`<select id="settingsColumnTab">${allTabs.map(t=>`<option value="${esc(t)}" ${t===settingsColumnTab?'selected':''}>${esc(d.tabLabels[t]||t)}</option>`).join('')}</select>`)}<div class="columns-list"><div class="layout-head column-layout-row"><span></span><span>Display name</span><span>Value type</span><span>Visibility</span></div>${crs}</div><div class="settings-add"><label for="newColumnInput">New column</label><div class="settings-add-inline"><input id="newColumnInput" placeholder="New field name"><select id="newColumnType" aria-label="New field type">${fieldTypeOptions.filter(([v])=>['text','number','date','datetime-local','source','code','select','money'].includes(v)).map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}</select><button type="button" class="secondary" id="addColumnNow">Add column</button></div></div><div class="settings-help">Linked fields keep their database identity and value type. You can change the display name here; newly created fields can choose a type. Code fields require separately defined logic.</div>`);
+ }
+ if(settingsActive==='Access'){
+  const people=d.access.people||[];const selected=people.find(p=>p.id===settingsSelectedPerson)||people.find(p=>p.role!=='Owner')||people[0];if(selected)settingsSelectedPerson=selected.id;
+  const members=people.map(p=>`<div class="access-person"><div class="person-identity"><span class="avatar ${roleClass(p.role)}">${esc(p.name.split(/\s+/).slice(0,2).map(s=>s[0]).join('').toUpperCase())}</span><div><strong>${esc(p.name)}</strong>${p.role==='Owner'?'<small>Tracker owner</small>':''}</div></div><select class="role-select ${roleClass(p.role)}" aria-label="Access for ${esc(p.name)}" data-person-role="${esc(p.id)}"><option ${p.role==='Owner'?'selected':''}>Owner</option><option ${p.role==='Editor'?'selected':''}>Editor</option><option ${p.role==='Viewer'?'selected':''}>Viewer</option><option ${p.role==='Custom'?'selected':''}>Custom</option></select></div>`).join('');
+  html+=settingSection('Tracker owner & team access',`<div class="access-people">${members}</div><div class="settings-add"><label for="addPersonName">Add person</label><div class="settings-add-inline"><input id="addPersonName" placeholder="Name or email"><select id="addPersonRole" aria-label="New person's access"><option>Editor</option><option>Viewer</option><option>Owner</option><option>Custom</option></select><button type="button" class="secondary" id="addPersonNow">Add person</button></div></div>`);
+  const userOpts=people.map(p=>`<option value="${esc(p.id)}" ${p.id===settingsSelectedPerson?'selected':''}>${esc(p.name)}</option>`).join('');
+  html+=settingSection('Individual permissions',`${settingField('Person',`<select id="settingsPerson">${userOpts}</select>`)}<div class="settings-help">Each person's access starts from their tracker role. Change a tab or column permission to customize it. Column permissions take precedence over tab permissions.</div>`);
+  const selectedOwner=selected?.role==='Owner';
+  const tro=allTabs.map(t=>{const v=effectiveTabAccess(d,selected,t),changed=Object.hasOwn(d.access.overrides.tabs,settingsSelectedPerson+':'+t);return `<div class="access-override-row ${changed?'permission-modified':''}"><span>${esc(d.tabLabels[t]||t)}</span><select class="permission-select ${accessClass(v)} ${changed?'is-overridden':''}" data-setting-tab-access="${esc(t)}" aria-label="${esc(t)} permission" ${selectedOwner?'disabled':''}>${permissionSelectOptions(v)}</select></div>`}).join('');
+  html+=settingSection('Tab permissions',tro);
+  const cro=orderedDraftColumns(settingsColumnTab).map(([key,label])=>{const v=effectiveColumnAccess(d,selected,settingsColumnTab,key),changed=Object.hasOwn(d.access.overrides.columns,settingsSelectedPerson+':'+settingsColumnTab+':'+key);return `<div class="access-override-row ${changed?'permission-modified':''}"><span>${esc(d.columnLabels[settingsColumnTab+':'+key]||label)}</span><select class="permission-select ${accessClass(v)} ${changed?'is-overridden':''}" data-setting-col-access="${esc(key)}" aria-label="${esc(label)} permission" ${selectedOwner?'disabled':''}>${permissionSelectOptions(v)}</select></div>`}).join('');
+  html+=settingSection('Column permissions',`${settingField('Tab',`<select id="settingsColumnTab">${allTabs.map(t=>`<option value="${esc(t)}" ${t===settingsColumnTab?'selected':''}>${esc(d.tabLabels[t]||t)}</option>`).join('')}</select>`)}<div class="column-permission-list">${cro}</div>`);
+ }
+ $('settingsContent').innerHTML=html;
+}
+function collectSettings(){
+ if(!settingsDraft)return;
+ const root=$('settingsContent'),d=settingsDraft,one=(q)=>root.querySelector(q);
+ if(settingsActive==='Layout'){
+  d.title=one('[name="title"]')?.value.trim()||d.title;
+  d.description=one('[name="description"]')?.value??d.description;
+  root.querySelectorAll('[data-setting-tab-label]').forEach(x=>d.tabLabels[x.dataset.settingTabLabel]=x.value.trim()||x.dataset.settingTabLabel);
+  root.querySelectorAll('[data-setting-visibility]').forEach(x=>{const t=x.dataset.settingVisibility;d.hiddenTabs=d.hiddenTabs.filter(y=>y!==t);if(x.value==='hide')d.hiddenTabs.push(t)});
+  const tc=draftColumns(settingsColumnTab);
+  root.querySelectorAll('[data-setting-col-label]').forEach(x=>d.columnLabels[settingsColumnTab+':'+x.dataset.settingColLabel]=x.value.trim()||tc.find(c=>c[0]===x.dataset.settingColLabel)?.[1]);
+  root.querySelectorAll('[data-setting-col-visible]').forEach(x=>d.hiddenColumns[settingsColumnTab+':'+x.dataset.settingColVisible]=x.value==='hide');
+  root.querySelectorAll('[data-setting-col-type]').forEach(x=>{if(!x.disabled)d.columnTypes[settingsColumnTab+':'+x.dataset.settingColType]=x.value});
+ }
+}
+function addSettingsTab(){
+ if(settingsActive!=='Layout')return;collectSettings();const input=$('newTabInput');const label=input?.value.trim();if(!label){input?.focus();return}
+ if(draftTabs().some(t=>(settingsDraft.tabLabels[t]||t).toLowerCase()===label.toLowerCase())){alert('A tab with this name already exists.');return}
+ const t='Custom '+(tabs.length+settingsDraft.addedTabs.length-4);settingsDraft.addedTabs.push(t);settingsDraft.tabLabels[t]=label;
+ settingsDraft.tabOrder[t]=draftTabs().length-1;settingsDraft.addedColumns[t]=[['name','Record','text'],['status','Status','select'],['owner','Owner','text'],['source','Source','source']];
+ renderSettings();const row=$(`settingsContent`).querySelector(`[data-setting-tab-label="${t}"]`);row?.focus();row?.select();
+}
+function addSettingsColumn(){
+ if(settingsActive!=='Layout')return;collectSettings();const input=$('newColumnInput');const name=input?.value.trim();const type=$('newColumnType')?.value||'text';if(!name){input?.focus();return}
+ const tab=settingsColumnTab,cs=draftColumns(tab);
+ if(cs.some(([,l])=>l.toLowerCase()===name.toLowerCase())){alert('A column with this name already exists.');return}
+ const key='user_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,5);
+ (settingsDraft.addedColumns[tab]??=[]).push([key,name,type]);settingsDraft.columnLabels[tab+':'+key]=name;settingsDraft.columnOrder[tab+':'+key]=cs.length;
+ settingsDraft.hiddenColumns[tab+':'+key]=false;
+ renderSettings();const el=$('settingsContent').querySelector(`[data-setting-col-label="${key}"]`);el?.focus();el?.select();
+}
+function addSettingsPerson(){
+ if(settingsActive!=='Access')return;collectSettings();const input=$('addPersonName');const name=input?.value.trim();if(!name){input?.focus();return}
+ if(settingsDraft.access.people.some(x=>x.name.toLowerCase()===name.toLowerCase())){alert('That person already has access.');return}
+ const role=$('addPersonRole')?.value||'Viewer',id='p'+Date.now().toString(36);
+ settingsDraft.access.people.push({id,name,role,baseRole:role==='Custom'?'Viewer':role});settingsSelectedPerson=id;renderSettings();
+}
+function saveSettings(){
+ collectSettings();const d=settingsDraft;if(!d)return;
+ if(d.hiddenTabs.length===draftTabs().length){alert('Keep at least one tab visible.');return}
+ if(!d.access.people.some(p=>p.role==='Owner')){alert('The tracker needs at least one owner.');return}
+ for(const t of d.addedTabs||[]){
+  tabs.push(t);const key='custom_'+t.toLowerCase().replace(/\W+/g,'_');db[key]=[];
+  defs[t]={key,name:'record',fields:[]};columns[t]=[];defaultSort[t]='name:asc';
+ }
+ for(const [t,added] of Object.entries(d.addedColumns||{})){
+  for(const [key,label,type] of added){
+   const dbType=type==='select'?'select':type;
+   const def=[key,label,dbType];if(dbType==='select')def.push(['Not started','In progress','Blocked','Completed']);
+   const target=(t==='Overview'?'Vendors':t);
+   if(!defs[target].fields.some(f=>f[0]===key))defs[target].fields.push(def);
+   if(!columns[t].some(c=>c[0]===key))columns[t].push([key,label,type]);
+  }
+ }
+ delete d.addedTabs;delete d.addedColumns;
+ Object.assign(config,d);
+ if(config.hiddenTabs.includes(active))active=tabs.find(t=>!config.hiddenTabs.includes(t));
+ leaveSettings();$('feedback').textContent='Settings saved in this browser preview';
+}
+$('settingsPage').querySelector('.settings-tabs').addEventListener('click',e=>{const el=e.target.closest('[data-settings-tab]');if(!el)return;collectSettings();settingsActive=el.dataset.settingsTab;renderSettings()});
+$('settingsContent').addEventListener('change',e=>{
+ if(e.target.id==='settingsColumnTab'){collectSettings();settingsColumnTab=e.target.value;renderSettings()}
+ else if(e.target.id==='settingsPerson'){collectSettings();settingsSelectedPerson=e.target.value;renderSettings()}
+ else if(e.target.matches('[data-person-role]'))changePersonRole(e.target.dataset.personRole,e.target.value);
+ else if(e.target.matches('[data-setting-tab-access]'))changedAccess('tabs',e.target.dataset.settingTabAccess,e.target.value);
+ else if(e.target.matches('[data-setting-col-access]'))changedAccess('columns',settingsColumnTab+':'+e.target.dataset.settingColAccess,e.target.value);
+});
+// Reorder visible and hidden tabs/columns using drag handles. Keyboard arrow keys also move them.
+let dragSettings=null;
+$('settingsContent').addEventListener('dragstart',e=>{
+ const grip=e.target.closest('.drag-grip');if(!grip)return;
+ dragSettings={kind:grip.dataset.dragKind,key:grip.dataset.dragKey};
+ e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',dragSettings.key);
+ grip.closest('.layout-entry')?.classList.add('is-dragging');
+});
+$('settingsContent').addEventListener('dragover',e=>{
+ const target=e.target.closest('.layout-entry[data-reorder-kind]');
+ if(!dragSettings||!target||target.dataset.reorderKind!==dragSettings.kind||target.dataset.reorderKey===dragSettings.key)return;
+ e.preventDefault();e.dataTransfer.dropEffect='move';
+ $('settingsContent').querySelectorAll('.drop-target').forEach(el=>el.classList.remove('drop-target'));
+ target.classList.add('drop-target');
+});
+$('settingsContent').addEventListener('drop',e=>{
+ const target=e.target.closest('.layout-entry[data-reorder-kind]');if(!dragSettings||!target||dragSettings.kind!==target.dataset.reorderKind)return;
+ e.preventDefault();const rect=target.getBoundingClientRect(),after=e.clientY>rect.top+rect.height/2;
+ collectSettings();moveDraft(dragSettings.kind,dragSettings.key,target.dataset.reorderKey,after);dragSettings=null;
+});
+$('settingsContent').addEventListener('dragend',()=>{dragSettings=null;$('settingsContent').querySelectorAll('.is-dragging,.drop-target').forEach(el=>el.classList.remove('is-dragging','drop-target'))});
+$('settingsContent').addEventListener('keydown',e=>{
+ const grip=e.target.closest('.drag-grip');if(!grip||!['ArrowUp','ArrowDown'].includes(e.key))return;
+ const kind=grip.dataset.dragKind,key=grip.dataset.dragKey;
+ const items=kind==='tab'?orderedDraftTabs():orderedDraftColumns(settingsColumnTab).map(x=>x[0]);const at=items.indexOf(key),target=items[at+(e.key==='ArrowUp'?-1:1)];
+ if(!target)return;e.preventDefault();collectSettings();moveDraft(kind,key,target,e.key==='ArrowDown');
+ $('settingsContent').querySelectorAll('.drag-grip').forEach(x=>{if(x.dataset.dragKind===kind&&x.dataset.dragKey===key)x.focus()});
+});
+$('settingsContent').addEventListener('click',e=>{
+ if(e.target.closest('#addTabNow'))addSettingsTab();
+ if(e.target.closest('#addColumnNow'))addSettingsColumn();
+ if(e.target.closest('#addPersonNow'))addSettingsPerson();
+});
+$('settingsContent').addEventListener('keydown',e=>{
+ if(e.key==='Enter'&&e.target.id==='newTabInput'){e.preventDefault();addSettingsTab()}
+ if(e.key==='Enter'&&e.target.id==='newColumnInput'){e.preventDefault();addSettingsColumn()}
+ if(e.key==='Enter'&&e.target.id==='addPersonName'){e.preventDefault();addSettingsPerson()}
+});
+$('settingsSave').addEventListener('click',saveSettings);
+$('settingsCancel').addEventListener('click',leaveSettings);
+$('settingsBack').addEventListener('click',leaveSettings);
+$('tabs').addEventListener('click',e=>{const el=e.target.closest('[data-tab]');if(el)setTab(el.dataset.tab)});
+$('stats').addEventListener('click',e=>{const el=e.target.closest('[data-jump]');if(el)setTab(el.dataset.jump)});
+$('search').addEventListener('input',e=>{query=e.target.value;renderTable()});
+$('statusFilter').addEventListener('change',e=>{statusFilter=e.target.value;renderTable()});
+$('regionFilter').addEventListener('change',e=>{regionFilter=e.target.value;renderTable()});
+$('sort').addEventListener('change',e=>{sortBy=e.target.value;renderTable()});
+$('head').addEventListener('click',e=>{if(e.target.closest('[data-col-resize]'))return;const el=e.target.closest('[data-sort]');if(el){const [old,dir]=(sortBy||defaultSort[active]).split(':');sortBy=el.dataset.sort+':'+(old===el.dataset.sort&&dir==='asc'?'desc':'asc');renderTable();renderFilters()}});
+$('add').addEventListener('click',()=>{focusBefore=$('add');editForm(active==='Overview'?'Vendors':active)});
+$('settingsBtn').addEventListener('click',()=>{focusBefore=$('settingsBtn');settingsWorking={};settings()});
+$('saveEdits').addEventListener('click',savePending);
+$('discardEdits').addEventListener('click',discardPending);
+$('rows').addEventListener('click',e=>{if(e.target.closest('.cell-editor,.row-resize,a'))return;const expand=e.target.closest('[data-open-row]');if(expand){focusBefore=expand;showRow(expand.dataset.openRow);return}const cell=e.target.closest('td');if(!cell||cell.classList.contains('action-col'))return;const el=cell.closest('tr[data-row]');if(cell.dataset.editKind){focusBefore=cell;beginCellEdit(cell)}else if(el){focusBefore=el;showRow(el.dataset.row)}});
+$('rows').addEventListener('keydown',e=>{if(e.target.closest('.cell-editor,button,a'))return;if(e.key==='Enter'||e.key===' '){const tr=e.target.closest('tr[data-row]');if(tr){e.preventDefault();showRow(tr.dataset.row)}}});
+$('rows').addEventListener('change',e=>{if(e.target.classList.contains('cell-editor'))finishInline(e.target,true)});
+$('rows').addEventListener('focusout',e=>{const t=e.target;if(t.classList.contains('cell-editor')&&t.isConnected){if(t.value==='__create__')return;finishInline(t,true)}});
+$('rows').addEventListener('keydown',e=>{if(!e.target.classList.contains('cell-editor'))return;if(e.key==='Escape'){e.preventDefault();finishInline(e.target,false)}if(e.key==='Enter'&&e.target.tagName!=='TEXTAREA'){e.preventDefault();finishInline(e.target,true)}});
+$('drawerBody').addEventListener('click',e=>{if(e.target.closest('.cell-editor,a'))return;const d=e.target.closest('.detail[data-detail-kind]');if(d)beginDetailEdit(d)});
+$('drawerBody').addEventListener('change',e=>{const el=e.target;if(el.classList.contains('cell-editor')&&el.closest('.detail'))finishInline(el,true);if(el.id==='settingsTab'){cacheSettingsCols();renderSettingColumns(el.value)}});
+$('drawerBody').addEventListener('focusout',e=>{const t=e.target;if(t.classList.contains('cell-editor')&&t.closest('.detail')&&t.isConnected&&t.value!=='__create__')finishInline(t,true)});
+$('drawerBody').addEventListener('keydown',e=>{const t=e.target;if(t.classList.contains('cell-editor')&&t.closest('.detail')){if(e.key==='Escape'){e.preventDefault();finishInline(t,false)}else if(e.key==='Enter'&&t.tagName!=='TEXTAREA'){e.preventDefault();finishInline(t,true)}}});
+$('drawerBody').addEventListener('submit',e=>{if(e.target.id==='recordForm'){e.preventDefault();saveNewRecord(e.target)}else if(e.target.id==='followupForm'){e.preventDefault();saveFollowup(e.target)}else if(e.target.id==='settingsForm'){e.preventDefault();applySettings(e.target)}});
+$('drawerActions').addEventListener('click',e=>{if(e.target.closest('[data-close]'))closeDrawer();else if(e.target.closest('[data-followup]'))followupForm();else if(e.target.closest('[data-duplicate-record]'))duplicateSelected();else if(e.target.closest('[data-delete-record]'))deleteSelected();else if(e.target.closest('[data-save-pending]'))savePending();else if(e.target.closest('[data-discard-pending]'))discardPending()});
+$('close').addEventListener('click',closeDrawer);
+$('backdrop').addEventListener('click',e=>{if(e.target===$('backdrop'))closeDrawer()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&drawerState&&!e.target.closest('.cell-editor'))closeDrawer()});
+// "Create new" is always available when a linked CRO is required, even if no CRO has yet been added.
+$('drawerBody').addEventListener('change',e=>{if(e.target.matches('select[data-related="vendor"]')&&e.target.value==='__create__')createRelatedVendor(e.target)});
+// Drag-resize table columns; retains per-tab width preferences for this preview.
+$('head').addEventListener('pointerdown',e=>{const handle=e.target.closest('[data-col-resize]');if(!handle)return;e.preventDefault();e.stopPropagation();const key=handle.dataset.colResize,tk=active+':'+key,th=handle.closest('th'),x=e.clientX,start=th.getBoundingClientRect().width;handle.setPointerCapture?.(e.pointerId);const move=ev=>{config.colWidths[tk]=Math.max(85,Math.min(650,start+ev.clientX-x));const colIdx=shownColumns(active).findIndex(c=>c[0]===key),col=$('colGroup').children[colIdx];if(col)col.style.width=config.colWidths[tk]+'px';th.style.width=config.colWidths[tk]+'px'};const up=()=>{handle.removeEventListener('pointermove',move);renderTable()};handle.addEventListener('pointermove',move);handle.addEventListener('pointerup',up,{once:true});handle.addEventListener('pointercancel',up,{once:true})});
+$('rows').addEventListener('pointerdown',e=>{const handle=e.target.closest('[data-row-resize]');if(!handle)return;e.preventDefault();e.stopPropagation();const id=handle.dataset.rowResize,k=active+':'+id,tr=handle.closest('tr'),y=e.clientY,h=tr.getBoundingClientRect().height;handle.setPointerCapture?.(e.pointerId);const move=ev=>{config.rowHeights[k]=Math.max(38,Math.min(180,h+ev.clientY-y));tr.style.height=config.rowHeights[k]+'px'};const up=()=>{handle.removeEventListener('pointermove',move);renderTable()};handle.addEventListener('pointermove',move);handle.addEventListener('pointerup',up,{once:true});handle.addEventListener('pointercancel',up,{once:true})});
+// Resize side panel by dragging its left edge or using the keyboard.
+const resizeHandle=$('drawerResizer'),drawer=document.querySelector('.drawer');let drawerWidth=520;
+resizeHandle.addEventListener('pointerdown',e=>{e.preventDefault();const start=e.clientX,initial=drawer.getBoundingClientRect().width;resizeHandle.setPointerCapture?.(e.pointerId);const move=ev=>{drawerWidth=Math.max(365,Math.min(innerWidth-15,initial+start-ev.clientX));drawer.style.setProperty('--drawer-width',drawerWidth+'px')};const up=()=>resizeHandle.removeEventListener('pointermove',move);resizeHandle.addEventListener('pointermove',move);resizeHandle.addEventListener('pointerup',up,{once:true});resizeHandle.addEventListener('pointercancel',up,{once:true})});
+resizeHandle.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();drawerWidth=Math.max(365,Math.min(innerWidth-15,drawerWidth+(e.key==='ArrowLeft'?30:-30)));drawer.style.setProperty('--drawer-width',drawerWidth+'px')}});
+render();
+
+</script></body></html>
