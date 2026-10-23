@@ -2,7 +2,7 @@ import {useAccessRecheck} from './useAccessRecheck.js';
 import {FrontendCodeRuntime} from './FrontendCodeRuntime.js';
 import {ComponentRuntime} from './ComponentRuntime.js';
 import {ProjectSharing} from './ProjectSharing.js';
-import React,{useState} from 'react';
+import React,{useState,useEffect} from 'react';
 type Call=(name:string,args:Record<string,unknown>)=>Promise<any>;
 export function ComponentEditor({component,projects,call,onBack,onPreview}:{component:any;projects:any[];call:Call;onBack:()=>void;onPreview:(p:any)=>void}){
  const [showInterface,setShowInterface]=useState(!component.project_archived&&!component.archived&&['frontend-js','trialy-ui'].includes(component.format));
@@ -19,10 +19,16 @@ export function ComponentEditor({component,projects,call,onBack,onPreview}:{comp
  const revoke=(message:string)=>{setSource('');setHistory(null);setRevision(null);setRun(null);setUnavailable(message);};
  useAccessRecheck(()=>{void call('check_component_access',{componentId:component.id}).then(r=>{if(r.version!==component.version)throw Error('Interface changed; reopen it to review the current revision');}).catch(e=>revoke((e as Error).message));},!!component.id&&!showInterface&&!unavailable);
  const target={componentId:component.id,expectedVersion:component.version};
- if(unavailable)return <section><button onClick={onBack}>← Project</button><p role="alert">{unavailable}</p></section>;
+ const [leaving,setLeaving]=useState(false);
+ const dirty=name!==(component.name??'')||source!==(component.source??'')||format!==(component.format??'frontend-js')||resourceKind!==(component.resource_kind??'generic')||manifest!==JSON.stringify(component.manifest??null,null,2)||sourceAccess!==(component.source_access??'workspace')||assets!==JSON.stringify(component.assets??[],null,2)||execution!==JSON.stringify(component.execution??[],null,2);
+ const leave=()=>dirty?setLeaving(true):onBack();
+ useEffect(()=>{if(!dirty)return;const prevent=(e:BeforeUnloadEvent)=>{e.preventDefault();e.returnValue='';};window.addEventListener('beforeunload',prevent);return()=>window.removeEventListener('beforeunload',prevent);},[dirty]);
+ if(leaving)return <section role="alertdialog" aria-label="Unsaved configuration"><h3>Keep your edits?</h3><p>Your configuration changes have not been saved.</p><button autoFocus onClick={()=>setLeaving(false)}>Keep editing</button><button onClick={onBack}>Discard edits and return</button></section>;
+
+ if(unavailable)return <section><button onClick={leave}>← Home</button><p role="alert">{unavailable}</p></section>;
  if(sharing)return <ProjectSharing target={component} component call={call} onPreview={onPreview} onBack={()=>setSharing(false)}/>;
- if(showInterface)return <section><button onClick={onBack}>← Project</button><h3>{component.name}</h3><button onClick={()=>setShowInterface(false)}>Edit configuration / history</button><button onClick={()=>setSharing(true)}>Access control</button>{component.format==='frontend-js'?<FrontendCodeRuntime key={component.id+':'+component.version} component={component} call={call} onProposal={onPreview} onUnavailable={revoke}/>:<ComponentRuntime component={component} call={call} onPreview={onPreview}/>}</section>;
- return <section aria-label="Saved component"><button onClick={onBack}>← Project</button>{error&&<p role="alert">{error}</p>}
+ if(showInterface)return <section><button onClick={leave}>← Home</button><h3>{component.name}</h3><button onClick={()=>setShowInterface(false)}>Edit configuration / history</button><button onClick={()=>setSharing(true)}>Access control</button>{component.format==='frontend-js'?<FrontendCodeRuntime key={component.id+':'+component.version} component={component} call={call} onProposal={onPreview} onUnavailable={revoke}/>:<ComponentRuntime component={component} call={call} onPreview={onPreview}/>}</section>;
+ return <section aria-label="Saved component"><button onClick={leave}>← Home</button>{error&&<p role="alert">{error}</p>}
  {revision?<><button onClick={()=>setRevision(null)}>← Revision list</button><h3>Revision {revision.version}</h3><pre style={{whiteSpace:'pre-wrap',overflowWrap:'anywhere'}}>{revision.snapshot.source}</pre><p>Recovery creates a new revision. It keeps the current project and archive state. Execution bindings are cleared and must be reviewed again.</p><button disabled={busy} onClick={()=>act(()=>prepare({kind:'restore_component',...target,revisionVersion:revision.version}))}>Review recovery</button></>
  :history?<><button onClick={()=>setHistory(null)}>← Component</button><h3>Revision history</h3>{history.map(r=><p key={r.id}><button onClick={()=>setRevision(r)}>Revision {r.version} · {r.snapshot.name}</button></p>)}</>
  :<><h3>{component.id?'Edit saved component':'New component'}</h3><p>Frontend code runs under the documented HTML/CSS/JavaScript render/event contract. Other HTML and JavaScript formats are source-only. Saving does not change linked database records.</p>
