@@ -1,7 +1,7 @@
 import {activeProject} from './project-context.js';
 import {validateDerived,DerivedReader,validateRenderer} from './derived-fields.js';
 import {fieldChangeQuerySchema,type FieldChangeQuery} from '../shared/schema.js';
-import {requireHuman,setWriteAuthorization,type WriteAuthorization} from './write-authorization.js';
+import {requireCurrentAction,requireHuman,setWriteAuthorization,type WriteAuthorization} from './write-authorization.js';
 import {DataService} from './data-service.js';
 import {checksum,audit,revision} from './evidence.js';
 export {checksum,audit} from './evidence.js';
@@ -96,7 +96,7 @@ export class Service extends DataService {
    if((await tx.query('SELECT r.id FROM record_review_requests r LEFT JOIN record_review_decisions d ON d.request_id=r.id WHERE r.record_id=$1 AND d.request_id IS NULL',[op.recordId])).rows.length)fail(409,'review_pending','Cancel or complete the existing request before rerouting');
    if(op.dueOn&&(Number.isNaN(Date.parse(op.dueOn))||new Date(op.dueOn).toISOString().slice(0,10)!==op.dueOn))fail(400,'invalid_date','Choose a valid due date');
   }
-  if(op.kind==='accept_submission'){if(a.origin!=='human'||p.role!=='owner')fail(403,'owner_required','A human owner must review external submissions');const submission=(await tx.query('SELECT f.id FROM form_submissions f LEFT JOIN submission_acceptances accepted ON accepted.submission_id=f.id WHERE f.id=$1 AND f.workspace_id=$2 AND f.type_id=$3 AND accepted.submission_id IS NULL',[op.submissionId,w,op.typeId])).rows[0];if(!submission)fail(409,'submission_unavailable','Submission is unavailable or already accepted');const linked=(await tx.query('SELECT l.project_id FROM external_links l JOIN form_submissions s ON s.link_id=l.id WHERE s.id=$1 AND s.workspace_id=$2',[op.submissionId,w])).rows[0];if(linked?.project_id)await activeProject(tx,a,w,linked.project_id);await this.validate(tx,a,w,{kind:'create_record',typeId:op.typeId,data:op.data});}
+  if(op.kind==='accept_submission'){requireCurrentAction(a);if(p.role!=='owner')fail(403,'owner_required','A human owner must review external submissions');const submission=(await tx.query('SELECT f.id FROM form_submissions f LEFT JOIN submission_acceptances accepted ON accepted.submission_id=f.id WHERE f.id=$1 AND f.workspace_id=$2 AND f.type_id=$3 AND accepted.submission_id IS NULL',[op.submissionId,w,op.typeId])).rows[0];if(!submission)fail(409,'submission_unavailable','Submission is unavailable or already accepted');const linked=(await tx.query('SELECT l.project_id FROM external_links l JOIN form_submissions s ON s.link_id=l.id WHERE s.id=$1 AND s.workspace_id=$2',[op.submissionId,w])).rows[0];if(linked?.project_id)await activeProject(tx,a,w,linked.project_id);await this.validate(tx,a,w,{kind:'create_record',typeId:op.typeId,data:op.data});}
   if(['create_type','update_type','install_template','create_view','update_view'].includes(op.kind)&&p.role!=='owner')fail(403,'owner_required','Only the owner may configure this workspace');
   if(op.kind==='migrate_type')await this.migrationData(tx,a,w,op);
   if(op.kind==='adopt_template'){if(a.origin!=='human'||p.role!=='owner')fail(403,'owner_required','Human owner required for template adoption');await adoptionDiff(tx,w,op.template,op.mapping);}
@@ -281,7 +281,7 @@ export class Service extends DataService {
  async discard(a:Actor,id:string) {const r=await this.db.query('DELETE FROM data_previews WHERE id=$1 AND actor_id=$2 RETURNING id',[id,a.userId]);if(!r.rows.length)fail(404,'not_found','Preview not found');return {status:'discarded'};}
  async receipt(a:Actor,id:string) {const r=(await this.db.query('SELECT * FROM commit_receipts WHERE preview_id=$1 AND actor_id=$2',[id,a.userId])).rows[0];if(!r)fail(404,'not_found','Save receipt not found');await access(this.db,a,r.workspace_id);return r.result;}
  async commit(a:Actor,id:string,digest:string,authorization?:WriteAuthorization) {
-  if(!authorization)requireHuman(a);
+  if(!authorization)requireCurrentAction(a);
   const result=await this.db.transaction(async tx=>{
    // Serialise retries of the same logical save, including concurrent requests.
    await tx.query('SELECT pg_advisory_xact_lock(hashtext($1))',[id]);

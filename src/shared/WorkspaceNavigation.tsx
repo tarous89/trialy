@@ -1,5 +1,5 @@
 import React,{useEffect,useState} from 'react';
-export const destinations=[['projects','Projects'],['trackers','Trackers'],['forms','Forms'],['visuals','Visualizations'],['database','Database'],['code','Automations'],['changes','Changes & permissions'],['documents','Documents']] as const;
+export const destinations=[['home','Home'],['database','Database'],['logs','Logs']] as const;
 export function WorkspaceNavigation({selected,onSelect,onSettings}:{selected:string;onSelect:(key:string)=>void;onSettings:()=>void}){
  return <nav className="trialy-navigation" aria-label="Workspace navigation">{destinations.map(([key,label])=><button type="button" key={key} aria-current={selected===key?'page':undefined} onClick={()=>onSelect(key)}>{label}</button>)}<button type="button" className="trialy-settings" onClick={onSettings}>Settings</button></nav>;
 }

@@ -6,7 +6,7 @@ import {TableMappings,mappingStamp,validatePairs} from './mappings.js';
 import {Foundation} from '../foundation/service.js';
 import {z} from 'zod';
 import {id} from '../shared/schema.js';
-import {requireHuman,type WriteAuthorization} from '../domain/write-authorization.js';
+import {requireCurrentAction,requireHuman,type WriteAuthorization} from '../domain/write-authorization.js';
 import {execute} from '../foundation/runtime.js';
 import {frontendRequest,frontendOutput,frontendRead,componentRecordChanges} from './frontend.js';
 import {interfaceSchema} from './ui.js';
@@ -479,7 +479,7 @@ export class WorkspaceFoundation {
  async pending(a:Actor,w:string){await access(this.db,a,w);const rows=(await this.db.query('SELECT * FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND expires_at>now() ORDER BY expires_at',[w,a.userId])).rows;const visible=[];for(const r of rows){try{await this.validate(this.db,a,w,r.body.operation);if((r.body.operation.kind==='save_table_mapping'||r.body.operation.kind==='revoke_table_mapping')&&!(await this.db.query('SELECT $1::jsonb=$2::jsonb AS same',[J(r.body.tableMappingReview),J(await new TableMappings(this.db).review(a,w,r.body.operation))])).rows[0].same)continue;if((r.body.operation.kind==='link_cross_table_identity'||r.body.operation.kind==='unlink_cross_table_identity')&&!(await this.db.query('SELECT $1::jsonb=$2::jsonb AS same',[J(r.body.crossTableReview),J(await this.crossTableReview(this.db,a,w,r.body.operation))])).rows[0].same)continue;visible.push({id:r.id,workspaceId:w,workspaceFoundation:true,body:r.body.operation,responseReview:r.body.responseReview,collectionReview:r.body.collectionReview,trackingReview:r.body.trackingReview,linkedValueReview:r.body.linkedValueReview,tableMappingReview:r.body.tableMappingReview,crossTableReview:r.body.crossTableReview,componentCopy:r.body.componentCopy,projectArchive:r.body.projectArchive,projectLinks:r.body.projectLinks,factReview:r.body.factReview,fieldChanges:r.body.fieldChanges??[],digest:r.digest,expiresAt:r.expires_at});}catch{}}return visible;}
  async discard(a:Actor,w:string,id:string){await access(this.db,a,w);await this.db.query('DELETE FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[id,w,a.userId]);return {discarded:true};}
  private async replay(tx:Connection,a:Actor,w:string,id:string,digest:string){const r=(await tx.query('SELECT * FROM workspace_receipts WHERE id=$1',[id])).rows[0];if(r){if(r.user_id!==a.userId||r.workspace_id!==w||r.digest!==digest)fail(409,'receipt_conflict','Request does not match its saved receipt');return r.result;}}
- async confirm(a:Actor,w:string,id:string,digest:string){requireHuman(a);return this.db.transaction(async tx=>{
+ async confirm(a:Actor,w:string,id:string,digest:string){requireCurrentAction(a);return this.db.transaction(async tx=>{
   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await access(tx,a,w,true);const prior=await this.replay(tx,a,w,id,digest);if(prior)return prior;
   const draft=(await tx.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[id,w,a.userId])).rows[0];if(!draft||draft.digest!==digest)fail(409,'preview_expired','Preview unavailable');
   const op=workspaceOperation.parse(draft.body.operation);await this.validate(tx,a,w,op);

@@ -1,47 +1,41 @@
-# Home redesign: implementation foundation
+# Connected workspace redesign
 
-Scope: [issue #11](https://github.com/tarous89/trialy/issues/11).
+Implements [issue #11](https://github.com/tarous89/trialy/issues/11). Both production entry points use the branded Home / Database / Logs shell, with account Settings at the bottom. The plugin drawer starts closed. Generated resource frames keep their own styles.
 
-The approved navigation is Home, Database, Logs and account Settings. The user explicitly removed the proposed Needs review entry and deferred review inbox. Discuss/authorize changes during the active action, report the actual result and keep completed activity in Logs. Automation failures belong in Logs. This UI foundation adds no new write authority and does not disable existing server authorization checks.
+## Home
 
-## Implemented in this first change
+The server normalizes permitted components, external collection links, saved functions and existing scheduled jobs. Functions and their schedules share one card. Unclassified components use a neutral Custom interface label, remain in All, and are not silently reclassified. Project and resource permissions are evaluated before metadata is returned.
 
-- Shared, scoped React presentation components in `src/shared/ui`: branded shell, consistent SVG icons, buttons, search, select, keyboard-accessible action menus, project banners, type filters and Home resource cards.
-- Controlled Home state for project/type/search/sort/layout, allowing the connected controller to preserve context across navigation.
-- Four resource identities: emerald trackers, blue forms, violet visualizations and cyan automations.
-- Preview grid and detailed list; responsive app/sidebar and initially collapsed embedded drawer, empty/loading/error states and focus return.
-- Self-hosted variable Inter with its OFL license. The new stylesheet is isolated from generated resource frames and existing application styles.
-- Development-only fixture `design-preview.html`, using explicit synthetic content. It imports the reusable presentation components; miniature tracker/form/chart/automation illustrations are fixture code, not production thumbnails.
+Home combines project, resource type, search and sort filters. Responses are bounded to 40 resources by default (100 maximum); Load more retains the same filters. The current authorization routines still inspect candidate resources server-side, so very large catalogs may need indexed catalog optimization later. No full source or record values are sent for Home cards.
 
-The application entry points are deliberately not switched to the new components in this first change. This is implementation foundation plus a runnable visual acceptance fixture, not a live connected Home/Database/Logs release. Create, management and secondary-destination fixture actions identify themselves as navigation demonstrations. They do not pretend to save or read production data.
+Field-layout thumbnails contain permitted field labels, never sampled values. Other resources use branded structural fallbacks. No automation or generated interface runs to create a thumbnail. The approved tracker reference remains the default for creating actual tracker content.
 
-## Visual reference
+Grid/list preference is scoped to viewer/workspace/browser surface. Home state stays mounted across primary navigation; opening and returning from a resource retains filters, layout and scroll context. Project selection supports a bounded searchable expansion. Documents, project management, collections and legacy scheduled jobs remain contextual destinations.
 
-Uses Intel's forest navigation, restrained green controls, Inter typography, spacing and card treatment, together with Trialy's approved Theme 2 tracker reference. Custom tracker styling remains independent.
+## Current-action saves
 
-![Desktop Home](home/home-desktop.png)
+There is no Needs review item, deferred approval inbox, or retrospective validity task. The authenticated confirmation tools can complete an action agreed in the current conversation. They set an internal current-action flag while preserving the AI actor. They do not impersonate a human or bypass workspace, field, project, role, digest, revision, expiry or stale-access checks. Receipts remain the evidence of saving. Background/generated code cannot use this flag and still needs an existing scoped grant for automatic writes.
 
-[Detailed list](home/home-list.png) · [Narrow embedded layout](home/home-mobile.png)
+Owner-only account/security policies that require a human session remain in Settings. Temporary unsaved proposals still exist as transaction inputs and expire; they are not presented as a later work queue. Historical review evidence is retained rather than deleted. External source submissions remain source material until explicitly accepted into working records; this is separate from retrospective approval of completed changes.
 
-## Run and verify
+## Database and Logs
 
-`npm run dev:ui`, then open `/design-preview.html`; append `?embedded=1` for the embedded shell.
+Database keeps on-demand paginated reads, project filtering, table search, permitted-value search/sort and field-type schema filtering. Restricted fields/tables remain schema-only.
 
-Run `scripts/test-home-design.ts` using `node --import tsx` with `PLAYWRIGHT_IMPORT` pointing at an installed Playwright module and `CHROMIUM_PATH` at Chromium. Optional `HOME_SCREENSHOTS` saves screenshots. The harness starts/closes its own local Vite server, uses synthetic data and verifies:
+Logs uses an explicit metadata feed rather than exposing raw audit snapshots. It combines audit events, queued/running code executions and existing automation runs. Unrestricted human audit readers retain their existing inspection boundary. Other users, including AI, receive permitted resource/table activity and their execution statuses; no private record values, source, raw diagnostic text or bearer links are returned.
 
-- Home/Database/Logs/Settings with no Needs review entry;
-- project/type/search combination, sorting and empty states;
-- grid/list and return-state retention;
-- menu/drawer keyboard focus and Escape;
-- 390px embedded layout without page overflow;
-- actual loading of the self-hosted font and no page exceptions.
+Category, outcome, dates, actor, project, resource and text filters run on the server. Event details expose stable references and current context. Historical events without reliable project linkage remain workspace-level. CSV traverses all matching pages with a fixed upper time boundary, includes event references, UTC timestamps and filter context, and escapes spreadsheet formula prefixes. Exports above 50,000 rows fail explicitly and request a narrower filter; no partial file is downloaded. Permission changes are rechecked on each page.
 
-TypeScript and production build pass. These checks are presentation acceptance, not authenticated API or real ChatGPT-host acceptance.
+Migration `036_execution_activity.sql` records terminal execution outcomes in the append-only audit store before temporary runs expire, and backfills outcomes still present at migration time. It cannot reconstruct outcomes already deleted before the migration. Terminal outcomes are not also listed as live runs. Infrastructure/network outages that never create application events are outside this feed.
 
-## Remaining integration
+## Verification
 
-1. Build the authorized unified metadata controller for components, published forms and automation entities, preserving legacy resources and avoiding duplicate cards. Implement bounded project search/resource pagination and persisted per-user view preferences. Wire opening/creation to real actions, and ensure filters resolve unsaved work correctly.
-2. Supply bounded permission-aware read-only previews; never execute automations for thumbnails. Include revision/access invalidation and a safe fallback. Adapt font delivery to the existing self-contained embedded build/CSP when the shell is wired.
-3. Connect Database and replace the sidebar entry points in both surfaces. Retain documents, permissions and configuration through contextual actions. Migrate the current human-confirmation handoff to the approved in-the-moment flow deliberately, rather than merely removing checks.
-4. Implement the unified permission-filtered Logs API, durable event coverage, cursor filters and complete filtered CSV export. Automation failures stay here, without a new notification center.
-5. Run authenticated app and real-host acceptance before deployment of the connected redesign.
+- `npm run check`, `npm run build`, and all 63 backend tests pass.
+- `tests/home-activity.test.ts` covers current-action vs worker authorization, digest mismatch, repeated saves, metadata pagination/filtering, hidden-project exclusion, audit payload redaction, export pagination and outcome retention after run deletion.
+- `scripts/test-workspace-ui.ts` exercises the production React entry point against synthetic API responses: Home → resource → Home, composed filters, layout retention, Database redaction, multi-page CSV and 390px mobile navigation/overflow.
+- `scripts/test-home-design.ts` covers the shared presentation and keyboard menu/drawer behavior using the design fixture.
+- Screenshots below use synthetic content. Real ChatGPT host interaction and download behavior require host acceptance; standalone Chromium is not proof of that integration.
+
+[Home](home/workspace-home.png) · [Database](home/workspace-database.png) · [Logs](home/workspace-logs.png) · [Mobile](home/workspace-mobile.png)
+
+The existing deployment process runs the additive migration before rollout. No new environment variables, services or credentials are required.

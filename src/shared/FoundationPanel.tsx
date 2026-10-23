@@ -1,7 +1,7 @@
 import React,{useEffect,useState} from 'react';
 import {capabilityNames} from '../foundation/schema.js';
 type Call=(name:string,args:Record<string,unknown>)=>Promise<any>;
-export function FoundationPanel({workspaceId,types,call,incoming}:{workspaceId:string;types:any[];call:Call;incoming?:any}){
+export function FoundationPanel({workspaceId,types,call,incoming,initialRevisionId}:{workspaceId:string;types:any[];call:Call;incoming?:any;initialRevisionId?:string}){
  const [planningOnly,setPlanningOnly]=useState(false),[catalog,setCatalog]=useState<any[]>([]),[catalogOffset,setCatalogOffset]=useState<number|null>(0);
  const [triggerKind,setTriggerKind]=useState('interval'),[triggerTime,setTriggerTime]=useState('09:00'),[triggerZone,setTriggerZone]=useState(Intl.DateTimeFormat().resolvedOptions().timeZone),[triggerEvent,setTriggerEvent]=useState('records.changed');
  const [source,setSource]=useState('return tools.list();'),[input,setInput]=useState('{}'),[name,setName]=useState('My function');
@@ -21,6 +21,7 @@ export function FoundationPanel({workspaceId,types,call,incoming}:{workspaceId:s
  const program=()=>({source,input:JSON.parse(input),scope:{capabilities,typeIds,documents}});
  const toggle=(value:string,values:string[],setter:(v:string[])=>void)=>setter(values.includes(value)?values.filter(v=>v!==value):[...values,value]);
  async function loadRevision(revisionId:string){const r=await invoke('read_function_revision',{revisionId});setRevision(r);setPlanningOnly(!!r.body.planningOnly);setName(r.body.name);setSource(r.body.source);setCapabilities(r.body.scope.capabilities);setTypeIds(r.body.scope.typeIds);setDocuments(r.body.scope.documents);setContracts(JSON.stringify({inputContract:r.body.inputContract,outputContract:r.body.outputContract},null,2));}
+ useEffect(()=>{if(initialRevisionId)void act(()=>loadRevision(initialRevisionId));},[initialRevisionId]);
  return <section className="foundation"><h2>Automations</h2><p>Experiment with permitted data, then confirm exactly what to save. Code uses the workspace’s AI permissions. Drafts and run results expire after 24 hours.</p>
  {error&&<p className="error" role="alert">{error}</p>}{notice&&<p role="status">{notice}</p>}
  <label><input type="checkbox" checked={planningOnly} onChange={e=>setPlanningOnly(e.target.checked)}/>Save as a schema-only plan (cannot run until replaced by an authorized executable revision)</label><label>Automation name<input value={name} onChange={e=>setName(e.target.value)} maxLength={100}/></label>
