@@ -3,7 +3,7 @@ import {ActionFooter} from './ActionFooter.js';
 import React,{useEffect,useRef,useState} from 'react';
 import {useAccessRecheck} from './useAccessRecheck.js';
 type Call=(name:string,args:Record<string,unknown>)=>Promise<any>;
-export function FrontendCodeRuntime({component,previewId,call,onProposal,onUnavailable,onAccess,onBusyChange,onRendered}:{component?:any;previewId?:string;call:Call;onProposal:(p:any)=>void;onUnavailable?:(message:string)=>void;onAccess?:()=>void;onBusyChange?:(busy:boolean)=>void;onRendered?:()=>void}){
+export function FrontendCodeRuntime({component,previewId,call,onProposal,onUnavailable,onAccess,onBusyChange,onRendered,onUpdated}:{component?:any;previewId?:string;call:Call;onProposal:(p:any)=>void;onUnavailable?:(message:string)=>void;onAccess?:()=>void;onBusyChange?:(busy:boolean)=>void;onRendered?:()=>void;onUpdated?:(component:any)=>void}){
  const frame=useRef<HTMLIFrameElement>(null),output=useRef<any>(null),state=useRef<any>(null),busyRef=useRef(false),channel=useRef(crypto.randomUUID()),live=useRef(true),current=useRef(component);
  const [standard,setStandard]=useState(false),[ready,setReady]=useState(false),[height,setHeight]=useState(620),[adding,setAdding]=useState(false),[footer,setFooter]=useState<any>(null);
  const [frameUrl,setFrameUrl]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false),[proposal,setProposal]=useState<any>(null);
@@ -33,7 +33,7 @@ export function FrontendCodeRuntime({component,previewId,call,onProposal,onUnava
   if(!receipt.saved){await call('confirm_workspace_change',{previewId:p.id,digest:p.digest,confirmed:true});receipt.saved=true;}
   const read=await call('read_project_component',{componentId:current.current.id});current.current=read.component;
   const result=await call('run_component_frontend',{request:{componentId:current.current.id,expectedVersion:current.current.version,state:{...state.current,settings:false,layoutDraft:null,detail:null},event:{kind:'open'}}});
-  output.current=result;state.current=result.state;setFrameUrl(result.frameUrl);setFooter(null);saveReceipt.current=null;send();
+  output.current=result;state.current=result.state;setFrameUrl(result.frameUrl);setFooter(null);saveReceipt.current=null;send();onUpdated?.(current.current);
  }
  useEffect(()=>{live.current=true;void run();return()=>{live.current=false;};},[]);
  useEffect(()=>{if(component&&component!==current.current){current.current=component;void run();}},[component]);
