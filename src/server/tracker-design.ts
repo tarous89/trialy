@@ -9,7 +9,7 @@ export async function readTrackerDesign(input:unknown){
  const source=await readFile(new URL('../../plugin/trialy/skills/trialy-tracker-design/'+paths[resource],import.meta.url),'utf8');
  if(offset>source.length)throw new Error('Offset exceeds resource length');
  const text=source.slice(offset,offset+12000),end=offset+text.length;
- return {resource,version:'0.2.7',resources:Object.keys(paths),sha256:createHash('sha256').update(source).digest('hex'),offset,totalCharacters:source.length,nextOffset:end<source.length?end:null,text};
+ return {resource,version:'0.2.12',resources:Object.keys(paths),sha256:createHash('sha256').update(source).digest('hex'),offset,totalCharacters:source.length,nextOffset:end<source.length?end:null,text};
 }
 export function addTrackerDesignMcp(server:McpServer){
  server.registerTool('read_tracker_design',{title:'Read tracker design defaults',description:'Before building or revising a tracker, read skill and integration, then relevant references to completion using nextOffset. Defaults yield to user instructions and existing authorized data. HTML is the tracker-only reference, not the plugin interface. Public read-only documentation; no account data.',inputSchema:designRequest.shape,annotations:{readOnlyHint:true,openWorldHint:false},_meta:{securitySchemes:[{type:'noauth'}]}},async input=>{

@@ -1,3 +1,4 @@
+import {backgroundMetadata} from './ui-resource.js';
 import type {McpServer} from '@modelcontextprotocol/sdk/server/mcp.js';
 import {z} from 'zod';
 import {id,type Actor} from '../shared/schema.js';
@@ -5,7 +6,7 @@ import {Foundation,grantSchema} from '../foundation/service.js';
 import {programSchema,functionSchema,invokeSchema,scheduleSchema,capabilityNames,TOOL_CATALOG} from '../foundation/schema.js';
 import {RUNTIME,LIMITS} from '../foundation/runtime.js';
 export function addFoundationMcp(server:McpServer,f:Foundation,a:Actor,safe:(fn:(v:any)=>Promise<any>)=>any,metadata:any){
- const register=(name:string,description:string,schema:Record<string,z.ZodType>,readOnly:boolean,fn:(v:any)=>Promise<any>,appOnly=false)=>server.registerTool(name,{title:name.replaceAll('_',' '),description,inputSchema:schema,annotations:{readOnlyHint:readOnly,destructiveHint:!readOnly,openWorldHint:false},_meta:appOnly?{...metadata,ui:{resourceUri:metadata.ui.resourceUri,visibility:['app']}}:metadata},safe(fn));
+ const register=(name:string,description:string,schema:Record<string,z.ZodType>,readOnly:boolean,fn:(v:any)=>Promise<any>,appOnly=false)=>server.registerTool(name,{title:name.replaceAll('_',' '),description,inputSchema:schema,annotations:{readOnlyHint:readOnly,destructiveHint:!readOnly,openWorldHint:false},_meta:appOnly?{...backgroundMetadata(metadata),ui:{visibility:['app']}}:backgroundMetadata(metadata)},safe(fn));
  register('list_execution_approvals','List pending saved-function, single-data-type permission and schedule reviews.',{workspaceId:id},true,v=>f.pendingApprovals(a,v.workspaceId));
  register('prepare_execution_control','Prepare an exact permission or schedule for human review. Does not authorize writes. Grant config names exactly one data type; fields, expiry and schema version are captured in the review.',{workspaceId:id,kind:z.enum(['grant','schedule']),config:z.unknown()},false,v=>f.prepareControl(a,v.workspaceId,v.kind,v.config));
  register('confirm_execution_control','Save this exact action after agreement with the user in the current conversation. No deferred review task is created. Keep the digest unchanged; report success only from the returned receipt. Permissions and stale-version checks still apply.',{workspaceId:id,previewId:id,digest:z.string().length(64),confirmed:z.literal(true)},false,v=>f.confirmControl({...a,actionConfirmed:true},v.workspaceId,v.previewId,v.digest));
