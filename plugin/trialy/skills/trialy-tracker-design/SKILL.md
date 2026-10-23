@@ -14,6 +14,10 @@ Read [Trialy integration](references/TRIALY_INTEGRATION.md) before implementatio
 3. Use this skill as a skeleton to fill remaining gaps. When neither instructions nor existing data are supplied, use the approved HTML as the default visual and interaction template. Its vendor-selection content is illustrative, never evidence or saved real records.
 4. This package defines the opened tracker only. The host owns the persistent Trialy header with its logo and Open app button. Do not duplicate global navigation inside a tracker.
 
+## Executable skeleton and fidelity
+
+Read [Reference parity](references/REFERENCE_PARITY.md) before every UI build/revision. Reuse `assets/connected-tracker.js` through `prepare_tracker`; adapt configuration, not hand-recreated markup. Ordinary text, URLs and multi-value prose use neutral ink. Click values to edit; resize columns at header edges and rows at the bottom of Details cells. Reference-only features listed in the parity table must not be advertised as implemented.
+
 ## Default implementation
 
 Use `prepare_tracker` to show a temporary tracker before asking to save. Reuse compatible saved fields, or include temporary newTables definitions for missing tables; save creates them atomically with the tracker. It compiles the approved HTML structure and stylesheet through `assets/connected-tracker.js` with server-validated bindings. The trusted browser renderer handles tabs, search, sorting, details and layout locally; bounded data fetches and approved writes still use the backend. Never regenerate a reduced generic table as the default. Read `read_tracker_design(resource:"workflow")` for the current server-backed creation path, including the visible draft returned by `prepare_tracker`, confirmed save and `open_tracker`. Do not replace this default with a technical table editor. For explicit custom requirements, adapt the source while retaining the applicable visual and interaction contract.
@@ -61,7 +65,7 @@ Treat committed database records as the source of truth; trackers/forms/dashboar
 
 ### 4. Select only essential data and tabs
 
-Build the **smallest useful structure that tells the end-to-end story**. For each tab answer: “What decision or action does this tab enable?” Prefer one readable main table per tab with ~4–6 immediately useful visible fields; extra relevant fields remain available in the record-details view and Layout > Columns as hidden fields. An Overview should summarize real statuses from contributing tabs and show **only open decisions, updates, blockers or next actions**, not a redundant all-record list. Use a small number of **data-derived** metric cards with existing theme icons only when meaningful. Do not invent categories, budgets, statuses, or charts as decoration.
+Build the **smallest useful structure that tells the end-to-end story**. For each tab answer: “What decision or action does this tab enable?” Prefer one readable main table per tab. Show every included field by default; use horizontal scrolling with readable, resizable columns. Hide fields only when the user requests it. An Overview should summarize real statuses from contributing tabs and show **only open decisions, updates, blockers or next actions**, not a redundant all-record list. Use a small number of **data-derived** metric cards with existing theme icons only when meaningful. Do not invent categories, budgets, statuses, or charts as decoration.
 
 Classify candidate content as **Essential** (generic to the actual process), **Specialized** (service, study, jurisdiction or modality dependent; important when applicable), or **Nice to have** (advanced and not needed to prove the journey). Include essentials, allow specialized fields by context, and defer nice-to-have content. Do not confuse “specialized” with “dispensable for regulated work.”
 
@@ -110,5 +114,5 @@ For scoping requests: deliver the concise story, proposed tabs with their purpos
 1. **Keep Theme 2 (Vivid Tints)** and its approved base UI; no new color families or aesthetic redesign. Preserve contrast and clear action-state color semantics.
 2. **Data/permissions over presentation:** underlying source and audit win; no silent writes, merges or false success indications.
 3. **No forced domain taxonomy, study hierarchy, mandatory module list, or full-enterprise complexity.** Eleven showcase function names are examples, not code-defined modules.
-4. **More information is not better:** essential fields immediately visible, specialized fields when relevant, hidden fields accessible in Layout/details.
+4. **More information is not better:** all included fields visible by default; hidden fields only on explicit instruction and accessible in Layout/details.
 5. **The next action matters:** every overview should help users understand what actually needs attention now.

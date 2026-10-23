@@ -51,7 +51,7 @@ A tab is **a view centered on a distinct recurring action/decision**, not necess
 | Why does this tab exist? | Express a user question, not a technology label |
 | Which records does it show? | Reuse stable canonical objects where possible |
 | What is the next user action? | Add, update, request, compare, decide, close, follow up |
-| Which 4–6 fields matter at a glance? | Select visible columns; everything else in details/hidden columns |
+| Which fields serve the task? | Show all included fields by default; preserve readable resizable widths and horizontal overflow |
 | What evidence is required? | Source link/text, timestamp, responsible person, document version |
 | What should not go here? | Duplication, speculative metrics, unrelated features |
 

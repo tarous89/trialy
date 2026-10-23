@@ -27,7 +27,7 @@ import {DocumentControls} from '../shared/DocumentControls.js';
 import {BulkImport} from '../shared/BulkImport.js';
 import {ViewPicker,RecordView} from '../shared/WorkspaceViews.js';
 import type {Field} from '../shared/schema.js';
-const bridge=new App({name:'Trialy workspace',version:'0.2.15'},{},{autoResize:true});
+const bridge=new App({name:'Trialy workspace',version:'0.2.16'},{},{autoResize:true});
 function unwrap(result:any){if(result.isError)throw new Error(result.content?.find((c:any)=>c.type==='text')?.text??'The action could not complete.');return result.structuredContent?.result;}
 async function call(name:string,args:Record<string,unknown>={}){return unwrap(await bridge.callServerTool({name,arguments:args}));}
 function Workspace(){
