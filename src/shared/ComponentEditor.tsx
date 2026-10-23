@@ -1,3 +1,4 @@
+import {useAccessRecheck} from './useAccessRecheck.js';
 import {FrontendCodeRuntime} from './FrontendCodeRuntime.js';
 import {ComponentRuntime} from './ComponentRuntime.js';
 import {ProjectSharing} from './ProjectSharing.js';
@@ -14,9 +15,13 @@ export function ComponentEditor({component,projects,call,onBack,onPreview}:{comp
  const [project,setProject]=useState(component.project_id),[history,setHistory]=useState<any[]|null>(null),[revision,setRevision]=useState<any>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
  async function act(fn:()=>Promise<void>){setError('');setBusy(true);try{await fn();}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
  async function prepare(operation:any){onPreview(await call('prepare_workspace_change',{operation}));}
+ const [unavailable,setUnavailable]=useState('');
+ const revoke=(message:string)=>{setSource('');setHistory(null);setRevision(null);setRun(null);setUnavailable(message);};
+ useAccessRecheck(()=>{void call('check_component_access',{componentId:component.id}).then(r=>{if(r.version!==component.version)throw Error('Interface changed; reopen it to review the current revision');}).catch(e=>revoke((e as Error).message));},!!component.id&&!showInterface&&!unavailable);
  const target={componentId:component.id,expectedVersion:component.version};
+ if(unavailable)return <section><button onClick={onBack}>← Project</button><p role="alert">{unavailable}</p></section>;
  if(sharing)return <ProjectSharing target={component} component call={call} onPreview={onPreview} onBack={()=>setSharing(false)}/>;
- if(showInterface)return <section><button onClick={onBack}>← Project</button><h3>{component.name}</h3><button onClick={()=>setShowInterface(false)}>Edit configuration / history</button><button onClick={()=>setSharing(true)}>Access control</button>{component.format==='frontend-js'?<FrontendCodeRuntime key={component.id+':'+component.version} component={component} call={call} onProposal={onPreview}/>:<ComponentRuntime component={component} call={call} onPreview={onPreview}/>}</section>;
+ if(showInterface)return <section><button onClick={onBack}>← Project</button><h3>{component.name}</h3><button onClick={()=>setShowInterface(false)}>Edit configuration / history</button><button onClick={()=>setSharing(true)}>Access control</button>{component.format==='frontend-js'?<FrontendCodeRuntime key={component.id+':'+component.version} component={component} call={call} onProposal={onPreview} onUnavailable={revoke}/>:<ComponentRuntime component={component} call={call} onPreview={onPreview}/>}</section>;
  return <section aria-label="Saved component"><button onClick={onBack}>← Project</button>{error&&<p role="alert">{error}</p>}
  {revision?<><button onClick={()=>setRevision(null)}>← Revision list</button><h3>Revision {revision.version}</h3><pre style={{whiteSpace:'pre-wrap',overflowWrap:'anywhere'}}>{revision.snapshot.source}</pre><p>Recovery creates a new revision. It keeps the current project and archive state. Execution bindings are cleared and must be reviewed again.</p><button disabled={busy} onClick={()=>act(()=>prepare({kind:'restore_component',...target,revisionVersion:revision.version}))}>Review recovery</button></>
  :history?<><button onClick={()=>setHistory(null)}>← Component</button><h3>Revision history</h3>{history.map(r=><p key={r.id}><button onClick={()=>setRevision(r)}>Revision {r.version} · {r.snapshot.name}</button></p>)}</>
