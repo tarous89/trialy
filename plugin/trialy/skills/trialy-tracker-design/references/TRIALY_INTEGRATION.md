@@ -20,7 +20,7 @@ For data entry, return controls:[{slot,fieldId,recordId}] from frontend-js and p
 
 ## Shipped connected skeleton
 
-Use prepare_tracker for the default implementation; the approved HTML CSS is reused directly with assets/connected-tracker.js. The server verifies existing fields and supplies the manifest. The template reads only explicit bound tables; it never selects the first account table. One fictional example is displayed only while all bound tables are empty and never included in write proposals or totals. Override with showExample:false when requested.
+Use prepare_tracker for the default implementation; the approved HTML CSS is reused directly with assets/connected-tracker.js. The server verifies existing fields or temporary newTables definitions and supplies the manifest. prepare_tracker displays the preview immediately, without opening Home or committing schema. Approval saves required new tables and tracker together. The template reads only explicit bound tables; it never selects the first account table. One fictional example is displayed only while all bound tables are empty and never included in write proposals or totals. Override with showExample:false when requested.
 
 The template supports reviewed persistent presentation changes through layout.propose; this cannot add/rebind fields or alter permissions. Saved cells stage in the trusted frame and Save edits opens an exact batch review. Add record uses the trusted outer form and reviewed backend write. Source remains visible by default. Every saved tracker opens using open_tracker; schema tools are background operations.
 

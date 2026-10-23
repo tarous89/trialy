@@ -38,6 +38,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
     }
    }
   }
+  host.postMessage({kind:'trialy.rendered',channel},'*');
  });
  function send(kind,target){const trigger=target.closest('[data-action]');if(!trigger||!channel)return;const action=trigger.getAttribute('data-action');if(!action||action.length>200)return;
   if(action.startsWith('bound:')){const value=target.type==='checkbox'?target.checked:target.value;if(value===original[action])delete pending[action];else pending[action]=value;target.style.background=action in pending?'#e5f6e9':'';editStatus();return;}

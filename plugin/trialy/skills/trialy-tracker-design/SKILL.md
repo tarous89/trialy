@@ -16,7 +16,7 @@ Read [Trialy integration](references/TRIALY_INTEGRATION.md) before implementatio
 
 ## Default implementation
 
-Use `prepare_tracker` after compatible database fields exist. It compiles `assets/connected-tracker.js` with the approved HTML stylesheet and server-validated bindings. Follow the sibling workspace skill’s creation path, including `open_tracker_draft`, confirmed save and `open_tracker`. Do not replace this default with a technical table editor. For explicit custom requirements, adapt the source while retaining the applicable visual and interaction contract.
+Use `prepare_tracker` to show a temporary tracker before asking to save. Reuse compatible saved fields, or include temporary newTables definitions for missing tables; save creates them atomically with the tracker. It compiles `assets/connected-tracker.js` with the approved HTML stylesheet and server-validated bindings. Read `read_tracker_design(resource:"workflow")` for the current server-backed creation path, including the visible draft returned by `prepare_tracker`, confirmed save and `open_tracker`. Do not replace this default with a technical table editor. For explicit custom requirements, adapt the source while retaining the applicable visual and interaction contract.
 
 Schema availability alone does not make existing records relevant. If there is no relevant data, show exactly one labelled fictional example, excluded from real records and metrics. Do not populate unrelated university/PI/vendor information. User requests override this example default.
 

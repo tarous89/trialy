@@ -1,12 +1,15 @@
 import {readFile} from 'node:fs/promises';
 import {z} from 'zod';
-import {id,fail,type Actor} from '../shared/schema.js';
+import {id,fail,fieldsSchema,type Actor} from '../shared/schema.js';
 import {typeAccess,visibleFields} from '../domain/permissions.js';
 import {derived} from '../shared/formulas.js';
+import {Service} from '../domain/service.js';
 import type {WorkspaceFoundation} from './service.js';
 const key=z.string().regex(/^[a-z][a-z0-9_]{0,63}$/);
 export const trackerSetup=z.object({
  name:z.string().trim().min(1).max(100),description:z.string().max(500),projectId:id.nullable().default(null),
+ extendTables:z.array(z.object({typeId:id,expectedVersion:z.number().int().min(0),newFields:fieldsSchema}).strict()).max(8).default([]),
+ newTables:z.array(z.object({id,name:z.string().trim().min(1).max(100),fields:fieldsSchema}).strict()).max(8).default([]),
  scope:z.enum(['workspace','project']).default('workspace'),
  tabs:z.array(z.object({name:z.string().min(1).max(60),typeId:id,columns:z.array(z.object({field:key,label:z.string().min(1).max(100).optional(),visible:z.boolean().default(true),editable:z.boolean().default(true)}).strict()).min(1).max(30)}).strict()).min(1).max(8),
  example:z.record(key,z.union([z.string().max(500),z.number(),z.boolean(),z.null()])).optional(),
@@ -14,9 +17,18 @@ export const trackerSetup=z.object({
 }).strict();
 export async function trackerOperation(f:WorkspaceFoundation,a:Actor,w:string,input:unknown){
  const v=trackerSetup.parse(input);if(v.scope==='project'&&!v.projectId)fail(400,'project_required','Project-scoped data requires a project');
+ if(new Set(v.newTables.map(t=>t.id)).size!==v.newTables.length)fail(400,'duplicate_table','Draft table IDs must be unique');
+ for(const t of v.newTables){if(!v.tabs.some(tab=>tab.typeId===t.id))fail(400,'unused_table','Draft tables must be used by the tracker');if((await f.db.query('SELECT id FROM entity_types WHERE id=$1',[t.id])).rows.length)fail(409,'table_collision','Draft IDs must not replace existing tables');await new Service(f.db).validate(f.db,a,w,{kind:'create_type',name:t.name,fields:t.fields});}
+ const extensions=new Map<string,any>();
+ for(const extension of v.extendTables){
+  if(extensions.has(extension.typeId)||v.newTables.some(t=>t.id===extension.typeId)||!v.tabs.some(t=>t.typeId===extension.typeId))fail(400,'invalid_extension','Extend each existing bound table once');
+  const resolved=await typeAccess(f.db,a,w,extension.typeId,true);const merged=fieldsSchema.parse([...resolved.type.fields,...extension.newFields]);
+  await new Service(f.db).validate(f.db,a,w,{kind:'update_type',typeId:extension.typeId,expectedVersion:extension.expectedVersion,name:resolved.type.name,fields:merged});
+  extensions.set(extension.typeId,{...resolved,type:{...resolved.type,fields:merged,version:resolved.type.version+1}});
+ }
  const fields:any[]=[],bindings:any[]=[],tabs:any[]=[];
  for(const [i,tab] of v.tabs.entries()){
-  const {type,policy}=await typeAccess(f.db,a,w,tab.typeId),allowed=visibleFields(type.fields,policy,a);
+  const draft=v.newTables.find(t=>t.id===tab.typeId);const resolved=draft?null:extensions.get(tab.typeId)??await typeAccess(f.db,a,w,tab.typeId);const type=resolved?.type??{...draft!,version:0},allowed=resolved?visibleFields(type.fields,resolved.policy,a):type.fields.filter((f:any)=>a.origin!=='ai'||f.ai);
   if(new Set(tab.columns.map(c=>c.field)).size!==tab.columns.length)fail(400,'duplicate_column','Each tab field must be unique');
   const columns=tab.columns.map((c,columnIndex)=>{const field=allowed.find((x:any)=>x.key===c.field);if(!field)fail(403,'field_unavailable','Choose an authorized existing field');
    const fieldId='f_'+i+'_'+columnIndex,mode=c.editable&&!derived(field)?'write':'read';
@@ -31,7 +43,7 @@ export async function trackerOperation(f:WorkspaceFoundation,a:Actor,w:string,in
  const reference=await readFile(new URL('approved-theme2-reference.html',root),'utf8');
  const css=[...reference.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map(m=>m[1]).join('\n');
  const runtime=await readFile(new URL('connected-tracker.js',root),'utf8');
- const config={name:v.name,description:v.description,tabs,exampleTypeId:tabs[0].typeId,example:v.example??{[tabs[0].columns[0].field]:'Example organization'},showExample:v.showExample};
+ const config={name:v.name,description:v.description,tabs,exampleTypeId:tabs[0].typeId,example:v.example?Object.fromEntries(Object.entries(v.example).sort(([a],[b])=>a.localeCompare(b))):{[tabs[0].columns[0].field]:'Example organization'},showExample:v.showExample};
  return {kind:'save_component' as const,projectId:v.projectId,content:{name:v.name,format:'frontend-js' as const,resourceKind:'tracker' as const,sourceAccess:'workspace' as const,bindings,manifest:{version:1 as const,scope:v.scope,fields},source:`const config=${JSON.stringify(config)};\nconst theme=${JSON.stringify(css)};\n${runtime}`}};
 }
 export const trackerLayout=z.object({name:z.string().trim().min(1).max(100),description:z.string().max(500),tabs:z.array(z.object({typeId:id,name:z.string().trim().min(1).max(60),visible:z.boolean(),columns:z.array(z.object({field:key,label:z.string().trim().min(1).max(100),visible:z.boolean()}).strict()).min(1).max(30)}).strict()).min(1).max(8)}).strict();
