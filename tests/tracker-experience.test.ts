@@ -95,3 +95,18 @@ test('Home resumes private previews; saves remove preview and retain all visible
  const expired=await f.preview(a,w.id,hidden);await db.query("UPDATE workspace_previews SET expires_at=now()-interval '1 second' WHERE id=$1",[expired.id]);assert.ok(!(await workspaceHome(db,a,w.id)).resources.some(r=>r.id===expired.id));
  }finally{await db.close();}
 });
+
+test('canonical skeleton exposes neutral editable examples and bounded sizing without record operations',async()=>{
+ const {trackerRenderer}=await import('../src/workspace/standard-tracker.js');
+ const render=new Function('config','theme','input','tools',trackerRenderer);
+ const columns=Array.from({length:14},(_,i)=>({field:'field_'+i,fieldId:'f_0_'+i,label:'Field '+i,visible:true,editable:true,kind:i===1?'select':'text',multiple:i!==1,options:['Active']}));
+ const config={name:'Wide tracker',description:'',showExample:true,tabs:[{name:'Records',typeId:'table',columns,example:{field_0:['https://example.invalid','Ordinary text']}}]};
+ const reads:any[]=[];const tools={call:(name:string,args:any)=>{assert.equal(name,'records.read');reads.push(args);return {rows:[],total:0};}};
+ let output=render(config,'',{state:{tab:0},saved:false},tools);
+ assert.equal(output.controls.length,0);assert.match(output.html,/Edit example Field 0/);assert.match(output.html,/data-action="example:0:0"/);assert.match(output.html,/example-input" hidden/);assert.doesNotMatch(output.html,/class="tag"/);assert.match(output.html,/min-width:2744px/);assert.equal((output.html.match(/data-resize-column=/g)||[]).length,14);assert.match(output.html,/data-resize-row="table:example"/);
+ output=render(config,'',{state:output.state,event:{action:'resize-column:f_0_0',value:9999}},tools);assert.equal(output.state.widths.f_0_0,650);
+ output=render(config,'',{state:output.state,event:{action:'resize-row:table:example',value:-20}},tools);assert.equal(output.state.heights['table:example'],38);
+ output=render(config,'',{state:output.state,event:{action:'example:0:0',value:'Demo change'}},tools);assert.match(output.html,/Demo change/);assert.equal(output.controls.length,0);assert.equal(config.tabs[0].example.field_0[1],'Ordinary text');assert.equal(output.state.widths.f_0_0,650);
+ const {readTrackerDesign}=await import('../src/server/tracker-design.js');
+ const resource=await readTrackerDesign({resource:'skeleton'});assert.equal(resource.text,trackerRenderer.slice(0,12000));assert.ok(resource.resources.includes('parity'));
+});

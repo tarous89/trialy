@@ -2,6 +2,8 @@
 
 Read before generating or revising *any* tracker. This captures approved decisions from repeated design iterations and is not CRO-specific. **These are standard interactions, not optional inspiration.** A user may explicitly supersede a standard; otherwise preserve it exactly across trackers.
 
+The current connected implementation and explicit prototype-only boundaries are mapped in [REFERENCE_PARITY.md](REFERENCE_PARITY.md). Read it before exposing controls. Ordinary text/links/lists are neutral; semantic states alone receive color.
+
 ## Table of contents
 1. Tracker page anatomy
 2. Main table, sizing and scrolling
@@ -39,7 +41,7 @@ Default composition:
 
 ## 2. Main table behavior
 
-- One clean, full-width table is the default per tab. Visible columns should focus on 4–6 most important fields, while preserving other underlying fields as hidden and in details/settings.
+- One clean, full-width table is the default per tab. All configured fields are visible by default. Preserve readable widths and horizontal scrolling; hide fields only on user instruction.
 - The first visible data column (name/title) is an ordinary editable field, NOT a detail-navigation hotspot.
 - **Keep the table's rightmost Details column pinned/sticky horizontally**. Header label **“Details”** uses exactly the same typography, weight and color as other header labels. Expand control is larger (~24 px glyph), single outward-corner arrow, centered inside its cell with no persistent button background/border. Every row gets the expand control.
 - The rightmost pinned column must remain visible during horizontal scrolling and must not cover the last data column. Recheck sticky offset, cell background and z-index in scrolled states.
@@ -166,4 +168,4 @@ Do not introduce new permission colors. Color remains secondary to explicit word
 
 ### Current host refinement
 
-Keep the host header and dark action footer fixed. The tracker document is the only vertical scroller; tables may scroll horizontally but must not have an independent vertical height/scrollbar. The row-details surface fills at least the full available viewport, even for a one-row table. Its content uses that same document scroller. Local tabs/search/sort/details/layout interactions must not wait for the server. Each empty data tab gets one clearly labeled, display-only fictional example with typed values and meaningful tint pills. User instructions override these defaults.
+Keep the host header and dark action footer fixed. The tracker document is the only vertical scroller; tables may scroll horizontally but must not have an independent vertical height/scrollbar. The row-details surface fills at least the full available viewport, even for a one-row table. Its content uses that same document scroller. Local tabs/search/sort/details/layout interactions must not wait for the server. Each empty data tab gets one clearly labeled, locally editable fictional example with typed values and meaningful tint pills. User instructions override these defaults.

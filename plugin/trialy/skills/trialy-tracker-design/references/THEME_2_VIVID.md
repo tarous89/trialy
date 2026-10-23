@@ -121,3 +121,7 @@ In the bundled HTML, the final CSS section starts with:
 Use this section as the authoritative theme override if adapting the asset. It changes color **without modifying DOM, JS, geometry, or behavior**. The reference HTML's other CSS implements the fixed layout and interactions. Do not copy its content logic or create dummy `CRO #1` fields for unrelated workflows. Keep the same role and status color semantics across domains even as actual status vocabulary changes.
 
 Before delivery compare side by side on desktop/mobile with `assets/approved-theme2-screenshot.png` and the live reference HTML. Verify that contrast is strong, inputs readable, every icon retains the correct interaction, and changes outside the requested scope did not occur. The screenshot is a **visual style baseline**, not a mandatory layout of business-specific fields.
+
+## Latest user override: neutral data text
+
+Ordinary text, URLs, emails, names, notes and multi-value lists use the ink color, without tinted tags or colored links. Reserve tints for meaningful choice/status/boolean and permission states. Pending edits retain green fill. This overrides green source-link/rank/tag styling in the preserved specimen.
