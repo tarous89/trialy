@@ -116,3 +116,6 @@ For scoping requests: deliver the concise story, proposed tabs with their purpos
 3. **No forced domain taxonomy, study hierarchy, mandatory module list, or full-enterprise complexity.** Eleven showcase function names are examples, not code-defined modules.
 4. **More information is not better:** all included fields visible by default; hidden fields only on explicit instruction and accessible in Layout/details.
 5. **The next action matters:** every overview should help users understand what actually needs attention now.
+
+## Record details contract
+Use the shipped reusable renderer. Opening details must cover the full host viewport even after scrolling; the overlay scrolls as one page and keeps its close control reachable. Values, inputs, links, and tags use normal weight (400); only field labels use semibold (650). Long values wrap inside the drawer. Do not recreate a table-height drawer or bold the value wrapper. Verify both long records and scrolled-page opening on mobile and desktop.

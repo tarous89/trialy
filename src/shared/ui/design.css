@@ -91,3 +91,6 @@
 .ty-workspace .ty-filter[aria-pressed=true] svg{color:inherit}
 
 .ty-workspace .ty-db-heading{background:transparent;height:auto;min-height:74px}.ty-workspace .ty-db-table-heading h2{margin:0}.ty-workspace .ty-db-edit-toggle{flex-direction:row!important}.ty-workspace .ty-db-edit-toggle input{align-self:center}.ty-fixed:has(.ty-database) .trialy-project-filter{display:flex;flex-direction:row!important;align-items:center;gap:12px;margin:12px 0 20px}.ty-fixed:has(.ty-database) .trialy-project-filter select{width:auto;min-width:180px;margin:0}
+
+.ty-tracker--details{position:fixed!important;inset:0!important;z-index:1000;background:white;margin:0!important;padding:0!important;height:100dvh;overflow:hidden}.ty-tracker--details iframe{height:100dvh!important}.ty-tracker--details .ty-action-footer{z-index:1001}
+.ty-settings-tabs{display:flex;gap:8px;border-bottom:1px solid #bccbc5;margin-bottom:24px;padding-bottom:12px;flex-wrap:wrap}.ty-settings-tabs button[aria-selected=true]{background:#1c4436;color:white;border-color:#1c4436}.ty-settings-panel{max-width:1000px}.ty-access-table{border-bottom:1px solid #cbd5d2;padding:16px 0}.ty-access-table summary{font-weight:650;cursor:pointer}.ty-access-columns{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;padding:16px}

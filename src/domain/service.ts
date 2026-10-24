@@ -26,7 +26,11 @@ export class Service extends DataService {
    const user=(await tx.query('SELECT id FROM users WHERE id=$1 FOR UPDATE',[a.userId])).rows[0];if(!user)fail(401,'unauthenticated','Sign in required');
    if((await tx.query('SELECT user_id FROM memberships WHERE user_id=$1 LIMIT 1',[a.userId])).rows.length)return;
    const db:Database={query:(q,v)=>tx.query(q,v),transaction:fn=>fn(tx),close:async()=>{}};
-   await new Service(db).createWorkspace(a,'My account',{initialAiWorkspace:true});
+   const space=await new Service(db).createWorkspace(a,'My account',{initialAiWorkspace:true});
+   const projectId=randomUUID();
+   await tx.query("INSERT INTO workspace_nodes(id,workspace_id,kind,name,parent_id) VALUES($1,$2,'project','Project 1',NULL)",[projectId,space.id]);
+   const policy=await access(tx,a,space.id);
+   await audit(tx,a,policy,'project.created',projectId,null,{name:'Project 1',reason:'First account setup'});
   });
   return this.workspaces(a);
  }
