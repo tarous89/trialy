@@ -38,7 +38,7 @@ export async function trackerOperation(f:WorkspaceFoundation,a:Actor,w:string,in
   if(!v.omitSource&&!columns.some(c=>/^(source|sources|provenance)$/i.test(c.field)||/^source$/i.test(c.label)))fail(400,'source_required','Include a compatible Source field, or set omitSource only for an explicit user customization. Do not invent source values.');
   const binding=bindings.find(b=>b.typeId===tab.typeId);if(binding)binding.fields=[...new Set([...binding.fields,...columns.map(c=>c.field)])];else bindings.push({typeId:tab.typeId,fields:columns.map(c=>c.field)});
   if(tab.example&&Object.keys(tab.example).some(k=>!columns.some(c=>c.field===k)))fail(400,'example_field','Example fields must belong to their tab');
-  tabs.push({name:tab.name,typeId:tab.typeId,columns,...(tab.example?{example:Object.fromEntries(Object.entries(tab.example).sort(([a],[b])=>a.localeCompare(b)))}:{})});
+  tabs.push({name:tab.name,tableName:type.name,typeId:tab.typeId,columns,...(tab.example?{example:Object.fromEntries(Object.entries(tab.example).sort(([a],[b])=>a.localeCompare(b)))}:{})});
  }
  if(v.example&&Object.keys(v.example).some(k=>!tabs[0].columns.some((c:any)=>c.field===k)))fail(400,'example_field','Example fields must belong to the first tab');
  const root=new URL('../../plugin/trialy/skills/trialy-tracker-design/assets/',import.meta.url);

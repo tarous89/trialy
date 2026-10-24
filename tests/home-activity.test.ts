@@ -7,7 +7,7 @@ import type {Database,Connection} from '../src/db/database.js';
 import {Service} from '../src/domain/service.js';
 import {WorkspaceFoundation} from '../src/workspace/service.js';
 import {Foundation} from '../src/foundation/service.js';
-import {workspaceHome} from '../src/workspace/home.js';
+import {workspaceHome,accountHome} from '../src/workspace/home.js';
 import {activityPage} from '../src/workspace/activity.js';
 import type {Actor} from '../src/shared/schema.js';
 test('Home and activity honor current access; conversation saves are exact, idempotent and not worker approval',async()=>{
@@ -26,6 +26,12 @@ test('Home and activity honor current access; conversation saves are exact, idem
  const fnp=await engine.prepareFunction(ai,w.id,{name:'Synthetic automation',source:'return null;',scope:{capabilities:[],typeIds:[],documents:false},inputContract:{type:'any'},outputContract:{type:'any'}});
  const fn=await engine.saveFunction(action,w.id,fnp.id,fnp.digest);
  let home=await workspaceHome(db,ai,w.id);assert.equal(home.projects.length,1);assert.equal(home.resources.length,2);assert.ok(home.resources.some(r=>r.id===c.id));assert.ok(home.resources.some(r=>r.id===fn.functionId));assert.ok(!JSON.stringify(home).includes('throw new Error'));assert.equal(home.resources.find(r=>r.id===c.id).kind,'generic');assert.equal((await workspaceHome(db,ai,w.id,{kind:'automation'})).resources.length,1);const hp=await workspaceHome(db,ai,w.id,{limit:1});assert.equal(hp.nextOffset,1);assert.equal(hp.resources.length,1);
+ const secondSpace=await s.createWorkspace(owner,'Another internal container');await s.setAi(owner,secondSpace.id,true);
+ const secondDraft=await f.preview(ai,secondSpace.id,{kind:'create_node',nodeKind:'project',name:'ChatGPT project'});const secondProject=await f.confirm(action,secondSpace.id,secondDraft.id,secondDraft.digest);
+ const secondTool=await f.preview(ai,secondSpace.id,{kind:'save_component',projectId:secondProject.id,content:{name:'Another tool',format:'frontend-js',source:'return {html:"test",css:""};'}});await f.confirm(action,secondSpace.id,secondTool.id,secondTool.digest);
+ const account=await accountHome(db,owner,{limit:1});assert.equal(account.projects.length,2);assert.equal(account.resources.length,1);assert.equal(account.total,3);assert.equal(account.nextOffset,1);assert.ok(account.projects.some(p=>p.id===secondProject.id&&p.workspaceId===secondSpace.id));
+ const page2=await accountHome(db,owner,{limit:1,offset:1});assert.notEqual(page2.resources[0].id,account.resources[0].id);
+ const stranger:Actor={userId:randomUUID(),origin:'human'};await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[stranger.userId,stranger.userId,'stranger@example.invalid','Stranger']);assert.equal((await accountHome(db,stranger)).projects.length,0);
  const d=await s.preview(ai,w.id,{kind:'create_type',name:'Contacts',fields:[{key:'name',name:'Name',kind:'text',ai:true}]});
  await assert.rejects(s.commit(action,d.id,'0'.repeat(64)),/changed/);const type=(await s.commit(action,d.id,d.digest)).objects[0].id;
  const formPreview=await f.preview(ai,w.id,{kind:'create_collection_link',config:{kind:'form',name:'Public intake',typeId:type,fields:['name'],days:7,projectId:project.id}});const link=await f.confirm(action,w.id,formPreview.id,formPreview.digest);assert.ok(link.url);const withForm=await workspaceHome(db,ai,w.id,{kind:'form'});assert.equal(withForm.resources.length,1);assert.ok(!JSON.stringify(withForm).includes(link.url));

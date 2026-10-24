@@ -49,3 +49,5 @@ GRANT trialy_runtime TO trialy_worker;
 -- PostgreSQL requires an UPDATE privilege for SELECT ... FOR UPDATE on reviews.
 -- Limit it to the identifier column; application code never edits review bodies.
 GRANT UPDATE(id) ON data_previews,workspace_previews,foundation_previews TO trialy_runtime;
+
+GRANT INSERT ON support_requests TO trialy_runtime;

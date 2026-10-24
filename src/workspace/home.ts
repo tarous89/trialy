@@ -35,3 +35,21 @@ export async function workspaceHome(db:Database,a:Actor,w:string,input:unknown={
  for(const resource of page){const c=components.find(c=>c.id===resource.id);const labels:string[]=[];for(const b of c?.bindings??[]){try{const {type,policy}=await typeAccess(db,a,w,b.typeId);for(const field of visibleFields(type.fields,policy,a))if((b.fields??[]).includes(field.key))labels.push(field.name);}catch(e){if(![403,404].includes((e as any).status))throw e;}}resource.previewFields=labels.slice(0,4);}
  return {projects,resources:page,total:matches.length,nextOffset:q.offset+q.limit<matches.length?q.offset+q.limit:null};
 }
+
+/** Account Home spans authorized storage containers; each item retains its scope. */
+export async function accountHome(db:Database,a:Actor,input:unknown={}){
+ const q=homeQuery.parse(input),spaces=await new Service(db).workspaces(a),projects:any[]=[],resources:any[]=[];
+ let total=0;
+ for(const space of spaces){
+  let offset=0;
+  do{
+   const page=await workspaceHome(db,a,space.id,{...q,offset,limit:Math.min(100,q.offset+q.limit-offset)});
+   if(offset===0){projects.push(...page.projects.map(p=>({...p,workspaceId:space.id})));total+=page.total;}
+   resources.push(...page.resources.map(r=>({...r,workspaceId:space.id})));
+   if(page.nextOffset===null||page.nextOffset>=q.offset+q.limit)break;
+   offset=page.nextOffset;
+  }while(true);
+ }
+ resources.sort((a,b)=>q.sort==='name'?a.name.localeCompare(b.name)||a.id.localeCompare(b.id):new Date(b.updatedAt).getTime()-new Date(a.updatedAt).getTime()||a.id.localeCompare(b.id));
+ return {projects,resources:resources.slice(q.offset,q.offset+q.limit),total,nextOffset:q.offset+q.limit<total?q.offset+q.limit:null};
+}

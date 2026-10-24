@@ -12,7 +12,7 @@ Read [Trialy integration](references/TRIALY_INTEGRATION.md) before implementatio
 1. Explicit user instructions override every design default, including layout, theme, tabs and fields. Backend authorization and runtime constraints still apply.
 2. Existing authorized data and schema determine available content, relationships and provenance. Adapt them to the requested outcome; never silently replace them with example data.
 3. Use this skill as a skeleton to fill remaining gaps. When neither instructions nor existing data are supplied, use the approved HTML as the default visual and interaction template. Its vendor-selection content is illustrative, never evidence or saved real records.
-4. This package defines the opened tracker only. The host owns the persistent Trialy header with its logo and Open app button. Do not duplicate global navigation inside a tracker.
+4. This package defines the opened tracker only. The embedded host owns the persistent Trialy header with its logo and Open app button; the standalone app uses its sidebar without a top header. Do not duplicate global navigation inside a tracker.
 
 ## Executable skeleton and fidelity
 
@@ -84,8 +84,8 @@ A tracker can contain data-entry controls, forms and visualizations; they are no
 
 Build with the existing approved design, not a new theme or navigation concept. Details: [UI_INTERACTION_CONTRACT.md](references/UI_INTERACTION_CONTRACT.md), [THEME_2_VIVID.md](references/THEME_2_VIVID.md). The mandatory minimum:
 
-- No tracker-specific global logo/sidebar/header actions; the host supplies the persistent Trialy logo and Open app header. Show simple tracker **title + subtitle**, top tab row, and table toolbar.
-- Clean table-first pages: search, relevant filters, sort/rank where applicable, **`Add record`** only, Save edits / Ignore edits on pending changes. Fixed host header and action footer; a single full-page vertical scroller for the remaining content, with horizontal scrolling confined to the table. Details fill the available viewport height, regardless of table height. Far-right pinned **Details** column, accessible while scrolling horizontally.
+- No tracker-specific global logo/sidebar/header actions; the embedded host supplies the Trialy logo and Open app header; the standalone app supplies its sidebar. Show simple tracker **title + subtitle**, top tab row, and table toolbar.
+- Clean table-first pages: search, relevant filters, sort/rank where applicable, **`Add record`** only, Save edits / Ignore edits on pending changes. Fixed embedded host header (none in the standalone app) and action footer; a single full-page vertical scroller for the remaining content, with horizontal scrolling confined to the table. Details fill the available viewport height, regardless of table height. Far-right pinned **Details** column, accessible while scrolling horizontally.
 - Click **any editable data cell, including the first/name cell, to edit it inline**, not to open details; click the larger corner-expand icon in Details to open the right-side record drawer. All permitted detail fields directly editable.
 - Pending changed cells/fields gain a light **green** background. Save, merge, update and layout actions belong in a dark floating footer: one concise sentence and one primary CTA, with a quiet dismiss control. Do not add Advanced/reload controls or explanatory paragraphs above the tracker; no unapproved auto-commit. Review/save permissions and concurrency as backend requires.
 - Drawer resizes by dragging its left divider; line only, **no shadow**; supports Duplicate and Delete with appropriate confirmation/linked-record safeguards.
@@ -118,7 +118,12 @@ For scoping requests: deliver the concise story, proposed tabs with their purpos
 5. **The next action matters:** every overview should help users understand what actually needs attention now.
 
 ## Record details contract
-Use the shipped reusable renderer. Opening details must fill the available content area below the fixed header even after scrolling; the overlay scrolls as one page and keeps its close control reachable. Values, inputs, links, and tags use normal weight (400); only field labels use semibold (650). Long values wrap inside the drawer. Do not recreate a table-height drawer or bold the value wrapper. Verify both long records and scrolled-page opening on mobile and desktop.
+Use the shipped reusable renderer. Opening details must fill the available content area below any embedded host header even after scrolling; the overlay scrolls as one page and keeps its close control reachable. Values, inputs, links, and tags use normal weight (400); only field labels use semibold (650). Long values wrap inside the drawer. Do not recreate a table-height drawer or bold the value wrapper. Verify both long records and scrolled-page opening on mobile and desktop.
 
 ## Persistent app chrome and user-facing metadata
-Keep the dark application header, docked expanded sidebar and active action footer above content. Fit details, editors and confirmations inside the remaining content rectangle. Opening details must never replace or cover app navigation. Keep Home cards compact and white with one colored border; omit nested schema thumbnails. Show purpose, project, preview state and updated date; omit connected-table counts, schema details and revision numbers from Home. Use consistent system sans-serif typography, neutral text and strong green action buttons.
+Keep the dark embedded header, docked expanded sidebar and active action footer above content; omit the header in the standalone app. Fit details, editors and confirmations inside the remaining content rectangle. Opening details must never replace or cover app navigation. Keep Home cards compact and white with one colored border; omit nested schema thumbnails. Show purpose, project, preview state and updated date; omit connected-table counts, schema details and revision numbers from Home. Use consistent system sans-serif typography, neutral text and strong green action buttons.
+
+## Account navigation and layout mapping
+
+Use user, projects, tools, Database and Logs as the product vocabulary. Never display internal workspace names. The standalone app has no top header; the embedded ChatGPT host retains its navigation header. Keep the sidebar and any action footer above the changing content.
+Use a cog icon for account, project and tracker settings and a padlock for access control. In Layout settings, show the authorized database table name and ID for every tab and the table plus stable field key for every column; keep mapping metadata read-only and separate from editable display labels. Do not put this metadata on Home cards. Preserve mappings when labels change. Use the bundled renderer for these mappings; do not invent linked table names.

@@ -21,9 +21,11 @@ test('MFA enrollment, mandatory login challenge, single-use recovery and disable
  const account=(await db.query('SELECT * FROM local_accounts')).rows[0];assert.notEqual(account.mfa_secret,setup.body.secret);assert.ok(!JSON.stringify(account).includes(enabled.body.recoveryCodes[0]));
  await browser.post('/auth/logout').set('x-csrf-token',sessionCsrf).send({});const next=await browser.get('/auth/login');const nextCsrf=next.text.match(/name="csrf" value="([^"]+)"/)![1];
  const creds={email:'mfa@example.invalid',password:'synthetic-password-mfa',csrf:nextCsrf};
- assert.equal((await browser.post('/auth/login').type('form').send(creds)).status,401);
+ assert.ok(!next.text.includes('name="otp"'));
+ const challenge=await browser.post('/auth/login').type('form').send(creds);assert.equal(challenge.status,200);assert.ok(challenge.text.includes('action="/auth/verify"'));assert.equal((await browser.get('/test-csrf')).status,401);
+ assert.equal((await browser.post('/auth/verify').type('form').send({csrf:'wrong',otp:enabled.body.recoveryCodes[0]})).status,403);
  assert.equal((await browser.post('/auth/login').type('form').send({...creds,otp:code})).status,401);
- assert.equal((await browser.post('/auth/login').type('form').send({...creds,otp:enabled.body.recoveryCodes[0]})).status,303);
+ assert.equal((await browser.post('/auth/verify').type('form').send({csrf:nextCsrf,otp:enabled.body.recoveryCodes[0]})).status,303);
  const newCsrf=(await browser.get('/test-csrf')).body.csrf;
  assert.equal((await browser.post('/auth/mfa').set('x-csrf-token',newCsrf).send({action:'disable',password:'synthetic-password-mfa',code:enabled.body.recoveryCodes[0]})).status,401);
  assert.equal((await browser.post('/auth/mfa').set('x-csrf-token',newCsrf).send({action:'disable',password:'synthetic-password-mfa',code:enabled.body.recoveryCodes[1]})).status,200);
