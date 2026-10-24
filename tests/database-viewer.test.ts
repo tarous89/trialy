@@ -12,6 +12,10 @@ test('app/plugin share the same default storage and tracker identities; database
  const type=(await save({kind:'create_type',name:'Companies',fields:[{key:'name',name:'Company',kind:'text',ai:true},{key:'source',name:'Source',kind:'text',ai:true},{key:'status',name:'Status',kind:'select',options:['Active','Pending'],ai:true}]})).objects[0].id;
  const op=await trackerOperation(f,ai,w.id,{name:'Shared tracker',description:'Same saved object',tabs:[{name:'Companies',typeId:type,columns:[{field:'name'},{field:'source'},{field:'status'}]}]});const draft=await f.preview(ai,w.id,op);assert.equal((await workspaceHome(db,owner,w.id)).resources[0].id,draft.id);
  const receipt=await f.confirm({...ai,actionConfirmed:true},w.id,draft.id,draft.digest);assert.deepEqual((await workspaceHome(db,owner,w.id)).resources.map(r=>r.id),(await workspaceHome(db,ai,w.id)).resources.map(r=>r.id));assert.equal((await workspaceHome(db,owner,w.id)).resources[0].id,receipt.id);
+ const rowDraft=await s.preview(owner,w.id,{kind:'create_record',typeId:type,data:{name:'New row',status:'Pending'}});assert.equal((await databasePage(db,owner,w.id,{typeId:type})).total,0);
+ const newRow=await s.commit(owner,rowDraft.id,rowDraft.digest);assert.deepEqual(await s.commit(owner,rowDraft.id,rowDraft.digest),newRow);
+ const snapshot=(await workspaceHome(db,owner,w.id)).resources[0].snapshot;assert.equal(snapshot.rows[0][0],'New row');assert.equal(snapshot.columns[0],'Company');
+ await save({kind:'database_changes',typeId:type,deletions:[{recordId:newRow.objects[0].id,expectedVersion:0}]});
  const a=(await save({kind:'create_record',typeId:type,data:{name:'First',status:'Active'}})).objects[0].id,b=(await save({kind:'create_record',typeId:type,data:{name:'Second'}})).objects[0].id;
  await s.share(owner,w.id,member.userId,'editor',[],null,true);
  assert.equal((await databasePage(db,owner,w.id,{typeId:type})).canEdit,true);assert.equal((await databasePage(db,member,w.id,{typeId:type})).canEdit,false);

@@ -1,3 +1,5 @@
+import {standardTracker} from './standard-tracker.js';
+import {databasePage} from './database-browser.js';
 import {Service} from '../domain/service.js';
 import {z} from 'zod';
 import type {Actor} from '../shared/schema.js';
@@ -10,7 +12,7 @@ export async function workspaceHome(db:Database,a:Actor,w:string,input:unknown={
  const q=homeQuery.parse(input);
  const p=await access(db,a,w),f=new WorkspaceFoundation(db),engine=new Foundation(db);
  const [tree,components]=await Promise.all([f.nodes(a,w),f.components(a,w)]);
- const projects=tree.nodes.filter(n=>n.kind==='project'&&!n.effective_archived).map(n=>({id:n.id,name:n.name}));
+ const projects=tree.nodes.filter(n=>n.kind==='project'&&!n.effective_archived).map(n=>({id:n.id,name:n.name,createdAt:n.created_at}));
  const resources:any[]=components.filter(c=>!c.archived&&!c.project_archived).map(c=>({id:c.id,name:c.name,kind:['tracker','form','visualization'].includes(c.resource_kind)?c.resource_kind:'generic',source:'component',projectIds:c.project_id?[c.project_id]:[],updatedAt:c.updated_at??c.created_at,description:c.resource_kind==='generic'?'Saved custom interface':''}));
  // Automation source is never loaded or executed for Home thumbnails.
  if(p.ai_enabled&&(p.role==='owner'||p.user_ai)){
@@ -31,8 +33,23 @@ export async function workspaceHome(db:Database,a:Actor,w:string,input:unknown={
  }
  const matches=resources.filter(r=>(!q.projectId||(q.projectId==='unassigned'?r.projectIds.length===0:r.projectIds.includes(q.projectId)))&&(q.kind==='all'||r.kind===q.kind)&&(!q.query||`${r.name} ${r.description}`.toLowerCase().includes(q.query.toLowerCase()))).sort((a,b)=>q.sort==='name'?a.name.localeCompare(b.name)||a.id.localeCompare(b.id):new Date(b.updatedAt).getTime()-new Date(a.updatedAt).getTime()||a.id.localeCompare(b.id));
  const page=matches.slice(q.offset,q.offset+q.limit);
- // Read-only schema previews contain field names, never sampled values or executable HTML.
- for(const resource of page){const c=components.find(c=>c.id===resource.id);const labels:string[]=[];for(const b of c?.bindings??[]){try{const {type,policy}=await typeAccess(db,a,w,b.typeId);for(const field of visibleFields(type.fields,policy,a))if((b.fields??[]).includes(field.key))labels.push(field.name);}catch(e){if(![403,404].includes((e as any).status))throw e;}}resource.previewFields=labels.slice(0,4);}
+ // Build a bounded, permission-checked miniature without executing saved code.
+ for(const resource of page){
+  const c=components.find(c=>c.id===resource.id);if(!c)continue;
+  try{
+   const saved=(await f.readComponent(a,w,c.id)).component,standard=standardTracker(saved.source);
+   if(standard){
+    const tab=standard.config.tabs.find((t:any)=>t.visible!==false);if(!tab)continue;
+    const sample=await databasePage(db,a,w,{typeId:tab.typeId,limit:3,...(c.manifest?.scope==='project'&&c.project_id?{projectId:c.project_id}:{})});
+    const columns=tab.columns.filter((col:any)=>col.visible!==false&&sample.table.fields.some((field:any)=>field.key===col.field&&field.readable)).slice(0,4);
+    resource.snapshot={kind:'table',tabs:standard.config.tabs.filter((t:any)=>t.visible!==false).map((t:any)=>t.name).slice(0,4),columns:columns.map((col:any)=>col.label),rows:sample.rows.map((r:any)=>columns.map((col:any)=>{const value=r.data[col.field];return String(Array.isArray(value)?value.join(', '):value??'').slice(0,80);})),total:sample.total};
+   }else if(c.bindings?.length){
+    const binding=c.bindings[0],resolved=await typeAccess(db,a,w,binding.typeId);
+    resource.snapshot={kind:'fields',columns:visibleFields(resolved.type.fields,resolved.policy,a).filter(field=>binding.fields.includes(field.key)).slice(0,4).map(field=>field.name)};
+   }
+  }catch(e){if(![403,404,409].includes((e as any).status))throw e;}
+ }
+
  return {projects,resources:page,total:matches.length,nextOffset:q.offset+q.limit<matches.length?q.offset+q.limit:null};
 }
 
