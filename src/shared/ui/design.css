@@ -112,3 +112,30 @@
 .ty-confirm-dialog{background:white;border:1px solid #c6d4cb;border-radius:12px;box-shadow:0 16px 60px #10291f26;padding:28px;width:min(480px,100%);color:#152721}.ty-confirm-dialog h2{font-size:22px;margin-bottom:12px}.ty-confirm-dialog p{margin-bottom:24px}
 .ty-workspace .ty-resource-grid{grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}.ty-workspace .ty-resource{border:1px solid var(--kind-border,#c1cec6);border-left:3px solid var(--kind,#218257);border-radius:9px;box-shadow:none;background:white}.ty-resource:hover{box-shadow:0 3px 12px #10291f0c}.ty-workspace .ty-resource-open{border-radius:7px}.ty-workspace .ty-resource-info{padding:18px}.ty-workspace .ty-resource h3{font-size:17px;line-height:1.4;margin:8px 28px 8px 0;color:#152721;letter-spacing:-.2px}.ty-workspace .ty-type-label{font-size:12px;color:#52665b}.ty-workspace .ty-resource-info>p:empty{display:none}.ty-workspace .ty-resource-info>p{font-size:14px;line-height:1.5;color:#4b6057}.ty-workspace .ty-resource-meta{font-size:12px;margin-top:18px;padding-top:12px;border-top:1px solid #e3eae6;color:#52665b}.ty-workspace .ty-resource>.ty-menu{top:12px;right:10px}.ty-workspace .ty-resource-list .ty-resource-open{display:block}.ty-workspace .ty-resource-list .ty-resource-info{padding:14px 18px}.ty-workspace .ty-resource-list .ty-resource-meta{margin-top:8px;padding-top:0;border:0}.ty-workspace .ty-skeleton{height:155px}.ty-workspace .ty-page-heading{margin-bottom:24px}.ty-workspace .ty-resources-heading:empty{display:none}.ty-workspace .ty-toolbar{margin:12px 0 18px}.ty-workspace .ty-project{min-height:64px;padding:12px 14px}.ty-workspace .ty-filter{color:#304b3c;border-color:#c3d1c9;font-size:14px!important}.ty-workspace .ty-filter[aria-pressed=true]{background:#184e36;color:white;border-color:#184e36}.ty-workspace .ty-button--primary{background:#087b50;color:white;border-color:#087b50}.ty-workspace input,.ty-workspace select,.ty-workspace textarea{color:#152721}
 @media(max-width:760px){.ty-workspace{--shell-nav:0px}.ty-workspace.ty-navigation-open{--shell-nav:210px}.ty-workspace .ty-sidebar--desktop{display:none!important}.ty-workspace.ty-navigation-open .ty-sidebar--desktop{display:flex!important}.ty-workspace .ty-nav-toggle,.ty-workspace .ty-mobile-brand{display:flex!important}.ty-workspace .ty-breadcrumb{display:none}.ty-workspace #ty-main{padding:20px 16px}.ty-workspace .ty-topbar{padding:0 16px}.ty-workspace .ty-resource-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}.ty-workspace .ty-action-footer{left:calc(var(--shell-nav) + 12px);right:12px;padding:12px}}
+
+/* The standalone app uses its sidebar as the persistent navigation. */
+.ty-workspace:not(.ty-workspace--embedded){--shell-header:0px}
+.ty-workspace:not(.ty-workspace--embedded) #ty-main{padding-top:28px}
+.ty-creation-dialog{border:0;border-radius:16px;padding:32px;max-width:440px;width:calc(100% - 48px);color:#172d26;box-shadow:0 24px 80px #10291f40}
+.ty-creation-dialog::backdrop{background:#10291f66}
+.ty-creation-dialog p{line-height:1.6;color:#53665e}
+.ty-support-form{display:grid;gap:18px;max-width:600px}.ty-support-form label{display:grid;gap:8px}.ty-support-form textarea{min-height:160px}
+
+.ty-sidebar-toggle{display:none}
+@media(max-width:760px){
+.ty-workspace:not(.ty-workspace--embedded){--shell-nav:64px}
+.ty-workspace:not(.ty-workspace--embedded).ty-navigation-open{--shell-nav:210px}
+.ty-workspace:not(.ty-workspace--embedded) .ty-sidebar--desktop{display:flex!important;padding:16px 10px}
+.ty-workspace:not(.ty-workspace--embedded) .ty-sidebar-toggle{display:flex;align-items:center;justify-content:center;border:0;background:transparent;color:inherit;padding:10px;margin:0 0 16px}
+.ty-workspace:not(.ty-workspace--embedded):not(.ty-navigation-open) .ty-brand{font-size:0;gap:0;margin:0 0 24px;padding:0;justify-content:center}
+.ty-workspace:not(.ty-workspace--embedded):not(.ty-navigation-open) .ty-brand-dot,.ty-workspace:not(.ty-workspace--embedded):not(.ty-navigation-open) .ty-account>div{display:none}
+.ty-workspace:not(.ty-workspace--embedded):not(.ty-navigation-open) nav button,.ty-workspace:not(.ty-workspace--embedded):not(.ty-navigation-open) .ty-settings-button{font-size:0;gap:0;padding:12px;justify-content:center}
+.ty-workspace:not(.ty-workspace--embedded):not(.ty-navigation-open) .ty-account{padding:12px 0;justify-content:center}
+}
+.ty-creation-dialog{font:15px/1.5 system-ui,sans-serif}
+.ty-creation-dialog .ty-brand{font-size:25px;font-weight:750;letter-spacing:-1px;margin-bottom:24px;color:#10291f}
+.ty-creation-dialog .ty-brand-dot{color:#087b50}
+.ty-creation-dialog h2{font-size:24px;line-height:1.25;letter-spacing:-.5px;margin:0 0 12px}
+.ty-creation-dialog .ty-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:24px;flex-wrap:wrap}
+.ty-creation-dialog .ty-button{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font:600 14px system-ui;padding:11px 16px;border:1px solid #bdcbc3;border-radius:8px;background:white;color:#173b2d;cursor:pointer}
+.ty-creation-dialog .ty-button--primary{background:#087b50;border-color:#087b50;color:white}

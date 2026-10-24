@@ -14,6 +14,11 @@ test('PostgreSQL policies isolate tenants, tables, missing context, public submi
  const ra=(await change(a,wa.id,{kind:'create_record',typeId:ta,data:{name:'A-only'}})).objects[0].id,rb=(await change(b,wb.id,{kind:'create_record',typeId:tb,data:{name:'B-only'}})).objects[0].id;
  await service.share(a,wa.id,member.userId,'editor',[],[],true);
  const runtime=(role='trialy_runtime'):Database=>{const d:Database={query:(sql,v)=>d.transaction(tx=>tx.query(sql,v)),transaction:f=>pg.transaction(async tx=>{await tx.exec('SET LOCAL ROLE '+role);await setDatabaseContext(tx as Connection);return f(tx as Connection);}),close:async()=>{}};return d;};const db=runtime();
+ const supportId=randomUUID();
+ await withActor(a,()=>db.query('INSERT INTO support_requests(id,user_id,subject,message) VALUES($1,$2,$3,$4)',[supportId,a.userId,'Help','A private request']));
+ await withActor(b,async()=>{assert.equal((await db.query('SELECT * FROM support_requests')).rows.length,0);await assert.rejects(db.query('INSERT INTO support_requests(id,user_id,subject,message) VALUES($1,$2,$3,$4)',[randomUUID(),a.userId,'Forged','Blocked']),/row-level security/);});
+ await withActor({...a,origin:'ai'},async()=>assert.equal((await db.query('SELECT * FROM support_requests')).rows.length,0));
+ await withActor(a,async()=>assert.equal((await db.query('SELECT * FROM support_requests')).rows[0].id,supportId));
  assert.equal((await db.query('SELECT * FROM records')).rows.length,0,'missing context denies business rows');
  await withActor(a,async()=>{assert.deepEqual((await db.query('SELECT id FROM records')).rows.map(r=>r.id),[ra]);assert.equal((await db.query('SELECT id FROM records WHERE id=$1',[rb])).rows.length,0);await assert.rejects(db.query('INSERT INTO records(id,workspace_id,type_id,data) VALUES($1,$2,$3,$4)',[randomUUID(),wb.id,tb,'{}']),/row-level security/);await assert.rejects(db.query('INSERT INTO records(id,workspace_id,type_id,data) VALUES($1,$2,$3,$4)',[randomUUID(),wa.id,tb,'{}']),/row-level security/);const p=await new Service(db).preview(a,wa.id,{kind:'update_record',recordId:ra,expectedVersion:0,data:{name:'A-updated'}});await new Service(db).commit(a,p.id,p.digest);});
  await withActor(member,async()=>{assert.equal((await db.query('SELECT * FROM records')).rows.length,0);assert.equal((await schemaCatalog(db,member,wa.id)).tables.length,1);});

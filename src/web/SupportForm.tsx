@@ -1,0 +1,5 @@
+import React,{useState} from 'react';
+export function SupportForm({api}:{api:(p:string,m?:string,b?:unknown)=>Promise<any>}){
+ const [subject,setSubject]=useState(''),[message,setMessage]=useState(''),[busy,setBusy]=useState(false),[status,setStatus]=useState(''),[error,setError]=useState('');
+ return <section><h2>Support</h2><p>Tell us what you need help with.</p><form className="ty-support-form" onSubmit={async e=>{e.preventDefault();setBusy(true);setError('');setStatus('');try{const r=await api('/api/support','POST',{subject,message});setStatus('Request saved. Reference: '+r.id);setSubject('');setMessage('');}catch(e){setError((e as Error).message);}finally{setBusy(false);}}}><label>Subject<input required maxLength={160} value={subject} onChange={e=>setSubject(e.target.value)}/></label><label>How can we help?<textarea required maxLength={5000} value={message} onChange={e=>setMessage(e.target.value)}/></label><button className="primary" disabled={busy}>{busy?'Submitting…':'Submit request'}</button>{status&&<p role="status">{status}</p>}{error&&<p role="alert">{error}</p>}</form></section>;
+}

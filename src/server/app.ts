@@ -1,3 +1,4 @@
+import {accountHome} from '../workspace/home.js';
 import {frontendFrameDocument,FRAME_SCRIPT} from '../shared/frontend-frame.js';
 import {createHash} from 'node:crypto';
 import {addFoundationApi} from './foundation.js';
@@ -33,6 +34,8 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  addReviews(app,s);
  addFoundationApi(app,s);
  app.post('/api/account/initialize',async(req,res)=>res.json({workspaces:await s.ensureAccount(req.actor!)}));
+ app.post('/api/account/home',async(req,res)=>res.json(await accountHome(s.db,req.actor!,req.body)));
+ app.post('/api/support',rateLimit({windowMs:3600000,limit:10}),async(req,res)=>{const input=z.object({subject:z.string().trim().min(1).max(160),message:z.string().trim().min(1).max(5000)}).strict().parse(req.body);const requestId=randomUUID();await s.db.query('INSERT INTO support_requests(id,user_id,subject,message) VALUES($1,$2,$3,$4)',[requestId,req.actor!.userId,input.subject,input.message]);res.status(201).json({id:requestId});});
  app.get('/api/me',async(req,res)=>{const u=(await s.db.query('SELECT id,name,email FROM users WHERE id=$1',[req.actor!.userId])).rows[0];res.json({user:u,csrf:req.session?.csrf,workspaces:await s.workspaces(req.actor!)});});
  app.post('/api/workspaces',async(req,res)=>res.status(201).json(await s.createWorkspace(req.actor!,z.string().trim().min(1).max(100).parse(req.body.name))));
  app.get('/api/templates',(_req,res)=>res.json(templates));
