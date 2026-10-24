@@ -34,7 +34,7 @@ export const maintenanceBatch=z.object({
 export const workspaceOperation=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('create_node'),nodeKind:z.enum(['folder','project']),name:z.string().trim().min(1).max(100),parentId:id.nullable().default(null)}).strict(),
  z.object({kind:z.literal('move_node'),nodeId:id,expectedVersion:z.number().int().min(0),parentId:id.nullable()}).strict(),
- z.object({kind:z.literal('rename_node'),nodeId:id,expectedVersion:z.number().int().min(0),name:z.string().trim().min(1).max(100)}).strict(),
+ z.object({kind:z.literal('rename_node'),nodeId:id,expectedVersion:z.number().int().min(0),name:z.string().trim().min(1).max(100),description:z.string().trim().max(2000).optional()}).strict(),
  z.object({kind:z.literal('save_scope'),scope:maintenanceSchema,scopeId:id.optional(),expectedVersion:z.number().int().min(0).optional()}).strict(),
  identityLinkSchema,
  z.object({kind:z.literal('accept_collection_response'),submissionId:id,data:z.record(z.string(),z.union([z.string().max(50000),z.number().finite(),z.boolean(),z.array(z.union([z.string().max(50000),z.number().finite()])).max(100),z.null()]))}).strict(),

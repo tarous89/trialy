@@ -5,6 +5,7 @@ import {readFile,readdir} from 'node:fs/promises';
 import {PGlite} from '@electric-sql/pglite';
 import type {Database,Connection} from '../src/db/database.js';
 import {Service} from '../src/domain/service.js';
+import {WorkspaceFoundation} from '../src/workspace/service.js';
 import {workspaceHome} from '../src/workspace/home.js';
 test('legacy account receives one default project; archived projects and tool placements remain intact',async()=>{
  const pg=new PGlite();try{
@@ -18,5 +19,13 @@ test('legacy account receives one default project; archived projects and tool pl
  assert.deepEqual((await workspaceHome(db,{...a,origin:'ai'},old.id)).projects,projects);
  assert.equal((await workspaceHome(db,a,deleted.id)).projects.length,0);assert.equal((await db.query('SELECT count(*) AS n FROM workspace_nodes WHERE workspace_id=$1',[deleted.id])).rows[0].n,1);
  assert.equal((await db.query("SELECT count(*) AS n FROM audit_events WHERE object_id=$1 AND action='project.created'",[projects[0].id])).rows[0].n,1);
+ await pg.exec(await readFile('migrations/040_project_description.sql','utf8'));const f=new WorkspaceFoundation(db),id=projects[0].id;
+ const edit=await f.preview(a,old.id,{kind:'rename_node',nodeId:id,expectedVersion:0,name:'Outreach',description:'Plan vendor outreach'});
+ assert.equal((await f.nodes(a,old.id)).nodes[0].description,'');await f.confirm(a,old.id,edit.id,edit.digest);
+ assert.equal((await f.nodes(a,old.id)).nodes[0].description,'Plan vendor outreach');
+ const rename=await f.preview(a,old.id,{kind:'rename_node',nodeId:id,expectedVersion:1,name:'Outreach 2'});await f.confirm(a,old.id,rename.id,rename.digest);
+ assert.equal((await f.nodes(a,old.id)).nodes[0].description,'Plan vendor outreach');
+ await assert.rejects(()=>f.preview(a,old.id,{kind:'rename_node',nodeId:id,expectedVersion:0,name:'Stale',description:'Wrong'}));
+
  }finally{await pg.close();}
 });

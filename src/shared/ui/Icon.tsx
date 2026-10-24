@@ -1,5 +1,6 @@
 import React from 'react';
 const paths={
+ download:'M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5',
  panelOpen:'M3 4h18v16H3Zm6 0v16m4-12 4 4-4 4',
  panelClose:'M3 4h18v16H3Zm6 0v16m8-12-4 4 4 4',
  refresh:'M20 7v5h-5M4 17v-5h5M6 7a7 7 0 0 1 12-1l2 6M4 12l2 6a7 7 0 0 0 12-1',
