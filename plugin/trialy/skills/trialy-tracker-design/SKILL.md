@@ -118,4 +118,7 @@ For scoping requests: deliver the concise story, proposed tabs with their purpos
 5. **The next action matters:** every overview should help users understand what actually needs attention now.
 
 ## Record details contract
-Use the shipped reusable renderer. Opening details must cover the full host viewport even after scrolling; the overlay scrolls as one page and keeps its close control reachable. Values, inputs, links, and tags use normal weight (400); only field labels use semibold (650). Long values wrap inside the drawer. Do not recreate a table-height drawer or bold the value wrapper. Verify both long records and scrolled-page opening on mobile and desktop.
+Use the shipped reusable renderer. Opening details must fill the available content area below the fixed header even after scrolling; the overlay scrolls as one page and keeps its close control reachable. Values, inputs, links, and tags use normal weight (400); only field labels use semibold (650). Long values wrap inside the drawer. Do not recreate a table-height drawer or bold the value wrapper. Verify both long records and scrolled-page opening on mobile and desktop.
+
+## Persistent app chrome and user-facing metadata
+Keep the dark application header, docked expanded sidebar and active action footer above content. Fit details, editors and confirmations inside the remaining content rectangle. Opening details must never replace or cover app navigation. Keep Home cards compact and white with one colored border; omit nested schema thumbnails. Show purpose, project, preview state and updated date; omit connected-table counts, schema details and revision numbers from Home. Use consistent system sans-serif typography, neutral text and strong green action buttons.

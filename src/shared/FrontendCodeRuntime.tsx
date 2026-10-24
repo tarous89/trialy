@@ -56,6 +56,6 @@ export function FrontendCodeRuntime({component,previewId,call,onProposal,onUnava
  {proposal&&<ActionFooter action="Save changes" onAction={()=>onProposal(proposal)} onDismiss={async()=>{try{await call('discard_workspace_preview',{previewId:proposal.id});setProposal(null);blocked.current=false;}catch(e){setError((e as Error).message);}}}>Your changes are ready to save.</ActionFooter>}
  {footer&&!proposal&&<ActionFooter action={footer.kind==='edits'?'Save edits':'Save layout'} busy={busy} disabled={!!saveReceipt.current} onAction={()=>frameAction(footer.kind==='edits'?'save-edits':'save-layout')} dismissLabel={footer.kind==='edits'?'Ignore edits':'Discard layout changes'} onDismiss={()=>frameAction(footer.kind==='edits'?'discard-edits':'discard-layout')}>{footer.kind==='edits'?`${footer.count} field ${footer.count===1?'edit is':'edits are'} ready to save.`:'Your layout changes are ready to save.'}</ActionFooter>}
  {!ready&&<p className="ty-runtime-loading" role="status">Opening tracker…</p>}
- {frameUrl&&<iframe inert={adding} ref={frame} title="Saved frontend code" sandbox="allow-scripts" referrerPolicy="no-referrer" src={frameUrl} onLoad={send} style={{width:'100%',height:detailsOpen?'100dvh':height+'px',border:0,display:'block'}}/>}
+ {frameUrl&&<iframe inert={adding} ref={frame} title="Saved frontend code" sandbox="allow-scripts" referrerPolicy="no-referrer" src={frameUrl} onLoad={send} style={{width:'100%',height:detailsOpen?'100%':height+'px',border:0,display:'block'}}/>}
  </section>;
 }
