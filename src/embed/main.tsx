@@ -27,7 +27,7 @@ import {DocumentControls} from '../shared/DocumentControls.js';
 import {BulkImport} from '../shared/BulkImport.js';
 import {ViewPicker,RecordView} from '../shared/WorkspaceViews.js';
 import type {Field} from '../shared/schema.js';
-const bridge=new App({name:'Trialy workspace',version:'0.2.16'},{},{autoResize:true});
+const bridge=new App({name:'Trialy workspace',version:'0.2.17'},{},{autoResize:true});
 function unwrap(result:any){if(result.isError)throw new Error(result.content?.find((c:any)=>c.type==='text')?.text??'The action could not complete.');return result.structuredContent?.result;}
 async function call(name:string,args:Record<string,unknown>={}){return unwrap(await bridge.callServerTool({name,arguments:args}));}
 function Workspace(){
@@ -49,7 +49,7 @@ function Workspace(){
  const table=state.types.find((t:any)=>t.id===typeId),fields:Field[]=table?.fields??[];
  React.useEffect(()=>{setVisited(v=>v.includes(view)?v:[...v,view]);},[view]);
  React.useEffect(()=>{setProjectId('');setVisited([view]);},[state.workspaceId]);
- const openApp=()=>{void bridge.openLink({url:__TRIALY_APP_URL__});};
+ const openApp=()=>{void bridge.openLink({url:__TRIALY_APP_URL__+(state.workspaceId?'/?workspaceId='+encodeURIComponent(state.workspaceId):'')});};
  const openSettings=()=>{void bridge.openLink({url:__TRIALY_APP_URL__+'/?tab=access'+(state.workspaceId?'&workspaceId='+encodeURIComponent(state.workspaceId):'')});};
  const navigation=<WorkspaceNavigation selected={view} onSelect={setView} onSettings={openSettings}/>;
  async function run(fn:()=>Promise<void>){setBusy(true);setError('');try{await fn();}catch(e){setError((e as Error).message);}finally{setBusy(false);}}

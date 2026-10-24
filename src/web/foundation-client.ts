@@ -2,6 +2,7 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown)=
  const b=`/api/workspaces/${v.workspaceId}/foundation`;
  const o=`/api/workspaces/${v.workspaceId}/organization`;
  const routes:Record<string,[string,string?,unknown?]>={
+ reference_options:[`/api/workspaces/${v.workspaceId}/types/${v.typeId}/references/${encodeURIComponent(v.field)}?q=${encodeURIComponent(v.query??'')}&offset=${v.offset??0}`],
  move_tool:[`${o}/tools/move`,'POST',Object.fromEntries(Object.entries(v).filter(([k])=>k!=='workspaceId'))],
  read_workspace_home:[`${o}/home`,'POST',Object.fromEntries(Object.entries(v).filter(([k])=>k!=='workspaceId'))],
  read_workspace_activity:[`${o}/activity`,'POST',Object.fromEntries(Object.entries(v).filter(([k])=>k!=='workspaceId'))],
