@@ -98,6 +98,27 @@ export class Service extends DataService {
  }
  async validate(tx:Connection,a:Actor,w:string,op:Operation|FileOperation) {
   const p=await access(tx,a,w,op.kind!=='set_workspace_policy');
+  if(op.kind==='database_changes'){
+   const {type,policy}=await typeAccess(tx,a,w,op.typeId,true);
+   if(policy.role!=='owner'||!['human','ai'].includes(a.origin))fail(403,'owner_required','Only the owner may enable database editing');
+   if(visibleFields(type.fields,policy,a).length!==type.fields.length)fail(403,'full_record_required','Database editing requires access to every field');
+   const changes=[...op.updates,...op.deletions],ids=changes.map(c=>c.recordId);
+   if(!ids.length||ids.length>100||new Set(ids).size!==ids.length)fail(400,'database_batch','Choose up to 100 distinct records');
+   for(const change of changes){const r=(await tx.query('SELECT * FROM records WHERE workspace_id=$1 AND id=$2',[w,change.recordId])).rows[0];if(!r||r.type_id!==op.typeId)fail(404,'not_found','Record not found in this table');if(r.version!==change.expectedVersion)fail(409,'stale_version','A record changed. Discard or review your edits before saving again');}
+   for(const change of op.updates){await this.validate(tx,a,w,change);for(const field of type.fields.filter((f:Field)=>f.kind==='relationship')){const v=change.data[field.key];if(op.deletions.some(d=>(Array.isArray(v)?v:[v]).includes(d.recordId)))fail(409,'record_dependencies','An update cannot reference a record being deleted');}}
+   for(const change of op.deletions){
+    const r=(await tx.query('SELECT * FROM records WHERE workspace_id=$1 AND id=$2',[w,change.recordId])).rows[0];
+    if(r.state!=='draft')fail(409,'controlled_record','Only draft records can be deleted in Database');
+    if(policy.legal_hold||(policy.retention_until&&new Date(policy.retention_until).getTime()>Date.now()))fail(409,'retention_protected','Retention policy prevents deletion');
+    const linked=(await tx.query(`SELECT 1 FROM records r JOIN entity_types t ON t.id=r.type_id CROSS JOIN LATERAL jsonb_array_elements(t.fields) f
+     WHERE r.workspace_id=$1 AND NOT(r.id=ANY($3::uuid[])) AND r.state NOT IN ('archived','superseded') AND f->>'kind'='relationship' AND (r.data->>(f->>'key')=$2::text OR r.data->(f->>'key') @> to_jsonb(ARRAY[$2::text]))
+     UNION ALL SELECT 1 FROM identity_links WHERE workspace_id=$1 AND revoked_at IS NULL AND (source_record_id=$2::uuid OR preferred_record_id=$2::uuid)
+     UNION ALL SELECT 1 FROM cross_table_links WHERE workspace_id=$1 AND revoked_at IS NULL AND (source_record_id=$2::uuid OR preferred_record_id=$2::uuid)
+     UNION ALL SELECT 1 FROM document_controls WHERE workspace_id=$1 AND linked_record_id=$2::uuid
+     UNION ALL SELECT 1 FROM record_review_requests WHERE workspace_id=$1 AND record_id=$2::uuid LIMIT 1`,[w,r.id,op.deletions.map(d=>d.recordId)])).rows;
+    if(linked.length)fail(409,'record_dependencies','This record has linked work. Resolve the links before deleting');
+   }
+  }
   if(op.kind==='request_review'){
    if(a.origin!=='human'||p.role!=='owner')fail(403,'owner_required','A human owner must route reviews');
    const r=(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[op.recordId,w])).rows[0];if(!r)fail(404,'not_found','Record not found');
@@ -169,6 +190,7 @@ export class Service extends DataService {
   return p;
  }
  async fieldDiff(tx:Connection,a:Actor,w:string,op:Operation|FileOperation):Promise<any[]> {
+  if(op.kind==='database_changes')return (await Promise.all(op.updates.map(c=>this.fieldDiff(tx,a,w,c)))).flat();
   if(op.kind==='bulk_records')return (await Promise.all(op.changes.map(c=>this.fieldDiff(tx,a,w,c)))).flat();
   if(op.kind==='reverse_field_change'||op.kind==='reverse_field_changes'){const records=await this.reverseBatch(tx,a,w,op);return (await Promise.all(records.map(async r=>{const {type,policy}=await typeAccess(tx,a,w,r.record.type_id);return visibleFields(type.fields,policy,a).filter(f=>Object.hasOwn(r.record.data,f.key)!==Object.hasOwn(r.data,f.key)||json(r.record.data[f.key])!==json(r.data[f.key])).map(f=>({typeId:r.record.type_id,recordId:r.record.id,field:f.key,label:f.name,derived:!!derived(f),beforePresent:Object.hasOwn(r.record.data,f.key),before:r.record.data[f.key]??null,afterPresent:Object.hasOwn(r.data,f.key),after:r.data[f.key]??null}));}))).flat();}
   if(op.kind!=='create_record'&&op.kind!=='update_record'&&op.kind!=='restore_record')return [];
@@ -254,7 +276,7 @@ export class Service extends DataService {
   return this.prepare(a,w,{kind:'save_document',...input});
  }
  private async prepare(a:Actor,w:string,op:Operation|FileOperation) {
-  const schemaFingerprint=['create_type','update_type','migrate_type','create_view','update_view','create_record','update_record','bulk_records','accept_submission','upgrade_template','adopt_template','reverse_field_change','reverse_field_changes','archive_created_record','restore_archived_creation'].includes(op.kind)?checksum(json((await this.db.query('SELECT id,version FROM entity_types WHERE workspace_id=$1 ORDER BY id',[w])).rows)):undefined;
+  const schemaFingerprint=['create_type','update_type','migrate_type','create_view','update_view','create_record','update_record','bulk_records','database_changes','accept_submission','upgrade_template','adopt_template','reverse_field_change','reverse_field_changes','archive_created_record','restore_archived_creation'].includes(op.kind)?checksum(json((await this.db.query('SELECT id,version FROM entity_types WHERE workspace_id=$1 ORDER BY id',[w])).rows)):undefined;
   await this.validate(this.db,a,w,op);await this.sweep();
   let summary:any=op.kind==='restore_record'?{...op,...await this.restoreData(this.db,a,w,op)}:op.kind==='save_document'?{...op,bytes:undefined,byteSize:op.bytes.length,checksum:checksum(op.bytes)}:op;
   if(op.kind==='create_record'||op.kind==='update_record'||op.kind==='accept_submission'){
@@ -304,6 +326,7 @@ export class Service extends DataService {
    // Workspace lock serialises permissions/configuration changes with commits.
    await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[p.workspaceId]);
    if(p.schemaFingerprint&&p.schemaFingerprint!==checksum(json((await tx.query('SELECT id,version FROM entity_types WHERE workspace_id=$1 ORDER BY id',[p.workspaceId])).rows)))fail(409,'stale_version','Table configuration changed. Prepare the preview again.');
+   if(p.operation.kind==='database_changes'){requireCurrentAction(a);if(authorization&&authorization.kind!=='approval')fail(403,'approval_required','Database edits require an explicit save');}
    const policy=await this.validate(tx,a,p.workspaceId,p.operation);
    if(p.operation.kind==='migrate_type'&&p.migrationFingerprint!==(await this.migrationData(tx,a,p.workspaceId,p.operation)).fingerprint)fail(409,'stale_version','Records changed since migration preview');
    await setWriteAuthorization(tx,a,{...(authorization??{kind:'approval',id,digest,context:'data_preview'}),changeSetId:id,...(p.operation.kind==='reverse_field_change'?{reverses:p.operation.changeId}:p.operation.kind==='reverse_field_changes'?{reverses:p.operation.changes.map(c=>c.changeId)}:{})});
@@ -314,6 +337,15 @@ export class Service extends DataService {
   });return result;
  }
  private async apply(tx:Connection,a:Actor,w:string,op:Operation|FileOperation,p:any):Promise<any[]> {
+  if(op.kind==='database_changes'){
+   const objects:any[]=[];for(const change of op.updates)objects.push(...await this.apply(tx,a,w,change,p));
+   for(const change of op.deletions){const record=(await tx.query('SELECT * FROM records WHERE workspace_id=$1 AND id=$2',[w,change.recordId])).rows[0],version=record.version+1;
+    await tx.query("UPDATE records SET state='archived',version=$2,updated_at=now() WHERE id=$1",[record.id,version]);
+    await revision(tx,a,w,record.id,'record',version,{data:record.data,state:'archived'});
+    const authorization=(await tx.query("SELECT current_setting('trialy.write_authorization',true) AS value")).rows[0].value;
+    await audit(tx,a,p,'record.deleted',record.id,{state:record.state,version:record.version},{state:'archived',version,retained:true,authorization:authorization?JSON.parse(authorization):null},'Owner confirmed deletion in Database');objects.push({id:record.id,kind:'record',version,state:'archived'});
+   }return objects;
+  }
   if(op.kind==='archive_created_record'||op.kind==='restore_archived_creation'){
    const change=await this.creationArchive(tx,a,w,op),record=change.record,version=record.version+1;
    const authorization=(await tx.query("SELECT current_setting('trialy.write_authorization',true) AS value")).rows[0].value;

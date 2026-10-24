@@ -9,8 +9,8 @@ const json=JSON.stringify;
 export class DataService {
  constructor(public db:Database,public maxFileBytes=25*1024*1024,protected originals:OriginalStore=new PostgresOriginalStore()){}
  async workspaces(a:Actor) {
-  const rows=(await this.db.query(`SELECT w.id,w.name,w.ai_enabled,m.role FROM workspaces w JOIN memberships m ON m.tenant_id=w.tenant_id AND m.user_id=$1 LEFT JOIN workspace_access wa ON wa.workspace_id=w.id AND wa.user_id=$1 WHERE m.role='owner' OR wa.user_id IS NOT NULL ORDER BY w.created_at`,[a.userId])).rows;
-  const result=[];for(const w of rows) {try {await access(this.db,a,w.id);result.push(w);}catch {}}return result;
+  const rows=(await this.db.query(`SELECT w.id,w.name,w.ai_enabled,m.role FROM workspaces w JOIN memberships m ON m.tenant_id=w.tenant_id AND m.user_id=$1 LEFT JOIN workspace_access wa ON wa.workspace_id=w.id AND wa.user_id=$1 WHERE m.role='owner' OR wa.user_id IS NOT NULL ORDER BY w.ai_enabled DESC,w.created_at,w.id`,[a.userId])).rows;
+  const result:{workspace:any;shared:boolean}[]=[];for(const w of rows){try{await access(this.db,a,w.id);let shared=a.origin==='ai';if(a.origin==='human')try{await access(this.db,{...a,origin:'ai'},w.id);shared=true;}catch{}result.push({workspace:w,shared});}catch{}}return result.sort((a,b)=>Number(b.shared)-Number(a.shared)).map(r=>r.workspace);
  }
  async types(a:Actor,w:string) {
   const p=await access(this.db,a,w);const rows=(await this.db.query('SELECT * FROM entity_types WHERE workspace_id=$1 ORDER BY created_at,name',[w])).rows;

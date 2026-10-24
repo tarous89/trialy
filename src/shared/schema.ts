@@ -34,7 +34,9 @@ export const recordQuerySchema=z.object({state:z.enum(['active','archived','all'
 export const fieldChangeQuerySchema=z.object({typeId:id.optional(),recordId:id.optional(),actorId:id.optional(),authorizationId:id.optional(),changeSetId:id.optional(),authorizationKind:z.enum(['approval','maintenance_grant','execution_grant','unattributed']).optional(),since:z.string().datetime().optional(),until:z.string().datetime().optional(),offset:z.coerce.number().int().min(0).default(0)});
 export type FieldChangeQuery=z.infer<typeof fieldChangeQuerySchema>;
 export type RecordQuery=z.infer<typeof recordQuerySchema>;
+export const databaseChangesSchema=z.object({kind:z.literal('database_changes'),typeId:id,updates:z.array(z.object({kind:z.literal('update_record'),recordId:id,expectedVersion:z.number().int().min(0),data:values}).strict()).max(100).default([]),deletions:z.array(z.object({recordId:id,expectedVersion:z.number().int().min(0)}).strict()).max(100).default([])}).strict();
 export const operationSchema = z.discriminatedUnion('kind', [
+ databaseChangesSchema,
  z.object({kind:z.literal('reverse_field_change'),changeId:id,expectedVersion:z.number().int().min(0),reason:z.string().trim().min(1).max(1000)}),
  z.object({kind:z.literal('request_review'),recordId:id,expectedVersion:z.number().int().min(0),reviewerId:id,note:z.string().trim().min(1).max(1000),dueOn:z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable()}),
  z.object({kind:z.literal('accept_submission'),submissionId:id,typeId:id,data:values}),
