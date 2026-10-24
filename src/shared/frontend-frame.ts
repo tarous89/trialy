@@ -1,6 +1,7 @@
 import {trackerRenderer} from '../workspace/standard-tracker.js';
 // Only the shipped renderer and this trusted bridge run in the frame. Custom code stays in QuickJS.
 export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
+ let navigationOnly=false;
  const renderTracker=function(config,theme,input,tools){${trackerRenderer}};
  const host=window.parent,root=document.getElementById('surface'),sheet=document.getElementById('appearance');
  let channel=null,model=null,uiState=null,controls=[],connected=false,detailScroll=0;
@@ -41,7 +42,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  function paint(html,css){
   const horizontalScroll=root.querySelector('.scroll')?.scrollLeft||0;
   const focused=document.activeElement,focusAction=focused?.getAttribute('data-action'),focusGrip=focused?.hasAttribute('data-reorder')?focused.getAttribute('aria-label'):null,selection=focused?.selectionStart,editBefore=focused?.closest('.example-input')?._before;
-  root.replaceChildren(clean(html));sheet.textContent=css;
+  root.replaceChildren(clean(html));sheet.textContent=css+(navigationOnly?' .back-link,.settings-top{display:none!important}':'');
   if(connected){
    for(const el of root.querySelectorAll('input,select,textarea'))if(!el.hasAttribute('data-ui-state')){el.disabled=true;el.title='Use a connected data control';}
    for(const c of controls){
@@ -113,7 +114,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   const v=event.data;if(channel!==null&&v.channel!==channel)return;
   if(v.kind==='trialy.action'){footerAction(v.action);return;}
   if(v.kind!=='trialy.render'||typeof v.html!=='string'||v.html.length>200000||typeof v.css!=='string'||v.css.length>50000)return;
-  channel=v.channel;model=v.tracker||null;uiState=v.state;controls=Array.isArray(v.controls)?v.controls:[];connected=v.connected;
+  navigationOnly=!!v.navigationOnly;channel=v.channel;model=v.tracker||null;uiState=v.state;controls=Array.isArray(v.controls)?v.controls:[];connected=v.connected;
   pending=Object.create(null);original=Object.create(null);paint(v.html,v.css);post('trialy.rendered');
  });
  function send(kind,target){
