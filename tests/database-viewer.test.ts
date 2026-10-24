@@ -25,6 +25,11 @@ test('app/plugin share the same default storage and tracker identities; database
  const contacts=(await save({kind:'create_type',name:'Contacts',fields:[{key:'company',name:'Company',kind:'relationship',targetTypeId:type,ai:true}]})).objects[0].id;await save({kind:'create_record',typeId:contacts,data:{company:a}});
  await assert.rejects(s.preview(owner,w.id,{kind:'database_changes',typeId:type,updates:[],deletions:[{recordId:a,expectedVersion:1}]}),/linked work/);
  const wrong=(await save({kind:'create_record',typeId:contacts,data:{company:c}})).objects[0].id;await assert.rejects(s.preview(owner,w.id,{kind:'database_changes',typeId:type,updates:[],deletions:[{recordId:wrong,expectedVersion:0}]}),/this table/);
+ await s.share(owner,w.id,member.userId,'viewer',[type+':name'],[type],true);
+ const restricted=await databasePage(db,member,w.id,{typeId:type});assert.equal(restricted.rows[0].data.name,undefined);
+ const restrictedAI=await databasePage(db,{...member,origin:'ai'},w.id,{typeId:type});assert.equal(restrictedAI.rows[0].data.name,undefined);
+ const deniedTable=await databasePage(db,member,w.id,{typeId:contacts});assert.equal(deniedTable.schemaOnly,true);assert.equal(deniedTable.rows.length,0);
+ await assert.rejects(s.share(member,w.id,owner.userId,'editor',[],null,true),/owner|not permitted/);
  const denied=await s.preview(ai,w.id,{kind:'database_changes',typeId:type,updates:[{kind:'update_record',recordId:a,expectedVersion:1,data:{name:'Revoked'}}],deletions:[]});await s.setAi(owner,w.id,false);await assert.rejects(s.commit({...ai,actionConfirmed:true},denied.id,denied.digest),/AI access/);assert.equal((await f.record(db,owner,w.id,a)).data.name,'Edited');
  }finally{await db.close();}
 });

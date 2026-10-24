@@ -27,7 +27,7 @@ import {DocumentControls} from '../shared/DocumentControls.js';
 import {BulkImport} from '../shared/BulkImport.js';
 import {ViewPicker,RecordView} from '../shared/WorkspaceViews.js';
 import type {Field} from '../shared/schema.js';
-const bridge=new App({name:'Trialy workspace',version:'0.2.17'},{},{autoResize:true});
+const bridge=new App({name:'Trialy workspace',version:'0.2.18'},{},{autoResize:true});
 function unwrap(result:any){if(result.isError)throw new Error(result.content?.find((c:any)=>c.type==='text')?.text??'The action could not complete.');return result.structuredContent?.result;}
 async function call(name:string,args:Record<string,unknown>={}){return unwrap(await bridge.callServerTool({name,arguments:args}));}
 function Workspace(){
@@ -80,7 +80,7 @@ function Workspace(){
  {visited.includes('projects')&&<div hidden={view!=='projects'}><ProjectsPanel key={state.workspaceId} workspaceId={state.workspaceId} types={state.types} call={call} incoming={organizationIncoming}/></div>}
  {visited.includes('code')&&<div hidden={view!=='code'}><FoundationPanel key={state.workspaceId} workspaceId={state.workspaceId} types={state.types} call={call} incoming={foundationIncoming}/></div>}
  {(['trackers','forms','visuals'] as const).map(key=>visited.includes(key)&&<div key={key+state.workspaceId} hidden={view!==key}><ResourcesPanel workspaceId={state.workspaceId} kind={key==='trackers'?'tracker':key==='forms'?'form':'visualization'} projectId={projectId} types={state.types} call={call}/></div>)}
- {visited.includes('database')&&<div hidden={view!=='database'}><DatabasePanel key={state.workspaceId} workspaceId={state.workspaceId} projectId={projectId} call={call} onAccess={openSettings} onOpenTable={id=>{setTypeId(id);setView('records');void run(()=>records(state.workspaceId,id,0,'',''));}}/></div>}</>}
+ {visited.includes('database')&&<div hidden={view!=='database'}><DatabasePanel key={state.workspaceId} workspaceId={state.workspaceId} projectId={projectId} call={call} onAccess={()=>{void bridge.openLink({url:__TRIALY_APP_URL__+'/?tab=database&access=1&workspaceId='+encodeURIComponent(state.workspaceId)});}} onOpenTable={id=>{setTypeId(id);setView('records');void run(()=>records(state.workspaceId,id,0,'',''));}}/></div>}</>}
  {versions&&<RecordHistory key={versions.recordId} history={versions} busy={busy} onClose={()=>setVersions(null)} onPage={offset=>run(async()=>setVersions(await call('record_versions',{workspaceId:state.workspaceId,recordId:versions.recordId,offset})))} onRestore={operation=>run(()=>prepare(operation))}/>}
  {document&&<DocumentText document={document} busy={busy} onClose={()=>setDocument(null)} onPage={offset=>run(async()=>setDocument(await call('read_document_text',{workspaceId:state.workspaceId,versionId:document.versionId,offset})))}/>}
  {importing&&<BulkImport typeId={typeId} fields={fields} busy={busy} onClose={()=>setImporting(false)} onPreview={operation=>run(()=>prepare(operation))}/>}

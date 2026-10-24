@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
+import {readFile,readdir} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {PGlite} from '@electric-sql/pglite';
 import request from 'supertest';
@@ -11,7 +11,7 @@ import {addLocalAuth} from '../src/server/auth.js';
 import {addMcp} from '../src/server/mcp.js';
 import {Service} from '../src/domain/service.js';
 test('signup returns to OAuth; PKCE, replay, refresh and revocation are enforced',async()=>{
- const pg=new PGlite();for(const f of ['001_core','002_controlled_work','003_local_auth','004_governance','005_account_security','006_permissions','007_mfa','012_folder_access'])await pg.exec(await readFile(`migrations/${f}.sql`,'utf8'));
+ const pg=new PGlite();for(const f of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+f,'utf8'));
  const db:Database={query:(sql,v)=>pg.query(sql,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
  const app=baseApp();app.use(session({secret:'synthetic-session-secret-for-testing-only',resave:false,saveUninitialized:false}));const auth=addLocalAuth(app,db,'https://trialy.example');addMcp(app,new Service(db),auth.ai);app.use(errors);
  const client=await request(app).post('/register').send({client_name:'Synthetic ChatGPT',redirect_uris:['https://chatgpt.com/connector/oauth/synthetic'],token_endpoint_auth_method:'none',grant_types:['authorization_code','refresh_token'],response_types:['code']});assert.equal(client.status,201,client.text);
