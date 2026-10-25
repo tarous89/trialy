@@ -43,3 +43,8 @@ Migration 042 adds the database-wide RLS rule boundary used by the permission gr
 ## Verification
 
 Tests cover tool edits and record creation without database browsing; source attribution; multiple tools over one record; cross-tool column restrictions; AI inheritance; revoked pending changes; unauthorized permission updates; and execution with the restricted runtime database role. Existing isolation, approvals, history, schema migration, archival and invitation tests remain required. Browser QA covers app/plugin navigation, contextual access, save review, connection recovery and narrow screens.
+
+## Template setup and source remapping
+The New menu creates projects directly and opens a type-filtered gallery for trackers, forms, dashboards and automations. Dashboard retains the stored `visualization` enum for compatibility. Template setup requires an explicit new-table or existing-table choice and an explicit field mapping. New tables and tools (including report automations) commit together; reports are saved without enabling a schedule.
+
+Standard tool Layout changes are prepared by `prepare_tool_layout`. Server validation reconstructs bindings, manifests and UI types from authorized schema and checks the exact component version. Existing records are never copied, moved or rewritten by mapping changes. Computed fields become read-only. Custom code and custom function bindings require a reviewed code update; the UI does not rewrite unknown code heuristically. Changing a tool binding does not override database restrictions.

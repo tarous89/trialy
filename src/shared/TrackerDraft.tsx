@@ -6,7 +6,7 @@ type Call=(name:string,args:any)=>Promise<any>;
 export function TrackerDraft({preview,call,onSaved,onDiscard,onProposal}:{preview:any;call:Call;onSaved:(component:any)=>void;onDiscard:()=>void;onProposal:(p:any)=>void}){
  const [busy,setBusy]=useState(false),[rendering,setRendering]=useState(true),[rendered,setRendered]=useState(false),[error,setError]=useState('');
  const invoke=(name:string,args:any={})=>call(name,{workspaceId:preview.workspaceId,...args});
- const label=preview.body.content?.resourceKind==='visualization'?'visualization':preview.body.content?.resourceKind==='form'?'form':'tracker';
+ const label=preview.body.content?.resourceKind==='visualization'?'dashboard':preview.body.content?.resourceKind==='form'?'form':'tracker';
  const activePreview=useRef(preview),savedReceipt=useRef<any>(null);
  async function save(){setBusy(true);setError('');try{
   const p=activePreview.current;
@@ -17,3 +17,4 @@ export function TrackerDraft({preview,call,onSaved,onDiscard,onProposal}:{previe
  }catch(e){setError((e as Error).message);}finally{setBusy(false);}}
  return <section className="ty-tracker-preview">{error&&<p role="alert">{error}</p>}<FrontendCodeRuntime previewId={preview.id} call={invoke} onProposal={onProposal} onBusyChange={setRendering} onRendered={()=>setRendered(true)}/><ActionFooter action={savedReceipt.current?'Open saved '+label:'Save '+label} disabled={rendering||!rendered} busy={busy} onAction={()=>void save()} dismissLabel={"Discard "+label} onDismiss={savedReceipt.current?undefined:async()=>{setBusy(true);try{await invoke('discard_workspace_preview',{previewId:activePreview.current.id});if(activePreview.current.id!==preview.id)await invoke('discard_workspace_preview',{previewId:preview.id});onDiscard();}catch(e){setError((e as Error).message);setBusy(false);}}}>This {label} is a preview. Save it to keep it.</ActionFooter></section>;
 }
+
