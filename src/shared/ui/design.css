@@ -227,3 +227,5 @@
 .ty-workspace .ty-logs .ty-advanced{padding:0;border:0;background:transparent;box-shadow:none}.ty-workspace .ty-log-filters .ty-select{overflow:hidden;border:1px solid #82a99b}.ty-workspace .ty-log-filters .ty-select select{border:0;border-radius:999px;background:transparent}.ty-workspace .ty-project-page input,.ty-workspace .ty-project-page textarea{font-weight:400}
 
 @container(max-width:380px){.ty-workspace .ty-project-card .ty-project{padding:14px 30px 14px 10px;gap:8px}.ty-workspace .ty-project .ty-project-icon{width:22px}.ty-workspace .ty-project strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ty-workspace .ty-project time{white-space:nowrap;font-size:9px}.ty-workspace .ty-project-settings{right:4px;top:4px;width:24px;height:24px}}
+
+.ty-workspace .ty-account:has(.ty-account-email){display:grid;grid-template-columns:28px minmax(0,1fr);gap:8px}.ty-workspace .ty-account .ty-account-email{grid-column:1/-1;display:block;white-space:normal;overflow-wrap:anywhere;font-size:11px;font-weight:400;line-height:1.5;color:#c5d9ce;margin:0}
