@@ -23,7 +23,7 @@ test('Shared backend: access, committed history, original preservation and retri
  const save=async(op:unknown)=>{const p=await s.preview(owner,w.id,op);return s.commit(owner,p.id,p.digest);};
  await t.test('tenant isolation and explicit AI permission',async()=>{
   await assert.rejects(s.types(other,w.id),error('not_found'));
-  await assert.rejects(s.types({...owner,origin:'ai'},w.id),error('ai_disabled'));
+  assert.deepEqual(await s.types({...owner,origin:'ai'},w.id),[]);await s.setAi(owner,w.id,false);await assert.rejects(s.types({...owner,origin:'ai'},w.id),error('ai_disabled'));
   await s.setAi(owner,w.id,true);
   assert.equal((await s.workspaces(other)).length,1);assert.equal((await s.workspaces(owner))[0].id,w.id);
  });
@@ -224,9 +224,9 @@ test('Shared backend: access, committed history, original preservation and retri
  });
  await t.test('table AI exclusion and document policy cover reads, writes and inspection',async()=>{
   const ai={...owner,origin:'ai' as const};
-  await s.setAccessRules(owner,w.id,{expectedVersion:0,aiHiddenTypes:[typeId]});assert.ok(!(await s.types(ai,w.id)).some(t=>t.id===typeId));await assert.rejects(s.records(ai,w.id,typeId),error('not_found'));assert.ok((await s.types(owner,w.id)).some(t=>t.id===typeId));
+  await s.setAccessRules(owner,w.id,{expectedVersion:(await s.accessRules(owner,w.id)).version,aiHiddenTypes:[typeId]});assert.ok(!(await s.types(ai,w.id)).some(t=>t.id===typeId));await assert.rejects(s.records(ai,w.id,typeId),error('not_found'));assert.ok((await s.types(owner,w.id)).some(t=>t.id===typeId));
   const doc=(await s.documents(owner,w.id))[0];await s.share(owner,w.id,other.userId,'editor',[],null,true);
-  await s.setAccessRules(owner,w.id,{expectedVersion:1,aiHiddenTypes:[],document:{documentId:doc.document_id,allowedUsers:[],ai:false,expectedVersion:-1}});
+  await s.setAccessRules(owner,w.id,{expectedVersion:(await s.accessRules(owner,w.id)).version,aiHiddenTypes:[],document:{documentId:doc.document_id,allowedUsers:[],ai:false,expectedVersion:-1}});
   assert.ok(!(await s.documents(other,w.id)).some(d=>d.document_id===doc.document_id));await assert.rejects(s.original(other,w.id,doc.id),error('not_found'));await assert.rejects(s.acknowledgeDocument(other,w.id,doc.id,'Read'),error('not_found'));
   await assert.rejects(s.previewFile(other,w.id,{documentId:doc.document_id,expectedVersion:doc.version,filename:'attempt.txt',mime:'text/plain',bytes:Buffer.from('attempt'),ai:true}),error('not_found'));
   assert.ok(!(await s.documents(ai,w.id)).some(d=>d.document_id===doc.document_id));assert.ok((await s.original(owner,w.id,doc.id)).bytes.length);
@@ -277,4 +277,5 @@ test('Shared backend: access, committed history, original preservation and retri
  });
  await db.close();
 });
+
 

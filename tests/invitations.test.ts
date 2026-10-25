@@ -25,8 +25,9 @@ test('invitation signup returns to review, acceptance is scoped and replay canno
  const review=await browser.get('/api/invitation').set('x-trialy-invitation',token);assert.equal(review.status,200,review.text);assert.deepEqual(review.body.tables,[{id:t.id,name:'Tasks'}]);
  assert.equal((await browser.post('/api/invitation').set('x-trialy-invitation',token).send({confirmed:true})).status,403);
  const accept=()=>browser.post('/api/invitation').set('x-trialy-invitation',token).set('x-csrf-token',current.csrf).send({confirmed:true});assert.equal((await accept()).status,200);assert.equal((await accept()).status,200);
- const policy=(await db.query('SELECT * FROM workspace_access WHERE user_id=$1',[current.userId])).rows[0];assert.deepEqual(policy.allowed_types,[t.id]);assert.equal(policy.ai_enabled,false);assert.equal(policy.role,'viewer');
+ const policy=(await db.query('SELECT * FROM workspace_access WHERE user_id=$1',[current.userId])).rows[0];assert.deepEqual(policy.allowed_types,[t.id]);assert.equal(policy.ai_enabled,true);assert.equal(policy.role,'viewer');
  await s.unshare(owner,w.id,current.userId);assert.equal((await accept()).status,200);assert.equal((await db.query('SELECT * FROM workspace_access WHERE user_id=$1',[current.userId])).rows.length,0);
  const revoked=await create();await request(ownerApp).post(root+'/'+revoked.body.id+'/revoke').send({});assert.equal((await browser.get('/api/invitation').set('x-trialy-invitation',revoked.body.path.split('#')[1])).status,404);
  assert.ok(!JSON.stringify((await request(ownerApp).get(root)).body).includes(token));await db.close();
 });
+

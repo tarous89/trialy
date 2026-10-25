@@ -1,3 +1,4 @@
+import {applyTypePolicy} from '../domain/effective-access.js';
 import {readFile} from 'node:fs/promises';
 import {z} from 'zod';
 import {id,fail,fieldsSchema,newFieldsSchema,type Actor} from '../shared/schema.js';
@@ -24,7 +25,7 @@ export async function trackerOperation(f:WorkspaceFoundation,a:Actor,w:string,in
   if(extensions.has(extension.typeId)||v.newTables.some(t=>t.id===extension.typeId)||!v.tabs.some(t=>t.typeId===extension.typeId))fail(400,'invalid_extension','Extend each existing bound table once');
   const resolved=await typeAccess(f.db,a,w,extension.typeId,true);const merged=fieldsSchema.parse([...resolved.type.fields,...extension.newFields]);
   await new Service(f.db).validate(f.db,a,w,{kind:'update_type',typeId:extension.typeId,expectedVersion:extension.expectedVersion,name:resolved.type.name,fields:merged});
-  extensions.set(extension.typeId,{...resolved,type:{...resolved.type,fields:merged,version:resolved.type.version+1}});
+  const type={...resolved.type,fields:merged,version:resolved.type.version+1};extensions.set(extension.typeId,{type,policy:await applyTypePolicy(f.db,a,resolved.policy,type)});
  }
  const fields:any[]=[],bindings:any[]=[],tabs:any[]=[];
  for(const [i,tab] of v.tabs.entries()){
@@ -58,3 +59,4 @@ export function applyTrackerLayout(content:any,input:unknown){
  if(!tabs.some(t=>t.visible))fail(400,'layout_empty','Keep at least one tab visible');
  return {name:layout.name,manifest:{...content.manifest,fields:content.manifest.fields.map((f:any)=>({...f,label:tabs.flatMap(t=>t.columns).find((c:any)=>c.fieldId===f.id)?.label??f.label}))},source:'const config='+JSON.stringify({...config,name:layout.name,description:layout.description,tabs})+';\n'+content.source.slice(line.length+1)};
 }
+

@@ -1,3 +1,4 @@
+import {applyTypePolicy} from '../domain/effective-access.js';
 import {z} from 'zod';
 import type {Connection} from '../db/database.js';
 import {access,visibleFields} from '../domain/permissions.js';
@@ -8,12 +9,12 @@ export const catalogRequest=z.object({offset:z.number().int().min(0).max(1000000
 export async function schemaCatalog(db:Connection,a:Actor,w:string,input:unknown={}){
  const v=catalogRequest.parse(input),p=await access(db,a,w);
  const rows=(await db.query('SELECT id,name,version,fields,concept FROM entity_types WHERE workspace_id=$1 AND ($2::uuid IS NULL OR id=$2) ORDER BY name,id LIMIT $3 OFFSET $4',[w,v.typeId??null,v.limit+1,v.offset])).rows;
- const tables=rows.slice(0,v.limit).map(t=>{
-  const readable=p.allowed_types===null||p.allowed_types.includes(t.id);
-  const visible=readable?visibleFields(t.fields,{...p,typeId:t.id},a):[];
-  const fields=t.fields.map((f:any)=>{const read=visible.some(k=>k.key===f.key);return {key:f.key,name:f.name,kind:f.kind,required:f.required,multiple:!!f.multiple,targetTypeId:f.targetTypeId??null,derived:derived(f),readable:read,writable:read&&!derived(f)&&!p.archived&&!['viewer','inspector'].includes(p.role)};});
-  return {id:t.id,name:t.name,version:t.version,concept:t.concept??null,readable,fields};
- });
+ const tables=[];for(const t of rows.slice(0,v.limit)){
+  const policy=await applyTypePolicy(db,a,p,t);const visible=visibleFields(t.fields,policy,a);const readable=visible.length>0;
+  if(p.direct_data===false&&!readable)continue;
+  const fields=t.fields.map((f:any)=>{const read=visible.some(k=>k.key===f.key);return {key:f.key,name:f.name,kind:f.kind,required:f.required,multiple:!!f.multiple,targetTypeId:f.targetTypeId??null,derived:derived(f),readable:read,writable:read&&!derived(f)&&!p.archived&&policy.write_fields.includes(f.key)};});
+  tables.push({id:t.id,name:t.name,version:t.version,concept:t.concept??null,readable,fields});
+ }
  return {workspaceId:w,tables,nextOffset:rows.length>v.limit?v.offset+v.limit:null,policy:'Schema visibility grants no access to entries, counts, execution or writes.'};
 }
 export const matchRequest=z.object({name:z.string().trim().min(1).max(100),kind:fieldSchema.shape.kind,typeId:id.optional(),concept:z.enum(['person','organization','project','location']).optional(),offset:z.number().int().min(0).max(1000000).default(0)}).strict();
@@ -41,3 +42,4 @@ export async function accountCatalog(db:import('../db/database.js').Database,a:A
  }
  return {tables,nextOffset:rows.length>v.limit?v.offset+v.limit:null};
 }
+

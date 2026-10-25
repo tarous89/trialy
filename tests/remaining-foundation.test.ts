@@ -54,8 +54,9 @@ test('Task setup, project relationships, exact alias correction, collection cons
   assert.match((await f.runFrontend(ai,w.id,{componentId:fileComponent.id,expectedVersion:0})).html,/Saved source/);
   const copied=await approve({kind:'copy_component',sourceComponentId:fileComponent.id,expectedVersion:0,projectId:project.id,name:'Copied attachment'});
   assert.equal((await f.readComponent(a,w.id,copied.id)).component.assets[0].versionId,file.versionId);
-  await s.setAccessRules(a,w.id,{expectedVersion:0,aiHiddenTypes:[],document:{documentId:file.id,allowedUsers:null,ai:false,expectedVersion:-1}});
+  await s.setAccessRules(a,w.id,{expectedVersion:(await s.accessRules(a,w.id)).version,aiHiddenTypes:[],document:{documentId:file.id,allowedUsers:null,ai:false,expectedVersion:-1}});
   await assert.rejects(f.runFrontend(ai,w.id,{componentId:fileComponent.id,expectedVersion:0}),/unavailable|access/);
   assert.equal((await operationalStatus(db,a,w.id)).worker.status,'no_recent_heartbeat');await db.query("INSERT INTO worker_health(id,last_success_at) VALUES('synthetic',now())");assert.equal((await operationalStatus(db,a,w.id)).worker.status,'recent_heartbeat');await assert.rejects(operationalStatus(db,ai,w.id),/Human owner/);
  }finally{await pg.close();}
 });
+

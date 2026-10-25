@@ -1,3 +1,4 @@
+import {AccessManagement} from '../domain/access-management.js';
 import {accountCatalog} from '../workspace/catalog.js';
 import {accountHome} from '../workspace/home.js';
 import {frontendFrameDocument,FRAME_SCRIPT} from '../shared/frontend-frame.js';
@@ -40,6 +41,9 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  app.post('/api/support',rateLimit({windowMs:3600000,limit:10}),async(req,res)=>{const input=z.object({subject:z.string().trim().min(1).max(160),message:z.string().trim().min(1).max(5000)}).strict().parse(req.body);const requestId=randomUUID();await s.db.query('INSERT INTO support_requests(id,user_id,subject,message) VALUES($1,$2,$3,$4)',[requestId,req.actor!.userId,input.subject,input.message]);res.status(201).json({id:requestId});});
  app.get('/api/me',async(req,res)=>{const u=(await s.db.query('SELECT id,name,email FROM users WHERE id=$1',[req.actor!.userId])).rows[0];res.json({user:u,csrf:req.session?.csrf,workspaces:await s.workspaces(req.actor!)});});
  app.post('/api/workspaces',async(req,res)=>res.status(201).json(await s.createWorkspace(req.actor!,z.string().trim().min(1).max(100).parse(req.body.name))));
+ app.get('/api/workspaces/:workspaceId/effective-access',async(req,res)=>res.json(await new AccessManagement(s.db).overview(req.actor!,id.parse(req.params.workspaceId))));
+ app.get('/api/workspaces/:workspaceId/effective-access/:subject',async(req,res)=>res.json(await new AccessManagement(s.db).explain(req.actor!,id.parse(req.params.workspaceId),String(req.params.subject))));
+ app.post('/api/workspaces/:workspaceId/effective-access',async(req,res)=>res.json(await new AccessManagement(s.db).update(req.actor!,id.parse(req.params.workspaceId),req.body)));
  app.get('/api/templates',(_req,res)=>res.json(templates));
  app.param('workspaceId',(req,_res,next,value)=>{id.parse(value);next();});
  app.get('/api/workspaces/:workspaceId/template-upgrades',async(req,res)=>res.json(await s.templateUpgrades(req.actor!,String(req.params.workspaceId))));
@@ -59,7 +63,7 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  app.get('/api/receipts/:previewId',async(req,res)=>res.json(await s.receipt(req.actor!,id.parse(req.params.previewId))));
  app.get('/api/workspaces/:workspaceId/documents',async(req,res)=>res.json(await s.documents(req.actor!,String(req.params.workspaceId))));
  app.post('/api/workspaces/:workspaceId/documents/preview',async(req,res)=>{
-  const f=z.object({filename:z.string().min(1).max(250),mime:z.string().min(1).max(150),base64:z.string().regex(/^[A-Za-z0-9+/]*={0,2}$/),ai:z.boolean().default(false),documentId:id.optional(),expectedVersion:z.number().int().min(0).optional()}).parse(req.body);
+  const f=z.object({filename:z.string().min(1).max(250),mime:z.string().min(1).max(150),base64:z.string().regex(/^[A-Za-z0-9+/]*={0,2}$/),ai:z.boolean().default(true),documentId:id.optional(),expectedVersion:z.number().int().min(0).optional()}).parse(req.body);
   res.json(await s.previewFile(req.actor!,String(req.params.workspaceId),{...f,bytes:Buffer.from(f.base64,'base64')}));
  });
  app.get('/api/workspaces/:workspaceId/documents/:versionId/download',async(req,res)=>{
@@ -92,4 +96,5 @@ export const errors:ErrorRequestHandler=(error,_req,res,_next)=>{
  if(error?.type==='entity.too.large'){res.status(413).json({error:'too_large',message:'Upload exceeds the configured limit.'});return;}
  console.error(JSON.stringify({event:'request_failed',code:error?.code??'unknown'}));res.status(500).json({error:'unavailable',message:'This action was not confirmed. Refresh its status before retrying.'});
 };
+
 

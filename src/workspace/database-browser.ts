@@ -8,7 +8,7 @@ import {DerivedReader} from '../domain/derived-fields.js';
 export const databaseRequest=z.object({typeId:id,projectId:id.optional(),offset:z.number().int().min(0).max(1000000).default(0),limit:z.number().int().min(1).max(100).default(50),query:z.string().max(500).default(''),sortField:z.string().max(64).optional(),descending:z.boolean().default(false)}).strict();
 export async function databasePage(db:Database,a:Actor,w:string,input:unknown){
  const v=databaseRequest.parse(input);if(v.projectId)await activeProject(db,a,w,v.projectId);
- const policy=await access(db,a,w);const canEdit=policy.role==='owner'&&!policy.archived;
+ const policy=await access(db,a,w);const canEdit=!['viewer','inspector'].includes(policy.role)&&!policy.archived;
  const table=(await schemaCatalog(db,a,w,{typeId:v.typeId})).tables[0];if(!table)fail(404,'not_found','Table unavailable');
  if(!table.readable)return {table,canEdit:false,rows:[],total:null,nextOffset:null,schemaOnly:true};
  const {type,policy:tablePolicy}=await typeAccess(db,a,w,v.typeId),fields=visibleFields(type.fields,tablePolicy,a),keys=fields.map(f=>f.key);
@@ -24,5 +24,6 @@ export async function databasePage(db:Database,a:Actor,w:string,input:unknown){
  const current=await typeAccess(db,a,w,v.typeId);if(JSON.stringify(visibleFields(current.type.fields,current.policy,a))!==JSON.stringify(fields))fail(409,'access_changed','Access or schema changed; reload this table');
  if(v.projectId)await activeProject(db,a,w,v.projectId);
  for(const field of table.fields){const original=type.fields.find((f:any)=>f.key===field.key);if(field.readable)(field as any).options=original?.options??[];}
- return {table,canEdit:canEdit&&keys.length===type.fields.length,rows:resolved.map(r=>({id:r.id,version:r.version,data:r.data})),total,nextOffset:v.offset+rows.length<total?v.offset+rows.length:null,schemaOnly:false};
+ return {table,canDelete:policy.role==='owner'&&keys.length===type.fields.length,canEdit:canEdit&&table.fields.some((f:any)=>f.writable),rows:resolved.map(r=>({id:r.id,version:r.version,data:r.data})),total,nextOffset:v.offset+rows.length<total?v.offset+rows.length:null,schemaOnly:false};
 }
+
