@@ -25,8 +25,9 @@ export function addInvitations(app:Express,s:Service,human:RequestHandler){
    const membership=(await tx.query('SELECT role FROM memberships WHERE tenant_id=$1 AND user_id=$2',[p.tenant_id,userId])).rows[0];if(membership?.role==='owner'||(await tx.query('SELECT user_id FROM workspace_access WHERE workspace_id=$1 AND user_id=$2',[r.workspace_id,userId])).rows.length)fail(409,'existing_access','You already have access; ask the owner to edit it instead');
    const tables=(await tx.query('SELECT id FROM entity_types WHERE workspace_id=$1',[r.workspace_id])).rows;if(r.allowed_types.some((id:string)=>!tables.some(t=>t.id===id)))fail(409,'changed','The table selection changed; ask for a new invitation');
    await tx.query("INSERT INTO memberships(tenant_id,user_id,role) VALUES($1,$2,'viewer') ON CONFLICT DO NOTHING",[p.tenant_id,userId]);
-   await tx.query('INSERT INTO workspace_access(workspace_id,user_id,role,allowed_types,ai_enabled) VALUES($1,$2,$3,$4,false)',[r.workspace_id,userId,r.role,JSON.stringify(r.allowed_types)]);
+   await tx.query('INSERT INTO workspace_access(workspace_id,user_id,role,allowed_types,ai_enabled) VALUES($1,$2,$3,$4,$5)',[r.workspace_id,userId,r.role,JSON.stringify(r.allowed_types),r.role!=='inspector']);
    await tx.query('UPDATE workspace_invitations SET accepted_by=$2,accepted_at=now() WHERE id=$1',[r.id,userId]);await audit(tx,req.actor!,p,'invitation.accepted',r.id,null,{userId,role:r.role,allowedTypes:r.allowed_types,ai:false,invitedBy:r.owner_id});return {workspaceId:r.workspace_id,accepted:true};
   });res.set('Cache-Control','no-store');res.json(result);
  });
 }
+

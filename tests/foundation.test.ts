@@ -57,7 +57,8 @@ test('Foundation acceptance: scoped experiment, exact atomic commit, revisions, 
  const fresh=await f.enqueue(a,w.id,{source:'return {answer:42};',scope:{capabilities:[],typeIds:[],documents:false},input:{}},randomUUID());await runFoundation(db);const file=await f.previewArtifact(a,w.id,fresh.id,'result.json');const originalReceipt=await s.commit(a,file.id,file.digest);assert.equal((await s.original(a,w.id,originalReceipt.objects[0].versionId)).bytes.toString(),'{"answer":42}');
  const documentRun=await f.enqueue(a,w.id,{source:'return tools.call("documents.list");',scope:{capabilities:['documents.list'],typeIds:[],documents:true},input:{}},randomUUID());await runFoundation(db);assert.equal((await f.run(a,w.id,documentRun.id)).status,'succeeded');
  await save({kind:'document_controls',documentId:originalReceipt.objects[0].id,expectedVersion:-1,folder:'Changed folder',linkedRecordId:null,reviewerId:null,expiresOn:null});assert.equal((await f.run(a,w.id,documentRun.id)).diagnostic,'access_changed');
- await s.setAccessRules(a,w.id,{expectedVersion:0,aiHiddenTypes:[table]});assert.equal((await f.run(a,w.id,run.id)).diagnostic,'access_changed');
+ await s.setAccessRules(a,w.id,{expectedVersion:(await s.accessRules(a,w.id)).version,aiHiddenTypes:[table]});assert.equal((await f.run(a,w.id,run.id)).diagnostic,'access_changed');
  const exported=await s.exportWorkspace(a,w.id);assert.equal(exported.foundation_revisions.length,1);
  }finally{await db.close();}
 });
+

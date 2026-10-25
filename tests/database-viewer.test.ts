@@ -1,12 +1,12 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';import {randomUUID} from 'node:crypto';import {readFile,readdir} from 'node:fs/promises';import {PGlite} from '@electric-sql/pglite';
 import type {Database,Connection} from '../src/db/database.js';import {Service} from '../src/domain/service.js';import {WorkspaceFoundation} from '../src/workspace/service.js';import {trackerOperation} from '../src/workspace/tracker-template.js';import {accountCatalog} from '../src/workspace/catalog.js';import {accountHome} from '../src/workspace/home.js';import {workspaceHome} from '../src/workspace/home.js';import {databasePage} from '../src/workspace/database-browser.js';
-test('app/plugin share the same default storage and tracker identities; database saves are owner-only, atomic, reviewed and audited',async()=>{
+test('app/plugin share the same default storage and tracker identities; database saves are permission-checked, atomic, reviewed and audited',async()=>{
  const pg=new PGlite();const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:f=>pg.transaction(tx=>f(tx as Connection)),close:()=>pg.close()};
  try{
  for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
  const owner={userId:randomUUID(),origin:'human' as const},ai={...owner,origin:'ai' as const},member={userId:randomUUID(),origin:'human' as const};
  for(const a of [owner,member])await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[a.userId,a.userId,a.userId+'@example.invalid','Fixture']);
- const s=new Service(db),f=new WorkspaceFoundation(db),old=await s.createWorkspace(owner,'Older private workspace'),w=await s.createWorkspace(owner,'Connected database');await s.setAi(owner,w.id,true);
+ const s=new Service(db),f=new WorkspaceFoundation(db),old=await s.createWorkspace(owner,'Older private workspace'),w=await s.createWorkspace(owner,'Connected database');await s.setAi(owner,old.id,false);await s.setAi(owner,w.id,true);
  assert.equal((await s.workspaces(owner))[0].id,w.id);assert.equal((await s.workspaces(ai))[0].id,w.id);assert.ok((await s.workspaces(owner)).some(x=>x.id===old.id));assert.ok(!(await s.workspaces(ai)).some(x=>x.id===old.id));
  const save=async(op:any)=>{const p=await s.preview(owner,w.id,op);return s.commit(owner,p.id,p.digest);};
  const type=(await save({kind:'create_type',name:'Companies',fields:[{key:'name',name:'Company',kind:'text',ai:true},{key:'source',name:'Source',kind:'text',ai:true},{key:'status',name:'Status',kind:'select',options:['Active','Pending'],ai:true}]})).objects[0].id;
@@ -23,7 +23,7 @@ test('app/plugin share the same default storage and tracker identities; database
  await save({kind:'database_changes',typeId:type,deletions:[{recordId:newRow.objects[0].id,expectedVersion:0}]});
  const a=(await save({kind:'create_record',typeId:type,data:{name:'First',status:'Active'}})).objects[0].id,b=(await save({kind:'create_record',typeId:type,data:{name:'Second'}})).objects[0].id;
  await s.share(owner,w.id,member.userId,'editor',[],null,true);
- assert.equal((await databasePage(db,owner,w.id,{typeId:type})).canEdit,true);assert.equal((await databasePage(db,member,w.id,{typeId:type})).canEdit,false);
+ assert.equal((await databasePage(db,owner,w.id,{typeId:type})).canEdit,true);assert.equal((await databasePage(db,member,w.id,{typeId:type})).canEdit,true);
  const change={kind:'database_changes',typeId:type,updates:[{kind:'update_record',recordId:a,expectedVersion:0,data:{name:'Edited'}}],deletions:[{recordId:b,expectedVersion:0}]};
  await assert.rejects(s.preview(member,w.id,change),/owner/);const pending=await s.preview(owner,w.id,change);assert.equal((await f.record(db,owner,w.id,a)).data.name,'First');assert.equal((await databasePage(db,owner,w.id,{typeId:type})).total,2);
  await s.commit(owner,pending.id,pending.digest);assert.equal((await f.record(db,owner,w.id,a)).data.name,'Edited');assert.equal((await databasePage(db,ai,w.id,{typeId:type})).total,1);
@@ -42,3 +42,4 @@ test('app/plugin share the same default storage and tracker identities; database
  const denied=await s.preview(ai,w.id,{kind:'database_changes',typeId:type,updates:[{kind:'update_record',recordId:a,expectedVersion:1,data:{name:'Revoked'}}],deletions:[]});await s.setAi(owner,w.id,false);await assert.rejects(s.commit({...ai,actionConfirmed:true},denied.id,denied.digest),/AI access/);assert.equal((await f.record(db,owner,w.id,a)).data.name,'Edited');
  }finally{await db.close();}
 });
+

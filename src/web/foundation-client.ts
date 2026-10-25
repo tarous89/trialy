@@ -2,6 +2,11 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown)=
  const b=`/api/workspaces/${v.workspaceId}/foundation`;
  const o=`/api/workspaces/${v.workspaceId}/organization`;
  const routes:Record<string,[string,string?,unknown?]>={
+ list_tool_tables:[`${o}/components/${v.componentId}/tables`],
+ tool_reference_options:[`${o}/components/${v.componentId}/references/${v.typeId}/${encodeURIComponent(v.field)}?q=${encodeURIComponent(v.query??'')}&offset=${v.offset??0}`],
+ read_effective_access:[`/api/workspaces/${v.workspaceId}/effective-access`],
+ explain_effective_access:[`/api/workspaces/${v.workspaceId}/effective-access/${v.subject}`],
+ update_effective_access:[`/api/workspaces/${v.workspaceId}/effective-access`,'POST',v.change],
  read_account_home:['/api/account/home','POST',Object.fromEntries(Object.entries(v).filter(([k])=>k!=='workspaceId'))],
  read_account_schema:['/api/account/schema','POST',{offset:v.offset??0,limit:v.limit??25}],
  reference_options:[`/api/workspaces/${v.workspaceId}/types/${v.typeId}/references/${encodeURIComponent(v.field)}?q=${encodeURIComponent(v.query??'')}&offset=${v.offset??0}`],
@@ -27,3 +32,4 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown)=
  list_execution_grants:[`${b}/grants`],confirm_execution_grant:[`${b}/grants`,'POST',{...v.grant,confirmed:v.confirmed}],revoke_execution_grant:[`${b}/grants/${v.grantId}`,'DELETE'],list_code_schedules:[`${b}/schedules`],confirm_code_schedule:[`${b}/schedules`,'POST',{schedule:v.schedule,confirmed:v.confirmed}],pause_code_schedule:[`${b}/schedules/${v.scheduleId}/pause`,'POST',{paused:v.paused}]
  };const route=routes[name];if(!route)throw new Error('Unknown foundation action');return api(...route);
 };}
+

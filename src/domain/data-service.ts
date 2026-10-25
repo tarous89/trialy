@@ -1,3 +1,4 @@
+import {applyTypePolicy,rowFence,assertRecordScope} from './effective-access.js';
 import {DerivedReader} from './derived-fields.js';
 import type {Connection,Database} from '../db/database.js';
 import {PostgresOriginalStore,type OriginalStore} from '../db/originals.js';
@@ -14,7 +15,7 @@ export class DataService {
  }
  async types(a:Actor,w:string) {
   const p=await access(this.db,a,w);const rows=(await this.db.query('SELECT * FROM entity_types WHERE workspace_id=$1 ORDER BY created_at,name',[w])).rows;
-  return rows.filter(t=>!p.allowed_types||p.allowed_types.includes(t.id)).map(t=>({...t,fields:visibleFields(t.fields,{...p,typeId:t.id},a)}));
+  const result=[];for(const t of rows){const policy=await applyTypePolicy(this.db,a,p,t);const fields=visibleFields(t.fields,policy,a);if(fields.length)result.push({...t,fields});}return result;
  }
  protected async recordQuery(a:Actor,w:string,t:string,opts:RecordQuery={},connection:Connection=this.db) {
   const {type,policy}=await typeAccess(connection,a,w,t);const fields=visibleFields(type.fields,policy,a);
@@ -33,7 +34,7 @@ export class DataService {
   }
   if(opts.dueBefore){const field=opts.dateField??config.dateField;if(!field||!fields.some(f=>f.key===field&&f.kind==='date'))fail(400,'invalid_date_field','Choose an accessible date field');where+=` AND NULLIF(data->>${bind(field)}::text,'')<=${bind(opts.dueBefore)}::text`; }
   if(opts.month){const field=opts.dateField??config.dateField;if(!field||!fields.some(f=>f.key===field&&f.kind==='date'))fail(400,'invalid_date_field','Choose an accessible date field');where+=` AND left(data->>${bind(field)}::text,7)=${bind(opts.month)}::text`;}
-  return {args,where,fields,config};
+  where+=rowFence(policy,args);return {args,where,fields,config};
  }
  async records(a:Actor,w:string,t:string,opts:RecordQuery={},allowedTypes?:string[]) {
   const dynamic=await this.dynamicRows(a,w,t,opts,allowedTypes);
@@ -70,13 +71,13 @@ export class DataService {
  /** Derived queries evaluate before filtering/sorting/pagination; never return a partial total. */
  private async dynamicRows(a:Actor,w:string,t:string,opts:RecordQuery,allowedTypes?:string[]){
   const {type,policy}=await typeAccess(this.db,a,w,t);const fields=visibleFields(type.fields,policy,a);
-  if(!fields.some(f=>f.computed||f.lookup))return null;
+  if(!fields.some(f=>f.computed||f.lookup)&&!policy.scope_project)return null;
   let config:any={};if(opts.viewId){const v=(await this.db.query('SELECT * FROM saved_views WHERE id=$1 AND workspace_id=$2 AND type_id=$3',[opts.viewId,w,t])).rows[0];if(!v||viewFields(viewConfigSchema.parse(v.config)).some(k=>!fields.some(f=>f.key===k)))fail(404,'not_found','View unavailable');config=v.config;}
   for(const key of [opts.dueBefore?opts.dateField??config.dateField:null,opts.month?opts.dateField??config.dateField:null])if(key&&!fields.some(f=>f.key===key&&f.kind==='date'))fail(400,'invalid_date_field','Choose an accessible date field');
   const source=(await this.db.query("SELECT id,type_id,version,state,created_at,CASE WHEN sum(octet_length(data::text)) OVER ()<=8388608 AND octet_length(data::text)<=262144 THEN data ELSE NULL END AS data FROM records WHERE workspace_id=$1 AND type_id=$2 AND ($3='all' OR ($3='archived' AND state='archived') OR ($3='active' AND state<>'archived')) ORDER BY created_at,id LIMIT 1001",[w,t,opts.state??'active'])).rows;
   if(source.length>1000)fail(409,'derived_query_limit','This derived table exceeds the 1,000-record evaluation limit; no partial result was returned');
   if(source.some(r=>r.data===null))fail(409,'derived_query_limit','Derived evaluation exceeds the 8 MiB table or 256 KiB record budget; no partial result was returned');
-  const reader=new DerivedReader(this.db,a,w,allowedTypes);let rows=[];for(const r of source)rows.push(await reader.read(r,config.renderers));
+  const reader=new DerivedReader(this.db,a,w,allowedTypes);let rows=[];for(const r of source){try{await assertRecordScope(this.db,policy,r.id);}catch{continue;}rows.push(await reader.read(r,config.renderers));}
   if(opts.q)rows=rows.filter(r=>Object.values(r.data).some(v=>v!==null&&String(v).toLowerCase().includes(opts.q!.toLowerCase())));
   for(const f of config.filters??[])rows=rows.filter(r=>{if(r.derived[f.field]?.status==='error')return false;const v=r.data[f.field];return f.operator==='empty'?v===null||v===undefined||v==='':f.operator==='contains'?String(v??'').toLowerCase().includes(String(f.value).toLowerCase()):v===f.value;});
   const date=opts.dateField??config.dateField;
@@ -105,7 +106,7 @@ export class DataService {
   const r=(await this.db.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[recordId,w])).rows[0];
   if(!r)fail(404,'not_found','Record not found');
   const {type,policy}=await typeAccess(this.db,a,w,r.type_id);
-  const fields=visibleFields(type.fields,policy,a);
+  await assertRecordScope(this.db,policy,recordId);const fields=visibleFields(type.fields,policy,a);
   const revisions=(await this.db.query("SELECT version,snapshot,actor_id,created_at FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='record' ORDER BY version DESC LIMIT 51 OFFSET $3",[w,recordId,offset])).rows;
   return {recordId,typeId:r.type_id,currentVersion:r.version,typeVersion:type.version,fields,
    canRestore:!['viewer','inspector'].includes(policy.role)&&fields.length===type.fields.length&&!['archived','superseded'].includes(r.state),
@@ -148,4 +149,5 @@ export class DataService {
   });
  }
 }
+
 

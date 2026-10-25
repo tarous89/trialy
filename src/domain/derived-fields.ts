@@ -1,3 +1,4 @@
+import {assertRecordScope} from './effective-access.js';
 import {z} from 'zod';
 import {getQuickJS} from 'quickjs-emscripten';
 import type {Connection} from '../db/database.js';
@@ -71,19 +72,19 @@ export async function validateDerived(db:Connection,a:Actor,w:string,typeId:stri
 
 /** One request-local evaluation context: no cross-user caches, writes or external tools. */
 export class DerivedReader{
- private schemas=new Map<string,Promise<{type:any;fields:Field[]}>>();
+ private schemas=new Map<string,Promise<{type:any;policy:any;fields:Field[]}>>();
  private rows=new Map<string,Promise<any>>();
  private values=new Map<string,Promise<any>>();
  private budget=0;
  private deadline=Date.now()+2500;
  constructor(private db:Connection,private actor:Actor,private workspace:string,private allowedTypes?:string[],private allowedFields?:Record<string,string[]>){}
- private schema(t:string){if(this.allowedTypes&&!this.allowedTypes.includes(t))throw Error('source_unavailable');if(!this.schemas.has(t))this.schemas.set(t,(async()=>{const {type,policy}=await typeAccess(this.db,this.actor,this.workspace,t);return {type,fields:visibleFields(type.fields,policy,this.actor).filter(f=>!this.allowedFields||this.allowedFields[t]?.includes(f.key))};})());return this.schemas.get(t)!;}
+ private schema(t:string){if(this.allowedTypes&&!this.allowedTypes.includes(t))throw Error('source_unavailable');if(!this.schemas.has(t))this.schemas.set(t,(async()=>{const {type,policy}=await typeAccess(this.db,this.actor,this.workspace,t);return {type,policy,fields:visibleFields(type.fields,policy,this.actor).filter(f=>!this.allowedFields||this.allowedFields[t]?.includes(f.key))};})());return this.schemas.get(t)!;}
  private row(id:string){if(!this.rows.has(id))this.rows.set(id,(async()=>{if(++this.budget>3000||Date.now()>this.deadline)throw Error('evaluation_limit');return (await this.db.query("SELECT id,type_id,version,CASE WHEN octet_length(data::text)<=262144 THEN data ELSE NULL END AS data FROM records WHERE workspace_id=$1 AND id::text=$2 AND state NOT IN ('archived','superseded')",[this.workspace,id])).rows[0];})());return this.rows.get(id)!;}
  private async value(row:any,key:string,stack:Set<string>):Promise<any>{
   const tag=row.id+':'+key;if(stack.has(tag))throw Error('dependency_cycle');if(this.values.has(tag))return this.values.get(tag)!;
   const next=new Set(stack);next.add(tag);
   const work=(async()=>{if(++this.budget>3000||Date.now()>this.deadline)throw Error('evaluation_limit');
-   if(row.data===null)throw Error('input_limit');const {fields}=await this.schema(row.type_id);const f=fields.find(v=>v.key===key);if(!f)throw Error('source_unavailable');
+   if(row.data===null)throw Error('input_limit');const {fields,policy}=await this.schema(row.type_id);await assertRecordScope(this.db,policy,row.id);const f=fields.find(v=>v.key===key);if(!f)throw Error('source_unavailable');
    if(f.computed){const input:Record<string,any>={};for(const dep of f.computed.fields)input[dep]=await this.value(row,dep,next);
     const output=await pureCode(f.computed.source,input);checkOutput(f,output);return output;}
    if(f.lookup){const ref=fields.find(v=>v.key===f.lookup!.reference)!;
@@ -100,7 +101,7 @@ export class DerivedReader{
   })();this.values.set(tag,work);return work;
  }
  async read(row:any,renderers:Record<string,any>={}){
-  const {type,fields}=await this.schema(row.type_id);const data=projectData(row.data,fields),derived:Record<string,any>={},display:Record<string,any>={};
+  const {type,fields,policy}=await this.schema(row.type_id);await assertRecordScope(this.db,policy,row.id);const data=projectData(row.data,fields),derived:Record<string,any>={},display:Record<string,any>={};
   for(const f of fields){if(f.computed||f.lookup){try{data[f.key]=await this.value(row,f.key,new Set());derived[f.key]={status:data[f.key]===null?'missing':'current',definitionVersion:type.version};}catch(e){delete data[f.key];derived[f.key]={status:'error',code:(e as Error).message==='source_unavailable'?'source_unavailable':'calculation_failed',definitionVersion:type.version};}}
    const renderer=renderers[f.key]??f.renderer;
    if(renderer?.kind==='code'&&Object.hasOwn(data,f.key)){try{const value=await pureCode(renderer.source??'',{value:data[f.key]});display[f.key]=['string','number','boolean'].includes(typeof value)?{text:String(value)}:displaySchema.parse(value);}catch{display[f.key]={error:'Display unavailable; showing underlying value'};}}
@@ -114,3 +115,4 @@ export function validateRenderer(field:Field,r:any){
  if(r.kind==='progress'&&(r.max??100)<=(r.min??0))fail(400,'renderer_range','Maximum must exceed minimum');
  if(r.kind==='code'&&!r.source)fail(400,'renderer_source','Custom display code is required');
 }
+

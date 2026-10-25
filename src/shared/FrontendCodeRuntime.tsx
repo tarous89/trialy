@@ -11,7 +11,7 @@ export function FrontendCodeRuntime({component,previewId,call,onProposal,onUnava
  const [frameUrl,setFrameUrl]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false),[proposal,setProposal]=useState<any>(null);
  const checking=useRef(false),eventQueue=useRef<any[]>([]),blocked=useRef(false),saveReceipt=useRef<any>(null),approvedAction=useRef<string|null>(null);
  function clearOutput(){setDetailsOpen(false);eventQueue.current=[];output.current=null;state.current=null;setFrameUrl('');setReady(false);setProposal(null);setFooter(null);}
- useAccessRecheck(()=>{if(!current.current||checking.current||busyRef.current)return;checking.current=true;const c=current.current;void call('check_component_access',{componentId:c.id}).then(r=>{if(r.version!==current.current.version)throw Error('Interface changed; reopen it to review the current revision');}).catch(e=>{if(live.current){clearOutput();setError((e as Error).message);onUnavailable?.((e as Error).message);}}).finally(()=>{checking.current=false;});},!!component);
+ useAccessRecheck(()=>{if(!current.current||checking.current||busyRef.current)return;checking.current=true;const c=current.current;void call('check_component_access',{componentId:c.id}).then(r=>{if(output.current?.accessVersion!==undefined&&r.accessVersion!==output.current.accessVersion)throw Error('Access changed. Reopen this tool to load permitted data.');if(r.version!==current.current.version)throw Error('Interface changed; reopen it to review the current revision');}).catch(e=>{if(live.current){clearOutput();setError((e as Error).message);onUnavailable?.((e as Error).message);}}).finally(()=>{checking.current=false;});},!!component);
  const send=()=>{if(output.current)frame.current?.contentWindow?.postMessage({kind:'trialy.render',channel:channel.current,html:output.current.html,css:output.current.css,controls:output.current.controls,connected:output.current.connected,state:output.current.state,tracker:output.current.tracker,navigationOnly:embedded},'*');};
  const frameAction=(action:string)=>{approvedAction.current=action==='save-edits'?'bound-batch':action==='save-layout'?'save-layout':null;frame.current?.contentWindow?.postMessage({kind:'trialy.action',channel:channel.current,action},'*');};
  async function run(event:any={kind:'open'}){
@@ -61,3 +61,4 @@ export function FrontendCodeRuntime({component,previewId,call,onProposal,onUnava
  {frameUrl&&<iframe inert={adding} ref={frame} title="Saved frontend code" sandbox="allow-scripts" referrerPolicy="no-referrer" src={frameUrl} onLoad={send} style={{width:'100%',height:detailsOpen?'100%':height+'px',border:0,display:'block'}}/>}
  </section>;
 }
+
