@@ -2,6 +2,8 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown)=
  const b=`/api/workspaces/${v.workspaceId}/foundation`;
  const o=`/api/workspaces/${v.workspaceId}/organization`;
  const routes:Record<string,[string,string?,unknown?]>={
+ prepare_tool_layout:[`${o}/tool-layout`,'POST',Object.fromEntries(Object.entries(v).filter(([k])=>k!=='workspaceId'))],
+ prepare_tool_template:[`${o}/tracker-template`,'POST',Object.fromEntries(Object.entries(v).filter(([k])=>k!=='workspaceId'))],
  read_access_grid_draft:[`/api/workspaces/${v.workspaceId}/access-grid/reviews/${v.reviewId}`],
  read_access_directory:['/api/account/access'],
  read_access_grid:[`/api/workspaces/${v.workspaceId}/access-grid?subject=${encodeURIComponent(v.subject??'all')}`],

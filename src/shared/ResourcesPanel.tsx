@@ -15,7 +15,7 @@ export function ResourcesPanel({workspaceId,kind,projectId='',types,call}:{works
  useEffect(()=>{void act(refresh);},[workspaceId,projectId,kind]);
  const fields=(types.find(t=>t.id===typeId)?.fields??[]).filter((f:any)=>!f.formula&&!f.computed&&!f.lookup&&!['document','relationship','person','table','field'].includes(f.kind));
  useEffect(()=>{setQuestions(old=>keys.map(field=>old.find(q=>q.field===field)??{field,required:!!fields.find((f:any)=>f.key===field)?.required,help:''}));},[keys]);
- const title=kind==='tracker'?'Trackers':kind==='form'?'Forms':'Visualizations';
+ const title=kind==='tracker'?'Trackers':kind==='form'?'Forms':'Dashboards';
  return <section className="resource-page"><h2>{title}</h2>{error&&<p role="alert">{error}</p>}{url&&<label>Share this link<input readOnly value={url} onFocus={e=>e.target.select()}/></label>}
  {preview?<section><h3>Review before saving</h3><ChangeSummary value={preview.body}/><button disabled={busy} onClick={()=>act(async()=>{await invoke('discard_workspace_preview',{previewId:preview.id});setPreview(null);})}>Discard</button><button disabled={busy} onClick={()=>act(async()=>{const r=await invoke('confirm_workspace_change',{previewId:preview.id,digest:preview.digest,confirmed:true});setUrl(r.url??'');setPreview(null);setNewForm(false);setSelected(null);await refresh();})}>Confirm save</button></section>
  :selected?<ComponentEditor key={selected.id} component={selected} projects={projects} call={invoke} onBack={()=>setSelected(null)} onPreview={setPreview}/>
@@ -28,3 +28,4 @@ export function ResourcesPanel({workspaceId,kind,projectId='',types,call}:{works
  <button disabled={busy} onClick={()=>act(refresh)}>Refresh</button></>}
  </section>;
 }
+

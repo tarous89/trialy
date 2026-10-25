@@ -1,3 +1,4 @@
+import {automationTemplate} from './automation-template.js';
 import {withActor,setDatabaseContext} from '../db/context.js';
 import {rulesFor,denied,resourceGrant,assertRecordScope,assertWritable,toolPolicy} from '../domain/effective-access.js';
 import {standardTracker} from './standard-tracker.js';
@@ -95,7 +96,7 @@ export class WorkspaceFoundation {
  }
  async invokeComponent(a:Actor,w:string,input:unknown){
   const v=z.object({componentId:id,expectedVersion:z.number().int().min(0),binding:z.string().min(1).max(64),input:z.unknown().default(null),requestKey:id}).strict().parse(input);
-  const c=await this.component(this.db,a,w,v.componentId);await validateResource(this.db,a,w,c);if(c.resource_kind==='visualization')fail(403,'read_only','Visualizations cannot invoke functions');const binding=c.execution.find((b:any)=>b.name===v.binding);if(!binding||c.archived||c.project_archived||c.version!==v.expectedVersion)fail(409,'component_changed','Open the current component and function binding');
+  const c=await this.component(this.db,a,w,v.componentId);await validateResource(this.db,a,w,c);if(c.resource_kind==='visualization')fail(403,'read_only','Dashboards cannot invoke functions');const binding=c.execution.find((b:any)=>b.name===v.binding);if(!binding||c.archived||c.project_archived||c.version!==v.expectedVersion)fail(409,'component_changed','Open the current component and function binding');
   return new Foundation(this.db).invoke(a,w,{revisionId:binding.revisionId,input:v.input,...(binding.grantId?{grantId:binding.grantId}:{}),componentContext:{id:c.id,version:c.version,binding:binding.name}},v.requestKey);
  }
  async runFrontend(a:Actor,w:string,input:unknown):Promise<any>{
@@ -154,7 +155,7 @@ export class WorkspaceFoundation {
      if(!raster)fail(400,'asset_format','File does not match its raster image type');return {name:v.name,versionId:asset.versionId,checksum:file.checksum,dataUrl:'data:'+file.mime+';base64,'+b.toString('base64')};
     }
     if(name==='functions.invoke'){
-     if(content.resource_kind==='visualization'||content.resourceKind==='visualization')fail(403,'read_only','Visualizations cannot invoke functions');
+     if(content.resource_kind==='visualization'||content.resourceKind==='visualization')fail(403,'read_only','Dashboards cannot invoke functions');
      if(!request.componentId)fail(403,'preview_read_only','Unsaved interfaces cannot queue functions');
      const v=z.object({binding:z.string().min(1).max(64),input:z.unknown().default(null),requestKey:id}).strict().parse(value);
      if(invocations.length>=3)fail(429,'run_limit','At most three function requests per interface event');if(!content.execution.some((b:any)=>b.name===v.binding))fail(403,'component_binding','Function is not bound');
@@ -185,7 +186,7 @@ export class WorkspaceFoundation {
      return {status:'proposed'};
     }
     if(name==='records.propose'){
-     if(content.resource_kind==='visualization'||content.resourceKind==='visualization')fail(403,'read_only','Visualizations cannot propose changes');
+     if(content.resource_kind==='visualization'||content.resourceKind==='visualization')fail(403,'read_only','Dashboards cannot propose changes');
      if(!request.componentId)fail(403,'preview_read_only','Unsaved interface previews cannot propose database changes');
      const next=componentRecordChanges.parse(value);if(changes.length+next.length>50)fail(400,'change_limit','Too many proposed changes');changes.push(...next);return {status:'proposed',count:next.length};
     }
@@ -428,6 +429,7 @@ export class WorkspaceFoundation {
   if(op.kind==='apply_component_records'||op.kind==='edit_component_record')a={...a,accessToolId:op.componentId};
   if(!['apply_component_records','edit_component_record'].includes(op.kind)){const p=await access(tx,a,w);if(p.direct_data===false&&p.role!=='owner')fail(403,'manage_required','Tool data access does not allow structure or access changes');}
   if(op.kind==='apply_component_records'||op.kind==='edit_component_record'||(op.kind==='save_component'&&op.content.sourceAccess==='bindings'))await access(tx,a,w,true);else await this.policy(tx,a,w,true);
+  if(op.kind==='create_automation_template'){const built=await trackerOperation(new WorkspaceFoundation(adapter(tx)),a,w,op.setup);automationTemplate(op.setup,op.report,built.content);}
   if(op.kind==='create_tracker'){
    await this.componentSourcePolicy(tx,a,w);
    if(op.setup.projectId){const project=(await this.activeNode(tx,a,w,op.setup.projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');}
@@ -471,7 +473,7 @@ export class WorkspaceFoundation {
    if(op.kind==='restore_component'){const old=await this.componentRevision(tx,w,op.componentId,op.revisionVersion);await this.nodeAccess(tx,a,w,old.project_id);await this.componentBindings(tx,a,w,old.bindings);await validateResource(tx,a,w,old);await this.componentAssets(tx,a,w,old.assets);}
   }
   if(op.kind==='apply_component_records'){
-   const c=await this.component(tx,a,w,op.componentId);await validateResource(tx,a,w,c,true);if(c.resource_kind==='visualization')fail(403,'read_only','Visualizations cannot modify records');if(c.archived||c.project_archived||c.format!=='frontend-js'||c.version!==op.expectedVersion)fail(409,'component_changed','Interface changed');
+   const c=await this.component(tx,a,w,op.componentId);await validateResource(tx,a,w,c,true);if(c.resource_kind==='visualization')fail(403,'read_only','Dashboards cannot modify records');if(c.archived||c.project_archived||c.format!=='frontend-js'||c.version!==op.expectedVersion)fail(409,'component_changed','Interface changed');
    for(const change of op.changes){
     const record=change.kind==='update_record'?await this.record(tx,a,w,change.recordId,true):null;
     if(record&&change.kind==='update_record'&&record.version!==change.expectedVersion)fail(409,'stale_version','Record changed');
@@ -550,6 +552,14 @@ export class WorkspaceFoundation {
   const result=await this.apply(tx,a,w,p,op,{kind:'approval',id,digest,context:'workspace_preview'});await tx.query('INSERT INTO workspace_receipts(id,workspace_id,user_id,digest,result) VALUES($1,$2,$3,$4,$5)',[id,w,a.userId,digest,J(result)]);await tx.query('DELETE FROM workspace_previews WHERE id=$1',[id]);return result;
  });}
  private async apply(tx:Connection,a:Actor,w:string,p:any,op:WorkspaceOperation,authorization?:WriteAuthorization):Promise<any>{
+  if(op.kind==='create_automation_template'){
+   const service=new Service(adapter(tx)),ids=new Map<string,string>();
+   for(const table of op.setup.newTables){const preview=await service.preview(a,w,{kind:'create_type',name:table.name,fields:table.fields});const receipt=await service.commit(a,preview.id,preview.digest,authorization);ids.set(table.id,receipt.objects[0].id);}
+   const setup={...op.setup,newTables:[],tabs:op.setup.tabs.map(t=>({...t,typeId:ids.get(t.typeId)??t.typeId}))};
+   const built=await trackerOperation(new WorkspaceFoundation(adapter(tx)),a,w,setup),foundation=new Foundation(adapter(tx));
+   const preview=await foundation.prepareFunction(a,w,automationTemplate(setup,op.report,built.content));
+   return {...await foundation.saveFunction(a,w,preview.id,preview.digest),workspaceId:w,status:'saved'};
+  }
   if(op.kind==='create_tracker'){
    const service=new Service(adapter(tx)),ids=new Map<string,string>();
    for(const table of op.setup.newTables){const preview=await service.preview(a,w,{kind:'create_type',name:table.name,fields:table.fields});const receipt=await service.commit(a,preview.id,preview.digest,authorization);ids.set(table.id,receipt.objects[0].id);}
@@ -630,7 +640,7 @@ export class WorkspaceFoundation {
     for(const schedule of review.schedules){await tx.query('UPDATE foundation_schedules SET paused=true WHERE id=$1',[schedule.id]);await audit(tx,a,p,'schedule.project_archived',schedule.id,{paused:false},{paused:true,projectArchive:objectId,authorization},op.reason);}
    }
   }
-  else if(op.kind==='create_node'){after={id:objectId,kind:op.nodeKind,name:op.name,parent_id:op.parentId,version};await tx.query('INSERT INTO workspace_nodes(id,workspace_id,kind,name,parent_id) VALUES($1,$2,$3,$4,$5)',[objectId,w,op.nodeKind,op.name,op.parentId]);}
+  else if(op.kind==='create_node'){after={id:objectId,kind:op.nodeKind,name:op.name,description:op.description,parent_id:op.parentId,version};await tx.query('INSERT INTO workspace_nodes(id,workspace_id,kind,name,parent_id,description) VALUES($1,$2,$3,$4,$5,$6)',[objectId,w,op.nodeKind,op.name,op.parentId,op.description]);}
   else if(op.kind==='copy_component'){
    const content=await this.componentCopy(tx,a,w,op);after={...content,id:objectId,workspace_id:w,project_id:op.projectId,version};
    await tx.query('INSERT INTO workspace_components(id,workspace_id,project_id,name,format,source,bindings,created_by,execution,allowed_users,ai_enabled,assets,source_access) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)',[objectId,w,op.projectId,content.name,content.format,content.source,J(content.bindings),a.userId,J([]),content.allowed_users===null?null:J(content.allowed_users),content.ai_enabled,J(content.assets),content.source_access]);

@@ -4,10 +4,10 @@ import {ActionFooter} from './ActionFooter.js';
 import React,{useEffect,useRef,useState} from 'react';
 import {useAccessRecheck} from './useAccessRecheck.js';
 type Call=(name:string,args:Record<string,unknown>)=>Promise<any>;
-export function FrontendCodeRuntime({component,previewId,call,onProposal,onUnavailable,onAccess,onBusyChange,onRendered,onUpdated}:{component?:any;previewId?:string;call:Call;onProposal:(p:any)=>void;onUnavailable?:(message:string)=>void;onAccess?:()=>void;onBusyChange?:(busy:boolean)=>void;onRendered?:()=>void;onUpdated?:(component:any)=>void}){
+export function FrontendCodeRuntime({component,previewId,call,onProposal,onUnavailable,onAccess,onLayout,onBusyChange,onRendered,onUpdated}:{component?:any;previewId?:string;call:Call;onProposal:(p:any)=>void;onUnavailable?:(message:string)=>void;onAccess?:()=>void;onLayout?:()=>void;onBusyChange?:(busy:boolean)=>void;onRendered?:()=>void;onUpdated?:(component:any)=>void}){
  const embedded=React.useContext(EmbeddedNavigation);
  const frame=useRef<HTMLIFrameElement>(null),output=useRef<any>(null),state=useRef<any>(null),busyRef=useRef(false),channel=useRef(crypto.randomUUID()),live=useRef(true),current=useRef(component);
- const [detailsOpen,setDetailsOpen]=useState(false),[standard,setStandard]=useState(false),[ready,setReady]=useState(false),[height,setHeight]=useState(620),[adding,setAdding]=useState(false),[footer,setFooter]=useState<any>(null);
+ const [detailsOpen,setDetailsOpen]=useState(false),[standard,setStandard]=useState(false),[ready,setReady]=useState(false),[height,setHeight]=useState(620),[adding,setAdding]=useState(component?.resource_kind==='form'),[footer,setFooter]=useState<any>(null);
  const [frameUrl,setFrameUrl]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false),[proposal,setProposal]=useState<any>(null);
  const checking=useRef(false),eventQueue=useRef<any[]>([]),blocked=useRef(false),saveReceipt=useRef<any>(null),approvedAction=useRef<string|null>(null);
  function clearOutput(){setDetailsOpen(false);eventQueue.current=[];output.current=null;state.current=null;setFrameUrl('');setReady(false);setProposal(null);setFooter(null);}
@@ -15,7 +15,7 @@ export function FrontendCodeRuntime({component,previewId,call,onProposal,onUnava
  const send=()=>{if(output.current)frame.current?.contentWindow?.postMessage({kind:'trialy.render',channel:channel.current,html:output.current.html,css:output.current.css,controls:output.current.controls,connected:output.current.connected,state:output.current.state,tracker:output.current.tracker,navigationOnly:embedded},'*');};
  const frameAction=(action:string)=>{approvedAction.current=action==='save-edits'?'bound-batch':action==='save-layout'?'save-layout':null;frame.current?.contentWindow?.postMessage({kind:'trialy.action',channel:channel.current,action},'*');};
  async function run(event:any={kind:'open'}){
-  if(event.action==='tracker:add'){if(current.current)setAdding(true);return;}if(event.action==='tracker:access'){onAccess?.();return;}
+  if(event.action==='tracker:layout'){onLayout?.();return;}if(event.action==='tracker:add'){if(current.current)setAdding(true);return;}if(event.action==='tracker:access'){onAccess?.();return;}
   if(blocked.current)return;if(busyRef.current){if(eventQueue.current.length<50)eventQueue.current.push(event);return;}busyRef.current=true;setBusy(true);onBusyChange?.(true);setError('');
   try{
    const c=current.current,explicitApproval=approvedAction.current===event.action;approvedAction.current=null;

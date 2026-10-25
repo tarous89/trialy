@@ -32,7 +32,7 @@ export const maintenanceBatch=z.object({
  links:z.array(identityLinkSchema).max(50).default([])
 }).strict().refine(v=>v.changes.length+v.links.length>0,'Provide changes or identity links');
 export const workspaceOperation=z.discriminatedUnion('kind',[
- z.object({kind:z.literal('create_node'),nodeKind:z.enum(['folder','project']),name:z.string().trim().min(1).max(100),parentId:id.nullable().default(null)}).strict(),
+ z.object({kind:z.literal('create_node'),nodeKind:z.enum(['folder','project']),name:z.string().trim().min(1).max(100),description:z.string().trim().max(2000).default(''),parentId:id.nullable().default(null)}).strict(),
  z.object({kind:z.literal('move_node'),nodeId:id,expectedVersion:z.number().int().min(0),parentId:id.nullable()}).strict(),
  z.object({kind:z.literal('rename_node'),nodeId:id,expectedVersion:z.number().int().min(0),name:z.string().trim().min(1).max(100),description:z.string().trim().max(2000).optional()}).strict(),
  z.object({kind:z.literal('save_scope'),scope:maintenanceSchema,scopeId:id.optional(),expectedVersion:z.number().int().min(0).optional()}).strict(),
@@ -47,6 +47,7 @@ export const workspaceOperation=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('link_cross_table_identity'),sourceRecordId:id,preferredRecordId:id,sourceVersion:z.number().int().min(0),preferredVersion:z.number().int().min(0),mappingId:id.optional(),fieldPairs:fieldPairsSchema.optional(),rationale:text}).strict(),
  z.object({kind:z.literal('unlink_cross_table_identity'),linkId:id,expectedVersion:z.number().int().min(0),reason:text}).strict(),
  z.object({kind:z.literal('unlink_identity'),linkId:id,expectedVersion:z.number().int().min(0),reason:text}).strict(),
+ z.object({kind:z.literal('create_automation_template'),report:z.enum(['due','missing']),setup:trackerSetup}).strict(),
  z.object({kind:z.literal('create_tracker'),setup:trackerSetup,content:componentContent}).strict(),
  z.object({kind:z.literal('save_component'),projectId:id.nullable().default(null),componentId:id.optional(),expectedVersion:z.number().int().min(0).optional(),content:componentContent}).strict(),
  z.object({kind:z.literal('move_component'),componentId:id,expectedVersion:z.number().int().min(0),projectId:id.nullable()}).strict(),
@@ -66,4 +67,5 @@ export const workspaceOperation=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('copy_component'),sourceComponentId:id,expectedVersion:z.number().int().min(0),projectId:id,name:z.string().trim().min(1).max(100)}).strict()
 ]);
 export type WorkspaceOperation=z.infer<typeof workspaceOperation>;
+
 

@@ -8,7 +8,7 @@ import {Service} from '../domain/service.js';
 import type {WorkspaceFoundation} from './service.js';
 const key=z.string().regex(/^[a-z][a-z0-9_]{0,63}$/);
 export const trackerSetup=z.object({
- name:z.string().trim().min(1).max(100),description:z.string().max(500),projectId:id.nullable().default(null),
+ resourceKind:z.enum(['tracker','form','visualization']).default('tracker'),name:z.string().trim().min(1).max(100),description:z.string().max(500),projectId:id.nullable().default(null),
  extendTables:z.array(z.object({typeId:id,expectedVersion:z.number().int().min(0),newFields:newFieldsSchema}).strict()).max(8).default([]),
  newTables:z.array(z.object({id,name:z.string().trim().min(1).max(100),fields:newFieldsSchema}).strict()).max(8).default([]),
  scope:z.enum(['workspace','project']).default('workspace'),
@@ -32,7 +32,7 @@ export async function trackerOperation(f:WorkspaceFoundation,a:Actor,w:string,in
   const draft=v.newTables.find(t=>t.id===tab.typeId);const resolved=draft?null:extensions.get(tab.typeId)??await typeAccess(f.db,a,w,tab.typeId);const type=resolved?.type??{...draft!,version:0},allowed=resolved?visibleFields(type.fields,resolved.policy,a):type.fields.filter((f:any)=>a.origin!=='ai'||f.ai);
   if(new Set(tab.columns.map(c=>c.field)).size!==tab.columns.length)fail(400,'duplicate_column','Each tab field must be unique');
   const columns=tab.columns.map((c,columnIndex)=>{const field=allowed.find((x:any)=>x.key===c.field);if(!field)fail(403,'field_unavailable','Choose an authorized existing field');
-   const fieldId='f_'+i+'_'+columnIndex,mode=c.editable&&!derived(field)?'write':'read';
+   const fieldId='f_'+i+'_'+columnIndex,mode=v.resourceKind!=='visualization'&&c.editable&&!derived(field)?'write':'read';
    fields.push({id:fieldId,typeId:tab.typeId,field:c.field,schemaVersion:type.version,kind:field.kind,mode,label:c.label??field.name});
    const requested=(input as any).tabs[i].columns[columnIndex];const visible=requested.visible??true;
    return {...c,visible,label:c.label??field.name,fieldId,kind:field.kind,multiple:!!field.multiple,options:field.options??[],editable:mode==='write',required:!!field.required};});
@@ -46,8 +46,8 @@ export async function trackerOperation(f:WorkspaceFoundation,a:Actor,w:string,in
  const reference=await readFile(new URL('approved-theme2-reference.html',root),'utf8');
  const css=[...reference.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map(m=>m[1]).join('\n');
  const runtime=await readFile(new URL('connected-tracker.js',root),'utf8');
- const config={name:v.name,description:v.description,tabs,exampleTypeId:tabs[0].typeId,example:v.example?Object.fromEntries(Object.entries(v.example).sort(([a],[b])=>a.localeCompare(b))):{},showExample:v.showExample};
- return {kind:'save_component' as const,projectId:v.projectId,content:{name:v.name,format:'frontend-js' as const,resourceKind:'tracker' as const,sourceAccess:'workspace' as const,bindings,manifest:{version:1 as const,scope:v.scope,fields},source:`const config=${JSON.stringify(config)};\nconst theme=${JSON.stringify(css)};\n${runtime}`}};
+ const config={resourceKind:v.resourceKind,name:v.name,description:v.description,tabs,exampleTypeId:tabs[0].typeId,example:v.example?Object.fromEntries(Object.entries(v.example).sort(([a],[b])=>a.localeCompare(b))):{},showExample:v.showExample};
+ return {kind:'save_component' as const,projectId:v.projectId,content:{name:v.name,format:'frontend-js' as const,resourceKind:v.resourceKind,sourceAccess:'workspace' as const,bindings,manifest:{version:1 as const,scope:v.scope,fields},source:`const config=${JSON.stringify(config)};\nconst theme=${JSON.stringify(css)};\n${runtime}`}};
 }
 export const trackerLayout=z.object({name:z.string().trim().min(1).max(100),description:z.string().max(500),tabs:z.array(z.object({typeId:id,name:z.string().trim().min(1).max(60),visible:z.boolean(),columns:z.array(z.object({field:key,label:z.string().trim().min(1).max(100),visible:z.boolean()}).strict()).min(1).max(30)}).strict()).min(1).max(8)}).strict();
 export function applyTrackerLayout(content:any,input:unknown){

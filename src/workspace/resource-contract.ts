@@ -8,12 +8,12 @@ export const resourceManifest=z.object({version:z.literal(1),scope:z.enum(['proj
 export type Manifest=z.infer<typeof resourceManifest>;
 export async function validateResource(db:Connection,a:Actor,w:string,c:any,partial=false){
  const kind=c.resourceKind??c.resource_kind??'generic',raw=c.manifest;
- if(kind!=='generic'&&!raw)fail(400,'manifest_required','Trackers, forms and visualizations require a connected-data manifest');
+ if(kind!=='generic'&&!raw)fail(400,'manifest_required','Trackers, forms and dashboards require a connected-data manifest');
  if(!raw)return;
  const m=resourceManifest.parse(raw);
  if(c.format!=='frontend-js')fail(400,'manifest_format','Connected resources use frontend-js');
  if(new Set(m.fields.map(f=>f.id)).size!==m.fields.length)fail(400,'duplicate_control','Manifest field IDs must be unique');
- if(kind==='visualization'&&(m.fields.some(f=>f.mode==='write')||(c.execution??[]).length))fail(400,'read_only','Visualizations cannot have writable controls or execution bindings');
+ if(kind==='visualization'&&(m.fields.some(f=>f.mode==='write')||(c.execution??[]).length))fail(400,'read_only','Dashboards cannot have writable controls or execution bindings');
  for(const b of c.bindings){
   let pair;try{pair=await typeAccess(db,a,w,b.typeId);}catch(e){if(partial)continue;throw e;}const {type,policy}=pair,visible=visibleFields(type.fields,policy,a);
   for(const key of b.fields)if(!m.fields.some(f=>f.typeId===b.typeId&&f.field===key))fail(400,'unmapped_binding','Every bound field must be declared in the manifest');
@@ -28,7 +28,7 @@ export async function validateResource(db:Connection,a:Actor,w:string,c:any,part
  if(m.fields.some(f=>!c.bindings.some((b:any)=>b.typeId===f.typeId)))fail(400,'unmapped_binding','Manifest table must be in component bindings');
 }
 export function requireManifestWrite(c:any,typeId:string,keys:string[]){
- if((c.resource_kind??c.resourceKind)==='visualization')fail(403,'read_only','Visualizations cannot modify records');
+ if((c.resource_kind??c.resourceKind)==='visualization')fail(403,'read_only','Dashboards cannot modify records');
  if(c.manifest&&keys.some(key=>!c.manifest.fields.some((f:any)=>f.typeId===typeId&&f.field===key&&f.mode==='write')))fail(403,'manifest_write','Write exceeds the reviewed manifest');
 }
 
