@@ -16,9 +16,15 @@ Account roles remain the base grants. Inspectors cannot edit. Viewers may edit e
 
 ## Transparency and interaction
 
-People precede Connections. Details are collapsed, searchable and filterable to custom settings. Selecting a person exposes projects/tools and tables/columns. Each column shows effective read/write access, contributing source tools and record scope. Database browsing is shown separately. A table/column restriction displays its cross-tool effect before Save.
+The Access page separates My workspace from Shared with me. Its directory includes only currently authorized account storage. Owned workspaces show a user/connection selector, initially All users. The All users summary and batch targets exclude immutable owners when other members exist; owners retain full authority. Connections remain separate principals inheriting the signed-in user.
 
-Project, tool, table and column menus reuse the same access panel. A custom tool may omit its own access-control UI; platform controls and enforcement remain. The plugin renders the same panel; a write prepares an exact change for the signed-in owner to review in Trialy. MCP cannot impersonate a trusted human approval. The version is rechecked at save.
+The grid stacks projects (expandable tools), Database (general permissions, tables and expandable columns), workflows, and the selected user's ChatGPT connection. Green square checks mean allowed, grey crosses mean denied, and a grey mixed indicator means underlying permissions differ. Column source details stay behind the information button. Shared workspaces show only the current user's visible resources and effective rights, never other members or hidden columns. Permission management remains owner-only.
+
+Allow edits starts off. Changes remain local, highlight the edited rows in green, and expose Save changes / Ignore changes. A batch saves atomically with an expected access version and existing audits; a failure rolls back every row. Database, table and column restrictions name bound tools in an alert before the batch is saved. Explicit child restrictions remain authoritative when a broader parent grant is enabled.
+
+The shared panel is also available in project/tool/table/column context. Plugin Save prepares an expiring, user-owned review with a short review URL. The authenticated app displays the exact batch and requires Save changes; MCP cannot impersonate human approval. No permission is changed merely by opening the review.
+
+Workflow rows describe the existing private function/automation permissions; saved workflow source remains private to its creator. Owners can restrict a member's existing workflow rights, but a checkbox never silently shares source or transfers execution identity. Database restrictions and write approvals still apply. A connection's view/edit settings can independently stop AI writes without stopping the person's permitted human edits.
 
 ## Enforcement
 
@@ -32,7 +38,7 @@ Database editing follows effective field permissions. Deleting whole records rem
 
 ## Migration
 
-Migration 041 adds rules and separates database browsing from direct-data grants. Existing member grants remain intact. Legacy workspace AI defaults are repaired only when creation evidence exists and no deliberate workspace AI/access-policy decision is recorded. Existing member/document exclusions remain intact. The migration updates invitation row-security checks for inherited AI defaults and preserves inspector restrictions.
+Migration 042 adds the database-wide RLS rule boundary used by the permission grid. Migration 041 adds rules and separates database browsing from direct-data grants. Existing member grants remain intact. Legacy workspace AI defaults are repaired only when creation evidence exists and no deliberate workspace AI/access-policy decision is recorded. Existing member/document exclusions remain intact. The migration updates invitation row-security checks for inherited AI defaults and preserves inspector restrictions.
 
 ## Verification
 

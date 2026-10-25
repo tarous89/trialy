@@ -1,3 +1,4 @@
+import {requireWorkflow} from '../domain/effective-access.js';
 import {WorkspaceFoundation} from '../workspace/service.js';
 import {requireCurrentAction,requireHuman} from '../domain/write-authorization.js';
 import {nextDaily} from '../shared/schedules.js';
@@ -39,7 +40,7 @@ export class Foundation {
  }
  async validateScope(a:Actor,w:string,scope:Scope){await this.policy(a,w);for(const t of scope.typeIds)await typeAccess(this.db,ai(a),w,t);}
  async enqueue(a:Actor,w:string,input:unknown,requestKey:string,revisionId?:string,scheduleId?:string,grantId?:string,componentContext?:{id:string;version:number;binding:string}){
-  await this.checkComponent(a,w,componentContext,revisionId,grantId);
+  await this.checkComponent(a,w,componentContext,revisionId,grantId);if(revisionId){const rev=await this.revision(a,w,revisionId);await requireWorkflow(this.db,ai(a),w,rev.function_id,true);}
   id.parse(requestKey);const program=programSchema.parse(input);await this.validateScope(a,w,program.scope);
   const digest=checksum(J({program,revisionId:revisionId??null,grantId:grantId??null,componentContext:componentContext??null}));
   const existing=(await this.db.query('SELECT id,source_digest FROM foundation_runs WHERE user_id=$1 AND request_key=$2',[a.userId,requestKey])).rows[0];
@@ -98,9 +99,9 @@ export class Foundation {
   await this.storeReceipt(tx,a,w,id,digest,r.kind,result);await tx.query('DELETE FROM foundation_previews WHERE id=$1',[id]);return result;
  });}
  async discardFunction(a:Actor,w:string,previewId:string){await this.policy(a,w);await this.db.query('DELETE FROM foundation_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[previewId,w,a.userId]);return {id:previewId,discarded:true};}
- private async ownedFunction(a:Actor,w:string,functionId:string){const f=(await this.db.query('SELECT * FROM foundation_functions WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[functionId,w,a.userId])).rows[0];if(!f)fail(404,'not_found','Function not found');return f;}
- async functions(a:Actor,w:string){await this.policy(a,w);return (await this.db.query('SELECT f.*,r.id AS revision_id,r.digest,r.runtime FROM foundation_functions f JOIN foundation_revisions r ON r.function_id=f.id AND r.version=f.version WHERE f.workspace_id=$1 AND f.user_id=$2 ORDER BY f.created_at DESC',[w,a.userId])).rows;}
- async revision(a:Actor,w:string,revisionId:string){await this.policy(a,w);const r=(await this.db.query('SELECT r.* FROM foundation_revisions r JOIN foundation_functions f ON f.id=r.function_id WHERE r.id=$1 AND f.workspace_id=$2 AND f.user_id=$3',[revisionId,w,a.userId])).rows[0];if(!r)fail(404,'not_found','Revision not found');await (r.body.planningOnly?this.validatePlanScope(a,w,r.body.scope):this.validateScope(a,w,r.body.scope));return r;}
+ private async ownedFunction(a:Actor,w:string,functionId:string){await requireWorkflow(this.db,ai(a),w,functionId,true);const f=(await this.db.query('SELECT * FROM foundation_functions WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[functionId,w,a.userId])).rows[0];if(!f)fail(404,'not_found','Function not found');return f;}
+ async functions(a:Actor,w:string){await this.policy(a,w);const rows=(await this.db.query('SELECT f.*,r.id AS revision_id,r.digest,r.runtime FROM foundation_functions f JOIN foundation_revisions r ON r.function_id=f.id AND r.version=f.version WHERE f.workspace_id=$1 AND f.user_id=$2 ORDER BY f.created_at DESC',[w,a.userId])).rows;const result=[];for(const row of rows){try{await requireWorkflow(this.db,ai(a),w,row.id);result.push(row);}catch(e){if((e as any).status!==403)throw e;}}return result;}
+ async revision(a:Actor,w:string,revisionId:string){await this.policy(a,w);const r=(await this.db.query('SELECT r.* FROM foundation_revisions r JOIN foundation_functions f ON f.id=r.function_id WHERE r.id=$1 AND f.workspace_id=$2 AND f.user_id=$3',[revisionId,w,a.userId])).rows[0];if(!r)fail(404,'not_found','Revision not found');await requireWorkflow(this.db,ai(a),w,r.function_id);await (r.body.planningOnly?this.validatePlanScope(a,w,r.body.scope):this.validateScope(a,w,r.body.scope));return r;}
  async saveFunction(a:Actor,w:string,previewId:string,digest:string){
   requireCurrentAction(a);
   return this.db.transaction(async tx=>{
@@ -163,3 +164,4 @@ export class Foundation {
  async schedules(a:Actor,w:string){await this.policy(a,w);return (await this.db.query('SELECT id,revision_id,interval_minutes,paused,next_at,grant_id,trigger,component_context FROM foundation_schedules WHERE workspace_id=$1 AND user_id=$2 ORDER BY created_at DESC',[w,a.userId])).rows;}
  async pause(a:Actor,w:string,scheduleId:string,paused:boolean){const p=await this.policy(a,w,!paused);return this.db.transaction(async tx=>{const result=await tx.query('UPDATE foundation_schedules SET paused=$1 WHERE id=$2 AND workspace_id=$3 AND user_id=$4 RETURNING id',[paused,scheduleId,w,a.userId]);if(!result.rows.length)fail(404,'not_found','Schedule not found');await audit(tx,a,p,'execution.schedule_paused',scheduleId,null,{paused});return {id:scheduleId,paused};});}
 }
+

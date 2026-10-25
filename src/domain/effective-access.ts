@@ -2,13 +2,13 @@ import {z} from 'zod';
 import type {Connection} from '../db/database.js';
 import {fail,id,type Actor,type Field} from '../shared/schema.js';
 
-export const accessRuleSchema=z.object({subject:z.union([id,z.literal('chatgpt')]),kind:z.enum(['project','tool','table','column']),resourceId:id,field:z.string().max(64).optional(),read:z.enum(['inherit','allow','deny']).default('inherit'),write:z.enum(['inherit','allow','deny']).default('inherit'),bindings:z.array(z.object({toolId:id.optional(),typeId:id,fields:z.array(z.string()),writable:z.array(z.string()),projectId:id.nullable()})).optional()}).strict();
+export const accessRuleSchema=z.object({subject:z.union([id,z.literal('chatgpt')]),kind:z.enum(['project','tool','table','column','database','workflow','connection']),resourceId:id,field:z.string().max(64).optional(),read:z.enum(['inherit','allow','deny']).default('inherit'),write:z.enum(['inherit','allow','deny']).default('inherit'),bindings:z.array(z.object({toolId:id.optional(),typeId:id,fields:z.array(z.string()),writable:z.array(z.string()),projectId:id.nullable()})).optional()}).strict();
 export type AccessRule=z.infer<typeof accessRuleSchema>;
-export function rulesFor(p:any,a:Actor):AccessRule[]{return (p.permission_rules??[]).filter((r:AccessRule)=>r.subject===a.userId||(a.origin==='ai'&&r.subject==='chatgpt'));}
-export function dataRules(p:any,a:Actor,t:string,key?:string){return rulesFor(p,a).filter(r=>r.resourceId===t&&(r.kind==='table'||(r.kind==='column'&&r.field===key)));}
+export function rulesFor(p:any,a:Actor):AccessRule[]{return (p.permission_rules??[]).filter((r:AccessRule)=>(r.subject===a.userId||(a.origin==='ai'&&r.subject==='chatgpt'))&&(r.kind!=='connection'||a.origin==='ai'));}
+export function dataRules(p:any,a:Actor,t:string,key?:string){return rulesFor(p,a).filter(r=>r.kind==='database'||r.kind==='connection'||r.resourceId===t&&(r.kind==='table'||(r.kind==='column'&&r.field===key)));}
 export function denied(rules:AccessRule[],action:'read'|'write'){return rules.some(r=>r.read==='deny'||(action==='write'&&r.write==='deny'));}
 export function resourceGrant(p:any,a:Actor,kind:'project'|'tool',resourceId:string,parents:string[]=[]) {
- const rules=rulesFor(p,a).filter(r=>(r.kind===kind&&r.resourceId===resourceId)||(r.kind==='project'&&parents.includes(r.resourceId)));
+ const rules=rulesFor(p,a).filter(r=>r.kind==='connection'||(r.kind===kind&&r.resourceId===resourceId)||(r.kind==='project'&&parents.includes(r.resourceId)));
  const owner=p.role==='owner';
  const read=(owner||p.direct_data!==false||rules.some(r=>r.subject===a.userId&&r.read==='allow'))&&!denied(rules,'read');
  const write=read&&p.role!=='inspector'&&(owner||(p.direct_data!==false&&!['viewer','inspector'].includes(p.role))||rules.some(r=>r.subject===a.userId&&r.write==='allow'))&&!denied(rules,'write');
@@ -51,3 +51,6 @@ export async function applyTypePolicy(db:Connection,a:Actor,p:any,type:any){
 export async function assertRecordScope(db:Connection,p:any,recordId:string){if(p.scope_project&&!(await db.query('SELECT 1 FROM project_records WHERE workspace_id=$1 AND project_id=$2 AND record_id=$3 AND revoked_at IS NULL',[p.id,p.scope_project,recordId])).rows.length)fail(404,'not_found','Record is outside the permitted scope');}
 export function assertWritable(p:any,keys:string[]){if(keys.some(k=>!p.write_fields?.includes(k)))fail(403,'field_read_only','Editing is restricted for one or more fields');}
 export function rowFence(p:any,args:any[],alias='records'){if(!p.scope_project)return '';args.push(p.scope_project);return ` AND EXISTS(SELECT 1 FROM project_records access_scope WHERE access_scope.workspace_id=${alias}.workspace_id AND access_scope.record_id=${alias}.id AND access_scope.project_id=$${args.length} AND access_scope.revoked_at IS NULL)`;}
+
+export function workflowGrant(p:any,a:Actor,workflow:{id:string;creator:string}){const rules=rulesFor(p,a).filter(r=>r.kind==='connection'||r.kind==='workflow'&&r.resourceId===workflow.id);const read=workflow.creator===a.userId&&!denied(rules,'read');return {read,write:read&&!['viewer','inspector'].includes(p.role)&&!denied(rules,'write')};}
+export async function requireWorkflow(db:Connection,a:Actor,w:string,workflowId:string,write=false){const row=(await db.query("SELECT id,user_id AS creator FROM foundation_functions WHERE workspace_id=$1 AND id=$2 UNION ALL SELECT id,owner_id FROM automations WHERE workspace_id=$1 AND id=$2",[w,workflowId])).rows[0];if(!row)fail(404,'not_found','Workflow unavailable');const rules=(await db.query('SELECT permission_rules FROM workspaces WHERE id=$1',[w])).rows[0]?.permission_rules??[];const blocked=denied(rulesFor({permission_rules:rules},a).filter(r=>r.kind==='connection'||r.kind==='workflow'&&r.resourceId===workflowId),write?'write':'read');if(row.creator!==a.userId||blocked)fail(403,'workflow_access','Workflow access is restricted');return row;}

@@ -13,8 +13,8 @@ export async function access(db:Connection, actor:Actor, workspaceId:string, wri
  if(write && (role==='inspector'||(role==='viewer'&&!actor.accessToolId))) fail(403,'forbidden','Editing is not permitted');
  if(actor.origin==='ai' && (!r.ai_enabled || (role!=='owner' && !r.user_ai))) fail(403,'ai_disabled','AI access is not permitted');
  let allowedTypes=role==='owner'?null:r.allowed_types;
- const activeRules=rulesFor({...r,role},actor);const blockedTypes=activeRules.filter(x=>x.kind==='table'&&x.read==='deny').map(x=>x.resourceId);
- if(blockedTypes.length){const types=(await db.query('SELECT id FROM entity_types WHERE workspace_id=$1',[workspaceId])).rows;allowedTypes=types.map(t=>t.id).filter(id=>!blockedTypes.includes(id)&&(!allowedTypes||allowedTypes.includes(id)));}
+ const activeRules=rulesFor({...r,role},actor);if(write&&activeRules.some(x=>x.kind==='connection'&&(x.read==='deny'||x.write==='deny')))fail(403,'connection_read_only','This connection cannot edit');const blockedTypes=activeRules.filter(x=>(x.kind==='table'||x.kind==='database')&&x.read==='deny').map(x=>x.resourceId);
+ if(blockedTypes.length){const types=(await db.query('SELECT id FROM entity_types WHERE workspace_id=$1',[workspaceId])).rows;allowedTypes=types.map(t=>t.id).filter(id=>!blockedTypes.includes(workspaceId)&&!blockedTypes.includes(id)&&(!allowedTypes||allowedTypes.includes(id)));}
  if(role!=='owner'&&r.direct_data===false)allowedTypes=[];
  const hidden=[...(role==='owner'?[]:(r.hidden_fields??[])),...activeRules.filter(x=>x.kind==='column'&&x.read==='deny').map(x=>x.resourceId+':'+x.field)];
  if(actor.origin==='ai'&&r.ai_hidden_types?.length){const types=(await db.query('SELECT id FROM entity_types WHERE workspace_id=$1',[workspaceId])).rows;allowedTypes=types.map(t=>t.id).filter(id=>!r.ai_hidden_types.includes(id)&&(!allowedTypes||allowedTypes.includes(id)));}

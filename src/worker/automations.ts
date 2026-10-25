@@ -1,3 +1,4 @@
+import {requireWorkflow} from '../domain/effective-access.js';
 import {nextDaily,localDay} from '../shared/schedules.js';
 import { randomUUID } from 'node:crypto';
 import type { Database } from '../db/database.js';
@@ -14,7 +15,7 @@ export async function runAutomation(db:Database):Promise<boolean>{return db.tran
   eventIds=events.map(e=>e.id);rule.event_cursor=events[events.length-1].event_sequence;
  }
  const actor={userId:rule.owner_id,origin:'worker' as const};let p:any;let reason='';
- try{p=await access(tx,actor,rule.workspace_id,true);}catch{reason='permission_unavailable';}
+ try{p=await access(tx,actor,rule.workspace_id,true);await requireWorkflow(tx,actor,rule.workspace_id,rule.id,true);}catch{reason='permission_unavailable';}
  if((rule.action||(rule.schedule&&rule.schedule.kind!=='daily'))&&p?.role!=='owner')reason='permission_unavailable';
  const grant=(await tx.query('SELECT * FROM action_grants WHERE id=$1 FOR UPDATE',[rule.grant_id])).rows[0];
  if(!grant||grant.revoked_at||grant.used_at||grant.user_id!==rule.owner_id||grant.workspace_id!==rule.workspace_id||grant.action!==(rule.action?.kind==='create_record'?'records.create':rule.action?.kind==='remind_me'?'reminders.create':'reports.prepare')||grant.destination!==(rule.action?.kind==='create_record'?rule.action.typeId:rule.workspace_id))reason='permission_unavailable';
@@ -35,3 +36,4 @@ export async function runAutomation(db:Database):Promise<boolean>{return db.tran
  if(!reason&&rule.action?.kind==='remind_me')await tx.query('INSERT INTO inbox_reminders(id,workspace_id,user_id,automation_id,run_id) VALUES($1,$2,$3,$4,$5)',[randomUUID(),rule.workspace_id,rule.owner_id,rule.id,id]);
  const next=rule.schedule?.kind==='daily'?nextDaily(rule.schedule,new Date()):new Date(Date.now()+(rule.schedule?30000:rule.interval_minutes*60000));await tx.query('UPDATE automations SET next_run=$2,paused=$3,event_cursor=$4 WHERE id=$1',[rule.id,next,(!!reason&&reason!=='condition_not_met')||(!reason&&!grant?.future),rule.event_cursor]);return true;
 });}
+
