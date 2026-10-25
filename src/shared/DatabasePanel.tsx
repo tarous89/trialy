@@ -51,7 +51,7 @@ export function DatabasePanel({workspaceId,projectId='',call,onAccess}:{workspac
   return <input autoFocus aria-label={f.name} type={f.kind==='date'?'date':['number','money'].includes(f.kind)?'number':'text'} step="any" value={value??''} onChange={e=>change(e.target.value===''?null:['number','money'].includes(f.kind)?Number(e.target.value):e.target.value)}/>;
  }
  return <section ref={container} className="database-page ty-database" aria-label="Database browser">
-  <header className="ty-db-heading"><div><h1>Database</h1><span>Shared across the app and ChatGPT</span></div><Button icon="lock" onClick={()=>onAccess(tableWorkspace)}>Access</Button></header>
+  <header className="ty-db-heading"><div><h1>Database</h1></div></header>
   {error&&<p className="ty-db-message" role="alert">{error}</p>}{notice&&<p className="ty-db-message" role="status">{notice}</p>}
   <div className="ty-db-layout"><aside className="ty-db-tree" aria-label="Tables and fields"><SearchField label="Find tables and fields" value={tableQuery} onChange={setTableQuery} placeholder="Find table or field"/><div className="ty-db-tree-label">Tables <span>{tables.length}{catalogOffset!==null?'+':''}</span></div>
    {tables.filter(t=>(t.name+' '+(t.fields??[]).map((f:any)=>f.name).join(' ')).toLowerCase().includes(tableQuery.toLowerCase())).map(t=><div key={t.id}><div className="ty-db-tree-row"><button className="ty-db-table-name" aria-current={selected===t.id?'true':undefined} onClick={()=>choose(t.id)}><Icon name="tracker" size={17}/><span>{t.name}</span></button><button className="ty-db-tree-toggle" aria-label={(expanded[t.id]?"Collapse ":"Expand ")+t.name} aria-expanded={!!expanded[t.id]} onClick={()=>setExpanded(v=>({...v,[t.id]:!v[t.id]}))}><Icon name={expanded[t.id]?"down":"chevron"} size={14}/></button></div>{expanded[t.id]&&<ul>{(t.fields??[]).map((f:any)=><li key={f.key}><button title={f.kind+(f.multiple?' · multiple values':'')+(!f.readable?' · schema only':'')} onClick={()=>{setHidden(v=>v.filter(k=>k!==f.key));setTimeout(()=>container.current?.querySelector(`[data-db-field="${f.key}"]`)?.scrollIntoView({block:'nearest',inline:'center'}),0);}}><span>{f.name}</span><small>{f.kind}{f.multiple?'[]':''}</small></button></li>)}</ul>}</div>)}
@@ -68,3 +68,4 @@ export function DatabasePanel({workspaceId,projectId='',call,onAccess}:{workspac
   {dirty&&<ActionFooter action="Save changes" busy={saving} onAction={()=>void save()} onDismiss={()=>void discard()} dismissLabel="Discard database changes">{Object.keys(edits).filter(id=>!deleted.includes(id)).length} edited records{deleted.length?` and ${deleted.length} deletions`:''} ready to save.</ActionFooter>}
  </section>;
 }
+
