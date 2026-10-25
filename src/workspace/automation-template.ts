@@ -1,5 +1,6 @@
 import {fail} from '../shared/schema.js';
 export function automationTemplate(setup:any,report:string,content:any){
+ if(setup.scope==='project'||setup.projectId)fail(400,'template_scope','Report templates use workspace data. Create a project-scoped automation with reviewed code instead.');
  if(setup.tabs.length!==1||setup.extendTables.length)fail(400,'template_scope','Automation templates use one table without schema extensions.');
  const tab=setup.tabs[0],fields=content.manifest.fields;
  const date=fields.find((f:any)=>f.kind==='date');
