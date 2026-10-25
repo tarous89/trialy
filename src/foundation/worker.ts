@@ -1,3 +1,4 @@
+import {requireWorkflow} from '../domain/effective-access.js';
 import {nextDaily} from '../shared/schedules.js';
 import {randomUUID} from 'node:crypto';
 import {z} from 'zod';
@@ -18,7 +19,7 @@ export async function dispatchSchedules(db:Database){
   await tx.query('SAVEPOINT schedule_dispatch');
   try{
    await f.checkComponent(a,row.workspace_id,row.component_context,row.revision_id,row.grant_id);
-   const revision=await f.revision(a,row.workspace_id,row.revision_id);if(revision.runtime!==RUNTIME)throw new Error('Runtime unavailable');
+   const revision=await f.revision(a,row.workspace_id,row.revision_id);await requireWorkflow(tx,a,row.workspace_id,revision.function_id,true);if(revision.runtime!==RUNTIME)throw new Error('Runtime unavailable');
    if(row.grant_id){const grant=(await f.grants(a,row.workspace_id)).find(g=>g.id===row.grant_id);if(!grant||grant.authorization_version!==1||new Date(grant.expires_at).getTime()<=Date.now()||grant.revoked_at||!grant.future)throw new Error('Grant unavailable');}
    const active=(await tx.query("SELECT id FROM foundation_runs WHERE schedule_id=$1 AND status IN ('queued','running') LIMIT 1",[row.id])).rows.length;
    let eligible=true,cursor=row.event_cursor;
@@ -48,7 +49,7 @@ export async function runFoundation(db:Database){
  const poll=setInterval(()=>{if(checking)return;checking=true;void db.query('SELECT status,lease_token,cancel_requested FROM foundation_runs WHERE id=$1',[row.id]).then(({rows})=>{const r=rows[0];if(!r||r.status!=='running'||r.lease_token!==token||r.cancel_requested)controller.abort();}).catch(()=>controller.abort()).finally(()=>{checking=false;});},250);
  try{
   const program=programSchema.parse(row.program);await f.checkComponent(actor,row.workspace_id,row.component_context,row.revision_id,row.grant_id);await f.validateScope(actor,row.workspace_id,program.scope);const before=await f.stamps(actor,row.workspace_id);
-  if(row.revision_id){const revision=await f.revision(actor,row.workspace_id,row.revision_id);if(revision.runtime!==RUNTIME||revision.body.toolCatalog!==program.toolCatalog||revision.body.source!==program.source||J(scopeSchema.parse(revision.body.scope))!==J(program.scope))throw new Error('revision_mismatch');checkContract(revision.body.inputContract,program.input);}
+  if(row.revision_id){const revision=await f.revision(actor,row.workspace_id,row.revision_id);await requireWorkflow(db,actor,row.workspace_id,revision.function_id,true);if(revision.runtime!==RUNTIME||revision.body.toolCatalog!==program.toolCatalog||revision.body.source!==program.source||J(scopeSchema.parse(revision.body.scope))!==J(program.scope))throw new Error('revision_mismatch');checkContract(revision.body.inputContract,program.input);}
   const changes:Operation[]=[];
   const gateway=new ToolGateway(new Set(program.scope.capabilities),async()=>{
    if(controller.signal.aborted)throw new Error('cancelled');await f.checkComponent(actor,row.workspace_id,row.component_context,row.revision_id,row.grant_id);await f.validateScope(actor,row.workspace_id,program.scope);
@@ -70,7 +71,7 @@ export async function runFoundation(db:Database){
    const preview=await f.data.preview(actor,row.workspace_id,operation);await f.data.discard(actor,preview.id);changes.push(operation);return {proposed:1,saved:false};
   }});
   const result=await execute(program.source,program.input,(name,input)=>gateway.call(name,input),controller.signal);
-  if(row.revision_id){const revision=await f.revision(actor,row.workspace_id,row.revision_id);checkContract(revision.body.outputContract,result);}
+  if(row.revision_id){const revision=await f.revision(actor,row.workspace_id,row.revision_id);await requireWorkflow(db,actor,row.workspace_id,revision.function_id,true);checkContract(revision.body.outputContract,result);}
   await f.checkComponent(actor,row.workspace_id,row.component_context,row.revision_id,row.grant_id);
   const after=await f.stamps(actor,row.workspace_id);if(after.data!==before.data||after.access!==before.access)throw new Error('data_changed');
   const digest=changes.length?checksum(J({runId:row.id,sourceDigest:row.source_digest,changes,stamp:before})):null;
@@ -80,3 +81,4 @@ export async function runFoundation(db:Database){
  return true;
 }
 export async function foundationMaintenance(db:Database){await db.query('DELETE FROM foundation_previews WHERE expires_at<now()');await db.query("DELETE FROM foundation_runs WHERE expires_at<now() AND (status<>'running' OR lease_until<now())");}
+

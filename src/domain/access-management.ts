@@ -18,14 +18,14 @@ export class AccessManagement{
  }
  async explain(a:Actor,w:string,subject:string){
   const owner=await access(this.db,a,w);if(owner.role!=='owner'&&subject!==a.userId)fail(403,'owner_required','Only the owner can inspect another person’s access');
-  const target:Actor={userId:subject==='chatgpt'?a.userId:subject,origin:subject==='chatgpt'?'ai':'human'};
-  const p=await access(this.db,subject==='chatgpt'?{...target,origin:'human'}:target,w),tables=(await this.db.query('SELECT * FROM entity_types WHERE workspace_id=$1 ORDER BY name',[w])).rows;
-  if(subject==='chatgpt'&&(!p.ai_enabled||(p.role!=='owner'&&!p.user_ai)))return {tables:tables.map(t=>({id:t.id,name:t.name,fields:t.fields.map((f:any)=>({key:f.key,name:f.name,read:false,write:false,sources:[]}))})),databaseBrowse:false,version:p.access_version,connectionEnabled:false};
-  const tools=(await this.db.query('SELECT id,name FROM workspace_components WHERE workspace_id=$1 AND archived=false ORDER BY name',[w])).rows;
+  const target:Actor={userId:subject==='chatgpt'?a.userId:subject,origin:subject==='chatgpt'||owner.role!=='owner'&&a.origin==='ai'?'ai':'human'};
+  const p=await access(this.db,{...target,origin:'human'},w),tables=(await this.db.query('SELECT * FROM entity_types WHERE workspace_id=$1 ORDER BY name',[w])).rows;
+  if(target.origin==='ai'&&(!p.ai_enabled||(p.role!=='owner'&&!p.user_ai)))return {tables:tables.map(t=>({id:t.id,name:t.name,fields:t.fields.map((f:any)=>({key:f.key,name:f.name,read:false,write:false,sources:[]}))})),databaseBrowse:false,version:p.access_version,connectionEnabled:false};
+  const tools=(await this.db.query('SELECT id,name,bindings FROM workspace_components WHERE workspace_id=$1 AND archived=false ORDER BY name',[w])).rows;
   const result=[];
   for(const t of tables){
    const direct=await applyTypePolicy(this.db,target,{...p,database_browse:true},t),directFields=visibleFields(t.fields,direct,target),sources:any[]=[];
-   for(const c of tools){try{const via=await applyTypePolicy(this.db,{...target,accessToolId:c.id},p,t),fields=visibleFields(t.fields,via,target);if(fields.length)sources.push({id:c.id,name:c.name,fields:fields.map(f=>f.key),writable:via.write_fields.filter((k:string)=>fields.some(f=>f.key===k)),scope:via.scope_project?'Project records':'All records in the bound table',projectId:via.scope_project});}catch{}}
+   for(const c of tools.filter(c=>c.bindings.some((b:any)=>b.typeId===t.id))){try{const via=await applyTypePolicy(this.db,{...target,accessToolId:c.id},p,t),fields=visibleFields(t.fields,via,target);if(fields.length)sources.push({id:c.id,name:c.name,fields:fields.map(f=>f.key),writable:via.write_fields.filter((k:string)=>fields.some(f=>f.key===k)),scope:via.scope_project?'Project records':'All records in the bound table',projectId:via.scope_project});}catch{}}
    const fields=t.fields.map((f:any)=>{const grants=[...(directFields.some(v=>v.key===f.key)?[{id:'direct',name:p.role==='owner'?'Account owner':'Direct data access',read:true,write:direct.write_fields.includes(f.key),scope:'All records'}]:[]),...sources.filter(s=>s.fields.includes(f.key)).map(s=>({id:s.id,name:s.name,read:true,write:s.writable.includes(f.key),scope:s.scope}))];return {key:f.key,name:f.name,read:grants.length>0,write:grants.some(g=>g.write),sources:grants};});
    if(owner.role==='owner'||fields.some((f:any)=>f.read))result.push({id:t.id,name:t.name,fields:owner.role==='owner'?fields:fields.filter((f:any)=>f.read)});
   }
@@ -40,7 +40,9 @@ export class AccessManagement{
    }
    const rules:AccessRule[]=[...(p.permission_rules??[])];let changed:any=null;
    if(v.rule){const r:AccessRule={...v.rule,subject:v.subject};
-    if(r.kind==='table'||r.kind==='column'){const t=(await tx.query('SELECT fields FROM entity_types WHERE workspace_id=$1 AND id=$2',[w,r.resourceId])).rows[0];if(!t||(r.kind==='column'&&!t.fields.some((f:any)=>f.key===r.field)))fail(404,'not_found','Table or column unavailable');}
+    if(r.kind==='database'||r.kind==='connection'){if(r.resourceId!==w)fail(404,'not_found','Database unavailable');}
+    else if(r.kind==='workflow'){const workflow=(await tx.query('SELECT user_id AS creator FROM foundation_functions WHERE workspace_id=$1 AND id=$2 UNION ALL SELECT owner_id FROM automations WHERE workspace_id=$1 AND id=$2',[w,r.resourceId])).rows[0];if(!workflow)fail(404,'not_found','Workflow unavailable');if((r.read==='allow'||r.write==='allow')&&workflow.creator!==v.subject)fail(403,'private_workflow','Workflows remain private to their creator');}
+    else if(r.kind==='table'||r.kind==='column'){const t=(await tx.query('SELECT fields FROM entity_types WHERE workspace_id=$1 AND id=$2',[w,r.resourceId])).rows[0];if(!t||(r.kind==='column'&&!t.fields.some((f:any)=>f.key===r.field)))fail(404,'not_found','Table or column unavailable');}
     else {
      const table=r.kind==='project'?'workspace_nodes':'workspace_components';if(!(await tx.query(`SELECT id FROM ${table} WHERE workspace_id=$1 AND id=$2`,[w,r.resourceId])).rows.length)fail(404,'not_found','Resource unavailable');
      if(r.read==='allow'&&r.subject!=='chatgpt'){

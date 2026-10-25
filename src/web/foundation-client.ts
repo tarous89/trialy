@@ -2,6 +2,10 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown)=
  const b=`/api/workspaces/${v.workspaceId}/foundation`;
  const o=`/api/workspaces/${v.workspaceId}/organization`;
  const routes:Record<string,[string,string?,unknown?]>={
+ read_access_grid_draft:[`/api/workspaces/${v.workspaceId}/access-grid/reviews/${v.reviewId}`],
+ read_access_directory:['/api/account/access'],
+ read_access_grid:[`/api/workspaces/${v.workspaceId}/access-grid?subject=${encodeURIComponent(v.subject??'all')}`],
+ save_access_grid:[`/api/workspaces/${v.workspaceId}/access-grid`,'POST',v.batch],
  list_tool_tables:[`${o}/components/${v.componentId}/tables`],
  tool_reference_options:[`${o}/components/${v.componentId}/references/${v.typeId}/${encodeURIComponent(v.field)}?q=${encodeURIComponent(v.query??'')}&offset=${v.offset??0}`],
  read_effective_access:[`/api/workspaces/${v.workspaceId}/effective-access`],
