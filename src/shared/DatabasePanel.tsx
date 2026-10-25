@@ -8,7 +8,7 @@ import {Button,SearchField} from './ui/Controls.js';
 import {Icon} from './ui/Icon.js';
 type Call=(name:string,args:any)=>Promise<any>;
 const text=(v:any)=>v==null?'—':Array.isArray(v)?v.join(', '):typeof v==='boolean'?(v?'True':'False'):String(v);
-export function DatabasePanel({workspaceId,projectId='',call,onAccess}:{workspaceId:string;projectId?:string;call:Call;onOpenTable:(id:string)=>void;onAccess:()=>void}){
+export function DatabasePanel({workspaceId,projectId='',call,onAccess}:{workspaceId:string;projectId?:string;call:Call;onOpenTable:(id:string)=>void;onAccess:(workspaceId:string)=>void}){
  const [expanded,setExpanded]=useState<Record<string,boolean>>({}),[adding,setAdding]=useState(false);
  const [tables,setTables]=useState<any[]>([]),[catalogOffset,setCatalogOffset]=useState<number|null>(0),[selected,setSelected]=useState(''),[page,setPage]=useState<any>(null);
  const [tableQuery,setTableQuery]=useState(''),[query,setQuery]=useState(''),[search,setSearch]=useState(''),[offset,setOffset]=useState(0),[sort,setSort]=useState(''),[descending,setDescending]=useState(false);
@@ -16,15 +16,24 @@ export function DatabasePanel({workspaceId,projectId='',call,onAccess}:{workspac
  const [error,setError]=useState(''),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false),[saving,setSaving]=useState(false),[refresh,setRefresh]=useState(0),[pendingReceipt,setPendingReceipt]=useState<any>(null);
  const container=useRef<HTMLElement>(null),generation=useRef(0),request=useRef(0);
  const dirty=Object.keys(edits).length+deleted.length>0;
- const invoke=(name:string,args:any={})=>call(name,{workspaceId,...args});
- async function catalog(start=0){const g=generation.current;try{const p=await invoke('read_workspace_schema',{offset:start,limit:25});if(g!==generation.current)return;setTables(old=>start?[...old,...p.tables]:p.tables);setCatalogOffset(p.nextOffset);if(!start){setSelected(p.tables[0]?.id??'');setExpanded({[p.tables[0]?.id]:true});}}catch(e){if(g===generation.current)setError((e as Error).message);}}
- useEffect(()=>{generation.current++;setAdding(false);setExpanded({});setTables([]);setSelected('');setPage(null);setEdits({});setDeleted([]);setEditing(false);setPendingReceipt(null);setError('');void catalog();return()=>{generation.current++;};},[workspaceId]);
- useEffect(()=>{if(!selected)return;if(dirty){setError('Save or discard your changes before changing the project filter.');return;}const n=++request.current;setBusy(true);setError('');setPage(null);invoke('read_database_table',{typeId:selected,...(projectId?{projectId}:{}),offset,query:search,...(sort?{sortField:sort,descending}:{})}).then(p=>{if(n===request.current){setPage(p);if(!p.canEdit)setEditing(false);}}).catch(e=>{if(n===request.current)setError(e.message);}).finally(()=>{if(n===request.current)setBusy(false);});return()=>{request.current++;};},[workspaceId,projectId,selected,offset,search,sort,descending,refresh]);
+ const tableWorkspace=tables.find(t=>t.id===selected)?.workspaceId??workspaceId;
+ const invoke=(name:string,args:any={})=>call(name,{workspaceId:tableWorkspace,...args});
+ const catalogRequest=useRef(0),loadedCount=useRef(25);
+ async function catalog(start=0){const g=generation.current,n=++catalogRequest.current;try{
+  const result:any[]=[];let next:number|null=start;const target=start+25;
+  do{const p=await call('read_account_schema',{offset:next,limit:25});result.push(...p.tables);next=p.nextOffset;}while(next!==null&&next<(start?target:loadedCount.current));
+  if(g!==generation.current||n!==catalogRequest.current)return;
+  setTables(old=>start?[...old,...result.filter(t=>!old.some(o=>o.id===t.id))]:result);setCatalogOffset(next);loadedCount.current=start?target:Math.max(25,result.length);
+  if(!start){setSelected(old=>result.some(t=>t.id===old)?old:result[0]?.id??'');setExpanded(old=>Object.keys(old).length?old:{[result[0]?.id]:true});}
+ }catch(e){if(g===generation.current&&n===catalogRequest.current)setError((e as Error).message);}}
+ useEffect(()=>{generation.current++;loadedCount.current=25;setAdding(false);setExpanded({});setTables([]);setSelected('');setPage(null);setEdits({});setDeleted([]);setEditing(false);setPendingReceipt(null);setError('');void catalog();return()=>{generation.current++;};},[workspaceId]);
+ useEffect(()=>{if(!selected)return;if(dirty){setError('Save or discard your changes before changing the project filter.');return;}const n=++request.current;setBusy(true);setError('');setPage(null);invoke('read_database_table',{typeId:selected,...(projectId?{projectId}:{}),offset,query:search,...(sort?{sortField:sort,descending}:{})}).then(p=>{if(n===request.current){setPage(p);if(!p.canEdit)setEditing(false);}}).catch(e=>{if(n===request.current)setError(e.message);}).finally(()=>{if(n===request.current)setBusy(false);});return()=>{request.current++;};},[workspaceId,tableWorkspace,projectId,selected,offset,search,sort,descending,refresh]);
  useAccessRecheck(()=>{
-  if(container.current?.closest('[hidden]')||saving||!selected)return;
-  if(!dirty){setRefresh(v=>v+1);return;}
+  if(container.current?.closest('[hidden]')||saving||adding)return;
+  if(!dirty){void catalog();setRefresh(v=>v+1);return;}
   const n=request.current;void invoke('read_database_table',{typeId:selected,offset,...(projectId?{projectId}:{}),query:search}).then(p=>{if(n!==request.current)return;if(!p.canEdit||JSON.stringify(p.table.fields)!==JSON.stringify(page?.table.fields)){setEdits({});setDeleted([]);setChecked([]);setEditing(false);setPage(p);setError('Access or schema changed. Editing has been disabled.');}}).catch(()=>{if(n!==request.current)return;setEdits({});setDeleted([]);setEditing(false);setPage(null);setError('Access could not be verified. Reopen Database.');});
- },!!selected);
+ });
+ useEffect(()=>{const navigate=(e:Event)=>{if((e as CustomEvent).detail==='database'&&!dirty&&!saving&&!adding){void catalog();setRefresh(v=>v+1);}};window.addEventListener('trialy:navigate',navigate);return()=>window.removeEventListener('trialy:navigate',navigate);});
  useEffect(()=>{if(!dirty)return;const stop=(e:BeforeUnloadEvent)=>{e.preventDefault();e.returnValue='';};window.addEventListener('beforeunload',stop);return()=>window.removeEventListener('beforeunload',stop);},[dirty]);
  function choose(id:string){if(dirty){setError('Save or discard changes before opening another table.');return;}setSelected(id);setOffset(0);setSearch('');setQuery('');setSort('');setHidden([]);setChecked([]);setActive('');setEditing(false);setNotice('');}
  function stage(row:any,field:any,value:any){setEdits(old=>{const next={...old},data={...next[row.id]};if(JSON.stringify(value)===JSON.stringify(row.data[field.key]??null))delete data[field.key];else data[field.key]=value;if(Object.keys(data).length)next[row.id]=data;else delete next[row.id];return next;});setPendingReceipt(null);setNotice('');}
@@ -42,7 +51,7 @@ export function DatabasePanel({workspaceId,projectId='',call,onAccess}:{workspac
   return <input autoFocus aria-label={f.name} type={f.kind==='date'?'date':['number','money'].includes(f.kind)?'number':'text'} step="any" value={value??''} onChange={e=>change(e.target.value===''?null:['number','money'].includes(f.kind)?Number(e.target.value):e.target.value)}/>;
  }
  return <section ref={container} className="database-page ty-database" aria-label="Database browser">
-  <header className="ty-db-heading"><div><h1>Database</h1><span>Shared across the app and ChatGPT</span></div><Button icon="lock" onClick={onAccess}>Access</Button></header>
+  <header className="ty-db-heading"><div><h1>Database</h1><span>Shared across the app and ChatGPT</span></div><Button icon="lock" onClick={()=>onAccess(tableWorkspace)}>Access</Button></header>
   {error&&<p className="ty-db-message" role="alert">{error}</p>}{notice&&<p className="ty-db-message" role="status">{notice}</p>}
   <div className="ty-db-layout"><aside className="ty-db-tree" aria-label="Tables and fields"><SearchField label="Find tables and fields" value={tableQuery} onChange={setTableQuery} placeholder="Find table or field"/><div className="ty-db-tree-label">Tables <span>{tables.length}{catalogOffset!==null?'+':''}</span></div>
    {tables.filter(t=>(t.name+' '+(t.fields??[]).map((f:any)=>f.name).join(' ')).toLowerCase().includes(tableQuery.toLowerCase())).map(t=><div key={t.id}><div className="ty-db-tree-row"><button className="ty-db-table-name" aria-current={selected===t.id?'true':undefined} onClick={()=>choose(t.id)}><Icon name="tracker" size={17}/><span>{t.name}</span></button><button className="ty-db-tree-toggle" aria-label={(expanded[t.id]?"Collapse ":"Expand ")+t.name} aria-expanded={!!expanded[t.id]} onClick={()=>setExpanded(v=>({...v,[t.id]:!v[t.id]}))}><Icon name={expanded[t.id]?"down":"chevron"} size={14}/></button></div>{expanded[t.id]&&<ul>{(t.fields??[]).map((f:any)=><li key={f.key}><button title={f.kind+(f.multiple?' · multiple values':'')+(!f.readable?' · schema only':'')} onClick={()=>{setHidden(v=>v.filter(k=>k!==f.key));setTimeout(()=>container.current?.querySelector(`[data-db-field="${f.key}"]`)?.scrollIntoView({block:'nearest',inline:'center'}),0);}}><span>{f.name}</span><small>{f.kind}{f.multiple?'[]':''}</small></button></li>)}</ul>}</div>)}

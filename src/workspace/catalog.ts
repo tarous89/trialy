@@ -26,3 +26,18 @@ export async function fieldCandidates(db:Connection,a:Actor,w:string,input:unkno
  })).sort((a,b)=>b.score-a.score||a.typeId.localeCompare(b.typeId)||a.field.key.localeCompare(b.field.key));
  return {candidates,nextOffset:page.nextOffset,decision:'Candidates are suggestions, never automatic semantic matches. Prefer reuse; check entity, project context, meaning, units and cardinality. Schema-only candidates require permission to read/write. Page to completion before concluding no existing field is suitable.'};
 }
+
+/** One permission-filtered catalog over the existing account database; no copies. */
+export const accountCatalogRequest=catalogRequest.omit({typeId:true});
+export async function accountCatalog(db:import('../db/database.js').Database,a:Actor,input:unknown={}){
+ const v=accountCatalogRequest.parse(input),{Service}=await import('../domain/service.js');
+ const spaces=await new Service(db).workspaces(a);
+ if(!spaces.length)return {tables:[],nextOffset:null};
+ const rows=(await db.query('SELECT id,workspace_id FROM entity_types WHERE workspace_id=ANY($1::uuid[]) ORDER BY name,id LIMIT $2 OFFSET $3',[spaces.map(s=>s.id),v.limit+1,v.offset])).rows;
+ const tables=[];
+ for(const row of rows.slice(0,v.limit)){
+  const page=await schemaCatalog(db,a,row.workspace_id,{typeId:row.id,limit:1});
+  if(page.tables[0])tables.push({...page.tables[0],workspaceId:row.workspace_id});
+ }
+ return {tables,nextOffset:rows.length>v.limit?v.offset+v.limit:null};
+}
