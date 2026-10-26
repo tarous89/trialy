@@ -23,10 +23,10 @@ export function baseApp() {
  app.get('/frontend/frame',async(_req,res)=>{
   const hash=createHash('sha256').update(FRAME_SCRIPT).digest('base64');
   res.removeHeader('X-Frame-Options');res.set('Content-Security-Policy',`sandbox allow-scripts; default-src 'none'; script-src 'sha256-${hash}'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'`);
-  res.set('Cache-Control','no-store');res.set('Cross-Origin-Resource-Policy','cross-origin');res.type('html').send(await frontendFrameDocument());
+  res.set('Cache-Control','public, max-age=0, must-revalidate');res.set('Cross-Origin-Resource-Policy','cross-origin');res.type('html').send(await frontendFrameDocument());
  });
  app.use(express.json({limit:'36mb'}));app.use(rateLimit({windowMs:60000,limit:180,standardHeaders:'draft-8',legacyHeaders:false}));
- app.use((req,res,next)=>{const requestId=randomUUID();res.set('X-Request-ID',requestId);res.on('finish',()=>{if(process.env.NODE_ENV!=='test')console.log(JSON.stringify({requestId,method:req.method,status:res.statusCode,time:new Date().toISOString()}));});next();});
+ app.use((req,res,next)=>{const requestId=randomUUID(),started=performance.now();res.set('X-Request-ID',requestId);res.on('finish',()=>{if(process.env.NODE_ENV!=='test')console.log(JSON.stringify({requestId,method:req.method,path:req.path,durationMs:Math.round(performance.now()-started),status:res.statusCode,time:new Date().toISOString()}));});next();});
  app.get('/health',(_req,res)=>res.json({status:'ok',service:'trialy'}));return app;
 }
 export function addApi(app:express.Express,s:Service,human:RequestHandler) {

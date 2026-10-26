@@ -1,3 +1,4 @@
+import {mergeTrackerSnapshot} from './tracker-cache.js';
 import {ChangeSummary} from './ChangeSummary.js';
 import {EmbeddedNavigation} from './ui/PageNavigation.js';
 import {TrackerRecordForm} from './TrackerRecordForm.js';
@@ -12,13 +13,32 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
  const [detailsOpen,setDetailsOpen]=useState(false),[standard,setStandard]=useState(false),[ready,setReady]=useState(false),[height,setHeight]=useState(620),[adding,setAdding]=useState(component?.resource_kind==='form'),[footer,setFooter]=useState<any>(null);
  const [frameUrl,setFrameUrl]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false),[proposal,setProposal]=useState<any>(null);
  const checking=useRef(false),eventQueue=useRef<any[]>([]),blocked=useRef(false),saveReceipt=useRef<any>(null),approvedAction=useRef<string|null>(null);
- function clearOutput(){setRecordReview(null);saveReceipt.current=null;approvedAction.current=null;setDetailsOpen(false);eventQueue.current=[];output.current=null;state.current=null;setFrameUrl('');setReady(false);setProposal(null);setFooter(null);}
+ function clearOutput(){cancelPrefetch();setRecordReview(null);saveReceipt.current=null;approvedAction.current=null;setDetailsOpen(false);eventQueue.current=[];output.current=null;state.current=null;setFrameUrl('');setReady(false);setProposal(null);setFooter(null);}
  useAccessRecheck(()=>{if(!current.current||checking.current||busyRef.current)return;checking.current=true;const c=current.current;void call('check_component_access',{componentId:c.id}).then(r=>{if(output.current?.accessVersion!==undefined&&r.accessVersion!==output.current.accessVersion)throw Error('Access changed. Reopen this tool to load permitted data.');if(r.version!==current.current.version)throw Error('Interface changed; reopen it to review the current revision');}).catch(e=>{if(live.current){clearOutput();setError((e as Error).message);onUnavailable?.((e as Error).message);}}).finally(()=>{checking.current=false;});},!!component);
+ const prefetchTimer=useRef<ReturnType<typeof setTimeout>|undefined>(undefined),generation=useRef(0);
+ function cancelPrefetch(){generation.current++;clearTimeout(prefetchTimer.current);}
+ function prefetch(result:any){
+  if(!current.current||!result.tracker||result.proposal)return;
+  const captured=generation.current,c=current.current,model=result.tracker,st=result.state;
+  const tab=st.tab<0?model.config.tabs.findIndex((t:any)=>t.visible!==false):st.tab;
+  if(tab<0)return;
+  const page=model.pages.find((p:any)=>p.request.typeId===model.config.tabs[tab].typeId&&p.request.limit>0&&p.request.offset===(st.offsets?.[tab]||0));
+  const action=st.tab<0?'tab:'+tab:page&&page.request.offset+page.request.limit<page.result.total?'next':null;
+  if(!action)return;
+  prefetchTimer.current=setTimeout(async()=>{try{
+   if(!live.current||busyRef.current||generation.current!==captured)return;
+   const next=await call('run_component_frontend',{request:{componentId:c.id,expectedVersion:c.version,state:st,event:{kind:'click',action}}});
+   if(!live.current||generation.current!==captured||busyRef.current||!output.current||next.accessVersion!==output.current.accessVersion)return;
+   const merged=mergeTrackerSnapshot(output.current,next);
+   output.current={...output.current,tracker:merged.tracker};
+   frame.current?.contentWindow?.postMessage({kind:'trialy.cache',channel:channel.current,tracker:merged.tracker},'*');
+  }catch{/* Optional prefetch never replaces the current view or shows an error. */}},250);
+ }
  const send=()=>{if(output.current)frame.current?.contentWindow?.postMessage({kind:'trialy.render',channel:channel.current,html:output.current.html,css:output.current.css,controls:output.current.controls,connected:output.current.connected,state:output.current.state,tracker:output.current.tracker,navigationOnly:embedded},'*');};
  const frameAction=(action:string)=>{approvedAction.current=action==='save-edits'?'bound-batch':action==='save-layout'?'save-layout':null;frame.current?.contentWindow?.postMessage({kind:'trialy.action',channel:channel.current,action},'*');};
  async function run(event:any={kind:'open'}){
   if(event.action==='tracker:layout'){onLayout?.();return;}if(event.action==='tracker:access'){onAccess?.();return;}
-  if(blocked.current)return;if(busyRef.current){if(eventQueue.current.length<50)eventQueue.current.push(event);return;}busyRef.current=true;setBusy(true);onBusyChange?.(true);setError('');
+  if(blocked.current)return;if(busyRef.current){if(eventQueue.current.length<50)eventQueue.current.push(event);return;}cancelPrefetch();busyRef.current=true;setBusy(true);onBusyChange?.(true);setError('');
   try{
    const c=current.current,explicitApproval=approvedAction.current===event.action;approvedAction.current=null;
    if(['tracker:create'].includes(event.action)||/^tracker:(duplicate|delete):/.test(event.action)){
@@ -36,7 +56,7 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
      }
      p=await call('prepare_workspace_change',{operation:{kind:'apply_component_records',componentId:c.id,expectedVersion:c.version,changes:[{kind:'create_record',typeId:tab.typeId,data}]}});
     }else{
-     const recordId=event.action.split(':')[2],row=model.pages.find((p:any)=>p.request.typeId===tab.typeId)?.result.rows.find((r:any)=>r.id===recordId);
+     const recordId=event.action.split(':')[2],row=model.pages.filter((p:any)=>p.request.typeId===tab.typeId).flatMap((p:any)=>p.result.rows).find((r:any)=>r.id===recordId);
      if(!row)throw Error('Record unavailable; reopen the table.');
      if(event.action.startsWith('tracker:delete:'))p=await call('prepare_change',{operation:{kind:'database_changes',typeId:tab.typeId,updates:[],deletions:[{recordId,expectedVersion:row.version}]}});
      else{
@@ -55,18 +75,19 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
     const p=result.proposal;saveReceipt.current={proposal:p};
     await finishSave();return;
    }
-   output.current=result;state.current=result.state;setStandard(!!result.tracker);setFrameUrl(result.frameUrl);setProposal(result.proposal);
-   if(result.proposal){blocked.current=true;eventQueue.current=[];}send();
+   result=mergeTrackerSnapshot(output.current,result);output.current=result;state.current=result.state;setStandard(!!result.tracker);setFrameUrl(result.frameUrl);setProposal(result.proposal);
+   if(result.proposal){blocked.current=true;eventQueue.current=[];}send();prefetch(result);
   }catch(e){if(live.current)setError((e as Error).message);}finally{busyRef.current=false;onBusyChange?.(false);if(live.current){setBusy(false);if(eventQueue.current.length&&!blocked.current)void run(eventQueue.current.shift());}}
  }
  async function finishSave(){
+  cancelPrefetch();
   const receipt=saveReceipt.current,p=receipt.proposal;
   if(!receipt.saved){await call(receipt.deletion?'commit_change':'confirm_workspace_change',{previewId:p.id,digest:p.digest,confirmed:true});receipt.saved=true;}
   const read=await call('read_project_component',{componentId:current.current.id});current.current=read.component;
-  const result=await call('run_component_frontend',{request:{componentId:current.current.id,expectedVersion:current.current.version,state:{...state.current,settings:false,layoutDraft:null,detail:null,newRow:null},event:{kind:'open'}}});
-  output.current=result;state.current=result.state;setFrameUrl(result.frameUrl);setFooter(null);setRecordReview(null);saveReceipt.current=null;send();onUpdated?.(current.current);
+  let result=await call('run_component_frontend',{request:{componentId:current.current.id,expectedVersion:current.current.version,state:{...state.current,settings:false,layoutDraft:null,detail:null,newRow:null},event:{kind:'open'}}});
+  result=mergeTrackerSnapshot(null,result);output.current=result;state.current=result.state;setFrameUrl(result.frameUrl);setFooter(null);setRecordReview(null);saveReceipt.current=null;send();prefetch(result);onUpdated?.(current.current);
  }
- useEffect(()=>{live.current=true;if(initialOutput){output.current=initialOutput;state.current=initialOutput.state;setStandard(!!initialOutput.tracker);setFrameUrl(initialOutput.frameUrl);setProposal(initialOutput.proposal);onBusyChange?.(false);}else void run();return()=>{live.current=false;};},[]);
+ useEffect(()=>{live.current=true;if(initialOutput){output.current=mergeTrackerSnapshot(null,initialOutput);state.current=initialOutput.state;setStandard(!!initialOutput.tracker);setFrameUrl(initialOutput.frameUrl);setProposal(initialOutput.proposal);onBusyChange?.(false);prefetch(output.current);}else void run();return()=>{live.current=false;cancelPrefetch();};},[]);
  useEffect(()=>{if(component&&component!==current.current){current.current=component;void run();}},[component]);
  useEffect(()=>{const receive=(e:MessageEvent)=>{if(e.source!==frame.current?.contentWindow)return;if(e.data?.kind==='trialy.ready'){setReady(true);send();}
   else if(e.data.channel===channel.current){

@@ -75,6 +75,10 @@ export class DerivedReader{
  private schemas=new Map<string,Promise<{type:any;policy:any;fields:Field[]}>>();
  private rows=new Map<string,Promise<any>>();
  private values=new Map<string,Promise<any>>();
+ private scopes=new Map<string,Promise<void>>();
+ prime(typeId:string,type:any,policy:any){if(!this.schemas.has(typeId))this.schemas.set(typeId,Promise.resolve({type,policy,fields:visibleFields(type.fields,policy,this.actor).filter(f=>!this.allowedFields||this.allowedFields[typeId]?.includes(f.key))}));}
+ authorizeRows(ids:string[]){for(const id of ids)this.scopes.set(id,Promise.resolve());}
+ private scope(policy:any,id:string){if(!this.scopes.has(id))this.scopes.set(id,assertRecordScope(this.db,policy,id));return this.scopes.get(id)!;}
  private budget=0;
  private deadline=Date.now()+2500;
  constructor(private db:Connection,private actor:Actor,private workspace:string,private allowedTypes?:string[],private allowedFields?:Record<string,string[]>){}
@@ -84,7 +88,7 @@ export class DerivedReader{
   const tag=row.id+':'+key;if(stack.has(tag))throw Error('dependency_cycle');if(this.values.has(tag))return this.values.get(tag)!;
   const next=new Set(stack);next.add(tag);
   const work=(async()=>{if(++this.budget>3000||Date.now()>this.deadline)throw Error('evaluation_limit');
-   if(row.data===null)throw Error('input_limit');const {fields,policy}=await this.schema(row.type_id);await assertRecordScope(this.db,policy,row.id);const f=fields.find(v=>v.key===key);if(!f)throw Error('source_unavailable');
+   if(row.data===null)throw Error('input_limit');const {fields,policy}=await this.schema(row.type_id);await this.scope(policy,row.id);const f=fields.find(v=>v.key===key);if(!f)throw Error('source_unavailable');
    if(f.computed){const input:Record<string,any>={};for(const dep of f.computed.fields)input[dep]=await this.value(row,dep,next);
     const output=await pureCode(f.computed.source,input);checkOutput(f,output);return output;}
    if(f.lookup){const ref=fields.find(v=>v.key===f.lookup!.reference)!;
@@ -101,7 +105,7 @@ export class DerivedReader{
   })();this.values.set(tag,work);return work;
  }
  async read(row:any,renderers:Record<string,any>={}){
-  const {type,fields,policy}=await this.schema(row.type_id);await assertRecordScope(this.db,policy,row.id);const data=projectData(row.data,fields),derived:Record<string,any>={},display:Record<string,any>={};
+  const {type,fields,policy}=await this.schema(row.type_id);await this.scope(policy,row.id);const data=projectData(row.data,fields),derived:Record<string,any>={},display:Record<string,any>={};
   for(const f of fields){if(f.computed||f.lookup){try{data[f.key]=await this.value(row,f.key,new Set());derived[f.key]={status:data[f.key]===null?'missing':'current',definitionVersion:type.version};}catch(e){delete data[f.key];derived[f.key]={status:'error',code:(e as Error).message==='source_unavailable'?'source_unavailable':'calculation_failed',definitionVersion:type.version};}}
    const renderer=renderers[f.key]??f.renderer;
    if(renderer?.kind==='code'&&Object.hasOwn(data,f.key)){try{const value=await pureCode(renderer.source??'',{value:data[f.key]});display[f.key]=['string','number','boolean'].includes(typeof value)?{text:String(value)}:displaySchema.parse(value);}catch{display[f.key]={error:'Display unavailable; showing underlying value'};}}

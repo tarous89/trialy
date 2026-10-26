@@ -99,14 +99,16 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   footer();
  }
  function local(event){
-  if(event.action?.startsWith('tab:')||event.action?.startsWith('filter:'))return false;
-  if(!model||!/^((draft|resize-column|resize-row|example|tab|details|tab-name|tab-visible|column-label|visibility|move-tab|move-column|reorder-tab|reorder-column):|tracker:add$|discard-new$|query$|sort$|next$|previous$|settings$|discard-layout$|column-tab$|layout-name$|layout-description$|close-details$)/.test(event.action||''))return false;
+  const navigation=/^(tab:|filter:|next$|previous$)/.test(event.action||'');
+  if(navigation&&(Object.keys(pending).length||uiState?.newRow))return false;
+  if(!model||!/^((draft|resize-column|resize-row|example|tab|filter|details|tab-name|tab-visible|column-label|visibility|move-tab|move-column|reorder-tab|reorder-column):|tracker:add$|discard-new$|query$|sort$|next$|previous$|settings$|discard-layout$|column-tab$|layout-name$|layout-description$|close-details$)/.test(event.action||''))return false;
   const old=uiState,next=structuredClone(uiState);
   try{
    const output=renderTracker(model.config,model.theme,{state:next,event,saved:model.saved,writable:model.writable},{call:(name,value)=>{
     if(name!=='records.read')throw Error('Server action');
-    const p=model.pages.find(p=>p.request.typeId===value.typeId&&p.request.limit===value.limit&&p.request.offset===value.offset);if(!p)throw Error('Page needed');return p.result;
+    const p=model.pages.find(p=>p.request.typeId===value.typeId&&p.request.limit===value.limit&&p.request.offset===value.offset&&JSON.stringify(Object.entries(p.request.filters||{}).sort())===JSON.stringify(Object.entries(value.filters||{}).sort())&&(!navigation||Date.now()-p.receivedAt<15000));if(!p)throw Error('Page needed');return p.result;
    }});
+   if(navigation){const nextControls=(output.controls||[]).map(c=>{const cached=model.cachedControls?.[c.fieldId+':'+c.recordId];if(!cached)throw Error('Controls needed');return {...cached,slot:c.slot};});controls=nextControls;}
    uiState=output.state;paint(output.html,output.css);
    if(!old?.detail&&uiState.detail){detailScroll=scrollY;scrollTo(0,0);root.querySelector('[aria-label="Close details"]')?.focus({preventScroll:true});}
    else if(old?.detail&&!uiState.detail){scrollTo(0,detailScroll);root.querySelector('[data-action="details:'+old.detail+'"]')?.focus({preventScroll:true});}
@@ -129,6 +131,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  window.addEventListener('message',event=>{
   if(event.source!==host||typeof event.data?.channel!=='string')return;
   const v=event.data;if(channel!==null&&v.channel!==channel)return;
+  if(v.kind==='trialy.cache'){if(model&&v.tracker){model=v.tracker;}return;}
   if(v.kind==='trialy.action'){footerAction(v.action);return;}
   if(v.kind!=='trialy.render'||typeof v.html!=='string'||v.html.length>200000||typeof v.css!=='string'||v.css.length>50000)return;
   navigationOnly=!!v.navigationOnly;channel=v.channel;model=v.tracker||null;uiState=v.state;controls=Array.isArray(v.controls)?v.controls:[];connected=v.connected;

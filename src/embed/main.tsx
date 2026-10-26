@@ -82,7 +82,7 @@ function Workspace(){
    void transition.current.show(key,async()=>{
     const [account,types,output]=await Promise.all([
      call('initialize_account'),call('list_tables',{workspaceId:data.workspaceId}),
-     call('run_component_frontend',{workspaceId:data.workspaceId,request:{...(saved?{componentId:saved.id,expectedVersion:saved.version}:{previewId:draft.id}),event:{kind:'open'}}})
+     data.initialOutput?Promise.resolve(data.initialOutput):call('run_component_frontend',{workspaceId:data.workspaceId,request:{...(saved?{componentId:saved.id,expectedVersion:saved.version}:{previewId:draft.id}),event:{kind:'open'}}})
     ]);
     return {account:{...account,workspaceId:data.workspaceId,types,templates:[]},output};
    },({account,output})=>{if(!active)return;setState(account);setTrackerOutput(output);setOpenedTracker(saved||null);setTrackerPreview(draft||null);setView('tracker');setError('');setNotice('');},e=>{if(active)setError((e as Error).message);});
