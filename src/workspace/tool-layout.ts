@@ -1,3 +1,4 @@
+import {standardSource} from '../shared/standard-tool.js';
 import {z} from 'zod';
 import {id,fail,type Actor} from '../shared/schema.js';
 import {standardTracker} from './standard-tracker.js';
@@ -13,9 +14,9 @@ export async function prepareToolLayout(f:WorkspaceFoundation,a:Actor,w:string,i
  let remapped=false;
  for(const t of v.tabs){const prev=old.tabs[t.originalIndex];if(!prev||t.columns.length!==prev.columns.length||new Set(t.columns.map(c=>c.fieldId)).size!==t.columns.length)fail(400,'layout_scope','Keep the existing fields.');for(const col of t.columns){const original=prev.columns.find((c:any)=>c.fieldId===col.fieldId);if(!original)fail(400,'layout_scope','Unknown field');if(original.field!==col.field||prev.typeId!==t.typeId)remapped=true;}}
  if(remapped&&c.execution?.length)fail(400,'execution_mapping','This tool has custom actions. Update their bindings in ChatGPT before changing sources.');
- const operation=await trackerOperation(f,a,w,{name:v.name,description:v.description,projectId:c.project_id,scope:c.manifest?.scope??'workspace',resourceKind:c.resource_kind,tabs:v.tabs.map(t=>({name:t.name,typeId:t.typeId,columns:t.columns.map(col=>({field:col.field,label:col.label,visible:col.visible,editable:old.tabs[t.originalIndex].columns.find((x:any)=>x.fieldId===col.fieldId).editable}))})),showExample:false,omitSource:true});
+ const operation=await trackerOperation(f,a,w,{overview:old.overview?{...old.overview,nextSteps:old.overview.nextSteps.map((p:any)=>({...p,tabIndex:v.tabs.findIndex(t=>t.originalIndex===p.tabIndex)}))}:undefined,name:v.name,description:v.description,pageSize:old.pageSize??25,projectId:c.project_id,scope:c.manifest?.scope??'workspace',resourceKind:c.resource_kind,tabs:v.tabs.map(t=>({name:t.name,typeId:t.typeId,filters:(old.tabs[t.originalIndex].filters??[]).filter((field:string)=>t.columns.some(col=>col.field===field)),columns:t.columns.map(col=>({field:col.field,label:col.label,visible:col.visible,display:old.tabs[t.originalIndex].columns.find((x:any)=>x.fieldId===col.fieldId).display,editable:old.tabs[t.originalIndex].columns.find((x:any)=>x.fieldId===col.fieldId).editable}))})),showExample:false,omitSource:true});
  const rebuilt=standardTracker(operation.content.source)!;
  rebuilt.config.tabs.forEach((t:any,i:number)=>t.visible=v.tabs[i].visible);
- operation.content.source='const config='+JSON.stringify(rebuilt.config)+';\n'+operation.content.source.split('\n').slice(1).join('\n');
+ operation.content.source=standardSource(rebuilt.config);
  return f.preview(a,w,{...operation,componentId:c.id,expectedVersion:c.version,content:{...operation.content,sourceAccess:c.source_access,assets:c.assets??[],execution:c.execution??[]}});
 }
