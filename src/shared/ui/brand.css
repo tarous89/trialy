@@ -119,5 +119,5 @@
 .ty-workspace--embedded .ty-footer-dismiss{color:#e7eee9}
 
 /* Open app remains a light CTA against the dark embedded header. */
-.ty-workspace--embedded .ty-topbar .ty-button--quiet{background:#fff;color:#183d32;border-color:#dce5e1}
-.ty-workspace--embedded .ty-topbar .ty-button--quiet:is(:hover,:focus-visible){background:#e7eee9;color:#183d32}
+.ty-workspace--embedded .ty-topbar .ty-button.ty-button--quiet{background:#fff;color:#183d32;border-color:#dce5e1}
+.ty-workspace--embedded .ty-topbar .ty-button.ty-button--quiet:is(:hover,:focus-visible){background:#e7eee9;color:#183d32}
