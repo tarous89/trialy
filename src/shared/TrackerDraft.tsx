@@ -3,7 +3,7 @@ import {FrontendCodeRuntime} from './FrontendCodeRuntime.js';
 import {ActionFooter} from './ActionFooter.js';
 type Call=(name:string,args:any)=>Promise<any>;
 /** The save click approves the visible tracker and its required new tables together. */
-export function TrackerDraft({preview,call,onSaved,onDiscard,onProposal}:{preview:any;call:Call;onSaved:(component:any)=>void;onDiscard:()=>void;onProposal:(p:any)=>void}){
+export function TrackerDraft({preview,call,onSaved,onDiscard,onProposal,initialOutput}:{initialOutput?:any;preview:any;call:Call;onSaved:(component:any,output?:any)=>void;onDiscard:()=>void;onProposal:(p:any)=>void}){
  const [busy,setBusy]=useState(false),[rendering,setRendering]=useState(true),[rendered,setRendered]=useState(false),[error,setError]=useState('');
  const invoke=(name:string,args:any={})=>call(name,{workspaceId:preview.workspaceId,...args});
  const label=preview.body.content?.resourceKind==='visualization'?'dashboard':preview.body.content?.resourceKind==='form'?'form':'tracker';
@@ -13,8 +13,9 @@ export function TrackerDraft({preview,call,onSaved,onDiscard,onProposal}:{previe
   const receipt=savedReceipt.current??await invoke('confirm_workspace_change',{previewId:p.id,digest:p.digest,confirmed:true});savedReceipt.current=receipt;
   const result=await invoke('read_project_component',{componentId:receipt.id});
   if(p.id!==preview.id)await invoke('discard_workspace_preview',{previewId:preview.id}).catch(()=>{});
-  onSaved(result.component);
+  const output=await invoke('run_component_frontend',{request:{componentId:result.component.id,expectedVersion:result.component.version,event:{kind:'open'}}});
+  onSaved(result.component,output);
  }catch(e){setError((e as Error).message);}finally{setBusy(false);}}
- return <section className="ty-tracker-preview">{error&&<p role="alert">{error}</p>}<FrontendCodeRuntime previewId={preview.id} call={invoke} onProposal={onProposal} onBusyChange={setRendering} onRendered={()=>setRendered(true)}/><ActionFooter variant="secondary" action={savedReceipt.current?'Open saved '+label:'Save '+label} disabled={rendering||!rendered} busy={busy} onAction={()=>void save()} dismissLabel={"Discard "+label} onDismiss={savedReceipt.current?undefined:async()=>{setBusy(true);try{await invoke('discard_workspace_preview',{previewId:activePreview.current.id});if(activePreview.current.id!==preview.id)await invoke('discard_workspace_preview',{previewId:preview.id});onDiscard();}catch(e){setError((e as Error).message);setBusy(false);}}}>This {label} is a preview. Save it to keep it.</ActionFooter></section>;
+ return <section className="ty-tracker-preview">{error&&<p role="alert">{error}</p>}<FrontendCodeRuntime initialOutput={initialOutput} previewId={preview.id} call={invoke} onProposal={onProposal} onBusyChange={setRendering} onRendered={()=>setRendered(true)}/><ActionFooter variant="secondary" action={savedReceipt.current?'Open saved '+label:'Save '+label} disabled={rendering||!rendered} busy={busy} onAction={()=>void save()} dismissLabel={"Discard "+label} onDismiss={savedReceipt.current?undefined:async()=>{setBusy(true);try{await invoke('discard_workspace_preview',{previewId:activePreview.current.id});if(activePreview.current.id!==preview.id)await invoke('discard_workspace_preview',{previewId:preview.id});onDiscard();}catch(e){setError((e as Error).message);setBusy(false);}}}>This {label} is a preview. Save it to keep it.</ActionFooter></section>;
 }
 
