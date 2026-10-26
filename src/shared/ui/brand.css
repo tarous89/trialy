@@ -117,3 +117,7 @@
 .ty-workspace--embedded .ty-action-footer .ty-button--secondary{background:transparent;color:#e7eee9;border:1px solid #80988a}
 .ty-workspace--embedded .ty-action-footer .ty-button--secondary:hover{background:#263c31;color:white}
 .ty-workspace--embedded .ty-footer-dismiss{color:#e7eee9}
+
+/* Open app remains a light CTA against the dark embedded header. */
+.ty-workspace--embedded .ty-topbar .ty-button.ty-button--quiet{background:#fff;color:#183d32;border-color:#dce5e1}
+.ty-workspace--embedded .ty-topbar .ty-button.ty-button--quiet:is(:hover,:focus-visible){background:#e7eee9;color:#183d32}
