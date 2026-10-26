@@ -466,6 +466,8 @@ export class WorkspaceFoundation {
     if(op.componentId&&(await this.component(tx,a,w,op.componentId)).project_id!==op.projectId)fail(400,'move_required','Use the explicit move operation to change project');
     await this.componentBindings(tx,a,w,op.content.bindings);
     const previous=op.componentId?await this.component(tx,a,w,op.componentId):null;
+    const kind=op.content.resourceKind??previous?.resource_kind;
+    if(a.origin==='ai'&&['tracker','form','visualization'].includes(kind)&&op.content.format==='frontend-js'&&!standardTracker(op.content.source)&&op.content.source!==previous?.source&&!op.designChangeReason)fail(400,'explicit_design_change_required','Standard tools use prepare_tracker. A custom design requires designChangeReason describing the explicit user-requested deviation, included in the save review.');
     if(previous?.resource_kind!=='generic'&&previous&&op.content.resourceKind==='generic')fail(400,'resource_downgrade','Connected resources cannot remove their data contract');
     await validateResource(tx,a,w,{...op.content,resourceKind:op.content.resourceKind??previous?.resource_kind??'generic',manifest:op.content.manifest===undefined?previous?.manifest:op.content.manifest});await this.componentAssets(tx,a,w,op.content.assets);
     if(new Set(op.content.execution.map(e=>e.name)).size!==op.content.execution.length)fail(400,'duplicate_binding','Function binding names must be unique');

@@ -11,6 +11,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  function footer(){
   const n=Object.keys(pending).length;
   const layoutDirty=uiState?.settings&&model?.saved&&JSON.stringify(uiState.layoutDraft)!==JSON.stringify({name:model.config.name,description:model.config.description,tabs:model.config.tabs.map(t=>({typeId:t.typeId,name:t.name,visible:t.visible!==false,columns:t.columns.map(c=>({field:c.field,label:c.label,visible:c.visible}))}))});
+  for(const b of root.querySelectorAll('[data-action="save-edits"]'))b.disabled=!n;
   post('trialy.footer',{footer:n?{kind:'edits',count:n}:layoutDirty?{kind:'layout'}:null});post('trialy.state',{state:uiState});
  }
  function activateCell(button){const holder=button.parentElement,editor=holder.querySelector('.cell-input,.example-input');if(!editor)return;editor._before={pending:{...pending},examples:{...uiState?.examples}};button.hidden=true;editor.hidden=false;editor.querySelector('input,textarea,select')?.focus({preventScroll:true});}
@@ -42,10 +43,11 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  function paint(html,css){
   const horizontalScroll=root.querySelector('.scroll')?.scrollLeft||0;
   const focused=document.activeElement,focusAction=focused?.getAttribute('data-action'),focusGrip=focused?.hasAttribute('data-reorder')?focused.getAttribute('aria-label'):null,selection=focused?.selectionStart,editBefore=focused?.closest('.example-input')?._before;
-  root.replaceChildren(clean(html));sheet.textContent=css+(navigationOnly?' .back-link,.settings-top{display:none!important}':'');
+  root.replaceChildren(clean(html));sheet.textContent=css;
   if(connected){
    for(const el of root.querySelectorAll('input,select,textarea'))if(!el.hasAttribute('data-ui-state')){el.disabled=true;el.title='Use a connected data control';}
-   for(const c of controls){
+   for(const control of controls){
+    const c=uiState?.newRow?{...control,editable:false}:control;
     if(!/^[a-z][a-z0-9_]{0,63}$/.test(c.slot))continue;
     for(const slot of root.querySelectorAll('[data-trialy-slot="'+c.slot+'"]')){
      if(c.editable&&c.multiple){
@@ -85,7 +87,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   footer();
  }
  function local(event){
-  if(!model||!/^((resize-column|resize-row|example|tab|details|tab-name|tab-visible|column-label|visibility|move-tab|move-column|reorder-tab|reorder-column):|query$|sort$|next$|previous$|settings$|discard-layout$|column-tab$|layout-name$|layout-description$|close-details$)/.test(event.action||''))return false;
+  if(!model||!/^((draft|resize-column|resize-row|example|tab|details|tab-name|tab-visible|column-label|visibility|move-tab|move-column|reorder-tab|reorder-column):|tracker:add$|discard-new$|query$|sort$|next$|previous$|settings$|discard-layout$|column-tab$|layout-name$|layout-description$|close-details$)/.test(event.action||''))return false;
   const old=uiState,next=structuredClone(uiState);
   try{
    const output=renderTracker(model.config,model.theme,{state:next,event,saved:model.saved,writable:model.writable},{call:(name,value)=>{
@@ -100,8 +102,10 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   }catch{return false;}
  }
  function dispatch(event){
+  if((Object.keys(pending).length||uiState?.newRow)&&['tracker:add','tracker:layout','settings'].includes(event.action)){post('trialy.notice',{message:'Save or cancel your current changes first.'});return;}
   if(local(event))return;
-  if(Object.keys(pending).length&&!['bound-batch'].includes(event.action))return;
+  if(Object.keys(pending).length&&!['bound-batch'].includes(event.action)){post('trialy.notice',{message:'Save or ignore your current edits before this action.'});return;}
+  if(uiState?.newRow&&event.action!=='tracker:create'){post('trialy.notice',{message:'Save or cancel the new row before this action.'});return;}
   post('trialy.event',{event,state:uiState});
  }
  function footerAction(action){
@@ -119,6 +123,8 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  });
  function send(kind,target){
   const trigger=target.closest('[data-action]');if(!trigger||!channel)return;const action=trigger.getAttribute('data-action');if(!action||action.length>200)return;
+  if(action==='save-edits'){post('trialy.approve',{action:'bound-batch'});footerAction(action);return;}
+  if(action==='save-new'){post('trialy.approve',{action:'tracker:create'});dispatch({kind:'submit',action:'tracker:create',form:{data:JSON.stringify(uiState.newRow?.data??{})}});return;}
   if(action.startsWith('bound:')){
    if(!(action in original))return;
    const value=target.type==='checkbox'?target.checked:target.value;
@@ -171,3 +177,4 @@ export async function frontendFrameDocument(){
  const hash=btoa(String.fromCharCode(...new Uint8Array(bytes)));
  return `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-${hash}'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font:15px system-ui;margin:0;color:#183d32}*{box-sizing:border-box}table{border-collapse:collapse}th,td{padding:8px;border:1px solid #ddd}input,button,select,textarea{font:inherit}.cell-input[hidden],.cell-display[hidden]{display:none!important}.multi-value-editor{display:grid;gap:5px;min-width:150px}.multi-value-row{display:flex;gap:4px;align-items:center}.multi-value-row input,.multi-value-row select{width:100%;min-width:0}.multi-value-editor>button{justify-self:start;width:auto}.multi-value-editor button{font-size:12px;padding:3px 6px;color:#253c40;background:#f8faf9;border:1px solid #dce5e1;border-radius:6px;text-align:left}</style><style id="appearance"></style></head><body><div id="surface"></div><script>${FRAME_SCRIPT}</script></body></html>`;
 }
+

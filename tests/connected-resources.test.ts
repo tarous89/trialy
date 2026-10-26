@@ -18,7 +18,7 @@ test('connected resources enforce schema/value separation, shared edits, project
  for(const a of [owner,member,outsider])await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[a.userId,a.userId,a.userId+'@example.invalid','Synthetic']);
  const w=await s.createWorkspace(owner,'Shared workspace');await s.setAi(owner,w.id,true);
  const save=async(op:any)=>{const p=await s.preview(owner,w.id,op);return s.commit(owner,p.id,p.digest);};
- const change=async(op:any)=>{const p=await f.preview(ai,w.id,op);return f.confirm(owner,w.id,p.id,p.digest);};
+ const change=async(op:any)=>{if(op.kind==='save_component')op={...op,designChangeReason:'Explicit custom interface for this permission test fixture.'};const p=await f.preview(ai,w.id,op);return f.confirm(owner,w.id,p.id,p.digest);};
  const fields=[{key:'name',name:'Vendor name',kind:'text',ai:true},{key:'secret',name:'Private price',kind:'number',ai:false}];
  const table=(await save({kind:'create_type',name:'Vendors',concept:'organization',fields})).objects[0].id;
  const row=(await save({kind:'create_record',typeId:table,data:{name:'Vendor one',secret:12345}})).objects[0].id;

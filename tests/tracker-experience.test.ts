@@ -16,6 +16,9 @@ test('designed outreach tracker excludes unrelated PI records, persists bindings
  const firstLine=op.content.source.split('\n')[0],reorderedConfig=JSON.parse(firstLine.slice(13,-1));reorderedConfig.tabs.reverse();
  const reordered=await f.preview(a,w.id,{...op,content:{...op.content,source:'const config='+JSON.stringify(reorderedConfig)+';\n'+op.content.source.slice(firstLine.length+1)}});
  const reorderedContacts=await f.runFrontend(a,w.id,{previewId:reordered.id,event:{kind:'click',action:'tab:0'}});assert.match(reorderedContacts.html,/Alex Morgan \(example\)/);assert.doesNotMatch(reorderedContacts.html,/Example biotech/);await f.discard(a,w.id,reordered.id);
+ const ai={...a,origin:'ai' as const};
+ await assert.rejects(f.preview(ai,w.id,{...op,content:{...op.content,source:op.content.source+'\n// custom design'}}),/explicit user-requested deviation/);
+ const explicit=await f.preview(ai,w.id,{...op,designChangeReason:'User explicitly requested this custom design.',content:{...op.content,source:op.content.source+'\n// custom design'}});assert.ok(explicit.id);await f.discard(ai,w.id,explicit.id);
  const receipt=await f.confirm(a,w.id,p.id,p.digest);let component=(await f.readComponent(a,w.id,receipt.id)).component;assert.equal(component.project_id,null);
  const row=(await save({kind:'create_record',typeId:companies,data:{name:'Real authorized company',source:'User'}})).objects[0].id;
  rendered=await f.runFrontend(a,w.id,{componentId:receipt.id,expectedVersion:0,event:{kind:'click',action:'tab:0'}});assert.doesNotMatch(rendered.html,/Example biotech|University fixture/);assert.equal(rendered.controls[0].value,'Real authorized company');
@@ -121,4 +124,23 @@ test('connected account identity is app-only metadata and never infers data acce
  const response=await request(app).post('/mcp').set('Authorization','Bearer fixture').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:2,method:'tools/call',params:{name:'read_connected_account',arguments:{}}});
  assert.equal(response.body.result._meta.accountIdentity.email,'connected@example.invalid');assert.equal(response.body.result.structuredContent.result.connected,true);assert.ok(!JSON.stringify(response.body.result.content).includes('connected@example.invalid'));assert.ok(!JSON.stringify(response.body.result.structuredContent).includes('connected@example.invalid'));assert.equal(queries,1);
  const anonymous=await request(app).post('/mcp').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:3,method:'tools/call',params:{name:'read_connected_account',arguments:{}}});assert.equal(anonymous.body.result.isError,true);assert.equal(queries,1);
+});
+
+
+test('standard inline row and details actions preserve data until an explicit save',async()=>{
+ const {trackerRenderer}=await import('../src/workspace/standard-tracker.js');
+ const render=new Function('config','theme','input','tools',trackerRenderer);
+ const config={name:'Outreach',description:'',showExample:false,tabs:[{name:'Companies',typeId:'table',columns:[{field:'name',fieldId:'f_0_0',label:'Company',kind:'text',editable:true,visible:true},{field:'internal',fieldId:'f_0_1',label:'Required hidden field',kind:'text',editable:true,visible:false,required:true}]}]};
+ const row={id:'record',version:0,data:{name:'Existing'}};
+ const calls:string[]=[];const tools={call:(name:string)=>{calls.push(name);assert.equal(name,'records.read');return {rows:[row],total:1};}};
+ let out=render(config,'',{saved:true,writable:true,state:{tab:0},event:{action:'tracker:add'}},tools);
+ assert.match(out.html,/class="draft-row"/);assert.match(out.html,/New Company/);assert.match(out.html,/New Required hidden field/);assert.match(out.html,/data-action="save-new"/);assert.doesNotMatch(out.html,/role="dialog"/);
+ out=render(config,'',{saved:true,writable:true,state:out.state,event:{action:'draft:name',value:'New company'}},tools);
+ assert.equal(out.state.newRow.data.name,'New company');assert.equal(row.data.name,'Existing');
+ out=render(config,'',{saved:true,writable:true,state:out.state,event:{action:'discard-new'}},tools);assert.equal(out.state.newRow,null);assert.doesNotMatch(out.html,/class="draft-row"/);
+ out=render(config,'',{saved:true,writable:true,state:out.state,event:{action:'details:record'}},tools);
+ for(const action of ['save-edits','tracker:duplicate:record','tracker:delete:record'])assert.ok(out.html.includes('data-action="'+action+'"'));
+ assert.match(out.html,/M4 7h16M4 12h16M4 17h16/); // actual reference settings icon
+ assert.doesNotMatch(out.html,/↗/);assert.ok(calls.every(c=>c==='records.read'));
+ out=render(config,'',{saved:true,writable:false,state:{tab:0},event:{action:'tracker:add'}},tools);assert.equal(out.state.newRow,undefined);
 });

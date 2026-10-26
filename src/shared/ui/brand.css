@@ -109,3 +109,11 @@
 
 .ty-workspace .ty-sidebar .ty-new-menu [role=menu]{background:var(--ty-sidebar);border-color:#34483d;box-shadow:0 8px 24px #0006;color-scheme:dark}.ty-workspace .ty-sidebar .ty-new-menu [role=menu] button{background:transparent;color:#e7eee9;font-weight:400;opacity:1}.ty-workspace .ty-sidebar .ty-new-menu [role=menu] button:is(:hover,:focus-visible){background:#263c31;color:#fff}.ty-workspace .ty-sidebar .ty-new-menu [role=menu] button:focus-visible{outline:2px solid #8dd5b0;outline-offset:-2px}.ty-workspace .ty-project-access-toggle>svg{flex-shrink:0;color:var(--ty-ink)}.ty-workspace .ty-setup .ty-project-access-toggle{display:flex;flex-direction:row;align-items:center;gap:9px;margin:20px 0 14px}.ty-workspace .ty-setup .ty-project-access-toggle input{width:auto;margin:0}.ty-workspace .ty-setup .ty-access-check{width:25px;min-height:25px;padding:3px}.ty-workspace .ty-setup .ty-access-grid{margin-top:12px}
 .ty-workspace .ty-setup label.ty-project-access-toggle{flex-direction:row!important;justify-content:flex-start}.ty-workspace .ty-setup .ty-project-access-toggle input{flex:0 0 auto;align-self:center}.ty-workspace .ty-setup button.ty-access-check.is-denied{background:#f0f2f1!important;color:#8b948e!important;border-color:#d9dfdb}.ty-workspace .ty-setup button.ty-access-check.is-allowed{background:#27764e!important;color:white!important;border-color:#27764e}.ty-workspace .ty-setup button.ty-access-check:disabled{opacity:1}
+
+/* Embedded chrome shares the sidebar palette; tracker content stays light. */
+.ty-workspace--embedded .ty-topbar,.ty-workspace--embedded:has(.ty-tracker--standard) .ty-topbar,.ty-workspace--embedded .ty-action-footer{background:var(--ty-sidebar);color:#e7eee9;border-color:#34483d}
+.ty-workspace--embedded .ty-topbar :is(.ty-button,.ty-icon-button,.ty-mobile-brand,.ty-breadcrumb,.ty-breadcrumb strong){color:#e7eee9}
+.ty-workspace--embedded .ty-topbar :is(.ty-button,.ty-icon-button):hover{background:#263c31;color:#fff}
+.ty-workspace--embedded .ty-action-footer .ty-button--secondary{background:transparent;color:#e7eee9;border:1px solid #80988a}
+.ty-workspace--embedded .ty-action-footer .ty-button--secondary:hover{background:#263c31;color:white}
+.ty-workspace--embedded .ty-footer-dismiss{color:#e7eee9}
