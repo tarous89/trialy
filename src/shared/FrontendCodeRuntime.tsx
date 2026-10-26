@@ -5,7 +5,7 @@ import {ActionFooter} from './ActionFooter.js';
 import React,{useEffect,useRef,useState} from 'react';
 import {useAccessRecheck} from './useAccessRecheck.js';
 type Call=(name:string,args:Record<string,unknown>)=>Promise<any>;
-export function FrontendCodeRuntime({component,previewId,call,onProposal,onUnavailable,onAccess,onLayout,onBusyChange,onRendered,onUpdated}:{component?:any;previewId?:string;call:Call;onProposal:(p:any)=>void;onUnavailable?:(message:string)=>void;onAccess?:()=>void;onLayout?:()=>void;onBusyChange?:(busy:boolean)=>void;onRendered?:()=>void;onUpdated?:(component:any)=>void}){
+export function FrontendCodeRuntime({component,previewId,initialOutput,call,onProposal,onUnavailable,onAccess,onLayout,onBusyChange,onRendered,onUpdated}:{component?:any;previewId?:string;initialOutput?:any;call:Call;onProposal:(p:any)=>void;onUnavailable?:(message:string)=>void;onAccess?:()=>void;onLayout?:()=>void;onBusyChange?:(busy:boolean)=>void;onRendered?:()=>void;onUpdated?:(component:any)=>void}){
  const embedded=React.useContext(EmbeddedNavigation);
  const frame=useRef<HTMLIFrameElement>(null),output=useRef<any>(null),state=useRef<any>(null),busyRef=useRef(false),channel=useRef(crypto.randomUUID()),live=useRef(true),current=useRef(component);
  const [recordReview,setRecordReview]=useState<any>(null);
@@ -66,7 +66,7 @@ export function FrontendCodeRuntime({component,previewId,call,onProposal,onUnava
   const result=await call('run_component_frontend',{request:{componentId:current.current.id,expectedVersion:current.current.version,state:{...state.current,settings:false,layoutDraft:null,detail:null,newRow:null},event:{kind:'open'}}});
   output.current=result;state.current=result.state;setFrameUrl(result.frameUrl);setFooter(null);setRecordReview(null);saveReceipt.current=null;send();onUpdated?.(current.current);
  }
- useEffect(()=>{live.current=true;void run();return()=>{live.current=false;};},[]);
+ useEffect(()=>{live.current=true;if(initialOutput){output.current=initialOutput;state.current=initialOutput.state;setStandard(!!initialOutput.tracker);setFrameUrl(initialOutput.frameUrl);setProposal(initialOutput.proposal);onBusyChange?.(false);}else void run();return()=>{live.current=false;};},[]);
  useEffect(()=>{if(component&&component!==current.current){current.current=component;void run();}},[component]);
  useEffect(()=>{const receive=(e:MessageEvent)=>{if(e.source!==frame.current?.contentWindow)return;if(e.data?.kind==='trialy.ready'){setReady(true);send();}
   else if(e.data.channel===channel.current){
