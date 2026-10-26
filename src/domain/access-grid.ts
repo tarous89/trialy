@@ -17,7 +17,7 @@ export const rowKey=(kind:string,id:string,field?:string)=>[kind,id,field??''].j
 export class AccessGrid{
  constructor(private db:Database){}
  async directory(a:Actor){const result=[];for(const w of await new Service(this.db).workspaces(a)){const p=await access(this.db,a,w.id);result.push({id:w.id,name:w.name,owned:p.role==='owner'});}return {workspaces:result};}
- async read(a:Actor,w:string,subject='all'){
+ async read(a:Actor,w:string,subject=a.userId){
   const p=await access(this.db,a,w),manage=p.role==='owner',am=new AccessManagement(this.db);
   const overview=await am.overview(a,w),f=new WorkspaceFoundation(this.db);
   const people=manage?overview.people:[{id:a.userId,name:'You',role:p.role}];

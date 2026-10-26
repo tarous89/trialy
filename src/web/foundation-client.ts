@@ -7,7 +7,7 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown)=
  prepare_tool_template:[`${o}/tracker-template`,'POST',Object.fromEntries(Object.entries(v).filter(([k])=>k!=='workspaceId'))],
  read_access_grid_draft:[`/api/workspaces/${v.workspaceId}/access-grid/reviews/${v.reviewId}`],
  read_access_directory:['/api/account/access'],
- read_access_grid:[`/api/workspaces/${v.workspaceId}/access-grid?subject=${encodeURIComponent(v.subject??'all')}`],
+ read_access_grid:[`/api/workspaces/${v.workspaceId}/access-grid${v.subject?'?subject='+encodeURIComponent(v.subject):''}`],
  save_access_grid:[`/api/workspaces/${v.workspaceId}/access-grid`,'POST',v.batch],
  list_tool_tables:[`${o}/components/${v.componentId}/tables`],
  tool_reference_options:[`${o}/components/${v.componentId}/references/${v.typeId}/${encodeURIComponent(v.field)}?q=${encodeURIComponent(v.query??'')}&offset=${v.offset??0}`],
