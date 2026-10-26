@@ -447,7 +447,11 @@ export class WorkspaceFoundation {
   if(op.kind==='archive_node')await this.nodeArchive(tx,a,w,op);
   if(op.kind==='copy_component')await this.componentCopy(tx,a,w,op);
   if(op.kind==='apply_maintenance'){const scope=await this.scope(tx,a,w,op.batch.scopeId);if(scope.revoked_at||scope.version!==op.batch.expectedScopeVersion)fail(409,'scope_changed','Maintenance scope changed');if(scope.schema_stamp!==await this.scopeStamp(tx,{...a,origin:'ai'},w,maintenanceSchema.parse(scope.body)))fail(409,'schema_changed','Scope requires renewed review');}
-  if(op.kind==='create_node'){await this.parent(tx,w,op.parentId);if(op.parentId)await this.activeNode(tx,a,w,op.parentId);}
+  if(op.kind==='create_node'){await this.parent(tx,w,op.parentId);if(op.parentId)await this.activeNode(tx,a,w,op.parentId);if(op.initialAccess){
+   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const policy=await this.policy(tx,a,w,true);if(policy.role!=='owner')fail(403,'owner_required','Only the workspace owner may set project access');if(policy.access_version!==op.initialAccess.expectedVersion)fail(409,'access_changed','Workspace access changed. Reopen project setup.');
+   const members=(await tx.query('SELECT m.user_id,m.role FROM memberships m LEFT JOIN workspace_access wa ON wa.user_id=m.user_id AND wa.workspace_id=$1 WHERE m.tenant_id=$2 AND (m.role=\'owner\' OR wa.user_id IS NOT NULL)',[w,policy.tenant_id])).rows;
+   for(const rule of op.initialAccess.rules){if(rule.subject==='chatgpt')continue;const member=members.find(m=>m.user_id===rule.subject);if(!member)fail(400,'invalid_user','Choose a workspace member');if(member.role==='owner')fail(400,'owner_access','Owners retain full access');}
+  }}
   if(op.kind==='move_node'||op.kind==='rename_node'){const n=(await this.activeNode(tx,a,w,op.nodeId))[0];if(n.version!==op.expectedVersion)fail(409,'stale_version','Project or folder changed');if(op.kind==='move_node'){await this.parent(tx,w,op.parentId,op.nodeId);if(op.parentId)await this.activeNode(tx,a,w,op.parentId);}}
   if(op.kind==='save_component'||op.kind==='move_component'||op.kind==='archive_component'||op.kind==='restore_component'){
    if(op.kind!=='save_component'||op.content.sourceAccess!=='bindings')await this.componentSourcePolicy(tx,a,w);
@@ -640,7 +644,8 @@ export class WorkspaceFoundation {
     for(const schedule of review.schedules){await tx.query('UPDATE foundation_schedules SET paused=true WHERE id=$1',[schedule.id]);await audit(tx,a,p,'schedule.project_archived',schedule.id,{paused:false},{paused:true,projectArchive:objectId,authorization},op.reason);}
    }
   }
-  else if(op.kind==='create_node'){after={id:objectId,kind:op.nodeKind,name:op.name,description:op.description,parent_id:op.parentId,version};await tx.query('INSERT INTO workspace_nodes(id,workspace_id,kind,name,parent_id,description) VALUES($1,$2,$3,$4,$5,$6)',[objectId,w,op.nodeKind,op.name,op.parentId,op.description]);}
+  else if(op.kind==='create_node'){after={id:objectId,kind:op.nodeKind,name:op.name,description:op.description,parent_id:op.parentId,version};await tx.query('INSERT INTO workspace_nodes(id,workspace_id,kind,name,parent_id,description) VALUES($1,$2,$3,$4,$5,$6)',[objectId,w,op.nodeKind,op.name,op.parentId,op.description]);if(op.initialAccess){const restrictions=op.initialAccess.rules.filter(r=>!r.read||!r.write).map(r=>({subject:r.subject,kind:'project',resourceId:objectId,read:r.read?'inherit':'deny',write:r.write?'inherit':'deny'}));await tx.query('UPDATE workspaces SET permission_rules=permission_rules||$2::jsonb,access_version=access_version+1 WHERE id=$1',[w,J(restrictions)]);after={...after,initialAccess:op.initialAccess};}}
+
   else if(op.kind==='copy_component'){
    const content=await this.componentCopy(tx,a,w,op);after={...content,id:objectId,workspace_id:w,project_id:op.projectId,version};
    await tx.query('INSERT INTO workspace_components(id,workspace_id,project_id,name,format,source,bindings,created_by,execution,allowed_users,ai_enabled,assets,source_access) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)',[objectId,w,op.projectId,content.name,content.format,content.source,J(content.bindings),a.userId,J([]),content.allowed_users===null?null:J(content.allowed_users),content.ai_enabled,J(content.assets),content.source_access]);

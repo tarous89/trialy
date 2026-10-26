@@ -32,7 +32,7 @@ export const maintenanceBatch=z.object({
  links:z.array(identityLinkSchema).max(50).default([])
 }).strict().refine(v=>v.changes.length+v.links.length>0,'Provide changes or identity links');
 export const workspaceOperation=z.discriminatedUnion('kind',[
- z.object({kind:z.literal('create_node'),nodeKind:z.enum(['folder','project']),name:z.string().trim().min(1).max(100),description:z.string().trim().max(2000).default(''),parentId:id.nullable().default(null)}).strict(),
+ z.object({kind:z.literal('create_node'),nodeKind:z.enum(['folder','project']),name:z.string().trim().min(1).max(100),description:z.string().trim().max(2000).default(''),parentId:id.nullable().default(null),initialAccess:z.object({expectedVersion:z.number().int().min(0),rules:z.array(z.object({subject:z.union([id,z.literal('chatgpt')]),read:z.boolean(),write:z.boolean()}).strict().refine(v=>v.read||!v.write,{message:'Editing requires viewing'})).max(1000)}).strict().optional()}).strict(),
  z.object({kind:z.literal('move_node'),nodeId:id,expectedVersion:z.number().int().min(0),parentId:id.nullable()}).strict(),
  z.object({kind:z.literal('rename_node'),nodeId:id,expectedVersion:z.number().int().min(0),name:z.string().trim().min(1).max(100),description:z.string().trim().max(2000).optional()}).strict(),
  z.object({kind:z.literal('save_scope'),scope:maintenanceSchema,scopeId:id.optional(),expectedVersion:z.number().int().min(0).optional()}).strict(),
