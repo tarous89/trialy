@@ -1,3 +1,6 @@
+import {addWorkspaceMcp} from '../src/server/workspace-foundation.js';
+import {trackerSetup} from '../src/workspace/tracker-template.js';
+import {standardSource} from '../src/shared/standard-tool.js';
 import {runFoundation} from '../src/foundation/worker.js';
 import {test} from 'node:test';import assert from 'node:assert/strict';import {randomUUID} from 'node:crypto';import {readFile,readdir} from 'node:fs/promises';import {PGlite} from '@electric-sql/pglite';
 import type {Database,Connection} from '../src/db/database.js';import {Service} from '../src/domain/service.js';import {WorkspaceFoundation} from '../src/workspace/service.js';import {trackerOperation} from '../src/workspace/tracker-template.js';import {prepareToolLayout} from '../src/workspace/tool-layout.js';import {standardTracker} from '../src/workspace/standard-tracker.js';import {Foundation} from '../src/foundation/service.js';import {AccessManagement} from '../src/domain/access-management.js';
@@ -22,5 +25,28 @@ test('templates and source layout preserve records, update types, enforce scope 
  const foundation=new Foundation(db),run=await foundation.invoke(a,w.id,{revisionId:auto.revisionId,input:{}},randomUUID());await runFoundation(db);const ran=await foundation.run(a,w.id,run.id);assert.equal(ran.status,'succeeded',JSON.stringify(ran));
  const invalid={...setup,newTables:[{id:randomUUID(),name:'Must not exist',fields:[{key:'name',name:'Name',kind:'text',ai:true}]}]};invalid.tabs=[{name:'Bad',typeId:invalid.newTables[0].id,columns:[{field:'name'}]}];await assert.rejects(f.preview(a,w.id,{kind:'create_automation_template',report:'due',setup:invalid}),/date field/);assert.ok(!(await s.types(a,w.id)).some(t=>t.name==='Must not exist'));
  const proj=await commit(await f.preview(a,w.id,{kind:'create_node',nodeKind:'project',name:'Folder',description:'Optional description'}));assert.equal((await db.query('SELECT description FROM workspace_nodes WHERE id=$1',[proj.id])).rows[0].description,'Optional description');await assert.rejects(f.preview(a,w.id,{kind:'create_automation_template',report:'due',setup:{...setup,scope:'project',projectId:proj.id,newTables:[],tabs:[{name:'Due',typeId:target,columns:[{field:'due'}]}]}}),/workspace data/);
+ const typedId=randomUUID();
+ const typedSetup={name:'Adapted budget',description:'Purpose-built content',pageSize:25,showExample:false,omitSource:true,newTables:[{id:typedId,name:'Budget items',fields:[
+  {key:'name',name:'Item',kind:'text',multiple:false},
+  {key:'status',name:'Status',kind:'select',options:['Active','Done'],multiple:false},
+  {key:'quantity',name:'Quantity',kind:'number',multiple:false},
+  {key:'cost',name:'Unit cost',kind:'money',multiple:false},
+  {key:'total',name:'Total',kind:'money',formula:{operator:'product',fields:['quantity','cost']}},
+  {key:'next_step',name:'Next step',kind:'text',computed:{fields:['status'],source:"return input.status === 'Active' ? 'Review budget' : 'Complete';"}}
+ ]}],tabs:[{name:'Budget',typeId:typedId,filters:['status'],columns:[{field:'name'},{field:'status',display:{kind:'badge',valueTones:{Active:'green',Done:'blue'}}},{field:'quantity'},{field:'cost'},{field:'total',display:{kind:'number',prefix:'€ ',decimals:2}},{field:'next_step'}]}],overview:{showCounts:false,nextSteps:[{tabIndex:0,titleField:'name',textField:'next_step',heading:'Budget actions'}]}};
+ const typed=await trackerOperation(f,a,w.id,typedSetup);assert.deepEqual(await trackerOperation(f,a,w.id,trackerSetup.parse(typedSetup)),typed);assert.equal(JSON.parse(typed.content.source).template,'trialy.standard.v1');assert.ok(!typed.content.source.includes('<style'));assert.ok(typed.content.source.length<7000);
+ const savedTyped=await commit(await f.preview(a,w.id,{kind:'create_tracker',setup:typedSetup,content:typed.content}));const tc=(await f.readComponent(a,w.id,savedTyped.id)).component,tt=tc.bindings[0].typeId;
+ await save({kind:'bulk_records',changes:Array.from({length:32},(_,i)=>({kind:'create_record',typeId:tt,data:{name:'Item '+i,status:i<30?'Active':'Done',quantity:2,cost:12.5}}))});
+ const opened=await f.runFrontend(a,w.id,{componentId:tc.id,expectedVersion:0,event:{kind:'click',action:'tab:0'}});assert.equal(opened.tracker.pages[0].result.rows.length,25);assert.match(opened.html,/Filter by Status/);
+ const filtered=await f.runFrontend(a,w.id,{componentId:tc.id,expectedVersion:0,state:opened.state,event:{kind:'change',action:'filter:status',value:'Active'}});assert.equal(filtered.tracker.pages[0].result.total,30);assert.equal(filtered.controls.find((c:any)=>c.label==='Total').value,25);assert.equal(filtered.controls.find((c:any)=>c.label==='Total').editable,false);assert.equal(filtered.controls.find((c:any)=>c.label==='Total').display.prefix,'€ ');assert.equal(filtered.controls.find((c:any)=>c.label==='Next step').value,'Review budget');
+ const next=await f.runFrontend(a,w.id,{componentId:tc.id,expectedVersion:0,state:filtered.state,event:{kind:'click',action:'next'}});assert.equal(next.tracker.pages[0].result.rows.length,5);
+ const overview=await f.runFrontend(a,w.id,{componentId:tc.id,expectedVersion:0,event:{kind:'click',action:'tab:-1'}});assert.match(overview.html,/Budget actions/);assert.doesNotMatch(overview.html,/class="stats"/);
+ const config=standardTracker(tc.source)!.config;assert.equal(standardTracker(standardSource({...config,css:'body{}'})),null);
+ const revisedSetup={...typedSetup,newTables:[],name:'Revised budget',tabs:typedSetup.tabs.map(t=>({...t,typeId:tt}))};const revised=await trackerOperation(f,a,w.id,revisedSetup);const rp=await f.preview(a,w.id,{kind:'create_tracker',componentId:tc.id,expectedVersion:0,setup:revisedSetup,content:revised.content});const rr=await commit(rp);assert.equal(rr.id,tc.id);assert.equal((await s.records(a,w.id,tt,{})).total,32);assert.equal((await f.readComponent(a,w.id,tc.id)).component.name,'Revised budget');
+ await assert.rejects(f.preview(a,w.id,{kind:'create_tracker',componentId:tc.id,expectedVersion:0,setup:revisedSetup,content:revised.content}),/changed/);
+ const handlers=new Map<string,any>();addWorkspaceMcp({registerTool:(name:string,_schema:any,handler:any)=>handlers.set(name,handler)} as any,f,a,(handler:any)=>handler,{});
+ const trackerRevision=await handlers.get('prepare_tracker_revision')({workspaceId:w.id,componentId:tc.id,expectedVersion:1,changes:{columns:[{tabIndex:0,field:'status',label:'Stage'}]}});
+ const revisionConfig=standardTracker(trackerRevision.preview.body.content.source)!.config;assert.equal(revisionConfig.tabs[0].columns[1].label,'Stage');assert.deepEqual(revisionConfig.tabs[0].columns[1].display,config.tabs[0].columns[1].display);assert.deepEqual(revisionConfig.overview,config.overview);assert.deepEqual(revisionConfig.tabs[0].filters,['status']);assert.equal(revisionConfig.name,'Revised budget');await commit(trackerRevision.preview);assert.equal((await s.records(a,w.id,tt,{})).total,32);
+
  }finally{await db.close();}
 });
