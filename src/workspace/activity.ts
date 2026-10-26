@@ -1,11 +1,12 @@
+import {activityEvidence,recordEventChanges} from './activity-evidence.js';
 import {Service} from '../domain/service.js';
 import {z} from 'zod';
-import {id,type Actor} from '../shared/schema.js';
+import {id,type Actor,fail} from '../shared/schema.js';
 import type {Database} from '../db/database.js';
 import {access} from '../domain/permissions.js';
 import {WorkspaceFoundation} from './service.js';
 import {Foundation} from '../foundation/service.js';
-export const activityQuery=z.object({offset:z.number().int().min(0).default(0),limit:z.number().int().min(1).max(200).default(50),query:z.string().max(200).default(''),category:z.enum(['all','automation','access','deletion','data','configuration']).default('all'),outcome:z.enum(['all','failed','succeeded','queued','running','cancelled','completed','skipped']).default('all'),actorId:id.optional(),projectId:id.optional(),resourceId:id.optional(),since:z.iso.datetime().optional(),until:z.iso.datetime().optional(),before:z.iso.datetime().optional()});
+export const activityQuery=z.object({eventId:id.optional(),offset:z.number().int().min(0).default(0),limit:z.number().int().min(1).max(200).default(50),query:z.string().max(200).default(''),category:z.enum(['all','automation','access','deletion','data','configuration']).default('all'),outcome:z.enum(['all','failed','succeeded','queued','running','cancelled','completed','skipped']).default('all'),actorId:id.optional(),projectId:id.optional(),resourceId:id.optional(),since:z.iso.datetime().optional(),until:z.iso.datetime().optional(),before:z.iso.datetime().optional()});
 /** Metadata only. Never return snapshots, payloads, diagnostics, source or bearer links. */
 export async function activityPage(db:Database,a:Actor,w:string,input:unknown){
  const q=activityQuery.parse(input),p=await access(db,a,w),f=new WorkspaceFoundation(db);
@@ -15,9 +16,9 @@ export async function activityPage(db:Database,a:Actor,w:string,input:unknown){
  // other members see only metadata for currently accessible project resources.
  let full=a.origin==='human'&&['owner','inspector'].includes(p.role)&&p.document_scope&&p.allowed_types===null&&!p.hidden_fields.length;
  if(full){try{await new Service(db).inspectionAccess(db,a,w);}catch(e){if((e as any).status!==403)throw e;full=false;}}
- const allowedTypes=(await new Service(db).types(a,w)).map(t=>t.id);
+ const tables=await new Service(db).types(a,w),allowedTypes=tables.map(t=>t.id);
  const before=q.before??new Date().toISOString();
- const params=[w,a.userId,full,permitted,q.query,q.category,q.outcome,q.actorId??null,q.projectId??null,q.resourceId??null,q.since??null,q.until??null,before,q.limit+1,q.offset,allowedTypes];
+ const params=[w,a.userId,full,permitted,q.query,q.category,q.outcome,q.actorId??null,q.projectId??null,q.resourceId??null,q.since??null,q.until??null,before,q.limit+1,q.offset,allowedTypes,q.eventId??null];
  const rows=(await db.query(`WITH events AS (
  SELECT e.id::text id,e.created_at,e.actor_id,e.action,e.object_id resource_id,CASE WHEN e.action IN ('automation.failed','automation.cancelled') THEN split_part(e.action,'.',2) ELSE 'succeeded' END outcome,e.origin,
  CASE WHEN e.action ~ '(access|permission|grant|sharing)' THEN 'access' WHEN e.action ~ '(delet|archiv|remov)' THEN 'deletion' WHEN e.action ~ '(automation|execution|function)' THEN 'automation' WHEN e.action ~ '(record|field|data)' THEN 'data' ELSE 'configuration' END category,
@@ -33,8 +34,11 @@ export async function activityPage(db:Database,a:Actor,w:string,input:unknown){
  UNION ALL
  SELECT 'legacy:'||r.id::text,r.created_at,j.owner_id,'automation.'||r.status,j.id,r.status,'worker','automation',NULL::uuid,j.name FROM automation_runs r JOIN automations j ON j.id=r.automation_id WHERE r.workspace_id=$1 AND $3::boolean
  ) SELECT events.*,u.name AS actor_name FROM events JOIN users u ON u.id=events.actor_id WHERE ($5='' OR strpos(lower(action||' '||resource_name||' '||coalesce(resource_id::text,'')||' '||actor_id::text||' '||u.name),lower($5))>0)
- AND ($6='all' OR category=$6) AND ($7='all' OR outcome=$7) AND ($8::uuid IS NULL OR actor_id=$8) AND ($9::uuid IS NULL OR project_id=$9 OR EXISTS(SELECT 1 FROM project_records pr WHERE pr.workspace_id=$1 AND pr.project_id=$9 AND pr.record_id=events.resource_id AND pr.revoked_at IS NULL AND ($3::boolean OR pr.project_id=ANY($4::uuid[])))) AND ($10::uuid IS NULL OR resource_id=$10)
+ AND ($17::uuid IS NULL OR events.id=$17::text) AND ($6='all' OR category=$6) AND ($7='all' OR outcome=$7) AND ($8::uuid IS NULL OR actor_id=$8) AND ($9::uuid IS NULL OR project_id=$9 OR EXISTS(SELECT 1 FROM project_records pr WHERE pr.workspace_id=$1 AND pr.project_id=$9 AND pr.record_id=events.resource_id AND pr.revoked_at IS NULL AND ($3::boolean OR pr.project_id=ANY($4::uuid[])))) AND ($10::uuid IS NULL OR resource_id=$10)
  AND ($11::timestamptz IS NULL OR events.created_at >= $11) AND ($12::timestamptz IS NULL OR events.created_at <= $12) AND events.created_at <= $13::timestamptz
  ORDER BY events.created_at DESC,events.id DESC LIMIT $14 OFFSET $15`,params)).rows;
- return {rows:rows.slice(0,q.limit),nextOffset:rows.length>q.limit?q.offset+q.limit:null,before,scope:full?'Workspace audit metadata':'Permitted resource activity and your execution statuses',projects:nodes.nodes.filter(n=>n.kind==='project').map(n=>({id:n.id,name:n.name}))};
+ return {rows:await activityEvidence(db,a,w,rows.slice(0,q.limit),tables,full),nextOffset:rows.length>q.limit?q.offset+q.limit:null,before,scope:full?'Workspace audit metadata':'Permitted resource activity and your execution statuses',projects:nodes.nodes.filter(n=>n.kind==='project').map(n=>({id:n.id,name:n.name}))};
 }
+
+
+export async function activityDetails(db:Database,a:Actor,w:string,eventId:string){const page=await activityPage(db,a,w,{eventId,limit:1});if(!page.rows.length)fail(404,'not_found','Event unavailable');return recordEventChanges(db,a,w,eventId,page.scope==='Workspace audit metadata');}
