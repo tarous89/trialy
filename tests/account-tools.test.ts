@@ -25,7 +25,7 @@ test('account setup is automatic and idempotent; standalone tools move without c
  const starter=(await f.nodes(ai,w)).nodes.find((n:any)=>n.name==='Project 1');assert.ok(starter);
  const deletion=await f.preview(ai,w,{kind:'archive_node',nodeId:starter.id,expectedVersion:starter.version,archived:true,reason:'Delete starter project'});await f.confirm(ai,w,deletion.id,deletion.digest);
  assert.equal((await s.ensureAccount(ai))[0].id,w);assert.equal((await f.nodes(ai,w)).nodes.filter((n:any)=>n.name==='Project 1'&&!n.archived).length,0,'Deleted starter project is never recreated');assert.equal((await admin.query('SELECT count(*) AS n FROM workspaces')).rows[0].n,1);
- const save=async(op:any)=>{if(op.kind==='save_component')op={...op,designChangeReason:'Explicit custom interface for this permission test fixture.'};const p=await f.preview(ai,w,op);return f.confirm(ai,w,p.id,p.digest);};
+ const save=async(op:any)=>{const author=op.kind==='save_component'?owner:ai;const p=await f.preview(author,w,op);return f.confirm(author,w,p.id,p.digest);};
  const standalone=await save({kind:'save_component',content:{name:'Independent tracker',format:'frontend-js',source:'return {html:"<h1>Ready</h1>"};'}});
  assert.equal((await f.readComponent(ai,w,standalone.id)).component.project_id,null);
  const project=await save({kind:'create_node',nodeKind:'project',name:'Project A'});
