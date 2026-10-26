@@ -7,7 +7,7 @@ import {trackerSetup,trackerOperation} from '../workspace/tracker-template.js';
 import {backgroundMetadata} from './ui-resource.js';
 import {moveTool,moveToolInput} from '../workspace/tool-placement.js';
 import {workspaceHome,homeQuery} from '../workspace/home.js';
-import {activityPage,activityQuery} from '../workspace/activity.js';
+import {activityPage,activityQuery,activityDetails} from '../workspace/activity.js';
 import {databasePage,databaseRequest} from '../workspace/database-browser.js';
 import {schemaCatalog,fieldCandidates,catalogRequest,matchRequest} from '../workspace/catalog.js';
 import {operationalStatus} from '../domain/operations.js';
@@ -39,6 +39,7 @@ export function addWorkspaceApi(app:Express,f:WorkspaceFoundation){
  app.get(`${b}/operational-status`,async(req,res)=>res.json(await operationalStatus(f.db,req.actor!,id.parse(req.params.workspaceId))));
  app.get(`${b}/collection-responses`,async(req,res)=>res.json(await f.collectionResponses(req.actor!,id.parse(req.params.workspaceId),z.coerce.number().int().min(0).default(0).parse(req.query.offset))));
  app.post(`${b}/home`,async(req,res)=>res.json(await workspaceHome(f.db,req.actor!,id.parse(req.params.workspaceId),req.body)));
+ app.get(`${b}/activity/:eventId`,async(req,res)=>res.json(await activityDetails(f.db,req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.eventId))));
  app.post(`${b}/activity`,async(req,res)=>res.json(await activityPage(f.db,req.actor!,id.parse(req.params.workspaceId),req.body)));
  app.get(`${b}/previews`,async(req,res)=>res.json(await f.pending(req.actor!,id.parse(req.params.workspaceId))));
  app.post(`${b}/previews`,async(req,res)=>res.json(await f.preview(req.actor!,id.parse(req.params.workspaceId),req.body)));
@@ -77,6 +78,7 @@ export function addWorkspaceMcp(server:McpServer,f:WorkspaceFoundation,a:Actor,s
  register('read_account_home','Read all authorized projects and tools directly from the connected account database.',homeQuery.shape,true,v=>accountHome(f.db,a,v));
  register('read_account_schema','Read the account database catalog across authorized data areas. Each table includes its workspaceId for subsequent reads and approved writes.',accountCatalogRequest.shape,true,v=>accountCatalog(f.db,a,v));
  register('read_workspace_home','List authorized project and resource metadata for Home. Never executes code or returns source, records or bearer links.',{workspaceId:id,...homeQuery.shape},true,({workspaceId,...v})=>workspaceHome(f.db,a,workspaceId,v));
+ register('read_activity_changes','Read authorized before/after values for one visible record event.',{workspaceId:id,eventId:id},true,v=>activityDetails(f.db,a,v.workspaceId,v.eventId),true);
  register('read_workspace_activity','Read paginated permission-filtered event metadata. Includes automation failures. No record values, source, or infrastructure logs. Use the same filters and before timestamp across export pages.',{workspaceId:id,...activityQuery.shape},true,({workspaceId,...v})=>activityPage(f.db,a,workspaceId,v));
  register('read_database_table','Browse one table with bounded pagination, optional project context, permitted-value search and sort. Restricted tables return schema only, never entries or counts.',{workspaceId:id,...databaseRequest.shape},true,({workspaceId,...v})=>databasePage(f.db,a,workspaceId,v));
  register('read_workspace_schema','Read paginated schema including restricted fields, without entries, counts, defaults or field code. Schema discovery does not grant value access or execution. Use before creating fields.',{workspaceId:id,...catalogRequest.shape},true,({workspaceId,...v})=>schemaCatalog(f.db,a,workspaceId,v));
