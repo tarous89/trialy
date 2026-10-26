@@ -170,12 +170,13 @@ export class WorkspaceFoundation {
      const v=frontendRead.parse(value),binding=content.bindings.find((b:any)=>b.typeId===v.typeId);if(!binding)fail(403,'binding_required','Table is not bound to this component');
      if(request.componentId)await this.component(this.db,a,w,request.componentId);
      let linkedTable;try{linkedTable=await typeAccess(this.db,a,w,v.typeId);}catch(e){if((e as any).status===403||(e as any).status===404)return {unavailable:true,message:'This table is restricted',rows:[],total:null,limit:v.limit,offset:v.offset};throw e;}const readableKeys=visibleFields(linkedTable.type.fields,linkedTable.policy,a).filter(f=>binding.fields.includes(f.key)).map(f=>f.key);
+     if(Object.keys(v.filters).length>8||Object.keys(v.filters).some(k=>!readableKeys.includes(k)))fail(403,'filter_field','Filter only readable bound fields');
      // Project in PostgreSQL and bound each row before materializing it in the web process.
      const rows=(await this.db.query(`SELECT id,version,CASE WHEN octet_length(selected::text)<=100000 THEN selected ELSE NULL END AS data FROM (
       SELECT id,version,(SELECT coalesce(jsonb_object_agg(key,value),'{}'::jsonb) FROM jsonb_each(data) WHERE key=ANY($3::text[])) AS selected
-      FROM records WHERE workspace_id=$1 AND type_id=$2 AND state<>'archived' AND ($6::uuid IS NULL OR EXISTS(SELECT 1 FROM project_records pr WHERE pr.workspace_id=$1 AND pr.project_id=$6 AND pr.record_id=records.id AND pr.revoked_at IS NULL)) ORDER BY created_at,id LIMIT $4 OFFSET $5) page`,[w,v.typeId,readableKeys,v.limit,v.offset,content.manifest?.scope==='project'?content.project_id:null])).rows;
+      FROM records WHERE workspace_id=$1 AND type_id=$2 AND state<>'archived' AND NOT EXISTS(SELECT 1 FROM jsonb_each_text($7::jsonb) filter WHERE records.data->>filter.key IS DISTINCT FROM filter.value) AND ($6::uuid IS NULL OR EXISTS(SELECT 1 FROM project_records pr WHERE pr.workspace_id=$1 AND pr.project_id=$6 AND pr.record_id=records.id AND pr.revoked_at IS NULL)) ORDER BY created_at,id LIMIT $4 OFFSET $5) page`,[w,v.typeId,readableKeys,v.limit,v.offset,content.manifest?.scope==='project'?content.project_id:null,J(v.filters)])).rows;
      if(rows.some(r=>r.data===null))fail(400,'read_limit','A record exceeds the interface read budget');
-     const total=Number((await this.db.query("SELECT count(*) AS n FROM records WHERE workspace_id=$1 AND type_id=$2 AND state<>'archived' AND ($3::uuid IS NULL OR EXISTS(SELECT 1 FROM project_records pr WHERE pr.workspace_id=$1 AND pr.project_id=$3 AND pr.record_id=records.id AND pr.revoked_at IS NULL))",[w,v.typeId,content.manifest?.scope==='project'?content.project_id:null])).rows[0].n);
+     const total=Number((await this.db.query("SELECT count(*) AS n FROM records WHERE workspace_id=$1 AND type_id=$2 AND state<>'archived' AND NOT EXISTS(SELECT 1 FROM jsonb_each_text($4::jsonb) filter WHERE records.data->>filter.key IS DISTINCT FROM filter.value) AND ($3::uuid IS NULL OR EXISTS(SELECT 1 FROM project_records pr WHERE pr.workspace_id=$1 AND pr.project_id=$3 AND pr.record_id=records.id AND pr.revoked_at IS NULL))",[w,v.typeId,content.manifest?.scope==='project'?content.project_id:null,J(v.filters)])).rows[0].n);
      const bound=Object.fromEntries(content.bindings.map((b:any)=>[b.typeId,b.fields]));const reader=new DerivedReader(this.db,a,w,Object.keys(bound),bound);return {tableName:linkedTable.type.name,rows:await Promise.all(rows.map(r=>reader.read({...r,type_id:v.typeId}))),total,limit:v.limit,offset:v.offset};
     }
     if(name==='layout.propose'){
@@ -208,7 +209,7 @@ export class WorkspaceFoundation {
     const field=record.fields.find((f:any)=>f.key===definition.field);if(!field&&draftSchema&&!request.componentId){controls.push({slot:item.slot,label:definition.label??definition.field,kind:definition.kind,value:null,options:[],editable:false,action:''});continue;}if(!field){controls.push({slot:item.slot,label:'Restricted field',kind:'text',value:null,options:[],editable:false,action:''});continue;}
     const {policy}=await typeAccess(this.db,a,w,record.type_id);
     const resolved=resolvedCache.get(record.id)??await controlReader.read(record);resolvedCache.set(record.id,resolved);
-    controls.push({slot:item.slot,label:definition.label??field.name,kind:field.kind,multiple:!!field.multiple,value:resolved.data[field.key]??null,options:field.options??[],editable:!!request.componentId&&definition.mode==='write'&&!policy.archived&&policy.write_fields.includes(field.key)&&['text','number','money','date','boolean','select'].includes(field.kind),action:'bound:'+definition.id+':'+record.id+':'+record.version});
+    controls.push({slot:item.slot,label:definition.label??field.name,kind:field.kind,display:tracker?.config.tabs.flatMap((t:any)=>t.columns).find((c:any)=>c.fieldId===definition.id)?.display??field.renderer,rendered:resolved.display?.[field.key],multiple:!!field.multiple,value:resolved.data[field.key]??null,options:field.options??[],editable:!!request.componentId&&definition.mode==='write'&&!derived(field)&&!policy.archived&&policy.write_fields.includes(field.key)&&['text','number','money','date','boolean','select'].includes(field.kind),action:'bound:'+definition.id+':'+record.id+':'+record.version});
    }
    if(new Set(controls.map(c=>c.slot)).size!==controls.length)fail(400,'duplicate_control','Control slots must be unique');
    const {proposal,queued}=await this.db.transaction(async tx=>{
@@ -432,6 +433,7 @@ export class WorkspaceFoundation {
   if(op.kind==='create_automation_template'){const built=await trackerOperation(new WorkspaceFoundation(adapter(tx)),a,w,op.setup);automationTemplate(op.setup,op.report,built.content);}
   if(op.kind==='create_tracker'){
    await this.componentSourcePolicy(tx,a,w);
+   if(op.componentId){const previous=await this.component(tx,a,w,op.componentId);if(previous.version!==op.expectedVersion)fail(409,'stale_version','Tool changed; reload its configuration');if(!standardTracker(previous.source))fail(400,'custom_tool','Custom tools require a custom source review');if(previous.project_id!==op.setup.projectId||previous.resource_kind!==op.setup.resourceKind||previous.execution?.length)fail(400,'revision_scope','Keep the project, tool kind, and custom execution bindings unchanged');}
    if(op.setup.projectId){const project=(await this.activeNode(tx,a,w,op.setup.projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');}
    const generated=await trackerOperation(new WorkspaceFoundation(adapter(tx)),a,w,op.setup);
    const parsed=workspaceOperation.parse(generated),expected=workspaceOperation.parse(op);if(parsed.kind!=='save_component'||expected.kind!=='create_tracker'||!isDeepStrictEqual(parsed.content,expected.content))fail(409,'tracker_changed','Tracker fields or template changed; prepare the preview again');
@@ -467,7 +469,7 @@ export class WorkspaceFoundation {
     await this.componentBindings(tx,a,w,op.content.bindings);
     const previous=op.componentId?await this.component(tx,a,w,op.componentId):null;
     const kind=op.content.resourceKind??previous?.resource_kind;
-    if(a.origin==='ai'&&['tracker','form','visualization'].includes(kind)&&op.content.format==='frontend-js'&&!standardTracker(op.content.source)&&op.content.source!==previous?.source&&!op.designChangeReason)fail(400,'explicit_design_change_required','Standard tools use prepare_tracker. A custom design requires designChangeReason describing the explicit user-requested deviation, included in the save review.');
+    if(a.origin==='ai'&&['tracker','form','visualization'].includes(kind)&&op.content.format==='frontend-js'&&(!standardTracker(op.content.source)||!op.content.source.startsWith('{"template":'))&&op.content.source!==previous?.source)fail(400,'standard_design_required','Standard tools use configuration-only prepare_tracker or prepare_tracker_revision. Custom source requires the signed-in app editor and an explicit save review.');
     if(previous?.resource_kind!=='generic'&&previous&&op.content.resourceKind==='generic')fail(400,'resource_downgrade','Connected resources cannot remove their data contract');
     await validateResource(tx,a,w,{...op.content,resourceKind:op.content.resourceKind??previous?.resource_kind??'generic',manifest:op.content.manifest===undefined?previous?.manifest:op.content.manifest});await this.componentAssets(tx,a,w,op.content.assets);
     if(new Set(op.content.execution.map(e=>e.name)).size!==op.content.execution.length)fail(400,'duplicate_binding','Function binding names must be unique');
@@ -571,7 +573,9 @@ export class WorkspaceFoundation {
    for(const table of op.setup.newTables){const preview=await service.preview(a,w,{kind:'create_type',name:table.name,fields:table.fields});const receipt=await service.commit(a,preview.id,preview.digest,authorization);ids.set(table.id,receipt.objects[0].id);}
    for(const extension of op.setup.extendTables){const {type}=await typeAccess(tx,a,w,extension.typeId,true);const preview=await service.preview(a,w,{kind:'update_type',typeId:extension.typeId,expectedVersion:extension.expectedVersion,name:type.name,fields:[...type.fields,...extension.newFields]});await service.commit(a,preview.id,preview.digest,authorization);}
    const setup={...op.setup,newTables:[],extendTables:[],tabs:op.setup.tabs.map(t=>({...t,typeId:ids.get(t.typeId)??t.typeId}))};
-   const operation=workspaceOperation.parse(await trackerOperation(new WorkspaceFoundation(adapter(tx)),a,w,setup));
+   const built=await trackerOperation(new WorkspaceFoundation(adapter(tx)),a,w,setup);
+   const previous=op.componentId?await this.component(tx,a,w,op.componentId):null;
+   const operation=workspaceOperation.parse({...built,...(previous?{componentId:previous.id,expectedVersion:op.expectedVersion,content:{...built.content,sourceAccess:previous.source_access,assets:previous.assets??[],execution:previous.execution??[]}}:{})});
    await this.validate(tx,a,w,operation);return this.apply(tx,a,w,p,operation,authorization);
   }
   if(op.kind==='link_cross_table_identity'||op.kind==='unlink_cross_table_identity'){
