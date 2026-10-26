@@ -19,7 +19,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   if(!c.editable)return;
   const editor=document.createElement('span');editor.className='cell-input';editor.hidden=true;editor.append(...slot.childNodes);
   const button=document.createElement('button');button.type='button';button.className='cell-display';button.setAttribute('aria-label','Edit '+c.label);
-  const refresh=()=>{const value=c.action in pending?(c.multiple?JSON.parse(pending[c.action]):pending[c.action]):c.value;button.textContent=value==null||value===''?'—':Array.isArray(value)?value.join(', '):c.kind==='boolean'?(value?'Yes':'No'):String(value);button.style.background=c.action in pending?'#e5f6e9':'';if(['select','boolean'].includes(c.kind))button.className='cell-display pill '+tone(value);};refresh();
+  const refresh=()=>{const value=c.action in pending?(c.multiple?JSON.parse(pending[c.action]):pending[c.action]):c.value;button.textContent=value==null||value===''?'—':Array.isArray(value)?value.join(', '):c.kind==='boolean'?(value?'Yes':'No'):String(value);button.style.background=c.action in pending?'#e5f6e9':'';if(['select','boolean'].includes(c.kind))button.className='cell-display pill '+tone(value);const d=c.display||{},color=d.valueTones?.[String(value)]||d.tone,palette={neutral:'#253c40',green:'#186849',blue:'#275d91',amber:'#865800',red:'#a43232'};if(color&&palette[color])button.style.color=palette[color];if(d.kind==='badge')button.className='cell-display pill '+(color&&color!=='neutral'?color:'');if(value!=null&&!Array.isArray(value)){if(!(c.action in pending)&&c.rendered?.text!=null)button.textContent=String(c.rendered.text);else if(d.kind==='number'&&typeof value==='number')button.textContent=(d.prefix||'')+value.toFixed(d.decimals??2)+(d.suffix||'');else if(d.prefix||d.suffix)button.textContent=(d.prefix||'')+button.textContent+(d.suffix||'');}};refresh();
   editor.addEventListener('focusout',()=>{queueMicrotask(()=>{if(editor.contains(document.activeElement))return;editor.hidden=true;button.hidden=false;refresh();});});
   slot.replaceChildren(button,editor);
  }
@@ -77,6 +77,18 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
       if(c.action in pending)el.style.background='#e5f6e9';
      }else el.textContent=c.value==null?'—':Array.isArray(c.value)?c.value.join(', '):String(c.value);
      if(['select','boolean','multi_select'].includes(c.kind)){el.className='pill '+tone(c.action in pending?pending[c.action]:c.value);if(!c.editable&&c.kind==='boolean')el.textContent=c.value===true?'Yes':c.value===false?'No':'—';}
+     const d=c.display||{},palette={neutral:'#253c40',green:'#186849',blue:'#275d91',amber:'#865800',red:'#a43232'};
+     const color=d.valueTones?.[String(c.value)]||d.tone;
+     if(color&&palette[color])el.style.color=palette[color];
+     if(!c.editable&&c.value!=null){
+      const rendered=c.rendered?.text;
+      if(rendered!=null)el.textContent=String(rendered);
+      else if(d.kind==='number'&&typeof c.value==='number')el.textContent=(d.prefix||'')+c.value.toFixed(d.decimals??2)+(d.suffix||'');
+      else if(d.prefix||d.suffix)el.textContent=(d.prefix||'')+el.textContent+(d.suffix||'');
+      if(d.kind==='badge')el.className='pill '+(color&&color!=='neutral'?color:'');
+      if(d.kind==='progress'&&typeof c.value==='number'){const meter=document.createElement('progress');meter.max=100;meter.value=Math.max(0,Math.min(100,(c.value-(d.min??0))/((d.max??100)-(d.min??0)||1)*100));meter.setAttribute('aria-label',c.label);el.append(meter);}
+      if(d.kind==='link'&&typeof c.value==='string'&&/^https?:\/\//i.test(c.value)){const link=document.createElement('a');link.href=c.value;link.textContent=el.textContent;link.target='_blank';link.rel='noopener noreferrer';el.replaceChildren(link);}
+     }
      slot.replaceChildren(el);collapsed(slot,c);
     }
    }
@@ -87,6 +99,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   footer();
  }
  function local(event){
+  if(event.action?.startsWith('tab:')||event.action?.startsWith('filter:'))return false;
   if(!model||!/^((draft|resize-column|resize-row|example|tab|details|tab-name|tab-visible|column-label|visibility|move-tab|move-column|reorder-tab|reorder-column):|tracker:add$|discard-new$|query$|sort$|next$|previous$|settings$|discard-layout$|column-tab$|layout-name$|layout-description$|close-details$)/.test(event.action||''))return false;
   const old=uiState,next=structuredClone(uiState);
   try{
