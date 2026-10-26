@@ -42,7 +42,12 @@ if(action==='discard-new')state.newRow=null;
 if(parts[0]==='draft'&&state.newRow){const c=config.tabs[state.newRow.tab]?.columns.find(c=>c.field===parts[1]);if(c?.editable)state.newRow.data[c.field]=e.value;}
 
 // Only declared tables are read. An empty tab gets one locally editable fictional example, never a write or real metric.
-const pages=config.tabs.map((t,i)=>tools.call('records.read',{typeId:t.typeId,limit:state.tab===i||state.tab===-1&&(config.overview?.nextSteps||[]).some(p=>p.tabIndex===i)?pageSizes[i]:1,offset:state.tab===i?(state.offsets[i]||0):0,filters:Object.fromEntries(Object.entries(state.filters[i]||{}).filter(([,v])=>v!==''))}));
+const pages=config.tabs.map((t,i)=>{
+ const overview=state.tab===-1, full=state.tab===i||overview&&((config.overview?.nextSteps||[]).some(p=>p.tabIndex===i)||config.resourceKind==='visualization');
+ const needed=full||overview&&(config.overview?.showCounts!==false||config.showExample);
+ if(!needed||t.visible===false)return {rows:[],total:0,limit:0,offset:0};
+ return tools.call('records.read',{typeId:t.typeId,limit:full?pageSizes[i]:0,offset:state.tab===i?(state.offsets[i]||0):0,filters:Object.fromEntries(Object.entries(state.filters[i]||{}).filter(([,v])=>v!==''))});
+});
 const controls=[];
 config.tabs.forEach((t,i)=>i===state.tab&&pages[i].rows.forEach((r,j)=>t.columns.forEach((c,k)=>controls.push({slot:'slot_'+i+'_'+j+'_'+k,fieldId:c.fieldId,recordId:r.id}))));
 const tone=v=>/fail|blocked|overdue|high|reject/i.test(String(v))?'red':/done|complete|active|approved|yes|ready/i.test(String(v))?'green':/pending|progress|medium|review|contact/i.test(String(v))?'amber':'blue';
