@@ -3,6 +3,7 @@ import {resourceKind,resourceManifest} from './resource-contract.js';
 import {exchangeSchema} from '../domain/exchange.js';
 import {componentRecordChanges} from './frontend.js';
 import {z} from 'zod';
+import {designExceptionSchema} from './design-exception.js';
 import {id,recordWriteSchema,fieldsSchema,newFieldsSchema,dataConceptSchema} from '../shared/schema.js';
 const text=z.string().trim().min(1).max(1000);
 export const maintenanceSchema=z.object({
@@ -49,7 +50,7 @@ export const workspaceOperation=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('unlink_identity'),linkId:id,expectedVersion:z.number().int().min(0),reason:text}).strict(),
  z.object({kind:z.literal('create_automation_template'),report:z.enum(['due','missing']),setup:trackerSetup}).strict(),
  z.object({kind:z.literal('create_tracker'),componentId:id.optional(),expectedVersion:z.number().int().min(0).optional(),setup:trackerSetup,content:componentContent}).strict(),
- z.object({kind:z.literal('save_component'),designChangeReason:z.string().trim().min(10).max(1000).optional(),projectId:id.nullable().default(null),componentId:id.optional(),expectedVersion:z.number().int().min(0).optional(),content:componentContent}).strict(),
+ z.object({kind:z.literal('save_component'),designException:designExceptionSchema.optional(),designChangeReason:z.string().trim().min(10).max(1000).optional(),projectId:id.nullable().default(null),componentId:id.optional(),expectedVersion:z.number().int().min(0).optional(),content:componentContent}).strict(),
  z.object({kind:z.literal('move_component'),componentId:id,expectedVersion:z.number().int().min(0),projectId:id.nullable()}).strict(),
  z.object({kind:z.literal('archive_component'),componentId:id,expectedVersion:z.number().int().min(0),archived:z.boolean()}).strict(),
  z.object({kind:z.literal('apply_component_records'),componentId:id,expectedVersion:z.number().int().min(0),changes:componentRecordChanges}).strict(),

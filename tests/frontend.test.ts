@@ -25,9 +25,10 @@ test('Frontend code: read-only drafts, bound reads, reviewed atomic writes, stal
  if(input.event.action==='fail'){tools.call('records.propose',[{kind:'update_record',recordId:r.id,expectedVersion:r.version,data:{name:'Never saved'}}]);throw new Error('fail');}
  return {html:'<form data-action="rename"><button>Rename</button></form>',css:'button{color:green}',state:{data:r.data,host:typeof process+'/'+typeof fetch+'/'+typeof document}};`;
  const content={name:'My code',format:'frontend-js',source,bindings:[{typeId:table,fields:['name']}]};
- const draft=await f.preview(ai,w.id,{kind:'save_component',projectId:project.id,content});
- const initial=await f.runFrontend(ai,w.id,{previewId:draft.id});assert.deepEqual((initial.state as any).data,{name:'Original'});assert.equal((initial.state as any).host,'undefined/undefined/undefined');assert.equal(initial.proposal,null);assert.equal((await f.components(ai,w.id)).length,0);
- await assert.rejects(f.runFrontend(ai,w.id,{previewId:draft.id,event:{kind:'submit',action:'rename'}}));
+ // Legacy/custom runtime fixture is created by the owner; AI can still run its authorized bindings.
+ const draft=await f.preview(a,w.id,{kind:'save_component',projectId:project.id,content});
+ const initial=await f.runFrontend(a,w.id,{previewId:draft.id});assert.deepEqual((initial.state as any).data,{name:'Original'});assert.equal((initial.state as any).host,'undefined/undefined/undefined');assert.equal(initial.proposal,null);assert.equal((await f.components(ai,w.id)).length,0);
+ await assert.rejects(f.runFrontend(a,w.id,{previewId:draft.id,event:{kind:'submit',action:'rename'}}));
  const saved=await f.confirm(a,w.id,draft.id,draft.digest);
  const request={componentId:saved.id,expectedVersion:0,event:{kind:'submit',action:'rename'}};
  const run=await f.runFrontend(ai,w.id,request);assert.ok(run.proposal);assert.equal((await f.record(db,a,w.id,record)).data.name,'Original');

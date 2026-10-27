@@ -270,3 +270,7 @@
 .ty-workspace #ty-main:has(.ty-database:not([hidden] *)){padding-bottom:24px;overflow:hidden}
 .ty-workspace .ty-db-context-body{max-height:280px;overflow:auto}
 .ty-workspace .ty-db-columns>div{max-height:max(90px,min(360px,calc(var(--db-height) - 200px)))}
+
+/* Standard trackers scroll inside their single viewport frame; the host stays fixed. */
+.ty-workspace:has(.ty-tracker--standard:not([hidden] *)) #ty-main{overflow:hidden;scrollbar-gutter:auto}
+.ty-workspace:has(.ty-tracker--standard:not([hidden] *)) .ty-tracker-surface{margin:0!important}
