@@ -229,3 +229,14 @@
 @container(max-width:380px){.ty-workspace .ty-project-card .ty-project{padding:14px 30px 14px 10px;gap:8px}.ty-workspace .ty-project .ty-project-icon{width:22px}.ty-workspace .ty-project strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ty-workspace .ty-project time{white-space:nowrap;font-size:9px}.ty-workspace .ty-project-settings{right:4px;top:4px;width:24px;height:24px}}
 
 .ty-workspace .ty-account:has(.ty-account-email){display:grid;grid-template-columns:28px minmax(0,1fr);gap:8px}.ty-workspace .ty-account .ty-account-email{grid-column:1/-1;display:block;white-space:normal;overflow-wrap:anywhere;font-size:11px;font-weight:400;line-height:1.5;color:#c5d9ce;margin:0}
+
+
+/* Database cells stay compact until opened; never stretch rows to fill a viewport. */
+.ty-workspace .ty-db-grid table{height:auto!important}
+.ty-workspace .ty-db-grid tbody,.ty-workspace .ty-db-grid tr{height:auto}
+.ty-workspace .ty-db-grid .ty-db-value{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-height:42px;line-height:21px;white-space:pre-wrap;overflow-wrap:anywhere;max-width:320px}
+.ty-workspace .ty-db-grid .ty-db-value[aria-expanded=true]{display:block;-webkit-line-clamp:unset;max-height:none}
+.ty-db-tree-row .ty-db-table-name{min-width:0;flex:1}
+.ty-db-tree-row .ty-db-table-name svg{flex:none}
+.ty-db-tree-row .ty-db-table-name span{white-space:normal;overflow-wrap:anywhere}
+.ty-workspace .ty-db-editor textarea{display:block;width:100%;min-height:64px;resize:vertical;border:1px solid #6b897b;border-radius:5px;padding:6px 8px;font:inherit;line-height:21px;color:inherit;background:#fff}

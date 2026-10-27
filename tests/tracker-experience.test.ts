@@ -18,9 +18,12 @@ test('designed outreach tracker excludes unrelated PI records, persists bindings
  const reordered=await f.preview(a,w.id,{...op,content:{...op.content,source:standardSource(reorderedConfig)}});
  const reorderedContacts=await f.runFrontend(a,w.id,{previewId:reordered.id,event:{kind:'click',action:'tab:0'}});assert.match(reorderedContacts.html,/Alex Morgan \(example\)/);assert.doesNotMatch(reorderedContacts.html,/Example biotech/);await f.discard(a,w.id,reordered.id);
  const ai={...a,origin:'ai' as const};
- await assert.rejects(f.preview(ai,w.id,{...op,content:{...op.content,source:op.content.source+'\n// custom design'}}),/configuration-only/);
- await assert.rejects(f.preview(ai,w.id,{...op,designChangeReason:'User explicitly requested this custom design.',content:{...op.content,source:op.content.source+'\n// custom design'}}),/signed-in app editor/);
+ await assert.rejects(f.preview(ai,w.id,{...op,content:{...op.content,source:op.content.source+'\n// custom design'}}),/default Vivid template/);
+ const customContent={...op.content,source:'return {html:"<main>Schedule timeline</main>",css:"",state:{}};'};
+ const custom=await f.preview(ai,w.id,{...op,designChangeReason:'The requested interactive schedule timeline cannot be expressed by the table template.',content:customContent});
+ const customOutput=await f.resolveTrackerPreview(ai,w.id,custom.id);assert.match(customOutput.initialOutput.html,/Schedule timeline/);await f.discard(ai,w.id,custom.id);
  const receipt=await f.confirm(a,w.id,p.id,p.digest);let component=(await f.readComponent(a,w.id,receipt.id)).component;assert.equal(component.project_id,null);
+ await assert.rejects(f.preview(ai,w.id,{...op,componentId:component.id,expectedVersion:0,designChangeReason:'The requested interactive schedule timeline cannot be expressed by the table template.',content:customContent}),/saved standard designs cannot be replaced/);
  const row=(await save({kind:'create_record',typeId:companies,data:{name:'Real authorized company',source:'User'}})).objects[0].id;
  rendered=await f.runFrontend(a,w.id,{componentId:receipt.id,expectedVersion:0,event:{kind:'click',action:'tab:0'}});assert.doesNotMatch(rendered.html,/Example biotech|University fixture/);assert.equal(rendered.controls[0].value,'Real authorized company');
  const contactsWithOtherData:any=await f.runFrontend(a,w.id,{componentId:receipt.id,expectedVersion:0,event:{kind:'click',action:'tab:1'}});assert.match(contactsWithOtherData.html,/Alex Morgan \(example\)/);assert.doesNotMatch(contactsWithOtherData.html,/Real authorized company/);assert.equal(contactsWithOtherData.controls.length,0);
@@ -145,3 +148,4 @@ test('standard inline row and details actions preserve data until an explicit sa
  assert.doesNotMatch(out.html,/↗/);assert.ok(calls.every(c=>c==='records.read'));
  out=render(config,'',{saved:true,writable:false,state:{tab:0},event:{action:'tracker:add'}},tools);assert.equal(out.state.newRow,undefined);
 });
+
