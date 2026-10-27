@@ -7,7 +7,7 @@ export const rendererSchema=z.object({
  prefix:z.string().max(30).optional(),suffix:z.string().max(30).optional(),
  decimals:z.number().int().min(0).max(8).optional()
 }).strict();
-export const fieldSchema = z.object({ key: z.string().regex(/^[a-z][a-z0-9_]{0,63}$/), name: z.string().min(1).max(100), kind: z.enum(['text','number','money','date','boolean','select','relationship','person','document','table','field']), required: z.boolean().default(false), ai: z.boolean().default(true), options: z.array(z.string().max(100)).max(100).optional(), targetTypeId: id.optional(), unique:z.boolean().optional(), multiple:z.boolean().optional(),
+export const fieldSchema = z.object({ key: z.string().regex(/^[a-z][a-z0-9_]{0,63}$/), name: z.string().min(1).max(100), description:z.string().trim().max(2000).optional(), kind: z.enum(['text','number','money','date','boolean','select','relationship','person','document','table','field']), required: z.boolean().default(false), ai: z.boolean().default(true), options: z.array(z.string().max(100)).max(100).optional(), targetTypeId: id.optional(), unique:z.boolean().optional(), multiple:z.boolean().optional(),
  computed:z.object({source:z.string().min(1).max(10000),fields:z.array(z.string()).max(100)}).strict().optional(),
  lookup:z.object({reference:z.string(),field:z.string(),aggregate:z.enum(['first','sum','count','min','max','join']).default('first')}).strict().optional(),
  renderer:rendererSchema.optional(), formula:z.object({operator:z.enum(['sum','product','difference','ratio']),fields:z.array(z.string()).min(2).max(10)}).strict().optional() }).strict();
@@ -37,6 +37,7 @@ export type RecordQuery=z.infer<typeof recordQuerySchema>;
 export const databaseChangesSchema=z.object({kind:z.literal('database_changes'),typeId:id,updates:z.array(z.object({kind:z.literal('update_record'),recordId:id,expectedVersion:z.number().int().min(0),data:values}).strict()).max(100).default([]),deletions:z.array(z.object({recordId:id,expectedVersion:z.number().int().min(0)}).strict()).max(100).default([])}).strict();
 export const operationSchema = z.discriminatedUnion('kind', [
  databaseChangesSchema,
+ z.object({kind:z.literal('set_field_context'),typeId:id,field:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),expectedVersion:z.number().int().min(0),expectedContextVersion:z.number().int().min(0),description:z.string().trim().max(2000)}).strict(),
  z.object({kind:z.literal('reverse_field_change'),changeId:id,expectedVersion:z.number().int().min(0),reason:z.string().trim().min(1).max(1000)}),
  z.object({kind:z.literal('request_review'),recordId:id,expectedVersion:z.number().int().min(0),reviewerId:id,note:z.string().trim().min(1).max(1000),dueOn:z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable()}),
  z.object({kind:z.literal('accept_submission'),submissionId:id,typeId:id,data:values}),
@@ -63,5 +64,6 @@ export type Operation = z.infer<typeof operationSchema>;
 export type Actor = {userId:string; origin:'human'|'ai'|'worker'; actionConfirmed?:boolean; accessToolId?:string};
 export class AppError extends Error { constructor(public status:number, public code:string, message:string) {super(message);} }
 export function fail(status:number, code:string, message:string):never {throw new AppError(status,code,message);}
+
 
 

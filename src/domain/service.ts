@@ -138,6 +138,12 @@ export class Service extends DataService {
   }
   if(op.kind==='accept_submission'){requireCurrentAction(a);if(p.role!=='owner')fail(403,'owner_required','A human owner must review external submissions');const submission=(await tx.query('SELECT f.id FROM form_submissions f LEFT JOIN submission_acceptances accepted ON accepted.submission_id=f.id WHERE f.id=$1 AND f.workspace_id=$2 AND f.type_id=$3 AND accepted.submission_id IS NULL',[op.submissionId,w,op.typeId])).rows[0];if(!submission)fail(409,'submission_unavailable','Submission is unavailable or already accepted');const linked=(await tx.query('SELECT l.project_id FROM external_links l JOIN form_submissions s ON s.link_id=l.id WHERE s.id=$1 AND s.workspace_id=$2',[op.submissionId,w])).rows[0];if(linked?.project_id)await activeProject(tx,a,w,linked.project_id);await this.validate(tx,a,w,{kind:'create_record',typeId:op.typeId,data:op.data});}
   if(['create_type','update_type','install_template','create_view','update_view'].includes(op.kind)&&p.role!=='owner')fail(403,'owner_required','Only the owner may configure this workspace');
+  if(op.kind==='set_field_context'){
+   if(p.role!=='owner')fail(403,'owner_required','Only the owner may edit column context');
+   const {type,policy}=await typeAccess(tx,a,w,op.typeId,true);
+   if(type.version!==op.expectedVersion||(type.context_version??0)!==op.expectedContextVersion)fail(409,'stale_version','Column context or schema changed; refresh and review again');
+   if(!policy.write_fields.includes(op.field)||!visibleFields(type.fields,policy,a).some(f=>f.key===op.field))fail(403,'field_unavailable','Column unavailable');
+  }
   if(op.kind==='migrate_type')await this.migrationData(tx,a,w,op);
   if(op.kind==='adopt_template'){if(a.origin!=='human'||p.role!=='owner')fail(403,'owner_required','Human owner required for template adoption');await adoptionDiff(tx,w,op.template,op.mapping);}
   if(op.kind==='upgrade_template'){if(a.origin!=='human'||p.role!=='owner')fail(403,'owner_required','Human owner required for template upgrades');const diff=await templateDiff(tx,w,op.template);if(diff.installedVersion!==op.expectedVersion||diff.availableVersion<=diff.installedVersion)fail(409,'no_upgrade','No newer template is available for this baseline');}
@@ -165,7 +171,7 @@ export class Service extends DataService {
   if(op.kind==='create_type'||op.kind==='update_type')await validateDerived(tx,a,w,op.kind==='update_type'?op.typeId:undefined,op.fields);
   if(op.kind==='archive_created_record'||op.kind==='restore_archived_creation')await this.creationArchive(tx,a,w,op);
   if(op.kind==='reverse_field_change'||op.kind==='reverse_field_changes')await this.reverseBatch(tx,a,w,op);
-  if(op.kind==='update_type'){const {type}=await typeAccess(tx,a,w,op.typeId,true);if(a.origin==='ai'&&type.fields.some((f:Field)=>!f.ai))fail(403,'restricted_configuration','Edit tables containing model-restricted fields in the standalone application');if(type.version!==op.expectedVersion)fail(409,'stale_version','Table changed; preview again');const populated=Number((await tx.query('SELECT count(*) AS n FROM records WHERE type_id=$1 AND workspace_id=$2',[op.typeId,w])).rows[0].n)>0;if(populated){for(const old of type.fields){const next=op.fields.find(f=>f.key===old.key);if(!next||next.kind!==old.kind||json([next.formula?.operator,next.formula?.fields])!==json([old.formula?.operator,old.formula?.fields])||json(next.options)!==json(old.options)||next.targetTypeId!==old.targetTypeId||!!next.multiple!==!!old.multiple||!!next.computed!==!!old.computed||!!next.lookup!==!!old.lookup||(!old.required&&next.required))fail(409,'migration_required','Existing data requires an explicit field migration; use an optional new field instead');}if(op.fields.some(f=>(f.required||f.formula)&&!type.fields.some((old:Field)=>old.key===f.key)))fail(409,'migration_required','New fields on populated tables must be optional');}}
+  if(op.kind==='update_type'){const {type}=await typeAccess(tx,a,w,op.typeId,true);if(a.origin==='ai'&&type.fields.some((f:Field)=>!f.ai))fail(403,'restricted_configuration','Edit tables containing model-restricted fields in the standalone application');if(type.version!==op.expectedVersion)fail(409,'stale_version','Table changed; preview again');if(type.fields.some((f:Field)=>op.fields.some(n=>n.key===f.key&&(n.description??'')!==(f.description??''))))fail(409,'context_change','Change existing descriptions with set_field_context before editing the schema');const populated=Number((await tx.query('SELECT count(*) AS n FROM records WHERE type_id=$1 AND workspace_id=$2',[op.typeId,w])).rows[0].n)>0;if(populated){for(const old of type.fields){const next=op.fields.find(f=>f.key===old.key);if(!next||next.kind!==old.kind||json([next.formula?.operator,next.formula?.fields])!==json([old.formula?.operator,old.formula?.fields])||json(next.options)!==json(old.options)||next.targetTypeId!==old.targetTypeId||!!next.multiple!==!!old.multiple||!!next.computed!==!!old.computed||!!next.lookup!==!!old.lookup||(!old.required&&next.required))fail(409,'migration_required','Existing data requires an explicit field migration; use an optional new field instead');}if(op.fields.some(f=>(f.required||f.formula)&&!type.fields.some((old:Field)=>old.key===f.key)))fail(409,'migration_required','New fields on populated tables must be optional');}}
   if(op.kind==='bulk_records'){for(const change of op.changes)await this.validate(tx,a,w,change);}
   if(op.kind==='restore_record')await this.restoreData(tx,a,w,op);
   if(op.kind==='update_type'){for(const f of op.fields.filter(f=>f.unique)){const rows=(await tx.query("SELECT 1 FROM records WHERE workspace_id=$1 AND type_id=$2 AND data->$3::text IS NOT NULL AND data->$3::text NOT IN ('null'::jsonb,'\"\"'::jsonb) GROUP BY data->$3::text HAVING count(*)>1 LIMIT 1",[w,op.typeId,f.key])).rows;if(rows.length)fail(409,'duplicate_value','Existing values must be unique before enabling this rule');}}
@@ -289,6 +295,7 @@ export class Service extends DataService {
   const schemaFingerprint=['create_type','update_type','migrate_type','create_view','update_view','create_record','update_record','bulk_records','database_changes','accept_submission','upgrade_template','adopt_template','reverse_field_change','reverse_field_changes','archive_created_record','restore_archived_creation'].includes(op.kind)?checksum(json((await this.db.query('SELECT id,version FROM entity_types WHERE workspace_id=$1 ORDER BY id',[w])).rows)):undefined;
   await this.validate(this.db,a,w,op);await this.sweep();
   let summary:any=op.kind==='restore_record'?{...op,...await this.restoreData(this.db,a,w,op)}:op.kind==='save_document'?{...op,bytes:undefined,byteSize:op.bytes.length,checksum:checksum(op.bytes)}:op;
+  if(op.kind==='set_field_context'){const {type}=await typeAccess(this.db,a,w,op.typeId);summary={...op,columnName:type.fields.find((f:Field)=>f.key===op.field)?.name,before:type.fields.find((f:Field)=>f.key===op.field)?.description??'',after:op.description};}
   if(op.kind==='create_record'||op.kind==='update_record'||op.kind==='accept_submission'){
    const before=op.kind==='update_record'?(await this.db.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[op.recordId,w])).rows[0]:null;
    const {type,policy}=await typeAccess(this.db,a,w,before?.type_id??(op.kind!=='update_record'?op.typeId:''));
@@ -347,6 +354,14 @@ export class Service extends DataService {
   });return result;
  }
  private async apply(tx:Connection,a:Actor,w:string,op:Operation|FileOperation,p:any):Promise<any[]> {
+  if(op.kind==='set_field_context'){
+   const {type}=await typeAccess(tx,a,w,op.typeId,true),before=type.fields.find((f:Field)=>f.key===op.field)?.description??'';
+   const fields=type.fields.map((f:Field)=>f.key===op.field?{...f,description:op.description}:f),contextVersion=(type.context_version??0)+1;
+   const changed=await tx.query('UPDATE entity_types SET fields=$1,context_version=$2 WHERE id=$3 AND workspace_id=$4 AND version=$5 AND context_version=$6 RETURNING id',[json(fields),contextVersion,op.typeId,w,op.expectedVersion,op.expectedContextVersion]);
+   if(!changed.rows.length)fail(409,'stale_version','Column context changed; refresh and review again');
+   await audit(tx,a,p,'type.context.updated',op.typeId,{field:op.field,description:before},{field:op.field,description:op.description,contextVersion});
+   return [{id:op.typeId,kind:'column_context',field:op.field,description:op.description,contextVersion}];
+  }
   if(op.kind==='database_changes'){
    const objects:any[]=[];for(const change of op.updates)objects.push(...await this.apply(tx,a,w,change,p));
    for(const change of op.deletions){const record=(await tx.query('SELECT * FROM records WHERE workspace_id=$1 AND id=$2',[w,change.recordId])).rows[0],version=record.version+1;
@@ -540,5 +555,6 @@ await audit(tx,a,p,'submission.accepted',op.submissionId,null,{recordId:result[0
  async pause(a:Actor,w:string,id:string,paused:boolean){await requireWorkflow(this.db,a,w,id,true);return this.db.transaction(async tx=>{await tx.query('SELECT id FROM automations WHERE id=$1 AND workspace_id=$2 AND owner_id=$3 FOR UPDATE',[id,w,a.userId]);await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await access(tx,a,w,!paused);if(a.origin!=='human')fail(403,'human_required','Human authorisation required');const before=(await tx.query('UPDATE automations SET paused=$1,version=version+1 WHERE id=$2 AND workspace_id=$3 AND owner_id=$4 RETURNING *',[paused,id,w,a.userId])).rows[0];if(!before)fail(404,'not_found','Automation not found');await revision(tx,a,w,id,'automation',before.version,before);await audit(tx,a,p,'automation.paused',id,null,{paused});return {id,paused};});}
 
 }
+
 
 

@@ -12,6 +12,20 @@ test('app/plugin share the same default storage and tracker identities; database
  const type=(await save({kind:'create_type',name:'Companies',fields:[{key:'name',name:'Company',kind:'text',ai:true},{key:'source',name:'Source',kind:'text',ai:true},{key:'status',name:'Status',kind:'select',options:['Active','Pending'],ai:true}]})).objects[0].id;
  const op=await trackerOperation(f,ai,w.id,{name:'Shared tracker',description:'Same saved object',tabs:[{name:'Companies',typeId:type,columns:[{field:'name'},{field:'source'},{field:'status'}]}]});const draft=await f.preview(ai,w.id,op);assert.equal((await workspaceHome(db,owner,w.id)).resources[0].id,draft.id);
  const receipt=await f.confirm({...ai,actionConfirmed:true},w.id,draft.id,draft.digest);assert.deepEqual((await workspaceHome(db,owner,w.id)).resources.map(r=>r.id),(await workspaceHome(db,ai,w.id)).resources.map(r=>r.id));assert.equal((await workspaceHome(db,owner,w.id)).resources[0].id,receipt.id);
+ const contextOp={kind:'set_field_context',typeId:type,field:'name',expectedVersion:0,expectedContextVersion:0,description:'Company legal name, not the name of its drug or contact person.'};
+ const contextPreview=await s.preview(ai,w.id,contextOp);
+ assert.equal((await databasePage(db,owner,w.id,{typeId:type})).table.fields[0].description,'');
+ await s.commit({...ai,actionConfirmed:true},contextPreview.id,contextPreview.digest);
+ const contextTable=(await databasePage(db,owner,w.id,{typeId:type})).table;
+ assert.equal(contextTable.version,0);assert.equal(contextTable.contextVersion,1);assert.equal(contextTable.fields[0].description,contextOp.description);
+ assert.equal((await accountCatalog(db,ai)).tables.find(t=>t.id===type)?.fields[0].description,contextOp.description);
+ assert.ok((await f.runFrontend(owner,w.id,{componentId:receipt.id,expectedVersion:0})).html,'Context metadata must not invalidate tracker bindings');
+ await assert.rejects(s.preview(owner,w.id,contextOp),/changed/);
+ const pendingContext=await s.preview(owner,w.id,{...contextOp,expectedContextVersion:1,description:'Another description'});
+ await save({...contextOp,expectedContextVersion:1,description:'Latest company definition'});
+ await assert.rejects(s.commit(owner,pendingContext.id,pendingContext.digest),/changed/);
+ const contextAudit=(await db.query("SELECT after_value FROM audit_events WHERE object_id=$1 AND action='type.context.updated' ORDER BY created_at DESC LIMIT 1",[type])).rows[0];assert.equal(contextAudit.after_value.description,'Latest company definition');
+ await assert.rejects(s.preview(owner,w.id,{...contextOp,expectedContextVersion:2,description:'x'.repeat(2001)}));
  const otherScope=await s.createWorkspace(owner,'Second connected area');await s.setAi(owner,otherScope.id,true);
  const otherTypeDraft=await s.preview(ai,otherScope.id,{kind:'create_type',name:'Other table',fields:[{key:'name',name:'Name',kind:'text',ai:true}]});const otherType=(await s.commit({...ai,actionConfirmed:true},otherTypeDraft.id,otherTypeDraft.digest)).objects[0].id;
  const humanCatalog=await accountCatalog(db,owner),aiCatalog=await accountCatalog(db,ai);assert.deepEqual(humanCatalog.tables.map(t=>t.id),aiCatalog.tables.map(t=>t.id));assert.ok(humanCatalog.tables.some(t=>t.id===otherType&&t.workspaceId===otherScope.id));
@@ -23,6 +37,8 @@ test('app/plugin share the same default storage and tracker identities; database
  await save({kind:'database_changes',typeId:type,deletions:[{recordId:newRow.objects[0].id,expectedVersion:0}]});
  const a=(await save({kind:'create_record',typeId:type,data:{name:'First',status:'Active'}})).objects[0].id,b=(await save({kind:'create_record',typeId:type,data:{name:'Second'}})).objects[0].id;
  await s.share(owner,w.id,member.userId,'editor',[],null,true);
+ await assert.rejects(s.preview(member,w.id,{...contextOp,expectedContextVersion:2}),/owner/);
+ await assert.rejects(s.preview(owner,otherScope.id,{...contextOp,expectedContextVersion:2}));
  assert.equal((await databasePage(db,owner,w.id,{typeId:type})).canEdit,true);assert.equal((await databasePage(db,member,w.id,{typeId:type})).canEdit,true);
  const change={kind:'database_changes',typeId:type,updates:[{kind:'update_record',recordId:a,expectedVersion:0,data:{name:'Edited'}}],deletions:[{recordId:b,expectedVersion:0}]};
  await assert.rejects(s.preview(member,w.id,change),/owner/);const pending=await s.preview(owner,w.id,change);assert.equal((await f.record(db,owner,w.id,a)).data.name,'First');assert.equal((await databasePage(db,owner,w.id,{typeId:type})).total,2);
@@ -42,4 +58,5 @@ test('app/plugin share the same default storage and tracker identities; database
  const denied=await s.preview(ai,w.id,{kind:'database_changes',typeId:type,updates:[{kind:'update_record',recordId:a,expectedVersion:1,data:{name:'Revoked'}}],deletions:[]});await s.setAi(owner,w.id,false);await assert.rejects(s.commit({...ai,actionConfirmed:true},denied.id,denied.digest),/AI access/);assert.equal((await f.record(db,owner,w.id,a)).data.name,'Edited');
  }finally{await db.close();}
 });
+
 
