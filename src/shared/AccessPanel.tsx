@@ -70,5 +70,5 @@ export function AccessPanel({call,scope,onClose,openLink,initialDraft,onDirty}:{
 
  </>}</section>;
 }
-export function AccessButton({call,scope}:{call:Call;scope:AccessScope}){const [open,setOpen]=useState(false);return <><button className="ty-button ty-button--quiet" aria-label={'Access · '+scope.name} onClick={()=>setOpen(true)}>Access</button>{open&&<div className="ty-content-overlay"><div className="ty-access-dialog" role="dialog" aria-modal="true" aria-label={'Access · '+scope.name}><AccessPanel call={call} scope={scope} onClose={()=>setOpen(false)}/></div></div>}</>;}
+export function AccessButton({call,scope}:{call:Call;scope:AccessScope}){const [open,setOpen]=useState(false);return <><button className="ty-button ty-button--secondary" aria-label={'Access · '+scope.name} onClick={()=>setOpen(true)}>Access</button>{open&&<div className="ty-content-overlay"><div className="ty-access-dialog" role="dialog" aria-modal="true" aria-label={'Access · '+scope.name}><AccessPanel call={call} scope={scope} onClose={()=>setOpen(false)}/></div></div>}</>;}
 

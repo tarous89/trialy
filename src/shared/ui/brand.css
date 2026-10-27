@@ -121,3 +121,16 @@
 /* Open app remains a light CTA against the dark embedded header. */
 .ty-workspace--embedded .ty-topbar .ty-button.ty-button--quiet{background:#fff;color:#183d32;border-color:#dce5e1}
 .ty-workspace--embedded .ty-topbar .ty-button.ty-button--quiet:is(:hover,:focus-visible){background:#e7eee9;color:#183d32}
+
+
+/* Shared secondary action style for app and plugin pages. */
+.ty-workspace{--ty-secondary-bg:#fff;--ty-secondary-ink:#25352e;--ty-secondary-border:#d2dcd6;--ty-secondary-hover:#f0f4f1;--ty-secondary-hover-border:#a8b9ae}
+.ty-workspace .ty-action-footer{--ty-secondary-bg:transparent;--ty-secondary-ink:#e7eee9;--ty-secondary-border:#80988a;--ty-secondary-hover:#263c31;--ty-secondary-hover-border:#a1b4a8}
+.ty-workspace #ty-main :is(.ty-button:not(.ty-button--primary):not(.ty-button--quiet),.ty-icon-button,.ty-logs .ty-advanced>summary,.ty-settings-page button:not([class]):not([role=tab])){display:inline-flex;align-items:center;justify-content:center;gap:8px;box-sizing:border-box;min-height:40px;border:1px solid var(--ty-secondary-border);border-radius:8px;padding:9px 14px;margin:0;background:var(--ty-secondary-bg);color:var(--ty-secondary-ink);font-family:inherit;font-size:14px;font-weight:500;line-height:20px;text-decoration:none;white-space:nowrap;box-shadow:none;cursor:pointer;transition:background-color .12s,border-color .12s}
+.ty-workspace #ty-main :is(.ty-button:not(.ty-button--primary):not(.ty-button--quiet),.ty-icon-button,.ty-logs .ty-advanced>summary,.ty-settings-page button:not([class]):not([role=tab])):hover:not(:disabled){background:var(--ty-secondary-hover);border-color:var(--ty-secondary-hover-border)}
+.ty-workspace #ty-main :is(.ty-button:not(.ty-button--primary):not(.ty-button--quiet),.ty-icon-button,.ty-logs .ty-advanced>summary,.ty-settings-page button:not([class]):not([role=tab])):focus-visible{outline:2px solid var(--ty-focus,#287650);outline-offset:2px}
+.ty-workspace #ty-main :is(.ty-button:not(.ty-button--primary):not(.ty-button--quiet),.ty-icon-button,.ty-settings-page button:not([class]):not([role=tab])):disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.ty-workspace #ty-main .ty-icon-button{width:40px;height:40px;min-width:40px;padding:9px;flex:none}
+.ty-workspace #ty-main .ty-icon-button svg{width:18px;height:18px}
+.ty-workspace #ty-main :is(.ty-db-columns,.ty-advanced)>summary{list-style:none}
+.ty-workspace #ty-main :is(.ty-db-columns,.ty-advanced)>summary::-webkit-details-marker{display:none}
