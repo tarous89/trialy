@@ -244,3 +244,29 @@
 /* Hidden cached trackers must not remove gutters from the current page. */
 .ty-workspace:not(:has(.ty-tracker--standard:not([hidden] *))) #ty-main{padding:28px 32px 64px}
 @media(max-width:760px){.ty-workspace:not(:has(.ty-tracker--standard:not([hidden] *))) #ty-main{padding:24px 16px 48px}}
+
+/* Database has two independent scroll regions, with stable navigation and toolbar. */
+.ty-workspace .ty-database{height:var(--db-height,calc(100dvh - 130px));display:flex;flex-direction:column;min-height:0}
+.ty-workspace .ty-database>.ty-db-heading,.ty-database>.ty-db-message{flex:none}
+.ty-workspace .ty-database .ty-db-layout{flex:1;min-height:0;margin-bottom:0;overflow:hidden;grid-template-rows:minmax(0,1fr)}
+.ty-workspace .ty-database .ty-db-tree{height:100%;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+.ty-workspace .ty-db-content{display:flex;flex-direction:column;min-height:0;height:100%;overflow:hidden}
+.ty-db-content>.ty-db-table-heading,.ty-db-content>.ty-db-toolbar,.ty-db-content>.ty-db-pagination{flex:none}
+.ty-workspace .ty-db-grid{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+.ty-workspace .ty-db-grid thead th{position:sticky;top:0;z-index:2}
+.ty-workspace .ty-db-columns>div{max-height:min(360px,55dvh);overflow-y:auto;max-width:calc(100vw - 48px)}
+.ty-workspace .ty-fixed .ty-db-columns label,.ty-workspace .ty-db-columns label{display:flex!important;flex-direction:row!important;align-items:center;justify-content:flex-start;gap:10px;margin:0;padding:8px 0;font-size:13px;font-weight:400;line-height:1.4;text-align:left}
+.ty-workspace .ty-db-columns label input{flex:none;width:15px!important;height:15px;align-self:center!important;margin:0!important;padding:0}
+.ty-db-columns label span{min-width:0;overflow-wrap:anywhere}
+.ty-workspace .ty-db-grid th .ty-db-context-toggle{font-size:11px;font-weight:400;line-height:1.5;color:#64736e;white-space:normal;margin-top:3px}
+.ty-workspace .ty-db-context-body{font-size:12px;font-weight:400;max-width:300px;white-space:normal}
+.ty-workspace .ty-db-context-body p{white-space:pre-wrap;overflow-wrap:anywhere;margin:8px 0}
+.ty-workspace .ty-db-context-body label{display:block;font-size:11px;font-weight:400;margin:8px 0}
+.ty-workspace .ty-db-context-body textarea{display:block;width:100%;min-height:90px;max-height:220px;resize:vertical;font-size:12px;font-weight:400;white-space:pre-wrap}
+.ty-workspace .ty-db-grid th .ty-db-context-actions{display:flex;gap:12px;margin:10px 0}
+.ty-workspace .ty-db-grid th .ty-db-context-actions button{font-size:12px;font-weight:500;white-space:normal}
+@media(max-width:560px){.ty-workspace .ty-database .ty-db-layout{grid-template-columns:140px minmax(0,1fr)}.ty-workspace .ty-database .ty-db-tree ul{display:block;padding-left:5px}.ty-workspace .ty-database .ty-db-tree{padding:10px 6px}.ty-workspace .ty-db-table-heading{padding:12px}.ty-workspace .ty-db-toolbar{padding:10px}.ty-db-pagination{flex-wrap:wrap}}
+
+.ty-workspace #ty-main:has(.ty-database:not([hidden] *)){padding-bottom:24px;overflow:hidden}
+.ty-workspace .ty-db-context-body{max-height:280px;overflow:auto}
+.ty-workspace .ty-db-columns>div{max-height:max(90px,min(360px,calc(var(--db-height) - 200px)))}

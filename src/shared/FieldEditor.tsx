@@ -4,6 +4,7 @@ export function FieldEditor({fields,onChange,types,existing=[]}:{fields:Field[];
  const change=(index:number,patch:Partial<Field>)=>onChange(fields.map((f,i)=>i===index?{...f,...patch}:f));
  return <fieldset><legend>Fields</legend>{fields.map((f,i)=><div className="field-definition" key={i}>
  <label>Name<input required maxLength={100} value={f.name} onChange={e=>change(i,{name:e.target.value})}/></label>
+ <label>Context (optional)<textarea disabled={existing.some(x=>x.key===f.key)} title="Existing column context is edited in Database" maxLength={2000} value={f.description??''} placeholder="Meaning, units and examples" onChange={e=>change(i,{description:e.target.value})}/></label>
  <label>Key<input required pattern="[a-z][a-z0-9_]{0,63}" disabled={existing.some(x=>x.key===f.key)} value={f.key} onChange={e=>change(i,{key:e.target.value})}/></label>
  <label>Type<select value={f.kind} onChange={e=>change(i,{kind:e.target.value as Field['kind'],options:undefined,targetTypeId:undefined,formula:undefined,computed:undefined,lookup:undefined,multiple:defaultMultiple({...f,kind:e.target.value as Field['kind'],formula:undefined,computed:undefined,lookup:undefined})})}>{['text','number','money','date','boolean','select','relationship','person','document','table','field'].map(k=><option key={k}>{k}</option>)}</select></label>
  {f.kind==='select'&&<label>Options (one per line)<textarea required value={(f.options??[]).join('\n')} onChange={e=>change(i,{options:e.target.value.split('\n')})}/></label>}
@@ -21,4 +22,5 @@ export function FieldEditor({fields,onChange,types,existing=[]}:{fields:Field[];
  {!existing.some(x=>x.key===f.key)&&<button type="button" onClick={()=>onChange(fields.filter((_,n)=>n!==i))}>Remove</button>}
  </div>)}<button type="button" disabled={fields.length>=100} onClick={()=>onChange([...fields,{key:`field_${fields.length+1}`,name:'New field',kind:'text',ai:true,required:false,multiple:true}])}>Add field</button><p>Changes affecting existing values may require an explicit data migration.</p></fieldset>;
 }
+
 
