@@ -14,6 +14,7 @@ export function CreationCenter({kind,call,onClose,onCreated,onChat}:{kind:string
  function toggleAccess(row:any,key:'read'|'write'){const value=permissions[row.id]??row;setPermissions(old=>({...old,[row.id]:key==='read'?{read:!value.read,write:value.read?false:value.write}:{read:value.read||!value.write,write:!value.write}}));}
  const chat=()=>onChat?onChat():continueCreationInChat('custom tool');
  const select=(t:ToolTemplate)=>{setTemplate(t);setName(t.name);setDescription(t.description);setMode('');setMapping(t.tables.map(x=>({typeId:'',fields:x.fields.map(()=>''),id:crypto.randomUUID()})));setError('');};
+ useEffect(()=>{if(kind==='tracker')select(toolTemplates[0]);},[kind]);
  const chooseTable=(i:number,typeId:string)=>setMapping(old=>old.map((m,j)=>j===i?{...m,typeId,fields:template!.tables[i].fields.map(()=> '')}:m));
  const changeField=(i:number,j:number,key:string)=>setMapping(old=>old.map((m,k)=>k===i?{...m,fields:m.fields.map((v:string,n:number)=>n===j?key:v)}:m));
  const ready=!!name.trim()&&!!mode&&(mode==='new'||mapping.every(m=>m.typeId&&m.fields.every(Boolean)&&new Set(m.fields).size===m.fields.length));
@@ -26,3 +27,4 @@ export function CreationCenter({kind,call,onClose,onCreated,onChat}:{kind:string
  :<><p>Use an adaptable starting point. ChatGPT can tailor the content while keeping the standard interface.</p><div className="ty-type-filters" aria-label="Template type">{[['all','All templates'],['tracker','Trackers'],['form','Forms'],['visualization','Dashboards'],['automation','Automations']].map(([k,label])=><button key={k} className="ty-filter" aria-pressed={filter===k} onClick={()=>setFilter(k)}>{label}</button>)}</div><div className="ty-template-grid"><button className="ty-template-card" onClick={chat}><strong>Build with ChatGPT</strong><p>Tell ChatGPT what you want to build, or explore ideas.</p><small>Continue in ChatGPT ↗</small></button>{toolTemplates.filter(t=>filter==='all'||t.kind===filter).map(t=><button key={t.id} className="ty-template-card" onClick={()=>select(t)}><strong>{t.name}</strong><p>{t.description}</p><small>{resourceTypes[t.kind].label}</small></button>)}</div></>}
  </section>;
 }
+
