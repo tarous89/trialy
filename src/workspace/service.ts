@@ -255,6 +255,32 @@ export class WorkspaceFoundation {
   const bound=Object.fromEntries(c.bindings.map((b:any)=>[b.typeId,b.fields]));const reader=new DerivedReader(this.db,a,w,Object.keys(bound),bound);result.rows=await Promise.all(result.rows.map(r=>reader.read(r)));
   return {componentVersion:c.version,fields:type.fields.filter((f:any)=>block.fields.includes(f.key)),editable:block.editable&&!['viewer','inspector'].includes(policy.role)&&!policy.archived,...result,rows:result.rows.map(r=>({...r,data:Object.fromEntries(block.fields.map(k=>[k,r.data[k]??null]))}))};
  }
+ async prepareRenderedTracker(a:Actor,w:string,operation:any){
+  return this.db.transaction(async tx=>{
+   const f=new WorkspaceFoundation(adapter(tx)),preview=await f.preview(a,w,operation);
+   const initialOutput=await f.runFrontend(a,w,{previewId:preview.id});
+   return {workspaceId:w,screen:'tracker-preview',preview,initialOutput,saveStatus:'unsaved',previewStatus:'prepared',preparedAt:new Date().toISOString(),displayStatus:'awaiting_client'};
+  });
+ }
+ async resolveTrackerPreview(a:Actor,w:string,previewId:string):Promise<any>{
+  await access(this.db,a,w);
+  const unavailable=(status='unavailable')=>({workspaceId:w,screen:'tracker-unavailable',previewStatus:status,message:status==='expired'?'This unsaved preview has expired. Open your saved tools or create a new preview.':'This preview is no longer available. Open your saved tools or create a new preview.'});
+  const receipt=(await this.db.query('SELECT result FROM workspace_receipts WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[previewId,w,a.userId])).rows[0];
+  if(receipt?.result?.id){
+   try{const saved=await this.readComponent(a,w,receipt.result.id,true);if(saved.component.archived||saved.component.project_archived)return unavailable();return {...saved,screen:'tracker',previewStatus:'saved',recoveredFromPreview:previewId,displayStatus:'awaiting_client'};}
+   catch(e){if([403,404,409].includes((e as any).status))return unavailable();throw e;}
+  }
+  const row=(await this.db.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[previewId,w,a.userId])).rows[0];
+  if(!row)return unavailable();
+  if(new Date(row.expires_at).getTime()<=Date.now())return unavailable('expired');
+  const op=row.body.operation;
+  if(!['create_tracker','save_component'].includes(op.kind)||op.content?.format!=='frontend-js')return unavailable();
+  if(row.body.accessStamp!==await this.accessStamp(this.db,w))return unavailable();
+  try{
+   const initialOutput=await this.runFrontend(a,w,{previewId});
+   return {workspaceId:w,screen:'tracker-preview',preview:{id:row.id,workspaceId:w,workspaceFoundation:true,temporary:true,body:op,digest:row.digest,expiresAt:row.expires_at},initialOutput,saveStatus:'unsaved',previewStatus:'prepared',preparedAt:new Date().toISOString(),displayStatus:'awaiting_client'};
+  }catch(e){if([403,404,409].includes((e as any).status))return unavailable();throw e;}
+ }
  async checkComponentAccess(a:Actor,w:string,id:string){const c=await this.component(this.db,a,w,id);if(c.archived||c.project_archived)fail(409,'component_archived','Interface is archived');return {id:c.id,version:c.version,accessVersion:(await access(this.db,a,w)).access_version};}
  async readComponent(a:Actor,w:string,id:string,includeOutput=false){const component=await this.component(this.db,a,w,id);const initialOutput=includeOutput&&standardTracker(component.source)&&!component.archived&&!component.project_archived?await this.runFrontend(a,w,{componentId:id,expectedVersion:component.version,event:{kind:'open'}}):undefined;return {workspaceId:w,workspaceFoundation:true,component,...(initialOutput?{initialOutput}:{})};}
  async componentHistory(a:Actor,w:string,id:string){
@@ -780,5 +806,6 @@ export class WorkspaceFoundation {
   return {recordId,links:safe,observations:allowed,historyAvailable:true};
  }
 }
+
 
 
