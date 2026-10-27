@@ -20,10 +20,11 @@ test('designed outreach tracker excludes unrelated PI records, persists bindings
  const ai={...a,origin:'ai' as const};
  await assert.rejects(f.preview(ai,w.id,{...op,content:{...op.content,source:op.content.source+'\n// custom design'}}),/default Vivid template/);
  const customContent={...op.content,source:'return {html:"<main>Schedule timeline</main>",css:"",state:{}};'};
- const custom=await f.preview(ai,w.id,{...op,designChangeReason:'The requested interactive schedule timeline cannot be expressed by the table template.',content:customContent});
- const customOutput=await f.resolveTrackerPreview(ai,w.id,custom.id);assert.match(customOutput.initialOutput.html,/Schedule timeline/);await f.discard(ai,w.id,custom.id);
+ await assert.rejects(f.preview(ai,w.id,{...op,designChangeReason:'The requested interactive schedule timeline cannot be expressed by the table template.',content:customContent}),/structured designException/);
+ const custom=await f.preview(a,w.id,{...op,content:customContent});
+ const customOutput=await f.resolveTrackerPreview(a,w.id,custom.id);assert.match(customOutput.initialOutput.html,/Schedule timeline/);await f.discard(ai,w.id,custom.id);
  const receipt=await f.confirm(a,w.id,p.id,p.digest);let component=(await f.readComponent(a,w.id,receipt.id)).component;assert.equal(component.project_id,null);
- await assert.rejects(f.preview(ai,w.id,{...op,componentId:component.id,expectedVersion:0,designChangeReason:'The requested interactive schedule timeline cannot be expressed by the table template.',content:customContent}),/saved standard designs cannot be replaced/);
+ await assert.rejects(f.preview(ai,w.id,{...op,componentId:component.id,expectedVersion:0,designChangeReason:'The requested interactive schedule timeline cannot be expressed by the table template.',content:customContent}),/Saved standard designs cannot be replaced/);
  const row=(await save({kind:'create_record',typeId:companies,data:{name:'Real authorized company',source:'User'}})).objects[0].id;
  rendered=await f.runFrontend(a,w.id,{componentId:receipt.id,expectedVersion:0,event:{kind:'click',action:'tab:0'}});assert.doesNotMatch(rendered.html,/Example biotech|University fixture/);assert.equal(rendered.controls[0].value,'Real authorized company');
  const contactsWithOtherData:any=await f.runFrontend(a,w.id,{componentId:receipt.id,expectedVersion:0,event:{kind:'click',action:'tab:1'}});assert.match(contactsWithOtherData.html,/Alex Morgan \(example\)/);assert.doesNotMatch(contactsWithOtherData.html,/Real authorized company/);assert.equal(contactsWithOtherData.controls.length,0);

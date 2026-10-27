@@ -20,7 +20,8 @@
     "export:verify": "node --import tsx scripts/verify-export.ts",
     "recovery:inventory": "node --env-file-if-exists=.env --import tsx scripts/recovery-inventory.ts",
     "recovery:rehearse": "node --import tsx scripts/rehearse-recovery.ts",
-    "db:runtime-audit": "node --env-file-if-exists=.env --import tsx scripts/runtime-audit.ts"
+    "db:runtime-audit": "node --env-file-if-exists=.env --import tsx scripts/runtime-audit.ts",
+    "test:visual": "playwright test"
   },
   "dependencies": {
     "@modelcontextprotocol/ext-apps": "^2.0.3",
@@ -41,6 +42,7 @@
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",
+    "@playwright/test": "1.51.1",
     "@types/connect-pg-simple": "^7.0.3",
     "@types/express": "^5.0.6",
     "@types/express-session": "^1.19.0",

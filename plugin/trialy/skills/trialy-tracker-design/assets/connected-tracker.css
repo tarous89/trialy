@@ -1,0 +1,37 @@
+/* Connection behavior only. The approved HTML owns typography, colors and control geometry. */
+main{min-height:100vh;padding-bottom:105px}
+.cell-display{display:block;border:0;background:transparent;color:var(--ink);font:inherit;text-align:left;padding:0;width:100%;min-height:22px;overflow:hidden;text-overflow:ellipsis;cursor:text}
+.cell-display:focus-visible{outline:2px solid var(--accent)}
+.cell-content{overflow:hidden}.cell-content:focus-within{max-height:none!important}
+.cell-display .pill{width:auto;display:inline-block;margin:0 4px 0 0}
+.cell-display .pill:last-child{margin-right:0}
+.example-input[hidden]{display:none}.example-input textarea{width:100%;min-height:54px;border:1px solid var(--line);color:var(--ink);background:var(--paper)}
+.example-input input,.example-input select{color:var(--ink)}
+#trackerTable td{position:relative}.resize-column:focus-visible,.row-resize:focus-visible{opacity:1;outline:2px solid var(--accent)}
+.source-link,.mini-link,.rank,td a,.drawer a{color:var(--ink)}
+.scroll{overflow-x:auto;overflow-y:hidden;max-height:none;height:auto}
+.draft-row td{background:var(--editable)!important}.draft-row input,.draft-row textarea,.draft-row select{width:100%;min-width:80px;box-sizing:border-box}
+.inline-row-actions,.drawer-actions{display:flex;gap:10px;align-items:center;padding:16px;background:var(--paper)}
+.drawer-actions{position:sticky;bottom:0;z-index:3;border-top:1px solid var(--line);flex-wrap:wrap}
+button:disabled{opacity:.5;cursor:default}
+.layout-binding{display:grid;gap:5px;min-width:0}.layout-binding small{font-size:11px;font-weight:400;color:var(--muted);overflow-wrap:anywhere}
+.settings-tabs svg{vertical-align:middle}.settings-section .tab-layout-row{grid-template-columns:34px minmax(120px,1fr) 132px!important}
+.settings-section .column-layout-row{grid-template-columns:34px minmax(140px,1.6fr) minmax(120px,.85fr) 123px!important}
+.is-hidden{opacity:.55}.layout-entry.drag-over{outline:2px solid var(--accent);border-radius:8px}
+.back-link{border:0;background:none;padding:0;color:var(--accent)}
+.stats{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.overview-examples{margin:34px 0}.overview-examples h2{font-size:19px;margin-bottom:18px}
+.example-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.example-card{position:relative;display:flex;flex-direction:column;gap:15px;text-align:left;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:24px}
+.example-card .pill{align-self:flex-start}.example-card strong{font-size:17px}.example-card small{font-size:12px;color:var(--muted)}
+.example-arrow{position:absolute;right:20px;bottom:20px;color:var(--accent)}
+.detail-page{position:fixed;inset:0;height:100dvh;min-height:0;overflow-y:auto;overflow-x:hidden;display:flex;justify-content:flex-end;align-items:flex-start;z-index:10}
+.detail-shade{position:fixed;inset:0;background:rgba(20,40,36,.15)}
+.detail-page .drawer{position:relative;top:auto;right:auto;min-height:100dvh;height:auto;max-height:none;overflow:visible;display:block;transform:none;padding-bottom:90px}
+.drawer-head{position:sticky;top:0;background:var(--paper);z-index:2}.drawer-head small{color:var(--muted);font-size:12px}
+.drawer-main{overflow:visible;flex:none}.drawer-main .field{min-width:0}
+.drawer-main .field,.drawer-main .cell-display,.drawer-main input,.drawer-main textarea,.drawer-main select,.drawer-main [data-trialy-slot],.drawer-main dd,.drawer-main .pill{font-weight:400}
+.drawer-main .field>span:first-child,.drawer-main dt{font-weight:650}
+.drawer-main .cell-display{white-space:pre-wrap;overflow-wrap:anywhere;text-overflow:clip}
+.drawer-main textarea{max-width:100%;box-sizing:border-box}.drawer-main [data-trialy-slot]{display:block}
+@media(max-width:680px){main{padding-bottom:120px}.settings-section .column-layout-row{grid-template-columns:24px minmax(95px,1fr) 90px!important;gap:10px}.column-layout-row>*:nth-child(3){display:none}.settings-section .tab-layout-row{grid-template-columns:24px minmax(90px,1fr) 90px!important;gap:10px}.drawer{width:100vw!important}.drawer-resizer{display:none}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}

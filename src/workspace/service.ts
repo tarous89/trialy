@@ -1,3 +1,4 @@
+import {validateDesignException} from './design-exception.js';
 import {automationTemplate} from './automation-template.js';
 import {withActor,setDatabaseContext} from '../db/context.js';
 import {rulesFor,denied,resourceGrant,assertRecordScope,assertWritable,toolPolicy} from '../domain/effective-access.js';
@@ -184,9 +185,9 @@ export class WorkspaceFoundation {
      // Project in PostgreSQL and bound each row before materializing it in the web process.
      const rows=v.limit===0?[]:(await this.db.query(`SELECT id,version,CASE WHEN octet_length(selected::text)<=100000 THEN selected ELSE NULL END AS data FROM (
       SELECT id,version,(SELECT coalesce(jsonb_object_agg(key,value),'{}'::jsonb) FROM jsonb_each(data) WHERE key=ANY($3::text[])) AS selected
-      FROM records WHERE workspace_id=$1 AND type_id=$2 AND state<>'archived' AND NOT EXISTS(SELECT 1 FROM jsonb_each_text($7::jsonb) filter WHERE records.data->>filter.key IS DISTINCT FROM filter.value) AND ($6::uuid IS NULL OR EXISTS(SELECT 1 FROM project_records pr WHERE pr.workspace_id=$1 AND pr.project_id=$6 AND pr.record_id=records.id AND pr.revoked_at IS NULL)) ORDER BY created_at,id LIMIT $4 OFFSET $5) page`,[w,v.typeId,readableKeys,v.limit,v.offset,content.manifest?.scope==='project'?content.project_id:null,J(v.filters)])).rows;
+      FROM records WHERE workspace_id=$1 AND type_id=$2 AND state<>'archived' AND NOT EXISTS(SELECT 1 FROM jsonb_each_text($7::jsonb) filter WHERE NOT (CASE WHEN jsonb_typeof(records.data->filter.key)='array' THEN (records.data->filter.key) @> jsonb_build_array(filter.value) ELSE records.data->>filter.key=filter.value END IS TRUE)) AND ($6::uuid IS NULL OR EXISTS(SELECT 1 FROM project_records pr WHERE pr.workspace_id=$1 AND pr.project_id=$6 AND pr.record_id=records.id AND pr.revoked_at IS NULL)) ORDER BY created_at,id LIMIT $4 OFFSET $5) page`,[w,v.typeId,readableKeys,v.limit,v.offset,content.manifest?.scope==='project'?content.project_id:null,J(v.filters)])).rows;
      if(rows.some(r=>r.data===null))fail(400,'read_limit','A record exceeds the interface read budget');
-     const total=Number((await this.db.query("SELECT count(*) AS n FROM records WHERE workspace_id=$1 AND type_id=$2 AND state<>'archived' AND NOT EXISTS(SELECT 1 FROM jsonb_each_text($4::jsonb) filter WHERE records.data->>filter.key IS DISTINCT FROM filter.value) AND ($3::uuid IS NULL OR EXISTS(SELECT 1 FROM project_records pr WHERE pr.workspace_id=$1 AND pr.project_id=$3 AND pr.record_id=records.id AND pr.revoked_at IS NULL))",[w,v.typeId,content.manifest?.scope==='project'?content.project_id:null,J(v.filters)])).rows[0].n);
+     const total=Number((await this.db.query("SELECT count(*) AS n FROM records WHERE workspace_id=$1 AND type_id=$2 AND state<>'archived' AND NOT EXISTS(SELECT 1 FROM jsonb_each_text($4::jsonb) filter WHERE NOT (CASE WHEN jsonb_typeof(records.data->filter.key)='array' THEN (records.data->filter.key) @> jsonb_build_array(filter.value) ELSE records.data->>filter.key=filter.value END IS TRUE)) AND ($3::uuid IS NULL OR EXISTS(SELECT 1 FROM project_records pr WHERE pr.workspace_id=$1 AND pr.project_id=$3 AND pr.record_id=records.id AND pr.revoked_at IS NULL))",[w,v.typeId,content.manifest?.scope==='project'?content.project_id:null,J(v.filters)])).rows[0].n);
      pageReader.prime(v.typeId,linkedTable.type,linkedTable.policy);
      // SQL already applied this exact project scope before returning these rows.
      if(linkedTable.policy.scope_project===(content.manifest?.scope==='project'?content.project_id:null))pageReader.authorizeRows(rows.map(r=>r.id));
@@ -515,8 +516,14 @@ export class WorkspaceFoundation {
     if(op.componentId&&(await this.component(tx,a,w,op.componentId)).project_id!==op.projectId)fail(400,'move_required','Use the explicit move operation to change project');
     await this.componentBindings(tx,a,w,op.content.bindings);
     const previous=op.componentId?await this.component(tx,a,w,op.componentId):null;
-    const kind=op.content.resourceKind??previous?.resource_kind;
-    if(a.origin==='ai'&&['tracker','form','visualization'].includes(kind)&&op.content.format==='frontend-js'&&(!standardTracker(op.content.source)||!op.content.source.startsWith('{"template":'))&&op.content.source!==previous?.source&&(!!previous||!op.designChangeReason))fail(400,'standard_design_required','Use the default Vivid template via prepare_tracker or prepare_tracker_revision. Only a new custom format may use designChangeReason explaining the specific unsupported requirement; saved standard designs cannot be replaced by AI source edits.');
+    const kind=op.content.resourceKind??previous?.resource_kind??'generic';
+    if(a.origin==='ai'&&op.content.format==='frontend-js'&&op.content.source!==previous?.source){
+     if(!previous&&kind==='generic'&&op.content.bindings.length)fail(400,'resource_kind_required','A bound interactive tool must declare tracker, form or visualization; generic cannot bypass the standard design contract.');
+     if(['tracker','form','visualization'].includes(kind)&&(!standardTracker(op.content.source)||!op.content.source.startsWith('{"template":'))){
+      if(previous)fail(400,'standard_design_required','Saved standard designs cannot be replaced by AI source edits. Use prepare_tracker_revision.');
+      validateDesignException(op.designException,op.content);
+     }
+    }
     if(previous?.resource_kind!=='generic'&&previous&&op.content.resourceKind==='generic')fail(400,'resource_downgrade','Connected resources cannot remove their data contract');
     await validateResource(tx,a,w,{...op.content,resourceKind:op.content.resourceKind??previous?.resource_kind??'generic',manifest:op.content.manifest===undefined?previous?.manifest:op.content.manifest});await this.componentAssets(tx,a,w,op.content.assets);
     if(new Set(op.content.execution.map(e=>e.name)).size!==op.content.execution.length)fail(400,'duplicate_binding','Function binding names must be unique');

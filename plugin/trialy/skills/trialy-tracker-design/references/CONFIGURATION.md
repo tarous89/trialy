@@ -6,7 +6,7 @@ Use `prepare_tracker` for a new tailored tool and `prepare_tracker_revision` for
 
 - `name`, `description`, `resourceKind` (`tracker`, `form`, `visualization`), `projectId`, `scope`.
 - `pageSize`: 1–25, default 25. Very wide tables are bounded to 480 interactive cells per page.
-- `tabs`: tailored name, authorized `typeId`, `visible`, `filters` (keys of scalar select or boolean columns), `columns` and optional labelled fictional `example`.
+- `tabs`: tailored name, authorized `typeId`, `visible`, `filters` (keys of select or boolean columns, including multi-value choices), `columns` and optional labelled fictional `example`.
 - Each column: stable database `field`, display `label`, `visible`, `editable`, optional `display`. Existing field type, dropdown options, multiplicity and calculation definition come from the database, not invented UI metadata.
 - `newTables` and `extendTables`: reviewed schema definitions. Existing tables use current schema versions. Relationships/lookups can target existing authorized tables. New mutually linked tables need staged schema preparation; do not invent saved IDs.
 - `showExample`: controls fictional empty-state examples; these are never saved records. `omitSource` only when Source is explicitly excluded.
@@ -31,7 +31,7 @@ Calculated fields are read-only, scalar, optional and non-unique. Numeric formul
 
 ## Column display
 
-`display` is optional and does not change stored values:
+`display` is optional and does not change stored values. Categorical fields receive semantic colors automatically; a neutral badge without per-value mappings does not suppress them. Optional valueTones customize meanings within the fixed palette:
 
 ```json
 {"kind":"badge","tone":"neutral","valueTones":{"New":"blue","Contacted":"amber","Engaged":"green","Declined":"red"}}
@@ -39,7 +39,7 @@ Calculated fields are read-only, scalar, optional and non-unique. Numeric formul
 
 Kinds: text, badge, number, progress, link. Tones: neutral, green, blue, amber, red. Numeric formatting supports `prefix`, `suffix`, `decimals`; progress supports `min`, `max`. Link display accepts HTTP(S) values. Editing uses the underlying value. Formatting is supplied by the trusted UI; raw CSS, HTML and event handlers are not configuration inputs.
 
-For a currency column, use `display:{kind:"number",prefix:"€ ",decimals:2}`. For status filtering, include `filters:["status"]` on that tab. Filters apply to the whole bound table before pagination; search/sort are explicitly labelled as page-local.
+For a currency column, use `display:{kind:"number",prefix:"€ ",decimals:2}`. Categorical filters are automatic (up to eight, status/stage first). `filters:["status"]` narrows the controls; `filterMode:"custom"` uses exactly the supplied list; `filterMode:"none"` hides them only when requested. Multi-value filtering matches records containing the selected value. Filters apply to the whole bound table before pagination; search/sort are explicitly labelled as page-local.
 
 ## Adaptable overview
 
@@ -51,4 +51,4 @@ Read the saved tool and its current version. Call `prepare_tracker_revision` wit
 
 ## Unsupported designs
 
-Use the approved Vivid HTML template as the first and default tracker format. Always adapt tables, columns, labels, statuses, calculations and other content to the user. Different business terminology is not a reason for new code. Only when a required interaction or presentation cannot be expressed by the template may ChatGPT choose a new custom format: explain the specific limitation in `prepare_workspace_change` → `save_component.designChangeReason`, preserve the connected resource manifest and permissions, then open the draft with `open_tracker_draft` and use the normal reviewed save. This exception creates a new tool only; it cannot replace a saved standard tracker. Ordinary revisions use `prepare_tracker_revision`.
+Use `prepare_tracker` and `prepare_tracker_revision` for standard tools. ChatGPT changes content and bindings; Trialy owns HTML, CSS, icons, spacing, colors and interactions. More fields, different terminology, calculations, status filters and visual preferences are supported configuration work, never reasons to generate a new design. A new custom tool is permitted only for an actual user-required capability absent from the renderer: `interactive_timeline` (at least two bound date fields), `calendar` (a bound date field), or `dependency_graph` (a bound relationship field). Supply `save_component.designException` with `capability`, the user's `userRequirement`, `whyStandardInsufficient` and exact manifest `fieldIds`. The server validates the capability and bindings; the preview exposes the exception for review. A free-text `designChangeReason` alone is rejected. Do not invent a requirement to qualify. Preserve the host shell and existing permission/write controls. Existing saved standard tools remain configuration-only; never relabel a bound tool as generic to bypass this rule.

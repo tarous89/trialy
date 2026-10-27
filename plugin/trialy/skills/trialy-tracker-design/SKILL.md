@@ -1,22 +1,23 @@
 ---
 name: trialy-tracker-design
-description: Build and revise Trialy trackers and their contained forms, views, settings and workflows. Use user instructions and existing authorized data first, with the supplied skeleton and Theme 2 HTML as overridable defaults. Does not define the whole plugin or application interface.
+description: Build and revise Trialy trackers and their contained forms, views, settings and workflows. Use user instructions and existing authorized data first, with the fixed Vivid template and configuration-only adaptation. Does not define the whole plugin or application interface.
 ---
 
 # Trialy tracker design standard
 
+## Standard authoring fast path
+
+Read [CONFIGURATION.md](references/CONFIGURATION.md), inspect relevant authorized schemas, and call `prepare_tracker`. The server supplies the Vivid template and fills categorical filters and semantic badge colors, including multi-value fields. Use `filterMode:none` only for an explicit request to hide filters. Do not rewrite, copy or submit the HTML for a standard tracker. The HTML, renderer and other visual references are for development/exception work, not a mandatory token-heavy read for each configuration request. For targeted revisions read the saved configuration and change only requested properties.
+
 ## Integration and override contract
 
-Read [Trialy integration](references/TRIALY_INTEGRATION.md) before implementation. This section takes precedence over conflicting defaults elsewhere in this package.
+Read [Trialy integration](references/TRIALY_INTEGRATION.md) when implementing a custom exception or changing the renderer. This section takes precedence over conflicting defaults elsewhere in this package.
 
-1. Explicit user instructions override every design default, including layout, theme, tabs and fields. Backend authorization and runtime constraints still apply.
-2. Existing authorized data and schema determine available content, relationships and provenance. Adapt them to the requested outcome; never silently replace them with example data.
-3. Use the approved Vivid HTML template as the first and default tracker format. Always adapt tables, columns, labels, statuses, calculations and other content to the user. Different business terminology is not a reason for new code. Only when a required interaction or presentation cannot be expressed by the template may ChatGPT choose a new custom format: explain the specific limitation in `prepare_workspace_change` → `save_component.designChangeReason`, preserve the connected resource manifest and permissions, then open the draft with `open_tracker_draft` and use the normal reviewed save. This exception creates a new tool only; it cannot replace a saved standard tracker. Ordinary revisions use `prepare_tracker_revision`. Its vendor-selection content is illustrative, never evidence or saved real records.
-4. This package defines the opened tracker only. The embedded host owns the persistent Trialy header with its logo and Open app button; the standalone app uses its sidebar without a top header. Do not duplicate global navigation inside a tracker.
+Use `prepare_tracker` and `prepare_tracker_revision` for standard tools. ChatGPT changes content and bindings; Trialy owns HTML, CSS, icons, spacing, colors and interactions. More fields, different terminology, calculations, status filters and visual preferences are supported configuration work, never reasons to generate a new design. A new custom tool is permitted only for an actual user-required capability absent from the renderer: `interactive_timeline` (at least two bound date fields), `calendar` (a bound date field), or `dependency_graph` (a bound relationship field). Supply `save_component.designException` with `capability`, the user's `userRequirement`, `whyStandardInsufficient` and exact manifest `fieldIds`. The server validates the capability and bindings; the preview exposes the exception for review. A free-text `designChangeReason` alone is rejected. Do not invent a requirement to qualify. Preserve the host shell and existing permission/write controls. Existing saved standard tools remain configuration-only; never relabel a bound tool as generic to bypass this rule.
 
 ## Executable skeleton and fidelity
 
-Read [Reference parity](references/REFERENCE_PARITY.md) before every UI build/revision. Reuse `assets/connected-tracker.js` through `prepare_tracker`; adapt configuration, not hand-recreated markup. Ordinary text, URLs and multi-value prose use neutral ink. Click values to edit; resize columns at header edges and rows at the bottom of Details cells. Reference-only features listed in the parity table must not be advertised as implemented.
+When modifying the renderer itself, read [Reference parity](references/REFERENCE_PARITY.md). Reuse `assets/connected-tracker.js` through `prepare_tracker`; adapt configuration, not hand-recreated markup. Ordinary text, URLs and multi-value prose use neutral ink. Click values to edit; resize columns at header edges and rows at the bottom of Details cells. Reference-only features listed in the parity table must not be advertised as implemented.
 
 ## Default implementation
 
@@ -32,11 +33,11 @@ Produce **credible, minimal, domain-specific content inside a stable, reusable t
 
 Respect direct user instructions and established workspace/platform security contracts if they conflict with defaults here. Never misrepresent an HTML demo as a deployed, persistent, permission-enforced application. Never claim an integration, data source, or compliance capability that has not been verified. Preserve previously approved design and behavior during targeted revisions: change only what the user requested.
 
-### Load relevant references before acting
+### Additional references for renderer development and complex workflows
 
-- **Every new tracker / scope revision:** Read [DISCOVERY_AND_STRUCTURE.md](references/DISCOVERY_AND_STRUCTURE.md) for the repeatable decision process and [DATA_AND_LIFECYCLE.md](references/DATA_AND_LIFECYCLE.md) for shared identity, sources, approval, and derived state.
-- **Every UI implementation or UI revision:** Read [UI_INTERACTION_CONTRACT.md](references/UI_INTERACTION_CONTRACT.md) completely. Its behaviors are **universal and non-optional** in every tracker unless the user explicitly changes the standard.
-- **Every style/theme task:** Read [THEME_2_VIVID.md](references/THEME_2_VIVID.md). Use `assets/approved-theme2-reference.html` as the canonical working reference; do not copy its CRO-specific data or vocabulary. The user approved **Theme 2 / Vivid Tints** as final.
+- **Complex discovery or data-lifecycle changes:** Read [DISCOVERY_AND_STRUCTURE.md](references/DISCOVERY_AND_STRUCTURE.md) for the repeatable decision process and [DATA_AND_LIFECYCLE.md](references/DATA_AND_LIFECYCLE.md) for shared identity, sources, approval, and derived state.
+- **Renderer development or a custom exception:** Read [UI_INTERACTION_CONTRACT.md](references/UI_INTERACTION_CONTRACT.md) completely. Its behaviors are **universal and non-optional** in every tracker unless the user explicitly changes the standard.
+- **Renderer style/theme development:** Read [THEME_2_VIVID.md](references/THEME_2_VIVID.md). Use `assets/approved-theme2-reference.html` as the canonical working reference; do not copy its CRO-specific data or vocabulary. The user approved **Theme 2 / Vivid Tints** as final.
 - **Before calling work complete:** Use [QA_AND_EXAMPLES.md](references/QA_AND_EXAMPLES.md) as the acceptance checklist and generalization test suite.
 
 ## The repeatable sequence — run it in this order
@@ -137,8 +138,3 @@ Use Tools as the main destination label, with New above it in the sidebar. Keep 
 New → Project opens direct folder creation with name and optional description/Access, without templates. Tracker preselects the first Vivid template. Form, Dashboard and Automation open the gallery filtered by type. Build with ChatGPT adapts the content within that default; choose a new custom format only under the exception above. Ask explicitly whether a template should use existing tables/fields or create new empty tables. In Layout, show editable source table/field selectors next to labels and the inherited database type. Reconnecting must not move or copy records. Rebuild bindings and control types together, respecting column permissions and read-only derived fields. Block incompatible custom actions until their code is reviewed. Keep the stored `visualization` identifier for Dashboard API compatibility.
 
 ## Configuration-only creation and revisions
-
-Read [Configuration inputs](references/CONFIGURATION.md) before creation or revision. Use `prepare_tracker` to create an application-rendered standard tool. Use `prepare_tracker_revision` for a saved tool, sending only requested changes and its current version. Adapt all content to the user; template business fields are examples, not constraints. The application owns typography, spacing, navigation, controls and styles. Do not generate or alter UI source for standard tools. A model-supplied designChangeReason does not unlock custom code.
-
-For dropdowns, statuses, relationships, linked fields, formatting and calculations, use the documented typed configuration and existing schema capabilities. Preserve omitted properties and all unrelated decisions during edits. Unsupported functionality may justify a new custom format with a specific designChangeReason and reviewed save as described above; it is not a reason to relabel a tracker as generic. Existing standard tracker source still requires the signed-in app editor for replacement.
-
