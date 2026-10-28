@@ -1,5 +1,7 @@
 # Trialy runtime integration
 
+Current visual authority: [TEMPLATE_REUSE.md](TEMPLATE_REUSE.md) and the fixed component kit extracted from the supplied HTML. Where older visual guidance below differs, preserve the exact template; backend authorization and persistence rules still apply.
+
 The HTML and screenshot are preserved reference assets, not the whole plugin interface. Start from their Theme 2 styling and interaction patterns unless the user specifies otherwise. Adapt business labels, tabs and fields to instructions and authorized data. Do not populate unrelated trackers with fictional vendors. If showing example rows, label them as examples and keep them separate from real data.
 
 Read the sibling trialy-workspace skill and current frontend/execution contracts before implementation. The browser HTML example uses DOM event handlers and local memory. Trialy frontend-js uses the isolated trialy-frontend-js-v1 render/event contract; port interactions to supported data-action events and state. Do not paste the HTML script into QuickJS, relax the sandbox, or imply local Save is a database commit. Read all paginated design resources to completion through read_tracker_design if this package is not locally available.

@@ -20,12 +20,12 @@ for(const width of [1440,390])test(`Overview and actual tool settings at ${width
  expect(await embed.locator('.ty-tool-settings '+selector).first().evaluate(read,props),selector).toEqual(await reference.locator(selector).first().evaluate(read,props));
  }
  await page.screenshot({path:`test-results/layout-${width}.png`,fullPage:true});
- await embed.getByRole('button',{name:'Access',exact:true}).click();
+ await embed.getByRole('tab',{name:'Access control',exact:true}).click();
  await expect(embed.getByRole('heading',{name:'Owner & team access'})).toBeVisible();
  await expect(embed.getByRole('heading',{name:'Tab permissions',exact:true})).toBeVisible();
  await expect(embed.getByRole('combobox',{name:'Company permission',exact:true})).toBeVisible();
  await page.screenshot({path:`test-results/access-${width}.png`,fullPage:true});
- await embed.getByRole('button',{name:'Layout',exact:true}).click();
+ await embed.getByRole('tab',{name:'Layout',exact:true}).click();
  await embed.getByRole('combobox',{name:'Visibility for tab Contacts',exact:true}).selectOption('hide');
  await embed.getByRole('button',{name:'Save layout',exact:true}).click();
  await expect(tracker.getByRole('button',{name:'Companies',exact:true})).toBeVisible();

@@ -1,0 +1,882 @@
+{
+  "page": {
+    "tag": "main",
+    "attrs": {},
+    "children": [
+      {
+        "slot": "content"
+      }
+    ]
+  },
+  "heading": [
+    {
+      "tag": "h1",
+      "attrs": {},
+      "children": [
+        {
+          "slot": "title"
+        }
+      ]
+    },
+    {
+      "tag": "p",
+      "attrs": {
+        "class": "subtitle"
+      },
+      "children": [
+        {
+          "slot": "description"
+        }
+      ]
+    }
+  ],
+  "tabs": {
+    "tag": "div",
+    "attrs": {
+      "class": "tabs-shell"
+    },
+    "children": [
+      {
+        "tag": "div",
+        "attrs": {
+          "class": "tabs",
+          "role": "tablist",
+          "aria-label": {
+            "slot": "label"
+          }
+        },
+        "children": [
+          {
+            "slot": "tabs"
+          }
+        ]
+      },
+      {
+        "slot": "settings"
+      }
+    ]
+  },
+  "tab": {
+    "tag": "button",
+    "attrs": {
+      "type": "button",
+      "class": {
+        "slot": "class"
+      },
+      "role": "tab",
+      "aria-selected": {
+        "slot": "selected"
+      }
+    },
+    "children": [
+      {
+        "slot": "label"
+      }
+    ]
+  },
+  "stats": {
+    "tag": "div",
+    "attrs": {
+      "class": "stats"
+    },
+    "children": [
+      {
+        "slot": "items"
+      }
+    ]
+  },
+  "stat": {
+    "tag": "button",
+    "attrs": {
+      "type": "button",
+      "class": "stat"
+    },
+    "children": [
+      {
+        "tag": "div",
+        "attrs": {
+          "class": "stat-head"
+        },
+        "children": [
+          {
+            "tag": "span",
+            "attrs": {
+              "class": "number"
+            },
+            "children": [
+              {
+                "slot": "value"
+              }
+            ]
+          },
+          {
+            "slot": "icon"
+          }
+        ]
+      },
+      {
+        "tag": "div",
+        "attrs": {
+          "class": "label"
+        },
+        "children": [
+          {
+            "slot": "label"
+          }
+        ]
+      },
+      {
+        "tag": "div",
+        "attrs": {
+          "class": "hint"
+        },
+        "children": [
+          {
+            "slot": "hint"
+          }
+        ]
+      }
+    ]
+  },
+  "pill": {
+    "tag": "span",
+    "attrs": {
+      "class": {
+        "slot": "class"
+      }
+    },
+    "children": [
+      {
+        "slot": "label"
+      }
+    ]
+  },
+  "tags": {
+    "tag": "div",
+    "attrs": {
+      "class": "multi"
+    },
+    "children": [
+      {
+        "slot": "items"
+      }
+    ]
+  },
+  "tag": {
+    "tag": "span",
+    "attrs": {
+      "class": "tag"
+    },
+    "children": [
+      {
+        "slot": "label"
+      }
+    ]
+  },
+  "rank": {
+    "tag": "span",
+    "attrs": {
+      "class": "rank"
+    },
+    "children": [
+      {
+        "slot": "label"
+      }
+    ]
+  },
+  "empty": {
+    "tag": "span",
+    "attrs": {
+      "class": "empty-source"
+    },
+    "children": [
+      "\u2014"
+    ]
+  },
+  "search": {
+    "tag": "label",
+    "attrs": {
+      "class": "search",
+      "aria-label": {
+        "slot": "label"
+      }
+    },
+    "children": [
+      {
+        "tag": "svg",
+        "attrs": {
+          "width": "16",
+          "height": "16",
+          "viewBox": "0 0 24 24",
+          "fill": "none",
+          "stroke": "currentColor",
+          "stroke-width": "1.7"
+        },
+        "children": [
+          {
+            "tag": "circle",
+            "attrs": {
+              "cx": "11",
+              "cy": "11",
+              "r": "7"
+            },
+            "children": []
+          },
+          {
+            "tag": "path",
+            "attrs": {
+              "d": "m20 20-4-4"
+            },
+            "children": []
+          }
+        ]
+      },
+      {
+        "slot": "input"
+      }
+    ]
+  },
+  "toolbar": {
+    "tag": "div",
+    "attrs": {
+      "class": "toolbar"
+    },
+    "children": [
+      {
+        "slot": "search"
+      },
+      {
+        "slot": "filters"
+      },
+      {
+        "slot": "sort"
+      },
+      {
+        "tag": "span",
+        "attrs": {
+          "class": "push"
+        },
+        "children": []
+      },
+      {
+        "slot": "actions"
+      }
+    ]
+  },
+  "table": {
+    "tag": "section",
+    "attrs": {
+      "class": "card",
+      "aria-label": {
+        "slot": "label"
+      }
+    },
+    "children": [
+      {
+        "tag": "div",
+        "attrs": {
+          "class": "scroll"
+        },
+        "children": [
+          {
+            "slot": "table"
+          }
+        ]
+      },
+      {
+        "slot": "empty"
+      },
+      {
+        "tag": "div",
+        "attrs": {
+          "class": "tablefoot"
+        },
+        "children": [
+          {
+            "tag": "span",
+            "attrs": {},
+            "children": [
+              {
+                "slot": "count"
+              }
+            ]
+          },
+          {
+            "tag": "span",
+            "attrs": {},
+            "children": [
+              {
+                "slot": "feedback"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "details": {
+    "tag": "dl",
+    "attrs": {
+      "class": "details"
+    },
+    "children": [
+      {
+        "slot": "items"
+      }
+    ]
+  },
+  "detail": {
+    "tag": "div",
+    "attrs": {
+      "class": "detail"
+    },
+    "children": [
+      {
+        "tag": "dt",
+        "attrs": {},
+        "children": [
+          {
+            "slot": "label"
+          }
+        ]
+      },
+      {
+        "tag": "dd",
+        "attrs": {},
+        "children": [
+          {
+            "slot": "value"
+          }
+        ]
+      }
+    ]
+  },
+  "drawerHead": {
+    "tag": "div",
+    "attrs": {
+      "class": "drawer-head"
+    },
+    "children": [
+      {
+        "tag": "div",
+        "attrs": {},
+        "children": [
+          {
+            "tag": "h2",
+            "attrs": {},
+            "children": [
+              {
+                "slot": "title"
+              }
+            ]
+          },
+          {
+            "tag": "div",
+            "attrs": {
+              "class": "drawer-resize-note"
+            },
+            "children": [
+              {
+                "slot": "hint"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "close"
+      }
+    ]
+  },
+  "drawerBody": {
+    "tag": "div",
+    "attrs": {
+      "class": "drawer-main"
+    },
+    "children": [
+      {
+        "slot": "content"
+      }
+    ]
+  },
+  "drawerActions": {
+    "tag": "div",
+    "attrs": {
+      "class": "drawer-actions"
+    },
+    "children": [
+      {
+        "slot": "actions"
+      }
+    ]
+  },
+  "settingsTop": {
+    "tag": "div",
+    "attrs": {
+      "class": "settings-top"
+    },
+    "children": [
+      {
+        "slot": "back"
+      },
+      {
+        "tag": "div",
+        "attrs": {
+          "class": "settings-top-actions"
+        },
+        "children": [
+          {
+            "slot": "actions"
+          }
+        ]
+      }
+    ]
+  },
+  "settingsTabs": {
+    "tag": "div",
+    "attrs": {
+      "class": "settings-tabs",
+      "role": "tablist",
+      "aria-label": "Settings sections"
+    },
+    "children": [
+      {
+        "slot": "tabs"
+      }
+    ]
+  },
+  "settingsTab": {
+    "tag": "button",
+    "attrs": {
+      "type": "button",
+      "class": {
+        "slot": "class"
+      },
+      "role": "tab",
+      "aria-selected": {
+        "slot": "selected"
+      }
+    },
+    "children": [
+      {
+        "slot": "label"
+      }
+    ]
+  },
+  "settingsContent": {
+    "tag": "div",
+    "attrs": {
+      "class": "settings-content"
+    },
+    "children": [
+      {
+        "slot": "content"
+      }
+    ]
+  },
+  "section": {
+    "tag": "section",
+    "attrs": {
+      "class": "settings-section"
+    },
+    "children": [
+      {
+        "tag": "h2",
+        "attrs": {},
+        "children": [
+          {
+            "slot": "title"
+          }
+        ]
+      },
+      {
+        "slot": "info"
+      },
+      {
+        "slot": "content"
+      }
+    ]
+  },
+  "field": {
+    "tag": "label",
+    "attrs": {
+      "class": "settings-field"
+    },
+    "children": [
+      {
+        "slot": "label"
+      },
+      {
+        "slot": "control"
+      }
+    ]
+  },
+  "stack": {
+    "tag": "div",
+    "attrs": {
+      "class": "settings-stack"
+    },
+    "children": [
+      {
+        "slot": "content"
+      }
+    ]
+  },
+  "tabLayoutRow": {
+    "tag": "div",
+    "attrs": {
+      "class": "layout-entry tab-layout-row"
+    },
+    "children": [
+      {
+        "slot": "grip"
+      },
+      {
+        "slot": "name"
+      },
+      {
+        "slot": "visibility"
+      }
+    ]
+  },
+  "columnLayoutRow": {
+    "tag": "div",
+    "attrs": {
+      "class": "layout-entry column-layout-row"
+    },
+    "children": [
+      {
+        "slot": "grip"
+      },
+      {
+        "slot": "name"
+      },
+      {
+        "slot": "kind"
+      },
+      {
+        "slot": "visibility"
+      }
+    ]
+  },
+  "person": {
+    "tag": "div",
+    "attrs": {
+      "class": "access-person"
+    },
+    "children": [
+      {
+        "tag": "div",
+        "attrs": {
+          "class": "person-identity"
+        },
+        "children": [
+          {
+            "slot": "avatar"
+          },
+          {
+            "tag": "div",
+            "attrs": {},
+            "children": [
+              {
+                "tag": "strong",
+                "attrs": {},
+                "children": [
+                  {
+                    "slot": "name"
+                  }
+                ]
+              },
+              {
+                "tag": "small",
+                "attrs": {},
+                "children": [
+                  {
+                    "slot": "description"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "role"
+      }
+    ]
+  },
+  "permission": {
+    "tag": "div",
+    "attrs": {
+      "class": "access-override-row"
+    },
+    "children": [
+      {
+        "tag": "span",
+        "attrs": {},
+        "children": [
+          {
+            "slot": "label"
+          }
+        ]
+      },
+      {
+        "slot": "control"
+      }
+    ]
+  },
+  "gripIcon": {
+    "tag": "svg",
+    "attrs": {
+      "viewBox": "0 0 24 24",
+      "fill": "currentColor",
+      "aria-hidden": "true"
+    },
+    "children": [
+      {
+        "tag": "circle",
+        "attrs": {
+          "cx": "9",
+          "cy": "5",
+          "r": "1.4"
+        },
+        "children": []
+      },
+      {
+        "tag": "circle",
+        "attrs": {
+          "cx": "15",
+          "cy": "5",
+          "r": "1.4"
+        },
+        "children": []
+      },
+      {
+        "tag": "circle",
+        "attrs": {
+          "cx": "9",
+          "cy": "12",
+          "r": "1.4"
+        },
+        "children": []
+      },
+      {
+        "tag": "circle",
+        "attrs": {
+          "cx": "15",
+          "cy": "12",
+          "r": "1.4"
+        },
+        "children": []
+      },
+      {
+        "tag": "circle",
+        "attrs": {
+          "cx": "9",
+          "cy": "19",
+          "r": "1.4"
+        },
+        "children": []
+      },
+      {
+        "tag": "circle",
+        "attrs": {
+          "cx": "15",
+          "cy": "19",
+          "r": "1.4"
+        },
+        "children": []
+      }
+    ]
+  },
+  "icon.people": {
+    "tag": "svg",
+    "attrs": {
+      "viewBox": "0 0 24 24",
+      "fill": "none",
+      "stroke": "currentColor",
+      "stroke-linecap": "round",
+      "stroke-linejoin": "round",
+      "aria-hidden": "true"
+    },
+    "children": [
+      {
+        "tag": "circle",
+        "attrs": {
+          "cx": "11",
+          "cy": "8",
+          "r": "3"
+        },
+        "children": []
+      },
+      {
+        "tag": "path",
+        "attrs": {
+          "d": "M4 20v-2a7 7 0 0 1 14 0v2"
+        },
+        "children": []
+      },
+      {
+        "tag": "path",
+        "attrs": {
+          "d": "M20 9v6"
+        },
+        "children": []
+      }
+    ]
+  },
+  "icon.document": {
+    "tag": "svg",
+    "attrs": {
+      "viewBox": "0 0 24 24",
+      "fill": "none",
+      "stroke": "currentColor",
+      "stroke-linecap": "round",
+      "stroke-linejoin": "round",
+      "aria-hidden": "true"
+    },
+    "children": [
+      {
+        "tag": "path",
+        "attrs": {
+          "d": "M5 3h10l4 4v14H5z"
+        },
+        "children": []
+      },
+      {
+        "tag": "path",
+        "attrs": {
+          "d": "M15 3v5h4M8 12h8M8 16h8"
+        },
+        "children": []
+      }
+    ]
+  },
+  "icon.checklist": {
+    "tag": "svg",
+    "attrs": {
+      "viewBox": "0 0 24 24",
+      "fill": "none",
+      "stroke": "currentColor",
+      "stroke-linecap": "round",
+      "stroke-linejoin": "round",
+      "aria-hidden": "true"
+    },
+    "children": [
+      {
+        "tag": "path",
+        "attrs": {
+          "d": "M9 12l2 2 4-4"
+        },
+        "children": []
+      },
+      {
+        "tag": "rect",
+        "attrs": {
+          "x": "3",
+          "y": "3",
+          "width": "18",
+          "height": "18",
+          "rx": "3"
+        },
+        "children": []
+      }
+    ]
+  },
+  "icon.contract": {
+    "tag": "svg",
+    "attrs": {
+      "viewBox": "0 0 24 24",
+      "fill": "none",
+      "stroke": "currentColor",
+      "stroke-linecap": "round",
+      "stroke-linejoin": "round",
+      "aria-hidden": "true"
+    },
+    "children": [
+      {
+        "tag": "path",
+        "attrs": {
+          "d": "M7 3h10l4 4v14H3V3h4"
+        },
+        "children": []
+      },
+      {
+        "tag": "path",
+        "attrs": {
+          "d": "M8 14l2 2 5-6"
+        },
+        "children": []
+      }
+    ]
+  },
+  "icon.expand": {
+    "tag": "svg",
+    "attrs": {
+      "viewBox": "0 0 24 24",
+      "fill": "none",
+      "stroke": "currentColor",
+      "stroke-width": "1.75",
+      "aria-hidden": "true"
+    },
+    "children": [
+      {
+        "tag": "path",
+        "attrs": {
+          "d": "M10 14 19 5M12 5h7v7M19 15v4H5V5h4"
+        },
+        "children": []
+      }
+    ]
+  },
+  "icon.settings": {
+    "tag": "svg",
+    "attrs": {
+      "viewBox": "0 0 24 24",
+      "fill": "none",
+      "stroke": "currentColor",
+      "stroke-linecap": "round",
+      "stroke-linejoin": "round",
+      "aria-hidden": "true"
+    },
+    "children": [
+      {
+        "tag": "path",
+        "attrs": {
+          "d": "M4 7h16M4 12h16M4 17h16"
+        },
+        "children": []
+      },
+      {
+        "tag": "circle",
+        "attrs": {
+          "cx": "9",
+          "cy": "7",
+          "r": "2.2",
+          "fill": "white"
+        },
+        "children": []
+      },
+      {
+        "tag": "circle",
+        "attrs": {
+          "cx": "15",
+          "cy": "12",
+          "r": "2.2",
+          "fill": "white"
+        },
+        "children": []
+      },
+      {
+        "tag": "circle",
+        "attrs": {
+          "cx": "10",
+          "cy": "17",
+          "r": "2.2",
+          "fill": "white"
+        },
+        "children": []
+      }
+    ]
+  }
+}

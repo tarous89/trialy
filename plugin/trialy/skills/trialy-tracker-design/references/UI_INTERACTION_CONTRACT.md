@@ -1,5 +1,7 @@
 # Immutable universal tracker interface and interaction contract
 
+Current visual authority: [TEMPLATE_REUSE.md](TEMPLATE_REUSE.md) and the fixed component kit extracted from the supplied HTML. Where older visual guidance below differs, preserve the exact template; backend authorization and persistence rules still apply.
+
 Read before generating or revising *any* tracker. This captures approved decisions from repeated design iterations and is not CRO-specific. **These are standard interactions, not optional inspiration.** A user may explicitly supersede a standard; otherwise preserve it exactly across trackers.
 
 The current connected implementation and explicit prototype-only boundaries are mapped in [REFERENCE_PARITY.md](REFERENCE_PARITY.md). Read it before exposing controls. Ordinary text/links/lists are neutral; semantic states alone receive color.

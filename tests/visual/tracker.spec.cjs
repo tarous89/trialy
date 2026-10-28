@@ -33,6 +33,14 @@ for (const width of [1440, 1100, 390]) test(`Vivid connected tracker at ${width}
   expect(drawer.height).toBeGreaterThanOrEqual(drawer.viewport);
   await expect(tracker.getByRole("button", { name: "Duplicate", exact: true })).toBeVisible();
   await expect(tracker.getByRole("button", { name: "Delete", exact: true })).toBeVisible();
+  const referenceDetails=await page.context().newPage();await referenceDetails.setViewportSize({width,height:1000});await referenceDetails.goto(fixtureBase+'/reference');
+  await referenceDetails.locator('.expand-row').first().click();
+  for(const selector of ['.drawer-main .detail','.drawer-main dt','.drawer-main dd']){
+    const props=['fontFamily','fontSize','fontWeight','color','backgroundColor','borderRadius','paddingTop','paddingBottom'];
+    const measure=(el,ps)=>Object.fromEntries(ps.map(p=>[p,getComputedStyle(el)[p]]));
+    expect(await tracker.locator(selector).first().evaluate(measure,props),selector).toEqual(await referenceDetails.locator(selector).first().evaluate(measure,props));
+  }
+  await referenceDetails.close();
   await expect(page).toHaveScreenshot(`details-${width}.png`);
   await tracker.getByRole("button", { name: "Close details", exact: true }).click();
   if (width === 1440) {

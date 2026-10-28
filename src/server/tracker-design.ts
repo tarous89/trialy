@@ -2,14 +2,15 @@ import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {z} from 'zod';
 import type {McpServer} from '@modelcontextprotocol/sdk/server/mcp.js';
-const paths={configuration:'references/CONFIGURATION.md',parity:'references/REFERENCE_PARITY.md',skeleton:'assets/connected-tracker.js',workflow:'../trialy-workspace/SKILL.md',skill:'SKILL.md',integration:'references/TRIALY_INTEGRATION.md',theme:'references/THEME_2_VIVID.md',data:'references/DATA_AND_LIFECYCLE.md',interaction:'references/UI_INTERACTION_CONTRACT.md',discovery:'references/DISCOVERY_AND_STRUCTURE.md',qa:'references/QA_AND_EXAMPLES.md',html:'assets/approved-theme2-reference.html'} as const;
-export const designRequest=z.object({resource:z.enum(['configuration','parity','skeleton','workflow','skill','integration','theme','data','interaction','discovery','qa','html']).default('skill'),offset:z.number().int().min(0).default(0)}).strict();
+const paths={components:'assets/vivid-template/components.json',template:'references/TEMPLATE_REUSE.md',styles:'assets/vivid-template/theme.css',catalog:'assets/vivid-template/catalog.html',manifest:'assets/vivid-template/manifest.json',configuration:'references/CONFIGURATION.md',parity:'references/REFERENCE_PARITY.md',skeleton:'assets/connected-tracker.js',workflow:'../trialy-workspace/SKILL.md',skill:'SKILL.md',integration:'references/TRIALY_INTEGRATION.md',theme:'references/THEME_2_VIVID.md',data:'references/DATA_AND_LIFECYCLE.md',interaction:'references/UI_INTERACTION_CONTRACT.md',discovery:'references/DISCOVERY_AND_STRUCTURE.md',qa:'references/QA_AND_EXAMPLES.md',html:'assets/approved-theme2-reference.html'} as const;
+export const designRequest=z.object({resource:z.enum(['components','template','styles','catalog','manifest','configuration','parity','skeleton','workflow','skill','integration','theme','data','interaction','discovery','qa','html']).default('skill'),offset:z.number().int().min(0).default(0)}).strict();
 export async function readTrackerDesign(input:unknown){
  const {resource,offset}=designRequest.parse(input);
- const source=await readFile(new URL('../../plugin/trialy/skills/trialy-tracker-design/'+paths[resource],import.meta.url),'utf8');
+ let source=await readFile(new URL('../../plugin/trialy/skills/trialy-tracker-design/'+paths[resource],import.meta.url),'utf8');
+ if(resource==='skeleton')source=await readFile(new URL('../../plugin/trialy/skills/trialy-tracker-design/assets/vivid-template/runtime.js',import.meta.url),'utf8')+source;
  if(offset>source.length)throw new Error('Offset exceeds resource length');
  const text=source.slice(offset,offset+12000),end=offset+text.length;
- return {resource,version:'0.5.0',resources:Object.keys(paths),sha256:createHash('sha256').update(source).digest('hex'),offset,totalCharacters:source.length,nextOffset:end<source.length?end:null,text};
+ return {resource,version:'0.6.0',resources:Object.keys(paths),sha256:createHash('sha256').update(source).digest('hex'),offset,totalCharacters:source.length,nextOffset:end<source.length?end:null,text};
 }
 export function addTrackerDesignMcp(server:McpServer){
  server.registerTool('read_tracker_design',{title:'Read tracker design defaults',description:'Returns paginated versioned tracker documentation, the HTML reference, or the standard renderer source. Includes a content hash and nextOffset. Contains no account data.',inputSchema:designRequest.shape,annotations:{readOnlyHint:true,openWorldHint:false},_meta:{securitySchemes:[{type:'noauth'}]}},async input=>{
