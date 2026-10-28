@@ -1,3 +1,5 @@
+import {AccessGrid} from '../../src/domain/access-grid.js';
+import {prepareToolLayout} from '../../src/workspace/tool-layout.js';
 import express from 'express';import {PGlite} from '@electric-sql/pglite';import {readFile,readdir,mkdir} from 'node:fs/promises';import {randomUUID} from 'node:crypto';import assert from 'node:assert/strict';
 import {baseApp} from '../../src/server/app.js';import {Service} from '../../src/domain/service.js';import {WorkspaceFoundation} from '../../src/workspace/service.js';import {trackerOperation} from '../../src/workspace/tracker-template.js';import {workspaceHome} from '../../src/workspace/home.js';import type {Database,Connection} from '../../src/db/database.js';
 
@@ -16,11 +18,14 @@ export async function fixture(){
  const tools=async(name:string,v:any):Promise<any>=>{calls.push(name);
   if(name==='open_workspace')return {screen:'home',uiBuild:'acceptance',viewerId:actor.userId,workspaces:[w],workspaceId:w.id,types:await s.types(actor,w.id)};
   if(name==='read_connected_account')return {connected:true};
-  if(name==='read_account_home')return {projects:[],resources:[],total:0};
+  if(name==='read_account_home')return {projects:[],resources:[{id:preview.id,workspaceId:w.id,name:'Saved preview card',kind:'tracker',source:'preview',projectIds:[],status:'Preview',updatedAt:new Date().toISOString()}],total:1};
+  if(name==='resolve_tracker_preview')return f.resolveTrackerPreview(actor,w.id,v.previewId);
   if(name==='initialize_account')return {viewerId:actor.userId,workspaceId:w.id,workspaces:[w],types:await s.types(actor,w.id)};
   if(name==='list_project_sharing_members')return [];
   if(name==='list_workspace_projects')return f.nodes(actor,w.id);
   if(name==='list_views')return [];
+  if(name==='read_access_grid')return new AccessGrid(db).read(actor,w.id,v.subject);
+  if(name==='prepare_tool_layout'){const {workspaceId,...request}=v;return prepareToolLayout(f,actor,w.id,request);}
   if(name==='list_tables')return s.types(actor,w.id);
   if(name==='list_workspace_previews')return f.pending(actor,w.id);
   if(name==='read_workspace_home')return workspaceHome(db,actor,w.id,v);
@@ -36,7 +41,7 @@ export async function fixture(){
  app.get('/embed',async(_req,res)=>{res.removeHeader('Content-Security-Policy');res.type('html').send(await readFile('dist/embed.html','utf8'));});
  app.get('/',(_req,res)=>{res.removeHeader('Content-Security-Policy');res.type('html').send(`<html><body style="margin:0"><iframe id="app" src="/embed" style="width:100%;height:100vh;border:0"></iframe><script>window.addEventListener('message',async e=>{const m=e.data;if(e.source!==document.getElementById('app').contentWindow)return;if(m.method==='ui/initialize')e.source.postMessage({jsonrpc:'2.0',id:m.id,result:{protocolVersion:m.params.protocolVersion,hostInfo:{name:'Acceptance host',version:'1'},hostCapabilities:{serverTools:{},openLinks:{}},hostContext:{theme:'light',displayMode:'fullscreen'}}},'*');else if(m.method==='ui/notifications/initialized'){window.hostReady=true;}else if(m.method==='tools/call'){const result=await (await fetch('/fixture/tool',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(m.params)})).json();e.source.postMessage({jsonrpc:'2.0',id:m.id,result},'*');}else if(m.id)e.source.postMessage({jsonrpc:'2.0',id:m.id,result:{}},'*');});window.deliver=result=>document.getElementById('app').contentWindow.postMessage({jsonrpc:'2.0',method:'ui/notifications/tool-result',params:{content:[],structuredContent:{result}}},'*');</script></body></html>`);});
 
- app.get('/fixture/initial',async(_req,res)=>res.json({screen:'tracker',workspaceId:w.id,component,initialOutput:await f.runFrontend(actor,w.id,{componentId:component.id,expectedVersion:0})}));
+ app.get('/fixture/initial',async(_req,res)=>{const current=(await f.readComponent(actor,w.id,component.id)).component;res.json({screen:'tracker',workspaceId:w.id,component:current,initialOutput:await f.runFrontend(actor,w.id,{componentId:current.id,expectedVersion:current.version})});});
  app.get('/reference',async(_req,res)=>{res.removeHeader('Content-Security-Policy');res.type('html').send(await readFile('plugin/trialy/skills/trialy-tracker-design/assets/approved-theme2-reference.html','utf8'));});
  return {base,component,w,f,actor,close:async()=>{server.closeAllConnections();await new Promise<void>(r=>server.close(()=>r()));await db.close();}};
 }

@@ -59,3 +59,15 @@ test('account loads independently, old results resolve, and fresh bundles avoid 
  calls.length=0;await loadTrackerDisplay({screen:'tracker-preview',workspaceId:'w',preview:{id:'new'},preparedAt:new Date().toISOString(),initialOutput:{html:'ready'}},call,()=>{});
  assert.deepEqual(calls.sort(),['initialize_account','list_tables']);
 });
+
+test('a preview saved between resolution and rendering opens its receipt without a false error',async()=>{
+ let resolutions=0;const call=async(name:string)=>{
+  if(name==='initialize_account')return {viewerId:'u'};
+  if(name==='list_tables')return [];
+  if(name==='resolve_tracker_preview'){resolutions++;return resolutions===1?{screen:'tracker-preview',workspaceId:'w',preview:{id:'draft'}}:{screen:'tracker',workspaceId:'w',component:{id:'saved',version:0},recoveredFromPreview:true,initialOutput:{html:'saved'}};}
+  if(name==='run_component_frontend')throw Error('Code preview unavailable');
+  throw Error(name);
+ };
+ const result=await loadTrackerDisplay({screen:'tracker-preview',workspaceId:'w',preview:{id:'draft'}},call,()=>{});
+ assert.equal(result.resolved.component.id,'saved');assert.equal(result.output.html,'saved');assert.equal(resolutions,2);
+});

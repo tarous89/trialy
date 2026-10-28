@@ -43,6 +43,7 @@ export function addWorkspaceApi(app:Express,f:WorkspaceFoundation){
  app.post(`${b}/home`,async(req,res)=>res.json(await workspaceHome(f.db,req.actor!,id.parse(req.params.workspaceId),req.body)));
  app.get(`${b}/activity/:eventId`,async(req,res)=>res.json(await activityDetails(f.db,req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.eventId))));
  app.post(`${b}/activity`,async(req,res)=>res.json(await activityPage(f.db,req.actor!,id.parse(req.params.workspaceId),req.body)));
+ app.get(`${b}/previews/:previewId/resolve`,async(req,res)=>res.json(await f.resolveTrackerPreview(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.previewId))));
  app.get(`${b}/previews`,async(req,res)=>res.json(await f.pending(req.actor!,id.parse(req.params.workspaceId))));
  app.post(`${b}/previews`,async(req,res)=>res.json(await f.preview(req.actor!,id.parse(req.params.workspaceId),req.body)));
  app.delete(`${b}/previews/:previewId`,async(req,res)=>res.json(await f.discard(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.previewId))));
