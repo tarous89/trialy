@@ -309,3 +309,8 @@
 .ty-column-details .ty-details-grid .ty-context-copy{font-weight:400;white-space:pre-wrap}
 .ty-column-details p{font-size:12px;margin:20px 0 0;line-height:1.5}
 @media(max-width:480px){.ty-column-details{padding:20px}.ty-column-details .ty-details-grid{grid-template-columns:minmax(0,1fr)}.ty-column-details .ty-details-grid>div{padding:14px 16px}}
+
+.ty-workspace .ty-resource>.ty-menu>.ty-icon-button{display:flex;align-items:center;justify-content:center;padding:0;min-width:32px;width:32px;height:32px;color:#42574b}
+.ty-workspace .ty-resource>.ty-menu>.ty-icon-button svg{display:block;flex:none;width:20px;height:20px;opacity:1;visibility:visible}
+.ty-resource .ty-menu-popover{max-height:280px;overflow-y:auto;max-width:min(280px,calc(100vw - 48px))}
+.ty-resource .ty-menu-popover button:disabled{opacity:.45;cursor:default}

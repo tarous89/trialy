@@ -26,4 +26,4 @@ const paths={
  more:'M5 12h.1M12 12h.1M19 12h.1',folder:'M3 6V4h6l2 3h10v13H3Z',
 } as const;
 export type IconName=keyof typeof paths;
-export function Icon({name,size=20,...props}:{name:IconName;size?:number}&React.SVGProps<SVGSVGElement>){return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}><path d={paths[name]}/></svg>;}
+export function Icon({name,size=20,...props}:{name:IconName;size?:number}&React.SVGProps<SVGSVGElement>){return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>{name==='more'?[5,12,19].map(cx=><circle key={cx} cx={cx} cy="12" r="1.8" fill="currentColor" stroke="none"/>):<path d={paths[name]}/>}</svg>;}
