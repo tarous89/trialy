@@ -145,3 +145,4 @@
 .ty-workspace .ty-resource-grid .ty-tool-snapshot{background:var(--kind-soft)}
 .ty-workspace .ty-filter[class*=ty-kind-]:is(:hover,[aria-pressed=true]){color:var(--tool-tone);border-bottom-color:var(--tool-tone)}
 .ty-workspace .ty-resource .ty-tool-type{color:var(--tool-tone)}
+.ty-workspace .ty-type-filters .ty-filter svg{color:var(--tool-tone);display:block}
