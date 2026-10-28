@@ -1,5 +1,7 @@
 # Approved design language: Theme 2 / Vivid Tints
 
+Current visual authority: [TEMPLATE_REUSE.md](TEMPLATE_REUSE.md) and the fixed component kit extracted from the supplied HTML. Where older visual guidance below differs, preserve the exact template; backend authorization and persistence rules still apply.
+
 **Final user-approved theme.** Read for every tracker build or visual revision. This reference is based on the actual `/assets/approved-theme2-reference.html` final HTML, not a guessed ChatGPT brand color palette. Use the approved asset as the precise source for selectors and interactions; the business-specific CRO values in that file are illustration only and must be replaced for new trackers.
 
 ## Table of contents

@@ -1,5 +1,7 @@
 # Reference-to-skeleton contract
 
+Current visual authority: [TEMPLATE_REUSE.md](TEMPLATE_REUSE.md) and the fixed component kit extracted from the supplied HTML. Where older visual guidance below differs, preserve the exact template; backend authorization and persistence rules still apply.
+
 Read this with TRIALY_INTEGRATION.md before constructing or revising a tracker. This is the concrete mapping of the approved HTML's structure, CSS and event handlers to the connected implementation. It overrides older aspirational language elsewhere in the package. User instructions take precedence over presentation defaults.
 
 ## Reuse, do not reconstruct
