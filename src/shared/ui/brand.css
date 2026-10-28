@@ -134,3 +134,15 @@
 .ty-workspace #ty-main .ty-icon-button svg{width:18px;height:18px}
 .ty-workspace #ty-main :is(.ty-db-columns,.ty-advanced)>summary{list-style:none}
 .ty-workspace #ty-main :is(.ty-db-columns,.ty-advanced)>summary::-webkit-details-marker{display:none}
+
+/* Vivid tool identity, with quiet card edges until interaction. */
+.ty-workspace .ty-kind-tracker{--kind:#00976b;--kind-soft:#d6faeb;--tool-tone:var(--kind)}
+.ty-workspace .ty-kind-form{--kind:#1769ed;--kind-soft:#e0edff;--tool-tone:var(--kind)}
+.ty-workspace .ty-kind-visualization{--kind:#853deb;--kind-soft:#efe1ff;--tool-tone:var(--kind)}
+.ty-workspace .ty-kind-automation{--kind:#ce6000;--kind-soft:#ffead2;--tool-tone:var(--kind)}
+.ty-workspace .ty-resource-grid .ty-resource{border:1px solid var(--ty-border)}
+.ty-workspace .ty-resource-grid .ty-resource:is(:hover,:focus-within){border-color:var(--tool-tone);box-shadow:0 4px 14px #00000008}
+.ty-workspace .ty-resource-grid .ty-tool-snapshot{background:var(--kind-soft)}
+.ty-workspace .ty-filter[class*=ty-kind-]:is(:hover,[aria-pressed=true]){color:var(--tool-tone);border-bottom-color:var(--tool-tone)}
+.ty-workspace .ty-resource .ty-tool-type{color:var(--tool-tone)}
+.ty-workspace .ty-type-filters .ty-filter svg{color:var(--tool-tone);display:block}
