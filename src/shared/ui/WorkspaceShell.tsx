@@ -5,6 +5,7 @@ import {Icon,type IconName} from './Icon.js';
 import {Button} from './Controls.js';
 import './design.css';
 import './brand.css';
+import './scroll.css';
 export type Destination='home'|'database'|'logs'|'access-control'|'settings';
 const entries:{id:Destination;label:string;icon:IconName}[]=[{id:'home',label:'Tools',icon:'grid'},{id:'database',label:'Database',icon:'database'},{id:'access-control',label:'Access',icon:'lock'},{id:'logs',label:'Logs',icon:'logs'}];
 export function WorkspaceShell({children,selected,onNavigate,accountName,accountEmail,embedded=false,onOpenApp,onNew}:{children:React.ReactNode;selected:Destination;onNavigate:(d:Destination)=>void;accountName:string;accountEmail?:string;embedded?:boolean;onOpenApp?:()=>void;onNew?:(kind:string)=>void}){
