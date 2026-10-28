@@ -53,6 +53,7 @@ test('Task setup, project relationships, exact alias correction, collection cons
   await db.query("UPDATE extractions SET status='ready',text_content='Saved source' WHERE version_id=$1",[file.versionId]);
   const fileComponent=await approve({kind:'save_component',projectId:project.id,content:{name:'Attached text',format:'frontend-js',sourceAccess:'bindings',assets:[{name:'source',versionId:file.versionId}],source:"const source=tools.call('files.text',{name:'source'});return {html:'<p>'+source.text+'</p>'};"}});
   assert.match((await f.runFrontend(ai,w.id,{componentId:fileComponent.id,expectedVersion:0})).html,/Saved source/);
+  const independentCopy=await approve({kind:'copy_component',sourceComponentId:fileComponent.id,expectedVersion:0,projectId:null,name:'Independent copy'});assert.equal((await f.readComponent(a,w.id,independentCopy.id)).component.project_id,null);
   const copied=await approve({kind:'copy_component',sourceComponentId:fileComponent.id,expectedVersion:0,projectId:project.id,name:'Copied attachment'});
   assert.equal((await f.readComponent(a,w.id,copied.id)).component.assets[0].versionId,file.versionId);
   await s.setAccessRules(a,w.id,{expectedVersion:(await s.accessRules(a,w.id)).version,aiHiddenTypes:[],document:{documentId:file.id,allowedUsers:null,ai:false,expectedVersion:-1}});
