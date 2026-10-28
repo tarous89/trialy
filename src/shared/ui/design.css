@@ -159,7 +159,7 @@
 .ty-workspace .ty-project strong{font-size:15px;font-weight:600;color:inherit;line-height:1.3}.ty-workspace .ty-project time{display:block;margin-top:6px;font-size:10px;font-weight:400;letter-spacing:.2px;color:#b7c9bd}.ty-workspace .ty-project>svg{margin-left:auto;color:#c4dcc6;width:15px}
 .ty-workspace .ty-resource-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:18px;align-items:start}
 .ty-workspace .ty-resource{--tool-tone:#537b65;position:relative;min-width:0;background:white;border:2px solid var(--tool-tone);border-radius:11px;box-shadow:none;overflow:visible}
-.ty-workspace .ty-resource.ty-kind-tracker{--tool-tone:#418169}.ty-workspace .ty-resource.ty-kind-visualization{--tool-tone:#6c69b4}.ty-workspace .ty-resource.ty-kind-form{--tool-tone:#3d81ad}.ty-workspace .ty-resource.ty-kind-automation{--tool-tone:#b17a3d}
+.ty-workspace .ty-resource.ty-kind-tracker{--tool-tone:var(--kind)}.ty-workspace .ty-resource.ty-kind-visualization{--tool-tone:var(--kind)}.ty-workspace .ty-resource.ty-kind-form{--tool-tone:var(--kind)}.ty-workspace .ty-resource.ty-kind-automation{--tool-tone:var(--kind)}
 .ty-workspace .ty-resource-grid .ty-resource{aspect-ratio:4/5}.ty-workspace .ty-resource-open{display:flex;flex-direction:column;width:100%;height:100%;padding:0;margin:0;border:0;background:transparent;color:#192b23;text-align:left;border-radius:9px;overflow:hidden}
 .ty-workspace .ty-tool-snapshot{display:flex;align-items:center;justify-content:center;flex:1;min-height:0;min-width:0;padding:24px 14px 12px;background:#f7f9f7;overflow:hidden;color:var(--tool-tone);border-radius:8px 8px 0 0}
 .ty-workspace .ty-resource-info{flex:none;padding:14px 15px 16px;min-width:0;width:100%}.ty-workspace .ty-resource h3{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;padding:0;margin:0 0 7px;font-size:15px;line-height:1.35;font-weight:600;color:#1b3025;min-height:0}
@@ -278,7 +278,7 @@
 .ty-workspace .ty-kind-tracker{--tool-tone:#26856a}.ty-workspace .ty-kind-form{--tool-tone:#3a80b3}.ty-workspace .ty-kind-visualization{--tool-tone:#7960b5}.ty-workspace .ty-kind-automation{--tool-tone:#b17a32}.ty-workspace .ty-kind-generic{--tool-tone:#60727e}
 .ty-workspace .ty-filter svg{color:var(--tool-tone)}
 .ty-workspace .ty-resource-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
-.ty-workspace .ty-resource-grid .ty-resource{aspect-ratio:auto;border:3px solid var(--tool-tone);border-radius:13px}
+.ty-workspace .ty-resource-grid .ty-resource{aspect-ratio:auto;border:1px solid var(--ty-border);border-radius:13px}
 .ty-workspace .ty-resource-grid .ty-tool-snapshot{height:100px;flex:none;background:color-mix(in srgb,var(--tool-tone) 9%,white);padding:18px}
 .ty-tool-art{display:flex;gap:20px;align-items:center;width:85%;padding:14px;background:white;border-radius:9px;box-shadow:0 4px 14px #102d3210;color:var(--tool-tone)}.ty-art-lines{display:grid;gap:8px;flex:1}.ty-art-lines i{height:5px;border-radius:5px;background:color-mix(in srgb,var(--tool-tone) 20%,white)}.ty-art-lines i:nth-child(2){width:75%}.ty-art-lines i:last-child{width:50%}
 .ty-workspace .ty-resource h3{display:flex;align-items:center;gap:9px}.ty-resource h3 svg{flex:none;color:var(--tool-tone)}.ty-resource h3 span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ty-tool-type,.ty-tool-project{font-size:12px;color:#65776d}.ty-tool-project{display:none}.ty-resource-info time{display:block;margin-top:8px}
