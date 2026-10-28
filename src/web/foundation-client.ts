@@ -31,6 +31,7 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown)=
  render_project_component:[`${o}/components/${v.componentId}/render?block=${v.block}&offset=${v.offset??0}`],
  list_project_sharing_members:[`${o}/sharing-members`],
  list_project_components:[`${o}/components${v.projectId?'?projectId='+encodeURIComponent(v.projectId):''}`],read_project_component:[`${o}/components/${v.componentId}${v.includeOutput?'?includeOutput=true':''}`],read_component_history:[`${o}/components/${v.componentId}/history`],
+ resolve_tracker_preview:[`${o}/previews/${v.previewId}/resolve`],
  list_workspace_projects:[o],list_workspace_previews:[`${o}/previews`],prepare_workspace_change:[`${o}/previews`,'POST',v.operation],confirm_workspace_change:[`${o}/previews/${v.previewId}/confirm`,'POST',{digest:v.digest,confirmed:v.confirmed}],discard_workspace_preview:[`${o}/previews/${v.previewId}`,'DELETE'],list_maintenance_scopes:[`${o}/scopes`],revoke_maintenance_scope:[`${o}/scopes/${v.scopeId}`,'DELETE'],maintain_workspace_records:[`${o}/maintain`,'POST',v.batch],read_record_evidence:[`${o}/evidence/${v.recordId}`],
  discard_function_preview:[`${b}/functions/previews/${v.previewId}`,'DELETE'],
  prepare_run_artifact:[`${b}/runs/${v.runId}/artifact`,'POST',{filename:v.filename,index:v.index}],commit_change:[`/api/previews/${v.previewId}/commit`,'POST',{digest:v.digest,confirmed:v.confirmed}],
