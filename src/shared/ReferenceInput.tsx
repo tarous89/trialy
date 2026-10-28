@@ -8,5 +8,5 @@ export function ReferenceInput({field,value,onChange,load}:{field:Field;value:an
  return <span className="reference-input"><input aria-label={`Search ${field.name}`} placeholder="Search available references" value={query} onChange={e=>{setQuery(e.target.value);setOffset(0);}}/>
  <select aria-label={field.name} multiple={!!field.multiple} required={field.required} value={field.multiple?selected:selected[0]??''} onChange={e=>onChange(field.multiple?[...e.target.selectedOptions].map(o=>o.value):e.target.value||null)}>{!field.multiple&&<option value="">Choose…</option>}{options.map((o:any)=><option key={o.id} value={o.id}>{o.label}</option>)}</select>
  {field.multiple&&<small>Choose multiple entries using Ctrl/Cmd. {selected.length} selected.</small>}
- <button type="button" disabled={busy||!offset} onClick={()=>setOffset(Math.max(0,offset-50))}>Previous</button><button type="button" disabled={busy||!page.hasMore} onClick={()=>setOffset(offset+50)}>Next</button>{error&&<small role="alert">{error}</small>}</span>;
+ <button type="button" disabled={busy||!offset} onClick={()=>setOffset(Math.max(0,offset-25))}>Previous</button><button type="button" disabled={busy||!page.hasMore} onClick={()=>setOffset(offset+25)}>Next</button>{error&&<small role="alert">{error}</small>}</span>;
 }
