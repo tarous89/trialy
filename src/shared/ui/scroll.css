@@ -1,0 +1,24 @@
+/* Scrolling contract: the shell owns ordinary pages. Database and standard
+   trackers own a content viewport instead; their shell must not scroll. */
+html:has(.ty-workspace),body:has(.ty-workspace){height:100%;overflow:hidden}
+.ty-workspace #ty-main{overflow-y:auto;overscroll-behavior:contain}
+.ty-workspace #ty-main .ty-paged-screen,
+.ty-workspace #ty-main .ty-log-screen{display:block;height:auto;min-height:0;overflow:visible}
+.ty-workspace #ty-main .ty-page-results{height:auto;max-height:none;overflow:visible;padding-bottom:0}
+.ty-workspace #ty-main .ty-page-pagination{position:static;flex:none;margin-top:20px;padding:12px 0;flex-wrap:wrap;background:transparent}
+/* Horizontal table scrolling does not constrain vertical content. */
+.ty-workspace #ty-main :is(.scroll,.record-scroll,.record-view,.tablewrap,.ty-access-table,.ty-layout-scroll,.ty-log-diff-scroll){height:auto;max-height:none;overflow-x:auto;overflow-y:hidden}
+.ty-workspace #ty-main :is(.ty-fixed pre,.foundation pre,.document-text pre){max-height:none;height:auto;overflow:visible;white-space:pre-wrap;overflow-wrap:anywhere}
+/* Database's table and sidebar are siblings, never nested scrolling panes. */
+.ty-workspace #ty-main:has(.ty-database:not([hidden] *)),
+.ty-workspace #ty-main:has(.ty-tracker--standard:not([hidden] *)){overflow:hidden}
+.ty-workspace #ty-main .ty-database{height:var(--db-height);min-height:0}
+.ty-workspace #ty-main .ty-db-grid>.ty-page-pagination{position:static;margin:0;padding:16px;background:white}
+/* Fixed overlays have a single scrollable panel, not a scrollable backdrop. */
+.ty-workspace .overlay,.ty-workspace .ty-content-overlay{overflow:hidden}
+.ty-workspace :is(.overlay,.ty-content-overlay)>:is(section,.modal,.ty-confirm-dialog,.ty-create-row){max-height:100%;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.ty-workspace :is(.overlay,.ty-content-overlay) :is(pre,.ty-project-choices){max-height:none;overflow:visible;overflow-wrap:anywhere;white-space:pre-wrap}
+.ty-workspace #ty-main:has(.overlay:not([hidden] *),.ty-content-overlay:not([hidden] *)),
+body:has(dialog[open]) .ty-workspace #ty-main{overflow:hidden}
+/* Navigation can scroll independently on short screens. */
+.ty-workspace .ty-sidebar--desktop{overflow-y:auto;overscroll-behavior:contain}
