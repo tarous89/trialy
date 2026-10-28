@@ -314,3 +314,14 @@
 .ty-workspace .ty-resource>.ty-menu>.ty-icon-button svg{display:block;flex:none;width:20px;height:20px;opacity:1;visibility:visible}
 .ty-resource .ty-menu-popover{max-height:280px;overflow-y:auto;max-width:min(280px,calc(100vw - 48px))}
 .ty-resource .ty-menu-popover button:disabled{opacity:.45;cursor:default}
+
+/* Page navigation remains below the scrolling results, at the viewport bottom. */
+.ty-paged-screen{height:var(--page-height,calc(100dvh - 88px));min-height:320px;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.ty-page-results{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding-bottom:16px}
+.ty-log-screen{display:flex;flex-direction:column;min-height:0;height:100%}
+.ty-page-pagination{display:flex;flex:none;align-items:center;justify-content:center;gap:20px;padding:16px 0 0;margin-top:auto;background:var(--ty-bg,#f6f8f7)}
+.ty-page-pagination span{font-size:13px;color:#62766a;white-space:nowrap}
+.ty-db-content>.ty-page-pagination{padding:12px 18px;border-top:1px solid #e2e8e4}
+.ty-log-toolbar-actions{display:flex;gap:8px;flex:none;margin-left:auto}
+.ty-logs .ty-log-filters{flex:none;align-items:center}
+@media(max-width:600px){.ty-page-pagination{gap:10px}.ty-page-pagination .ty-button{font-size:12px;padding:8px}.ty-logs .ty-log-filters{gap:8px}}

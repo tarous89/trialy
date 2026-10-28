@@ -10,6 +10,6 @@ test('database export fails instead of downloading partial data after access cha
  await assert.rejects(databaseCsv(async()=>({table:{fields:[]},rows:[],nextOffset:null}),['name']),/access changed/);
  await assert.rejects(databaseCsv(async()=>({table:{fields:[]},rows:[],nextOffset:0}),[]),/did not advance/);
 });
-test('shared app and MCP browsing defaults are 25, with bounded explicit export batches',()=>{
- const typeId='11111111-1111-4111-8111-111111111111';assert.equal(databaseRequest.parse({typeId}).limit,25);assert.equal(activityQuery.parse({}).limit,25);assert.equal(homeQuery.parse({}).limit,25);assert.equal(frontendRead.parse({typeId}).limit,25);assert.equal(databaseRequest.parse({typeId,limit:100}).limit,100);assert.throws(()=>databaseRequest.parse({typeId,limit:101}));
+test('shared browsing defaults use 20 tools and 25 rows, with bounded export batches',()=>{
+ const typeId='11111111-1111-4111-8111-111111111111';assert.equal(databaseRequest.parse({typeId}).limit,25);assert.equal(activityQuery.parse({}).limit,25);assert.equal(homeQuery.parse({}).limit,20);assert.equal(frontendRead.parse({typeId}).limit,25);assert.equal(databaseRequest.parse({typeId,limit:100}).limit,100);assert.throws(()=>databaseRequest.parse({typeId,limit:101}));
 });

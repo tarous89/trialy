@@ -33,11 +33,11 @@ export async function activityPage(db:Database,a:Actor,w:string,input:unknown){
  WHERE r.workspace_id=$1 AND r.status IN ('queued','running') AND ($3::boolean OR (r.user_id=$2 AND (fn.id IS NULL OR fn.id=ANY($4::uuid[])) AND (c.id IS NULL OR c.id=ANY($4::uuid[]))))
  UNION ALL
  SELECT 'legacy:'||r.id::text,r.created_at,j.owner_id,'automation.'||r.status,j.id,r.status,'worker','automation',NULL::uuid,j.name FROM automation_runs r JOIN automations j ON j.id=r.automation_id WHERE r.workspace_id=$1 AND $3::boolean
- ) SELECT events.*,u.name AS actor_name FROM events JOIN users u ON u.id=events.actor_id WHERE ($5='' OR strpos(lower(action||' '||resource_name||' '||coalesce(resource_id::text,'')||' '||actor_id::text||' '||u.name),lower($5))>0)
+ ) SELECT events.*,count(*) OVER() AS total_count,u.name AS actor_name FROM events JOIN users u ON u.id=events.actor_id WHERE ($5='' OR strpos(lower(action||' '||resource_name||' '||coalesce(resource_id::text,'')||' '||actor_id::text||' '||u.name),lower($5))>0)
  AND ($17::uuid IS NULL OR events.id=$17::text) AND ($6='all' OR category=$6) AND ($7='all' OR outcome=$7) AND ($8::uuid IS NULL OR actor_id=$8) AND ($9::uuid IS NULL OR project_id=$9 OR EXISTS(SELECT 1 FROM project_records pr WHERE pr.workspace_id=$1 AND pr.project_id=$9 AND pr.record_id=events.resource_id AND pr.revoked_at IS NULL AND ($3::boolean OR pr.project_id=ANY($4::uuid[])))) AND ($10::uuid IS NULL OR resource_id=$10)
  AND ($11::timestamptz IS NULL OR events.created_at >= $11) AND ($12::timestamptz IS NULL OR events.created_at <= $12) AND events.created_at <= $13::timestamptz
  ORDER BY events.created_at DESC,events.id DESC LIMIT $14 OFFSET $15`,params)).rows;
- return {rows:await activityEvidence(db,a,w,rows.slice(0,q.limit),tables,full),nextOffset:rows.length>q.limit?q.offset+q.limit:null,before,scope:full?'Workspace audit metadata':'Permitted resource activity and your execution statuses',projects:nodes.nodes.filter(n=>n.kind==='project').map(n=>({id:n.id,name:n.name}))};
+ return {total:Number(rows[0]?.total_count??0),rows:await activityEvidence(db,a,w,rows.slice(0,q.limit),tables,full),nextOffset:rows.length>q.limit?q.offset+q.limit:null,before,scope:full?'Workspace audit metadata':'Permitted resource activity and your execution statuses',projects:nodes.nodes.filter(n=>n.kind==='project').map(n=>({id:n.id,name:n.name}))};
 }
 
 
