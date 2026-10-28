@@ -65,7 +65,7 @@ export const workspaceOperation=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('record_fact'),recordId:id,expectedVersion:z.number().int().min(0),field:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),value:z.union([z.string().max(50000),z.number().finite(),z.boolean(),z.array(z.union([z.string().max(50000),z.number().finite()])).max(100),z.null()]),projectId:id.optional(),validFrom:z.string().datetime().optional(),validUntil:z.string().datetime().optional(),sourceLabel:text,rationale:text}).strict(),
  z.object({kind:z.literal('prefer_record_fact'),factId:id,expectedVersion:z.number().int().min(0),reason:text}).strict(),
  z.object({kind:z.literal('retract_record_fact'),factId:id,reason:text}).strict(),
- z.object({kind:z.literal('copy_component'),sourceComponentId:id,expectedVersion:z.number().int().min(0),projectId:id,name:z.string().trim().min(1).max(100)}).strict()
+ z.object({kind:z.literal('copy_component'),sourceComponentId:id,expectedVersion:z.number().int().min(0),projectId:id.nullable(),name:z.string().trim().min(1).max(100)}).strict()
 ]);
 export type WorkspaceOperation=z.infer<typeof workspaceOperation>;
 
