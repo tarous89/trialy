@@ -56,6 +56,10 @@ test('app/plugin share the same default storage and tracker identities; database
  const deniedTable=await databasePage(db,member,w.id,{typeId:contacts});assert.equal(deniedTable.schemaOnly,true);assert.equal(deniedTable.rows.length,0);
  await assert.rejects(s.share(member,w.id,owner.userId,'editor',[],null,true),/owner|not permitted/);
  const denied=await s.preview(ai,w.id,{kind:'database_changes',typeId:type,updates:[{kind:'update_record',recordId:a,expectedVersion:1,data:{name:'Revoked'}}],deletions:[]});await s.setAi(owner,w.id,false);await assert.rejects(s.commit({...ai,actionConfirmed:true},denied.id,denied.digest),/AI access/);assert.equal((await f.record(db,owner,w.id,a)).data.name,'Edited');
+ const pagedType=(await save({kind:'create_type',name:'Pagination fixture',fields:[{key:'name',name:'Name',kind:'text',ai:true}]})).objects[0].id;
+ for(let i=0;i<26;i++)await save({kind:'create_record',typeId:pagedType,data:{name:'Row '+i}});
+ const p1=await databasePage(db,owner,w.id,{typeId:pagedType}),p2=await databasePage(db,owner,w.id,{typeId:pagedType,offset:p1.nextOffset!});
+ assert.equal(p1.rows.length,25);assert.equal(p1.nextOffset,25);assert.equal(p2.rows.length,1);assert.equal(p2.nextOffset,null);assert.equal(new Set([...p1.rows,...p2.rows].map(r=>r.id)).size,26);
  }finally{await db.close();}
 });
 

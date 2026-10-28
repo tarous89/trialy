@@ -38,9 +38,9 @@ export class DataService {
  }
  async records(a:Actor,w:string,t:string,opts:RecordQuery={},allowedTypes?:string[]) {
   const dynamic=await this.dynamicRows(a,w,t,opts,allowedTypes);
-  if(dynamic){const limit=Math.min(100,Math.max(1,opts.limit??50)),offset=Math.max(0,opts.offset??0);return {rows:dynamic.rows.slice(offset,offset+limit),total:dynamic.rows.length,limit,offset,month:opts.month};}
+  if(dynamic){const limit=Math.min(100,Math.max(1,opts.limit??25)),offset=Math.max(0,opts.offset??0);return {rows:dynamic.rows.slice(offset,offset+limit),total:dynamic.rows.length,limit,offset,month:opts.month};}
   const {args,where,fields,config}=await this.recordQuery(a,w,t,opts);
-  const limit=Math.min(100,Math.max(1,opts.limit??50)),offset=Math.max(0,opts.offset??0);
+  const limit=Math.min(100,Math.max(1,opts.limit??25)),offset=Math.max(0,opts.offset??0);
   const total=Number((await this.db.query(`SELECT count(*) AS count FROM records WHERE ${where}`,args)).rows[0].count);
   const bind=(v:unknown)=>{args.push(v);return `$${args.length}`;};
   const order=config.sort?`NULLIF(data->${bind(config.sort.field)}::text,'null'::jsonb) ${config.sort.direction==='desc'?'DESC':'ASC'} NULLS LAST,created_at,id`:'created_at,id';
@@ -92,14 +92,14 @@ export class DataService {
   if(field.kind==='relationship'){
    if(!field.targetTypeId)return {options:[],hasMore:false};
    const target=await typeAccess(this.db,a,w,field.targetTypeId),visible=visibleFields(target.type.fields,target.policy,a);
-   const page=await this.records(a,w,field.targetTypeId,{q,offset,limit:50});hasMore=offset+page.rows.length<page.total;
+   const page=await this.records(a,w,field.targetTypeId,{q,offset,limit:25});hasMore=offset+page.rows.length<page.total;
    options=page.rows.map(r=>({id:r.id,label:String(r.data[visible.find(f=>f.kind==='text')?.key??visible[0]?.key]??r.id)}));
   }else if(field.kind==='table')options=(await this.types(a,w)).map(v=>({id:v.id,label:v.name}));
   else if(field.kind==='field'&&field.targetTypeId){const target=await typeAccess(this.db,a,w,field.targetTypeId);options=visibleFields(target.type.fields,target.policy,a).map(f=>({id:f.key,label:f.name}));}
   else if(field.kind==='document')options=(await this.documents(a,w)).map(d=>({id:d.id,label:d.filename+' · v'+d.version}));
   else if(field.kind==='person')options=(await this.db.query('SELECT u.id,u.name FROM users u JOIN memberships m ON m.user_id=u.id WHERE m.tenant_id=$1 ORDER BY u.name,u.id',[policy.tenant_id])).rows.map(u=>({id:u.id,label:u.name}));
   else fail(400,'invalid_reference','Choose a reference field');
-  if(field.kind!=='relationship'){options=options.filter(o=>o.label.toLowerCase().includes(q.toLowerCase()));hasMore=offset+50<options.length;options=options.slice(offset,offset+50);}
+  if(field.kind!=='relationship'){options=options.filter(o=>o.label.toLowerCase().includes(q.toLowerCase()));hasMore=offset+25<options.length;options=options.slice(offset,offset+25);}
   return {options,hasMore,offset};
  }
  async recordHistory(a:Actor,w:string,recordId:string,offset=0) {
@@ -107,10 +107,10 @@ export class DataService {
   if(!r)fail(404,'not_found','Record not found');
   const {type,policy}=await typeAccess(this.db,a,w,r.type_id);
   await assertRecordScope(this.db,policy,recordId);const fields=visibleFields(type.fields,policy,a);
-  const revisions=(await this.db.query("SELECT version,snapshot,actor_id,created_at FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='record' ORDER BY version DESC LIMIT 51 OFFSET $3",[w,recordId,offset])).rows;
+  const revisions=(await this.db.query("SELECT version,snapshot,actor_id,created_at FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='record' ORDER BY version DESC LIMIT 26 OFFSET $3",[w,recordId,offset])).rows;
   return {recordId,typeId:r.type_id,currentVersion:r.version,typeVersion:type.version,fields,
    canRestore:!['viewer','inspector'].includes(policy.role)&&fields.length===type.fields.length&&!['archived','superseded'].includes(r.state),
-   offset,hasMore:revisions.length>50,revisions:revisions.slice(0,50).map(v=>({version:v.version,actorId:v.actor_id,createdAt:v.created_at,state:v.snapshot.state,data:projectData(v.snapshot.data??{},fields)}))};
+   offset,hasMore:revisions.length>25,revisions:revisions.slice(0,25).map(v=>({version:v.version,actorId:v.actor_id,createdAt:v.created_at,state:v.snapshot.state,data:projectData(v.snapshot.data??{},fields)}))};
  }
  async documentPermission(tx:Connection,a:Actor,w:string,documentId:string,version=false){
   const p=await access(tx,a,w);const rules=(await tx.query(`SELECT r.* FROM document_access r WHERE r.workspace_id=$1 AND r.document_id=${version?'(SELECT document_id FROM document_versions WHERE id::text=$2 AND workspace_id=$1)':'$2::uuid'}`,[w,documentId])).rows[0];

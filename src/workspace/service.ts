@@ -252,7 +252,7 @@ export class WorkspaceFoundation {
  async renderComponent(a:Actor,w:string,id:string,blockIndex:number,offset=0){a={...a,accessToolId:id};
   const c=await this.component(this.db,a,w,id);if(c.archived||c.project_archived||c.format!=='trialy-ui')fail(400,'not_runnable','Choose an active Trialy interface');
   const spec=this.parseInterface(c),block=spec.blocks[blockIndex];if(!block||block.kind!=='table')fail(400,'invalid_block','Choose a table block');
-  const result=await new Service(this.db).records(a,w,block.typeId,{limit:50,offset},c.bindings.map((b:any)=>b.typeId));const {type,policy}=await typeAccess(this.db,a,w,block.typeId);
+  const result=await new Service(this.db).records(a,w,block.typeId,{limit:25,offset},c.bindings.map((b:any)=>b.typeId));const {type,policy}=await typeAccess(this.db,a,w,block.typeId);
   const bound=Object.fromEntries(c.bindings.map((b:any)=>[b.typeId,b.fields]));const reader=new DerivedReader(this.db,a,w,Object.keys(bound),bound);result.rows=await Promise.all(result.rows.map(r=>reader.read(r)));
   return {componentVersion:c.version,fields:type.fields.filter((f:any)=>block.fields.includes(f.key)),editable:block.editable&&!['viewer','inspector'].includes(policy.role)&&!policy.archived,...result,rows:result.rows.map(r=>({...r,data:Object.fromEntries(block.fields.map(k=>[k,r.data[k]??null]))}))};
  }
@@ -310,9 +310,9 @@ export class WorkspaceFoundation {
  }
  async recordFacts(a:Actor,w:string,recordId:string,offset=0){
   const record=await this.record(this.db,a,w,recordId);if(!Number.isInteger(offset)||offset<0)fail(400,'invalid_offset','Invalid page');
-  const rows=(await this.db.query('SELECT f.*,r.reason AS retraction_reason,r.actor_id AS retracted_by,r."authorization" AS retraction_authorization,r.created_at AS retracted_at FROM record_facts f LEFT JOIN record_fact_retractions r ON r.fact_id=f.id WHERE f.workspace_id=$1 AND f.record_id=$2 ORDER BY f.created_at DESC,f.id DESC LIMIT 100 OFFSET $3',[w,recordId,offset])).rows;
+  const rows=(await this.db.query('SELECT f.*,r.reason AS retraction_reason,r.actor_id AS retracted_by,r."authorization" AS retraction_authorization,r.created_at AS retracted_at FROM record_facts f LEFT JOIN record_fact_retractions r ON r.fact_id=f.id WHERE f.workspace_id=$1 AND f.record_id=$2 ORDER BY f.created_at DESC,f.id DESC LIMIT 25 OFFSET $3',[w,recordId,offset])).rows;
   const facts=[];for(const fact of rows){if(!record.fields.some((f:any)=>f.key===fact.field_key))continue;try{if(fact.project_id)await this.nodeAccess(this.db,a,w,fact.project_id);facts.push(fact);}catch{}}
-  return {recordId,recordVersion:record.version,currentValues:record.data,facts,nextOffset:rows.length===100?offset+100:null,interpretation:'Candidate values preserve source labels and context. Current values change only through a separately reviewed preference. Labels are supplied evidence descriptions, not independent verification.'};
+  return {recordId,recordVersion:record.version,currentValues:record.data,facts,nextOffset:rows.length===25?offset+25:null,interpretation:'Candidate values preserve source labels and context. Current values change only through a separately reviewed preference. Labels are supplied evidence descriptions, not independent verification.'};
  }
  private async factReview(tx:Connection,a:Actor,w:string,op:Extract<WorkspaceOperation,{kind:'record_fact'|'prefer_record_fact'|'retract_record_fact'}>){
   const fact=op.kind==='record_fact'?null:(await tx.query('SELECT f.* FROM record_facts f LEFT JOIN record_fact_retractions r ON r.fact_id=f.id WHERE f.id=$1 AND f.workspace_id=$2 AND r.fact_id IS NULL',[op.factId,w])).rows[0];
@@ -331,9 +331,9 @@ export class WorkspaceFoundation {
  async projectRecords(a:Actor,w:string,projectId:string,offset=0,typeIds?:string[]){
   const project=(await this.nodeAccess(this.db,a,w,projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');
   if(!Number.isInteger(offset)||offset<0)fail(400,'invalid_offset','Invalid page');
-  const rows=(await this.db.query('SELECT p.* FROM project_records p JOIN records r ON r.id=p.record_id WHERE p.workspace_id=$1 AND p.project_id=$2 AND p.revoked_at IS NULL AND ($4::uuid[] IS NULL OR r.type_id=ANY($4::uuid[])) ORDER BY p.created_at,p.id LIMIT 100 OFFSET $3',[w,projectId,offset,typeIds??null])).rows;
+  const rows=(await this.db.query('SELECT p.* FROM project_records p JOIN records r ON r.id=p.record_id WHERE p.workspace_id=$1 AND p.project_id=$2 AND p.revoked_at IS NULL AND ($4::uuid[] IS NULL OR r.type_id=ANY($4::uuid[])) ORDER BY p.created_at,p.id LIMIT 25 OFFSET $3',[w,projectId,offset,typeIds??null])).rows;
   const records=[];for(const link of rows){try{const record=await this.record(this.db,a,w,link.record_id);records.push({link,record});}catch{}}
-  return {projectId,records,nextOffset:rows.length===100?offset+100:null,shared:true};
+  return {projectId,records,nextOffset:rows.length===25?offset+25:null,shared:true};
  }
  private async projectLinksReview(tx:Connection,a:Actor,w:string,op:Extract<WorkspaceOperation,{kind:'link_project_records'|'unlink_project_record'}>){
   if(op.kind==='unlink_project_record'){
@@ -379,20 +379,20 @@ export class WorkspaceFoundation {
    JOIN records t ON t.id::text=e.value AND t.workspace_id=r.workspace_id
    JOIN project_records q ON q.record_id=t.id AND q.project_id=p.project_id AND q.workspace_id=p.workspace_id AND q.revoked_at IS NULL
    WHERE p.workspace_id=$1 AND p.project_id=$2 AND p.revoked_at IS NULL AND r.state<>'archived' AND t.state<>'archived' AND ($4::uuid[] IS NULL OR (r.type_id=ANY($4::uuid[]) AND t.type_id=ANY($4::uuid[])))
-   ORDER BY r.id,e.key,t.id LIMIT 101 OFFSET $3`,[w,projectId,offset,typeIds??null])).rows,relationships=[];
-  for(const edge of rows.slice(0,100)){
+   ORDER BY r.id,e.key,t.id LIMIT 26 OFFSET $3`,[w,projectId,offset,typeIds??null])).rows,relationships=[];
+  for(const edge of rows.slice(0,25)){
    let source:any,target:any;try{source=await this.record(this.db,a,w,edge.source_id);target=await this.record(this.db,a,w,edge.target_id);}catch(e){if([403,404].includes((e as any).status))continue;throw e;}
    const field=source.fields.find((f:any)=>f.key===edge.field&&f.kind==='relationship'&&f.targetTypeId===target.type_id);if(!field)continue;
    relationships.push({field:field.key,label:field.name,source:{id:source.id,typeId:source.type_id,version:source.version,data:source.data},target:{id:target.id,typeId:target.type_id,version:target.version,data:target.data}});
   }
-  return {projectId,relationships,nextOffset:rows.length>100?offset+100:null,interpretation:'Explicit relationship fields between records linked to this project. No inferred identity edges or links to records outside this project. Contextual roles/affiliations can be customer-defined relationship records linked to the project.'};
+  return {projectId,relationships,nextOffset:rows.length>25?offset+25:null,interpretation:'Explicit relationship fields between records linked to this project. No inferred identity edges or links to records outside this project. Contextual roles/affiliations can be customer-defined relationship records linked to the project.'};
  }
  async collectionResponses(a:Actor,w:string,offset=0){
   const p=await access(this.db,a,w);if(p.role!=='owner')fail(403,'owner_required','Owner required');
-  const rows=(await this.db.query('SELECT s.id,s.type_id,s.link_id,s.data,s.created_at,a.record_id FROM form_submissions s LEFT JOIN submission_acceptances a ON a.submission_id=s.id WHERE s.workspace_id=$1 ORDER BY s.created_at,s.id LIMIT 101 OFFSET $2',[w,offset])).rows,responses=[];
-  for(const row of rows){try{const {type,policy}=await typeAccess(this.db,a,w,row.type_id);const fields=visibleFields(type.fields,policy,a);responses.push({...row,data:projectData(row.data,fields),typeName:type.name});}catch(e){if(![403,404].includes((e as any).status))throw e;}}
+  const rows=(await this.db.query('SELECT s.id,s.type_id,s.link_id,s.data,s.created_at,a.record_id FROM form_submissions s LEFT JOIN submission_acceptances a ON a.submission_id=s.id WHERE s.workspace_id=$1 ORDER BY s.created_at,s.id LIMIT 26 OFFSET $2',[w,offset])).rows,responses=[];
+  for(const row of rows.slice(0,25)){try{const {type,policy}=await typeAccess(this.db,a,w,row.type_id);const fields=visibleFields(type.fields,policy,a);responses.push({...row,data:projectData(row.data,fields),typeName:type.name});}catch(e){if(![403,404].includes((e as any).status))throw e;}}
   const links=[];for(const link of (await this.db.query('SELECT id,name,kind,type_id,fields,project_id,expires_at,revoked_at FROM external_links WHERE workspace_id=$1 ORDER BY created_at DESC LIMIT 100',[w])).rows){try{const {type,policy}=await typeAccess(this.db,a,w,link.type_id);if(link.fields.every((k:string)=>visibleFields(type.fields,policy,a).some(f=>f.key===k)))links.push(link);}catch(e){if(![403,404].includes((e as any).status))throw e;}}
-  return {links,responses,nextOffset:rows.length>100?offset+100:null,interpretation:'Unverified external statements. Acceptance requires human review. Original attachments are reviewed separately in standalone Access settings.'};
+  return {links,responses,nextOffset:rows.length>25?offset+25:null,interpretation:'Unverified external statements. Acceptance requires human review. Original attachments are reviewed separately in standalone Access settings.'};
  }
  private async responseReview(tx:Connection,a:Actor,w:string,op:Extract<WorkspaceOperation,{kind:'accept_collection_response'}>){
   if((await access(tx,a,w,true)).role!=='owner')fail(403,'owner_required','Owner required');
@@ -465,14 +465,14 @@ export class WorkspaceFoundation {
  }
  async crossTableLinks(a:Actor,w:string,recordId:string,offset=0){
   await this.record(this.db,a,w,recordId,false,true);
-  const rows=(await this.db.query('SELECT * FROM cross_table_links WHERE workspace_id=$1 AND (source_record_id=$2 OR preferred_record_id=$2) ORDER BY created_at,id LIMIT 101 OFFSET $3',[w,recordId,offset])).rows,links=[];
-  for(const link of rows.slice(0,100)){
+  const rows=(await this.db.query('SELECT * FROM cross_table_links WHERE workspace_id=$1 AND (source_record_id=$2 OR preferred_record_id=$2) ORDER BY created_at,id LIMIT 26 OFFSET $3',[w,recordId,offset])).rows,links=[];
+  for(const link of rows.slice(0,25)){
    let source:any,preferred:any;
    try{source=await this.record(this.db,a,w,link.source_record_id,false,true);preferred=await this.record(this.db,a,w,link.preferred_record_id,false,true);}catch(e){if([403,404].includes((e as any).status))continue;throw e;}
    const schemaChanged=link.schema_stamp!==mappingStamp(source.type_id,source.fields,preferred.type_id,preferred.fields,source.typeConcept,preferred.typeConcept);
    links.push({...link,schemaChanged,source:{id:source.id,typeId:source.type_id,version:source.version,data:source.data},preferred:{id:preferred.id,typeId:preferred.type_id,version:preferred.version,data:preferred.data},comparisons:schemaChanged?[]:link.field_pairs.map((pair:any)=>({...pair,sourcePresent:Object.hasOwn(source.data,pair.sourceField),preferredPresent:Object.hasOwn(preferred.data,pair.preferredField),sourceValue:source.data[pair.sourceField]??null,preferredValue:preferred.data[pair.preferredField]??null,conflict:J(source.data[pair.sourceField])!==J(preferred.data[pair.preferredField])}))});
   }
-  return {recordId,links,nextOffset:rows.length>100?offset+100:null,interpretation:'Direct reviewed identity claims only. No transitive merge, value propagation, permission grant or relationship/action retargeting. Changed schemas require a new mapping review.'};
+  return {recordId,links,nextOffset:rows.length>25?offset+25:null,interpretation:'Direct reviewed identity claims only. No transitive merge, value propagation, permission grant or relationship/action retargeting. Changed schemas require a new mapping review.'};
  }
  private async validate(tx:Connection,a:Actor,w:string,op:WorkspaceOperation){
   if(op.kind==='apply_component_records'||op.kind==='edit_component_record')a={...a,accessToolId:op.componentId};

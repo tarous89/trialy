@@ -5,7 +5,7 @@ import {schemaCatalog} from './catalog.js';
 import {activeProject} from '../domain/project-context.js';
 import {access,typeAccess,visibleFields} from '../domain/permissions.js';
 import {DerivedReader} from '../domain/derived-fields.js';
-export const databaseRequest=z.object({typeId:id,projectId:id.optional(),offset:z.number().int().min(0).max(1000000).default(0),limit:z.number().int().min(1).max(100).default(50),query:z.string().max(500).default(''),sortField:z.string().max(64).optional(),descending:z.boolean().default(false)}).strict();
+export const databaseRequest=z.object({typeId:id,projectId:id.optional(),offset:z.number().int().min(0).max(1000000).default(0),limit:z.number().int().min(1).max(100).default(25),query:z.string().max(500).default(''),sortField:z.string().max(64).optional(),descending:z.boolean().default(false)}).strict();
 export async function databasePage(db:Database,a:Actor,w:string,input:unknown){
  const v=databaseRequest.parse(input);if(v.projectId)await activeProject(db,a,w,v.projectId);
  const policy=await access(db,a,w);const canEdit=!['viewer','inspector'].includes(policy.role)&&!policy.archived;

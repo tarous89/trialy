@@ -7,7 +7,7 @@ import type {Database} from '../db/database.js';
 import {access,typeAccess,visibleFields} from '../domain/permissions.js';
 import {WorkspaceFoundation} from './service.js';
 import {Foundation} from '../foundation/service.js';
-export const homeQuery=z.object({offset:z.number().int().min(0).default(0),limit:z.number().int().min(1).max(100).default(40),query:z.string().max(200).default(''),projectId:z.string().default(''),kind:z.enum(['all','tracker','form','visualization','automation']).default('all'),sort:z.enum(['updated','name']).default('updated')});
+export const homeQuery=z.object({offset:z.number().int().min(0).default(0),limit:z.number().int().min(1).max(100).default(25),query:z.string().max(200).default(''),projectId:z.string().default(''),kind:z.enum(['all','tracker','form','visualization','automation']).default('all'),sort:z.enum(['updated','name']).default('updated')});
 export async function workspaceHome(db:Database,a:Actor,w:string,input:unknown={}){
  const q=homeQuery.parse(input);
  const p=await access(db,a,w),f=new WorkspaceFoundation(db),engine=new Foundation(db);

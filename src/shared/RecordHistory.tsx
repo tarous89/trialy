@@ -11,6 +11,6 @@ export function RecordHistory({history,busy,onClose,onPage,onRestore}:{history:a
  <dl className="preview-values">{history.fields.map((f:Field)=><React.Fragment key={f.key}><dt>{f.name}</dt><dd>{String(v.data[f.key]??'—')}</dd></React.Fragment>)}</dl>
  {history.canRestore&&v.version<history.currentVersion&&<button type="button" disabled={busy||!reason.trim()} onClick={()=>onRestore({kind:'restore_record',recordId:history.recordId,sourceVersion:v.version,expectedVersion:history.currentVersion,expectedTypeVersion:history.typeVersion,reason:reason.trim()})}>Preview restoring version {v.version}</button>}
  </details>)}
- <footer><button type="button" disabled={busy||history.offset===0} onClick={()=>onPage(Math.max(0,history.offset-50))}>Newer versions</button><button type="button" disabled={busy||!history.hasMore} onClick={()=>onPage(history.offset+50)}>Older versions</button></footer>
+ <footer><button type="button" disabled={busy||history.offset===0} onClick={()=>onPage(Math.max(0,history.offset-25))}>Newer versions</button><button type="button" disabled={busy||!history.hasMore} onClick={()=>onPage(history.offset+25)}>Older versions</button></footer>
  </section>;
 }

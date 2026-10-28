@@ -254,9 +254,9 @@ export class Service extends DataService {
  }
  async creationArchives(a:Actor,w:string,offset=0){
   await access(this.db,a,w);if(!Number.isInteger(offset)||offset<0)fail(400,'invalid_offset','Invalid page');
-  const rows=(await this.db.query(`SELECT e.id,e.object_id AS record_id,e.actor_id,e.created_at,e.reason,e.action,e.before_value,e.after_value,r.type_id,r.version AS current_version,r.state AS current_state FROM audit_events e JOIN records r ON r.id=e.object_id AND r.workspace_id=e.workspace_id WHERE e.workspace_id=$1 AND e.action IN ('record.creation_archived','record.creation_restored') ORDER BY e.created_at DESC,e.id DESC LIMIT 100 OFFSET $2`,[w,offset])).rows;
+  const rows=(await this.db.query(`SELECT e.id,e.object_id AS record_id,e.actor_id,e.created_at,e.reason,e.action,e.before_value,e.after_value,r.type_id,r.version AS current_version,r.state AS current_state FROM audit_events e JOIN records r ON r.id=e.object_id AND r.workspace_id=e.workspace_id WHERE e.workspace_id=$1 AND e.action IN ('record.creation_archived','record.creation_restored') ORDER BY e.created_at DESC,e.id DESC LIMIT 25 OFFSET $2`,[w,offset])).rows;
   const events=[];for(const row of rows){try{const {type,policy}=await typeAccess(this.db,a,w,row.type_id);if(visibleFields(type.fields,policy,a).length!==type.fields.length)continue;events.push({...row,typeName:type.name});}catch{}}
-  return {events,nextOffset:rows.length===100?offset+100:null};
+  return {events,nextOffset:rows.length===25?offset+25:null};
  }
  private async reverseBatch(tx:Connection,a:Actor,w:string,op:Extract<Operation,{kind:'reverse_field_change'|'reverse_field_changes'}>){
   const entries=op.kind==='reverse_field_change'?[op]:op.changes;
@@ -281,9 +281,9 @@ export class Service extends DataService {
  async fieldChanges(a:Actor,w:string,query:Partial<FieldChangeQuery>={}){
   query=fieldChangeQuerySchema.parse(query);await access(this.db,a,w);const offset=query.offset??0;
   if(query.since&&query.until&&query.since>query.until)fail(400,'date_range','Start must precede end');
-  const rows=(await this.db.query(`SELECT * FROM record_field_changes WHERE workspace_id=$1 AND ($2::uuid IS NULL OR type_id=$2) AND ($3::uuid IS NULL OR record_id=$3) AND ($5::uuid IS NULL OR actor_id=$5) AND ($6::text IS NULL OR "authorization"->>'id'=$6) AND ($7::text IS NULL OR coalesce("authorization"->>'kind','unattributed')=$7) AND ($8::timestamptz IS NULL OR created_at >= $8) AND ($9::timestamptz IS NULL OR created_at <= $9) AND ($10::text IS NULL OR "authorization"->>'changeSetId'=$10) ORDER BY created_at DESC,id DESC LIMIT 100 OFFSET $4`,[w,query.typeId??null,query.recordId??null,offset,query.actorId??null,query.authorizationId??null,query.authorizationKind??null,query.since??null,query.until??null,query.changeSetId??null])).rows;
+  const rows=(await this.db.query(`SELECT * FROM record_field_changes WHERE workspace_id=$1 AND ($2::uuid IS NULL OR type_id=$2) AND ($3::uuid IS NULL OR record_id=$3) AND ($5::uuid IS NULL OR actor_id=$5) AND ($6::text IS NULL OR "authorization"->>'id'=$6) AND ($7::text IS NULL OR coalesce("authorization"->>'kind','unattributed')=$7) AND ($8::timestamptz IS NULL OR created_at >= $8) AND ($9::timestamptz IS NULL OR created_at <= $9) AND ($10::text IS NULL OR "authorization"->>'changeSetId'=$10) ORDER BY created_at DESC,id DESC LIMIT 25 OFFSET $4`,[w,query.typeId??null,query.recordId??null,offset,query.actorId??null,query.authorizationId??null,query.authorizationKind??null,query.since??null,query.until??null,query.changeSetId??null])).rows;
   const visible=[];for(const r of rows){try{const {type,policy}=await typeAccess(this.db,a,w,r.type_id);await assertRecordScope(this.db,policy,r.record_id);const field=visibleFields(type.fields,policy,a).find(f=>f.key===r.field_key);if(!field&&!(a.origin==='human'&&policy.role==='owner'&&!type.fields.some((f:Field)=>f.key===r.field_key)))continue;visible.push({...r,typeName:type.name,fieldName:field?.name??r.field_key,derived:!!field?.formula});}catch{}}
-  return {changes:visible,nextOffset:rows.length===100?offset+100:null};
+  return {changes:visible,nextOffset:rows.length===25?offset+25:null};
  }
  async preview(a:Actor,w:string,input:unknown) {const op=operationSchema.parse(input);return this.prepare(a,w,op);}
  async previewFile(a:Actor,w:string,input:{filename:string;mime:string;bytes:Buffer;ai:boolean;documentId?:string;expectedVersion?:number;submissionFileId?:string}) {

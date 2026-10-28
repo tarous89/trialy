@@ -47,13 +47,13 @@ export class TableMappings {
  async list(a:Actor,w:string,offset=0){
   // Check workspace access even when no mappings exist.
   await access(this.db,a,w);
-  const rows=(await this.db.query('SELECT id FROM table_mappings WHERE workspace_id=$1 ORDER BY created_at,id LIMIT 101 OFFSET $2',[w,offset])).rows,mappings=[];
-  for(const {id} of rows.slice(0,100)){
+  const rows=(await this.db.query('SELECT id FROM table_mappings WHERE workspace_id=$1 ORDER BY created_at,id LIMIT 26 OFFSET $2',[w,offset])).rows,mappings=[];
+  for(const {id} of rows.slice(0,25)){
    const m=await this.row(w,id);let current;
    try{current=await this.tables(a,w,m.source_type_id,m.preferred_type_id);}catch(e){if([403,404].includes((e as any).status))continue;throw e;}
    mappings.push({...m,sourceName:current.source.name,preferredName:current.preferred.name,schemaChanged:m.schema_stamp!==current.schemaStamp,usable:!m.revoked_at&&m.schema_stamp===current.schemaStamp});
   }
-  return {mappings,nextOffset:rows.length>100?offset+100:null};
+  return {mappings,nextOffset:rows.length>25?offset+25:null};
  }
  async apply(a:Actor,w:string,policy:any,op:MappingOperation,authorization?:WriteAuthorization){
   const review=await this.review(a,w,op),id=op.kind==='save_table_mapping'?randomUUID():op.mappingId;

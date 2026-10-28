@@ -6,7 +6,7 @@ import type {Database} from '../db/database.js';
 import {access} from '../domain/permissions.js';
 import {WorkspaceFoundation} from './service.js';
 import {Foundation} from '../foundation/service.js';
-export const activityQuery=z.object({eventId:id.optional(),offset:z.number().int().min(0).default(0),limit:z.number().int().min(1).max(200).default(50),query:z.string().max(200).default(''),category:z.enum(['all','automation','access','deletion','data','configuration']).default('all'),outcome:z.enum(['all','failed','succeeded','queued','running','cancelled','completed','skipped']).default('all'),actorId:id.optional(),projectId:id.optional(),resourceId:id.optional(),since:z.iso.datetime().optional(),until:z.iso.datetime().optional(),before:z.iso.datetime().optional()});
+export const activityQuery=z.object({eventId:id.optional(),offset:z.number().int().min(0).default(0),limit:z.number().int().min(1).max(200).default(25),query:z.string().max(200).default(''),category:z.enum(['all','automation','access','deletion','data','configuration']).default('all'),outcome:z.enum(['all','failed','succeeded','queued','running','cancelled','completed','skipped']).default('all'),actorId:id.optional(),projectId:id.optional(),resourceId:id.optional(),since:z.iso.datetime().optional(),until:z.iso.datetime().optional(),before:z.iso.datetime().optional()});
 /** Metadata only. Never return snapshots, payloads, diagnostics, source or bearer links. */
 export async function activityPage(db:Database,a:Actor,w:string,input:unknown){
  const q=activityQuery.parse(input),p=await access(db,a,w),f=new WorkspaceFoundation(db);
