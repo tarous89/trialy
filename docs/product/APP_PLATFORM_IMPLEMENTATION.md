@@ -23,7 +23,7 @@ The approved scope is limited to simple apps. Branded connectors, external ident
 
 - `npm run build` and TypeScript checks pass.
 - Full unit/integration suite: 124 tests pass, including connector authorization, network isolation, encrypted storage, exact reviews, quotas, replay protection, route validation and sign-in returns.
-- Full browser/visual suite: 23 tests pass. Existing 18 scenarios and their screenshot baselines remain unchanged. Five added scenarios cover desktop/mobile standalone launch, cross-app links, script-URL rejection, internal navigation/history/refresh, unsaved edits, footer spacing, reviewed shared-data saves, connector reviews/replay, access UI, creating a second connection, credential replacement and removal.
+- Full browser/visual suite: 24 tests pass. Existing 18 scenarios and their screenshot baselines remain unchanged. Six added scenarios cover desktop/mobile standalone launch, cross-app links, script-URL rejection, internal navigation/history/refresh, unsaved edits, footer spacing, reviewed shared-data saves, connector reviews/replay, access UI, creating a second connection, credential replacement and removal, and the embedded host open-link bridge.
 - Test fixtures use separate data for simple apps and existing trackers, plus a separate simulated client IP per scenario; production request limits are unchanged.
 - Three new screenshot baselines cover standalone desktop/mobile and Connectors Access. Synthetic host tests do not establish actual ChatGPT visual parity.
 

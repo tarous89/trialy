@@ -42,3 +42,9 @@ test('App changes stay proposals until review and reopen with saved data',async(
  const f=await (await page.request.get(base+'/fixture/apps')).json();await page.goto(base+f.url.replace('?',`/company?recordId=${f.recordId}&`));const frame=page.frameLocator('iframe[title="Saved frontend code"]');
  await frame.getByRole('button',{name:'Rename company',exact:true}).click();await page.getByRole('button',{name:'Save changes',exact:true}).click();const review=page.getByRole('dialog',{name:'Review app changes'});await expect(review).toContainText('Updated company');await review.getByRole('button',{name:'Save changes',exact:true}).click();await expect(frame.getByText('Updated company',{exact:true})).toBeVisible();await page.reload();await expect(frame.getByText('Updated company',{exact:true})).toBeVisible();
 });
+
+test('Embedded app launch uses the host open-link bridge',async({page})=>{
+ const f=await (await page.request.get(base+'/fixture/apps')).json();await page.goto(base);await page.waitForFunction(()=>window.hostReady);
+ await page.evaluate(r=>window.deliver(r),{screen:'app-link',name:'Simple app fixture',workspaceId:f.workspaceId,appId:f.appId,url:base+f.url});
+ const embed=page.frameLocator('#app');await expect(embed.getByRole('heading',{name:'Simple app fixture',exact:true})).toBeVisible();await embed.getByRole('link',{name:'Open app ↗',exact:true}).click();await expect.poll(()=>page.evaluate(()=>window.lastOpenedUrl)).toBe(base+f.url);
+});
