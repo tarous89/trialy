@@ -1,3 +1,4 @@
+import {AppPlatform,AppNavigation} from './AppPlatform.js';
 import {readStandardConfig} from './standard-tool.js';
 import {ToolLayout} from './ToolLayout.js';
 import {AccessButton,AccessPanel} from './AccessPanel.js';
@@ -9,6 +10,7 @@ import {ProjectSharing} from './ProjectSharing.js';
 import React,{useState,useEffect,useRef} from 'react';
 type Call=(name:string,args:Record<string,unknown>)=>Promise<any>;
 export function ComponentEditor({component:initialComponent,projects,call,onBack,onPreview,initialOutput}:{initialOutput?:any;component:any;projects:any[];call:Call;onBack:()=>void;onPreview:(p:any)=>void}){
+ const platform=React.useContext(AppPlatform),navigation=React.useContext(AppNavigation);
  const [component,setComponent]=useState(initialComponent);
  const preparedOutput=useRef(initialOutput);
  useEffect(()=>{setComponent(initialComponent);},[initialComponent]);
@@ -28,6 +30,7 @@ export function ComponentEditor({component:initialComponent,projects,call,onBack
  const target={componentId:component.id,expectedVersion:component.version};
  const [leaving,setLeaving]=useState(false);
  const dirty=name!==(component.name??'')||source!==(component.source??'')||format!==(component.format??'frontend-js')||resourceKind!==(component.resource_kind??'generic')||manifest!==JSON.stringify(component.manifest??null,null,2)||sourceAccess!==(component.source_access??'workspace')||assets!==JSON.stringify(component.assets??[],null,2)||execution!==JSON.stringify(component.execution??[],null,2);
+ useEffect(()=>{if(!showInterface)navigation?.setDirty(dirty);},[dirty,showInterface,navigation?.setDirty]);
  const leave=()=>dirty?setLeaving(true):onBack();
  useEffect(()=>{if(!dirty)return;const prevent=(e:BeforeUnloadEvent)=>{e.preventDefault();e.returnValue='';};window.addEventListener('beforeunload',prevent);return()=>window.removeEventListener('beforeunload',prevent);},[dirty]);
  if(leaving)return <section role="alertdialog" aria-label="Unsaved configuration"><h3>Keep your edits?</h3><p>Your configuration changes have not been saved.</p><button autoFocus onClick={()=>setLeaving(false)}>Keep editing</button><button onClick={onBack}>Discard edits and return</button></section>;
@@ -40,7 +43,7 @@ export function ComponentEditor({component:initialComponent,projects,call,onBack
  {revision?<><PageBack onClick={()=>setRevision(null)}>← Revision list</PageBack><h3>Revision {revision.version}</h3><pre style={{whiteSpace:'pre-wrap',overflowWrap:'anywhere'}}>{revision.snapshot.source}</pre><p>Recovery creates a new revision. It keeps the current project and archive state. Execution bindings are cleared and must be reviewed again.</p><button disabled={busy} onClick={()=>act(()=>prepare({kind:'restore_component',...target,revisionVersion:revision.version}))}>Review recovery</button></>
  :history?<><PageBack onClick={()=>setHistory(null)}>← Component</PageBack><h3>Revision history</h3>{history.map(r=><p key={r.id}><button onClick={()=>setRevision(r)}>Revision {r.version} · {r.snapshot.name}</button></p>)}</>
  :<><h3>{component.id?'Edit saved component':'New component'}</h3><p>Frontend code runs under the documented HTML/CSS/JavaScript render/event contract. Other HTML and JavaScript formats are source-only. Saving does not change linked database records.</p>
- <label>Resource type<select value={resourceKind} onChange={e=>setResourceKind(e.target.value)}>{['generic','tracker','form','visualization'].map(k=><option key={k} value={k}>{k==='visualization'?'dashboard':k}</option>)}</select></label><label>Connected field manifest<textarea rows={6} value={manifest} onChange={e=>setManifest(e.target.value)}/></label><label>Name<input value={name} onChange={e=>setName(e.target.value)}/></label><label>Format<select value={format} onChange={e=>setFormat(e.target.value)}>{['frontend-js','text','markdown','json','javascript','html',...(component.format==='trialy-ui'?['trialy-ui']:[])].map(f=><option key={f}>{f}</option>)}</select></label>
+ {!platform.enabled&&<label>Resource type<select value={resourceKind} onChange={e=>setResourceKind(e.target.value)}>{['generic','tracker','form','visualization'].map(k=><option key={k} value={k}>{k==='visualization'?'dashboard':k}</option>)}</select></label>}<label>Connected field manifest<textarea rows={6} value={manifest} onChange={e=>setManifest(e.target.value)}/></label><label>Name<input value={name} onChange={e=>setName(e.target.value)}/></label><label>Format<select value={format} onChange={e=>setFormat(e.target.value)}>{['frontend-js','text','markdown','json','javascript','html',...(component.format==='trialy-ui'?['trialy-ui']:[])].map(f=><option key={f}>{f}</option>)}</select></label>
  <label>Source / configuration<textarea rows={16} value={source} onChange={e=>setSource(e.target.value)} spellCheck={false}/></label>
 <label>Source access<select value={sourceAccess} onChange={e=>setSourceAccess(e.target.value)}><option value="workspace">Full workspace access required</option><option value="bindings">Owner-approved sharing with bound-data audience</option></select></label><p>Bound-data sharing discloses the complete saved source, including any copied values in it, to people/AI permitted by its project and bindings. Review that source before approving. Live reads and writes still obey field permissions.</p>
  <label>Saved file assets (JSON)<textarea rows={4} value={assets} onChange={e=>setAssets(e.target.value)}/></label><p>Attach exact saved file versions as name/versionId pairs. Files remain in the database; attachments do not grant additional access.</p>

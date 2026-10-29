@@ -136,7 +136,7 @@ export class WorkspaceFoundation {
    return {boundEdit:true,proposal,state:request.state,html:'',css:''};
   }
   const knownTracker=standardTracker(content.source),key=w+':'+a.userId;if(!knownTracker&&(activeFrontends.size>=2||activeFrontends.has(key)))fail(429,'runtime_busy','Another interface is running; try again shortly');if(!knownTracker)activeFrontends.add(key);
-  const changes:any[]=[],invocations:any[]=[];let layoutProposal:any=null;
+  const changes:any[]=[],invocations:any[]=[],connectorReviews:any[]=[];let layoutProposal:any=null;
   try{
    const currentPolicy=await access(this.db,a,w);
    const tracker=knownTracker,pages:any[]=[];
@@ -149,7 +149,7 @@ export class WorkspaceFoundation {
     if(name==='connectors.call'&&process.env.SIMPLE_APPS_ENABLED==='true'){
      if(!request.componentId)fail(403,'preview_read_only','Unsaved app previews cannot use external connectors');
      const v=z.object({connectionId:id,operation:z.string().max(64),requestKey:id,parameters:z.record(z.string(),z.unknown()).optional(),records:z.record(z.string(),id).optional()}).strict().parse(value);
-     return new Connectors(this.db,(tx,actor,workspaceId,appId)=>this.component(tx,actor,workspaceId,appId)).call(a,w,{...v,appId:request.componentId,appVersion:version});
+     if(connectorReviews.length>=3)fail(429,'connector_reviews','Review existing connector requests before creating more');const result=await new Connectors(this.db,(tx,actor,workspaceId,appId)=>this.component(tx,actor,workspaceId,appId)).call(a,w,{...v,appId:request.componentId,appVersion:version});if(result.status==='review_required')connectorReviews.push(result);return result;
     }
     if(name==='project.records'||name==='project.relationships'){
      const v=z.object({offset:z.number().int().min(0).max(1000000).default(0)}).strict().parse(value);
@@ -255,7 +255,7 @@ export class WorkspaceFoundation {
     const proposal=layoutProposal?await f.preview(a,w,layoutProposal):changes.length?await f.preview(a,w,{kind:'apply_component_records',componentId:request.componentId,expectedVersion:version,changes}):null;
     const queued=[];for(const v of invocations)queued.push(await f.invokeComponent(a,w,{...v,componentId:request.componentId,expectedVersion:version}));return {proposal,queued};
    });
-   return {queued,runtime:'trialy-frontend-js-v1',frameUrl:new URL('/frontend/frame',process.env.PUBLIC_URL??process.env.RENDER_EXTERNAL_URL??'http://localhost:3000').toString(),...output,accessVersion:currentPolicy.access_version,controls,connected:!!content.manifest,proposal,temporary:!request.componentId,...(tracker?{tracker:{config:tracker.config,theme:tracker.theme,pages,saved:!!request.componentId,writable}}:{})};
+   return {queued,...(connectorReviews.length?{connectorReviews}:{}),runtime:'trialy-frontend-js-v1',frameUrl:new URL('/frontend/frame',process.env.PUBLIC_URL??process.env.RENDER_EXTERNAL_URL??'http://localhost:3000').toString(),...output,accessVersion:currentPolicy.access_version,controls,connected:!!content.manifest,proposal,temporary:!request.componentId,...(tracker?{tracker:{config:tracker.config,theme:tracker.theme,pages,saved:!!request.componentId,writable}}:{})};
   }finally{if(!knownTracker)activeFrontends.delete(key);}
  }
  private parseInterface(content:any){

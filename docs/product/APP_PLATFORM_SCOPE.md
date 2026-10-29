@@ -1,6 +1,6 @@
 # Simple apps: implementation scope
 
-Updated 29 October 2026. Status: ready to implement; documentation only.
+Updated 29 October 2026. Status: approved P0 implemented and locally verified; see [implementation and release evidence](APP_PLATFORM_IMPLEMENTATION.md).
 
 [Prioritized roadmap](APP_PLATFORM_ROADMAP.md) · [Generic connector](CONNECTORS_AND_USAGE.md) · [Later backlog](APP_PLATFORM_BACKLOG.md)
 

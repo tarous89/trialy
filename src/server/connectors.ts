@@ -1,3 +1,4 @@
+import {access,typeAccess,visibleFields} from '../domain/permissions.js';
 import type {Express} from 'express';
 import type {McpServer} from '@modelcontextprotocol/sdk/server/mcp.js';
 import {z} from 'zod';
@@ -6,10 +7,15 @@ import type {WorkspaceFoundation} from '../workspace/service.js';
 import {Connectors} from '../connectors/service.js';
 import {connectorApproval,connectorChange,connectorCall} from '../connectors/schema.js';
 export const connectorsFor=(f:WorkspaceFoundation)=>new Connectors(f.db,(tx,a,w,appId)=>f.component(tx,a,w,appId));
-export function addConnectorApi(app:Express,f:WorkspaceFoundation){
- const c=connectorsFor(f),base='/api/workspaces/:workspaceId/connectors';
+export function addConnectorApi(app:Express,f:WorkspaceFoundation,options:{service?:Connectors}={}){
+ const c=options.service??connectorsFor(f),base='/api/workspaces/:workspaceId/connectors';
  const context=(req:any)=>({a:req.actor as Actor,w:id.parse(req.params.workspaceId)}),offset=z.coerce.number().int().min(0).max(1000000).default(0);
- app.get(base,async(req,res)=>{const {a,w}=context(req);res.json(await c.list(a,w,offset.parse(req.query.offset)));});
+ app.get(base,async(req,res)=>{const {a,w}=context(req);res.json(await c.list(a,w,offset.parse(req.query.offset),z.string().max(200).default('').parse(req.query.q)));});
+
+ app.get(`${base}/directory`,async(req,res)=>{const {a,w}=context(req),p=await access(f.db,a,w),apps=await f.components(a,w);const tables=[];for(const row of (await f.db.query('SELECT id FROM entity_types WHERE workspace_id=$1 ORDER BY name,id',[w])).rows){try{const {type,policy}=await typeAccess(f.db,a,w,row.id);tables.push({id:type.id,name:type.name,fields:visibleFields(type.fields,policy,a).map(field=>({key:field.key,name:field.name,kind:field.kind,readable:true,writable:policy.write_fields.includes(field.key)&&!field.formula&&!field.computed&&!field.lookup}))});}catch(e){if(![403,404].includes((e as any).status))throw e;}}
+ const managed=p.role==='owner'||(await f.db.query("SELECT id FROM connectors WHERE workspace_id=$1 AND config->'managers' ? $2::text LIMIT 1",[w,a.userId])).rows.length>0;
+ const people=(await f.db.query(`SELECT u.id,u.name,m.role AS tenant_role,wa.role FROM users u JOIN memberships m ON m.user_id=u.id LEFT JOIN workspace_access wa ON wa.user_id=u.id AND wa.workspace_id=$1 WHERE m.tenant_id=$2 AND ($3::boolean OR u.id=$4) AND (m.role='owner' OR wa.user_id IS NOT NULL) ORDER BY u.name,u.id`,[w,p.tenant_id,managed,a.userId])).rows.map(person=>({id:person.id,name:person.name,owner:person.tenant_role==='owner',canManage:person.tenant_role==='owner'||person.role==='editor'}));
+ res.json({apps:apps.filter(app=>!app.archived&&!app.project_archived).map(app=>({id:app.id,name:app.name,version:app.version})),tables,people,canCreate:p.role==='owner'&&!p.archived});});
  app.post(`${base}/prepare`,async(req,res)=>{const {a,w}=context(req);res.json(await c.prepare(a,w,req.body));});
  app.get(`${base}/reviews/:reviewId`,async(req,res)=>{const {a,w}=context(req);res.json(await c.readReview(a,w,id.parse(req.params.reviewId)));});
  app.post(`${base}/reviews/:reviewId/confirm`,async(req,res)=>{const {a,w}=context(req),v=connectorApproval.parse(req.body),reviewId=id.parse(req.params.reviewId),review=await c.readReview(a,w,reviewId);res.json(review.kind==='config'?await c.confirmConfig(a,w,reviewId,v.digest):await c.confirmInvocation(a,w,reviewId,v.digest));});

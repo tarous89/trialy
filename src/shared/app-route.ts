@@ -23,5 +23,6 @@ export function parseAppUrl(value:string){
 }
 export function appSignInReturn(value:unknown):string|undefined{
  if(typeof value!=='string')return;
- const parsed=parseAppUrl(value);return parsed?appUrl(parsed):undefined;
+ const parsed=parseAppUrl(value);if(parsed)return appUrl(parsed);
+ try{if(!value.startsWith('/?')||/[\\\u0000-\u0020]/.test(value))return;const url=new URL(value,'https://app.invalid');if(url.hash||url.searchParams.get('tab')!=='connectors'||[...url.searchParams.keys()].some(k=>!['tab','workspaceId','connectionId','connectorReview'].includes(k)||url.searchParams.getAll(k).length!==1))return;id.parse(url.searchParams.get('workspaceId'));for(const key of ['connectionId','connectorReview'])if(url.searchParams.has(key))id.parse(url.searchParams.get(key));return url.pathname+url.search;}catch{return;}
 }

@@ -67,7 +67,7 @@ export function addWorkspaceApi(app:Express,f:WorkspaceFoundation){
  app.get(`${b}/evidence/:recordId`,async(req,res)=>res.json(await f.evidence(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.recordId))));
 }
 export function addWorkspaceMcp(server:McpServer,f:WorkspaceFoundation,a:Actor,safe:any,metadata:any){
- if(process.env.SIMPLE_APPS_ENABLED==='true'){addConnectorMcp(server,f,a,safe,backgroundMetadata(metadata));addAppMcp(server,f,a,safe,backgroundMetadata(metadata));}
+ if(process.env.SIMPLE_APPS_ENABLED==='true'){addConnectorMcp(server,f,a,safe,backgroundMetadata(metadata));addAppMcp(server,f,a,safe,metadata);}
  const display=(name:string,description:string,schema:Record<string,z.ZodType>,fn:(v:any)=>Promise<any>)=>server.registerTool(name,{title:name.replaceAll('_',' '),description,inputSchema:schema,annotations:{readOnlyHint:true,openWorldHint:false},_meta:metadata},safe(fn));
  display('open_tracker','Open exactly this saved tracker in the current branded shell. Use after a confirmed tracker save or when the user asks to open it. Background schema/read tools never navigate.',{workspaceId:id,componentId:id},async v=>({...await f.readComponent(a,v.workspaceId,v.componentId,true),screen:'tracker'}));
  display('open_tracker_draft','Resolve an unsaved preview or reopen its saved tool under current permissions. A prepared response means server rendering succeeded, not that the client displayed it.',{workspaceId:id,previewId:id},v=>f.resolveTrackerPreview(a,v.workspaceId,v.previewId));

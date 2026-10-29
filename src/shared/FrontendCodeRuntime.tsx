@@ -1,3 +1,6 @@
+import {parseAppUrl} from './app-route.js';
+import {AppPlatform,AppNavigation} from './AppPlatform.js';
+import {ConnectorReview} from './ConnectorsPanel.js';
 import {mergeTrackerSnapshot,SNAPSHOT_TTL} from './tracker-cache.js';
 import {ChangeSummary} from './ChangeSummary.js';
 import {EmbeddedNavigation} from './ui/PageNavigation.js';
@@ -7,6 +10,8 @@ import React,{useEffect,useRef,useState} from 'react';
 import {useAccessRecheck} from './useAccessRecheck.js';
 type Call=(name:string,args:Record<string,unknown>)=>Promise<any>;
 export function FrontendCodeRuntime({component,previewId,initialOutput,call,onProposal,onUnavailable,onAccess,onLayout,onBusyChange,onRendered,onUpdated}:{component?:any;previewId?:string;initialOutput?:any;call:Call;onProposal:(p:any)=>void;onUnavailable?:(message:string)=>void;onAccess?:()=>void;onLayout?:()=>void;onBusyChange?:(busy:boolean)=>void;onRendered?:()=>void;onUpdated?:(component:any)=>void}){
+ const platform=React.useContext(AppPlatform),navigation=React.useContext(AppNavigation),navigationRef=useRef(navigation);navigationRef.current=navigation;
+ const [connectorReviews,setConnectorReviews]=useState<any[]>([]),[customDirty,setCustomDirty]=useState(false);
  const embedded=React.useContext(EmbeddedNavigation);
  const frame=useRef<HTMLIFrameElement>(null),output=useRef<any>(null),state=useRef<any>(null),busyRef=useRef(false),channel=useRef(crypto.randomUUID()),live=useRef(true),current=useRef(component);
  const [recordReview,setRecordReview]=useState<any>(null);
@@ -34,7 +39,7 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
    frame.current?.contentWindow?.postMessage({kind:'trialy.cache',channel:channel.current,tracker:merged.tracker},'*');
   }catch{/* Optional prefetch does not replace the view. */}}},150);
  }
- const send=()=>{if(output.current)frame.current?.contentWindow?.postMessage({kind:'trialy.render',channel:channel.current,html:output.current.html,css:output.current.css,controls:output.current.controls,connected:output.current.connected,state:output.current.state,tracker:output.current.tracker,navigationOnly:embedded},'*');};
+ const send=()=>{if(output.current)frame.current?.contentWindow?.postMessage({kind:'trialy.render',channel:channel.current,html:output.current.html,css:output.current.css,controls:output.current.controls,connected:output.current.connected,state:output.current.state,tracker:output.current.tracker,navigationOnly:embedded,appLinks:platform.enabled,appOrigin:platform.origin,linkContext:parseAppUrl(location.pathname+location.search)??(component?{appId:component.id,workspaceId:component.workspace_id,source:'component'}:null)},'*');};
  const frameAction=(action:string)=>{approvedAction.current=action==='save-edits'?'bound-batch':action==='save-layout'?'save-layout':null;frame.current?.contentWindow?.postMessage({kind:'trialy.action',channel:channel.current,action},'*');};
  async function run(event:any={kind:'open'}){
   if(event.action==='tracker:layout'){onLayout?.();return;}if(event.action==='tracker:access'){onAccess?.();return;}
@@ -68,14 +73,14 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
     else setRecordReview({proposal:p,deletion:event.action.startsWith('tracker:delete:')});
     return;
    }
-   let result=await call('run_component_frontend',{request:{...(previewId?{previewId}:{componentId:c.id,expectedVersion:c.version}),state:state.current,event}});
+   let result=await call('run_component_frontend',{request:{...(previewId?{previewId}:{componentId:c.id,expectedVersion:c.version}),state:state.current,event,...(navigationRef.current?{route:navigationRef.current.route}:{})}});
    if(!live.current)return;
    // The footer click approves the visible edits. The server still validates a precise proposal and its digest before committing.
    if(result.proposal&&explicitApproval&&(event.action==='bound-batch'||event.action==='save-layout'&&output.current?.tracker)){
     const p=result.proposal;saveReceipt.current={proposal:p};
     await finishSave();return;
    }
-   result=mergeTrackerSnapshot(output.current,result);output.current=result;state.current=result.state;setStandard(!!result.tracker);setFrameUrl(result.frameUrl);setProposal(result.proposal);
+   result=mergeTrackerSnapshot(output.current,result);output.current=result;state.current=result.state;setStandard(!!result.tracker);setFrameUrl(result.frameUrl);setProposal(result.proposal);setConnectorReviews(result.connectorReviews??[]);setCustomDirty(false);
    if(result.proposal){blocked.current=true;eventQueue.current=[];}send();prefetch(result);
   }catch(e){if(live.current)setError((e as Error).message);}finally{busyRef.current=false;onBusyChange?.(false);if(live.current){setBusy(false);if(eventQueue.current.length&&!blocked.current)void run(eventQueue.current.shift());}}
  }
@@ -84,14 +89,19 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
   const receipt=saveReceipt.current,p=receipt.proposal;
   if(!receipt.saved){await call(receipt.deletion?'commit_change':'confirm_workspace_change',{previewId:p.id,digest:p.digest,confirmed:true});receipt.saved=true;}
   const read=await call('read_project_component',{componentId:current.current.id});current.current=read.component;
-  let result=await call('run_component_frontend',{request:{componentId:current.current.id,expectedVersion:current.current.version,state:{...state.current,settings:false,layoutDraft:null,detail:null,newRow:null},event:{kind:'open'}}});
+  let result=await call('run_component_frontend',{request:{componentId:current.current.id,expectedVersion:current.current.version,...(navigationRef.current?{route:navigationRef.current.route}:{}),state:{...state.current,settings:false,layoutDraft:null,detail:null,newRow:null},event:{kind:'open'}}});
   result=mergeTrackerSnapshot(null,result);output.current=result;state.current=result.state;setFrameUrl(result.frameUrl);setFooter(null);setRecordReview(null);saveReceipt.current=null;send();prefetch(result);onUpdated?.(current.current);
  }
  useEffect(()=>{live.current=true;if(initialOutput){output.current=mergeTrackerSnapshot(null,initialOutput);state.current=initialOutput.state;setStandard(!!initialOutput.tracker);setFrameUrl(initialOutput.frameUrl);setProposal(initialOutput.proposal);onBusyChange?.(false);prefetch(output.current);}else void run();return()=>{live.current=false;cancelPrefetch();};},[]);
+ const routeKey=JSON.stringify([navigation?.route,navigation?.reset]),lastRoute=useRef(routeKey),lastReset=useRef(navigation?.reset);
+ useEffect(()=>{if(lastRoute.current!==routeKey){lastRoute.current=routeKey;if(lastReset.current!==navigation?.reset){lastReset.current=navigation?.reset;state.current=null;blocked.current=false;setProposal(null);setFooter(null);setRecordReview(null);}setCustomDirty(false);void run();}},[routeKey]);
+ useEffect(()=>{navigation?.setDirty(!!footer||!!recordReview||!!proposal||customDirty||busy);},[footer,recordReview,proposal,customDirty,busy,navigation?.setDirty]);
  useEffect(()=>{if(component&&component!==current.current){current.current=component;void run();}},[component]);
  useEffect(()=>{const receive=(e:MessageEvent)=>{if(e.source!==frame.current?.contentWindow)return;if(e.data?.kind==='trialy.ready'){setReady(true);send();}
   else if(e.data.channel===channel.current){
-   if(e.data.kind==='trialy.approve'&&output.current?.tracker&&['bound-batch','tracker:create'].includes(e.data.action))approvedAction.current=e.data.action;
+   if(e.data.kind==='trialy.link'&&typeof e.data.href==='string')navigationRef.current?.navigate(e.data.href);
+   else if(e.data.kind==='trialy.dirty')setCustomDirty(!!e.data.dirty);
+   else if(e.data.kind==='trialy.approve'&&output.current?.tracker&&['bound-batch','tracker:create'].includes(e.data.action))approvedAction.current=e.data.action;
    else if(e.data.kind==='trialy.notice')setError(e.data.message);
    else if(e.data.kind==='trialy.rendered')onRendered?.();
    else if(e.data.kind==='trialy.footer')setFooter(e.data.footer);
@@ -101,17 +111,18 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
   }
  };window.addEventListener('message',receive);return()=>window.removeEventListener('message',receive);},[proposal]);
  useEffect(()=>{if(!detailsOpen)return;const previous=document.body.style.overflow;document.body.style.overflow='hidden';return()=>{document.body.style.overflow=previous;};},[detailsOpen]);
- useEffect(()=>{if(!standard||!frame.current)return;const size=()=>{const top=frame.current?.getBoundingClientRect().top??72;setHeight(Math.max(200,window.innerHeight-top));};size();window.addEventListener('resize',size);const observer=new ResizeObserver(size);observer.observe(document.documentElement);return()=>{window.removeEventListener('resize',size);observer.disconnect();};},[standard,frameUrl,ready,adding]);
+ useEffect(()=>{if(!standard||!frame.current)return;const size=()=>{const top=frame.current?.getBoundingClientRect().top??72;setHeight(Math.max(200,window.innerHeight-top-(navigationRef.current?.footerHeight??0)));};size();window.addEventListener('resize',size);const observer=new ResizeObserver(size);observer.observe(document.documentElement);return()=>{window.removeEventListener('resize',size);observer.disconnect();};},[standard,frameUrl,ready,adding]);
  useEffect(()=>{if(!frameUrl||ready)return;const timer=setTimeout(()=>setError('The host did not open the isolated frame. Try the interface in the standalone workspace.'),8000);return()=>clearTimeout(timer);},[frameUrl,ready]);
- return <section className={`ty-tracker-surface ${standard?'ty-tracker--standard':''} ${detailsOpen?'ty-tracker--details':''}`} aria-label="Tracker">
+ return <section className={`ty-tracker-surface ${standard?'ty-tracker--standard':''} ${detailsOpen?'ty-tracker--details':''}`} aria-label={platform.enabled?"App":"Tracker"}>
  {error&&<div className="ty-runtime-error" role="alert">{error}{saveReceipt.current&&<button onClick={async()=>{setBusy(true);try{await finishSave();setError('');}catch(e){setError((e as Error).message);}finally{setBusy(false);}}}>Retry save</button>}</div>}
  {!standard&&ready&&<div className="ty-actions"><button disabled={busy||!!proposal} onClick={()=>void run()}>Refresh</button></div>}
  {adding&&<div className="ty-record-entry"><TrackerRecordForm initialTypeId={output.current?.tracker?.config.tabs[state.current?.tab]?.typeId} component={current.current} call={call} onPreview={async p=>{try{if(saveReceipt.current)await call('discard_workspace_preview',{previewId:p.id});else saveReceipt.current={proposal:p};await finishSave();setAdding(false);setError('');}catch(e){setError((e as Error).message);throw e;}}} onClose={()=>setAdding(false)}/></div>}
  {recordReview&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="dialog" aria-modal="true" aria-label="Review record change"><h2>{recordReview.deletion?'Delete record?':'Duplicate record?'}</h2><p>{recordReview.deletion?'Remove this record from active tables. Its history is retained.':'Create a new record with these values.'}</p><ChangeSummary value={recordReview.proposal.summary??recordReview.proposal.body}/><button className="ty-button" disabled={busy||!!saveReceipt.current?.saved} onClick={async()=>{setBusy(true);try{await call(recordReview.deletion?'discard_preview':'discard_workspace_preview',{previewId:recordReview.proposal.id});saveReceipt.current=null;setRecordReview(null);setError('');}catch(e){setError((e as Error).message);}finally{setBusy(false);}}}>Cancel</button><button className="ty-button ty-button--primary" disabled={busy} onClick={async()=>{setBusy(true);try{saveReceipt.current??={proposal:recordReview.proposal,deletion:recordReview.deletion};await finishSave();}catch(e){setError((e as Error).message);}finally{setBusy(false);}}}>{recordReview.deletion?'Delete record':'Duplicate record'}</button></section></div>}
  {proposal&&<ActionFooter action="Save changes" onAction={()=>onProposal(proposal)} onDismiss={async()=>{try{await call('discard_workspace_preview',{previewId:proposal.id});setProposal(null);blocked.current=false;}catch(e){setError((e as Error).message);}}}>Your changes are ready to save.</ActionFooter>}
  {footer&&!proposal&&<ActionFooter action={footer.kind==='edits'?'Save edits':'Save layout'} busy={busy} disabled={!!saveReceipt.current} onAction={()=>frameAction(footer.kind==='edits'?'save-edits':'save-layout')} dismissLabel={footer.kind==='edits'?'Ignore edits':'Discard layout changes'} onDismiss={()=>frameAction(footer.kind==='edits'?'discard-edits':'discard-layout')}>{footer.kind==='edits'?`${footer.count} field ${footer.count===1?'edit is':'edits are'} ready to save.`:'Your layout changes are ready to save.'}</ActionFooter>}
- {!ready&&<p className="ty-runtime-loading" role="status">Opening tracker…</p>}
- {frameUrl&&<iframe inert={adding||!!recordReview} ref={frame} title="Saved frontend code" sandbox="allow-scripts" referrerPolicy="no-referrer" src={frameUrl} onLoad={send} style={{width:'100%',height:detailsOpen?'100%':height+'px',border:0,display:'block'}}/>}
+ {connectorReviews[0]&&embedded?<div className="ty-actions"><a className="ty-button ty-button--primary" href={connectorReviews[0].reviewUrl} target="_blank" rel="noopener noreferrer">Review request in Trialy</a></div>:connectorReviews[0]&&<ConnectorReview reviewId={connectorReviews[0].reviewId} call={call} onClose={()=>setConnectorReviews(r=>r.slice(1))} onConfirmed={result=>{setConnectorReviews(r=>r.slice(1));void run({kind:'click',action:'connector:completed',form:{result:JSON.stringify(result)}});}}/>}
+ {!ready&&<p className="ty-runtime-loading" role="status">{platform.enabled?'Opening app…':'Opening tracker…'}</p>}
+ {frameUrl&&<iframe inert={adding||!!recordReview} ref={frame} title="Saved frontend code" sandbox={platform.enabled?"allow-scripts allow-popups allow-popups-to-escape-sandbox":"allow-scripts"} referrerPolicy="no-referrer" src={frameUrl} onLoad={send} style={{width:'100%',height:detailsOpen?'100%':height+'px',border:0,display:'block'}}/>}
  </section>;
 }
 

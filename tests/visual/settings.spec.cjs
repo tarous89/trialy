@@ -1,4 +1,4 @@
-const {test,expect}=require('@playwright/test');
+const {test,expect}=require('./test.cjs');
 for(const width of [1440,390])test(`Overview and actual tool settings at ${width}px`,async({page})=>{
  await page.setViewportSize({width,height:1000});await page.goto('http://127.0.0.1:4179');await page.waitForFunction(()=>window.hostReady);
  const initial=await(await page.request.get('http://127.0.0.1:4179/fixture/initial')).json();await page.evaluate(r=>window.deliver(r),initial);

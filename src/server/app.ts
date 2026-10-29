@@ -23,7 +23,7 @@ export function baseApp() {
  // Public stateless frame shell. HTTP sandbox also protects direct navigation.
  app.get('/frontend/frame',async(_req,res)=>{
   const hash=createHash('sha256').update(FRAME_SCRIPT).digest('base64');
-  res.removeHeader('X-Frame-Options');res.set('Content-Security-Policy',`sandbox allow-scripts; default-src 'none'; script-src 'sha256-${hash}'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'`);
+  res.removeHeader('X-Frame-Options');res.set('Content-Security-Policy',`sandbox allow-scripts${process.env.SIMPLE_APPS_ENABLED==='true'?' allow-popups allow-popups-to-escape-sandbox':''}; default-src 'none'; script-src 'sha256-${hash}'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'`);
   res.set('Cache-Control','public, max-age=0, must-revalidate');res.set('Cross-Origin-Resource-Policy','cross-origin');res.type('html').send(await frontendFrameDocument());
  });
  app.use(express.json({limit:'36mb'}));app.use(rateLimit({windowMs:60000,limit:180,standardHeaders:'draft-8',legacyHeaders:false}));
@@ -33,7 +33,7 @@ export function baseApp() {
 export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  addExternal(app,s,human);
  addInvitations(app,s,human);
- app.get('/api/config',(_req,res)=>res.json({brand:process.env.BRAND_NAME??'Trialy',demo:process.env.LOCAL_DEMO==='true'&&process.env.NODE_ENV!=='production'}));
+ app.get('/api/config',(_req,res)=>res.json({simpleApps:process.env.SIMPLE_APPS_ENABLED==='true',brand:process.env.BRAND_NAME??'Trialy',demo:process.env.LOCAL_DEMO==='true'&&process.env.NODE_ENV!=='production'}));
  app.use('/api',human);app.use('/api',(_req,res,next)=>{res.set('Cache-Control','no-store');next();});
  addReviews(app,s);
  addFoundationApi(app,s);

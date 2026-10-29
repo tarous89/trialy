@@ -1,0 +1,17 @@
+/* Standalone pages inherit all typography, controls, spacing and colors from the shared shell. */
+.ty-workspace.ty-standalone{--shell-nav:0px;--shell-header:0px;--app-brand-height:44px}
+.ty-workspace.ty-standalone .ty-main-column{width:100%;padding-top:0;height:calc(100dvh - var(--app-brand-height))}
+.ty-workspace.ty-standalone #ty-main{height:calc(100dvh - var(--app-brand-height));padding-bottom:88px}
+.ty-app-brand-footer{position:fixed;inset:auto 0 0;height:var(--app-brand-height);display:flex;align-items:center;justify-content:center;background:var(--ty-sidebar);color:#e7eee9;z-index:2400;border-top:1px solid var(--ty-border);margin:0;padding:0}
+.ty-app-brand-footer a{display:flex;gap:8px;align-items:center;color:inherit;text-decoration:none;font:inherit;font-size:12px}
+.ty-app-brand-footer a:focus-visible{outline:2px solid var(--ty-focus);outline-offset:4px}
+.ty-workspace.ty-standalone .ty-action-footer{bottom:calc(var(--app-brand-height) + 16px)}
+.ty-workspace.ty-standalone .ty-tracker--details{inset:0 0 var(--app-brand-height)!important;height:calc(100dvh - var(--app-brand-height))!important}
+.ty-workspace.ty-standalone .ty-content-overlay{bottom:var(--app-brand-height);z-index:2301}
+
+.ty-connector-fields{padding:0;margin:0;border:0;min-width:0}
+.ty-workspace .ty-connectors .ty-connector-input{display:block}
+.ty-connectors .ty-layout-scroll table{width:100%;border-collapse:collapse}
+.ty-connectors .ty-layout-scroll :is(th,td){text-align:left;padding:12px 8px;border-bottom:1px solid var(--ty-border)}
+
+.ty-connectors .ty-confirm-dialog,.ty-standalone .ty-confirm-dialog{max-height:100%;overflow:auto;overflow-wrap:anywhere}

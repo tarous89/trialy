@@ -8,6 +8,8 @@ import {Service} from '../src/domain/service.js';
 import {WorkspaceFoundation} from '../src/workspace/service.js';
 import {prepareSimpleApp,readApp} from '../src/workspace/apps.js';
 import {appUrl,parseAppUrl,appSignInReturn} from '../src/shared/app-route.js';
+import {addAppMcp} from '../src/server/apps.js';
+import {frameLinkTarget,resolveAppLink} from '../src/shared/app-links.js';
 import {projectTheme} from '../src/shared/ui/project-theme.js';
 import type {Actor} from '../src/shared/schema.js';
 test('app links preserve only validated app identifiers and route state',()=>{
@@ -27,6 +29,7 @@ test('neutral apps retain existing save/permission contracts and receive page ro
   const draft=await prepareSimpleApp(f,a,w.id,{content:{name:'Calculator',source:"return {html:'<p>Calculator</p>',state:input.route??null};",bindings:[]}});
   assert.equal((await f.runFrontend(a,w.id,{previewId:draft.id,route:{path:'/calculator'}})).state.path,'/calculator');
   const saved=await f.confirm(a,w.id,draft.id,draft.digest),location={appId:saved.id,workspaceId:w.id,route:{path:'/calculator'}};
+  const registered=new Map<string,any>();addAppMcp({registerTool:(name:string,metadata:any,run:any)=>registered.set(name,{metadata,run})} as any,f,a,(fn:any)=>fn,{ui:{resourceUri:'ui://trialy/test'}});const launched=await registered.get('open_app').run(location);assert.equal(launched.screen,'app-link');assert.equal(launched.url,new URL(appUrl(location),process.env.PUBLIC_URL??'https://trialy-web.onrender.com').href);assert.ok(registered.get('open_app').metadata._meta.ui.resourceUri);assert.equal(registered.get('read_app').metadata._meta.ui?.resourceUri,undefined);
   const result=await readApp(f,a,location);assert.equal((result as any).component.resource_kind,'generic');assert.equal((result as any).component.id,saved.id);
   await assert.rejects(readApp(f,stranger,location));
   const output=await f.runFrontend(a,w.id,{componentId:saved.id,expectedVersion:0,route:{path:'/calculator',page:2}});assert.deepEqual(output.state,{path:'/calculator',page:2});
@@ -41,4 +44,18 @@ test('neutral apps retain existing save/permission contracts and receive page ro
   await db.query("UPDATE records SET state='archived' WHERE id=$1",[record]);await assert.rejects(f.runFrontend(a,w.id,request));
   await db.query('UPDATE workspace_components SET archived=true WHERE id=$1',[saved.id]);await assert.rejects(readApp(f,a,location),/unavailable/);
  }finally{if(before===undefined)delete process.env.SIMPLE_APPS_ENABLED;else process.env.SIMPLE_APPS_ENABLED=before;await pg.close();}
+});
+
+test('frame links keep app pages local and cross-app links native without executable URLs',()=>{
+ const current={appId:randomUUID(),workspaceId:randomUUID(),source:'component' as const,route:{path:'/companies'}},origin='https://trialy.example';
+ assert.equal(resolveAppLink('detail',current,origin)?.kind,'internal');
+ assert.equal(frameLinkTarget(appUrl(current),origin,current)?.external,false);
+ const other=appUrl({...current,appId:randomUUID(),route:{path:'/calculator'}});
+ assert.deepEqual(frameLinkTarget(other,origin,current),{href:origin+other,external:true});
+ assert.equal(resolveAppLink(other,current,origin)?.kind,'app');
+ assert.equal(frameLinkTarget('https://docs.example/apps/help',origin,current)?.external,true);
+ for(const value of ['javascript:alert(1)','data:text/html,bad','//other.example','https://user:secret@example.com','/apps/bad?workspaceId=bad'])assert.equal(frameLinkTarget(value,origin,current),null);
+ for(const value of ['/detail?private=value','/detail#secret','/detail?page=1&page=2'])assert.equal(resolveAppLink(value,current,origin),null);
+ const setup='/?tab=connectors&workspaceId='+current.workspaceId+'&connectorReview='+randomUUID();assert.equal(appSignInReturn(setup),setup);
+ for(const value of [setup+'&secret=value',setup+'&workspaceId='+randomUUID(),setup.replace('/?','//evil.example/?')])assert.equal(appSignInReturn(value),undefined);
 });

@@ -30,11 +30,12 @@ export class Connectors{
   const {config}=await this.connection(tx,a,w,connectionId);
   if(policy.role!=='owner'&&!config.managers.includes(a.userId))fail(403,'connector_manage','Connector management is not permitted');return policy;
  }
- async list(a:Actor,w:string,offset=0){
+ async list(a:Actor,w:string,offset=0,query=''){
   const p=await access(this.db,a,w),values=[w,p.role==='owner',a.userId,a.origin==='ai'];
   const where="c.workspace_id=$1 AND c.removed_at IS NULL AND ($2::boolean OR c.config->'managers' ? $3::text OR EXISTS(SELECT 1 FROM jsonb_array_elements(c.config->'operations') o WHERE o->'users' ? $3::text AND (NOT $4::boolean OR o->>'aiEnabled'='true')))";
-  const rows=(await this.db.query(`SELECT c.id,c.version,c.config->>'name' AS name,c.config->>'enabled' AS enabled,c.config->'auth'->>'kind' AS auth_kind,c.config->'managers' AS managers,EXISTS(SELECT 1 FROM connector_credentials s WHERE s.connection_id=c.id AND s.sealed<>'') AS configured FROM connectors c WHERE ${where} ORDER BY c.created_at,c.id LIMIT 25 OFFSET $5`,[...values,offset])).rows;
-  const total=Number((await this.db.query(`SELECT count(*) AS n FROM connectors c WHERE ${where}`,values)).rows[0].n);
+  const search=query?" AND c.config->>'name' ILIKE $6":"";
+  const rows=(await this.db.query(`SELECT c.id,c.version,c.config->>'name' AS name,c.config->>'enabled' AS enabled,c.config->'auth'->>'kind' AS auth_kind,c.config->'managers' AS managers,EXISTS(SELECT 1 FROM connector_credentials s WHERE s.connection_id=c.id AND s.sealed<>'') AS configured FROM connectors c WHERE ${where}${search} ORDER BY c.created_at,c.id LIMIT 25 OFFSET $5`,[...values,offset,...(query?['%'+query+'%']:[])])).rows;
+  const total=Number((await this.db.query(`SELECT count(*) AS n FROM connectors c WHERE ${where}${query?" AND c.config->>'name' ILIKE $5":''}`,[...values,...(query?['%'+query+'%']:[])])).rows[0].n);
   return {connections:rows.map(r=>({id:r.id,name:r.name,type:'generic_https',enabled:r.enabled==='true',version:r.version,credentialStatus:r.auth_kind==='none'?'not_required':r.configured?'configured':'missing',canManage:editable(p,a)&&(p.role==='owner'||r.managers.includes(a.userId))})),total,offset};
  }
  async read(a:Actor,w:string,connectionId:string){
@@ -42,7 +43,7 @@ export class Connectors{
   const operations=config.operations.filter(o=>manage||o.users.includes(a.userId)&&(a.origin!=='ai'||o.aiEnabled));if(!operations.length&&!manage)fail(404,'not_found','Connector unavailable');
   const credential=(await this.db.query("SELECT rotated_at FROM connector_credentials WHERE connection_id=$1 AND workspace_id=$2 AND sealed<>''",[connectionId,w])).rows[0];
   // Invocation-only users receive operation handles and schemas, never source mappings or other users' grants.
-  return {id:row.id,version:row.version,removed:!!row.removed_at,canManage:manage&&editable(policy,a),credentialStatus:config.auth.kind==='none'?'not_required':credential?'configured':'missing',rotatedAt:credential?.rotated_at??null,config:manage?config:{type:config.type,name:config.name,enabled:config.enabled,operations:operations.map(o=>({id:o.id,name:o.name,effect:o.effect,parameters:o.parameters,response:o.response,apps:o.apps}))}};
+  return {id:row.id,version:row.version,removed:!!row.removed_at,canManage:manage&&editable(policy,a),credentialStatus:config.auth.kind==='none'?'not_required':credential?'configured':'missing',rotatedAt:credential?.rotated_at??null,config:manage?config:{type:config.type,name:config.name,enabled:config.enabled,operations:operations.map(o=>({id:o.id,name:o.name,effect:o.effect,parameters:o.parameters,response:o.response,apps:o.apps,mappings:o.mappings.map(m=>({parameter:m.parameter,typeId:m.typeId,field:m.field})),constants:o.constants,destinations:o.destinations}))}};
  }
  async prepare(a:Actor,w:string,input:unknown){
   const v=connectorChange.parse(input);await this.manager(this.db,a,w,v.connectionId);
@@ -55,7 +56,8 @@ export class Connectors{
   if(Buffer.byteLength(J(body))>100000)fail(413,'connector_review_size','Review exceeds the size limit');
   const reviewId=randomUUID(),digest=checksum(J(body));
   await this.db.query('INSERT INTO connector_reviews(id,workspace_id,user_id,origin,kind,digest,body) VALUES($1,$2,$3,$4,$5,$6,$7)',[reviewId,w,a.userId,a.origin,kind,digest,J(body)]);
-  return {status:'review_required' as const,reviewId,digest};
+  const url=new URL('/',process.env.PUBLIC_URL??'http://localhost:3000');url.searchParams.set('tab','connectors');url.searchParams.set('workspaceId',w);url.searchParams.set('connectorReview',reviewId);
+  return {status:'review_required' as const,reviewId,digest,reviewUrl:url.href};
  }
  async readReview(a:Actor,w:string,reviewId:string){
   requireHuman(a);await access(this.db,a,w);
@@ -147,6 +149,8 @@ export class Connectors{
  }
  async call(a:Actor,w:string,input:unknown){
   const built=await this.build(this.db,a,w,input);
+  const previous=(await this.db.query('SELECT * FROM connector_invocations WHERE connection_id=$1 AND workspace_id=$2 AND user_id=$3 AND request_key=$4',[built.call.connectionId,w,a.userId,built.call.requestKey])).rows[0];
+  if(previous){if(previous.digest!==built.digest)fail(409,'connector_request_key','This request key belongs to another request');return {id:previous.id,status:previous.status==='running'&&Date.now()-new Date(previous.created_at).getTime()>30000?'unknown':previous.status,result:previous.result,replayed:true};}
   if(built.reviewRequired)return this.review(a,w,'invoke',{call:built.call,connectionVersion:built.row.version,request:built.request,digest:built.digest});
   return this.dispatch(a,w,built.call,built.digest);
  }

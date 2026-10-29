@@ -1,6 +1,6 @@
 # Generic connector: first-release contract
 
-Updated 29 October 2026. Status: backend staged behind an opt-in flag; management UI awaits approval. No live connection or billing activated. See the [implementation checkpoint](APP_PLATFORM_IMPLEMENTATION.md) for implemented contracts, limits and release prerequisites.
+Updated 29 October 2026. Status: backend and approved management UI implemented behind the reversible simple-app flag. No customer-provider billing or live connection is created by rollout. See [implementation and release evidence](APP_PLATFORM_IMPLEMENTATION.md) for implemented contracts, limits and release prerequisites.
 
 [Simple-app scope](APP_PLATFORM_SCOPE.md) · [Steps S4/S5](APP_PLATFORM_ROADMAP.md) · [Later backlog](APP_PLATFORM_BACKLOG.md)
 

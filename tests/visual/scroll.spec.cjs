@@ -1,4 +1,4 @@
-const {test,expect}=require('@playwright/test');
+const {test,expect}=require('./test.cjs');
 let server;test.beforeAll(async()=>{const{createServer}=await import('vite');server=await createServer({server:{host:'127.0.0.1',port:4180,strictPort:true}});await server.listen();});test.afterAll(async()=>{await server?.close();});
 for(const embedded of [false,true])for(const width of [1440,390])test(`single scroll ownership ${embedded?'plugin':'app'} ${width}`,async({page})=>{
  await page.setViewportSize({width,height:850});

@@ -1,6 +1,6 @@
 # Simple-app implementation roadmap
 
-Updated 29 October 2026. Status: backend implementation staged; UI changes await the user's explicit approval. No step is marked fully released. See the [implementation checkpoint and concrete UI approval](APP_PLATFORM_IMPLEMENTATION.md). This replaces the earlier 14-step launch plan.
+Updated 29 October 2026. Status: all six P0 implementation steps delivered with local verification. Deployment and actual-host verification are recorded separately in [implementation and release evidence](APP_PLATFORM_IMPLEMENTATION.md). This replaces the earlier 14-step launch plan.
 
 [Scope](APP_PLATFORM_SCOPE.md) · [Connector contract](CONNECTORS_AND_USAGE.md) · [Prioritized backlog](APP_PLATFORM_BACKLOG.md)
 
