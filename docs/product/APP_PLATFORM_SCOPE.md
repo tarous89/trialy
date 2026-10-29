@@ -46,13 +46,13 @@ The trusted standalone wrapper owns browser history. Extend the current render/e
 
 Provide styled denied, wrong-account, missing, archived and expired-preview states. Existing saved functions, collections and legacy automations on Home get compatible standalone detail/control wrappers; do not drop them or broaden their rights. Draft previews remain owner-only, expiring and without persistent/external effects.
 
-## 5. Standard footer and existing UI
+## 5. Corner watermark and existing UI
 
-Every standalone app has a small persistent trusted footer outside generated content. Requested copy: **Built with TrialAgents**. Centralize the label and reuse existing brand assets/styles. This does not rename the repository, domains or unrelated products.
+Every generated app, site or tool opens directly as an independent page with its own design and navigation. It has a small persistent trusted watermark in the bottom-right corner outside generated content, with no full-width branding strip or platform management navigation. Requested copy: **Built with TrialAgents**. Centralize the label and reuse existing brand assets/styles. This does not rename the repository, domains or unrelated products.
 
-The footer links to the platform Home through normal authentication and authorization. App access does not grant account/Home access. Use a fixed platform-owned destination; denied visitors see the normal sign-in/access state without account details.
+The watermark links to the platform Home through normal authentication and authorization. App access does not grant account/Home access. Use a fixed platform-owned destination; denied visitors see the normal sign-in/access state without account details.
 
-Keep it visible through navigation, loading and errors. Reserve its height so it never covers content or save/review controls, including on mobile. Generated source cannot hide or replace the footer.
+Keep it visible through navigation, loading and errors. The app uses the full viewport height. Place trusted save/review controls clear of the corner watermark on desktop and mobile; generated layouts should leave that corner clear of essential fixed controls. Generated source cannot hide or replace the watermark.
 
 Use the actual shared UI: [Controls](../../src/shared/ui/Controls.tsx), [WorkspaceShell](../../src/shared/ui/WorkspaceShell.tsx), [design.css](../../src/shared/ui/design.css), [brand.css](../../src/shared/ui/brand.css), [scroll.css](../../src/shared/ui/scroll.css), existing tables/pagination/dialogs/save states and [Access](../../src/shared/AccessPanel.tsx). Fonts, sizes, margins, buttons, icons and interactions must match the current app. No new visual framework or unrelated redesign. This applies to platform chrome and Connectors, not mandatory layouts for generated content.
 

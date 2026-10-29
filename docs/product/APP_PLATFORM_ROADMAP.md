@@ -29,18 +29,18 @@ Touchpoints: [HomeView](../../src/shared/ui/HomeView.tsx), [HomePanel](../../src
 
 Acceptance: a three-page app needs no category; same-project cards share a stable pattern; moving an app changes its accent and preserves data/access; unassigned apps are neutral. Existing functions/forms/automations remain accessible. No record, history or grant is removed.
 
-## S2 — Standalone launch and trusted footer
+## S2 — Standalone launch and corner watermark
 
 1. Add an authenticated `/apps/{appId}` route with a validated optional page path. Reuse saved component readers/renderers and current sessions. Owner-only preview routes retain expiry and no-effect restrictions.
 2. Add a minimal standalone wrapper without the management sidebar. Keep the current isolated render frame; do not execute generated source in the trusted parent document.
 3. Change Home card/Open actions to real safe new-tab links; load/render inside the opened page. Provide standalone detail/control wrappers for other existing Home resources rather than dropping them.
-4. Embedded hosts return a trusted Open app link. Retain old embedded readers/previews for compatibility; do not open unsolicited tabs from tool calls.
-5. Add the persistent shared footer, “Built with TrialAgents,” with centralized label/assets and a fixed Home destination. Reserve space for it and existing save/review controls. Reuse current styles.
+4. The open_app tool returns a direct standalone URL without requiring the management widget; present it as a chat link. Retain old embedded readers/previews for compatibility; do not open unsolicited tabs from tool calls.
+5. Add a compact persistent “Built with TrialAgents” watermark in the bottom-right corner, with centralized label/assets and a fixed Home destination. Use the full app viewport without a branding stripe. Keep trusted save/review controls above the watermark and reuse current styles.
 6. Preserve validated sign-in return paths. Denied/wrong-account/archived/missing states reveal no restricted details. No public access or new identity system is introduced.
 
-Touchpoints: [server app](../../src/server/app.ts), [web host](../../src/web/main.tsx), [auth](../../src/server/auth.ts), [HomePanel](../../src/shared/HomePanel.tsx), [FrontendCodeRuntime](../../src/shared/FrontendCodeRuntime.tsx), [frame](../../src/shared/frontend-frame.ts), [embed](../../src/embed/main.tsx). New modules: small standalone route resolver and shared app-page wrapper/footer.
+Touchpoints: [server app](../../src/server/app.ts), [web host](../../src/web/main.tsx), [auth](../../src/server/auth.ts), [HomePanel](../../src/shared/HomePanel.tsx), [FrontendCodeRuntime](../../src/shared/FrontendCodeRuntime.tsx), [frame](../../src/shared/frontend-frame.ts), [embed](../../src/embed/main.tsx). New modules: small standalone route resolver and shared app-page wrapper/watermark.
 
-Acceptance: clicking Open launches separately while Home stays open; no asynchronous popup failure; direct links survive sign-in; access checks hold. Footer remains visible on desktop/mobile, loading/errors and app pages without overlapping actions, and its Home link grants no extra access. Existing resource launchers still work.
+Acceptance: clicking Open launches separately while Home stays open; no asynchronous popup failure; direct links survive sign-in; access checks hold. The corner watermark remains visible on desktop/mobile, loading/errors and app pages without overlapping actions, and its Home link grants no extra access. Existing resource launchers still work.
 
 ## S3 — Internal navigation and links
 
@@ -86,7 +86,7 @@ Acceptance: add two services through the same connector type, select allowed app
 
 1. Use additive changes and stable IDs. Check old trackers, forms, visualizations, saved functions and collections with existing rights; appearance/routing changes do not alter data/history counts.
 2. Exercise one synthetic three-page app with a shared record, calculator and generic connector: launch, sign-in return, navigation, reviewed save, reopen, footer and connection revocation.
-3. Compare desktop/mobile UI against current shared components for Home/project colors, Connectors, trusted chrome, save/error states, spacing, keyboard/focus and footer overlap.
+3. Compare desktop/mobile UI against current shared components for Home/project colors, Connectors, trusted chrome, save/error states, spacing, keyboard/focus and watermark overlap.
 4. Run focused navigation/access/connector/compatibility tests and required repository checks. Test actual ChatGPT link launch and authenticated handoff separately from synthetic host tests.
 5. Update/release bundled plugin instructions when implementation is ready. Verify hosted/bundled contracts agree. No branded provider or new paid service is authorized by this planning document.
 6. If needed, use a reversible launch flag. Rollback restores old launch/UI behavior while retaining secure connector configuration/history; it does not reverse records or external calls. Document runtime/protocol limits accurately.

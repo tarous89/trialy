@@ -8,7 +8,6 @@ import {FoundationPanel} from './FoundationPanel.js';
 import {CollectionsPanel} from './CollectionsPanel.js';
 import {ChangeSummary} from './ChangeSummary.js';
 import {Button} from './ui/Controls.js';
-import {Icon} from './ui/Icon.js';
 import './ui/design.css';import './ui/brand.css';import './ui/scroll.css';import './app-pages.css';
 type Call=(name:string,args:any)=>Promise<any>;
 export function StandaloneApp({signedIn,loading=false,call,api}:{signedIn:boolean;loading?:boolean;call:Call;api:(path:string,method?:string,body?:unknown)=>Promise<any>}){
@@ -23,8 +22,8 @@ export function StandaloneApp({signedIn,loading=false,call,api}:{signedIn:boolea
  const invoke=(name:string,args:any={})=>call(name,{workspaceId:current?.workspaceId,...args});
  const goHome=()=>{if(dirty.current||proposal){setPending('/');return;}location.assign(APP_BRAND.home);};
  const component=loaded?.component??loaded?.preview?.component;
- const footer=<footer className="ty-app-brand-footer"><a href={APP_BRAND.home} onClick={e=>{if(dirty.current||proposal){e.preventDefault();goHome();}}}><Icon name="molecule" size={18}/>{APP_BRAND.footer}</a></footer>;
- return <AppPlatform.Provider value={{enabled:true,origin:location.origin}}><div className="ty-workspace ty-standalone"><div className="ty-main-column"><main id="ty-main"><AppNavigation.Provider value={current?{route:current.route,reset,footerHeight:44,navigate,setDirty}:null}>
+ const watermark=<a className="ty-app-watermark" href={APP_BRAND.home} onClick={e=>{if(dirty.current||proposal){e.preventDefault();goHome();}}}><img src="/trialagents-mark-white.png" width="18" height="18" alt="" aria-hidden="true"/>{APP_BRAND.watermark}</a>;
+ return <AppPlatform.Provider value={{enabled:true,origin:location.origin}}><div className="ty-workspace ty-standalone"><div className="ty-main-column"><main id="ty-main"><AppNavigation.Provider value={current?{route:current.route,reset,navigate,setDirty}:null}>
  {!current?<p role="alert">This app link is unavailable.</p>:loading?<p role="status">Opening app…</p>:!signedIn?<section className="ty-empty"><h1>Sign in to open this app</h1><a className="ty-button ty-button--primary" href={'/auth/login?returnTo='+encodeURIComponent(appUrl(current))}>Sign in</a></section>:<>
  {error&&<div role="alert"><p>{error}</p><Button onClick={()=>setReload(n=>n+1)}>Try again</Button></div>}{!loaded&&!error&&<p role="status">Opening app…</p>}
  {component&&<ComponentEditor key={component.id+':'+loaded.loadedRevision} component={component} projects={[]} call={invoke} onBack={goHome} onPreview={setProposal}/>}
@@ -35,7 +34,7 @@ export function StandaloneApp({signedIn,loading=false,call,api}:{signedIn:boolea
  {proposal&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="dialog" aria-modal="true" aria-label="Review app changes"><h2>Review changes</h2><ChangeSummary value={proposal.summary??proposal.body}/><div className="ty-actions"><Button disabled={busy} onClick={()=>{void invoke('discard_workspace_preview',{previewId:proposal.id}).then(()=>{setProposal(null);setDirty(false);setReload(n=>n+1);}).catch(e=>setError(e.message));}}>Cancel</Button><Button variant="primary" disabled={busy} onClick={()=>{setBusy(true);void invoke('confirm_workspace_change',{previewId:proposal.id,digest:proposal.digest,confirmed:true}).then(()=>{setProposal(null);setDirty(false);setReload(n=>n+1);}).catch(e=>setError(e.message)).finally(()=>setBusy(false));}}>Save changes</Button></div></section></div>}
  </>}
  {pending&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="alertdialog" aria-modal="true" aria-label="Unsaved changes"><h3>Keep your edits?</h3><p>Your changes have not been saved.</p><Button autoFocus onClick={()=>setPending(null)}>Keep editing</Button><Button onClick={()=>{const next=pending;setPending(null);setDirty(false);setProposal(null);if(next==='/')location.assign('/');else{setReset(n=>n+1);assign(next);}}}>Discard edits and continue</Button></section></div>}
- </AppNavigation.Provider></main>{footer}</div></div></AppPlatform.Provider>;
+ </AppNavigation.Provider></main>{watermark}</div></div></AppPlatform.Provider>;
 }
 function LegacyApp({api,workspaceId,resource}:{api:(p:string,m?:string,b?:unknown)=>Promise<any>;workspaceId:string;resource:any}){
  const [paused,setPaused]=useState(resource.status==='Paused'),[busy,setBusy]=useState(false),[error,setError]=useState('');
