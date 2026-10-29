@@ -23,6 +23,8 @@ services:
         generateValue: true
       - key: BRAND_NAME
         value: TrialAgents
+      - key: APP_PUBLIC_URL
+        value: https://platform.trialagents.com
   - type: worker
     name: trialy-worker
     runtime: docker
