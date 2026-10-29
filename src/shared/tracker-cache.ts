@@ -1,5 +1,5 @@
 /** Component-instance memory only. Never persist authorized data in browser storage. */
-export const SNAPSHOT_TTL=15000;
+export const SNAPSHOT_TTL=120000;
 export function mergeTrackerSnapshot(previous:any,next:any,now=Date.now()){
  if(!next.tracker)return next;
  const compatible=previous?.tracker&&previous.accessVersion===next.accessVersion&&JSON.stringify(previous.tracker.config)===JSON.stringify(next.tracker.config);

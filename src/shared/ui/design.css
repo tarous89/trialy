@@ -325,3 +325,5 @@
 .ty-log-toolbar-actions{display:flex;gap:8px;flex:none;margin-left:auto}
 .ty-logs .ty-log-filters{flex:none;align-items:center}
 @media(max-width:600px){.ty-page-pagination{gap:10px}.ty-page-pagination .ty-button{font-size:12px;padding:8px}.ty-logs .ty-log-filters{gap:8px}}
+
+.ty-workspace .ty-tracker-notice{position:fixed;bottom:24px;right:24px;top:auto!important;z-index:60;display:flex;gap:12px;align-items:center;max-width:calc(100vw - 48px);background:#eff9f2;border:1px solid #d8eddf;border-radius:9px;padding:10px 14px;font-size:13px;pointer-events:auto!important;animation:none!important;box-shadow:0 5px 20px #0001}.ty-tracker-notice button{border:0;background:transparent;padding:2px 6px}.ty-confirm-dialog button+button{margin-left:10px}

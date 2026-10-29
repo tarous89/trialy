@@ -1,3 +1,4 @@
+import {SNAPSHOT_TTL} from './tracker-cache.js';
 import {trackerRenderer} from '../workspace/standard-tracker.js';
 // Only the shipped renderer and this trusted bridge run in the frame. Custom code stays in QuickJS.
 export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
@@ -19,9 +20,9 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   el.replaceChildren();
   const d=c.display||{},values=Array.isArray(value)?value:[value];
   for(const [i,v] of values.entries()){
-   if(i&&!(d.kind==='badge'||['select','boolean'].includes(c.kind)))el.append(document.createTextNode(', '));
+   if(i&&!(d.kind==='badge'))el.append(document.createTextNode(', '));
    const text=v==null||v===''?'—':c.kind==='boolean'?(v===true||v==='true'?'Yes':'No'):String(v);
-   if(v!=null&&v!==''&&(d.kind==='badge'||['select','boolean'].includes(c.kind))){const pill=document.createElement('span');const color=d.valueTones?.[String(v)]||(d.tone&&d.tone!=='neutral'?d.tone:tone(v));pill.className='pill '+(['green','blue','amber','red'].includes(color)?color:'');pill.textContent=text;el.append(pill);}
+   if(v!=null&&v!==''&&(d.kind==='badge')){const pill=document.createElement('span');const color=d.valueTones?.[String(v)]||d.tone||'neutral';pill.className='pill '+(['green','blue','amber','red'].includes(color)?color:'');pill.textContent=text;el.append(pill);}
    else if(!c.editable&&d.kind==='link'&&/^https?:\/\//i.test(String(v))){const a=document.createElement('a');a.href=String(v);a.textContent=text;a.target='_blank';a.rel='noopener noreferrer';el.append(a);}
    else el.append(document.createTextNode(text));
   }
@@ -36,12 +37,12 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   if(!c.editable)return;
   const editor=document.createElement('span');editor.className='cell-input';editor.hidden=true;editor.append(...slot.childNodes);
   const button=document.createElement('button');button.type='button';button.className='cell-display';button.setAttribute('aria-label','Edit '+c.label);
-  const refresh=()=>{const value=c.action in pending?(c.multiple?JSON.parse(pending[c.action]):pending[c.action]):c.value;showValue(button,c,value,c.action in pending);button.style.background=c.action in pending?'#e5f6e9':'';};refresh();
+  const refresh=()=>{const value=c.example?(uiState.examples[c.fieldId]??c.value):c.action in pending?(c.multiple?JSON.parse(pending[c.action]):pending[c.action]):c.value;showValue(button,c,value,c.action in pending);button.style.background=c.action in pending?'#e5f6e9':'';};refresh();
   editor.addEventListener('focusout',()=>{queueMicrotask(()=>{if(editor.contains(document.activeElement))return;editor.hidden=true;button.hidden=false;refresh();});});
   slot.replaceChildren(button,editor);
  }
  const tags=new Set('div span p h1 h2 h3 h4 h5 h6 section article header footer main nav aside ul ol li dl dt dd table thead tbody tfoot tr th td caption colgroup col form label input textarea select option optgroup button fieldset legend output progress meter details summary br hr pre code blockquote strong em b i u s small sub sup a img svg g path rect circle ellipse line polyline polygon text tspan defs lineargradient radialgradient stop clippath title desc'.split(' '));
- const attrs=new Set('class id style title role tabindex name value placeholder disabled readonly required checked selected multiple min max step minlength maxlength rows cols colspan rowspan scope for width height alt viewbox d x y x1 y1 x2 y2 cx cy r rx ry points fill stroke stroke-width stroke-linecap stroke-linejoin opacity transform xmlns offset stop-color stop-opacity preserveaspectratio data-action data-trialy-slot data-ui-state data-reorder data-resize-column data-resize-row draggable inert hidden'.split(' '));
+ const attrs=new Set('class id style title role tabindex name value placeholder disabled readonly required checked selected multiple min max step minlength maxlength rows cols colspan rowspan scope for width height alt viewbox d x y x1 y1 x2 y2 cx cy r rx ry points fill stroke stroke-width stroke-linecap stroke-linejoin opacity transform xmlns offset stop-color stop-opacity preserveaspectratio data-action data-trialy-example data-trialy-value data-trialy-slot data-ui-state data-reorder data-resize-column data-resize-row draggable inert hidden'.split(' '));
  const inputTypes=new Set('text number date datetime-local month week time email tel url checkbox radio range color hidden button submit reset'.split(' '));
  function clean(html){const template=document.createElement('template');template.innerHTML=html;
   function walk(parent){for(const node of Array.from(parent.childNodes)){
@@ -64,24 +65,26 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   root.replaceChildren(clean(html));sheet.textContent=css;
   if(connected){
    for(const el of root.querySelectorAll('input,select,textarea'))if(!el.hasAttribute('data-ui-state')){el.disabled=true;el.title='Use a connected data control';}
-   for(const control of controls){
+   const examples=Array.from(root.querySelectorAll('[data-trialy-example]')).map(el=>{const [ti,ci]=el.getAttribute('data-trialy-example').split(':').map(Number),c=model?.config.tabs[ti]?.columns[ci];return c?{...c,example:true,selector:'[data-trialy-example="'+ti+':'+ci+'"]',slot:'example_'+ti+'_'+ci,action:'example-bound:'+c.fieldId,value:uiState.examples[c.fieldId]??JSON.parse(el.getAttribute('data-trialy-value')||'[]')}:null;}).filter(Boolean);
+   for(const control of [...controls,...examples]){
     const c=uiState?.newRow?{...control,editable:false}:control;
     if(!/^[a-z][a-z0-9_]{0,63}$/.test(c.slot))continue;
-    for(const slot of root.querySelectorAll('[data-trialy-slot="'+c.slot+'"]')){
+    for(const slot of root.querySelectorAll(c.selector||'[data-trialy-slot="'+c.slot+'"]')){
      if(c.editable&&c.multiple){
-      const stored=c.action in pending?JSON.parse(pending[c.action]):c.value;
-      const values=Array.isArray(stored)?stored:stored==null||stored===''?[]:[stored];
+      const stored=c.example?(uiState.examples[c.fieldId]??c.value):c.action in pending?JSON.parse(pending[c.action]):c.value;
+      const values=Array.isArray(stored)?[...stored]:stored==null||stored===''?[]:[stored];
       original[c.action]=JSON.stringify(Array.isArray(c.value)?c.value:c.value==null||c.value===''?[]:[c.value]);
       const group=document.createElement('span');group.className='multi-value-editor';
+      const stageValues=()=>{const filtered=values.filter(v=>v!=='');if(c.example){uiState.examples[c.fieldId]=filtered;post('trialy.state',{state:uiState});}else{const wire=JSON.stringify(filtered);if(wire===original[c.action])delete pending[c.action];else pending[c.action]=wire;}footer();};
       const render=()=>{group.replaceChildren();const rows=values.length?values:[''];
        rows.forEach((value,i)=>{const row=document.createElement('span');row.className='multi-value-row';const input=document.createElement(c.kind==='select'?'select':'input');
         if(c.kind==='select'){const blank=document.createElement('option');blank.value='';blank.textContent='Choose…';input.append(blank);for(const v of c.options){const o=document.createElement('option');o.value=v;o.textContent=v;input.append(o);}}else{input.type=['number','money'].includes(c.kind)?'number':'text';input.step='any';}
         input.value=String(value);input.setAttribute('aria-label',i?c.label+' '+(i+1):c.label);input.style.background=c.action in pending?'#e5f6e9':'';
-        const stage=()=>{const raw=input.value;values[i]=raw===''?'':['number','money'].includes(c.kind)?Number(raw):raw;const wire=JSON.stringify(values.filter(v=>v!==''));if(wire===original[c.action])delete pending[c.action];else pending[c.action]=wire;input.style.background=c.action in pending?'#e5f6e9':'';footer();};
+        const stage=()=>{const raw=input.value;values[i]=raw===''?'':['number','money'].includes(c.kind)?Number(raw):raw;stageValues();input.style.background=c.action in pending?'#e5f6e9':'';footer();};
         input.addEventListener(c.kind==='select'?'change':'input',stage);row.append(input);
-        if(rows.length>1){const remove=document.createElement('button');remove.type='button';remove.textContent='×';remove.setAttribute('aria-label','Remove '+c.label+' '+(i+1));remove.onclick=()=>{values.splice(i,1);const wire=JSON.stringify(values.filter(v=>v!==''));if(wire===original[c.action])delete pending[c.action];else pending[c.action]=wire;render();footer();};row.append(remove);}group.append(row);
+        if(rows.length>1){const remove=document.createElement('button');remove.type='button';remove.textContent='×';remove.setAttribute('aria-label','Remove '+c.label+' '+(i+1));remove.onmousedown=e=>e.preventDefault();remove.onclick=()=>{values.splice(i,1);stageValues();render();group.querySelector('input,select,button')?.focus();};row.append(remove);}group.append(row);
        });
-       const add=document.createElement('button');add.type='button';add.textContent='+ Add value';add.setAttribute('aria-label','Add '+c.label+' value');add.disabled=values.length>=100;add.onclick=()=>{if(!values.length)values.push('');values.push('');render();group.querySelectorAll('input,select')[values.length-1]?.focus();};group.append(add);
+       const add=document.createElement('button');add.type='button';add.textContent='+ Add value';add.setAttribute('aria-label','Add '+c.label+' value');add.disabled=values.length>=100;add.onmousedown=e=>e.preventDefault();add.onclick=()=>{if(!values.length)values.push('');values.push('');render();group.querySelectorAll('input,select')[values.length-1]?.focus();};group.append(add);
       };render();slot.replaceChildren(group);collapsed(slot,c);continue;
      }
      const el=document.createElement(c.editable?(c.kind==='select'?'select':'input'):'span');
@@ -105,14 +108,14 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   footer();
  }
  function local(event){
-  const navigation=/^(tab:|filter:|next$|previous$)/.test(event.action||'');
+  const navigation=/^(tab:|filter:|next$|previous$|overview-next$|overview-previous$|overview-panel$)/.test(event.action||'');
   if(navigation&&(Object.keys(pending).length||uiState?.newRow))return false;
-  if(!model||!/^((draft|resize-column|resize-row|example|tab|filter|sort-field|details|tab-name|tab-visible|column-label|visibility|move-tab|move-column|reorder-tab|reorder-column):|tracker:add$|discard-new$|query$|sort$|next$|previous$|settings$|discard-layout$|column-tab$|layout-name$|layout-description$|close-details$)/.test(event.action||''))return false;
+  if(!model||!/^((draft|resize-column|resize-row|example|tab|filter|sort-field|details|tab-name|tab-visible|column-label|visibility|move-tab|move-column|reorder-tab|reorder-column):|tracker:add$|discard-new$|query$|sort$|next$|previous$|overview-next$|overview-previous$|overview-panel$|settings$|discard-layout$|column-tab$|layout-name$|layout-description$|close-details$)/.test(event.action||''))return false;
   const old=uiState,next=structuredClone(uiState);
   try{
    const output=renderTracker(model.config,model.theme,{state:next,event,saved:model.saved,writable:model.writable},{call:(name,value)=>{
     if(name!=='records.read')throw Error('Server action');
-    const p=model.pages.find(p=>p.request.typeId===value.typeId&&p.request.limit===value.limit&&p.request.offset===value.offset&&JSON.stringify(Object.entries(p.request.filters||{}).sort())===JSON.stringify(Object.entries(value.filters||{}).sort())&&(!navigation||Date.now()-p.receivedAt<15000));if(!p)throw Error('Page needed');return p.result;
+    const p=model.pages.find(p=>p.request.typeId===value.typeId&&p.request.limit===value.limit&&p.request.offset===value.offset&&JSON.stringify(Object.entries(p.request.filters||{}).sort())===JSON.stringify(Object.entries(value.filters||{}).sort())&&(!navigation||Date.now()-p.receivedAt<${SNAPSHOT_TTL}));if(!p)throw Error('Page needed');return p.result;
    }});
    if(navigation){const nextControls=(output.controls||[]).map(c=>{const cached=model.cachedControls?.[c.fieldId+':'+c.recordId];if(!cached)throw Error('Controls needed');return {...cached,slot:c.slot};});controls=nextControls;}
    uiState=output.state;paint(output.html,output.css);
@@ -151,7 +154,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
    if(!(action in original))return;
    const value=target.type==='checkbox'?target.checked:target.value;
    if(value===original[action])delete pending[action];else pending[action]=value;
-   for(const el of root.querySelectorAll('[data-action]'))if(el.getAttribute('data-action')===action){if(el.type==='checkbox')el.checked=value;else el.value=value;el.style.background=action in pending?'#e5f6e9':'';if(el.tagName==='SELECT')el.className='pill '+tone(value);}
+   for(const el of root.querySelectorAll('[data-action]'))if(el.getAttribute('data-action')===action){if(el.type==='checkbox')el.checked=value;else el.value=value;el.style.background=action in pending?'#e5f6e9':'';}
    footer();return;
   }
   const form=trigger.closest('form'),values=Object.create(null);if(form){let n=0;for(const [key,value] of new FormData(form)){if(++n>100||key.length>100||typeof value!=='string'||value.length>50000)return;values[key]=value;}}
@@ -168,7 +171,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  root.addEventListener('submit',e=>{e.preventDefault();if(e.target instanceof Element)send('submit',e.target);});
  root.addEventListener('keydown',e=>{
   const editor=e.target.closest('.cell-input,.example-input');
-  if(editor&&e.key==='Enter'&&e.target.tagName!=='TEXTAREA'){e.preventDefault();e.target.blur();return;}
+  if(editor&&e.key==='Enter'&&e.target.matches('input,select')){e.preventDefault();e.target.blur();return;}
   if(editor&&e.key==='Escape'){e.preventDefault();if(editor._before){pending=Object.assign(Object.create(null),editor._before.pending);uiState.examples=editor._before.examples;}e.target.blur();local({kind:'change',action:'sort',value:uiState?.sorts?.[uiState.tab]||''});return;}
   const resize=e.target.closest('[data-resize-column],[data-resize-row]');
   if(resize&&['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){e.preventDefault();const column=resize.hasAttribute('data-resize-column'),delta=['ArrowLeft','ArrowUp'].includes(e.key)?-10:10;dispatch({kind:'change',action:(column?'resize-column:':'resize-row:')+(column?resize.dataset.resizeColumn:resize.dataset.resizeRow),value:Number(resize.getAttribute('aria-valuenow'))+delta});const next=Array.from(root.querySelectorAll(column?'[data-resize-column]':'[data-resize-row]')).find(x=>(column?x.dataset.resizeColumn:x.dataset.resizeRow)===(column?resize.dataset.resizeColumn:resize.dataset.resizeRow));next?.focus({preventScroll:true});return;}

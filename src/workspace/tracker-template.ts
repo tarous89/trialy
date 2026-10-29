@@ -1,3 +1,4 @@
+import {toolThemeSchema} from '../shared/tool-theme.js';
 import {iconSchema,columnDisplay,overviewSchema,standardSource,standardDefaults} from '../shared/standard-tool.js';
 import {standardTracker} from './standard-tracker.js';
 import {applyTypePolicy} from '../domain/effective-access.js';
@@ -10,12 +11,12 @@ import {Service} from '../domain/service.js';
 import type {WorkspaceFoundation} from './service.js';
 const key=z.string().regex(/^[a-z][a-z0-9_]{0,63}$/);
 export const trackerSetup=z.object({
- overview:overviewSchema.optional(),templateId:z.literal('trialy.standard.v1').default('trialy.standard.v1'),pageSize:z.number().int().min(1).max(25).default(25),
+ theme:toolThemeSchema.optional(),allowEdits:z.boolean().optional(),overview:overviewSchema.optional(),templateId:z.literal('trialy.standard.v1').default('trialy.standard.v1'),pageSize:z.number().int().min(1).max(25).default(25),
  resourceKind:z.enum(['tracker','form','visualization']).default('tracker'),name:z.string().trim().min(1).max(100),description:z.string().max(500),projectId:id.nullable().default(null),
  extendTables:z.array(z.object({typeId:id,expectedVersion:z.number().int().min(0),newFields:newFieldsSchema}).strict()).max(8).default([]),
  newTables:z.array(z.object({id,name:z.string().trim().min(1).max(100),fields:newFieldsSchema}).strict()).max(8).default([]),
  scope:z.enum(['workspace','project']).default('workspace'),
- tabs:z.array(z.object({name:z.string().min(1).max(60),icon:iconSchema.optional(),typeId:id,visible:z.boolean().default(true),filterMode:z.enum(['auto','custom','none']).optional(),filters:z.array(key).max(8).default([]),example:z.record(key,z.union([z.string().max(500),z.number(),z.boolean(),z.array(z.union([z.string().max(500),z.number()])).max(100),z.null()])).optional(),columns:z.array(z.object({field:key,label:z.string().min(1).max(100).optional(),visible:z.boolean().optional(),editable:z.boolean().default(true),display:columnDisplay.optional()}).strict()).min(1).max(30)}).strict()).min(1).max(8),
+ tabs:z.array(z.object({name:z.string().min(1).max(60),icon:iconSchema.optional(),iconPath:z.string().regex(/^[MmLlHhVvCcSsQqTtAaZz0-9., +\-]+$/).max(2000).optional(),typeId:id,visible:z.boolean().default(true),filterMode:z.enum(['auto','custom','none']).optional(),filters:z.array(key).max(8).default([]),example:z.record(key,z.union([z.string().max(500),z.number(),z.boolean(),z.array(z.union([z.string().max(500),z.number()])).max(100),z.null()])).optional(),columns:z.array(z.object({field:key,label:z.string().min(1).max(100).optional(),visible:z.boolean().optional(),editable:z.boolean().default(true),display:columnDisplay.optional()}).strict()).min(1).max(30)}).strict()).min(1).max(8),
  example:z.record(key,z.union([z.string().max(500),z.number(),z.boolean(),z.array(z.union([z.string().max(500),z.number()])).max(100),z.null()])).optional(),
  showExample:z.boolean().default(true),omitSource:z.boolean().default(false)
 }).strict();
@@ -35,7 +36,7 @@ export async function trackerOperation(f:WorkspaceFoundation,a:Actor,w:string,in
   const draft=v.newTables.find(t=>t.id===tab.typeId);const resolved=draft?null:extensions.get(tab.typeId)??await typeAccess(f.db,a,w,tab.typeId);const type=resolved?.type??{...draft!,version:0},allowed=resolved?visibleFields(type.fields,resolved.policy,a):type.fields.filter((f:any)=>a.origin!=='ai'||f.ai);
   if(new Set(tab.columns.map(c=>c.field)).size!==tab.columns.length)fail(400,'duplicate_column','Each tab field must be unique');
   const columns=tab.columns.map((c,columnIndex)=>{const field=allowed.find((x:any)=>x.key===c.field);if(!field)fail(403,'field_unavailable','Choose an authorized existing field');
-   const fieldId='f_'+i+'_'+columnIndex,mode=v.resourceKind!=='visualization'&&c.editable&&!derived(field)?'write':'read';
+   const fieldId='f_'+i+'_'+columnIndex,mode=(v.allowEdits??v.resourceKind!=='visualization')&&c.editable&&!derived(field)?'write':'read';
    fields.push({id:fieldId,typeId:tab.typeId,field:c.field,schemaVersion:type.version,kind:field.kind,mode,label:c.label??field.name});
    const requested=(input as any).tabs[i].columns[columnIndex];const visible=requested.visible??true;
    return {...c,visible,label:c.label??field.name,fieldId,kind:field.kind,multiple:!!field.multiple,options:field.options??[],editable:mode==='write',required:!!field.required};});
@@ -43,11 +44,11 @@ export async function trackerOperation(f:WorkspaceFoundation,a:Actor,w:string,in
   for(const filter of tab.filters)if(!columns.some(c=>c.field===filter&&['select','boolean'].includes(c.kind)))fail(400,'filter_field','Filters must reference a selected dropdown or boolean field');
   const binding=bindings.find(b=>b.typeId===tab.typeId);if(binding)binding.fields=[...new Set([...binding.fields,...columns.map(c=>c.field)])];else bindings.push({typeId:tab.typeId,fields:columns.map(c=>c.field)});
   if(tab.example&&Object.keys(tab.example).some(k=>!columns.some(c=>c.field===k)))fail(400,'example_field','Example fields must belong to their tab');
-  tabs.push({name:tab.name,...(tab.icon?{icon:tab.icon}:{}),visible:tab.visible,...(tab.filterMode?{filterMode:tab.filterMode}:{}),filters:tab.filters,tableName:type.name,typeId:tab.typeId,columns,...(tab.example?{example:Object.fromEntries(Object.entries(tab.example).sort(([a],[b])=>a.localeCompare(b)))}:{})});
+  tabs.push({name:tab.name,...(tab.icon?{icon:tab.icon}:{}),...(tab.iconPath?{iconPath:tab.iconPath}:{}),visible:tab.visible,...(tab.filterMode?{filterMode:tab.filterMode}:{}),filters:tab.filters,tableName:type.name,typeId:tab.typeId,columns,...(tab.example?{example:Object.fromEntries(Object.entries(tab.example).sort(([a],[b])=>a.localeCompare(b)))}:{})});
  }
  if(v.example&&Object.keys(v.example).some(k=>!tabs[0].columns.some((c:any)=>c.field===k)))fail(400,'example_field','Example fields must belong to the first tab');
  for(const panel of v.overview?.nextSteps??[]){const tab=tabs[panel.tabIndex];if(!tab||![panel.titleField,panel.textField].every(field=>tab.columns.some((c:any)=>c.field===field)))fail(400,'overview_field','Next steps must use fields selected in the referenced tab');}
- const config={...(v.overview?{overview:v.overview}:{}),pageSize:v.pageSize,resourceKind:v.resourceKind,name:v.name,description:v.description,tabs,exampleTypeId:tabs[0].typeId,example:v.example?Object.fromEntries(Object.entries(v.example).sort(([a],[b])=>a.localeCompare(b))):{},showExample:v.showExample};
+ const config={...(v.theme?{theme:v.theme}:{}),...(v.overview?{overview:v.overview}:{}),pageSize:v.pageSize,resourceKind:v.resourceKind,name:v.name,description:v.description,tabs,exampleTypeId:tabs[0].typeId,example:v.example?Object.fromEntries(Object.entries(v.example).sort(([a],[b])=>a.localeCompare(b))):{},showExample:v.showExample};
  return {kind:'save_component' as const,projectId:v.projectId,content:{name:v.name,format:'frontend-js' as const,resourceKind:v.resourceKind,sourceAccess:'workspace' as const,bindings,manifest:{version:1 as const,scope:v.scope,fields},source:standardSource(standardDefaults(config))}};
 }
 export const trackerLayout=z.object({name:z.string().trim().min(1).max(100),description:z.string().max(500),tabs:z.array(z.object({typeId:id,name:z.string().trim().min(1).max(60),visible:z.boolean(),columns:z.array(z.object({field:key,label:z.string().trim().min(1).max(100),visible:z.boolean()}).strict()).min(1).max(30)}).strict()).min(1).max(8)}).strict();

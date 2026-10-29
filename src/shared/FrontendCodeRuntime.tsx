@@ -1,4 +1,4 @@
-import {mergeTrackerSnapshot} from './tracker-cache.js';
+import {mergeTrackerSnapshot,SNAPSHOT_TTL} from './tracker-cache.js';
 import {ChangeSummary} from './ChangeSummary.js';
 import {EmbeddedNavigation} from './ui/PageNavigation.js';
 import {TrackerRecordForm} from './TrackerRecordForm.js';
@@ -18,27 +18,27 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
  const prefetchTimer=useRef<ReturnType<typeof setTimeout>|undefined>(undefined),generation=useRef(0);
  function cancelPrefetch(){generation.current++;clearTimeout(prefetchTimer.current);}
  function prefetch(result:any){
-  if(!current.current||!result.tracker||result.proposal)return;
-  const captured=generation.current,c=current.current,model=result.tracker,st=result.state;
-  const tab=st.tab<0?model.config.tabs.findIndex((t:any)=>t.visible!==false):st.tab;
-  if(tab<0)return;
-  const page=model.pages.find((p:any)=>p.request.typeId===model.config.tabs[tab].typeId&&p.request.limit>0&&p.request.offset===(st.offsets?.[tab]||0));
-  const action=st.tab<0?'tab:'+tab:page&&page.request.offset+page.request.limit<page.result.total?'next':null;
-  if(!action)return;
-  prefetchTimer.current=setTimeout(async()=>{try{
+  if((!current.current&&!previewId)||!result.tracker||result.proposal)return;
+  clearTimeout(prefetchTimer.current);
+  const captured=generation.current,c=current.current,model=result.tracker,st=structuredClone(result.state);
+  const visible=model.config.tabs.map((t:any,i:number)=>t.visible!==false?i:-1).filter((i:number)=>i>=0);
+  const candidates=visible.filter((i:number)=>i!==st.tab).sort((a:number,b:number)=>Math.abs(a-st.tab)-Math.abs(b-st.tab)).slice(0,2).map((i:number)=>({action:'tab:'+i,tab:i,offset:st.offsets?.[i]||0}));
+  if(st.tab>=0){const page=model.pages.find((p:any)=>p.request.typeId===model.config.tabs[st.tab].typeId&&p.request.limit>0&&p.request.offset===(st.offsets?.[st.tab]||0));if(page&&page.request.offset+page.request.limit<page.result.total)candidates.unshift({action:'next',tab:st.tab,offset:page.request.offset+page.request.limit});}
+  const needed=candidates.filter(({tab,offset}:{tab:number;offset:number})=>{const t=model.config.tabs[tab],limit=Math.min(model.config.pageSize||25,Math.max(1,Math.floor(480/t.columns.length))),filters=JSON.stringify(Object.entries(st.filters?.[tab]||{}).filter(([,v])=>v!=='').sort());const page=model.pages.find((p:any)=>p.request.typeId===t.typeId&&p.request.limit===limit&&p.request.offset===offset&&JSON.stringify(Object.entries(p.request.filters||{}).sort())===filters&&Date.now()-p.receivedAt<SNAPSHOT_TTL);return !page||page.result.rows.some((r:any)=>t.columns.some((f:any)=>!model.cachedControls?.[f.fieldId+':'+r.id]));});
+  if(!needed.length)return;
+  prefetchTimer.current=setTimeout(async()=>{for(const {action} of needed){try{
    if(!live.current||busyRef.current||generation.current!==captured)return;
-   const next=await call('run_component_frontend',{request:{componentId:c.id,expectedVersion:c.version,state:st,event:{kind:'click',action}}});
+   const next=await call('run_component_frontend',{request:{...(c?{componentId:c.id,expectedVersion:c.version}:{previewId}),state:st,event:{kind:'click',action}}});
    if(!live.current||generation.current!==captured||busyRef.current||!output.current||next.accessVersion!==output.current.accessVersion)return;
-   const merged=mergeTrackerSnapshot(output.current,next);
-   output.current={...output.current,tracker:merged.tracker};
+   const merged=mergeTrackerSnapshot(output.current,next);output.current={...output.current,tracker:merged.tracker};
    frame.current?.contentWindow?.postMessage({kind:'trialy.cache',channel:channel.current,tracker:merged.tracker},'*');
-  }catch{/* Optional prefetch never replaces the current view or shows an error. */}},250);
+  }catch{/* Optional prefetch does not replace the view. */}}},150);
  }
  const send=()=>{if(output.current)frame.current?.contentWindow?.postMessage({kind:'trialy.render',channel:channel.current,html:output.current.html,css:output.current.css,controls:output.current.controls,connected:output.current.connected,state:output.current.state,tracker:output.current.tracker,navigationOnly:embedded},'*');};
  const frameAction=(action:string)=>{approvedAction.current=action==='save-edits'?'bound-batch':action==='save-layout'?'save-layout':null;frame.current?.contentWindow?.postMessage({kind:'trialy.action',channel:channel.current,action},'*');};
  async function run(event:any={kind:'open'}){
   if(event.action==='tracker:layout'){onLayout?.();return;}if(event.action==='tracker:access'){onAccess?.();return;}
-  if(blocked.current)return;if(busyRef.current){if(eventQueue.current.length<50)eventQueue.current.push(event);return;}cancelPrefetch();busyRef.current=true;setBusy(true);onBusyChange?.(true);setError('');
+  if(blocked.current)return;if(busyRef.current){if(/^tab:/.test(event.action||''))eventQueue.current=eventQueue.current.filter(e=>!/^tab:/.test(e.action||''));if(eventQueue.current.length<50)eventQueue.current.push(event);return;}cancelPrefetch();busyRef.current=true;setBusy(true);onBusyChange?.(true);setError('');
   try{
    const c=current.current,explicitApproval=approvedAction.current===event.action;approvedAction.current=null;
    if(['tracker:create'].includes(event.action)||/^tracker:(duplicate|delete):/.test(event.action)){
@@ -95,7 +95,7 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
    else if(e.data.kind==='trialy.notice')setError(e.data.message);
    else if(e.data.kind==='trialy.rendered')onRendered?.();
    else if(e.data.kind==='trialy.footer')setFooter(e.data.footer);
-   else if(e.data.kind==='trialy.state'){state.current=e.data.state;setDetailsOpen(!!e.data.state?.detail);}
+   else if(e.data.kind==='trialy.state'){const old=state.current,next=e.data.state;state.current=next;setDetailsOpen(!!next?.detail);if(output.current&&(old?.tab!==next?.tab||JSON.stringify(old?.offsets)!==JSON.stringify(next?.offsets)||JSON.stringify(old?.filters)!==JSON.stringify(next?.filters))){cancelPrefetch();prefetch({...output.current,state:next});}}
    else if(e.data.kind==='trialy.resize'&&!output.current?.tracker&&Number.isFinite(e.data.height))setHeight(Math.max(200,Math.min(20000,e.data.height)));
    else if(e.data.kind==='trialy.event'&&!proposal){state.current=e.data.state??state.current;void run(e.data.event);}
   }

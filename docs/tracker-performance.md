@@ -1,6 +1,6 @@
 # Standard tracker loading
 
-Standard tools retain configuration-only definitions and the approved application-owned renderer. The compiled server adapter calls the same renderer with asynchronous, parallel data reads; the browser adapter renders locally from authorized snapshots. No saved source is evaluated in Node: only the shipped renderer is compiled. Legacy configurations that fail the current configuration schema fall back to the isolated runtime, as does custom source.
+Template tools store configuration and optional theme overrides and the approved application-owned renderer. The compiled server adapter calls the same renderer with asynchronous, parallel data reads; the browser adapter renders locally from authorized snapshots. No saved source is evaluated in Node: only the shipped renderer is compiled. Legacy configurations that fail the current configuration schema fall back to the isolated runtime, as does custom source.
 
 ## Read path
 
@@ -12,9 +12,9 @@ Standard tools retain configuration-only definitions and the approved applicatio
 
 ## Browser behavior
 
-The same iframe stays mounted for navigation and successful saves. Authorized pages are held in component-instance memory for 15 seconds, at most 16 pages. Cache keys include table, page, page size and filters. Permission-version or configuration changes invalidate snapshots; successful saves discard old pages. Nothing is stored in localStorage, service workers or a shared browser data cache.
+The same iframe stays mounted for navigation and successful saves. Authorized pages are held in component-instance memory for 120 seconds, at most 16 pages. Cache keys include table, page, page size and filters. Permission-version or configuration changes invalidate snapshots; successful saves discard old pages. Nothing is stored in localStorage, service workers or a shared browser data cache.
 
-An optional background request prefetches the first visible table from Overview, or the next page of the active table. It never changes the visible view. Generation checks discard results arriving after navigation/save/unmount. Cached navigation cannot bypass pending-edit review. Existing focus/periodic access rechecks clear the view if access changes.
+Optional background requests prefetch up to two neighboring tabs and the next page of the active table. It never changes the visible view. Generation checks discard results arriving after navigation/save/unmount. Cached navigation cannot bypass pending-edit review. Existing focus/periodic access rechecks clear the view if access changes.
 
 The public, user-data-free frame shell supports HTTP revalidation. Authenticated data is not made public-cacheable. Request logs include path and duration, without request bodies or query strings.
 
@@ -23,3 +23,5 @@ The public, user-data-free frame shell supports HTTP revalidation. Authenticated
 The populated integration fixture measures 25 rows with 6 fields, including computed values. Its query budget rejects a return to per-cell authorization queries. Other tests cover scope, stale writes, drafts, typed controls, cache expiry/invalidation and bounded memory.
 
 Local embedded-database timings are diagnostic, not a production latency SLA. Browser host/network latency, unusually expensive computations, and custom-code runtime costs remain separate factors. Counts are current SQL aggregates, not asynchronously materialized values; only expensive aggregates demonstrated by profiling should gain a dependency-aware materialization system. Existing page-local search/sort semantics remain unchanged.
+
+Neighboring tabs and the next data page are prefetched sequentially with bounded memory, including the signed controls needed for local rendering. Both previews and saved tools can use the cache. Successful writes clear snapshots; access/version rechecks still clear unavailable views. Repeated pending tab navigation is coalesced to the most recent target.

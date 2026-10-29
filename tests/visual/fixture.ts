@@ -1,3 +1,4 @@
+import {schemaCatalog} from '../../src/workspace/catalog.js';
 import {AccessGrid} from '../../src/domain/access-grid.js';
 import {prepareToolLayout} from '../../src/workspace/tool-layout.js';
 import express from 'express';import {PGlite} from '@electric-sql/pglite';import {readFile,readdir,mkdir} from 'node:fs/promises';import {randomUUID} from 'node:crypto';import assert from 'node:assert/strict';
@@ -11,7 +12,7 @@ export async function fixture(){
  const save=async(op:any)=>{const p=await s.preview(actor,w.id,op);return s.commit(actor,p.id,p.digest);};
  const table=async(name:string)=>(await save({kind:'create_type',name,fields:[{key:'name',name:'Name',kind:'text',ai:true},{key:'status',name:'Status',kind:'select',multiple:true,options:['Planned','Active','Blocked'],ai:true},{key:'channel',name:'Channel',kind:'select',options:['Email','LinkedIn'],ai:true},{key:'next_step',name:'Next step',kind:'text',ai:true},{key:'source',name:'Source',kind:'text',ai:true}]})).objects[0].id;
  const pi=await table('PI Engagement Tracker');await save({kind:'create_record',typeId:pi,data:{name:'University fixture'}});const companies=await table('Companies'),contacts=await table('Contacts');
- const op=await trackerOperation(f,actor,w.id,{name:'Biotech outreach',description:'Track companies and contacts for email and LinkedIn outreach.',tabs:[{name:'Companies',typeId:companies,columns:[{field:'name',label:'Company'},{field:'status'},{field:'channel'},{field:'next_step'},{field:'source'}]},{name:'Contacts',typeId:contacts,columns:[{field:'name',label:'Contact'},{field:'status'},{field:'channel'},{field:'next_step'},{field:'source'}]}],example:{name:'Example biotech',source:null}});const preview=await f.preview(actor,w.id,op);
+ const op=await trackerOperation(f,actor,w.id,{name:'Biotech outreach',description:'Track companies and contacts for email and LinkedIn outreach.',overview:{showCounts:true,nextSteps:[{tabIndex:0,titleField:'name',textField:'next_step',heading:'Company next steps'},{tabIndex:1,titleField:'name',textField:'next_step',heading:'Contact follow-ups'}]},tabs:[{name:'Companies',typeId:companies,columns:[{field:'name',label:'Company'},{field:'status'},{field:'channel'},{field:'next_step'},{field:'source'}]},{name:'Contacts',typeId:contacts,columns:[{field:'name',label:'Contact'},{field:'status'},{field:'channel'},{field:'next_step'},{field:'source'}]}],example:{name:'Example biotech',source:null}});const preview=await f.preview(actor,w.id,op);
  const receipt=await f.confirm(actor,w.id,preview.id,preview.digest);const component=(await f.readComponent(actor,w.id,receipt.id)).component;
  for(let i=0;i<26;i++)await save({kind:'create_record',typeId:companies,data:{name:'Biotech '+String(i+1).padStart(2,'0'),status:i%3===0?['Active','Planned']:i%3===1?['Blocked']:['Planned'],channel:i%2?'Email':'LinkedIn',next_step:'Review development plans and arrange a conversation.',source:'User supplied'}});
  const calls:string[]=[];
@@ -26,6 +27,7 @@ export async function fixture(){
   if(name==='list_views')return [];
   if(name==='read_access_grid')return new AccessGrid(db).read(actor,w.id,v.subject);
   if(name==='prepare_tool_layout'){const {workspaceId,...request}=v;return prepareToolLayout(f,actor,w.id,request);}
+  if(name==='read_workspace_schema'){const {workspaceId,...request}=v;return schemaCatalog(db,actor,w.id,request);}
   if(name==='list_tables')return s.types(actor,w.id);
   if(name==='list_workspace_previews')return f.pending(actor,w.id);
   if(name==='read_workspace_home')return workspaceHome(db,actor,w.id,v);
@@ -41,6 +43,7 @@ export async function fixture(){
  app.get('/embed',async(_req,res)=>{res.removeHeader('Content-Security-Policy');res.type('html').send(await readFile('dist/embed.html','utf8'));});
  app.get('/',(_req,res)=>{res.removeHeader('Content-Security-Policy');res.type('html').send(`<html><body style="margin:0"><iframe id="app" src="/embed" style="width:100%;height:100vh;border:0"></iframe><script>window.addEventListener('message',async e=>{const m=e.data;if(e.source!==document.getElementById('app').contentWindow)return;if(m.method==='ui/initialize')e.source.postMessage({jsonrpc:'2.0',id:m.id,result:{protocolVersion:m.params.protocolVersion,hostInfo:{name:'Acceptance host',version:'1'},hostCapabilities:{serverTools:{},openLinks:{}},hostContext:{theme:'light',displayMode:'fullscreen'}}},'*');else if(m.method==='ui/notifications/initialized'){window.hostReady=true;}else if(m.method==='tools/call'){const result=await (await fetch('/fixture/tool',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(m.params)})).json();e.source.postMessage({jsonrpc:'2.0',id:m.id,result},'*');}else if(m.id)e.source.postMessage({jsonrpc:'2.0',id:m.id,result:{}},'*');});window.deliver=result=>document.getElementById('app').contentWindow.postMessage({jsonrpc:'2.0',method:'ui/notifications/tool-result',params:{content:[],structuredContent:{result}}},'*');</script></body></html>`);});
 
+ app.get('/fixture/calls',(_req,res)=>res.json(calls));
  app.get('/fixture/initial',async(_req,res)=>{const current=(await f.readComponent(actor,w.id,component.id)).component;res.json({screen:'tracker',workspaceId:w.id,component:current,initialOutput:await f.runFrontend(actor,w.id,{componentId:current.id,expectedVersion:current.version})});});
  app.get('/vivid-catalog',async(_req,res)=>{res.removeHeader('Content-Security-Policy');res.type('html').send(await readFile('plugin/trialy/skills/trialy-tracker-design/assets/vivid-template/catalog.html','utf8'));});
  app.get('/reference',async(_req,res)=>{res.removeHeader('Content-Security-Policy');res.type('html').send(await readFile('plugin/trialy/skills/trialy-tracker-design/assets/approved-theme2-reference.html','utf8'));});

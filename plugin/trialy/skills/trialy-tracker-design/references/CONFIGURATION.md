@@ -1,6 +1,6 @@
 # Standard tool configuration
 
-Use `prepare_tracker` for a new tailored tool and `prepare_tracker_revision` for changes. The template ID is `trialy.standard.v1`. This is an interface template, not a fixed business workflow. Adapt every tab, field and status to the actual task. The server stores JSON configuration and supplies the versioned renderer and approved stylesheet; do not copy the renderer or write HTML/CSS.
+Use `prepare_tracker` for a new tailored tool and `prepare_tracker_revision` for changes. The template ID is `trialy.standard.v1`. This is an interface template, not a fixed business workflow. Adapt every tab, field and status to the actual task. The server stores JSON configuration and supplies the versioned renderer and default stylesheet. Use theme overrides or custom frontend-js when requested.
 
 ## Creation inputs
 
@@ -31,7 +31,7 @@ Calculated fields are read-only, scalar, optional and non-unique. Numeric formul
 
 ## Column display
 
-`display` is optional and does not change stored values. Categorical fields receive semantic colors automatically; a neutral badge without per-value mappings does not suppress them. Optional valueTones customize meanings within the fixed palette:
+`display` is optional and does not change stored values. Status/stage/priority/outcome fields receive badge defaults only when display is omitted. Other categories and multiple values stay plain. Explicit text or neutral badge settings always win. Optional valueTones customize meaning:
 
 ```json
 {"kind":"badge","tone":"neutral","valueTones":{"New":"blue","Contacted":"amber","Engaged":"green","Declined":"red"}}
@@ -51,8 +51,18 @@ Read the saved tool and its current version. Call `prepare_tracker_revision` wit
 
 ## Unsupported designs
 
-Use `prepare_tracker` and `prepare_tracker_revision` for standard tools. ChatGPT changes content and bindings; Trialy owns HTML, CSS, icons, spacing, colors and interactions. More fields, different terminology, calculations, status filters and visual preferences are supported configuration work, never reasons to generate a new design. A new custom tool is permitted only for an actual user-required capability absent from the renderer: `interactive_timeline` (at least two bound date fields), `calendar` (a bound date field), or `dependency_graph` (a bound relationship field). Supply `save_component.designException` with `capability`, the user's `userRequirement`, `whyStandardInsufficient` and exact manifest `fieldIds`. The server validates the capability and bindings; the preview exposes the exception for review. A free-text `designChangeReason` alone is rejected. Do not invent a requirement to qualify. Preserve the host shell and existing permission/write controls. Existing saved standard tools remain configuration-only; never relabel a bound tool as generic to bypass this rule.
+Use Vivid as a reusable default. Users may customize branding, fonts, icons, layouts and interactions or request fully custom frontend-js code, including revisions of saved template tools. No design exception or capability whitelist is required. Use prepare_tracker / prepare_tracker_revision for template configuration and theme; use save_component for custom source with authorized bindings and a complete manifest. Preserve database validation, access controls, reviewed writes and audit logging.
 
 ## Exact reusable template
 
 Read [TEMPLATE_REUSE.md](TEMPLATE_REUSE.md). The fixed component kit supersedes conflicting styling advice in older references. Each tab may optionally select `icon: "people" | "document" | "checklist" | "contract"`; these reuse the original four SVGs without changing their paths, colors or size. All other visual decisions remain template-owned. Labels, fields and record content do not inherit the example HTML's business domain.
+
+## Theme and custom interfaces
+
+`theme` is supported by prepare_tracker, prepare_tracker_revision.changes and tool Settings. Fields: primary, accent, success, background, surface, text, muted, border (six-digit hex); fontFamily (font stack); fontSize (12–24); density (comfortable/compact); radius (0–30); css (up to 12,000 characters, applied last inside the isolated tool frame). Omitted values preserve the Vivid preset. Revisions merge the theme unless the caller deliberately supplies a replacement theme; use {} to reset.
+
+Example requested brand: `theme:{primary:"#003B71",accent:"#00A3E0",success:"#65B32E",surface:"#FFFFFF",background:"#F3F6F8"}`. Preserve all unrelated configuration and database bindings.
+
+Tabs accept an optional iconPath (SVG path data) in addition to the preset icon names. Use custom source for arbitrary SVGs or different component structures. `allowEdits:true` enables explicitly editable columns on an interactive dashboard; omitted keeps new dashboards read-only. Existing field permission checks and reviewed saves still apply.
+
+For fully custom tools, create or revise save_component with frontend-js source and its authorized manifest. Preserve the existing componentId/expectedVersion and bindings when changing only presentation. No designException is needed.
