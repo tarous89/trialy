@@ -34,7 +34,7 @@ Default composition:
 [complete rows; full page scrolls vertically]
 ```
 
-- Do **not** include a second tracker-owned global header, Trialy logo, app sidebar or special navigation buttons; the host can supply them later.
+- Do **not** include a second tracker-owned global header, TrialAgents logo, app sidebar or special navigation buttons; the host can supply them later.
 - Do not show “interactive prototype” taglines or extraneous labels. A short fictionality/local-demo footnote may be used where materially necessary.
 - The tracker title and short subtitle are left-aligned. Business context (service, asset, work package) belongs in title/subtitle or specific data fields, not redundant always-visible summary cards.
 - Show exactly user-required tabs; for the vendor example, Overview / Vendors / RFP / Qualification / Contracting. For other domains derive tabs from actual need.
@@ -61,7 +61,7 @@ Default composition:
 - Mark pending changes with the approved **light green fill** (`#e5f6e9` in original base, or closest existing theme green for pending state) and subtle inset border. Pending changes remain obvious in both table and drawer.
 - Show save/update/merge actions in a **dark floating footer**, fixed below the content: one concise sentence, one primary CTA, and a quiet accessible dismiss control whenever edits are pending. No Advanced/reload panel or extra instructions above the title. Use `+ Add record` consistently rather than “Add vendor,” “Add RFP,” etc. Tab context supplies the record type. Do not add Save buttons to every cell.
 - `Ignore edits` must restore the exact pre-edit values and clear the pending highlight and controls; `Save edits` must commit only the reviewed, permitted changed fields and update all bound views. Retain errors/pending drafts on failed authorization or stale values—never claim success early.
-- In the standalone HTML demo, memory-local persistence is an illustration only; explicit messages must not imply a database commit. In Trialy-connected usage, every change requires the platform's exact approval path or an applicable revocable, narrowly scoped data-type grant. Manual typing is not a backend commit.
+- In the standalone HTML demo, memory-local persistence is an illustration only; explicit messages must not imply a database commit. In TrialAgents-connected usage, every change requires the platform's exact approval path or an applicable revocable, narrowly scoped data-type grant. Manual typing is not a backend commit.
 - Use appropriate editors for data type: text, numeric, date, boolean, select, relationship reference, URL/source and computed code where allowed. Do not sprinkle unrelated date/calendar icons or superfluous dropdown chevrons just for aesthetics.
 - Changes that affect derived Overview stats or other tabs should recompute from committed/staged records in a clear, predictable way. A preview may show proposed consequences but must not masquerade as committed state.
 - Data changes and *presentation* changes are different destinations. Renaming a visible column must never silently rename an existing database key, and editing a computed cell must edit inputs or calculation definition through proper review, not overwrite a calculated output.
@@ -164,7 +164,7 @@ Do not introduce new permission colors. Color remains secondary to explicit word
 - Preserve stable record IDs, type IDs, relation IDs and unchanged source fields when changing view labels or order.
 - Do not implement tab-specific duplicated data arrays as the authoritative state; connect each tab view to shared store/query.
 - Tab-visibility and column-visibility affect layout only. Team permissions are enforced on read, filter, aggregation, export, detail, source link and write endpoints too.
-- For local HTML demos, editable in-memory data is permitted as clearly marked sample behavior. For connected Trialy, use backend services that enforce current actor identity, rights, stale-write prevention and exact approvals.
+- For local HTML demos, editable in-memory data is permitted as clearly marked sample behavior. For connected TrialAgents, use backend services that enforce current actor identity, rights, stale-write prevention and exact approvals.
 - Recompute permissions after every membership, project move, component edit, schema change and source binding change; revocation is not just UI styling.
 - When modifying previously approved HTML, preserve existing UX details **byte-for-byte wherever possible**. A seemingly small style change must not rearrange action controls, resurrect unused tabs or silently change business logic.
 

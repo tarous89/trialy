@@ -4,14 +4,14 @@
       "Interactive"
     ],
     "category": "Productivity",
-    "defaultPrompt": "Open my Trialy workspace.",
+    "defaultPrompt": "Open my TrialAgents workspace.",
     "developerName": "Atlas Consulting",
-    "displayName": "Trialy",
+    "displayName": "TrialAgents",
     "longDescription": "Use a persistent workspace for data, documents, isolated JavaScript and saved functions inside ChatGPT. Experiment with scoped tools, review exact proposed changes and explicitly confirm saves. Optional once/future permissions support scheduled functions. Development version: not fit for patient-level data; live external providers, regulatory validation and real-host acceptance remain pending.",
-    "shortDescription": "Data, code and tools for ChatGPT"
+    "shortDescription": "Data, code & tools for ChatGPT"
   },
   "name": "trialy",
-  "version": "0.2.23",
+  "version": "0.2.24",
   "description": "Persistent data, isolated JavaScript, saved functions and authorized tools for ChatGPT.",
   "author": {
     "name": "Atlas Consulting"

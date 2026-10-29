@@ -12,7 +12,7 @@
 - **Candidate information:** Site organization, location, PI/person relationships, relevant *documented* trial experience, outreach status where requested, feasibility replies, resources/capabilities, constraints, scoring criteria and selection rationale.
 - **Views and interactions:** Site/PI list, filterable comparison matrix, site feasibility form, review queue and geographic distribution *only where authorized locations are available*.
 - **Possible triggers:** Questionnaire response -> exact reviewable update; preferred-site decision -> proposed startup task/checklist; unanswered request -> reminder draft.
-- **Boundaries:** Trialy cannot infer investigator qualifications, site recruitment potential or site availability from an empty tracker. Preserve affiliations as dated/contextual relationships, not duplicate investigator profiles. No patient data.
+- **Boundaries:** TrialAgents cannot infer investigator qualifications, site recruitment potential or site availability from an empty tracker. Preserve affiliations as dated/contextual relationships, not duplicate investigator profiles. No patient data.
 - **Comparable offerings:** Veeva Study Startup feasibility, TrialHub site/country intelligence.
 
 ## START-02 — Site activation tracker (P2)

@@ -35,7 +35,7 @@ Acceptance: a three-page app needs no category; same-project cards share a stabl
 2. Add a minimal standalone wrapper without the management sidebar. Keep the current isolated render frame; do not execute generated source in the trusted parent document.
 3. Change Home card/Open actions to real safe new-tab links; load/render inside the opened page. Provide standalone detail/control wrappers for other existing Home resources rather than dropping them.
 4. Embedded hosts return a trusted Open app link. Retain old embedded readers/previews for compatibility; do not open unsolicited tabs from tool calls.
-5. Add the persistent shared footer, “Built with TrialAgent,” with centralized label/assets and a fixed Home destination. Reserve space for it and existing save/review controls. Reuse current styles.
+5. Add the persistent shared footer, “Built with TrialAgents,” with centralized label/assets and a fixed Home destination. Reserve space for it and existing save/review controls. Reuse current styles.
 6. Preserve validated sign-in return paths. Denied/wrong-account/archived/missing states reveal no restricted details. No public access or new identity system is introduced.
 
 Touchpoints: [server app](../../src/server/app.ts), [web host](../../src/web/main.tsx), [auth](../../src/server/auth.ts), [HomePanel](../../src/shared/HomePanel.tsx), [FrontendCodeRuntime](../../src/shared/FrontendCodeRuntime.tsx), [frame](../../src/shared/frontend-frame.ts), [embed](../../src/embed/main.tsx). New modules: small standalone route resolver and shared app-page wrapper/footer.

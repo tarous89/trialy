@@ -7,8 +7,8 @@ const page=await browser.newPage({viewport:{width:1440,height:1100}}),errors:str
 const projects=[{id:'p1',name:'AX-101 · Phase I'},{id:'p2',name:'CMC manufacturing'},{id:'p3',name:'Company operations'}];const resources=[['r1','Vendor selection','tracker','p1'],['r2','Site feasibility','form','p1'],['r3','Enrollment overview','visualization','p1'],['r4','Weekly site summary','automation','p1'],['r5','Manufacturing milestones','tracker','p2'],['r6','Budget overview','visualization','p3']].map(([id,name,kind,p])=>({id,name,kind,source:'component',canMove:true,placementVersion:0,projectIds:[p],updatedAt:'2026-10-23T09:00:00Z',previewFields:kind==='automation'?[]:['Name','Status','Owner'],description:'Connected project data · revision 1'}));
 let exportPages=0;
 await page.route('**/api/**',async (route:any)=>{const url=new URL(route.request().url()),path=url.pathname;let body:any=[];
-if(path==='/api/me')body={csrf:'test',user:{id:'u1',name:'Alex',email:'synthetic@example.invalid'},workspaces:[{id:'w1',name:'Trialy workspace',ai_enabled:true}]};
-else if(path==='/api/config')body={brand:'Trialy',demo:false};
+if(path==='/api/me')body={csrf:'test',user:{id:'u1',name:'Alex',email:'synthetic@example.invalid'},workspaces:[{id:'w1',name:'TrialAgents workspace',ai_enabled:true}]};
+else if(path==='/api/config')body={brand:'TrialAgents',demo:false};
 else if(path.endsWith('/tools/move')){const v=route.request().postDataJSON();const r=resources.find(r=>r.id===v.toolId)!;assert.equal(v.expectedVersion,r.placementVersion);r.projectIds=v.projectId?[v.projectId]:[];r.placementVersion++;body={status:'saved',version:r.placementVersion};}
 else if(path.endsWith('/home'))body={projects,resources};
 else if(path.endsWith('/organization'))body={nodes:projects.map(p=>({...p,kind:'project'}))};

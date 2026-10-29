@@ -42,7 +42,7 @@
 - **Candidate information:** Countries, study assumptions, external trial-landscape sources, competing-trial observations, expected operational constraints, data gaps, scoring criteria, decision rationale and source/date.
 - **Views and interactions:** Country comparison grid, editable weighted scorecard, evidence links, assumptions log and selected/not-selected review.
 - **Possible triggers:** Newly authorized evidence leads to an *update proposal*; approved country shortlist can be linked to trial plans or draft RFP scopes.
-- **Boundaries:** Trialy does not include proprietary epidemiology, patient counts, live country/site performance benchmarks or recruitment predictions simply by providing a scorecard. Use reviewed external sources/integrations where authorized; protect source licensing.
+- **Boundaries:** TrialAgents does not include proprietary epidemiology, patient counts, live country/site performance benchmarks or recruitment predictions simply by providing a scorecard. Use reviewed external sources/integrations where authorized; protect source licensing.
 - **Comparable offerings:** TrialHub and Citeline Trialtrove for underlying intelligence, alongside configurable sponsor decision matrices.
 
 ## Later specification work

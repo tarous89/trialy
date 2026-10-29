@@ -1,4 +1,4 @@
-# Trialy — Interface behavior register
+# TrialAgents — Interface behavior register
 
 Updated 11 October 2026. Applies to standalone and embedded workspaces and ChatGPT-generated components. This records product decisions and open recommendations; it does not claim runtime implementation.
 

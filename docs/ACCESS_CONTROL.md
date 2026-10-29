@@ -1,6 +1,6 @@
 # Effective access contract
 
-Approved scope: 25 October 2026. Trialy is ChatGPT-first. App and plugin share one database and one authorization policy.
+Approved scope: 25 October 2026. TrialAgents is ChatGPT-first. App and plugin share one database and one authorization policy.
 
 ## Identities, grants and restrictions
 

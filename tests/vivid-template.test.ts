@@ -8,7 +8,8 @@ const base=new URL('../plugin/trialy/skills/trialy-tracker-design/assets/',impor
 const read=(name:string)=>readFile(new URL(name,base),'utf8');
 test('reusable theme preserves the uploaded HTML and its complete CSS cascade',async()=>{
  const [reference,css,manifest]=await Promise.all([read('approved-theme2-reference.html'),read('vivid-template/theme.css'),read('vivid-template/manifest.json').then(JSON.parse)]);
- assert.equal(createHash('sha256').update(reference).digest('hex'),'b6774c33c1e34b380f91b6c7412af3a2968d2ce38829321cc43b1b5d323151b3');
+ // Approved 29 October naming-only update; the complete CSS cascade remains unchanged.
+ assert.equal(createHash('sha256').update(reference).digest('hex'),'83b6b5d1b29bea60a27b225c04f37b9c4c23a7cd5e3a78f13e8b255b2e9f11e4');
  assert.equal(css,[...reference.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map(m=>m[1]).join('\n'));
  assert.equal(createHash('sha256').update(css).digest('hex'),manifest.stylesheetSha256);
 });

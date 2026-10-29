@@ -38,7 +38,7 @@ The standalone app now revalidates the signed-in session on focus/visibility ret
 
 All 60 backend tests pass. `scripts/test-connected-browser.ts` is a repeatable isolated Chromium acceptance test against the production-built app, real signup/password login machinery, cookie sessions, CSRF routes and migrated PGlite. It uses separate actual browser accounts, verifies stored tracker values, revokes a member's field access and checks the frame/source editor disappear, invalidates a revision, and revokes the owner session while the app is open. No injected actor or production write is used. A one-row Database response in that synthetic local run was 434 bytes and about 14 ms; this is not a production latency benchmark.
 
-The connected production Trialy MCP `open_workspace` authenticated successfully and returned the authorized workspace/schema. This verifies the live authenticated tool boundary only, not manual ChatGPT iframe navigation/approval-return acceptance. Production SQL inspection was blocked by the private database's empty external IP allowlist; no network exposure or credential changes were made.
+The connected production TrialAgents MCP `open_workspace` authenticated successfully and returned the authorized workspace/schema. This verifies the live authenticated tool boundary only, not manual ChatGPT iframe navigation/approval-return acceptance. Production SQL inspection was blocked by the private database's empty external IP allowlist; no network exposure or credential changes were made.
 
 
 ## Final database isolation implementation — 23 October 2026

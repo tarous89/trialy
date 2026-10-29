@@ -6,7 +6,7 @@ Updated 29 October 2026. Status: backend and approved management UI implemented 
 
 ## 1. Small release boundary
 
-Ship one generic HTTPS connector type, with multiple named service connections. Support no authentication or API token/header credentials and bounded JSON/text requests/responses. Use customer-owned credentials. Branded services, OAuth flows, file streaming, webhooks and Trialy-funded provider usage are later work.
+Ship one generic HTTPS connector type, with multiple named service connections. Support no authentication or API token/header credentials and bounded JSON/text requests/responses. Use customer-owned credentials. Branded services, OAuth flows, file streaming, webhooks and TrialAgents-funded provider usage are later work.
 
 The builder prepares operations and mappings; users select the service/account, permissions and credentials through standard UI. Normal users should not have to write request code. A connection cannot eliminate a provider's account/credential requirements. Label the feature **Connectors**, not APIs.
 
@@ -31,7 +31,7 @@ Add tenant-scoped connection records (name, base address, auth mode, secret refe
 
 Expose neutral builder operations for discovering safe metadata, preparing configuration, requesting secure credential setup, binding an app and reading status. Names are selected during S4/S5. Generated code invokes a connection/operation handle with validated parameters; it cannot choose an arbitrary destination or fetch credential values.
 
-Keep existing inbound “Connected applications” settings intact. Those authorize ChatGPT/other clients to use Trialy. This connector authorizes Trialy to use an external service; workers cannot inherit connections from ChatGPT.
+Keep existing inbound “Connected applications” settings intact. Those authorize ChatGPT/other clients to use TrialAgents. This connector authorizes TrialAgents to use an external service; workers cannot inherit connections from ChatGPT.
 
 ## 4. What the connector is allowed to see
 
@@ -55,9 +55,9 @@ Provider responses/configuration are untrusted data. Normalize errors and redact
 
 ## 6. Cost controls now, billing later
 
-P0 includes technical usage counters, configured per-connection/app request limits, timeout/body/concurrency bounds, cancellation and disable controls. These protect Trialy's execution and help users see use. The external provider charges the customer's account; Trialy cannot enforce that account's total provider bill. Make this visible at setup, without inventing a provider cost estimate.
+P0 includes technical usage counters, configured per-connection/app request limits, timeout/body/concurrency bounds, cancellation and disable controls. These protect TrialAgents's execution and help users see use. The external provider charges the customer's account; TrialAgents cannot enforce that account's total provider bill. Make this visible at setup, without inventing a provider cost estimate.
 
-Do not build monetary reservations, subscriptions/overages, an AI token ledger or managed provider accounts for this release. Keep these in P2, with branded managed services last. Before Trialy pays for any external service, implement bounded spending admission, trustworthy metering and reconciliation. Future pricing should distinguish Trialy's compute/storage/transfer from provider units; flat per-call pricing is not assumed.
+Do not build monetary reservations, subscriptions/overages, an AI token ledger or managed provider accounts for this release. Keep these in P2, with branded managed services last. Before TrialAgents pays for any external service, implement bounded spending admission, trustworthy metering and reconciliation. Future pricing should distinguish TrialAgents's compute/storage/transfer from provider units; flat per-call pricing is not assumed.
 
 ## 7. Acceptance examples
 

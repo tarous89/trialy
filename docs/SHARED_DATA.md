@@ -1,6 +1,6 @@
 # Shared records, contextual facts and reviewed backfill
 
-Implemented checkpoint: migration 025. ChatGPT determines meaning and proposes interpretations; Trialy enforces current access, schema, versions and human approval. No fixed clinical workflow, entity-matching rulebook or automatic conversation capture is introduced.
+Implemented checkpoint: migration 025. ChatGPT determines meaning and proposes interpretations; TrialAgents enforces current access, schema, versions and human approval. No fixed clinical workflow, entity-matching rulebook or automatic conversation capture is introduced.
 
 ## Shared project references
 

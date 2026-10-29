@@ -19,7 +19,7 @@ services:
       - key: SESSION_SECRET
         generateValue: true
       - key: BRAND_NAME
-        value: Trialy
+        value: TrialAgents
   - type: worker
     name: trialy-worker
     runtime: docker

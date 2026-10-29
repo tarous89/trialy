@@ -4,7 +4,7 @@ let handle,review;
 function element(tag,text,parent=content){const e=document.createElement(tag);e.textContent=text;parent.append(e);return e;}
 function button(label,fn){const b=element('button',label,actions);b.onclick=fn;return b;}
 async function api(path,body,csrf){const r=await fetch('/guest/'+path,{method:'POST',headers:{'Content-Type':'application/json',...(csrf?{'x-csrf-token':csrf}:{})},body:JSON.stringify(body),cache:'no-store'});const out=await r.json();if(!r.ok){const e=Error(out.message||'The save did not complete. Your preview is preserved.');e.status=r.status;throw e;}return out;}
-function completed(receipt){status.textContent='Saved to Trialy. Your tracker remains available after the temporary preview expires.';actions.replaceChildren();const a=element('a','Open saved workspace',actions);a.href='/?workspaceId='+encodeURIComponent(receipt.workspaceId)+'&tab=projects';}
+function completed(receipt){status.textContent='Saved to TrialAgents. Your tracker remains available after the temporary preview expires.';actions.replaceChildren();const a=element('a','Open saved workspace',actions);a.href='/?workspaceId='+encodeURIComponent(receipt.workspaceId)+'&tab=projects';}
 async function inspect(){
  review=await api('inspect',{handle});content.replaceChildren();actions.replaceChildren();
  if(review.status==='saved'){completed(review.receipt);return;}

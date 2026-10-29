@@ -1,4 +1,4 @@
-# Trialy focused acceptance and evidence
+# TrialAgents focused acceptance and evidence
 
 This is an implementation evidence map, not a claim of regulatory compliance. Customer intended use and their operating procedures determine validation and record requirements. Test only the affected critical paths after a change; do not build a large duplicate test programme.
 
@@ -22,17 +22,16 @@ Verify a hidden financial field and its dependent calculation are absent from th
 
 ## Onboarding and distribution
 
-1. Connect the existing private Trialy plugin using the designated test ChatGPT account. Complete signup/consent and verify it returns to the initiating host connection.
+1. Connect the existing private TrialAgents plugin using the designated test ChatGPT account. Complete signup/consent and verify it returns to the initiating host connection.
 2. Open the workspace, create a synthetic record, preview/discard, then preview/save. Read the result from a separate conversation and standalone session.
 3. Exercise embedded upload/download in that host. If host file handling or automatic opening is unsupported, record the actual behavior and keep the standalone path available; do not advertise automatic behavior as proven.
-4. Record account plan, app availability, approved permissions and tested host behavior. Trialy adds no organizational ChatGPT-account requirement.
+4. Record account plan, app availability, approved permissions and tested host behavior. TrialAgents adds no organizational ChatGPT-account requirement.
 5. Test disconnect/reconnect, logout and revoked access without sending messages to real recipients.
 6. Customer production remains gated on recovery evidence, identity hardening, any required provider integrations and customer intended-use review.
 
 ## Brand cutover
 
-Keep Trialy repository/internal IDs and the existing Trialegions product separate. Before public rename, explicitly select the destination domain and authorize the replacement. Inventory old routes/data, agree migration/redirects, verify backups and OAuth callback/issuer behavior, update brand configuration and plugin listing, perform a synthetic connect/save/read-back check, and retain a rollback route. No current Trialegions data or domain is changed by this development work.
-
+Public naming is **TrialAgents**; the internal product name is **TrialAgents OS**. The user approved the app and plugin naming change on 29 October 2026. This is a copy/presentation change using existing styles, with no domain, authentication, database or user-content migration. Repository/plugin slugs, service names, scopes, cookies, routes, saved runtime contracts and data identifiers remain stable for compatibility. Intel, CTIS, Custom and existing Trialegions services are separate and unchanged. See [naming and compatibility](BRANDING.md).
 
 ## Additional implementation evidence
 

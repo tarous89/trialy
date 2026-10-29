@@ -1,12 +1,12 @@
-# Trialy — Demo templates and clinical-operations research catalog
+# TrialAgents — Demo templates and clinical-operations research catalog
 
 **Status:** Product discovery / candidate use cases, **not approved functional specifications or implemented modules**.  
 **Recorded:** 20 October 2026.  
 **Basis:** October 2026 research/discussion of sponsor-side clinical operations, established products and configurable trackers. Priorities below are hypotheses for product planning, not verified market-share or willingness-to-pay measurements.
 
-## Relationship to Trialy's active scope
+## Relationship to TrialAgents's active scope
 
-This catalog organizes **examples of applications users could ask ChatGPT to create** using Trialy's shared data, saved code, isolated execution, tool gateway and permissions. **It does not authorize hardcoded clinical modules, default product navigation, mandatory templates, a fixed clinical schema, predefined approval chains, or a separate component engine.** The current architecture and decisions in [README](../../README.md), [development roadmap](../../DEVELOPMENT.md), [frontend contract](../FRONTEND_CODE.md) and [write authorization](../WRITE_AUTHORIZATION.md) take precedence.
+This catalog organizes **examples of applications users could ask ChatGPT to create** using TrialAgents's shared data, saved code, isolated execution, tool gateway and permissions. **It does not authorize hardcoded clinical modules, default product navigation, mandatory templates, a fixed clinical schema, predefined approval chains, or a separate component engine.** The current architecture and decisions in [README](../../README.md), [development roadmap](../../DEVELOPMENT.md), [frontend contract](../FRONTEND_CODE.md) and [write authorization](../WRITE_AUTHORIZATION.md) take precedence.
 
 A feature here is a **customer-facing use case** assembled from customer-defined data types, records, relationships, authorized documents, generated code, views and actions. Records can be shared across projects subject to permissions. Use the generic platform `project` concept; a clinical study is one possible project, not a mandatory platform entity.
 
@@ -64,7 +64,7 @@ The following are **desired functional ingredients**, not a requirement to build
 
 ## Universal constraints and review rules
 
-1. **No assumed fixed workflow:** Customer/project/task context controls the generated data and UI. Suggested fields in the section files are *examples*, not universal required schema. The user can change a workflow without rewriting Trialy's shared foundation.
+1. **No assumed fixed workflow:** Customer/project/task context controls the generated data and UI. Suggested fields in the section files are *examples*, not universal required schema. The user can change a workflow without rewriting TrialAgents's shared foundation.
 2. **Explicit approval before database writes:** New records, edits, imports, reconciliations and workflow-generated writes must show an exact diff and receive authorization by default. Only a specific revocable, expiring **data-type** permission can allow future writes in its declared scope. Approved setup does not grant blanket future updates.
 3. **Manual edits are also controlled:** Typing in an editable view is not a database commit. Review the actual destination and impact; enforce versions and permissions server-side. Generated code cannot approve its own write.
 4. **Keep observed, inferred and planned states distinct:** A drafted RFP is not sent; a short-listed CRO is not selected; a site under assessment is not active. Sources and uncertainty survive corrections.
@@ -86,7 +86,7 @@ The following are **desired functional ingredients**, not a requirement to build
 
 ## Market comparables to investigate further
 
-Clinical development/planning: TrialHub, Citeline Trialtrove, Kivo, Oracle ClearTrial. Outsourcing: Oracle ClearTrial, Science Exchange, commercial CTMS/vendor systems. Study startup: Veeva Study Startup and eTMF, TrialHub. Ongoing oversight and documents: Medidata Rave CTMS, Qualio, Kivo, Veeva eTMF, plus spreadsheets and Microsoft 365 tools. **Named competitors are research reference points, not assertions that Trialy implements, matches or replaces their specialist capabilities.** Collect source-specific customer/review evidence and direct sponsor interviews during detailed specification.
+Clinical development/planning: TrialHub, Citeline Trialtrove, Kivo, Oracle ClearTrial. Outsourcing: Oracle ClearTrial, Science Exchange, commercial CTMS/vendor systems. Study startup: Veeva Study Startup and eTMF, TrialHub. Ongoing oversight and documents: Medidata Rave CTMS, Qualio, Kivo, Veeva eTMF, plus spreadsheets and Microsoft 365 tools. **Named competitors are research reference points, not assertions that TrialAgents implements, matches or replaces their specialist capabilities.** Collect source-specific customer/review evidence and direct sponsor interviews during detailed specification.
 
 ## Exact specification template to fill later — per feature
 

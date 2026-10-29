@@ -10,7 +10,7 @@ for(const width of [1440,390])test(`Simple apps: launch, navigation, draft guard
  const frame=app.frameLocator('iframe[title="Saved frontend code"]');await expect(frame.getByRole('heading',{name:'Overview'})).toBeVisible();
  await expect(frame.locator('a').filter({hasText:'Unsafe'})).not.toHaveAttribute('href');
  const [linked]=await Promise.all([context.waitForEvent('page'),frame.getByRole('link',{name:'Linked calculator',exact:true}).click()]);await expect(linked.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Linked calculator',exact:true})).toBeVisible();await linked.close();
- await expect(app.locator('.ty-sidebar')).toHaveCount(0);await expect(app.getByRole('link',{name:'Built with TrialAgent'})).toBeVisible();
+ await expect(app.locator('.ty-sidebar')).toHaveCount(0);await expect(app.getByRole('link',{name:'Built with TrialAgents'})).toBeVisible();
  await frame.getByRole('link',{name:'Company',exact:true}).click();await expect(frame.getByRole('heading',{name:'Company',exact:true})).toBeVisible();await expect(app).toHaveURL(/\/company\?/);
  await app.reload();await expect(frame.getByRole('heading',{name:'Company',exact:true})).toBeVisible();
  await frame.getByRole('link',{name:'Calculator',exact:true}).click();await expect(frame.getByRole('heading',{name:'Calculator'})).toBeVisible();await frame.getByLabel('Quantity').fill('7');await frame.getByLabel('Rate',{exact:true}).fill('9');await frame.getByRole('button',{name:'Calculate'}).click();await expect(frame.getByText('Total: 63')).toBeVisible();
