@@ -1,156 +1,70 @@
-# Connectors, credentials and usage economics
+# Generic connector: first-release contract
 
-Date: 29 October 2026. Status: proposed implementation design. No connector, provider account, price or billable feature is activated by this document.
+Updated 29 October 2026. Status: ready to implement; no live connection or billing activated.
 
-[Platform scope](APP_PLATFORM_SCOPE.md) · [Implementation steps AP-05, AP-09 and AP-13](APP_PLATFORM_ROADMAP.md)
+[Simple-app scope](APP_PLATFORM_SCOPE.md) · [Steps S4/S5](APP_PLATFORM_ROADMAP.md) · [Later backlog](APP_PLATFORM_BACKLOG.md)
 
-## 1. Recommendation and release boundary
+## 1. Small release boundary
 
-Build one generic connector system now. Add provider-specific email, document and AI adapters later. The common system owns connection setup, secrets, permissions, request execution, errors, usage and revocation. Provider adapters should fill in operations and authentication details rather than create independent integration systems.
+Ship one generic HTTPS connector type, with multiple named service connections. Support no authentication or API token/header credentials and bounded JSON/text requests/responses. Use customer-owned credentials. Branded services, OAuth flows, file streaming, webhooks and Trialy-funded provider usage are later work.
 
-Initial implementation supports public HTTPS services with no authentication or a supplied API token/header credential, bounded JSON/text/file requests and explicit operations. The builder can prepare a connection and operation definitions from service documentation or an OpenAPI definition. An administrator need not manually write HTTP requests. OAuth2 is designed into the connection contract from the start; it is only advertised after its secure authorization/refresh flow is implemented and tested.
+The builder prepares operations and mappings; users select the service/account, permissions and credentials through standard UI. Normal users should not have to write request code. A connection cannot eliminate a provider's account/credential requirements. Label the feature **Connectors**, not APIs.
 
-Do not build a large catalogue before validating real demand. Include the platform's own data/files/identity/jobs as built-in capabilities requiring no external account. Prove the generic connector with a controlled test service and at least one authorized read-only service before enabling external writes. Later add the first managed provider when its cost, authorization and operational behavior are understood.
+## 2. One management destination
 
-No branded connector is required for a new ordinary HTTPS service to be usable. Unsupported protocols, customer private networks, raw sockets and provider-specific signing/streaming are explicit technical extensions, not prohibited use cases.
+Use the same sidebar, typography, spacing, tables, secondary buttons, menus, dialogs, form controls, access grid and save states as current Database/Access/Logs. Add only one top-level Connectors destination. List connections and open a detail page/panel with these groups:
 
-## 2. What users see
-
-The primary flow is contextual:
-
-1. The user describes an app or asks for new behavior.
-2. The builder discovers available capabilities and existing authorized connections.
-3. If a connection is missing, Trialy displays a trusted “Connect [service]” action showing account, requested access, apps using it and who pays.
-4. The user signs in with the provider or enters a key in Trialy's protected settings UI. No secret is pasted into chat, source or a generated app form.
-5. The builder receives a connection handle and status, completes the app and previews its behavior. A connected account is not blanket permission for all external actions.
-
-Add a compact **Connectors** settings page for Connected / Available / Needs attention, with account/service label, last successful use, authorized apps, spending limit and Disconnect. Keep it out of every app's main navigation unless relevant. An app settings panel can show only its own connections.
-
-Keep the current inbound “Connected applications” page distinct: it controls clients such as ChatGPT accessing Trialy. Outbound connectors let Trialy call another service. Neither direction silently authorizes the other. Trialy workers cannot inherit Gmail, Microsoft or other connections from the user's ChatGPT account.
-
-Users should not need to understand APIs, runtimes or code to connect a supported service. They still must choose/authorize the correct external account or supply credentials where the provider requires them. A generic connector cannot eliminate that consent or automatically create arbitrary paid provider accounts.
-
-## 3. Internal model
-
-| Object | Fields and responsibilities |
+| Group | Contents |
 | --- | --- |
-| Connector definition | Stable ID/version, service description, operation schemas, auth type, permitted destinations/protocols, pagination, timeouts, effect metadata and pricing adapter |
-| Connection | Tenant/owner, provider account identity where verified, secret references, status, scopes, expiry/refresh, billing mode and revocation version |
-| App binding | Connection, allowed operation versions, relevant data/recipient/destination scope, app revision or reviewed compatible scope, expiry and limits |
-| Invocation | Actor/app/run, canonical parameters digest, effect approval/grant, idempotency key, status, provider receipt, result reference and usage event |
-| Credential record | Encrypted secret or provider token, key version, creation/rotation/revocation metadata; never available through normal reads |
+| Details | Name, optional description, base HTTPS address, authentication mode, masked credential status, enabled/disabled status, declared operations and safe test configuration |
+| Data | Input/output field definitions; allowed source tables/fields/record scope; allowed response fields; optional destination table/field mapping; bounded test result |
+| Access | Who manages this connection; which apps/users may use each operation; allowed data/disclosure and destination-write scope; expiry and request limits |
+| Activity | Last use, app/actor, operation, status, duration, call/byte/error counts and links to review/effect receipts |
 
-Version definitions and re-review materially broader scopes. Label display metadata separately from operation effect/authority. HTTP method alone does not prove an operation is read-only: a GET can have side effects. Unknown external operations default to requiring the appropriate effect review until the connection definition establishes their behavior.
+Provide Add, Edit, Test, Disable and Remove through existing UI patterns. Removal disables future calls and preserves history. Show errors such as missing credential, denied access, rate limit, unavailable service and outcome unknown. Connection tests do not silently issue remote writes or copy data into the database.
 
-Expose a stable SDK operation such as `connectors.invoke(binding, operation, input)`; the exact name is selected during implementation. HTTP SDK compatibility can use a broker-backed transport. Do not promise every third-party SDK is a drop-in replacement where it assumes direct credentials or unrestricted networking.
+“Data” is configuration and a bounded preview, not another database. Saving a response is a separate reviewed change to shared records. Never dump an entire provider response or unrestricted headers into the interface or logs.
 
-Auth modes should be extensible: none, API key/header, OAuth2 and later signed-request mechanisms. Signing and credential injection occur in the broker, never in generated frontend code. Store arbitrary connection configuration separately from secrets.
+## 3. Minimal model and operations
 
-## 4. Credential and network boundary
+Add tenant-scoped connection records (name, base address, auth mode, secret reference, enabled/version), versioned operation definitions (method, relative path/template, parameter/request/response schemas and effect classification), app/user bindings, data policies and invocation receipts.
 
-- Use encryption at rest with managed key custody/rotation and least-privilege service access. Store ciphertext and secret metadata separately from app source, snapshots and ordinary customer records. Backups must preserve decryptability only for authorized recovery.
-- Credential entry occurs in the authenticated trusted UI with CSRF/session protection and step-up authentication when appropriate. One-time setup handles are user/tenant-bound, short-lived and cannot reveal an existing secret.
-- MCP and the app SDK expose configured/missing/expired status and handles, never token values. Secrets are also excluded from logs, error messages, test responses, exports, source revisions and support diagnostics.
-- Inject credentials only for the reviewed destination/account/operation. Never forward them across an unapproved redirect or allow a user-supplied header to override authorization.
-- OAuth uses verified redirect URIs, state/PKCE as applicable, encrypted refresh tokens, bounded refresh retries and explicit scope/re-consent handling. Provider consent and Trialy app authorization are separate.
-- Resolve and validate destinations at request time, including every redirect and DNS change. Block loopback, private/link-local/metadata endpoints and control-plane networks; validate IPv4/IPv6 and prevent DNS rebinding. Private connectivity requires a separate deliberate design.
-- Enforce these rules outside the generated process. A library cannot bypass limits using raw sockets, DNS, redirects, images or a separate `fetch`. Browser applications use the SDK; server network access is restricted to the broker/build paths required by the manifest.
-- Limit headers, request/response sizes, file decompression, duration, pagination and calls per run. Record normalized errors such as expired connection, denied scope, rate limit, budget exhausted, provider unavailable and outcome unknown.
+Expose neutral builder operations for discovering safe metadata, preparing configuration, requesting secure credential setup, binding an app and reading status. Names are selected during S4/S5. Generated code invokes a connection/operation handle with validated parameters; it cannot choose an arbitrary destination or fetch credential values.
 
-Provider responses, documentation and imported specifications are untrusted content. They do not grant new authority or instructions to expose secrets. If an AI adapter later consumes them, its tool actions still pass the same gateway.
+Keep existing inbound “Connected applications” settings intact. Those authorize ChatGPT/other clients to use Trialy. This connector authorizes Trialy to use an external service; workers cannot inherit connections from ChatGPT.
 
-## 5. Effects, triggers and reliability
+## 4. What the connector is allowed to see
 
-External effects need their own authorization contract. A database write grant does not authorize sending email or creating a remote document. Permit one exact action or a scoped, expiring, revocable standing authorization naming connector, operations, recipients/destinations or field constraints, rate and cost limits.
+Enforce separate scopes for management, invocation, outbound disclosure, inbound result visibility and saving returned data. Connection-management access is not permission to read every table or act for every user.
 
-Store exact request/effect hashes and provider receipts. Show human-readable before/action/after evidence where the provider supports it, without logging credentials or unnecessary private payloads. Record both the initiating identity and executing app/run.
+Effective scope is the intersection of the current actor's rights, the app's declared rights and the connection's policy. AI and human origins remain distinct. Organizational project placement and card color never grant authority. Recheck policy on every call; disabling/revoking blocks future use, including existing scheduled callers.
 
-All retries share one logical operation ID. Use the provider's idempotency mechanism when available. On a timeout after dispatch, the result can be unknown: retain an effect-pending state, query provider status where possible, and avoid blind retry. A local database transaction cannot atomically roll back an external email. For multi-step workflows, checkpoint each effect and specify compensation/review behavior.
+For mapped requests, the broker reads the selected record IDs and constructs the request from allowed source fields. Query/body templates use constrained declared parameters. Apply field/record permissions before data leaves; apply the response-field policy before returning provider data. Derived values must have permitted dependencies. Destination mappings cannot save to fields the actor/app may not write, and saving uses existing previews/grants/audit history.
 
-Webhook ingress verifies signatures or scoped authentication, timestamp/replay windows and body limits before queue admission. Persist a deduplicated event before acknowledging it. Workers recheck current connection and app authorization when processing; event arrival does not freeze permission forever. Separate received event data from accepted authoritative records and chargeable effects.
+Do not accept arbitrary outgoing JSON and trust labels claiming it contains only approved fields. A caller can disguise a restricted value as a string. P0 therefore uses server-built mapped payloads for reusable automatic calls. Unmapped free text or computed payloads require a trusted exact-payload disclosure review, with current actor/app data permissions still enforced. A reviewed transformation may run only on the connector's permitted inputs. General automatic provenance tracking is not part of this release.
 
-Revoking a connection blocks future calls and queued effects. It cannot undo a completed remote operation or erase costs already incurred. The interface should state that accurately.
+A read request can still disclose data in its parameters, so GET is not automatically safe. Unknown operation effects require review. External writes need an exact action authorization or an applicable scoped standing grant; a database-write grant does not authorize a remote operation. Do not add general account-wide send authority.
 
-## 6. Two billing modes
+## 5. Secrets and request execution
 
-| Mode | Provider bill | Trialy bill | Recommended timing |
-| --- | --- | --- | --- |
-| User-connected service | Customer pays provider under their account/contract | Platform subscription and Trialy compute/storage/transfer | First generic connector release |
-| Trialy-provided service | Trialy pays provider | Subscription plus explicit metered service usage | After adapter pricing/reconciliation is verified |
+Use trusted authenticated UI for credential entry/replacement, with the current session/CSRF protections. Never ask for keys in chat or generated app forms. Store encrypted credentials under separate key custody, with rotation/revocation metadata. Return only configured/missing/expired status and connection handles. Keep secrets out of source, models, previews, logs, exports and test output.
 
-A user-connected service can offer a one-click OAuth experience later; it need not mean manual integration. Trialy-provided services remove account setup for the supported operation, but still need applicable sender/domain or account consent and clear spending terms.
+The broker injects credentials only for the configured destination/operation. Validate URL resolution and each redirect, including IPv4/IPv6/private/link-local/metadata ranges and DNS rebinding. Do not forward credentials to another origin. Limit request/response sizes, duration, rate, concurrency and redirects; prevent generated code bypassing the broker through direct networking. Credential-free external page links are a separate navigation feature.
 
-Do not proxy unknown paid services using a shared Trialy key. If unit cost cannot be bounded or measured, use the customer's account or keep the managed operation disabled until a pricing adapter exists. For user-connected services, show that provider charges are external/possibly unknown; Trialy call limits do not guarantee a cap on that provider's total bill.
+Provider responses/configuration are untrusted data. Normalize errors and redact headers. Retain operation IDs, hashes, effect authorization and provider receipts. Reuse idempotency keys where supported. On uncertain completion after dispatch, show an unknown outcome and reconcile before retrying; do not assume a timeout means no remote effect occurred. Revocation cannot undo a completed remote action.
 
-## 7. Cost model
+## 6. Cost controls now, billing later
 
-Separate the cost to run Trialy, the cost of a specific operation, and the price charged to the customer. Track the actual provider's billing dimensions, not an invented flat “API call” count.
+P0 includes technical usage counters, configured per-connection/app request limits, timeout/body/concurrency bounds, cancellation and disable controls. These protect Trialy's execution and help users see use. The external provider charges the customer's account; Trialy cannot enforce that account's total provider bill. Make this visible at setup, without inventing a provider cost estimate.
 
-For an app over a billing period:
+Do not build monetary reservations, subscriptions/overages, an AI token ledger or managed provider accounts for this release. Keep these in P2, with branded managed services last. Before Trialy pays for any external service, implement bounded spending admission, trustworthy metering and reconciliation. Future pricing should distinguish Trialy's compute/storage/transfer from provider units; flat per-call pricing is not assumed.
 
-```text
-direct_cost = build_compute + execution_compute + durable_storage
-            + transfer_and_requests + external_provider_usage
+## 7. Acceptance examples
 
-fully_allocated_cost = direct_cost + allocated_shared_infrastructure
-                    + attributable_operational_overhead
-```
+- An app sends only selected company fields to a test service and receives only permitted response fields. A hidden financial field is rejected even if inserted into a differently named parameter.
+- Another user/app cannot reuse the connection without permission or use the owner's broader table access. Disabling it blocks subsequent reads and queued effects.
+- The user previews a returned value and saves it to an authorized column; the existing diff, approval and audit trail remain intact.
+- Credential replacement never reveals the old value. Secret-bearing headers are absent from previews, tool responses and errors.
+- A safe read test makes no persistent data change; a write test requires an explicit reviewed action. A repeated known-completed write does not duplicate the effect.
 
-Compute may be billed as instance-seconds or as vCPU-seconds plus GiB-seconds. Use the provider's actual tariff, never both for the same resource. Include provisioned/wall-time billing and idle time where applicable, not just CPU utilization. Storage uses time-weighted GB-months; transfer uses billable bytes. Distinguish internal transfers, cache hits and customer egress according to the chosen service's tariff.
-
-| Work | Measure |
-| --- | --- |
-| Package builds | Billable build duration/size, artifact retention and package traffic |
-| Functions/jobs | Runtime, billable duration and provisioned memory/CPU/instance; retries and cancelled runs |
-| Long-lived services | Provisioned active/idle time, restart overhead and reserved capacity |
-| Data/files | Stored bytes over time, requests, retrieval and egress where charged |
-| Email later | Provider-billable messages/recipients and any account/domain/fixed allocation |
-| AI later | Provider/model, input/cached/output units, additional tools/media and fixed charges |
-| Generic customer service | Trialy broker/compute/transfer; third-party cost only if reliably observable, labeled external |
-
-Record rate-catalog version, currency, app/revision/run, measured quantity, estimation status, provider request/receipt ID and payer. Meter in trusted services. Generated code cannot report its own authoritative usage or price. Reconcile against provider invoices; retain adjustments and refunds as ledger entries.
-
-Recommended commercial structure: a subscription covering shared infrastructure and an included usage allowance, then transparent metered usage with an owner-set monthly maximum. Customers should see currency amounts and understandable units. There is no need to invent an opaque credit system at this stage. Do not promise unlimited workers, email or AI.
-
-If a usage charge targets contribution margin `m`, then:
-
-```text
-usage_price = attributable_usage_cost / (1 - m)
-```
-
-Illustration only, not proposed pricing: if a customer's attributable usage costs EUR 12 and the target contribution margin is 60%, the usage revenue is EUR 30, leaving EUR 18 before costs excluded from that calculation. A 60% markup on EUR 12 would be EUR 19.20 and is not a 60% margin. Subscription revenue must also cover shared baseline infrastructure, support and other overhead. Choose actual tariffs after observing representative workloads and demand, not from this illustration.
-
-Provider rate cards, exchange rates and plan allowances can change. Keep them in versioned configuration with effective dates. Avoid assuming free tiers or unused allowances permanently reduce every customer's marginal cost. Any tax/invoicing design is a separate commercial implementation decision.
-
-## 8. Spending controls and exposure
-
-1. Estimate a maximum charge from bounded runtime, iterations, payload sizes, output tokens or operation quantity before admission.
-2. Atomically reserve that amount against account, app and execution budgets. Reserve in the customer-price currency using the relevant tariff; separately check platform/provider exposure limits.
-3. Run only while the reservation, authorization and connection remain valid. Apply worker concurrency, rate, timeout, workflow-depth and retry ceilings.
-4. Settle measured usage and release unused amounts. Keep an unresolved reservation when provider outcome/cost is uncertain; reconcile it instead of treating it as free.
-5. Warn at configurable thresholds and stop new chargeable work at the hard cap. Offer an explicit limit increase; no automatic paid overage or automatic key switch.
-6. Define treatment of costs already in flight, provider reporting delays and platform-caused failures. Admission bounds reduce overspend; a stop request cannot reverse an already dispatched paid request. State any bounded possible exposure honestly.
-
-The platform also needs a global emergency stop and provider-level caps. Otherwise many individually cheap apps can exhaust the owner's shared provider account. Long-lived services need periodic reservation renewal and a safe stop policy. A runaway loop must not bypass metering by nesting functions or connector calls.
-
-## 9. Order of investment
-
-1. Identity/data/jobs remain built-in capabilities.
-2. Build usage metering and hard limits before new paid runtime/provider exposure.
-3. Ship the generic connector, secret UI and management surface with user-connected credentials.
-4. Validate a real app plus safe test-service read/write/webhook flows and recovery semantics.
-5. Add the most requested provider adapter using the same broker.
-6. Add Trialy-funded operations only once measured economics, quotas, operational duties and explicit customer pricing are ready.
-
-Email sending, cloud document access and AI can be postponed without blocking apps, internal linking, calculators, shared records or background processing. A worker generating a `.docx` file does not require Microsoft 365; opening a user's cloud Word document does require an authorized document connector. Conversational building through ChatGPT does not imply the deployed app has ongoing access to ChatGPT inference; in-app AI is a separately configured, metered capability.
-
-## 10. Sources and implementation checks
-
-Checked 29 October 2026. These sources inform design; no vendor quote or production provider choice is implied.
-
-- [OWASP secrets management](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html): credential lifecycle, custody, auditing and recovery.
-- [OWASP SSRF prevention](https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html): destination/network validation for generic requests.
-- [Render pricing](https://render.com/pricing) and [cron billing](https://render.com/docs/cronjobs): shared baseline and compute/metered cost dimensions. Recheck selected plans at provisioning.
-- [Resend pricing](https://resend.com/pricing): example of provider-specific message units, allowances and fixed charges. No email adapter or exact tariff is selected here.
-
-Release acceptance must cover secret leakage, revocation mid-run, cross-tenant access, redirect/DNS bypass, duplicate webhooks, unknown external outcomes, concurrent budget admission, delayed metering and invoice reconciliation. Use synthetic recipients/services until real external actions are explicitly authorized.
+Use controlled services and synthetic data for tests; do not send real messages or other external effects without explicit authorization. Reuse the technical references from the earlier planning commit as needed: [OWASP secrets](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html) and [SSRF prevention](https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html). They inform implementation, not a claim of completed security validation.

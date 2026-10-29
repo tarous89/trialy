@@ -2,9 +2,9 @@
 
 ## Active next implementation — 29 October 2026
 
-Follow the [app platform roadmap](docs/product/APP_PLATFORM_ROADMAP.md) in dependency order. It scopes one app model, real internal links, browser packages, isolated server execution, reusable authentication, durable workers/triggers, generic connectors and cost controls. [Scope and architecture](docs/product/APP_PLATFORM_SCOPE.md) · [Connectors and economics](docs/product/CONNECTORS_AND_USAGE.md).
+Implement P0 through the [six-step simple-app roadmap](docs/product/APP_PLATFORM_ROADMAP.md): neutral apps/project colors; standalone new-tab launch and standard footer; navigation/links; generic connector backend; one consistent Connectors management page; compatibility and release checks. [Agreed scope](docs/product/APP_PLATFORM_SCOPE.md) · [Connector data/access contract](docs/product/CONNECTORS_AND_USAGE.md) · [Prioritized backlog](docs/product/APP_PLATFORM_BACKLOG.md).
 
-All new roadmap steps are unimplemented planning items. Existing foundation capabilities listed below are reused; account authentication and basic schedules/events must not be rebuilt as if absent. The new roadmap supersedes the previous order of future product work, while retaining unresolved production recovery, credential and real-host acceptance requirements. Provider-specific email, Microsoft 365 and AI integrations follow the generic connector foundation.
+All six steps are pending. Reuse the current runtime, authentication, schedules/events, shared data and UI components. The reduced scope supersedes the earlier 14-step launch plan: browser packages, new server languages, advanced workflows, external audiences and commercial billing move to P2; branded email/document/AI connectors are P3, last. Existing production recovery, credential and real-host acceptance obligations remain; no unrelated infrastructure expansion is required by this planning update.
 
 Foundation implementation baseline updated 11 October 2026, with later notes below. [Scope](README.md) · [History](HISTORY.md) · [Current runtime contract](docs/FRONTEND_CODE.md).
 

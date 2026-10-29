@@ -1,14 +1,15 @@
 # Trialy — Shared Data and a Home for What ChatGPT Builds
 
-## App platform direction — 29 October 2026
+## Active simple-app scope — 29 October 2026
 
-The active product direction is a foundation for apps built through conversation. Users describe their work; ChatGPT or another supported builder chooses the interface and code. Tracker, form, dashboard and automation are optional examples/templates, not mandatory app types. Apps can combine navigation, calculations, shared records, authentication, server functions and background work.
+The first release now focuses on simple apps with navigation, links and one generic connector type. Users describe their work; the builder chooses the interface without a tracker/form/dashboard/automation category. Home cards inherit their project's existing color pattern. Apps open on standalone pages in new tabs by default, with a persistent trusted “Built with TrialAgent” footer. Internal navigation stays in the app tab.
 
-- [App platform scope and architecture](docs/product/APP_PLATFORM_SCOPE.md)
-- [Ordered implementation roadmap and acceptance criteria](docs/product/APP_PLATFORM_ROADMAP.md)
-- [Connectors, credential handling and usage economics](docs/product/CONNECTORS_AND_USAGE.md)
+- [P0 scope and agreed behavior](docs/product/APP_PLATFORM_SCOPE.md)
+- [Six-step implementation roadmap and acceptance criteria](docs/product/APP_PLATFORM_ROADMAP.md)
+- [Generic connector management, data and access contract](docs/product/CONNECTORS_AND_USAGE.md)
+- [P1/P2 backlog and branded connectors last](docs/product/APP_PLATFORM_BACKLOG.md)
 
-These documents specify planned changes, not shipped capabilities. They supersede conflicting product restrictions in older scope/design documents; existing data, authorization, audit and migration guarantees remain in force. Current code still uses the bounded runtimes described below. Broad browser/server execution, app routing, outbound connectors and usage billing must pass the roadmap gates before being advertised as available. Trialy remains the repository/development name; a public brand/domain cutover is separate.
+These documents specify planned changes, not shipped capabilities, and supersede the earlier broad first-release plan. Reuse the current runtime, authentication, database, access controls and audit history. The Connectors page and trusted app chrome must use the current shared UI components/styles. Advanced runtimes, new workflow infrastructure, monetary billing and branded integrations are backlog work, not prerequisites. Trialy remains the repository/development name; the footer label does not rename domains or unrelated products.
 
 Foundation baseline updated 11 October 2026, with later implementation notes below. Read the 29 October app platform documents above for the superseding direction and remaining work. The uploaded initial brief remains a historical source, subject to the user's subsequent decisions.
 
@@ -30,7 +31,7 @@ Users build their database while doing their work; database maintenance is not a
 
 Projects and folders organize saved components: forms, trackers, visualizations, presentations/files, mixed interfaces and workflows with actions. These are examples of user-created content, not platform templates or a fixed component catalogue. Users can move projects between folders and components between projects without copying shared entities or breaking stable references. Moves must recheck access and must not silently expose data or expand execution grants.
 
-The full permitted experience belongs in ChatGPT, with the standalone app on the same backend as backup/admin and for data deliberately excluded from AI. A durable generated interface host is part of the product scope; a minimal data/function/run panel alone does not complete it.
+Creation and revisions remain conversational. Running apps default to authenticated standalone pages opened through trusted links from Home or ChatGPT. The platform remains their management home on the same backend. Existing embedded previews/readers stay compatible; full standalone operation is no longer conditional on embedded feature parity. Human and AI data access remain distinct.
 
 ## Foundation responsibilities
 
