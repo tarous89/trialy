@@ -1,3 +1,4 @@
+import {withRequestMetrics} from '../db/metrics.js';
 import {AccessGrid} from '../domain/access-grid.js';
 import {AccessManagement} from '../domain/access-management.js';
 import {accountCatalog} from '../workspace/catalog.js';
@@ -26,7 +27,7 @@ export function baseApp() {
   res.set('Cache-Control','public, max-age=0, must-revalidate');res.set('Cross-Origin-Resource-Policy','cross-origin');res.type('html').send(await frontendFrameDocument());
  });
  app.use(express.json({limit:'36mb'}));app.use(rateLimit({windowMs:60000,limit:180,standardHeaders:'draft-8',legacyHeaders:false}));
- app.use((req,res,next)=>{const requestId=randomUUID(),started=performance.now();res.set('X-Request-ID',requestId);res.on('finish',()=>{if(process.env.NODE_ENV!=='test')console.log(JSON.stringify({requestId,method:req.method,path:req.path,durationMs:Math.round(performance.now()-started),status:res.statusCode,time:new Date().toISOString()}));});next();});
+ app.use((req,res,next)=>{const requestId=randomUUID(),started=performance.now(),metrics={queryCount:0,databaseMs:0,poolWaitMs:0,metadataHits:0};res.set('X-Request-ID',requestId);res.on('finish',()=>{if(process.env.NODE_ENV!=='test')console.log(JSON.stringify({requestId,method:req.method,path:req.path,durationMs:Math.round(performance.now()-started),queryCount:metrics.queryCount,databaseMs:Math.round(metrics.databaseMs),poolWaitMs:Math.round(metrics.poolWaitMs),metadataHits:metrics.metadataHits,status:res.statusCode,time:new Date().toISOString()}));});withRequestMetrics(metrics,next);});
  app.get('/health',(_req,res)=>res.json({status:'ok',service:'trialy'}));return app;
 }
 export function addApi(app:express.Express,s:Service,human:RequestHandler) {

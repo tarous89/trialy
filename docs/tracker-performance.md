@@ -25,3 +25,47 @@ The populated integration fixture measures 25 rows with 6 fields, including comp
 Local embedded-database timings are diagnostic, not a production latency SLA. Browser host/network latency, unusually expensive computations, and custom-code runtime costs remain separate factors. Counts are current SQL aggregates, not asynchronously materialized values; only expensive aggregates demonstrated by profiling should gain a dependency-aware materialization system. Existing page-local search/sort semantics remain unchanged.
 
 Neighboring tabs and the next data page are prefetched sequentially with bounded memory, including the signed controls needed for local rendering. Both previews and saved tools can use the cache. Successful writes clear snapshots; access/version rechecks still clear unavailable views. Repeated pending tab navigation is coalesced to the most recent target.
+
+## Account pages — October 29, 2026
+
+Tools, Access, Database and Logs reuse only an allowlisted set of permission/schema
+lookups inside a single read operation. Keys include SQL parameters and the runtime
+actor/tool context. Every reused result is fetched again, uncached, before the
+response returns; a concurrent metadata change rejects the response. Existing
+explicit table/project access rechecks bypass reuse. No cross-request permission
+or record cache is introduced, and database row-level security remains unchanged.
+
+Account schema discovery fetches one bounded batch of metadata and applies each
+workspace's policy. The existing catalog filtering/order/pagination remain intact.
+Tool thumbnails share identical table/project sample reads within the response.
+Logs skip building per-tool entitlement lists only after establishing the existing
+unrestricted human audit entitlement; restricted/AI reads retain the full checks.
+
+No styles, DOM layout, controls, response fields, record limits or thumbnails change.
+Access no longer repeats its initial grid request. Only typed search is debounced;
+initial loads and pagination start immediately. Off-screen app Tools polling stops,
+while navigation back and visible-page access rechecks continue. Database navigation
+finishes catalog refresh before scheduling the row refresh.
+
+Synthetic regression fixture (five trackers, one two-field table, 25 records):
+
+| Read | Before SQL calls | After SQL calls |
+| --- | ---: | ---: |
+| Tools | 143 | 31 |
+| Access grid | 61 | 25 |
+| Database records | 11 | 8 |
+| Logs (25 events) | 50 | 8 |
+| Catalog (25 tables) | 54 | 5 |
+
+Counts exclude transaction/context statements and include final freshness checks.
+These are query-count improvements, not claims about production wall-clock latency.
+`tests/page-performance.test.ts` checks query budgets and complete returned data.
+`tests/read-metadata.test.ts` covers concurrent changes, mutation isolation, runtime
+actor/tool separation, nesting and uncached records/counts. Browser tests verify
+one initial Access read, fresh subject changes, and hidden/visible Tools polling.
+
+Request logs add `queryCount`, `databaseMs`, `poolWaitMs` and `metadataHits` alongside
+existing duration/status. No SQL text, parameters or record values are logged.
+`databaseMs` sums business SQL execution time (can overlap across parallel calls),
+not transaction/context overhead; `poolWaitMs` sums connection acquisition time.
+No speculative indexes, migrations, hosting upgrades or progressive rendering added.

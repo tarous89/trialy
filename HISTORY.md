@@ -387,3 +387,9 @@ Added isolated 24-hour tracker/page previews, persistent workspace save footer, 
 - Use one paginated Overview next-steps area; fix multiple-value Add/Remove focus and cached-value mutation; expire dismissible save notifications.
 - Prefetch neighboring tabs and next pages with controls, retain bounded session snapshots for two minutes, coalesce pending tab clicks, and preserve permission/version revalidation and invalidation after writes.
 - Validation: production build and type check; 104 backend tests; 15 browser scenarios including real Settings saves, brand overrides, pagination, multi-value keyboard editing, cache navigation after 20 seconds, and desktop/mobile preset parity. Plugin instructions independently forward-tested for branding and custom board requests without live writes. Actual ChatGPT host behavior still requires a user session check after publication.
+
+### 2026-10-29 — Account page performance
+- Reduced repeated metadata reads with per-read reuse and uncached final verification.
+- Batched the database catalog; shared identical thumbnail samples; streamlined authorized audit reads.
+- Removed duplicate Access loading and off-screen Tools polling; retained all UI and interaction contracts.
+- Added query/connection timing diagnostics and performance/security/browser regression coverage.

@@ -1,3 +1,4 @@
+import {withReadMetadata} from '../db/read-metadata.js';
 import {standardTracker} from './standard-tracker.js';
 import {databasePage} from './database-browser.js';
 import {Service} from '../domain/service.js';
@@ -8,7 +9,8 @@ import {access,typeAccess,visibleFields} from '../domain/permissions.js';
 import {WorkspaceFoundation} from './service.js';
 import {Foundation} from '../foundation/service.js';
 export const homeQuery=z.object({offset:z.number().int().min(0).default(0),limit:z.number().int().min(1).max(100).default(20),query:z.string().max(200).default(''),projectId:z.string().default(''),kind:z.enum(['all','tracker','form','visualization','automation']).default('all'),sort:z.enum(['updated','name']).default('updated')});
-export async function workspaceHome(db:Database,a:Actor,w:string,input:unknown={}){
+export async function workspaceHome(db:Database,a:Actor,w:string,input:unknown={}){return withReadMetadata(db,db=>workspaceHomeRead(db,a,w,input));}
+async function workspaceHomeRead(db:Database,a:Actor,w:string,input:unknown={}){
  const q=homeQuery.parse(input);
  const p=await access(db,a,w),f=new WorkspaceFoundation(db),engine=new Foundation(db);
  const [tree,components]=await Promise.all([f.nodes(a,w),f.components(a,w)]);
@@ -34,13 +36,16 @@ export async function workspaceHome(db:Database,a:Actor,w:string,input:unknown={
  const matches=resources.filter(r=>(!q.projectId||(q.projectId==='unassigned'?r.projectIds.length===0:r.projectIds.includes(q.projectId)))&&(q.kind==='all'||r.kind===q.kind)&&(!q.query||`${r.name} ${r.description}`.toLowerCase().includes(q.query.toLowerCase()))).sort((a,b)=>q.sort==='name'?a.name.localeCompare(b.name)||a.id.localeCompare(b.id):new Date(b.updatedAt).getTime()-new Date(a.updatedAt).getTime()||a.id.localeCompare(b.id));
  const page=matches.slice(q.offset,q.offset+q.limit);
  // Build a bounded, permission-checked miniature without executing saved code.
+ const samples=new Map<string,ReturnType<typeof databasePage>>();
  for(const resource of page){
   const c=components.find(c=>c.id===resource.id);if(!c)continue;
   try{
    const saved=(await f.readComponent(a,w,c.id)).component,standard=standardTracker(saved.source);
    if(standard){
     const tab=standard.config.tabs.find((t:any)=>t.visible!==false);if(!tab)continue;
-    const sample=await databasePage(db,a,w,{typeId:tab.typeId,limit:3,...(c.manifest?.scope==='project'&&c.project_id?{projectId:c.project_id}:{})});
+    const sampleArgs={typeId:tab.typeId,limit:3,...(c.manifest?.scope==='project'&&c.project_id?{projectId:c.project_id}:{})},sampleKey=JSON.stringify(sampleArgs);
+    if(!samples.has(sampleKey))samples.set(sampleKey,databasePage(db,a,w,sampleArgs));
+    const sample=await samples.get(sampleKey)!;
     const columns=tab.columns.filter((col:any)=>col.visible!==false&&sample.table.fields.some((field:any)=>field.key===col.field&&field.readable)).slice(0,4);
     resource.snapshot={kind:'table',tabs:standard.config.tabs.filter((t:any)=>t.visible!==false).map((t:any)=>t.name).slice(0,4),columns:columns.map((col:any)=>col.label),rows:sample.rows.map((r:any)=>columns.map((col:any)=>{const value=r.data[col.field];return String(Array.isArray(value)?value.join(', '):value??'').slice(0,80);})),total:sample.total};
    }else if(c.bindings?.length){
@@ -54,7 +59,8 @@ export async function workspaceHome(db:Database,a:Actor,w:string,input:unknown={
 }
 
 /** Account Home spans authorized storage containers; each item retains its scope. */
-export async function accountHome(db:Database,a:Actor,input:unknown={}){
+export async function accountHome(db:Database,a:Actor,input:unknown={}){return withReadMetadata(db,db=>accountHomeRead(db,a,input));}
+async function accountHomeRead(db:Database,a:Actor,input:unknown={}){
  const q=homeQuery.parse(input),spaces=await new Service(db).workspaces(a),projects:any[]=[],resources:any[]=[];
  let total=0;
  for(const space of spaces){
