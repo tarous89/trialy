@@ -1,8 +1,10 @@
+import {frameLinkTarget} from './app-links.js';
 import {SNAPSHOT_TTL} from './tracker-cache.js';
 import {trackerRenderer} from '../workspace/standard-tracker.js';
 // Only the shipped renderer and this trusted bridge run in the frame. Custom code stays in QuickJS.
 export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
- let navigationOnly=false;
+ let navigationOnly=false,appLinks=false,appOrigin='',linkContext=null;
+ const linkTarget=${frameLinkTarget.toString()};
  const renderTracker=function(config,theme,input,tools){${trackerRenderer}};
  const host=window.parent,root=document.getElementById('surface'),sheet=document.getElementById('appearance');
  let channel=null,model=null,uiState=null,controls=[],connected=false,detailScroll=0;
@@ -23,7 +25,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
    if(i&&!(d.kind==='badge'))el.append(document.createTextNode(', '));
    const text=v==null||v===''?'—':c.kind==='boolean'?(v===true||v==='true'?'Yes':'No'):String(v);
    if(v!=null&&v!==''&&(d.kind==='badge')){const pill=document.createElement('span');const color=d.valueTones?.[String(v)]||d.tone||'neutral';pill.className='pill '+(['green','blue','amber','red'].includes(color)?color:'');pill.textContent=text;el.append(pill);}
-   else if(!c.editable&&d.kind==='link'&&/^https?:\/\//i.test(String(v))){const a=document.createElement('a');a.href=String(v);a.textContent=text;a.target='_blank';a.rel='noopener noreferrer';el.append(a);}
+   else if(!c.editable&&d.kind==='link'&&/^https?:\/\//i.test(String(v))){const a=document.createElement('a');a.href=String(v);a.textContent=text;a.target='_blank';a.rel='noopener noreferrer';if(appLinks){try{const u=new URL(String(v));if(!u.username&&!u.password){a.dataset.appHref=u.href;a.dataset.external='true';}}catch{}}el.append(a);}
    else el.append(document.createTextNode(text));
   }
   if(!Array.isArray(value)&&value!=null){
@@ -52,8 +54,10 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
     if(name==='type'&&tag==='input'){if(!inputTypes.has(attr.value.toLowerCase()))node.setAttribute('type','text');continue;}
     if(name==='type'&&tag==='button'){node.setAttribute('type',['button','submit','reset'].includes(attr.value)?attr.value:'button');continue;}
     if(name==='src'&&tag==='img'&&/^data:image\/(png|jpeg|gif|webp);base64,[a-z0-9+/=]+$/i.test(attr.value))continue;
+    if(name==='href'&&tag==='a'&&appLinks){const href=attr.value;if(href.length<=2000&&!/[\\\u0000-\u0020]/.test(href)&&!href.startsWith('//')&&(!/^[a-z][a-z0-9+.-]*:/i.test(href)||/^(https?:|mailto:|tel:)/i.test(href))){node.dataset.appHref=href;continue;}}
     if(!attrs.has(name)&&!/^aria-[a-z-]+$/.test(name))node.removeAttribute(attr.name);
    }
+   if(tag==='a'&&node.dataset.appHref){const target=linkTarget(node.dataset.appHref,appOrigin,linkContext);if(!target){node.removeAttribute('href');delete node.dataset.appHref;}else if(target.external){node.href=target.href;node.target='_blank';node.rel='noopener noreferrer';node.dataset.external='true';}else node.setAttribute('href','#');}
    walk(node);
   }}walk(template.content);return template.content;
  }
@@ -143,7 +147,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   if(v.kind==='trialy.cache'){if(model&&v.tracker){model=v.tracker;}return;}
   if(v.kind==='trialy.action'){footerAction(v.action);return;}
   if(v.kind!=='trialy.render'||typeof v.html!=='string'||v.html.length>200000||typeof v.css!=='string'||v.css.length>50000)return;
-  navigationOnly=!!v.navigationOnly;channel=v.channel;model=v.tracker||null;uiState=v.state;controls=Array.isArray(v.controls)?v.controls:[];connected=v.connected;
+  navigationOnly=!!v.navigationOnly;appLinks=!!v.appLinks;appOrigin=v.appOrigin||'';linkContext=v.linkContext||null;channel=v.channel;model=v.tracker||null;uiState=v.state;controls=Array.isArray(v.controls)?v.controls:[];connected=v.connected;
   pending=Object.create(null);original=Object.create(null);paint(v.html,v.css);post('trialy.rendered');
  });
  function send(kind,target){
@@ -161,11 +165,11 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   dispatch({kind,action,value:target.type==='checkbox'?target.checked:typeof target.value==='string'?target.value:null,form:values});
  }
  root.addEventListener('click',e=>{const target=e.target;if(!(target instanceof Element))return;
-  const display=target.closest('.cell-display');if(display){e.preventDefault();activateCell(display);return;}if(target.closest('a'))e.preventDefault();const b=target.closest('button,input[type=submit]');if(b?.disabled)return;
+  const display=target.closest('.cell-display');if(display){e.preventDefault();activateCell(display);return;}const anchor=target.closest('a');if(anchor){if(appLinks&&anchor.dataset.appHref){if(anchor.dataset.external==='true')return;e.preventDefault();if(Object.keys(pending).length||uiState?.newRow){post('trialy.notice',{message:'Save or ignore your current edits before following this link.'});return;}post('trialy.link',{href:anchor.dataset.appHref});return;}e.preventDefault();}const b=target.closest('button,input[type=submit]');if(b?.disabled)return;
   if(b&&b.type==='submit'&&b.form){e.preventDefault();send('submit',b);return;}
   if(target.closest('[data-action]')&&!target.matches('input,textarea,select,option')){e.preventDefault();send('click',target);}
  });
- root.addEventListener('input',e=>{if(e.target instanceof Element&&(e.target.matches('input[data-ui-state],textarea[data-ui-state]')||e.target.getAttribute('data-action')?.startsWith('bound:')))send('change',e.target);});
+ root.addEventListener('input',e=>{if(appLinks&&!model)post('trialy.dirty',{dirty:true});if(e.target instanceof Element&&(e.target.matches('input[data-ui-state],textarea[data-ui-state]')||e.target.getAttribute('data-action')?.startsWith('bound:')))send('change',e.target);});
  root.addEventListener('change',e=>{if(e.target instanceof Element&&!e.target.matches('input[data-ui-state],textarea[data-ui-state]'))send('change',e.target);});
  root.addEventListener('focusout',e=>{const editor=e.target.closest('.example-input');if(editor)queueMicrotask(()=>{if(!editor.contains(document.activeElement)){editor.hidden=true;editor.previousElementSibling.hidden=false;}});});
  root.addEventListener('submit',e=>{e.preventDefault();if(e.target instanceof Element)send('submit',e.target);});

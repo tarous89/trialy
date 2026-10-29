@@ -1,4 +1,4 @@
-const { test, expect } = require("@playwright/test");
+const { test, expect } = require("./test.cjs");
 const fixtureBase='http://127.0.0.1:4179';
 for (const width of [1440, 1100, 390]) test(`Vivid connected tracker at ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 1e3 });

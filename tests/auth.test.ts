@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,readdir} from 'node:fs/promises';
-import {createHash} from 'node:crypto';
+import {randomUUID,createHash} from 'node:crypto';
 import {PGlite} from '@electric-sql/pglite';
 import request from 'supertest';
 import session from 'express-session';
@@ -57,5 +57,11 @@ test('signup returns to OAuth; PKCE, replay, refresh and revocation are enforced
  assert.equal((await browser.post('/auth/login').type('form').send({email:'test@example.invalid',password:'new-synthetic-password-456',csrf:againCsrf})).status,303);
  const history=await browser.get('/auth/security');assert.equal(history.body.events[0].action,'password_changed');
  await assert.rejects(db.query('DELETE FROM account_security_events'));
+ const enabled=process.env.SIMPLE_APPS_ENABLED;process.env.SIMPLE_APPS_ENABLED='true';
+ try{for(const destination of ['/apps/'+randomUUID()+'/company?workspaceId='+randomUUID()+'&source=component&recordId='+randomUUID(),'/?tab=connectors&workspaceId='+randomUUID()+'&connectorReview='+randomUUID()]){
+  const returning=request.agent(app),form=await returning.get('/auth/login').query({returnTo:destination});
+  const result=await returning.post('/auth/login').type('form').send({email:'test@example.invalid',password:'new-synthetic-password-456',csrf:form.text.match(/name="csrf" value="([^"]+)"/)![1]});assert.equal(result.headers.location,destination);
+  assert.equal((await returning.get('/auth/login')).headers.location,'/','Return path is consumed after sign-in');
+ }}finally{if(enabled===undefined)delete process.env.SIMPLE_APPS_ENABLED;else process.env.SIMPLE_APPS_ENABLED=enabled;}
  await db.close();
 });

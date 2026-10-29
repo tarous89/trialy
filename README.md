@@ -1,6 +1,17 @@
 # Trialy — Shared Data and a Home for What ChatGPT Builds
 
-Updated 11 October 2026. This is the active scope. It supersedes the previous template/workflow-led scope and roadmap; the uploaded initial brief remains a historical source, subject to the user's subsequent decisions.
+## Active simple-app scope — 29 October 2026
+
+The first release now focuses on simple apps with navigation, links and one generic connector type. Users describe their work; the builder chooses the interface without a tracker/form/dashboard/automation category. Home cards inherit their project's existing color pattern. Apps open on standalone pages in new tabs by default, with a persistent trusted “Built with TrialAgent” footer. Internal navigation stays in the app tab.
+
+- [P0 scope and agreed behavior](docs/product/APP_PLATFORM_SCOPE.md)
+- [Six-step implementation roadmap and acceptance criteria](docs/product/APP_PLATFORM_ROADMAP.md)
+- [Generic connector management, data and access contract](docs/product/CONNECTORS_AND_USAGE.md)
+- [P1/P2 backlog and branded connectors last](docs/product/APP_PLATFORM_BACKLOG.md)
+
+These documents specify planned changes, not shipped capabilities, and supersede the earlier broad first-release plan. Reuse the current runtime, authentication, database, access controls and audit history. The Connectors page and trusted app chrome must use the current shared UI components/styles. Advanced runtimes, new workflow infrastructure, monetary billing and branded integrations are backlog work, not prerequisites. Trialy remains the repository/development name; the footer label does not rename domains or unrelated products.
+
+Foundation baseline updated 11 October 2026, with later implementation notes below. Read the 29 October app platform documents above for the superseding direction and remaining work. The uploaded initial brief remains a historical source, subject to the user's subsequent decisions.
 
 Repository: `tarous89/trialy`. Development name: **Trialy**. A future public rename to **Trialegions** is a separate cutover. Do not change the existing Trialegions, TrialAgents or Intel applications.
 
@@ -20,7 +31,7 @@ Users build their database while doing their work; database maintenance is not a
 
 Projects and folders organize saved components: forms, trackers, visualizations, presentations/files, mixed interfaces and workflows with actions. These are examples of user-created content, not platform templates or a fixed component catalogue. Users can move projects between folders and components between projects without copying shared entities or breaking stable references. Moves must recheck access and must not silently expose data or expand execution grants.
 
-The full permitted experience belongs in ChatGPT, with the standalone app on the same backend as backup/admin and for data deliberately excluded from AI. A durable generated interface host is part of the product scope; a minimal data/function/run panel alone does not complete it.
+Creation and revisions remain conversational. Running apps default to authenticated standalone pages opened through trusted links from Home or ChatGPT. The platform remains their management home on the same backend. Existing embedded previews/readers stay compatible; full standalone operation is no longer conditional on embedded feature parity. Human and AI data access remain distinct.
 
 ## Foundation responsibilities
 
@@ -77,7 +88,7 @@ See [Database write approval and change history](docs/WRITE_AUTHORIZATION.md) fo
 - Experiments remain provisional. Initial setup/imports/components require confirmation before becoming saved work. Subsequent additions and updates also require visible review and approval, unless covered by explicit longer-term permission for their data type; structure or inclusion-scope expansion always requires review. This is not unrestricted permission to rewrite data.
 - A likely identity match does not itself authorize contacting someone, changing recipients, sharing restricted information or granting access. Reconciliation operates only on data the acting identity and AI may access.
 
-We are not building industry templates, prescribed review chains or fixed business workflow modules. User-created workflows are in scope as code and components on the shared foundation. Biotech teams remain the intended audience without dictating database schemas or mandatory screens.
+User-created workflows are in scope as code and components on the shared foundation. Optional industry examples and templates can accelerate creation without prescribing review chains, database schemas, screens or app types. Biotech teams remain the intended audience.
 
 ## Decisions retained
 
@@ -141,3 +152,4 @@ Typed JavaScript computations, cross-table lookups, multiple references, searcha
 ## Account, projects and tools
 
 Connect an account before creating a project or tool (tracker, form, visualization or automation). Account storage initializes automatically; there is no workspace-creation step. Tools can be independent or organized into projects with drag-and-drop or Move to. Organization preserves data scope and permissions. Public forms remain usable without login; previously issued temporary previews remain recoverable until expiry. See [implementation and verification](docs/design/ACCOUNT_PROJECT_TOOLS.md).
+

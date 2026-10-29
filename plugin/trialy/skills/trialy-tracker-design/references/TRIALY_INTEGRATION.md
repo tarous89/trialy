@@ -6,7 +6,7 @@ The HTML and screenshot are preserved reference assets, not the whole plugin int
 
 Read the sibling trialy-workspace skill and current frontend/execution contracts before implementation. The browser HTML example uses DOM event handlers and local memory. Trialy frontend-js uses the isolated trialy-frontend-js-v1 render/event contract; port interactions to supported data-action events and state. Do not paste the HTML script into QuickJS, relax the sandbox, or imply local Save is a database commit. Read all paginated design resources to completion through read_tracker_design if this package is not locally available.
 
-The app owns identity, account connection and cross-tracker navigation. A persistent header outside the generated tracker contains Trialy and Open app. Tracker title, tabs, Layout and Access control belong to the tracker surface.
+The platform owns identity and account connection. Apps open in separate pages with a trusted persistent “Built with TrialAgent” footer outside generated content; the embedded preview offers an Open app link. Internal pages use the trusted route/link bridge. Tracker title, tabs, Layout and Access control belong to the tracker surface.
 
 Access policy is stored and enforced by the backend independently of generated source. The trusted Access control entry opens the existing component sharing review. Component access currently supports eligible-user allowlists and AI access, constrained by project/workspace/data permissions. Owner/Editor/Viewer badges and per-tab/per-column overrides in the reference are a design model, not a claim of implemented enforcement. Do not expose active-looking unsupported permission toggles. Implement additional policy semantics on the backend before offering them. Hiding columns is presentation, never authorization. Replacing tracker source cannot grant permissions or reset policies.
 
@@ -24,7 +24,7 @@ For data entry, return controls:[{slot,fieldId,recordId}] from frontend-js and p
 
 Use prepare_tracker for the default implementation; the approved HTML CSS is reused directly with assets/connected-tracker.js. The server verifies existing fields or temporary newTables definitions and supplies the manifest. prepare_tracker displays the preview immediately, without opening Home or committing schema. Approval saves required new tables and tracker together. The template reads only explicit bound tables; it never selects the first account table. One fictional example is displayed in each empty data tab and never included in write proposals or totals. Override with showExample:false when requested.
 
-The template supports reviewed persistent presentation changes through layout.propose; this cannot add/rebind fields or alter permissions. Saved cells stage in the trusted frame. The dark floating footer shows one sentence and Save edits; that click authorizes the exact visible changes, which are validated, proposed and confirmed with a digest on the backend. The dismiss control restores the original values. Layout saving follows the same flow. Errors retain edits and never report an unconfirmed save. Add record inserts an unsaved inline row; saving uses the protected reviewed backend write. Source remains visible by default. Every saved tracker opens using open_tracker; schema tools are background operations.
+The template supports reviewed persistent presentation changes through layout.propose; this cannot add/rebind fields or alter permissions. Saved cells stage in the trusted frame. The dark floating footer shows one sentence and Save edits; that click authorizes the exact visible changes, which are validated, proposed and confirmed with a digest on the backend. The dismiss control restores the original values. Layout saving follows the same flow. Errors retain edits and never report an unconfirmed save. Add record inserts an unsaved inline row; saving uses the protected reviewed backend write. Source remains visible by default. Use open_app for the standalone launch link; open_tracker remains an embedded compatibility reader. Schema tools are background operations.
 
 Use Vivid as a reusable default. Users may customize branding, fonts, icons, layouts and interactions or request fully custom frontend-js code, including revisions of saved template tools. No design exception or capability whitelist is required. Use prepare_tracker / prepare_tracker_revision for template configuration and theme; use save_component for custom source with authorized bindings and a complete manifest. Preserve database validation, access controls, reviewed writes and audit logging.
 
@@ -38,3 +38,12 @@ For the complete reference-to-runtime map and reusable skeleton contract, read [
 
 
 Standard tool creation now stores configuration for trialy.standard.v1. See CONFIGURATION.md for typed inputs and revisions; the application owns all HTML/CSS.
+
+
+## Simple-app extensions
+
+Use `prepare_app` for a custom app without selecting a category. It preserves existing component IDs, data bindings, reviews and version checks. A calculator can omit tables. Existing template kinds stay internal compatibility metadata.
+
+`input.route` supplies a validated path plus optional recordId/page. Use plain anchors for internal pages, canonical returned app URLs for cross-app links, and ordinary permitted external links. The shell owns history, refresh, sign-in return, dirty-edit warnings and its footer. Generated code stays isolated; no script tags, browser DOM, fetch or packages are enabled. `tools.call('records.get',{recordId})` is a saved-app-only bound read with current scope checks.
+
+Generic HTTPS operations use `tools.call('connectors.call',...)`, declared access and mapped fields. Configuration and credentials live in Connectors. Secrets never appear in source, the model or frame. Free-text disclosure and external effects require exact trusted review, and returned data saves through existing record review. See the workspace skill's Connectors section for request keys, completion events, quotas and unknown outcomes.

@@ -51,3 +51,6 @@ GRANT trialy_runtime TO trialy_worker;
 GRANT UPDATE(id) ON data_previews,workspace_previews,foundation_previews TO trialy_runtime;
 
 GRANT INSERT ON support_requests TO trialy_runtime;
+
+-- Additive connector storage (migration 044); no delete privilege on receipts or reviews.
+GRANT SELECT,INSERT,UPDATE ON connectors,connector_credentials,connector_reviews,connector_invocations TO trialy_runtime;

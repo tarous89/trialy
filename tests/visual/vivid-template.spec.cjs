@@ -1,4 +1,4 @@
-const {test,expect}=require('@playwright/test');
+const {test,expect}=require('./test.cjs');
 for(const width of [1440,390])test(`Extracted components match original HTML at ${width}px`,async({page,context})=>{
  await page.setViewportSize({width,height:1000});await page.goto('http://127.0.0.1:4179/vivid-catalog');
  const ref=await context.newPage();await ref.setViewportSize({width,height:1000});await ref.goto('http://127.0.0.1:4179/reference');

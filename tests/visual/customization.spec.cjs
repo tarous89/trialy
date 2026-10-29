@@ -1,4 +1,4 @@
-const {test,expect}=require('@playwright/test');
+const {test,expect}=require('./test.cjs');
 const base='http://127.0.0.1:4179';
 async function open(page){await page.goto(base);await page.waitForFunction(()=>window.hostReady);const initial=await(await page.request.get(base+'/fixture/initial')).json();await page.evaluate(r=>window.deliver(r),initial);const embed=page.frameLocator('#app');return {embed,tracker:embed.frameLocator('iframe[title="Saved frontend code"]')};}
 

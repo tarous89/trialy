@@ -1,3 +1,4 @@
+import {addAppsFixture} from './apps-fixture.js';
 import {schemaCatalog} from '../../src/workspace/catalog.js';
 import {AccessGrid} from '../../src/domain/access-grid.js';
 import {prepareToolLayout} from '../../src/workspace/tool-layout.js';
@@ -6,7 +7,7 @@ import {baseApp} from '../../src/server/app.js';import {Service} from '../../src
 
 export async function fixture(){
  const pg=new PGlite();const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
- const app=baseApp(),server=app.listen(Number(process.env.VISUAL_TEST_PORT||4179),'127.0.0.1');await new Promise<void>(r=>server.once('listening',r));const base='http://127.0.0.1:'+(server.address() as any).port;process.env.PUBLIC_URL=base;
+ const app=baseApp();app.set('trust proxy','loopback');const server=app.listen(Number(process.env.VISUAL_TEST_PORT||4179),'127.0.0.1');await new Promise<void>(r=>server.once('listening',r));const base='http://127.0.0.1:'+(server.address() as any).port;process.env.PUBLIC_URL=base;
  for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
  const actor={userId:randomUUID(),origin:'human' as const};await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,'fixture@example.invalid','Fixture']);const s=new Service(db),f=new WorkspaceFoundation(db),w=await s.createWorkspace(actor,'Test account');
  const save=async(op:any)=>{const p=await s.preview(actor,w.id,op);return s.commit(actor,p.id,p.digest);};
@@ -41,12 +42,13 @@ export async function fixture(){
  };
  app.post('/fixture/tool',async(req,res)=>{try{const result=await tools(req.body.name,req.body.arguments);res.json({content:[],structuredContent:{result}});}catch(e){console.error(req.body.name,(e as Error).message);res.json({isError:true,content:[{type:'text',text:(e as Error).message}]});}});
  app.get('/embed',async(_req,res)=>{res.removeHeader('Content-Security-Policy');res.type('html').send(await readFile('dist/embed.html','utf8'));});
- app.get('/',(_req,res)=>{res.removeHeader('Content-Security-Policy');res.type('html').send(`<html><body style="margin:0"><iframe id="app" src="/embed" style="width:100%;height:100vh;border:0"></iframe><script>window.addEventListener('message',async e=>{const m=e.data;if(e.source!==document.getElementById('app').contentWindow)return;if(m.method==='ui/initialize')e.source.postMessage({jsonrpc:'2.0',id:m.id,result:{protocolVersion:m.params.protocolVersion,hostInfo:{name:'Acceptance host',version:'1'},hostCapabilities:{serverTools:{},openLinks:{}},hostContext:{theme:'light',displayMode:'fullscreen'}}},'*');else if(m.method==='ui/notifications/initialized'){window.hostReady=true;}else if(m.method==='tools/call'){const result=await (await fetch('/fixture/tool',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(m.params)})).json();e.source.postMessage({jsonrpc:'2.0',id:m.id,result},'*');}else if(m.id)e.source.postMessage({jsonrpc:'2.0',id:m.id,result:{}},'*');});window.deliver=result=>document.getElementById('app').contentWindow.postMessage({jsonrpc:'2.0',method:'ui/notifications/tool-result',params:{content:[],structuredContent:{result}}},'*');</script></body></html>`);});
+ app.get('/',(_req,res)=>{res.removeHeader('Content-Security-Policy');res.type('html').send(`<html><body style="margin:0"><iframe id="app" src="/embed" style="width:100%;height:100vh;border:0"></iframe><script>window.addEventListener('message',async e=>{const m=e.data;if(e.source!==document.getElementById('app').contentWindow)return;if(m.method==='ui/initialize')e.source.postMessage({jsonrpc:'2.0',id:m.id,result:{protocolVersion:m.params.protocolVersion,hostInfo:{name:'Acceptance host',version:'1'},hostCapabilities:{serverTools:{},openLinks:{}},hostContext:{theme:'light',displayMode:'fullscreen'}}},'*');else if(m.method==='ui/notifications/initialized'){window.hostReady=true;}else if(m.method==='ui/open-link'){window.lastOpenedUrl=m.params.url;e.source.postMessage({jsonrpc:'2.0',id:m.id,result:{}},'*');}else if(m.method==='tools/call'){const result=await (await fetch('/fixture/tool',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(m.params)})).json();e.source.postMessage({jsonrpc:'2.0',id:m.id,result},'*');}else if(m.id)e.source.postMessage({jsonrpc:'2.0',id:m.id,result:{}},'*');});window.deliver=result=>document.getElementById('app').contentWindow.postMessage({jsonrpc:'2.0',method:'ui/notifications/tool-result',params:{content:[],structuredContent:{result}}},'*');</script></body></html>`);});
 
  app.get('/fixture/calls',(_req,res)=>res.json(calls));
  app.get('/fixture/initial',async(_req,res)=>{const current=(await f.readComponent(actor,w.id,component.id)).component;res.json({screen:'tracker',workspaceId:w.id,component:current,initialOutput:await f.runFrontend(actor,w.id,{componentId:current.id,expectedVersion:current.version})});});
  app.get('/vivid-catalog',async(_req,res)=>{res.removeHeader('Content-Security-Policy');res.type('html').send(await readFile('plugin/trialy/skills/trialy-tracker-design/assets/vivid-template/catalog.html','utf8'));});
  app.get('/reference',async(_req,res)=>{res.removeHeader('Content-Security-Policy');res.type('html').send(await readFile('plugin/trialy/skills/trialy-tracker-design/assets/approved-theme2-reference.html','utf8'));});
+ await addAppsFixture(app,db,actor,w);
  return {base,component,w,f,actor,close:async()=>{server.closeAllConnections();await new Promise<void>(r=>server.close(()=>r()));await db.close();}};
 }
 

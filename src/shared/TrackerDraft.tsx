@@ -1,3 +1,4 @@
+import {AppPlatform} from './AppPlatform.js';
 import React,{useState,useRef} from 'react';
 import {FrontendCodeRuntime} from './FrontendCodeRuntime.js';
 import {ActionFooter} from './ActionFooter.js';
@@ -6,7 +7,8 @@ type Call=(name:string,args:any)=>Promise<any>;
 export function TrackerDraft({preview,call,onSaved,onDiscard,onProposal,initialOutput}:{initialOutput?:any;preview:any;call:Call;onSaved:(component:any,output?:any)=>void;onDiscard:()=>void;onProposal:(p:any)=>void}){
  const [busy,setBusy]=useState(false),[rendering,setRendering]=useState(true),[rendered,setRendered]=useState(false),[error,setError]=useState('');
  const invoke=(name:string,args:any={})=>call(name,{workspaceId:preview.workspaceId,...args});
- const label=preview.body.content?.resourceKind==='visualization'?'dashboard':preview.body.content?.resourceKind==='form'?'form':'tracker';
+ const platform=React.useContext(AppPlatform);
+ const label=platform.enabled?'app':preview.body.content?.resourceKind==='visualization'?'dashboard':preview.body.content?.resourceKind==='form'?'form':'tracker';
  const activePreview=useRef(preview),savedReceipt=useRef<any>(null);
  async function save(){setBusy(true);setError('');try{
   const p=activePreview.current;

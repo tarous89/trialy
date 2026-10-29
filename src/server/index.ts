@@ -12,6 +12,7 @@ import { addMcp } from './mcp.js';
 if(!process.env.DATABASE_URL)throw new Error('DATABASE_URL required');
 const db=new Postgres(runtimeConnection(process.env,'web'));const service=new Service(db,Number(process.env.MAX_FILE_BYTES??26214400));
 await enforceRuntimeRole(db);
+console.log(JSON.stringify({event:'simple_apps_configuration',enabled:process.env.SIMPLE_APPS_ENABLED==='true',connectorCredentialKey:process.env.CONNECTOR_ENCRYPTION_KEY?'present':'missing'}));
 const app=baseApp();app.get('/ready',async(_req,res)=>{try{await db.query('SELECT 1');res.json({status:'ready'});}catch{res.status(503).json({status:'unavailable'});}});const auth=configureAuth(app,db,process.env);addGuestRoutes(app,new GuestDrafts(db),process.env.PUBLIC_URL??process.env.RENDER_EXTERNAL_URL??'http://localhost:3000');addApi(app,service,auth.human);addMcp(app,service,auth.ai);
 app.use(express.static('dist/web'));app.get('/{*path}',(req,res)=>{if(req.path.startsWith('/api/')||req.path.startsWith('/auth/')){res.status(404).json({error:'not_found'});return;}res.sendFile('index.html',{root:'dist/web'});});app.use(errors);
 const cleanup=setInterval(()=>{void withDatabaseContext({service:'maintenance'},()=>service.sweep()).catch(()=>console.error(JSON.stringify({event:"preview_cleanup_failed"})));},60000);cleanup.unref();

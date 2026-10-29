@@ -1,7 +1,20 @@
 export function foundationClient(api:(path:string,method?:string,body?:unknown)=>Promise<any>){return async(name:string,v:Record<string,any>)=>{
  const b=`/api/workspaces/${v.workspaceId}/foundation`;
  const o=`/api/workspaces/${v.workspaceId}/organization`;
+ const c=`/api/workspaces/${v.workspaceId}/connectors`;
+ const clean=Object.fromEntries(Object.entries(v).filter(([key])=>key!=='workspaceId'));
  const routes:Record<string,[string,string?,unknown?]>={
+ connector_directory:[`${c}/directory`],
+ list_connectors:[`${c}?offset=${v.offset??0}&q=${encodeURIComponent(v.query??'')}`],
+ read_connector:[`${c}/${v.connectionId}`],
+ prepare_connector:[`${c}/prepare`,'POST',clean],
+ read_connector_review:[`${c}/reviews/${v.reviewId}`],
+ confirm_connector_review:[`${c}/reviews/${v.reviewId}/confirm`,'POST',{digest:v.digest,confirmed:true}],
+ replace_connector_credential:[`${c}/${v.connectionId}/credential`,'POST',{expectedVersion:v.expectedVersion,secret:v.secret}],
+ disable_connector:[`${c}/${v.connectionId}/disable`,'POST',{expectedVersion:v.expectedVersion,remove:v.remove??false,confirmed:true}],
+ read_connector_activity:[`${c}/${v.connectionId}/activity?offset=${v.offset??0}`],
+ call_connector:[`${c}/call`,'POST',clean],
+ propose_connector_response:[`${c}/results/${v.invocationId}/propose`,'POST',Object.fromEntries(Object.entries(clean).filter(([key])=>key!=='invocationId'))],
  read_activity_changes:[`${o}/activity/${v.eventId}`],
  prepare_tool_layout:[`${o}/tool-layout`,'POST',Object.fromEntries(Object.entries(v).filter(([k])=>k!=='workspaceId'))],
  prepare_tool_template:[`${o}/tracker-template`,'POST',Object.fromEntries(Object.entries(v).filter(([k])=>k!=='workspaceId'))],
