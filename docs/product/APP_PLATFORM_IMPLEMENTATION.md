@@ -7,7 +7,7 @@
 | Step | Implementation |
 | --- | --- |
 | S1 | Neutral `prepare_app`, App/Project creation, optional templates, Home without type filters/labels, stable project colors and neutral unassigned apps. Existing IDs and internal resource kinds remain compatible. |
-| S2 | Authorized standalone pages, real new-tab Home/Open anchors, legacy-resource wrappers, owner previews, persistent trusted “Built with TrialAgents” footer and validated sign-in return, including connector setup. |
+| S2 | Authorized standalone pages, real new-tab Home/Open anchors, legacy-resource wrappers, owner previews, compact trusted “Built with TrialAgents” bottom-right watermark and validated sign-in return, including connector setup. |
 | S3 | Validated `input.route`, bound single-record reads, internal page links, native cross-app links, Back/Forward, deep refresh, state retention and unsaved-edit guards. |
 | S4 | Generic HTTPS broker, encrypted credentials, source/destination/user/app/AI policies, exact effect reviews, technical quotas, idempotent receipts, unknown-outcome handling and reviewed response saves. |
 | S5 | One Connectors destination with Details/Data/Access/Activity; add/edit/test/disable/remove, password-only credential replacement, trusted request/configuration review and safe builder handoffs. |
@@ -62,3 +62,5 @@ Returned data never writes directly to shared records. A response mapping must f
 ## Release evidence
 
 Local verification is complete. GitHub/Render/plugin release IDs and remaining real-host checks are recorded in PR #62 and the release note after rollout. Do not infer a live deployment or real-host verification from this file alone.
+
+29 October 2026 update: `open_app` returns a direct standalone URL without attaching the management widget. Legacy embedded readers remain available explicitly. Apps use the full viewport with a compact corner watermark; save/review controls keep clear of it. Authentication, permissions and persistence behavior are unchanged.
