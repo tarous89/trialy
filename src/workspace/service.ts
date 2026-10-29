@@ -1,4 +1,5 @@
 import {automationTemplate} from './automation-template.js';
+import {Connectors} from '../connectors/service.js';
 import {withActor,setDatabaseContext} from '../db/context.js';
 import {rulesFor,denied,resourceGrant,assertRecordScope,assertWritable,toolPolicy} from '../domain/effective-access.js';
 import {standardTracker,renderStandard} from './standard-tracker.js';
@@ -145,6 +146,11 @@ export class WorkspaceFoundation {
    const pageReader=new DerivedReader(this.db,a,w,Object.keys(bound),bound);
    const writable=!!request.componentId&&!currentPolicy.archived&&currentPolicy.role!=='inspector'&&(await toolPolicy(this.db,a,currentPolicy,request.componentId)).grant.write;
    const handler=async(name:string,value:unknown)=>{
+    if(name==='connectors.call'&&process.env.SIMPLE_APPS_ENABLED==='true'){
+     if(!request.componentId)fail(403,'preview_read_only','Unsaved app previews cannot use external connectors');
+     const v=z.object({connectionId:id,operation:z.string().max(64),requestKey:id,parameters:z.record(z.string(),z.unknown()).optional(),records:z.record(z.string(),id).optional()}).strict().parse(value);
+     return new Connectors(this.db,(tx,actor,workspaceId,appId)=>this.component(tx,actor,workspaceId,appId)).call(a,w,{...v,appId:request.componentId,appVersion:version});
+    }
     if(name==='project.records'||name==='project.relationships'){
      const v=z.object({offset:z.number().int().min(0).max(1000000).default(0)}).strict().parse(value);
      const typeIds=content.bindings.map((b:any)=>b.typeId),projectId=content.project_id;
@@ -174,6 +180,15 @@ export class WorkspaceFoundation {
     if(name==='functions.status'){
      if(!request.componentId)fail(403,'preview_read_only','Open a saved interface');
      const v=z.object({requestKey:id}).strict().parse(value);const r=(await this.db.query('SELECT id,component_context FROM foundation_runs WHERE workspace_id=$1 AND user_id=$2 AND request_key=$3',[w,a.userId,v.requestKey])).rows[0];if(!r||r.component_context?.id!==request.componentId||r.component_context?.version!==version)fail(404,'not_found','Component run not found');return new Foundation(this.db).run(a,w,r.id);
+    }
+    if(name==='records.get'&&process.env.SIMPLE_APPS_ENABLED==='true'){
+     if(!request.componentId)fail(403,'preview_read_only','Open a saved app to read a record detail');
+     const v=z.object({recordId:id}).strict().parse(value),record=await this.record(this.db,a,w,v.recordId);
+     const binding=content.bindings.find((b:any)=>b.typeId===record.type_id);
+     if(!binding||record.state==='archived')fail(404,'not_found','Record unavailable');
+     if(content.manifest?.scope==='project'&&!(await this.db.query('SELECT id FROM project_records WHERE workspace_id=$1 AND project_id=$2 AND record_id=$3 AND revoked_at IS NULL',[w,content.project_id,record.id])).rows.length)fail(404,'not_found','Record unavailable');
+     const resolved=await pageReader.read({...record,data:Object.fromEntries(Object.entries(record.data).filter(([key])=>binding.fields.includes(key)))});
+     return {id:record.id,typeId:record.type_id,version:record.version,data:resolved.data};
     }
     if(name==='records.read'){
      if(draftTables.includes((value as any)?.typeId)){const v=frontendRead.parse(value);return {rows:[],total:0,limit:v.limit,offset:v.offset};}
@@ -206,7 +221,7 @@ export class WorkspaceFoundation {
     }
     fail(403,'capability_unavailable','This interface capability is unavailable');
    };
-   const output=frontendOutput.parse(await (tracker?((_:string,input:any,call:any)=>renderStandard(tracker.config,tracker.theme,input,call)):execute)(content.source,{state:request.state,event:request.event,saved:!!request.componentId,writable},async(name,value)=>{const result=await handler(name,value);if(tracker&&name==='records.read')pages.push({request:value,result});return result;}));
+   const output=frontendOutput.parse(await (tracker?((_:string,input:any,call:any)=>renderStandard(tracker.config,tracker.theme,input,call)):execute)(content.source,{state:request.state,event:request.event,saved:!!request.componentId,writable,...(request.route?{route:request.route}:{})},async(name,value)=>{const result=await handler(name,value);if(tracker&&name==='records.read')pages.push({request:value,result});return result;}));
    if(!tracker&&(output.controls?.length??0)>100)fail(400,'control_limit','Custom interfaces support at most 100 controls');
    if(Buffer.byteLength(J(output.state))>100000)fail(400,'state_limit','Interface state is too large');
    // Recheck after execution; a concurrent revoke/edit must not release its output.
