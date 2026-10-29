@@ -1,6 +1,12 @@
 # Trialy — Current development roadmap
 
-Updated 11 October 2026. Development steps for the flexible shared-data/code foundation, not releases. [Scope](README.md) · [History](HISTORY.md) · [Runtime contract](docs/FRONTEND_CODE.md).
+## Active next implementation — 29 October 2026
+
+Follow the [app platform roadmap](docs/product/APP_PLATFORM_ROADMAP.md) in dependency order. It scopes one app model, real internal links, browser packages, isolated server execution, reusable authentication, durable workers/triggers, generic connectors and cost controls. [Scope and architecture](docs/product/APP_PLATFORM_SCOPE.md) · [Connectors and economics](docs/product/CONNECTORS_AND_USAGE.md).
+
+All new roadmap steps are unimplemented planning items. Existing foundation capabilities listed below are reused; account authentication and basic schedules/events must not be rebuilt as if absent. The new roadmap supersedes the previous order of future product work, while retaining unresolved production recovery, credential and real-host acceptance requirements. Provider-specific email, Microsoft 365 and AI integrations follow the generic connector foundation.
+
+Foundation implementation baseline updated 11 October 2026, with later notes below. [Scope](README.md) · [History](HISTORY.md) · [Current runtime contract](docs/FRONTEND_CODE.md).
 
 ## Implemented foundation
 
@@ -53,3 +59,4 @@ Build/type-check; focused scenarios for new setup, linked corrections, source/bi
 - [ ] Real ChatGPT host acceptance of new schema/tool discovery; refresh the connector after deployment.
 
 Precise implementation limits are recorded in docs/FIELD_CAPABILITIES.md; these are not claims of unlimited table evaluation or retrospective computed snapshots.
+
