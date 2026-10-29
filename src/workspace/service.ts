@@ -1,3 +1,4 @@
+import {appPublicUrl} from '../shared/public-url.js';
 import {automationTemplate} from './automation-template.js';
 import {Connectors} from '../connectors/service.js';
 import {withActor,setDatabaseContext} from '../db/context.js';
@@ -255,7 +256,7 @@ export class WorkspaceFoundation {
     const proposal=layoutProposal?await f.preview(a,w,layoutProposal):changes.length?await f.preview(a,w,{kind:'apply_component_records',componentId:request.componentId,expectedVersion:version,changes}):null;
     const queued=[];for(const v of invocations)queued.push(await f.invokeComponent(a,w,{...v,componentId:request.componentId,expectedVersion:version}));return {proposal,queued};
    });
-   return {queued,...(connectorReviews.length?{connectorReviews}:{}),runtime:'trialy-frontend-js-v1',frameUrl:new URL('/frontend/frame',process.env.PUBLIC_URL??process.env.RENDER_EXTERNAL_URL??'http://localhost:3000').toString(),...output,accessVersion:currentPolicy.access_version,controls,connected:!!content.manifest,proposal,temporary:!request.componentId,...(tracker?{tracker:{config:tracker.config,theme:tracker.theme,pages,saved:!!request.componentId,writable}}:{})};
+   return {queued,...(connectorReviews.length?{connectorReviews}:{}),runtime:'trialy-frontend-js-v1',frameUrl:new URL('/frontend/frame',appPublicUrl()).toString(),...output,accessVersion:currentPolicy.access_version,controls,connected:!!content.manifest,proposal,temporary:!request.componentId,...(tracker?{tracker:{config:tracker.config,theme:tracker.theme,pages,saved:!!request.componentId,writable}}:{})};
   }finally{if(!knownTracker)activeFrontends.delete(key);}
  }
  private parseInterface(content:any){

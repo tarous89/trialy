@@ -31,9 +31,11 @@ test('Connectors match existing controls and approve an external request once',a
 
 test('Connector configuration, credential replacement and removal use trusted controls',async({page})=>{
  const f=await (await page.request.get(base+'/fixture/apps')).json();await page.goto(base+'/app-home?tab=connectors&workspaceId='+f.workspaceId);
+ await page.getByRole('button',{name:'Add connector',exact:true}).click();await page.getByLabel('Name',{exact:true}).fill('Discard this connector');await expect(page.getByRole('button',{name:'← Connectors',exact:true})).toHaveCount(0);
+ await page.getByRole('button',{name:'Ignore changes',exact:true}).click();await expect(page.getByRole('heading',{name:'Connectors',exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Open Discard this connector',exact:true})).toHaveCount(0);
  await page.getByRole('button',{name:'Add connector',exact:true}).click();await page.getByLabel('Name',{exact:true}).fill('Second service');await page.getByLabel('Service address',{exact:true}).fill('https://example.invalid');await page.getByLabel('Authentication',{exact:true}).selectOption('bearer');
  await page.getByRole('tab',{name:'Access',exact:true}).click();await page.getByRole('checkbox',{name:'use Fixture',exact:true}).click();await page.getByLabel('Simple app fixture',{exact:true}).check();
- await page.getByRole('tab',{name:'Data',exact:true}).click();await page.getByRole('button',{name:'Add input',exact:true}).click();await page.getByLabel('Input name',{exact:true}).fill('query');await page.getByRole('button',{name:'Review configuration',exact:true}).click();
+ await page.getByRole('tab',{name:'Data',exact:true}).click();await page.getByRole('button',{name:'Add input',exact:true}).click();await page.getByLabel('Input name',{exact:true}).fill('query');await page.getByRole('button',{name:'Save changes',exact:true}).click();
  const review=page.getByRole('dialog',{name:'Review connector action'});await expect(review).toContainText('Second service');await review.getByRole('button',{name:'Save configuration',exact:true}).click();await expect(review).toHaveCount(0);
  await page.getByRole('tab',{name:'Details',exact:true}).click();await page.getByRole('button',{name:'Replace credential',exact:true}).click();await page.getByLabel('New credential',{exact:true}).fill('synthetic-fixture-secret');await page.getByRole('button',{name:'Save credential',exact:true}).click();await expect(page.getByText(/^Configured/)).toBeVisible();await expect(page.getByLabel('New credential',{exact:true})).toHaveCount(0);await expect(page.locator('body')).not.toContainText('synthetic-fixture-secret');
  await page.getByRole('button',{name:'Remove',exact:true}).click();await page.getByRole('button',{name:'Confirm',exact:true}).click();await expect(page.getByRole('heading',{name:'Connectors',exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Open Second service',exact:true})).toHaveCount(0);
@@ -48,4 +50,11 @@ test('Embedded app launch uses the host open-link bridge',async({page})=>{
  const f=await (await page.request.get(base+'/fixture/apps')).json();await page.goto(base);await page.waitForFunction(()=>window.hostReady);
  await page.evaluate(r=>window.deliver(r),{screen:'app-link',name:'Simple app fixture',workspaceId:f.workspaceId,appId:f.appId,url:base+f.url});
  const embed=page.frameLocator('#app');await expect(embed.getByRole('heading',{name:'Simple app fixture',exact:true})).toBeVisible();await embed.getByRole('link',{name:'Open app ↗',exact:true}).click();await expect.poll(()=>page.evaluate(()=>window.lastOpenedUrl)).toBe(base+f.url);
+});
+
+for(const width of [1440,390])test(`Connector editor actions stay at the top right at ${width}px`,async({page})=>{
+ await page.setViewportSize({width,height:1000});const f=await (await page.request.get(base+'/fixture/apps')).json();await page.goto(base+'/app-home?tab=connectors&workspaceId='+f.workspaceId);await page.getByRole('button',{name:'Add connector',exact:true}).click();
+ const heading=page.locator('.ty-connector-heading'),save=heading.getByRole('button',{name:'Save changes',exact:true}),ignore=heading.getByRole('button',{name:'Ignore changes',exact:true});await expect(save).toBeVisible();await expect(ignore).toBeVisible();
+ const box=await heading.boundingBox(),actions=await heading.locator('.ty-actions').boundingBox(),tabs=await page.getByRole('tablist',{name:'Connector settings'}).boundingBox();expect(Math.abs(box.x+box.width-actions.x-actions.width)).toBeLessThan(2);expect(actions.y+actions.height).toBeLessThan(tabs.y);expect(actions.x).toBeGreaterThanOrEqual(box.x);
+ await expect(page).toHaveScreenshot(`connector-new-${width}.png`);await ignore.click();await expect(page.getByRole('heading',{name:'Connectors',exact:true})).toBeVisible();
 });

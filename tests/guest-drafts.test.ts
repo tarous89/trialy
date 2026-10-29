@@ -17,6 +17,7 @@ import {addLocalAuth} from '../src/server/auth.js';
 import {addGuestRoutes} from '../src/server/guest-drafts.js';
 import {addMcp} from '../src/server/mcp.js';
 test('anonymous creation blocked; previously issued previews retain atomic recovery without cross-account claim',async t=>{
+ const previous=process.env.APP_PUBLIC_URL;process.env.APP_PUBLIC_URL='https://platform.trialagents.com';t.after(()=>{if(previous===undefined)delete process.env.APP_PUBLIC_URL;else process.env.APP_PUBLIC_URL=previous;});
  const pg=new PGlite();t.after(()=>pg.close());for(const f of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+f,'utf8'));
  const db:Database={query:(sql,v)=>pg.query(sql,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
  await pg.exec(await readFile('ops/runtime-role.sql','utf8'));const runtime:Database={query:(q,v)=>runtime.transaction(tx=>tx.query(q,v)),transaction:f=>pg.transaction(async tx=>{await tx.exec('SET LOCAL ROLE trialy_runtime');await setDatabaseContext(tx as Connection);return f(tx as Connection);}),close:async()=>{}};
@@ -42,14 +43,14 @@ test('anonymous creation blocked; previously issued previews retain atomic recov
  const inspected=await browser.post('/guest/inspect').set('Origin','https://trialy.example').send({handle:draft.handle});assert.equal(inspected.body.account,null);
  const login=await browser.get('/auth/login?mode=signup'),csrf=login.text.match(/name="csrf" value="([^"]+)"/)![1];
  const signed=await browser.post('/auth/signup').type('form').send({csrf,email:'guest@example.invalid',password:'temporary-tracker-test-password',intendedUse:'accepted'});assert.equal(signed.headers.location,'/save-preview');
- const review=(await browser.post('/guest/inspect').set('Origin','https://trialy.example').send({handle:draft.handle})).body;
+ const review=(await browser.post('/guest/inspect').set('Origin','https://platform.trialagents.com').send({handle:draft.handle})).body;
  assert.equal(review.account.email,'guest@example.invalid');assert.equal((await db.query('SELECT count(*) AS n FROM workspaces')).rows[0].n,0,'Login alone is not save approval');
  const body={handle:draft.handle,digest:draft.digest,accountId:review.account.userId,confirmed:true,allowAi:true};
  assert.equal((await browser.post('/guest/save').set('Origin','https://wrong.example').send(body)).status,403);
- assert.equal((await browser.post('/guest/save').set('Origin','https://trialy.example').send(body)).status,403);
+ assert.equal((await browser.post('/guest/save').set('Origin','https://trialy.example').send(body)).status,403);assert.equal((await browser.post('/guest/save').set('Origin','https://platform.trialagents.com').send(body)).status,403);
  assert.equal((await browser.post('/guest/save').set('Origin','https://trialy.example').set('x-csrf-token',review.csrf).send({...body,accountId:randomUUID()})).status,409);
  assert.equal((await browser.post('/guest/save').set('Origin','https://trialy.example').set('x-csrf-token',review.csrf).send({...body,digest:'0'.repeat(64)})).status,409);
- const saved=await browser.post('/guest/save').set('Origin','https://trialy.example').set('x-csrf-token',review.csrf).send(body);assert.equal(saved.status,200,saved.text);
+ const saved=await browser.post('/guest/save').set('Origin','https://platform.trialagents.com').set('x-csrf-token',review.csrf).send(body);assert.equal(saved.status,200,saved.text);
  const repeated=await browser.post('/guest/save').set('Origin','https://trialy.example').set('x-csrf-token',review.csrf).send(body);assert.deepEqual(repeated.body,saved.body);
  const actor={userId:review.account.userId,origin:'human' as const};
  assert.equal((await service.workspaces(actor)).length,1);assert.equal((await new WorkspaceFoundation(db).components(actor,saved.body.workspaceId)).length,1);

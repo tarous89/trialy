@@ -1,3 +1,4 @@
+import {appPublicUrl} from '../shared/public-url.js';
 import {randomUUID} from 'node:crypto';
 import {z} from 'zod';
 import type {Database} from '../db/database.js';
@@ -44,7 +45,7 @@ export class GuestDrafts{
   // Capability holders get a receipt, never access to the saved account contents.
   if(row.receipt)return {guestDraft:true,handle,status:'saved',receipt:row.receipt};
   if(new Date(row.expires_at).getTime()<=Date.now())fail(410,'draft_expired','This temporary tracker expired. Ask ChatGPT to prepare it again.');
-  return {guestDraft:true,handle,status:'temporary',bundle:row.body as GuestBundle,digest:row.digest,expiresAt:new Date(row.expires_at).toISOString(),saveUrl:new URL('/save-preview',process.env.PUBLIC_URL??'https://trialy-web.onrender.com').href+'#preview='+encodeURIComponent(JSON.stringify(handle))};
+  return {guestDraft:true,handle,status:'temporary',bundle:row.body as GuestBundle,digest:row.digest,expiresAt:new Date(row.expires_at).toISOString(),saveUrl:new URL('/save-preview',appPublicUrl(process.env,'https://trialy-web.onrender.com')).href+'#preview='+encodeURIComponent(JSON.stringify(handle))};
  }
  async run(input:unknown){
   const v=z.object({handle:guestHandle,component:z.number().int().min(0).max(9),request:frontendRequest}).strict().parse(input);
@@ -60,7 +61,7 @@ export class GuestDrafts{
     return {rows:t.rows.slice(q.offset,q.offset+q.limit).map(r=>({id:r.id,version:0,data:Object.fromEntries(Object.entries(r.data).filter(([k])=>binding.fields.includes(k)))})),total:t.rows.length,limit:q.limit,offset:q.offset};
    }));
    const controls=(output.controls??[]).map(item=>{const f=c.manifest?.fields.find(f=>f.id===item.fieldId),table=draft.bundle!.tables.find(t=>t.id===f?.typeId),row=table?.rows.find(r=>r.id===item.recordId),field=table?.fields.find(x=>x.key===f?.field);if(!f||!row||!field||!c.bindings.some(b=>b.typeId===table!.id&&b.fields.includes(field.key)))fail(400,'invalid_control','Preview control must refer to a bound draft field');return {slot:item.slot,label:f.label??field.name,kind:field.kind,value:row.data[field.key]??null,options:field.options??[],editable:false,action:''};});
-   return {...output,controls,connected:!!c.manifest,temporary:true,frameUrl:new URL('/frontend/frame',process.env.PUBLIC_URL??'http://localhost:3000').href};
+   return {...output,controls,connected:!!c.manifest,temporary:true,frameUrl:new URL('/frontend/frame',appPublicUrl()).href};
   }finally{active.delete(v.handle.id);}
  }
  async destinations(a:Actor,input:unknown){

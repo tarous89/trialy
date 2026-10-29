@@ -116,7 +116,8 @@ test('canonical skeleton exposes neutral editable examples and bounded sizing wi
  const resource=await readTrackerDesign({resource:'skeleton'});assert.equal(resource.text,trackerRenderer.slice(0,12000));assert.ok(resource.resources.includes('parity'));
 });
 
-test('connected account identity is app-only metadata and never infers data access',async()=>{
+test('connected account identity is app-only metadata and never infers data access',async t=>{
+ const previous=process.env.APP_PUBLIC_URL;process.env.APP_PUBLIC_URL='https://platform.trialagents.com';t.after(()=>{if(previous===undefined)delete process.env.APP_PUBLIC_URL;else process.env.APP_PUBLIC_URL=previous;});
  const {default:request}=await import('supertest'),{baseApp}=await import('../src/server/app.js'),{addMcp}=await import('../src/server/mcp.js');
  const userId=randomUUID();let queries=0;
  const db={query:async(sql:string,args:any[])=>{queries++;assert.equal(args[0],userId);assert.match(sql,/SELECT name,email FROM users/);return {rows:[{name:'Connected user',email:'connected@example.invalid'}]};}} as unknown as Database;
@@ -124,8 +125,10 @@ test('connected account identity is app-only metadata and never infers data acce
  const list=await request(app).post('/mcp').set('Authorization','Bearer fixture').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:1,method:'tools/list'});
  assert.deepEqual(list.body.result.tools.find((t:any)=>t.name==='read_connected_account')._meta.ui.visibility,['app']);
  const response=await request(app).post('/mcp').set('Authorization','Bearer fixture').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:2,method:'tools/call',params:{name:'read_connected_account',arguments:{}}});
- assert.equal(response.body.result._meta.accountIdentity.email,'connected@example.invalid');assert.equal(response.body.result.structuredContent.result.connected,true);assert.ok(!JSON.stringify(response.body.result.content).includes('connected@example.invalid'));assert.ok(!JSON.stringify(response.body.result.structuredContent).includes('connected@example.invalid'));assert.equal(queries,1);
- const anonymous=await request(app).post('/mcp').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:3,method:'tools/call',params:{name:'read_connected_account',arguments:{}}});assert.equal(anonymous.body.result.isError,true);assert.equal(queries,1);
+ assert.equal(response.body.result._meta.appPlatform.origin,'https://platform.trialagents.com');assert.equal(response.body.result._meta.accountIdentity.email,'connected@example.invalid');assert.equal(response.body.result.structuredContent.result.connected,true);assert.ok(!JSON.stringify(response.body.result.content).includes('connected@example.invalid'));assert.ok(!JSON.stringify(response.body.result.structuredContent).includes('connected@example.invalid'));assert.equal(queries,1);
+ const anonymous=await request(app).post('/mcp').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:3,method:'tools/call',params:{name:'read_connected_account',arguments:{}}});assert.equal(anonymous.body.result.isError,true);assert.equal(queries,1);assert.deepEqual(anonymous.body.result._meta['mcp/www_authenticate'],[`Bearer resource_metadata="${process.env.PUBLIC_URL??'https://trialy-web.onrender.com'}/.well-known/oauth-protected-resource/mcp"`]);
+ const resources=await request(app).post('/mcp').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:4,method:'resources/read',params:{uri:'ui://trialy/workspace.html'}});
+ assert.ok(resources.body.result.contents[0]._meta.ui.csp.frameDomains.includes('https://platform.trialagents.com'));
 });
 
 

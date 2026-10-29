@@ -1,3 +1,4 @@
+import {appPublicUrl} from '../shared/public-url.js';
 import {requireCurrentAction} from './write-authorization.js';
 import {activeProject} from './project-context.js';
 import {derived} from '../shared/formulas.js';
@@ -29,6 +30,6 @@ export async function createExchange(tx:Connection,a:Actor,w:string,input:z.infe
  const review=await exchangeReview(tx,a,w,input),p=await access(tx,a,w,true),raw=randomBytes(32).toString('base64url'),linkId=randomUUID();
  await tx.query('INSERT INTO external_links(id,workspace_id,owner_id,token_hash,kind,name,type_id,type_version,fields,view_id,view_version,questions,file_request,expires_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,now()+$14*interval \'1 day\')',[linkId,w,a.userId,checksum(raw),input.kind,input.name,input.typeId,review.typeVersion,JSON.stringify(input.fields),review.view?.id??null,review.view?.version??null,JSON.stringify(review.questions),input.fileRequest?JSON.stringify(input.fileRequest):null,input.days]);
  if(input.projectId)await tx.query('UPDATE external_links SET project_id=$1 WHERE id=$2',[input.projectId,linkId]);
- await audit(tx,a,p,'external_link.created',linkId,null,{...review,authorization});return {id:linkId,path:'/collect#'+raw,url:new URL('/collect#'+raw,process.env.PUBLIC_URL??process.env.RENDER_EXTERNAL_URL??'http://localhost:3000').toString()};
+ await audit(tx,a,p,'external_link.created',linkId,null,{...review,authorization});return {id:linkId,path:'/collect#'+raw,url:new URL('/collect#'+raw,appPublicUrl()).toString()};
 }
 
