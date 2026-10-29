@@ -49,10 +49,10 @@ test('connected resources enforce schema/value separation, shared edits, project
  await assert.rejects(f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:0,event:{kind:'change',action:`bound:vendor_name:${row}:0`,value:'Stale'}}),/changed/);
  await assert.rejects(f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:0,event:{kind:'change',action:`bound:vendor_name:${outside}:0`,value:'Wrong project'}}),/outside/);
  await assert.rejects(change({kind:'save_component',projectId:project.id,content:{...content,manifest:null}}),/manifest/);
- await assert.rejects(change({kind:'save_component',projectId:project.id,content:{...content,resourceKind:'visualization'}}),/writable/);
+ const interactive=await change({kind:'save_component',projectId:project.id,content:{...content,resourceKind:'visualization'}});assert.ok(interactive.id);
  const readManifest={...manifest,fields:manifest.fields.map(x=>({...x,mode:'read'}))};
  const visual=await change({kind:'save_component',projectId:project.id,content:{...content,resourceKind:'visualization',manifest:readManifest}});
- await assert.rejects(change({kind:'apply_component_records',componentId:visual.id,expectedVersion:0,changes:[{kind:'update_record',recordId:row,expectedVersion:1,data:{name:'Denied'}}]}),/Dashboards/);
+ await assert.rejects(change({kind:'apply_component_records',componentId:visual.id,expectedVersion:0,changes:[{kind:'update_record',recordId:row,expectedVersion:1,data:{name:'Denied'}}]}),/read-only|manifest/);
  const copy=await change({kind:'copy_component',sourceComponentId:c.id,expectedVersion:0,projectId:project.id,name:'Copy'});assert.equal((await f.readComponent(ai,w.id,copy.id)).component.resource_kind,'tracker');
  await save({kind:'update_type',typeId:table,expectedVersion:0,name:'Vendors renamed',fields});
  await assert.rejects(f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:0}),/Schema changed/);

@@ -1,34 +1,34 @@
 ---
 name: trialy-tracker-design
-description: Build or revise Trialy trackers, forms and contained views using the fixed Vivid component template. Adapt content and authorized bindings without recreating HTML, colors, icons or layout. Use for tracker creation and targeted changes, not the whole application shell.
+description: Build or revise Trialy tools with useful design defaults and full user customization. Use the reusable Vivid components, brand themes, or custom interfaces while preserving authorized database bindings, access controls and audit logs.
 ---
 
-# Reuse the Vivid template
+# Build the user's tool
 
-Read [TEMPLATE_REUSE.md](references/TEMPLATE_REUSE.md) and [CONFIGURATION.md](references/CONFIGURATION.md). The user-supplied HTML is the visual authority; its records and business workflow are examples only. The reusable source is `assets/vivid-template/`: exact stylesheet, fixed component trees, original SVG icons, manifest, and neutral visual catalog. Do not redesign from prose or copy sample business logic.
+Treat Vivid as a starting point. Users may change colors, fonts, icons, spacing, layouts, components and interactions, or replace the interface entirely. No design exception or unsupported-capability justification is needed. Database integrity, access enforcement and audit logs are the firm boundaries.
 
-## Standard workflow
+## Workflow
 
-1. Establish the user's job from context. Inspect relevant authorized schemas and the saved configuration when revising. Reuse suitable tables and fields; preserve their identity, type and cardinality. Available data is not automatically relevant data.
-2. Call `prepare_tracker` or `prepare_tracker_revision` with `templateId:"trialy.standard.v1"`. Supply content and bindings only. Trialy renders the fixed components. Do not submit HTML, CSS, SVG or source code for standard tools.
-3. Use all relevant columns by default. Hide fields only when requested. Keep categorical filters unless the user asks to hide them. Badges and icons are choices from the closed template catalog, not generated styles.
-4. Include newTables definitions only when required schemas are missing. They remain temporary until the reviewed save creates them atomically with the tracker. New editable fields may be multi-value; reused field cardinality must stay unchanged.
-5. Show the prepared preview. Keep examples explicitly fictional, unsaved and excluded from metrics; omit them if requested. Never populate unrelated information from the HTML.
-6. Follow [Trialy workspace workflow](../trialy-workspace/SKILL.md) for persistence and opening. Use a clearly matching project from context, otherwise Tools. Reuse existing save authorization; do not ask for it again. A valid preview stays reopenable until expiry, and a saved preview resolves to the saved tool.
-7. For targeted changes, alter only requested configuration properties. Preserve bindings, existing content and the template.
+1. Establish the user's job and inspect the relevant authorized schema and saved tool. Reuse suitable tables and preserve field identities, types and cardinality unless the user requests a reviewed schema change.
+2. For a template-based tool, use `prepare_tracker` or `prepare_tracker_revision`. Read [CONFIGURATION.md](references/CONFIGURATION.md) for content, bindings, theme and display options. Honor requested styling; a brand palette is supported through `theme` and does not require a renderer deployment.
+3. For custom composition, use the reusable components described in [TEMPLATE_REUSE.md](references/TEMPLATE_REUSE.md). For a fully custom interface, use `prepare_workspace_change` with `operation.kind:"save_component"` and `format:"frontend-js"` and a matching authorized manifest. Existing tools can switch to custom code while retaining their database records. Read [TRIALY_INTEGRATION.md](references/TRIALY_INTEGRATION.md) for the runtime and write contract.
+4. Create or extend database schemas only where needed. `newTables` and `extendTables` remain temporary until the reviewed save commits them atomically. Never weaken access or copy restricted data to achieve a design change.
+5. Show the prepared preview. Examples, when useful, are clearly fictional, unsaved and excluded from totals. Omit them on request. The reference HTML's business content is illustrative only.
+6. Follow [Trialy workspace workflow](../trialy-workspace/SKILL.md) for persistence and opening. Use an appropriate project or Tools. Reuse existing authorization without asking again; every committed write still uses the supported authorization and logging flow.
+7. For targeted revisions, preserve unrelated content, styling and bindings. Rebrand or redesign only as requested.
 
-## What is fixed
+## Default standards users may override
 
-Typography, spacing, geometry, colors, responsive rules, icon paths, badges, tabs, overview stat composition, table structure, detail fields and Settings component structure come from the HTML. The server owns the renderer. More fields, another domain, new labels or different data are never reasons to regenerate the UI. Use tab.icon from people/document/checklist/contract when helpful; otherwise the reference sequence is used.
+Preserve the original Vivid appearance when no visual change is requested. Keep its overview icons and expressive accents. Use plain text for names, dates, numbers, links and descriptive values. Multiple values use separated text or neutral chips; cardinality does not imply a color. Use restrained semantic badges for status, stage, priority and outcomes. Explicit `display` settings take precedence over defaults, including `kind:"text"` and neutral badges.
 
-The demo's memberships, fake access rules, storage, joins, next-action calculations and sample dates are not reusable behavior. Use real backend permissions and reviewed writes. Do not represent demo functionality as a deployed capability.
+Use consistent action spacing, accessible icon buttons with labels/tooltips, brief save notifications, real pagination, and usable Add/remove controls for multiple values. These are reusable quality defaults, not a closed catalog of permitted tools. Implement the user's preferred alternative when requested.
 
-## Exceptions and references
+## Runtime boundaries
 
-An existing standard tool remains configuration-only. A new custom tool is allowed only for a user-required capability supported by the server's exception contract: interactive_timeline, calendar or dependency_graph. Read [TRIALY_INTEGRATION.md](references/TRIALY_INTEGRATION.md) before such work. Never invent a requirement or bypass permission/write controls.
+Custom source runs in bounded QuickJS and returns HTML/CSS/state; it does not run arbitrary browser JavaScript or fetch external services. Use supported events and the trusted data/control bridge. Keep code isolation, data validation, field permissions, reviewed writes and logs intact. Explain an actual runtime limitation precisely and use the nearest supported implementation; do not invent a template restriction.
 
-For complex discovery and shared data, use [DISCOVERY_AND_STRUCTURE.md](references/DISCOVERY_AND_STRUCTURE.md) and [DATA_AND_LIFECYCLE.md](references/DATA_AND_LIFECYCLE.md). For renderer development, first read TEMPLATE_REUSE.md and the fixed component assets. Older interaction/theme/parity references describe integration history; conflicting visual suggestions do not override the exact HTML or this template contract. Do not read the entire sample HTML for routine authoring.
+For shared-data discovery read [DISCOVERY_AND_STRUCTURE.md](references/DISCOVERY_AND_STRUCTURE.md) and [DATA_AND_LIFECYCLE.md](references/DATA_AND_LIFECYCLE.md). Historic visual advice in other references is default guidance, subordinate to explicit user choices.
 
-## Completion check
+## Verify
 
-Confirm the configuration uses the standard template, bindings are authorized, real totals exclude samples, user content is escaped, requested changes are present, and no sample-domain records or styling have leaked into the tool. Report what was actually saved or published, with the returned link.
+Check the requested appearance and behavior, authorized bindings, preserved records, pagination, multi-value editing, color meaning and fictional-example separation. Distinguish prepared, saved, published and host-tested status in the response.

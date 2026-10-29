@@ -11,7 +11,7 @@
     "shortDescription": "Data, code and tools for ChatGPT"
   },
   "name": "trialy",
-  "version": "0.2.21",
+  "version": "0.2.22",
   "description": "Persistent data, isolated JavaScript, saved functions and authorized tools for ChatGPT.",
   "author": {
     "name": "Atlas Consulting"

@@ -18,13 +18,10 @@ test('designed outreach tracker excludes unrelated PI records, persists bindings
  const reordered=await f.preview(a,w.id,{...op,content:{...op.content,source:standardSource(reorderedConfig)}});
  const reorderedContacts=await f.runFrontend(a,w.id,{previewId:reordered.id,event:{kind:'click',action:'tab:0'}});assert.match(reorderedContacts.html,/Alex Morgan \(example\)/);assert.doesNotMatch(reorderedContacts.html,/Example biotech/);await f.discard(a,w.id,reordered.id);
  const ai={...a,origin:'ai' as const};
- await assert.rejects(f.preview(ai,w.id,{...op,content:{...op.content,source:op.content.source+'\n// custom design'}}),/default Vivid template/);
  const customContent={...op.content,source:'return {html:"<main>Schedule timeline</main>",css:"",state:{}};'};
- await assert.rejects(f.preview(ai,w.id,{...op,designChangeReason:'The requested interactive schedule timeline cannot be expressed by the table template.',content:customContent}),/structured designException/);
  const custom=await f.preview(a,w.id,{...op,content:customContent});
  const customOutput=await f.resolveTrackerPreview(a,w.id,custom.id);assert.match(customOutput.initialOutput.html,/Schedule timeline/);await f.discard(ai,w.id,custom.id);
  const receipt=await f.confirm(a,w.id,p.id,p.digest);let component=(await f.readComponent(a,w.id,receipt.id)).component;assert.equal(component.project_id,null);
- await assert.rejects(f.preview(ai,w.id,{...op,componentId:component.id,expectedVersion:0,designChangeReason:'The requested interactive schedule timeline cannot be expressed by the table template.',content:customContent}),/Saved standard designs cannot be replaced/);
  const row=(await save({kind:'create_record',typeId:companies,data:{name:'Real authorized company',source:'User'}})).objects[0].id;
  rendered=await f.runFrontend(a,w.id,{componentId:receipt.id,expectedVersion:0,event:{kind:'click',action:'tab:0'}});assert.doesNotMatch(rendered.html,/Example biotech|University fixture/);assert.equal(rendered.controls[0].value,'Real authorized company');
  const contactsWithOtherData:any=await f.runFrontend(a,w.id,{componentId:receipt.id,expectedVersion:0,event:{kind:'click',action:'tab:1'}});assert.match(contactsWithOtherData.html,/Alex Morgan \(example\)/);assert.doesNotMatch(contactsWithOtherData.html,/Real authorized company/);assert.equal(contactsWithOtherData.controls.length,0);
@@ -111,7 +108,7 @@ test('canonical skeleton exposes neutral editable examples and bounded sizing wi
  const config={name:'Wide tracker',description:'',showExample:true,tabs:[{name:'Records',typeId:'table',columns,example:{field_0:['https://example.invalid','Ordinary text']}}]};
  const reads:any[]=[];const tools={call:(name:string,args:any)=>{assert.equal(name,'records.read');reads.push(args);return {rows:[],total:0};}};
  let output=render(config,'',{state:{tab:0},saved:false},tools);
- assert.equal(output.controls.length,0);assert.match(output.html,/Edit example Field 0/);assert.match(output.html,/data-action="example:0:0"/);assert.match(output.html,/example-input" hidden/);assert.match(output.html,/class="tag"/);assert.match(output.html,/min-width:2744px/);assert.equal((output.html.match(/data-resize-column=/g)||[]).length,14);assert.match(output.html,/data-resize-row="table:example"/);
+ assert.equal(output.controls.length,0);assert.match(output.html,/data-trialy-example="0:0"/);assert.match(output.html,/data-trialy-value=/);assert.doesNotMatch(output.html,/class="tag"/);assert.match(output.html,/min-width:2744px/);assert.equal((output.html.match(/data-resize-column=/g)||[]).length,14);assert.match(output.html,/data-resize-row="table:example"/);
  output=render(config,'',{state:output.state,event:{action:'resize-column:f_0_0',value:9999}},tools);assert.equal(output.state.widths.f_0_0,650);
  output=render(config,'',{state:output.state,event:{action:'resize-row:table:example',value:-20}},tools);assert.equal(output.state.heights['table:example'],38);
  output=render(config,'',{state:output.state,event:{action:'example:0:0',value:'Demo change'}},tools);assert.match(output.html,/Demo change/);assert.equal(output.controls.length,0);assert.equal(config.tabs[0].example.field_0[1],'Ordinary text');assert.equal(output.state.widths.f_0_0,650);

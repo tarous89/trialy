@@ -376,3 +376,14 @@ Extended the existing foundation with permission-aware multi-reference fields, s
 ## 2026-10-20 — Anonymous tracker-to-account transition
 
 Added isolated 24-hour tracker/page previews, persistent workspace save footer, account signup/sign-in return, explicit human account review, atomic import through existing audit/version paths and idempotent save receipts. Reused Intel connection/recovery behavior with the requested one-day retention. Protected account tools still require OAuth; no new grants or existing-data access. Guest-save integration test and full build/backend suite cover the change; real ChatGPT/browser acceptance remains unverified. See docs/GUEST_SAVE_FLOW.md.
+
+## Customizable tools and interaction repairs — 2026-10-29
+
+**Release:** 0.2.22; commit associated with this entry. No database migration or customer-record rewrite.
+
+- Treat Vivid as an unchanged default preset; remove design-exception gates and allow saved tools to adopt custom interfaces while retaining data/access contracts. Dashboard edit capability follows explicitly reviewed bindings rather than its display category.
+- Add persisted theme tokens, scoped CSS, custom tab icon paths, and Style settings. Explicit column appearance overrides semantic defaults; ordinary categories and multiple text values stay plain.
+- Add Settings tab/column creation and removal, reviewed atomic schema additions, visibility/delete icon buttons, and spacing. Removing a view retains shared tables/records.
+- Use one paginated Overview next-steps area; fix multiple-value Add/Remove focus and cached-value mutation; expire dismissible save notifications.
+- Prefetch neighboring tabs and next pages with controls, retain bounded session snapshots for two minutes, coalesce pending tab clicks, and preserve permission/version revalidation and invalidation after writes.
+- Validation: production build and type check; 104 backend tests; 15 browser scenarios including real Settings saves, brand overrides, pagination, multi-value keyboard editing, cache navigation after 20 seconds, and desktop/mobile preset parity. Plugin instructions independently forward-tested for branding and custom board requests without live writes. Actual ChatGPT host behavior still requires a user session check after publication.

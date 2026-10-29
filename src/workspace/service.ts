@@ -1,4 +1,3 @@
-import {validateDesignException} from './design-exception.js';
 import {automationTemplate} from './automation-template.js';
 import {withActor,setDatabaseContext} from '../db/context.js';
 import {rulesFor,denied,resourceGrant,assertRecordScope,assertWritable,toolPolicy} from '../domain/effective-access.js';
@@ -97,7 +96,7 @@ export class WorkspaceFoundation {
  }
  async invokeComponent(a:Actor,w:string,input:unknown){
   const v=z.object({componentId:id,expectedVersion:z.number().int().min(0),binding:z.string().min(1).max(64),input:z.unknown().default(null),requestKey:id}).strict().parse(input);
-  const c=await this.component(this.db,a,w,v.componentId);await validateResource(this.db,a,w,c);if(c.resource_kind==='visualization')fail(403,'read_only','Dashboards cannot invoke functions');const binding=c.execution.find((b:any)=>b.name===v.binding);if(!binding||c.archived||c.project_archived||c.version!==v.expectedVersion)fail(409,'component_changed','Open the current component and function binding');
+  const c=await this.component(this.db,a,w,v.componentId);await validateResource(this.db,a,w,c);const binding=c.execution.find((b:any)=>b.name===v.binding);if(!binding||c.archived||c.project_archived||c.version!==v.expectedVersion)fail(409,'component_changed','Open the current component and function binding');
   return new Foundation(this.db).invoke(a,w,{revisionId:binding.revisionId,input:v.input,...(binding.grantId?{grantId:binding.grantId}:{}),componentContext:{id:c.id,version:c.version,binding:binding.name}},v.requestKey);
  }
  async runFrontend(a:Actor,w:string,input:unknown):Promise<any>{
@@ -166,7 +165,7 @@ export class WorkspaceFoundation {
      if(!raster)fail(400,'asset_format','File does not match its raster image type');return {name:v.name,versionId:asset.versionId,checksum:file.checksum,dataUrl:'data:'+file.mime+';base64,'+b.toString('base64')};
     }
     if(name==='functions.invoke'){
-     if(content.resource_kind==='visualization'||content.resourceKind==='visualization')fail(403,'read_only','Dashboards cannot invoke functions');
+
      if(!request.componentId)fail(403,'preview_read_only','Unsaved interfaces cannot queue functions');
      const v=z.object({binding:z.string().min(1).max(64),input:z.unknown().default(null),requestKey:id}).strict().parse(value);
      if(invocations.length>=3)fail(429,'run_limit','At most three function requests per interface event');if(!content.execution.some((b:any)=>b.name===v.binding))fail(403,'component_binding','Function is not bound');
@@ -201,7 +200,7 @@ export class WorkspaceFoundation {
      return {status:'proposed'};
     }
     if(name==='records.propose'){
-     if(content.resource_kind==='visualization'||content.resourceKind==='visualization')fail(403,'read_only','Dashboards cannot propose changes');
+
      if(!request.componentId)fail(403,'preview_read_only','Unsaved interface previews cannot propose database changes');
      const next=componentRecordChanges.parse(value);if(changes.length+next.length>50)fail(400,'change_limit','Too many proposed changes');changes.push(...next);return {status:'proposed',count:next.length};
     }
@@ -516,15 +515,7 @@ export class WorkspaceFoundation {
     if(op.componentId&&(await this.component(tx,a,w,op.componentId)).project_id!==op.projectId)fail(400,'move_required','Use the explicit move operation to change project');
     await this.componentBindings(tx,a,w,op.content.bindings);
     const previous=op.componentId?await this.component(tx,a,w,op.componentId):null;
-    const kind=op.content.resourceKind??previous?.resource_kind??'generic';
-    if(a.origin==='ai'&&op.content.format==='frontend-js'&&op.content.source!==previous?.source){
-     if(!previous&&kind==='generic'&&op.content.bindings.length)fail(400,'resource_kind_required','A bound interactive tool must declare tracker, form or visualization; generic cannot bypass the standard design contract.');
-     if(['tracker','form','visualization'].includes(kind)&&(!standardTracker(op.content.source)||!op.content.source.startsWith('{"template":'))){
-      if(previous)fail(400,'standard_design_required','Saved standard designs cannot be replaced by AI source edits. Use prepare_tracker_revision.');
-      validateDesignException(op.designException,op.content);
-     }
-    }
-    if(previous?.resource_kind!=='generic'&&previous&&op.content.resourceKind==='generic')fail(400,'resource_downgrade','Connected resources cannot remove their data contract');
+    if(previous?.manifest&&op.content.manifest===null)fail(400,'manifest_required','Connected tools must retain their data contract when changing presentation.');
     await validateResource(tx,a,w,{...op.content,resourceKind:op.content.resourceKind??previous?.resource_kind??'generic',manifest:op.content.manifest===undefined?previous?.manifest:op.content.manifest});await this.componentAssets(tx,a,w,op.content.assets);
     if(new Set(op.content.execution.map(e=>e.name)).size!==op.content.execution.length)fail(400,'duplicate_binding','Function binding names must be unique');
     const foundation=new Foundation(adapter(tx));
@@ -535,7 +526,7 @@ export class WorkspaceFoundation {
    if(op.kind==='restore_component'){const old=await this.componentRevision(tx,w,op.componentId,op.revisionVersion);await this.nodeAccess(tx,a,w,old.project_id);await this.componentBindings(tx,a,w,old.bindings);await validateResource(tx,a,w,old);await this.componentAssets(tx,a,w,old.assets);}
   }
   if(op.kind==='apply_component_records'){
-   const c=await this.component(tx,a,w,op.componentId);await validateResource(tx,a,w,c,true);if(c.resource_kind==='visualization')fail(403,'read_only','Dashboards cannot modify records');if(c.archived||c.project_archived||c.format!=='frontend-js'||c.version!==op.expectedVersion)fail(409,'component_changed','Interface changed');
+   const c=await this.component(tx,a,w,op.componentId);await validateResource(tx,a,w,c,true);if(c.archived||c.project_archived||c.format!=='frontend-js'||c.version!==op.expectedVersion)fail(409,'component_changed','Interface changed');
    for(const change of op.changes){
     const record=change.kind==='update_record'?await this.record(tx,a,w,change.recordId,true):null;
     if(record&&change.kind==='update_record'&&record.version!==change.expectedVersion)fail(409,'stale_version','Record changed');

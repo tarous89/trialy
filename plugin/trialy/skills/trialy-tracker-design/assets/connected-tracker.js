@@ -12,12 +12,18 @@ const pageSizes=config.tabs.map(t=>Math.min(config.pageSize||25,Math.max(1,Math.
 state.filters=state.filters||{};
 if(parts[0]==='filter'){state.filters[state.tab]={...(state.filters[state.tab]||{}),[parts[1]]:String(e.value||'')};state.offsets[state.tab]=0;}
 const ui=(name,slots={},bindings={})=>vivid.render(name,slots,bindings),raw=vivid.raw;
-const overviewIcon=(t,i)=>ui('icon.'+(t.icon||['people','document','checklist','contract'][i%4]));
+const overviewIcon=(t,i)=>t.iconPath?'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" aria-hidden="true"><path d="'+esc(t.iconPath)+'"/></svg>':ui('icon.'+(t.icon||['people','document','checklist','contract'][i%4]));
 const layout=()=>({name:config.name,description:config.description,tabs:config.tabs.map(t=>({typeId:t.typeId,name:t.name,visible:t.visible!==false,columns:t.columns.map(c=>({field:c.field,label:c.label,visible:c.visible}))}))});
 if(parts[0]==='tab'){state.tab=Number(parts[1]);state.detail=null;}
 if(action==='query')state.queries[state.tab]=String(e.value||'');
 if(action==='sort'){state.sorts[state.tab]=String(e.value||'');state.sortDescending=false;}
 if(parts[0]==='sort-field'){state.sortDescending=state.sorts[state.tab]===parts[1]?!state.sortDescending:false;state.sorts[state.tab]=parts[1];}
+if(action==='overview-panel')state.overviewPanel=Number(e.value);
+const overviewPanels=(config.overview?.nextSteps||[]).filter(p=>config.tabs[p.tabIndex]?.visible!==false);
+const overviewPanel=overviewPanels[state.overviewPanel||0]||overviewPanels[0];
+if(action==='overview-next'&&overviewPanel)state.offsets.overview=(state.offsets.overview||0)+pageSizes[overviewPanel.tabIndex];
+if(action==='overview-previous'&&overviewPanel)state.offsets.overview=Math.max(0,(state.offsets.overview||0)-pageSizes[overviewPanel.tabIndex]);
+if(action==='overview-panel')state.offsets.overview=0;
 if(action==='next')state.offsets[state.tab]=(state.offsets[state.tab]||0)+pageSizes[state.tab];
 if(action==='previous')state.offsets[state.tab]=Math.max(0,(state.offsets[state.tab]||0)-pageSizes[state.tab]);
 if(action==='settings'){state.settings=true;state.layoutDraft=layout();state.columnTab=0;}
@@ -46,15 +52,25 @@ if(parts[0]==='draft'&&state.newRow){const c=config.tabs[state.newRow.tab]?.colu
 
 // Only declared tables are read. An empty tab gets one locally editable fictional example, never a write or real metric.
 const pages=config.tabs.map((t,i)=>{
- const overview=state.tab===-1, full=state.tab===i||overview&&((config.overview?.nextSteps||[]).some(p=>p.tabIndex===i)||config.resourceKind==='visualization');
+ const overview=state.tab===-1, full=state.tab===i||overview&&(overviewPanel?.tabIndex===i||config.resourceKind==='visualization');
  const needed=full||overview&&(config.overview?.showCounts!==false||config.showExample);
  if(!needed||t.visible===false)return {rows:[],total:0,limit:0,offset:0};
- return tools.call('records.read',{typeId:t.typeId,limit:full?pageSizes[i]:0,offset:state.tab===i?(state.offsets[i]||0):0,filters:Object.fromEntries(Object.entries(state.filters[i]||{}).filter(([,v])=>v!==''))});
+ return tools.call('records.read',{typeId:t.typeId,limit:full?pageSizes[i]:0,offset:state.tab===i?(state.offsets[i]||0):overview&&overviewPanel?.tabIndex===i?(state.offsets.overview||0):0,filters:Object.fromEntries(Object.entries(state.filters[i]||{}).filter(([,v])=>v!==''))});
 });
 const controls=[];
 config.tabs.forEach((t,i)=>i===state.tab&&pages[i].rows.forEach((r,j)=>t.columns.forEach((c,k)=>controls.push({slot:'slot_'+i+'_'+j+'_'+k,fieldId:c.fieldId,recordId:r.id}))));
 const tone=v=>/fail|blocked|overdue|high|reject/i.test(String(v))?'red':/done|complete|active|approved|yes|ready/i.test(String(v))?'green':/pending|progress|medium|review|contact/i.test(String(v))?'amber':'blue';
-const display=(c,v)=>Array.isArray(v)?ui('tags',{items:raw(v.map(x=>ui('tag',{label:x})).join(''))}):v==null||v===''?ui('empty'):['select','boolean','multi_select'].includes(c.kind)?ui('pill',{class:'pill '+(c.display?.valueTones?.[String(v)]||tone(v)),label:v===true?'Yes':v===false?'No':v}):esc(v);
+const display=(c,v)=>{
+ const d=c.display||{};
+ if(Array.isArray(v))return v.length?'<span class="value-list">'+v.map(x=>display(c,x)).join(d.kind==='badge'?'':', ')+'</span>':ui('empty');
+ if(v==null||v==='')return ui('empty');
+ const label=v===true?'Yes':v===false?'No':v;
+ if(d.kind==='badge')return ui('pill',{class:'pill '+(d.valueTones?.[String(v)]||d.tone||'neutral'),label});
+ if(d.kind==='link'&&/^https?:\/\//i.test(String(v)))return '<a href="'+esc(v)+'" target="_blank" rel="noopener noreferrer">'+esc(v)+'</a>';
+ if(d.kind==='number'&&typeof v==='number')return esc((d.prefix||'')+v.toFixed(d.decimals??2)+(d.suffix||''));
+ if(d.kind==='progress'&&typeof v==='number')return esc(v)+'<progress max="100" value="'+Math.max(0,Math.min(100,(v-(d.min??0))/((d.max??100)-(d.min??0)||1)*100))+'" aria-label="'+esc(c.label)+'"></progress>';
+ return esc((d.prefix||'')+label+(d.suffix||''));
+};
 const sampleFor=(t,i)=>{
  const given=t.example||(t.typeId===(config.exampleTypeId||config.tabs[0].typeId)?config.example:null)||{};
  return Object.fromEntries(t.columns.map((c,j)=>{
@@ -81,6 +97,7 @@ const cell=(c,r,ti)=>{
  if(r.example){
   const value=Object.prototype.hasOwnProperty.call(state.examples,c.fieldId)?state.examples[c.fieldId]:r.data[c.field];
   const ci=config.tabs[ti].columns.findIndex(x=>x.field===c.field),a='example:'+ti+':'+ci;
+  if(c.multiple)return '<span data-trialy-example="'+ti+':'+ci+'" data-trialy-value="'+esc(JSON.stringify(value??[]))+'">'+display(c,value)+'</span>';
   const shown=typeof value==='string'&&c.multiple?value.split('\n'):value;
   if(!c.editable)return display(c,shown);
   const attrs=' data-ui-state data-action="'+a+'" aria-label="Example '+esc(c.label)+'"';
@@ -111,7 +128,10 @@ if(state.settings){
  const tab=config.tabs[state.tab],page=pages[state.tab];
  if(!tab){
   if(config.overview?.showCounts!==false)html+='<div class="stats">'+config.tabs.map((t,i)=>t.visible===false?'':ui('stat',{value:pages[i].total??'—',icon:raw(overviewIcon(t,i)),label:t.name,hint:'Saved records'},{'data-action':'tab:'+i})).join('')+'</div>';
-  for(const panel of config.overview?.nextSteps||[]){const t=config.tabs[panel.tabIndex],p=pages[panel.tabIndex];if(t.visible===false)continue;const steps=p.rows.filter(r=>r.data[panel.textField]);html+=ui('table',{label:panel.heading,table:raw('<table><thead><tr><th>'+esc(panel.heading)+'</th><th>'+esc(t.columns.find(c=>c.field===panel.textField).label)+'</th></tr></thead><tbody>'+steps.map(r=>'<tr><td>'+esc(r.data[panel.titleField])+'</td><td class="next">'+esc(r.data[panel.textField])+'</td></tr>').join('')+'</tbody></table>'),count:p.rows.length+' of '+p.total+' records',feedback:steps.length?'':'No next steps in these records.'});}
+  if(overviewPanel){const panel=overviewPanel,t=config.tabs[panel.tabIndex],p=pages[panel.tabIndex],steps=p.rows.filter(r=>r.data[panel.textField]),offset=state.offsets.overview||0;
+   html+='<div class="toolbar"><label>Next steps <select class="filter" data-ui-state data-action="overview-panel" aria-label="Next steps section">'+overviewPanels.map((x,i)=>'<option value="'+i+'" '+(x===panel?'selected':'')+'>'+esc(x.heading)+'</option>').join('')+'</select></label></div>';
+   html+=ui('table',{label:panel.heading,table:raw('<table><thead><tr><th>'+esc(panel.heading)+'</th><th>'+esc(t.columns.find(c=>c.field===panel.textField).label)+'</th></tr></thead><tbody>'+steps.map(r=>'<tr><td>'+esc(r.data[panel.titleField])+'</td><td class="next">'+esc(r.data[panel.textField])+'</td></tr>').join('')+(!steps.length?'<tr><td colspan="2" class="blank">No next steps on this page.</td></tr>':'')+'</tbody></table>'),count:p.total?'Records '+(offset+1)+'–'+(offset+p.rows.length)+' of '+p.total:'No saved records',feedback:raw('<span class="pagination">'+(offset>0?button('Previous','overview-previous'):'')+(offset+p.rows.length<p.total?button('Next','overview-next'):'')+'</span>')});
+  }
   if(config.resourceKind==='visualization')config.tabs.forEach((t,i)=>{const field=t.columns.find(c=>c.kind==='select'||c.kind==='boolean')||t.columns[0],counts={};pages[i].rows.forEach(r=>{const k=String(r.data[field.field]??'Not set');counts[k]=(counts[k]||0)+1;});const max=Math.max(1,...Object.values(counts));html+='<section class="settings-section"><h2>'+esc(t.name)+' by '+esc(field.label)+'</h2><p>Breakdown of '+pages[i].rows.length+' loaded records of '+pages[i].total+'. Open the table to browse more.</p>'+Object.entries(counts).map(([label,count],j)=>'<div style="display:grid;grid-template-columns:minmax(100px,1fr) 3fr 40px;gap:14px;align-items:center;margin:14px 0"><span>'+esc(label)+'</span><span style="height:16px;width:'+Math.max(2,count/max*100)+'%;background:'+['#4a8c80','#7898c4','#b18eae','#c49b61'][j%4]+';border-radius:3px"></span><strong>'+count+'</strong></div>').join('')+'</section>';});
 
  }else{
@@ -126,7 +146,7 @@ if(state.settings){
   const tableStart=html.length;html+='<table id="trackerTable" style="width:100%;min-width:'+total+'px"><colgroup>'+widths.map(w=>'<col style="width:'+w+'px">').join('')+'<col style="width:84px"></colgroup><thead><tr>'+columns.map((c,i)=>'<th><button data-action="sort-field:'+c.field+'" aria-sort="'+(sort===c.field?(state.sortDescending?'descending':'ascending'):'none')+'">'+esc(c.label)+'</button><span class="resize-column" data-resize-column="'+c.fieldId+'" role="separator" tabindex="0" aria-orientation="vertical" aria-label="Resize '+esc(c.label)+' column" aria-valuemin="85" aria-valuemax="650" aria-valuenow="'+widths[i]+'"></span></th>').join('')+'<th class="action-col details-column" scope="col"><span class="details-col-label">Details</span></th></tr></thead><tbody>';
   html+=rows.map(r=>{const key=tab.typeId+':'+r.id,h=size(state.heights[key],38,180,54);return '<tr class="'+(r.draft?'draft-row':'')+'" style="height:'+h+'px">'+columns.map(c=>'<td><div class="cell-content" style="max-height:'+Math.max(22,h-16)+'px">'+cell(c,r,state.tab)+'</div></td>').join('')+'<td class="action-col details-column">'+(r.draft?button('Cancel','discard-new'):button('<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M10 14 19 5M12 5h7v7M19 15v4H5V5h4"/></svg>','details:'+r.id,'expand-row expand-record','aria-label="Open record details"'))+'<span class="row-resize" data-resize-row="'+key+'" role="separator" tabindex="0" aria-orientation="horizontal" aria-label="Resize row height" aria-valuemin="38" aria-valuemax="180" aria-valuenow="'+h+'"></span></td></tr>';}).join('');
   if(!rows.length)html+='<tr><td class="blank" colspan="'+(columns.length+1)+'">'+(q?'No matches on this page.':'No saved records yet.')+'</td></tr>';
-  html+='</tbody></table>';const tableContent=html.slice(tableStart);html=html.slice(0,tableStart)+ui('table',{label:'Current tracker table',table:raw(tableContent),count:page.total+' saved records'+(sample?' · fictional example, not saved':''),feedback:raw(((state.offsets[state.tab]||0)>0?button('Previous','previous'):'')+' '+((state.offsets[state.tab]||0)+pageSizes[state.tab]<page.total?button('Next','next'):''))});
+  html+='</tbody></table>';const tableContent=html.slice(tableStart);html=html.slice(0,tableStart)+ui('table',{label:'Current tracker table',table:raw(tableContent),count:page.total+' saved records'+(sample?' · fictional example, not saved':''),feedback:raw('<span class="pagination">'+((state.offsets[state.tab]||0)>0?button('Previous','previous'):'')+' '+((state.offsets[state.tab]||0)+pageSizes[state.tab]<page.total?button('Next','next'):'')+'</span>')});
 
   const r=allRows.find(r=>r.id===state.detail);
   if(draft)html+='<div class="inline-row-actions">'+button('Save changes','save-new','primary')+button('Cancel','discard-new')+'</div>';

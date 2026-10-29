@@ -14,6 +14,7 @@ for (const width of [1440, 1100, 390]) test(`Vivid connected tracker at ${width}
   await expect(tracker.locator("tbody tr")).toHaveCount(25);
   await expect(tracker.locator(".pill.green")).not.toHaveCount(0);
   await expect(tracker.locator(".pill.red")).not.toHaveCount(0);
+  await expect(tracker.locator("tbody td:nth-child(3) .pill")).toHaveCount(0);
   await expect(embed.getByText("Opening your account…",{exact:true})).toHaveCount(0);
   await expect(page).toHaveScreenshot(`tracker-${width}.png`);
   const outerScroll = await embed.locator("#ty-main").evaluate((el) => getComputedStyle(el).overflowY);

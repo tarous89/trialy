@@ -26,13 +26,13 @@ for(const width of [1440,390])test(`Overview and actual tool settings at ${width
  await expect(embed.getByRole('combobox',{name:'Company permission',exact:true})).toBeVisible();
  await page.screenshot({path:`test-results/access-${width}.png`,fullPage:true});
  await embed.getByRole('tab',{name:'Layout',exact:true}).click();
- await embed.getByRole('combobox',{name:'Visibility for tab Contacts',exact:true}).selectOption('hide');
+ await embed.getByRole('button',{name:'Hide tab Contacts',exact:true}).click();
  await embed.getByRole('button',{name:'Save layout',exact:true}).click();
  await expect(tracker.getByRole('button',{name:'Companies',exact:true})).toBeVisible();
  await expect(tracker.getByRole('button',{name:'Contacts',exact:true})).toHaveCount(0);
  // Restore fixture for other tests, exercising save round trip again.
  await tracker.getByRole('button',{name:'Tool settings',exact:true}).click();
- await embed.getByRole('combobox',{name:'Visibility for tab Contacts',exact:true}).selectOption('show');
+ await embed.getByRole('button',{name:'Show tab Contacts',exact:true}).click();
  await embed.getByRole('button',{name:'Save layout',exact:true}).click();
  await expect(tracker.getByRole('button',{name:'Contacts',exact:true})).toBeVisible();await reference.close();
 });
@@ -44,4 +44,5 @@ test('a saved preview card reopens the saved tool instead of reporting expiry',a
  const embed=page.frameLocator('#app');await embed.getByRole('button',{name:'Open Saved preview card',exact:true}).click();
  await expect(embed.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Biotech outreach',exact:true})).toBeVisible();
  await expect(embed.getByRole('alert')).toHaveCount(0);
+ await expect(embed.getByText('This preview was already saved. Your saved tracker is open.')).toHaveCount(0,{timeout:6000});
 });
