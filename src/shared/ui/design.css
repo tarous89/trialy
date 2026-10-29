@@ -327,3 +327,6 @@
 @media(max-width:600px){.ty-page-pagination{gap:10px}.ty-page-pagination .ty-button{font-size:12px;padding:8px}.ty-logs .ty-log-filters{gap:8px}}
 
 .ty-workspace .ty-tracker-notice{position:fixed;bottom:24px;right:24px;top:auto!important;z-index:60;display:flex;gap:12px;align-items:center;max-width:calc(100vw - 48px);background:#eff9f2;border:1px solid #d8eddf;border-radius:9px;padding:10px 14px;font-size:13px;pointer-events:auto!important;animation:none!important;box-shadow:0 5px 20px #0001}.ty-tracker-notice button{border:0;background:transparent;padding:2px 6px}.ty-confirm-dialog button+button{margin-left:10px}
+
+/* Tool menu trigger stays unframed in both hosts. */
+.ty-workspace .ty-resource>.ty-menu>.ty-icon-button,.ty-workspace .ty-resource>.ty-menu>.ty-icon-button:hover,.ty-workspace .ty-resource>.ty-menu>.ty-icon-button[aria-expanded=true]{background:transparent;border:0;box-shadow:none}
