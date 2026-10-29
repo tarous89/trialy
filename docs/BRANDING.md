@@ -16,3 +16,9 @@ Do not rewrite customer-authored app/project names, saved source, records, audit
 ## Verification
 
 Build and the existing unit/integration/browser suites verify the renamed surfaces. Review changed screenshots for branding text only; preserve the existing CSS values and template stylesheet. Release evidence belongs in the branding PR, including the plugin version and actual live checks. A successful authenticated MCP read does not by itself prove a signed-in browser launch.
+
+## App and plugin icons
+
+Approved 29 October 2026: replace the sidebar's generic molecule with the existing TrialAgents favicon mark, and use a plug glyph for Connectors. Keep the same icon dimensions, stroke, typography and layout. The dark sidebar uses the established white mark; browser tabs and light plugin surfaces use the black mark. Both files are unchanged copies from the current TrialAgents assets at `https://intel.trialagents.com/trialagents-mark-{black,white}.png`. The plugin uses the corresponding light/dark assets for its logo and composer icon.
+
+The older blue-tile `favicon.svg` is not the current favicon. Keep these owned PNGs local to this app and plugin so rendering does not depend on another product's server.
