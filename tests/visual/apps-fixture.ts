@@ -34,6 +34,7 @@ export async function addAppsFixture(app:Express,db:Database,actor:Actor,w:any){
  addAppApi(app,f);addConnectorApi(app,f,{service:connector});
  app.get('/fixture/apps',(_req,res)=>res.json({workspaceId:w.id,appId:saved.id,recordId:record.id,connectionId:connection.id,url:appUrl({appId:saved.id,workspaceId:w.id}),sends}));
  app.use('/assets',express.static('dist/web/assets'));app.use('/fonts',express.static('public/fonts'));
+ for(const name of ['trialagents-mark-black.png','trialagents-mark-white.png'])app.get('/'+name,(_req,res)=>res.sendFile(path.resolve('public',name)));
  for(const route of ['/app-home','/apps/{*path}'])app.get(route,(_req,res)=>res.sendFile(path.resolve('dist/web/index.html')));
  app.use(errors);
 }
