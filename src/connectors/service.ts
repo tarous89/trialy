@@ -1,3 +1,4 @@
+import {appPublicUrl} from '../shared/public-url.js';
 import {randomUUID} from 'node:crypto';
 import {z} from 'zod';
 import type {Database,Connection} from '../db/database.js';
@@ -56,7 +57,7 @@ export class Connectors{
   if(Buffer.byteLength(J(body))>100000)fail(413,'connector_review_size','Review exceeds the size limit');
   const reviewId=randomUUID(),digest=checksum(J(body));
   await this.db.query('INSERT INTO connector_reviews(id,workspace_id,user_id,origin,kind,digest,body) VALUES($1,$2,$3,$4,$5,$6,$7)',[reviewId,w,a.userId,a.origin,kind,digest,J(body)]);
-  const url=new URL('/',process.env.PUBLIC_URL??'http://localhost:3000');url.searchParams.set('tab','connectors');url.searchParams.set('workspaceId',w);url.searchParams.set('connectorReview',reviewId);
+  const url=new URL('/',appPublicUrl());url.searchParams.set('tab','connectors');url.searchParams.set('workspaceId',w);url.searchParams.set('connectorReview',reviewId);
   return {status:'review_required' as const,reviewId,digest,reviewUrl:url.href};
  }
  async readReview(a:Actor,w:string,reviewId:string){

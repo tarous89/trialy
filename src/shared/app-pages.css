@@ -10,6 +10,9 @@
 .ty-workspace.ty-standalone .ty-content-overlay{bottom:0;padding-bottom:var(--app-watermark-clearance);z-index:2301}
 
 .ty-connector-fields{padding:0;margin:0;border:0;min-width:0}
+.ty-workspace .ty-connector-heading{justify-content:space-between;flex-wrap:wrap}
+.ty-workspace .ty-connector-heading h1{min-width:0;overflow-wrap:anywhere}
+.ty-workspace .ty-connector-heading .ty-actions{margin:0 0 0 auto;justify-content:flex-end;flex-wrap:wrap}
 .ty-workspace .ty-connectors .ty-connector-input{display:block}
 .ty-connectors .ty-layout-scroll table{width:100%;border-collapse:collapse}
 .ty-connectors .ty-layout-scroll :is(th,td){text-align:left;padding:12px 8px;border-bottom:1px solid var(--ty-border)}

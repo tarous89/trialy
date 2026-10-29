@@ -1,4 +1,5 @@
 import {appSignInReturn} from '../shared/app-route.js';
+import {appPublicUrl} from '../shared/public-url.js';
 import {withActor} from '../db/context.js';
 import {mfaCrypto,consumeMfa,generateSecret,verify,recoveryHash} from './mfa.js';
 import express,{type Express,type RequestHandler} from 'express';
@@ -21,6 +22,7 @@ export async function passwordHash(value:string){const salt=randomBytes(16).toSt
 async function validPassword(value:string,encoded:string){const [salt,digest]=encoded.split(':');const actual=await scrypt(value,salt!,64) as Buffer;const expected=Buffer.from(digest!,'hex');return actual.length===expected.length&&timingSafeEqual(actual,expected);}
 function page(body:string){return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/png" href="/trialagents-mark-black.png"><title>TrialAgents account</title><style>body{font:16px system-ui;background:#f4f7f5;color:#163a32;margin:0;padding:40px 18px}main{max-width:440px;margin:auto;background:white;padding:28px;border-radius:14px}input,button{box-sizing:border-box;display:block;width:100%;font:inherit;padding:12px;margin:8px 0 20px;border:1px solid #afc6bb;border-radius:6px}button{background:#17634c;color:white;cursor:pointer}small{color:#52685f}a{color:#17634c}</style></head><body><main>${body}</main></body></html>`;}
 export function configureAuth(app:Express,db:Postgres,env:NodeJS.ProcessEnv){
+ appPublicUrl(env); // Validate the optional browser origin without changing the OAuth issuer.
  const production=env.NODE_ENV==='production',base=(env.PUBLIC_URL??env.RENDER_EXTERNAL_URL??'http://localhost:3000').replace(/\/$/,'');
  if(production&&!base.startsWith('https://'))throw new Error('Production requires HTTPS');if(!env.SESSION_SECRET||env.SESSION_SECRET.length<32)throw new Error('SESSION_SECRET must have 32 characters');if(production)app.set('trust proxy',1);
  const Store=connectPg(session);app.use(session({name:'trialy_session',secret:env.SESSION_SECRET,store:new Store({pool:db.pool,tableName:'session'}),resave:false,saveUninitialized:false,rolling:true,cookie:{httpOnly:true,secure:production,sameSite:'lax',maxAge:30*24*3600000}}));

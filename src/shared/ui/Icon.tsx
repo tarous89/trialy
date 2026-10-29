@@ -17,6 +17,7 @@ const paths={
  visualization:'M4 3v17h17M8 15v-4m5 4V6m5 9v-7',
  automation:'M4 4h6v6H4Zm10 10h6v6h-6ZM7 10v7h7m-4-10h7v7',
  plug:'M9 3v4m6-4v4M6 7h12v4a6 6 0 0 1-12 0V7Zm6 10v4',
+ chain:'M13.5 9a5 5 0 1 1-10 0 5 5 0 0 1 10 0Zm7 6a5 5 0 1 1-10 0 5 5 0 0 1 10 0Z',
  molecule:'m8 5 8 1 4 7-6 6-9-3-2-7Zm0 0 6 14M3 9l17 4m-15 3L16 6',
  dna:'M7 2c0 8 10 12 10 20M17 2C17 10 7 14 7 22M8 5h8M9 9h6m-6 6h6m-7 4h8',
  flask:'M9 3h6m-5 0v6L4 19a1 1 0 0 0 1 2h14a1 1 0 0 0 1-2L14 9V3M7 15h10',

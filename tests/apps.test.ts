@@ -1,4 +1,5 @@
 import {test} from 'node:test';
+import {appPublicUrl} from '../src/shared/public-url.js';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 import {readFile,readdir} from 'node:fs/promises';
@@ -21,7 +22,7 @@ test('app links preserve only validated app identifiers and route state',()=>{
 test('neutral apps retain existing save/permission contracts and receive page routes',async()=>{
  const pg=new PGlite();for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
  const db:Database={query:(s,v)=>pg.query(s,v) as any,transaction:f=>pg.transaction(tx=>f(tx as Connection)),close:()=>pg.close()};
- const before=process.env.SIMPLE_APPS_ENABLED;process.env.SIMPLE_APPS_ENABLED='true';
+ const before=process.env.SIMPLE_APPS_ENABLED,beforeAppUrl=process.env.APP_PUBLIC_URL;process.env.SIMPLE_APPS_ENABLED='true';process.env.APP_PUBLIC_URL='https://platform.trialagents.com';
  try{
   const a:Actor={userId:randomUUID(),origin:'human'},stranger:Actor={userId:randomUUID(),origin:'human'},s=new Service(db),f=new WorkspaceFoundation(db);
   for(const actor of [a,stranger])await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,'synthetic@example.invalid','Synthetic']);
@@ -29,10 +30,10 @@ test('neutral apps retain existing save/permission contracts and receive page ro
   const draft=await prepareSimpleApp(f,a,w.id,{content:{name:'Calculator',source:"return {html:'<p>Calculator</p>',state:input.route??null};",bindings:[]}});
   assert.equal((await f.runFrontend(a,w.id,{previewId:draft.id,route:{path:'/calculator'}})).state.path,'/calculator');
   const saved=await f.confirm(a,w.id,draft.id,draft.digest),location={appId:saved.id,workspaceId:w.id,route:{path:'/calculator'}};
-  const registered=new Map<string,any>();addAppMcp({registerTool:(name:string,metadata:any,run:any)=>registered.set(name,{metadata,run})} as any,f,a,(fn:any)=>fn,{ui:{resourceUri:'ui://trialy/test'}});const launched=await registered.get('open_app').run(location);assert.equal(launched.screen,'app-link');assert.equal(launched.url,new URL(appUrl(location),process.env.PUBLIC_URL??'https://trialy-web.onrender.com').href);assert.equal(registered.get('open_app').metadata._meta.ui?.resourceUri,undefined);assert.equal(registered.get('read_app').metadata._meta.ui?.resourceUri,undefined);
+  const registered=new Map<string,any>();addAppMcp({registerTool:(name:string,metadata:any,run:any)=>registered.set(name,{metadata,run})} as any,f,a,(fn:any)=>fn,{ui:{resourceUri:'ui://trialy/test'}});const launched=await registered.get('open_app').run(location);assert.equal(launched.screen,'app-link');assert.equal(launched.url,new URL(appUrl(location),appPublicUrl(process.env,'https://trialy-web.onrender.com')).href);assert.equal(registered.get('open_app').metadata._meta.ui?.resourceUri,undefined);assert.equal(registered.get('read_app').metadata._meta.ui?.resourceUri,undefined);
   const result=await readApp(f,a,location);assert.equal((result as any).component.resource_kind,'generic');assert.equal((result as any).component.id,saved.id);
   await assert.rejects(readApp(f,stranger,location));
-  const output=await f.runFrontend(a,w.id,{componentId:saved.id,expectedVersion:0,route:{path:'/calculator',page:2}});assert.deepEqual(output.state,{path:'/calculator',page:2});
+  const output=await f.runFrontend(a,w.id,{componentId:saved.id,expectedVersion:0,route:{path:'/calculator',page:2}});assert.deepEqual(output.state,{path:'/calculator',page:2});assert.equal(output.frameUrl,'https://platform.trialagents.com/frontend/frame');
   const legacy=await f.runFrontend(a,w.id,{componentId:saved.id,expectedVersion:0});assert.equal(legacy.state,null);
   const save=async(op:any)=>{const p=await s.preview(a,w.id,op);return s.commit(a,p.id,p.digest);};
   const table=(await save({kind:'create_type',name:'Companies',fields:[{key:'name',name:'Name',kind:'text'},{key:'private',name:'Private',kind:'text'}]})).objects[0].id;
@@ -43,7 +44,7 @@ test('neutral apps retain existing save/permission contracts and receive page ro
   await assert.rejects(f.runFrontend(a,w.id,{...request,route:{path:'/company',recordId:randomUUID()}}));
   await db.query("UPDATE records SET state='archived' WHERE id=$1",[record]);await assert.rejects(f.runFrontend(a,w.id,request));
   await db.query('UPDATE workspace_components SET archived=true WHERE id=$1',[saved.id]);await assert.rejects(readApp(f,a,location),/unavailable/);
- }finally{if(before===undefined)delete process.env.SIMPLE_APPS_ENABLED;else process.env.SIMPLE_APPS_ENABLED=before;await pg.close();}
+ }finally{if(beforeAppUrl===undefined)delete process.env.APP_PUBLIC_URL;else process.env.APP_PUBLIC_URL=beforeAppUrl;if(before===undefined)delete process.env.SIMPLE_APPS_ENABLED;else process.env.SIMPLE_APPS_ENABLED=before;await pg.close();}
 });
 
 test('frame links keep app pages local and cross-app links native without executable URLs',()=>{
@@ -58,4 +59,11 @@ test('frame links keep app pages local and cross-app links native without execut
  for(const value of ['/detail?private=value','/detail#secret','/detail?page=1&page=2'])assert.equal(resolveAppLink(value,current,origin),null);
  const setup='/?tab=connectors&workspaceId='+current.workspaceId+'&connectorReview='+randomUUID();assert.equal(appSignInReturn(setup),setup);
  for(const value of [setup+'&secret=value',setup+'&workspaceId='+randomUUID(),setup.replace('/?','//evil.example/?')])assert.equal(appSignInReturn(value),undefined);
+});
+
+test('browser origin can change without altering MCP/OAuth configuration',()=>{
+ const env={NODE_ENV:'production',PUBLIC_URL:'https://trialy-web.onrender.com',APP_PUBLIC_URL:'https://platform.trialagents.com/'};
+ assert.equal(appPublicUrl(env),'https://platform.trialagents.com');assert.equal(env.PUBLIC_URL,'https://trialy-web.onrender.com');
+ assert.equal(appPublicUrl({PUBLIC_URL:'https://legacy.example/'}),'https://legacy.example');assert.equal(appPublicUrl({RENDER_EXTERNAL_URL:'https://render.example'}),'https://render.example');assert.equal(appPublicUrl({},'http://localhost:4179'),'http://localhost:4179');
+ for(const APP_PUBLIC_URL of ['http://platform.trialagents.com','https://user:secret@platform.trialagents.com','https://platform.trialagents.com/path','https://platform.trialagents.com?x=1','https://platform.trialagents.com#x','javascript:alert(1)'])assert.throws(()=>appPublicUrl({...env,APP_PUBLIC_URL}));
 });

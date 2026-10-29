@@ -6,6 +6,9 @@ services:
     region: frankfurt
     plan: starter
     healthCheckPath: /health
+    domains:
+      - platform.trialagents.com
+    renderSubdomainPolicy: enabled
     preDeployCommand: npm run db:migrate
     envVars:
       - key: DATABASE_URL
