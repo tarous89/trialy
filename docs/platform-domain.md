@@ -20,7 +20,7 @@ Only replace conflicting A/AAAA/CNAME records for this exact subdomain if any ap
 
 1. Merge the connector/domain change. The existing Blueprint adds `platform.trialagents.com` to `trialy-web`; it keeps the Render subdomain enabled. Confirm the Blueprint sync and Custom Domains entry in the existing service. If sync needs manual action, sync the existing Blueprint; do not create a second service or Blueprint.
 2. Add the DNS record above. In Render's service Settings → Custom Domains, verify DNS and wait for the TLS certificate to become valid. Confirm `https://platform.trialagents.com/health`, `/ready`, `/auth/login` and the favicon over normal, verified HTTPS.
-3. Only after DNS/TLS succeeds, set **`APP_PUBLIC_URL=https://platform.trialagents.com`** on the web service and deploy. Add the same non-secret value to the web service's `envVars` in `render.yaml` so subsequent Blueprint syncs keep the intended configuration. This release deliberately leaves it unset while DNS is absent.
+3. Only after DNS/TLS succeeds, set **`APP_PUBLIC_URL=https://platform.trialagents.com`** on the web service and deploy. Add the same non-secret value to the web service's `envVars` in `render.yaml` so subsequent Blueprint syncs keep the intended configuration. The Blueprint now includes this value after DNS and HTTPS checks succeeded.
 4. Keep **`PUBLIC_URL`**, the plugin MCP endpoint `https://trialy-web.onrender.com/mcp`, OAuth issuer/resource, cookie names, session secret and database unchanged. `APP_PUBLIC_URL` moves app launches, browser review/collection/save links, frontend frames and connected embedded navigation independently of OAuth. The embedded widget receives its browser origin at runtime; Docker does not need a new build argument.
 5. Verify sign-in, Home, a permitted standalone app with navigation and corner watermark, and connector editor Save/Ignore. Confirm the ChatGPT connection still works and `open_app` returns the platform domain. Check embedded navigation and frame loading. Use synthetic fixtures for write tests; do not modify customer data or invoke real providers as a smoke test.
 
@@ -31,3 +31,8 @@ Browser sessions are host-only: users sign in once on the new domain. Do not cop
 Unset `APP_PUBLIC_URL` (or set it to the previous browser origin) and deploy; remove its Blueprint value too if activation was committed. Generated links fall back to `PUBLIC_URL`/`RENDER_EXTERNAL_URL`. Keep the old Render hostname enabled. No schema or data rollback is needed.
 
 References: [Render custom domains](https://render.com/docs/custom-domains), [Cloudflare DNS setup](https://render.com/docs/configure-cloudflare-dns), [Blueprint domain configuration](https://render.com/docs/blueprint-spec#domains).
+
+## Activation evidence — 2026-10-29
+
+The CNAME resolves to `trialy-web.onrender.com`. Render reports **Verified** and **Certificate Issued**. Normal HTTPS requests to `/health`, `/ready` and `/auth/login` return 200 on the platform domain. The old Render subdomain remains enabled. The web Blueprint activates `APP_PUBLIC_URL`; deployment and post-activation results are recorded in the activation PR. No authentication issuer, plugin transport or data migration is involved.
+
