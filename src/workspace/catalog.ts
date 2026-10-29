@@ -1,21 +1,24 @@
+import {isDeepStrictEqual} from 'node:util';
+import {withReadMetadata,freshReadDatabase} from '../db/read-metadata.js';
 import {applyTypePolicy} from '../domain/effective-access.js';
 import {z} from 'zod';
 import type {Connection} from '../db/database.js';
 import {access,visibleFields} from '../domain/permissions.js';
 import {derived} from '../shared/formulas.js';
-import {id,fieldSchema,type Actor} from '../shared/schema.js';
+import {id,fieldSchema,fail,type Actor} from '../shared/schema.js';
 export const catalogRequest=z.object({offset:z.number().int().min(0).max(1000000).default(0),limit:z.number().int().min(1).max(25).default(10),typeId:id.optional()}).strict();
 /** Metadata is deliberately projected: never return field code, defaults, samples or records. */
 export async function schemaCatalog(db:Connection,a:Actor,w:string,input:unknown={}){
  const v=catalogRequest.parse(input),p=await access(db,a,w);
  const rows=(await db.query('SELECT id,name,version,context_version,fields,concept FROM entity_types WHERE workspace_id=$1 AND ($2::uuid IS NULL OR id=$2) ORDER BY name,id LIMIT $3 OFFSET $4',[w,v.typeId??null,v.limit+1,v.offset])).rows;
- const tables=[];for(const t of rows.slice(0,v.limit)){
-  const policy=await applyTypePolicy(db,a,p,t);const visible=visibleFields(t.fields,policy,a);const readable=visible.length>0;
-  if(p.direct_data===false&&!readable)continue;
-  const fields=t.fields.map((f:any)=>{const read=visible.some(k=>k.key===f.key);return {key:f.key,name:f.name,kind:f.kind,description:read?(f.description??''):'',canEditContext:read&&p.role==='owner'&&!p.archived&&policy.write_fields.includes(f.key),required:f.required,multiple:!!f.multiple,targetTypeId:f.targetTypeId??null,derived:derived(f),readable:read,writable:read&&!derived(f)&&!p.archived&&policy.write_fields.includes(f.key)};});
-  tables.push({id:t.id,name:t.name,version:t.version,contextVersion:t.context_version??0,canEditContext:p.role==='owner'&&!p.archived,concept:t.concept??null,readable,fields});
- }
+ const tables=[];for(const t of rows.slice(0,v.limit)){const table=await catalogTable(db,a,p,t);if(table)tables.push(table);}
  return {workspaceId:w,tables,nextOffset:rows.length>v.limit?v.offset+v.limit:null,policy:'Schema visibility grants no access to entries, counts, execution or writes.'};
+}
+async function catalogTable(db:Connection,a:Actor,p:any,t:any){
+ const policy=await applyTypePolicy(db,a,p,t),visible=visibleFields(t.fields,policy,a),readable=visible.length>0;
+ if(p.direct_data===false&&!readable)return null;
+ const fields=t.fields.map((f:any)=>{const read=visible.some(k=>k.key===f.key);return {key:f.key,name:f.name,kind:f.kind,description:read?(f.description??''):'',canEditContext:read&&p.role==='owner'&&!p.archived&&policy.write_fields.includes(f.key),required:f.required,multiple:!!f.multiple,targetTypeId:f.targetTypeId??null,derived:derived(f),readable:read,writable:read&&!derived(f)&&!p.archived&&policy.write_fields.includes(f.key)};});
+ return {id:t.id,name:t.name,version:t.version,contextVersion:t.context_version??0,canEditContext:p.role==='owner'&&!p.archived,concept:t.concept??null,readable,fields};
 }
 export const matchRequest=z.object({name:z.string().trim().min(1).max(100),kind:fieldSchema.shape.kind,typeId:id.optional(),concept:z.enum(['person','organization','project','location']).optional(),offset:z.number().int().min(0).max(1000000).default(0)}).strict();
 const words=(s:string)=>new Set(s.toLocaleLowerCase().replace(/[_-]/g,' ').split(/[^\p{L}\p{N}]+/u).filter(Boolean));
@@ -30,16 +33,19 @@ export async function fieldCandidates(db:Connection,a:Actor,w:string,input:unkno
 
 /** One permission-filtered catalog over the existing account database; no copies. */
 export const accountCatalogRequest=catalogRequest.omit({typeId:true});
-export async function accountCatalog(db:import('../db/database.js').Database,a:Actor,input:unknown={}){
+export async function accountCatalog(db:import('../db/database.js').Database,a:Actor,input:unknown={}){return withReadMetadata(db,db=>accountCatalogRead(db,a,input));}
+async function accountCatalogRead(db:import('../db/database.js').Database,a:Actor,input:unknown={}){
  const v=accountCatalogRequest.parse(input),{Service}=await import('../domain/service.js');
  const spaces=await new Service(db).workspaces(a);
  if(!spaces.length)return {tables:[],nextOffset:null};
- const rows=(await db.query('SELECT id,workspace_id FROM entity_types WHERE workspace_id=ANY($1::uuid[]) ORDER BY name,id LIMIT $2 OFFSET $3',[spaces.map(s=>s.id),v.limit+1,v.offset])).rows;
- const tables=[];
+ const rows=(await db.query('SELECT id,workspace_id,name,version,context_version,fields,concept FROM entity_types WHERE workspace_id=ANY($1::uuid[]) ORDER BY name,id LIMIT $2 OFFSET $3',[spaces.map(s=>s.id),v.limit+1,v.offset])).rows;
+ const tables=[],policies=new Map<string,Awaited<ReturnType<typeof access>>>();
  for(const row of rows.slice(0,v.limit)){
-  const page=await schemaCatalog(db,a,row.workspace_id,{typeId:row.id,limit:1});
-  if(page.tables[0])tables.push({...page.tables[0],workspaceId:row.workspace_id});
+  let policy=policies.get(row.workspace_id);if(!policy){policy=await access(db,a,row.workspace_id);policies.set(row.workspace_id,policy);}
+  const table=await catalogTable(db,a,policy,row);if(table)tables.push({...table,workspaceId:row.workspace_id});
  }
+ // Explicitly revalidate each reused policy before returning schema metadata.
+ for(const [workspaceId,policy] of policies){const current=await access(freshReadDatabase(db),a,workspaceId);if(!isDeepStrictEqual(current,policy))fail(409,'access_changed','Access changed; reload this page');}
  return {tables,nextOffset:rows.length>v.limit?v.offset+v.limit:null};
 }
 

@@ -1,10 +1,13 @@
+import {AccessPanel} from '../../src/shared/AccessPanel.js';
 import React from 'react';import {createRoot} from 'react-dom/client';
 import {WorkspaceShell} from '../../src/shared/ui/WorkspaceShell.js';
 import {LogsPanel} from '../../src/shared/LogsPanel.js';import {HomePanel} from '../../src/shared/HomePanel.js';import {DatabasePanel} from '../../src/shared/DatabasePanel.js';
 import '../../src/shared/shell.css';import '../../src/web/style.css';import '../../src/shared/views.css';
 const params=new URLSearchParams(location.search),view=params.get('view')??'tools';
 const fields=[{key:'name',name:'Name',kind:'text',readable:true}],table={id:'t',name:'Companies',workspaceId:'w',fields};
-const call=async(name:string,args:any)=>{
+const pageCalls:string[]=[];(window as any).pageCalls=pageCalls;
+const call=async(name:string,args:any)=>{pageCalls.push(name);
+ if(name==='read_access_grid')return{workspaceId:'w',subject:args.subject??'owner',version:0,canManage:true,people:[{id:'owner',name:'Owner',role:'owner'},{id:'member',name:'Member',role:'editor'}],rows:[],tools:[],restrictions:[],connections:[]};
  if(name==='read_account_schema')return{tables:Array.from({length:25},(_,i)=>({...table,id:i?'t'+i:'t',name:'Table '+i})),nextOffset:null};
  if(name==='read_database_table')return{table,canEdit:false,total:26,rows:Array.from({length:25},(_,i)=>({id:String(i),data:{name:'Record '+i+' · '+ 'Description '.repeat(12)}})),nextOffset:25};
  if(name==='read_workspace_activity')return{total:26,projects:[],nextOffset:25,rows:Array.from({length:25},(_,i)=>({id:String(i),created_at:'2026-10-28T12:00:00Z',action:'record.created',resource_name:'Company',category:'data',outcome:'succeeded',actor_name:'Alex',actor_id:'a'}))};
@@ -13,4 +16,4 @@ const call=async(name:string,args:any)=>{
 const long=Array.from({length:140},(_,i)=>'Line '+i+' · read-only details').join('\n');
 const tableContent=<table><tbody>{Array.from({length:100},(_,i)=><tr key={i}><td style={{padding:14}}>Entry {i}</td><td>Details</td></tr>)}</tbody></table>;
 const ordinary=<section className="ty-page ty-fixed"><h1>{view}</h1>{view==='documents'?<div className="document-text"><pre>{long}</pre></div>:view==='automation'?<div className="foundation"><pre>{long}</pre></div>:view==='access'?<div className="ty-access-table">{tableContent}</div>:view==='records'?<div className="record-view"><div className="record-scroll">{tableContent}</div></div>:view==='settings'?<div className="scroll"><pre>{long}</pre></div>:<div className="overlay"><section className="modal foundation"><pre>{long}</pre></section></div>}</section>;
-createRoot(document.getElementById('root')!).render(<WorkspaceShell selected={view==='logs'?'logs':view==='database'?'database':'home'} onNavigate={()=>{}} accountName="Fixture" embedded={params.has('embedded')}>{view==='tools'?<HomePanel workspaceId="w" types={[]} call={call} onDocuments={()=>{}}/>:view==='logs'?<LogsPanel workspaceId="w" call={call}/>:view==='database'?<div><DatabasePanel workspaceId="w" call={call} onOpenTable={()=>{}} onAccess={()=>{}}/></div>:ordinary}</WorkspaceShell>);
+createRoot(document.getElementById('root')!).render(<WorkspaceShell selected={view==='logs'?'logs':view==='database'?'database':'home'} onNavigate={()=>{}} accountName="Fixture" embedded={params.has('embedded')}>{view==='access-performance'?<AccessPanel call={call}/>:view==='tools'?<HomePanel active={!params.has('inactive')} workspaceId="w" types={[]} call={call} onDocuments={()=>{}}/>:view==='logs'?<LogsPanel workspaceId="w" call={call}/>:view==='database'?<div><DatabasePanel workspaceId="w" call={call} onOpenTable={()=>{}} onAccess={()=>{}}/></div>:ordinary}</WorkspaceShell>);

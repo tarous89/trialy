@@ -23,10 +23,11 @@ export function AccessPanel({call,scope,onClose,openLink,initialDraft,onDirty,tr
  const [columnTab,setColumnTab]=useState(0);
  const initialChanges:Change[]=initialDraft?.changes??[];
  const [data,setData]=useState<any>(null),[subject,setSubject]=useState(initialChanges[0]?.subject??''),[editing,setEditing]=useState(!!initialChanges.length),[changes,setChanges]=useState<Change[]>(initialChanges),[expanded,setExpanded]=useState<Record<string,boolean>>({}),[query,setQuery]=useState(''),[error,setError]=useState(''),[notice,setNotice]=useState(''),[saving,setSaving]=useState(false),[reviewing,setReviewing]=useState(false),[loading,setLoading]=useState(true);
+ const resolvedDefaultSubject=useRef<string|null>(null);
  const request=useRef(0),version=useRef<number|undefined>(initialDraft?.expectedVersion),embedded=useEmbeddedNavigation(),hostLink=React.useContext(AccessHost);
  const dirty=changes.length>0;
- async function load(){const seq=++request.current;setLoading(true);try{const value=await call('read_access_grid',subject?{subject}:{});if(seq!==request.current)return;setData(value);if(!subject)setSubject(value.subject);if(!dirty)version.current=value.version;setError('');}catch(e){if(seq===request.current)setError((e as Error).message);}finally{if(seq===request.current)setLoading(false);}}
- useEffect(()=>{void load();return()=>{request.current++;};},[subject]);
+ async function load(){const seq=++request.current;setLoading(true);try{const value=await call('read_access_grid',subject?{subject}:{});if(seq!==request.current)return;setData(value);if(!subject){resolvedDefaultSubject.current=value.subject;setSubject(value.subject);}if(!dirty)version.current=value.version;setError('');}catch(e){if(seq===request.current)setError((e as Error).message);}finally{if(seq===request.current)setLoading(false);}}
+ useEffect(()=>{if(subject&&resolvedDefaultSubject.current===subject)resolvedDefaultSubject.current=null;else void load();return()=>{request.current++;};},[subject]);
  useEffect(()=>{onDirty?.(dirty);return()=>onDirty?.(false);},[dirty]);
  useEffect(()=>{if(!dirty)return;const guard=(e:BeforeUnloadEvent)=>{e.preventDefault();e.returnValue='';};window.addEventListener('beforeunload',guard);return()=>window.removeEventListener('beforeunload',guard);},[dirty]);
  useEffect(()=>{if(!dirty)return;const guard=(e:Event)=>{e.preventDefault();setNotice('Save or ignore changes before leaving Access.');};window.addEventListener('trialy:navigate',guard);return()=>window.removeEventListener('trialy:navigate',guard);},[dirty]);

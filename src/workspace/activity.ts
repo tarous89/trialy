@@ -1,3 +1,4 @@
+import {withReadMetadata} from '../db/read-metadata.js';
 import {activityEvidence,recordEventChanges} from './activity-evidence.js';
 import {Service} from '../domain/service.js';
 import {z} from 'zod';
@@ -8,14 +9,15 @@ import {WorkspaceFoundation} from './service.js';
 import {Foundation} from '../foundation/service.js';
 export const activityQuery=z.object({eventId:id.optional(),offset:z.number().int().min(0).default(0),limit:z.number().int().min(1).max(200).default(25),query:z.string().max(200).default(''),category:z.enum(['all','automation','access','deletion','data','configuration']).default('all'),outcome:z.enum(['all','failed','succeeded','queued','running','cancelled','completed','skipped']).default('all'),actorId:id.optional(),projectId:id.optional(),resourceId:id.optional(),since:z.iso.datetime().optional(),until:z.iso.datetime().optional(),before:z.iso.datetime().optional()});
 /** Metadata only. Never return snapshots, payloads, diagnostics, source or bearer links. */
-export async function activityPage(db:Database,a:Actor,w:string,input:unknown){
+export async function activityPage(db:Database,a:Actor,w:string,input:unknown){return withReadMetadata(db,db=>activityPageRead(db,a,w,input));}
+async function activityPageRead(db:Database,a:Actor,w:string,input:unknown){
  const q=activityQuery.parse(input),p=await access(db,a,w),f=new WorkspaceFoundation(db);
- const [nodes,components,functions]=await Promise.all([f.nodes(a,w),f.components(a,w),new Foundation(db).functions(a,w).catch(()=>[])]);
- const permitted=[...nodes.nodes.map(n=>n.id),...components.map(c=>c.id),...functions.map(f=>f.id)];
  // Unrestricted human audit readers retain the existing audit entitlement. AI and
  // other members see only metadata for currently accessible project resources.
  let full=a.origin==='human'&&['owner','inspector'].includes(p.role)&&p.document_scope&&p.allowed_types===null&&!p.hidden_fields.length;
  if(full){try{await new Service(db).inspectionAccess(db,a,w);}catch(e){if((e as any).status!==403)throw e;full=false;}}
+ const [nodes,components,functions]=await Promise.all([f.nodes(a,w),full?Promise.resolve([]):f.components(a,w),full?Promise.resolve([]):new Foundation(db).functions(a,w).catch(()=>[])]);
+ const permitted=[...nodes.nodes.map(n=>n.id),...components.map(c=>c.id),...functions.map(f=>f.id)];
  const tables=await new Service(db).types(a,w),allowedTypes=tables.map(t=>t.id);
  const before=q.before??new Date().toISOString();
  const params=[w,a.userId,full,permitted,q.query,q.category,q.outcome,q.actorId??null,q.projectId??null,q.resourceId??null,q.since??null,q.until??null,before,q.limit+1,q.offset,allowedTypes,q.eventId??null];

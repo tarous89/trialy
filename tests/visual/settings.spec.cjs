@@ -20,10 +20,13 @@ for(const width of [1440,390])test(`Overview and actual tool settings at ${width
  expect(await embed.locator('.ty-tool-settings '+selector).first().evaluate(read,props),selector).toEqual(await reference.locator(selector).first().evaluate(read,props));
  }
  await page.screenshot({path:`test-results/layout-${width}.png`,fullPage:true});
+ const accessCalls=async()=>(await(await page.request.get('http://127.0.0.1:4179/fixture/calls')).json()).filter(x=>x==='read_access_grid').length;
+ const beforeAccess=await accessCalls();
  await embed.getByRole('tab',{name:'Access control',exact:true}).click();
  await expect(embed.getByRole('heading',{name:'Owner & team access'})).toBeVisible();
  await expect(embed.getByRole('heading',{name:'Tab permissions',exact:true})).toBeVisible();
  await expect(embed.getByRole('combobox',{name:'Company permission',exact:true})).toBeVisible();
+ await expect.poll(accessCalls).toBe(beforeAccess+1);
  await page.screenshot({path:`test-results/access-${width}.png`,fullPage:true});
  await embed.getByRole('tab',{name:'Layout',exact:true}).click();
  await embed.getByRole('button',{name:'Hide tab Contacts',exact:true}).click();

@@ -16,3 +16,21 @@ for(const embedded of [false,true])for(const width of [1440,390])test(`single sc
   }
  }
 });
+
+test('Access resolves its default subject once and refetches on deliberate selection',async({page})=>{
+ await page.goto('http://127.0.0.1:4180/tests/visual/scroll-fixture.html?view=access-performance');
+ const subject=page.getByRole('combobox',{name:'Users and connections'});
+ await expect(subject).toHaveValue('owner');
+ const count=()=>page.evaluate(()=>window.pageCalls.filter(n=>n==='read_access_grid').length);
+ expect(await count()).toBe(1);
+ await subject.selectOption('member');await expect.poll(count).toBe(2);
+ await subject.selectOption('owner');await expect.poll(count).toBe(3);
+});
+for(const inactive of [true,false])test(`Tools polling respects page visibility: ${inactive?'hidden':'visible'}`,async({page})=>{
+ await page.clock.install();
+ await page.goto('http://127.0.0.1:4180/tests/visual/scroll-fixture.html?view=tools'+(inactive?'&inactive':''));
+ const count=()=>page.evaluate(()=>window.pageCalls.filter(n=>n==='read_account_home').length);
+ await expect.poll(count).toBe(1);
+ await page.clock.runFor(31000);
+ await expect.poll(count).toBe(inactive?1:2);
+});

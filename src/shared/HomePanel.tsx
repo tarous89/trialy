@@ -16,18 +16,18 @@ import {ProjectsPanel} from './ProjectsPanel.js';
 import {ResourcesPanel} from './ResourcesPanel.js';
 import {useAccessRecheck} from './useAccessRecheck.js';
 type Call=(name:string,args:any)=>Promise<any>;
-export function HomePanel({workspaceId,loadHome,types,call,onDocuments,viewerId,onLegacyAutomations,onCompose}:{workspaceId:string;loadHome?:(args:any)=>Promise<any>;types:any[];call:Call;onDocuments:()=>void;viewerId?:string;onLegacyAutomations?:()=>void;onCompose?:(message:string)=>Promise<void>}){
+export function HomePanel({workspaceId,loadHome,types,call,onDocuments,viewerId,onLegacyAutomations,onCompose,active=true}:{active?:boolean;workspaceId:string;loadHome?:(args:any)=>Promise<any>;types:any[];call:Call;onDocuments:()=>void;viewerId?:string;onLegacyAutomations?:()=>void;onCompose?:(message:string)=>Promise<void>}){
  const embedded=React.useContext(EmbeddedNavigation);
  const [state,setState]=useState<HomeState>(()=>{try{return {...initialHomeState,layout:localStorage.getItem('trialy-layout:'+workspaceId+':'+(viewerId??'session'))==='list'?'list':'grid'};}catch{return initialHomeState;}}),[data,setData]=useState<any>({projects:[],resources:[]}),[loading,setLoading]=useState(true),[error,setError]=useState(''),[refresh,setRefresh]=useState(0),[screen,setScreen]=useState('home'),[selected,setSelected]=useState<any>(null),[proposal,setProposal]=useState<any>(null),[saving,setSaving]=useState(false),[moveNotice,setMoveNotice]=useState('');
  const [offset,setOffset]=useState(0);
  const [deleting,setDeleting]=useState<HomeResource|null>(null);
  const opening=useRef(0);
  useEffect(()=>()=>{opening.current++;},[]);
- const scroll=useRef(0),loadedQuery=useRef(''),activeWorkspace=useRef(workspaceId);
+ const scroll=useRef(0),loadedQuery=useRef(''),activeWorkspace=useRef(workspaceId),previousQuery=useRef(state.query);
  const home=(args:any)=>loadHome?loadHome(args):call('read_account_home',args);
  const invoke=(name:string,args:any={})=>call(name,{workspaceId:activeWorkspace.current,...args});
- useAccessRecheck(()=>{setRefresh(r=>r+1);},screen==='home');
- useEffect(()=>{let alive=true;const key=JSON.stringify([workspaceId,state.query,state.kind,state.projectId,state.sort,offset]);setLoading(loadedQuery.current!==key);setError('');const timer=setTimeout(()=>{home({query:state.query,kind:state.kind,projectId:state.projectId,sort:state.sort,offset,limit:20}).then(r=>{if(alive){loadedQuery.current=key;setData(r);}}).catch(e=>{if(alive){setData({projects:[],resources:[]});setError(e.message);}}).finally(()=>{if(alive)setLoading(false);});},150);return()=>{alive=false;clearTimeout(timer);};},[workspaceId,refresh,state.query,state.kind,state.projectId,state.sort,offset]);
+ useAccessRecheck(()=>{setRefresh(r=>r+1);},active&&screen==='home');
+ useEffect(()=>{let alive=true;const delay=previousQuery.current===state.query?0:150;previousQuery.current=state.query;const key=JSON.stringify([workspaceId,state.query,state.kind,state.projectId,state.sort,offset]);setLoading(loadedQuery.current!==key);setError('');const timer=setTimeout(()=>{home({query:state.query,kind:state.kind,projectId:state.projectId,sort:state.sort,offset,limit:20}).then(r=>{if(alive){loadedQuery.current=key;setData(r);}}).catch(e=>{if(alive){setData({projects:[],resources:[]});setError(e.message);}}).finally(()=>{if(alive)setLoading(false);});},delay);return()=>{alive=false;clearTimeout(timer);};},[workspaceId,refresh,state.query,state.kind,state.projectId,state.sort,offset]);
  useEffect(()=>{try{localStorage.setItem('trialy-layout:'+workspaceId+':'+(viewerId??'session'),state.layout);}catch{}},[workspaceId,state.layout]);
  useEffect(()=>{if(screen==='home'&&!loading)window.scrollTo(0,scroll.current);},[screen,loading]);
  useEffect(()=>{const navigate=(e:Event)=>{opening.current++;setError('');if((e as CustomEvent).detail==='home'){setScreen('home');setOffset(0);setState(s=>({...s,projectId:'',kind:'all',query:''}));setSelected(null);setProposal(null);setRefresh(r=>r+1);}};window.addEventListener('trialy:navigate',navigate);return()=>window.removeEventListener('trialy:navigate',navigate);},[]);
