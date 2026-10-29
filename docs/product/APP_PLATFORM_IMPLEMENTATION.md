@@ -7,7 +7,7 @@
 | Step | Implementation |
 | --- | --- |
 | S1 | Neutral `prepare_app`, App/Project creation, optional templates, Home without type filters/labels, stable project colors and neutral unassigned apps. Existing IDs and internal resource kinds remain compatible. |
-| S2 | Authorized standalone pages, real new-tab Home/Open anchors, legacy-resource wrappers, owner previews, persistent trusted “Built with TrialAgent” footer and validated sign-in return, including connector setup. |
+| S2 | Authorized standalone pages, real new-tab Home/Open anchors, legacy-resource wrappers, owner previews, persistent trusted “Built with TrialAgents” footer and validated sign-in return, including connector setup. |
 | S3 | Validated `input.route`, bound single-record reads, internal page links, native cross-app links, Back/Forward, deep refresh, state retention and unsaved-edit guards. |
 | S4 | Generic HTTPS broker, encrypted credentials, source/destination/user/app/AI policies, exact effect reviews, technical quotas, idempotent receipts, unknown-outcome handling and reviewed response saves. |
 | S5 | One Connectors destination with Details/Data/Access/Activity; add/edit/test/disable/remove, password-only credential replacement, trusted request/configuration review and safe builder handoffs. |

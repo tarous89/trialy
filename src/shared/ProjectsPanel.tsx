@@ -36,7 +36,7 @@ export function ProjectsPanel({workspaceId,types,call,incoming,creationInChat=fa
  const move=async(n:any,parentId:string)=>prepare({kind:'move_node',nodeId:n.id,expectedVersion:n.version,parentId:parentId||null});
  const dragComponent=(e:React.DragEvent,c:any)=>{e.dataTransfer.setData('application/x-trialy-component',c.id);e.dataTransfer.effectAllowed='move';};
  const closePreview=()=>{setPreview(null);setCodePreview(false);};
- return <section><h2>Projects & maintenance</h2><p>Organize ongoing work and review what Trialy may keep updated. Project and folder restrictions apply in addition to workspace permissions. Moves retain existing restrictions.</p>
+ return <section><h2>Projects & maintenance</h2><p>Organize ongoing work and review what TrialAgents may keep updated. Project and folder restrictions apply in addition to workspace permissions. Moves retain existing restrictions.</p>
  {!preview&&!selected&&!component&&!sharing&&!showMappings&&!collections&&!operations&&<><button onClick={()=>setCollections(true)}>Collections and shared views</button><button onClick={()=>setShowMappings(true)}>Reusable field mappings</button><button onClick={()=>act(async()=>setOperations(await invoke('read_operational_status')))}>Operational status</button></>}
  {shareUrl&&<p>Collection link ready: <a href={shareUrl} target="_blank" rel="noreferrer">Open link</a><input aria-label="Shareable collection URL" readOnly value={shareUrl}/><button onClick={()=>setShareUrl('')}>Dismiss</button></p>}
  {error&&<p role="alert" className="error">{error}</p>}{notice&&<p role="status">{notice}</p>}

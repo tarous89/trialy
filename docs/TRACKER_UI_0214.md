@@ -22,6 +22,6 @@ The host header and action footer stay fixed. The remaining tracker document is 
 
 ## Deployment and test
 
-No migration, infrastructure or environment changes are needed. Deploy the existing web and worker services from main. Refresh the Trialy connector/tool definitions and start a fresh test conversation; reopen saved standard trackers to load the new renderer. The deployed `read_tracker_design` workflow is versioned with the server. Independently cached/installed plugin package synchronization is not assumed.
+No migration, infrastructure or environment changes are needed. Deploy the existing web and worker services from main. Refresh the TrialAgents connector/tool definitions and start a fresh test conversation; reopen saved standard trackers to load the new renderer. The deployed `read_tracker_design` workflow is versioned with the server. Independently cached/installed plugin package synchronization is not assumed.
 
 Actual ChatGPT-host behavior must be tested after refresh; the automated embedding harness does not reproduce every host sizing or cache behavior. Search/sort is scoped to the loaded page; pagination still fetches authorized server data. Adding database fields/tabs, granular permission semantics, table/row resizing and generic duplicate/delete remain separate supported-backend work, not fake template controls.

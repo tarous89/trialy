@@ -13,7 +13,7 @@ This supersedes the broader first-release requirements in the earlier PR #62 rev
 | P0 — required now | One app concept; project colors; standalone pages opening in a new tab; navigation and links; standard footer; generic HTTPS connector with management, data scope and access controls |
 | P1 — follow-up | Improvements justified by initial usage; connector OAuth/file/pagination support; optional project appearance editing |
 | P2 — advanced backlog | Browser packages/React/npm, Node/Python/container runtimes, new endpoints, advanced workflows/webhooks, continuous workers, external audiences and commercial usage billing |
-| P3 — branded connectors last | Email, Microsoft 365/Google, AI and other provider-specific or Trialy-funded services |
+| P3 — branded connectors last | Email, Microsoft 365/Google, AI and other provider-specific or TrialAgents-funded services |
 
 P0 is not a new general-purpose hosting infrastructure. Reuse `frontend-js`, the standard renderer, component revisions and current limits. New tabs do not require a deployment per app. Existing workers/schedules remain available; extending them is not a P0 dependency. Do not claim unrestricted browser/server code compatibility.
 
@@ -48,7 +48,7 @@ Provide styled denied, wrong-account, missing, archived and expired-preview stat
 
 ## 5. Standard footer and existing UI
 
-Every standalone app has a small persistent trusted footer outside generated content. Requested copy: **Built with TrialAgent**. Centralize the label and reuse existing brand assets/styles. This does not rename the repository, domains or unrelated products.
+Every standalone app has a small persistent trusted footer outside generated content. Requested copy: **Built with TrialAgents**. Centralize the label and reuse existing brand assets/styles. This does not rename the repository, domains or unrelated products.
 
 The footer links to the platform Home through normal authentication and authorization. App access does not grant account/Home access. Use a fixed platform-owned destination; denied visitors see the normal sign-in/access state without account details.
 
@@ -66,10 +66,10 @@ Data means operation input/output definitions, permitted source/destination mapp
 
 Access distinguishes who manages a connection, who/which apps can invoke operations, what platform data may leave and where returned data may be saved. A connection can only narrow existing actor/app permissions. The [connector contract](CONNECTORS_AND_USAGE.md) specifies enforceable behavior.
 
-ChatGPT can prepare configuration and inspect safe metadata. Credentials are entered only through trusted platform UI and never returned to chat or generated code. Keep existing inbound “Connected applications” settings separate: those control access to Trialy, not outbound service calls.
+ChatGPT can prepare configuration and inspect safe metadata. Credentials are entered only through trusted platform UI and never returned to chat or generated code. Keep existing inbound “Connected applications” settings separate: those control access to TrialAgents, not outbound service calls.
 
 ## 7. Costs and launch boundary
 
-Use customer-owned service credentials first. Add request/time/body/rate/concurrency limits, per-connection counters, disable controls and audit entries. Provider charges are external; Trialy cannot cap the customer's entire provider bill. Do not require currency reservations, a billing engine or Trialy-funded email/AI for P0.
+Use customer-owned service credentials first. Add request/time/body/rate/concurrency limits, per-connection counters, disable controls and audit entries. Provider charges are external; TrialAgents cannot cap the customer's entire provider bill. Do not require currency reservations, a billing engine or TrialAgents-funded email/AI for P0.
 
 The release is complete when one simple app is created without choosing a type, inherits its project colors, opens separately, navigates between pages, calls a permitted connector, saves a reviewed result and reopens. Its footer works and remains visible. Unauthorized users/fields/operations fail; old tools/data/history survive; Connectors matches the existing UI.

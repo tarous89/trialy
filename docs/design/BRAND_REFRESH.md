@@ -1,4 +1,4 @@
-# Trialy brand refresh — 25 October 2026
+# TrialAgents brand refresh — 25 October 2026
 
 The web app and ChatGPT workspace load `src/shared/ui/brand.css` after the existing component styles. The embedded build includes exactly the same stylesheet. Use this shared brand layer for fixed platform UI; generated tracker content retains its own established rendering contract.
 

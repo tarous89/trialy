@@ -33,7 +33,7 @@ export function baseApp() {
 export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  addExternal(app,s,human);
  addInvitations(app,s,human);
- app.get('/api/config',(_req,res)=>res.json({simpleApps:process.env.SIMPLE_APPS_ENABLED==='true',brand:process.env.BRAND_NAME??'Trialy',demo:process.env.LOCAL_DEMO==='true'&&process.env.NODE_ENV!=='production'}));
+ app.get('/api/config',(_req,res)=>res.json({simpleApps:process.env.SIMPLE_APPS_ENABLED==='true',brand:process.env.BRAND_NAME??'TrialAgents',demo:process.env.LOCAL_DEMO==='true'&&process.env.NODE_ENV!=='production'}));
  app.use('/api',human);app.use('/api',(_req,res,next)=>{res.set('Cache-Control','no-store');next();});
  addReviews(app,s);
  addFoundationApi(app,s);
@@ -87,7 +87,7 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  app.post('/api/workspaces/:workspaceId/members',async(req,res)=>{const p=z.object({userId:id,role:z.enum(['editor','viewer','inspector']),hiddenFields:z.array(z.string().max(160)).max(10000),allowedTypes:z.array(id).nullable(),ai:z.boolean()}).parse(req.body);res.json(await s.share(req.actor!,String(req.params.workspaceId),p.userId,p.role,p.hiddenFields,p.allowedTypes,p.ai));});
  app.delete('/api/workspaces/:workspaceId/members/:userId',async(req,res)=>res.json(await s.unshare(req.actor!,String(req.params.workspaceId),id.parse(req.params.userId))));
  app.post('/api/workspaces/:workspaceId/records/:recordId/state',async(req,res)=>{const p=z.object({expectedVersion:z.number().int().min(0),state:z.enum(['in_review','approved','archived']),meaning:z.string().min(1).max(1000)}).parse(req.body);res.json(await s.transition(req.actor!,String(req.params.workspaceId),id.parse(req.params.recordId),p.expectedVersion,p.state,p.meaning));});
- app.get('/api/workspaces/:workspaceId/export',async(req,res)=>{const data=await s.exportWorkspace(req.actor!,String(req.params.workspaceId));if(req.query.format==='html'){res.set('Content-Disposition','attachment; filename="trialy-inspection.html"');res.type('html').send(inspectionHtml(data));}else{res.set('Content-Disposition','attachment; filename="trialy-workspace-export.json"');res.json(data);}});
+ app.get('/api/workspaces/:workspaceId/export',async(req,res)=>{const data=await s.exportWorkspace(req.actor!,String(req.params.workspaceId));if(req.query.format==='html'){res.set('Content-Disposition','attachment; filename="trialagents-inspection.html"');res.type('html').send(inspectionHtml(data));}else{res.set('Content-Disposition','attachment; filename="trialagents-workspace-export.json"');res.json(data);}});
  app.get('/api/workspaces/:workspaceId/automations',async(req,res)=>res.json(await s.automations(req.actor!,String(req.params.workspaceId))));
  app.get('/api/workspaces/:workspaceId/runs',async(req,res)=>res.json(await s.runs(req.actor!,String(req.params.workspaceId))));
  app.post('/api/workspaces/:workspaceId/automations/:automationId/pause',async(req,res)=>res.json(await s.pause(req.actor!,String(req.params.workspaceId),id.parse(req.params.automationId),z.boolean().parse(req.body.paused))));

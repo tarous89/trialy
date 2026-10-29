@@ -1,4 +1,4 @@
-# Trialy 0.2.15 — previews and field defaults
+# TrialAgents 0.2.15 — previews and field defaults
 
 Home lists the current user's valid frontend tracker/form/visualization creation previews alongside saved work, with an explicit Preview badge. Listings include only authorized metadata, not generated code or sample values. Previews remain temporary (24 hours), cannot be moved as saved objects, and disappear on save, discard or expiry. Reopening rechecks permissions and validity. Older drafts invalidated by schema or template changes must be regenerated; saved trackers are preserved.
 
@@ -12,4 +12,4 @@ Home uses the approved Theme 2 font stack, 16px base text, larger controls and d
 
 Validation: 70 backend tests, TypeScript and production builds; real QuickJS/PGlite synthetic-host browser acceptance for Home preview reopening, exact save, project destination, multi-value add/edit/save/reopen, layout, mobile and custom-action approval boundaries. Standalone Home/navigation/Database redaction/export browser checks also pass. Screenshots are in docs/design/tracker-experience. Real ChatGPT host acceptance remains user-side.
 
-Release: existing main-branch Render web and worker services; no migration or configuration changes. Refresh the app and Trialy connector, then use a new chat for updated creation instructions.
+Release: existing main-branch Render web and worker services; no migration or configuration changes. Refresh the app and TrialAgents connector, then use a new chat for updated creation instructions.

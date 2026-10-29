@@ -4,10 +4,10 @@ Updated: 2026-10-10. Deployed on Render; private plugin created. Live ChatGPT co
 
 ## Intended experience
 
-1. User opens Trialy in ChatGPT and selects Connect.
-2. ChatGPT starts Trialy's OAuth authorization-code flow with PKCE. Trialy's own login page includes sign-up for new users.
-3. After consent, Trialy redirects to the exact registered **ChatGPT OAuth callback**, completing the connection. Standalone login returns to `/` when no connection is pending.
-4. The opaque access token identifies the Trialy user who signed in and approved consent. It is stored only as a hash, with client, scope/resource policy and expiry enforced by the local provider. No prior standalone visit is required.
+1. User opens TrialAgents in ChatGPT and selects Connect.
+2. ChatGPT starts TrialAgents's OAuth authorization-code flow with PKCE. TrialAgents's own login page includes sign-up for new users.
+3. After consent, TrialAgents redirects to the exact registered **ChatGPT OAuth callback**, completing the connection. Standalone login returns to `/` when no connection is pending.
+4. The opaque access token identifies the TrialAgents user who signed in and approved consent. It is stored only as a hash, with client, scope/resource policy and expiry enforced by the local provider. No prior standalone visit is required.
 5. `open_workspace` displays accessible workspaces inside ChatGPT. A new account gets in-app onboarding and explicitly confirms its first workspace name and AI access. Existing workspaces never become AI-accessible simply because the account connects.
 6. Shared table/list/comparison/calendar/timeline/dashboard layouts, configurable saved views, record forms, permission-filtered saved versions, previewed restoration, document search/text, template previews and confirmed saves operate through the same service and database. More of the complete app remains to port into the embedded surface.
 
@@ -21,7 +21,7 @@ Read-only source inspection found:
 
 - **Atablez:** `server/index.ts` implements email/password registration and login using Node scrypt and database-backed credentials. `server/oauth.ts` implements the MCP SDK `OAuthServerProvider`; `mcpAuthRouter` supplies the OAuth endpoints. Authorization preserves a pending connection ticket across login/signup and returns a one-use code plus the original state to the registered callback. Token exchange, refresh rotation and revocation are implemented locally.
 - **Intel:** `app/lib/auth.ts` uses salted scrypt password hashes, database-backed session token hashes and HTTP-only cookies. `app/oauth/authorize/route.ts` preserves a validated local return path through sign-up/login, displays account-bound consent and redirects to the registered ChatGPT callback with code/state. The MCP service validates access through its existing authorization backend.
-- These are observed code paths, not a new live acceptance test. Existing apps were not modified. Their user databases, cookies, token audiences and payment entitlements must not be shared with Trialy by default.
+- These are observed code paths, not a new live acceptance test. Existing apps were not modified. Their user databases, cookies, token audiences and payment entitlements must not be shared with TrialAgents by default.
 
 ### Implemented self-hosted authentication
 
@@ -35,11 +35,11 @@ Read-only source inspection found:
 
 ## Hosting and registration
 
-- Render inventory showed one workspace, **Tarek Roustom's Workspace** (`tea-cspqipl6l47c739nslfg`). The user explicitly confirmed this workspace on 2026-10-10. No further workspace permission request is needed for the authorised Trialy development setup.
+- Render inventory showed one workspace, **Tarek Roustom's Workspace** (`tea-cspqipl6l47c739nslfg`). The user explicitly confirmed this workspace on 2026-10-10. No further workspace permission request is needed for the authorised TrialAgents development setup.
 - Deploy the repo's staging blueprint to the confirmed workspace using the updated self-hosted authentication settings. Run migrations before serving requests/starting the worker. Keep one web instance because previews are temporarily in memory.
 - Build includes the self-contained MCP Apps HTML bundle at `dist/embed.html`; serve it as an MCP UI resource, not as a public authenticated standalone session.
 - Register the deployed `/mcp` endpoint using plugin creator / ChatGPT connection setup. Preserve this repository and Render hosting; no second implementation in Sites is needed.
-- Add plugin instructions to invoke `open_workspace` when the user opens Trialy and after successful connection, and to require explicit preview confirmation before `commit_change`.
+- Add plugin instructions to invoke `open_workspace` when the user opens TrialAgents and after successful connection, and to require explicit preview confirmation before `commit_change`.
 - Do not create a plugin pointing to a guessed or unverified deployment endpoint.
 
 ### Deployment checkpoint — 2026-10-10

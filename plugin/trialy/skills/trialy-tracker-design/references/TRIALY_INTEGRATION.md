@@ -1,12 +1,12 @@
-# Trialy runtime integration
+# TrialAgents runtime integration
 
 Current visual authority: [TEMPLATE_REUSE.md](TEMPLATE_REUSE.md) and the fixed component kit extracted from the supplied HTML. Use it as the default and honor explicit user customization; backend authorization and persistence rules still apply.
 
 The HTML and screenshot are preserved reference assets, not the whole plugin interface. Start from their Theme 2 styling and interaction patterns unless the user specifies otherwise. Adapt business labels, tabs and fields to instructions and authorized data. Do not populate unrelated trackers with fictional vendors. If showing example rows, label them as examples and keep them separate from real data.
 
-Read the sibling trialy-workspace skill and current frontend/execution contracts before implementation. The browser HTML example uses DOM event handlers and local memory. Trialy frontend-js uses the isolated trialy-frontend-js-v1 render/event contract; port interactions to supported data-action events and state. Do not paste the HTML script into QuickJS, relax the sandbox, or imply local Save is a database commit. Read all paginated design resources to completion through read_tracker_design if this package is not locally available.
+Read the sibling trialy-workspace skill and current frontend/execution contracts before implementation. The browser HTML example uses DOM event handlers and local memory. TrialAgents frontend-js uses the isolated trialy-frontend-js-v1 render/event contract; port interactions to supported data-action events and state. Do not paste the HTML script into QuickJS, relax the sandbox, or imply local Save is a database commit. Read all paginated design resources to completion through read_tracker_design if this package is not locally available.
 
-The platform owns identity and account connection. Apps open in separate pages with a trusted persistent “Built with TrialAgent” footer outside generated content; the embedded preview offers an Open app link. Internal pages use the trusted route/link bridge. Tracker title, tabs, Layout and Access control belong to the tracker surface.
+The platform owns identity and account connection. Apps open in separate pages with a trusted persistent “Built with TrialAgents” footer outside generated content; the embedded preview offers an Open app link. Internal pages use the trusted route/link bridge. Tracker title, tabs, Layout and Access control belong to the tracker surface.
 
 Access policy is stored and enforced by the backend independently of generated source. The trusted Access control entry opens the existing component sharing review. Component access currently supports eligible-user allowlists and AI access, constrained by project/workspace/data permissions. Owner/Editor/Viewer badges and per-tab/per-column overrides in the reference are a design model, not a claim of implemented enforcement. Do not expose active-looking unsupported permission toggles. Implement additional policy semantics on the backend before offering them. Hiding columns is presentation, never authorization. Replacing tracker source cannot grant permissions or reset policies.
 

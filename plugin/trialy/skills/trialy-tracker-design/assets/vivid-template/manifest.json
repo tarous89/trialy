@@ -1,7 +1,7 @@
 {
   "id": "trialy.vivid.v1",
   "source": "../approved-theme2-reference.html",
-  "sourceSha256": "b6774c33c1e34b380f91b6c7412af3a2968d2ce38829321cc43b1b5d323151b3",
+  "sourceSha256": "83b6b5d1b29bea60a27b225c04f37b9c4c23a7cd5e3a78f13e8b255b2e9f11e4",
   "stylesheet": "theme.css",
   "stylesheetSha256": "e9314f6705fa06b5951e971e593ea4d9d8847a38abb8c0210d539de876ff2655",
   "components": "components.json",

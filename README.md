@@ -1,19 +1,19 @@
-# Trialy — Shared Data and a Home for What ChatGPT Builds
+# TrialAgents OS — Shared Data and a Home for What ChatGPT Builds
 
 ## Active simple-app scope — 29 October 2026
 
-The first release now focuses on simple apps with navigation, links and one generic connector type. Users describe their work; the builder chooses the interface without a tracker/form/dashboard/automation category. Home cards inherit their project's existing color pattern. Apps open on standalone pages in new tabs by default, with a persistent trusted “Built with TrialAgent” footer. Internal navigation stays in the app tab.
+The first release now focuses on simple apps with navigation, links and one generic connector type. Users describe their work; the builder chooses the interface without a tracker/form/dashboard/automation category. Home cards inherit their project's existing color pattern. Apps open on standalone pages in new tabs by default, with a persistent trusted “Built with TrialAgents” footer. Internal navigation stays in the app tab.
 
 - [P0 scope and agreed behavior](docs/product/APP_PLATFORM_SCOPE.md)
 - [Six-step implementation roadmap and acceptance criteria](docs/product/APP_PLATFORM_ROADMAP.md)
 - [Generic connector management, data and access contract](docs/product/CONNECTORS_AND_USAGE.md)
 - [P1/P2 backlog and branded connectors last](docs/product/APP_PLATFORM_BACKLOG.md)
 
-These documents specify planned changes, not shipped capabilities, and supersede the earlier broad first-release plan. Reuse the current runtime, authentication, database, access controls and audit history. The Connectors page and trusted app chrome must use the current shared UI components/styles. Advanced runtimes, new workflow infrastructure, monetary billing and branded integrations are backlog work, not prerequisites. Trialy remains the repository/development name; the footer label does not rename domains or unrelated products.
+The six-step simple-app implementation is deployed; [implementation and verification](docs/product/APP_PLATFORM_IMPLEMENTATION.md) and [release evidence in PR #62](https://github.com/tarous89/trialy/pull/62) distinguish shipped behavior from remaining live-host checks. These documents supersede the earlier broad first-release plan. Reuse the current runtime, authentication, database, access controls and audit history. The Connectors page and trusted app chrome must use the current shared UI components/styles. Advanced runtimes, new workflow infrastructure, monetary billing and branded integrations are backlog work, not prerequisites. The public product name is **TrialAgents**; **TrialAgents OS** is the internal name that distinguishes this foundation from Intel, CTIS and Custom. Existing infrastructure and protocol identifiers remain compatible.
 
 Foundation baseline updated 11 October 2026, with later implementation notes below. Read the 29 October app platform documents above for the superseding direction and remaining work. The uploaded initial brief remains a historical source, subject to the user's subsequent decisions.
 
-Repository: `tarous89/trialy`. Development name: **Trialy**. A future public rename to **Trialegions** is a separate cutover. Do not change the existing Trialegions, TrialAgents or Intel applications.
+Repository: `tarous89/trialy`. Public name: **TrialAgents**. Internal name: **TrialAgents OS**. The 29 October 2026 rename changes product copy and plugin presentation, not URLs, OAuth scopes, database roles, saved identifiers or other TrialAgents products. See [naming and compatibility](docs/BRANDING.md).
 
 - [Current development steps](DEVELOPMENT.md)
 - [Proposed 11-function demo template showcase](docs/product/TEMPLATE_SHOWCASE_PLAN.md)
@@ -25,7 +25,7 @@ Repository: `tarous89/trialy`. Development name: **Trialy**. A future public ren
 
 ## Product boundary
 
-Trialy is the persistent workspace behind the things ChatGPT builds. ChatGPT designs interfaces, application logic and data reconciliation. Trialy supplies a connected database, an organized home for saved components, authorized tools and background execution, with access control and traceable changes throughout.
+TrialAgents is the persistent workspace behind the things ChatGPT builds. ChatGPT designs interfaces, application logic and data reconciliation. TrialAgents supplies a connected database, an organized home for saved components, authorized tools and background execution, with access control and traceable changes throughout.
 
 Users build their database while doing their work; database maintenance is not a separate routine they must perform. A study tracker and a conference tracker can reference the same investigator and organization, while retaining separate study participation and conference follow-up records. Shared means connected within the authorized workspace, never globally merged across customers or permissions.
 
@@ -50,7 +50,7 @@ Three layers define the flexibility boundary:
 
 | Layer | Content | Control |
 | --- | --- | --- |
-| Platform foundation | Customer/workspace, users/memberships, access, projects/folders, component code/revisions, sources, audit and jobs | Trialy enforces stable contracts |
+| Platform foundation | Customer/workspace, users/memberships, access, projects/folders, component code/revisions, sources, audit and jobs | TrialAgents enforces stable contracts |
 | Common concepts | Person, organization, project and location, with extensible relationships | Small starting vocabulary, not mandatory business fields or fixed templates |
 | Customer-specific model | Fields, additional types, classifications, activities, forms, calculations and workflows | ChatGPT designs against the existing authorized schema |
 
@@ -66,12 +66,12 @@ Interface preferences and the proposed edit-routing policy are tracked separatel
 
 ## Task-driven capture and approved maintenance — updated 11 October 2026
 
-**The task determines the structure; the approved structure and inclusion criteria determine what Trialy maintains.** Capture, structuring and reconciliation are distinct decisions, not permission to record everything mentioned.
+**The task determines the structure; the approved structure and inclusion criteria determine what TrialAgents maintains.** Capture, structuring and reconciliation are distinct decisions, not permission to record everything mentioned.
 
 - Establish or extend a table when the requested work involves multiple entries, repeated actions, tracking, a workflow or expected future additions. A task can qualify with only one initial person/site if it will track repeated interactions or develop over time. A one-off draft or passing mention alone does not justify creating a structure.
 - Inspect and reuse existing authorized structures and entities first. Propose only the fields, relationships and additional types needed for the task. Show the purpose, inclusion criteria, initial records and ongoing maintenance scope in the setup preview; save the setup after review and approval.
 - Every database change requires a visible exact preview and approval by default, including additions and updates to existing tables. Task/schema approval does not itself authorize future writes. Only an explicitly granted, revocable longer-term permission for a named data type can waive repeated approval within its stated boundaries; no general database-write permission.
-- Extract relevant facts from information made available to Trialy through authorized work. Propose updates to existing entities and qualifying new entities, preserving shared identity across projects; save only after approval or under an applicable longer-term data-type permission. Do not imply access to all ChatGPT conversations or continuous background discovery without an enabled trigger/source.
+- Extract relevant facts from information made available to TrialAgents through authorized work. Propose updates to existing entities and qualifying new entities, preserving shared identity across projects; save only after approval or under an applicable longer-term data-type permission. Do not imply access to all ChatGPT conversations or continuous background discovery without an enabled trigger/source.
 - Fit is both structural and semantic: a company having a name/email does not make it eligible for a project-specific CRO tracker. Maintain fields and relationships only where the information concerns an eligible entity and the approved purpose.
 - Do not create columns, tables or source archives simply because additional facts were mentioned. Do not save entire messages or communication histories by default; extract only relevant facts and retain proportionate provenance. Communication records are appropriate only when explicitly included in the reviewed tracking structure. Original files explicitly accepted for storage remain preserved under the existing original-file policy.
 - A request such as “add addresses to this tracker” initiates a reviewed schema expansion. After approval, populate from available permitted sources and maintain the new field like the existing fields. Missing values remain missing and uncertainty remains explicit; broader research requires an authorized source/task scope.
@@ -95,7 +95,7 @@ User-created workflows are in scope as code and components on the shared foundat
 - Keep the existing repo and Render services; make the correction on `foundation-reset` before merging runtime changes.
 - Use PostgreSQL for committed data and original file bytes. No vector database or separate file service is required now.
 - No Auth0 requirement. Existing self-hosted authentication, MFA and OAuth remain.
-- Trialy is not fit for patient-level data. Retain the intended-use notice; do not introduce patient-content screening or quarantine. Professional personal information is allowed.
+- TrialAgents is not fit for patient-level data. Retain the intended-use notice; do not introduce patient-content screening or quarantine. Professional personal information is allowed.
 - Human and model permissions remain distinct. Generated code cannot expand either permission set. Human consent need not inherently mean leaving ChatGPT; a trusted confirmation path must be implemented and verified before claiming it works there.
 - Experiments and code drafts are not official records. Explicit saving starts persistent version history; a saved function is not automatically granted permission to execute side effects.
 - Preserve originals even when extraction/OCR fails. Derived-data failures remain quiet availability flags. Never claim a source or data change is saved before durable commit.
@@ -124,7 +124,7 @@ Data/file previews and experiment/proposal/function-preview staging live in Post
 
 ## Frontend scope correction — 11 October 2026
 
-ChatGPT writes frontend code; Trialy saves, versions, organizes and hosts that code with authorized data/tool access. Trialy is not a UI block catalogue or a template/workflow builder. The initial executable contract is `frontend-js` / `trialy-frontend-js-v1`: JavaScript renders arbitrary supported HTML/CSS and handles events inside a bounded runtime. The earlier `trialy-ui` schema is legacy compatibility only. See [FRONTEND_CODE.md](docs/FRONTEND_CODE.md) for the exact contract and remaining browser/host verification. Unmodified React/npm applications are not supported yet.
+ChatGPT writes frontend code; TrialAgents saves, versions, organizes and hosts that code with authorized data/tool access. TrialAgents is not a UI block catalogue or a template/workflow builder. The initial executable contract is `frontend-js` / `trialy-frontend-js-v1`: JavaScript renders arbitrary supported HTML/CSS and handles events inside a bounded runtime. The earlier `trialy-ui` schema is legacy compatibility only. See [FRONTEND_CODE.md](docs/FRONTEND_CODE.md) for the exact contract and remaining browser/host verification. Unmodified React/npm applications are not supported yet.
 
 ### Archival behavior
 

@@ -1,8 +1,8 @@
-# Trialy — 11-function demo template showcase
+# TrialAgents — 11-function demo template showcase
 
 **Status:** Agreed product-discovery direction, recorded 20 October 2026. **Planning only**; no template gallery or eleven demos are claimed to be built, published or customer-validated.
 
-**Purpose:** Show small biotech teams what they can create with Trialy through relatable examples. One initial demo per function. Demos are editable starting points, not hardcoded app modules, mandatory schemas, fixed workflows, defaults installed for all users, or prescribed industry processes. The active [platform scope](../../README.md), [development roadmap](../../DEVELOPMENT.md), and [write authorization](../WRITE_AUTHORIZATION.md) still control implementation.
+**Purpose:** Show small biotech teams what they can create with TrialAgents through relatable examples. One initial demo per function. Demos are editable starting points, not hardcoded app modules, mandatory schemas, fixed workflows, defaults installed for all users, or prescribed industry processes. The active [platform scope](../../README.md), [development roadmap](../../DEVELOPMENT.md), and [write authorization](../WRITE_AUTHORIZATION.md) still control implementation.
 
 ## Initial showcase — eleven short names
 
@@ -41,7 +41,7 @@ This hierarchy is **not** a mandatory table structure, fixed navigation or ontol
 
 A tracker might contain a form and visualizations; these are still independently useful component types. Automations can be triggered by a schedule or authorized record event, including a form submission **after its accepted change**. Neither a form nor a visualization needs its own separate database.
 
-## Reality check against implemented Trialy foundation (20 October 2026)
+## Reality check against implemented TrialAgents foundation (20 October 2026)
 
 | Area | Documented current state | Showcase/production work remaining |
 | --- | --- | --- |
@@ -51,7 +51,7 @@ A tracker might contain a form and visualizations; these are still independently
 | Visualizations | **Foundation implemented:** flexible generated frontend displays, custom safe HTML/SVG/CSS, saved views, status renderers and timeline views. | Author useful dashboard demos and confirm correct rollups/permissions. Not a full DOM/React/npm/canvas application host; no need for a separate hardcoded chart catalogue. |
 | Automations | **Core implemented:** saved JavaScript functions, worker, interval/daily/record-event scheduling, grants, reviewable record-change proposals, retries/cancel/status. | Configure relevant demo behavior and validate triggers. Live email/calendar/Drive/SharePoint provider adapters and outward notification effects are **not connected**; production alerting and real-host acceptance remain open. |
 
-**Limits:** Derived lookup/computation is scoped, permission-checked and read-time, not an unbounded automatic aggregation engine; see [field capability limits](../FIELD_CAPABILITIES.md). Cross-tracker rollups must use clear shared references and vetted query logic, not magical global synchronization. The 24-hour anonymous tracker preview is temporary; only explicit account save commits it to the permanent database. Trialy is not intended for patient-level information. Do not imply a CTMS/eTMF/eQMS, regulated e-signature or official submission replacement from these demos.
+**Limits:** Derived lookup/computation is scoped, permission-checked and read-time, not an unbounded automatic aggregation engine; see [field capability limits](../FIELD_CAPABILITIES.md). Cross-tracker rollups must use clear shared references and vetted query logic, not magical global synchronization. The 24-hour anonymous tracker preview is temporary; only explicit account save commits it to the permanent database. TrialAgents is not intended for patient-level information. Do not imply a CTMS/eTMF/eQMS, regulated e-signature or official submission replacement from these demos.
 
 ## Lightweight sequence for productization
 

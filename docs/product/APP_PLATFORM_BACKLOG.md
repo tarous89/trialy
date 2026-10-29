@@ -23,7 +23,7 @@ These do not postpone required P0 new-tab launch, working links, project color i
 - Cron expansion, durable multistep workflows, checkpoints, richer event chains, advanced retry/recovery and long-lived workers. Preserve current jobs/schedules in the meantime.
 - Build/release pipelines and immutable artifacts when packaged runtimes require them; current component revisions suffice for P0.
 - Invite-only external app audiences, public signup/federation, additional record-scope policies and real-time collaboration. Reuse existing auth before adding identity systems.
-- Monetary usage ledger, reservations, account/app spending caps, rate catalogues and provider invoice reconciliation. Required before Trialy-funded variable-cost services; initial connectors use customer credentials.
+- Monetary usage ledger, reservations, account/app spending caps, rate catalogues and provider invoice reconciliation. Required before TrialAgents-funded variable-cost services; initial connectors use customer credentials.
 - Additional execution-provider/storage/production recovery work specifically required by these larger runtimes. Existing production obligations are not waived by postponing them.
 
 Each needs a separately scoped change with measured demand, cost and acceptance criteria. No new runtime/infrastructure purchase follows automatically from this backlog.
@@ -32,6 +32,6 @@ Each needs a separately scoped change with measured demand, cost and acceptance 
 
 Email sending, Microsoft 365/Google document access, AI providers and other provider-specific services come after the generic connector and actual usage evidence. Build them as adapters to the same credential, scope, review, management and logging contracts.
 
-Trialy-funded services additionally need verified pricing and the P2 spending controls. Customer-connected services still need provider consent. Generating a local document is not the same as connecting to a cloud Word account, and building through ChatGPT does not automatically provide in-app AI execution.
+TrialAgents-funded services additionally need verified pricing and the P2 spending controls. Customer-connected services still need provider consent. Generating a local document is not the same as connecting to a cloud Word account, and building through ChatGPT does not automatically provide in-app AI execution.
 
 Do not build a connector marketplace or a large unused catalogue. Select the first branded adapter through a separate product decision after P0 is working.

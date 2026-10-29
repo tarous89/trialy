@@ -264,7 +264,7 @@ export class WorkspaceFoundation {
   return spec;
  }
  async renderComponent(a:Actor,w:string,id:string,blockIndex:number,offset=0){a={...a,accessToolId:id};
-  const c=await this.component(this.db,a,w,id);if(c.archived||c.project_archived||c.format!=='trialy-ui')fail(400,'not_runnable','Choose an active Trialy interface');
+  const c=await this.component(this.db,a,w,id);if(c.archived||c.project_archived||c.format!=='trialy-ui')fail(400,'not_runnable','Choose an active TrialAgents interface');
   const spec=this.parseInterface(c),block=spec.blocks[blockIndex];if(!block||block.kind!=='table')fail(400,'invalid_block','Choose a table block');
   const result=await new Service(this.db).records(a,w,block.typeId,{limit:25,offset},c.bindings.map((b:any)=>b.typeId));const {type,policy}=await typeAccess(this.db,a,w,block.typeId);
   const bound=Object.fromEntries(c.bindings.map((b:any)=>[b.typeId,b.fields]));const reader=new DerivedReader(this.db,a,w,Object.keys(bound),bound);result.rows=await Promise.all(result.rows.map(r=>reader.read(r)));

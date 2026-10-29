@@ -30,7 +30,7 @@ test('anonymous creation blocked; previously issued previews retain atomic recov
  assert.deepEqual(listed.body.result.tools.find((t:any)=>t.name==='read_records').securitySchemes,[{type:'oauth2',scopes:['trialy']}]);
  const tid=randomUUID(),rowId=randomUUID();
  const bundle={name:'Launch tracker',tables:[{id:tid,name:'Tasks',fields:[{key:'name',name:'Name',kind:'text',required:true,ai:true}],rows:[{id:rowId,data:{name:'Prepare protocol'}}]}],components:[{name:'Launch',format:'frontend-js',bindings:[{typeId:tid,fields:['name']}],source:`const data=tools.call('records.read',{typeId:'${tid}'});return {html:'<h1>'+data.rows[0].data.name+'</h1>',state:null};`}]};
- const response=await mcp('preview_tracker',{bundle});assert.equal(response.body.result.isError,true);assert.ok(response.body.result._meta['mcp/www_authenticate']);await assert.rejects(drafts.create(bundle),/Connect your Trialy account/);
+ const response=await mcp('preview_tracker',{bundle});assert.equal(response.body.result.isError,true);assert.ok(response.body.result._meta['mcp/www_authenticate']);await assert.rejects(drafts.create(bundle),/Connect your TrialAgents account/);
  // Seed a historical preview directly: production no longer exposes creation.
  const historical=async(input:any):Promise<any>=>{const body=guestBundle.parse(input),handle={id:randomUUID(),token:randomBytes(32).toString('base64url')},raw=JSON.stringify(body);await db.query('INSERT INTO guest_drafts(id,capability_hash,body,digest) VALUES($1,$2,$3,$4)',[handle.id,checksum(handle.token),raw,checksum(raw)]);return drafts.read(handle);};
  const draft=await historical(bundle);

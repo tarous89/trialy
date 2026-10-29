@@ -8,7 +8,7 @@ try{
  let rows=[{id:'r1',version:0,data:{name:'Example biotech',status:'Active',source:'Long evidence paragraph. '.repeat(100)}},{id:'r2',version:0,data:{name:'Second company',status:'Pending',source:'User supplied'}}];let proposal:any,prepared=0,saved=0,canEdit=true;const requests:string[]=[];
  await page.route('**/api/**',async(route:any)=>{const path=new URL(route.request().url()).pathname;requests.push(path);let body:any=[];
   if(path==='/api/me')body={csrf:'fixture',user:{id:'u1',name:'Example user'},workspaces:[{id:'private',name:'Private'},{id:'shared',name:'Connected account'}]};
-  else if(path==='/api/config')body={brand:'Trialy'};
+  else if(path==='/api/config')body={brand:'TrialAgents'};
   else if(path.endsWith('/home'))body={projects:[],resources:[],total:0,nextOffset:null};
   else if(path.endsWith('/organization'))body={nodes:[]};
   else if(path.endsWith('/schema'))body={tables:[{id:'table',name:'Companies',fields,readable:true}],nextOffset:null};

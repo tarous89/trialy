@@ -1,4 +1,4 @@
-/* Trialy / TrialAgents family. Shared by the web and ChatGPT entry points.
+/* TrialAgents OS. Shared by the web and ChatGPT entry points.
    Navigation: underline tabs. Inputs: 8px rectangles. Metadata: small pills.
    Green is reserved for primary actions, selection and successful outcomes. */
 .ty-workspace{--ty-ink:#182220;--ty-muted:#64706c;--ty-green:#299667;--ty-border:#dce1df;--ty-canvas:#f6f7f7;--ty-sidebar:#0d1311;--ty-focus:#23865d;--shell-header:64px;font-size:14px;background:var(--ty-canvas);color:var(--ty-ink)}

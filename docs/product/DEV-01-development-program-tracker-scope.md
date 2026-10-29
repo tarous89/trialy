@@ -6,7 +6,7 @@
 
 ## 0. Evidence standard, positioning and limits
 
-This document proposes an initial **ChatGPT-created, configurable development-program tracker** based on real software product interfaces, customer case studies, independent reviews and practitioner requests. A "default" below means a **suggested starter configuration only**. Do not add hardcoded clinical tables, mandatory program fields, fixed UI modules, regulated workflow rules or automatic database writes to Trialy's foundation. The current Trialy repository scope takes precedence.
+This document proposes an initial **ChatGPT-created, configurable development-program tracker** based on real software product interfaces, customer case studies, independent reviews and practitioner requests. A "default" below means a **suggested starter configuration only**. Do not add hardcoded clinical tables, mandatory program fields, fixed UI modules, regulated workflow rules or automatic database writes to TrialAgents's foundation. The current TrialAgents repository scope takes precedence.
 
 **What is validated:**
 - [S1] **Precision BioSciences / Smartsheet customer case study (2025, PDF)** — a lean (fewer than 100 employees) clinical-stage gene-editing sponsor uses cross-functional Research, Regulatory, Clinical and manufacturing-related planning; linked timelines, dependencies, milestones, resource management and dashboards. Their program manager describes replacing siloed function-by-function timeline grids, management visibility into IND readiness, and resource-overload alerts. https://pt.smartsheet.com/sites/default/files/2025-12/Precision%20BioSciences%20Case%20Study.pdf
@@ -45,7 +45,7 @@ This document proposes an initial **ChatGPT-created, configurable development-pr
 
 **When:** May start with a single preclinical asset or intended development project; persists into clinical phases and across multiple assets/projects. A small sponsor with just one asset still benefits from workstream and upcoming-milestone visibility. Do not create clinical studies, CROs or sites unless the actual task calls for those records.
 
-**Granularity boundary:** Do not assume asset = indication = program = study. For some organizations, one asset may have several indication-specific programs or multiple studies. On setup, let the user choose "What does one program represent in your organization?" and adapt relationships. Trialy's platform **project** remains the stable organizing concept; only user-authorized task-specific fields/relationships are proposed. No forced duplicate "Project" entity.
+**Granularity boundary:** Do not assume asset = indication = program = study. For some organizations, one asset may have several indication-specific programs or multiple studies. On setup, let the user choose "What does one program represent in your organization?" and adapt relationships. TrialAgents's platform **project** remains the stable organizing concept; only user-authorized task-specific fields/relationships are proposed. No forced duplicate "Project" entity.
 
 ## 2. Minimal onboarding experience
 
@@ -146,7 +146,7 @@ S1 confirms tracked staff hours, workloads and allocations, with >100% utilizati
 | Trigger / user prompt | Result | Authorization / failure condition | Evidence |
 | --- | --- | --- | --- |
 | "Start tracking program X" | Propose program setup, allowed fields, optional first milestones and links | Exact setup preview; explicit approval before first saved record | S1,S2,S3 |
-| "Update program status from this slide/email" | ChatGPT extracts candidate changes, checks record identity, displays sources and before/after diff | No silent write; respect owner/AI rights and record versions; require approval except explicit data-type grant | S1,S4,S6 plus Trialy authorization |
+| "Update program status from this slide/email" | ChatGPT extracts candidate changes, checks record identity, displays sources and before/after diff | No silent write; respect owner/AI rights and record versions; require approval except explicit data-type grant | S1,S4,S6 plus TrialAgents authorization |
 | Milestone forecast approaches or passes | Compute upcoming/late status; prepare reminder or escalation suggestion | User-configured thresholds; scheduling/job availability; outgoing provider action requires separate grant | S1,S2,S3 |
 | One milestone date changes | Show affected visible dependency chain and **proposed** downstream date changes | Do not rewrite agreed baselines or downstream dates silently; review before commit | S1,S3,S5 |
 | Linked document review becomes approved | Propose corresponding task/milestone completion, with version evidence | Actual approved document state must be trusted, not inferred from filename; data change approved/granted | S3 |
@@ -161,7 +161,7 @@ No provider-side actions, background monitoring of all conversations, automatic 
 2. **Clinical-stage, fewer than 100 employees, cross-functional program:** program manager links clinical, regulatory and manufacturing workstream updates; reviewer sees dependencies and reasons for missed gates without opening separate files (S1).
 3. **CMO with several programs:** reader filters by near-term decision dates, clicks a flagged program to inspect owner, dates, rationale and source, and requests a current-as-of management summary (S1,S2,S5).
 4. **Document-driven progress:** reviewer accepts an approved-document event and sees a proposed milestone-status change, with both document version and separate write authorization (S3).
-5. **Stale/uncertain plan:** different sources claim different dates; Trialy preserves originals and competing observations, shows provisional/uncertain values, and asks before selecting a preferred forecast.
+5. **Stale/uncertain plan:** different sources claim different dates; TrialAgents preserves originals and competing observations, shows provisional/uncertain values, and asks before selecting a preferred forecast.
 6. **Approval/permission failure:** generated UI may stage but cannot commit a change; unauthorized reader cannot see hidden source text or call external send operations; stale record versions fail safely.
 
 These are **acceptance scenarios to design**, not claims the current plugin already passes them.
@@ -174,7 +174,7 @@ These are **acceptance scenarios to design**, not claims the current plugin alre
 - No formal regulatory filing, regulator submissions, validated eTMF/eQMS/Part 11 sign-off claims.
 - No mandatory drug asset ontology, hardcoded therapeutic-area vocabulary, fixed clinical workflow, automatic cross-customer data union, or independent background source monitoring.
 - No fixed contract or procurement functionality in this first scope; related OUT and OPS use cases can link to a program when users actually request them.
-- Do not duplicate an existing Trialy project entity merely to satisfy a template; inspect/reuse authorized records and preserve shared IDs.
+- Do not duplicate an existing TrialAgents project entity merely to satisfy a template; inspect/reuse authorized records and preserve shared IDs.
 
 ## 9. Unresolved decisions before implementation
 

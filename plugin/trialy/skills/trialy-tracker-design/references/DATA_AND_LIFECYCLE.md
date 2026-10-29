@@ -65,8 +65,8 @@ No fixed set of these objects is mandatory. For a simple checklist, create fewer
 Every evidentiary row should offer a **Source** field with an appropriate display label. Default to linking existing files in provider storage (Google Drive, SharePoint, OneDrive etc.), source URLs, stable document IDs and/or concise text/evidence notes. For a stable connected source prefer provider ID + version + last verified time + friendly URL, not just a mutable web link.
 
 - A plain URL is a pointer, not evidence the file is accessible or was read. Do not claim contents/permissions from a URL alone.
-- Storage providers retain their own access controls; Trialy must re-check user permissions and must not expose restricted URLs through table filters, aggregates or tooltip metadata.
-- Store an immutable accepted copy in Trialy only when explicitly requested, needed for provenance, or supported by authorized project/document policy. The template must not assume every Source is uploaded.
+- Storage providers retain their own access controls; TrialAgents must re-check user permissions and must not expose restricted URLs through table filters, aggregates or tooltip metadata.
+- Store an immutable accepted copy in TrialAgents only when explicitly requested, needed for provenance, or supported by authorized project/document policy. The template must not assume every Source is uploaded.
 - Represent multiple sources as link/reference records if needed; don't concatenate long URLs in one dense column. Link label should be human-readable; the Details panel can hold richer provenance.
 - Failures to fetch, permissions to read, missing/expired links or source version changes must appear as missing/unverified rather than proven facts.
 
@@ -84,7 +84,7 @@ A read-only presentation of authorized committed data: progress, overview stats,
 ### Automation
 An authorized scheduled or event-triggered function. Inputs: a timer, approved record change, accepted form result or explicit user event. Outputs: either a report/reminder proposal, a reviewed database change, or a separately authorized external action. Include idempotency/retry, failures, no self-trigger loops and cancellation. Avoid autonomous contacting, regulated submissions, money transfers or sharing without separate permission.
 
-**Status of Trialy's documented platform as of 20 Oct 2026:** PostgreSQL shared records, typed fields/links, source/provenance, audited write proposals, project/component saving, generated bounded JS frontend, form collection, internal functions and schedules exist at foundation level. External email/calendar/Drive/SharePoint worker adapters, trusted in-ChatGPT human approval and full real-host acceptance were still pending. Check current repo/runtime rather than assuming these statuses remain true in future; the demo must never imply they're complete just because UI controls render.
+**Status of TrialAgents's documented platform as of 20 Oct 2026:** PostgreSQL shared records, typed fields/links, source/provenance, audited write proposals, project/component saving, generated bounded JS frontend, form collection, internal functions and schedules exist at foundation level. External email/calendar/Drive/SharePoint worker adapters, trusted in-ChatGPT human approval and full real-host acceptance were still pending. Check current repo/runtime rather than assuming these statuses remain true in future; the demo must never imply they're complete just because UI controls render.
 
 ## 6. Access precedence and hidden vs restricted
 
@@ -103,7 +103,7 @@ function effective(user, tab, field) {
 }
 ```
 
-The resolver diagram is conceptual, not a claim that underlying Trialy API accepts these names. **Resolve on backend reads and writes**; don't trust caller-provided roles, filters or field lists. Human and AI permissions are separate; reading from a connected external app does not automatically grant worker access to the same app. Keep owner privileges server verified.
+The resolver diagram is conceptual, not a claim that underlying TrialAgents API accepts these names. **Resolve on backend reads and writes**; don't trust caller-provided roles, filters or field lists. Human and AI permissions are separate; reading from a connected external app does not automatically grant worker access to the same app. Keep owner privileges server verified.
 
 Use **Custom** as a derived displayed master role when a person has one or more differing explicit overrides. Preserve their previous base role internally so defaults continue to resolve consistently. Show effective per-cell outcomes (“Can edit / Can view / Restricted”), not “Inherit role” or duplicate “Custom” labels. See [UI_INTERACTION_CONTRACT.md](UI_INTERACTION_CONTRACT.md) for exact behavior and theme colors.
 

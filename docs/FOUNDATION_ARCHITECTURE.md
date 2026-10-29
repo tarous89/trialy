@@ -4,7 +4,7 @@ Decision date: 11 October 2026. Status: accepted direction, with the first execu
 
 ## Product expansion: shared entities and saved applications
 
-Accepted clarification, 11 October 2026: the execution foundation is a subsystem of a larger persistent workspace, not the complete product. ChatGPT authors interfaces, logic and reconciliation decisions; Trialy hosts and organizes saved components, maintains connected authorized data and runs approved actions.
+Accepted clarification, 11 October 2026: the execution foundation is a subsystem of a larger persistent workspace, not the complete product. ChatGPT authors interfaces, logic and reconciliation decisions; TrialAgents hosts and organizes saved components, maintains connected authorized data and runs approved actions.
 
 Target additions (not yet implemented):
 
@@ -31,7 +31,7 @@ This capture contract is a target layered onto existing proposals, grants and re
 
 ## Responsibility boundary
 
-ChatGPT creates code and application logic. Trialy supplies persistent data, isolated execution and authorized tools. A generic table view is a useful client; it does not constrain the logic that may run. A user may create a review process in their own data/code, but that process is not a platform-wide requirement.
+ChatGPT creates code and application logic. TrialAgents supplies persistent data, isolated execution and authorized tools. A generic table view is a useful client; it does not constrain the logic that may run. A user may create a review process in their own data/code, but that process is not a platform-wide requirement.
 
 Platform invariants are authentication, tenant/resource isolation, explicit authorization, exact save receipts, source preservation, audit/provenance and controlled resource use. Business choices—review stages, reminder recipients, intake decisions, calculations and presentation—belong to user-authored applications. This correction must not weaken existing authorizations while extracting those choices.
 

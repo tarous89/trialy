@@ -35,7 +35,7 @@ const active=new Set<string>();
 export class GuestDrafts{
  constructor(readonly db:Database){}
  async create(_input:unknown){
-  fail(401,'account_required','Connect your Trialy account before creating a project or tool.');
+  fail(401,'account_required','Connect your TrialAgents account before creating a project or tool.');
  }
  async read(input:unknown){
   const handle=guestHandle.parse(input);
