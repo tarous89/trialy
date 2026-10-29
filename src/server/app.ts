@@ -1,3 +1,4 @@
+import {appPublicUrl} from '../shared/public-url.js';
 import {withRequestMetrics} from '../db/metrics.js';
 import {AccessGrid} from '../domain/access-grid.js';
 import {AccessManagement} from '../domain/access-management.js';
@@ -19,7 +20,7 @@ import { Service } from '../domain/service.js';
 import {inspectionHtml} from '../domain/inspection.js';
 import { templates } from '../domain/templates.js';
 export function baseApp() {
- const app=express();app.disable('x-powered-by');app.use(helmet({contentSecurityPolicy:{directives:{defaultSrc:["'self'"],scriptSrc:["'self'"],styleSrc:["'self'","'unsafe-inline'"],frameAncestors:["'self'"]}}}));
+ const app=express();app.disable('x-powered-by');app.use(helmet({contentSecurityPolicy:{directives:{defaultSrc:["'self'"],scriptSrc:["'self'"],styleSrc:["'self'","'unsafe-inline'"],frameSrc:["'self'",...new Set([new URL(appPublicUrl()).origin,new URL(process.env.PUBLIC_URL??process.env.RENDER_EXTERNAL_URL??'http://localhost:3000').origin])],frameAncestors:["'self'"]}}}));
  // Public stateless frame shell. HTTP sandbox also protects direct navigation.
  app.get('/frontend/frame',async(_req,res)=>{
   const hash=createHash('sha256').update(FRAME_SCRIPT).digest('base64');

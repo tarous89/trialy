@@ -122,6 +122,7 @@ test('connected account identity is app-only metadata and never infers data acce
  const userId=randomUUID();let queries=0;
  const db={query:async(sql:string,args:any[])=>{queries++;assert.equal(args[0],userId);assert.match(sql,/SELECT name,email FROM users/);return {rows:[{name:'Connected user',email:'connected@example.invalid'}]};}} as unknown as Database;
  const app=baseApp();addMcp(app,new Service(db),(req,_res,next)=>{req.actor={userId,origin:'ai'};next();});
+ const health=await request(app).get('/health');assert.ok(health.headers['content-security-policy'].includes("frame-src 'self' https://platform.trialagents.com"));assert.ok(health.headers['content-security-policy'].includes("frame-ancestors 'self'"));
  const list=await request(app).post('/mcp').set('Authorization','Bearer fixture').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:1,method:'tools/list'});
  assert.deepEqual(list.body.result.tools.find((t:any)=>t.name==='read_connected_account')._meta.ui.visibility,['app']);
  const response=await request(app).post('/mcp').set('Authorization','Bearer fixture').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:2,method:'tools/call',params:{name:'read_connected_account',arguments:{}}});
