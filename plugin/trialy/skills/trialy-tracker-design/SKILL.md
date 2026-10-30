@@ -7,10 +7,12 @@ description: Build or revise TrialAgents tools with useful design defaults and f
 
 Treat Vivid as a starting point. Users may change colors, fonts, icons, spacing, layouts, components and interactions, or replace the interface entirely. No design exception or unsupported-capability justification is needed. Database integrity, access enforcement and audit logs are the firm boundaries.
 
+For new apps, first follow the dynamic discovery and existing-app reuse workflow in [TrialAgents workspace](../trialy-workspace/SKILL.md). Check `list_app_templates` and read the selected template with `read_app_template`. Its current server instructions and schema govern that template. The packaged Vivid references below describe the legacy Vivid renderer only; they are not a complete template catalog or a restriction on other designs. Existing app source is reusable only after `read_app` succeeds under current permissions.
+
 ## Workflow
 
 1. Establish the user's job and inspect the relevant authorized schema and saved tool. Reuse suitable tables and preserve field identities, types and cardinality unless the user requests a reviewed schema change.
-2. For a template-based tool, use `prepare_tracker` or `prepare_tracker_revision`. Read [CONFIGURATION.md](references/CONFIGURATION.md) for content, bindings, theme and display options. Honor requested styling; a brand palette is supported through `theme` and does not require a renderer deployment.
+2. For a catalog template, use `prepare_app_from_template` with the version, digest and configuration returned by `read_app_template`. For legacy Vivid tools, `prepare_tracker` and `prepare_tracker_revision` remain available. Read [CONFIGURATION.md](references/CONFIGURATION.md) for content, bindings, theme and display options. Honor requested styling; a brand palette is supported through `theme` and does not require a renderer deployment.
 3. For custom composition, use the reusable components described in [TEMPLATE_REUSE.md](references/TEMPLATE_REUSE.md). For a fully custom app, use `prepare_app` with `content.format:"frontend-js"` (legacy `save_component` remains supported) and a matching authorized manifest. Existing tools can switch to custom code while retaining their database records. Read [TRIALY_INTEGRATION.md](references/TRIALY_INTEGRATION.md) for the runtime and write contract.
 4. Create or extend database schemas only where needed. `newTables` and `extendTables` remain temporary until the reviewed save commits them atomically. Never weaken access or copy restricted data to achieve a design change.
 5. Show the prepared preview. Examples, when useful, are clearly fictional, unsaved and excluded from totals. Omit them on request. The reference HTML's business content is illustrative only.

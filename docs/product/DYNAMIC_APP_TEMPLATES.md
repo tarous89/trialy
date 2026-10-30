@@ -1,0 +1,44 @@
+# Dynamic templates and existing-app reuse
+
+Approved and implemented 30 October 2026. Extends the simple-app scope without changing the app UI or the database, approval and audit boundaries.
+
+## Stable discovery contract
+
+Before creating an app, the plugin checks authorized app metadata and the server catalog. It reads only the selected app source or template. Templates are optional accelerators; arbitrary supported custom apps remain allowed.
+
+- `list_app_templates`: bounded, searchable summaries, use/avoid guidance, latest active version and digest. No source in list responses.
+- `read_app_template`: one exact version, current instructions, configuration schema, defaults, examples and sandboxed source where applicable.
+- `prepare_app_from_template`: exact version/digest, server-validated configuration and authorized bindings; displays an unsaved preview.
+- `prepare_app_from_existing`: source app and exact version; shared or separate database choice; new app preview. Original apps and records are untouched.
+
+Discovery is quiet. Preparation opens the extension. Save uses the existing digest-bound confirmation and returns to Home. No template, source text or catalog guidance can grant permission, approve a write or override runtime limits.
+
+## Publishing templates without a plugin release
+
+The publisher maintains versioned JSON files in `templates/apps/`. Add a file and deploy the server through the existing repository release process. The server reads the directory at discovery time; the tool names and input shapes do not change. No plugin package upload is required for new templates using the supported engines. This is a repository-managed catalog, not an end-user upload facility or an admin gallery.
+
+Keep published versions immutable. Add a new semantic version for changes and retain old files. A digest binds each read to preparation, so in-place changes reject an old preparation request. Mark a retired version deprecated to prevent new preparation. The latest deprecated version hides the template from discovery; explicit old active versions remain readable/preparable. Existing app source/configuration and saved data remain intact regardless of catalog changes. The shared Vivid runtime still receives normal platform maintenance; catalog versions do not freeze the entire platform runtime.
+
+Supported engines:
+
+- `tracker`: Vivid `trackerSetup` configuration, including existing or proposed new tables, fields, views, theme, examples and pagination. Database structures are created only with the reviewed app save.
+- `frontend-js`: sandboxed app source, declared database bindings and optional business manifest. Source receives JSON-encoded `templateConfiguration` and `templateBindings`. Configurable fields support bounded strings, finite numbers, booleans and string enums; unknown fields are rejected. The existing sandbox and manifest checks validate actual execution/data usage.
+
+Initial catalog: Vivid tracker, budget calculator and planning checklist. The latter two explicitly keep state local and do not claim persistence. Catalog assets/source and detailed guidance are served on demand; packaged references remain compatibility documentation.
+
+Adding a new engine, networking capability, authentication model or integration remains a server/tool contract change and may require a plugin release and OpenAI review. Dynamic templates are not a review exemption. Public submission is a separate action.
+
+## Existing-app reuse and data isolation
+
+Find candidates with `read_account_home`; use `read_app` to read authorized source/configuration. The new reuse tool supports:
+
+- `shared_data`: the new interface references the existing authorized tables. It does not clone their rows.
+- `separate_data`: supply complete replacement bindings/source, or tracker configuration with new tables. Original table bindings are rejected. New tracker tables and the app save atomically; no records are copied.
+
+Source access, archived state and version are checked during preparation, rendering and confirmation. Copies created by this flow are creator-only, further restricted by any target project. AI is enabled only when the copy is made through an authorized AI actor; a human copy does not silently release source to AI. Function grants, file references, schedules and connector authorizations are not inherited. Source depending on those must be adapted or separately authorized. General authored source may contain literals: users/builders must review adapted content, not assume rebinding automatically removes hard-coded data or links.
+
+Template and reuse provenance are included in the reviewed operation and saved component revision/audit snapshot. The original app remains unchanged. Existing legacy duplicate controls retain their prior restriction-preserving behavior.
+
+## Validation
+
+Tests cover discovery of added files without a tool/package change, old-version reads, pagination, digest conflicts, rejected unknown configuration, sandbox rendering for starter templates, reviewed atomic table creation, shared/separate data, creator-only copies, no cloned records/grants, denied source access and stale-source rejection at save. Existing core/browser suites remain release gates.

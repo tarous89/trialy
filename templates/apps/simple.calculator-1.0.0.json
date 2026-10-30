@@ -1,0 +1,40 @@
+{
+  "version": "1.0.0",
+  "deprecated": false,
+  "id": "simple.calculator",
+  "name": "Budget calculator",
+  "description": "A small calculator for quantity, unit cost and an estimated total; no database required.",
+  "tags": [
+    "calculator",
+    "budget",
+    "cost",
+    "estimate"
+  ],
+  "whenToUse": "A quick interactive multiplication or cost estimate without persistent records.",
+  "whenNotToUse": "Accounting, invoicing, financial advice or a calculation requiring an authoritative pricing source.",
+  "instructions": "Set heading and currency to the user\u2019s wording. This is a local estimate, not a saved financial record. The configuration is supplied as templateConfiguration and source executes in the existing sandbox. If additional calculations are needed, adapt the returned source with prepare_app. Never claim that local form state was saved.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "Budget estimate",
+    "currency": "EUR"
+  },
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "Calculator heading",
+      "required": true
+    },
+    "currency": {
+      "type": "string",
+      "description": "Display currency label",
+      "required": true
+    }
+  },
+  "examples": [
+    {
+      "heading": "Study supply estimate",
+      "currency": "EUR"
+    }
+  ],
+  "source": "const esc=v=>String(v).replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'}[c]));\nconst state=input.state||{};if(input.event.action==='calculate'){const q=Number(input.event.form.quantity),p=Number(input.event.form.price);state.total=Number.isFinite(q*p)?q*p:0;}\nreturn {html:'<main><p class=\"eyebrow\">ESTIMATE</p><h1>'+esc(templateConfiguration.heading)+'</h1><form data-action=\"calculate\"><label>Quantity<input name=\"quantity\" type=\"number\" min=\"0\" step=\"any\" required></label><label>Unit cost<input name=\"price\" type=\"number\" min=\"0\" step=\"any\" required></label><button type=\"submit\">Calculate</button></form><h2>'+esc(templateConfiguration.currency)+' '+(state.total??0).toFixed(2)+'</h2><p>Estimate only \u00b7 not saved as a record.</p></main>',css:'body{font:16px system-ui;background:#f4f7f5;color:#193c31;margin:0}main{max-width:600px;margin:40px auto;padding:28px}h1{font-size:32px}label{display:block;margin:20px 0}input{display:block;padding:12px;border:1px solid #bdcec5;border-radius:8px;margin-top:8px}button{padding:12px 24px;background:#175f47;color:white;border:0;border-radius:8px}.eyebrow{letter-spacing:.14em;font-size:12px}',state};"
+}

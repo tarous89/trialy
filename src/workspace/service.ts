@@ -493,6 +493,13 @@ export class WorkspaceFoundation {
   if(op.kind==='apply_component_records'||op.kind==='edit_component_record')a={...a,accessToolId:op.componentId};
   if(!['apply_component_records','edit_component_record'].includes(op.kind)){const p=await access(tx,a,w);if(p.direct_data===false&&p.role!=='owner')fail(403,'manage_required','Tool data access does not allow structure or access changes');}
   if(op.kind==='apply_component_records'||op.kind==='edit_component_record'||(op.kind==='save_component'&&op.content.sourceAccess==='bindings'))await access(tx,a,w,true);else await this.policy(tx,a,w,true);
+  if((op.kind==='save_component'||op.kind==='create_tracker')&&op.reuseOrigin){
+   const source=await this.component(tx,a,w,op.reuseOrigin.componentId);
+   if(source.archived||source.project_archived)fail(404,'not_found','Source app unavailable');
+   if(source.version!==op.reuseOrigin.version)fail(409,'stale_version','Source app changed; prepare a new preview');
+   if(op.componentId||op.content.execution.length||op.content.assets.length)fail(400,'reuse_scope','Reuse creates a new app without file or execution grants');
+   if(op.reuseOrigin.mode==='separate_data'&&op.content.bindings.some(b=>source.bindings.some((old:any)=>old.typeId===b.typeId)))fail(400,'reuse_data','Separate data must not bind the original tables');
+  }
   if(op.kind==='create_automation_template'){const built=await trackerOperation(new WorkspaceFoundation(adapter(tx)),a,w,op.setup);automationTemplate(op.setup,op.report,built.content);}
   if(op.kind==='create_tracker'){
    await this.componentSourcePolicy(tx,a,w);
@@ -636,7 +643,7 @@ export class WorkspaceFoundation {
    const setup={...op.setup,newTables:[],extendTables:[],tabs:op.setup.tabs.map(t=>({...t,typeId:ids.get(t.typeId)??t.typeId}))};
    const built=await trackerOperation(new WorkspaceFoundation(adapter(tx)),a,w,setup);
    const previous=op.componentId?await this.component(tx,a,w,op.componentId):null;
-   const operation=workspaceOperation.parse({...built,...(previous?{componentId:previous.id,expectedVersion:op.expectedVersion,content:{...built.content,sourceAccess:previous.source_access,assets:previous.assets??[],execution:previous.execution??[]}}:{})});
+   const operation=workspaceOperation.parse({...built,catalogOrigin:op.catalogOrigin,reuseOrigin:op.reuseOrigin,...(previous?{componentId:previous.id,expectedVersion:op.expectedVersion,content:{...built.content,sourceAccess:previous.source_access,assets:previous.assets??[],execution:previous.execution??[]}}:{})});
    await this.validate(tx,a,w,operation);return this.apply(tx,a,w,p,operation,authorization);
   }
   if(op.kind==='link_cross_table_identity'||op.kind==='unlink_cross_table_identity'){
@@ -726,12 +733,13 @@ export class WorkspaceFoundation {
   else if(op.kind==='move_node'||op.kind==='rename_node'){objectId=op.nodeId;before=await this.node(tx,w,objectId);version=before.version+1;after={...before,version,...(op.kind==='move_node'?{parent_id:op.parentId}:{name:op.name,...(op.description!==undefined?{description:op.description}:{})})};const keep=op.kind==='move_node'?await this.moveRestrictions(tx,a,w,objectId,before):{users:before.allowed_users,ai:before.ai_enabled};after={...after,allowed_users:keep.users,ai_enabled:keep.ai};await tx.query('UPDATE workspace_nodes SET name=$1,parent_id=$2,version=$3,allowed_users=$5,ai_enabled=$6,description=$7 WHERE id=$4',[after.name,after.parent_id,version,objectId,keep.users===null?null:J(keep.users),keep.ai,after.description??'']);}
   else if(op.kind==='save_component'||op.kind==='move_component'||op.kind==='archive_component'||op.kind==='restore_component'){
    if(op.componentId){objectId=op.componentId;before=await this.component(tx,a,w,objectId);version=before.version+1;}
-   if(op.kind==='save_component')after={...before,id:objectId,workspace_id:w,project_id:op.projectId,...op.content,source_access:op.content.sourceAccess,resource_kind:op.content.resourceKind??before?.resource_kind??'generic',manifest:op.content.manifest===undefined?(before?.manifest??null):op.content.manifest,version,archived:before?.archived??false};
+   if(op.kind==='save_component')after={...before,id:objectId,workspace_id:w,project_id:op.projectId,...op.content,source_access:op.content.sourceAccess,catalogOrigin:op.catalogOrigin,reuseOrigin:op.reuseOrigin,resource_kind:op.content.resourceKind??before?.resource_kind??'generic',manifest:op.content.manifest===undefined?(before?.manifest??null):op.content.manifest,version,archived:before?.archived??false};
    else if(op.kind==='move_component'){const keep=await this.moveRestrictions(tx,a,w,before.project_id,before);after={...before,project_id:op.projectId,version,allowed_users:keep.users,ai_enabled:keep.ai};}
    else if(op.kind==='archive_component')after={...before,archived:op.archived,version};
    else {const old=await this.componentRevision(tx,w,objectId,op.revisionVersion);after={...before,name:old.name,format:old.format,source:old.source,bindings:old.bindings,assets:old.assets??[],source_access:before.source_access==='bindings'&&old.source_access==='bindings'?'bindings':'workspace',execution:[],resource_kind:old.resource_kind??'generic',manifest:old.manifest??null,version};}
    if(before)await tx.query('UPDATE workspace_components SET project_id=$1,name=$2,format=$3,source=$4,bindings=$5,version=$6,archived=$7,allowed_users=$9,ai_enabled=$10,execution=$11,assets=$12,source_access=$13 WHERE id=$8',[after.project_id,after.name,after.format,after.source,J(after.bindings),version,after.archived,objectId,after.allowed_users==null?null:J(after.allowed_users),after.ai_enabled??true,J(after.execution??[]),J(after.assets??[]),after.source_access??'workspace']);
    else await tx.query('INSERT INTO workspace_components(id,workspace_id,project_id,name,format,source,bindings,created_by,execution,assets,source_access) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',[objectId,w,after.project_id,after.name,after.format,after.source,J(after.bindings),a.userId,J(after.execution??[]),J(after.assets??[]),after.source_access??'workspace']);
+   if(op.kind==='save_component'&&op.reuseOrigin&&!before){after.allowed_users=[a.userId];after.ai_enabled=a.origin==='ai';await tx.query('UPDATE workspace_components SET allowed_users=$1,ai_enabled=$3 WHERE id=$2',[J([a.userId]),objectId,after.ai_enabled]);}
    await tx.query('UPDATE workspace_components SET resource_kind=$1,manifest=$2 WHERE id=$3',[after.resource_kind??'generic',after.manifest?J(after.manifest):null,objectId]);
   }
   else if(op.kind==='save_scope'){
