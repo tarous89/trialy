@@ -7,7 +7,7 @@ import {PGlite} from '@electric-sql/pglite';
 import type {Database,Connection} from '../src/db/database.js';
 import {Service} from '../src/domain/service.js';
 import {WorkspaceFoundation} from '../src/workspace/service.js';
-import {prepareSimpleApp,readApp} from '../src/workspace/apps.js';
+import {prepareSimpleApp,readApp,openApp} from '../src/workspace/apps.js';
 import {appUrl,parseAppUrl,appSignInReturn} from '../src/shared/app-route.js';
 import {addAppMcp} from '../src/server/apps.js';
 import {frameLinkTarget,resolveAppLink} from '../src/shared/app-links.js';
@@ -16,6 +16,8 @@ import type {Actor} from '../src/shared/schema.js';
 test('app links preserve only validated app identifiers and route state',()=>{
  const appId=randomUUID(),workspaceId=randomUUID(),recordId=randomUUID(),v={appId,workspaceId,route:{path:'/companies/detail',recordId,page:3}},url=appUrl(v);
  assert.deepEqual(parseAppUrl(url),{...v,source:'component'});assert.equal(appSignInReturn(url),url);
+ for(const attribution of ['&utm_source=chatgpt.com','&utm_source=chatgpt.com&utm_medium=referral&utm_campaign=launch&utm_content=link&utm_term=app&utm_id=1','&utm_source=first&utm_source=second']){assert.deepEqual(parseAppUrl(url+attribution),parseAppUrl(url));assert.equal(appSignInReturn(url+attribution),url);}
+ assert.equal(parseAppUrl(url+'&utm_source=chatgpt.com&source=preview'),null);
  for(const input of ['https://evil.example/apps/'+appId,'//evil.example/apps/'+appId,'/apps/'+appId+'/../auth/logout?workspaceId='+workspaceId,url+'&secret=token',url+'&page=4',url+'#private',url.replace('/companies/detail','/%2e%2e'),url.replace('/companies/detail','/a\\b')])assert.equal(appSignInReturn(input),undefined,input);
  assert.throws(()=>appUrl({...v,route:{path:'/a/../b'}}));assert.deepEqual(projectTheme(workspaceId),projectTheme(workspaceId));assert.notDeepEqual(projectTheme(workspaceId),projectTheme());
 });
@@ -30,7 +32,8 @@ test('neutral apps retain existing save/permission contracts and receive page ro
   const draft=await prepareSimpleApp(f,a,w.id,{content:{name:'Calculator',source:"return {html:'<p>Calculator</p>',state:input.route??null};",bindings:[]}});
   assert.equal((await f.runFrontend(a,w.id,{previewId:draft.id,route:{path:'/calculator'}})).state.path,'/calculator');
   const saved=await f.confirm(a,w.id,draft.id,draft.digest),location={appId:saved.id,workspaceId:w.id,route:{path:'/calculator'}};
-  const registered=new Map<string,any>();addAppMcp({registerTool:(name:string,metadata:any,run:any)=>registered.set(name,{metadata,run})} as any,f,a,(fn:any)=>fn,{ui:{resourceUri:'ui://trialy/test'}});const launched=await registered.get('open_app').run(location);assert.equal(launched.screen,'app-link');assert.equal(launched.url,new URL(appUrl(location),appPublicUrl(process.env,PLATFORM_ORIGIN)).href);assert.equal(registered.get('open_app').metadata._meta.ui?.resourceUri,undefined);assert.equal(registered.get('read_app').metadata._meta.ui?.resourceUri,undefined);
+  const registered=new Map<string,any>();addAppMcp({registerTool:(name:string,metadata:any,run:any)=>registered.set(name,{metadata,run})} as any,f,a,(fn:any)=>fn,{ui:{resourceUri:'ui://trialy/test'}});const launched=await registered.get('open_app').run(location);assert.equal(launched.screen,'tracker');assert.equal(launched.component.id,saved.id);assert.deepEqual(launched.route,location.route);assert.equal(launched.url,new URL(appUrl(location),appPublicUrl(process.env,PLATFORM_ORIGIN)).href);assert.equal(registered.get('open_app').metadata._meta.ui?.resourceUri,'ui://trialy/test');assert.equal(registered.get('read_app').metadata._meta.ui?.resourceUri,undefined);
+  const prepared=await registered.get('prepare_app').run({workspaceId:w.id,content:{name:'Draft calculator',source:"return {html:'<h1>Draft calculator</h1>'};",bindings:[]}});assert.equal(prepared.screen,'tracker-preview');assert.ok(prepared.initialOutput.html.includes('Draft calculator'));assert.equal(registered.get('prepare_app').metadata._meta.ui.resourceUri,'ui://trialy/test');const reopened=await openApp(f,a,{appId:prepared.preview.id,workspaceId:w.id,source:'preview'});assert.equal(reopened.preview.id,prepared.preview.id);assert.equal(reopened.screen,'tracker-preview');
   const result=await readApp(f,a,location);assert.equal((result as any).component.resource_kind,'generic');assert.equal((result as any).component.id,saved.id);
   await assert.rejects(readApp(f,stranger,location));
   const output=await f.runFrontend(a,w.id,{componentId:saved.id,expectedVersion:0,route:{path:'/calculator',page:2}});assert.deepEqual(output.state,{path:'/calculator',page:2});assert.equal(output.frameUrl,'https://platform.trialagents.com/frontend/frame');
@@ -53,6 +56,7 @@ test('frame links keep app pages local and cross-app links native without execut
  assert.equal(frameLinkTarget(appUrl(current),origin,current)?.external,false);
  const other=appUrl({...current,appId:randomUUID(),route:{path:'/calculator'}});
  assert.deepEqual(frameLinkTarget(other,origin,current),{href:origin+other,external:true});
+ assert.deepEqual(frameLinkTarget(other+'&utm_source=chatgpt.com',origin,current),{href:origin+other,external:true});assert.equal(resolveAppLink(other+'&utm_source=chatgpt.com',current,origin)?.href,other);
  assert.equal(resolveAppLink(other,current,origin)?.kind,'app');
  assert.equal(frameLinkTarget('https://docs.example/apps/help',origin,current)?.external,true);
  for(const value of ['javascript:alert(1)','data:text/html,bad','//other.example','https://user:secret@example.com','/apps/bad?workspaceId=bad'])assert.equal(frameLinkTarget(value,origin,current),null);

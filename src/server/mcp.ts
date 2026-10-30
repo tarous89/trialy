@@ -1,5 +1,5 @@
 import {appPublicUrl,oauthPublicUrl,PLATFORM_ORIGIN} from '../shared/public-url.js';
-import {workspaceResource,backgroundMetadata} from './ui-resource.js';
+import {workspaceResource,backgroundMetadata,registerWorkspaceResources} from './ui-resource.js';
 import {addTrackerDesignMcp} from './tracker-design.js';
 import {rateLimit} from 'express-rate-limit';
 import {addGuestMcp} from './guest-drafts.js';
@@ -19,7 +19,7 @@ import { operationSchema, recordQuerySchema, fieldChangeQuerySchema, id, AppErro
 export function addMcp(app:Express,s:Service,authenticate:RequestHandler) {
  const createLimit=rateLimit({windowMs:60000,limit:10,standardHeaders:'draft-8',legacyHeaders:false});
  app.post('/mcp',(req,res,next)=>req.body?.method==='tools/call'&&req.body?.params?.name==='preview_tracker'?createLimit(req,res,next):next(),(req,res,next)=>{if(req.get('authorization'))return authenticate(req,res,next);res.set('Cache-Control','no-store');next();},async(req,res)=>{
-  const actor=req.actor!;const server=new McpServer({name:'trialy',version:'0.2.19'});
+  const actor=req.actor!;const server=new McpServer({name:'trialy',version:'0.2.28'});
   addTrackerDesignMcp(server);
   const bundle=await workspaceResource(),resource=bundle.uri;
   const metadata={ui:{resourceUri:resource},'openai/widgetAccessible':true,securitySchemes:[{type:'oauth2',scopes:['trialy']}], 'openai/outputTemplate':resource};
@@ -32,16 +32,14 @@ export function addMcp(app:Express,s:Service,authenticate:RequestHandler) {
   server.registerTool('list_field_changes',{description:'Read immutable field-level before/after changes with their authorization. Current field permissions apply.',inputSchema:{workspaceId:id,...fieldChangeQuerySchema.shape},annotations:{readOnlyHint:true},_meta:backgroundMetadata(metadata)},safe(v=>s.fieldChanges(actor,v.workspaceId,v)));
   addWorkspaceMcp(server,new WorkspaceFoundation(s.db),actor,safe,metadata);
   addFoundationMcp(server,new Foundation(s.db,s),actor,safe,metadata);
-  server.registerResource('workspace',resource,{mimeType:'text/html;profile=mcp-app'},async()=>({contents:[{uri:resource,mimeType:'text/html;profile=mcp-app',text:bundle.html,_meta:{ui:{prefersBorder:true,csp:{connectDomains:[],resourceDomains:[],frameDomains:[...new Set([new URL(appPublicUrl()).origin,oauthPublicUrl()])]}},'openai/widgetDescription':'The TrialAgents workspace: data, code, functions and confirmed saves inside ChatGPT.','openai/ui':{availableDisplayModes:['inline','fullscreen'],preferredDisplayMode:'fullscreen'}}}]}));
-  // Keep old chat links readable; new tools always advertise the content-addressed resource.
-  server.registerResource('workspace-legacy','ui://trialy/workspace.html',{mimeType:'text/html;profile=mcp-app'},async()=>({contents:[{uri:'ui://trialy/workspace.html',mimeType:'text/html;profile=mcp-app',text:bundle.html,_meta:{ui:{prefersBorder:true,csp:{connectDomains:[],resourceDomains:[],frameDomains:[...new Set([new URL(appPublicUrl()).origin,oauthPublicUrl()])]}},'openai/widgetDescription':'The TrialAgents workspace: data, code, functions and confirmed saves inside ChatGPT.','openai/ui':{availableDisplayModes:['inline','fullscreen'],preferredDisplayMode:'fullscreen'}}}]}));
+  registerWorkspaceResources(server,bundle,[new URL(appPublicUrl()).origin,oauthPublicUrl()]);
   server.registerTool('read_connected_account',{title:'Connected account',description:'Display the authenticated TrialAgents account identity in the app sidebar. Identity is delivered only to the app.',inputSchema:{},annotations:{readOnlyHint:true,openWorldHint:false},_meta:{...backgroundMetadata(metadata),ui:{visibility:['app']}}},async()=>{
    const response=await safe(async()=>({connected:true,viewerId:actor.userId}))({});if('isError' in response&&response.isError)return response;
    const account=(await s.db.query('SELECT name,email FROM users WHERE id=$1',[actor.userId])).rows[0];
    return {...response,_meta:{accountIdentity:account??{},appPlatform:{enabled:process.env.SIMPLE_APPS_ENABLED==='true',origin:new URL(appPublicUrl(process.env,PLATFORM_ORIGIN)).origin}}};
   });
   server.registerTool('initialize_account',{title:'Prepare TrialAgents account',description:'Resolves or initializes storage for the connected account without opening the workspace UI. Returns authentication and data-access status separately. Existing restrictions remain enforced.',inputSchema:{},annotations:{readOnlyHint:false,destructiveHint:false},_meta:backgroundMetadata(metadata)},safe(async()=>{const workspaces=await s.ensureAccount(actor);return {authenticated:true,accessStatus:workspaces.length?'ready':'no_accessible_workspace',...(workspaces.length?{}:{message:'Your account is connected, but no account database is available to ChatGPT. The owner can review ChatGPT access under Access in TrialAgents. Reconnecting does not change these permissions.'}),viewerId:actor.userId,workspaceId:workspaces[0]?.id,workspaces};}));
-  server.registerTool('open_workspace',{title:'TrialAgents workspace',description:'Open the interactive TrialAgents workspace inside ChatGPT. Use when the user opens TrialAgents and after connecting their account. Use initialize_account instead when creating an app or project; do not open Home as a creation step. Connect your account before creation. The first account database is initialized automatically; never ask users to create or name a workspace. Existing access restrictions remain enforced.',inputSchema:{workspaceId:id.optional()},annotations:{readOnlyHint:false,destructiveHint:false},_meta:{...metadata,securitySchemes:[{type:'noauth'},{type:'oauth2',scopes:['trialy']}],'openai/ui':{entrypoints:[{type:'global'},{type:'thread'}]}}},async v=>{
+  server.registerTool('open_workspace',{title:'TrialAgents workspace',description:'Open the interactive TrialAgents workspace inside ChatGPT. Use when the user opens TrialAgents and after connecting their account. For creation, initialize storage quietly and display the prepared app in this extension. If an app cannot be displayed after one retry, open this platform view; never leave the user with only a chat link. Connect your account before creation. The first account database is initialized automatically; never ask users to create or name a workspace. Existing access restrictions remain enforced.',inputSchema:{workspaceId:id.optional()},annotations:{readOnlyHint:false,destructiveHint:false},_meta:{...metadata,securitySchemes:[{type:'noauth'},{type:'oauth2',scopes:['trialy']}],'openai/ui':{entrypoints:[{type:'global'},{type:'thread'}]}}},async v=>{
    if(!actor)return result({guestWelcome:true,workspaces:[],types:[],templates:[],connectionRequired:true,message:'Connect your TrialAgents account to create and save projects and tools. Trackers, forms, dashboards and automations can stand alone or belong to a project.'});
    return safe(async v=>{
    const workspaces=await s.ensureAccount(actor);const workspaceId=v.workspaceId??workspaces[0]?.id;

@@ -17,6 +17,8 @@ export function parseAppUrl(value:string){
  try{
   if(!value.startsWith('/apps/')||/[\\\u0000-\u0020]/.test(value))return null;
   const url=new URL(value,'https://app.invalid'),match=url.pathname.match(/^\/apps\/([^/]+)(\/.*)?$/);
+  // Hosts may append attribution. It is never routing or sign-in return state.
+  for(const key of ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','utm_id'])url.searchParams.delete(key);
   if(!match||url.hash||[...url.searchParams.keys()].some(k=>!['workspaceId','source','recordId','page'].includes(k))||[...url.searchParams.keys()].some(k=>url.searchParams.getAll(k).length!==1))return null;
   return appLocation.parse({appId:match[1],workspaceId:url.searchParams.get('workspaceId'),source:url.searchParams.get('source')??'component',route:{path:match[2]??'/',...(url.searchParams.has('recordId')?{recordId:url.searchParams.get('recordId')}:{}),...(url.searchParams.has('page')?{page:Number(url.searchParams.get('page'))}:{})}});
  }catch{return null;}

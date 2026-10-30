@@ -71,3 +71,16 @@ test('a preview saved between resolution and rendering opens its receipt without
  const result=await loadTrackerDisplay({screen:'tracker-preview',workspaceId:'w',preview:{id:'draft'}},call,()=>{});
  assert.equal(result.resolved.component.id,'saved');assert.equal(result.output.html,'saved');assert.equal(resolutions,2);
 });
+
+test('embedded app routes render the requested page instead of the prepared root',async()=>{
+ const route={path:'/calculator',page:2};let renders=0;
+ const call=async(name:string,args:any)=>{
+  if(name==='initialize_account')return {viewerId:'u'};
+  if(name==='list_tables')return [];
+  if(name==='resolve_tracker_preview')return {screen:'tracker-preview',workspaceId:'w',preview:{id:'draft'},initialOutput:{html:'root'}};
+  if(name==='run_component_frontend'){renders++;assert.deepEqual(args.request.route,route);return {html:'calculator'};}
+  throw Error(name);
+ };
+ const result=await loadTrackerDisplay({screen:'tracker-preview',workspaceId:'w',preview:{id:'draft'},route},call,()=>{});
+ assert.equal(result.output.html,'calculator');assert.deepEqual(result.resolved.route,route);assert.equal(renders,1);
+});

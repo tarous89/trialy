@@ -11,6 +11,7 @@ import {useAccessRecheck} from './useAccessRecheck.js';
 type Call=(name:string,args:Record<string,unknown>)=>Promise<any>;
 export function FrontendCodeRuntime({component,previewId,initialOutput,call,onProposal,onUnavailable,onAccess,onLayout,onBusyChange,onRendered,onUpdated}:{component?:any;previewId?:string;initialOutput?:any;call:Call;onProposal:(p:any)=>void;onUnavailable?:(message:string)=>void;onAccess?:()=>void;onLayout?:()=>void;onBusyChange?:(busy:boolean)=>void;onRendered?:()=>void;onUpdated?:(component:any)=>void}){
  const platform=React.useContext(AppPlatform),navigation=React.useContext(AppNavigation),navigationRef=useRef(navigation);navigationRef.current=navigation;
+ const platformRef=useRef(platform);platformRef.current=platform;
  const [connectorReviews,setConnectorReviews]=useState<any[]>([]),[customDirty,setCustomDirty]=useState(false);
  const embedded=React.useContext(EmbeddedNavigation);
  const frame=useRef<HTMLIFrameElement>(null),output=useRef<any>(null),state=useRef<any>(null),busyRef=useRef(false),channel=useRef(crypto.randomUUID()),live=useRef(true),current=useRef(component);
@@ -39,7 +40,8 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
    frame.current?.contentWindow?.postMessage({kind:'trialy.cache',channel:channel.current,tracker:merged.tracker},'*');
   }catch{/* Optional prefetch does not replace the view. */}}},150);
  }
- const send=()=>{if(output.current)frame.current?.contentWindow?.postMessage({kind:'trialy.render',channel:channel.current,html:output.current.html,css:output.current.css,controls:output.current.controls,connected:output.current.connected,state:output.current.state,tracker:output.current.tracker,navigationOnly:embedded,appLinks:platform.enabled,appOrigin:platform.origin,linkContext:parseAppUrl(location.pathname+location.search)??(component?{appId:component.id,workspaceId:component.workspace_id,source:'component'}:null)},'*');};
+ const send=()=>{if(output.current)frame.current?.contentWindow?.postMessage({kind:'trialy.render',channel:channel.current,html:output.current.html,css:output.current.css,controls:output.current.controls,connected:output.current.connected,state:output.current.state,tracker:output.current.tracker,navigationOnly:embedded,appLinks:platformRef.current.enabled,appOrigin:platformRef.current.origin,linkContext:navigationRef.current?.location??parseAppUrl(location.pathname+location.search)??(component?{appId:component.id,workspaceId:component.workspace_id,source:'component'}:null)},'*');};
+ useEffect(()=>{if(ready)send();},[platform.enabled,platform.origin]);
  const frameAction=(action:string)=>{approvedAction.current=action==='save-edits'?'bound-batch':action==='save-layout'?'save-layout':null;frame.current?.contentWindow?.postMessage({kind:'trialy.action',channel:channel.current,action},'*');};
  async function run(event:any={kind:'open'}){
   if(event.action==='tracker:layout'){onLayout?.();return;}if(event.action==='tracker:access'){onAccess?.();return;}
@@ -100,7 +102,7 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
  useEffect(()=>{const receive=(e:MessageEvent)=>{if(e.source!==frame.current?.contentWindow)return;if(e.data?.kind==='trialy.ready'){setReady(true);send();}
   else if(e.data.channel===channel.current){
    if(e.data.kind==='trialy.link'&&typeof e.data.href==='string')navigationRef.current?.navigate(e.data.href);
-   else if(e.data.kind==='trialy.dirty')setCustomDirty(!!e.data.dirty);
+   else if(e.data.kind==='trialy.dirty'){if(e.data.dirty)navigationRef.current?.setDirty(true);setCustomDirty(!!e.data.dirty);}
    else if(e.data.kind==='trialy.approve'&&output.current?.tracker&&['bound-batch','tracker:create'].includes(e.data.action))approvedAction.current=e.data.action;
    else if(e.data.kind==='trialy.notice')setError(e.data.message);
    else if(e.data.kind==='trialy.rendered')onRendered?.();
