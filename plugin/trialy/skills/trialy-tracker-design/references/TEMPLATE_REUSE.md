@@ -4,7 +4,7 @@ The supplied HTML defines the unchanged Vivid preset. Explicit user design choic
 
 ## What GPT supplies
 
-Use `prepare_tracker` or `prepare_tracker_revision` with `templateId: "trialy.standard.v1"`. Supply names, descriptions, tabs, authorized table/field bindings, visibility, order, filters, and display semantics. Read CONFIGURATION.md for the validated tool arguments. Use theme overrides for branding. Use custom frontend-js and the authorized data bridge for layouts or interactions outside the template; no design exception is needed.
+Use `prepare_tracker` or `prepare_tracker_revision` with `templateId: "trialy.standard.v1"`. Supply names, descriptions, tabs, authorized table/field bindings, visibility, order, filters, and display semantics. Read CONFIGURATION.md for the validated operation arguments. Use theme overrides for branding. Use custom frontend-js and the authorized data bridge for layouts or interactions outside the template; no design exception is needed.
 
 A tab can select `icon: "people" | "document" | "checklist" | "contract"`. These are the four exact SVGs from the HTML, with content-independent names. Without a selection, their reference order repeats. Badges use only `neutral`, `green`, `blue`, `amber`, or `red` through column display/valueTones. These default semantic classes may be themed through theme.css; theme.primary/accent/success accept hex colors. A tab can also provide iconPath with an SVG path.
 

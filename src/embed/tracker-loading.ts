@@ -21,6 +21,6 @@ export async function loadTrackerDisplay(data:any,call:(name:string,args?:any)=>
 }
 export function trackerLoadError(error:unknown){
  const text=error instanceof Error?error.message:String(error);
- if(/Code preview unavailable|Tracker preview unavailable|Preview unavailable|preview_expired/i.test(text))return 'This preview is no longer available. Open your saved tools or create a new preview.';
- return 'The tracker could not be opened. Your saved tools are still available. Please retry or open Tools.';
+ if(/Code preview unavailable|Tracker preview unavailable|Preview unavailable|preview_expired/i.test(text))return 'This preview is no longer available. Open your saved apps or create a new preview.';
+ return 'The tracker could not be opened. Your saved apps are still available. Please retry or open Apps.';
 }

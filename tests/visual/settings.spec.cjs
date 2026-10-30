@@ -9,8 +9,8 @@ for(const width of [1440,390])test(`Overview and actual tool settings at ${width
  const props=['color','backgroundColor','fontSize','paddingTop','borderRadius'];const read=(el,ps)=>Object.fromEntries(ps.map(p=>[p,getComputedStyle(el)[p]]));
  expect(await tracker.locator(selector).first().evaluate(read,props)).toEqual(await reference.locator(selector).first().evaluate(read,props));
  }
- await tracker.getByRole('button',{name:'Tool settings',exact:true}).click();
- await expect(embed.getByRole('heading',{name:'Tool settings'})).toBeVisible();
+ await tracker.getByRole('button',{name:'App settings',exact:true}).click();
+ await expect(embed.getByRole('heading',{name:'App settings'})).toBeVisible();
  await expect(embed.getByRole('heading',{name:'Tabs',exact:true})).toBeVisible();
  await expect(embed.getByRole('heading',{name:'Columns',exact:true})).toBeVisible();
  await expect(embed.getByRole('combobox',{name:'Source table',exact:true})).toHaveCount(0);
@@ -34,7 +34,7 @@ for(const width of [1440,390])test(`Overview and actual tool settings at ${width
  await expect(tracker.getByRole('button',{name:'Companies',exact:true})).toBeVisible();
  await expect(tracker.getByRole('button',{name:'Contacts',exact:true})).toHaveCount(0);
  // Restore fixture for other tests, exercising save round trip again.
- await tracker.getByRole('button',{name:'Tool settings',exact:true}).click();
+ await tracker.getByRole('button',{name:'App settings',exact:true}).click();
  await embed.getByRole('button',{name:'Show tab Contacts',exact:true}).click();
  await embed.getByRole('button',{name:'Save layout',exact:true}).click();
  await expect(tracker.getByRole('button',{name:'Contacts',exact:true})).toBeVisible();await reference.close();

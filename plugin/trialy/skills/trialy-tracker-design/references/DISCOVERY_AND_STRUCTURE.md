@@ -25,7 +25,7 @@ A template is a **doorway that makes a problem recognizable**. It is not a featu
 8. Only then organize tabs and pick table/graph shapes.
 9. Test the proposed story against a small-team workflow: Can 5–20 people understand it without an implementation consultant?
 
-**Evidence hierarchy:** actual small-team user description/interview > named small-biotech customer case > authentic product support/feature documentation > generic vendor marketing > speculative example. A tool serving large pharma may provide useful workflow mechanics, but is not proof of fit or heavy adoption among small biotechs. Cite what claims are supported and label conjecture. Research when the domain is unfamiliar, dynamic, or heavily specialized. Do not fake statistics or quotations. Avoid delaying obvious prototyping with exhaustive research when user already supplied concrete workflows.
+**Evidence hierarchy:** actual small-team user description/interview > named small-biotech customer case > authentic product support/feature documentation > generic vendor marketing > speculative example. An app serving large pharma may provide useful workflow mechanics, but is not proof of fit or heavy adoption among small biotechs. Cite what claims are supported and label conjecture. Research when the domain is unfamiliar, dynamic, or heavily specialized. Do not fake statistics or quotations. Avoid delaying obvious prototyping with exhaustive research when user already supplied concrete workflows.
 
 **Story prompt format:**
 > “We are [small organization/context]. We must [objective] by [time]. We have [candidates/work/participants], need to collect [critical facts], choose [decision], and keep [evidence/next steps] visible.”

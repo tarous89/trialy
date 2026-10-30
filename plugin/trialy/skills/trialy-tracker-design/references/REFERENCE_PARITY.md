@@ -10,7 +10,7 @@ Read this with TRIALY_INTEGRATION.md before constructing or revising a tracker. 
 
 For a new tracker change the configuration: title, description, tabs, authorized field bindings, labels, explicit visibility overrides and fictional examples. Do not ask the model to rewrite an entire HTML document from memory. Do not paste the specimen's local database, permission simulation or vendor logic into a connected tracker. For intentional custom source, retain the applicable contract and test that source separately; custom source is not automatically upgraded or trusted to execute in the browser.
 
-The server exposes this document as `read_tracker_design(resource:"parity")` and the exact renderer as `resource:"skeleton"`. Follow nextOffset until null. The skeleton is a render-function body, not a standalone HTML file: inputs are config, theme, input and tools; output is html, css, controls and state. Its dependencies are deliberately supplied by the platform.
+The server exposes this document as `read_tracker_design(resource:"parity")` and the exact renderer as `resource:"skeleton"`. Follow nextOffset until null. The skeleton is a render-function body, not a standalone HTML file: inputs are config, theme, input and apps; output is html, css, controls and state. Its dependencies are deliberately supplied by the platform.
 
 ## Detailed feature mapping
 

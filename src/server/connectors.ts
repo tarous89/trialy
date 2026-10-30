@@ -32,6 +32,6 @@ export function addConnectorMcp(server:McpServer,f:WorkspaceFoundation,a:Actor,s
  register('list_connectors','Discover authorized outbound connectors. Never request credentials in chat.',{workspaceId:id,offset:z.number().int().min(0).default(0)},true,v=>c.list(a,v.workspaceId,v.offset));
  register('read_connector','Read safe connector configuration, operation schemas and credential status; never secret values.',{workspaceId:id,connectionId:id},true,v=>c.read(a,v.workspaceId,v.connectionId));
  register('prepare_connector','Prepare a generic HTTPS connector or revise its configuration, app/user bindings and field mappings. No credentials accepted. Requires human review in the trusted app before saving.',{workspaceId:id,...connectorChange.shape},false,({workspaceId,...v})=>c.prepare(a,workspaceId,v));
- register('prepare_connector_call','Prepare an exact connector request for human review. This tool never dispatches external requests.',{workspaceId:id,...connectorCall.shape},false,({workspaceId,...v})=>c.prepareCall(a,workspaceId,v));
+ register('prepare_connector_call','Prepare an exact connector request for human review. This operation never dispatches external requests.',{workspaceId:id,...connectorCall.shape},false,({workspaceId,...v})=>c.prepareCall(a,workspaceId,v));
  register('read_connector_activity','Read authorized usage counters and receipt metadata. No raw request bodies, headers or credentials.',{workspaceId:id,connectionId:id,offset:z.number().int().min(0).default(0)},true,v=>c.activity(a,v.workspaceId,v.connectionId,v.offset));
 }

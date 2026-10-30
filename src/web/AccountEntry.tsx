@@ -9,8 +9,8 @@ export function AccountEntry({brand,signInHref,error,onDemo}:{brand:string;signI
   </header>
   <div className="ty-entry-body"><section className="ty-entry-panel" aria-labelledby="ty-entry-title">
    <img className="ty-entry-mark" src="/trialagents-mark-black.png" width="52" height="52" alt=""/>
-   <h1 id="ty-entry-title">Your projects.<br/>Your tools.</h1>
-   <p className="ty-entry-subtitle">Bring your projects, tools and data together with ChatGPT.<br/>Explore in preview. Save when you're ready.</p>
+   <h1 id="ty-entry-title">Your projects.<br/>Your apps.</h1>
+   <p className="ty-entry-subtitle">Bring your projects, apps and data together with ChatGPT.<br/>Explore in preview. Save when you're ready.</p>
    <a className="ty-entry-primary" href={signInHref}>Sign in to {brand} →</a>
    {onDemo&&<button className="ty-entry-demo" onClick={onDemo}>Open local demo</button>}
    <p className="ty-entry-note">Designed for clinical operations. Not fit for patient-level data.</p>

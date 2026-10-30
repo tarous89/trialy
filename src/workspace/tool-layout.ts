@@ -8,7 +8,7 @@ import type {WorkspaceFoundation} from './service.js';
 export const toolLayoutRequest=z.object({componentId:id,expectedVersion:z.number().int().min(0),name:z.string().trim().min(1).max(100),description:z.string().max(500),theme:toolThemeSchema.optional(),newTables:trackerSetup.shape.newTables,extendTables:trackerSetup.shape.extendTables,tabs:z.array(z.object({originalIndex:z.number().int().min(0).optional(),typeId:id,name:z.string().trim().min(1).max(60),visible:z.boolean(),columns:z.array(z.object({fieldId:z.string().max(100).optional(),field:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),label:z.string().trim().min(1).max(100),visible:z.boolean(),display:columnDisplay.optional()}).strict()).min(1).max(30)}).strict()).min(1).max(8)}).strict();
 export async function prepareToolLayout(f:WorkspaceFoundation,a:Actor,w:string,input:unknown){
  const v=toolLayoutRequest.parse(input),{component:c}=await f.readComponent(a,w,v.componentId),standard=standardTracker(c.source);
- if(c.version!==v.expectedVersion)fail(409,'stale_version','This tool changed. Reopen its settings.');
+ if(c.version!==v.expectedVersion)fail(409,'stale_version','This app changed. Reopen its settings.');
  if(!standard)fail(400,'custom_layout','Update this custom layout in ChatGPT, keeping its authorized data bindings.');
  const old=standard.config,indices=v.tabs.flatMap(t=>t.originalIndex===undefined?[]:[t.originalIndex]);
  if(new Set(indices).size!==indices.length||indices.some(i=>!old.tabs[i])||!v.tabs.some(t=>t.visible))fail(400,'layout_scope','Use distinct existing tabs and keep at least one visible tab.');

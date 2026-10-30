@@ -88,7 +88,7 @@ export class WorkspaceFoundation {
  }
  async toolTables(a:Actor,w:string,componentId:string):Promise<any>{
   if(a.accessToolId!==componentId)return withActor({...a,accessToolId:componentId},()=>this.toolTables({...a,accessToolId:componentId},w,componentId));
-  const c=await this.component(this.db,a,w,componentId);if(c.archived||c.project_archived)fail(409,'component_changed','Open an active tool');
+  const c=await this.component(this.db,a,w,componentId);if(c.archived||c.project_archived)fail(409,'component_changed','Open an active app');
   const result=[];for(const binding of c.bindings){try{const {type,policy}=await typeAccess(this.db,a,w,binding.typeId);const fields=visibleFields(type.fields,policy,a).map(f=>({...f,writable:policy.write_fields.includes(f.key)}));result.push({id:type.id,name:type.name,fields,creationBlocked:type.fields.some((f:any)=>f.required&&!f.formula&&!f.computed&&!f.lookup&&!fields.some(v=>v.key===f.key&&v.writable))});}catch(e){if((e as any).status!==404)throw e;}}
   return result;
  }
@@ -155,7 +155,7 @@ export class WorkspaceFoundation {
     if(name==='project.records'||name==='project.relationships'){
      const v=z.object({offset:z.number().int().min(0).max(1000000).default(0)}).strict().parse(value);
      const typeIds=content.bindings.map((b:any)=>b.typeId),projectId=content.project_id;
-     if(!projectId)fail(400,'project_required','This independent tool has no project data scope. Use bound records.read instead.');
+     if(!projectId)fail(400,'project_required','This independent app has no project data scope. Use bound records.read instead.');
      const projectRecord=(record:any)=>{const binding=content.bindings.find((b:any)=>b.typeId===(record.type_id??record.typeId));return {id:record.id,typeId:record.type_id??record.typeId,version:record.version,data:Object.fromEntries(Object.entries(record.data).filter(([k])=>binding.fields.includes(k)))};};
      if(name==='project.records'){const page=await this.projectRecords(a,w,projectId,v.offset,typeIds);return {projectId,records:page.records.map(r=>projectRecord(r.record)),nextOffset:page.nextOffset};}
      const page=await this.projectRelationships(a,w,projectId,v.offset,typeIds);return {projectId,relationships:page.relationships.filter(r=>content.bindings.find((b:any)=>b.typeId===r.source.typeId)?.fields.includes(r.field)).map(r=>({field:r.field,label:r.label,source:projectRecord(r.source),target:projectRecord(r.target)})),nextOffset:page.nextOffset};
@@ -260,7 +260,7 @@ export class WorkspaceFoundation {
   }finally{if(!knownTracker)activeFrontends.delete(key);}
  }
  private parseInterface(content:any){
-  let spec;try{spec=interfaceSchema.parse(JSON.parse(content.source));}catch{fail(400,'invalid_interface','Use a valid trialy-ui-v1 interface description');}
+  let spec;try{spec=interfaceSchema.parse(JSON.parse(content.source));}catch{fail(400,'invalid_interface','Use a valid legacy TrialAgents interface description');}
   for(const b of spec.blocks)if(b.kind==='table'&&!content.bindings.some((v:any)=>v.typeId===b.typeId&&b.fields.every(k=>v.fields.includes(k))))fail(400,'invalid_binding','Every interface table field must have a declared data binding');
   return spec;
  }
@@ -280,7 +280,7 @@ export class WorkspaceFoundation {
  }
  async resolveTrackerPreview(a:Actor,w:string,previewId:string):Promise<any>{
   await access(this.db,a,w);
-  const unavailable=(status='unavailable')=>({workspaceId:w,screen:'tracker-unavailable',previewStatus:status,message:status==='expired'?'This unsaved preview has expired. Open your saved tools or create a new preview.':'This preview is no longer available. Open your saved tools or create a new preview.'});
+  const unavailable=(status='unavailable')=>({workspaceId:w,screen:'tracker-unavailable',previewStatus:status,message:status==='expired'?'This unsaved preview has expired. Open your saved apps or create a new preview.':'This preview is no longer available. Open your saved apps or create a new preview.'});
   const receipt=(await this.db.query('SELECT result FROM workspace_receipts WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[previewId,w,a.userId])).rows[0];
   if(receipt?.result?.id){
    try{const saved=await this.readComponent(a,w,receipt.result.id,true);if(saved.component.archived||saved.component.project_archived)return unavailable();return {...saved,screen:'tracker',previewStatus:'saved',recoveredFromPreview:previewId,displayStatus:'awaiting_client'};}
@@ -382,7 +382,7 @@ export class WorkspaceFoundation {
   const source=await this.component(tx,a,w,op.sourceComponentId);
   if(source.version!==op.expectedVersion)fail(409,'stale_version','Source component changed; prepare a new copy');
   if(source.format==='trialy-ui')fail(400,'legacy_format','Create frontend-js code instead of copying the legacy renderer');
-  if(op.projectId){const project=(await this.activeNode(tx,a,w,op.projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');}else if(source.manifest?.scope==='project')fail(400,'project_required','Keep a project-scoped tool in a project');
+  if(op.projectId){const project=(await this.activeNode(tx,a,w,op.projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');}else if(source.manifest?.scope==='project')fail(400,'project_required','Keep a project-scoped app in a project');
   const keep=await this.moveRestrictions(tx,a,w,source.project_id,source);
   return {name:op.name,format:source.format,source:source.source,resource_kind:source.resource_kind,manifest:source.manifest,bindings:source.bindings,assets:source.assets??[],source_access:source.source_access,execution:[],allowed_users:keep.users,ai_enabled:keep.ai,archived:false,copiedFrom:{componentId:source.id,version:source.version}};
  }
@@ -491,7 +491,7 @@ export class WorkspaceFoundation {
  }
  private async validate(tx:Connection,a:Actor,w:string,op:WorkspaceOperation){
   if(op.kind==='apply_component_records'||op.kind==='edit_component_record')a={...a,accessToolId:op.componentId};
-  if(!['apply_component_records','edit_component_record'].includes(op.kind)){const p=await access(tx,a,w);if(p.direct_data===false&&p.role!=='owner')fail(403,'manage_required','Tool data access does not allow structure or access changes');}
+  if(!['apply_component_records','edit_component_record'].includes(op.kind)){const p=await access(tx,a,w);if(p.direct_data===false&&p.role!=='owner')fail(403,'manage_required','App data access does not allow structure or access changes');}
   if(op.kind==='apply_component_records'||op.kind==='edit_component_record'||(op.kind==='save_component'&&op.content.sourceAccess==='bindings'))await access(tx,a,w,true);else await this.policy(tx,a,w,true);
   if((op.kind==='save_component'||op.kind==='create_tracker')&&op.reuseOrigin){
    const source=await this.component(tx,a,w,op.reuseOrigin.componentId);
@@ -503,7 +503,7 @@ export class WorkspaceFoundation {
   if(op.kind==='create_automation_template'){const built=await trackerOperation(new WorkspaceFoundation(adapter(tx)),a,w,op.setup);automationTemplate(op.setup,op.report,built.content);}
   if(op.kind==='create_tracker'){
    await this.componentSourcePolicy(tx,a,w);
-   if(op.componentId){const previous=await this.component(tx,a,w,op.componentId);if(previous.version!==op.expectedVersion)fail(409,'stale_version','Tool changed; reload its configuration');if(!standardTracker(previous.source))fail(400,'custom_tool','Custom tools require a custom source review');if(previous.project_id!==op.setup.projectId||previous.resource_kind!==op.setup.resourceKind||previous.execution?.length)fail(400,'revision_scope','Keep the project, tool kind, and custom execution bindings unchanged');}
+   if(op.componentId){const previous=await this.component(tx,a,w,op.componentId);if(previous.version!==op.expectedVersion)fail(409,'stale_version','App changed; reload its configuration');if(!standardTracker(previous.source))fail(400,'custom_tool','Custom apps require a custom source review');if(previous.project_id!==op.setup.projectId||previous.resource_kind!==op.setup.resourceKind||previous.execution?.length)fail(400,'revision_scope','Keep the project, app kind, and custom execution bindings unchanged');}
    if(op.setup.projectId){const project=(await this.activeNode(tx,a,w,op.setup.projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');}
    const generated=await trackerOperation(new WorkspaceFoundation(adapter(tx)),a,w,op.setup);
    const parsed=workspaceOperation.parse(generated),expected=workspaceOperation.parse(op);if(parsed.kind!=='save_component'||expected.kind!=='create_tracker'||!isDeepStrictEqual(parsed.content,expected.content))fail(409,'tracker_changed','Tracker fields or template changed; prepare the preview again');
@@ -530,15 +530,15 @@ export class WorkspaceFoundation {
    else if((await access(tx,a,w,true)).role!=='owner')fail(403,'owner_required','Only an owner can approve source sharing with a restricted data audience');
    if((op.kind==='save_component'||op.kind==='move_component')&&op.projectId){const project=(await this.activeNode(tx,a,w,op.projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');}
    if(op.componentId){const c=await this.component(tx,a,w,op.componentId);if(c.project_archived)fail(409,'project_archived','Restore the project before editing components');if(c.version!==op.expectedVersion)fail(409,'stale_version','Component changed');}
-   if(op.kind==='move_component'&&(await this.component(tx,a,w,op.componentId)).manifest?.scope==='project')fail(400,'use_tool_move','Use move_tool to organize this tool without changing its data scope');
+   if(op.kind==='move_component'&&(await this.component(tx,a,w,op.componentId)).manifest?.scope==='project')fail(400,'use_tool_move','Use move_tool to organize this app without changing its data scope');
    if(op.kind==='save_component'&&!op.componentId&&op.expectedVersion!==undefined)fail(400,'invalid_version','New components have no expected version');
    if(op.kind==='save_component'){
-    if(!op.projectId&&op.content.manifest?.scope==='project')fail(400,'project_scope','A project-scoped data binding needs a project. Use workspace scope for an independent tool.');
-    if(op.content.format==='trialy-ui'){if(!op.componentId||(await this.component(tx,a,w,op.componentId)).format!=='trialy-ui')fail(400,'legacy_format','Save ChatGPT-written code using frontend-js; trialy-ui is retained only for existing items');this.parseInterface(op.content);}
+    if(!op.projectId&&op.content.manifest?.scope==='project')fail(400,'project_scope','A project-scoped data binding needs a project. Use workspace scope for an independent app.');
+    if(op.content.format==='trialy-ui'){if(!op.componentId||(await this.component(tx,a,w,op.componentId)).format!=='trialy-ui')fail(400,'legacy_format','Save ChatGPT-written code using frontend-js; the legacy interface format is retained only for existing items');this.parseInterface(op.content);}
     if(op.componentId&&(await this.component(tx,a,w,op.componentId)).project_id!==op.projectId)fail(400,'move_required','Use the explicit move operation to change project');
     await this.componentBindings(tx,a,w,op.content.bindings);
     const previous=op.componentId?await this.component(tx,a,w,op.componentId):null;
-    if(previous?.manifest&&op.content.manifest===null)fail(400,'manifest_required','Connected tools must retain their data contract when changing presentation.');
+    if(previous?.manifest&&op.content.manifest===null)fail(400,'manifest_required','Connected apps must retain their data contract when changing presentation.');
     await validateResource(tx,a,w,{...op.content,resourceKind:op.content.resourceKind??previous?.resource_kind??'generic',manifest:op.content.manifest===undefined?previous?.manifest:op.content.manifest});await this.componentAssets(tx,a,w,op.content.assets);
     if(new Set(op.content.execution.map(e=>e.name)).size!==op.content.execution.length)fail(400,'duplicate_binding','Function binding names must be unique');
     const foundation=new Foundation(adapter(tx));
