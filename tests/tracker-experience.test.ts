@@ -38,13 +38,18 @@ test('embedded resources are content-addressed and background tools retain auth 
  const meta=backgroundMetadata({ui:{resourceUri:bundle.uri},'openai/outputTemplate':bundle.uri,'openai/widgetAccessible':true,securitySchemes:[{type:'oauth2'}]});assert.equal(meta['openai/outputTemplate'],undefined);assert.equal(meta.ui,undefined);assert.deepEqual(meta.securitySchemes,[{type:'oauth2'}]);
 });
 
-test('MCP exposes a single registered tracker draft tool and no navigation metadata on schema reads',async()=>{
+test('MCP exposes app displays, quiet schema reads and cached widget compatibility',async t=>{
+ const prior=process.env.SIMPLE_APPS_ENABLED;process.env.SIMPLE_APPS_ENABLED='true';t.after(()=>{if(prior===undefined)delete process.env.SIMPLE_APPS_ENABLED;else process.env.SIMPLE_APPS_ENABLED=prior;});
  const {default:request}=await import('supertest'),{baseApp}=await import('../src/server/app.js'),{addMcp}=await import('../src/server/mcp.js');
  const app=baseApp();addMcp(app,new Service({} as Database),(_q,_r,next)=>next());
  const response=await request(app).post('/mcp').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:1,method:'tools/list'});assert.equal(response.status,200);const tools=response.body.result.tools;
  for(const name of ['initialize_account','read_workspace_schema','find_field_candidates','prepare_change']){const t=tools.find((t:any)=>t.name===name);assert.ok(t);assert.equal(t._meta['openai/outputTemplate'],undefined);}
- for(const name of ['open_workspace','open_tracker','open_tracker_draft','prepare_tracker'])assert.match(tools.find((t:any)=>t.name===name)._meta['openai/outputTemplate'],/workspace-[a-f0-9]{16}\.html$/);
+ for(const name of ['open_workspace','open_app','prepare_app','open_tracker','open_tracker_draft','prepare_tracker'])assert.match(tools.find((t:any)=>t.name===name)._meta['openai/outputTemplate'],/workspace-[a-f0-9]{16}\.html$/);
  assert.equal(tools.filter((t:any)=>t.name==='open_tracker_preview').length,1,'Preserve legacy preview recovery');
+ const cachedUri='ui://trialy/workspace-0000000000000000.html';
+ const cached=await request(app).post('/mcp').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:2,method:'resources/read',params:{uri:cachedUri}});
+ assert.equal(cached.body.result.contents[0].uri,cachedUri);assert.equal(cached.body.result.contents[0].text,(await workspaceResource()).html);assert.equal(cached.body.result.contents[0]._meta['openai/ui'].preferredDisplayMode,'fullscreen');
+ for(const uri of ['ui://trialy/workspace-secret.html','ui://other/workspace-0000000000000000.html']){const denied=await request(app).post('/mcp').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:3,method:'resources/read',params:{uri}});assert.ok(denied.body.error,uri);}
 });
 
 test('empty account previews missing tables without writes; save is atomic, idempotent and project optional',async()=>{

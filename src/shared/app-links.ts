@@ -10,6 +10,7 @@ export function frameLinkTarget(href:string,origin:string,current:{appId?:string
   if(url.username||url.password)return null;
   if(absolute&&(url.origin!==origin||!url.pathname.startsWith('/apps/')))return {href:url.href,external:true};
   if(href.startsWith('/apps/')||absolute&&url.pathname.startsWith('/apps/')){
+   for(const key of ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','utm_id'])url.searchParams.delete(key);
    const match=url.pathname.match(/^\/apps\/([a-f0-9-]{36})(?:\/[A-Za-z0-9_-]+)*$/i),uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
    if(!match||!uuid.test(match[1])||!uuid.test(url.searchParams.get('workspaceId')||'')||url.hash||[...url.searchParams.keys()].some(k=>!['workspaceId','source','recordId','page'].includes(k)||url.searchParams.getAll(k).length!==1))return null;
    const source=url.searchParams.get('source')||'component';

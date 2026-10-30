@@ -4,14 +4,15 @@ export async function loadTrackerDisplay(data:any,call:(name:string,args?:any)=>
  const resource=data.screen==='tracker-preview'&&(!data.initialOutput||!data.preparedAt||Date.now()-Date.parse(data.preparedAt)>15000)
   ?call('resolve_tracker_preview',{workspaceId:data.workspaceId,previewId:data.preview.id}):Promise.resolve(data);
  const [identity,firstResolved]=await Promise.all([account,resource]);
- let resolved=firstResolved;
+ let resolved={...firstResolved,...(data.route?{route:data.route}:{})};
  if(resolved.screen==='tracker-unavailable')return {account:identity,resolved,output:null};
- const render=()=>resolved.initialOutput?Promise.resolve(resolved.initialOutput):call('run_component_frontend',{workspaceId:resolved.workspaceId,request:{...(resolved.component?{componentId:resolved.component.id,expectedVersion:resolved.component.version}:{previewId:resolved.preview.id}),event:{kind:'open'}}});
+ const rootRoute=!data.route||(data.route.path==='/'&&!data.route.recordId&&data.route.page===undefined);
+ const render=()=>resolved.initialOutput&&rootRoute?Promise.resolve(resolved.initialOutput):call('run_component_frontend',{workspaceId:resolved.workspaceId,request:{...(resolved.component?{componentId:resolved.component.id,expectedVersion:resolved.component.version}:{previewId:resolved.preview.id}),...(data.route?{route:data.route}:{}),event:{kind:'open'}}});
  let output;try{output=await render();}catch(error){
   // Saving in another surface can consume the preview between resolve and render.
   // Reconcile its receipt once; never create another preview or retry a write.
   if(!resolved.preview||!/preview.*unavailable|preview_expired/i.test(String(error)))throw error;
-  resolved=await call('resolve_tracker_preview',{workspaceId:resolved.workspaceId,previewId:resolved.preview.id});
+  resolved={...await call('resolve_tracker_preview',{workspaceId:resolved.workspaceId,previewId:resolved.preview.id}),...(data.route?{route:data.route}:{})};
   if(resolved.screen==='tracker-unavailable')return {account:identity,resolved,output:null};
   output=await render();
  }

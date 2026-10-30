@@ -49,10 +49,10 @@ test('Invalid sign-in keeps the shared design and retry flow',async({page})=>{
  await page.getByRole('link',{name:'Try again'}).click();
  await expect(page.getByRole('heading',{name:'Sign in to TrialAgents'})).toBeVisible();
 });
-test('Create account preserves app return after switching auth modes',async({page,request})=>{
+test('Create account preserves app return and strips attribution after switching auth modes',async({page,request})=>{
  const fixture=await (await request.get(base+'/fixture/apps')).json();
  const destination=fixture.url;
- await page.goto(base+'/auth/login?returnTo='+encodeURIComponent(destination));
+ await page.goto(base+'/auth/login?returnTo='+encodeURIComponent(destination+'&utm_source=chatgpt.com'));
  await page.getByRole('link',{name:'Create an account',exact:true}).click();
  await page.getByLabel('Email',{exact:true}).fill('auth-app-return@example.invalid');
  await page.getByLabel('Password',{exact:true}).fill('synthetic-test-password');
