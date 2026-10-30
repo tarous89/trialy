@@ -11,7 +11,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=build --chown=node:node /app /app
 ENV PLAYWRIGHT_BROWSERS_PATH=/opt/playwright
-RUN npx playwright install --with-deps chromium --only-shell && chmod -R a+rX /opt/playwright
+RUN node node_modules/playwright/cli.js install --with-deps chromium --only-shell && chmod -R a+rX /opt/playwright
 USER node
 EXPOSE 3000
 CMD ["npm", "start"]
