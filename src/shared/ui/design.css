@@ -336,3 +336,10 @@
 .ty-workspace .ty-tracker-preview>.ty-action-footer{left:0;right:0;bottom:0;width:auto;max-width:none;min-height:var(--shell-footer);margin:0;border-radius:0;border-width:1px 0 0;box-shadow:none;padding:12px max(20px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px))}
 .ty-workspace:has(.ty-tracker-preview>.ty-action-footer:not([hidden] *)) #ty-main{padding-bottom:calc(var(--shell-footer) + 24px);scroll-padding-bottom:calc(var(--shell-footer) + 24px)}
 .ty-workspace:has(.ty-tracker-preview>.ty-action-footer:not([hidden] *)) .ty-sidebar--desktop{bottom:var(--shell-footer);height:calc(100dvh - var(--shell-footer))}
+
+/* Labeled preview actions wrap as a pair on narrow screens. */
+@media(max-width:600px){
+ .ty-workspace:has(.ty-tracker-preview>.ty-action-footer:not([hidden] *)){--shell-footer:calc(112px + env(safe-area-inset-bottom,0px))}
+ .ty-workspace .ty-tracker-preview>.ty-action-footer{flex-wrap:wrap;justify-content:flex-end;gap:10px}
+ .ty-workspace .ty-tracker-preview>.ty-action-footer .ty-action-footer-sentence{flex-basis:100%}
+}

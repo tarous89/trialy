@@ -118,7 +118,7 @@
 .ty-workspace--embedded .ty-action-footer .ty-button--secondary:hover{background:#263c31;color:white}
 .ty-workspace--embedded .ty-footer-dismiss{color:#e7eee9}
 
-/* Open app remains a light CTA against the dark embedded header. */
+/* Open TrialAgents remains a light CTA against the dark embedded header. */
 .ty-workspace--embedded .ty-topbar .ty-button.ty-button--quiet{background:#fff;color:#183d32;border-color:#dce5e1}
 .ty-workspace--embedded .ty-topbar .ty-button.ty-button--quiet:is(:hover,:focus-visible){background:#e7eee9;color:#183d32}
 
@@ -152,3 +152,16 @@
 .ty-workspace .ty-resource-open{text-decoration:none;color:inherit;cursor:pointer}
 .ty-workspace .ty-menu-popover>a{display:block;padding:10px 12px;color:inherit;text-decoration:none;border-radius:6px;font:inherit}
 .ty-workspace .ty-menu-popover>a:is(:hover,:focus){background:var(--ty-hover,#f0f4f2)}
+@media(max-width:380px){
+ .ty-workspace--embedded .ty-topbar{padding:0 12px;gap:8px}
+ .ty-workspace--embedded .ty-topbar-left{gap:8px}
+ .ty-workspace--embedded .ty-mobile-brand{font-size:17px}
+ .ty-workspace--embedded .ty-topbar>.ty-button{font-size:12px;padding:8px}
+ .ty-workspace--embedded .ty-topbar>.ty-button svg{display:none}
+}
+.ty-workspace .ty-tracker-preview>.ty-action-footer .ty-button--primary{background:#fff!important;color:#123c2c;border-color:#fff}
+.ty-workspace .ty-tracker-preview>.ty-action-footer .ty-button--primary:hover{background:#edf6f0!important}
+/* Keep the platform action in the header row, including template app layouts. */
+.ty-workspace.ty-workspace--embedded .ty-main-column>.ty-topbar{flex-wrap:nowrap}
+@media(max-width:600px){.ty-workspace.ty-workspace--embedded .ty-main-column>.ty-topbar{padding:0 16px;gap:12px}}
+@media(max-width:380px){.ty-workspace.ty-workspace--embedded .ty-main-column>.ty-topbar{padding:0 12px;gap:8px}}
