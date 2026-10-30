@@ -330,3 +330,9 @@
 
 /* Tool menu trigger stays unframed in both hosts. */
 .ty-workspace .ty-resource>.ty-menu>.ty-icon-button,.ty-workspace .ty-resource>.ty-menu>.ty-icon-button:hover,.ty-workspace .ty-resource>.ty-menu>.ty-icon-button[aria-expanded=true]{background:transparent;border:0;box-shadow:none}
+
+/* Preview saving stays at the screen edge in the extension and standalone app. */
+.ty-workspace:has(.ty-tracker-preview>.ty-action-footer:not([hidden] *)){--shell-footer:calc(80px + env(safe-area-inset-bottom,0px))}
+.ty-workspace .ty-tracker-preview>.ty-action-footer{left:0;right:0;bottom:0;width:auto;max-width:none;min-height:var(--shell-footer);margin:0;border-radius:0;border-width:1px 0 0;box-shadow:none;padding:12px max(20px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px))}
+.ty-workspace:has(.ty-tracker-preview>.ty-action-footer:not([hidden] *)) #ty-main{padding-bottom:calc(var(--shell-footer) + 24px);scroll-padding-bottom:calc(var(--shell-footer) + 24px)}
+.ty-workspace:has(.ty-tracker-preview>.ty-action-footer:not([hidden] *)) .ty-sidebar--desktop{bottom:var(--shell-footer);height:calc(100dvh - var(--shell-footer))}
