@@ -1,0 +1,40 @@
+{
+  "version": "1.0.0",
+  "deprecated": false,
+  "id": "simple.checklist",
+  "name": "Planning checklist",
+  "description": "A lightweight personal planning checklist with local checkboxes and a progress summary.",
+  "tags": [
+    "planning",
+    "checklist",
+    "tasks",
+    "readiness"
+  ],
+  "whenToUse": "A short disposable checklist or planning aid that does not need shared database records.",
+  "whenNotToUse": "Persistent task tracking, regulated sign-off, audit evidence or approvals; use a database-backed tracker for these.",
+  "instructions": "Provide items as newline-separated text. Checkmarks are local session state only. Explain this limitation; choose the Vivid tracker if the user needs saved progress. Configuration is available in templateConfiguration. This template cannot grant approval or write to the database.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "Planning checklist",
+    "items": "Define the objective\nAgree the next steps\nReview the plan"
+  },
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "Checklist heading",
+      "required": true
+    },
+    "items": {
+      "type": "string",
+      "description": "One checklist item per line, up to 30 items",
+      "required": true
+    }
+  },
+  "examples": [
+    {
+      "heading": "Meeting preparation",
+      "items": "Review agenda\nGather questions\nConfirm attendees"
+    }
+  ],
+  "source": "const esc=v=>String(v).replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'}[c]));\nconst items=templateConfiguration.items.split('\\n').map(x=>x.trim()).filter(Boolean).slice(0,30);const state=input.state||{};if(input.event.action==='update')state.checked=items.map((_,i)=>!!input.event.form['item'+i]);const checked=state.checked||[];\nreturn {html:'<main><p>PLANNING</p><h1>'+esc(templateConfiguration.heading)+'</h1><form data-action=\"update\">'+items.map((item,i)=>'<label><input type=\"checkbox\" name=\"item'+i+'\" '+(checked[i]?'checked':'')+'>'+esc(item)+'</label>').join('')+'<button>Update progress</button></form><h2>'+checked.filter(Boolean).length+' / '+items.length+'</h2><p>Progress lasts for this session; it is not a saved record or approval.</p></main>',css:'body{font:16px system-ui;color:#193c31;background:#f4f7f5;margin:0}main{max-width:640px;margin:40px auto;padding:28px}label{display:flex;gap:12px;padding:16px;margin:8px 0;background:white;border-radius:8px}button{padding:12px 24px;background:#175f47;color:white;border:0;border-radius:8px}',state};"
+}

@@ -32,6 +32,10 @@ export const maintenanceBatch=z.object({
  changes:z.array(recordWriteSchema).max(200).default([]),
  links:z.array(identityLinkSchema).max(50).default([])
 }).strict().refine(v=>v.changes.length+v.links.length>0,'Provide changes or identity links');
+const appProvenance={
+ catalogOrigin:z.object({id:z.string().max(80),version:z.string().max(40),digest:z.string().length(64)}).strict().optional(),
+ reuseOrigin:z.object({componentId:id,version:z.number().int().min(0),mode:z.enum(['shared_data','separate_data'])}).strict().optional()
+};
 export const workspaceOperation=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('create_node'),nodeKind:z.enum(['folder','project']),name:z.string().trim().min(1).max(100),description:z.string().trim().max(2000).default(''),parentId:id.nullable().default(null),initialAccess:z.object({expectedVersion:z.number().int().min(0),rules:z.array(z.object({subject:z.union([id,z.literal('chatgpt')]),read:z.boolean(),write:z.boolean()}).strict().refine(v=>v.read||!v.write,{message:'Editing requires viewing'})).max(1000)}).strict().optional()}).strict(),
  z.object({kind:z.literal('move_node'),nodeId:id,expectedVersion:z.number().int().min(0),parentId:id.nullable()}).strict(),
@@ -49,8 +53,8 @@ export const workspaceOperation=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('unlink_cross_table_identity'),linkId:id,expectedVersion:z.number().int().min(0),reason:text}).strict(),
  z.object({kind:z.literal('unlink_identity'),linkId:id,expectedVersion:z.number().int().min(0),reason:text}).strict(),
  z.object({kind:z.literal('create_automation_template'),report:z.enum(['due','missing']),setup:trackerSetup}).strict(),
- z.object({kind:z.literal('create_tracker'),componentId:id.optional(),expectedVersion:z.number().int().min(0).optional(),setup:trackerSetup,content:componentContent}).strict(),
- z.object({kind:z.literal('save_component'),designException:designExceptionSchema.optional(),designChangeReason:z.string().trim().min(10).max(1000).optional(),projectId:id.nullable().default(null),componentId:id.optional(),expectedVersion:z.number().int().min(0).optional(),content:componentContent}).strict(),
+ z.object({...appProvenance,kind:z.literal('create_tracker'),componentId:id.optional(),expectedVersion:z.number().int().min(0).optional(),setup:trackerSetup,content:componentContent}).strict(),
+ z.object({...appProvenance,kind:z.literal('save_component'),designException:designExceptionSchema.optional(),designChangeReason:z.string().trim().min(10).max(1000).optional(),projectId:id.nullable().default(null),componentId:id.optional(),expectedVersion:z.number().int().min(0).optional(),content:componentContent}).strict(),
  z.object({kind:z.literal('move_component'),componentId:id,expectedVersion:z.number().int().min(0),projectId:id.nullable()}).strict(),
  z.object({kind:z.literal('archive_component'),componentId:id,expectedVersion:z.number().int().min(0),archived:z.boolean()}).strict(),
  z.object({kind:z.literal('apply_component_records'),componentId:id,expectedVersion:z.number().int().min(0),changes:componentRecordChanges}).strict(),

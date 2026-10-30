@@ -73,3 +73,7 @@ ChatGPT can prepare configuration and inspect safe metadata. Credentials are ent
 Use customer-owned service credentials first. Add request/time/body/rate/concurrency limits, per-connection counters, disable controls and audit entries. Provider charges are external; TrialAgents cannot cap the customer's entire provider bill. Do not require currency reservations, a billing engine or TrialAgents-funded email/AI for P0.
 
 The release is complete when one simple app is created without choosing a type, inherits its project colors, opens separately, navigates between pages, calls a permitted connector, saves a reviewed result and reopens. Its footer works and remains visible. Unauthorized users/fields/operations fail; old tools/data/history survive; Connectors matches the existing UI.
+
+## 30 October addition: dynamic templates and app reuse
+
+The [dynamic-template and existing-app reuse contract](DYNAMIC_APP_TEMPLATES.md) is now part of P0. It adds stable catalog discovery/read/preparation tools and permission-checked app reuse, with an explicit shared/separate-data choice. Catalog-only additions use the server publishing process without changing the plugin package; new capabilities remain subject to the normal release/review process. Templates remain optional, and saved apps do not automatically adopt new catalog revisions.
