@@ -309,8 +309,10 @@ export class WorkspaceFoundation {
    const row=(await tx.query('SELECT body FROM workspace_previews WHERE id=$1',[preview.id])).rows[0];
    row.body.operation.designOrigin.quality=designQuality.status;row.body.preparation={requestKey:key??null,fingerprint};row.body.designQuality=designQuality;
    const digest=checksum(J(row.body)),target=replace??preview.id;
-   await tx.query("UPDATE workspace_previews SET body=$2,digest=$3,expires_at=now()+interval '24 hours' WHERE id=$1",[target,J(row.body),digest]);
-   if(replace)await tx.query('DELETE FROM workspace_previews WHERE id=$1',[preview.id]);
+   // Preview bodies are immutable to the runtime role. Replace the temporary row
+   // atomically using its existing insert/delete permissions, keeping its identity.
+   await tx.query('DELETE FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND id=ANY($3::uuid[])',[w,a.userId,[target,preview.id]]);
+   await tx.query('INSERT INTO workspace_previews(id,workspace_id,user_id,body,digest) VALUES($1,$2,$3,$4,$5)',[target,w,a.userId,J(row.body),digest]);
    return {workspaceId:w,screen:'tracker-preview',preview:{...preview,id:target,body:row.body.operation,digest},initialOutput,designQuality,saveStatus:'unsaved',previewStatus:'prepared',preparedAt:new Date().toISOString(),displayStatus:'awaiting_client'};
   });
  }
