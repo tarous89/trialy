@@ -1,3 +1,4 @@
+import {BrandMark} from './BrandMark.js';
 import React,{useEffect,useRef,useState} from 'react';
 import {FrontendCodeRuntime} from './FrontendCodeRuntime.js';
 export function GuestPreview({draft,call,openLink,onSaved}:{draft:any;call:(name:string,args:any)=>Promise<any>;openLink:(url:string)=>Promise<void>;onSaved:(receipt:any)=>Promise<void>}){
@@ -10,7 +11,7 @@ export function GuestPreview({draft,call,openLink,onSaved}:{draft:any;call:(name
  const bundle=draft.bundle,selected=bundle?.components[component],expired=!!draft.expiresAt&&new Date(draft.expiresAt).getTime()<=clock;
  const remaining=Math.max(1,Math.ceil((new Date(draft.expiresAt).getTime()-clock)/3600000));
  const url=draft.saveUrl;
- return <main><header><div><small>TRIALY · {status==='saved'?'SAVED':'TEMPORARY PREVIEW'}</small><h1>{bundle?.name??'Your tracker'}</h1></div></header>
+ return <main><header><div><small style={{display:'flex',alignItems:'center',gap:8}}><BrandMark tone="dark" size={22}/>TrialAgents · {status==='saved'?'SAVED':'TEMPORARY PREVIEW'}</small><h1>{bundle?.name??'Your tracker'}</h1></div></header>
  {bundle&&<><nav aria-label="Pages">{bundle.components.map((c:any,i:number)=><button key={i} aria-pressed={component===i} onClick={()=>setComponent(i)}>{c.name}</button>)}</nav>
  {selected?.format==='frontend-js'?<FrontendCodeRuntime key={component} previewId={draft.handle.id} call={(_name,args)=>call('run_tracker_preview',{handle:draft.handle,component,request:args.request})} onProposal={()=>{}}/>:<section><pre>{selected?.source}</pre></section>}
  {bundle.tables.map((t:any)=><details key={t.id}><summary>{t.name} · {t.rows.length} records</summary><div className="scroll"><table><thead><tr>{t.fields.map((f:any)=><th key={f.key}>{f.name}</th>)}</tr></thead><tbody>{t.rows.map((r:any)=><tr key={r.id}>{t.fields.map((f:any)=><td key={f.key}>{String(r.data[f.key]??'')}</td>)}</tr>)}</tbody></table></div></details>)}</>}

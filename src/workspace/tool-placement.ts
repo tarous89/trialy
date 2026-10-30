@@ -18,11 +18,11 @@ export async function moveTool(db:Database,a:Actor,w:string,input:unknown){
   if(v.projectId){const target=(await f.activeNode(tx,a,w,v.projectId))[0];if(target.kind!=='project')fail(400,'project_required','Choose a project');}
   let resource:any,offset:number|null=0;
   do{const page=await workspaceHome(local,a,w,{offset,limit:100});resource=page.resources.find(r=>r.id===v.toolId&&r.source===v.source);offset=page.nextOffset;}while(!resource&&offset!==null);
-  if(!resource)fail(404,'tool_unavailable','Tool is unavailable. Refresh Home.');
-  if(resource.placementVersion!==v.expectedVersion)fail(409,'stale_version','The tool was moved elsewhere. Refresh Home before moving again.');
+  if(!resource)fail(404,'tool_unavailable','App is unavailable. Refresh Home.');
+  if(resource.placementVersion!==v.expectedVersion)fail(409,'stale_version','The app was moved elsewhere. Refresh Home before moving again.');
   const table={component:'workspace_components',function:'foundation_functions',collection:'external_links',legacy:'automations'}[v.source];
   const changed=await tx.query(`UPDATE ${table} SET home_project_id=$1,home_placement_version=home_placement_version+1 WHERE workspace_id=$2 AND id=$3 AND home_placement_version=$4 RETURNING id`,[v.projectId,w,v.toolId,v.expectedVersion]);
-  if(!changed.rows.length)fail(409,'stale_version','The tool changed. Refresh Home before moving again.');
+  if(!changed.rows.length)fail(409,'stale_version','The app changed. Refresh Home before moving again.');
   await audit(tx,a,policy,'tool.moved',v.toolId,{projectIds:resource.projectIds},{projectId:v.projectId,source:v.source,version:v.expectedVersion+1},'Organizational move; data scope and access unchanged');
   return {status:'saved',toolId:v.toolId,projectId:v.projectId,version:v.expectedVersion+1};
  });

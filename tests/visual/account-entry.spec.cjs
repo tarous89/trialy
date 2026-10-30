@@ -11,7 +11,7 @@ for(const width of [1440,390])test(`Signed-out entry matches Intel auth styling 
  await page.setViewportSize({width,height:1000});
  await page.route('**/api/me',route=>route.fulfill({status:401,contentType:'application/json',body:JSON.stringify({error:'unauthenticated'})}));
  await page.goto(base+'/app-home');
- await expect(page.getByRole('heading',{name:'Your projects. Your tools.'})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Your projects. Your apps.'})).toBeVisible();
  await expect(page.getByRole('link',{name:'Sign in to TrialAgents →',exact:true})).toHaveAttribute('href','/auth/login');
  await expect(page.getByRole('button',{name:'Open local demo',exact:true})).toHaveCount(0);
  await expect(page.locator('.brandmark')).toHaveCount(0);

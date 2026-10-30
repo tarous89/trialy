@@ -47,7 +47,7 @@ export class AccessManagement{
      const table=r.kind==='project'?'workspace_nodes':'workspace_components';if(!(await tx.query(`SELECT id FROM ${table} WHERE workspace_id=$1 AND id=$2`,[w,r.resourceId])).rows.length)fail(404,'not_found','Resource unavailable');
      if(r.read==='allow'&&r.subject!=='chatgpt'){
       const components=r.kind==='tool'?(await tx.query('SELECT * FROM workspace_components WHERE workspace_id=$1 AND id=$2',[w,r.resourceId])).rows:(await tx.query(`WITH RECURSIVE children AS (SELECT id FROM workspace_nodes WHERE workspace_id=$1 AND id=$2 UNION ALL SELECT n.id FROM workspace_nodes n JOIN children c ON n.parent_id=c.id WHERE n.workspace_id=$1) SELECT * FROM workspace_components WHERE workspace_id=$1 AND project_id IN (SELECT id FROM children) AND archived=false`,[w,r.resourceId])).rows;
-      if(components.some(c=>c.source_access!=='bindings'))fail(409,'review_tool_source','A tool contains saved source data. Convert it to reviewed connected bindings before scoped sharing.');
+      if(components.some(c=>c.source_access!=='bindings'))fail(409,'review_tool_source','An app contains saved source data. Convert it to reviewed connected bindings before scoped sharing.');
       r.bindings=components.flatMap(c=>c.bindings.map((b:any)=>({toolId:c.id,typeId:b.typeId,fields:b.fields,writable:r.write==='allow'?b.fields.filter((key:string)=>!c.manifest||c.manifest.fields.some((f:any)=>f.typeId===b.typeId&&f.field===key&&f.mode==='write')):[],projectId:c.manifest?.scope==='project'?c.project_id:null})));
      }
     }

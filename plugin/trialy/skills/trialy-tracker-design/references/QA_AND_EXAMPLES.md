@@ -131,7 +131,7 @@ For requested HTML builds, **deliver the working HTML**, not just the plan. Pres
 - For style-only changes compare DOM text, HTML element/control positions, full JavaScript payload and sample data to previous version; only CSS theme declarations should differ. Retest permissions and click targets after CSS changes.
 - For content-only changes, the shell's HTML/CSS/widgets/settings/access model should remain equivalent; domain data, tabs, labels, filters, validations and business decision logic are allowed to differ.
 - For a narrow behavior change, check all core flows plus target regression; avoid unrelated refactoring or unsolicited UX improvements.
-- Never say browser QA passed if browser tool was unavailable or navigation was blocked; run static sanity tests and call the limitation out accurately.
+- Never say browser QA passed if browser app was unavailable or navigation was blocked; run static sanity tests and call the limitation out accurately.
 
 ## Connected template regression gates
 

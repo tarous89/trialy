@@ -36,7 +36,7 @@ test('overview and data pagination replace rows; multiple values support keyboar
 
 test('Settings adds a field and tab with reviewed schema changes, themes and removes the views',async({page})=>{
  const {embed,tracker}=await open(page);
- await tracker.getByRole('button',{name:'Tool settings',exact:true}).click();
+ await tracker.getByRole('button',{name:'App settings',exact:true}).click();
  await expect(embed.getByText('Loading data sources…')).toHaveCount(0);
  await embed.getByRole('button',{name:'Add column',exact:true}).click();
  const addColumn=embed.locator('.settings-section').filter({has:embed.getByRole('heading',{name:'Add column',exact:true})});
@@ -52,7 +52,7 @@ test('Settings adds a field and tab with reviewed schema changes, themes and rem
  await embed.getByRole('button',{name:'Confirm changes',exact:true}).click();
  await expect(tracker.getByRole('button',{name:'New activities',exact:true})).toBeVisible();
  await expect(tracker.locator('h1')).toHaveCSS('color','rgb(0, 59, 113)');
- await tracker.getByRole('button',{name:'Tool settings',exact:true}).click();
+ await tracker.getByRole('button',{name:'App settings',exact:true}).click();
  await embed.getByRole('button',{name:'Delete tab New activities',exact:true}).click();
  await embed.getByRole('button',{name:'Delete column Research notes',exact:true}).click();
  await embed.getByRole('tab',{name:'Style',exact:true}).click();await embed.getByRole('button',{name:'Reset to Vivid defaults',exact:true}).click();
