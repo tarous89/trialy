@@ -1,3 +1,4 @@
+import {withActor,setDatabaseContext} from '../src/db/context.js';
 import {z} from 'zod';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
@@ -14,13 +15,22 @@ import {inspectAppDesign} from '../src/workspace/design-quality.js';
 import {appDesignCss,designPalettes,contrast,readable} from '../src/shared/app-design.js';
 import {standardTracker} from '../src/workspace/standard-tracker.js';
 
-async function fixture(){const pg=new PGlite();for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};const a={userId:randomUUID(),origin:'human' as const};await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[a.userId,a.userId,'quality@example.invalid','Quality']);const s=new Service(db),f=new WorkspaceFoundation(db),w=await s.createWorkspace(a,'Quality');const handlers=new Map<string,any>();addWorkspaceMcp({registerTool:(n:string,_m:any,run:any)=>handlers.set(n,(input:any)=>run(z.object(_m.inputSchema).parse(input)))} as any,f,a,(run:any)=>run,{});return {db,a,s,f,w,prepare:(input:any)=>handlers.get('prepare_tracker')({workspaceId:w.id,...input})};}
+async function fixture(){
+ const pg=new PGlite();for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
+ await pg.exec(await readFile('ops/runtime-role.sql','utf8'));
+ const owner:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
+ const a={userId:randomUUID(),origin:'human' as const};await owner.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[a.userId,a.userId,'quality@example.invalid','Quality']);const w=await new Service(owner).createWorkspace(a,'Quality');
+ const db:Database={query:(q,v)=>db.transaction(tx=>tx.query(q,v)),transaction:fn=>withActor(a,()=>pg.transaction(async tx=>{await tx.exec('SET LOCAL ROLE trialy_runtime');await setDatabaseContext(tx as Connection);return fn(tx as Connection);})),close:()=>pg.close()};
+ const s=new Service(db),f=new WorkspaceFoundation(db),handlers=new Map<string,any>();addWorkspaceMcp({registerTool:(n:string,_m:any,run:any)=>handlers.set(n,(input:any)=>run(z.object(_m.inputSchema).parse(input)))} as any,f,a,(run:any)=>run,{});
+ return {db,a,s,f,w,prepare:(input:any)=>handlers.get('prepare_tracker')({workspaceId:w.id,...input})};
+}
 const field=(key:string,extra:any={})=>({key,name:key,kind:'text',ai:true,multiple:false,...extra});
 const setup=()=>{const co=randomUUID(),ct=randomUUID();return {name:'Outreach',description:'Linked company and contact outreach',showExample:true,newTables:[{id:co,name:'Companies',fields:[field('name'),field('contacts',{kind:'relationship',targetTypeId:ct,multiple:true})]},{id:ct,name:'Contacts',fields:[field('name'),field('company',{kind:'relationship',targetTypeId:co}),field('email'),field('company_name',{lookup:{reference:'company',field:'name',aggregate:'first'}})]}],tabs:[{name:'Companies',typeId:co,columns:[{field:'name'},{field:'contacts'}]},{name:'Contacts',typeId:ct,columns:[{field:'name'},{field:'company'}]}]};};
 
 test('one creation request survives retries, revisions, atomic linked saves and discard',async()=>{
  process.env.APP_DESIGN_CHECKS='off';const {db,a,s,f,w,prepare}=await fixture();try{
  const requestKey=randomUUID(),input=setup(),draft=await prepare({...input,requestKey});
+ await assert.rejects(db.query('UPDATE workspace_previews SET body=body WHERE id=$1',[draft.preview.id]),/permission denied/);
  assert.equal((await s.types(a,w.id)).length,0);assert.equal((await prepare({...input,requestKey})).preview.id,draft.preview.id);
  assert.equal((await prepare({...setup(),requestKey})).preview.id,draft.preview.id,'new temporary IDs do not duplicate an identical request');
  const contacts=standardTracker(draft.preview.body.content.source)!.config.tabs[1];assert.equal(contacts.columns.find((c:any)=>c.field==='email')?.visible,false);
