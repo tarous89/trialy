@@ -15,7 +15,7 @@
     "composerIconDark": "./assets/trialagents-mark-white.png"
   },
   "name": "trialy",
-  "version": "0.2.28",
+  "version": "0.2.29",
   "description": "Persistent data, isolated JavaScript, saved functions and authorized tools for ChatGPT.",
   "author": {
     "name": "Atlas Consulting"

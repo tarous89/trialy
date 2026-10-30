@@ -16,6 +16,10 @@ for (const width of [1440, 1100, 390]) test(`Vivid connected tracker at ${width}
   await expect(tracker.locator(".pill.red")).not.toHaveCount(0);
   await expect(tracker.locator("tbody td:nth-child(3) .pill")).toHaveCount(0);
   await expect(embed.getByText("Opening your account…",{exact:true})).toHaveCount(0);
+  const header=await embed.locator('.ty-topbar').boundingBox(),platformButton=await embed.getByRole('button',{name:'Open TrialAgents',exact:true}).boundingBox();
+  expect(platformButton.y+platformButton.height).toBeLessThanOrEqual(header.y+header.height);
+  expect(platformButton.x+platformButton.width).toBeLessThanOrEqual(width);
+  const brand=await embed.locator('.ty-mobile-brand').boundingBox();expect(platformButton.x-brand.x-brand.width).toBeGreaterThanOrEqual(8);
   await expect(page).toHaveScreenshot(`tracker-${width}.png`);
   const outerScroll = await embed.locator("#ty-main").evaluate((el) => getComputedStyle(el).overflowY);
   expect(outerScroll).toBe("hidden");

@@ -47,7 +47,7 @@ for(const width of [1440,390])test(`App changes stay proposals without covering 
  await frame.getByRole('button',{name:'Rename company',exact:true}).click();const mark=await page.getByRole('link',{name:'Built with TrialAgents'}).boundingBox();const actions=await page.locator('.ty-action-footer').boundingBox();expect(actions.y+actions.height).toBeLessThan(mark.y);await page.getByRole('button',{name:'Save changes',exact:true}).click();const review=page.getByRole('dialog',{name:'Review app changes'});await expect(review).toContainText('Updated company');const box=await review.boundingBox();expect(box.y+box.height).toBeLessThan(mark.y);await review.getByRole('button',{name:'Save changes',exact:true}).click();await expect(frame.getByText('Updated company',{exact:true})).toBeVisible();await page.reload();await expect(frame.getByText('Updated company',{exact:true})).toBeVisible();
 });
 
-test('Embedded app displays its requested page, navigates safely and offers the host link',async({page})=>{
+test('Embedded app navigates safely and offers only the TrialAgents platform link',async({page})=>{
  const f=await (await page.request.get(base+'/fixture/apps')).json();const display=await (await page.request.get(base+'/fixture/app-display?appId='+f.appId+'&path=/calculator')).json();
  await page.goto(base+'/?apps=1');await page.waitForFunction(()=>window.hostReady);await page.evaluate(r=>window.deliver(r),display);
  const embed=page.frameLocator('#app'),app=embed.frameLocator('iframe[title="Saved frontend code"]');
@@ -56,13 +56,13 @@ test('Embedded app displays its requested page, navigates safely and offers the 
  await expect(embed.getByRole('button',{name:'Refresh',exact:true})).toBeEnabled();
  await app.getByLabel('Draft note').fill('Keep this');await app.getByRole('link',{name:'Overview',exact:true}).click();await expect(embed.getByRole('alertdialog',{name:'Unsaved changes'})).toBeVisible();await embed.getByRole('button',{name:'Keep editing'}).click();await expect(app.getByLabel('Draft note')).toHaveValue('Keep this');
  await app.getByRole('link',{name:'Overview',exact:true}).click();await embed.getByRole('button',{name:'Discard edits and continue'}).click();await expect(app.getByRole('heading',{name:'Overview',exact:true})).toBeVisible();
- await embed.getByRole('link',{name:'Open app ↗',exact:true}).click();await expect.poll(()=>page.evaluate(()=>window.lastOpenedUrl)).toBe(base+f.url);
+ await expect(embed.getByRole('link',{name:'Open app ↗',exact:true})).toHaveCount(0);await embed.getByRole('button',{name:'Open TrialAgents',exact:true}).click();await expect.poll(()=>page.evaluate(()=>window.lastOpenedUrl)).toBe(base+'/?workspaceId='+f.workspaceId);
 });
 
-test('Embedded preview saves on its current page and unavailable previews show the platform',async({page})=>{
+test('Embedded preview returns to Home after saving and unavailable previews show the platform',async({page})=>{
  const draft=await (await page.request.get(base+'/fixture/app-draft')).json();await page.goto(base+'/?apps=1');await page.waitForFunction(()=>window.hostReady);await page.evaluate(r=>window.deliver(r),draft);
  const embed=page.frameLocator('#app');await expect(embed.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Embedded draft'})).toBeVisible();await expect(embed.getByRole('button',{name:'Save app',exact:true})).toBeEnabled();
- const app=embed.frameLocator('iframe[title="Saved frontend code"]');await app.getByRole('link',{name:'Details',exact:true}).click();await expect(app.getByRole('heading',{name:'Draft details'})).toBeVisible();await embed.getByRole('button',{name:'Save app',exact:true}).click();await expect(embed.getByRole('button',{name:'Save app',exact:true})).toHaveCount(0);await expect(app.getByRole('heading',{name:'Draft details'})).toBeVisible();await app.getByRole('button',{name:'Inspect page',exact:true}).click();await expect(embed.getByRole('button',{name:'Refresh',exact:true})).toBeEnabled();await expect(app.getByRole('heading',{name:'Draft details'})).toBeVisible();
+ const app=embed.frameLocator('iframe[title="Saved frontend code"]');await app.getByRole('link',{name:'Details',exact:true}).click();await expect(app.getByRole('heading',{name:'Draft details'})).toBeVisible();await embed.getByRole('button',{name:'Save app',exact:true}).click();await expect(embed.getByRole('button',{name:'Save app',exact:true})).toHaveCount(0);await expect(embed.getByRole('heading',{name:'Home',exact:true})).toBeVisible();await expect(embed.getByRole('link',{name:'Open Embedded draft',exact:true})).toBeVisible();await expect(embed.locator('.ty-tracker-preview')).toHaveCount(0);
  await page.evaluate(r=>window.deliver(r),{screen:'tracker-unavailable',workspaceId:draft.workspaceId,message:'This unsaved preview has expired.'});await expect(embed.getByRole('heading',{name:'Home',exact:true})).toBeVisible();await expect(embed.getByRole('button',{name:'Open saved tools',exact:true})).toBeVisible();
  const calls=await (await page.request.get(base+'/fixture/calls')).json();expect(calls).toContain('open_workspace');
 });
