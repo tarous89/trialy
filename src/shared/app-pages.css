@@ -3,9 +3,12 @@
 .ty-workspace.ty-standalone .ty-main-column{width:100%;padding-top:0;height:100dvh}
 .ty-workspace.ty-standalone #ty-main{height:100dvh;padding-bottom:88px}
 .ty-app-watermark{position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));display:inline-flex;gap:8px;align-items:center;width:max-content;max-width:calc(100vw - 24px);background:var(--ty-sidebar);color:#e7eee9;z-index:2400;border:1px solid var(--ty-border);border-radius:8px;margin:0;padding:8px 12px;text-decoration:none;font:inherit;font-size:12px;line-height:20px;white-space:nowrap}
+.ty-workspace.ty-standalone:has(.ty-tracker-preview>.ty-action-footer:not([hidden] *)) .ty-app-watermark{bottom:calc(var(--shell-footer) + 12px)}
+.ty-workspace.ty-standalone:has(.ty-tracker-preview>.ty-action-footer:not([hidden] *)) #ty-main{padding-bottom:calc(var(--shell-footer) + var(--app-watermark-clearance) + 24px);scroll-padding-bottom:calc(var(--shell-footer) + var(--app-watermark-clearance) + 24px)}
 .ty-app-watermark img{flex:none}
 .ty-app-watermark:focus-visible{outline:2px solid var(--ty-focus);outline-offset:4px}
 .ty-workspace.ty-standalone .ty-action-footer{bottom:var(--app-watermark-clearance)}
+.ty-workspace.ty-standalone .ty-tracker-preview>.ty-action-footer{bottom:0}
 .ty-workspace.ty-standalone .ty-tracker--details{inset:0!important;height:100dvh!important}
 .ty-workspace.ty-standalone .ty-content-overlay{bottom:0;padding-bottom:var(--app-watermark-clearance);z-index:2301}
 
