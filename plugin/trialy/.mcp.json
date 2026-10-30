@@ -2,7 +2,7 @@
   "mcpServers": {
     "trialy": {
       "type": "streamable-http",
-      "url": "https://trialy-web.onrender.com/mcp",
+      "url": "https://platform.trialagents.com/mcp",
       "headers": {}
     }
   }

@@ -4,9 +4,13 @@ import type {OAuthServerProvider} from '@modelcontextprotocol/sdk/server/auth/pr
 import {InvalidGrantError,InvalidRequestError,InvalidTokenError} from '@modelcontextprotocol/sdk/server/auth/errors.js';
 export const token=()=>randomBytes(32).toString('base64url');
 export const hash=(v:string)=>createHash('sha256').update(v).digest('hex');
-export function localOAuth(db:Database,base:string):OAuthServerProvider{
+export function localOAuth(db:Database,base:string,legacyResource?:string):OAuthServerProvider{
  const resource=base+'/mcp';
- const checkResource=(r?:URL)=>{if(r&&r.href!==resource)throw new InvalidRequestError('Wrong resource');};
+ // Only an explicitly configured previous URL for this same service is accepted.
+ // It is never advertised or used as a redirect destination.
+ const resources=new Set([resource]);
+ if(legacyResource){const old=new URL(legacyResource);if(old.protocol!=='https:'||old.username||old.password||old.pathname!=='/mcp'||old.search||old.hash)throw Error('LEGACY_MCP_RESOURCE_URL must be an HTTPS MCP resource URL');resources.add(old.href);}
+ const checkResource=(r?:URL)=>{if(r&&!resources.has(r.href))throw new InvalidRequestError('Wrong resource');};
  const get=async(id:string,kind:string)=>{const row=(await db.query('SELECT data FROM oauth_data WHERE id=$1 AND kind=$2 AND (expires_at IS NULL OR expires_at>$3)',[id,kind,Date.now()])).rows[0];if(!row)throw new InvalidGrantError('Invalid or expired authorization');return row.data;};
  const issue=async(tx:Connection,userId:string,clientId:string,family=randomUUID())=>{const access=token(),refresh=token();for(const [value,kind,ttl] of [[access,'access',3600000],[refresh,'refresh',30*86400000]] as const)await tx.query('INSERT INTO oauth_tokens(hash,user_id,client_id,kind,family,expires_at) VALUES($1,$2,$3,$4,$5,$6)',[hash(value),userId,clientId,kind,family,Date.now()+ttl]);return {access_token:access,refresh_token:refresh,token_type:'Bearer',expires_in:3600,scope:'trialy'};};
  return {

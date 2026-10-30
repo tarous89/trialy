@@ -10,6 +10,7 @@ import {baseApp,errors} from '../src/server/app.js';
 import {addLocalAuth} from '../src/server/auth.js';
 import {addMcp} from '../src/server/mcp.js';
 import {Service} from '../src/domain/service.js';
+import {oauthPublicUrl,PLATFORM_ORIGIN} from '../src/shared/public-url.js';
 test('signup returns to OAuth; PKCE, replay, refresh and revocation are enforced',async()=>{
  const pg=new PGlite();for(const f of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+f,'utf8'));
  const db:Database={query:(sql,v)=>pg.query(sql,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
@@ -64,4 +65,49 @@ test('signup returns to OAuth; PKCE, replay, refresh and revocation are enforced
   assert.equal((await returning.get('/auth/login')).headers.location,'/','Return path is consumed after sign-in');
  }}finally{if(enabled===undefined)delete process.env.SIMPLE_APPS_ENABLED;else process.env.SIMPLE_APPS_ENABLED=enabled;}
  await db.close();
+});
+
+test('canonical domain advertises platform URLs and preserves only the explicit legacy OAuth resource',async()=>{
+ const pg=new PGlite();for(const f of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+f,'utf8'));
+ const db:Database={query:(sql,v)=>pg.query(sql,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
+ const old='https://trialy-web.onrender.com',canonical=PLATFORM_ORIGIN,redirect='https://chatgpt.com/connector/oauth/domain-test';
+ const prior={PUBLIC_URL:process.env.PUBLIC_URL,APP_PUBLIC_URL:process.env.APP_PUBLIC_URL};
+ const make=(base:string,legacy?:string)=>{const app=baseApp();app.use(session({secret:'synthetic-domain-migration-test-only',resave:false,saveUninitialized:false}));const auth=addLocalAuth(app,db,base,'synthetic-domain-migration-mfa-key-only',legacy);addMcp(app,new Service(db),auth.ai);app.use(errors);return {app,auth};};
+ try{
+  const before=make(old);const client=await request(before.app).post('/register').send({client_name:'Synthetic domain client',redirect_uris:[redirect],token_endpoint_auth_method:'none',grant_types:['authorization_code','refresh_token'],response_types:['code']});assert.equal(client.status,201);
+  const browser=request.agent(before.app),verifier='a'.repeat(43),authorize={response_type:'code',client_id:client.body.client_id,redirect_uri:redirect,scope:'trialy',resource:old+'/mcp',state:'domain-migration-state',code_challenge:createHash('sha256').update(verifier).digest('base64url'),code_challenge_method:'S256'};
+  const started=await browser.get('/authorize').query(authorize),target=new URL(started.headers.location);
+  const login=await browser.get(target.pathname+target.search),csrf=login.text.match(/name="csrf" value="([^"]+)"/)![1];
+  await browser.post('/auth/signup').type('form').send({email:'domain-migration@example.invalid',password:'synthetic-password',intendedUse:'accepted',csrf});
+  const consent=await browser.get('/auth/consent'),approved=await browser.post('/auth/consent').type('form').send({decision:'approve',csrf:consent.text.match(/name="csrf" value="([^"]+)"/)![1]});
+  const exchanged=await request(before.app).post('/token').type('form').send({grant_type:'authorization_code',client_id:client.body.client_id,code:new URL(approved.headers.location).searchParams.get('code'),code_verifier:verifier,redirect_uri:redirect,resource:old+'/mcp'});assert.equal(exchanged.status,200);
+  process.env.PUBLIC_URL=canonical;process.env.APP_PUBLIC_URL=canonical;
+  const after=make(canonical,old+'/mcp');
+  const metadata=await request(after.app).get('/.well-known/oauth-authorization-server');assert.equal(metadata.status,200);assert.equal(metadata.body.issuer,canonical+'/');
+  for(const field of ['authorization_endpoint','token_endpoint','registration_endpoint','revocation_endpoint'])assert.equal(new URL(metadata.body[field]).origin,canonical);
+  const resource=await request(after.app).get('/.well-known/oauth-protected-resource/mcp');assert.equal(resource.body.resource,canonical+'/mcp');assert.deepEqual(resource.body.authorization_servers,[canonical+'/']);
+  const cached=await request(after.app).get('/authorize').set('Host','trialy-web.onrender.com').query(authorize);assert.equal(cached.status,302);assert.equal(new URL(cached.headers.location).origin,canonical);
+  const next=await request(after.app).get('/authorize').query({...authorize,resource:canonical+'/mcp'});assert.equal(next.status,302);assert.equal(new URL(next.headers.location).origin,canonical);
+  const mcp=(payload:any,bearer?:string)=>{const call=request(after.app).post('/mcp').set('Accept','application/json, text/event-stream');if(bearer)call.set('Authorization','Bearer '+bearer);return call.send({jsonrpc:'2.0',id:1,...payload});};
+  assert.equal((await mcp({method:'tools/list'},exchanged.body.access_token)).status,200,'Pre-migration access token remains usable');
+  const denied=await mcp({method:'tools/list'},'invalid-token');assert.equal(denied.status,401);assert.equal(denied.headers['www-authenticate'],`Bearer resource_metadata="${canonical}/.well-known/oauth-protected-resource/mcp"`);
+  const challenge=await mcp({method:'tools/call',params:{name:'initialize_account',arguments:{}}});assert.deepEqual(challenge.body.result._meta['mcp/www_authenticate'],[`Bearer resource_metadata="${canonical}/.well-known/oauth-protected-resource/mcp"`]);
+  const listed=await mcp({method:'resources/list'}),uri=listed.body.result.resources.find((r:any)=>r.name==='workspace').uri;
+  const widget=await mcp({method:'resources/read',params:{uri}}),content=widget.body.result.contents[0];assert.deepEqual(content._meta.ui.csp.frameDomains,[canonical]);assert.ok(!content.text.includes(old),'Bundled widget never falls back to Render');
+  const refreshed=await request(after.app).post('/token').type('form').send({grant_type:'refresh_token',client_id:client.body.client_id,refresh_token:exchanged.body.refresh_token,resource:old+'/mcp'});assert.equal(refreshed.status,200,'Pre-migration refresh token remains usable with the old resource');
+  for(const wrong of ['https://other.example/mcp',old+'/mcp?extra=1',old+'/other',canonical+'/other']){
+   const denied=await request(after.app).post('/token').type('form').send({grant_type:'refresh_token',client_id:client.body.client_id,refresh_token:refreshed.body.refresh_token,resource:wrong});assert.equal(denied.status,400,wrong);
+  }
+  const canonicalRefresh=await request(after.app).post('/token').type('form').send({grant_type:'refresh_token',client_id:client.body.client_id,refresh_token:refreshed.body.refresh_token,resource:canonical+'/mcp'});assert.equal(canonicalRefresh.status,200);
+  const replay=await request(after.app).post('/token').type('form').send({grant_type:'refresh_token',client_id:client.body.client_id,refresh_token:refreshed.body.refresh_token,resource:canonical+'/mcp'});assert.equal(replay.status,400);
+  await assert.rejects(after.auth.provider.verifyAccessToken(canonicalRefresh.body.access_token));
+  const noAlias=make(canonical);await assert.rejects(noAlias.auth.provider.authorize(client.body,{...authorize,redirectUri:redirect,scopes:['trialy'],codeChallenge:authorize.code_challenge,resource:new URL(old+'/mcp')} as any,{} as any),/Wrong resource/);
+  for(const invalid of ['http://legacy.example/mcp','https://user:secret@legacy.example/mcp','https://legacy.example/mcp?x=1','https://legacy.example/other'])assert.throws(()=>make(canonical,invalid));
+ }finally{for(const key of ['PUBLIC_URL','APP_PUBLIC_URL'] as const){if(prior[key]===undefined)delete process.env[key];else process.env[key]=prior[key];}await db.close();}
+});
+
+test('OAuth origin is explicit and validated',()=>{
+ assert.equal(oauthPublicUrl({NODE_ENV:'production'}),PLATFORM_ORIGIN);
+ assert.equal(oauthPublicUrl({PUBLIC_URL:PLATFORM_ORIGIN,RENDER_EXTERNAL_URL:'https://trialy-web.onrender.com'}),PLATFORM_ORIGIN);
+ for(const PUBLIC_URL of ['http://platform.trialagents.com','https://user:secret@platform.trialagents.com','https://platform.trialagents.com/path','https://platform.trialagents.com?x=1','https://platform.trialagents.com#x'])assert.throws(()=>oauthPublicUrl({NODE_ENV:'production',PUBLIC_URL}));
 });

@@ -1,6 +1,6 @@
 import {accountPage as page} from './account-page.js';
 import {appSignInReturn} from '../shared/app-route.js';
-import {appPublicUrl} from '../shared/public-url.js';
+import {appPublicUrl,oauthPublicUrl} from '../shared/public-url.js';
 import {withActor} from '../db/context.js';
 import {mfaCrypto,consumeMfa,generateSecret,verify,recoveryHash} from './mfa.js';
 import express,{type Express,type RequestHandler} from 'express';
@@ -23,16 +23,16 @@ export async function passwordHash(value:string){const salt=randomBytes(16).toSt
 async function validPassword(value:string,encoded:string){const [salt,digest]=encoded.split(':');const actual=await scrypt(value,salt!,64) as Buffer;const expected=Buffer.from(digest!,'hex');return actual.length===expected.length&&timingSafeEqual(actual,expected);}
 
 export function configureAuth(app:Express,db:Postgres,env:NodeJS.ProcessEnv){
- appPublicUrl(env); // Validate the optional browser origin without changing the OAuth issuer.
- const production=env.NODE_ENV==='production',base=(env.PUBLIC_URL??env.RENDER_EXTERNAL_URL??'http://localhost:3000').replace(/\/$/,'');
+ appPublicUrl(env);
+ const production=env.NODE_ENV==='production',base=oauthPublicUrl(env);
  if(production&&!base.startsWith('https://'))throw new Error('Production requires HTTPS');if(!env.SESSION_SECRET||env.SESSION_SECRET.length<32)throw new Error('SESSION_SECRET must have 32 characters');if(production)app.set('trust proxy',1);
  const Store=connectPg(session);app.use(session({name:'trialy_session',secret:env.SESSION_SECRET,store:new Store({pool:db.pool,tableName:'session'}),resave:false,saveUninitialized:false,rolling:true,cookie:{httpOnly:true,secure:production,sameSite:'lax',maxAge:30*24*3600000}}));
- return addLocalAuth(app,db,base,env.MFA_ENCRYPTION_KEY??env.SESSION_SECRET);
+ return addLocalAuth(app,db,base,env.MFA_ENCRYPTION_KEY??env.SESSION_SECRET,env.LEGACY_MCP_RESOURCE_URL);
 }
 // Sessions may be injected by focused tests; production always uses PostgreSQL above.
-export function addLocalAuth(app:Express,db:Database,base:string,mfaKey=process.env.MFA_ENCRYPTION_KEY??process.env.SESSION_SECRET??''){
+export function addLocalAuth(app:Express,db:Database,base:string,mfaKey=process.env.MFA_ENCRYPTION_KEY??process.env.SESSION_SECRET??'',legacyResource?:string){
  const crypto=mfaKey.length>=32?mfaCrypto(mfaKey):null;
- const provider=localOAuth(db,base);app.use('/auth',express.urlencoded({extended:false,limit:'8kb'}));app.use('/auth',(_req,res,next)=>{res.set('Cache-Control','no-store');res.set('Referrer-Policy','no-referrer');next();});
+ const provider=localOAuth(db,base,legacyResource);app.use('/auth',express.urlencoded({extended:false,limit:'8kb'}));app.use('/auth',(_req,res,next)=>{res.set('Cache-Control','no-store');res.set('Referrer-Policy','no-referrer');next();});
  // Epoch checking also invalidates sessions stored before account-wide revocation.
  app.use(async(req,_res,next)=>{if(req.session.userId){req.session.cookie.maxAge=30*24*3600000;const account=(await db.query('SELECT session_version FROM local_accounts WHERE user_id=$1',[req.session.userId])).rows[0];if(!account||(req.session.sessionVersion??0)!==account.session_version){await new Promise<void>((resolve,reject)=>req.session.regenerate(e=>e?reject(e):resolve()));}}next();});
  const limited=rateLimit({windowMs:15*60000,limit:20,standardHeaders:true,legacyHeaders:false});
