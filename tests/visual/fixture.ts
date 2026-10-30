@@ -1,4 +1,6 @@
 import {addAppsFixture} from './apps-fixture.js';
+import session from 'express-session';
+import {addLocalAuth} from '../../src/server/auth.js';
 import {schemaCatalog} from '../../src/workspace/catalog.js';
 import {AccessGrid} from '../../src/domain/access-grid.js';
 import {prepareToolLayout} from '../../src/workspace/tool-layout.js';
@@ -48,6 +50,8 @@ export async function fixture(){
  app.get('/fixture/initial',async(_req,res)=>{const current=(await f.readComponent(actor,w.id,component.id)).component;res.json({screen:'tracker',workspaceId:w.id,component:current,initialOutput:await f.runFrontend(actor,w.id,{componentId:current.id,expectedVersion:current.version})});});
  app.get('/vivid-catalog',async(_req,res)=>{res.removeHeader('Content-Security-Policy');res.type('html').send(await readFile('plugin/trialy/skills/trialy-tracker-design/assets/vivid-template/catalog.html','utf8'));});
  app.get('/reference',async(_req,res)=>{res.removeHeader('Content-Security-Policy');res.type('html').send(await readFile('plugin/trialy/skills/trialy-tracker-design/assets/approved-theme2-reference.html','utf8'));});
+ app.use(session({secret:'synthetic-visual-auth-session-secret-only',resave:false,saveUninitialized:false}));
+ addLocalAuth(app,db,base);
  await addAppsFixture(app,db,actor,w);
  return {base,component,w,f,actor,close:async()=>{server.closeAllConnections();await new Promise<void>(r=>server.close(()=>r()));await db.close();}};
 }

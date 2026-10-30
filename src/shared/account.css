@@ -1,0 +1,40 @@
+/* Shared by the browser entry page and server-rendered auth forms.
+   Visual values match Intel Agent's auth page; selectors stay scoped to auth. */
+@font-face{font-family:Inter;src:url('/fonts/inter-variable.woff2') format('woff2');font-style:normal;font-weight:100 900;font-display:swap}
+.ty-account-entry{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;background:#f8f8f7;color:#1a1c1e;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;color-scheme:light}
+.ty-account-entry *{box-sizing:border-box}
+.ty-account-entry a{color:inherit;text-decoration:none}
+.ty-account-entry button,.ty-account-entry input{font:inherit}
+.ty-account-entry .ty-entry-header{width:100%;height:65px;flex-shrink:0;margin:0;padding:0 max(24px,calc((100% - 1220px)/2));display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e5e7eb;background:transparent}
+.ty-entry-brand{display:inline-flex;align-items:center;min-width:0}
+.ty-entry-brand img{display:block;object-fit:contain}
+.ty-entry-brand span{margin-left:10px;font-size:18px;font-weight:600;white-space:nowrap}
+.ty-entry-home{font-size:15px;font-weight:500}
+.ty-account-entry .ty-entry-home:hover{color:#3d9e6a}
+.ty-entry-body{display:flex;flex:1;padding:32px 0}
+.ty-entry-panel{width:min(480px,calc(100% - 32px));margin:auto;padding:32px;border:1px solid #e5e7eb;border-radius:12px;background:white;color:#1a1c1e;box-shadow:0 1px 2px #0000000d;text-align:center;overflow-wrap:anywhere}
+.ty-entry-mark{display:block;margin:0 auto 18px;object-fit:contain}
+.ty-entry-panel h1{margin:0 0 6px;color:#1a1c1e;font-size:30px;font-weight:600;line-height:1.3;letter-spacing:normal}
+.ty-entry-panel p{color:#595c61;font-size:16px;line-height:1.55}
+.ty-entry-panel .ty-entry-subtitle{margin:0 0 26px}
+.ty-account-entry .ty-entry-primary{display:inline-flex;align-items:center;justify-content:center;gap:.55rem;width:100%;height:44px;min-height:44px;margin:0;padding:.65rem 1.1rem;border:1px solid #6cc69647;border-radius:6px;background:#3d9e6a;color:white;font-size:16px;font-weight:600;line-height:1.6;cursor:pointer;transition:background-color 160ms ease,transform 160ms ease;-webkit-font-smoothing:subpixel-antialiased;text-rendering:geometricPrecision}
+.ty-account-entry .ty-entry-primary:hover{background:#368c5e}
+.ty-entry-primary:active{transform:translateY(1px)}
+.ty-account-entry a:focus-visible,.ty-account-entry button:focus-visible{outline:2px solid #3d9e6a;outline-offset:3px}
+.ty-entry-panel .ty-entry-note{margin:18px 0 0;padding-top:17px;border-top:1px solid #e5e7eb;font-size:13px;line-height:1.55}
+.ty-account-entry .ty-entry-demo{margin:18px 0 0;padding:0;border:0;background:transparent;color:#3d9e6a;font-size:15px;font-weight:500;cursor:pointer}
+.ty-entry-panel .ty-entry-error{margin:20px 0 0;padding:11px 13px;border:1px solid #c9404052;border-radius:6px;background:#fdf0f0;color:#912a2a;text-align:left;font-size:14px;line-height:1.5}
+.ty-auth-form{display:flex;flex-direction:column;gap:20px;margin-top:26px;text-align:left}
+.ty-auth-form label{display:flex;flex-direction:column;gap:8px;color:#1a1c1e;font-size:15px;font-weight:500}
+.ty-auth-form input:not([type=hidden]):not([type=checkbox]){width:100%;height:44px;min-height:44px;margin:0;padding:10px 12px;color:#1a1c1e;background:#f8f8f7;border:1px solid #c5cad3;border-radius:6px;outline:none;font-size:16px;line-height:22px}
+.ty-auth-form input:focus{border-color:#3d9e6a;box-shadow:0 0 0 3px #3d9e6a29}
+.ty-auth-form input::placeholder{color:#64686e}
+.ty-auth-form .ty-auth-check{display:flex;flex-direction:row;align-items:flex-start;gap:10px;color:#595c61;font-size:13px;font-weight:400;line-height:1.55;cursor:pointer}
+.ty-auth-check input{flex:0 0 16px;width:16px;height:16px;margin:2px 0 0;accent-color:#3d9e6a}
+.ty-auth-check input:focus-visible{outline:2px solid #3d9e6a;outline-offset:3px}
+.ty-entry-panel .ty-auth-switch{margin:18px 0 0;font-size:15px;line-height:1.55}
+.ty-account-entry .ty-auth-switch a{color:#3d9e6a;font-weight:500}
+.ty-account-entry .ty-auth-switch a:hover{text-decoration:underline;text-underline-offset:3px}
+.ty-account-entry .ty-auth-secondary{width:100%;min-height:44px;padding:.65rem 1.1rem;border:1px solid #c5cad3;border-radius:6px;background:white;color:#1a1c1e;font-size:16px;font-weight:500;cursor:pointer}
+.ty-account-entry .ty-auth-secondary:hover{background:#f8f8f7}
+@media(max-width:760px){.ty-account-entry .ty-entry-header{padding-inline:15px}.ty-entry-brand span{font-size:17px}.ty-entry-panel{padding:24px 22px}}
