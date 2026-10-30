@@ -10,6 +10,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends tesseract-ocr p
 WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=build --chown=node:node /app /app
+ENV PLAYWRIGHT_BROWSERS_PATH=/opt/playwright
+RUN npx playwright install --with-deps chromium --only-shell && chmod -R a+rX /opt/playwright
 USER node
 EXPOSE 3000
 CMD ["npm", "start"]

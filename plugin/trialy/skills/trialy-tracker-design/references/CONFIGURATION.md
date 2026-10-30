@@ -66,3 +66,9 @@ Example requested brand: `theme:{primary:"#003B71",accent:"#00A3E0",success:"#65
 Tabs accept an optional iconPath (SVG path data) in addition to the preset icon names. Use custom source for arbitrary SVGs or different component structures. `allowEdits:true` enables explicitly editable columns on an interactive dashboard; omitted keeps new dashboards read-only. Existing field permission checks and reviewed saves still apply.
 
 For fully custom apps, create or revise save_component with frontend-js source and its authorized manifest. Preserve the existing componentId/expectedVersion and bindings when changing only presentation. No designException is needed.
+
+## App quality and linked drafts (0.2.32)
+
+Read `read_app_design` before creating or redesigning an app. Preserve catalog template defaults unless styling changes were requested. Every preparation accepts a stable UUID requestKey; a changed unsaved preview also needs replacesPreviewId and expectedDigest. Successful revisions retain the preview ID. A failed design inspection leaves the previous draft intact.
+
+New tables can reference another new table's temporary UUID via targetTypeId. Relationship graphs and lookup dependencies validate together and save atomically. Source is optional. New preparations default includeDetailFields:true: secondary fields omitted from a main table remain bound and appear in details. Saved/older apps keep their existing field selection until explicitly revised.

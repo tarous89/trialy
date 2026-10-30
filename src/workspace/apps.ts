@@ -1,19 +1,20 @@
 import {z} from 'zod';
+import {appPreparationFields} from '../shared/app-design.js';
 import {appLocation,appUrl} from '../shared/app-route.js';
 import {id,fail,type Actor} from '../shared/schema.js';
 import {componentContent} from './schema.js';
 import type {WorkspaceFoundation} from './service.js';
 import {workspaceHome} from './home.js';
-export const prepareApp=z.object({projectId:id.nullable().default(null),appId:id.optional(),expectedVersion:z.number().int().min(0).optional(),content:componentContent.omit({resourceKind:true}).extend({format:z.literal('frontend-js').default('frontend-js')})}).strict();
+export const prepareApp=z.object({...appPreparationFields,projectId:id.nullable().default(null),appId:id.optional(),expectedVersion:z.number().int().min(0).optional(),content:componentContent.omit({resourceKind:true}).extend({format:z.literal('frontend-js').default('frontend-js')})}).strict();
 export async function prepareSimpleApp(f:WorkspaceFoundation,a:Actor,w:string,input:unknown){
- return f.preview(a,w,appOperation(input));
+ const result=await f.prepareRenderedTracker(a,w,appOperation(input));return result.preview??result;
 }
 export async function prepareRenderedApp(f:WorkspaceFoundation,a:Actor,w:string,input:unknown){
  return f.prepareRenderedTracker(a,w,appOperation(input));
 }
 function appOperation(input:unknown){
  const v=prepareApp.parse(input);
- return {kind:'save_component' as const,projectId:v.projectId,componentId:v.appId,expectedVersion:v.expectedVersion,content:{...v.content,resourceKind:'generic' as const}};
+ return {kind:'save_component' as const,preparation:{requestKey:v.requestKey,replacesPreviewId:v.replacesPreviewId,expectedDigest:v.expectedDigest},projectId:v.projectId,componentId:v.appId,expectedVersion:v.expectedVersion,content:{...v.content,resourceKind:'generic' as const}};
 }
 export async function readApp(f:WorkspaceFoundation,a:Actor,input:unknown){
  const v=appLocation.parse(input),w=v.workspaceId;

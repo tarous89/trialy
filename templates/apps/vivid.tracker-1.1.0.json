@@ -1,0 +1,26 @@
+{
+  "version": "1.1.0",
+  "deprecated": false,
+  "id": "vivid.tracker",
+  "name": "Vivid tracker",
+  "description": "Editable multi-table tracker with overview, filters, details and pagination.",
+  "tags": [
+    "tracker",
+    "outreach",
+    "crm",
+    "pipeline",
+    "companies",
+    "contacts"
+  ],
+  "whenToUse": "Tracking records, relationships, statuses and follow-ups in one or more authorized database tables.",
+  "whenNotToUse": "A custom visual experience, calculator or app without stored records; use a custom app or another template.",
+  "instructions": "Inspect authorized schema and suitable existing apps first. Keep the default Vivid design unless the user requests visual customization. Use the current read_app_design kit when changing styling. Supply tabs and columns using existing table IDs, or newTables with temporary UUIDs; relationship targetTypeId may reference another new table in this same bundle. All tables and the app save atomically after confirmation. Include all needed fields; includeDetailFields keeps additional new-table fields bound and available in details while hidden from the table. Source fields are optional and appropriate for sourced research, not required on every table. Use scalar status/date and fictional examples only for empty tabs. Reuse a stable requestKey for retries, and replacesPreviewId plus expectedDigest for corrections. Read configurationSchema for supported settings.",
+  "engine": "tracker",
+  "defaults": {
+    "pageSize": 25,
+    "showExample": true,
+    "includeDetailFields": true
+  },
+  "options": {},
+  "examples": []
+}

@@ -1,3 +1,4 @@
+import {appPreparationFields} from '../shared/app-design.js';
 import {trackerSetup} from './tracker-template.js';
 import {resourceKind,resourceManifest} from './resource-contract.js';
 import {exchangeSchema} from '../domain/exchange.js';
@@ -33,6 +34,8 @@ export const maintenanceBatch=z.object({
  links:z.array(identityLinkSchema).max(50).default([])
 }).strict().refine(v=>v.changes.length+v.links.length>0,'Provide changes or identity links');
 const appProvenance={
+ preparation:z.object(appPreparationFields).strict().optional(),
+ designOrigin:z.object({version:z.string().max(80),template:z.string().max(80).nullable(),theme:z.record(z.string(),z.unknown()).optional(),quality:z.string().max(40)}).strict().optional(),
  catalogOrigin:z.object({id:z.string().max(80),version:z.string().max(40),digest:z.string().length(64)}).strict().optional(),
  reuseOrigin:z.object({componentId:id,version:z.number().int().min(0),mode:z.enum(['shared_data','separate_data'])}).strict().optional()
 };

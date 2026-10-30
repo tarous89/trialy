@@ -77,3 +77,7 @@ The release is complete when one simple app is created without choosing a type, 
 ## 30 October addition: dynamic templates and app reuse
 
 The [dynamic-template and existing-app reuse contract](DYNAMIC_APP_TEMPLATES.md) is now part of P0. It adds stable catalog discovery/read/preparation tools and permission-checked app reuse, with an explicit shared/separate-data choice. Catalog-only additions use the server publishing process without changing the plugin package; new capabilities remain subject to the normal release/review process. Templates remain optional, and saved apps do not automatically adopt new catalog revisions.
+
+## App quality release
+
+See [App creation quality](APP_DESIGN_QUALITY.md) for the shared design kit, rendered quality checks, linked-table creation, detail-field retention and one-preview request/revision contract.

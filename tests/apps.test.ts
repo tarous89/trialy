@@ -41,7 +41,7 @@ test('neutral apps retain existing save/permission contracts and receive page ro
   const save=async(op:any)=>{const p=await s.preview(a,w.id,op);return s.commit(a,p.id,p.digest);};
   const table=(await save({kind:'create_type',name:'Companies',fields:[{key:'name',name:'Name',kind:'text'},{key:'private',name:'Private',kind:'text'}]})).objects[0].id;
   const record=(await save({kind:'create_record',typeId:table,data:{name:'Acme',private:'Omit'}})).objects[0].id;
-  const detailDraft=await prepareSimpleApp(f,a,w.id,{content:{name:'Details',sourceAccess:'bindings',source:"const record=tools.call('records.get',{recordId:input.route.recordId});return {html:'<p>Details</p>',state:record};",bindings:[{typeId:table,fields:['name']}]}}),detail=await f.confirm(a,w.id,detailDraft.id,detailDraft.digest);
+  const detailDraft=await prepareSimpleApp(f,a,w.id,{content:{name:'Details',sourceAccess:'bindings',source:"if(!input.route?.recordId)return {html:'<p>Select a company to see its details.</p>'};const record=tools.call('records.get',{recordId:input.route.recordId});return {html:'<p>Details</p>',state:record};",bindings:[{typeId:table,fields:['name']}]}}),detail=await f.confirm(a,w.id,detailDraft.id,detailDraft.digest);
   const request={componentId:detail.id,expectedVersion:0,route:{path:'/company',recordId:record}};
   const loaded=await f.runFrontend(a,w.id,request);assert.deepEqual(loaded.state.data,{name:'Acme'});
   await assert.rejects(f.runFrontend(a,w.id,{...request,route:{path:'/company',recordId:randomUUID()}}));
