@@ -30,16 +30,16 @@ export function checkOutput(field:Field,value:unknown){
  if(['text','date'].includes(kind)&&typeof value!=='string')throw Error('output_type');
  if(kind==='date'&&(!/^\d{4}-\d{2}-\d{2}$/.test(String(value))||Number.isNaN(Date.parse(String(value)))||new Date(String(value)).toISOString().slice(0,10)!==value))throw Error('output_type');
 }
-export async function validateDerived(db:Connection,a:Actor,w:string,typeId:string|undefined,fields:Field[]){
+export async function validateDerived(db:Connection,a:Actor,w:string,typeId:string|undefined,fields:Field[],draftTypes?:ReadonlyMap<string,Field[]>){
  formulaOrder(fields);
  const types=(await db.query('SELECT id,fields FROM entity_types WHERE workspace_id=$1',[w])).rows;
- const schemas=new Map<string,Field[]>(types.map(t=>[t.id,t.fields]));const own=typeId??'new';schemas.set(own,fields);
+ const schemas=new Map<string,Field[]>(types.map(t=>[t.id,t.fields]));for(const [id,fields] of draftTypes??[])schemas.set(id,fields);const own=typeId??'new';schemas.set(own,fields);
  for(const f of fields){
   if(f.renderer)validateRenderer(f,f.renderer);
   if(f.kind==='field'&&!f.targetTypeId)fail(400,'invalid_reference','Field references require a target table');
-  if(f.targetTypeId)await typeAccess(db,a,w,f.targetTypeId);
-  if(f.lookup){const ref=fields.find(v=>v.key===f.lookup!.reference)!;const t=await typeAccess(db,a,w,ref.targetTypeId!);
-   const source=visibleFields(t.type.fields,t.policy,a).find(v=>v.key===f.lookup!.field);
+  if(f.targetTypeId&&!draftTypes?.has(f.targetTypeId))await typeAccess(db,a,w,f.targetTypeId);
+  if(f.lookup){const ref=fields.find(v=>v.key===f.lookup!.reference)!;const virtual=draftTypes?.get(ref.targetTypeId!);const t=virtual?null:await typeAccess(db,a,w,ref.targetTypeId!);
+   const source=(virtual?virtual.filter(v=>a.origin!=='ai'||v.ai):visibleFields(t!.type.fields,t!.policy,a)).find(v=>v.key===f.lookup!.field);
    if(!source)fail(400,'invalid_lookup','Lookup source is unavailable');
    if(['sum','min','max'].includes(f.lookup.aggregate)&&!['number','money'].includes(source.kind))fail(400,'invalid_lookup','Numeric aggregation needs a numeric source');
    const output=f.lookup.aggregate==='count'?'number':f.lookup.aggregate==='join'?'text':source.kind;

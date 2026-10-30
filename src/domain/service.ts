@@ -105,7 +105,7 @@ export class Service extends DataService {
   }
   if(!partial && type.fields.some((f:Field)=>f.required&&!fields.some(x=>x.key===f.key)))fail(403,'restricted_required','Creation requires a field you cannot access');
  }
- async validate(tx:Connection,a:Actor,w:string,op:Operation|FileOperation) {
+ async validate(tx:Connection,a:Actor,w:string,op:Operation|FileOperation,draft?:{schemas:ReadonlyMap<string,Field[]>;ownTypeId?:string}) {
   const p=await access(tx,a,w,op.kind!=='set_workspace_policy');
   if(op.kind==='database_changes'){
    const {type,policy}=await typeAccess(tx,a,w,op.typeId,true);
@@ -168,7 +168,7 @@ export class Service extends DataService {
   if(op.kind==='save_document'&&op.submissionFileId){if(a.origin!=='human'||p.role!=='owner')fail(403,'owner_required','Human owner required');const source=(await tx.query('SELECT f.checksum FROM submission_files f LEFT JOIN submission_file_acceptances accepted ON accepted.file_id=f.id WHERE f.id=$1 AND f.workspace_id=$2 AND accepted.file_id IS NULL',[op.submissionFileId,w])).rows[0];if(!source||source.checksum!==checksum(op.bytes)||op.documentId)fail(409,'source_unavailable','Source is unavailable or already accepted');}
   if(op.kind==='save_document'&&op.documentId)await this.documentPermission(tx,a,w,op.documentId);
   if(op.kind==='save_document'&&(!p.document_scope))fail(403,'restricted_documents','Document access for restricted views is not enabled');
-  if(op.kind==='create_type'||op.kind==='update_type')await validateDerived(tx,a,w,op.kind==='update_type'?op.typeId:undefined,op.fields);
+  if(op.kind==='create_type'||op.kind==='update_type')await validateDerived(tx,a,w,op.kind==='update_type'?op.typeId:draft?.ownTypeId,op.fields,draft?.schemas);
   if(op.kind==='archive_created_record'||op.kind==='restore_archived_creation')await this.creationArchive(tx,a,w,op);
   if(op.kind==='reverse_field_change'||op.kind==='reverse_field_changes')await this.reverseBatch(tx,a,w,op);
   if(op.kind==='update_type'){const {type}=await typeAccess(tx,a,w,op.typeId,true);if(a.origin==='ai'&&type.fields.some((f:Field)=>!f.ai))fail(403,'restricted_configuration','Edit tables containing model-restricted fields in the standalone application');if(type.version!==op.expectedVersion)fail(409,'stale_version','Table changed; preview again');if(type.fields.some((f:Field)=>op.fields.some(n=>n.key===f.key&&(n.description??'')!==(f.description??''))))fail(409,'context_change','Change existing descriptions with set_field_context before editing the schema');const populated=Number((await tx.query('SELECT count(*) AS n FROM records WHERE type_id=$1 AND workspace_id=$2',[op.typeId,w])).rows[0].n)>0;if(populated){for(const old of type.fields){const next=op.fields.find(f=>f.key===old.key);if(!next||next.kind!==old.kind||json([next.formula?.operator,next.formula?.fields])!==json([old.formula?.operator,old.formula?.fields])||json(next.options)!==json(old.options)||next.targetTypeId!==old.targetTypeId||!!next.multiple!==!!old.multiple||!!next.computed!==!!old.computed||!!next.lookup!==!!old.lookup||(!old.required&&next.required))fail(409,'migration_required','Existing data requires an explicit field migration; use an optional new field instead');}if(op.fields.some(f=>(f.required||f.formula)&&!type.fields.some((old:Field)=>old.key===f.key)))fail(409,'migration_required','New fields on populated tables must be optional');}}
@@ -352,6 +352,21 @@ export class Service extends DataService {
    await tx.query('INSERT INTO commit_receipts(preview_id,actor_id,workspace_id,digest,result) VALUES($1,$2,$3,$4,$5)',[id,a.userId,p.workspaceId,digest,json(result)]);
    await tx.query('DELETE FROM data_previews WHERE id=$1',[id]);return result;
   });return result;
+ }
+ /** Create a reviewed graph atomically; temporary IDs never become record references. */
+ async createTypeBundle(tx:Connection,a:Actor,w:string,tables:{id:string;name:string;fields:Field[]}[],authorization:WriteAuthorization){
+  requireCurrentAction(a);
+  const ids=new Map(tables.map(t=>[t.id,randomUUID()]));
+  const mapped=tables.map(t=>({...t,id:ids.get(t.id)!,fields:t.fields.map(f=>({...f,...(f.targetTypeId?{targetTypeId:ids.get(f.targetTypeId)??f.targetTypeId}:{})}))}));
+  const schemas=new Map(mapped.map(t=>[t.id,t.fields]));
+  for(const t of mapped)await this.validate(tx,a,w,{kind:'create_type',name:t.name,fields:t.fields},{schemas,ownTypeId:t.id});
+  const policy=await access(tx,a,w,true);await setWriteAuthorization(tx,a,authorization);
+  for(const t of mapped){
+   const op={kind:'create_type',name:t.name,fields:t.fields};
+   await tx.query('INSERT INTO entity_types(id,workspace_id,name,fields) VALUES($1,$2,$3,$4)',[t.id,w,t.name,json(t.fields)]);
+   await revision(tx,a,w,t.id,'type',0,op);await audit(tx,a,policy,'type.created',t.id,null,{...op,authorization});
+  }
+  return ids;
  }
  private async apply(tx:Connection,a:Actor,w:string,op:Operation|FileOperation,p:any):Promise<any[]> {
   if(op.kind==='set_field_context'){

@@ -92,3 +92,7 @@ Acceptance: add two services through the same connector type, select allowed app
 6. If needed, use a reversible launch flag. Rollback restores old launch/UI behavior while retaining secure connector configuration/history; it does not reverse records or external calls. Document runtime/protocol limits accurately.
 
 Done: all P0 acceptance checks pass. New-tab launch, project colors, navigation, connector data/access controls and the standard footer must not be postponed to P1. Larger requests go to the [backlog](APP_PLATFORM_BACKLOG.md).
+
+## App quality release
+
+See [App creation quality](APP_DESIGN_QUALITY.md) for the shared design kit, rendered quality checks, linked-table creation, detail-field retention and one-preview request/revision contract.

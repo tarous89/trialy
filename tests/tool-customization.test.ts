@@ -1,3 +1,4 @@
+import {readable} from '../src/shared/app-design.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
@@ -29,7 +30,7 @@ test('rebrand, extend Settings and remove a view column without losing shared re
   const themed=await prepareToolLayout(f,ai,w.id,layout);await f.confirm(a,w.id,themed.id,themed.digest);
   let current=(await f.readComponent(a,w.id,receipt.id)).component;
   assert.deepEqual(current.bindings,op.content.bindings);assert.deepEqual((await f.record(db,a,w.id,recordId)).data.name,['Alpha','Beta']);
-  const rendered=await f.runFrontend(ai,w.id,{componentId:receipt.id,expectedVersion:1});assert.match(rendered.css,/#003B71/);assert.match(rendered.css,/#00A3E0/);
+  const rendered=await f.runFrontend(ai,w.id,{componentId:receipt.id,expectedVersion:1});assert.match(rendered.css,/#003B71/);assert.ok(rendered.css.includes(readable(theme.accent,theme.background)));assert.deepEqual(standardTracker(current.source)!.config.theme,theme);
   const draftId=randomUUID();
   const extended=await prepareToolLayout(f,ai,w.id,{...layout,expectedVersion:1,extendTables:[{typeId,expectedVersion:0,newFields:[{key:'notes',name:'Notes',kind:'text',multiple:true,ai:true}]}],newTables:[{id:draftId,name:'Activities',fields:[{key:'name',name:'Activity',kind:'text',ai:true}]}],tabs:[{...layout.tabs[0],columns:[...layout.tabs[0].columns,{field:'notes',label:'Notes',visible:true}]},{typeId:draftId,name:'Activities',visible:true,columns:[{field:'name',label:'Activity',visible:true}]}]});
   assert.equal((await service.types(a,w.id)).length,1);assert.equal((await service.types(a,w.id))[0].fields.length,1);

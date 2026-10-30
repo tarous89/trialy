@@ -1,6 +1,7 @@
 import {readFile,readdir} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {z} from 'zod';
+import {appPreparationFields} from '../shared/app-design.js';
 import {fail,id,type Actor} from '../shared/schema.js';
 import {componentContent} from './schema.js';
 import {trackerSetup,trackerOperation} from './tracker-template.js';
@@ -10,7 +11,7 @@ const option=z.object({type:z.enum(['string','number','boolean']),description:z.
 const entry=z.object({id:key,version,name:z.string().min(1).max(100),description:z.string().min(1).max(1000),tags:z.array(z.string().max(50)).max(20),whenToUse:z.string().min(1).max(2000),whenNotToUse:z.string().min(1).max(2000),instructions:z.string().min(1).max(20000),engine:z.enum(['tracker','frontend-js']),defaults:z.record(z.string(),z.unknown()).default({}),options:z.record(z.string().regex(/^[a-z][a-zA-Z0-9_]{0,63}$/),option).default({}),source:z.string().max(180000).optional(),examples:z.array(z.record(z.string(),z.unknown())).max(5).default([]),deprecated:z.boolean().default(false)}).strict();
 export const templateQuery=z.object({query:z.string().max(200).default(''),offset:z.number().int().min(0).default(0),limit:z.number().int().min(1).max(50).default(20)}).strict();
 export const templateRead=z.object({templateId:key,version:version.optional()}).strict();
-export const templatePrepare=z.object({templateId:key,version,digest:z.string().regex(/^[a-f0-9]{64}$/),name:z.string().trim().min(1).max(100),projectId:id.nullable().default(null),configuration:z.record(z.string(),z.unknown()).default({}),bindings:componentContent.shape.bindings,manifest:componentContent.shape.manifest}).strict();
+export const templatePrepare=z.object({...appPreparationFields,templateId:key,version,digest:z.string().regex(/^[a-f0-9]{64}$/),name:z.string().trim().min(1).max(100),projectId:id.nullable().default(null),configuration:z.record(z.string(),z.unknown()).default({}),bindings:componentContent.shape.bindings,manifest:componentContent.shape.manifest}).strict();
 const directory=new URL('../../templates/apps/',import.meta.url);
 /** Publisher-controlled files only. Never load an arbitrary caller URL or filesystem path. */
 export class AppTemplates{
@@ -30,14 +31,14 @@ export class AppTemplates{
  async read(input:unknown){const v=templateRead.parse(input);const matches=(await this.entries()).filter(t=>t.id===v.templateId&&(!v.version||t.version===v.version)).sort((a,b)=>compare(b.version,a.version));const t=matches[0];if(!t)fail(404,'not_found','Template unavailable');return {...t,configurationSchema:t.engine==='tracker'?z.toJSONSchema(trackerSetup,{io:"input",unrepresentable:"any"}):{type:'object',additionalProperties:false,properties:Object.fromEntries(Object.entries(t.options).map(([k,o])=>[k,{type:o.type,description:o.description,...(o.enum?{enum:o.enum}:{}),...(o.default!==undefined?{default:o.default}:{})}])),required:Object.entries(t.options).filter(([,o])=>o.required&&o.default===undefined).map(([k])=>k)}};}
  async operation(f:WorkspaceFoundation,a:Actor,w:string,input:unknown){
   const v=templatePrepare.parse(input),t=await this.read(vPick(v));if(t.deprecated)fail(409,'template_retired','Choose an active template');if(t.digest!==v.digest)fail(409,'template_changed','Template changed; read it again before preparing');
-  const catalogOrigin={id:t.id,version:t.version,digest:t.digest};
+  const catalogOrigin={id:t.id,version:t.version,digest:t.digest},preparation={requestKey:v.requestKey,replacesPreviewId:v.replacesPreviewId,expectedDigest:v.expectedDigest};
   if(t.engine==='tracker'){
    if(v.bindings.length||v.manifest)fail(400,'template_bindings','Use tracker tabs and fields for database bindings');
-   const setup=trackerSetup.parse({...t.defaults,...v.configuration,name:v.name,projectId:v.projectId});const built=await trackerOperation(f,a,w,setup);return {kind:'create_tracker',setup,content:built.content,catalogOrigin};
+   const setup=trackerSetup.parse({...t.defaults,...v.configuration,name:v.name,projectId:v.projectId});const built=await trackerOperation(f,a,w,setup);return {kind:'create_tracker',setup,content:built.content,catalogOrigin,preparation};
   }
   const configuration=configure(t.options,{...t.defaults,...v.configuration});if(!t.source)fail(500,'template_source','Template source missing');
   const source=`const templateConfiguration=${JSON.stringify(configuration)};\nconst templateBindings=${JSON.stringify(v.bindings)};\n${t.source}`;
-  return {kind:'save_component',projectId:v.projectId,catalogOrigin,content:{name:v.name,format:'frontend-js',source,bindings:v.bindings,manifest:v.manifest,sourceAccess:'workspace',assets:[],execution:[]}};
+  return {kind:'save_component',projectId:v.projectId,catalogOrigin,preparation,content:{name:v.name,format:'frontend-js',source,bindings:v.bindings,manifest:v.manifest,sourceAccess:'workspace',assets:[],execution:[]}};
  }
 }
 function vPick(v:z.infer<typeof templatePrepare>){return {templateId:v.templateId,version:v.version};}
