@@ -1,4 +1,4 @@
-import {appPublicUrl} from '../shared/public-url.js';
+import {appPublicUrl,PLATFORM_ORIGIN} from '../shared/public-url.js';
 import {randomUUID} from 'node:crypto';
 import {z} from 'zod';
 import type {Database} from '../db/database.js';
@@ -45,7 +45,7 @@ export class GuestDrafts{
   // Capability holders get a receipt, never access to the saved account contents.
   if(row.receipt)return {guestDraft:true,handle,status:'saved',receipt:row.receipt};
   if(new Date(row.expires_at).getTime()<=Date.now())fail(410,'draft_expired','This temporary tracker expired. Ask ChatGPT to prepare it again.');
-  return {guestDraft:true,handle,status:'temporary',bundle:row.body as GuestBundle,digest:row.digest,expiresAt:new Date(row.expires_at).toISOString(),saveUrl:new URL('/save-preview',appPublicUrl(process.env,'https://trialy-web.onrender.com')).href+'#preview='+encodeURIComponent(JSON.stringify(handle))};
+  return {guestDraft:true,handle,status:'temporary',bundle:row.body as GuestBundle,digest:row.digest,expiresAt:new Date(row.expires_at).toISOString(),saveUrl:new URL('/save-preview',appPublicUrl(process.env,PLATFORM_ORIGIN)).href+'#preview='+encodeURIComponent(JSON.stringify(handle))};
  }
  async run(input:unknown){
   const v=z.object({handle:guestHandle,component:z.number().int().min(0).max(9),request:frontendRequest}).strict().parse(input);

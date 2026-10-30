@@ -1,5 +1,5 @@
 import {test} from 'node:test';
-import {appPublicUrl} from '../src/shared/public-url.js';
+import {appPublicUrl,PLATFORM_ORIGIN} from '../src/shared/public-url.js';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 import {readFile,readdir} from 'node:fs/promises';
@@ -30,7 +30,7 @@ test('neutral apps retain existing save/permission contracts and receive page ro
   const draft=await prepareSimpleApp(f,a,w.id,{content:{name:'Calculator',source:"return {html:'<p>Calculator</p>',state:input.route??null};",bindings:[]}});
   assert.equal((await f.runFrontend(a,w.id,{previewId:draft.id,route:{path:'/calculator'}})).state.path,'/calculator');
   const saved=await f.confirm(a,w.id,draft.id,draft.digest),location={appId:saved.id,workspaceId:w.id,route:{path:'/calculator'}};
-  const registered=new Map<string,any>();addAppMcp({registerTool:(name:string,metadata:any,run:any)=>registered.set(name,{metadata,run})} as any,f,a,(fn:any)=>fn,{ui:{resourceUri:'ui://trialy/test'}});const launched=await registered.get('open_app').run(location);assert.equal(launched.screen,'app-link');assert.equal(launched.url,new URL(appUrl(location),appPublicUrl(process.env,'https://trialy-web.onrender.com')).href);assert.equal(registered.get('open_app').metadata._meta.ui?.resourceUri,undefined);assert.equal(registered.get('read_app').metadata._meta.ui?.resourceUri,undefined);
+  const registered=new Map<string,any>();addAppMcp({registerTool:(name:string,metadata:any,run:any)=>registered.set(name,{metadata,run})} as any,f,a,(fn:any)=>fn,{ui:{resourceUri:'ui://trialy/test'}});const launched=await registered.get('open_app').run(location);assert.equal(launched.screen,'app-link');assert.equal(launched.url,new URL(appUrl(location),appPublicUrl(process.env,PLATFORM_ORIGIN)).href);assert.equal(registered.get('open_app').metadata._meta.ui?.resourceUri,undefined);assert.equal(registered.get('read_app').metadata._meta.ui?.resourceUri,undefined);
   const result=await readApp(f,a,location);assert.equal((result as any).component.resource_kind,'generic');assert.equal((result as any).component.id,saved.id);
   await assert.rejects(readApp(f,stranger,location));
   const output=await f.runFrontend(a,w.id,{componentId:saved.id,expectedVersion:0,route:{path:'/calculator',page:2}});assert.deepEqual(output.state,{path:'/calculator',page:2});assert.equal(output.frameUrl,'https://platform.trialagents.com/frontend/frame');
