@@ -10,9 +10,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "investor-crm.html",
-      "sourceCharacters": 96050,
-      "catalogBytes": 111445,
-      "sha256": "2e0ebbbb1428184dbbaf0d632d535b39892c40b1270cc52f8f2066f66c79fef6"
+      "sourceCharacters": 96161,
+      "catalogBytes": 111560,
+      "sha256": "a5624ad50df32e8587f3e0d31c1da52dbef06378ad8adc100833126f355b9adb"
     },
     {
       "id": "life.partnership-tracker",
@@ -23,9 +23,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "partnership-tracker.html",
-      "sourceCharacters": 96232,
-      "catalogBytes": 111809,
-      "sha256": "837a205d2f3d8d0e9d3207b1629d4400d9251863d513e21eee03d22c7406d38f"
+      "sourceCharacters": 96343,
+      "catalogBytes": 111924,
+      "sha256": "9ecff2885671a0d171c4de791baea33f1300aa310c01a18b994ac1b5995b17d3"
     },
     {
       "id": "life.cash-runway",
@@ -36,9 +36,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "cash-runway.html",
-      "sourceCharacters": 93120,
-      "catalogBytes": 106553,
-      "sha256": "954179cb0850951d2d705488a0a56c486b856b3c55cc118e18a621bde14902e7"
+      "sourceCharacters": 93231,
+      "catalogBytes": 106668,
+      "sha256": "371f0b27c497cd3c6e30969f4d9cc23dafcf3d675f2ba940b6c04af4f5ae876c"
     },
     {
       "id": "life.hiring-resource-management",
@@ -49,9 +49,9 @@
       "screens": 7,
       "version": "1.0.0",
       "html": "hiring-resource-management.html",
-      "sourceCharacters": 95988,
-      "catalogBytes": 111422,
-      "sha256": "b9c3ec212267607fb5a5e65f6e3797c8e2c95280e8a2404806c1f1df605024c0"
+      "sourceCharacters": 96099,
+      "catalogBytes": 111537,
+      "sha256": "1ed5197a6aa2f6f072f0e65fec4b3207d9a836ebe2eb4410590c5f7d655536b2"
     },
     {
       "id": "life.cro-selection",
@@ -62,9 +62,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "cro-selection.html",
-      "sourceCharacters": 95116,
-      "catalogBytes": 109848,
-      "sha256": "b9e488f99b3a75ac52a54528a56a4cc4bda490a9cec3ddd79e10ee3878a2a000"
+      "sourceCharacters": 95227,
+      "catalogBytes": 109963,
+      "sha256": "36fd9db0e84f115032dd5e4d80c7c34aff0b2c75054fce186455762dc5311519"
     },
     {
       "id": "life.project-oversight",
@@ -75,9 +75,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "project-oversight.html",
-      "sourceCharacters": 94837,
-      "catalogBytes": 109420,
-      "sha256": "ceab47139789b8d86b66af40069b4e84bdb708d23ce3ea26ebb4d2a341a60508"
+      "sourceCharacters": 94948,
+      "catalogBytes": 109535,
+      "sha256": "d37a32ea6931d4e711b6b754cf6f1dd2a836cc527caefc6a84085094a57da59c"
     },
     {
       "id": "life.sponsor-rfp-management",
@@ -88,9 +88,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "sponsor-rfp-management.html",
-      "sourceCharacters": 95058,
-      "catalogBytes": 109880,
-      "sha256": "e011917b05d2da207804a19278810cbda04c11cd3e5af0f3afdf705feaa3b6e0"
+      "sourceCharacters": 95169,
+      "catalogBytes": 109995,
+      "sha256": "2358805218e005dd2167a35c143cd0458301397af7bd79ea74d2cf285b771a80"
     },
     {
       "id": "life.cro-oversight",
@@ -101,9 +101,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "cro-oversight.html",
-      "sourceCharacters": 96647,
-      "catalogBytes": 112449,
-      "sha256": "4cf1e25ab810609fdde91184f27a6b4815defeaf3e2406b8730c0c3d0a265d40"
+      "sourceCharacters": 96758,
+      "catalogBytes": 112564,
+      "sha256": "1abed2bcb0c72db0371c684e5b27590ba5a38821cfe7988ec5b24c654fd60dbd"
     },
     {
       "id": "life.sponsor-site-feasibility",
@@ -114,9 +114,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "sponsor-site-feasibility.html",
-      "sourceCharacters": 96259,
-      "catalogBytes": 112009,
-      "sha256": "43fad24e028985e49282da45e14ed1730ac5326ccc19271de14c0f84744e9848"
+      "sourceCharacters": 96370,
+      "catalogBytes": 112124,
+      "sha256": "879ad31f6a2b665537a7e5021a1f1d37066b150c809ceb2998872b3f5482d79a"
     },
     {
       "id": "life.investigator-crm",
@@ -127,9 +127,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "investigator-crm.html",
-      "sourceCharacters": 95269,
-      "catalogBytes": 110160,
-      "sha256": "9819da1fa60024f1ba93941cb3b7188c101ceb067ccd69b77e77204462cc929a"
+      "sourceCharacters": 95380,
+      "catalogBytes": 110275,
+      "sha256": "b4a578606b98e2396da377109835d4c1b9c48a1c93f4959c1246621fcb2906f7"
     },
     {
       "id": "life.trial-regulatory-submission",
@@ -140,9 +140,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "trial-regulatory-submission.html",
-      "sourceCharacters": 95762,
-      "catalogBytes": 111127,
-      "sha256": "cf9ad035b5b77661ea486359476dcc148dd87b2916a942b3dc54383a9292fc9a"
+      "sourceCharacters": 95873,
+      "catalogBytes": 111242,
+      "sha256": "4df3a3caf4ec7aafae70a791d1abc0b299e133ced2454bf70983780b36fc01c1"
     },
     {
       "id": "life.trial-monitoring-pv-oversight",
@@ -153,9 +153,9 @@
       "screens": 7,
       "version": "1.0.0",
       "html": "trial-monitoring-pv-oversight.html",
-      "sourceCharacters": 96180,
-      "catalogBytes": 111812,
-      "sha256": "c4f48bb670f79643a1a26e1e1548d492ee091c3d1dbba4773d16078b4ce04c51"
+      "sourceCharacters": 96291,
+      "catalogBytes": 111927,
+      "sha256": "8cb894aaa3b92acb29229f8d1cbd06bb128796fe3fc7853b48cb6eda14ab631b"
     },
     {
       "id": "life.cro-rfp-management",
@@ -166,9 +166,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "cro-rfp-management.html",
-      "sourceCharacters": 95643,
-      "catalogBytes": 110705,
-      "sha256": "44550497641c41265b1d91bb12a9518847cf204557c146ca448b13f49c3ef233"
+      "sourceCharacters": 95754,
+      "catalogBytes": 110820,
+      "sha256": "84e053c77a11841e2365c6cf8523c2677b8099f3b49ab280c75fa9289e486d3b"
     },
     {
       "id": "life.cro-resource-planning",
@@ -179,9 +179,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "cro-resource-planning.html",
-      "sourceCharacters": 94852,
-      "catalogBytes": 109477,
-      "sha256": "82ca41cdb72f00fb7f381e508c3fb8e5b4b95ad8f1eda5175762570ce4e6fb18"
+      "sourceCharacters": 94963,
+      "catalogBytes": 109592,
+      "sha256": "5d946a22607e68861c95afa43d902a9cd3f06f4fe66ca26d55b230bc174e94fb"
     },
     {
       "id": "life.pi-network-management",
@@ -192,9 +192,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "pi-network-management.html",
-      "sourceCharacters": 95981,
-      "catalogBytes": 111357,
-      "sha256": "ee6c84449ccf2eb4daf8dbeaa839230c29a39327c375d8813d0786e2e60d2dfb"
+      "sourceCharacters": 96092,
+      "catalogBytes": 111472,
+      "sha256": "27b34c21e870b3f472a046b73aab63665eb133c3257ce8a5b15cb13129728182"
     },
     {
       "id": "life.cro-site-feasibility",
@@ -205,9 +205,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "cro-site-feasibility.html",
-      "sourceCharacters": 96092,
-      "catalogBytes": 111533,
-      "sha256": "3d91abdba46d7541695534abdc26d33d8a5247a39d2ae52dd7d2cfad4b84ed33"
+      "sourceCharacters": 96203,
+      "catalogBytes": 111648,
+      "sha256": "825010e67a317f76053af4d41ae0354f25626998cc517fd1d988404bd7796f22"
     },
     {
       "id": "life.sponsor-updates",
@@ -218,9 +218,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "sponsor-updates.html",
-      "sourceCharacters": 95607,
-      "catalogBytes": 110657,
-      "sha256": "602b1f4438a0d7d835ebb3ea0b5a65630542672119468a6273a387b6b68fd6c0"
+      "sourceCharacters": 95718,
+      "catalogBytes": 110772,
+      "sha256": "e97aa35df2ba9c355a8a36446650f8ae49f8397456553ad8ce295d73d45969f3"
     },
     {
       "id": "life.client-signals-crm",
@@ -231,9 +231,9 @@
       "screens": 7,
       "version": "1.0.0",
       "html": "client-signals-crm.html",
-      "sourceCharacters": 96344,
-      "catalogBytes": 111983,
-      "sha256": "6d20681cf4e51234f50fdb04b8aecaaa127ac1f17370c09b64e9f5f3592d9c8c"
+      "sourceCharacters": 96455,
+      "catalogBytes": 112098,
+      "sha256": "b0e1fe56a0ecd995eb5e214660952224653c43eff6d620c779e1fd14a240a396"
     },
     {
       "id": "life.experiment-notebook",
@@ -244,9 +244,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "experiment-notebook.html",
-      "sourceCharacters": 95011,
-      "catalogBytes": 109641,
-      "sha256": "10e746d69384ad78dbdc1f2839de8bde5b53ad6d0f2e6a73528ba4a004718aab"
+      "sourceCharacters": 95122,
+      "catalogBytes": 109756,
+      "sha256": "e8cdcdb313c5009ad0c9465d901cb4db95ede2f05e20b4cd87168994406fbce0"
     },
     {
       "id": "life.inventory-management",
@@ -257,9 +257,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "inventory-management.html",
-      "sourceCharacters": 95891,
-      "catalogBytes": 111092,
-      "sha256": "f6bdb09d562044003db93e8a687d23d90f4ffdabee803cd395d299b8b5a8693d"
+      "sourceCharacters": 96002,
+      "catalogBytes": 111207,
+      "sha256": "d58ebaae3c340b14df6ffa0d544c8cc51052d839d018b7716f90c6c78ba82154"
     },
     {
       "id": "life.literature-radar",
@@ -270,9 +270,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "literature-radar.html",
-      "sourceCharacters": 93954,
-      "catalogBytes": 107894,
-      "sha256": "b3ef31183fbe0b27edf849103350431a66cdfc0c82a9f24341fbbf3540eefc76"
+      "sourceCharacters": 94065,
+      "catalogBytes": 108009,
+      "sha256": "3d28cf91440e69ae95ef87d7e9482546583c6d916f8f928cc6970bb448bb7840"
     },
     {
       "id": "life.grant-pipeline",
@@ -283,9 +283,9 @@
       "screens": 7,
       "version": "1.0.0",
       "html": "grant-pipeline.html",
-      "sourceCharacters": 95912,
-      "catalogBytes": 111098,
-      "sha256": "25fba7b71f92ba411ef77a2910f55c1b07e48862c48909717baab597db325ccf"
+      "sourceCharacters": 96023,
+      "catalogBytes": 111213,
+      "sha256": "919cce98072af0235f44852df1d7478b96a39b395c852e830fcd519e05509c98"
     },
     {
       "id": "life.publication-management",
@@ -296,9 +296,9 @@
       "screens": 7,
       "version": "1.0.0",
       "html": "publication-management.html",
-      "sourceCharacters": 97090,
-      "catalogBytes": 113025,
-      "sha256": "e8b99680a849699908c734828b877f6b8d629dc2e943af2823881310675f30cc"
+      "sourceCharacters": 97201,
+      "catalogBytes": 113140,
+      "sha256": "67150742d68286f23f3cf57f4220887d4af66ea4369d57933ecfe34beb708b53"
     }
   ]
 }

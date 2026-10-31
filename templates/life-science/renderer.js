@@ -96,7 +96,7 @@ function renderLifeScience(spec,config,bindings,input,tools,V,themeCss,icons){
   if(!list.length)return blank(p.unbound?'Connect your '+sch.name.toLowerCase():'No matching records',p.unbound?'Use this template in ChatGPT to map its fields to your authorized TrialAgents tables. No example records are saved.':'Add a record or adjust the page filters. Empty results are not fabricated.');
   const thead='<thead><tr>'+cols.map(f=>'<th scope="col">'+esc(f.label)+'</th>').join('')+'<th scope="col" class="ls-details-col">Details</th></tr></thead>';
   const rows=list.map(r=>'<tr>'+cols.map((f,i)=>'<td'+(i===0?' class="ls-name"':'')+'>'+fieldValue(f,r.data[f.key])+'</td>').join('')+'<td class="ls-details-col">'+button(icon('external',18),'details:'+r.id,'ls-icon-button',false,'aria-label="Details for '+esc(r.data.name)+'"')+'</td></tr>').join('');
-  return V.render('table',{label:sch.name,table:raw('<table><caption class="ls-sr">'+esc(sch.name)+'</caption>'+thead+'<tbody>'+rows+'</tbody></table>'),empty:'',count:(p.total>p.rows.length?'Loaded '+p.rows.length+' of '+p.total+' records':'All '+p.total+' records'),feedback:'Reviewed edits \u00b7 permission-controlled'},{class:'card ls-table-card'});
+  return V.render('table',{label:sch.name,table:raw('<table aria-label="'+esc(sch.name)+'">'+thead+'<tbody>'+rows+'</tbody></table>'),empty:'',count:(p.total>p.rows.length?'Loaded '+p.rows.length+' of '+p.total+' records':'All '+p.total+' records'),feedback:'Reviewed edits \u00b7 permission-controlled'},{class:'card ls-table-card'});
  }
  function inputField(f,value='',dataAction=''){
   const id='field-'+f.key,required=f.required?' required':'',base=' id="'+id+'" name="'+f.key+'" data-ui-state="true"'+required+(dataAction?' data-action="'+dataAction+'"':'');
