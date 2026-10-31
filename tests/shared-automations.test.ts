@@ -136,6 +136,13 @@ test('shared automations isolate failures, preserve saved apps and enforce revie
    await assert.rejects(events.subscribe(ai,{...v,delivery:{...v.delivery,url:'http://127.0.0.1'}}));
    await assert.rejects(new AutomationEvents(db,async()=>response('wrong')).subscribe(ai,{...v,delivery:{...v.delivery,url:'https://callbacks.example.org/invalid'}}),/verified/);
   });
+  await t.test('bounded host batches signal the remaining agenda without repeating completed work',async()=>{
+   await pg.query("UPDATE automation_occurrences SET status='blocked' WHERE status='queued'");const current=await s.runner(human,w.id,runner.id);assert.ok(current.enabled);
+   const ids=[randomUUID(),randomUUID()];for(const oid of ids)await pg.query("INSERT INTO automation_occurrences(id,workspace_id,user_id,runner_id,occurrence_key,due_at,reason) VALUES($1,$2,$3,$4,$5,now(),'daily_check')",[oid,w.id,human.userId,runner.id,'test-drain:'+oid]);
+   const c:any=await s.claim(ai,w.id,{runnerId:runner.id,occurrenceId:ids[0],requestKey:randomUUID()});await s.finish(ai,w.id,{occurrenceId:ids[0],claimToken:c.claimToken});
+   const event=(await pg.query<any>("SELECT * FROM automation_outbox WHERE runner_id=$1 AND event_key LIKE 'drain:%' ORDER BY created_at DESC LIMIT 1",[runner.id])).rows[0];assert.ok(event);assert.ok(new Date(event.available_at).getTime()>Date.now());assert.equal((await pg.query<any>('SELECT status FROM automation_occurrences WHERE id=$1',[ids[1]])).rows[0].status,'queued');
+   const replay=await s.claim(ai,w.id,{runnerId:runner.id,occurrenceId:ids[0],requestKey:randomUUID()});assert.equal(replay.status,'completed');
+  });
   await t.test('connection revocation blocks claims without hiding saved apps',async()=>{
    await pg.query<any>('DELETE FROM oauth_tokens WHERE family=$1',[ai.connectionFamily]);assert.equal((await s.setup(human,w.id)).state,'awaiting_subscription');await pg.query<any>('UPDATE automation_occurrences SET available_at=now() WHERE id=$1',[work.id]);await assert.rejects(s.claim(ai,w.id,{runnerId:runner.id,occurrenceId:work.id,requestKey:randomUUID()}),/inactive/);assert.deepEqual((await pg.query<any>('SELECT source,version,bindings FROM workspace_components WHERE id=$1',[app.id])).rows[0],original);
   });

@@ -81,6 +81,9 @@ export class AutomationService{
   await tx.query('UPDATE automation_runners SET last_check_at=now(),verified_at=coalesce(verified_at,now()) WHERE id=$1',[o.runner_id]);
   if(o.monitor_id&&['completed','no_update'].includes(result.status)){await tx.query('UPDATE automation_dispatch SET last_success_at=now(),diagnostic=NULL WHERE monitor_id=$1',[o.monitor_id]);const m=await new AppMonitoring(adapter(tx)).row(a,w,o.monitor_id),t=m.config.automation?.trigger;if(t?.kind==='after_success')await tx.query('UPDATE automation_dispatch SET next_at=$2 WHERE monitor_id=$1',[o.monitor_id,new Date(Date.now()+t.minutes*60000)]);}
   if(result.status==='partial'&&o.attempts<o.retry_limit){await tx.query("UPDATE automation_occurrences SET status='queued',available_at=now()+interval '15 minutes' WHERE id=$1",[o.id]);await signalWork(tx,o,`partial:${o.id}:${o.attempts}`,'continuation');}
+  // A bounded host invocation must not strand the remainder of today's agenda.
+  // Delay the hint so the current invocation can finish its own small batch first.
+  if((await tx.query("SELECT id FROM automation_occurrences WHERE runner_id=$1 AND status='queued' AND due_at<=now() AND available_at<=now() LIMIT 1",[o.runner_id])).rows.length){const key='drain:'+Math.floor(Date.now()/30000);await signalWork(tx,o,key,'continuation');await tx.query("UPDATE automation_outbox SET available_at=greatest(available_at,now()+interval '30 seconds') WHERE runner_id=$1 AND event_key=$2 AND status='queued'",[o.runner_id,key]);}
   // Follow-up actions are dispatched separately: failures never undo research saves.
   return {id:o.id,status:result.status,result};
  });}

@@ -56,3 +56,8 @@ DO $$ DECLARE t text; BEGIN
 END $$;
 
 CREATE UNIQUE INDEX automation_authoring_key ON app_monitors(workspace_id,user_id,app_id,(config->>'authoringKey')) WHERE config->>'authoringKey' IS NOT NULL;
+
+CREATE INDEX automation_runners_daily ON automation_runners(next_daily_at) WHERE enabled;
+CREATE UNIQUE INDEX automation_attempt_run ON automation_attempts(run_id) WHERE run_id IS NOT NULL;
+CREATE INDEX automation_expired_claims ON automation_occurrences(lease_until) WHERE status='running';
+CREATE INDEX automation_pending_completion ON automation_occurrences(finished_at) WHERE status='completed' AND completion_action_id IS NOT NULL AND completion_dispatched_at IS NULL;
