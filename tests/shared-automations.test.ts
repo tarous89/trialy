@@ -43,7 +43,7 @@ test('shared automations isolate failures, preserve saved apps and enforce revie
  try{await withActor(human,async()=>{
   const domain=new Service(db),f=new WorkspaceFoundation(db),m=new AppMonitoring(db),s=new AutomationService(db),w=await domain.createWorkspace(human,'Automation tests');await domain.setAi(human,w.id,true);
   const preview=await f.preview(human,w.id,{kind:'save_component',content:{name:'Always available',format:'frontend-js',sourceAccess:'bindings',source:'return {html:"<h1>Saved app</h1>"};',bindings:[]}}),app=await f.confirm(human,w.id,preview.id,preview.digest);
-  const original=(await pg.query<any>('SELECT source,version,bindings FROM workspace_components WHERE id=$1',[app.id])).rows[0];
+  let original=(await pg.query<any>('SELECT source,version,bindings FROM workspace_components WHERE id=$1',[app.id])).rows[0];
   const p=await s.prepare(ai,w.id,{preferences:{time:'06:00',timeZone:'Europe/Berlin'}});await assert.rejects(s.confirm(ai,w.id,p.id,p.digest),/approve/);const runner=await s.confirm(human,w.id,p.id,p.digest);
   const v={name:'automation.ready',arguments:{workspaceId:w.id,runnerId:runner.id},delivery:{mode:'webhook',url:'https://callbacks.example.org/events',secret:'whsec_'+randomBytes(32).toString('base64')}};
   await t.test('OAuth alone does not claim readiness; verified subscription round trip does',async()=>{
@@ -124,6 +124,10 @@ test('shared automations isolate failures, preserve saved apps and enforce revie
    await s.finish(ai,w.id,{occurrenceId:o.id,claimToken:c.claimToken,result:{status:'completed',summary:'Confirmed final report'}});await withDatabaseContext({service:'worker'},()=>dispatchCompletions(db));await withDatabaseContext({service:'worker'},()=>dispatchCompletions(db));const runs=(await pg.query<any>('SELECT * FROM app_action_runs WHERE action_id=$1',[action.id])).rows;assert.equal(runs.length,1);assert.equal(runs[0].results.research.summary,'Confirmed final report');
    await m.control(human,w.id,mon.id,0,false);await assert.rejects(actions.authorizeRun(runs[0].id),/stopped or changed/);await withDatabaseContext({service:'worker'},()=>processAppAction(db));assert.equal((await pg.query<any>('SELECT count(*)::int AS n FROM app_service_jobs')).rows[0].n,0);assert.equal((await pg.query<any>('SELECT status FROM automation_occurrences WHERE id=$1',[o.id])).rows[0].status,'completed');
    assert.deepEqual((await pg.query<any>('SELECT source,version,bindings FROM workspace_components WHERE id=$1',[app.id])).rows[0],original);
+   const revision=await f.preview(human,w.id,{kind:'save_component',componentId:app.id,expectedVersion:0,content:{name:'Always available',format:'frontend-js',sourceAccess:'bindings',source:'return {html:"<h1>Updated saved app</h1>"};',bindings:[]}});await f.confirm(human,w.id,revision.id,revision.digest);await m.control(human,w.id,mon.id,0,true);
+   assert.equal((await m.read(ai,w.id,mon.id)).availability,'ready','A layout publication must not pause research when its email action needs separate review');
+   await pg.query('UPDATE automation_occurrences SET completion_dispatched_at=NULL WHERE id=$1',[o.id]);await withDatabaseContext({service:'worker'},()=>dispatchCompletions(db));const kept=(await pg.query<any>('SELECT status,result FROM automation_occurrences WHERE id=$1',[o.id])).rows[0];assert.equal(kept.status,'completed');assert.equal(kept.result.deliveryStatus,'blocked');assert.equal(kept.result.summary,'Confirmed final report');
+   original=(await pg.query<any>('SELECT source,version,bindings FROM workspace_components WHERE id=$1',[app.id])).rows[0];
   });
   await t.test('subscription refresh, rotation, expiry, unsubscribe and delivery signatures',async()=>{
    const events=new AutomationEvents(db,transport),existing=await events.subscribe(ai,v),newKey='whsec_'+randomBytes(32).toString('base64');assert.equal((await events.subscribe(ai,{...v,delivery:{...v.delivery,secret:newKey}})).id,existing.id);

@@ -17,7 +17,7 @@ export const automationsEnabled=()=>process.env.APP_AUTOMATIONS_ENABLED!=='false
 export async function connectionActive(db:Connection,s:any){return !!(await db.query("SELECT 1 FROM oauth_tokens WHERE user_id=$1 AND family::text=$2 AND client_id=$3 AND expires_at>$4 LIMIT 1",[s.user_id,s.connection_family,s.client_id,Date.now()])).rows.length;}
 export async function activeSubscription(db:Connection,runnerId:string){const s=(await db.query('SELECT * FROM automation_subscriptions WHERE runner_id=$1 AND enabled AND expires_at>now()',[runnerId])).rows[0];return s&&await connectionActive(db,s)?s:null;}
 export async function signalWork(db:Connection,r:any,key:string,reason:string){await db.query('INSERT INTO automation_outbox(id,workspace_id,user_id,runner_id,event_key,reason) VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT(runner_id,event_key) DO NOTHING',[randomUUID(),r.workspace_id,r.user_id,r.runner_id??r.id,key,reason]);}
-export async function validateShared(db:Database,a:Actor,w:string,config:MonitoringConfig){
+export async function validateShared(db:Database,a:Actor,w:string,config:MonitoringConfig,review=false){
  const c=config.automation;if(!c)return;
  const runner=(await db.query('SELECT id FROM automation_runners WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[c.runnerId,w,a.userId])).rows[0];if(!runner)fail(403,'runner_required','Complete the approved background setup first');
  const trigger=c.trigger;if('timeZone' in trigger&&trigger.timeZone!==config.schedule.timeZone)fail(400,'schedule_timezone','Schedule timezone must match the automation');
@@ -25,7 +25,7 @@ export async function validateShared(db:Database,a:Actor,w:string,config:Monitor
   const binding=config.readBindings.find(b=>b.typeId===trigger.typeId),fields=trigger.kind==='database'?[...trigger.fields,...(trigger.becomes?[trigger.becomes.field]:[])]:[trigger.field];
   if(!binding||fields.some(f=>!binding.fields.includes(f)))fail(403,'trigger_scope','Trigger fields must be in approved read bindings');
  }
- if(c.completionActionId){const action=await new AppActions(db).row(a,w,c.completionActionId);if(action.user_id!==a.userId||action.app_id!==config.appId||action.version!==c.completionActionVersion||action.paused||action.config.trigger.kind!=='manual'||action.config.recordTypeId)fail(403,'completion_scope','Select a current approved manual action for this app without per-record input');await new AppActions(db).validate(a,w,action.config);}
+ if(review&&c.completionActionId){const action=await new AppActions(db).row(a,w,c.completionActionId);if(action.user_id!==a.userId||action.app_id!==config.appId||action.version!==c.completionActionVersion||action.paused||action.config.trigger.kind!=='manual'||action.config.recordTypeId)fail(403,'completion_scope','Select a current approved manual action for this app without per-record input');await new AppActions(db).validate(a,w,action.config);}
 }
 export async function syncDispatch(tx:Connection,a:Actor,w:string,monitorId:string,version:number,config:MonitoringConfig,old?:any){
  const c=config.automation;if(!c){if(old?.config.automation)await tx.query('UPDATE automation_dispatch SET next_at=NULL,diagnostic=$2 WHERE monitor_id=$1',[monitorId,'legacy_schedule']);return;}

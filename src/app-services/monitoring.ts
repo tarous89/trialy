@@ -20,9 +20,9 @@ export class AppMonitoring {
  constructor(readonly db:Database){this.f=new WorkspaceFoundation(db);}
  async owner(a:Actor,w:string){const p=await access(this.db,a,w,true);if(p.role!=='owner')fail(403,'owner_required','Only the account owner can configure monitoring');return p;}
  async app(a:Actor,w:string,appId:string){const c=await this.f.component(this.db,a,w,appId);if(c.archived||c.project_archived)fail(409,'app_archived','Monitoring requires a saved, active app');return c;}
- async validate(a:Actor,w:string,config:MonitoringConfig){
+ async validate(a:Actor,w:string,config:MonitoringConfig,review=false){
   await this.owner(a,w);const c=await this.app(a,w,config.appId);
-  await validateShared(this.db,a,w,config);
+  await validateShared(this.db,a,w,config,review);
   if(Date.parse(config.expiresAt)<=Date.now())fail(403,'monitoring_expired','Monitoring authorization expired');
   const schemas=[];
   for(const b of config.readBindings){const {type,policy}=await typeAccess(this.db,a,w,b.typeId);const visible=visibleFields(type.fields,policy,a);if(b.fields.some(k=>!visible.some(f=>f.key===k)))fail(403,'monitoring_fields','Monitoring includes unavailable fields');schemas.push({id:type.id,name:type.name,version:type.version,fields:visible.filter(f=>b.fields.includes(f.key))});}
@@ -34,7 +34,7 @@ export class AppMonitoring {
  }
  async row(a:Actor,w:string,monitorId:string){await this.owner(a,w);const row=(await this.db.query('SELECT * FROM app_monitors WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[monitorId,w,a.userId])).rows[0];if(!row)fail(404,'not_found','Monitoring unavailable');await this.app(a,w,row.app_id);return row;}
  async prepare(a:Actor,w:string,input:unknown){
-  const body=monitoringChange.parse(input);await this.owner(a,w);const checked=await withActor({...a,origin:'ai'},()=>this.validate({...a,origin:'ai'},w,body.config));
+  const body=monitoringChange.parse(input);await this.owner(a,w);const checked=await withActor({...a,origin:'ai'},()=>this.validate({...a,origin:'ai'},w,body.config,true));
   if(!body.monitorId&&body.config.authoringKey){const existing=(await this.db.query("SELECT id FROM app_monitors WHERE workspace_id=$1 AND user_id=$2 AND app_id=$3 AND config->>'authoringKey'=$4",[w,a.userId,body.config.appId,body.config.authoringKey])).rows[0];if(existing)fail(409,'automation_exists','Read and revise the existing automation: '+existing.id);}
   if(body.monitorId){const old=await this.row(a,w,body.monitorId);if(old.version!==body.expectedVersion||old.app_id!==body.config.appId)fail(409,'monitoring_changed','Read the current monitoring configuration');if(!old.config.automation&&body.config.automation&&old.task)fail(409,'legacy_task_linked','Pause the existing ChatGPT task and detach its association before migrating');}
   const reviewBody={change:body,scopeStamp:checked.stamp,schemas:checked.schemas,writeScopes:checked.scopes},reviewId=randomUUID(),digest=checksum(J(reviewBody));await this.db.query("INSERT INTO app_service_previews(id,workspace_id,user_id,kind,body,digest) VALUES($1,$2,$3,'monitoring',$4,$5)",[reviewId,w,a.userId,J(reviewBody),digest]);
@@ -43,7 +43,7 @@ export class AppMonitoring {
  async confirm(a:Actor,w:string,reviewId:string,digest:string){requireHuman(a);return this.db.transaction(async tx=>{
   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const s=new AppMonitoring(adapter(tx)),p=await s.owner(a,w),r=(await tx.query("SELECT * FROM app_service_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND kind='monitoring' AND expires_at>now() FOR UPDATE",[reviewId,w,a.userId])).rows[0];
   if(!r||r.digest!==digest)fail(409,'review_changed','Monitoring review unavailable or changed');if(r.consumed_at)return r.result;
-  const v=monitoringChange.parse(r.body.change),checked=await withActor({...a,origin:'ai'},()=>s.validate({...a,origin:'ai'},w,v.config)),monitorId=v.monitorId??randomUUID();let version=0;let previous:any;
+  const v=monitoringChange.parse(r.body.change),checked=await withActor({...a,origin:'ai'},()=>s.validate({...a,origin:'ai'},w,v.config,true)),monitorId=v.monitorId??randomUUID();let version=0;let previous:any;
   if(checked.stamp!==r.body.scopeStamp)fail(409,'scope_changed','Monitoring fields or permissions changed after preparation');
   if(v.monitorId){const old=await s.row(a,w,v.monitorId);previous=old;if(!old.config.automation&&v.config.automation&&old.task)fail(409,'legacy_task_linked','Detach the paused legacy task before migrating');if(old.version!==v.expectedVersion||old.app_id!==v.config.appId)fail(409,'monitoring_changed','Monitoring changed');version=old.version+1;await tx.query("UPDATE app_monitor_runs SET status='cancelled',finished_at=now() WHERE monitor_id=$1 AND status='running'",[monitorId]);await tx.query('UPDATE app_monitors SET version=$2,config=$3,scope_stamp=$4,enabled=true,coverage_through=CASE WHEN $5 THEN coverage_through ELSE NULL END,updated_at=now() WHERE id=$1',[monitorId,version,J(v.config),checked.stamp,!!v.config.automation&&['objective','instructions','sourcePolicy','readBindings','writeScopes'].every(k=>J(old.config[k])===J((v.config as any)[k]))]);}
   else {if(v.config.authoringKey&&(await tx.query("SELECT id FROM app_monitors WHERE workspace_id=$1 AND user_id=$2 AND app_id=$3 AND config->>'authoringKey'=$4",[w,a.userId,v.config.appId,v.config.authoringKey])).rows.length)fail(409,'automation_exists','An automation with this authoring key already exists');const n=Number((await tx.query('SELECT count(*) AS n FROM app_monitors WHERE workspace_id=$1 AND user_id=$2',[w,a.userId])).rows[0].n);if(n>=100)fail(409,'monitoring_limit','This account already has 100 monitoring configurations');await tx.query('INSERT INTO app_monitors(id,workspace_id,user_id,app_id,config,scope_stamp) VALUES($1,$2,$3,$4,$5,$6)',[monitorId,w,a.userId,v.config.appId,J(v.config),checked.stamp]);}
