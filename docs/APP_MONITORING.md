@@ -2,7 +2,7 @@
 
 ## Scope and compatibility
 
-This document describes the legacy per-app host-task adapter. Release 0.2.38 also implements the [shared automation engine](scopes/APP_AUTOMATION_ENGINE_2026-10-31.md), whose schedules are executable server configuration. The [revised app configuration scope](product/APP_CONFIGURATION_AND_AUTOMATIONS.md) plans a first-class Automations list and complete expandable editing across research and platform actions. Those new management and tab-access changes are not implemented by this documentation revision.
+This document describes the legacy per-app host-task adapter. Release 0.2.38 also implements the [shared automation engine](scopes/APP_AUTOMATION_ENGINE_2026-10-31.md), whose schedules are executable server configuration. The [revised app configuration scope](product/APP_CONFIGURATION_AND_AUTOMATIONS.md) adds a first-class Automations list and complete expandable editing across research and platform actions. The current implementation includes optional standard-tracker sections and management adapters; actual host activation remains separately unverified.
 
 New shared definitions belong to a saved app, reuse the owner/workspace runner, and remain optional for app availability. The target lifecycle is disable/enable/edit; retirement follows parent app deletion and retains records/history. Sharing app tabs never shares private monitoring prompts, execution identity or management authority. Existing legacy task links and receipts remain intact until explicitly migrated without dual scheduling.
 

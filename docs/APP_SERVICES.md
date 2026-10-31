@@ -2,11 +2,11 @@
 
 The builder contract is [APP_SERVICES.md](../plugin/trialy/skills/trialy-workspace/references/APP_SERVICES.md), also available through `read_app_services` on MCP. This release adds no app-specific authentication system or seat purchasing flow.
 
-## Management scope revision — planned
+## Automation management
 
 The [revised app configuration scope](product/APP_CONFIGURATION_AND_AUTOMATIONS.md) places platform actions and ChatGPT research definitions in one app-linked Automations destination. Keep executor and trigger independent. TrialAgents still owns email, deterministic jobs and approved connector/LLM calls; the ChatGPT connection is not required for those independent jobs. Research-to-email uses the existing approved completion dependency, with separate outcomes and no duplicate schedule.
 
-Expanded platform rows edit typed action, timing, mappings and recipient policy through the same schema/review as MCP. The target lifecycle offers disable/enable/edit/history, with retirement through parent app deletion and preserved receipts/data. This is documentation for the next UI/lifecycle work, not a change to current service APIs. Optional service failures remain isolated from app reads, saves and rendering; real access revocation still applies.
+Expanded platform rows edit typed action, timing, mappings and recipient policy through the same schema/review as MCP. The lifecycle offers disable/enable/edit/history, with retirement through parent app deletion and preserved receipts/data. The management adapter reuses existing action/monitor stores and review APIs. Standard calendar actions now support daily/weekly/monthly cadence, stable anchors and month-end policies. Editing preserves disabled state and unchanged database event cursors. Optional service failures remain isolated from app reads, saves and rendering; real access revocation still applies.
 
 ## Operation
 

@@ -1,8 +1,19 @@
 # Using TrialAgents templates and optional tasks
 
-Version: 1.2.0
+Version: 1.3.0
 
 Retrieve this current guidance with `read_app_template_guidance(resource:"usage")`, following all `nextOffset` values. Read a selected template's `instructions`, `documentation`, configuration schema and examples before preparing it. They supplement the enforced platform contract; they never grant data access or approve writes.
+
+## Optional app sections and automation configuration
+
+Every app keeps its backend app-level access boundary. Optional configuration must never prevent a saved app from opening or ordinary records from loading. Do not rewrite existing apps to add metadata. Preserve IDs and policies during requested revisions.
+
+- **Access:** the existing Projects section shows projects and apps by default. Apps expand into optional parts, using the same pattern as Database → tables → columns. For standard tracker record tabs, use a stable unique `accessId`, for example `tabs:[{accessId:"companies",name:"Companies",typeId:<saved or temporary UUID>,columns:[{field:"name"}]}]`. Changing labels or order preserves accessId. Tabs inherit the app policy and can only narrow it. Missing accessId is valid and keeps app-level access. Custom arbitrary source has app-level access until a proven section boundary is available; never implement security by hiding HTML. Protected standard tabs cannot attach functions/assets or copy restricted bindings to a new unrestricted tab. Independently permitted Database/other-app paths remain independent.
+- **Automation:** consider useful ongoing work, but zero automations is valid. Save the app first, then configure accepted research through `prepare_app_monitoring` or deterministic/email work through `prepare_app_action`. Reuse existing IDs and a stable app-specific authoringKey on retries. Consult `list_app_automations`, `read_app_automation`, and `read_app_automation_guide`. Research uses the shared ChatGPT runner; email always runs through TrialAgents. Do not create a ChatGPT task per app or send emails from ChatGPT. A configuration failure leaves the saved app intact.
+- **Setup:** quietly check `read_automation_setup` at first supported use, every app creation, adding an automation and reconnection/explicit repair. Complete missing already-authorized setup where supported; otherwise suggest the resumable handoff. Respect declined setup and deliberate pauses. Reuse a verified subscription; never fabricate host IDs or callbacks. Prefer a supported Work chat, high reasoning, and the latest highest-capability model available in the user's subscription. Current task tools have no model/reasoning parameters: report the requested preference separately from observed host settings, and never claim an automatic model upgrade.
+- **Documentation:** each new template documents purpose, stable sections/inheritance or app-only access, optional data/connector bindings, automation mode (`none` is legitimate), executor, timing/timezone, exact prompt or action, sources, destinations, expiry/limits, write permissions, no-result/failure behavior and disable/edit/history. Include both an automation example when useful and a no-automation example. User management and ChatGPT use the same versioned definitions and review path.
+- **Continuity:** definitions stay listed and editable when disabled. Saving does not re-enable them. No standalone automation Delete action. No automation reads on app loading, navigation or ordinary saves; no scheduler failure banners inside generated apps. Never erase records or local input on task failure. Diagnostics belong in platform Automations.
+
 
 ## Select and prepare
 
@@ -19,7 +30,6 @@ Explain only limitations that affect the user's decision: for example, a disposa
 
 ## Decide whether a task helps
 
-Planning note, 31 October: the [revised app configuration scope](../docs/product/APP_CONFIGURATION_AND_AUTOMATIONS.md) adds a future platform Automations list with app-linked, expandable configuration and optional registered-tab access. App creation should consider interface, data, access, connectors and automation; only useful, authorized configurations are added. Shared connection setup is separate and must not block app saving. Until implementation ships, use the supported tools and workflow below; do not claim that the planned navigation or tab permissions already exist.
 
 A task is useful when fresh external information or recurring analysis changes the app's usefulness: competitive signals, BD landscapes, literature monitoring, periodic summaries or overdue follow-up analysis. A one-time calculator or disposable checklist normally needs no task. Keep the app useful without scheduling.
 

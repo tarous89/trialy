@@ -6,7 +6,7 @@ The earlier broad proposal is preserved in [planning commit d7679e2](https://git
 
 ## Superseding work — 31 October 2026
 
-Email/app services and the shared automation foundation were separately authorized and implemented after the historical priorities below; actual shared ChatGPT activation still has open gates. The [revised app configuration scope](APP_CONFIGURATION_AND_AUTOMATIONS.md) now defines a review-stage iteration for the Automations destination, complete schedule/prompt editors, optional tab access and first-use connection guidance. These are not deferred by the old advanced-workflow/provider backlog. A workflow designer, delegated automation managers, new runtimes and app controls below tab granularity remain out of scope. This revision is documentation only.
+Email/app services and the shared automation foundation were separately authorized and implemented after the historical priorities below; actual shared ChatGPT activation still has open gates. The [revised app configuration scope](APP_CONFIGURATION_AND_AUTOMATIONS.md) now defines a approved implementation iteration for the Automations destination, complete schedule/prompt editors, optional tab access and first-use connection guidance. These are not deferred by the old advanced-workflow/provider backlog. A workflow designer, delegated automation managers, new runtimes and app controls below tab granularity remain out of scope. Missing optional declarations or automation setup never block app service.
 
 ## P1 — Small improvements after first use
 

@@ -2,15 +2,15 @@
 
 Approved scope: 25 October 2026. TrialAgents is ChatGPT-first. App and plugin share one database and one authorization policy.
 
-## Planned app and tab hierarchy — 31 October revision
+## App and optional tab hierarchy — 31 October revision
 
-The [revised app configuration scope](product/APP_CONFIGURATION_AND_AUTOMATIONS.md#app-and-tab-access) extends this contract; this section is planned, not shipped. App-level checks already exist. A general tab authorization resource does not.
+The [revised app configuration scope](product/APP_CONFIGURATION_AND_AUTOMATIONS.md#app-and-tab-access) extends this contract; app-level checks always apply. Standard tracker tabs may additionally declare optional accessId keys; arbitrary custom section execution is not advertised as protected.
 
-Show every app as an individually configurable parent in an Apps section, optionally grouped by project. Expand only registered user-facing tabs with stable IDs. Proposed default: tabs inherit app view/edit permissions and can only narrow them. Parent/data/connector/AI restrictions remain authoritative. Renames, reorderings and layout revisions preserve tab policy. New tabs must not recreate a restricted tab under a fresh ID to bypass sharing review. Keep existing database column restrictions; no new per-function or per-column app controls are in this scope.
+Keep the existing Projects section. Show projects and their apps by default, exactly like Database and its tables. Apps expand into optional registered tabs, like tables expand into columns. Unassigned apps remain visible here. Expand only registered user-facing tabs with stable IDs. Default: tabs inherit app view/edit permissions and can only narrow them. Parent/data/connector/AI restrictions remain authoritative. Renames, reorderings and layout revisions preserve tab policy. New tabs must not recreate a restricted tab under a fresh ID to bypass sharing review. Keep existing database column restrictions; no new per-function or per-column app controls are in this scope.
 
 Enforce section context server-side for source, data, reads/writes, exports, counts, connector calls, routes and MCP operations before showing tab protection as available. Hiding navigation is insufficient. Custom source with combined private literals/bindings needs a reviewed section boundary; unsupported apps retain app-level access until adapted. Tab restrictions do not revoke independent authorized Database/other-app paths, which must be disclosed in access review. Actual revocation still clears forbidden output; automation failure never does.
 
-New apps remain owner-private even when no sharing is configured. App editing does not confer configuration, automation-management or execution-identity authority. Proposed initial automation management remains owner-only; delegated management is an explicit later decision. See the revised scope for migration and release tests.
+Missing section declarations preserve the existing backend app/workspace boundary and never imply public access. App editing does not confer configuration, automation-management or execution-identity authority. Automation management remains owner-only; delegated management is an explicit later decision. See the revised scope for migration and release tests.
 
 ## Identities, grants and restrictions
 

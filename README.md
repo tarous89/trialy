@@ -2,7 +2,7 @@
 
 ## Scope revision under review — 31 October 2026
 
-[Apps, access and automations](docs/product/APP_CONFIGURATION_AND_AUTOMATIONS.md) defines the next documentation-only scope: every app has its own access boundary, optional registered-tab restrictions, and optional app-linked automations managed in a new platform **Automations** destination. The shared ChatGPT connection is configured separately and reused across apps. App loading, use and saving remain independent of automation availability. The new navigation/tab controls are not yet implemented; live unattended ChatGPT activation remains unverified. This revision does not authorize resuming implementation or deploying a feature change.
+[Apps, access and automations](docs/product/APP_CONFIGURATION_AND_AUTOMATIONS.md) defines the approved app configuration contract: every app has its own access boundary, optional registered-tab restrictions, and optional app-linked automations managed in a new platform **Automations** destination. The shared ChatGPT connection is configured separately and reused across apps. App loading, use and saving remain independent of automation availability. The implementation adds the Automations management destination and optional standard-tracker tab controls. Existing apps retain their boundaries; real unattended ChatGPT activation remains separately unverified.
 
 ## Active simple-app scope — 29 October 2026
 

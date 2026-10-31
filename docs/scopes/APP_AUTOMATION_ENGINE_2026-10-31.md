@@ -1,6 +1,6 @@
 # TrialAgents app automation engine
 
-Status: engine foundation implemented in release 0.2.38, 31 October 2026; see the implementation notes below. The subsequent [app configuration and Automations destination revision](../product/APP_CONFIGURATION_AND_AUTOMATIONS.md) supersedes the product-management and creation experience and is documentation-only, pending review before implementation resumes. App-tab authorization and the unified list are not shipped. End-to-end execution with a real ChatGPT event subscription remains a separate activation check. This document itself grants no permissions or activates personal tasks.
+Status: engine foundation implemented in release 0.2.38, 31 October 2026; see the implementation notes below. The subsequent [app configuration and Automations destination revision](../product/APP_CONFIGURATION_AND_AUTOMATIONS.md) supersedes the product-management and creation experience and is implemented in the 0.2.39 release candidate. The current change adds a unified list and optional standard-tracker tab controls. End-to-end execution with a real ChatGPT event subscription remains a separate activation check. This document itself grants no permissions or activates personal tasks.
 
 ## Product decision
 
@@ -275,4 +275,8 @@ Operator checks: deploy migration 049 and runtime grants before running the work
 
 Validation includes the actual SDK initialize/events/tool transport, restricted-role scheduler and receipt tests, DST/weekly/month-end timing, token revocation, lease recovery, callback signatures/rotation, database-trigger deduplication/loop exclusion, completion-action pause checks, and mobile/desktop continuity with unsaved input during automation failures. The plugin instructions were forward-tested for first connection, missing host capabilities, interrupted writes and schedule edits.
 
-Release verification: final CI passed **175 backend tests** (including bounded-batch continuation), **72 browser tests**, production build/type checks and production browser verification. The mobile setup screen was inspected. Provider delivery and actual ChatGPT unattended subscription execution are not claimed by these fixture tests. This later documentation-only scope revision adds no runtime verification claim.
+Release verification: final CI passed **175 backend tests** (including bounded-batch continuation), **72 browser tests**, production build/type checks and production browser verification. The mobile setup screen was inspected. Provider delivery and actual ChatGPT unattended subscription execution are not claimed by these fixture tests. Those counts describe the 0.2.38 baseline, not the subsequent management/section-access change.
+
+## Management and access revision (0.2.39)
+
+The [app configuration scope](../product/APP_CONFIGURATION_AND_AUTOMATIONS.md) now describes the implemented unified Automations destination, Projects/app/optional-section access hierarchy, additive migration 050, shared creation guidance and release evidence. Disabled definitions and paused runners remain paused when edited. Schedule configuration is editable in the platform as well as through the existing reviewed MCP preparation path. The older UI limitations above describe 0.2.38 only. Actual host activation remains independently unverified.

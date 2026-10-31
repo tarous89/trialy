@@ -34,3 +34,14 @@ for(const inactive of [true,false])test(`Tools polling respects page visibility:
  await page.clock.runFor(31000);
  await expect.poll(count).toBe(inactive?1:2);
 });
+
+test('Projects show apps by default and apps expand into optional parts',async({page})=>{
+ await page.goto('http://127.0.0.1:4180/tests/visual/scroll-fixture.html?view=access-sections');
+ await expect(page.getByText('Research project',{exact:true})).toBeVisible();
+ await expect(page.getByText('Research tracker',{exact:true})).toBeVisible();
+ await expect(page.getByText('Records tab',{exact:true})).toHaveCount(0);
+ await page.getByRole('button',{name:'Expand Research tracker',exact:true}).click();
+ await expect(page.getByText('Records tab',{exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Collapse Research project',exact:true}).click();
+ await expect(page.getByText('Research tracker',{exact:true})).toHaveCount(0);
+});

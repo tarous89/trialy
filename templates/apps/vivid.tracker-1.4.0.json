@@ -1,0 +1,58 @@
+{
+  "version": "1.4.0",
+  "deprecated": false,
+  "id": "vivid.tracker",
+  "name": "Vivid tracker",
+  "description": "Editable multi-table tracker with overview, filters, details and pagination.",
+  "tags": [
+    "tracker",
+    "outreach",
+    "crm",
+    "pipeline",
+    "companies",
+    "contacts"
+  ],
+  "whenToUse": "Tracking records, relationships, statuses and follow-ups in one or more authorized database tables.",
+  "whenNotToUse": "A custom visual experience, calculator or app without stored records; use a custom app or another template.",
+  "instructions": "Read read_app_template_guidance(resource:\"usage\") and this template's documentation before preparation. Inspect authorized schema and suitable existing apps first. Keep the default Vivid design unless the user requests visual customization. Use the current read_app_design kit when changing styling. Supply tabs and columns using existing table IDs, or newTables with temporary UUIDs; relationship targetTypeId may reference another new table in this same bundle. All tables and the app save atomically after confirmation. Include all needed fields; includeDetailFields keeps additional new-table fields bound and available in details while hidden from the table. Source fields are optional and appropriate for sourced research, not required on every table. Use scalar status/date and fictional examples only for empty tabs. Reuse a stable requestKey for retries, and replacesPreviewId plus expectedDigest for corrections. Read configurationSchema for supported settings. Keep the shared standard renderer. Keep Search and Add record on one line; secondary filters and sorting collapse into the Filters disclosure when the container is too narrow. Follow the current authoring guide for responsive behavior and measured performance; test the actual tab/field count and long labels. Consider interface, data, app access, connectors and optional automations using current usage guidance. Missing optional setup never blocks saving or app use. Recheck the shared runner at app creation, respecting deliberate pauses; prefer a supported Work chat, high reasoning and the latest most capable subscription model without inventing unavailable host controls. Give useful record tabs stable optional accessId keys. These inherit app access and support backend restrictions; omission is valid. Preserve IDs on rename/reorder. Do not retrofit unrelated existing apps.",
+  "engine": "tracker",
+  "defaults": {
+    "pageSize": 25,
+    "showExample": true,
+    "includeDetailFields": true
+  },
+  "options": {},
+  "examples": [],
+  "documentation": {
+    "quickStart": [
+      "Inspect existing apps and authorized schema; reuse suitable company/contact or other business tables.",
+      "Configure tabs, visible columns, detail fields and relationships with verified IDs. Keep the Vivid renderer and default theme unless customization is requested.",
+      "Prepare one app preview, verify its interactions and save through review; verify the saved app ID. Offer monitoring only when ongoing research or reporting would help."
+    ],
+    "dataContract": "Persistent authorized tables and records. Use record IDs for relationships and readable display fields for company/contact labels. Status/date/boolean are scalar by default; use multiple values only when meaningful. Bind all detail fields, even those hidden from the main table. Research fields may include source URL, publication date, checked date and relevance rationale; they are not mandatory for unrelated workflows. Existing schemas and records are preserved. Standard record tabs can declare accessId for optional app section restrictions. Keep sensitive data in authorized record bindings, not copied static prose or cross-tab summaries. Independent Database access remains independently authorized.",
+    "interactionContract": "Overview and visible tabs; bounded pagination (25 by default), filters, sorting, details, inline edits, multi-value selection, add/duplicate/delete and reviewed layout edits use the shared renderer. Save/Ignore apply to the current user edits. Do not substitute a decorative table or invent separate save, navigation or project-move controls. The toolbar keeps Search and Add record inline and collapses secondary filters/sort into a keyboard-accessible Filters panel with an active count. Resizing preserves selections; wide tables scroll within their own region.",
+    "lifecycle": "Keep the same app ID for revisions. Use one requestKey for creation retries and verify its save receipt. The first-save prompt applies only to a new unsaved app. Loading failures retain the last usable view; publication never forces a reload. Local inputs are not committed records. Read the saved component with includeOutput:true after layout confirmation and consume that output without another initial render. Use the shared bounded, instance-local snapshots and in-flight navigation coalescing; retain access checks and write approval. Automation definitions are separate app configuration: list/read through unified management, keep stable authoring keys, disable rather than delete, and preserve disabled state when editing. Optional services cannot replace the app or discard input.",
+    "limitations": [
+      "This is a record workflow, not a mandatory layout for all apps. Use another template or custom source for a specialized calculator or visual experience.",
+      "A saved tracker does not itself research companies, send notifications or create a scheduled task. Those are optional separately configured services.",
+      "Cold tabs and layout confirmations still require server work. Page size is bounded by the control/payload budget for wide schemas. Search/sort apply to the loaded page; do not imply a full-dataset search. Never remove permissions or approvals to hide latency."
+    ],
+    "examples": [
+      {
+        "prompt": "Track biotech companies, their contacts, outreach status and next follow-up.",
+        "expectedBehavior": "Reuse or prepare linked company/contact tables, show readable company names with contacts, expose status filters and next steps, and save one reviewed tracker."
+      },
+      {
+        "prompt": "Monitor competitor announcements and keep this tracker current each Monday.",
+        "expectedBehavior": "Save the app first. Review an app-linked research definition and scopes, reuse the shared ChatGPT runner and event subscription, and configure Monday in the confirmed timezone. Report pending activation honestly; no separate task per app."
+      }
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "Recurring competitive research, BD signals, literature tracking, periodic analysis or follow-up reports. Do not schedule merely because a tracker exists.",
+      "readRequirements": "Use the saved app ID and monitor ID; grant the minimum authorized identity, status, source and coverage fields. Read the current monitoring guide. Read read_app_automation_guide; use list_app_automations/read_app_automation for management. Setup status and requested model preferences are independent of proven unattended execution.",
+      "outputContract": "Deduplicate relevant findings, preserve source evidence and dates, and write only through valid reviewed scopes. Otherwise return proposed changes. Record no_update versus partial/blocked/failed correctly.",
+      "promptExample": "For the configured occurrence, read the current monitor for this saved tracker, research only its approved sources and relevance criteria, compare against existing entries, preserve citations, perform only scoped authorized writes, and finish the run with actual coverage and the configured reporting preference."
+    }
+  }
+}

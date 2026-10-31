@@ -1,6 +1,6 @@
 # Apps, access and automations: revised product scope
 
-31 October 2026. **Documentation-only revision; implementation is paused for review.** This is the authoritative target for the next change. It supersedes conflicting navigation, app-creation and automation-management descriptions in earlier scopes, not existing runtime behavior. The original product brief remains historical. See the [automation engine scope](../scopes/APP_AUTOMATION_ENGINE_2026-10-31.md) for scheduling and execution mechanics.
+31 October 2026. **Implemented in the 0.2.39 release candidate, incorporating the owner’s final clarifications.** This is the authoritative scope for app configuration and automation management. It supersedes conflicting navigation, app-creation and automation-management descriptions in earlier scopes, not existing runtime behavior. The original product brief remains historical. See the [automation engine scope](../scopes/APP_AUTOMATION_ENGINE_2026-10-31.md) for scheduling and execution mechanics.
 
 ## Product model
 
@@ -16,39 +16,39 @@ An app is a saved interface with a stable identity and independently managed con
 
 Use the existing platform navigation and visual components. Product discussion may call the access destination Access Control; the current UI label is Access. This scope does not require renaming unrelated navigation. The new Automations destination belongs to platform management, not to every generated app's own navigation. A contextual link from app details opens this same list filtered to that app, without creating a second configuration store. Keep existing standalone app pages free of management chrome and preserve embedded operation.
 
-An app can have no database, connectors or automations. It always has an access boundary: a newly created app is private to its owner unless explicitly shared. “No access setup” means no additional sharing configuration, not public or unprotected access. No new app-specific login or seat-purchasing model is introduced.
+An app can have no database, connectors or automations. It always has an access boundary: existing workspace/app grants are always enforced; template authors should prepare owner-private sharing when requested and never broaden an audience implicitly. “No access setup” means no additional sharing configuration, not public or unprotected access. No new app-specific login or seat-purchasing model is introduced.
 
-## Current implementation and remaining work
+## Implementation and remaining activation
 
-| Area | Verified baseline | Next scope |
+| Area | Existing foundation | 0.2.39 implementation |
 | --- | --- | --- |
-| App access | Saved apps already have server-enforced sharing and contextual access; the grid groups tools under projects | Make every app individually discoverable in an Apps section, optionally grouped by project, and expandable into registered tabs |
-| Tab access | No general app-tab authorization resource exists | Add stable tab identities, inheritance and server-enforced tab execution/data boundaries |
-| Automations | Release 0.2.38 has shared runners, schedules, occurrences, guarded research, receipts and owner settings | Add one first-class list across apps and both executors; complete schedule/prompt editing and lifecycle controls |
-| ChatGPT setup | MCP Events server methods and guided setup exist | Attempt setup at first supported plugin use, at latest first app creation; expose honest pending/unsupported states |
+| App access | Saved apps already have server-enforced sharing and contextual access; the grid groups tools under projects | Projects show their apps by default; each app expands into optional registered tabs |
+| Tab access | App-level access remains the fallback | Optional standard-tracker identities, inherited permissions and server-projected source/data boundaries; arbitrary custom sections are not claimed |
+| Automations | Release 0.2.38 has shared runners, schedules, occurrences, guarded research, receipts and owner settings | One first-class list across apps and both executors, versioned schedule/prompt editing, disabled-state preservation and archive suspension |
+| ChatGPT setup | MCP Events server methods and guided setup exist | Creation/onboarding instructions check setup repeatedly and reuse consent; pending/unsupported states remain explicit |
 | Live activation | Web/worker deployed; actual unattended ChatGPT run not verified | Resolve worker shared-key configuration, host event discovery, subscription and unattended acceptance separately |
 
 Do not replace the working queue or build a second scheduler to implement this UI. Existing app services remain the platform executor; existing monitors remain the research executor. Add shared management adapters where necessary, preserving their identities, grants and receipts.
 
 ## App and tab access
 
-Every app has a parent permission row with the current view/edit distinction. App use and data editing do not imply permission to edit app code, share resources, manage connectors or manage automations.
+Use exactly the Database hierarchy pattern in the existing **Projects** access section. Projects show their apps by default; an app can expand to its registered tabs/parts, just as a database table expands to columns. Apps without a project stay directly visible in this section. Do not introduce a second Apps section. Every app has a parent permission row with the current view/edit distinction. App use and data editing do not imply permission to edit app code, share resources, manage connectors or manage automations.
 
-The proposed default is **inherit and restrict**. Tabs inherit effective app access until an authorized owner adds a narrower rule. A tab cannot grant access when its parent app is denied. Database, connector, record and AI restrictions continue to apply, and explicit denials remain authoritative. The owner retains the existing owner-management authority. Human permissions and the connected user's AI restrictions remain distinguishable.
+The approved default is **inherit and restrict**. Tabs inherit effective app access until an authorized owner adds a narrower rule. A tab cannot grant access when its parent app is denied. Database, connector, record and AI restrictions continue to apply, and explicit denials remain authoritative. The owner retains the existing owner-management authority. Human permissions and the connected user's AI restrictions remain distinguishable.
 
 For a four-tab app, Access Control can show the app as one row and expand it into Overview, Records, Reports and Budget. The owner can leave the whole app inherited, make Budget read-only or deny Budget to selected users. Ordinary users see only authorized resources; the hierarchy must not disclose restricted tab names or contents. No new per-button, per-function or per-column controls are introduced by this feature; existing database column protections remain supported.
 
-Tabs are registered user-facing sections with immutable IDs and editable labels. Renaming, reordering, changing a route or publishing a layout revision preserves the identity and its restrictions. Temporary filters, modals and every small UI state do not become access resources. Existing tracker view IDs may be reused after validation; custom apps declare their sections explicitly. Never infer protected sections by scraping generated HTML or by trusting client-provided tab names.
+Tabs are registered user-facing sections with immutable IDs and editable labels. Renaming, reordering, changing a route or publishing a layout revision preserves the identity and its restrictions. Temporary filters, modals and every small UI state do not become access resources. The initial supported contract is standard tracker `tabs[].accessId`: an optional stable key with section-specific record bindings. Add it as a best practice for useful tabs; missing metadata preserves app-level access. Arbitrary custom apps retain app-level protection until a separately implemented source/data boundary can enforce finer sections. Do not retrofit existing apps automatically. Never infer protected sections by scraping generated HTML or by trusting client-provided tab names.
 
-New ordinary tabs inherit the app policy, with a clear publication review of any new audience or bindings. New data/connector capabilities still require their own authorization. A restricted tab cannot be replaced with a new ID to bypass its policy: review section additions/removals and preserve the prior restriction until an explicit policy decision. Removing a tab retires its identity and policy for history; it does not delete records. Unregistered routes cannot become an escape from a declared restriction.
+New ordinary tabs inherit the app policy, with a clear publication review of any new audience or bindings. New data/connector capabilities still require their own authorization. A restricted tab cannot be replaced with a new ID to bypass its policy: review section additions/removals and preserve the prior restriction until an explicit policy decision. In the first supported contract, replacing or removing a restricted tab requires an explicit prior access-policy review. It never deletes records. Unregistered routes cannot become an escape from a declared restriction.
 
-**Enforcement is a release requirement.** The server must resolve the saved app revision, registered tab and actor, then constrain reads, writes, exports, searches, counts, connector operations, deep links and MCP calls through that context. Filter protected data before delivery, including prefetched/cached data, render inputs, source literals and error metadata. A client tab ID is not an authority token. Restrictions apply in both standalone and ChatGPT surfaces.
+**Missing declarations are allowed; declared restrictions must be enforced.** Omitted optional sections or failed automation preparation never make an otherwise authorized published app unavailable. For registered sections, the server must resolve the saved app revision, registered tab and actor, then constrain reads, writes, exports, searches, counts, connector operations, deep links and MCP calls through that context. Filter protected data before delivery, including prefetched/cached data, render inputs, source literals and error metadata. A client tab ID is not an authority token. Restrictions apply in both standalone and ChatGPT surfaces.
 
 Hiding a tab is only presentation. Existing arbitrary custom source can contain protected literals or combine every tab's data, so it cannot automatically receive a trustworthy per-tab checkbox. Add enforceable section-specific bindings and source/output isolation where required; otherwise keep app-level access and explicitly report that tab restrictions need a reviewed app update. Never advertise protection that the current runtime cannot enforce. Do not rewrite existing apps silently.
 
 Tab restrictions narrow access through that app section; they do not revoke an independently authorized Database or other-app path. Owners who need to protect the underlying information everywhere must use the existing database/record/column controls. Warn about other applicable access paths in the review. Copied content and cross-tab summaries need explicit source/binding checks; moving a protected result to an unrestricted tab must not implicitly publish it.
 
-Access revocation remains effective immediately for subsequent reads and effects. Clear newly forbidden data, including cached tab output, while keeping remaining permitted tabs usable. The app-continuity rule never overrides actual access revocation.
+Access revocation remains effective immediately for subsequent reads and effects. Clear newly forbidden cached output immediately under the existing access recheck. A fresh authorized read contains only permitted tabs; this security recheck remains distinct from optional automation failures. The app-continuity rule never overrides actual access revocation.
 
 ## Automations destination
 
@@ -69,7 +69,7 @@ Daily, weekly, monthly, one-time, after-success interval, record-date and databa
 
 Editing schedule or prompt never replaces the shared host task. Save with optimistic version checks and a concrete review of changed instructions, timing and affected permissions. A schedule edit preserves completed coverage and history, affects future occurrences, and shows how pending work will be handled. Reconcile queued occurrences transactionally so the old and new schedules cannot both dispatch. Prompt/objective/source changes create a new definition revision; incompatible active claims are fenced and any coverage reset is explicit. New recipients, data destinations, capabilities or write grants require the normal separate authorization. Prose does not confer authority.
 
-In the proposed first version, only the app/workspace owner can inspect private prompts/history or manage automation. Ordinary app editors/viewers and public-link users gain no automation authority. Scope listings to the authenticated owner and workspace; there is no cross-owner aggregation or implicit use of another person's ChatGPT account. Delegated management is a separate follow-up requiring explicit manage permissions, execution ownership and disclosure rules.
+In this version, only the app/workspace owner can inspect private prompts/history or manage automation. Ordinary app editors/viewers and public-link users gain no automation authority. Scope listings to the authenticated owner and workspace; there is no cross-owner aggregation or implicit use of another person's ChatGPT account. Delegated management is a separate follow-up requiring explicit manage permissions, execution ownership and disclosure rules.
 
 ## Lifecycle and data preservation
 
@@ -89,11 +89,13 @@ Deleting or disabling automation never deletes underlying app records, tables or
 
 ## Shared ChatGPT connection and onboarding
 
-The shared connection is infrastructure for many definitions, not an automation row and not a task per app. Retain one logical runner/subscription per authorizing user and workspace. Daily dispatch (proposed default 06:00 in the confirmed local timezone), immediate eligible triggers, due calculations, receipts and bounded continuation reuse the existing engine. The server sends a small wake-up event; ChatGPT fetches current authorized due instructions. Full mutable prompts do not live in callback payloads or a copied host schedule.
+The shared connection is infrastructure for many definitions, not an automation row and not a task per app. Retain one logical runner/subscription per authorizing user and workspace. Daily dispatch (default 06:00 in the confirmed local timezone), immediate eligible triggers, due calculations, receipts and bounded continuation reuse the existing engine. The server sends a small wake-up event; ChatGPT fetches current authorized due instructions. Full mutable prompts do not live in callback payloads or a copied host schedule.
 
-Target the first supported plugin setup/use and, at latest, the first app-creation conversation for guided connection setup. Plugin installation or OAuth alone cannot establish a host subscription or background-work authorization. When the host offers no install-time execution hook, first tool use is the actionable point. Reuse already-recorded consent and an existing runner; do not repeat permissions unnecessarily or create duplicate subscriptions.
+Check setup quietly at first supported plugin use, on every app-creation conversation, when adding an automation, and after reconnection or an explicit repair request. Complete already-authorized missing setup where the host supports it, otherwise offer a resumable suggestion. Repeat opportunities, not duplicate subscriptions. Do not reactivate a deliberately paused/disconnected runner or repeatedly pressure a user who declined. Plugin installation or OAuth alone cannot establish a host subscription or background-work authorization. When the host offers no install-time execution hook, first tool use is the actionable point. Reuse already-recorded consent and an existing runner; do not repeat permissions unnecessarily or create duplicate subscriptions.
 
 Keep connection setup separate from approving each automation. The user's reviewed onboarding choice may cover later definitions within an explicit scope; it does not authorize every future suggested objective, recipient or write. Apps save and run even if setup is declined, unavailable or incomplete. Do not block first app creation to force automation setup. Show pending setup in Automations, and offer a resumable handoff; never imply that accepting OAuth proves unattended execution.
+
+Requested execution is a supported **Work chat**, **high reasoning**, and the **latest highest-capability model available in the user’s subscription**. Current task tools do not expose model/reasoning parameters; save the preference and include it in setup guidance, but report host execution settings as unverified unless actually observed. Never invent host parameters, hardcode a model ID, or promise automatic upgrades. Model preference is independent of connection readiness.
 
 Readiness requires actual supported host discovery/subscription and a verified background cycle. A successful callback delivery is not job completion. The current production checks still include the shared web/worker encryption key, host discovery, subscription, renewal/revocation and a real unattended run. This scope does not claim those gates are complete or promise an exact-time ChatGPT execution SLA.
 
@@ -103,14 +105,14 @@ Apply this workflow to every template and custom app. Automation remains optiona
 
 1. Read the supported current app, access, connector and automation contracts; inspect relevant existing resources before creating duplicates.
 2. Design the interface and stable user-facing sections. Choose data bindings or explicitly no database. Preserve existing app identities during revisions.
-3. Establish owner-private app access by default; configure requested sharing and supported tab restrictions. Validate permissions and data/connector boundaries independently of visual design.
+3. Preserve the backend app-level access boundary; configure requested sharing and supported optional tab restrictions. Validate permissions and data/connector boundaries independently of visual design.
 4. Reuse/configure only required connectors. Decide ongoing work: none, ChatGPT research, platform action, or a linked research-to-platform-email chain.
 5. Propose useful automation with concrete timing, prompt/action, sources, outputs, limits and permissions. Existing user intent can authorize preparation; template recommendations alone cannot activate it.
 6. Save the reviewed app and data configuration through existing safeguards. Then persist/reconcile approved automations against that saved app with stable authoring keys. Automation preparation/activation failure cannot roll back a successfully saved app or block its use. Never dispatch from an unsaved preview.
-7. Complete or resume shared connection setup at the first opportunity if authorized and supported; reuse it for every later app. Platform-only actions do not depend on ChatGPT readiness.
+7. Check shared connection setup on every app creation; complete or resume missing setup if authorized and supported, respecting deliberate pauses and declined setup. Reuse the runner for every later app. Platform-only actions do not depend on ChatGPT readiness.
 8. Verify app save, permission configuration, automation definition, enabled/readiness state and next occurrence separately. Link the user to the app and its filtered Automations view; report partial setup honestly.
 
-When implementation ships, update app/tool descriptions, dynamic authoring/usage guidance, bundled workspace/design instructions and examples together. Required authoring documentation covers app purpose, stable sections and inheritance, optional data/connector bindings, access expectations, automation mode and executor, timing/timezone, complete prompt/action, sources/output contract, failure/no-result behavior, permissions, lifecycle and no-automation examples. All examples remain template-independent. This planning pass must not publish instructions that claim unimplemented tab controls or tools already exist.
+App/tool descriptions, dynamic authoring/usage guidance (1.3.0), bundled workspace/design instructions and new immutable template versions are updated together. Required authoring documentation covers app purpose, stable sections and inheritance, optional data/connector bindings, access expectations, automation mode and executor, timing/timezone, complete prompt/action, sources/output contract, failure/no-result behavior, permissions, lifecycle and no-automation examples. All examples remain template-independent. Instructions describe the supported standard-tracker section boundary; arbitrary custom sections remain a future extension.
 
 ## Failure isolation and compatibility
 
@@ -124,7 +126,7 @@ Existing apps retain app-level permissions and all current data, links and publi
 
 ## Delivery scope and acceptance
 
-This revision changes documentation only. Resume implementation only after the product review; do not deploy this branch as a feature release.
+The management and supported section-access implementation is included in this release. Validate the feature independently of real-host subscription activation; the app must remain available while that activation is pending.
 
 1. **Unified management:** add the Automations destination and paginated app-linked listing over existing executors; owner-only expanded editors, disable/enable, history and honest connection state. No queue rewrite.
 2. **App access hierarchy:** expose every app as a parent; add registered section identity and effective-policy enforcement before displaying tab permission controls. Ship custom-section support only with a demonstrated data/source boundary.
@@ -142,8 +144,18 @@ Required acceptance scenarios:
 - Research plus email has one research occurrence and an independently tracked TrialAgents email dependency; no duplicate schedules, ChatGPT email execution or rerun of completed research on delivery failure.
 - Fresh install/first use, first app, reconnection, unsupported host, declined setup and existing runner all have truthful status and no duplicate or involuntary activation. One real authorized unattended cycle is required before calling the connection active.
 
-## Decisions for review
+## Confirmed decisions
 
 User-confirmed direction: app-level access, optional tab granularity, first-class Automations destination, expandable user/MCP configuration parity, disabling rather than standalone deletion, shared setup independent of per-app definitions, template independence and uninterrupted app service.
 
-Proposed defaults pending review: tabs inherit and can only narrow app access; automation management remains owner-only in this iteration. Newly inherited tabs still require publication/access-impact review for new exposure. Delegated managers, per-function/column app controls, a visual workflow designer, separate tasks per app and automatic template-triggered activation are outside this scope.
+Approved defaults: tabs inherit and can only narrow app access; automation management remains owner-only in this iteration. Newly inherited tabs still require publication/access-impact review for new exposure. Delegated managers, per-function/column app controls, a visual workflow designer, separate tasks per app and automatic template-triggered activation are outside this scope.
+
+## Release implementation evidence (0.2.39)
+
+The implementation reuses monitors, actions, reviews and the existing shared runner. Migration 050 adds listing/deduplication indexes and suspends definitions when their app or project is archived; restore never silently re-enables them. Existing apps are not rewritten. Read-only section projection disables record creation and mutation controls as well as enforcing writes on the server.
+
+The management list loads bounded summaries; expanded editors and histories load separately. Common schedule, prompt and email fields have structured editors, with a validated complete-configuration editor for advanced fields. Source/data protections apply to supported standard tracker sections, including historical revisions and app-context requests. Custom source retains its app boundary. App rendering, normal saves and health checks do not call automation management.
+
+Validation includes 177 backend tests, 75 browser tests covering desktop/mobile management and hierarchy checks, optional-service outage continuity with unsaved input, and production build/type checks. The final read-only control adjustment additionally passed its targeted access/monitoring and tracker regressions. Final CI results are recorded in [PR #86](https://github.com/tarous89/trialy/pull/86). These tests do not establish a live ChatGPT subscription or force host model settings.
+
+Remaining operational acceptance: share the existing web encryption key with the worker, verify that the intended ChatGPT host exposes TrialAgents events, establish the authorized subscription, and complete a real unattended verification cycle. Requested latest-capability/high-reasoning preferences are stored; host-selected model/reasoning remain unverified. This does not block app usage or management deployment.
