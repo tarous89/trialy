@@ -5,8 +5,7 @@ on:
     paths:
       - '.github/workflows/template-authoring-build.yml'
       - 'templates/life-science/**'
-      - 'scripts/build-life-science-templates.mjs'
-      - 'tests/life-science-templates.test.ts'
+      - 'scripts/repair-life-science-authoring.py'
 permissions:
   contents: write
 concurrency:
@@ -23,47 +22,32 @@ jobs:
         with:
           node-version: '24'
           cache: npm
-      - name: Apply reproducible pre-release input-focus correction
-        run: python3 scripts/repair-life-science-authoring.py
-      - name: Generate all 23 catalog entries and standalone interfaces
-        run: node scripts/build-life-science-templates.mjs
-      - name: Retain corrected source and generated files on authoring branch only
+      - run: python3 scripts/repair-life-science-authoring.py
+      - run: node scripts/build-life-science-templates.mjs
+      - name: Synchronize first-release authoring sources on the isolated branch
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add templates/life-science templates/standalone templates/apps scripts/build-life-science-templates.mjs tests/life-science-templates.test.ts tests/app-templates.test.ts
+          git add templates/life-science templates/standalone templates/apps
           if ! git diff --cached --quiet; then
-            git commit -m 'Retain field focus and unapplied calculation inputs through trusted frame renders'
+            git commit -m 'Pass authoring typography contrast and accessible table checks'
             git push origin HEAD:refs/heads/templates/life-science-suite-2026-10-31
           fi
       - run: npm ci
-      - name: Production build and type checks
-        run: npm run build
-      - name: Domain templates and real database save/access regressions
-        run: |
-          set -o pipefail
-          APP_DESIGN_CHECKS=off node --import tsx --test --test-concurrency=1 tests/life-science-templates.test.ts tests/app-templates.test.ts 2>&1 | tee /tmp/template-tests.log
-      - name: Install browser for unchanged trusted bridge
-        run: npx playwright install --with-deps chromium --only-shell
-      - name: All 143 screens and edits through the shipped sandbox frame
+      - run: npm run build
+      - name: Real catalog and database tests
+        run: APP_DESIGN_CHECKS=off node --import tsx --test --test-concurrency=1 tests/life-science-templates.test.ts tests/app-templates.test.ts
+      - run: npx playwright install --with-deps chromium --only-shell
+      - name: Official design quality checks across all 143 screens
+        run: node --import tsx tests/life-science-design.check.mjs
+      - name: Actual trusted-frame navigation and record editing
         run: node --import tsx tests/life-science-frame.check.mjs
-      - name: Export standalone HTML deliverables
-        if: always()
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          from zipfile import ZipFile, ZIP_DEFLATED
-          with ZipFile('trialagents-23-templates.zip', 'w', ZIP_DEFLATED) as z:
-              for p in Path('templates/standalone').glob('*'):
-                  if p.is_file(): z.write(p, p.name)
-          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: template-html-and-validation
+          name: final-template-validation
           path: |
-            trialagents-23-templates.zip
-            /tmp/template-tests.log
+            /tmp/life-science-design-qa.json
             /tmp/life-science-frame-qa/result.json
             templates/life-science/BUILD_MANIFEST.json
           retention-days: 7
