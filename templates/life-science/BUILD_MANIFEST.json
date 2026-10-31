@@ -3,7 +3,7 @@
   "authoringVersion": "1.1.1",
   "authoringHash": "78b232d9a01713bdc80a7abe048b105126d895907444b8b063bb9e4bdfc754e7",
   "canonicalVividHash": "e9314f6705fa06b5951e971e593ea4d9d8847a38abb8c0210d539de876ff2655",
-  "rendererHash": "20623d64454bacd6df0b825e0211a61b655f3b642b4579fdb43c3b085031aab0",
+  "rendererHash": "17b22865deb55cf29a42c715c02b8b19d637cdc25c8f2b39d8b96eec3aab1fe4",
   "cssCharacters": 37943,
   "templates": [
     {
@@ -15,9 +15,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "investor-crm.html",
-      "sourceCharacters": 95578,
-      "catalogBytes": 110967,
-      "sha256": "4d5169e2469bc16c8ba1b9f4965db84f35912470eeaba711e643068d99949176"
+      "sourceCharacters": 96050,
+      "catalogBytes": 111445,
+      "sha256": "2e0ebbbb1428184dbbaf0d632d535b39892c40b1270cc52f8f2066f66c79fef6"
     },
     {
       "id": "life.partnership-tracker",
@@ -28,9 +28,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "partnership-tracker.html",
-      "sourceCharacters": 95760,
-      "catalogBytes": 111331,
-      "sha256": "1fbb2965c99b01e0b20272256cb0ccfd73d26f2e9767bc869132e8d0f27f1807"
+      "sourceCharacters": 96232,
+      "catalogBytes": 111809,
+      "sha256": "837a205d2f3d8d0e9d3207b1629d4400d9251863d513e21eee03d22c7406d38f"
     },
     {
       "id": "life.cash-runway",
@@ -41,9 +41,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "cash-runway.html",
-      "sourceCharacters": 92648,
-      "catalogBytes": 106075,
-      "sha256": "f2e83bfb630412878dfceb4cc2fa5fcff436a557e2f0ab2f419a6b3005da7e0b"
+      "sourceCharacters": 93120,
+      "catalogBytes": 106553,
+      "sha256": "954179cb0850951d2d705488a0a56c486b856b3c55cc118e18a621bde14902e7"
     },
     {
       "id": "life.hiring-resource-management",
@@ -54,9 +54,9 @@
       "screens": 7,
       "version": "1.0.0",
       "html": "hiring-resource-management.html",
-      "sourceCharacters": 95516,
-      "catalogBytes": 110944,
-      "sha256": "e7ef79f13ba54ab6c0ead5b1384cdf7a53c8497c348721c00d5ae0db5a77c227"
+      "sourceCharacters": 95988,
+      "catalogBytes": 111422,
+      "sha256": "b9c3ec212267607fb5a5e65f6e3797c8e2c95280e8a2404806c1f1df605024c0"
     },
     {
       "id": "life.cro-selection",
@@ -67,9 +67,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "cro-selection.html",
-      "sourceCharacters": 94644,
-      "catalogBytes": 109370,
-      "sha256": "93d58c7fc201c99dabb7ea221816f77e12fbab73c9c5a88c5467d2c058e416bd"
+      "sourceCharacters": 95116,
+      "catalogBytes": 109848,
+      "sha256": "b9e488f99b3a75ac52a54528a56a4cc4bda490a9cec3ddd79e10ee3878a2a000"
     },
     {
       "id": "life.project-oversight",
@@ -80,9 +80,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "project-oversight.html",
-      "sourceCharacters": 94365,
-      "catalogBytes": 108942,
-      "sha256": "63f9531f0a58f1e38f1230c70a6bfafecb05308825ac300ee6929d9737c271c0"
+      "sourceCharacters": 94837,
+      "catalogBytes": 109420,
+      "sha256": "ceab47139789b8d86b66af40069b4e84bdb708d23ce3ea26ebb4d2a341a60508"
     },
     {
       "id": "life.sponsor-rfp-management",
@@ -93,9 +93,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "sponsor-rfp-management.html",
-      "sourceCharacters": 94586,
-      "catalogBytes": 109402,
-      "sha256": "55705dd5dfd89a518088a1a6b09f8b096a67d983aa100ac38b56b312c0c2ad90"
+      "sourceCharacters": 95058,
+      "catalogBytes": 109880,
+      "sha256": "e011917b05d2da207804a19278810cbda04c11cd3e5af0f3afdf705feaa3b6e0"
     },
     {
       "id": "life.cro-oversight",
@@ -106,9 +106,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "cro-oversight.html",
-      "sourceCharacters": 96175,
-      "catalogBytes": 111971,
-      "sha256": "6a17278dbe0a0a7f36361d9746de1e1885e8444a73dd7279cc77c2aa9b5c94fe"
+      "sourceCharacters": 96647,
+      "catalogBytes": 112449,
+      "sha256": "4cf1e25ab810609fdde91184f27a6b4815defeaf3e2406b8730c0c3d0a265d40"
     },
     {
       "id": "life.sponsor-site-feasibility",
@@ -119,9 +119,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "sponsor-site-feasibility.html",
-      "sourceCharacters": 95787,
-      "catalogBytes": 111531,
-      "sha256": "5d9d80212344464c7bd1f2fb3579407ca556e47894fd6c66b23ff3cd1b852298"
+      "sourceCharacters": 96259,
+      "catalogBytes": 112009,
+      "sha256": "43fad24e028985e49282da45e14ed1730ac5326ccc19271de14c0f84744e9848"
     },
     {
       "id": "life.investigator-crm",
@@ -132,9 +132,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "investigator-crm.html",
-      "sourceCharacters": 94797,
-      "catalogBytes": 109682,
-      "sha256": "7d2874ef499881e219e97fb408e1af5566140a1b8d00b4e3a796981e5ae29c08"
+      "sourceCharacters": 95269,
+      "catalogBytes": 110160,
+      "sha256": "9819da1fa60024f1ba93941cb3b7188c101ceb067ccd69b77e77204462cc929a"
     },
     {
       "id": "life.trial-regulatory-submission",
@@ -145,9 +145,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "trial-regulatory-submission.html",
-      "sourceCharacters": 95290,
-      "catalogBytes": 110649,
-      "sha256": "b7aeaff10e514b3132d40bd9e087ce83daef9d9d11adfeb7e5a765f028aa9a83"
+      "sourceCharacters": 95762,
+      "catalogBytes": 111127,
+      "sha256": "cf9ad035b5b77661ea486359476dcc148dd87b2916a942b3dc54383a9292fc9a"
     },
     {
       "id": "life.trial-monitoring-pv-oversight",
@@ -158,9 +158,9 @@
       "screens": 7,
       "version": "1.0.0",
       "html": "trial-monitoring-pv-oversight.html",
-      "sourceCharacters": 95708,
-      "catalogBytes": 111334,
-      "sha256": "701a3aa2a5e26e50b51306e3b2f7dbf8e302b39fd5cb6194de358e941daf9762"
+      "sourceCharacters": 96180,
+      "catalogBytes": 111812,
+      "sha256": "c4f48bb670f79643a1a26e1e1548d492ee091c3d1dbba4773d16078b4ce04c51"
     },
     {
       "id": "life.cro-rfp-management",
@@ -171,9 +171,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "cro-rfp-management.html",
-      "sourceCharacters": 95171,
-      "catalogBytes": 110227,
-      "sha256": "78a5140ddbccfeb1bb3143d71b81853debcc174bbf17a9d89a044a2a34c5ef72"
+      "sourceCharacters": 95643,
+      "catalogBytes": 110705,
+      "sha256": "44550497641c41265b1d91bb12a9518847cf204557c146ca448b13f49c3ef233"
     },
     {
       "id": "life.cro-resource-planning",
@@ -184,9 +184,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "cro-resource-planning.html",
-      "sourceCharacters": 94380,
-      "catalogBytes": 108999,
-      "sha256": "17dd8e7a3b6c73c146e75d323ab1d7a42fbb445c20fe593987bd65f7457c5657"
+      "sourceCharacters": 94852,
+      "catalogBytes": 109477,
+      "sha256": "82ca41cdb72f00fb7f381e508c3fb8e5b4b95ad8f1eda5175762570ce4e6fb18"
     },
     {
       "id": "life.pi-network-management",
@@ -197,9 +197,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "pi-network-management.html",
-      "sourceCharacters": 95509,
-      "catalogBytes": 110879,
-      "sha256": "02a8bf642a3940ccee25b61861f72edaab23e17ab32ebcbfc85190dc61c0e5e4"
+      "sourceCharacters": 95981,
+      "catalogBytes": 111357,
+      "sha256": "ee6c84449ccf2eb4daf8dbeaa839230c29a39327c375d8813d0786e2e60d2dfb"
     },
     {
       "id": "life.cro-site-feasibility",
@@ -210,9 +210,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "cro-site-feasibility.html",
-      "sourceCharacters": 95620,
-      "catalogBytes": 111055,
-      "sha256": "c6b991c1fc618d7f10c6dd2e03d17eb21591400cdcb456bfb563f966f5ad19c9"
+      "sourceCharacters": 96092,
+      "catalogBytes": 111533,
+      "sha256": "3d91abdba46d7541695534abdc26d33d8a5247a39d2ae52dd7d2cfad4b84ed33"
     },
     {
       "id": "life.sponsor-updates",
@@ -223,9 +223,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "sponsor-updates.html",
-      "sourceCharacters": 95135,
-      "catalogBytes": 110179,
-      "sha256": "e74c1bb13c8cdda401a10e1b7e68041a7ecf955604f3eca8c36f13efdf68e044"
+      "sourceCharacters": 95607,
+      "catalogBytes": 110657,
+      "sha256": "602b1f4438a0d7d835ebb3ea0b5a65630542672119468a6273a387b6b68fd6c0"
     },
     {
       "id": "life.client-signals-crm",
@@ -236,9 +236,9 @@
       "screens": 7,
       "version": "1.0.0",
       "html": "client-signals-crm.html",
-      "sourceCharacters": 95872,
-      "catalogBytes": 111505,
-      "sha256": "9ba651c88faf9d2b8d578a7ec03edd665bf889517fb22066f95c330392992aaf"
+      "sourceCharacters": 96344,
+      "catalogBytes": 111983,
+      "sha256": "6d20681cf4e51234f50fdb04b8aecaaa127ac1f17370c09b64e9f5f3592d9c8c"
     },
     {
       "id": "life.experiment-notebook",
@@ -249,9 +249,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "experiment-notebook.html",
-      "sourceCharacters": 94539,
-      "catalogBytes": 109163,
-      "sha256": "ec5f0e85aa1ac890e1611065024b92a12f1addf94bd14ade46c080e4feb245e1"
+      "sourceCharacters": 95011,
+      "catalogBytes": 109641,
+      "sha256": "10e746d69384ad78dbdc1f2839de8bde5b53ad6d0f2e6a73528ba4a004718aab"
     },
     {
       "id": "life.inventory-management",
@@ -262,9 +262,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "inventory-management.html",
-      "sourceCharacters": 95419,
-      "catalogBytes": 110614,
-      "sha256": "e0802bc924e282c2d2ab1918796d70b27d3b4d4633763711b7e08bf133f23595"
+      "sourceCharacters": 95891,
+      "catalogBytes": 111092,
+      "sha256": "f6bdb09d562044003db93e8a687d23d90f4ffdabee803cd395d299b8b5a8693d"
     },
     {
       "id": "life.literature-radar",
@@ -275,9 +275,9 @@
       "screens": 6,
       "version": "1.0.0",
       "html": "literature-radar.html",
-      "sourceCharacters": 93482,
-      "catalogBytes": 107416,
-      "sha256": "c8912de4dab1c0cc5e810bc0f83dc94f95872661a1a7d3ac576917dcb7cfc307"
+      "sourceCharacters": 93954,
+      "catalogBytes": 107894,
+      "sha256": "b3ef31183fbe0b27edf849103350431a66cdfc0c82a9f24341fbbf3540eefc76"
     },
     {
       "id": "life.grant-pipeline",
@@ -288,9 +288,9 @@
       "screens": 7,
       "version": "1.0.0",
       "html": "grant-pipeline.html",
-      "sourceCharacters": 95440,
-      "catalogBytes": 110620,
-      "sha256": "699b183ba9062225d286afb905ff03a906d955c4eb412e260d2ea9974f942857"
+      "sourceCharacters": 95912,
+      "catalogBytes": 111098,
+      "sha256": "25fba7b71f92ba411ef77a2910f55c1b07e48862c48909717baab597db325ccf"
     },
     {
       "id": "life.publication-management",
@@ -301,9 +301,9 @@
       "screens": 7,
       "version": "1.0.0",
       "html": "publication-management.html",
-      "sourceCharacters": 96618,
-      "catalogBytes": 112547,
-      "sha256": "41bad0566b7ad10c7fb9ef23b1bfad2814086c1cdce6fb5d690c5bb0a75e770c"
+      "sourceCharacters": 97090,
+      "catalogBytes": 113025,
+      "sha256": "e8b99680a849699908c734828b877f6b8d629dc2e943af2823881310675f30cc"
     }
   ]
 }
