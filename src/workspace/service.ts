@@ -337,7 +337,7 @@ export class WorkspaceFoundation {
    // atomically using its existing insert/delete permissions, keeping its identity.
    await tx.query('DELETE FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND id=ANY($3::uuid[])',[w,a.userId,[target,preview.id]]);
    await tx.query('INSERT INTO workspace_previews(id,workspace_id,user_id,body,digest) VALUES($1,$2,$3,$4,$5)',[target,w,a.userId,J(row.body),digest]);
-   return {workspaceId:w,screen:'tracker-preview',preview:{...preview,id:target,body:row.body.operation,digest},initialOutput,designQuality,saveStatus:'unsaved',previewStatus:'prepared',preparedAt:new Date().toISOString(),displayStatus:'awaiting_client'};
+   return {workspaceId:w,screen:'tracker-preview',preview:{...preview,id:target,body:row.body.operation,digest},initialOutput,designQuality,saveStatus:op.componentId?'revision':'unsaved',previewStatus:'prepared',preparedAt:new Date().toISOString(),displayStatus:'awaiting_client'};
   });
  }
  async resolveTrackerPreview(a:Actor,w:string,previewId:string):Promise<any>{
@@ -350,14 +350,18 @@ export class WorkspaceFoundation {
   }
   const row=(await this.db.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[previewId,w,a.userId])).rows[0];
   if(!row)return unavailable();
-  if(new Date(row.expires_at).getTime()<=Date.now())return unavailable('expired');
   const op=row.body.operation;
+  const published=async(status='unavailable')=>{
+   if(op.componentId){try{const saved=await this.readComponent(a,w,op.componentId,true);if(!saved.component.archived&&!saved.component.project_archived)return {...saved,screen:'tracker',previewStatus:'saved',displayStatus:'awaiting_client'};}catch{/* Never bypass current publication access. */}}
+   return unavailable(status);
+  };
+  if(new Date(row.expires_at).getTime()<=Date.now())return published('expired');
   if(!['create_tracker','save_component'].includes(op.kind)||op.content?.format!=='frontend-js')return unavailable();
-  if(row.body.accessStamp!==await this.accessStamp(this.db,w))return unavailable();
+  if(row.body.accessStamp!==await this.accessStamp(this.db,w))return published();
   try{
    const initialOutput=await this.runFrontend(a,w,{previewId});
-   return {workspaceId:w,screen:'tracker-preview',preview:{id:row.id,workspaceId:w,workspaceFoundation:true,temporary:true,body:op,digest:row.digest,expiresAt:row.expires_at},initialOutput,saveStatus:'unsaved',previewStatus:'prepared',preparedAt:new Date().toISOString(),displayStatus:'awaiting_client'};
-  }catch(e){if([403,404,409].includes((e as any).status))return unavailable();throw e;}
+   return {workspaceId:w,screen:'tracker-preview',preview:{id:row.id,workspaceId:w,workspaceFoundation:true,temporary:true,body:op,digest:row.digest,expiresAt:row.expires_at},initialOutput,saveStatus:op.componentId?'revision':'unsaved',previewStatus:'prepared',preparedAt:new Date().toISOString(),displayStatus:'awaiting_client'};
+  }catch(e){if(op.componentId)return published();if([403,404,409].includes((e as any).status))return unavailable();throw e;}
  }
  private async componentAccessStamp(a:Actor,w:string,c:any):Promise<string>{
   if(a.accessToolId!==c.id)return withActor({...a,accessToolId:c.id},()=>this.componentAccessStamp({...a,accessToolId:c.id},w,c));

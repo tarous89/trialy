@@ -41,6 +41,16 @@ test('reproduce draft lifecycle error and verify an authorized recovery path',as
   await t.test('expired draft resolves to an explicit expired state',async()=>{assert.equal((await f.resolveTrackerPreview(a,w.id,expired.preview.id)).previewStatus,'expired');});
   const discarded=await create();await f.discard(a,w.id,discarded.preview.id);
   await t.test('discarded draft resolves to an unavailable state',async()=>{assert.equal((await f.resolveTrackerPreview(a,w.id,discarded.preview.id)).previewStatus,'unavailable');});
+  await t.test('expired or failed revision previews recover the current publication without becoming new apps',async()=>{
+   const draft=await f.prepareRenderedTracker(a,w.id,{kind:'save_component',componentId:saved.id,expectedVersion:0,content:fresh.preview.body.content});
+   assert.equal(draft.saveStatus,'revision');
+   const run=WorkspaceFoundation.prototype.runFrontend;
+   WorkspaceFoundation.prototype.runFrontend=async function(actor,workspace,request){if((request as any).previewId===draft.preview.id)throw Error('Render failed');return run.call(this,actor,workspace,request);};
+   try{const recovered=await f.resolveTrackerPreview(a,w.id,draft.preview.id);assert.equal(recovered.screen,'tracker');assert.equal(recovered.component.id,saved.id);}finally{WorkspaceFoundation.prototype.runFrontend=run;}
+   await db.query("UPDATE workspace_previews SET expires_at=now()-interval '1 second' WHERE id=$1",[draft.preview.id]);
+   const recovered=await f.resolveTrackerPreview(a,w.id,draft.preview.id);assert.equal(recovered.screen,'tracker');assert.equal(recovered.component.id,saved.id);
+   assert.equal(Number((await db.query('SELECT count(*) AS n FROM workspace_components')).rows[0].n),1);
+  });
   const active=await create();
   await t.test('wrong workspace produces the same error',()=>unavailable(active.preview.id,a,randomUUID()));
   await t.test('wrong account produces the same error and cannot use the saved receipt',async()=>{
@@ -50,14 +60,14 @@ test('reproduce draft lifecycle error and verify an authorized recovery path',as
  }finally{await db.close();}
 });
 
-import {loadTrackerDisplay,trackerLoadError} from '../src/embed/tracker-loading.js';
+import {loadTrackerDisplay} from '../src/embed/tracker-loading.js';
 test('account loads independently, old results resolve, and fresh bundles avoid a second render',async()=>{
  let initialized=false;const calls:string[]=[];
  const call=async(name:string)=>{calls.push(name);if(name==='initialize_account')return {viewerId:'u'};if(name==='list_tables')return [];throw Error('Code preview unavailable');};
  await assert.rejects(loadTrackerDisplay({screen:'tracker-preview',workspaceId:'w',preview:{id:'old'}},call,()=>{initialized=true;}),/Code preview unavailable/);assert.equal(initialized,true);
- assert.ok(calls.includes('resolve_tracker_preview'));assert.doesNotMatch(trackerLoadError(Error('INVALID_ARGUMENT Code preview unavailable')),/INVALID_ARGUMENT/);
- calls.length=0;await loadTrackerDisplay({screen:'tracker-preview',workspaceId:'w',preview:{id:'new'},preparedAt:new Date().toISOString(),initialOutput:{html:'ready'}},call,()=>{});
- assert.deepEqual(calls.sort(),['initialize_account','list_tables']);
+ assert.ok(calls.includes('resolve_tracker_preview'));
+ calls.length=0;const saved=await loadTrackerDisplay({screen:'tracker-preview',workspaceId:'w',preview:{id:'new'},preparedAt:new Date().toISOString(),initialOutput:{html:'old draft'}},async(name,args)=>name==='resolve_tracker_preview'?{screen:'tracker',workspaceId:'w',component:{id:'saved',version:1},initialOutput:{html:'saved'}}:call(name),()=>{});
+ assert.equal(saved.resolved.screen,'tracker');assert.equal(saved.output.html,'saved');
 });
 
 test('a preview saved between resolution and rendering opens its receipt without a false error',async()=>{

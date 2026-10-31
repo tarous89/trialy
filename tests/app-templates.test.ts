@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {PGlite} from '@electric-sql/pglite';
-import {AppTemplates,appTemplates} from '../src/workspace/app-templates.js';
+import {AppTemplates,appTemplates,readTemplateGuidance} from '../src/workspace/app-templates.js';
 import {reuseAppOperation} from '../src/workspace/app-reuse.js';
 import {WorkspaceFoundation} from '../src/workspace/service.js';
 import {Service} from '../src/domain/service.js';
@@ -37,6 +37,7 @@ test('templates and app reuse preserve review, source access, isolated data and 
   const f=new WorkspaceFoundation(db),s=new Service(db),w=await s.createWorkspace(a,'Template tests');
   const registered=new Map<string,any>();addAppMcp({registerTool:(n:string,m:any,run:any)=>registered.set(n,{m,run})} as any,f,a,(fn:any)=>fn,{ui:{resourceUri:'ui://trialy/test'}});
   assert.equal(registered.get('list_app_templates').m._meta.ui?.resourceUri,undefined);assert.equal(registered.get('read_app_template').m._meta.ui?.resourceUri,undefined);assert.equal(registered.get('prepare_app_from_existing').m._meta.ui.resourceUri,'ui://trialy/test');
+  const guideTool=registered.get('read_app_template_guidance');assert.equal(guideTool.m._meta.ui?.resourceUri,undefined);assert.equal(guideTool.m.annotations.readOnlyHint,true);assert.equal((await guideTool.run({resource:'usage'})).structuredContent.result.sha256,(await readTemplateGuidance({resource:'usage'})).sha256);
   for(const templateId of ['simple.calculator','simple.checklist']){
    const t=await appTemplates.read({templateId});const result=await registered.get('prepare_app_from_template').run({workspaceId:w.id,templateId,version:t.version,digest:t.digest,name:templateId});assert.equal(result.screen,'tracker-preview');assert.ok(result.initialOutput.html.includes('<h1>'));assert.equal((await db.query('SELECT id FROM workspace_components')).rows.length,0);await f.discard(a,w.id,result.preview.id);
   }
@@ -57,4 +58,20 @@ test('templates and app reuse preserve review, source access, isolated data and 
   await db.query('UPDATE workspace_components SET version=version-1,ai_enabled=false WHERE id=$1',[c.id]);await assert.rejects(reuseAppOperation(f,{...a,origin:'ai'},w.id,input));
   const current=(await f.readComponent(a,w.id,c.id)).component;assert.equal(current.name,'Original');assert.equal((await db.query('SELECT id FROM records')).rows.length,1);
  }finally{await pg.close();}
+});
+
+
+test('current templates expose useful documentation and optional task contracts while released versions remain readable',async()=>{
+ const catalog=await appTemplates.list();assert.equal(catalog.guidance.tool,'read_app_template_guidance');
+ for(const summary of catalog.templates){
+  const t=await appTemplates.read({templateId:summary.id});assert.ok(t.documentation?.quickStart.length);assert.ok(t.documentation?.examples.length);assert.ok(t.documentation?.dataContract);assert.ok(t.documentation?.lifecycle);
+  assert.equal(t.documentation?.tasks.mode,t.engine==='tracker'?'optional':'none');assert.equal(t.guidance.tool,catalog.guidance.tool);
+ }
+ assert.equal((await appTemplates.read({templateId:'vivid.tracker',version:'1.1.0'})).version,'1.1.0');
+ for(const resource of ['usage','authoring']){
+  let offset:number|null=0,text='',digest='';
+  do{const page=await readTemplateGuidance({resource,offset});assert.ok(page.text.length<=12000);if(digest)assert.equal(page.sha256,digest);digest=page.sha256;text+=page.text;offset=page.nextOffset;}while(offset!==null);
+  const file=resource==='usage'?'TEMPLATE_USAGE.md':'TEMPLATE_AUTHORING.md';assert.equal(text,await readFile('templates/'+file,'utf8'));
+ }
+ await assert.rejects(readTemplateGuidance({resource:'../../secret'}));await assert.rejects(readTemplateGuidance({offset:999999}));
 });

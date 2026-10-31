@@ -154,3 +154,5 @@ Typed JavaScript computations, cross-table lookups, multiple references, searcha
 
 Connect an account before creating a project or tool (tracker, form, visualization or automation). Account storage initializes automatically; there is no workspace-creation step. Tools can be independent or organized into projects with drag-and-drop or Move to. Organization preserves data scope and permissions. Public forms remain usable without login; previously issued temporary previews remain recoverable until expiry. See [implementation and verification](docs/design/ACCOUNT_PROJECT_TOOLS.md).
 
+
+Template authors: [living template standard](templates/TEMPLATE_AUTHORING.md) and [ChatGPT usage and tasks](templates/TEMPLATE_USAGE.md). Both are served dynamically by `read_app_template_guidance`; each current catalog template includes its own usage documentation.

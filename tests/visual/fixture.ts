@@ -1,3 +1,4 @@
+import {moveTool} from '../../src/workspace/tool-placement.js';
 import {openApp,prepareRenderedApp} from '../../src/workspace/apps.js';
 import {addAppsFixture} from './apps-fixture.js';
 import session from 'express-session';
@@ -21,6 +22,7 @@ export async function fixture(){
  for(let i=0;i<26;i++)await save({kind:'create_record',typeId:companies,data:{name:'Biotech '+String(i+1).padStart(2,'0'),status:i%3===0?['Active','Planned']:i%3===1?['Blocked']:['Planned'],channel:i%2?'Email':'LinkedIn',next_step:'Review development plans and arrange a conversation.',source:'User supplied'}});
  const calls:string[]=[];
  const tools=async(name:string,v:any):Promise<any>=>{calls.push(name);
+  if(name==='move_tool'){const {workspaceId,...request}=v;return moveTool(db,{...actor,origin:'ai',actionConfirmed:true},workspaceId??w.id,request);}
   if(name==='open_app')return openApp(f,actor,v);
   if(name==='open_workspace')return {screen:'home',uiBuild:'acceptance',viewerId:actor.userId,workspaces:[w],workspaceId:w.id,types:await s.types(actor,w.id)};
   if(name==='read_connected_account')return {connected:true};
