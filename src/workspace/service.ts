@@ -1,3 +1,4 @@
+import {monitoringReceiptRuns} from '../app-services/monitoring-guard.js';
 import {openRuntimeView,assertRuntimeReadAccess,assertRuntimeScope,assertRuntimeWriteSchema,incompatible} from './runtime-view.js';
 import {withReadMetadata} from '../db/read-metadata.js';
 import {AppActions} from '../app-services/service.js';
@@ -846,11 +847,12 @@ export class WorkspaceFoundation {
    await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await this.policy(tx,actor,w,true);
    const monitoring=monitorRunId?await new AppMonitoring(adapter(tx)).active(actor,w,monitorRunId):null;
    if(monitoring&&!monitoring.config.writeScopes.some(s=>s.scopeId===v.scopeId&&s.version===v.expectedScopeVersion))fail(403,'monitoring_write_scope','Write permission is outside this monitoring configuration');
-   if(monitoring){const existing=(await tx.query('SELECT run_id FROM app_monitor_receipts WHERE request_key=$1',[v.requestKey])).rows[0];if(existing&&existing.run_id!==monitorRunId)fail(409,'monitoring_receipt','This request belongs to another monitoring run');const n=Number((await tx.query('SELECT coalesce(sum(change_count),0) AS n FROM app_monitor_receipts WHERE run_id=$1',[monitorRunId])).rows[0].n);if(!existing&&n+v.changes.length+v.links.length>monitoring.config.maxChangesPerRun)fail(429,'monitoring_change_limit','Approved change limit for this run reached');}
+   const receiptRuns=monitoring?await monitoringReceiptRuns(tx,monitorRunId!,!!monitoring.config.automation):[];
+   if(monitoring){const existing=(await tx.query('SELECT run_id FROM app_monitor_receipts WHERE request_key=$1',[v.requestKey])).rows[0];if(existing&&!receiptRuns.includes(existing.run_id))fail(409,'monitoring_receipt','This request belongs to another monitoring occurrence');const n=Number((await tx.query('SELECT coalesce(sum(change_count),0) AS n FROM app_monitor_receipts WHERE run_id=ANY($1::uuid[])',[receiptRuns])).rows[0].n);if(!existing&&n+v.changes.length+v.links.length>monitoring.config.maxChangesPerRun)fail(429,'monitoring_change_limit','Approved change limit for this occurrence reached');}
    const s=await this.scope(tx,actor,w,v.scopeId);const body=maintenanceSchema.parse(s.body);
    if(s.revoked_at||s.version!==v.expectedScopeVersion)fail(409,'scope_changed','Maintenance permission changed');
    if(s.schema_stamp!==await this.scopeStamp(tx,actor,w,body))fail(409,'schema_changed','Review maintenance scope for the changed schema');
-   const prior=await this.replay(tx,actor,w,v.requestKey,digest);if(prior){if(monitorRunId&&!(await tx.query('SELECT 1 FROM app_monitor_receipts WHERE run_id=$1 AND request_key=$2',[monitorRunId,v.requestKey])).rows.length)fail(409,'monitoring_receipt','This save was not made by the current monitoring run');return prior;}
+   const prior=await this.replay(tx,actor,w,v.requestKey,digest);if(prior){if(monitorRunId&&!(await tx.query('SELECT 1 FROM app_monitor_receipts WHERE run_id=ANY($1::uuid[]) AND request_key=$2',[receiptRuns,v.requestKey])).rows.length)fail(409,'monitoring_receipt','This save was not made by the current monitoring run');return prior;}
    if(v.changes.length+v.links.length>body.maxChanges)fail(400,'batch_limit','Batch exceeds approved limit');
    const service=new Service(adapter(tx));const ids:string[]=[];
    // Validate complete batch before saving; transaction also rolls back any later failure.
@@ -866,6 +868,7 @@ export class WorkspaceFoundation {
     return new WorkspaceFoundation(adapter(tx)).preview(actor,w,{kind:'apply_maintenance',batch:v});
    }
    const authorization=approval??{kind:'maintenance_grant' as const,id:s.id,version:s.version,context:'type:'+body.bindings[0].typeId};
+   if(monitorRunId)await tx.query("SELECT set_config('trialy.run_id',$1,true)",[monitorRunId]);
    if(v.changes.length){const draft=await service.preview(actor,w,{kind:'bulk_records',changes:v.changes});const receipt=await service.commit(actor,draft.id,draft.digest,authorization);ids.push(...receipt.objects.map((o:any)=>o.id));}
    const links=[];for(const l of v.links){await this.validate(tx,actor,w,l);links.push(await this.apply(tx,actor,w,p,l,authorization));}
    const result={workspaceId:w,workspaceFoundation:true,status:'saved',requestKey:v.requestKey,recordIds:ids,links};

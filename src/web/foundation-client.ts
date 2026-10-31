@@ -4,10 +4,18 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown)=
  const c=`/api/workspaces/${v.workspaceId}/connectors`;
  const clean=Object.fromEntries(Object.entries(v).filter(([key])=>key!=='workspaceId'));
  const services=`/api/workspaces/${v.workspaceId}/app-services`;
+ const automation=services+'/automations';
  const routes:Record<string,[string,string?,unknown?]>={
+ read_automation_setup:[automation],
+ prepare_automation_setup:[automation+'/prepare','POST',clean],
+ control_automation_runner:[`${automation}/${v.runnerId}/control`,'POST',{enabled:v.enabled,expectedVersion:v.expectedVersion}],
+ disconnect_automation_runner:[`${automation}/${v.runnerId}/disconnect`,'POST',{}],
+ read_automation_agenda:[`${automation}/${v.runnerId}/agenda?offset=${v.offset??0}`],
+ retry_automation_work:[`${automation}/occurrences/${v.occurrenceId}/retry`,'POST',{delivery:!!v.delivery}],
  prepare_app_monitoring:[`${services}/monitoring/prepare`,'POST',clean],
  list_app_monitoring:[`${services}/monitoring?appId=${v.appId}&offset=${v.offset??0}`],
  read_app_monitoring:[`${services}/monitoring/${v.monitorId}`],
+ detach_app_monitoring_task:[`${services}/monitoring/${v.monitorId}/detach-task`,'POST',{expectedVersion:v.expectedVersion,hostTaskPaused:true}],
  control_app_monitoring:[`${services}/monitoring/${v.monitorId}/control`,'POST',{expectedVersion:v.expectedVersion,enabled:v.enabled}],
  read_app_monitor_runs:[`${services}/monitoring/${v.monitorId}/runs?offset=${v.offset??0}`],
  prepare_app_sharing:[`${services}/sharing/prepare`,'POST',clean],

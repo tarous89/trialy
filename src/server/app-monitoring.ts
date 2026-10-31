@@ -14,6 +14,7 @@ export function addAppMonitoringApi(app:Express,f:WorkspaceFoundation){
  app.post(b+'/prepare',async(req,res)=>{const {a,w}=context(req);res.json(await s.prepare(a,w,req.body));});
  app.get(b+'/:monitorId',async(req,res)=>{const {a,w}=context(req);res.json(await s.read(a,w,id.parse(req.params.monitorId)));});
  app.post(b+'/:monitorId/control',async(req,res)=>{const {a,w}=context(req),v=z.object({expectedVersion:z.number().int().min(0),enabled:z.boolean()}).strict().parse(req.body);res.json(await s.control(a,w,id.parse(req.params.monitorId),v.expectedVersion,v.enabled));});
+ app.post(b+'/:monitorId/detach-task',async(req,res)=>{const {a,w}=context(req),v=z.object({expectedVersion:z.number().int().min(0),hostTaskPaused:z.literal(true)}).strict().parse(req.body);res.json(await s.detach(a,w,id.parse(req.params.monitorId),v.expectedVersion));});
  app.get(b+'/:monitorId/runs',async(req,res)=>{const {a,w}=context(req);res.json(await s.runs(a,w,id.parse(req.params.monitorId),z.coerce.number().int().min(0).default(0).parse(req.query.offset)));});
 }
 export function addAppMonitoringMcp(server:McpServer,f:WorkspaceFoundation,a:Actor,safe:any,metadata:any){

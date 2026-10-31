@@ -42,3 +42,9 @@ Template and reuse provenance are included in the reviewed operation and saved c
 ## Validation
 
 Tests cover discovery of added files without a tool/package change, old-version reads, pagination, digest conflicts, rejected unknown configuration, sandbox rendering for starter templates, reviewed atomic table creation, shared/separate data, creator-only copies, no cloned records/grants, denied source access and stale-source rejection at save. Existing core/browser suites remain release gates.
+
+## Optional background work
+
+Every template's instructions must classify requested research/analysis as shared ChatGPT automation and email/deterministic effects as TrialAgents app actions. Read the current `read_app_automation_guide`; executable timing and detailed instructions live in the database, not generated app source or a per-template task. Save the app first, reuse the owner/workspace runner, inspect existing monitors, and propose separately reviewed definitions with stable authoring keys. Describe sources, eligibility, deduplication, coverage, destinations, quiet behavior and bounded checkpoints. Provide one concrete example and an explicit no-automation path. No template may activate automation merely by being selected.
+
+Acceptance must include scheduler, callback and research failure while the existing app remains mounted and usable with saved data and in-progress input intact. Never render automation errors or a mandatory loading state inside generated app content. Automation history is owner-only management UI. Research receipt replay must not duplicate records; failed follow-up email must not repeat research. See `plugin/trialy/skills/trialy-workspace/references/SHARED_AUTOMATIONS.md` for the current authoring/execution contract.

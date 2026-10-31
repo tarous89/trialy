@@ -45,3 +45,5 @@ The connected app retains bounded data pages, signed write controls, accessible 
 ## Authoring check
 
 Before preparing: identify the user's actual job and authorized bindings. Before saving: check templateId, labels, field types, cardinality, explicit icon/tone choices if needed, counts excluding examples, and no sample-domain leakage. Choose configuration, theme overrides or custom code according to the user's requested result.
+
+For optional research, monitoring or reporting, read `read_app_automation_guide` (or ../../trialy-workspace/references/SHARED_AUTOMATIONS.md). Use the shared runner after the app is saved and approved; classify email/deterministic effects as TrialAgents actions. Keep automation status and failures outside generated tracker content. Test the tracker remains usable when scheduling is unavailable.

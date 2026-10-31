@@ -1,5 +1,7 @@
 # Optional recurring work for any saved app
 
+For new shared scheduling, start with [SHARED_AUTOMATIONS.md](SHARED_AUTOMATIONS.md) or `read_app_automation_guide`. The per-app host-task workflow below is retained for existing legacy monitors. Shared monitors use `claim_automation_work` and `finish_automation_work`, never the legacy start/finish operations. Do not create a second host schedule for a shared monitor.
+
 Use this contract for recurring research, monitoring, signal collection, analysis or reporting. It applies to ANY saved app: custom code, a reused app, any template, or an app without database tables. Templates can suggest defaults; they are never required. Do not add an app category, replace the app, change its layout/schema or expand permissions to attach monitoring. Monitor configuration is separate from the published component. No task starts just because an app was saved.
 
 ## Setup in ChatGPT

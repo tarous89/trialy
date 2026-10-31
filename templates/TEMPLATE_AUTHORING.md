@@ -1,6 +1,6 @@
 # TrialAgents template authoring standard
 
-Version: 1.1.1
+Version: 1.2.0
 
 This is the living engineering contract for templates served by TrialAgents. Update it when a verified renderer, lifecycle or host-integration lesson changes. Retrieve the current copy with `read_app_template_guidance(resource:"authoring")`; follow `nextOffset` to the end. The response includes a version and content hash. Packaged plugin examples are not the catalog.
 
@@ -82,11 +82,11 @@ Measure realistic complexity and cold/warm behavior: at least four tables, long 
 
 ## Optional tasks and services
 
-Recurring research, analysis and reporting can benefit any app. Declare task opportunities in metadata, not hard-coded template schedules. See `read_app_template_guidance(resource:"usage")` and `read_app_monitoring_guide` for setup.
+Recurring research, analysis and reporting can benefit any app. Declare task opportunities in metadata, not hard-coded template schedules. See `read_app_template_guidance(resource:"usage")` and `read_app_automation_guide` for shared-runner setup (legacy monitors retain `read_app_monitoring_guide`).
 
-Use platform background actions for deterministic recurring, dated or database-triggered operations. Use ChatGPT tasks for research/reasoning when the host supports the required capabilities. Use durable connector jobs for LLM/API calls that outlast interactive request limits. Notifications use the platform email service with reviewed recipients and purpose. Never embed provider keys or send emails directly from a template.
+Use platform background actions for deterministic recurring, dated or database-triggered operations. Use the shared ChatGPT runner for research/reasoning when the host supports events. Instructions and executable timing live in TrialAgents; never create a task per template. Use durable connector jobs for LLM/API calls that outlast interactive request limits. Notifications use the platform email service with reviewed recipients and purpose. Never embed provider keys or send emails directly from a template.
 
-A template must work fully without a task. Task creation, reads, writes, delivery and paid/external actions each need their own applicable authorization. Do not imply that a task was activated merely because template metadata includes a schedule suggestion.
+A template must work fully without a task. Never wait for automation status before showing or saving the app; failures belong only in owner settings/history. Test callback, scheduling and research failure while the app retains its current frame and unsaved input. Task creation, reads, writes, delivery and paid/external actions each need their own applicable authorization. Do not imply that a task was activated merely because template metadata includes a schedule suggestion.
 
 ## Acceptance and maintenance
 
