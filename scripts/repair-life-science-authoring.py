@@ -18,3 +18,20 @@ for old, new in pairs:
         assert new in s, 'Expected authoring pattern not found: ' + old
 p.write_text(s)
 print('Verified unique focus identities and non-submitting input drafts')
+p = Path('templates/life-science/renderer.js')
+s = p.read_text()
+old = '<table><caption class="ls-sr">\'+esc(sch.name)+\'</caption>'
+new = '<table aria-label="\'+esc(sch.name)+\'">'
+if old in s:
+    assert s.count(old) == 1
+    s = s.replace(old, new)
+else:
+    assert new in s
+p.write_text(s)
+p = Path('templates/life-science/theme.css')
+s = p.read_text().replace('font-size:11px','font-size:12px').replace('color:#677e6d','color:#52695d')
+marker = '/* Readable forecast table headers */'
+if marker not in s:
+    s += '\n' + marker + '\n.ls-data-disclosure th{color:#203b2f;background:#f4f8f5}\n'
+p.write_text(s)
+print('Verified accessible table names, type floor and readable supporting labels')
