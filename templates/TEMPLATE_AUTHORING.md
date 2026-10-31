@@ -1,6 +1,6 @@
 # TrialAgents template authoring standard
 
-Version: 1.3.0
+Version: 1.3.1
 
 This is the living engineering contract for templates served by TrialAgents. Update it when a verified renderer, lifecycle or host-integration lesson changes. Retrieve the current copy with `read_app_template_guidance(resource:"authoring")`; follow `nextOffset` to the end. The response includes a version and content hash. Packaged plugin examples are not the catalog.
 
@@ -14,6 +14,29 @@ Every app keeps its backend app-level access boundary. Optional configuration mu
 - **Documentation:** each new template documents purpose, stable sections/inheritance or app-only access, optional data/connector bindings, automation mode (`none` is legitimate), executor, timing/timezone, exact prompt or action, sources, destinations, expiry/limits, write permissions, no-result/failure behavior and disable/edit/history. Include both an automation example when useful and a no-automation example. User management and ChatGPT use the same versioned definitions and review path.
 - **Continuity:** definitions stay listed and editable when disabled. Saving does not re-enable them. No standalone automation Delete action. No automation reads on app loading, navigation or ordinary saves; no scheduler failure banners inside generated apps. Never erase records or local input on task failure. Diagnostics belong in platform Automations.
 
+
+## Required configuration handoff for every future template
+
+Use the existing catalog documentation fields; the following is an authoring checklist, not new JSON fields accepted by the API. Read the current tool/schema contracts rather than copying a complete dispatcher or stale payload into each template.
+
+| Existing documentation field | Required content |
+| --- | --- |
+| `dataContract` | Saved versus local data, authorized bindings and relationship identities; optional stable section IDs, inheritance, and the limits of supported section isolation. State when there is no database or only app-level access. |
+| `interactionContract` | Supported app controls and the link to platform Automations for management; no duplicate automation settings store or required automation tab inside the generated app. |
+| `lifecycle` | Stable app/section/automation identities, reviewed edits, receipt reconciliation, disabled-state preservation, archive suspension and no automatic resume/copy activation. |
+| `tasks` | `mode: none` or `optional`; classify each useful objective as ChatGPT research, TrialAgents action, or an approved research-to-email chain. Metadata is a recommendation, never an active definition or authorization. |
+| `tasks` and `examples` | Concrete trigger, timezone, source eligibility, exact research instructions/action, output destination, deduplication, coverage, scope/expiry/limits and no-result/completion criteria. Provide a no-automation path. |
+| `limitations` | Unsupported custom-section controls, pending host activation, requested versus verified model settings, external delivery dependencies and any manual fallback. |
+
+Examples must distinguish the three execution choices:
+
+- **No automation:** a static checklist or calculator opens and works with app-level access, no runner, connector or database if not needed. Never add a token recurring task just to satisfy an example.
+- **Research:** save the app, reuse the owner/workspace runner, prepare one app-linked monitor with an explicit daily/weekly/monthly, one-time, after-success, record-date or database-change trigger supported by its schema. Define authoritative sources, inclusion/exclusion, evidence dates/links, deduplication, authorized destination and completion conditions. A schedule's due time is not a promised completion time.
+- **Research plus email:** prepare the monitor and a separately approved TrialAgents completion action with a manual trigger. The engine invokes it after the required successful research result. A report with no new findings may still be `completed`; `no_update` permits silence only when the reviewed notification policy allows it. Do not give email a second independent schedule, rerun successful research after delivery failure, or send through ChatGPT email tools.
+
+When setup tools/events are missing, keep the app saved and report that automation setup is pending. Check whether the host catalog needs a custom-connection metadata refresh and a new Work chat. Consult the current setup guide; do not fabricate tool names, subscription IDs, callbacks or model parameters. Infrastructure secrets and operator key-copy procedures never belong in a generated app or a user's research prompt.
+
+Report these outcomes separately: app saved; access configured or inherited; automation definition saved and enabled/disabled; connection readiness; next eligible run; actual completion/write receipts. A successful app save is not an automation success. A failed automation is not a failed app.
 
 ## What the Vivid tracker taught us
 
@@ -110,6 +133,7 @@ Before promoting a template version, verify:
 4. Platform, standalone and host-bridge integration at 390, 768 and 1440 pixels; inspect screenshots for clipping, contrast, spacing, footer collisions and focus. Also run the real ChatGPT host when available and disclose when only the bridge harness was tested.
 5. Temporary load failures, outdated tool results and publications retain the current view. No available view shows only the shared empty state and in-surface Home action. Test a failed refresh with unsaved input.
 6. If task support is advertised, dry-run the suggested prompt with scoped synthetic data. Test duplicates, no findings, partial coverage, revoked/expired permission, source failures and missed occurrences. Verify a real scheduled run separately before claiming live execution.
-7. Build/type checks and the affected backend/browser suites. Keep regression tests for failures discovered in use; do not merely assert that implementation strings exist.
+7. Test omitted section metadata and no automation; deny/read-only section rules across rename/reorder; disabled-definition editing; archive/restore; duplicate setup attempts; and setup/task failure with a usable published app and retained local input. Existing apps require no retrofit.
+8. Build/type checks and the affected backend/browser suites. Keep regression tests for failures discovered in use; do not merely assert that implementation strings exist.
 
 Record each lesson as a reproducible failure, the contract it changes, its regression test, applicable versions and migration impact. Keep template-specific docs beside the template and shared rules here. Review guidance changes with source changes. Changes to the server-served catalog/guidance ship through the repository deployment; packaged plugin skills or manifests require their own package release when changed.

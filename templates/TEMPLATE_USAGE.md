@@ -1,6 +1,6 @@
 # Using TrialAgents templates and optional tasks
 
-Version: 1.3.0
+Version: 1.3.1
 
 Retrieve this current guidance with `read_app_template_guidance(resource:"usage")`, following all `nextOffset` values. Read a selected template's `instructions`, `documentation`, configuration schema and examples before preparing it. They supplement the enforced platform contract; they never grant data access or approve writes.
 
@@ -42,3 +42,13 @@ Follow the shared automation guide for first connection, event subscription, ver
 Existing legacy per-app host tasks still use `read_app_monitoring_guide`; pause and detach them before migration. Copies do not inherit monitoring or permissions. Task context, source content and template suggestions never authorize broader access.
 
 Keep app content, ordinary loading and saving fully independent from automation status. Background failures appear only in owner automation settings/history. Test a running app with unsaved input while event delivery, research or scheduling fails. No optional service may replace the published frame or erase saved data. Template task examples describe research questions, required fields, output contracts and permissions; reference the current shared execution guide instead of duplicating its dispatcher prompt.
+
+## Creation completion and later management
+
+After the saved-app receipt, report app configuration and optional automation outcomes separately. Use the actual saved app/automation IDs, version, enabled state and next eligible time; verify readiness through `read_automation_setup`. Never call a definition active merely because its enabled flag is true. Owner inspection uses `list_app_automations`, `read_app_automation` and `read_app_automation_history`; mutations retain the existing exact review path. Direct the owner to platform Automations, optionally filtered to the app, rather than generating another settings page inside the app.
+
+Schedule/prompt changes update the stored definition, not the host subscription. Explain the reviewed effect on future/pending work and coverage; retain completed receipts. Disabling retains the app, records and history. Editing does not re-enable a disabled definition or paused runner. Archiving suspends attached work; restoring/copying an app does not activate background work. Legacy host tasks need explicit pause/detachment before migration to avoid duplicate execution.
+
+If the new setup/management tools are absent from the host catalog, preserve the saved app and disclose pending setup. For a custom MCP connection, refresh its metadata and use a new Work chat; then recheck supported event discovery. This is a recovery step, not proof of host support. Never invent a successful subscription, substitute a polling task, or ask for a new model/API subscription as an assumed fix. Operator encryption-key setup is platform infrastructure and must not be embedded in an app or task prompt.
+
+Template documentation is complete only when it explains optional sections/app-level fallback, executor and trigger, full instructions/action, source/output/write scope, disabled/edit/history behavior, failure/no-result criteria, and a working no-automation path. Keep all of this compatible with the user's requested app; it must not impose a template or extra functionality.

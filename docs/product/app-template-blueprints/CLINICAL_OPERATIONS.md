@@ -1,5 +1,7 @@
 # Clinical Operations apps — detailed candidate screen scope
 
+**Current platform contract (1 November 2026):** follow the [shared build contract](DESIGN_AND_BUILD_CONTRACT.md#6-app-access-chatgpt-and-scheduling-contract) for optional section access, unified Automations, shared ChatGPT research setup, TrialAgents email, failure isolation and template documentation. References to a Task in these candidate recipes describe optional ongoing work, not a separate host task per app. None of these candidates is marked implemented by this update.
+
 **Status: planning only.** Six user-selected sponsor-side applications, not live modules, validated regulatory tools or HTML designs. Distinguish **sponsor RFP intake/evaluation** from CRO bid response. Site/PI management is **institutional/professional only**. Trial Monitoring & Pharmacovigilance means **operational oversight only**. Follow [shared design and data/AI rules](DESIGN_AND_BUILD_CONTRACT.md) and exact TrialAgents permissions and audit controls.
 
 ## CO-01 — RFP Management (6 screens)

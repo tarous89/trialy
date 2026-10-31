@@ -1,12 +1,19 @@
 # TrialAgents — Current development roadmap
 
-## Active next implementation — 29 October 2026
+## Current implementation — 1 November 2026
 
-Implement P0 through the [six-step simple-app roadmap](docs/product/APP_PLATFORM_ROADMAP.md): neutral apps/project colors; standalone new-tab launch and standard footer; navigation/links; generic connector backend; one consistent Connectors management page; compatibility and release checks. [Agreed scope](docs/product/APP_PLATFORM_SCOPE.md) · [Connector data/access contract](docs/product/CONNECTORS_AND_USAGE.md) · [Prioritized backlog](docs/product/APP_PLATFORM_BACKLOG.md).
+Read [CONTEXT.md](CONTEXT.md) first. The six-step simple-app roadmap is implemented; release **0.2.39** adds unified app automation management and optional standard-tracker section permissions. [Current app configuration contract](docs/product/APP_CONFIGURATION_AND_AUTOMATIONS.md) · [Template authoring](templates/TEMPLATE_AUTHORING.md) · [Template usage](templates/TEMPLATE_USAGE.md).
 
-All six steps are pending. Reuse the current runtime, authentication, schedules/events, shared data and UI components. The reduced scope supersedes the earlier 14-step launch plan: browser packages, new server languages, advanced workflows, external audiences and commercial billing move to P2; branded email/document/AI connectors are P3, last. Existing production recovery, credential and real-host acceptance obligations remain; no unrelated infrastructure expansion is required by this planning update.
+- Access keeps Projects → apps visible by default → optional expandable tabs. Missing section metadata is valid; app-level authorization always applies. No existing-app retrofit.
+- Automations lists existing research monitors and platform actions across apps, with reviewed editing, enable/disable and history. Editing preserves disabled state; archive suspends work without silently resuming on restore.
+- Shared ChatGPT setup is checked opportunistically without blocking apps. Instructions/timing live in TrialAgents, one owner/workspace subscription dispatches research, and TrialAgents sends approved email.
+- App continuity, exact writes, receipts, schema/access checks and user input preservation remain mandatory. High-reasoning/latest-model preferences are requested, not host-enforced settings.
 
-Foundation implementation baseline updated 11 October 2026, with later notes below. [Scope](README.md) · [History](HISTORY.md) · [Current runtime contract](docs/FRONTEND_CODE.md).
+**Remaining activation:** synchronize the existing web encryption key to the worker, refresh the host tool catalog, verify event discovery/subscription, and observe an unattended verification cycle. See [operator steps](docs/OPERATIONS.md#shared-automation-activation). The last release check did not establish activation; do not infer it from deployment or OAuth.
+
+**Release evidence:** [PR #86](https://github.com/tarous89/trialy/pull/86), 177 backend tests, 75 browser tests, build/type checks and production browser verification; web/worker live and migration 050 applied. This does not close unrelated recovery/provider acceptance gates.
+
+The foundation and dated checklists below retain their historical status as of their headings. They are not the current feature backlog. Use the [prioritized backlog](docs/product/APP_PLATFORM_BACKLOG.md) and current context for new work.
 
 ## Implemented foundation
 
@@ -25,7 +32,7 @@ These capabilities are implemented, not a claim of production acceptance. Runtim
 
 The newly agreed [11-function demo template showcase](docs/product/TEMPLATE_SHOWCASE_PLAN.md) is the product-facing discovery and demonstration plan. Each functional entry is a short, editable example, not a fixed application module or automatic template installation. One shared database supports trackers, forms, read-only visualizations and approved event/scheduled automations. The former 18 use cases remain research inputs. **No demos/gallery have been marked implemented** by this documentation decision, and this entry does not alter the remaining execution gates below.
 
-## Remaining execution gates
+## Historical foundation execution gates — 11 October 2026
 
 | Step | Remaining work | Needed to proceed |
 | --- | --- | --- |

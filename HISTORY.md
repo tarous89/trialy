@@ -5,6 +5,14 @@ This file records meaningful decisions and completed development work. It is not
 - [Scope and decisions](README.md)
 - [Current development plan](DEVELOPMENT.md)
 
+## App configuration and shared automation management — 1 November 2026
+
+Release 0.2.39 shipped in [PR #86](https://github.com/tarous89/trialy/pull/86), commit `345eb6bb55ccd23110ac73d5690dd75bdea5ac27`. Both Render services were verified live; migrations and public MCP smoke checks passed. CI: 177 backend tests, 75 browser tests, build and production browser verification.
+
+Added Projects/app/optional-tab access, unified app-linked Automations with reviewed schedule/prompt editing and history, disabled-state preservation, archive suspension, and repeated shared-runner setup guidance. Existing apps remain unchanged. Research uses the shared ChatGPT event connection; platform actions handle email. Model/reasoning preferences remain requested and unverified.
+
+Live unattended activation was not established: worker signing storage and host event discovery/subscription remain explicit checks. [Current context](CONTEXT.md) and [operator setup](docs/OPERATIONS.md#shared-automation-activation) distinguish deployed code from activation. Shared template guidance and blueprint instructions now use this contract, including an explicit no-automation path and failure-isolation acceptance.
+
 ## Documentation baseline — 2026-10-10
 
 **Status:** scope agreed; development plan prepared; application implementation not started. No runtime, database, deployment, customer migration, or public-brand cutover has been performed by this documentation task.
