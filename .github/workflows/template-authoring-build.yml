@@ -1,0 +1,29 @@
+name: Template authoring build
+on:
+  push:
+    branches: ['templates/life-science-suite-2026-10-31']
+    paths:
+      - '.github/workflows/template-authoring-build.yml'
+      - 'templates/blueprints/**'
+      - 'scripts/build-life-science-templates.mjs'
+      - 'tests/life-science-templates.test.ts'
+permissions:
+  contents: read
+concurrency:
+  group: template-authoring-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Export tracked source for isolated authoring QA
+        run: git archive --format=zip --output=template-authoring-source.zip HEAD
+      - uses: actions/upload-artifact@v4
+        with:
+          name: template-authoring-source
+          path: template-authoring-source.zip
+          retention-days: 2
