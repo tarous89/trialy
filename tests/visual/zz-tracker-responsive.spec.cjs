@@ -1,4 +1,5 @@
 const {test,expect}=require('./test.cjs');
+const {createHash}=require('node:crypto');
 const base='http://127.0.0.1:4179';
 async function open(page,surface){
  const initial=await(await page.request.get(base+'/fixture/wide-tracker')).json();
@@ -12,6 +13,14 @@ function requestBody(request){
  return request.url().endsWith('/frontend/run')?request.postDataJSON():null;
 }
 for(const surface of ['plugin','app']){
+ test(`${surface}: an older frame keeps filters usable across a runtime rollout`,async({page})=>{
+  await page.setViewportSize({width:390,height:1000});
+  // An already-open pre-disclosure frame has no capability marker or toggle handler.
+  await page.route('**/frontend/frame',async route=>{const response=await route.fetch();let body=await response.text();body=body.replace("document.documentElement.classList.add('trialy-responsive-toolbar');",'');const hash=createHash('sha256').update(body.match(/<script>([\s\S]*)<\/script>/)[1]).digest('base64'),headers=response.headers();body=body.replace(/sha256-[^']+/g,'sha256-'+hash);headers['content-security-policy']=headers['content-security-policy'].replace(/sha256-[^']+/g,'sha256-'+hash);await route.fulfill({response,headers,body});});
+  const {tracker}=await open(page,surface);await tracker.getByRole('button',{name:'Tab 0',exact:true}).click();
+  const filter=tracker.getByRole('combobox',{name:'Filter by Qualification 1',exact:true});await expect(filter).toBeVisible();await expect(tracker.getByRole('button',{name:'Filter options',exact:true})).toBeHidden();
+  await filter.selectOption('Active');await expect(tracker.locator('tbody tr')).toHaveCount(13);expect(await tracker.locator('body').evaluate(el=>el.scrollWidth<=innerWidth)).toBe(true);
+ });
  test(`${surface}: wide tracker toolbar stays on one line and filters survive resizing`,async({page})=>{
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   const {tracker}=await open(page,surface);await tracker.getByRole('button',{name:'Tab 0',exact:true}).click();

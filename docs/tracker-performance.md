@@ -132,3 +132,16 @@ Responsive toolbar lessons and future-template requirements are maintained in
 runtime fixes apply to valid standard configurations and exact recognized legacy
 renderers on their next load. Custom source is not silently rewritten; data,
 schema, app identity and sharing are unchanged.
+
+Responsive CSS is gated by a frame capability marker. A page opened before this
+release keeps its filters visible with the previous wrapping behavior when it
+receives new server markup. Refreshing loads the single-line disclosure handler;
+the rollout never leaves an older frame with hidden filters and an inert button.
+Both browser surfaces include a missing-marker compatibility regression.
+
+The production PostgreSQL transaction result carries parser functions in addition
+to rows/counts. Metadata reuse clones only the `Connection` data contract, never
+the full driver result. The four-tab fixture now includes these non-cloneable
+internals, and `tests/read-metadata.test.ts` checks clone isolation and the final
+freshness check with this result shape. A live authorized component/output read
+is required in release verification, in addition to health checks and PGlite tests.
