@@ -23,40 +23,30 @@ jobs:
         with:
           node-version: '24'
           cache: npm
-      - name: Refine test union narrowing
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          p = Path('tests/life-science-templates.test.ts')
-          source = p.read_text()
-          source = source.replace('assert.equal(op.content.execution.length,0)', 'assert.equal((op.content as any).execution.length,0)')
-          p.write_text(source)
-          PY
+      - name: Apply reproducible pre-release input-focus correction
+        run: python3 scripts/repair-life-science-authoring.py
       - name: Generate all 23 catalog entries and standalone interfaces
         run: node scripts/build-life-science-templates.mjs
-      - name: Retain readable source and generated files on authoring branch only
+      - name: Retain corrected source and generated files on authoring branch only
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add templates/life-science templates/standalone templates/apps scripts/build-life-science-templates.mjs tests/life-science-templates.test.ts tests/app-templates.test.ts
           if ! git diff --cached --quiet; then
-            git commit -m 'Keep template fixture type narrowing and generated artifacts consistent'
+            git commit -m 'Retain field focus and unapplied calculation inputs through trusted frame renders'
             git push origin HEAD:refs/heads/templates/life-science-suite-2026-10-31
           fi
       - run: npm ci
-      - name: Prepare isolated local test dependencies
-        run: tar -czf /tmp/template-test-dependencies.tar.gz node_modules
-      - uses: actions/upload-artifact@v4
-        with:
-          name: template-test-dependencies
-          path: /tmp/template-test-dependencies.tar.gz
-          retention-days: 2
       - name: Production build and type checks
         run: npm run build
       - name: Domain templates and real database save/access regressions
         run: |
           set -o pipefail
           APP_DESIGN_CHECKS=off node --import tsx --test --test-concurrency=1 tests/life-science-templates.test.ts tests/app-templates.test.ts 2>&1 | tee /tmp/template-tests.log
+      - name: Install browser for unchanged trusted bridge
+        run: npx playwright install --with-deps chromium --only-shell
+      - name: All 143 screens and edits through the shipped sandbox frame
+        run: node --import tsx tests/life-science-frame.check.mjs
       - name: Export standalone HTML deliverables
         if: always()
         run: |
@@ -74,5 +64,6 @@ jobs:
           path: |
             trialagents-23-templates.zip
             /tmp/template-tests.log
+            /tmp/life-science-frame-qa/result.json
             templates/life-science/BUILD_MANIFEST.json
           retention-days: 7
