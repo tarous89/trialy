@@ -2,6 +2,7 @@ import {parseAppUrl} from './app-route.js';
 import {AppPlatform,AppNavigation} from './AppPlatform.js';
 import {ConnectorReview} from './ConnectorsPanel.js';
 import {mergeTrackerSnapshot,SNAPSHOT_TTL} from './tracker-cache.js';
+import {FrontendReads} from './frontend-reads.js';
 import {ChangeSummary} from './ChangeSummary.js';
 import {EmbeddedNavigation} from './ui/PageNavigation.js';
 import {TrackerRecordForm} from './TrackerRecordForm.js';
@@ -26,6 +27,8 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
  const localEdits=!!footer||!!recordReview||!!proposal||customDirty;
  const localEditsRef=useRef(localEdits);localEditsRef.current=localEdits;
  const checking=useRef(false),eventQueue=useRef<any[]>([]),blocked=useRef(false),saveReceipt=useRef<any>(null),approvedAction=useRef<string|null>(null);
+ const navigationReads=useRef(new FrontendReads());
+ const readFrontend=(request:any)=>navigationReads.current.run(request,request=>call('run_component_frontend',{request}),!!output.current?.tracker);
  function clearOutput(){cancelPrefetch();setRecordReview(null);saveReceipt.current=null;approvedAction.current=null;setDetailsOpen(false);eventQueue.current=[];output.current=null;state.current=null;setFrameUrl('');setReady(false);setProposal(null);setFooter(null);setCustomDirty(false);blocked.current=false;navigationRef.current?.setDirty(false);}
  function viewRequest(c=current.current){return {componentId:c.id,expectedVersion:c.version,...(output.current?.viewId?{viewId:output.current.viewId}:{})};}
  function actionError(e:unknown){const status=(e as any)?.status;if(saveReceipt.current&&!saveReceipt.current.saved&&status>=400&&status<500)saveReceipt.current=null;setError(saveReceipt.current?.saved?'Your changes were saved, but the app could not reload them. You can retry loading the saved data.':(e as Error).message||'This action could not complete. Your work is still here.');}
@@ -58,7 +61,7 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
   if(!needed.length)return;
   prefetchTimer.current=setTimeout(async()=>{for(const {action} of needed){try{
    if(!live.current||busyRef.current||generation.current!==captured)return;
-   const next=await call('run_component_frontend',{request:{...(c?viewRequest(c):{previewId}),state:st,event:{kind:'click',action}}});
+   const next=await readFrontend({...(c?viewRequest(c):{previewId}),...(navigationRef.current?{route:navigationRef.current.route}:{}),state:st,event:{kind:'click',action}});
    if(!live.current||generation.current!==captured||busyRef.current||!output.current||next.accessVersion!==output.current.accessVersion)return;
    const merged=mergeTrackerSnapshot(output.current,next);output.current={...output.current,tracker:merged.tracker};
    frame.current?.contentWindow?.postMessage({kind:'trialy.cache',channel:channel.current,tracker:merged.tracker},'*');
@@ -99,7 +102,7 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
     else setRecordReview({proposal:p,deletion:event.action.startsWith('tracker:delete:')});
     return;
    }
-   let result=await call('run_component_frontend',{request:{...(previewId?{previewId}:viewRequest(c)),state:state.current,event,...(navigationRef.current?{route:navigationRef.current.route}:{})}});
+   let result=await readFrontend({...(previewId?{previewId}:viewRequest(c)),state:state.current,event,...(navigationRef.current?{route:navigationRef.current.route}:{})});
    if(!live.current)return;
    // The footer click approves the visible edits. The server still validates a precise proposal and its digest before committing.
    if(result.proposal&&explicitApproval&&(event.action==='bound-batch'||event.action==='save-layout'&&output.current?.tracker)){
