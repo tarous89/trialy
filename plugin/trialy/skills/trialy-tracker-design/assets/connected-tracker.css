@@ -34,15 +34,16 @@ button:disabled{opacity:.5;cursor:default}
 .cell-display[hidden]{display:none!important}
 
 /* Fit the action row to its actual container; secondary options expand on demand. */
-.tracker-toolbar{position:relative;flex-wrap:nowrap;min-width:0;isolation:isolate;z-index:6}
-.tracker-toolbar .search{flex:1 1 190px;min-width:0;max-width:390px;margin:0}
-.tracker-options{display:flex;align-items:center;gap:10px;flex:none;white-space:nowrap}
-.tracker-options .filter,.tracker-options .sort{flex:none;min-width:110px;max-width:220px}
-.tracker-toolbar>.primary{flex:none;margin-left:auto}
-.tracker-toolbar .tracker-options-toggle{display:none;flex:none;margin:0}
-.tracker-toolbar.options-overflow .tracker-options-toggle{display:inline-flex}
-.tracker-toolbar.options-overflow .tracker-options{display:none;position:absolute;top:calc(100% + 8px);right:0;box-sizing:border-box;width:min(100%,580px);max-height:min(55vh,420px);overflow-y:auto;white-space:normal;padding:14px;gap:10px;background:var(--paper,#fff);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 28px #102d2520;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr))}
-.tracker-toolbar.options-overflow.options-open .tracker-options{display:grid}
-.tracker-toolbar.options-overflow .tracker-options .filter,.tracker-toolbar.options-overflow .tracker-options .sort{min-width:0;max-width:none;width:100%;box-sizing:border-box}
-.tracker-toolbar.toolbar-compact>.primary,.tracker-toolbar.toolbar-compact>.tracker-options-toggle{padding-inline:10px}
-.tracker-toolbar.toolbar-compact .search{padding-inline:10px;gap:6px}
+.tracker-options{display:contents}.tracker-options-toggle{display:none}
+html.trialy-responsive-toolbar .tracker-toolbar{position:relative;flex-wrap:nowrap;min-width:0;isolation:isolate;z-index:6}
+html.trialy-responsive-toolbar .tracker-toolbar .search{flex:1 1 190px;min-width:0;max-width:390px;margin:0}
+html.trialy-responsive-toolbar .tracker-options{display:flex;align-items:center;gap:10px;flex:none;white-space:nowrap}
+html.trialy-responsive-toolbar .tracker-options .filter,html.trialy-responsive-toolbar .tracker-options .sort{flex:none;min-width:110px;max-width:220px}
+html.trialy-responsive-toolbar .tracker-toolbar>.primary{flex:none;margin-left:auto}
+html.trialy-responsive-toolbar .tracker-toolbar .tracker-options-toggle{display:none;flex:none;margin:0}
+html.trialy-responsive-toolbar .tracker-toolbar.options-overflow .tracker-options-toggle{display:inline-flex}
+html.trialy-responsive-toolbar .tracker-toolbar.options-overflow .tracker-options{display:none;position:absolute;top:calc(100% + 8px);right:0;box-sizing:border-box;width:min(100%,580px);max-height:min(55vh,420px);overflow-y:auto;white-space:normal;padding:14px;gap:10px;background:var(--paper,#fff);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 28px #102d2520;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr))}
+html.trialy-responsive-toolbar .tracker-toolbar.options-overflow.options-open .tracker-options{display:grid}
+html.trialy-responsive-toolbar .tracker-toolbar.options-overflow .tracker-options .filter,html.trialy-responsive-toolbar .tracker-toolbar.options-overflow .tracker-options .sort{min-width:0;max-width:none;width:100%;box-sizing:border-box}
+html.trialy-responsive-toolbar .tracker-toolbar.toolbar-compact>.primary,html.trialy-responsive-toolbar .tracker-toolbar.toolbar-compact>.tracker-options-toggle{padding-inline:10px}
+html.trialy-responsive-toolbar .tracker-toolbar.toolbar-compact .search{padding-inline:10px;gap:6px}

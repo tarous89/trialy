@@ -9,6 +9,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  const host=window.parent,root=document.getElementById('surface'),sheet=document.getElementById('appearance');
  let channel=null,model=null,uiState=null,controls=[],connected=false,detailScroll=0;
  let pending=Object.create(null),original=Object.create(null);
+ document.documentElement.classList.add('trialy-responsive-toolbar');
  let optionsOpen=false,optionsTab=null,toolbarObserver=null;
  function setOptionsOpen(open,focus=false){
   optionsOpen=open;const bar=root.querySelector('.tracker-toolbar'),button=bar?.querySelector('.tracker-options-toggle');
