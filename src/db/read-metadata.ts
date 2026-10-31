@@ -34,7 +34,10 @@ export async function withReadMetadata<T>(db:Database,read:(db:Database)=>Promis
    entry.result.catch(()=>{entries.delete(key);});
   }
   // Callers may enrich returned metadata. Never mutate the saved comparison.
-  return structuredClone(await entry.result);
+  // PostgreSQL transaction results also contain parser/type functions. Only the
+  // Connection contract is data; never structured-clone the driver's internals.
+  const result=await entry.result;
+  return {rows:structuredClone(result.rows),rowCount:result.rowCount};
  };
  const scoped:Database={query,transaction:fn=>db.transaction(fn),close:async()=>{}};
  sessions.add(scoped);originals.set(scoped,db);

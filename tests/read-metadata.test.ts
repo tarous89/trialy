@@ -26,3 +26,10 @@ test('runtime actor and tool contexts never share metadata, including nested rea
 test('rows and counts are never cached',async()=>{
  const f=fixture();await withReadMetadata(f.db,async db=>{for(let i=0;i<2;i++){await db.query('SELECT * FROM records');await db.query('SELECT count(*) FROM records');}});assert.equal(f.count(),4);
 });
+test('PostgreSQL parser functions are excluded from cloned transaction metadata',async()=>{
+ let calls=0;const row={id:'table',fields:[{key:'name'}]};
+ // node-postgres Result includes non-cloneable _parsers and _types properties;
+ // the production transaction adapter returns this richer driver result.
+ const db:Database={query:async()=>{calls++;return {rows:[row] as any,rowCount:1,_parsers:[(value:string)=>value],_types:{getTypeParser:()=>String}};},transaction:fn=>fn(db),close:async()=>{}};
+ await withReadMetadata(db,async inner=>{const first=await inner.query(sql,['t','w']);assert.deepEqual(Object.keys(first).sort(),['rowCount','rows']);first.rows[0].fields[0].key='changed';const second=await inner.query(sql,['t','w']);assert.equal(second.rows[0].fields[0].key,'name');assert.equal(second.rowCount,1);});assert.equal(calls,2);assert.equal(row.fields[0].key,'name');
+});

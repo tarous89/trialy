@@ -12,7 +12,7 @@ import type {Database,Connection} from '../src/db/database.js';
 
 test('four-tab tracker budgets cover publication checks, wide schemas and layout saves',async()=>{
  const pg=new PGlite();let queries:string[]=[],changeAccess=false;
- const query=(tx:Connection)=>async(sql:string,args?:any[])=>{queries.push(sql);if(changeAccess&&sql.includes('octet_length(selected::text)')){changeAccess=false;await tx.query('UPDATE workspaces SET access_version=access_version+1 WHERE id=$1',[args![0]]);}return tx.query(sql,args);};
+ const query=(tx:Connection)=>async(sql:string,args?:any[])=>{queries.push(sql);if(changeAccess&&sql.includes('octet_length(selected::text)')){changeAccess=false;await tx.query('UPDATE workspaces SET access_version=access_version+1 WHERE id=$1',[args![0]]);}return {...await tx.query(sql,args),_parsers:[(value:unknown)=>value]};};
  const db:Database={query:query(pg as any),transaction:fn=>pg.transaction(tx=>fn({query:query(tx as any)})),close:()=>pg.close()};
  try{
   for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
