@@ -1,3 +1,4 @@
+import {enqueueServiceJob} from '../app-services/jobs.js';
 import {appPublicUrl} from '../shared/public-url.js';
 import {randomUUID} from 'node:crypto';
 import {z} from 'zod';
@@ -65,7 +66,7 @@ export class Connectors{
   const r=(await this.db.query('SELECT * FROM connector_reviews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[reviewId,w,a.userId])).rows[0];
   if(!r)fail(404,'not_found','Connector review unavailable');
   if(r.kind==='config')await this.manager(this.db,a,w,r.body.connectionId);
-  else if((await this.build(this.db,{...a,origin:r.origin},w,r.body.call)).digest!==r.body.digest)fail(409,'connector_changed','Request data or permissions changed; review again');
+  else if((await this.inspect(this.db,{...a,origin:r.origin},w,r.body.call)).digest!==r.body.digest)fail(409,'connector_changed','Request data or permissions changed; review again');
   return {id:r.id,digest:r.digest,kind:r.kind,body:r.body,expiresAt:r.expires_at,consumed:!!r.consumed_at};
  }
  async confirmConfig(a:Actor,w:string,reviewId:string,digest:string){
@@ -104,7 +105,7 @@ export class Connectors{
    await audit(tx,a,p,remove?'connector.removed':'connector.disabled',connectionId,{version:row.version},{version:row.version+1});return {id:connectionId,version:row.version+1,enabled:false};
   });
  }
- private async build(tx:Connection,a:Actor,w:string,raw:unknown){
+ async inspect(tx:Connection,a:Actor,w:string,raw:unknown){
   const call=connectorCall.parse(raw);a={...a,accessToolId:call.appId};
   return withActor(a,async()=>{
    const {row,config,policy}=await this.connection(tx,a,w,call.connectionId);
@@ -134,11 +135,11 @@ export class Connectors{
    }
    Object.assign(parameters,call.parameters);
    for(const p of operation.parameters){const value=parameters[p.name];if(value===undefined){if(p.required)fail(400,'connector_parameters','Missing required connector parameter');continue;}
-    if(value!==null&&(typeof value!==({text:'string',number:'number',boolean:'boolean'} as const)[p.kind]||typeof value==='string'&&value.length>4000||typeof value==='number'&&!Number.isFinite(value))||p.choices&&!p.choices.some(c=>c===value))fail(400,'connector_parameters','Connector parameter does not match its declared schema');
+    if(value!==null&&(typeof value!==({text:'string',number:'number',boolean:'boolean',json:typeof value} as const)[p.kind]||typeof value==='string'&&value.length>64000||typeof value==='number'&&!Number.isFinite(value))||p.choices&&!p.choices.some(c=>c===value))fail(400,'connector_parameters','Connector parameter does not match its declared schema');
    }
    let path=operation.path;const rest={...parameters};for(const match of operation.path.matchAll(/\{([a-z][a-z0-9_]*)\}/g)){const value=parameters[match[1]];if(value===undefined||value===null||!/^[A-Za-z0-9_-]+$/.test(String(value)))fail(400,'connector_path','Path parameters must be identifiers');path=path.replace(match[0],encodeURIComponent(String(value)));delete rest[match[1]];}
    const url=new URL(path,config.baseUrl);if(url.origin!==new URL(config.baseUrl).origin)fail(400,'connector_destination','Operation leaves configured destination');
-   let body:string|undefined;if(operation.method==='GET'){for(const [k,v] of Object.entries(rest))url.searchParams.set(k,String(v??''));}else body=J(rest);
+   let body:string|undefined;if(operation.method==='GET'){if(Object.values(rest).some(v=>v!==null&&typeof v==='object'))fail(400,'connector_parameters','JSON inputs require a body request');for(const [k,v] of Object.entries(rest))url.searchParams.set(k,String(v??''));}else body=J(rest);
    const request={url:url.href,method:operation.method,...(body?{body}:{}),headers:{accept:operation.response.format==='json'?'application/json':'text/plain',...(body?{'content-type':'application/json'}:{})}};
    if(Buffer.byteLength(J(request))>65536)fail(413,'connector_request_size','Connector request exceeds 64 KiB');
    const stamp={connectionVersion:row.version,appVersion:app.version,accessVersion:policy.access_version,stamps,request},digest=checksum(J(stamp));
@@ -146,41 +147,53 @@ export class Connectors{
   });
  }
  async prepareCall(a:Actor,w:string,input:unknown){
-  const built=await this.build(this.db,a,w,input);return this.review(a,w,'invoke',{call:built.call,connectionVersion:built.row.version,request:built.request,digest:built.digest});
+  const built=await this.inspect(this.db,a,w,input);return this.review(a,w,'invoke',{call:built.call,connectionVersion:built.row.version,request:built.request,digest:built.digest});
  }
- async call(a:Actor,w:string,input:unknown){
-  const built=await this.build(this.db,a,w,input);
+ async call(a:Actor,w:string,input:unknown,queued=false){
+  const built=await this.inspect(this.db,a,w,input);
+  if(queued||built.operation.execution==='background'){const job=(await this.db.query('SELECT id,status,payload FROM app_service_jobs WHERE workspace_id=$1 AND user_id=$2 AND request_key=$3',[w,a.userId,'connector:'+built.call.connectionId+':'+built.call.requestKey])).rows[0];if(job){if(job.payload.digest!==built.digest)fail(409,'connector_request_key','This request key belongs to another request');return {id:job.id,status:job.status,replayed:true};}}
   const previous=(await this.db.query('SELECT * FROM connector_invocations WHERE connection_id=$1 AND workspace_id=$2 AND user_id=$3 AND request_key=$4',[built.call.connectionId,w,a.userId,built.call.requestKey])).rows[0];
-  if(previous){if(previous.digest!==built.digest)fail(409,'connector_request_key','This request key belongs to another request');return {id:previous.id,status:previous.status==='running'&&Date.now()-new Date(previous.created_at).getTime()>30000?'unknown':previous.status,result:previous.result,replayed:true};}
+  if(previous){if(previous.digest!==built.digest)fail(409,'connector_request_key','This request key belongs to another request');return {id:previous.id,status:previous.status==='running'&&Date.now()>new Date(previous.deadline_at).getTime()?'unknown':previous.status,result:previous.result,replayed:true};}
   if(built.reviewRequired)return this.review(a,w,'invoke',{call:built.call,connectionVersion:built.row.version,request:built.request,digest:built.digest});
-  return this.dispatch(a,w,built.call,built.digest);
+  return queued||built.operation.execution==='background'?this.queue(a,w,built.call,built.digest):this.dispatch(a,w,built.call,built.digest);
  }
  async confirmInvocation(a:Actor,w:string,reviewId:string,digest:string){
   requireHuman(a);const review=await this.readReview(a,w,reviewId);if(review.kind!=='invoke'||review.digest!==digest)fail(409,'connector_review','Review is unavailable or changed');
   const stored=(await this.db.query('SELECT origin FROM connector_reviews WHERE id=$1 AND user_id=$2',[reviewId,a.userId])).rows[0];
   // Approval never upgrades an AI-origin request to the human's broader data visibility.
-  return this.dispatch({...a,origin:stored.origin},w,review.body.call,review.body.digest,reviewId);
+  const actor={...a,origin:stored.origin},built=await this.inspect(this.db,actor,w,review.body.call);
+  if(built.operation.execution==='background')return this.queue(actor,w,built.call,built.digest,reviewId);
+  return this.dispatch(actor,w,review.body.call,review.body.digest,reviewId);
  }
- private async dispatch(a:Actor,w:string,call:ConnectorCall,digest:string,reviewId?:string){
+ async queue(a:Actor,w:string,call:ConnectorCall,digest:string,reviewId?:string){
+  const built=await this.inspect(this.db,a,w,call);if(built.digest!==digest)fail(409,'connector_changed','Request changed');
+  if(built.reviewRequired&&!reviewId)fail(403,'connector_review','Review this request');
+  if(reviewId){const r=await this.readReview({...a,origin:'human'},w,reviewId);if(r.body.digest!==digest)fail(409,'connector_changed','Request changed');}
+  return enqueueServiceJob(this.db,a,w,call.appId,'connector','connector:'+call.connectionId+':'+call.requestKey,{origin:a.origin,call,digest,reviewId:reviewId??null},built.operation.timeoutSeconds+60);
+ }
+ async executeAuthorized(a:Actor,w:string,input:unknown,authorize:()=>Promise<void>,signal?:AbortSignal){
+  await authorize();const built=await this.inspect(this.db,a,w,input);return this.dispatch(a,w,built.call,built.digest,undefined,authorize,signal);
+ }
+ private async dispatch(a:Actor,w:string,call:ConnectorCall,digest:string,reviewId?:string,authorized?:()=>Promise<void>,signal?:AbortSignal){
   const scoped={...a,accessToolId:call.appId};return withActor(scoped,async()=>{
    const reservation=await this.db.transaction(async tx=>{
     await tx.query('SELECT id FROM connectors WHERE id=$1 AND workspace_id=$2 FOR UPDATE',[call.connectionId,w]);
-    const built=await this.build(tx,scoped,w,call);if(built.digest!==digest)fail(409,'connector_changed','Request data or permissions changed; review again');
-    if(built.reviewRequired&&!reviewId)fail(403,'connector_review','Review this request before sending');
+    const built=await this.inspect(tx,scoped,w,call);if(built.digest!==digest)fail(409,'connector_changed','Request data or permissions changed; review again');
+    await authorized?.();if(built.reviewRequired&&!reviewId&&!authorized)fail(403,'connector_review','Review this request before sending');
     const previous=(await tx.query('SELECT * FROM connector_invocations WHERE connection_id=$1 AND user_id=$2 AND request_key=$3',[call.connectionId,a.userId,call.requestKey])).rows[0];
-    if(previous){if(previous.digest!==digest)fail(409,'connector_request_key','This request key belongs to another request');if(previous.status==='running'&&Date.now()-new Date(previous.created_at).getTime()>30000){await tx.query("UPDATE connector_invocations SET status='unknown',completed_at=now() WHERE id=$1 AND status='running'",[previous.id]);previous.status='unknown';}return {previous};}
+    if(previous){if(previous.digest!==digest)fail(409,'connector_request_key','This request key belongs to another request');if(previous.status==='running'&&Date.now()>new Date(previous.deadline_at).getTime()){await tx.query("UPDATE connector_invocations SET status='unknown',completed_at=now() WHERE id=$1 AND status='running'",[previous.id]);previous.status='unknown';}return {previous};}
     if(reviewId){const review=(await tx.query("SELECT * FROM connector_reviews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND kind='invoke' AND expires_at>now() FOR UPDATE",[reviewId,w,a.userId])).rows[0];if(!review||review.body.digest!==digest||review.consumed_at)fail(409,'connector_review','Review is unavailable or already used');await tx.query('UPDATE connector_reviews SET consumed_at=now() WHERE id=$1',[reviewId]);}
     // Crash recovery is conservative: uncertain requests never become retryable automatically.
-    await tx.query("UPDATE connector_invocations SET status='unknown',completed_at=now() WHERE connection_id=$1 AND status='running' AND created_at<now()-interval '30 seconds'",[call.connectionId]);
+    await tx.query("UPDATE connector_invocations SET status='unknown',completed_at=now() WHERE connection_id=$1 AND status='running' AND deadline_at<now()",[call.connectionId]);
     const counts=(await tx.query("SELECT count(*) FILTER(WHERE created_at>now()-interval '1 minute') AS recent,count(*) FILTER(WHERE created_at>now()-interval '1 minute' AND app_id=$2) AS app_recent,count(*) FILTER(WHERE status='running') AS active FROM connector_invocations WHERE connection_id=$1",[call.connectionId,call.appId])).rows[0];
     if(Number(counts.recent)>=built.config.requestsPerMinute||Number(counts.app_recent)>=built.config.requestsPerAppPerMinute||Number(counts.active)>=3)fail(429,'connector_limit','Connector request limit reached');
     let secret='';if(built.config.auth.kind!=='none'){const credential=(await tx.query('SELECT sealed FROM connector_credentials WHERE connection_id=$1 AND workspace_id=$2',[call.connectionId,w])).rows[0];if(!credential?.sealed)fail(409,'connector_credential','Configure this connector credential in the trusted app');secret=(this.options.vault??connectorVault()).open(credential.sealed,`${w}:${call.connectionId}`);}
-    const invocationId=randomUUID();await tx.query("INSERT INTO connector_invocations(id,workspace_id,connection_id,user_id,app_id,operation,request_key,digest,status,effect,review_id,request_bytes) VALUES($1,$2,$3,$4,$5,$6,$7,$8,'running',$9,$10,$11)",[invocationId,w,call.connectionId,a.userId,call.appId,call.operation,call.requestKey,digest,built.operation.effect,reviewId??null,Buffer.byteLength(built.request.url)+Buffer.byteLength(built.request.body??'')]);
+    const invocationId=randomUUID();await tx.query("INSERT INTO connector_invocations(id,workspace_id,connection_id,user_id,app_id,operation,request_key,digest,status,effect,review_id,request_bytes,deadline_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,'running',$9,$10,$11,$12)",[invocationId,w,call.connectionId,a.userId,call.appId,call.operation,call.requestKey,digest,built.operation.effect,reviewId??null,Buffer.byteLength(built.request.url)+Buffer.byteLength(built.request.body??''),new Date(Date.now()+(built.operation.timeoutSeconds+10)*1000)]);
     return {built,invocationId,secret};
    });
    if(reservation.previous){const p=reservation.previous;return {id:p.id,status:p.status,result:p.result,replayed:true};}
    const {built,invocationId,secret}=reservation;
-   const request:OutboundRequest={...built!.request,headers:{...built!.request.headers},authorize:async()=>{if((await this.build(this.db,scoped,w,call)).digest!==digest)fail(409,'connector_changed','Request changed before dispatch');}};
+   const request:OutboundRequest={...built!.request,timeoutMs:built!.operation.timeoutSeconds*1000,signal,headers:{...built!.request.headers},authorize:async()=>{await authorized?.();if((await this.inspect(this.db,scoped,w,call)).digest!==digest)fail(409,'connector_changed','Request changed before dispatch');}};
    if(built!.config.auth.kind==='bearer')request.headers.authorization='Bearer '+secret;
    if(built!.config.auth.kind==='header')request.headers[built!.config.auth.header]=secret!;
    let status='unknown',result:unknown=null,httpStatus:number|null=null,responseBytes=0,duration=0;const started=Date.now();
@@ -192,7 +205,7 @@ export class Connectors{
    const completed=await this.db.query("UPDATE connector_invocations SET status=$2,result=$3,http_status=$4,response_bytes=$5,duration_ms=$6,completed_at=now() WHERE id=$1 AND status='running' RETURNING status",[invocationId,status,J(result),httpStatus,responseBytes,duration]);
    if(!completed.rows.length){status='unknown';result=null;}
    // An in-flight revoke cannot undo a provider action, but it must prevent result disclosure.
-   const current=await this.build(this.db,scoped,w,call);if(current.digest!==digest)fail(409,'connector_changed','Connector or data changed while the request was running; inspect Activity');
+   const current=await this.inspect(this.db,scoped,w,call);if(current.digest!==digest)fail(409,'connector_changed','Connector or data changed while the request was running; inspect Activity');
    return {id:invocationId,status,result};
   });
  }
@@ -201,7 +214,7 @@ export class Connectors{
   if(!manage&&!config.operations.some(o=>o.users.includes(a.userId)&&(a.origin!=='ai'||o.aiEnabled)))fail(404,'not_found','Connector unavailable');
   const values=[connectionId,w,manage?null:a.userId];
   const where='connection_id=$1 AND workspace_id=$2 AND ($3::uuid IS NULL OR user_id=$3)';
-  const stale="status='running' AND created_at<now()-interval '30 seconds'";
+  const stale="status='running' AND deadline_at<now()";
   const rows=(await this.db.query(`SELECT id,user_id,app_id,operation,CASE WHEN ${stale} THEN 'unknown' ELSE status END AS status,http_status,request_bytes,response_bytes,duration_ms,created_at,completed_at,review_id FROM connector_invocations WHERE ${where} ORDER BY created_at DESC,id LIMIT 25 OFFSET $4`,[...values,offset])).rows;
   const totals=(await this.db.query(`SELECT count(*) AS calls,count(*) FILTER(WHERE status IN ('failed','unknown') OR (${stale})) AS errors,coalesce(sum(request_bytes+response_bytes),0) AS bytes,coalesce(sum(duration_ms),0) AS duration_ms FROM connector_invocations WHERE ${where}`,values)).rows[0];return {rows,totals,offset};
  }

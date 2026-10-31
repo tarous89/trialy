@@ -8,7 +8,7 @@ for(const [ip,bits] of [['0.0.0.0',8],['10.0.0.0',8],['100.64.0.0',10],['127.0.0
 const global6=new BlockList();global6.addSubnet('2000::',3,'ipv6');
 for(const [ip,bits] of [['2001::',23],['2001:db8::',32],['2002::',16],['3fff::',20]] as const)denied.addSubnet(ip,bits,'ipv6');
 export function publicAddress(address:string){const family=isIP(address);return family===4?!denied.check(address,'ipv4'):family===6&&global6.check(address,'ipv6')&&!denied.check(address,'ipv6');}
-export type OutboundRequest={url:string;method:string;body?:string;headers:Record<string,string>;authorize?:()=>Promise<void>};
+export type OutboundRequest={url:string;method:string;body?:string;headers:Record<string,string>;timeoutMs?:number;signal?:AbortSignal;authorize?:()=>Promise<void>};
 export type OutboundResponse={status:number;body:string;bytes:number;durationMs:number};
 export type ConnectorTransport=(input:OutboundRequest)=>Promise<OutboundResponse>;
 export async function resolveDestination(value:string,resolve=lookup){
@@ -19,23 +19,23 @@ export async function resolveDestination(value:string,resolve=lookup){
  return {url:u,address:addresses[0]};
 }
 export function createHttpsTransport(dependencies:{lookup?:typeof lookup;request?:typeof request}={}):ConnectorTransport{return async input=>{
- const started=Date.now();if(Buffer.byteLength(input.body??'')>65536)fail(413,'connector_request_size','Connector request exceeds 64 KiB');
+ const started=Date.now(),limit=Math.min(1800000,Math.max(1000,input.timeoutMs??20000));if(Buffer.byteLength(input.body??'')>65536)fail(413,'connector_request_size','Connector request exceeds 64 KiB');
  // Resolve once and pin the socket lookup; never follow redirects or forward credentials.
  let timer:ReturnType<typeof setTimeout>|undefined;
- const timeout=new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('Connector timeout')),10000);});
+ const timeout=new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('Connector timeout')),limit);});
  try{return await Promise.race([timeout,(async()=>{
   const {url,address}=await resolveDestination(input.url,dependencies.lookup??lookup);
   await input.authorize?.();
-  if(Date.now()-started>=10000)throw Error('Connector timeout');
+  if(Date.now()-started>=limit)throw Error('Connector timeout');
   return await new Promise<OutboundResponse>((resolve,reject)=>{
-   const req=(dependencies.request??request)(url,{method:input.method,agent:false,headers:{...input.headers,'accept-encoding':'identity',...(input.body?{'content-length':String(Buffer.byteLength(input.body))}:{})},lookup:((_host:any,options:any,cb:any)=>options?.all?cb(null,[address]):cb(null,address.address,address.family)) as any},res=>{
+   const req=(dependencies.request??request)(url,{method:input.method,agent:false,signal:input.signal,headers:{...input.headers,'accept-encoding':'identity',...(input.body?{'content-length':String(Buffer.byteLength(input.body))}:{})},lookup:((_host:any,options:any,cb:any)=>options?.all?cb(null,[address]):cb(null,address.address,address.family)) as any},res=>{
     const chunks:Buffer[]=[];let bytes=0;
     if((res.statusCode??500)>=300&&(res.statusCode??500)<400||res.headers['content-encoding']&&res.headers['content-encoding']!=='identity'){res.destroy();reject(Error('Connector redirect or encoding rejected'));return;}
     res.on('data',(chunk:Buffer)=>{bytes+=chunk.length;if(bytes>65536){res.destroy();reject(Error('Connector response exceeds 64 KiB'));}else chunks.push(chunk);});
     res.on('error',reject);res.on('end',()=>resolve({status:res.statusCode??500,body:Buffer.concat(chunks).toString('utf8'),bytes,durationMs:Date.now()-started}));
    });
    // Wall-clock deadline includes DNS, response headers and response body.
-   const remaining=Math.max(1,10000-(Date.now()-started)),deadline=setTimeout(()=>req.destroy(Error('Connector timeout')),remaining);
+   const remaining=Math.max(1,limit-(Date.now()-started)),deadline=setTimeout(()=>req.destroy(Error('Connector timeout')),remaining);
    req.on('close',()=>clearTimeout(deadline));req.on('error',reject);if(input.body)req.write(input.body);req.end();
   });
  })()]);}finally{clearTimeout(timer);}

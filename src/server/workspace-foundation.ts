@@ -1,3 +1,4 @@
+import {addAppServicesApi,addAppServicesMcp} from './app-services.js';
 import {appPreparationFields} from '../shared/app-design.js';
 import {appPublicUrl} from '../shared/public-url.js';
 import {columnDisplay} from '../shared/standard-tool.js';
@@ -26,7 +27,7 @@ import {workspaceOperation,maintenanceBatch} from '../workspace/schema.js';
 import {addConnectorApi,addConnectorMcp} from './connectors.js';
 import {addAppApi,addAppMcp} from './apps.js';
 export function addWorkspaceApi(app:Express,f:WorkspaceFoundation){
- if(process.env.SIMPLE_APPS_ENABLED==='true'){addConnectorApi(app,f);addAppApi(app,f);}
+ if(process.env.SIMPLE_APPS_ENABLED==='true'){addConnectorApi(app,f);addAppApi(app,f);addAppServicesApi(app,f);}
  const b='/api/workspaces/:workspaceId/organization';
  app.post(`${b}/tool-layout`,async(req,res)=>res.json(await prepareToolLayout(f,req.actor!,id.parse(req.params.workspaceId),req.body)));
  app.post(`${b}/tracker-template`,async(req,res)=>{const setup=trackerSetup.parse(req.body),op=await trackerOperation(f,req.actor!,id.parse(req.params.workspaceId),setup);res.json(await f.preview(req.actor!,id.parse(req.params.workspaceId),{kind:'create_tracker',setup,content:op.content}));});
@@ -69,7 +70,7 @@ export function addWorkspaceApi(app:Express,f:WorkspaceFoundation){
  app.get(`${b}/evidence/:recordId`,async(req,res)=>res.json(await f.evidence(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.recordId))));
 }
 export function addWorkspaceMcp(server:McpServer,f:WorkspaceFoundation,a:Actor,safe:any,metadata:any){
- if(process.env.SIMPLE_APPS_ENABLED==='true'){addConnectorMcp(server,f,a,safe,backgroundMetadata(metadata));addAppMcp(server,f,a,safe,metadata);}
+ if(process.env.SIMPLE_APPS_ENABLED==='true'){addConnectorMcp(server,f,a,safe,backgroundMetadata(metadata));addAppMcp(server,f,a,safe,metadata);addAppServicesMcp(server,f,a,safe,backgroundMetadata(metadata));}
  const display=(name:string,description:string,schema:Record<string,z.ZodType>,fn:(v:any)=>Promise<any>)=>server.registerTool(name,{title:name.replaceAll('_',' ').replace(/\btool\b/g,'app').replace(/\btools\b/g,'apps'),description,inputSchema:schema,annotations:{readOnlyHint:true,openWorldHint:false},_meta:metadata},safe(fn));
  display('open_tracker','Show exactly this saved tracker inside the TrialAgents extension. open_app also displays saved apps and supports page routes. Background schema/read operations never navigate.',{workspaceId:id,componentId:id},async v=>({...await f.readComponent(a,v.workspaceId,v.componentId,true),screen:'tracker'}));
  display('open_tracker_draft','Display an existing temporary app preview in the extension under current permissions. Resolves saved receipts and unavailable previews. Creates no new preview.',{workspaceId:id,previewId:id},v=>f.resolveTrackerPreview(a,v.workspaceId,v.previewId));

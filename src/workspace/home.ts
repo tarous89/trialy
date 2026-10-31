@@ -27,7 +27,8 @@ async function workspaceHomeRead(db:Database,a:Actor,w:string,input:unknown={}){
  for(let i=resources.length-1;i>=0;i--){const r=resources[i],placement=placements.find(x=>x.source===r.source&&x.tool_id===r.id);r.placementVersion=placement?.version??0;r.canMove=p.role==='owner'||p.role==='editor';
   if(placement){try{if(placement.project_id)await f.activeNode(db,a,w,placement.project_id);r.projectIds=placement.project_id?[placement.project_id]:[];}catch{resources.splice(i,1);}}
  }
- const previews=await f.pending(a,w);
+ // ChatGPT can recover its own drafts. Published app lists never include them.
+ const previews=a.origin==='ai'?await f.pending(a,w):[];
  for(const draft of previews){const op=draft.body;
   if(!['create_tracker','save_component'].includes(op.kind)||op.componentId||op.content?.format!=='frontend-js')continue;
   const content=op.content,projectId=op.setup?.projectId??op.projectId;

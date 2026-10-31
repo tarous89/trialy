@@ -1,3 +1,4 @@
+import {authorizeAppFunction} from '../app-services/service.js';
 import {requireWorkflow} from '../domain/effective-access.js';
 import {nextDaily} from '../shared/schedules.js';
 import {randomUUID} from 'node:crypto';
@@ -48,11 +49,11 @@ export async function runFoundation(db:Database){
  const actor:Actor={userId:row.user_id,origin:'ai'},controller=new AbortController();let checking=false;
  const poll=setInterval(()=>{if(checking)return;checking=true;void db.query('SELECT status,lease_token,cancel_requested FROM foundation_runs WHERE id=$1',[row.id]).then(({rows})=>{const r=rows[0];if(!r||r.status!=='running'||r.lease_token!==token||r.cancel_requested)controller.abort();}).catch(()=>controller.abort()).finally(()=>{checking=false;});},250);
  try{
-  const program=programSchema.parse(row.program);await f.checkComponent(actor,row.workspace_id,row.component_context,row.revision_id,row.grant_id);await f.validateScope(actor,row.workspace_id,program.scope);const before=await f.stamps(actor,row.workspace_id);
+  await authorizeAppFunction(db,row.id);const program=programSchema.parse(row.program);await f.checkComponent(actor,row.workspace_id,row.component_context,row.revision_id,row.grant_id);await f.validateScope(actor,row.workspace_id,program.scope);const before=await f.stamps(actor,row.workspace_id);
   if(row.revision_id){const revision=await f.revision(actor,row.workspace_id,row.revision_id);await requireWorkflow(db,actor,row.workspace_id,revision.function_id,true);if(revision.runtime!==RUNTIME||revision.body.toolCatalog!==program.toolCatalog||revision.body.source!==program.source||J(scopeSchema.parse(revision.body.scope))!==J(program.scope))throw new Error('revision_mismatch');checkContract(revision.body.inputContract,program.input);}
   const changes:Operation[]=[];
   const gateway=new ToolGateway(new Set(program.scope.capabilities),async()=>{
-   if(controller.signal.aborted)throw new Error('cancelled');await f.checkComponent(actor,row.workspace_id,row.component_context,row.revision_id,row.grant_id);await f.validateScope(actor,row.workspace_id,program.scope);
+   if(controller.signal.aborted)throw new Error('cancelled');await authorizeAppFunction(db,row.id);await f.checkComponent(actor,row.workspace_id,row.component_context,row.revision_id,row.grant_id);await f.validateScope(actor,row.workspace_id,program.scope);
    if((await f.stamps(actor,row.workspace_id)).access!==before.access)throw new Error('access_changed');
    if(row.grant_id){const g=(await f.grants(actor,row.workspace_id)).find(g=>g.id===row.grant_id);if(!g||g.authorization_version!==1||new Date(g.expires_at).getTime()<=Date.now()||g.revoked_at||(!g.future&&g.used_at)||g.revision_id!==row.revision_id)throw new Error('grant_unavailable');}
   });

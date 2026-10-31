@@ -2,7 +2,7 @@ import {z} from 'zod';
 import type {Connection} from '../db/database.js';
 import {fail,id,type Actor,type Field} from '../shared/schema.js';
 
-export const accessRuleSchema=z.object({subject:z.union([id,z.literal('chatgpt')]),kind:z.enum(['project','tool','table','column','database','workflow','connection']),resourceId:id,field:z.string().max(64).optional(),read:z.enum(['inherit','allow','deny']).default('inherit'),write:z.enum(['inherit','allow','deny']).default('inherit'),bindings:z.array(z.object({toolId:id.optional(),typeId:id,fields:z.array(z.string()),writable:z.array(z.string()),projectId:id.nullable()})).optional()}).strict();
+export const accessRuleSchema=z.object({shareId:id.optional(),subject:z.union([id,z.literal('chatgpt')]),kind:z.enum(['project','tool','table','column','database','workflow','connection']),resourceId:id,field:z.string().max(64).optional(),read:z.enum(['inherit','allow','deny']).default('inherit'),write:z.enum(['inherit','allow','deny']).default('inherit'),bindings:z.array(z.object({toolId:id.optional(),typeId:id,fields:z.array(z.string()),writable:z.array(z.string()),projectId:id.nullable()})).optional()}).strict();
 export type AccessRule=z.infer<typeof accessRuleSchema>;
 export function rulesFor(p:any,a:Actor):AccessRule[]{return (p.permission_rules??[]).filter((r:AccessRule)=>(r.subject===a.userId||(a.origin==='ai'&&r.subject==='chatgpt'))&&(r.kind!=='connection'||a.origin==='ai'));}
 export function dataRules(p:any,a:Actor,t:string,key?:string){return rulesFor(p,a).filter(r=>r.kind==='database'||r.kind==='connection'||r.resourceId===t&&(r.kind==='table'||(r.kind==='column'&&r.field===key)));}
