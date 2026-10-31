@@ -1,0 +1,452 @@
+{
+  "id": "life.investor-crm",
+  "version": "1.0.0",
+  "authoringVersion": "1.1.1",
+  "authoringHash": "78b232d9a01713bdc80a7abe048b105126d895907444b8b063bb9e4bdfc754e7",
+  "canonicalVividHash": "e9314f6705fa06b5951e971e593ea4d9d8847a38abb8c0210d539de876ff2655",
+  "sourceHash": "c85712aaa64bf64e55f37288b9675823e76855869099efeba8035d5e98c3e03c",
+  "screens": [
+    {
+      "name": "Fundraising Overview",
+      "kind": "overview",
+      "role": "opportunities",
+      "description": "A clear view of your next round.",
+      "route": "fundraising-overview"
+    },
+    {
+      "name": "Investor Directory",
+      "kind": "table",
+      "role": "organizations",
+      "description": "Your funds, their focus, your next conversation.",
+      "route": "investor-directory"
+    },
+    {
+      "name": "Investment Pipeline",
+      "kind": "pipeline",
+      "role": "opportunities",
+      "description": "Turn qualified interest into meaningful progress.",
+      "route": "investment-pipeline"
+    },
+    {
+      "name": "Interaction Log",
+      "kind": "form",
+      "role": "activities",
+      "description": "Capture the conversation. Keep the next step clear.",
+      "route": "interaction-log"
+    },
+    {
+      "name": "Follow-ups",
+      "kind": "timeline",
+      "role": "tasks",
+      "description": "Stay close to the relationships that matter.",
+      "route": "follow-ups"
+    },
+    {
+      "name": "Investor Research",
+      "kind": "research",
+      "role": "signals",
+      "description": "Source-backed investor intelligence, prepared with ChatGPT.",
+      "route": "investor-research"
+    }
+  ],
+  "schemas": {
+    "organizations": {
+      "name": "Investor directory",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Organization",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "focus",
+          "label": "Focus",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Identified",
+            "Qualified",
+            "Meeting",
+            "Due diligence",
+            "Committed",
+            "Declined"
+          ]
+        },
+        {
+          "key": "country",
+          "label": "Country",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Next action",
+          "kind": "date"
+        },
+        {
+          "key": "website",
+          "label": "Website",
+          "kind": "url"
+        },
+        {
+          "key": "stage",
+          "label": "Development stage",
+          "kind": "text"
+        },
+        {
+          "key": "size",
+          "label": "Team size",
+          "kind": "number"
+        },
+        {
+          "key": "amount",
+          "label": "Indicative amount",
+          "kind": "money"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Source URL",
+          "kind": "url"
+        },
+        {
+          "key": "observed",
+          "label": "Verified on",
+          "kind": "date"
+        },
+        {
+          "key": "notes",
+          "label": "Notes",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "opportunities": {
+      "name": "Investment opportunities",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Opportunity",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "company",
+          "label": "Organization label",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Stage",
+          "kind": "select",
+          "options": [
+            "Identified",
+            "Qualified",
+            "Meeting",
+            "Due diligence",
+            "Committed",
+            "Declined"
+          ]
+        },
+        {
+          "key": "amount",
+          "label": "Indicative value",
+          "kind": "money"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Decision / next action",
+          "kind": "date"
+        },
+        {
+          "key": "organization_id",
+          "label": "Organization",
+          "kind": "relationship",
+          "targetRole": "organizations"
+        },
+        {
+          "key": "category",
+          "label": "Focus area",
+          "kind": "text"
+        },
+        {
+          "key": "priority",
+          "label": "Priority",
+          "kind": "text"
+        },
+        {
+          "key": "probability",
+          "label": "Assumed probability %",
+          "kind": "number"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Evidence URL",
+          "kind": "url"
+        },
+        {
+          "key": "observed",
+          "label": "Reviewed on",
+          "kind": "date"
+        },
+        {
+          "key": "notes",
+          "label": "Decision rationale",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "activities": {
+      "name": "Interactions",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Interaction",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "company",
+          "label": "Company / institution",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Outcome",
+          "kind": "select",
+          "options": [
+            "Identified",
+            "Qualified",
+            "Meeting",
+            "Due diligence",
+            "Committed",
+            "Declined"
+          ]
+        },
+        {
+          "key": "date",
+          "label": "Date",
+          "kind": "date"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Follow-up due",
+          "kind": "date"
+        },
+        {
+          "key": "contact",
+          "label": "Professional contact",
+          "kind": "text"
+        },
+        {
+          "key": "channel",
+          "label": "Channel",
+          "kind": "text"
+        },
+        {
+          "key": "category",
+          "label": "Purpose",
+          "kind": "text"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Reference URL",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Summary",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "tasks": {
+      "name": "Follow-ups",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Action / deliverable",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "project",
+          "label": "Project",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Planned",
+            "In progress",
+            "Review",
+            "Completed",
+            "Blocked"
+          ]
+        },
+        {
+          "key": "priority",
+          "label": "Priority",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Due date",
+          "kind": "date"
+        },
+        {
+          "key": "start",
+          "label": "Start",
+          "kind": "date"
+        },
+        {
+          "key": "baseline",
+          "label": "Baseline date",
+          "kind": "date"
+        },
+        {
+          "key": "actual",
+          "label": "Actual completion",
+          "kind": "date"
+        },
+        {
+          "key": "category",
+          "label": "Workstream",
+          "kind": "text"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Evidence URL",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Rationale / evidence",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "signals": {
+      "name": "Investor research",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Finding",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "company",
+          "label": "Subject",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Review status",
+          "kind": "select",
+          "options": [
+            "New",
+            "Review",
+            "Verified",
+            "Excluded"
+          ]
+        },
+        {
+          "key": "category",
+          "label": "Signal type",
+          "kind": "text"
+        },
+        {
+          "key": "date",
+          "label": "Published date",
+          "kind": "date"
+        },
+        {
+          "key": "owner",
+          "label": "Reviewer",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Source URL",
+          "kind": "url"
+        },
+        {
+          "key": "observed",
+          "label": "Checked on",
+          "kind": "date"
+        },
+        {
+          "key": "source_id",
+          "label": "Stable source ID",
+          "kind": "text"
+        },
+        {
+          "key": "relevance",
+          "label": "Relevance",
+          "kind": "text"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "coverage",
+          "label": "Coverage / limitations",
+          "kind": "text"
+        },
+        {
+          "key": "notes",
+          "label": "Fact and interpretation",
+          "kind": "longtext"
+        }
+      ]
+    }
+  }
+}

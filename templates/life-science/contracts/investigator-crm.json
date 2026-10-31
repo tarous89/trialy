@@ -1,0 +1,379 @@
+{
+  "id": "life.investigator-crm",
+  "version": "1.0.0",
+  "authoringVersion": "1.1.1",
+  "authoringHash": "78b232d9a01713bdc80a7abe048b105126d895907444b8b063bb9e4bdfc754e7",
+  "canonicalVividHash": "e9314f6705fa06b5951e971e593ea4d9d8847a38abb8c0210d539de876ff2655",
+  "sourceHash": "85b3c0eb58fa0b6b21031913486f1751a80c94d9f32cdae513576bcc117e35ec",
+  "screens": [
+    {
+      "name": "Investigator Overview",
+      "kind": "overview",
+      "role": "contacts",
+      "description": "Your investigator relationships, in context.",
+      "route": "investigator-overview"
+    },
+    {
+      "name": "Investigator Directory",
+      "kind": "table",
+      "role": "contacts",
+      "description": "Professional expertise and the latest verified source.",
+      "route": "investigator-directory"
+    },
+    {
+      "name": "Institution Network",
+      "kind": "table",
+      "role": "organizations",
+      "description": "Keep people and institutions connected.",
+      "route": "institution-network"
+    },
+    {
+      "name": "Engagement History",
+      "kind": "timeline",
+      "role": "activities",
+      "description": "A shared memory of your professional interactions.",
+      "route": "engagement-history"
+    },
+    {
+      "name": "Interaction Entry",
+      "kind": "form",
+      "role": "activities",
+      "description": "Record the next conversation and its follow-up.",
+      "route": "interaction-entry"
+    },
+    {
+      "name": "Investigator Research",
+      "kind": "research",
+      "role": "signals",
+      "description": "Public credentials and research experience, with evidence.",
+      "route": "investigator-research"
+    }
+  ],
+  "schemas": {
+    "contacts": {
+      "name": "Investigator directory",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Full name",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "specialty",
+          "label": "Specialty",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Identified",
+            "Contacted",
+            "Questionnaire",
+            "Assessed",
+            "Selected",
+            "Declined"
+          ]
+        },
+        {
+          "key": "country",
+          "label": "Country",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Follow-up due",
+          "kind": "date"
+        },
+        {
+          "key": "role",
+          "label": "Professional role",
+          "kind": "text"
+        },
+        {
+          "key": "email",
+          "label": "Work email",
+          "kind": "email"
+        },
+        {
+          "key": "channel",
+          "label": "Channel",
+          "kind": "text"
+        },
+        {
+          "key": "organization_id",
+          "label": "Organization",
+          "kind": "relationship",
+          "targetRole": "organizations"
+        },
+        {
+          "key": "affiliation",
+          "label": "Affiliation label",
+          "kind": "text"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Public source",
+          "kind": "url"
+        },
+        {
+          "key": "observed",
+          "label": "Verified on",
+          "kind": "date"
+        },
+        {
+          "key": "notes",
+          "label": "Private notes",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "organizations": {
+      "name": "Institutions",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Organization",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "focus",
+          "label": "Focus",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Identified",
+            "Contacted",
+            "Questionnaire",
+            "Assessed",
+            "Selected",
+            "Declined"
+          ]
+        },
+        {
+          "key": "country",
+          "label": "Country",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Next action",
+          "kind": "date"
+        },
+        {
+          "key": "website",
+          "label": "Website",
+          "kind": "url"
+        },
+        {
+          "key": "stage",
+          "label": "Development stage",
+          "kind": "text"
+        },
+        {
+          "key": "size",
+          "label": "Team size",
+          "kind": "number"
+        },
+        {
+          "key": "amount",
+          "label": "Indicative amount",
+          "kind": "money"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Source URL",
+          "kind": "url"
+        },
+        {
+          "key": "observed",
+          "label": "Verified on",
+          "kind": "date"
+        },
+        {
+          "key": "notes",
+          "label": "Notes",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "activities": {
+      "name": "Engagement history",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Interaction",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "company",
+          "label": "Company / institution",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Outcome",
+          "kind": "select",
+          "options": [
+            "Identified",
+            "Contacted",
+            "Questionnaire",
+            "Assessed",
+            "Selected",
+            "Declined"
+          ]
+        },
+        {
+          "key": "date",
+          "label": "Date",
+          "kind": "date"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Follow-up due",
+          "kind": "date"
+        },
+        {
+          "key": "contact",
+          "label": "Professional contact",
+          "kind": "text"
+        },
+        {
+          "key": "channel",
+          "label": "Channel",
+          "kind": "text"
+        },
+        {
+          "key": "category",
+          "label": "Purpose",
+          "kind": "text"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Reference URL",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Summary",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "signals": {
+      "name": "Public investigator research",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Finding",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "company",
+          "label": "Subject",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Review status",
+          "kind": "select",
+          "options": [
+            "New",
+            "Review",
+            "Verified",
+            "Excluded"
+          ]
+        },
+        {
+          "key": "category",
+          "label": "Signal type",
+          "kind": "text"
+        },
+        {
+          "key": "date",
+          "label": "Published date",
+          "kind": "date"
+        },
+        {
+          "key": "owner",
+          "label": "Reviewer",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Source URL",
+          "kind": "url"
+        },
+        {
+          "key": "observed",
+          "label": "Checked on",
+          "kind": "date"
+        },
+        {
+          "key": "source_id",
+          "label": "Stable source ID",
+          "kind": "text"
+        },
+        {
+          "key": "relevance",
+          "label": "Relevance",
+          "kind": "text"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "coverage",
+          "label": "Coverage / limitations",
+          "kind": "text"
+        },
+        {
+          "key": "notes",
+          "label": "Fact and interpretation",
+          "kind": "longtext"
+        }
+      ]
+    }
+  }
+}

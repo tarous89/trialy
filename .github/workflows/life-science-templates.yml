@@ -1,0 +1,51 @@
+name: Life science template checks
+on:
+  pull_request:
+    paths:
+      - 'templates/life-science/**'
+      - 'templates/apps/life.*'
+      - 'templates/standalone/**'
+      - 'templates/TEMPLATE_AUTHORING.md'
+      - 'scripts/build-life-science-templates.mjs'
+      - 'tests/life-science-*'
+      - '.github/workflows/life-science-templates.yml'
+permissions:
+  contents: read
+jobs:
+  interfaces:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        range: [{start: 0, end: 8}, {start: 8, end: 16}, {start: 16, end: 23}]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Generated artifacts must reproduce exactly
+        run: |
+          node scripts/build-life-science-templates.mjs
+          git diff --exit-code -- templates/apps templates/standalone templates/life-science/contracts templates/life-science/BUILD_MANIFEST.json
+      - run: npx playwright install --with-deps chromium --only-shell
+      - name: Official authoring design checks
+        run: node --import tsx tests/life-science-design.check.mjs
+        env:
+          QA_START: '${{ matrix.range.start }}'
+          QA_END: '${{ matrix.range.end }}'
+      - name: Trusted frame navigation, retained drafts and reviewed write proposals
+        run: node --import tsx tests/life-science-frame.check.mjs
+        env:
+          QA_START: '${{ matrix.range.start }}'
+          QA_END: '${{ matrix.range.end }}'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: life-science-qa-${{ matrix.range.start }}
+          path: |
+            /tmp/life-science-design-qa.json
+            /tmp/life-science-frame-qa/result.json
+          retention-days: 7

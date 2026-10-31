@@ -1,0 +1,371 @@
+{
+  "id": "life.cro-selection",
+  "version": "1.0.0",
+  "authoringVersion": "1.1.1",
+  "authoringHash": "78b232d9a01713bdc80a7abe048b105126d895907444b8b063bb9e4bdfc754e7",
+  "canonicalVividHash": "e9314f6705fa06b5951e971e593ea4d9d8847a38abb8c0210d539de876ff2655",
+  "sourceHash": "84a077a9111f44c9eade7a84739c353d4e22e84148b03a819ff2d773771ea3ab",
+  "screens": [
+    {
+      "name": "Selection Overview",
+      "kind": "overview",
+      "role": "assessments",
+      "description": "Your sourcing decision, grounded in evidence.",
+      "route": "selection-overview"
+    },
+    {
+      "name": "CRO Directory",
+      "kind": "table",
+      "role": "organizations",
+      "description": "Capabilities and relationships worth knowing.",
+      "route": "cro-directory"
+    },
+    {
+      "name": "RFP Requirements",
+      "kind": "form",
+      "role": "requirements",
+      "description": "A good comparison begins with a clear question.",
+      "route": "rfp-requirements"
+    },
+    {
+      "name": "Proposal Comparison",
+      "kind": "comparison",
+      "role": "assessments",
+      "description": "Compare scope, assumptions and delivery side by side.",
+      "route": "proposal-comparison"
+    },
+    {
+      "name": "Evaluation Scorecard",
+      "kind": "comparison",
+      "role": "assessments",
+      "description": "Transparent scores. Human decisions.",
+      "route": "evaluation-scorecard"
+    },
+    {
+      "name": "Selection Decision",
+      "kind": "table",
+      "role": "tasks",
+      "description": "Document the rationale and the next steps.",
+      "route": "selection-decision"
+    }
+  ],
+  "schemas": {
+    "organizations": {
+      "name": "CRO directory",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Organization",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "focus",
+          "label": "Focus",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Not assessed",
+            "In progress",
+            "Review",
+            "Approved",
+            "Rework"
+          ]
+        },
+        {
+          "key": "country",
+          "label": "Country",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Next action",
+          "kind": "date"
+        },
+        {
+          "key": "website",
+          "label": "Website",
+          "kind": "url"
+        },
+        {
+          "key": "stage",
+          "label": "Development stage",
+          "kind": "text"
+        },
+        {
+          "key": "size",
+          "label": "Team size",
+          "kind": "number"
+        },
+        {
+          "key": "amount",
+          "label": "Indicative amount",
+          "kind": "money"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Source URL",
+          "kind": "url"
+        },
+        {
+          "key": "observed",
+          "label": "Verified on",
+          "kind": "date"
+        },
+        {
+          "key": "notes",
+          "label": "Notes",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "requirements": {
+      "name": "RFP requirements",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Requirement",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "category",
+          "label": "Section",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Not assessed",
+            "In progress",
+            "Review",
+            "Approved",
+            "Rework"
+          ]
+        },
+        {
+          "key": "mandatory",
+          "label": "Required",
+          "kind": "boolean"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Due date",
+          "kind": "date"
+        },
+        {
+          "key": "weight",
+          "label": "Weight",
+          "kind": "number"
+        },
+        {
+          "key": "answer",
+          "label": "Response / assessment",
+          "kind": "longtext"
+        },
+        {
+          "key": "reviewer",
+          "label": "Reviewer",
+          "kind": "text"
+        },
+        {
+          "key": "version",
+          "label": "Requirement version",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Requirement source",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Rationale",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "assessments": {
+      "name": "Proposal evaluations",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Candidate",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "category",
+          "label": "Service / area",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Assessment",
+          "kind": "select",
+          "options": [
+            "Not assessed",
+            "In progress",
+            "Review",
+            "Approved",
+            "Rework"
+          ]
+        },
+        {
+          "key": "owner",
+          "label": "Assessor",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Review due",
+          "kind": "date"
+        },
+        {
+          "key": "score_quality",
+          "label": "Quality / evidence (1-5)",
+          "kind": "number"
+        },
+        {
+          "key": "score_fit",
+          "label": "Strategic fit (1-5)",
+          "kind": "number"
+        },
+        {
+          "key": "score_delivery",
+          "label": "Delivery / feasibility (1-5)",
+          "kind": "number"
+        },
+        {
+          "key": "amount",
+          "label": "Cost estimate",
+          "kind": "money"
+        },
+        {
+          "key": "mandatory",
+          "label": "Mandatory items met",
+          "kind": "boolean"
+        },
+        {
+          "key": "next_step",
+          "label": "Clarification",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Evidence URL",
+          "kind": "url"
+        },
+        {
+          "key": "observed",
+          "label": "Review date",
+          "kind": "date"
+        },
+        {
+          "key": "notes",
+          "label": "Assessment rationale",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "tasks": {
+      "name": "Selection decisions",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Action / deliverable",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "project",
+          "label": "Project",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Planned",
+            "In progress",
+            "Review",
+            "Completed",
+            "Blocked"
+          ]
+        },
+        {
+          "key": "priority",
+          "label": "Priority",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Due date",
+          "kind": "date"
+        },
+        {
+          "key": "start",
+          "label": "Start",
+          "kind": "date"
+        },
+        {
+          "key": "baseline",
+          "label": "Baseline date",
+          "kind": "date"
+        },
+        {
+          "key": "actual",
+          "label": "Actual completion",
+          "kind": "date"
+        },
+        {
+          "key": "category",
+          "label": "Workstream",
+          "kind": "text"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Evidence URL",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Rationale / evidence",
+          "kind": "longtext"
+        }
+      ]
+    }
+  }
+}

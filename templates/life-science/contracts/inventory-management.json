@@ -1,0 +1,447 @@
+{
+  "id": "life.inventory-management",
+  "version": "1.0.0",
+  "authoringVersion": "1.1.1",
+  "authoringHash": "78b232d9a01713bdc80a7abe048b105126d895907444b8b063bb9e4bdfc754e7",
+  "canonicalVividHash": "e9314f6705fa06b5951e971e593ea4d9d8847a38abb8c0210d539de876ff2655",
+  "sourceHash": "43b0b420fd7dd5adab7d01784ef4a42e3a6c47ed54f53f6ab8c6ec79d4a3a1cd",
+  "screens": [
+    {
+      "name": "Inventory Overview",
+      "kind": "overview",
+      "role": "inventory",
+      "description": "Keep research moving with a clear view of supplies.",
+      "route": "inventory-overview"
+    },
+    {
+      "name": "Inventory Directory",
+      "kind": "table",
+      "role": "inventory",
+      "description": "Reagents and consumables, by item and lot.",
+      "route": "inventory-directory"
+    },
+    {
+      "name": "Stock Movements",
+      "kind": "form",
+      "role": "movements",
+      "description": "An auditable record of receipts, use and transfers.",
+      "route": "stock-movements"
+    },
+    {
+      "name": "Storage Locations",
+      "kind": "table",
+      "role": "organizations",
+      "description": "Find stock without a scavenger hunt.",
+      "route": "storage-locations"
+    },
+    {
+      "name": "Purchase Requests",
+      "kind": "table",
+      "role": "tasks",
+      "description": "Connect replenishment needs to an accountable decision.",
+      "route": "purchase-requests"
+    },
+    {
+      "name": "Inventory Forecast",
+      "kind": "inventory",
+      "role": "inventory",
+      "description": "See thresholds and stock exposure clearly.",
+      "route": "inventory-forecast"
+    }
+  ],
+  "schemas": {
+    "inventory": {
+      "name": "Laboratory inventory",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Item",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "category",
+          "label": "Category",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Stock status",
+          "kind": "select",
+          "options": [
+            "Available",
+            "Low stock",
+            "Requested",
+            "Ordered",
+            "Received",
+            "Expired"
+          ]
+        },
+        {
+          "key": "quantity",
+          "label": "Recorded on hand",
+          "kind": "number"
+        },
+        {
+          "key": "unit",
+          "label": "Unit",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Custodian",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Expiry",
+          "kind": "date"
+        },
+        {
+          "key": "threshold",
+          "label": "Reorder threshold",
+          "kind": "number"
+        },
+        {
+          "key": "location",
+          "label": "Storage location",
+          "kind": "text"
+        },
+        {
+          "key": "lot",
+          "label": "Nonhuman reagent lot",
+          "kind": "text"
+        },
+        {
+          "key": "catalog",
+          "label": "Catalog reference",
+          "kind": "text"
+        },
+        {
+          "key": "lead_days",
+          "label": "Lead days assumption",
+          "kind": "number"
+        },
+        {
+          "key": "source",
+          "label": "Reference",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Stock basis / caveat",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "movements": {
+      "name": "Stock movements",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Movement",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "item",
+          "label": "Item label",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Draft",
+            "Reviewed",
+            "Recorded"
+          ]
+        },
+        {
+          "key": "category",
+          "label": "Movement type",
+          "kind": "text"
+        },
+        {
+          "key": "quantity",
+          "label": "Quantity",
+          "kind": "number"
+        },
+        {
+          "key": "owner",
+          "label": "Actor",
+          "kind": "text"
+        },
+        {
+          "key": "date",
+          "label": "Date",
+          "kind": "date"
+        },
+        {
+          "key": "unit",
+          "label": "Unit",
+          "kind": "text"
+        },
+        {
+          "key": "from_location",
+          "label": "From",
+          "kind": "text"
+        },
+        {
+          "key": "to_location",
+          "label": "To",
+          "kind": "text"
+        },
+        {
+          "key": "lot",
+          "label": "Nonhuman lot",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Receipt reference",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Movement reason",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "organizations": {
+      "name": "Storage locations",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Organization",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "focus",
+          "label": "Focus",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Available",
+            "Low stock",
+            "Requested",
+            "Ordered",
+            "Received",
+            "Expired"
+          ]
+        },
+        {
+          "key": "country",
+          "label": "Country",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Next action",
+          "kind": "date"
+        },
+        {
+          "key": "website",
+          "label": "Website",
+          "kind": "url"
+        },
+        {
+          "key": "stage",
+          "label": "Development stage",
+          "kind": "text"
+        },
+        {
+          "key": "size",
+          "label": "Team size",
+          "kind": "number"
+        },
+        {
+          "key": "amount",
+          "label": "Indicative amount",
+          "kind": "money"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Source URL",
+          "kind": "url"
+        },
+        {
+          "key": "observed",
+          "label": "Verified on",
+          "kind": "date"
+        },
+        {
+          "key": "notes",
+          "label": "Notes",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "tasks": {
+      "name": "Purchase requests",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Action / deliverable",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "project",
+          "label": "Project",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Planned",
+            "In progress",
+            "Review",
+            "Completed",
+            "Blocked"
+          ]
+        },
+        {
+          "key": "priority",
+          "label": "Priority",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Due date",
+          "kind": "date"
+        },
+        {
+          "key": "start",
+          "label": "Start",
+          "kind": "date"
+        },
+        {
+          "key": "baseline",
+          "label": "Baseline date",
+          "kind": "date"
+        },
+        {
+          "key": "actual",
+          "label": "Actual completion",
+          "kind": "date"
+        },
+        {
+          "key": "category",
+          "label": "Workstream",
+          "kind": "text"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Evidence URL",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Rationale / evidence",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "reports": {
+      "name": "Inventory reviews",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Report",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "project",
+          "label": "Scope",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Draft",
+            "Review",
+            "Approved"
+          ]
+        },
+        {
+          "key": "date",
+          "label": "Report date",
+          "kind": "date"
+        },
+        {
+          "key": "owner",
+          "label": "Reviewer",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Next review",
+          "kind": "date"
+        },
+        {
+          "key": "period",
+          "label": "Reporting period",
+          "kind": "text"
+        },
+        {
+          "key": "cutoff",
+          "label": "Data cutoff",
+          "kind": "date"
+        },
+        {
+          "key": "version",
+          "label": "Report version",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Source reference",
+          "kind": "url"
+        },
+        {
+          "key": "sources",
+          "label": "Evidence references",
+          "kind": "longtext"
+        },
+        {
+          "key": "notes",
+          "label": "Reviewed report text",
+          "kind": "longtext"
+        }
+      ]
+    }
+  }
+}

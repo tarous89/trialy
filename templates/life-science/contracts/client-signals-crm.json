@@ -1,0 +1,471 @@
+{
+  "id": "life.client-signals-crm",
+  "version": "1.0.0",
+  "authoringVersion": "1.1.1",
+  "authoringHash": "78b232d9a01713bdc80a7abe048b105126d895907444b8b063bb9e4bdfc754e7",
+  "canonicalVividHash": "e9314f6705fa06b5951e971e593ea4d9d8847a38abb8c0210d539de876ff2655",
+  "sourceHash": "ffafe7a596104a15de7ffe88bdfb051c35203df23c245f4a84945b01dc8bdfe6",
+  "screens": [
+    {
+      "name": "Sales Overview",
+      "kind": "overview",
+      "role": "opportunities",
+      "description": "The pipeline and the evidence behind it.",
+      "route": "sales-overview"
+    },
+    {
+      "name": "Company Directory",
+      "kind": "table",
+      "role": "organizations",
+      "description": "Know your clients and prospective partners.",
+      "route": "company-directory"
+    },
+    {
+      "name": "Contacts",
+      "kind": "table",
+      "role": "contacts",
+      "description": "Professional relationships and next actions.",
+      "route": "contacts"
+    },
+    {
+      "name": "Opportunity Pipeline",
+      "kind": "pipeline",
+      "role": "opportunities",
+      "description": "From a qualified signal to an accountable opportunity.",
+      "route": "opportunity-pipeline"
+    },
+    {
+      "name": "Client Signals",
+      "kind": "research",
+      "role": "signals",
+      "description": "Separate public facts from your commercial interpretation.",
+      "route": "client-signals"
+    },
+    {
+      "name": "Signal Monitoring",
+      "kind": "monitor",
+      "role": "signals",
+      "description": "Let ChatGPT do the research. Keep the records here.",
+      "route": "signal-monitoring"
+    },
+    {
+      "name": "Account Briefings",
+      "kind": "report",
+      "role": "reports",
+      "description": "A useful company narrative, linked to its sources.",
+      "route": "account-briefings"
+    }
+  ],
+  "schemas": {
+    "organizations": {
+      "name": "Biotech companies",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Organization",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "focus",
+          "label": "Focus",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "New",
+            "Qualifying",
+            "Drafting",
+            "Review",
+            "Submitted",
+            "Won",
+            "Lost"
+          ]
+        },
+        {
+          "key": "country",
+          "label": "Country",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Next action",
+          "kind": "date"
+        },
+        {
+          "key": "website",
+          "label": "Website",
+          "kind": "url"
+        },
+        {
+          "key": "stage",
+          "label": "Development stage",
+          "kind": "text"
+        },
+        {
+          "key": "size",
+          "label": "Team size",
+          "kind": "number"
+        },
+        {
+          "key": "amount",
+          "label": "Indicative amount",
+          "kind": "money"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Source URL",
+          "kind": "url"
+        },
+        {
+          "key": "observed",
+          "label": "Verified on",
+          "kind": "date"
+        },
+        {
+          "key": "notes",
+          "label": "Notes",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "contacts": {
+      "name": "Professional contacts",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Full name",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "specialty",
+          "label": "Specialty",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "New",
+            "Qualifying",
+            "Drafting",
+            "Review",
+            "Submitted",
+            "Won",
+            "Lost"
+          ]
+        },
+        {
+          "key": "country",
+          "label": "Country",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Follow-up due",
+          "kind": "date"
+        },
+        {
+          "key": "role",
+          "label": "Professional role",
+          "kind": "text"
+        },
+        {
+          "key": "email",
+          "label": "Work email",
+          "kind": "email"
+        },
+        {
+          "key": "channel",
+          "label": "Channel",
+          "kind": "text"
+        },
+        {
+          "key": "organization_id",
+          "label": "Organization",
+          "kind": "relationship",
+          "targetRole": "organizations"
+        },
+        {
+          "key": "affiliation",
+          "label": "Affiliation label",
+          "kind": "text"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Public source",
+          "kind": "url"
+        },
+        {
+          "key": "observed",
+          "label": "Verified on",
+          "kind": "date"
+        },
+        {
+          "key": "notes",
+          "label": "Private notes",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "opportunities": {
+      "name": "CRO opportunities",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Opportunity",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "company",
+          "label": "Organization label",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Stage",
+          "kind": "select",
+          "options": [
+            "New",
+            "Qualifying",
+            "Drafting",
+            "Review",
+            "Submitted",
+            "Won",
+            "Lost"
+          ]
+        },
+        {
+          "key": "amount",
+          "label": "Indicative value",
+          "kind": "money"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Decision / next action",
+          "kind": "date"
+        },
+        {
+          "key": "organization_id",
+          "label": "Organization",
+          "kind": "relationship",
+          "targetRole": "organizations"
+        },
+        {
+          "key": "category",
+          "label": "Focus area",
+          "kind": "text"
+        },
+        {
+          "key": "priority",
+          "label": "Priority",
+          "kind": "text"
+        },
+        {
+          "key": "probability",
+          "label": "Assumed probability %",
+          "kind": "number"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Evidence URL",
+          "kind": "url"
+        },
+        {
+          "key": "observed",
+          "label": "Reviewed on",
+          "kind": "date"
+        },
+        {
+          "key": "notes",
+          "label": "Decision rationale",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "signals": {
+      "name": "Client intelligence signals",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Finding",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "company",
+          "label": "Subject",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Review status",
+          "kind": "select",
+          "options": [
+            "New",
+            "Review",
+            "Verified",
+            "Excluded"
+          ]
+        },
+        {
+          "key": "category",
+          "label": "Signal type",
+          "kind": "text"
+        },
+        {
+          "key": "date",
+          "label": "Published date",
+          "kind": "date"
+        },
+        {
+          "key": "owner",
+          "label": "Reviewer",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Source URL",
+          "kind": "url"
+        },
+        {
+          "key": "observed",
+          "label": "Checked on",
+          "kind": "date"
+        },
+        {
+          "key": "source_id",
+          "label": "Stable source ID",
+          "kind": "text"
+        },
+        {
+          "key": "relevance",
+          "label": "Relevance",
+          "kind": "text"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "coverage",
+          "label": "Coverage / limitations",
+          "kind": "text"
+        },
+        {
+          "key": "notes",
+          "label": "Fact and interpretation",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "reports": {
+      "name": "Account briefings",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Report",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "project",
+          "label": "Scope",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Draft",
+            "Review",
+            "Approved"
+          ]
+        },
+        {
+          "key": "date",
+          "label": "Report date",
+          "kind": "date"
+        },
+        {
+          "key": "owner",
+          "label": "Reviewer",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Next review",
+          "kind": "date"
+        },
+        {
+          "key": "period",
+          "label": "Reporting period",
+          "kind": "text"
+        },
+        {
+          "key": "cutoff",
+          "label": "Data cutoff",
+          "kind": "date"
+        },
+        {
+          "key": "version",
+          "label": "Report version",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Source reference",
+          "kind": "url"
+        },
+        {
+          "key": "sources",
+          "label": "Evidence references",
+          "kind": "longtext"
+        },
+        {
+          "key": "notes",
+          "label": "Reviewed report text",
+          "kind": "longtext"
+        }
+      ]
+    }
+  }
+}

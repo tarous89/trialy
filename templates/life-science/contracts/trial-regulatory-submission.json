@@ -1,0 +1,427 @@
+{
+  "id": "life.trial-regulatory-submission",
+  "version": "1.0.0",
+  "authoringVersion": "1.1.1",
+  "authoringHash": "78b232d9a01713bdc80a7abe048b105126d895907444b8b063bb9e4bdfc754e7",
+  "canonicalVividHash": "e9314f6705fa06b5951e971e593ea4d9d8847a38abb8c0210d539de876ff2655",
+  "sourceHash": "d60badaa4fb3aaee3bdfecfc3965e84d687756a1a06f147669efe897e6d539a5",
+  "screens": [
+    {
+      "name": "Submission Overview",
+      "kind": "overview",
+      "role": "projects",
+      "description": "Readiness you can trace to the underlying work.",
+      "route": "submission-overview"
+    },
+    {
+      "name": "Submission Tracker",
+      "kind": "table",
+      "role": "projects",
+      "description": "Study, jurisdiction and next milestone.",
+      "route": "submission-tracker"
+    },
+    {
+      "name": "Submission Checklist",
+      "kind": "table",
+      "role": "requirements",
+      "description": "Required items, accountable owners and current versions.",
+      "route": "submission-checklist"
+    },
+    {
+      "name": "Document Register",
+      "kind": "table",
+      "role": "documents",
+      "description": "Know which version was reviewed.",
+      "route": "document-register"
+    },
+    {
+      "name": "Authority Questions",
+      "kind": "form",
+      "role": "tasks",
+      "description": "Keep the response owner and deadline explicit.",
+      "route": "authority-questions"
+    },
+    {
+      "name": "Submission Readiness",
+      "kind": "report",
+      "role": "reports",
+      "description": "A documented readiness briefing, not a regulatory filing.",
+      "route": "submission-readiness"
+    }
+  ],
+  "schemas": {
+    "projects": {
+      "name": "Submission packages",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Project",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "category",
+          "label": "Workstream",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Not assessed",
+            "In progress",
+            "Review",
+            "Approved",
+            "Rework"
+          ]
+        },
+        {
+          "key": "priority",
+          "label": "Priority",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Next milestone",
+          "kind": "date"
+        },
+        {
+          "key": "start",
+          "label": "Start date",
+          "kind": "date"
+        },
+        {
+          "key": "baseline",
+          "label": "Baseline finish",
+          "kind": "date"
+        },
+        {
+          "key": "actual",
+          "label": "Actual finish",
+          "kind": "date"
+        },
+        {
+          "key": "amount",
+          "label": "Budget assumption",
+          "kind": "money"
+        },
+        {
+          "key": "next_step",
+          "label": "Next action",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Reference",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Objective / rationale",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "requirements": {
+      "name": "Submission checklist",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Requirement",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "category",
+          "label": "Section",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Not assessed",
+            "In progress",
+            "Review",
+            "Approved",
+            "Rework"
+          ]
+        },
+        {
+          "key": "mandatory",
+          "label": "Required",
+          "kind": "boolean"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Due date",
+          "kind": "date"
+        },
+        {
+          "key": "weight",
+          "label": "Weight",
+          "kind": "number"
+        },
+        {
+          "key": "answer",
+          "label": "Response / assessment",
+          "kind": "longtext"
+        },
+        {
+          "key": "reviewer",
+          "label": "Reviewer",
+          "kind": "text"
+        },
+        {
+          "key": "version",
+          "label": "Requirement version",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Requirement source",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Rationale",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "documents": {
+      "name": "Document register",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Document / response",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "category",
+          "label": "Category",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Review status",
+          "kind": "select",
+          "options": [
+            "Not assessed",
+            "In progress",
+            "Review",
+            "Approved",
+            "Rework"
+          ]
+        },
+        {
+          "key": "version",
+          "label": "Version",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Review due",
+          "kind": "date"
+        },
+        {
+          "key": "date",
+          "label": "Updated on",
+          "kind": "date"
+        },
+        {
+          "key": "reviewer",
+          "label": "Reviewer",
+          "kind": "text"
+        },
+        {
+          "key": "project",
+          "label": "Study / project",
+          "kind": "text"
+        },
+        {
+          "key": "mandatory",
+          "label": "Required",
+          "kind": "boolean"
+        },
+        {
+          "key": "source",
+          "label": "Source / location",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Content / review notes",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "tasks": {
+      "name": "Authority questions",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Action / deliverable",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "project",
+          "label": "Project",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Planned",
+            "In progress",
+            "Review",
+            "Completed",
+            "Blocked"
+          ]
+        },
+        {
+          "key": "priority",
+          "label": "Priority",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Due date",
+          "kind": "date"
+        },
+        {
+          "key": "start",
+          "label": "Start",
+          "kind": "date"
+        },
+        {
+          "key": "baseline",
+          "label": "Baseline date",
+          "kind": "date"
+        },
+        {
+          "key": "actual",
+          "label": "Actual completion",
+          "kind": "date"
+        },
+        {
+          "key": "category",
+          "label": "Workstream",
+          "kind": "text"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Evidence URL",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Rationale / evidence",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "reports": {
+      "name": "Readiness briefings",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Report",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "project",
+          "label": "Scope",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Draft",
+            "Review",
+            "Approved"
+          ]
+        },
+        {
+          "key": "date",
+          "label": "Report date",
+          "kind": "date"
+        },
+        {
+          "key": "owner",
+          "label": "Reviewer",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Next review",
+          "kind": "date"
+        },
+        {
+          "key": "period",
+          "label": "Reporting period",
+          "kind": "text"
+        },
+        {
+          "key": "cutoff",
+          "label": "Data cutoff",
+          "kind": "date"
+        },
+        {
+          "key": "version",
+          "label": "Report version",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Source reference",
+          "kind": "url"
+        },
+        {
+          "key": "sources",
+          "label": "Evidence references",
+          "kind": "longtext"
+        },
+        {
+          "key": "notes",
+          "label": "Reviewed report text",
+          "kind": "longtext"
+        }
+      ]
+    }
+  }
+}
