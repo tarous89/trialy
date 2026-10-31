@@ -10,6 +10,10 @@ This catalog organizes **examples of applications users could ask ChatGPT to cre
 
 A feature here is a **customer-facing use case** assembled from customer-defined data types, records, relationships, authorized documents, generated code, views and actions. Records can be shared across projects subject to permissions. Use the generic platform `project` concept; a clinical study is one possible project, not a mandatory platform entity.
 
+## New user-selected candidate app blueprints — 31 October 2026
+
+The more specific **[23-app template blueprint catalog](app-template-blueprints/README.md)** now scopes 6 biotech, 6 sponsor Clinical Operations, 6 CRO and 5 research-team applications. Each documents primary users, specific business workflows and records, 4–8 screens with four core capabilities each, modern Vivid-compatible styling, chart/icon treatments, ChatGPT research boundaries, and acceptance checks. **Literature Radar** and **Grant Pipeline** are the research names; Protocol Library is not a standalone candidate. These are **planning documents only**—no template packages or apps are installed. The earlier eleven functional themes below remain historical discovery input, not a constraint on custom apps.
+
 ## Current demo template plan — eleven functional starting points
 
 **The agreed showcase is one editable demonstration per function**, each with a short name: Translational Research, CMC, Nonclinical, Regulatory, Clinical, Medical Affairs, Vendors & CROs, Quality & Compliance, Finance, Business Development, and Board & Funding.
