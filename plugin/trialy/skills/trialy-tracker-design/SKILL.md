@@ -27,7 +27,7 @@ Use consistent action spacing, accessible icon buttons with labels/tooltips, bri
 
 ## Runtime boundaries
 
-Custom source runs in bounded QuickJS and returns HTML/CSS/state; it does not run arbitrary browser JavaScript or fetch external services. Use supported events and the trusted data/control bridge. Simple apps can use `input.route`, safe internal/cross-app links and declared generic HTTPS connector operations; read the integration reference and workspace skill for their contracts. Keep code isolation, data validation, field permissions, reviewed writes and logs intact. Explain an actual runtime limitation precisely and use the nearest supported implementation; do not invent a template restriction.
+Custom source runs in bounded QuickJS and returns HTML/CSS/state; it does not run arbitrary browser JavaScript or fetch external services. Use supported events and the trusted data/control bridge. Simple apps can use `input.route`, safe internal/cross-app links and declared generic HTTPS connector operations; read the integration reference and workspace skill for their contracts. For email notifications, public/team sharing and durable API/LLM jobs, call `read_app_services`. Keep code isolation, data validation, field permissions, reviewed writes and logs intact. Explain an actual runtime limitation precisely and use the nearest supported implementation; do not invent a template restriction.
 
 For shared-data discovery read [DISCOVERY_AND_STRUCTURE.md](references/DISCOVERY_AND_STRUCTURE.md) and [DATA_AND_LIFECYCLE.md](references/DATA_AND_LIFECYCLE.md). Historic visual advice in other references is default guidance, subordinate to explicit user choices.
 

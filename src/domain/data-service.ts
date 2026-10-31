@@ -97,7 +97,7 @@ export class DataService {
   }else if(field.kind==='table')options=(await this.types(a,w)).map(v=>({id:v.id,label:v.name}));
   else if(field.kind==='field'&&field.targetTypeId){const target=await typeAccess(this.db,a,w,field.targetTypeId);options=visibleFields(target.type.fields,target.policy,a).map(f=>({id:f.key,label:f.name}));}
   else if(field.kind==='document')options=(await this.documents(a,w)).map(d=>({id:d.id,label:d.filename+' · v'+d.version}));
-  else if(field.kind==='person')options=(await this.db.query('SELECT u.id,u.name FROM users u JOIN memberships m ON m.user_id=u.id WHERE m.tenant_id=$1 ORDER BY u.name,u.id',[policy.tenant_id])).rows.map(u=>({id:u.id,label:u.name}));
+  else if(field.kind==='person')options=(await this.db.query('SELECT u.id,u.name FROM users u JOIN memberships m ON m.user_id=u.id WHERE m.tenant_id=$1 AND u.subject NOT LIKE \'public-app|%\' ORDER BY u.name,u.id',[policy.tenant_id])).rows.map(u=>({id:u.id,label:u.name}));
   else fail(400,'invalid_reference','Choose a reference field');
   if(field.kind!=='relationship'){options=options.filter(o=>o.label.toLowerCase().includes(q.toLowerCase()));hasMore=offset+25<options.length;options=options.slice(offset,offset+25);}
   return {options,hasMore,offset};

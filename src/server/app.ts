@@ -1,3 +1,4 @@
+import {addPublicAppServices} from './app-services.js';
 import {bundledAppFont} from '../workspace/design-quality.js';
 import {appPublicUrl,oauthPublicUrl} from '../shared/public-url.js';
 import {withRequestMetrics} from '../db/metrics.js';
@@ -28,11 +29,12 @@ export function baseApp() {
   res.removeHeader('X-Frame-Options');res.set('Content-Security-Policy',`sandbox allow-scripts${process.env.SIMPLE_APPS_ENABLED==='true'?' allow-popups allow-popups-to-escape-sandbox':''}; default-src 'none'; script-src 'sha256-${hash}'; style-src 'unsafe-inline'; img-src data:; font-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'`);
   res.set('Cache-Control','public, max-age=0, must-revalidate');res.set('Cross-Origin-Resource-Policy','cross-origin');res.type('html').send(await frontendFrameDocument(bundledAppFont));
  });
- app.use(express.json({limit:'36mb'}));app.use(rateLimit({windowMs:60000,limit:180,standardHeaders:'draft-8',legacyHeaders:false}));
+ app.use(express.json({verify:(req,_res,buffer)=>{if(req.url==='/notifications/webhook')(req as any).rawBody=Buffer.from(buffer);},limit:'36mb'}));app.use(rateLimit({windowMs:60000,limit:180,standardHeaders:'draft-8',legacyHeaders:false}));
  app.use((req,res,next)=>{const requestId=randomUUID(),started=performance.now(),metrics={queryCount:0,databaseMs:0,poolWaitMs:0,metadataHits:0};res.set('X-Request-ID',requestId);res.on('finish',()=>{if(process.env.NODE_ENV!=='test')console.log(JSON.stringify({requestId,method:req.method,path:req.path,durationMs:Math.round(performance.now()-started),queryCount:metrics.queryCount,databaseMs:Math.round(metrics.databaseMs),poolWaitMs:Math.round(metrics.poolWaitMs),metadataHits:metrics.metadataHits,status:res.statusCode,time:new Date().toISOString()}));});withRequestMetrics(metrics,next);});
  app.get('/health',(_req,res)=>res.json({status:'ok',service:'trialy'}));return app;
 }
 export function addApi(app:express.Express,s:Service,human:RequestHandler) {
+ addPublicAppServices(app,s.db,human);
  addExternal(app,s,human);
  addInvitations(app,s,human);
  app.get('/api/config',(_req,res)=>res.json({simpleApps:process.env.SIMPLE_APPS_ENABLED==='true',brand:process.env.BRAND_NAME??'TrialAgents',demo:process.env.LOCAL_DEMO==='true'&&process.env.NODE_ENV!=='production'}));

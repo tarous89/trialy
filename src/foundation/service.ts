@@ -1,3 +1,4 @@
+import {authorizeAppFunction} from '../app-services/service.js';
 import {requireWorkflow} from '../domain/effective-access.js';
 import {WorkspaceFoundation} from '../workspace/service.js';
 import {requireCurrentAction,requireHuman} from '../domain/write-authorization.js';
@@ -127,6 +128,7 @@ export class Foundation {
   const receipt=await this.receipt(tx,a,w,runId,digest);if(receipt)return receipt;
   const r=(await tx.query("SELECT * FROM foundation_runs WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND status='succeeded' AND NOT cancel_requested AND expires_at>now() FOR UPDATE",[runId,w,a.userId])).rows[0];
   if(!r||!r.proposal||r.proposal_digest!==digest)fail(409,'proposal_unavailable','Proposal expired or unavailable');
+  await authorizeAppFunction(this.adapter(tx),runId,true);
   await new Foundation(this.adapter(tx)).checkComponent(a,w,r.component_context,r.revision_id,standingGrantId??r.grant_id);
   const stamp=await this.stamps(a,w,tx);if(stamp.data!==r.data_stamp||stamp.access!==r.access_stamp)fail(409,'stale_proposal','Data or permissions changed. Run again.');
   const changes=z.array(foundationOperationSchema).min(1).max(200).parse(r.proposal);

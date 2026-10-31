@@ -1,3 +1,5 @@
+import {AppActions} from '../app-services/service.js';
+import {serviceJob} from '../app-services/jobs.js';
 import {appDesignCss,DESIGN_VERSION} from '../shared/app-design.js';
 import {inspectAppDesign,type DesignFrame} from './design-quality.js';
 import {preparationFingerprint} from './app-preparation.js';
@@ -29,7 +31,7 @@ import {audit,revision,checksum} from '../domain/evidence.js';
 import {fail,type Actor} from '../shared/schema.js';
 import {maintenanceSchema,maintenanceBatch,workspaceOperation,type WorkspaceOperation} from './schema.js';
 const J=JSON.stringify;
-const activeFrontends=new Set<string>();
+const activeFrontends=new Set<string>(),activeDraftFrontends=new Set<string>();
 const adapter=(tx:Connection):Database=>({query:tx.query.bind(tx),transaction:fn=>fn(tx),close:async()=>{}});
 export class WorkspaceFoundation {
  constructor(public db:Database,private frontendSession=false){}
@@ -52,7 +54,7 @@ export class WorkspaceFoundation {
   const chain=await this.nodeAccess(tx,a,w,nodeId);let users=own.allowed_users??null,ai=own.ai_enabled??true;
   for(const n of chain){users=this.intersect(users,n.allowed_users);ai=ai&&n.ai_enabled;}return {users,ai};
  }
- async sharingMembers(a:Actor,w:string){const p=await this.policy(this.db,a,w);if(p.role!=='owner')fail(403,'owner_required','Only the workspace owner may change sharing');return (await this.db.query('SELECT u.id,u.name FROM users u JOIN memberships m ON m.user_id=u.id WHERE m.tenant_id=$1 ORDER BY u.name,u.id',[p.tenant_id])).rows;}
+ async sharingMembers(a:Actor,w:string){const p=await this.policy(this.db,a,w);if(p.role!=='owner')fail(403,'owner_required','Only the workspace owner may change sharing');return (await this.db.query('SELECT u.id,u.name FROM users u JOIN memberships m ON m.user_id=u.id WHERE m.tenant_id=$1 AND u.subject NOT LIKE \'public-app|%\' ORDER BY u.name,u.id',[p.tenant_id])).rows;}
  async nodes(a:Actor,w:string){const p=await access(this.db,a,w);let allowed:Set<string>|undefined;if(p.allowed_types!==null||p.hidden_fields.length){allowed=new Set();for(const c of await this.components(a,w)){for(const n of await this.nodeAccess(this.db,a,w,c.project_id))allowed.add(n.id);}}const nodes=[];for(const n of (await this.db.query('SELECT * FROM workspace_nodes WHERE workspace_id=$1 ORDER BY name,id',[w])).rows){if(allowed&&!allowed.has(n.id))continue;try{const chain=await this.nodeAccess(this.db,a,w,n.id);nodes.push({...n,effective_archived:chain.some(n=>n.archived)});}catch{}}return {workspaceId:w,workspaceFoundation:true,nodes};}
  async component(tx:Connection,a:Actor,w:string,id:string){
   a={...a,accessToolId:id};
@@ -139,10 +141,11 @@ export class WorkspaceFoundation {
    const proposal=await this.preview(a,w,{kind:'apply_component_records',componentId:request.componentId,expectedVersion:version,changes});
    return {boundEdit:true,proposal,state:request.state,html:'',css:''};
   }
-  const knownTracker=standardTracker(content.source),key=w+':'+a.userId;if(!knownTracker&&(activeFrontends.size>=2||activeFrontends.has(key)))fail(429,'runtime_busy','Another interface is running; try again shortly');if(!knownTracker)activeFrontends.add(key);
+  // Draft evaluation has its own bounded capacity and cannot occupy a published app slot.
+  const knownTracker=standardTracker(content.source),pool=request.componentId?activeFrontends:activeDraftFrontends,key=w+':'+a.userId+':'+(request.componentId??request.previewId);if(!knownTracker&&(pool.size>=(request.componentId?2:1)||pool.has(key)))fail(429,'runtime_busy','This interface is busy; try again shortly');if(!knownTracker)pool.add(key);
   const changes:any[]=[],invocations:any[]=[],connectorReviews:any[]=[];let layoutProposal:any=null;
   try{
-   const currentPolicy=await access(this.db,a,w);
+   const currentPolicy=await access(this.db,a,w),accessStamp=request.componentId?await this.componentAccessStamp(a,w,content):undefined;
    const tracker=knownTracker,pages:any[]=[];
    const tableCache=new Map<string,Promise<any>>(),pageRecords=new Map<string,any>(),resolvedPages=new Map<string,any>();
    const tableAccess=(typeId:string)=>{if(!tableCache.has(typeId))tableCache.set(typeId,typeAccess(this.db,a,w,typeId));return tableCache.get(typeId)!;};
@@ -150,10 +153,19 @@ export class WorkspaceFoundation {
    const pageReader=new DerivedReader(this.db,a,w,Object.keys(bound),bound);
    const writable=!!request.componentId&&!currentPolicy.archived&&currentPolicy.role!=='inspector'&&(await toolPolicy(this.db,a,currentPolicy,request.componentId)).grant.write;
    const handler=async(name:string,value:unknown)=>{
+    if(['actions.list','actions.run','actions.status','connectors.status'].includes(name)&&process.env.SIMPLE_APPS_ENABLED==='true'){
+     if(!request.componentId)fail(403,'preview_read_only','Open a saved app');
+     const actions=new AppActions(this.db);
+     if(name==='actions.list'){const v=z.object({offset:z.number().int().min(0).default(0)}).strict().parse(value),page=await actions.list(a,w,request.componentId,v.offset);return {actions:page.rows.map(r=>({id:r.id,name:r.config.name,paused:r.paused,recordTypeId:r.config.recordTypeId??null})),nextOffset:page.nextOffset};}
+     if(name==='connectors.status'){const v=z.object({jobId:id}).strict().parse(value);return serviceJob(this.db,a,w,v.jobId,request.componentId);}
+     if(name==='actions.status'){const v=z.object({runId:id}).strict().parse(value);return actions.status(a,w,v.runId,request.componentId);}
+     if(!['click','submit'].includes(request.event.kind))fail(403,'action_interaction','Run an action from an explicit app control');
+     const v=z.object({actionId:id,requestKey:id,recordId:id.optional()}).strict().parse(value),action=await actions.row(a,w,v.actionId);if(action.app_id!==request.componentId)fail(403,'action_scope','Action is not bound to this app');return actions.runNow(a,w,v.actionId,v.requestKey,v.recordId);
+    }
     if(name==='connectors.call'&&process.env.SIMPLE_APPS_ENABLED==='true'){
      if(!request.componentId)fail(403,'preview_read_only','Unsaved app previews cannot use external connectors');
      const v=z.object({connectionId:id,operation:z.string().max(64),requestKey:id,parameters:z.record(z.string(),z.unknown()).optional(),records:z.record(z.string(),id).optional()}).strict().parse(value);
-     if(connectorReviews.length>=3)fail(429,'connector_reviews','Review existing connector requests before creating more');const result=await new Connectors(this.db,(tx,actor,workspaceId,appId)=>this.component(tx,actor,workspaceId,appId)).call(a,w,{...v,appId:request.componentId,appVersion:version});if(result.status==='review_required')connectorReviews.push(result);return result;
+     if(connectorReviews.length>=3)fail(429,'connector_reviews','Review existing connector requests before creating more');const result=await new Connectors(this.db,(tx,actor,workspaceId,appId)=>this.component(tx,actor,workspaceId,appId)).call(a,w,{...v,appId:request.componentId,appVersion:version},true);if(result.status==='review_required')connectorReviews.push(result);return result;
     }
     if(name==='project.records'||name==='project.relationships'){
      const v=z.object({offset:z.number().int().min(0).max(1000000).default(0)}).strict().parse(value);
@@ -260,8 +272,8 @@ export class WorkspaceFoundation {
     const proposal=layoutProposal?await f.preview(a,w,layoutProposal):changes.length?await f.preview(a,w,{kind:'apply_component_records',componentId:request.componentId,expectedVersion:version,changes}):null;
     const queued=[];for(const v of invocations)queued.push(await f.invokeComponent(a,w,{...v,componentId:request.componentId,expectedVersion:version}));return {proposal,queued};
    });
-   return {queued,...(connectorReviews.length?{connectorReviews}:{}),runtime:'trialy-frontend-js-v1',frameUrl:new URL('/frontend/frame',appPublicUrl()).toString(),...output,css:(tracker?'':appDesignCss)+output.css,accessVersion:currentPolicy.access_version,controls,connected:!!content.manifest,proposal,temporary:!request.componentId,...(tracker?{tracker:{config:tracker.config,theme:tracker.theme,pages,saved:!!request.componentId,writable}}:{})};
-  }finally{if(!knownTracker)activeFrontends.delete(key);}
+   return {queued,...(connectorReviews.length?{connectorReviews}:{}),runtime:'trialy-frontend-js-v1',frameUrl:new URL('/frontend/frame',appPublicUrl()).toString(),...output,css:(tracker?'':appDesignCss)+output.css,accessVersion:currentPolicy.access_version,accessStamp,controls,connected:!!content.manifest,proposal,temporary:!request.componentId,...(tracker?{tracker:{config:tracker.config,theme:tracker.theme,pages,saved:!!request.componentId,writable}}:{})};
+  }finally{if(!knownTracker)pool.delete(key);}
  }
  private parseInterface(content:any){
   let spec;try{spec=interfaceSchema.parse(JSON.parse(content.source));}catch{fail(400,'invalid_interface','Use a valid legacy TrialAgents interface description');}
@@ -335,7 +347,13 @@ export class WorkspaceFoundation {
    return {workspaceId:w,screen:'tracker-preview',preview:{id:row.id,workspaceId:w,workspaceFoundation:true,temporary:true,body:op,digest:row.digest,expiresAt:row.expires_at},initialOutput,saveStatus:'unsaved',previewStatus:'prepared',preparedAt:new Date().toISOString(),displayStatus:'awaiting_client'};
   }catch(e){if([403,404,409].includes((e as any).status))return unavailable();throw e;}
  }
- async checkComponentAccess(a:Actor,w:string,id:string){const c=await this.component(this.db,a,w,id);if(c.archived||c.project_archived)fail(409,'component_archived','Interface is archived');return {id:c.id,version:c.version,accessVersion:(await access(this.db,a,w)).access_version};}
+ private async componentAccessStamp(a:Actor,w:string,c:any):Promise<string>{
+  if(a.accessToolId!==c.id)return withActor({...a,accessToolId:c.id},()=>this.componentAccessStamp({...a,accessToolId:c.id},w,c));
+  const p=await access(this.db,a,w),tool=await toolPolicy(this.db,a,p,c.id),tables=[];
+  for(const b of c.bindings){try{const {type,policy}=await typeAccess(this.db,a,w,b.typeId);tables.push({id:b.typeId,fields:visibleFields(type.fields,policy,a).filter(f=>b.fields.includes(f.key)),write:policy.write_fields.filter((k:string)=>b.fields.includes(k)),project:policy.scope_project});}catch(e){if(![403,404].includes((e as any).status))throw e;tables.push({id:b.typeId,fields:[]});}}
+  return checksum(J({archived:p.archived,write:tool.grant.write,tables}));
+ }
+ async checkComponentAccess(a:Actor,w:string,id:string){const c=await this.component(this.db,a,w,id);if(c.archived||c.project_archived)fail(409,'component_archived','Interface is archived');return {id:c.id,version:c.version,accessVersion:(await access(this.db,a,w)).access_version,accessStamp:await this.componentAccessStamp(a,w,c)};}
  async readComponent(a:Actor,w:string,id:string,includeOutput=false){const component=await this.component(this.db,a,w,id);const initialOutput=includeOutput&&standardTracker(component.source)&&!component.archived&&!component.project_archived?await this.runFrontend(a,w,{componentId:id,expectedVersion:component.version,event:{kind:'open'}}):undefined;return {workspaceId:w,workspaceFoundation:true,component,...(initialOutput?{initialOutput}:{})};}
  async componentHistory(a:Actor,w:string,id:string){
   await this.component(this.db,a,w,id);

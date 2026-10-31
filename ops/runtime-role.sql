@@ -54,3 +54,13 @@ GRANT INSERT ON support_requests TO trialy_runtime;
 
 -- Additive connector storage (migration 044); no delete privilege on receipts or reviews.
 GRANT SELECT,INSERT,UPDATE ON connectors,connector_credentials,connector_reviews,connector_invocations TO trialy_runtime;
+
+GRANT SELECT,INSERT,UPDATE ON app_actions,app_action_runs,app_service_jobs,app_service_previews TO trialy_runtime;
+GRANT INSERT ON notification_events TO trialy_runtime;
+GRANT SELECT ON notification_events TO trialy_worker;
+GRANT SELECT,INSERT ON notification_suppressions TO trialy_worker;
+GRANT SELECT,INSERT ON app_action_effects TO trialy_runtime;
+GRANT SELECT,INSERT,UPDATE ON app_shares TO trialy_runtime;
+GRANT EXECUTE ON FUNCTION trialy_security.accept_app_share(text) TO trialy_runtime;
+
+GRANT EXECUTE ON FUNCTION trialy_security.ingest_notification_event(text,text,text,jsonb) TO trialy_runtime;

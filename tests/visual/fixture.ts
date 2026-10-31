@@ -12,7 +12,7 @@ export async function fixture(){
  const pg=new PGlite();const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
  const app=baseApp();app.set('trust proxy','loopback');const server=app.listen(Number(process.env.VISUAL_TEST_PORT||4179),'127.0.0.1');await new Promise<void>(r=>server.once('listening',r));const base='http://127.0.0.1:'+(server.address() as any).port;process.env.PUBLIC_URL=base;
  for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
- const actor={userId:randomUUID(),origin:'human' as const};await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,'fixture@example.invalid','Fixture']);const s=new Service(db),f=new WorkspaceFoundation(db),w=await s.createWorkspace(actor,'Test account');
+ const actor={userId:randomUUID(),origin:'human' as const};await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,'fixture@example.invalid','Fixture']);const s=new Service(db),f=new WorkspaceFoundation(db),w=await s.createWorkspace(actor,'Test account');await s.setAi(actor,w.id,true);
  const save=async(op:any)=>{const p=await s.preview(actor,w.id,op);return s.commit(actor,p.id,p.digest);};
  const table=async(name:string)=>(await save({kind:'create_type',name,fields:[{key:'name',name:'Name',kind:'text',ai:true},{key:'status',name:'Status',kind:'select',multiple:true,options:['Planned','Active','Blocked'],ai:true},{key:'channel',name:'Channel',kind:'select',options:['Email','LinkedIn'],ai:true},{key:'next_step',name:'Next step',kind:'text',ai:true},{key:'source',name:'Source',kind:'text',ai:true}]})).objects[0].id;
  const pi=await table('PI Engagement Tracker');await save({kind:'create_record',typeId:pi,data:{name:'University fixture'}});const companies=await table('Companies'),contacts=await table('Contacts');
@@ -24,7 +24,7 @@ export async function fixture(){
   if(name==='open_app')return openApp(f,actor,v);
   if(name==='open_workspace')return {screen:'home',uiBuild:'acceptance',viewerId:actor.userId,workspaces:[w],workspaceId:w.id,types:await s.types(actor,w.id)};
   if(name==='read_connected_account')return {connected:true};
-  if(name==='read_account_home'){const home=await workspaceHome(db,actor,w.id,v);return {...home,resources:[{id:preview.id,workspaceId:w.id,name:'Saved preview card',kind:'tracker',source:'preview',projectIds:[],status:'Preview',updatedAt:new Date().toISOString()},...home.resources],total:home.total+1};}
+  if(name==='read_account_home'){const home=await workspaceHome(db,{...actor,origin:'ai'},w.id,v);return {...home,resources:[{id:preview.id,workspaceId:w.id,name:'Saved preview card',kind:'tracker',source:'preview',projectIds:[],status:'Preview',updatedAt:new Date().toISOString()},...home.resources],total:home.total+1};}
   if(name==='resolve_tracker_preview')return f.resolveTrackerPreview(actor,w.id,v.previewId);
   if(name==='initialize_account')return {viewerId:actor.userId,workspaceId:w.id,workspaces:[w],types:await s.types(actor,w.id)};
   if(name==='list_project_sharing_members')return [];

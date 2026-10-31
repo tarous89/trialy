@@ -1,0 +1,113 @@
+import {randomUUID} from 'node:crypto';
+import {z} from 'zod';
+import type {Database,Connection} from '../db/database.js';
+import {withActor} from '../db/context.js';
+import {access,typeAccess,visibleFields} from '../domain/permissions.js';
+import {audit,checksum} from '../domain/evidence.js';
+import {fail,id,type Actor} from '../shared/schema.js';
+import {requireHuman} from '../domain/write-authorization.js';
+import {WorkspaceFoundation} from '../workspace/service.js';
+import {Foundation} from '../foundation/service.js';
+import {Connectors} from '../connectors/service.js';
+import {connectorConfig} from '../connectors/schema.js';
+import {nextDaily} from '../shared/schedules.js';
+import {appPublicUrl} from '../shared/public-url.js';
+import {actionChange,actionConfig,matches,expand,type ActionConfig} from './schema.js';
+import {enqueueServiceJob} from './jobs.js';
+const J=JSON.stringify;
+export const actionRequestKey=(key:string)=>{const h=checksum(key);return h.slice(0,8)+'-'+h.slice(8,12)+'-4'+h.slice(13,16)+'-a'+h.slice(17,20)+'-'+h.slice(20,32);};
+const adapter=(tx:Connection):Database=>({query:tx.query.bind(tx),transaction:fn=>fn(tx),close:async()=>{}});
+export function nextAction(config:ActionConfig,after=new Date()):Date|null{
+ const t=config.trigger;if(t.kind==='manual')return null;if(t.kind==='once')return new Date(t.at);if(t.kind==='interval')return new Date(after.getTime()+t.minutes*60000);
+ if(t.kind==='calendar'){let n=after;for(let i=0;i<8;i++){n=nextDaily(t,n);const weekday=new Intl.DateTimeFormat('en-US',{weekday:'short',timeZone:t.timeZone}).format(n);if(t.weekdays.includes(['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].indexOf(weekday)))return n;}throw Error('invalid_calendar');}return after;
+}
+export function recordDue(value:unknown,t:Extract<ActionConfig['trigger'],{kind:'record_date'}>){
+ if(typeof value!=='string')return null;let date:Date;
+ if(/^\d{4}-\d{2}-\d{2}$/.test(value)){const from=new Date(value+'T00:00:00Z');date=nextDaily(t,new Date(from.getTime()-36*3600000));for(let i=0;i<4;i++){const local=new Intl.DateTimeFormat('en-CA',{timeZone:t.timeZone,year:'numeric',month:'2-digit',day:'2-digit'}).format(date);if(local===value)break;date=nextDaily(t,date);} }else date=new Date(value);
+ if(!Number.isFinite(date.getTime()))return null;return new Date(date.getTime()+t.offsetMinutes*60000);
+}
+export class AppActions{
+ readonly f:WorkspaceFoundation;
+ constructor(readonly db:Database){this.f=new WorkspaceFoundation(db);}
+ async validate(a:Actor,w:string,config:ActionConfig){
+  const scoped={...a,accessToolId:config.appId};return withActor(scoped,async()=>{
+   const c=await this.f.component(this.db,scoped,w,config.appId);if(c.archived||c.project_archived||c.version!==config.appVersion)fail(409,'app_changed','Review the current app revision');
+   if(Date.parse(config.expiresAt)<=Date.now())fail(403,'action_expired','Action authorization expired');
+   let table:any=null;if(config.recordTypeId){const b=c.bindings.find((b:any)=>b.typeId===config.recordTypeId);const {type,policy}=await typeAccess(this.db,scoped,w,config.recordTypeId);const fields=visibleFields(type.fields,policy,scoped);if(!b||config.fields.some(k=>!b.fields.includes(k)||!fields.some(f=>f.key===k)))fail(403,'action_scope','Action fields exceed app access');table={id:type.id,version:type.version,fields:type.fields};}
+   for(const step of config.steps){
+    if(step.kind==='connector'){const row=(await this.db.query('SELECT * FROM connectors WHERE id=$1 AND workspace_id=$2',[step.connectionId,w])).rows[0];if(!row||row.removed_at||row.version!==step.connectionVersion)fail(409,'connector_changed','Review the current connector configuration');const cn=connectorConfig.parse(row.config),op=cn.operations.find(o=>o.id===step.operation);if(!cn.enabled||!op||!op.apps.includes(c.id)||!op.users.includes(a.userId)||a.origin==='ai'&&!op.aiEnabled)fail(403,'connector_use','Connector action is not allowed');}
+    if(step.kind==='function'&&!c.execution.some((b:any)=>b.name===step.binding))fail(403,'function_binding','Function is not bound to the app');
+    const text=J(step);for(const match of text.matchAll(/\{\{\s*record\.([a-z][a-z0-9_]*)\s*\}\}/g))if(!config.fields.includes(match[1]))fail(403,'action_scope','Template refers to an undeclared field');
+   }
+   return {component:c,stamp:checksum(J({table,bindings:c.bindings,manifest:c.manifest,execution:c.execution}))};
+  });
+ }
+ async prepare(a:Actor,w:string,input:unknown){const body=actionChange.parse(input);const p=await access(this.db,a,w,true);if(p.role!=='owner')fail(403,'owner_required','Only the owner can authorize app actions');await this.validate({...a,origin:'ai'},w,body.config);
+  if(body.actionId){const row=await this.row(a,w,body.actionId);if(row.version!==body.expectedVersion)fail(409,'action_changed','Reload the action');}
+  const previewId=randomUUID(),digest=checksum(J(body));await this.db.query("INSERT INTO app_service_previews(id,workspace_id,user_id,kind,body,digest) VALUES($1,$2,$3,'action',$4,$5)",[previewId,w,a.userId,J(body),digest]);return {id:previewId,digest,body,reviewUrl:appPublicUrl()+'/?tab=apps&workspaceId='+w+'&serviceReview='+previewId,status:'review_required'};
+ }
+ async preview(a:Actor,w:string,previewId:string){await access(this.db,a,w);const r=(await this.db.query('SELECT * FROM app_service_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[previewId,w,a.userId])).rows[0];if(!r)fail(404,'not_found','Review unavailable');return r;}
+ async confirm(a:Actor,w:string,previewId:string,digest:string){requireHuman(a);return this.db.transaction(async tx=>{const service=new AppActions(adapter(tx));await tx.query('SELECT id FROM app_service_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 FOR UPDATE',[previewId,w,a.userId]);const r=await service.preview(a,w,previewId);if(r.kind!=='action'||r.digest!==digest)fail(409,'review_changed','Review changed');await tx.query('SELECT id FROM app_service_previews WHERE id=$1 FOR UPDATE',[previewId]);if(r.consumed_at)return r.result;const p=await access(tx,a,w,true);if(p.role!=='owner')fail(403,'owner_required','Owner required');const v=actionChange.parse(r.body),checked=await service.validate({...a,origin:'ai'},w,v.config),actionId=v.actionId??randomUUID();let version=0;
+   if(v.actionId){const old=await service.row(a,w,actionId);if(old.version!==v.expectedVersion)fail(409,'action_changed','Action changed');version=old.version+1;await tx.query('UPDATE app_actions SET config=$2,version=$3,scope_stamp=$4,paused=false,next_at=$5,approved_by=$6,approved_at=now(),last_error=NULL,scan_cursor=NULL,event_cursor=(SELECT coalesce(max(event_sequence),0) FROM audit_events WHERE workspace_id=$7) WHERE id=$1',[actionId,J(v.config),version,checked.stamp,nextAction(v.config),a.userId,w]);}
+   else await tx.query('INSERT INTO app_actions(id,workspace_id,user_id,app_id,config,scope_stamp,next_at,approved_by,event_cursor) VALUES($1,$2,$3,$4,$5,$6,$7,$3,(SELECT coalesce(max(event_sequence),0) FROM audit_events WHERE workspace_id=$2))',[actionId,w,a.userId,v.config.appId,J(v.config),checked.stamp,nextAction(v.config)]);
+   const result={id:actionId,version,saved:true};await audit(tx,a,p,'app_action.authorized',actionId,null,{...v.config,version,approvalId:previewId});await tx.query('UPDATE app_service_previews SET consumed_at=now(),result=$2 WHERE id=$1',[previewId,J(result)]);return result;
+  });}
+ async row(a:Actor,w:string,actionId:string){await access(this.db,a,w);const r=(await this.db.query('SELECT * FROM app_actions WHERE id=$1 AND workspace_id=$2',[actionId,w])).rows[0];if(!r||r.user_id!==a.userId&&!r.config.users.includes(a.userId))fail(404,'not_found','Action unavailable');return r;}
+ async list(a:Actor,w:string,appId?:string,offset=0){await access(this.db,a,w);const rows=(await this.db.query('SELECT * FROM app_actions WHERE workspace_id=$1 AND (user_id=$2 OR config->\'users\' ? $2::text) AND ($3::uuid IS NULL OR app_id=$3) ORDER BY created_at,id LIMIT 21 OFFSET $4',[w,a.userId,appId??null,offset])).rows;const visible=[];for(const row of rows.slice(0,20)){try{await this.f.component(this.db,{...a,accessToolId:row.app_id},w,row.app_id);visible.push(row);}catch{}}return {rows:visible,nextOffset:rows.length>20?offset+20:null};}
+ async record(a:Actor,w:string,config:ActionConfig,recordId?:string){if(!config.recordTypeId){if(recordId)fail(400,'record_scope','This action has no record input');return null;}if(!recordId)fail(400,'record_required','Select a record');return withActor({...a,accessToolId:config.appId},async()=>{const r=await this.f.record(this.db,{...a,accessToolId:config.appId},w,recordId);if(r.type_id!==config.recordTypeId||config.trigger.kind!=='database'&&r.state==='archived')fail(403,'record_scope','Record unavailable');return {id:r.id,version:r.version,data:Object.fromEntries(config.fields.map(k=>{if(!r.fields.some((f:any)=>f.key===k))fail(403,'field_scope','Field unavailable');return [k,r.data[k]??null];}))};});}
+ async enqueue(a:Actor,w:string,actionId:string,occurrence:string,recordId?:string,causalChain:string[]=[]){return this.db.transaction(async tx=>{const service=new AppActions(adapter(tx));await tx.query('SELECT id FROM app_actions WHERE id=$1 FOR UPDATE',[actionId]);const row=await service.row(a,w,actionId),config=actionConfig.parse(row.config);if(row.paused)fail(403,'action_paused','Action is paused');const checked=await service.validate(a,w,config);if(checked.stamp!==row.scope_stamp)fail(409,'action_scope_changed','Action scope changed');const record=await service.record(a,w,config,recordId);
+   const existing=(await tx.query('SELECT id,status FROM app_action_runs WHERE action_id=$1 AND action_version=$2 AND occurrence=$3',[actionId,row.version,occurrence])).rows[0];if(existing)return existing;
+   const count=Number((await tx.query("SELECT count(*) AS n FROM app_action_runs WHERE action_id=$1 AND created_at>now()-interval '24 hours'",[actionId])).rows[0].n);if(count>=config.maxRunsPerDay)fail(429,'action_limit','Daily action limit reached');
+   if(causalChain.includes(actionId)||causalChain.length>=8)fail(409,'action_loop','Automation cycle stopped');
+   const runId=randomUUID(),eligible=!record||matches(record.data,config.conditions);await tx.query('INSERT INTO app_action_runs(id,workspace_id,user_id,action_id,action_version,occurrence,record_id,record_version,origin,status,diagnostic,causal_chain) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',[runId,w,a.userId,actionId,row.version,occurrence,record?.id??null,record?.version??null,a.origin,eligible?'queued':'cancelled',eligible?null:'conditions_not_met',J([...causalChain,actionId])]);return {id:runId,status:eligible?'queued':'cancelled'};
+  });}
+ async runNow(a:Actor,w:string,actionId:string,requestKey:string,recordId?:string){id.parse(requestKey);return this.enqueue(a,w,actionId,'manual:'+a.userId+':'+requestKey,recordId);}
+ async authorizeRun(runId:string,expectedVersion?:number,reading=false,ignoreRecord=false){const run=(await this.db.query('SELECT * FROM app_action_runs WHERE id=$1',[runId])).rows[0];if(!run||!reading&&['cancelled','failed','unknown'].includes(run.status))fail(403,'run_stopped','Action is unavailable');const a:Actor={userId:run.user_id,origin:run.origin};return withActor(a,async()=>{const row=await this.row(a,run.workspace_id,run.action_id),config=actionConfig.parse(row.config);if(!reading&&row.paused||row.version!==run.action_version||expectedVersion!==undefined&&row.version!==expectedVersion)fail(403,'action_changed','Action authorization changed');const checked=await this.validate(a,run.workspace_id,config);if(checked.stamp!==row.scope_stamp)fail(409,'action_scope_changed','Action data scope changed');const record=await this.record(a,run.workspace_id,config,run.record_id??undefined);if(!reading&&!ignoreRecord&&record&&(record.version!==run.record_version||!matches(record.data,config.conditions)))fail(409,'record_changed','Record changed; action was stopped');return {run,row,config,record,a,component:checked.component};});}
+ async status(a:Actor,w:string,runId:string,appId?:string){const {run,config}=await this.authorizeRun(runId,undefined,true);if(run.workspace_id!==w||run.user_id!==a.userId||appId&&config.appId!==appId)fail(404,'not_found','Run unavailable');return {id:run.id,status:run.status,step:run.step,results:run.results,diagnostic:run.diagnostic};}
+ async control(a:Actor,w:string,actionId:string,paused:boolean){requireHuman(a);const row=await this.row(a,w,actionId);if(row.user_id!==a.userId)fail(403,'owner_required','Only the authorizing owner can change automation');if(!paused)await this.validate({...a,origin:'ai'},w,actionConfig.parse(row.config));await this.db.query('UPDATE app_actions SET paused=$2,last_error=NULL WHERE id=$1',[actionId,paused]);const p=await access(this.db,a,w);await audit(this.db,a,p,'app_action.paused',actionId,null,{paused});return {id:actionId,paused};}
+ async cancel(a:Actor,w:string,runId:string){requireHuman(a);const r=(await this.db.query('SELECT * FROM app_action_runs WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[runId,w,a.userId])).rows[0];if(!r)fail(404,'not_found','Run unavailable');await this.db.query("UPDATE app_action_runs SET status='cancelled',finished_at=now() WHERE id=$1 AND status IN ('queued','waiting','running')",[runId]);if(r.pending_job)await this.db.query("UPDATE app_service_jobs SET status='cancelled',finished_at=now() WHERE id=$1 AND status IN ('queued','running')",[r.pending_job]);return {id:runId,status:'cancelled',note:'Already dispatched effects cannot be undone'};}
+ async runs(a:Actor,w:string,appId?:string,offset=0){await access(this.db,a,w);return (await this.db.query(`SELECT r.id,r.action_id,r.status,r.step,r.diagnostic,r.created_at,r.finished_at,(SELECT coalesce(jsonb_agg(jsonb_build_object('id',j.id,'kind',j.kind,'status',j.status,'deliveryStatus',j.delivery_status)),'[]') FROM app_action_effects e JOIN app_service_jobs j ON j.id=e.job_id WHERE e.run_id=r.id) AS jobs FROM app_action_runs r JOIN app_actions a ON a.id=r.action_id WHERE r.workspace_id=$1 AND r.user_id=$2 AND ($3::uuid IS NULL OR a.app_id=$3) ORDER BY r.created_at DESC LIMIT 20 OFFSET $4`,[w,a.userId,appId??null,offset])).rows;}
+}
+export async function dispatchAppActions(db:Database,now=new Date()){
+ return db.transaction(async tx=>{const row=(await tx.query('SELECT * FROM app_actions WHERE NOT paused AND next_at<=$1 ORDER BY next_at,id FOR UPDATE SKIP LOCKED LIMIT 1',[now])).rows[0];if(!row)return false;const service=new AppActions(adapter(tx)),config=actionConfig.parse(row.config),a:Actor={userId:row.user_id,origin:'ai'};
+  await tx.query('SAVEPOINT action_dispatch');try{await withActor(a,async()=>{await service.validate(a,row.workspace_id,config);const trigger=config.trigger;let cursor=row.event_cursor,scan=row.scan_cursor,next:Date|null;
+   if(trigger.kind==='database'){
+    const events=(await tx.query('SELECT e.*,r.type_id FROM audit_events e LEFT JOIN records r ON r.id=e.object_id WHERE e.workspace_id=$1 AND e.event_sequence>$2 ORDER BY e.event_sequence LIMIT 100',[row.workspace_id,cursor])).rows;
+    for(const e of events){cursor=e.event_sequence;if(e.type_id!==trigger.typeId)continue;const kind=e.action==='record.created'?'created':['record.deleted','record.archived','record.creation_archived'].includes(e.action)?'deleted':e.action.startsWith('record.')?'updated':null;if(!kind||!trigger.events.includes(kind))continue;
+     const before=e.before_value?.data??{},after=e.after_value?.data??{};if(trigger.fields.length&&!trigger.fields.some(f=>J(before[f])!==J(after[f])))continue;if(trigger.becomes&&(!matches(after,[trigger.becomes])||matches(before,[trigger.becomes])))continue;
+     let chain:string[]=[];if(e.source_run_id){const cause=(await tx.query('SELECT r.causal_chain FROM app_action_effects x JOIN app_action_runs r ON r.id=x.run_id WHERE x.job_id=$1',[e.source_run_id])).rows[0];chain=cause?.causal_chain??[];}
+     try{await service.enqueue(a,row.workspace_id,row.id,'event:'+e.event_sequence,e.object_id,chain);}catch(e:any){if(![403,404,409].includes(e.status))throw e;}
+    }next=new Date(now.getTime()+1000);
+   }else if(trigger.kind==='record_date'){
+    const records=(await tx.query("SELECT id FROM records WHERE workspace_id=$1 AND type_id=$2 AND state<>'archived' AND ($3::uuid IS NULL OR id>$3) ORDER BY id LIMIT 100",[row.workspace_id,trigger.typeId,scan])).rows;
+    for(const item of records){try{const r=await service.record(a,row.workspace_id,config,item.id),due=recordDue(r?.data[trigger.field],trigger);if(due&&due<=now&&due>=new Date(row.approved_at))await service.enqueue(a,row.workspace_id,row.id,'date:'+item.id+':'+due.toISOString(),item.id);}catch(e:any){if(![403,404,409].includes(e.status))throw e;}}
+    scan=records.length===100?records.at(-1)!.id:null;next=new Date(now.getTime()+(scan?1000:30000));
+   }else{await service.enqueue(a,row.workspace_id,row.id,'time:'+new Date(row.next_at).toISOString());next=trigger.kind==='once'?null:nextAction(config,now);}
+   await tx.query('UPDATE app_actions SET next_at=$2,event_cursor=$3,scan_cursor=$4 WHERE id=$1',[row.id,next,cursor,scan]);});await tx.query('RELEASE SAVEPOINT action_dispatch');
+  }catch{await tx.query('ROLLBACK TO SAVEPOINT action_dispatch');await tx.query("UPDATE app_actions SET paused=true,last_error='authorization_or_dispatch_failed' WHERE id=$1",[row.id]);}return true;
+ });
+}
+export async function processAppAction(db:Database){
+ const r=await db.transaction(async tx=>{const row=(await tx.query("SELECT * FROM app_action_runs WHERE status='queued' OR status='waiting' AND (lease_until IS NULL OR lease_until<now()) OR status='running' AND lease_until<now() ORDER BY created_at FOR UPDATE SKIP LOCKED LIMIT 1")).rows[0];if(!row)return null;const token=randomUUID();await tx.query("UPDATE app_action_runs SET status='running',lease_token=$2,lease_until=now()+interval '45 seconds' WHERE id=$1",[row.id,token]);return {...row,lease_token:token};});if(!r)return false;
+ const service=new AppActions(db);try{
+  const committedWrite=!!r.pending_job&&(await db.query('SELECT id FROM foundation_receipts WHERE id=$1',[r.pending_job])).rows.length>0;const {a,config,record,component}=await service.authorizeRun(r.id,undefined,false,committedWrite);await withActor(a,async()=>{const step=config.steps[r.step];if(!step){await db.query("UPDATE app_action_runs SET status='succeeded',finished_at=now() WHERE id=$1 AND status='running' AND lease_token=$2",[r.id,r.lease_token]);return;}
+   if(r.pending_job){const table=step.kind==='function'?'foundation_runs':'app_service_jobs',job=(await db.query(`SELECT * FROM ${table} WHERE id=$1`,[r.pending_job])).rows[0];if(!job)throw Error('job_unavailable');if(['queued','running'].includes(job.status)){await db.query("UPDATE app_action_runs SET status='waiting',lease_until=now()+interval '2 seconds' WHERE id=$1 AND status='running' AND lease_token=$2",[r.id,r.lease_token]);return;}if(job.status!=='succeeded')throw Object.assign(Error('step_failed'),{unknown:job.status==='unknown'});if(step.kind==='function'&&job.proposal_digest){if(!job.grant_id)throw Error('function_requires_write_grant');if(!(await db.query('SELECT id FROM foundation_receipts WHERE id=$1',[job.id])).rows.length){if(job.diagnostic)throw Error('function_commit_failed');await db.query("UPDATE app_action_runs SET status='waiting',lease_until=now()+interval '2 seconds' WHERE id=$1 AND status='running' AND lease_token=$2",[r.id,r.lease_token]);return;}}await service.authorizeRun(r.id,undefined,false,committedWrite);const output=job.result;
+    await db.query("UPDATE app_action_runs SET results=$2,step=step+1,pending_job=NULL,status=CASE WHEN $4 THEN 'succeeded' ELSE 'queued' END,finished_at=CASE WHEN $4 THEN now() ELSE NULL END,lease_until=NULL WHERE id=$1 AND status='running' AND lease_token=$3",[r.id,J({...r.results,[step.id]:output}),r.lease_token,step.kind==='function']);return;
+   }
+   const context={record:record?.data??{},recordId:record?.id??null,steps:r.results},expanded=expand(step,context),key='action:'+r.id+':'+r.step;let job:any;
+   if(step.kind==='function'){const requestKey=actionRequestKey(key);job=await db.transaction(async tx=>{const j=await new WorkspaceFoundation(adapter(tx)).invokeComponent(a,r.workspace_id,{componentId:config.appId,expectedVersion:config.appVersion,binding:step.binding,input:expanded.input,requestKey});await tx.query('INSERT INTO app_action_effects(run_id,step,job_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING',[r.id,r.step,j.id]);return j;});}
+   else{const action={runId:r.id,version:r.action_version},payload=step.kind==='email'?{origin:a.origin,action,message:{to:expanded.to,subject:expanded.subject,text:expanded.text,appName:component.name}}:{origin:a.origin,action,call:{connectionId:step.connectionId,operation:step.operation,appId:config.appId,appVersion:config.appVersion,parameters:expanded.parameters,records:expanded.records,requestKey:actionRequestKey(key)}};
+    let seconds=23*3600;if(step.kind==='connector'){const c=new Connectors(db,(tx,a,w,id)=>service.f.component(tx,a,w,id)),built=await c.inspect(db,{...a,accessToolId:config.appId},r.workspace_id,(payload as any).call);seconds=Math.max(60,built.operation.timeoutSeconds+30);}
+    job=await enqueueServiceJob(db,a,r.workspace_id,config.appId,step.kind,key,payload,seconds);
+   }
+   await db.query('INSERT INTO app_action_effects(run_id,step,job_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING',[r.id,r.step,job.id]);
+   await db.query("UPDATE app_action_runs SET pending_job=$2,status='waiting',lease_until=NULL WHERE id=$1 AND status='running' AND lease_token=$3",[r.id,job.id,r.lease_token]);
+  });
+ }catch(e:any){await db.query("UPDATE app_action_runs SET status=$2,diagnostic=$3,finished_at=now() WHERE id=$1 AND status='running' AND lease_token=$4",[r.id,e.unknown?'unknown':'failed',e.status?'authorization_or_record_changed':'step_failed',r.lease_token]);}return true;
+}
+
+export async function authorizeAppFunction(db:Database,jobId:string,lock=false){
+ const link=(await db.query('SELECT r.id,r.action_id FROM app_action_effects e JOIN app_action_runs r ON r.id=e.run_id WHERE e.job_id=$1',[jobId])).rows[0];if(!link)return;
+ if(lock){await db.query('SELECT id FROM app_actions WHERE id=$1 FOR SHARE',[link.action_id]);await db.query('SELECT id FROM app_action_runs WHERE id=$1 FOR SHARE',[link.id]);}
+ await new AppActions(db).authorizeRun(link.id);
+}

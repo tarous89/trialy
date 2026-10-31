@@ -1,3 +1,4 @@
+import {addAppServicesApi} from '../../src/server/app-services.js';
 import type {Express} from 'express';
 import type {Database} from '../../src/db/database.js';
 import type {Actor} from '../../src/shared/schema.js';
@@ -31,10 +32,10 @@ export async function addAppsFixture(app:Express,db:Database,actor:Actor,w:any){
  const revision=await f.preview(actor,w.id,{kind:'save_component',componentId:saved.id,expectedVersion:0,content:{name:'Simple app fixture',format:'frontend-js',sourceAccess:'bindings',source,bindings:[{typeId:companyTable,fields:['name']}]}});await f.confirm(actor,w.id,revision.id,revision.digest);
  app.get('/api/me',(_req,res)=>res.json({user:{id:actor.userId,name:'Fixture',email:'fixture@example.invalid'},csrf:'fixture',workspaces:[w]}));
  process.env.SIMPLE_APPS_ENABLED='false';addApi(app,s,(req,_res,next)=>{req.actor=actor;next();});process.env.SIMPLE_APPS_ENABLED='true';
- addAppApi(app,f);addConnectorApi(app,f,{service:connector});
+ addAppServicesApi(app,f);addAppApi(app,f);addConnectorApi(app,f,{service:connector});
  app.get('/fixture/apps',(_req,res)=>res.json({workspaceId:w.id,appId:saved.id,recordId:record.id,connectionId:connection.id,url:appUrl({appId:saved.id,workspaceId:w.id}),sends}));
  app.use('/assets',express.static('dist/web/assets'));app.use('/fonts',express.static('public/fonts'));
  for(const name of ['trialagents-mark-black.png','trialagents-mark-white.png'])app.get('/'+name,(_req,res)=>res.sendFile(path.resolve('public',name)));
- for(const route of ['/app-home','/apps/{*path}'])app.get(route,(_req,res)=>res.sendFile(path.resolve('dist/web/index.html')));
+ for(const route of ['/app-home','/shared-app','/join-app','/apps/{*path}'])app.get(route,(_req,res)=>res.sendFile(path.resolve('dist/web/index.html')));
  app.use(errors);
 }

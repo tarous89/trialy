@@ -107,7 +107,7 @@ test('connector policy, exact reviews, idempotency, data writes, quotas and revo
    const p=await c.prepare(a,w.id,{config:{...config,auth:{kind:'none'},requestsPerMinute:1,requestsPerAppPerMinute:1}}),second=await c.confirmConfig(a,w.id,p.reviewId,p.digest);
    await c.call(a,w.id,{...call(),connectionId:second.id});const before=sent.length;await assert.rejects(c.call(a,w.id,{...call(),connectionId:second.id}),/limit/);assert.equal(sent.length,before);
    const crashedInput={...call(),connectionId:second.id},crashReview=await c.prepareCall(a,w.id,crashedInput),exact=await c.readReview(a,w.id,crashReview.reviewId),crashedId=randomUUID();
-   await db.query("INSERT INTO connector_invocations(id,workspace_id,connection_id,user_id,app_id,operation,request_key,digest,status,effect,created_at) VALUES($1,$2,$3,$4,$5,'lookup',$6,$7,'running','read',now()-interval '1 minute')",[crashedId,w.id,second.id,a.userId,app.id,crashedInput.requestKey,exact.body.digest]);
+   await db.query("INSERT INTO connector_invocations(id,workspace_id,connection_id,user_id,app_id,operation,request_key,digest,status,effect,created_at,deadline_at) VALUES($1,$2,$3,$4,$5,'lookup',$6,$7,'running','read',now()-interval '1 minute',now()-interval '30 seconds')",[crashedId,w.id,second.id,a.userId,app.id,crashedInput.requestKey,exact.body.digest]);
    assert.equal((await c.activity(a,w.id,second.id)).rows.find(r=>r.id===crashedId)?.status,'unknown');
    assert.equal((await c.call(a,w.id,crashedInput)).status,'unknown');assert.equal(sent.length,before);
    const privateConfig={...config,auth:{kind:'none'},operations:[{...operation,mappings:[{parameter:'company',typeId:table,field:'private'}]}]};

@@ -3,7 +3,18 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown)=
  const o=`/api/workspaces/${v.workspaceId}/organization`;
  const c=`/api/workspaces/${v.workspaceId}/connectors`;
  const clean=Object.fromEntries(Object.entries(v).filter(([key])=>key!=='workspaceId'));
+ const services=`/api/workspaces/${v.workspaceId}/app-services`;
  const routes:Record<string,[string,string?,unknown?]>={
+ prepare_app_sharing:[`${services}/sharing/prepare`,'POST',clean],
+ list_app_shares:[`${services}/sharing/${v.appId}`],
+ revoke_app_share:[`${services}/sharing/${v.shareId}/revoke`,'POST',{}],
+ read_app_service_review:[`${services}/reviews/${v.reviewId}`],
+ confirm_app_service_review:[`${services}/reviews/${v.reviewId}/confirm`,'POST',{digest:v.digest,confirmed:true}],
+ list_app_actions:[`${services}/actions?appId=${v.appId??''}&offset=${v.offset??0}`],
+ read_app_action_runs:[`${services}/runs?appId=${v.appId??''}&offset=${v.offset??0}`],
+ run_app_action:[`${services}/actions/${v.actionId}/run`,'POST',{requestKey:v.requestKey,recordId:v.recordId}],
+ pause_app_action:[`${services}/actions/${v.actionId}/pause`,'POST',{paused:v.paused}],
+ cancel_app_action_run:[`${services}/runs/${v.runId}/cancel`,'POST',{}],
  connector_directory:[`${c}/directory`],
  list_connectors:[`${c}?offset=${v.offset??0}&q=${encodeURIComponent(v.query??'')}`],
  read_connector:[`${c}/${v.connectionId}`],
