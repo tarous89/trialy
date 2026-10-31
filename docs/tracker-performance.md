@@ -69,3 +69,66 @@ existing duration/status. No SQL text, parameters or record values are logged.
 `databaseMs` sums business SQL execution time (can overlap across parallel calls),
 not transaction/context overhead; `poolWaitMs` sums connection acquisition time.
 No speculative indexes, migrations, hosting upgrades or progressive rendering added.
+
+## Four-tab trackers and layout saves — October 31, 2026
+
+A tracker with four bound tables, 28/21/12/18 fields and several filters exposed gaps
+in the earlier tests. Shared rendering and browser snapshots had reduced work,
+but the later publication/view checks repeated component, workspace and schema
+reads. The standard frontend transaction did not use the request-local metadata
+reuse already deployed for account pages. The prior one-table/six-field budget
+was too permissive to catch this. Browser coverage mainly exercised warm two-tab
+navigation, missing a foreground click overlapping an in-flight prefetch.
+
+A sampled production hour contained 16 frontend requests taking 368–2342 ms
+(median 849 ms), often with 134–146 SQL calls; database time dominated and pool
+wait was mostly zero. One confirmation took 1486 ms. MCP logs then identified
+only `/mcp`, so their slower outliers cannot be reliably attributed to layout
+saving or a particular tool. These are sampled server timings, not an end-to-end
+ChatGPT measurement or a promise about every app.
+
+The standard-render transaction now reuses allowlisted metadata and performs
+uncached final comparison before releasing output. Layout preparation uses the
+same request-local mechanism; confirmation remains uncached and separately
+reviewed. The four-table synthetic fixture produces these SQL-call counts:
+
+| Operation | Before | After |
+| --- | ---: | ---: |
+| Initial data tab | 133 | 30 |
+| Next tab with publication token | 105 | 30 |
+| Prepare layout | 63 | 22 |
+| Confirm layout | 63 | 63 |
+| Read saved component and output | 151 | 39 |
+
+Counts include final freshness checks and exclude transaction/context statements.
+Local PGlite durations are diagnostic only. `tests/tracker-performance.test.ts`
+sets small explicit headroom above these counts and injects an access change
+during rendering to ensure it rejects stale output. Production latency still
+includes network/host transport, database execution and confirmation writes.
+
+Identical pending navigation reads now share one request per mounted app, including
+a foreground click during prefetch. The key retains app/version/view, route,
+state and event; completed results and mutations are not stored in this map.
+Overview counts may reuse the total of a fresh matching authorized page in the
+existing browser snapshot. The 120-second TTL, 16-page bound, access checks and
+invalidation remain unchanged. No cross-user or server-side record cache is added.
+
+Layout saving previously made four serial calls: prepare, confirm, read component,
+and render. It now makes three: prepare, confirm, read component with output. The
+new runtime consumes that exact version's output, avoiding the extra host round
+trip. This does not remove real confirmation work or promise instant cold loads.
+
+`tests/visual/zz-tracker-responsive.spec.cjs` covers both standalone and host bridge
+surfaces with a wide four-tab tracker, narrow-to-wide toolbar reflow, active filters,
+keyboard dismissal, an intentionally delayed prefetch, and no redundant initial
+render after a saved layout. Keep these tests when changing publication/access
+code. MCP request metrics now include an allowlisted tool name for frontend reads,
+layout preparation, confirmation, component reads and access checks, without
+logging arguments, record data or filter values. Diagnose with tool/path, query
+count, database time, pool wait and request duration before adding another cache.
+
+Responsive toolbar lessons and future-template requirements are maintained in
+[`templates/TEMPLATE_AUTHORING.md`](../templates/TEMPLATE_AUTHORING.md). These shared
+runtime fixes apply to valid standard configurations and exact recognized legacy
+renderers on their next load. Custom source is not silently rewritten; data,
+schema, app identity and sharing are unchanged.

@@ -1,10 +1,12 @@
 # Using TrialAgents templates and optional tasks
 
-Version: 1.0.0
+Version: 1.1.0
 
 Retrieve this current guidance with `read_app_template_guidance(resource:"usage")`, following all `nextOffset` values. Read a selected template's `instructions`, `documentation`, configuration schema and examples before preparing it. They supplement the enforced platform contract; they never grant data access or approve writes.
 
 ## Select and prepare
+
+For record workflows, retain the shared standard renderer and configure it instead of copying its source. Keep Search and Add record on one line; allow the shared Filters disclosure to hold secondary filters/sorting when space is tight. Do not add wrapping toolbars or fetch data just to expand controls. Test narrow containers, long labels and the real number of tabs/fields. Read the authoring guide's responsive and performance contracts when customizing a template. Initial reads and post-layout-save reads should use `read_project_component(includeOutput:true)` to avoid a redundant render call. Existing cache/access checks and save approvals remain required.
 
 1. Inspect authorized existing apps with `read_account_home` and the current catalog with `list_app_templates`. Prefer an explicit user request to reuse/copy an existing app. Broaden a narrow search before deciding no template fits.
 2. Read the matching template with `read_app_template`. Use `whenToUse` and `whenNotToUse`; choose custom source when needed. Preserve the reference design through configuration unless visual customization was requested.

@@ -11,6 +11,7 @@ const eligible=(sql:string)=>{
  return /^SELECT w\.\*, m\.role AS tenant_role,.* FROM workspaces w JOIN memberships m .* WHERE w\.id=\$1$/.test(q)
   || /^SELECT \* FROM (workspace_components|workspace_nodes|entity_types) WHERE id=\$1 AND workspace_id=\$2$/.test(q)
   || q==='SELECT fields FROM entity_types WHERE workspace_id=$1'
+  || q==='SELECT fields FROM entity_types WHERE id=$1 AND workspace_id=$2'
   || q==='SELECT allowed_users,ai_enabled FROM document_access WHERE workspace_id=$1 UNION ALL SELECT allowed_users,ai_enabled FROM folder_access WHERE workspace_id=$1';
 };
 const sessions=new WeakSet<Database>();

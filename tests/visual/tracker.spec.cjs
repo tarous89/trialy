@@ -10,7 +10,8 @@ for (const width of [1440, 1100, 390]) test(`Vivid connected tracker at ${width}
   await page.evaluate(result=>window.deliver(result),initial);
   const embed = page.frameLocator("#app"), tracker = embed.frameLocator('iframe[title="Saved frontend code"]');
   await tracker.getByRole("button", { name: "Companies", exact: true }).click();
-  await expect(tracker.getByRole("combobox", { name: "Filter by Status", exact: true })).toBeVisible();
+  await expect(tracker.locator(".tracker-toolbar")).toBeVisible();
+  if(!await tracker.getByRole("combobox", { name: "Filter by Status", exact: true }).isVisible())await expect(tracker.getByRole("button", {name:"Filter options",exact:true})).toBeVisible();
   await expect(tracker.locator("tbody tr")).toHaveCount(25);
   await expect(tracker.locator(".pill.green")).not.toHaveCount(0);
   await expect(tracker.locator(".pill.red")).not.toHaveCount(0);
@@ -23,10 +24,12 @@ for (const width of [1440, 1100, 390]) test(`Vivid connected tracker at ${width}
   await expect(page).toHaveScreenshot(`tracker-${width}.png`);
   const outerScroll = await embed.locator("#ty-main").evaluate((el) => getComputedStyle(el).overflowY);
   expect(outerScroll).toBe("hidden");
+  if(await tracker.getByRole("button",{name:"Filter options",exact:true}).isVisible())await tracker.getByRole("button",{name:"Filter options",exact:true}).click();
   await tracker.getByRole("combobox", { name: "Filter by Status", exact: true }).selectOption("Active");
   await expect(tracker.locator("tbody tr")).toHaveCount(9);
   await tracker.getByRole("combobox", { name: "Filter by Status", exact: true }).selectOption("");
   await expect(tracker.locator("tbody tr")).toHaveCount(25);
+  if(await tracker.getByRole("button",{name:"Filter options",exact:true}).isVisible())await tracker.getByRole("combobox", {name:"Filter by Status",exact:true}).press("Escape");
   await tracker.getByRole("button", { name: "Company", exact: true }).click();
   await expect(tracker.getByRole("button", { name: "Company", exact: true })).toHaveAttribute("aria-sort", "ascending");
   await tracker.getByRole("button", { name: "Company", exact: true }).click();

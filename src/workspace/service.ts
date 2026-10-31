@@ -1,4 +1,5 @@
 import {openRuntimeView,assertRuntimeReadAccess,assertRuntimeScope,assertRuntimeWriteSchema,incompatible} from './runtime-view.js';
+import {withReadMetadata} from '../db/read-metadata.js';
 import {AppActions} from '../app-services/service.js';
 import {AppMonitoring} from '../app-services/monitoring.js';
 import {serviceJob} from '../app-services/jobs.js';
@@ -124,7 +125,7 @@ export class WorkspaceFoundation {
   // installed once; READ COMMITTED rechecks still see revocations before release.
   if(!this.frontendSession){
    const row=request.componentId?(await this.db.query('SELECT source FROM workspace_components WHERE id=$1 AND workspace_id=$2',[request.componentId,w])).rows[0]:(await this.db.query("SELECT body->'operation'->'content'->>'source' AS source FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()",[request.previewId,w,a.userId])).rows[0];
-   if(row?.source&&standardTracker(row.source))return this.db.transaction(tx=>new WorkspaceFoundation(adapter(tx),true).runFrontend(a,w,request));
+   if(row?.source&&standardTracker(row.source))return this.db.transaction(tx=>withReadMetadata(adapter(tx),db=>new WorkspaceFoundation(db,true).runFrontend(a,w,request)));
   }
   let content:any,version:number|undefined,viewId=request.viewId;let draftTables:string[]=[];let draftSchema=false;
   if(request.componentId){const runtime=await this.runtimeComponent(this.db,a,w,request.componentId,request.expectedVersion,viewId);assertRuntimeScope(runtime.latest,runtime.c);content=runtime.c;version=content.version;viewId=runtime.view.id;}

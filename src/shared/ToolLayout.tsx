@@ -7,7 +7,7 @@ import {readStandardConfig} from './standard-tool.js';
 import React,{useEffect,useState} from 'react';
 import {loadSourceTables} from './tool-templates.js';
 import {continueCreationInChat} from './creation.js';
-export function ToolLayout({component,call,onBack,onSaved,onAccess,onCustom}:{component:any;call:(name:string,args:any)=>Promise<any>;onBack:()=>void;onSaved:(c:any)=>void;onAccess:()=>void;onCustom?:()=>void}){
+export function ToolLayout({component,call,onBack,onSaved,onAccess,onCustom}:{component:any;call:(name:string,args:any)=>Promise<any>;onBack:()=>void;onSaved:(c:any,output?:any)=>void;onAccess:()=>void;onCustom?:()=>void}){
  const embedded=useEmbeddedNavigation();
  const [selectedTab,setSelectedTab]=useState(0),[section,setSection]=useState<'Layout'|'Style'>('Layout');
  const config=readStandardConfig(component.source);
@@ -32,7 +32,7 @@ export function ToolLayout({component,call,onBack,onSaved,onAccess,onCustom}:{co
   const p=review??await call('prepare_tool_layout',{componentId:component.id,expectedVersion:component.version,name,description,theme,newTables:draftTables,extendTables,tabs:tabs.map(t=>({originalIndex:t.originalIndex,typeId:t.typeId,name:t.name,visible:t.visible,columns:t.columns.map((c:any)=>({fieldId:c.fieldId,field:c.field,label:c.label,visible:c.visible,display:c.display}))}))});
   setReview(p);
   if(!review&&(draftTables.length||extendTables.length))return;
-  await call('confirm_workspace_change',{previewId:p.id,digest:p.digest,confirmed:true});const r=await call('read_project_component',{componentId:component.id});onSaved(r.component);
+  await call('confirm_workspace_change',{previewId:p.id,digest:p.digest,confirmed:true});const r=await call('read_project_component',{componentId:component.id,includeOutput:true});onSaved(r.component,r.initialOutput);
  });
  const allTables=[...tables,...newTables];
  function addItem(){

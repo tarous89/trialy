@@ -35,7 +35,7 @@ import {DocumentControls} from '../shared/DocumentControls.js';
 import {BulkImport} from '../shared/BulkImport.js';
 import {ViewPicker,RecordView} from '../shared/WorkspaceViews.js';
 import type {Field} from '../shared/schema.js';
-const bridge=new App({name:'TrialAgents workspace',version:'0.2.35'},{availableDisplayModes:['inline','fullscreen']},{autoResize:true});
+const bridge=new App({name:'TrialAgents workspace',version:'0.2.36'},{availableDisplayModes:['inline','fullscreen']},{autoResize:true});
 function unwrap(result:any){if(result.isError)throw Object.assign(new Error(result.content?.find((c:any)=>c.type==='text')?.text??'The action could not complete.'),result.structuredContent?.error??{});return result.structuredContent?.result;}
 async function call(name:string,args:Record<string,unknown>={}){return unwrap(await bridge.callServerTool({name,arguments:args}));}
 function Workspace(){

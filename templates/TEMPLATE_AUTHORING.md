@@ -1,6 +1,6 @@
 # TrialAgents template authoring standard
 
-Version: 1.0.0
+Version: 1.1.0
 
 This is the living engineering contract for templates served by TrialAgents. Update it when a verified renderer, lifecycle or host-integration lesson changes. Retrieve the current copy with `read_app_template_guidance(resource:"authoring")`; follow `nextOffset` to the end. The response includes a version and content hash. Packaged plugin examples are not the catalog.
 
@@ -59,6 +59,26 @@ The first-save footer belongs only to an app that has never been saved. Saved-ap
 Keep a loaded published app visible during ChatGPT edits and during failed loads. Publication may offer the platform's subtle optional refresh notice; it never forces a reload. If no authorized usable view exists, use the shared “No app is available” state and Return to Home in the same surface. Access revocation must still clear protected data. Failed writes preserve inputs and are never represented as successful.
 
 Use host/platform navigation adapters for links and Home; do not open a new browser tab for in-extension Home. Data calls must not replace the visible workspace through tool-result metadata. Present only complete previews; avoid repeated intermediate renders.
+
+## Responsive interaction contract
+
+Keep the primary data toolbar on **one line**: a shrinkable search input and the main action (for example, Add record). When the remaining controls do not fit, move secondary filters and sorting into a labelled **Filters** disclosure. Measure available container width and actual control widths; do not rely only on device breakpoints. The action must not fall onto a second row. Shorten its visible label at very narrow widths while retaining its accessible name. Show the active-filter count on the disclosure.
+
+The disclosure is local UI: opening it must not fetch data. Keep it within the viewport, allow its contents to scroll, preserve selections and search when resizing, expose `aria-expanded` and `aria-controls`, and support keyboard navigation, Escape with focus return, and outside-click dismissal. Keep an overflow-safe collapsed fallback before the shared frame script starts and in static design inspection. Do not hide controls permanently to make a screenshot fit.
+
+Use one main vertical scroll. Wide data tables may scroll horizontally inside their own labelled region; the page and action toolbar must not overflow horizontally. Keep tab navigation reachable, wrap long titles and values, stack overview cards as needed, and let details/settings fit the viewport without covering their close/save actions. Test 320, 390, 768, 1100 and 1440 CSS pixels, long labels, several active filters, narrow host containers and zoom/reflow. Fewer controls should remain inline when there is room. Preserve selection, inputs, scroll and business state across responsive changes.
+
+## Performance contract
+
+Use the standard tracker configuration and shared renderer for matching record workflows; copying/forking renderer source prevents shared fixes from reaching that app. Custom source remains supported but must meet the same measured responsiveness expectations. Prefer scoped bindings for new apps; never widen or silently change existing access to improve performance.
+
+Load one bounded active page, counts for overview totals, and bounded optional next-step samples. Respect control and payload limits even when a requested page size is larger. Do not fetch every row, every hidden tab or every detail merely to paint navigation. Page-local search/sort must be described honestly. Use readable labels and all authorized detail fields without loading unbounded records.
+
+For the shared runtime, preserve its instance-local authorized snapshots, bounded neighboring prefetch, identical in-flight read coalescing and access/version invalidation. Cache keys must distinguish app, version/view, route, filters, page and state. Never share data across users or apps, cache mutations, extend permission lifetimes, or skip final freshness checks for speed. Server permission/schema reuse is restricted to one request and rechecked before releasing data; records and counts remain uncached on the server.
+
+After a reviewed layout save, read the saved component with `includeOutput:true` and use that output directly. Do not issue another serial initial render. Keep confirmation, current permissions, optimistic versions and the real save receipt. Never simulate a successful save to remove a loading delay.
+
+Measure realistic complexity and cold/warm behavior: at least four tables, long labels, several filters and 12–28 fields per table, including hidden detail fields. Test a user click while prefetch is still pending, delayed host requests, repeated tab changes, page changes, successful layout reload and concurrent access changes. Set query-count/request-count budgets against a verified baseline; record local timings as diagnostics, not production guarantees. Re-run these checks when publication, access or runtime code changes. Consult [the measured tracker read path](../docs/tracker-performance.md) before adding another cache or timeout.
 
 ## Optional tasks and services
 

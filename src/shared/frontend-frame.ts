@@ -9,6 +9,19 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  const host=window.parent,root=document.getElementById('surface'),sheet=document.getElementById('appearance');
  let channel=null,model=null,uiState=null,controls=[],connected=false,detailScroll=0;
  let pending=Object.create(null),original=Object.create(null);
+ let optionsOpen=false,optionsTab=null,toolbarObserver=null;
+ function setOptionsOpen(open,focus=false){
+  optionsOpen=open;const bar=root.querySelector('.tracker-toolbar'),button=bar?.querySelector('.tracker-options-toggle');
+  bar?.classList.toggle('options-open',open);button?.setAttribute('aria-expanded',String(open));if(focus)button?.focus({preventScroll:true});
+ }
+ function fitToolbar(){
+  const bar=root.querySelector('.tracker-toolbar');if(!bar)return;
+  const options=bar.querySelector('.tracker-options'),add=bar.querySelector(':scope>.primary');if(!options||!add)return;
+  const compact=bar.clientWidth<420;bar.classList.toggle('toolbar-compact',compact);add.textContent=compact?'+ Add':'+ Add record';bar.classList.remove('options-overflow');
+  const gap=parseFloat(getComputedStyle(bar).gap)||10;
+  const overflow=160+options.getBoundingClientRect().width+add.getBoundingClientRect().width+gap*2>bar.clientWidth;
+  bar.classList.toggle('options-overflow',overflow);setOptionsOpen(overflow&&optionsOpen);
+ }
  const post=(kind,value={})=>{if(channel)host.postMessage({kind,channel,...value},'*');};
  const tone=v=>/fail|blocked|overdue|high|reject/i.test(String(v))?'red':/done|complete|active|approved|yes|ready/i.test(String(v))?'green':/pending|progress|medium|review|contact/i.test(String(v))?'amber':'blue';
  function footer(){
@@ -67,6 +80,9 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   const horizontalScroll=root.querySelector('.scroll')?.scrollLeft||0;
   const focused=document.activeElement,focusAction=focused?.getAttribute('data-action'),focusGrip=focused?.hasAttribute('data-reorder')?focused.getAttribute('aria-label'):null,selection=focused?.selectionStart,editBefore=focused?.closest('.example-input')?._before;
   root.replaceChildren(clean(html));sheet.textContent=css;
+  if(optionsTab!==uiState?.tab){optionsOpen=false;optionsTab=uiState?.tab;}
+  toolbarObserver?.disconnect();fitToolbar();const toolbar=root.querySelector('.tracker-toolbar');
+  if(toolbar){toolbarObserver=new ResizeObserver(fitToolbar);toolbarObserver.observe(toolbar);}
   if(connected){
    for(const el of root.querySelectorAll('input,select,textarea'))if(!el.hasAttribute('data-ui-state')){el.disabled=true;el.title='Use a connected data control';}
    const examples=Array.from(root.querySelectorAll('[data-trialy-example]')).map(el=>{const [ti,ci]=el.getAttribute('data-trialy-example').split(':').map(Number),c=model?.config.tabs[ti]?.columns[ci];return c?{...c,example:true,selector:'[data-trialy-example="'+ti+':'+ci+'"]',slot:'example_'+ti+'_'+ci,action:'example-bound:'+c.fieldId,value:uiState.examples[c.fieldId]??JSON.parse(el.getAttribute('data-trialy-value')||'[]')}:null;}).filter(Boolean);
@@ -119,7 +135,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   try{
    const output=renderTracker(model.config,model.theme,{state:next,event,saved:model.saved,writable:model.writable},{call:(name,value)=>{
     if(name!=='records.read')throw Error('Server action');
-    const p=model.pages.find(p=>p.request.typeId===value.typeId&&p.request.limit===value.limit&&p.request.offset===value.offset&&JSON.stringify(Object.entries(p.request.filters||{}).sort())===JSON.stringify(Object.entries(value.filters||{}).sort())&&(!navigation||Date.now()-p.receivedAt<${SNAPSHOT_TTL}));if(!p)throw Error('Page needed');return p.result;
+    const p=model.pages.find(p=>p.request.typeId===value.typeId&&(value.limit===0||p.request.limit===value.limit&&p.request.offset===value.offset)&&JSON.stringify(Object.entries(p.request.filters||{}).sort())===JSON.stringify(Object.entries(value.filters||{}).sort())&&(!navigation||Date.now()-p.receivedAt<${SNAPSHOT_TTL}));if(!p)throw Error('Page needed');return value.limit===0?{...p.result,rows:[],limit:0,offset:value.offset}:p.result;
    }});
    if(navigation){const nextControls=(output.controls||[]).map(c=>{const cached=model.cachedControls?.[c.fieldId+':'+c.recordId];if(!cached)throw Error('Controls needed');return {...cached,slot:c.slot};});controls=nextControls;}
    uiState=output.state;paint(output.html,output.css);
@@ -165,6 +181,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   dispatch({kind,action,value:target.type==='checkbox'?target.checked:typeof target.value==='string'?target.value:null,form:values});
  }
  root.addEventListener('click',e=>{const target=e.target;if(!(target instanceof Element))return;
+  if(target.closest('.tracker-options-toggle')){e.preventDefault();setOptionsOpen(!optionsOpen);return;}
   const display=target.closest('.cell-display');if(display){e.preventDefault();activateCell(display);return;}const anchor=target.closest('a');if(anchor){if(appLinks&&anchor.dataset.appHref){if(anchor.dataset.external==='true')return;e.preventDefault();if(Object.keys(pending).length||uiState?.newRow){post('trialy.notice',{message:'Save or ignore your current edits before following this link.'});return;}post('trialy.link',{href:anchor.dataset.appHref});return;}e.preventDefault();}const b=target.closest('button,input[type=submit]');if(b?.disabled)return;
   if(b&&b.type==='submit'&&b.form){e.preventDefault();send('submit',b);return;}
   if(target.closest('[data-action]')&&!target.matches('input,textarea,select,option')){e.preventDefault();send('click',target);}
@@ -174,6 +191,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  root.addEventListener('focusout',e=>{const editor=e.target.closest('.example-input');if(editor)queueMicrotask(()=>{if(!editor.contains(document.activeElement)){editor.hidden=true;editor.previousElementSibling.hidden=false;}});});
  root.addEventListener('submit',e=>{e.preventDefault();if(e.target instanceof Element)send('submit',e.target);});
  root.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&optionsOpen){e.preventDefault();setOptionsOpen(false,true);return;}
   const editor=e.target.closest('.cell-input,.example-input');
   if(editor&&e.key==='Enter'&&e.target.matches('input,select')){e.preventDefault();e.target.blur();return;}
   if(editor&&e.key==='Escape'){e.preventDefault();if(editor._before){pending=Object.assign(Object.create(null),editor._before.pending);uiState.examples=editor._before.examples;}e.target.blur();local({kind:'change',action:'sort',value:uiState?.sorts?.[uiState.tab]||''});return;}
@@ -198,6 +216,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   handle.addEventListener('pointermove',move);handle.addEventListener('pointerup',finish);handle.addEventListener('pointercancel',finish);
  });
  root.addEventListener('pointerdown',e=>{if(!e.target.matches('.drawer-resizer'))return;e.preventDefault();const move=ev=>document.documentElement.style.setProperty('--drawer-width',Math.max(365,Math.min(innerWidth,innerWidth-ev.clientX))+'px');const up=()=>{window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',up);};window.addEventListener('pointermove',move);window.addEventListener('pointerup',up);});
+ document.addEventListener('pointerdown',e=>{if(optionsOpen&&!e.target.closest('.tracker-toolbar'))setOptionsOpen(false);});
  new ResizeObserver(()=>{if(!model)post('trialy.resize',{height:Math.ceil(root.getBoundingClientRect().height)+32});}).observe(document.body);
  host.postMessage({kind:'trialy.ready'},'*');
 })();`;

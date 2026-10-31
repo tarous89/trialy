@@ -1,4 +1,5 @@
 import {moveTool} from '../../src/workspace/tool-placement.js';
+import {addWideTrackerFixture} from './wide-tracker-fixture.js';
 import {openApp,prepareRenderedApp} from '../../src/workspace/apps.js';
 import {addAppsFixture} from './apps-fixture.js';
 import session from 'express-session';
@@ -38,7 +39,7 @@ export async function fixture(){
   if(name==='list_tables')return s.types(actor,w.id);
   if(name==='list_workspace_previews')return f.pending(actor,w.id);
   if(name==='read_workspace_home')return workspaceHome(db,actor,w.id,v);
-  if(name==='read_project_component')return f.readComponent(actor,w.id,v.componentId);
+  if(name==='read_project_component')return f.readComponent(actor,w.id,v.componentId,v.includeOutput);
   if(name==='run_component_frontend')return f.runFrontend(actor,w.id,v.request);
   if(name==='check_component_access')return f.checkComponentAccess(actor,w.id,v.componentId,v.viewId);
   if(name==='prepare_workspace_change')return f.preview(actor,w.id,v.operation);
@@ -58,6 +59,7 @@ export async function fixture(){
  app.get('/reference',async(_req,res)=>{res.removeHeader('Content-Security-Policy');res.type('html').send(await readFile('plugin/trialy/skills/trialy-tracker-design/assets/approved-theme2-reference.html','utf8'));});
  app.use(session({secret:'synthetic-visual-auth-session-secret-only',resave:false,saveUninitialized:false}));
  addLocalAuth(app,db,base);
+ addWideTrackerFixture(app,f,s,actor,w.id);
  await addAppsFixture(app,db,actor,w);
  return {base,component,w,f,actor,close:async()=>{server.closeAllConnections();await new Promise<void>(r=>server.close(()=>r()));await db.close();}};
 }
