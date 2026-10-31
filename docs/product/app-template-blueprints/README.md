@@ -34,8 +34,8 @@ The original, separate [11-function showcase plan](../TEMPLATE_SHOWCASE_PLAN.md)
 
 - [Dynamic app templates](../DYNAMIC_APP_TEMPLATES.md): versioned publisher-owned JSON templates in `templates/apps`, `list_app_templates` / `read_app_template` / `prepare_app_from_template`, reusable Vivid tracker or bounded `frontend-js`. New same-engine templates can be deployed server-side without changing plugin package.
 - [App design quality](../APP_DESIGN_QUALITY.md): `read_app_design` exposes Inter-first app defaults, semantic palettes and desktop/mobile readability checks. Requested theme changes may override style; never modify the authoritative Vivid stylesheet as a side effect of scoping.
-- [Vivid reuse contract](../../plugin/trialy/skills/trialy-tracker-design/references/TEMPLATE_REUSE.md): headings, tabs, stat cards, editable tables, details drawer, forms, layout/access and semantic pills. Honor stable table fields and source provenance.
-- [Write authorization](../../docs/WRITE_AUTHORIZATION.md) and [Execution](../../docs/EXECUTION.md) govern saves and schedules.
+- [Vivid reuse contract](../../../plugin/trialy/skills/trialy-tracker-design/references/TEMPLATE_REUSE.md): headings, tabs, stat cards, editable tables, details drawer, forms, layout/access and semantic pills. Honor stable table fields and source provenance.
+- [Write authorization](../../WRITE_AUTHORIZATION.md) and [Execution](../../EXECUTION.md) govern saves and schedules.
 - [Application scope](../APP_PLATFORM_SCOPE.md): generic HTTPS connector exists, but workers cannot invoke it without a future explicit worker grant, and isolated functions have no network or LLM access.
 
 ## Suggested design/build order
