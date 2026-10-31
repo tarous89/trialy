@@ -21,7 +21,7 @@ type Preview={id:string;actorId:string;workspaceId:string;operation:Operation|Fi
 const json=(v:unknown)=>JSON.stringify(v);
 export class Service extends DataService {
  constructor(db:Database,maxFileBytes=25*1024*1024,originals:OriginalStore=new PostgresOriginalStore()) {super(db,maxFileBytes,originals);}
- async sweep() {await this.db.query('DELETE FROM data_previews WHERE expires_at<=now()');await this.db.query('DELETE FROM guest_drafts WHERE expires_at<=now() AND receipt IS NULL');}
+ async sweep() {await this.db.query('DELETE FROM app_runtime_views WHERE expires_at<=now()');await this.db.query('DELETE FROM data_previews WHERE expires_at<=now()');await this.db.query('DELETE FROM guest_drafts WHERE expires_at<=now() AND receipt IS NULL');}
  async ensureAccount(a:Actor){
   if(!['human','ai'].includes(a.origin))fail(403,'account_required','Connect your account first');
   await this.db.transaction(async tx=>{

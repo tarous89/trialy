@@ -27,6 +27,7 @@ test('Frontend code: read-only drafts, bound reads, reviewed atomic writes, stal
  const content={name:'My code',format:'frontend-js',source,bindings:[{typeId:table,fields:['name']}]};
  // Legacy/custom runtime fixture is created by the owner; AI can still run its authorized bindings.
  const draft=await f.preview(a,w.id,{kind:'save_component',projectId:project.id,content});
+ await assert.rejects(f.runFrontend(a,w.id,{previewId:draft.id,viewId:randomUUID()}),/Runtime views belong to saved apps/);
  const initial=await f.runFrontend(a,w.id,{previewId:draft.id});assert.deepEqual((initial.state as any).data,{name:'Original'});assert.equal((initial.state as any).host,'undefined/undefined/undefined');assert.equal(initial.proposal,null);assert.equal((await f.components(ai,w.id)).length,0);
  await assert.rejects(f.runFrontend(a,w.id,{previewId:draft.id,event:{kind:'submit',action:'rename'}}));
  const saved=await f.confirm(a,w.id,draft.id,draft.digest);
@@ -36,7 +37,7 @@ test('Frontend code: read-only drafts, bound reads, reviewed atomic writes, stal
  await assert.rejects(f.runFrontend(viewer,w.id,request));
  await assert.rejects(f.runFrontend(ai,w.id,{...request,event:{kind:'click',action:'bad'}}),/bindings/);
  const before=(await f.pending(ai,w.id)).length;await assert.rejects(f.runFrontend(ai,w.id,{...request,event:{kind:'click',action:'fail'}}));assert.equal((await f.pending(ai,w.id)).length,before);
- await assert.rejects(f.runFrontend(ai,w.id,{...request,expectedVersion:1}),/revision/);
+ await assert.rejects(f.runFrontend(ai,w.id,{...request,expectedVersion:1}),(e:any)=>e.code==='component_changed');
  const stale=await f.runFrontend(ai,w.id,request);assert.ok(stale.proposal);const staleProposal=stale.proposal;await save({kind:'update_record',recordId:record,expectedVersion:1,data:{name:'Concurrent update'}});await assert.rejects(f.confirm(a,w.id,staleProposal.id,staleProposal.digest),/changed/);
  await change({kind:'set_project_access',nodeId:project.id,expectedVersion:0,allowedUsers:null,ai:false});await assert.rejects(f.runFrontend(ai,w.id,request));
  const final=await f.runFrontend(a,w.id,{componentId:saved.id,expectedVersion:0});assert.equal((final.state as any).data.name,'Concurrent update');

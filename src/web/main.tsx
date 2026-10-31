@@ -48,7 +48,7 @@ import {WorkspacePolicy} from './WorkspacePolicy.js';
 import {BulkImport} from '../shared/BulkImport.js';
 import {ViewPicker,RecordView} from '../shared/WorkspaceViews.js';
 let csrf='';
-async function api(path:string,method='GET',body?:unknown){const r=await fetch(path,{method,credentials:'same-origin',headers:{'Content-Type':'application/json','X-CSRF-Token':csrf},body:body===undefined?undefined:JSON.stringify(body)});const data=await r.json();if(!r.ok)throw new Error(data.message??'This action could not complete');return data;}
+async function api(path:string,method='GET',body?:unknown){const r=await fetch(path,{method,credentials:'same-origin',headers:{'Content-Type':'application/json','X-CSRF-Token':csrf},body:body===undefined?undefined:JSON.stringify(body)});const data=await r.json();if(!r.ok)throw Object.assign(new Error(data.message??'This action could not complete'),{status:r.status,code:data.error});return data;}
 const queryParams=new URLSearchParams(location.search);if(queryParams.get('tab')==='changes'||queryParams.has('workspaceId'))sessionStorage.setItem('trialy.review',location.search);
 const reviewParams=new URLSearchParams(location.search||sessionStorage.getItem('trialy.review')||'');
 const legacy=queryParams.get('legacy')==='1';

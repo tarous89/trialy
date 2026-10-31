@@ -5,6 +5,11 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown)=
  const clean=Object.fromEntries(Object.entries(v).filter(([key])=>key!=='workspaceId'));
  const services=`/api/workspaces/${v.workspaceId}/app-services`;
  const routes:Record<string,[string,string?,unknown?]>={
+ prepare_app_monitoring:[`${services}/monitoring/prepare`,'POST',clean],
+ list_app_monitoring:[`${services}/monitoring?appId=${v.appId}&offset=${v.offset??0}`],
+ read_app_monitoring:[`${services}/monitoring/${v.monitorId}`],
+ control_app_monitoring:[`${services}/monitoring/${v.monitorId}/control`,'POST',{expectedVersion:v.expectedVersion,enabled:v.enabled}],
+ read_app_monitor_runs:[`${services}/monitoring/${v.monitorId}/runs?offset=${v.offset??0}`],
  prepare_app_sharing:[`${services}/sharing/prepare`,'POST',clean],
  list_app_shares:[`${services}/sharing/${v.appId}`],
  revoke_app_share:[`${services}/sharing/${v.shareId}/revoke`,'POST',{}],
@@ -44,7 +49,7 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown)=
  move_tool:[`${o}/tools/move`,'POST',Object.fromEntries(Object.entries(v).filter(([k])=>k!=='workspaceId'))],
  read_workspace_home:[`${o}/home`,'POST',Object.fromEntries(Object.entries(v).filter(([k])=>k!=='workspaceId'))],
  read_workspace_activity:[`${o}/activity`,'POST',Object.fromEntries(Object.entries(v).filter(([k])=>k!=='workspaceId'))],
- check_component_access:[`${o}/components/${v.componentId}/access`],
+ check_component_access:[`${o}/components/${v.componentId}/access${v.viewId?'?viewId='+encodeURIComponent(v.viewId):''}`],
  read_database_table:[`${o}/database`,'POST',Object.fromEntries(Object.entries(v).filter(([k])=>k!=='workspaceId'))],
  read_workspace_schema:[`${o}/schema`,'POST',{offset:v.offset??0,limit:v.limit??10,...(v.typeId?{typeId:v.typeId}:{})}],find_field_candidates:[`${o}/field-candidates`,'POST',Object.fromEntries(Object.entries(v).filter(([k])=>k!=='workspaceId'))],
  list_execution_approvals:[`${b}/approvals`],prepare_execution_control:[`${b}/approvals`,'POST',{kind:v.kind,config:v.config}],confirm_execution_control:[`${b}/approvals/${v.previewId}/confirm`,'POST',{digest:v.digest,confirmed:v.confirmed}],

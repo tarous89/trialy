@@ -1,0 +1,20 @@
+const {test,expect}=require('./test.cjs');
+const base='http://127.0.0.1:4179';
+for(const width of [1440,390])test(`Optional app monitoring review, history and disable preserve the published app at ${width}px`,async({page,context})=>{
+ await page.setViewportSize({width,height:1000});
+ const fixture=await (await page.request.get(base+'/fixture/apps')).json();
+ const live=await context.newPage();await live.goto(base+fixture.url);const frame=live.frameLocator('iframe[title="Saved frontend code"]');await expect(frame.getByRole('heading',{name:'Overview',exact:true})).toBeVisible();
+ const setup=await page.request.post(base+'/fixture/monitoring');expect(setup.ok()).toBe(true);const f=await setup.json();
+ await page.goto(base+'/app-home?tab=apps&workspaceId='+f.workspaceId+'&serviceReview='+f.reviewId);
+ await expect(page.getByRole('heading',{name:'Review monitoring',exact:true})).toBeVisible();await expect(page.getByText('No automatic database updates.',{exact:false})).toBeVisible();
+ await expect(page.locator('body')).toHaveJSProperty('scrollWidth',width);
+ await page.getByRole('button',{name:'Save monitoring configuration'}).click();await expect(page.getByRole('heading',{name:'Monitoring configuration saved'})).toBeVisible();await expect(page.getByText('Saving this configuration does not create a schedule.',{exact:false})).toBeVisible();
+ const monitorId=await page.locator('code').innerText();let monitorRequests=0;page.on('request',req=>{if(req.url().includes('/app-services/monitoring?'))monitorRequests++;});
+ await page.goto(base+'/app-home?tab=apps&workspaceId='+f.workspaceId+'&serviceApp='+f.appId);await expect(page.getByRole('heading',{name:'Share app',exact:true})).toBeVisible();expect(monitorRequests).toBe(0);
+ await page.locator('summary').filter({hasText:'Monitoring'}).click();await expect(page.getByRole('heading',{name:'Company signal monitoring',exact:true}).last()).toBeVisible();expect(monitorRequests).toBe(1);
+ expect((await page.request.post(base+'/fixture/monitoring/'+monitorId+'/run')).ok()).toBe(true);
+ await page.getByRole('button',{name:'Refresh monitoring',exact:true}).click();const card=page.locator('.settings-card').filter({has:page.getByRole('heading',{name:'Company signal monitoring',exact:true})}).last();await expect(card).toContainText('no update');await card.getByRole('button',{name:'Run history'}).click();await expect(page.getByLabel('Monitoring run history')).toContainText('0 confirmed record changes');
+ await card.getByRole('button',{name:'Disable monitoring'}).click();await expect(card).toContainText('Locally disabled');await expect(page.getByRole('status')).toContainText('Pause the linked schedule in ChatGPT');
+ await live.reload();await expect(frame.getByRole('heading',{name:'Overview',exact:true})).toBeVisible();await expect(live.getByRole('alertdialog')).toHaveCount(0);await expect(page.locator('body')).toHaveJSProperty('scrollWidth',width);
+ await page.screenshot({path:`/tmp/trialy-monitoring-${width}.png`,fullPage:true});await live.close();
+});

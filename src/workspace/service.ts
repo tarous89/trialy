@@ -1,4 +1,6 @@
+import {openRuntimeView,assertRuntimeReadAccess,assertRuntimeScope,assertRuntimeWriteSchema,incompatible} from './runtime-view.js';
 import {AppActions} from '../app-services/service.js';
+import {AppMonitoring} from '../app-services/monitoring.js';
 import {serviceJob} from '../app-services/jobs.js';
 import {appDesignCss,DESIGN_VERSION} from '../shared/app-design.js';
 import {inspectAppDesign,type DesignFrame} from './design-quality.js';
@@ -56,14 +58,24 @@ export class WorkspaceFoundation {
  }
  async sharingMembers(a:Actor,w:string){const p=await this.policy(this.db,a,w);if(p.role!=='owner')fail(403,'owner_required','Only the workspace owner may change sharing');return (await this.db.query('SELECT u.id,u.name FROM users u JOIN memberships m ON m.user_id=u.id WHERE m.tenant_id=$1 AND u.subject NOT LIKE \'public-app|%\' ORDER BY u.name,u.id',[p.tenant_id])).rows;}
  async nodes(a:Actor,w:string){const p=await access(this.db,a,w);let allowed:Set<string>|undefined;if(p.allowed_types!==null||p.hidden_fields.length){allowed=new Set();for(const c of await this.components(a,w)){for(const n of await this.nodeAccess(this.db,a,w,c.project_id))allowed.add(n.id);}}const nodes=[];for(const n of (await this.db.query('SELECT * FROM workspace_nodes WHERE workspace_id=$1 ORDER BY name,id',[w])).rows){if(allowed&&!allowed.has(n.id))continue;try{const chain=await this.nodeAccess(this.db,a,w,n.id);nodes.push({...n,effective_archived:chain.some(n=>n.archived)});}catch{}}return {workspaceId:w,workspaceFoundation:true,nodes};}
- async component(tx:Connection,a:Actor,w:string,id:string){
+ async component(tx:Connection,a:Actor,w:string,id:string,validateBindings=true){
   a={...a,accessToolId:id};
   const c=(await tx.query('SELECT * FROM workspace_components WHERE id=$1 AND workspace_id=$2',[id,w])).rows[0];
   if(!c)fail(404,'not_found','Component not found');
   if(c.source_access!=='bindings')await this.componentSourcePolicy(tx,a,w);
   const p=await access(tx,a,w);const chain=await this.nodeAccess(tx,a,w,c.project_id);
   if((p.role!=='owner'&&c.allowed_users!==null&&!c.allowed_users.includes(a.userId))||(a.origin==='ai'&&!c.ai_enabled))fail(404,'not_found','Component not found');
-  await toolPolicy(tx,a,p,id);if(!standardTracker(c.source))await this.componentBindings(tx,a,w,c.bindings);await this.componentAssets(tx,a,w,c.assets);return {...c,project_archived:chain.some(n=>n.archived)};
+  await toolPolicy(tx,a,p,id);if(validateBindings&&!standardTracker(c.source))await this.componentBindings(tx,a,w,c.bindings);await this.componentAssets(tx,a,w,c.assets);return {...c,project_archived:chain.some(n=>n.archived)};
+ }
+ private async runtimeComponent(tx:Connection,a:Actor,w:string,id:string,expectedVersion:number|undefined,viewId?:string){
+  const latest=await this.component(tx,a,w,id,!viewId);
+  if(latest.archived||latest.project_archived)fail(409,'component_archived','This app is archived');
+  if(!viewId&&latest.format!=='frontend-js')incompatible();
+  const view=await openRuntimeView(tx,a,w,latest,expectedVersion,viewId),c=view.component;
+  if(c.source_access!=='bindings')await this.componentSourcePolicy(tx,a,w);
+  await this.componentAssets(tx,a,w,c.assets);
+  await assertRuntimeReadAccess(tx,a,w,latest,view);
+  return {view,c,latest};
  }
  private async componentSourcePolicy(tx:Connection,a:Actor,w:string){
   const p=await this.policy(tx,a,w);
@@ -114,10 +126,10 @@ export class WorkspaceFoundation {
    const row=request.componentId?(await this.db.query('SELECT source FROM workspace_components WHERE id=$1 AND workspace_id=$2',[request.componentId,w])).rows[0]:(await this.db.query("SELECT body->'operation'->'content'->>'source' AS source FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()",[request.previewId,w,a.userId])).rows[0];
    if(row?.source&&standardTracker(row.source))return this.db.transaction(tx=>new WorkspaceFoundation(adapter(tx),true).runFrontend(a,w,request));
   }
-  let content:any,version:number|undefined;let draftTables:string[]=[];let draftSchema=false;
-  if(request.componentId){const c=await this.component(this.db,a,w,request.componentId);if(c.archived||c.project_archived||c.format!=='frontend-js'||c.version!==request.expectedVersion)fail(409,'component_changed','Open the current active code revision');content=c;version=c.version;}
+  let content:any,version:number|undefined,viewId=request.viewId;let draftTables:string[]=[];let draftSchema=false;
+  if(request.componentId){const runtime=await this.runtimeComponent(this.db,a,w,request.componentId,request.expectedVersion,viewId);assertRuntimeScope(runtime.latest,runtime.c);content=runtime.c;version=content.version;viewId=runtime.view.id;}
   else {const draft=(await this.db.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[request.previewId,w,a.userId])).rows[0];if(!draft||!['save_component','create_tracker'].includes(draft.body.operation.kind)||draft.body.operation.content.format!=='frontend-js')fail(404,'not_found','Code preview unavailable');await this.validate(this.db,a,w,draft.body.operation);content={...draft.body.operation.content,project_id:draft.body.operation.setup?.projectId??draft.body.operation.projectId};draftTables=(draft.body.operation.setup?.newTables??[]).map((t:any)=>t.id);draftSchema=!!(draftTables.length||draft.body.operation.setup?.extendTables?.length);}
-  if(!draftSchema)await validateResource(this.db,a,w,content,true); // create_tracker validation checks generated bindings, including virtual tables.
+  if(!draftSchema&&!request.viewId)await validateResource(this.db,a,w,content,true); // create_tracker validation checks generated bindings, including virtual tables.
   if(request.event.action.startsWith('bound:')||request.event.action==='bound-batch'){
    if(!request.componentId||!content.manifest)fail(403,'preview_read_only','Open a saved connected resource');
    const edits=request.event.action==='bound-batch'?Object.entries(request.event.form):[[request.event.action,request.event.value]];
@@ -129,7 +141,7 @@ export class WorkspaceFoundation {
     if(prefix!=='bound'||!control||!recordId||!/^\d+$/.test(versionText??''))fail(400,'invalid_control','Choose a bound writable field');
     const record=await this.record(this.db,a,w,id.parse(recordId),true);
     if(record.type_id!==control.typeId)fail(403,'manifest_binding','Record does not belong to this control');
-    const field=record.fields.find((f:any)=>f.key===control.field);let value:any=rawValue;
+    const field=record.fields.find((f:any)=>f.key===control.field);if(!field)incompatible();let value:any=rawValue;
     if(value===''&&!field.required)value=null;
     else if(field.multiple&&typeof value==='string'&&value.trim().startsWith('[')){try{value=JSON.parse(value);}catch{fail(400,'invalid_value','Enter a valid list of values');}if(!Array.isArray(value))fail(400,'invalid_value','Enter a list of values');}
     else if(['number','money'].includes(field.kind)){if(typeof value!=='string'||!value.trim()||!Number.isFinite(Number(value)))fail(400,'invalid_value','Enter a valid number');value=Number(value);}
@@ -138,7 +150,7 @@ export class WorkspaceFoundation {
     if(change.expectedVersion!==Number(versionText))fail(409,'stale_version','Edit versions disagree');
     change.data[control.field]=value;
    }
-   const proposal=await this.preview(a,w,{kind:'apply_component_records',componentId:request.componentId,expectedVersion:version,changes});
+   const proposal=await this.preview(a,w,{kind:'apply_component_records',componentId:request.componentId,expectedVersion:version,viewId,changes});
    return {boundEdit:true,proposal,state:request.state,html:'',css:''};
   }
   // Draft evaluation has its own bounded capacity and cannot occupy a published app slot.
@@ -165,7 +177,7 @@ export class WorkspaceFoundation {
     if(name==='connectors.call'&&process.env.SIMPLE_APPS_ENABLED==='true'){
      if(!request.componentId)fail(403,'preview_read_only','Unsaved app previews cannot use external connectors');
      const v=z.object({connectionId:id,operation:z.string().max(64),requestKey:id,parameters:z.record(z.string(),z.unknown()).optional(),records:z.record(z.string(),id).optional()}).strict().parse(value);
-     if(connectorReviews.length>=3)fail(429,'connector_reviews','Review existing connector requests before creating more');const result=await new Connectors(this.db,(tx,actor,workspaceId,appId)=>this.component(tx,actor,workspaceId,appId)).call(a,w,{...v,appId:request.componentId,appVersion:version},true);if(result.status==='review_required')connectorReviews.push(result);return result;
+     if(connectorReviews.length>=3)fail(429,'connector_reviews','Review existing connector requests before creating more');const latest=(await this.runtimeComponent(this.db,a,w,request.componentId,version,viewId)).latest;const result=await new Connectors(this.db,(tx,actor,workspaceId,appId)=>this.component(tx,actor,workspaceId,appId)).call(a,w,{...v,appId:request.componentId,appVersion:latest.version},true);if(result.status==='review_required')connectorReviews.push(result);return result;
     }
     if(name==='project.records'||name==='project.relationships'){
      const v=z.object({offset:z.number().int().min(0).max(1000000).default(0)}).strict().parse(value);
@@ -195,7 +207,7 @@ export class WorkspaceFoundation {
     }
     if(name==='functions.status'){
      if(!request.componentId)fail(403,'preview_read_only','Open a saved interface');
-     const v=z.object({requestKey:id}).strict().parse(value);const r=(await this.db.query('SELECT id,component_context FROM foundation_runs WHERE workspace_id=$1 AND user_id=$2 AND request_key=$3',[w,a.userId,v.requestKey])).rows[0];if(!r||r.component_context?.id!==request.componentId||r.component_context?.version!==version)fail(404,'not_found','Component run not found');return new Foundation(this.db).run(a,w,r.id);
+     const v=z.object({requestKey:id}).strict().parse(value);const r=(await this.db.query('SELECT id,component_context FROM foundation_runs WHERE workspace_id=$1 AND user_id=$2 AND request_key=$3',[w,a.userId,v.requestKey])).rows[0];if(!r||r.component_context?.id!==request.componentId)fail(404,'not_found','Component run not found');return new Foundation(this.db).run(a,w,r.id);
     }
     if(name==='records.get'&&process.env.SIMPLE_APPS_ENABLED==='true'){
      if(!request.componentId)fail(403,'preview_read_only','Open a saved app to read a record detail');
@@ -209,7 +221,7 @@ export class WorkspaceFoundation {
     if(name==='records.read'){
      if(draftTables.includes((value as any)?.typeId)){const v=frontendRead.parse(value);return {rows:[],total:0,limit:v.limit,offset:v.offset};}
      const v=frontendRead.parse(value),binding=content.bindings.find((b:any)=>b.typeId===v.typeId);if(!binding)fail(403,'binding_required','Table is not bound to this component');
-     if(request.componentId&&!tracker)await this.component(this.db,a,w,request.componentId);
+     if(request.componentId&&!tracker)await this.runtimeComponent(this.db,a,w,request.componentId,version,viewId);
      let linkedTable;try{linkedTable=await tableAccess(v.typeId);}catch(e){if((e as any).status===403||(e as any).status===404)return {unavailable:true,message:'This table is restricted',rows:[],total:null,limit:v.limit,offset:v.offset};throw e;}const readableKeys=visibleFields(linkedTable.type.fields,linkedTable.policy,a).filter(f=>binding.fields.includes(f.key)).map(f=>f.key);
      if(Object.keys(v.filters).length>8||Object.keys(v.filters).some(k=>!readableKeys.includes(k)))fail(403,'filter_field','Filter only readable bound fields');
      // Project in PostgreSQL and bound each row before materializing it in the web process.
@@ -241,7 +253,7 @@ export class WorkspaceFoundation {
    if(!tracker&&(output.controls?.length??0)>100)fail(400,'control_limit','Custom interfaces support at most 100 controls');
    if(Buffer.byteLength(J(output.state))>100000)fail(400,'state_limit','Interface state is too large');
    // Recheck after execution; a concurrent revoke/edit must not release its output.
-   if(request.componentId){const current=await this.component(this.db,a,w,request.componentId);if((await access(this.db,a,w)).access_version!==currentPolicy.access_version||current.version!==version||current.archived||current.project_archived)fail(409,'component_changed','Interface changed while running');}
+   if(request.componentId){const runtime=await this.runtimeComponent(this.db,a,w,request.componentId,version,viewId);assertRuntimeScope(runtime.latest,content);if((await access(this.db,a,w)).access_version!==currentPolicy.access_version)fail(409,'access_changed','Permissions changed while this action was running. Try again.');}
    else {const draft=(await this.db.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[request.previewId,w,a.userId])).rows[0];if(!draft)fail(409,'preview_expired','Preview unavailable');await this.validate(this.db,a,w,draft.body.operation);}
    if(!tracker&&appDesignCss.length+output.css.length>50000)fail(400,'css_limit','App styles exceed the frame size limit.');
    const controls=[];const recordCache=tracker?pageRecords:new Map<string,any>(),resolvedCache=tracker?resolvedPages:new Map<string,any>();
@@ -263,16 +275,16 @@ export class WorkspaceFoundation {
     const resolved=resolvedCache.get(record.id)??await controlReader.read(record);resolvedCache.set(record.id,resolved);
     controls.push({recordId:item.recordId,fieldId:item.fieldId,slot:item.slot,label:definition.label??field.name,kind:field.kind,display:tracker?.config.tabs.flatMap((t:any)=>t.columns).find((c:any)=>c.fieldId===definition.id)?.display??field.renderer,rendered:resolved.display?.[field.key],multiple:!!field.multiple,value:resolved.data[field.key]??null,options:field.options??[],editable:!!request.componentId&&definition.mode==='write'&&!derived(field)&&!policy.archived&&policy.write_fields.includes(field.key)&&['text','number','money','date','boolean','select'].includes(field.kind),action:'bound:'+definition.id+':'+record.id+':'+record.version});
    }
-   if(request.componentId){const latest=await this.component(this.db,a,w,request.componentId);if(latest.version!==version||latest.archived||latest.project_archived||(await access(this.db,a,w)).access_version!==currentPolicy.access_version)fail(409,'component_changed','Interface changed while preparing controls');}
+   if(request.componentId){const runtime=await this.runtimeComponent(this.db,a,w,request.componentId,version,viewId);assertRuntimeScope(runtime.latest,content);if((await access(this.db,a,w)).access_version!==currentPolicy.access_version)fail(409,'access_changed','Permissions changed while this action was running. Try again.');}
    if(new Set(controls.map(c=>c.slot)).size!==controls.length)fail(400,'duplicate_control','Control slots must be unique');
    const {proposal,queued}=!layoutProposal&&!changes.length&&!invocations.length?{proposal:null,queued:[]}:await this.db.transaction(async tx=>{
     await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const f=new WorkspaceFoundation(adapter(tx));
-    if(request.componentId){const c=await f.component(tx,a,w,request.componentId);if(c.version!==version||c.archived||c.project_archived)fail(409,'component_changed','Interface changed');}
+    if(request.componentId){const runtime=await f.runtimeComponent(tx,a,w,request.componentId,version,viewId);assertRuntimeScope(runtime.latest,content);}
     if(layoutProposal&&(changes.length||invocations.length))fail(400,'mixed_changes','Review layout and data changes separately');
-    const proposal=layoutProposal?await f.preview(a,w,layoutProposal):changes.length?await f.preview(a,w,{kind:'apply_component_records',componentId:request.componentId,expectedVersion:version,changes}):null;
-    const queued=[];for(const v of invocations)queued.push(await f.invokeComponent(a,w,{...v,componentId:request.componentId,expectedVersion:version}));return {proposal,queued};
+    const proposal=layoutProposal?await f.preview(a,w,layoutProposal):changes.length?await f.preview(a,w,{kind:'apply_component_records',componentId:request.componentId,expectedVersion:version,viewId,changes}):null;
+    const queued=[];for(const v of invocations){const latest=await f.component(tx,a,w,request.componentId!);if(!isDeepStrictEqual(content.execution.find((b:any)=>b.name===v.binding),latest.execution.find((b:any)=>b.name===v.binding)))incompatible();queued.push(await f.invokeComponent(a,w,{...v,componentId:request.componentId,expectedVersion:latest.version}));}return {proposal,queued};
    });
-   return {queued,...(connectorReviews.length?{connectorReviews}:{}),runtime:'trialy-frontend-js-v1',frameUrl:new URL('/frontend/frame',appPublicUrl()).toString(),...output,css:(tracker?'':appDesignCss)+output.css,accessVersion:currentPolicy.access_version,accessStamp,controls,connected:!!content.manifest,proposal,temporary:!request.componentId,...(tracker?{tracker:{config:tracker.config,theme:tracker.theme,pages,saved:!!request.componentId,writable}}:{})};
+   return {queued,...(connectorReviews.length?{connectorReviews}:{}),viewId,runtime:'trialy-frontend-js-v1',frameUrl:new URL('/frontend/frame',appPublicUrl()).toString(),...output,css:(tracker?'':appDesignCss)+output.css,accessVersion:currentPolicy.access_version,accessStamp,controls,connected:!!content.manifest,proposal,temporary:!request.componentId,...(tracker?{tracker:{config:tracker.config,theme:tracker.theme,pages,saved:!!request.componentId,writable}}:{})};
   }finally{if(!knownTracker)pool.delete(key);}
  }
  private parseInterface(content:any){
@@ -353,7 +365,12 @@ export class WorkspaceFoundation {
   for(const b of c.bindings){try{const {type,policy}=await typeAccess(this.db,a,w,b.typeId);tables.push({id:b.typeId,fields:visibleFields(type.fields,policy,a).filter(f=>b.fields.includes(f.key)),write:policy.write_fields.filter((k:string)=>b.fields.includes(k)),project:policy.scope_project});}catch(e){if(![403,404].includes((e as any).status))throw e;tables.push({id:b.typeId,fields:[]});}}
   return checksum(J({archived:p.archived,write:tool.grant.write,tables}));
  }
- async checkComponentAccess(a:Actor,w:string,id:string){const c=await this.component(this.db,a,w,id);if(c.archived||c.project_archived)fail(409,'component_archived','Interface is archived');return {id:c.id,version:c.version,accessVersion:(await access(this.db,a,w)).access_version,accessStamp:await this.componentAccessStamp(a,w,c)};}
+ async checkComponentAccess(a:Actor,w:string,id:string,viewId?:string):Promise<any>{
+  if(a.accessToolId!==id)return withActor({...a,accessToolId:id},()=>this.checkComponentAccess({...a,accessToolId:id},w,id,viewId));
+  const c=await this.component(this.db,a,w,id,!viewId);if(c.archived||c.project_archived)fail(409,'component_archived','Interface is archived');
+  if(viewId){const row=(await this.db.query('SELECT version FROM app_runtime_views WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND app_id=$4 AND (origin=$5 OR ($5=\'human\' AND origin=\'ai\'))',[viewId,w,a.userId,id,a.origin])).rows[0];await this.runtimeComponent(this.db,a,w,id,row?.version,viewId);}
+  return {id:c.id,version:c.version,accessVersion:(await access(this.db,a,w)).access_version,accessStamp:await this.componentAccessStamp(a,w,c)};
+ }
  async readComponent(a:Actor,w:string,id:string,includeOutput=false){const component=await this.component(this.db,a,w,id);const initialOutput=includeOutput&&standardTracker(component.source)&&!component.archived&&!component.project_archived?await this.runFrontend(a,w,{componentId:id,expectedVersion:component.version,event:{kind:'open'}}):undefined;return {workspaceId:w,workspaceFoundation:true,component,...(initialOutput?{initialOutput}:{})};}
  async componentHistory(a:Actor,w:string,id:string){
   await this.component(this.db,a,w,id);
@@ -374,7 +391,7 @@ export class WorkspaceFoundation {
   if(full&&fields.length!==type.fields.length)fail(403,'record_scope','Identity decisions require access to all fields of both records');
   return {...r,data:projectData(r.data,fields),fields,typeConcept:type.concept??null};
  }
- private async scopeStamp(tx:Connection,a:Actor,w:string,body:ReturnType<typeof maintenanceSchema.parse>,allowArchived=false){
+ async scopeStamp(tx:Connection,a:Actor,w:string,body:ReturnType<typeof maintenanceSchema.parse>,allowArchived=false){
   const chain=await (allowArchived?this.nodeAccess(tx,a,w,body.projectId):this.activeNode(tx,a,w,body.projectId));const project=chain[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');
   const types=[];for(const b of body.bindings){const {type,policy}=await typeAccess(tx,a,w,b.typeId,true);const fields=visibleFields(type.fields,policy,a);if(new Set(b.fields).size!==b.fields.length||b.fields.some(k=>!fields.some(f=>f.key===k&&!derived(f))))fail(403,'field_scope','Scope includes unavailable or calculated fields');types.push({id:type.id,version:type.version,fields:type.fields});}
   const restricted=chain.filter(n=>n.allowed_users!==null||!n.ai_enabled);return checksum(J(restricted.length?{types,access:restricted.map(n=>({id:n.id,users:n.allowed_users,ai:n.ai_enabled}))}:types));
@@ -605,14 +622,15 @@ export class WorkspaceFoundation {
    if(op.kind==='restore_component'){const old=await this.componentRevision(tx,w,op.componentId,op.revisionVersion);await this.nodeAccess(tx,a,w,old.project_id);await this.componentBindings(tx,a,w,old.bindings);await validateResource(tx,a,w,old);await this.componentAssets(tx,a,w,old.assets);}
   }
   if(op.kind==='apply_component_records'){
-   const c=await this.component(tx,a,w,op.componentId);await validateResource(tx,a,w,c,true);if(c.archived||c.project_archived||c.format!=='frontend-js'||c.version!==op.expectedVersion)fail(409,'component_changed','Interface changed');
+   const runtime=op.viewId?await this.runtimeComponent(tx,a,w,op.componentId,op.expectedVersion,op.viewId):null,c=runtime?.c??await this.component(tx,a,w,op.componentId);if(runtime)assertRuntimeScope(runtime.latest,c);else await validateResource(tx,a,w,c,true);if(c.archived||c.project_archived||c.format!=='frontend-js'||c.version!==op.expectedVersion)fail(409,'component_changed','Interface changed');
    for(const change of op.changes){
     const record=change.kind==='update_record'?await this.record(tx,a,w,change.recordId,true):null;
     if(record&&change.kind==='update_record'&&record.version!==change.expectedVersion)fail(409,'stale_version','Record changed');
     const typeId=change.kind==='create_record'?change.typeId:record!.type_id;
-    requireManifestWrite(c,typeId,Object.keys(change.data));
+    requireManifestWrite(c,typeId,Object.keys(change.data));if(runtime)requireManifestWrite(runtime.latest,typeId,Object.keys(change.data));
     if(record&&c.manifest?.scope==='project'&&!(await tx.query('SELECT id FROM project_records WHERE workspace_id=$1 AND project_id=$2 AND record_id=$3 AND revoked_at IS NULL',[w,c.project_id,record.id])).rows.length)fail(403,'project_scope','Record is outside this project');
     const binding=c.bindings.find((b:any)=>b.typeId===typeId);const {type,policy}=await typeAccess(tx,a,w,typeId,true);const fields=visibleFields(type.fields,policy,a);
+    if(runtime)assertRuntimeWriteSchema(runtime.view,typeId,type.fields,Object.keys(change.data));
     if(!binding||Object.keys(change.data).some(k=>!binding.fields.includes(k)||!fields.some(f=>f.key===k&&!derived(f))))fail(403,'binding_required','Write exceeds component data bindings');assertWritable(policy,Object.keys(change.data));
    }
   }
@@ -733,7 +751,7 @@ export class WorkspaceFoundation {
   if(op.kind==='apply_maintenance')return new WorkspaceFoundation(adapter(tx)).maintain(a,w,op.batch,authorization);
   if(op.kind==='apply_component_records'){
    const service=new Service(adapter(tx));const draft=await service.preview(a,w,{kind:'bulk_records',changes:op.changes});const saved=await service.commit(a,draft.id,draft.digest,authorization);
-   const component=await this.component(tx,a,w,op.componentId);
+   const component=await this.component(tx,a,w,op.componentId,!op.viewId);
    if(component.manifest?.scope==='project'){
     // Attach only the exact new rows from this reviewed write, in the same transaction.
     // They cannot pass a pre-existing project-link check until this attachment exists.
@@ -817,14 +835,17 @@ export class WorkspaceFoundation {
   for(const change of batch.changes){if(change.kind!=='update_record')continue;const record=await this.record(this.db,a,w,change.recordId,true);for(const field of Object.keys(change.data)){if(record.data[field]!==undefined&&record.data[field]!==null&&record.data[field]!=='')fail(409,'existing_value','Backfill does not replace existing values; prepare an explicit correction');}}
   return this.maintain(a,w,batch,undefined,true);
  }
- async maintain(a:Actor,w:string,input:unknown,approval?:WriteAuthorization,previewOnly=false){
+ async maintain(a:Actor,w:string,input:unknown,approval?:WriteAuthorization,previewOnly=false,monitorRunId?:string){
   const v=maintenanceBatch.parse(input),digest=checksum(J(v));const actor:Actor={...a,origin:'ai'};
   return this.db.transaction(async tx=>{
    await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await this.policy(tx,actor,w,true);
+   const monitoring=monitorRunId?await new AppMonitoring(adapter(tx)).active(actor,w,monitorRunId):null;
+   if(monitoring&&!monitoring.config.writeScopes.some(s=>s.scopeId===v.scopeId&&s.version===v.expectedScopeVersion))fail(403,'monitoring_write_scope','Write permission is outside this monitoring configuration');
+   if(monitoring){const existing=(await tx.query('SELECT run_id FROM app_monitor_receipts WHERE request_key=$1',[v.requestKey])).rows[0];if(existing&&existing.run_id!==monitorRunId)fail(409,'monitoring_receipt','This request belongs to another monitoring run');const n=Number((await tx.query('SELECT coalesce(sum(change_count),0) AS n FROM app_monitor_receipts WHERE run_id=$1',[monitorRunId])).rows[0].n);if(!existing&&n+v.changes.length+v.links.length>monitoring.config.maxChangesPerRun)fail(429,'monitoring_change_limit','Approved change limit for this run reached');}
    const s=await this.scope(tx,actor,w,v.scopeId);const body=maintenanceSchema.parse(s.body);
    if(s.revoked_at||s.version!==v.expectedScopeVersion)fail(409,'scope_changed','Maintenance permission changed');
    if(s.schema_stamp!==await this.scopeStamp(tx,actor,w,body))fail(409,'schema_changed','Review maintenance scope for the changed schema');
-   const prior=await this.replay(tx,actor,w,v.requestKey,digest);if(prior)return prior;
+   const prior=await this.replay(tx,actor,w,v.requestKey,digest);if(prior){if(monitorRunId&&!(await tx.query('SELECT 1 FROM app_monitor_receipts WHERE run_id=$1 AND request_key=$2',[monitorRunId,v.requestKey])).rows.length)fail(409,'monitoring_receipt','This save was not made by the current monitoring run');return prior;}
    if(v.changes.length+v.links.length>body.maxChanges)fail(400,'batch_limit','Batch exceeds approved limit');
    const service=new Service(adapter(tx));const ids:string[]=[];
    // Validate complete batch before saving; transaction also rolls back any later failure.
@@ -833,6 +854,7 @@ export class WorkspaceFoundation {
    for(const l of v.links){await this.validate(tx,actor,w,l);const r=await this.record(tx,actor,w,l.sourceRecordId);if(!body.bindings.some(b=>b.typeId===r.type_id))fail(403,'maintenance_scope','Identity outside scope');}
    if(v.changes.length)await service.validate(tx,actor,w,{kind:'bulk_records',changes:v.changes});
    const permitted=body.autoWrite&&body.bindings.length===1&&!!body.expiresAt&&Date.parse(body.expiresAt)>Date.now();
+   if(monitorRunId&&!permitted)fail(403,'monitoring_write_scope','An active ongoing write permission is required');
    if(!approval&&(previewOnly||!permitted)){
     const priorDraft=(await tx.query("SELECT * FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND body->'operation'->'batch'->>'requestKey'=$3 AND expires_at>now() LIMIT 1",[w,a.userId,v.requestKey])).rows[0];
     if(priorDraft){if(!(await tx.query("SELECT $1::jsonb=$2::jsonb AS same",[J(priorDraft.body.operation.batch),J(v)])).rows[0].same)fail(409,'request_conflict','Request already has a different pending proposal');return {workspaceId:w,workspaceFoundation:true,temporary:true,id:priorDraft.id,body:priorDraft.body.operation,fieldChanges:priorDraft.body.fieldChanges,digest:priorDraft.digest};}
@@ -843,6 +865,7 @@ export class WorkspaceFoundation {
    const links=[];for(const l of v.links){await this.validate(tx,actor,w,l);links.push(await this.apply(tx,actor,w,p,l,authorization));}
    const result={workspaceId:w,workspaceFoundation:true,status:'saved',requestKey:v.requestKey,recordIds:ids,links};
    await tx.query('INSERT INTO workspace_receipts(id,workspace_id,user_id,digest,result) VALUES($1,$2,$3,$4,$5)',[v.requestKey,w,a.userId,digest,J(result)]);
+   if(monitorRunId)await tx.query('INSERT INTO app_monitor_receipts(run_id,workspace_id,user_id,request_key,change_count) VALUES($1,$2,$3,$4,$5)',[monitorRunId,w,a.userId,v.requestKey,v.changes.length+v.links.length]);
    for(let i=0;i<v.changes.length;i++)await tx.query('INSERT INTO record_observations(id,workspace_id,record_id,scope_id,receipt_id,actor_id,data,source_label,interpretation) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',[randomUUID(),w,ids[i],s.id,v.requestKey,a.userId,J(v.changes[i].data),v.sourceLabel,v.interpretation]);
    await audit(tx,actor,p,'maintenance.applied',s.id,null,{requestKey:v.requestKey,scopeVersion:s.version,recordIds:ids,sourceLabel:v.sourceLabel,interpretation:v.interpretation});return result;
   });
