@@ -2,6 +2,8 @@
 
 Decision date: 11 October 2026. Status: accepted direction, with the first execution implementation now complete; see [EXECUTION.md](EXECUTION.md) for actual supported contracts and limits. Active scope: [README](../README.md). Build order: [DEVELOPMENT](../DEVELOPMENT.md).
 
+31 October documentation revision: the [app configuration and automations scope](product/APP_CONFIGURATION_AND_AUTOMATIONS.md) defines an app as a saved interface with optional data/connector/automation bindings and an always-enforced access boundary. Planned tab permissions require server-resolved section identity and source/data isolation. Automations use the existing research/platform executors and shared runner with one management projection, not a second scheduler or another app runtime. Configuration availability must not enter the app serving path. This is a planning extension, not evidence that tab controls or unified management have shipped.
+
 ## Product expansion: shared entities and saved applications
 
 Accepted clarification, 11 October 2026: the execution foundation is a subsystem of a larger persistent workspace, not the complete product. ChatGPT authors interfaces, logic and reconciliation decisions; TrialAgents hosts and organizes saved components, maintains connected authorized data and runs approved actions.

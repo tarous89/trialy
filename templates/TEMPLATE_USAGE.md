@@ -19,6 +19,8 @@ Explain only limitations that affect the user's decision: for example, a disposa
 
 ## Decide whether a task helps
 
+Planning note, 31 October: the [revised app configuration scope](../docs/product/APP_CONFIGURATION_AND_AUTOMATIONS.md) adds a future platform Automations list with app-linked, expandable configuration and optional registered-tab access. App creation should consider interface, data, access, connectors and automation; only useful, authorized configurations are added. Shared connection setup is separate and must not block app saving. Until implementation ships, use the supported tools and workflow below; do not claim that the planned navigation or tab permissions already exist.
+
 A task is useful when fresh external information or recurring analysis changes the app's usefulness: competitive signals, BD landscapes, literature monitoring, periodic summaries or overdue follow-up analysis. A one-time calculator or disposable checklist normally needs no task. Keep the app useful without scheduling.
 
 Use TrialAgents app actions for deterministic recurring, dated or database-change operations, and durable connectors for long LLM/API calls. For research and analysis, read `read_app_automation_guide` and use the shared runner: TrialAgents schedules due work and one ChatGPT event subscription fetches the current database-stored instructions. Do not create a separate host task for each app.

@@ -4,4 +4,6 @@
 
 Later explicit product decisions take precedence, including reviewed database writes, app-only account settings, and the connected-resource implementation scope in [issue #5](https://github.com/tarous89/trialy/issues/5). See [connected resources](../CONNECTED_RESOURCES.md) and [database runtime isolation](../DATABASE_ROLE_ROLLOUT.md) for implementation boundaries and validation.
 
-[App automation engine — 31 October 2026](APP_AUTOMATION_ENGINE_2026-10-31.md) scopes shared ChatGPT runners, daily and event-triggered dispatch, platform-owned schedules, database permissions, app creation and platform email delivery. It is a proposed implementation scope, not a shipped feature declaration.
+[App automation engine — 31 October 2026](APP_AUTOMATION_ENGINE_2026-10-31.md) records the implemented 0.2.38 engine foundation, its limits and remaining real-host activation gates. It does not claim unattended production execution is verified.
+
+[Apps, access and automations — revised scope](../product/APP_CONFIGURATION_AND_AUTOMATIONS.md) is the latest product target: app-level and optional tab access, a platform Automations destination, expandable user/MCP configuration parity, disable/edit lifecycle and shared first-use connection setup. This revision is documentation-only and under review before implementation resumes; inherited tab permissions and owner-only management are proposed defaults.

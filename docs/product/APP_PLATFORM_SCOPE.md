@@ -2,6 +2,8 @@
 
 Updated 29 October 2026. Status: approved P0 implemented and locally verified; see [implementation and release evidence](APP_PLATFORM_IMPLEMENTATION.md).
 
+31 October scope revision: [Apps, access and automations](APP_CONFIGURATION_AND_AUTOMATIONS.md) is the superseding target for app configuration, tab access and automation management. It is documentation for review, not an implementation or release claim. The historical P0 priorities below do not defer the separately requested app services and automation work.
+
 [Prioritized roadmap](APP_PLATFORM_ROADMAP.md) · [Generic connector](CONNECTORS_AND_USAGE.md) · [Later backlog](APP_PLATFORM_BACKLOG.md)
 
 This supersedes the broader first-release requirements in the earlier PR #62 revision. Build simple apps with navigation, links and one generic connector type. Reuse the current runtime, authentication, shared database, access controls, reviewed writes and audit history.
@@ -22,6 +24,10 @@ P0 is not a new general-purpose hosting infrastructure. Reuse `frontend-js`, the
 Home lists named apps, optionally grouped by project. Users describe what they need; the builder chooses screens and behavior. Remove mandatory tracker/form/dashboard/automation choices, type filters, type labels and type-based card colors. Templates remain optional starting points.
 
 Tables, forms and dashboards can still appear inside apps. This removes categories, not their functionality or saved data. Preserve existing IDs, records, history, permissions and function bindings. Older creation/open APIs remain compatibility adapters. Source is normally exchanged with the builder, not shown in the running app.
+
+The revised app description is a saved interface plus independently managed configuration: optional database bindings, a mandatory owner-private access boundary, optional connectors and zero or more app-linked automations. ChatGPT considers each during creation. No database, sharing, connector or automation is required when the app does not need it. Sharing is optional; access enforcement is not.
+
+Access Control must expose each app individually and optionally expand registered tabs. Proposed tab policy inherits and only narrows the parent app's rights; server-side data/action/source enforcement is required before tab controls are offered. A new platform Automations destination lists definitions with their parent apps and expandable schedule/prompt/action editors. Disabled entries remain visible; definitions retire with app deletion while history and shared data remain. The shared ChatGPT connection is separate, reusable infrastructure. See the revised scope for current-state gaps, lifecycle and acceptance.
 
 ## 3. Project colors
 

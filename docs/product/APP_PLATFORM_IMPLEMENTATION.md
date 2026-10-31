@@ -1,5 +1,7 @@
 # Simple apps: implementation and release
 
+Later planning status, 31 October 2026: [Apps, access and automations](APP_CONFIGURATION_AND_AUTOMATIONS.md) is a documentation-only target, not included in the release evidence below. The shared engine shipped separately in 0.2.38; a unified Automations destination and general tab access still need implementation, and live unattended host activation remains unverified.
+
 29 October 2026. The user approved the bounded UI and behavior changes and required the existing styling, fonts, colors, margins and layout. S1–S5 are implemented. S6 local verification is complete; deployment and real-host verification are tracked separately below. The reversible `SIMPLE_APPS_ENABLED` flag defaults off until rollout.
 
 ## Six-step status

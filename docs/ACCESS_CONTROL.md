@@ -2,6 +2,16 @@
 
 Approved scope: 25 October 2026. TrialAgents is ChatGPT-first. App and plugin share one database and one authorization policy.
 
+## Planned app and tab hierarchy — 31 October revision
+
+The [revised app configuration scope](product/APP_CONFIGURATION_AND_AUTOMATIONS.md#app-and-tab-access) extends this contract; this section is planned, not shipped. App-level checks already exist. A general tab authorization resource does not.
+
+Show every app as an individually configurable parent in an Apps section, optionally grouped by project. Expand only registered user-facing tabs with stable IDs. Proposed default: tabs inherit app view/edit permissions and can only narrow them. Parent/data/connector/AI restrictions remain authoritative. Renames, reorderings and layout revisions preserve tab policy. New tabs must not recreate a restricted tab under a fresh ID to bypass sharing review. Keep existing database column restrictions; no new per-function or per-column app controls are in this scope.
+
+Enforce section context server-side for source, data, reads/writes, exports, counts, connector calls, routes and MCP operations before showing tab protection as available. Hiding navigation is insufficient. Custom source with combined private literals/bindings needs a reviewed section boundary; unsupported apps retain app-level access until adapted. Tab restrictions do not revoke independent authorized Database/other-app paths, which must be disclosed in access review. Actual revocation still clears forbidden output; automation failure never does.
+
+New apps remain owner-private even when no sharing is configured. App editing does not confer configuration, automation-management or execution-identity authority. Proposed initial automation management remains owner-only; delegated management is an explicit later decision. See the revised scope for migration and release tests.
+
 ## Identities, grants and restrictions
 
 The authenticated actor is resolved by the server. ChatGPT inherits that person's permissions and can only be further restricted. New account databases, ordinary invitations and new uploads default to ChatGPT-enabled after connection authorization. Explicit existing exclusions remain exclusions; inspectors remain human-only.

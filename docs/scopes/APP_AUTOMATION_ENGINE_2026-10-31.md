@@ -1,10 +1,12 @@
 # TrialAgents app automation engine
 
-Status: implemented in release 0.2.38, 31 October 2026; see the implementation notes below. End-to-end execution with a real ChatGPT event subscription remains a separate activation check. This document itself grants no permissions or activates personal tasks.
+Status: engine foundation implemented in release 0.2.38, 31 October 2026; see the implementation notes below. The subsequent [app configuration and Automations destination revision](../product/APP_CONFIGURATION_AND_AUTOMATIONS.md) supersedes the product-management and creation experience and is documentation-only, pending review before implementation resumes. App-tab authorization and the unified list are not shipped. End-to-end execution with a real ChatGPT event subscription remains a separate activation check. This document itself grants no permissions or activates personal tasks.
 
 ## Product decision
 
 TrialAgents owns each app's automation definitions, schedules, permissions, queue, progress and history. ChatGPT performs authorized research, analysis and report preparation when TrialAgents signals that work is ready. TrialAgents executes emails, deterministic operations and approved API jobs through its workers.
+
+Automations are durable optional app configuration. A top-level platform **Automations** destination will list them with their parent apps, across ChatGPT and platform executors, with expandable editors using the same configuration as MCP. Users edit or disable definitions; standalone deletion is not part of the revised contract. App deletion retires attached definitions but retains audit/run history and never cascades into shared records. App access and optional registered-tab restrictions are managed in Access Control. These are management extensions to the existing engine, not a replacement scheduler.
 
 Configure one logical ChatGPT runner per connected user and TrialAgents workspace. The runner receives a daily check at 06:00 in the user's confirmed IANA timezone and additional notifications for enabled triggers. Its stable instructions fetch current work from TrialAgents, so editing an app's approved instructions or schedule does not require replacing a ChatGPT task. This is optional account functionality; apps continue working when it is disabled or unavailable.
 
@@ -18,7 +20,9 @@ OpenAI's [MCP Events documentation](https://developers.openai.com/plugins/build/
 
 Custom-event availability, actual unattended tool access, capacity and context/runtime limits must be tested on the intended accounts. This scope does not assume a published execution SLA or an unlimited ChatGPT allowance. If the host cannot subscribe, retain a clearly inactive setup; offer an explicitly authorized time-scheduled polling alternative without claiming event delivery works.
 
-## Existing implementation to preserve
+## Pre-0.2.38 baseline and implemented extensions
+
+The following table records the baseline used for the engine implementation. Its planned-extension column is historical; consult the implementation notes and revised product scope for what is implemented versus still pending.
 
 | Area | Current implementation | Planned extension |
 | --- | --- | --- |
@@ -31,11 +35,13 @@ Custom-event availability, actual unattended tool access, capacity and context/r
 | Owner controls | `src/shared/AppMonitoringPanel.tsx`, `AppServicesPanel.tsx` | Add setup, schedule, instructions, status and history controls |
 | Agent guidance | Workspace skill, monitoring/services references, `templates/TEMPLATE_USAGE.md`, `TEMPLATE_AUTHORING.md` | Teach setup, automation classification, creation and recovery for every app |
 
-Current monitoring schedules are descriptive text and are managed by individual ChatGPT tasks. Linking the same task to a second monitor is currently rejected. Current monitoring is owner-private, even for shared/public apps. Existing runs have a two-hour application deadline; this is not an OpenAI runtime limit. Existing configuration changes cancel runs and reset coverage, so shared-runner mode needs deliberate version and coverage rules instead of blindly reusing that behavior.
+Legacy monitoring schedules are descriptive text and are managed by individual ChatGPT tasks; shared-runner schedules are executable server configuration. Linking the same legacy task to a second monitor is rejected. Monitoring remains owner-private, even for shared/public apps. Existing runs have a two-hour application deadline; this is not an OpenAI runtime limit. Shared-runner mode preserves deliberate version and coverage rules rather than blindly copying legacy configuration-reset behavior.
 
 ## 1. Initial connection and consent
 
 The setup flow is resumable and idempotent:
+
+The revised target is to start this guided flow at supported plugin setup/first use, at latest during the first app-creation conversation. Installation does not guarantee an execution hook. If setup is unavailable, declined or incomplete, save and run the app normally and leave a resumable pending state in Automations. Reuse existing consent and runner state; connection setup is separate from approving each app definition.
 
 1. Connect the TrialAgents account through existing OAuth and resolve the accessible workspace. Do not broaden database permissions during initialization.
 2. Offer an explicit setup choice: **Enable approved app automations with ChatGPT**, with daily time/timezone, event-trigger behavior, notification preference and a plain-language explanation of background usage. Connecting without automation remains supported. Existing user authorization for this setup can be honored without asking the same question again.
@@ -59,6 +65,8 @@ Every automation has a stable ID and belongs to a saved app, workspace and autho
 - Read bindings, maintenance write scopes, schema/permission revisions, and per-run/per-day budgets. Instructions cannot grant capabilities.
 - Last attempt, last successful completion, coverage watermark, next scheduled occurrence, earliest outstanding due occurrence, and any blocking reason.
 - Optional approved downstream action and immutable result/dependency references.
+
+The management list includes disabled and pending definitions, not just due queue items. Exactly one parent app owns each new definition. The authorizing principal and private prompts/history are not shared merely by sharing the app. The proposed first iteration retains owner-only management; see the revised scope for tab inheritance and management decisions awaiting review.
 
 Keep executor and trigger independent. A database change can trigger research or an email. A weekly schedule can trigger either. Do not infer executor from the trigger alone.
 
@@ -150,7 +158,7 @@ Add a versioned shared scheduling layer without replacing the current action and
 | `automation_attempts` | Fenced claims, checkpoints and outcome; references existing monitor/action run receipts |
 | `automation_event_outbox` | Durable delivery, stable event identity, attempts, availability time and acknowledgement |
 
-These are proposed names, not implemented tables. Executor-specific instructions/scopes stay authoritative in their existing monitor/action configurations; the common envelope does not create a competing permission store. Extend existing tables where that produces a simpler equivalent design. Register every new table with runtime roles and row-level isolation; migration success alone is insufficient.
+These are historical proposed names, not an exact inventory of implemented tables. Migration 049 and the implementation notes describe the actual storage. Executor-specific instructions/scopes stay authoritative in their existing monitor/action configurations; the common management envelope must not create a competing permission store or scheduler. The revised scope should reuse existing storage through adapters where possible. Register any new metadata with runtime roles and row-level isolation; migration success alone is insufficient.
 
 Execution mode is explicit (`legacy_host_schedule` or `shared_runner`). Only one scheduler may own a definition. The scheduler takes locks in a documented consistent order and uses unique constraints for occurrences, delivery generations and active claims. Workers discover jobs through narrowly scoped service access, then execute as their approved principal.
 
@@ -168,13 +176,13 @@ Model the workflow as linked jobs, not as a prompt that sends an email:
 4. TrialAgents queues and sends through its existing notification service. Use the configured platform sender; the current worker uses `notifications@trialagents.com`.
 5. Show research outcome and email acceptance/delivery/bounce independently. An email failure does not rerun completed research. Partial/failed research does not send a “completed report” email unless the owner explicitly configured that outcome.
 
-Implement this dependency as a first-class approved completion event. The current platform step schema does not already provide a generic research-completed trigger, so this is new work. New recipients, channels or disclosure scope require authorization; editing prose never expands delivery authority.
+Release 0.2.38 implements an approved completion-action dependency; reuse it in the unified management view. It does not provide an unrestricted workflow graph. New recipients, channels or disclosure scope require authorization; editing prose never expands delivery authority.
 
 ## 8. Plugin and MCP contracts
 
-Extend `initialize_account` with observed runner/setup state and the current automation guide reference. It remains safe to call repeatedly and never activates automation just by opening an app.
+`initialize_account` returns an optional setup/guide descriptor without making account or app bootstrap depend on a scheduler query. Fetch observed runner state through the separate setup operation. Preserve that isolation while adding guided first-use setup; opening an app never activates automation.
 
-Proposed operations (final names subject to schema review):
+Engine operations below retain the original planning names; `prepare_app_automations` remains a proposed adapter, not a shipped tool. Current definition preparation uses existing monitor/action tools. Next-phase listing/editor/control operations must use the same schemas and reviews, not separate UI-only configuration. Do not document new names as callable before implementation.
 
 | Operation | Contract |
 | --- | --- |
@@ -197,30 +205,34 @@ The app defines task details in the database. The host subscription carries this
 
 Update the general workspace creation workflow, not only the tracker template:
 
-1. Resolve the app's purpose, authorized data and suitable template/custom design as today.
+1. Resolve the app's purpose, authorized data and suitable template/custom design as today. Consider interface, registered tabs, optional data bindings, owner-private access/requested sharing and any required connectors before automation; use the revised app configuration contract.
 2. Assess ongoing work: none, ChatGPT research/analysis, platform actions, or a combination. Do not force automation onto static apps.
 3. Configure explicit definitions for requested automation. A suggested opportunity without user intent remains an inactive suggestion.
 4. Show timing, execution owner, input/read scope, output/write scope, email recipients if any, limits and expiry in the creation review. Provision required schema only through the normal reviewed app/data workflow.
-5. Persist definitions against the confirmed saved app ID. Drafts and previews cannot dispatch. Use an idempotent creation bundle to stage related definitions and activate them only when app saving, grants and required setup have succeeded. A setup failure leaves the saved app usable and the automation visibly inactive.
-6. Reuse the existing ready runner. If absent, complete the authorized setup; never create one ChatGPT task per new app.
+5. Persist/reconcile definitions against the confirmed saved app ID with stable authoring keys. Drafts and previews cannot dispatch. Save app/data through their existing reviewed transaction; optional automation preparation/activation is a separate recoverable stage and must not roll back or block an otherwise valid app save. Activate only after required definition grants and executor setup succeed. Failed setup stays visible in Automations while the saved app remains usable.
+6. Reuse the existing runner. Start/resume authorized shared setup on first supported plugin use, at latest first app creation; do not force completion if the host is unavailable or the user declines. Never create one ChatGPT task per new app. Platform-only automations do not depend on ChatGPT readiness.
 7. Verify next occurrence, bindings and actual enabled state. Report “app saved,” “automation configured,” and “background connection verified” accurately and separately.
 
 Template metadata may provide automation blueprints with purpose, trigger defaults, instruction variables, data requirements, evidence/output contracts, optional email dependency and test examples. Blueprints are configuration accelerators, not hardcoded user schedules or grants. Custom apps use the same schema and tools. Templates remain fully usable without automation.
 
 ## 10. Owner experience and application stability
 
-Add account-level **Automations** controls for the runner and cross-app agenda, and per-app **Automations** controls through existing settings. Present:
+The [revised management contract](../product/APP_CONFIGURATION_AND_AUTOMATIONS.md#automations-destination) replaces settings-only discovery with a top-level platform **Automations** destination. List all authorized app-linked definitions across both executors, including disabled/setup-pending entries. App details link to the same list filtered by app. Connection setup is separate from individual definitions and the due agenda. Existing settings routes may redirect for compatibility. Present:
 
 - Name/app, “Runs with ChatGPT” or “Runs in TrialAgents”, trigger/schedule and timezone.
 - Next scheduled time, outstanding due work, last successful check and last result.
 - Instructions/source/output editors, bindings, approved recipient policy, pause/resume and history.
 - Connection state separately from each automation's state; last event accepted, last runner check and actual completion timestamps must not be conflated.
 
+Expand a row to inspect/edit all user-editable configuration that MCP can prepare, including prompt, source/output rules and advanced date/database triggers. Use structured controls, canonical schemas, optimistic versions and existing reviews. A deterministic platform action has typed action settings, not a synthetic ChatGPT prompt. Scope/recipient changes retain separate authorization. Use Disable/Enable/Edit/History, not standalone Delete. Retire definitions only through parent app deletion and preserve history. Schedule changes show next due time and reconcile pending occurrences; prompt revisions fence incompatible attempts without discarding committed work.
+
 Use existing brand styling and responsive single-row toolbars with collapsed secondary filters. Paginate 20 rows. Load history/details on demand; no global polling loops or full app reloads. Show nonblocking status in management views. Research cannot replace the app UI, expose drafts, display a save footer, change layouts or interrupt public users. Normal approved data refresh behavior continues.
 
 Disconnecting ChatGPT stops ChatGPT execution but does not disable unrelated approved platform email/actions. Pausing a research/email chain prevents future dependent emails from that chain. Provide clear “pause automation” and “pause all ChatGPT work” controls; these do not claim to terminate a host turn.
 
 ## 11. Delivery sequence and acceptance
+
+The sequence below records the engine plan. Next implementation work follows the revised scope's unified management, enforced app/tab access, creation/onboarding and compatibility gates. This documentation pass does not resume implementation or deployment.
 
 | Phase | Deliverable and exit condition |
 | --- | --- |
@@ -263,4 +275,4 @@ Operator checks: deploy migration 049 and runtime grants before running the work
 
 Validation includes the actual SDK initialize/events/tool transport, restricted-role scheduler and receipt tests, DST/weekly/month-end timing, token revocation, lease recovery, callback signatures/rotation, database-trigger deduplication/loop exclusion, completion-action pause checks, and mobile/desktop continuity with unsaved input during automation failures. The plugin instructions were forward-tested for first connection, missing host capabilities, interrupted writes and schedule edits.
 
-Local release verification: full backend suite **174/174 passed** (plus the subsequent bounded-batch continuation regression), full browser suite **72/72 passed**, production build/type checks passed. The new mobile setup screen was inspected. Provider delivery and actual ChatGPT unattended subscription execution are not claimed by these fixture tests.
+Release verification: final CI passed **175 backend tests** (including bounded-batch continuation), **72 browser tests**, production build/type checks and production browser verification. The mobile setup screen was inspected. Provider delivery and actual ChatGPT unattended subscription execution are not claimed by these fixture tests. This later documentation-only scope revision adds no runtime verification claim.

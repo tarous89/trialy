@@ -2,6 +2,12 @@
 
 The builder contract is [APP_SERVICES.md](../plugin/trialy/skills/trialy-workspace/references/APP_SERVICES.md), also available through `read_app_services` on MCP. This release adds no app-specific authentication system or seat purchasing flow.
 
+## Management scope revision — planned
+
+The [revised app configuration scope](product/APP_CONFIGURATION_AND_AUTOMATIONS.md) places platform actions and ChatGPT research definitions in one app-linked Automations destination. Keep executor and trigger independent. TrialAgents still owns email, deterministic jobs and approved connector/LLM calls; the ChatGPT connection is not required for those independent jobs. Research-to-email uses the existing approved completion dependency, with separate outcomes and no duplicate schedule.
+
+Expanded platform rows edit typed action, timing, mappings and recipient policy through the same schema/review as MCP. The target lifecycle offers disable/enable/edit/history, with retirement through parent app deletion and preserved receipts/data. This is documentation for the next UI/lifecycle work, not a change to current service APIs. Optional service failures remain isolated from app reads, saves and rendering; real access revocation still applies.
+
 ## Operation
 
 Apply migration 046 using the existing migration login. `npm run db:migrate` also provisions the existing restricted web/worker roles and grants the new tables/functions from `ops/runtime-role.sql`. Existing web and worker services are reused. Do not deploy the worker without migrations and runtime role provisioning.

@@ -4,6 +4,10 @@ Updated 29 October 2026. Status: all six P0 implementation steps delivered with 
 
 [Scope](APP_PLATFORM_SCOPE.md) · [Connector contract](CONNECTORS_AND_USAGE.md) · [Prioritized backlog](APP_PLATFORM_BACKLOG.md)
 
+## Next scope under review — 31 October 2026
+
+[Apps, access and automations](APP_CONFIGURATION_AND_AUTOMATIONS.md) defines the next bounded iteration: (1) unified app-linked Automations list and complete expandable editors over existing engines, (2) app hierarchy and server-enforced registered-tab access, (3) template-independent creation plus resumable first-use shared connection setup, and (4) compatibility/failure-isolation and real-host acceptance. Do not start implementation or deploy from this documentation revision. Preserve the completed S1–S6 behavior below. Tab inheritance and owner-only automation management remain proposed review defaults.
+
 ## Order
 
 | Step | Priority | Deliverable | Dependency |

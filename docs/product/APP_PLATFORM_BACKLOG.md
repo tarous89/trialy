@@ -4,6 +4,10 @@ Updated 29 October 2026. These items are explicitly outside the [simple-app P0 r
 
 The earlier broad proposal is preserved in [planning commit d7679e2](https://github.com/tarous89/trialy/tree/d7679e235a1bcc57ab702ee5e1d23f993732d42e/docs/product). It is design reference, not the active implementation order.
 
+## Superseding work — 31 October 2026
+
+Email/app services and the shared automation foundation were separately authorized and implemented after the historical priorities below; actual shared ChatGPT activation still has open gates. The [revised app configuration scope](APP_CONFIGURATION_AND_AUTOMATIONS.md) now defines a review-stage iteration for the Automations destination, complete schedule/prompt editors, optional tab access and first-use connection guidance. These are not deferred by the old advanced-workflow/provider backlog. A workflow designer, delegated automation managers, new runtimes and app controls below tab granularity remain out of scope. This revision is documentation only.
+
 ## P1 — Small improvements after first use
 
 | Item | Trigger for taking it up |

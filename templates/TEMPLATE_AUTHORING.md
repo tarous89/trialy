@@ -21,6 +21,8 @@ These are reliability and design defaults. They do not restrict users to tracker
 
 ## Required template package
 
+Planning note, 31 October: the [revised app configuration scope](../docs/product/APP_CONFIGURATION_AND_AUTOMATIONS.md#chatgpt-app-creation-and-authoring-standard) defines the next authoring contract. After the corresponding capabilities ship, template documentation must identify stable user-facing sections and access inheritance, optional database/connector bindings, app-linked automation executor/timing/prompt or action/output/permission settings, disable/edit lifecycle and the no-automation path. User-facing and MCP configuration must agree. This is not permission to use unimplemented tab controls or new tools; the requirements below describe the current supported package.
+
 Publish a catalog JSON under `templates/apps/<id>-<version>.json`. Keep IDs stable, use semantic versions, and publish a new version instead of rewriting a previously released contract. The raw-file digest protects preparation against catalog changes. Existing apps retain their saved source and configuration; catalog updates never silently migrate them.
 
 Every current template must contain:
