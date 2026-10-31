@@ -343,3 +343,17 @@
  .ty-workspace .ty-tracker-preview>.ty-action-footer{flex-wrap:wrap;justify-content:flex-end;gap:10px}
  .ty-workspace .ty-tracker-preview>.ty-action-footer .ty-action-footer-sentence{flex-basis:100%}
 }
+
+/* Publication notices never cover app controls or take focus from the viewer. */
+.ty-workspace:has(.ty-app-update){--ty-update-space:56px}
+.ty-workspace.ty-workspace:has(.ty-app-update) .ty-main-column{padding-top:var(--ty-update-space)}
+.ty-workspace .ty-app-update{position:fixed;z-index:2300;top:8px;left:252px;right:16px;max-width:960px;margin:0 auto;min-height:40px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 14px;border:1px solid #c8ded2;border-radius:10px;background:#edf7f0;color:#254b3a;font-size:13px;line-height:1.4;box-shadow:0 3px 12px #163a3610}
+.ty-workspace .ty-app-update button{flex:none;min-height:28px;padding:4px 8px;margin:0;border:0;border-radius:6px;background:transparent;color:#24523e;font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.ty-workspace:is(.ty-standalone,.ty-workspace--embedded) .ty-app-update{left:16px}
+.ty-workspace .ty-runtime-error{z-index:2400;top:calc(72px + var(--ty-update-space,0px));width:max-content;max-width:min(460px,calc(100vw - 32px));display:flex;align-items:flex-start;flex-wrap:wrap;gap:8px 16px;background:#fff8f3;color:#613d2d;border-color:#e8d0c0;padding:16px;box-shadow:0 8px 24px #33231c18;font-size:14px;line-height:1.5}
+.ty-workspace .ty-runtime-error>div{flex:1;min-width:180px}
+.ty-workspace .ty-runtime-error p{margin:4px 0 0}
+.ty-workspace .ty-runtime-error .ty-notice-dismiss{flex:none;margin:0;padding:0 4px;min-height:28px;border:0;background:transparent;color:inherit;font-size:23px}
+@media(max-width:650px){.ty-workspace:has(.ty-app-update){--ty-update-space:88px}.ty-workspace .ty-app-update{left:8px;right:8px;flex-wrap:wrap;gap:3px;padding:8px 12px}.ty-workspace:is(.ty-standalone,.ty-workspace--embedded) .ty-app-update{left:8px}}
+
+.ty-workspace.ty-workspace:has(.ty-app-update) .ty-topbar{top:var(--ty-update-space)}

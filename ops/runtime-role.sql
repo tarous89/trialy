@@ -64,3 +64,9 @@ GRANT SELECT,INSERT,UPDATE ON app_shares TO trialy_runtime;
 GRANT EXECUTE ON FUNCTION trialy_security.accept_app_share(text) TO trialy_runtime;
 
 GRANT EXECUTE ON FUNCTION trialy_security.ingest_notification_event(text,text,text,jsonb) TO trialy_runtime;
+
+GRANT SELECT,INSERT,UPDATE ON app_monitors,app_monitor_runs TO trialy_runtime;
+GRANT SELECT,INSERT ON app_monitor_receipts TO trialy_runtime;
+
+GRANT SELECT,INSERT,DELETE ON app_runtime_views TO trialy_runtime;
+GRANT UPDATE(read_access) ON app_runtime_views TO trialy_runtime;

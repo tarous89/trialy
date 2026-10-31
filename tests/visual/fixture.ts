@@ -38,13 +38,13 @@ export async function fixture(){
   if(name==='read_workspace_home')return workspaceHome(db,actor,w.id,v);
   if(name==='read_project_component')return f.readComponent(actor,w.id,v.componentId);
   if(name==='run_component_frontend')return f.runFrontend(actor,w.id,v.request);
-  if(name==='check_component_access')return f.checkComponentAccess(actor,w.id,v.componentId);
+  if(name==='check_component_access')return f.checkComponentAccess(actor,w.id,v.componentId,v.viewId);
   if(name==='prepare_workspace_change')return f.preview(actor,w.id,v.operation);
   if(name==='confirm_workspace_change')return f.confirm(actor,w.id,v.previewId,v.digest);
   if(name==='discard_workspace_preview')return f.discard(actor,w.id,v.previewId);
   throw Error('Unexpected tool '+name);
  };
- app.post('/fixture/tool',async(req,res)=>{try{const result=await tools(req.body.name,req.body.arguments);res.json({content:[],structuredContent:{result}});}catch(e){console.error(req.body.name,(e as Error).message);res.json({isError:true,content:[{type:'text',text:(e as Error).message}]});}});
+ app.post('/fixture/tool',async(req,res)=>{try{const result=await tools(req.body.name,req.body.arguments);res.json({content:[],structuredContent:{result}});}catch(e){console.error(req.body.name,(e as Error).message);res.json({isError:true,structuredContent:{error:{status:(e as any).status,code:(e as any).code}},content:[{type:'text',text:(e as Error).message}]});}});
  app.get('/embed',async(_req,res)=>{res.removeHeader('Content-Security-Policy');res.type('html').send(await readFile('dist/embed.html','utf8'));});
  app.get('/',(_req,res)=>{res.removeHeader('Content-Security-Policy');res.type('html').send(`<html><body style="margin:0"><iframe id="app" src="/embed" style="width:100%;height:100vh;border:0"></iframe><script>window.addEventListener('message',async e=>{const m=e.data;if(e.source!==document.getElementById('app').contentWindow)return;if(m.method==='ui/initialize')e.source.postMessage({jsonrpc:'2.0',id:m.id,result:{protocolVersion:m.params.protocolVersion,hostInfo:{name:'Acceptance host',version:'1'},hostCapabilities:{serverTools:{},openLinks:{}},hostContext:{theme:'light',displayMode:'fullscreen'}}},'*');else if(m.method==='ui/notifications/initialized'){window.hostReady=true;}else if(m.method==='ui/open-link'){window.lastOpenedUrl=m.params.url;e.source.postMessage({jsonrpc:'2.0',id:m.id,result:{}},'*');}else if(m.method==='tools/call'){const result=await (await fetch('/fixture/tool',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(m.params)})).json();if(m.params.name==='read_connected_account'&&new URL(location.href).searchParams.has('apps'))result._meta={appPlatform:{enabled:true,origin:location.origin}};e.source.postMessage({jsonrpc:'2.0',id:m.id,result},'*');}else if(m.id)e.source.postMessage({jsonrpc:'2.0',id:m.id,result:{}},'*');});window.deliver=result=>document.getElementById('app').contentWindow.postMessage({jsonrpc:'2.0',method:'ui/notifications/tool-result',params:{content:[],structuredContent:{result}}},'*');</script></body></html>`);});
 

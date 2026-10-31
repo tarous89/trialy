@@ -60,7 +60,7 @@ export const workspaceOperation=z.discriminatedUnion('kind',[
  z.object({...appProvenance,kind:z.literal('save_component'),designException:designExceptionSchema.optional(),designChangeReason:z.string().trim().min(10).max(1000).optional(),projectId:id.nullable().default(null),componentId:id.optional(),expectedVersion:z.number().int().min(0).optional(),content:componentContent}).strict(),
  z.object({kind:z.literal('move_component'),componentId:id,expectedVersion:z.number().int().min(0),projectId:id.nullable()}).strict(),
  z.object({kind:z.literal('archive_component'),componentId:id,expectedVersion:z.number().int().min(0),archived:z.boolean()}).strict(),
- z.object({kind:z.literal('apply_component_records'),componentId:id,expectedVersion:z.number().int().min(0),changes:componentRecordChanges}).strict(),
+ z.object({kind:z.literal('apply_component_records'),viewId:id.optional(),componentId:id,expectedVersion:z.number().int().min(0),changes:componentRecordChanges}).strict(),
  z.object({kind:z.literal('edit_component_record'),componentId:id,expectedVersion:z.number().int().min(0),recordId:id,recordVersion:z.number().int().min(0),field:z.string().min(1).max(64),value:z.union([z.string().max(50000),z.number().finite(),z.boolean(),z.array(z.union([z.string().max(50000),z.number().finite()])).max(100),z.null()])}).strict(),
  z.object({kind:z.literal('set_project_access'),nodeId:id,expectedVersion:z.number().int().min(0),allowedUsers:z.array(id).max(500).nullable(),ai:z.boolean()}).strict(),
  z.object({kind:z.literal('set_component_access'),componentId:id,expectedVersion:z.number().int().min(0),allowedUsers:z.array(id).max(500).nullable(),ai:z.boolean()}).strict(),

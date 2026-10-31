@@ -18,28 +18,31 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
  const [recordReview,setRecordReview]=useState<any>(null);
  const [detailsOpen,setDetailsOpen]=useState(false),[standard,setStandard]=useState(false),[ready,setReady]=useState(false),[height,setHeight]=useState(620),[adding,setAdding]=useState(component?.resource_kind==='form'),[footer,setFooter]=useState<any>(null);
  const [frameUrl,setFrameUrl]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false),[proposal,setProposal]=useState<any>(null);
+ const [reviewProposal,setReviewProposal]=useState(false);
+ const updateBanner=useRef<HTMLDivElement>(null);
  const [publishedUpdate,setPublishedUpdate]=useState(false),[confirmUpdate,setConfirmUpdate]=useState(false);
  const localEdits=!!footer||!!recordReview||!!proposal||customDirty;
  const localEditsRef=useRef(localEdits);localEditsRef.current=localEdits;
  const checking=useRef(false),eventQueue=useRef<any[]>([]),blocked=useRef(false),saveReceipt=useRef<any>(null),approvedAction=useRef<string|null>(null);
  function clearOutput(){cancelPrefetch();setRecordReview(null);saveReceipt.current=null;approvedAction.current=null;setDetailsOpen(false);eventQueue.current=[];output.current=null;state.current=null;setFrameUrl('');setReady(false);setProposal(null);setFooter(null);setCustomDirty(false);blocked.current=false;navigationRef.current?.setDirty(false);}
+ function viewRequest(c=current.current){return {componentId:c.id,expectedVersion:c.version,...(output.current?.viewId?{viewId:output.current.viewId}:{})};}
+ function actionError(e:unknown){const status=(e as any)?.status;if(saveReceipt.current&&!saveReceipt.current.saved&&status>=400&&status<500)saveReceipt.current=null;setError(saveReceipt.current?.saved?'Your changes were saved, but the app could not reload them. You can retry loading the saved data.':(e as Error).message||'This action could not complete. Your work is still here.');}
+ function unavailable(e:any){return e?.code==='component_archived'||e?.status===401||e?.status===403||e?.status===404;}
  async function loadPublished(){
-  if(!current.current||busyRef.current)return;
+  if(!current.current)return;
   cancelPrefetch();busyRef.current=true;setBusy(true);
   try{
    const read=await call('read_project_component',{componentId:current.current.id}),next=read.component;
    const result=await call('run_component_frontend',{request:{componentId:next.id,expectedVersion:next.version,event:{kind:'open'},...(navigationRef.current?{route:navigationRef.current.route}:{})}});
    if(!live.current)return;
-   current.current=next;output.current=mergeTrackerSnapshot(null,result);state.current=result.state;setStandard(!!result.tracker);setFrameUrl(result.frameUrl);setProposal(result.proposal);setConnectorReviews(result.connectorReviews??[]);setFooter(null);setRecordReview(null);setCustomDirty(false);saveReceipt.current=null;blocked.current=!!result.proposal;eventQueue.current=[];setPublishedUpdate(false);setConfirmUpdate(false);setError('');send();prefetch(result);onUpdated?.(next);
-  }catch(e){if(live.current){setPublishedUpdate(true);setError('The published update could not load. Try again shortly.');}}
-  finally{busyRef.current=false;if(live.current)setBusy(false);}
+   current.current=next;output.current=mergeTrackerSnapshot(null,result);state.current=result.state;setStandard(!!result.tracker);setFrameUrl(result.frameUrl);setProposal(result.proposal);setConnectorReviews(result.connectorReviews??[]);setFooter(null);setRecordReview(null);setCustomDirty(false);saveReceipt.current=null;blocked.current=!!result.proposal;eventQueue.current=[];setPublishedUpdate(false);setConfirmUpdate(false);setReviewProposal(false);setError('');send();prefetch(result);onUpdated?.(next);
+  }catch(e){if(live.current){setPublishedUpdate(true);setConfirmUpdate(false);setError('The update could not load. You can keep using this version and try again.');}}
+  finally{busyRef.current=false;if(live.current){setBusy(false);if(eventQueue.current.length&&!blocked.current)void run(eventQueue.current.shift());}}
  }
- useAccessRecheck(()=>{if(!current.current||checking.current||busyRef.current)return;checking.current=true;const c=current.current;void call('check_component_access',{componentId:c.id}).then(async r=>{
+ useAccessRecheck(()=>{if(!current.current||checking.current||busyRef.current)return;checking.current=true;const c=current.current;void call('check_component_access',{componentId:c.id,...(output.current?.viewId?{viewId:output.current.viewId}:{})}).then(r=>{
   if(!live.current||c!==current.current)return;
-  const accessChanged=output.current?.accessStamp!==undefined?r.accessStamp!==output.current.accessStamp:output.current?.accessVersion!==undefined&&r.accessVersion!==output.current.accessVersion;
-  if(accessChanged){clearOutput();await loadPublished();}
-  else if(r.version!==c.version){if(localEditsRef.current)setPublishedUpdate(true);else await loadPublished();}
- }).catch(e=>{if(live.current){clearOutput();setError((e as Error).message);onUnavailable?.((e as Error).message);}}).finally(()=>{checking.current=false;});},!!component);
+  if(r.version!==c.version)setPublishedUpdate(true);
+ }).catch(e=>{if(live.current){if(unavailable(e)){clearOutput();actionError(e);onUnavailable?.((e as Error).message);}else if(e?.code==='app_view_expired')setPublishedUpdate(true);/* A temporary network failure must never remove the app. */}}).finally(()=>{checking.current=false;});},!!component);
  const prefetchTimer=useRef<ReturnType<typeof setTimeout>|undefined>(undefined),generation=useRef(0);
  function cancelPrefetch(){generation.current++;clearTimeout(prefetchTimer.current);}
  function prefetch(result:any){
@@ -53,7 +56,7 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
   if(!needed.length)return;
   prefetchTimer.current=setTimeout(async()=>{for(const {action} of needed){try{
    if(!live.current||busyRef.current||generation.current!==captured)return;
-   const next=await call('run_component_frontend',{request:{...(c?{componentId:c.id,expectedVersion:c.version}:{previewId}),state:st,event:{kind:'click',action}}});
+   const next=await call('run_component_frontend',{request:{...(c?viewRequest(c):{previewId}),state:st,event:{kind:'click',action}}});
    if(!live.current||generation.current!==captured||busyRef.current||!output.current||next.accessVersion!==output.current.accessVersion)return;
    const merged=mergeTrackerSnapshot(output.current,next);output.current={...output.current,tracker:merged.tracker};
    frame.current?.contentWindow?.postMessage({kind:'trialy.cache',channel:channel.current,tracker:merged.tracker},'*');
@@ -80,38 +83,39 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
       else if(['number','money'].includes(f.kind))v=Number(v);
       data[f.field]=v;
      }
-     p=await call('prepare_workspace_change',{operation:{kind:'apply_component_records',componentId:c.id,expectedVersion:c.version,changes:[{kind:'create_record',typeId:tab.typeId,data}]}});
+     p=await call('prepare_workspace_change',{operation:{kind:'apply_component_records',...viewRequest(c),changes:[{kind:'create_record',typeId:tab.typeId,data}]}});
     }else{
      const recordId=event.action.split(':')[2],row=model.pages.filter((p:any)=>p.request.typeId===tab.typeId).flatMap((p:any)=>p.result.rows).find((r:any)=>r.id===recordId);
      if(!row)throw Error('Record unavailable; reopen the table.');
      if(event.action.startsWith('tracker:delete:'))p=await call('prepare_change',{operation:{kind:'database_changes',typeId:tab.typeId,updates:[],deletions:[{recordId,expectedVersion:row.version}]}});
      else{
       const data=Object.fromEntries(tab.columns.filter((f:any)=>f.editable&&Object.hasOwn(row.data,f.field)).map((f:any)=>[f.field,row.data[f.field]]));
-      p=await call('prepare_workspace_change',{operation:{kind:'apply_component_records',componentId:c.id,expectedVersion:c.version,changes:[{kind:'create_record',typeId:tab.typeId,data}]}});
+      p=await call('prepare_workspace_change',{operation:{kind:'apply_component_records',...viewRequest(c),changes:[{kind:'create_record',typeId:tab.typeId,data}]}});
      }
     }
     if(event.action==='tracker:create'&&explicitApproval){saveReceipt.current={proposal:p};await finishSave();}
     else setRecordReview({proposal:p,deletion:event.action.startsWith('tracker:delete:')});
     return;
    }
-   let result=await call('run_component_frontend',{request:{...(previewId?{previewId}:{componentId:c.id,expectedVersion:c.version}),state:state.current,event,...(navigationRef.current?{route:navigationRef.current.route}:{})}});
+   let result=await call('run_component_frontend',{request:{...(previewId?{previewId}:viewRequest(c)),state:state.current,event,...(navigationRef.current?{route:navigationRef.current.route}:{})}});
    if(!live.current)return;
    // The footer click approves the visible edits. The server still validates a precise proposal and its digest before committing.
    if(result.proposal&&explicitApproval&&(event.action==='bound-batch'||event.action==='save-layout'&&output.current?.tracker)){
     const p=result.proposal;saveReceipt.current={proposal:p};
     await finishSave();return;
    }
+   if(result.boundEdit&&result.proposal){setProposal(result.proposal);blocked.current=true;eventQueue.current=[];return;}
    result=mergeTrackerSnapshot(output.current,result);output.current=result;state.current=result.state;setStandard(!!result.tracker);setFrameUrl(result.frameUrl);setProposal(result.proposal);setConnectorReviews(result.connectorReviews??[]);setCustomDirty(false);
    if(result.proposal){blocked.current=true;eventQueue.current=[];}send();prefetch(result);
-  }catch(e){if(live.current)setError((e as Error).message);}finally{busyRef.current=false;onBusyChange?.(false);if(live.current){setBusy(false);if(eventQueue.current.length&&!blocked.current)void run(eventQueue.current.shift());}}
+  }catch(e){if(live.current)actionError(e);}finally{busyRef.current=false;onBusyChange?.(false);if(live.current){setBusy(false);if(eventQueue.current.length&&!blocked.current)void run(eventQueue.current.shift());}}
  }
  async function finishSave(){
   cancelPrefetch();
   const receipt=saveReceipt.current,p=receipt.proposal;
   if(!receipt.saved){await call(receipt.deletion?'commit_change':'confirm_workspace_change',{previewId:p.id,digest:p.digest,confirmed:true});receipt.saved=true;}
-  const read=await call('read_project_component',{componentId:current.current.id});current.current=read.component;
-  let result=await call('run_component_frontend',{request:{componentId:current.current.id,expectedVersion:current.current.version,...(navigationRef.current?{route:navigationRef.current.route}:{}),state:{...state.current,settings:false,layoutDraft:null,detail:null,newRow:null},event:{kind:'open'}}});
-  result=mergeTrackerSnapshot(null,result);output.current=result;state.current=result.state;setFrameUrl(result.frameUrl);setFooter(null);setRecordReview(null);saveReceipt.current=null;send();prefetch(result);onUpdated?.(current.current);
+  if(p.body?.kind==='save_component'){setReviewProposal(false);await loadPublished();return;}
+  let result=await call('run_component_frontend',{request:{...viewRequest(),...(navigationRef.current?{route:navigationRef.current.route}:{}),state:{...state.current,settings:false,layoutDraft:null,detail:null,newRow:null},event:{kind:'open'}}});
+  result=mergeTrackerSnapshot(null,result);output.current=result;state.current=result.state;setFrameUrl(result.frameUrl);setFooter(null);setRecordReview(null);setProposal(null);setReviewProposal(false);blocked.current=false;setCustomDirty(false);saveReceipt.current=null;send();prefetch(result);
  }
  useEffect(()=>{live.current=true;if(initialOutput){output.current=mergeTrackerSnapshot(null,initialOutput);state.current=initialOutput.state;setStandard(!!initialOutput.tracker);setFrameUrl(initialOutput.frameUrl);setProposal(initialOutput.proposal);onBusyChange?.(false);prefetch(output.current);}else void run();return()=>{live.current=false;cancelPrefetch();};},[]);
  const routeKey=JSON.stringify([navigation?.route,navigation?.reset]),lastRoute=useRef(routeKey),lastReset=useRef(navigation?.reset);
@@ -132,18 +136,20 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
   }
  };window.addEventListener('message',receive);return()=>window.removeEventListener('message',receive);},[proposal]);
  useEffect(()=>{if(!detailsOpen)return;const previous=document.body.style.overflow;document.body.style.overflow='hidden';return()=>{document.body.style.overflow=previous;};},[detailsOpen]);
- useEffect(()=>{if(!standard||!frame.current)return;const size=()=>{const top=frame.current?.getBoundingClientRect().top??72;setHeight(Math.max(200,window.innerHeight-top));};size();window.addEventListener('resize',size);const observer=new ResizeObserver(size);observer.observe(document.documentElement);return()=>{window.removeEventListener('resize',size);observer.disconnect();};},[standard,frameUrl,ready,adding]);
+ useEffect(()=>{const banner=updateBanner.current,workspace=banner?.closest<HTMLElement>('.ty-workspace');if(!banner||!workspace)return;const resize=()=>{workspace.style.setProperty('--ty-update-space',Math.ceil(banner.getBoundingClientRect().height+16)+'px');if(standard&&frame.current)setHeight(Math.max(200,window.innerHeight-frame.current.getBoundingClientRect().top));};resize();const observer=new ResizeObserver(resize);observer.observe(banner);return()=>{observer.disconnect();workspace.style.removeProperty('--ty-update-space');};},[publishedUpdate,standard]);
+ useEffect(()=>{if(!standard||!frame.current)return;const size=()=>{const top=frame.current?.getBoundingClientRect().top??72;setHeight(Math.max(200,window.innerHeight-top));};size();window.addEventListener('resize',size);const observer=new ResizeObserver(size);observer.observe(document.documentElement);return()=>{window.removeEventListener('resize',size);observer.disconnect();};},[standard,frameUrl,ready,adding,publishedUpdate]);
  useEffect(()=>{if(!frameUrl||ready)return;const timer=setTimeout(()=>setError('The host did not open the isolated frame. Try the interface in the standalone workspace.'),8000);return()=>clearTimeout(timer);},[frameUrl,ready]);
  return <section className={`ty-tracker-surface ${standard?'ty-tracker--standard':''} ${detailsOpen?'ty-tracker--details':''}`} aria-label={platform.enabled?"App":"Tracker"}>
- {error&&<div className="ty-runtime-error" role="alert">{error}{saveReceipt.current&&<button onClick={async()=>{setBusy(true);try{await finishSave();setError('');}catch(e){setError((e as Error).message);}finally{setBusy(false);}}}>Retry save</button>}</div>}
- {publishedUpdate&&<div className="ty-actions" role="status">A published update is available.<button disabled={busy} onClick={()=>localEditsRef.current?setConfirmUpdate(true):void loadPublished()}>Load published update</button></div>}
+ {error&&<div className="ty-runtime-error" role="alert"><div><strong>Action couldn’t complete</strong><p>{error}</p></div><button className="ty-notice-dismiss" aria-label="Dismiss error" onClick={()=>setError('')}>×</button>{saveReceipt.current&&<button onClick={async()=>{setBusy(true);try{await finishSave();setError('');}catch(e){actionError(e);}finally{setBusy(false);}}}>{saveReceipt.current?.saved?'Reload saved data':'Retry save'}</button>}</div>}
+ {publishedUpdate&&<div ref={updateBanner} className="ty-app-update" role="status"><span>This app has been updated. Refresh when you’re ready.</span><button disabled={busy} onClick={()=>localEditsRef.current?setConfirmUpdate(true):void loadPublished()}>Refresh to latest version</button></div>}
  {confirmUpdate&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="alertdialog" aria-modal="true" aria-label="Load published update"><h2>Discard your unsaved edits?</h2><p>Your local edits will be discarded when the published update loads.</p><button onClick={()=>setConfirmUpdate(false)}>Keep editing</button><button disabled={busy} onClick={()=>void loadPublished()}>Discard edits and load update</button></section></div>}
- {!standard&&ready&&<div className="ty-actions"><button disabled={busy||!!proposal} onClick={()=>void run()}>Refresh</button></div>}
- {adding&&<div className="ty-record-entry"><TrackerRecordForm initialTypeId={output.current?.tracker?.config.tabs[state.current?.tab]?.typeId} component={current.current} call={call} onPreview={async p=>{try{if(saveReceipt.current)await call('discard_workspace_preview',{previewId:p.id});else saveReceipt.current={proposal:p};await finishSave();setAdding(false);setError('');}catch(e){setError((e as Error).message);throw e;}}} onClose={()=>setAdding(false)}/></div>}
- {recordReview&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="dialog" aria-modal="true" aria-label="Review record change"><h2>{recordReview.deletion?'Delete record?':'Duplicate record?'}</h2><p>{recordReview.deletion?'Remove this record from active tables. Its history is retained.':'Create a new record with these values.'}</p><ChangeSummary value={recordReview.proposal.summary??recordReview.proposal.body}/><button className="ty-button" disabled={busy||!!saveReceipt.current?.saved} onClick={async()=>{setBusy(true);try{await call(recordReview.deletion?'discard_preview':'discard_workspace_preview',{previewId:recordReview.proposal.id});saveReceipt.current=null;setRecordReview(null);setError('');}catch(e){setError((e as Error).message);}finally{setBusy(false);}}}>Cancel</button><button className="ty-button ty-button--primary" disabled={busy} onClick={async()=>{setBusy(true);try{saveReceipt.current??={proposal:recordReview.proposal,deletion:recordReview.deletion};await finishSave();}catch(e){setError((e as Error).message);}finally{setBusy(false);}}}>{recordReview.deletion?'Delete record':'Duplicate record'}</button></section></div>}
- {proposal&&<ActionFooter action="Save changes" onAction={()=>onProposal(proposal)} onDismiss={async()=>{try{await call('discard_workspace_preview',{previewId:proposal.id});setProposal(null);blocked.current=false;}catch(e){setError((e as Error).message);}}}>Your changes are ready to save.</ActionFooter>}
+ {!standard&&ready&&<div className="ty-actions"><button disabled={busy||!!proposal} onClick={()=>current.current?(localEditsRef.current?setConfirmUpdate(true):void loadPublished()):void run()}>Refresh</button></div>}
+ {adding&&<div className="ty-record-entry"><TrackerRecordForm initialTypeId={output.current?.tracker?.config.tabs[state.current?.tab]?.typeId} component={{...current.current,viewId:output.current?.viewId}} call={call} onPreview={async p=>{try{if(saveReceipt.current)await call('discard_workspace_preview',{previewId:p.id});else saveReceipt.current={proposal:p};await finishSave();setAdding(false);setError('');}catch(e){actionError(e);throw e;}}} onClose={()=>setAdding(false)}/></div>}
+ {recordReview&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="dialog" aria-modal="true" aria-label="Review record change"><h2>{recordReview.deletion?'Delete record?':'Duplicate record?'}</h2><p>{recordReview.deletion?'Remove this record from active tables. Its history is retained.':'Create a new record with these values.'}</p><ChangeSummary value={recordReview.proposal.summary??recordReview.proposal.body}/><button className="ty-button" disabled={busy||!!saveReceipt.current?.saved} onClick={async()=>{setBusy(true);try{await call(recordReview.deletion?'discard_preview':'discard_workspace_preview',{previewId:recordReview.proposal.id});saveReceipt.current=null;setRecordReview(null);setError('');}catch(e){actionError(e);}finally{setBusy(false);}}}>Cancel</button><button className="ty-button ty-button--primary" disabled={busy} onClick={async()=>{setBusy(true);try{saveReceipt.current??={proposal:recordReview.proposal,deletion:recordReview.deletion};await finishSave();}catch(e){actionError(e);}finally{setBusy(false);}}}>{recordReview.deletion?'Delete record':'Duplicate record'}</button></section></div>}
+ {proposal&&<ActionFooter action="Save changes" onAction={()=>setReviewProposal(true)} onDismiss={async()=>{try{await call('discard_workspace_preview',{previewId:proposal.id});setProposal(null);blocked.current=false;}catch(e){actionError(e);}}}>Your changes are ready to save.</ActionFooter>}
  {footer&&!proposal&&<ActionFooter action={footer.kind==='edits'?'Save edits':'Save layout'} busy={busy} disabled={!!saveReceipt.current} onAction={()=>frameAction(footer.kind==='edits'?'save-edits':'save-layout')} dismissLabel={footer.kind==='edits'?'Ignore edits':'Discard layout changes'} onDismiss={()=>frameAction(footer.kind==='edits'?'discard-edits':'discard-layout')}>{footer.kind==='edits'?`${footer.count} field ${footer.count===1?'edit is':'edits are'} ready to save.`:'Your layout changes are ready to save.'}</ActionFooter>}
  {connectorReviews[0]&&embedded?<div className="ty-actions"><a className="ty-button ty-button--primary" href={connectorReviews[0].reviewUrl} target="_blank" rel="noopener noreferrer">Review request in TrialAgents</a></div>:connectorReviews[0]&&<ConnectorReview reviewId={connectorReviews[0].reviewId} call={call} onClose={()=>setConnectorReviews(r=>r.slice(1))} onConfirmed={result=>{setConnectorReviews(r=>r.slice(1));void run({kind:'click',action:'connector:completed',form:{result:JSON.stringify(result)}});}}/>}
+ {reviewProposal&&proposal&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="dialog" aria-modal="true" aria-label="Review app changes"><h2>Review changes</h2><ChangeSummary value={proposal.summary??proposal.body}/><button disabled={busy} onClick={()=>setReviewProposal(false)}>Keep editing</button><button disabled={busy} onClick={async()=>{setBusy(true);try{saveReceipt.current??={proposal};await finishSave();setError('');}catch(e){setReviewProposal(false);actionError(e);}finally{setBusy(false);}}}>Save changes</button></section></div>}
  {!ready&&<p className="ty-runtime-loading" role="status">{platform.enabled?'Opening app…':'Opening tracker…'}</p>}
  {frameUrl&&<iframe inert={adding||!!recordReview} ref={frame} title="Saved frontend code" sandbox={platform.enabled?"allow-scripts allow-popups allow-popups-to-escape-sandbox":"allow-scripts"} referrerPolicy="no-referrer" src={frameUrl} onLoad={send} style={{width:'100%',height:detailsOpen?'100%':height+'px',border:0,display:'block'}}/>}
  </section>;

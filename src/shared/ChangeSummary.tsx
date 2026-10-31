@@ -5,7 +5,7 @@ function Value({value,depth=0}:{value:any;depth?:number}):React.ReactNode{
  if(typeof value!=='object')return <span>{typeof value==='boolean'?(value?'Yes':'No'):String(value)}</span>;
  if(depth>5)return <span>See technical details</span>;
  if(Array.isArray(value))return value.length?<ul>{value.map((v,i)=><li key={i}><Value value={v} depth={depth+1}/></li>)}</ul>:<span>None</span>;
- return <dl className="ty-change-fields">{Object.entries(value).filter(([k])=>!['digest','accessStamp'].includes(k)&&!(k==='source'&&typeof value.format==='string')).map(([k,v])=><React.Fragment key={k}><dt>{label(k)}</dt><dd><Value value={v} depth={depth+1}/></dd></React.Fragment>)}</dl>;
+ return <dl className="ty-change-fields">{Object.entries(value).filter(([k])=>!['digest','accessStamp','viewId'].includes(k)&&!(k==='source'&&typeof value.format==='string')).map(([k,v])=><React.Fragment key={k}><dt>{label(k)}</dt><dd><Value value={v} depth={depth+1}/></dd></React.Fragment>)}</dl>;
 }
 export function ChangeSummary({value}:{value:any}){
  const op=value?.operation??value;

@@ -184,7 +184,7 @@ test('Folder archival retains contents and invalidates attached execution withou
   assert.ok((await db.query('SELECT revoked_at FROM maintenance_scopes WHERE id=$1',[scope.id])).rows[0].revoked_at);
   assert.equal((await engine.schedules(a,w.id)).find(x=>x.id===schedule.id).paused,true);
   await assert.rejects(engine.run(ai,w.id,queued.id),/Component changed/);
-  await assert.rejects(f.runFrontend(ai,w.id,{componentId:component.id,expectedVersion:1}),/current active/);
+  await assert.rejects(f.runFrontend(ai,w.id,{componentId:component.id,expectedVersion:1}),(e:any)=>e.code==='component_archived');
   await assert.rejects(f.preview(a,w.id,{kind:'move_node',nodeId:project.id,expectedVersion:0,parentId:null}),/Restore/);
   await confirm({...op,expectedVersion:1,archived:false,reason:'Reopen organization'});
   assert.equal((await f.nodes(a,w.id)).nodes.find(n=>n.id===project.id).effective_archived,false);

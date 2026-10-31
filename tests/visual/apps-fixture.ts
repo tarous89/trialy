@@ -1,4 +1,7 @@
+import {trackerOperation} from '../../src/workspace/tracker-template.js';
+import {AppSharing} from '../../src/app-services/sharing.js';
 import {addAppServicesApi} from '../../src/server/app-services.js';
+import {AppMonitoring} from '../../src/app-services/monitoring.js';
 import type {Express} from 'express';
 import type {Database} from '../../src/db/database.js';
 import type {Actor} from '../../src/shared/schema.js';
@@ -34,6 +37,17 @@ export async function addAppsFixture(app:Express,db:Database,actor:Actor,w:any){
  process.env.SIMPLE_APPS_ENABLED='false';addApi(app,s,(req,_res,next)=>{req.actor=actor;next();});process.env.SIMPLE_APPS_ENABLED='true';
  addAppServicesApi(app,f);addAppApi(app,f);addConnectorApi(app,f,{service:connector});
  app.get('/fixture/apps',(_req,res)=>res.json({workspaceId:w.id,appId:saved.id,recordId:record.id,connectionId:connection.id,url:appUrl({appId:saved.id,workspaceId:w.id}),sends}));
+ app.post('/fixture/publication',async(req,res)=>{
+  const p=await s.preview(actor,w.id,{kind:'create_type',name:'Continuity items '+crypto.randomUUID().slice(0,8),fields:[{key:'name',name:'Name',kind:'text',ai:true}]}),typeId=(await s.commit(actor,p.id,p.digest)).objects[0].id;
+  const rp=await s.preview(actor,w.id,{kind:'create_record',typeId,data:{name:'Original value'}}),recordId=(await s.commit(actor,rp.id,rp.digest)).objects[0].id;
+  const source=`const r=tools.call('records.read',{typeId:'${typeId}'}).rows[0];if(input.event.action==='save')tools.call('records.propose',[{kind:'update_record',recordId:r.id,expectedVersion:r.version,data:{name:input.event.form.name}}]);return {html:'<h1>Loaded version</h1><p>Keep working on this page.</p><form data-action="save"><label>Value<input aria-label="Value" name="name" value="'+r.data.name+'"></label><button type="submit">Save value</button></form>'};`;
+  const content=req.body?.standard?{...(await trackerOperation(f,actor,w.id,{name:'Publication tracker',description:'Keep working across updates.',showExample:false,tabs:[{name:'Items',typeId,columns:[{field:'name',label:'Name'}]}]})).content,sourceAccess:'bindings'}:{name:'Publication continuity '+crypto.randomUUID().slice(0,8),format:'frontend-js',sourceAccess:'bindings',source,bindings:[{typeId,fields:['name']}]},p2=await f.preview(actor,w.id,{kind:'save_component',content}),saved=await f.confirm(actor,w.id,p2.id,p2.digest);
+  const sharing=new AppSharing(db),share=await sharing.prepare(actor,w.id,{appId:saved.id,appVersion:0,kind:'public',mode:'edit',reviewedSource:true}),link=await sharing.confirm(actor,w.id,share.id,share.digest);
+  res.json({workspaceId:w.id,appId:saved.id,typeId,recordId,content,shareUrl:link.url});
+ });
+ app.post('/fixture/publication/:id/schema',async(req,res)=>{const c=(await f.readComponent(actor,w.id,req.params.id)).component,typeId=c.bindings[0].typeId,t=(await db.query('SELECT * FROM entity_types WHERE id=$1',[typeId])).rows[0];await db.query('UPDATE entity_types SET fields=$2,version=version+1 WHERE id=$1',[typeId,JSON.stringify(t.fields.map((field:any)=>({...field,required:true})))]);res.json({migrated:true});});
+ app.post('/fixture/monitoring',async(_req,res)=>{const m=new AppMonitoring(db),draft=await m.prepare(actor,w.id,{config:{name:'Company signal monitoring',appId:saved.id,objective:'Collect relevant company announcements.',instructions:'Review approved public sources, deduplicate against existing records, and summarize relevant changes.',sourcePolicy:'Official announcements; separate facts from inference.',schedule:{description:'Every weekday morning',timeZone:'Europe/Berlin'},readBindings:[{typeId:companyTable,fields:['name']}],writeScopes:[],expiresAt:new Date(Date.now()+86400000).toISOString()}});res.json({workspaceId:w.id,appId:saved.id,reviewId:draft.id});});
+ app.post('/fixture/monitoring/:id/run',async(req,res)=>{const m=new AppMonitoring(db),current=await m.read(actor,w.id,req.params.id),run=await m.start(actor,w.id,{monitorId:req.params.id,expectedVersion:current.version,occurrenceKey:crypto.randomUUID()});res.json(await m.finish(actor,w.id,{runId:run.id,status:'no_update',summary:'Checked the configured sources. No relevant changes found.',coverage:{through:new Date(Date.now()-1000).toISOString(),notes:'Configured sources reviewed successfully.'}}));});
  app.use('/assets',express.static('dist/web/assets'));app.use('/fonts',express.static('public/fonts'));
  for(const name of ['trialagents-mark-black.png','trialagents-mark-white.png'])app.get('/'+name,(_req,res)=>res.sendFile(path.resolve('public',name)));
  for(const route of ['/app-home','/shared-app','/join-app','/apps/{*path}'])app.get(route,(_req,res)=>res.sendFile(path.resolve('dist/web/index.html')));

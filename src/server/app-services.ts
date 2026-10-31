@@ -11,18 +11,20 @@ import {withActor} from '../db/context.js';
 import {WorkspaceFoundation} from '../workspace/service.js';
 import type {Database} from '../db/database.js';
 import {appUrl} from '../shared/app-route.js';
+import {addAppMonitoringApi,addAppMonitoringMcp} from './app-monitoring.js';
+import {AppMonitoring} from '../app-services/monitoring.js';
 export function addPublicAppServices(app:Express,db:Database,human:RequestHandler){
  const sharing=new AppSharing(db),f=new WorkspaceFoundation(db);
  app.post('/notifications/webhook',express.raw({type:'application/json',limit:'128kb'}),async(req,res)=>res.json(await receiveDeliveryEvent(db,(req as any).rawBody??req.body,req.headers)));
  app.post('/api/app-invitation/accept',human,async(req,res)=>res.json(await sharing.accept(req.actor!,req.body.token)));
  app.post('/public-app/call',rateLimit({windowMs:60000,limit:60}),async(req,res)=>{
-  const {s,a,c}=await sharing.publicContext(req.get('x-trialagents-share'));const v=z.object({name:z.string().max(80),args:z.record(z.string(),z.unknown()).default({})}).strict().parse(req.body),args:any=v.args;
+  const {s,a,c}=await sharing.publicContext(req.get('x-trialagents-share'),req.body?.name!=='open');const v=z.object({name:z.string().max(80),args:z.record(z.string(),z.unknown()).default({})}).strict().parse(req.body),args:any=v.args;
   res.set('Cache-Control','no-store');res.set('Referrer-Policy','no-referrer');
   const result=await withActor(a,async()=>{const w=s.workspace_id;
    if(v.name==='open')return {component:c,workspaceId:w,mode:s.config.mode};
    if(args.componentId&&args.componentId!==c.id)fail(403,'share_scope','App is outside this link');
    if(v.name==='run_component_frontend'){if(args.request?.componentId!==c.id||args.request?.previewId)fail(403,'share_scope','App is outside this link');return f.runFrontend(a,w,args.request);}
-   if(v.name==='check_component_access')return f.checkComponentAccess(a,w,c.id);
+   if(v.name==='check_component_access')return f.checkComponentAccess(a,w,c.id,args.viewId?id.parse(args.viewId):undefined);
    if(v.name==='read_project_component')return f.readComponent(a,w,c.id,false);
    if(v.name==='list_tool_tables')return f.toolTables(a,w,c.id);
    if(v.name==='tool_reference_options')return f.toolReferences(a,w,c.id,id.parse(args.typeId),z.string().parse(args.field),String(args.query??''),Number(args.offset??0));
@@ -33,6 +35,7 @@ export function addPublicAppServices(app:Express,db:Database,human:RequestHandle
  });
 }
 export function addAppServicesApi(app:Express,f:WorkspaceFoundation){
+ addAppMonitoringApi(app,f);
  const b='/api/workspaces/:workspaceId/app-services',actions=new AppActions(f.db),sharing=new AppSharing(f.db),context=(req:any)=>({a:req.actor as Actor,w:id.parse(req.params.workspaceId)});
  app.get(`${b}/actions`,async(req,res)=>{const {a,w}=context(req);res.json(await actions.list(a,w,req.query.appId?id.parse(req.query.appId):undefined,z.coerce.number().int().min(0).default(0).parse(req.query.offset)));});
  app.post(`${b}/actions/prepare`,async(req,res)=>{const {a,w}=context(req);res.json(await actions.prepare(a,w,req.body));});
@@ -40,7 +43,7 @@ export function addAppServicesApi(app:Express,f:WorkspaceFoundation){
  app.get(`${b}/sharing/:appId`,async(req,res)=>{const {a,w}=context(req);res.json(await sharing.list(a,w,id.parse(req.params.appId)));});
  app.post(`${b}/sharing/:shareId/revoke`,async(req,res)=>{const {a,w}=context(req);res.json(await sharing.revoke(a,w,id.parse(req.params.shareId)));});
  app.get(`${b}/reviews/:reviewId`,async(req,res)=>{const {a,w}=context(req);res.json(await actions.preview(a,w,id.parse(req.params.reviewId)));});
- app.post(`${b}/reviews/:reviewId/confirm`,async(req,res)=>{const {a,w}=context(req),v=z.object({digest:z.string().length(64),confirmed:z.literal(true)}).strict().parse(req.body),r=await actions.preview(a,w,id.parse(req.params.reviewId));res.json(r.kind==='sharing'?await sharing.confirm(a,w,r.id,v.digest):await actions.confirm(a,w,r.id,v.digest));});
+ app.post(`${b}/reviews/:reviewId/confirm`,async(req,res)=>{const {a,w}=context(req),v=z.object({digest:z.string().length(64),confirmed:z.literal(true)}).strict().parse(req.body),r=await actions.preview(a,w,id.parse(req.params.reviewId));res.json(r.kind==='monitoring'?await new AppMonitoring(f.db).confirm(a,w,r.id,v.digest):r.kind==='sharing'?await sharing.confirm(a,w,r.id,v.digest):await actions.confirm(a,w,r.id,v.digest));});
  app.post(`${b}/actions/:actionId/run`,async(req,res)=>{const {a,w}=context(req),v=z.object({requestKey:id,recordId:id.optional()}).strict().parse(req.body);res.json(await actions.runNow(a,w,id.parse(req.params.actionId),v.requestKey,v.recordId));});
  app.post(`${b}/actions/:actionId/pause`,async(req,res)=>{const {a,w}=context(req);res.json(await actions.control(a,w,id.parse(req.params.actionId),z.boolean().parse(req.body.paused)));});
  app.get(`${b}/runs`,async(req,res)=>{const {a,w}=context(req);res.json(await actions.runs(a,w,req.query.appId?id.parse(req.query.appId):undefined,z.coerce.number().int().min(0).default(0).parse(req.query.offset)));});
@@ -49,6 +52,7 @@ export function addAppServicesApi(app:Express,f:WorkspaceFoundation){
  app.get(`${b}/jobs/:jobId`,async(req,res)=>{const {a,w}=context(req);res.json(await serviceJob(f.db,a,w,id.parse(req.params.jobId)));});
 }
 export function addAppServicesMcp(server:McpServer,f:WorkspaceFoundation,a:Actor,safe:any,metadata:any){
+ addAppMonitoringMcp(server,f,a,safe,metadata);
  const actions=new AppActions(f.db),sharing=new AppSharing(f.db),register=(name:string,description:string,schema:any,read:boolean,fn:(v:any)=>Promise<any>)=>server.registerTool(name,{description,inputSchema:{workspaceId:id,...schema},annotations:{readOnlyHint:read,openWorldHint:!read,destructiveHint:false},_meta:metadata},safe(fn));
  register('prepare_app_action','Prepare a scoped app action with manual, recurring, one-time date, record date or committed database-change triggers. Steps can send TrialAgents email notifications, call configured APIs including LLMs, and invoke bound functions. Returns an exact human review link. Approval authorizes repeated execution only within the named app/data/recipient/expiry scope. No effects run during preparation.',actionChange.shape,false,({workspaceId,...v})=>actions.prepare(a,workspaceId,v));
  register('list_app_actions','Read authorized saved app actions, their triggers and status. Does not execute them.',{appId:id.optional(),offset:z.number().int().min(0).default(0)},true,v=>actions.list(a,v.workspaceId,v.appId,v.offset));
