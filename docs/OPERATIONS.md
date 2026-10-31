@@ -2,6 +2,21 @@
 
 Development environment only. These procedures do not establish a production recovery guarantee or regulatory certification.
 
+## Shared automation activation
+
+Current operator handoff for release 0.2.39, recorded 1 November 2026 (Europe/Berlin). App availability does not depend on completing these steps. The historical operational notes below retain their original scope; use [current context](../CONTEXT.md) and the [automation engine](scopes/APP_AUTOMATION_ENGINE_2026-10-31.md) for this feature.
+
+1. In [trialy-web](https://dashboard.render.com/web/srv-db58ppo473hc73a9ds10), open **Environment** and copy the existing `CONNECTOR_ENCRYPTION_KEY` value. In [trialy-worker](https://dashboard.render.com/worker/srv-db58ppo473hc73a9ds00), set the same variable to the exact same value and select **Save and deploy**. Do not generate a replacement, overwrite the web key, log the value or put it in chat/GitHub. Existing encrypted credentials/subscription signing material depend on that key. The Render connector cannot read it; use the secure dashboard.
+2. Verify the worker deploy and its `app_services_ready` event: `automationSigningStorageConfigured` must be true. This boolean proves key presence only, not that it matches or that subscription decryption works. Verify signing/decryption through the authorized subscription cycle; never print secrets as proof. Keep email configuration independent of ChatGPT readiness.
+3. Refresh the existing custom MCP connection at `https://platform.trialagents.com/mcp` and start a new Work chat. Verify current management/setup tools, event discovery, the actual host subscription and an unattended no-write verification cycle. Follow [ChatGPT setup](CHATGPT_SETUP.md#current-connection-and-automation-setup). Do not invent callbacks or replace event delivery with polling without an explicit design decision.
+4. Record server release, worker deploy, connection state, actual host task/subscription identifiers and verification receipt in owner-only operational records. Never put secrets, private identifiers or customer prompts in public documentation. Distinguish approved/enabled definitions from connection readiness and completed work.
+
+At the 0.2.39 release check, signing storage was false and this host exposed only GitHub events plus an older TrialAgents tool catalog. These are dated observations: recheck after configuration/metadata refresh. If TrialAgents remains unavailable, inspect host/plugin event support and workspace controls; refreshing alone does not guarantee activation. Local/foreground tests and accepted callbacks do not prove unattended execution.
+
+Keep `APP_AUTOMATIONS_ENABLED=false` available on web/worker as the independent automation kill switch. Preserve queued work, receipts and app data during troubleshooting. Never bind `/health` or ordinary app requests to optional scheduling health. Disable stops new/uncommitted effects; it cannot undo already committed writes or dispatched emails.
+
+References: [Render environment variables](https://render.com/docs/configure-environment-variables), [OpenAI MCP Events](https://developers.openai.com/plugins/build/mcp-events).
+
 ## Runtime and migrations
 
 Use a single web instance while previews are in memory. Saved records and originals live in PostgreSQL; previews can disappear on restart. The worker can restart without losing committed originals or queued work. Extraction gets two attempts and then a quiet availability flag.

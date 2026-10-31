@@ -1,6 +1,6 @@
 # TrialAgents — Shared blueprint, UI and interaction contract (all 23 apps)
 
-**Status:** Design and functional scoping proposal. No HTML, CSS, JS, template JSON or backend changes are approved or performed by this document. Detailed candidates: [catalog](README.md).
+**Status:** Design and functional scoping proposal. No HTML, CSS, JS, template JSON or backend changes are approved or performed by this document. Detailed candidates: [catalog](README.md). Platform contracts below are updated for deployed release 0.2.39 and guidance 1.3.1 on 1 November 2026; this does not mark any candidate app implemented. [Current project context](../../../CONTEXT.md).
 
 ## 1. Product and template philosophy
 
@@ -33,9 +33,9 @@
 
 **Cards and icons:** one large introductory/hero insight card or 1–3 dark metric cards on dashboards where useful, with single-color thin line icons (existing `Icon` names such as `database`, `molecule`, `dna`, `flask`, `tracker`, `visualization`, `clock`, `search`, `check`, `document`, `people` via Vivid, and iconPath/custom icons only where supported). No colorful clip art or icon on each row. 10–14 px radius (Vivid tables 12), subtle border, minimal shadow; dark cards should have faint technical line grid/orbit/plot motif only if it does not reduce contrast. Preserve stable project colors/cover identity already implemented in Home.
 
-**Spacing/layout:** desktop page max ~1200–1440 px depending on current shell, content gutters 28–36 px, mobile 16–20; 16–24 px between related cards, 24–36 px between sections. Tabs with quiet underline and settings on the right. One page-level vertical scrolling flow, no nested vertical table scrollbars. Main table searchable, 25 records/page default where available, pagination at bottom; sticky right **Details** action, resizable drawer, 40–44 px interaction targets. Full-width fixed Save/Ignore footer only when pending changes, no competing CTAs.
+**Spacing/layout:** desktop page max ~1200–1440 px depending on current shell, content gutters 28–36 px, mobile 16–20; 16–24 px between related cards, 24–36 px between sections. Tabs with quiet underline and settings on the right. One page-level vertical scrolling flow, no nested vertical table scrollbars. Main table searchable, 25 records/page default where available, pagination at bottom; sticky right **Details** action, resizable drawer, 40–44 px interaction targets. Use the existing trusted Save/Ignore controls for deliberate record/layout edits. The global first-save footer appears only for a never-saved app; saved revisions never bring it back. Do not invent a second save bar. Keep any shared footer in the header/sidebar brand color.
 
-**Responsive:** desktop 3-up metrics / 2-up charts when meaningful; tablet 2-up; phone 1-up. Timelines and matrices may scroll horizontally in their own region with labeled columns, never force the whole page wider. Small mobile screen remains actionable, not shrunk screenshots. Keyboard, high contrast, programmatic labels, legends and clear empty/loading/error/restricted states are mandatory.
+**Responsive:** keep Search and the primary action (such as Add record) on one line. When controls no longer fit the container, disclose secondary filters/sorting in the shared accessible Filters panel with active count; never push the primary action to a second row. Preserve filter/input state across resize, use keyboard/focus/Escape behavior, and do not fetch data to expand controls. Desktop 3-up metrics / 2-up charts when meaningful; tablet 2-up; phone 1-up. Timelines and matrices may scroll horizontally in their own region with labeled columns, never force the whole page wider. Small mobile screen remains actionable, not shrunk screenshots. Keyboard, high contrast, programmatic labels and legends are mandatory. Retain the latest authorized published app on loading or optional-service failures, including local input. Use the shared empty state only when no usable authorized app exists. Actual access revocation still clears forbidden content; failed writes use the existing dismissible feedback and preserve the draft. Automation diagnostics belong only in platform Automations.
 
 ## 3. Chart and scientific visualization rules
 
@@ -67,7 +67,7 @@ Each audience blueprint specifies exact instances of these primitives:
 - **Comparison/scorecard:** explicit criteria, missing-data handling, weights and score formula/version; manual override records a rationale; no black-box ranking.
 - **Calendar/timeline:** start/end/due, planned vs actual, owner, overdue markers; no assumed real-time sync; horizontal scroll if needed.
 - **Report viewer:** saved approved report version, covered period, source-record snapshot links, status and explicit *Prepare with ChatGPT* handoff; no hidden LLM inside TrialAgents.
-- **Monitoring/setup:** selected subjects/sources/keywords, cadence preference, preview of research prompt and write scope, ChatGPT Task configuration offered after authorization; display “not connected” until verified, not a fake working toggle.
+- **Monitoring/setup:** selected subjects/sources/keywords may be domain inputs, but management links to platform Automations for the app-linked definition, reviewed instructions/schedule, scopes, status and history. Do not require an automation screen inside each generated app or duplicate its settings store. Connection readiness is separate from enabled intent.
 
 ## 5. Shared data model and integrity
 
@@ -77,16 +77,23 @@ For every proposed domain entity: define fields, single/multi cardinality, recor
 
 All edits: exact preview + Save/Ignore, accessible changed-field indication and immutable field history. An expressly authorized type/field/source/expiry standing grant can cover future qualifying writes; granting a task does not grant a generic DB write or external email. AI reads are subject to AI permissions, not the human owner's broader view. No automatic unapproved schema changes.
 
-## 6. ChatGPT and scheduling contract
+## 6. App access, ChatGPT and scheduling contract
 
-**Exclusive ChatGPT responsibilities:** web search, source discovery, company/funding/competitor monitoring, literature evaluation, document analysis and generation of narrative weekly/monthly reports. A TrialAgents app must not pretend its bounded `frontend-js` or isolated scheduled QuickJS performs these activities. User can run a manually launched ChatGPT workflow from an approved template recipe.
+Follow the [implemented app configuration contract](../APP_CONFIGURATION_AND_AUTOMATIONS.md) and current `read_app_automation_guide`. All 23 candidate apps and future custom apps share this contract; recipe wording in an individual blueprint describes intent, not a separate scheduler or new API schema.
 
-**Proposed recipe format (documentation; not yet supported as first-class JSON schema):**
-- `purpose` and query/analysis instructions, `inputRecords` (authorized table/field subsets), `sourcesAndInclusion`, `cadenceSuggestion` (daily/weekly/monthly/manual), `dedupeKey` (DOI, company+event+date, grant URL, etc.), `proposedOutput` (records/report), `writeScope`, `notificationPolicy`, `errorHandling`.
-- Offer a ChatGPT Task *after* app/template save and explicit permission check. If the user and host support a task with TrialAgents MCP, create it using the ChatGPT scheduling system; link the verified task if an exposed lifecycle contract exists. If not, show a copyable/run-now prompt. **No unverified task IDs, phantom status dashboards or claim of unattended writeback.**
-- At each research run, read fresh permitted TrialAgents records, search cited sources, use inclusion/exclusion and dedupe, distinguish facts/analysis, attach source/title/date and confidence, propose changes or save only under a still-valid single-type grant. Record run outcome if available. Draft reports must distinguish source-backed facts from interpretation and show data cutoff.
-- Deterministic TrialAgents workers may calculate aggregates, due flags and internal reminders within current grants, but cannot browse the web, call an LLM, or invoke the generic connector as a worker in the existing implementation.
-- Every intelligence app **works manually** if scheduled Tasks, external websites or AI access are unavailable. No mandatory integration.
+**Access:** every app has the enforced backend app boundary. The Access page keeps Projects → apps visible by default → expandable registered tabs, matching Database → tables → columns. Supported standard tracker tabs can supply stable optional `accessId` values. Inherit app permissions and only narrow them; preserve IDs across rename/reorder and protect source/data server-side. Missing metadata is valid; arbitrary custom screens remain app-level until their finer boundary is supported. Do not retrofit existing apps or use hidden HTML as authorization. Independent Database access is still governed separately.
+
+**Research:** ChatGPT performs approved source discovery, monitoring, interpretation and report writing. Save the app first, then prepare an app-linked research monitor using existing tools, stable authoring keys and exact owner review. Store the complete instructions, sources, output, scopes, timing and expiry in TrialAgents. One shared owner/workspace ChatGPT event subscription fetches due work; no per-app task or independent ChatGPT polling schedule. Local app JavaScript does not perform this background research.
+
+**Recipe documentation:** specify purpose; authorized input fields; sources and inclusion/exclusion; typed trigger (calendar daily/weekly/monthly, one-time, after-success, record-date or database change when supported); IANA timezone and coverage; deduplication identity; output/report destination; reviewed write scope/limits/expiry; success/no-findings/partial-failure behavior; and any separately approved notification. Use existing `documentation.tasks` and examples, not invented catalog fields. Include a no-automation example.
+
+**Platform effects:** TrialAgents app actions execute approved deterministic work and email. Durable connector jobs support long LLM/API operations under their approved credentials and timeout contracts; never put a provider call or secret inside generated source. A research-to-email chain uses a separately reviewed manual-trigger completion action, not a duplicate schedule. Keep research success and email delivery outcomes separate; unknown delivery outcomes are reconciled without blind resend.
+
+**Connection:** quietly check setup on first supported use, every app creation, automation addition and reconnect/repair. Reuse prior consent/subscriptions and respect paused/declined setup. Requested execution is Work chat, latest most capable subscription model, high reasoning; current host tools do not expose controls to enforce model/reasoning settings. Missing tools may require custom-connection metadata refresh and a new Work chat; availability and a real unattended cycle still need verification. Never invent host IDs/callbacks or claim OAuth activates background work.
+
+**Management and continuity:** platform Automations lists app-linked definitions; owners expand/edit schedule and prompt, inspect permissions/history and disable work. Editing preserves disabled state. Archive suspends work; restore/copy does not silently enable it. Removing or disabling automation never deletes an app or its records. A generated app must load/save/work without automation setup, and retain its current published content and unsaved input during scheduling, callback or task failures. Do not fetch automation status on the app's ordinary loading path.
+
+**Performance:** follow the living authoring contract's bounded active-page reads, authorized snapshots and in-flight request reuse. Use returned `includeOutput:true` output after layout save rather than a second serial render. Validate cold/warm tabs with realistic fields, several filters, 320–1440px containers, and delayed/failed background services. Preserve permission checks and exact save receipts.
 
 ## 7. Scope and external-tool exclusions
 
@@ -105,9 +112,10 @@ All edits: exact preview + Save/Ignore, accessible changed-field indication and 
 3. Desktop 1440 and mobile 390 quality checks: readable, no overlapping controls, no page overflow, one vertical scroll; keyboard accessible, contrast>=4.5:1 normal text.
 4. One complete flow: new record/form → proposed exact field diffs → owner approval → committed data → overview/chart updated → history shows source and authorization.
 5. Search, filters, relationships, pagination, stale/empty/restricted/duplicate states and error recovery tested, no fake totals. Calculated KPIs manually reconciled against sample inputs.
-6. Research/LLM/report screen only offers verified ChatGPT handoff, properly cited result with report save if authorized, plus a manual fallback. Recurring monitoring only advertised after real Task/plugin integration test.
+6. Research/LLM/report screen only offers verified ChatGPT handoff, properly cited result with report save if authorized, plus a manual fallback. Recurring monitoring only advertised as active after a verified shared host subscription and unattended cycle; incomplete activation remains pending in platform Automations.
 7. Demo screenshots: four truthful frames per app — dashboard; records; action; resulting chart/report — at desktop and at least one narrow-screen pass, with clearly fictitious data.
-8. No patient data and no required external service. No compliance certification, live integration or email delivery claimed without acceptance evidence.
+8. Missing optional section metadata, no-automation creation, narrow tab permissions, disabled edits, archive/restore and scheduler/task failures preserve usable apps and records.
+9. No patient data and no required external service. No compliance certification, live integration or email delivery claimed without acceptance evidence.
 
 ## Shared implementation contract
 

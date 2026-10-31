@@ -1,5 +1,7 @@
 # CRO applications — detailed candidate screen scope
 
+**Current platform contract (1 November 2026):** follow the [shared build contract](DESIGN_AND_BUILD_CONTRACT.md#6-app-access-chatgpt-and-scheduling-contract) for optional section access, unified Automations, shared ChatGPT research setup, TrialAgents email, failure isolation and template documentation. References to a Task in these candidate recipes describe optional ongoing work, not a separate host task per app. None of these candidates is marked implemented by this update.
+
 **Status: planning only.** Six applications for CRO business development, study delivery, feasibility and project reporting. Distinguish CRO **bid response** from sponsor-side RFPs; client-specific data remains confidential while common organization/PI records can be reused under access rules. See [shared Vivid design and data/AI contract](DESIGN_AND_BUILD_CONTRACT.md). No mandatory external business app integration or patient data.
 
 ## CR-01 — RFP Management (6 screens)

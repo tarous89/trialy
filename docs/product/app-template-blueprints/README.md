@@ -2,6 +2,10 @@
 
 **Status:** Detailed product/design scope only. Nothing in this directory is an installed template, implemented app, production workflow, certification or permission grant. **Recorded:** 31 October 2026. **Source:** User-approved shortlist and screen proposals, adapted to the current TrialAgents/Vivid runtime; benchmark products are design/workflow references, never code/assets to copy.
 
+## Platform contract update — 1 November 2026
+
+All candidates use the deployed 0.2.39 app access/automation contract and [living authoring guidance](../../../templates/TEMPLATE_AUTHORING.md). Projects show apps by default with optional expandable supported sections. Automations are app-linked definitions managed in the platform, using one shared ChatGPT research connection and separate TrialAgents deterministic/email actions. Optional metadata/setup failures never block an app. The [shared build contract](DESIGN_AND_BUILD_CONTRACT.md) supersedes older per-app-task or worker-limitation wording in recipes; those recipes describe business intent, not host task architecture. The candidate apps themselves remain proposals, not deployed templates.
+
 ## Contents and audience
 
 | Audience | Application specifications | Number |

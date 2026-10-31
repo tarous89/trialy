@@ -1,6 +1,6 @@
 # Simple apps: implementation and release
 
-Implementation update, 31 October 2026: [Apps, access and automations](APP_CONFIGURATION_AND_AUTOMATIONS.md) is now approved for implementation; validation for this change is separate from the historical release evidence below. The shared engine shipped separately in 0.2.38; the current change adds a unified Automations destination and optional standard-tracker section access, and live unattended host activation remains unverified.
+Implementation update, 31 October 2026: [Apps, access and automations](APP_CONFIGURATION_AND_AUTOMATIONS.md) shipped in 0.2.39 ([PR #86](https://github.com/tarous89/trialy/pull/86)); see [current context](../../CONTEXT.md) for release evidence and remaining activation. The shared engine shipped separately in 0.2.38; the current change adds a unified Automations destination and optional standard-tracker section access, and live unattended host activation remains unverified.
 
 29 October 2026. The user approved the bounded UI and behavior changes and required the existing styling, fonts, colors, margins and layout. S1–S5 are implemented. S6 local verification is complete; deployment and real-host verification are tracked separately below. The reversible `SIMPLE_APPS_ENABLED` flag defaults off until rollout.
 

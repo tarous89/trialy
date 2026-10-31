@@ -1,8 +1,24 @@
 # ChatGPT connection and workspace onboarding
 
-Updated: 2026-10-10. Deployed on Render; private plugin created. Live ChatGPT connection and automatic opening are not yet verified.
+Current setup updated 1 November 2026 (Europe/Berlin). Platform/MCP release 0.2.39 is deployed. The older 10 October onboarding and deployment notes below are historical; they do not describe current feature or activation status. See [project context](../CONTEXT.md).
 
-## Intended experience
+## Current connection and automation setup
+
+Public platform: `https://platform.trialagents.com`. MCP: `https://platform.trialagents.com/mcp`. Reuse the existing TrialAgents/Trialy connection; do not create a second account, plugin or subscription to repair metadata.
+
+1. After a server/tool change, open the existing custom MCP connection in **ChatGPT Plugins**, select **Refresh**, and start a new **Work chat** with TrialAgents enabled. Verify that `read_automation_setup`, `read_app_automation_guide` and `list_app_automations` are available. A deployed tool is not necessarily present in an already-open conversation's tool catalog.
+2. Initialize/open the connected account and read setup. Existing app/database permissions remain authoritative. If already authorized, resume missing setup; otherwise prepare the exact shared-runner review and let the owner approve it. Confirm the user's IANA timezone; the default daily time is 06:00. Do not silently use the server's UTC timezone.
+3. Where supported, discover the connected TrialAgents event source and `automation.ready`, reconcile an existing subscription, and let the host supply its callback/signing secret. TrialAgents emits daily checks and eligible due-event hints; the host fetches current authorized instructions. Do not create a host task per app or an extra polling schedule.
+4. Verify a real unattended invocation with a no-write verification occurrence. OAuth connection, setup approval, callback acceptance and foreground checks are not proof of background completion. Leave unsupported/pending setup explicit in Automations while apps remain usable.
+5. Check setup again on app creation, automation addition and reconnect/repair, reusing existing consent and respecting deliberate pauses/declines. App save must succeed independently. Per-app automation instructions, schedules, sources, scopes, history and enable/disable live in TrialAgents.
+
+Requested execution: supported Work chat, latest highest-capability model in the user's subscription, high reasoning. Current host tools expose no model/reasoning parameters, so store these preferences without claiming verified settings or automatic model upgrades. If the host has relevant UI controls, verify their actual value separately.
+
+The worker must use the existing web encryption key; see [operator activation](OPERATIONS.md#shared-automation-activation). Last checked at the 0.2.39 rollout, worker signing storage was missing and this chat listed only GitHub events and older TrialAgents tools. Recheck after refresh rather than treating that result as permanent unavailability. If events remain unavailable, investigate integration/workspace controls; do not ask the user to buy an API key or claim a new subscription will solve it.
+
+Custom-connection metadata refresh updates server-discovered tools. Imported skills/manifests require their own plugin version/publication; a GitHub merge does not prove the installed package was updated. Templates and living guidance are served dynamically; read all guidance pages before authoring. References: [OpenAI connection refresh](https://developers.openai.com/plugins/deploy/connect-chatgpt), [MCP Events](https://developers.openai.com/plugins/build/mcp-events).
+
+## Historical onboarding design — 10 October 2026
 
 1. User opens TrialAgents in ChatGPT and selects Connect.
 2. ChatGPT starts TrialAgents's OAuth authorization-code flow with PKCE. TrialAgents's own login page includes sign-up for new users.

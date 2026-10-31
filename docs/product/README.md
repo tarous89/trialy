@@ -6,7 +6,9 @@
 
 ## Relationship to TrialAgents's active scope
 
-The [31 October app configuration and automation revision](APP_CONFIGURATION_AND_AUTOMATIONS.md) is the approved implementation contract for reusable app structure, app/tab access, optional automations and the shared ChatGPT connection. It applies across this catalog and custom apps. Templates must describe these configurations when relevant without turning them into mandatory modules or claiming unsupported custom-section controls.
+Read [current project context](../../CONTEXT.md) before treating a candidate application as an implemented template.
+
+The [31 October app configuration and automation revision](APP_CONFIGURATION_AND_AUTOMATIONS.md) is the implemented 0.2.39 contract for reusable app structure, app/tab access, optional automations and the shared ChatGPT connection. It applies across this catalog and custom apps. Templates must describe these configurations when relevant without turning them into mandatory modules or claiming unsupported custom-section controls.
 
 This catalog organizes **examples of applications users could ask ChatGPT to create** using TrialAgents's shared data, saved code, isolated execution, tool gateway and permissions. **It does not authorize hardcoded clinical modules, default product navigation, mandatory templates, a fixed clinical schema, predefined approval chains, or a separate component engine.** The current architecture and decisions in [README](../../README.md), [development roadmap](../../DEVELOPMENT.md), [frontend contract](../FRONTEND_CODE.md) and [write authorization](../WRITE_AUTHORIZATION.md) take precedence.
 

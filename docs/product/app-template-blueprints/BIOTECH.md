@@ -1,5 +1,7 @@
 # Biotech company apps — detailed candidate screen scope
 
+**Current platform contract (1 November 2026):** follow the [shared build contract](DESIGN_AND_BUILD_CONTRACT.md#6-app-access-chatgpt-and-scheduling-contract) for optional section access, unified Automations, shared ChatGPT research setup, TrialAgents email, failure isolation and template documentation. References to a Task in these candidate recipes describe optional ongoing work, not a separate host task per app. None of these candidates is marked implemented by this update.
+
 **Status: planning only.** Six user-selected proposed apps; no HTML or running templates created. Use the universal [design and build contract](DESIGN_AND_BUILD_CONTRACT.md): Vivid/Inter typography, neutral tables, selectively dark KPI cards, clear chart units, authorization and source history. Benchmarks illustrate established workflows, **not their code, screenshots or proprietary data**. No mandatory external integration or patient data.
 
 ## BT-01 — Investor CRM (6 screens)

@@ -1,6 +1,6 @@
 # Apps, access and automations: revised product scope
 
-31 October 2026. **Implemented in the 0.2.39 release candidate, incorporating the owner’s final clarifications.** This is the authoritative scope for app configuration and automation management. It supersedes conflicting navigation, app-creation and automation-management descriptions in earlier scopes, not existing runtime behavior. The original product brief remains historical. See the [automation engine scope](../scopes/APP_AUTOMATION_ENGINE_2026-10-31.md) for scheduling and execution mechanics.
+31 October 2026. **Deployed in release 0.2.39, incorporating the owner’s final clarifications.** This is the authoritative scope for app configuration and automation management. It supersedes conflicting navigation, app-creation and automation-management descriptions in earlier scopes, not existing runtime behavior. The original product brief remains historical. See the [automation engine scope](../scopes/APP_AUTOMATION_ENGINE_2026-10-31.md) for scheduling and execution mechanics.
 
 ## Product model
 
@@ -112,7 +112,7 @@ Apply this workflow to every template and custom app. Automation remains optiona
 7. Check shared connection setup on every app creation; complete or resume missing setup if authorized and supported, respecting deliberate pauses and declined setup. Reuse the runner for every later app. Platform-only actions do not depend on ChatGPT readiness.
 8. Verify app save, permission configuration, automation definition, enabled/readiness state and next occurrence separately. Link the user to the app and its filtered Automations view; report partial setup honestly.
 
-App/tool descriptions, dynamic authoring/usage guidance (1.3.0), bundled workspace/design instructions and new immutable template versions are updated together. Required authoring documentation covers app purpose, stable sections and inheritance, optional data/connector bindings, access expectations, automation mode and executor, timing/timezone, complete prompt/action, sources/output contract, failure/no-result behavior, permissions, lifecycle and no-automation examples. All examples remain template-independent. Instructions describe the supported standard-tracker section boundary; arbitrary custom sections remain a future extension.
+App/tool descriptions, dynamic authoring/usage guidance (1.3.1), bundled workspace/design instructions and new immutable template versions are updated together. Required authoring documentation covers app purpose, stable sections and inheritance, optional data/connector bindings, access expectations, automation mode and executor, timing/timezone, complete prompt/action, sources/output contract, failure/no-result behavior, permissions, lifecycle and no-automation examples. All examples remain template-independent. Instructions describe the supported standard-tracker section boundary; arbitrary custom sections remain a future extension.
 
 ## Failure isolation and compatibility
 
@@ -159,3 +159,5 @@ The management list loads bounded summaries; expanded editors and histories load
 Validation includes 177 backend tests, 75 browser tests covering desktop/mobile management and hierarchy checks, optional-service outage continuity with unsaved input, and production build/type checks. The final read-only control adjustment additionally passed its targeted access/monitoring and tracker regressions. Final CI results are recorded in [PR #86](https://github.com/tarous89/trialy/pull/86). These tests do not establish a live ChatGPT subscription or force host model settings.
 
 Remaining operational acceptance: share the existing web encryption key with the worker, verify that the intended ChatGPT host exposes TrialAgents events, establish the authorized subscription, and complete a real unattended verification cycle. Requested latest-capability/high-reasoning preferences are stored; host-selected model/reasoning remain unverified. This does not block app usage or management deployment.
+
+Current operational handoff and release status: [project context](../../CONTEXT.md), [operator activation steps](../OPERATIONS.md#shared-automation-activation) and [host metadata refresh](../CHATGPT_SETUP.md#current-connection-and-automation-setup). Historical release evidence is not proof of current connection readiness.

@@ -1,5 +1,7 @@
 # Research-team applications — detailed candidate scope
 
+**Current platform contract (1 November 2026):** follow the [shared build contract](DESIGN_AND_BUILD_CONTRACT.md#6-app-access-chatgpt-and-scheduling-contract) for optional section access, unified Automations, shared ChatGPT research setup, TrialAgents email, failure isolation and template documentation. References to a Task in these candidate recipes describe optional ongoing work, not a separate host task per app. None of these candidates is marked implemented by this update.
+
 **Status: planning only.** Five user-shortlisted applications, including the final names **Literature Radar** and **Grant Pipeline**. No separate Protocol Library template; an internal method reference screen is part of Experiment Notebook. All apps exclude patient data and mandatory third-party integration. ChatGPT performs online research, monitoring and interpretation only when authorized; TrialAgents owns UI/database/approval. Follow the [shared Vivid design and build contract](DESIGN_AND_BUILD_CONTRACT.md).
 
 ## RS-01 — Experiment Notebook (6 screens)

@@ -1,6 +1,6 @@
 # TrialAgents app automation engine
 
-Status: engine foundation implemented in release 0.2.38, 31 October 2026; see the implementation notes below. The subsequent [app configuration and Automations destination revision](../product/APP_CONFIGURATION_AND_AUTOMATIONS.md) supersedes the product-management and creation experience and is implemented in the 0.2.39 release candidate. The current change adds a unified list and optional standard-tracker tab controls. End-to-end execution with a real ChatGPT event subscription remains a separate activation check. This document itself grants no permissions or activates personal tasks.
+Status: engine foundation implemented in release 0.2.38, 31 October 2026; see the implementation notes below. The subsequent [app configuration and Automations destination revision](../product/APP_CONFIGURATION_AND_AUTOMATIONS.md) supersedes the product-management and creation experience and is deployed in release 0.2.39. The current change adds a unified list and optional standard-tracker tab controls. End-to-end execution with a real ChatGPT event subscription remains a separate activation check. This document itself grants no permissions or activates personal tasks.
 
 ## Product decision
 
