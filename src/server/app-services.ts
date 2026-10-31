@@ -13,6 +13,8 @@ import type {Database} from '../db/database.js';
 import {appUrl} from '../shared/app-route.js';
 import {addAppMonitoringApi,addAppMonitoringMcp} from './app-monitoring.js';
 import {AppMonitoring} from '../app-services/monitoring.js';
+import {AutomationService} from '../automations/service.js';
+import {addAutomationApi} from './automations.js';
 export function addPublicAppServices(app:Express,db:Database,human:RequestHandler){
  const sharing=new AppSharing(db),f=new WorkspaceFoundation(db);
  app.post('/notifications/webhook',express.raw({type:'application/json',limit:'128kb'}),async(req,res)=>res.json(await receiveDeliveryEvent(db,(req as any).rawBody??req.body,req.headers)));
@@ -36,6 +38,7 @@ export function addPublicAppServices(app:Express,db:Database,human:RequestHandle
 }
 export function addAppServicesApi(app:Express,f:WorkspaceFoundation){
  addAppMonitoringApi(app,f);
+ addAutomationApi(app,f.db);
  const b='/api/workspaces/:workspaceId/app-services',actions=new AppActions(f.db),sharing=new AppSharing(f.db),context=(req:any)=>({a:req.actor as Actor,w:id.parse(req.params.workspaceId)});
  app.get(`${b}/actions`,async(req,res)=>{const {a,w}=context(req);res.json(await actions.list(a,w,req.query.appId?id.parse(req.query.appId):undefined,z.coerce.number().int().min(0).default(0).parse(req.query.offset)));});
  app.post(`${b}/actions/prepare`,async(req,res)=>{const {a,w}=context(req);res.json(await actions.prepare(a,w,req.body));});
@@ -43,7 +46,7 @@ export function addAppServicesApi(app:Express,f:WorkspaceFoundation){
  app.get(`${b}/sharing/:appId`,async(req,res)=>{const {a,w}=context(req);res.json(await sharing.list(a,w,id.parse(req.params.appId)));});
  app.post(`${b}/sharing/:shareId/revoke`,async(req,res)=>{const {a,w}=context(req);res.json(await sharing.revoke(a,w,id.parse(req.params.shareId)));});
  app.get(`${b}/reviews/:reviewId`,async(req,res)=>{const {a,w}=context(req);res.json(await actions.preview(a,w,id.parse(req.params.reviewId)));});
- app.post(`${b}/reviews/:reviewId/confirm`,async(req,res)=>{const {a,w}=context(req),v=z.object({digest:z.string().length(64),confirmed:z.literal(true)}).strict().parse(req.body),r=await actions.preview(a,w,id.parse(req.params.reviewId));res.json(r.kind==='monitoring'?await new AppMonitoring(f.db).confirm(a,w,r.id,v.digest):r.kind==='sharing'?await sharing.confirm(a,w,r.id,v.digest):await actions.confirm(a,w,r.id,v.digest));});
+ app.post(`${b}/reviews/:reviewId/confirm`,async(req,res)=>{const {a,w}=context(req),v=z.object({digest:z.string().length(64),confirmed:z.literal(true)}).strict().parse(req.body),r=await actions.preview(a,w,id.parse(req.params.reviewId));res.json(r.kind==='automation_setup'?await new AutomationService(f.db).confirm(a,w,r.id,v.digest):r.kind==='monitoring'?await new AppMonitoring(f.db).confirm(a,w,r.id,v.digest):r.kind==='sharing'?await sharing.confirm(a,w,r.id,v.digest):await actions.confirm(a,w,r.id,v.digest));});
  app.post(`${b}/actions/:actionId/run`,async(req,res)=>{const {a,w}=context(req),v=z.object({requestKey:id,recordId:id.optional()}).strict().parse(req.body);res.json(await actions.runNow(a,w,id.parse(req.params.actionId),v.requestKey,v.recordId));});
  app.post(`${b}/actions/:actionId/pause`,async(req,res)=>{const {a,w}=context(req);res.json(await actions.control(a,w,id.parse(req.params.actionId),z.boolean().parse(req.body.paused)));});
  app.get(`${b}/runs`,async(req,res)=>{const {a,w}=context(req);res.json(await actions.runs(a,w,req.query.appId?id.parse(req.query.appId):undefined,z.coerce.number().int().min(0).default(0).parse(req.query.offset)));});

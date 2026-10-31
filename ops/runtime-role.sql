@@ -70,3 +70,6 @@ GRANT SELECT,INSERT ON app_monitor_receipts TO trialy_runtime;
 
 GRANT SELECT,INSERT,DELETE ON app_runtime_views TO trialy_runtime;
 GRANT UPDATE(read_access) ON app_runtime_views TO trialy_runtime;
+
+GRANT SELECT,INSERT,UPDATE ON automation_runners,automation_subscriptions,automation_dispatch,automation_occurrences,automation_outbox TO trialy_runtime;
+GRANT SELECT,INSERT ON automation_attempts TO trialy_runtime;

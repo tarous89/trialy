@@ -6,7 +6,7 @@ export interface Connection { query<T = any>(sql: string, values?: any[]): Promi
 export interface Database extends Connection { transaction<T>(fn: (tx: Connection) => Promise<T>): Promise<T>; close(): Promise<void> }
 export class Postgres implements Database {
   pool: pg.Pool;
-  constructor(url: string) { this.pool = new pg.Pool({ connectionString: url, max: 10, connectionTimeoutMillis: 10000 }); }
+  constructor(url: string, max=10, statementTimeout=0) { this.pool = new pg.Pool({ connectionString: url, max, connectionTimeoutMillis: 10000,statement_timeout:statementTimeout,lock_timeout:statementTimeout?Math.min(statementTimeout,1000):0 }); }
   async query<T = any>(sql: string, values: any[] = []) { return this.transaction(async tx=>{const r=await tx.query<T>(sql,values);return {rows:r.rows,rowCount:r.rowCount};}); }
   async transaction<T>(fn: (tx: Connection) => Promise<T>): Promise<T> {
     const metrics=requestMetrics(),waiting=performance.now();

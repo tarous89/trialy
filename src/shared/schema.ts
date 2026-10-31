@@ -61,7 +61,7 @@ export const operationSchema = z.discriminatedUnion('kind', [
  z.object({kind:z.literal('reverse_field_changes'),changes:z.array(z.object({changeId:id,expectedVersion:z.number().int().min(0)})).min(1).max(200),reason:z.string().trim().min(1).max(1000)}),
 ]);
 export type Operation = z.infer<typeof operationSchema>;
-export type Actor = {userId:string; origin:'human'|'ai'|'worker'; actionConfirmed?:boolean; accessToolId?:string};
+export type Actor = {userId:string; origin:'human'|'ai'|'worker'; actionConfirmed?:boolean; accessToolId?:string; connectionFamily?:string; clientId?:string};
 export class AppError extends Error { constructor(public status:number, public code:string, message:string) {super(message);} }
 export function fail(status:number, code:string, message:string):never {throw new AppError(status,code,message);}
 
