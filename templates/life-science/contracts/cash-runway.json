@@ -1,0 +1,200 @@
+{
+  "id": "life.cash-runway",
+  "version": "1.0.0",
+  "authoringVersion": "1.1.1",
+  "authoringHash": "78b232d9a01713bdc80a7abe048b105126d895907444b8b063bb9e4bdfc754e7",
+  "canonicalVividHash": "e9314f6705fa06b5951e971e593ea4d9d8847a38abb8c0210d539de876ff2655",
+  "sourceHash": "18dbb95c0077e759c4afd63a736e64965e4848228b811dc9ada89b25341b4304",
+  "screens": [
+    {
+      "name": "Financial Overview",
+      "kind": "overview",
+      "role": "expenses",
+      "description": "Clarity for your next financial decision.",
+      "route": "financial-overview"
+    },
+    {
+      "name": "Expense Tracker",
+      "kind": "table",
+      "role": "expenses",
+      "description": "Know what is committed, planned and actually spent.",
+      "route": "expense-tracker"
+    },
+    {
+      "name": "Budget Planner",
+      "kind": "budget",
+      "role": "expenses",
+      "description": "Keep the plan connected to the numbers.",
+      "route": "budget-planner"
+    },
+    {
+      "name": "Scenario Builder",
+      "kind": "scenario",
+      "role": "expenses",
+      "description": "Explore the implications before you commit.",
+      "route": "scenario-builder"
+    },
+    {
+      "name": "Cash Forecast",
+      "kind": "forecast",
+      "role": "expenses",
+      "description": "One transparent view of your cash horizon.",
+      "route": "cash-forecast"
+    },
+    {
+      "name": "Financial Briefing",
+      "kind": "report",
+      "role": "reports",
+      "description": "Turn the figures into a useful management narrative.",
+      "route": "financial-briefing"
+    }
+  ],
+  "schemas": {
+    "expenses": {
+      "name": "Expenses and budget lines",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Budget line",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "category",
+          "label": "Category",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Actual / forecast",
+          "kind": "select",
+          "options": [
+            "Actual",
+            "Forecast"
+          ]
+        },
+        {
+          "key": "amount",
+          "label": "Outflow",
+          "kind": "money"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "date",
+          "label": "Period date",
+          "kind": "date"
+        },
+        {
+          "key": "budget",
+          "label": "Budget",
+          "kind": "money"
+        },
+        {
+          "key": "inflow",
+          "label": "Inflow",
+          "kind": "money"
+        },
+        {
+          "key": "currency",
+          "label": "Currency",
+          "kind": "text"
+        },
+        {
+          "key": "project",
+          "label": "Program",
+          "kind": "text"
+        },
+        {
+          "key": "recurring",
+          "label": "Recurring",
+          "kind": "boolean"
+        },
+        {
+          "key": "source",
+          "label": "Finance reference",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Assumptions",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "reports": {
+      "name": "Financial briefings",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Report",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "project",
+          "label": "Scope",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Draft",
+            "Review",
+            "Approved"
+          ]
+        },
+        {
+          "key": "date",
+          "label": "Report date",
+          "kind": "date"
+        },
+        {
+          "key": "owner",
+          "label": "Reviewer",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Next review",
+          "kind": "date"
+        },
+        {
+          "key": "period",
+          "label": "Reporting period",
+          "kind": "text"
+        },
+        {
+          "key": "cutoff",
+          "label": "Data cutoff",
+          "kind": "date"
+        },
+        {
+          "key": "version",
+          "label": "Report version",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Source reference",
+          "kind": "url"
+        },
+        {
+          "key": "sources",
+          "label": "Evidence references",
+          "kind": "longtext"
+        },
+        {
+          "key": "notes",
+          "label": "Reviewed report text",
+          "kind": "longtext"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,452 @@
+{
+  "id": "life.hiring-resource-management",
+  "version": "1.0.0",
+  "authoringVersion": "1.1.1",
+  "authoringHash": "78b232d9a01713bdc80a7abe048b105126d895907444b8b063bb9e4bdfc754e7",
+  "canonicalVividHash": "e9314f6705fa06b5951e971e593ea4d9d8847a38abb8c0210d539de876ff2655",
+  "sourceHash": "b7e185c69ca35af37db203f9475e450cb938205587a200545489c9d67384cc93",
+  "screens": [
+    {
+      "name": "Team Overview",
+      "kind": "overview",
+      "role": "staff",
+      "description": "See your people, capacity and upcoming needs.",
+      "route": "team-overview"
+    },
+    {
+      "name": "Team Directory",
+      "kind": "table",
+      "role": "staff",
+      "description": "Capabilities and availability in one place.",
+      "route": "team-directory"
+    },
+    {
+      "name": "Resource Planner",
+      "kind": "allocation",
+      "role": "allocations",
+      "description": "Balance commitments across your development programs.",
+      "route": "resource-planner"
+    },
+    {
+      "name": "Capacity Forecast",
+      "kind": "capacity",
+      "role": "allocations",
+      "description": "Spot the gap before it becomes a bottleneck.",
+      "route": "capacity-forecast"
+    },
+    {
+      "name": "Hiring Requests",
+      "kind": "form",
+      "role": "tasks",
+      "description": "Make the need and the decision clear.",
+      "route": "hiring-requests"
+    },
+    {
+      "name": "Hiring Pipeline",
+      "kind": "pipeline",
+      "role": "contacts",
+      "description": "A considered approach to your next team member.",
+      "route": "hiring-pipeline"
+    },
+    {
+      "name": "Workforce Scenarios",
+      "kind": "capacity",
+      "role": "allocations",
+      "description": "Compare effort and capacity on the same basis.",
+      "route": "workforce-scenarios"
+    }
+  ],
+  "schemas": {
+    "staff": {
+      "name": "Team directory",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Team member",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "role",
+          "label": "Role",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Availability",
+          "kind": "select",
+          "options": [
+            "Available",
+            "Allocated",
+            "Future start"
+          ]
+        },
+        {
+          "key": "capacity",
+          "label": "Available hours / week",
+          "kind": "number"
+        },
+        {
+          "key": "owner",
+          "label": "Manager",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Available from",
+          "kind": "date"
+        },
+        {
+          "key": "country",
+          "label": "Country",
+          "kind": "text"
+        },
+        {
+          "key": "skills",
+          "label": "Skills",
+          "kind": "text"
+        },
+        {
+          "key": "employment",
+          "label": "Employment type",
+          "kind": "text"
+        },
+        {
+          "key": "rate",
+          "label": "Hourly rate assumption",
+          "kind": "money"
+        },
+        {
+          "key": "category",
+          "label": "Team",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Reference",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Professional capacity notes",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "allocations": {
+      "name": "Project allocations",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Assignment",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "project",
+          "label": "Project",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Planned",
+            "Confirmed",
+            "Review",
+            "Completed"
+          ]
+        },
+        {
+          "key": "role",
+          "label": "Role",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Team member",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "End date",
+          "kind": "date"
+        },
+        {
+          "key": "start",
+          "label": "Start date",
+          "kind": "date"
+        },
+        {
+          "key": "hours",
+          "label": "Allocated hours / week",
+          "kind": "number"
+        },
+        {
+          "key": "capacity",
+          "label": "Available hours / week",
+          "kind": "number"
+        },
+        {
+          "key": "actual_hours",
+          "label": "Recorded hours",
+          "kind": "number"
+        },
+        {
+          "key": "rate",
+          "label": "Rate assumption",
+          "kind": "money"
+        },
+        {
+          "key": "source",
+          "label": "Reference",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Allocation rationale",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "tasks": {
+      "name": "Hiring requests",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Action / deliverable",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "project",
+          "label": "Project",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Planned",
+            "In progress",
+            "Review",
+            "Completed",
+            "Blocked"
+          ]
+        },
+        {
+          "key": "priority",
+          "label": "Priority",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Due date",
+          "kind": "date"
+        },
+        {
+          "key": "start",
+          "label": "Start",
+          "kind": "date"
+        },
+        {
+          "key": "baseline",
+          "label": "Baseline date",
+          "kind": "date"
+        },
+        {
+          "key": "actual",
+          "label": "Actual completion",
+          "kind": "date"
+        },
+        {
+          "key": "category",
+          "label": "Workstream",
+          "kind": "text"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Evidence URL",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Rationale / evidence",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "contacts": {
+      "name": "Candidates",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Full name",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "specialty",
+          "label": "Specialty",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Sourced",
+            "Contacted",
+            "Interview",
+            "Offer",
+            "Hired",
+            "Declined"
+          ]
+        },
+        {
+          "key": "country",
+          "label": "Country",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Follow-up due",
+          "kind": "date"
+        },
+        {
+          "key": "role",
+          "label": "Professional role",
+          "kind": "text"
+        },
+        {
+          "key": "email",
+          "label": "Work email",
+          "kind": "email"
+        },
+        {
+          "key": "channel",
+          "label": "Channel",
+          "kind": "text"
+        },
+        {
+          "key": "organization_id",
+          "label": "Organization reference",
+          "kind": "text"
+        },
+        {
+          "key": "affiliation",
+          "label": "Affiliation label",
+          "kind": "text"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Public source",
+          "kind": "url"
+        },
+        {
+          "key": "observed",
+          "label": "Verified on",
+          "kind": "date"
+        },
+        {
+          "key": "notes",
+          "label": "Private notes",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "reports": {
+      "name": "Workforce plans",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Report",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "project",
+          "label": "Scope",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Draft",
+            "Review",
+            "Approved"
+          ]
+        },
+        {
+          "key": "date",
+          "label": "Report date",
+          "kind": "date"
+        },
+        {
+          "key": "owner",
+          "label": "Reviewer",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Next review",
+          "kind": "date"
+        },
+        {
+          "key": "period",
+          "label": "Reporting period",
+          "kind": "text"
+        },
+        {
+          "key": "cutoff",
+          "label": "Data cutoff",
+          "kind": "date"
+        },
+        {
+          "key": "version",
+          "label": "Report version",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Source reference",
+          "kind": "url"
+        },
+        {
+          "key": "sources",
+          "label": "Evidence references",
+          "kind": "longtext"
+        },
+        {
+          "key": "notes",
+          "label": "Reviewed report text",
+          "kind": "longtext"
+        }
+      ]
+    }
+  }
+}

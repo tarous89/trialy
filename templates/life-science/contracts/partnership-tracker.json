@@ -1,0 +1,457 @@
+{
+  "id": "life.partnership-tracker",
+  "version": "1.0.0",
+  "authoringVersion": "1.1.1",
+  "authoringHash": "78b232d9a01713bdc80a7abe048b105126d895907444b8b063bb9e4bdfc754e7",
+  "canonicalVividHash": "e9314f6705fa06b5951e971e593ea4d9d8847a38abb8c0210d539de876ff2655",
+  "sourceHash": "384ef70785b098935c614b5b0ae0e864a7b903d871f0572c7a5f7c7255bdcb57",
+  "screens": [
+    {
+      "name": "Partnering Overview",
+      "kind": "overview",
+      "role": "opportunities",
+      "description": "Your partnerships, moving forward.",
+      "route": "partnering-overview"
+    },
+    {
+      "name": "Partner Directory",
+      "kind": "table",
+      "role": "organizations",
+      "description": "Know the company behind each opportunity.",
+      "route": "partner-directory"
+    },
+    {
+      "name": "Deal Pipeline",
+      "kind": "pipeline",
+      "role": "opportunities",
+      "description": "One shared view from introduction to agreement.",
+      "route": "deal-pipeline"
+    },
+    {
+      "name": "Opportunity Evaluation",
+      "kind": "comparison",
+      "role": "assessments",
+      "description": "Make the trade-offs explicit.",
+      "route": "opportunity-evaluation"
+    },
+    {
+      "name": "Meetings & Agreements",
+      "kind": "timeline",
+      "role": "activities",
+      "description": "Keep every discussion connected to its commitments.",
+      "route": "meetings-agreements"
+    },
+    {
+      "name": "Partner Discovery",
+      "kind": "research",
+      "role": "signals",
+      "description": "Find the evidence behind a potential match.",
+      "route": "partner-discovery"
+    }
+  ],
+  "schemas": {
+    "organizations": {
+      "name": "Partner directory",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Organization",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "focus",
+          "label": "Focus",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Identified",
+            "Qualified",
+            "Evaluation",
+            "Negotiation",
+            "Agreement",
+            "Inactive"
+          ]
+        },
+        {
+          "key": "country",
+          "label": "Country",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Next action",
+          "kind": "date"
+        },
+        {
+          "key": "website",
+          "label": "Website",
+          "kind": "url"
+        },
+        {
+          "key": "stage",
+          "label": "Development stage",
+          "kind": "text"
+        },
+        {
+          "key": "size",
+          "label": "Team size",
+          "kind": "number"
+        },
+        {
+          "key": "amount",
+          "label": "Indicative amount",
+          "kind": "money"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Source URL",
+          "kind": "url"
+        },
+        {
+          "key": "observed",
+          "label": "Verified on",
+          "kind": "date"
+        },
+        {
+          "key": "notes",
+          "label": "Notes",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "opportunities": {
+      "name": "Partnering opportunities",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Opportunity",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "company",
+          "label": "Organization label",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Stage",
+          "kind": "select",
+          "options": [
+            "Identified",
+            "Qualified",
+            "Evaluation",
+            "Negotiation",
+            "Agreement",
+            "Inactive"
+          ]
+        },
+        {
+          "key": "amount",
+          "label": "Indicative value",
+          "kind": "money"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Decision / next action",
+          "kind": "date"
+        },
+        {
+          "key": "organization_id",
+          "label": "Organization",
+          "kind": "relationship",
+          "targetRole": "organizations"
+        },
+        {
+          "key": "category",
+          "label": "Focus area",
+          "kind": "text"
+        },
+        {
+          "key": "priority",
+          "label": "Priority",
+          "kind": "text"
+        },
+        {
+          "key": "probability",
+          "label": "Assumed probability %",
+          "kind": "number"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Evidence URL",
+          "kind": "url"
+        },
+        {
+          "key": "observed",
+          "label": "Reviewed on",
+          "kind": "date"
+        },
+        {
+          "key": "notes",
+          "label": "Decision rationale",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "assessments": {
+      "name": "Opportunity assessments",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Candidate",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "category",
+          "label": "Service / area",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Assessment",
+          "kind": "select",
+          "options": [
+            "Not assessed",
+            "In progress",
+            "Review",
+            "Approved",
+            "Rework"
+          ]
+        },
+        {
+          "key": "owner",
+          "label": "Assessor",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Review due",
+          "kind": "date"
+        },
+        {
+          "key": "score_quality",
+          "label": "Quality / evidence (1-5)",
+          "kind": "number"
+        },
+        {
+          "key": "score_fit",
+          "label": "Strategic fit (1-5)",
+          "kind": "number"
+        },
+        {
+          "key": "score_delivery",
+          "label": "Delivery / feasibility (1-5)",
+          "kind": "number"
+        },
+        {
+          "key": "amount",
+          "label": "Cost estimate",
+          "kind": "money"
+        },
+        {
+          "key": "mandatory",
+          "label": "Mandatory items met",
+          "kind": "boolean"
+        },
+        {
+          "key": "next_step",
+          "label": "Clarification",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Evidence URL",
+          "kind": "url"
+        },
+        {
+          "key": "observed",
+          "label": "Review date",
+          "kind": "date"
+        },
+        {
+          "key": "notes",
+          "label": "Assessment rationale",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "activities": {
+      "name": "Meetings and agreements",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Interaction",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "company",
+          "label": "Company / institution",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Outcome",
+          "kind": "select",
+          "options": [
+            "Identified",
+            "Qualified",
+            "Evaluation",
+            "Negotiation",
+            "Agreement",
+            "Inactive"
+          ]
+        },
+        {
+          "key": "date",
+          "label": "Date",
+          "kind": "date"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Follow-up due",
+          "kind": "date"
+        },
+        {
+          "key": "contact",
+          "label": "Professional contact",
+          "kind": "text"
+        },
+        {
+          "key": "channel",
+          "label": "Channel",
+          "kind": "text"
+        },
+        {
+          "key": "category",
+          "label": "Purpose",
+          "kind": "text"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Reference URL",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Summary",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "signals": {
+      "name": "Partner discoveries",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Finding",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "company",
+          "label": "Subject",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Review status",
+          "kind": "select",
+          "options": [
+            "New",
+            "Review",
+            "Verified",
+            "Excluded"
+          ]
+        },
+        {
+          "key": "category",
+          "label": "Signal type",
+          "kind": "text"
+        },
+        {
+          "key": "date",
+          "label": "Published date",
+          "kind": "date"
+        },
+        {
+          "key": "owner",
+          "label": "Reviewer",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Source URL",
+          "kind": "url"
+        },
+        {
+          "key": "observed",
+          "label": "Checked on",
+          "kind": "date"
+        },
+        {
+          "key": "source_id",
+          "label": "Stable source ID",
+          "kind": "text"
+        },
+        {
+          "key": "relevance",
+          "label": "Relevance",
+          "kind": "text"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "coverage",
+          "label": "Coverage / limitations",
+          "kind": "text"
+        },
+        {
+          "key": "notes",
+          "label": "Fact and interpretation",
+          "kind": "longtext"
+        }
+      ]
+    }
+  }
+}

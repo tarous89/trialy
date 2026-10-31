@@ -1,0 +1,539 @@
+{
+  "id": "life.publication-management",
+  "version": "1.0.0",
+  "authoringVersion": "1.1.1",
+  "authoringHash": "78b232d9a01713bdc80a7abe048b105126d895907444b8b063bb9e4bdfc754e7",
+  "canonicalVividHash": "e9314f6705fa06b5951e971e593ea4d9d8847a38abb8c0210d539de876ff2655",
+  "sourceHash": "cc19d9babc69ad860d4854c668e623409798a2a6a76a02b6529aef1865867d7e",
+  "screens": [
+    {
+      "name": "Publication Overview",
+      "kind": "overview",
+      "role": "manuscripts",
+      "description": "Your editorial progress, clearly organized.",
+      "route": "publication-overview"
+    },
+    {
+      "name": "Manuscript Pipeline",
+      "kind": "pipeline",
+      "role": "manuscripts",
+      "description": "From first idea to the published record.",
+      "route": "manuscript-pipeline"
+    },
+    {
+      "name": "Authors & Contributors",
+      "kind": "table",
+      "role": "contacts",
+      "description": "Professional contributions and version-specific approvals.",
+      "route": "authors-contributors"
+    },
+    {
+      "name": "Review Management",
+      "kind": "form",
+      "role": "documents",
+      "description": "Give each draft a clear review and decision.",
+      "route": "review-management"
+    },
+    {
+      "name": "Journal & Congress Targets",
+      "kind": "table",
+      "role": "organizations",
+      "description": "Audience, requirements and the next deadline.",
+      "route": "journal-congress-targets"
+    },
+    {
+      "name": "Submission Timeline",
+      "kind": "timeline",
+      "role": "tasks",
+      "description": "Preserve the plan, the actual date and the decision.",
+      "route": "submission-timeline"
+    },
+    {
+      "name": "Publication Reports",
+      "kind": "report",
+      "role": "reports",
+      "description": "Share a considered view of your publication portfolio.",
+      "route": "publication-reports"
+    }
+  ],
+  "schemas": {
+    "manuscripts": {
+      "name": "Manuscript pipeline",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Manuscript",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "category",
+          "label": "Output type",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Stage",
+          "kind": "select",
+          "options": [
+            "Concept",
+            "Drafting",
+            "Author review",
+            "Submitted",
+            "Revision",
+            "Published",
+            "Withdrawn"
+          ]
+        },
+        {
+          "key": "journal",
+          "label": "Target outlet",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Lead author",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Next deadline",
+          "kind": "date"
+        },
+        {
+          "key": "start",
+          "label": "Planned start",
+          "kind": "date"
+        },
+        {
+          "key": "date",
+          "label": "Last update",
+          "kind": "date"
+        },
+        {
+          "key": "version",
+          "label": "Draft version",
+          "kind": "text"
+        },
+        {
+          "key": "authors",
+          "label": "Contributors",
+          "kind": "text"
+        },
+        {
+          "key": "doi",
+          "label": "DOI when published",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Working document",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Review / decision notes",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "contacts": {
+      "name": "Authors and contributors",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Full name",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "specialty",
+          "label": "Specialty",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Concept",
+            "Drafting",
+            "Author review",
+            "Submitted",
+            "Revision",
+            "Published",
+            "Withdrawn"
+          ]
+        },
+        {
+          "key": "country",
+          "label": "Country",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Follow-up due",
+          "kind": "date"
+        },
+        {
+          "key": "role",
+          "label": "Professional role",
+          "kind": "text"
+        },
+        {
+          "key": "email",
+          "label": "Work email",
+          "kind": "email"
+        },
+        {
+          "key": "channel",
+          "label": "Channel",
+          "kind": "text"
+        },
+        {
+          "key": "organization_id",
+          "label": "Organization",
+          "kind": "relationship",
+          "targetRole": "organizations"
+        },
+        {
+          "key": "affiliation",
+          "label": "Affiliation label",
+          "kind": "text"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Public source",
+          "kind": "url"
+        },
+        {
+          "key": "observed",
+          "label": "Verified on",
+          "kind": "date"
+        },
+        {
+          "key": "notes",
+          "label": "Private notes",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "documents": {
+      "name": "Review rounds",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Document / response",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "category",
+          "label": "Category",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Review status",
+          "kind": "select",
+          "options": [
+            "Not assessed",
+            "In progress",
+            "Review",
+            "Approved",
+            "Rework"
+          ]
+        },
+        {
+          "key": "version",
+          "label": "Version",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Review due",
+          "kind": "date"
+        },
+        {
+          "key": "date",
+          "label": "Updated on",
+          "kind": "date"
+        },
+        {
+          "key": "reviewer",
+          "label": "Reviewer",
+          "kind": "text"
+        },
+        {
+          "key": "project",
+          "label": "Study / project",
+          "kind": "text"
+        },
+        {
+          "key": "mandatory",
+          "label": "Required",
+          "kind": "boolean"
+        },
+        {
+          "key": "source",
+          "label": "Source / location",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Content / review notes",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "organizations": {
+      "name": "Journal and congress targets",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Organization",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "focus",
+          "label": "Focus",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Concept",
+            "Drafting",
+            "Author review",
+            "Submitted",
+            "Revision",
+            "Published",
+            "Withdrawn"
+          ]
+        },
+        {
+          "key": "country",
+          "label": "Country",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Next action",
+          "kind": "date"
+        },
+        {
+          "key": "website",
+          "label": "Website",
+          "kind": "url"
+        },
+        {
+          "key": "stage",
+          "label": "Development stage",
+          "kind": "text"
+        },
+        {
+          "key": "size",
+          "label": "Team size",
+          "kind": "number"
+        },
+        {
+          "key": "amount",
+          "label": "Indicative amount",
+          "kind": "money"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Source URL",
+          "kind": "url"
+        },
+        {
+          "key": "observed",
+          "label": "Verified on",
+          "kind": "date"
+        },
+        {
+          "key": "notes",
+          "label": "Notes",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "tasks": {
+      "name": "Submission milestones",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Action / deliverable",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "project",
+          "label": "Project",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Planned",
+            "In progress",
+            "Review",
+            "Completed",
+            "Blocked"
+          ]
+        },
+        {
+          "key": "priority",
+          "label": "Priority",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Due date",
+          "kind": "date"
+        },
+        {
+          "key": "start",
+          "label": "Start",
+          "kind": "date"
+        },
+        {
+          "key": "baseline",
+          "label": "Baseline date",
+          "kind": "date"
+        },
+        {
+          "key": "actual",
+          "label": "Actual completion",
+          "kind": "date"
+        },
+        {
+          "key": "category",
+          "label": "Workstream",
+          "kind": "text"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Evidence URL",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Rationale / evidence",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "reports": {
+      "name": "Publication reports",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Report",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "project",
+          "label": "Scope",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Draft",
+            "Review",
+            "Approved"
+          ]
+        },
+        {
+          "key": "date",
+          "label": "Report date",
+          "kind": "date"
+        },
+        {
+          "key": "owner",
+          "label": "Reviewer",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Next review",
+          "kind": "date"
+        },
+        {
+          "key": "period",
+          "label": "Reporting period",
+          "kind": "text"
+        },
+        {
+          "key": "cutoff",
+          "label": "Data cutoff",
+          "kind": "date"
+        },
+        {
+          "key": "version",
+          "label": "Report version",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Source reference",
+          "kind": "url"
+        },
+        {
+          "key": "sources",
+          "label": "Evidence references",
+          "kind": "longtext"
+        },
+        {
+          "key": "notes",
+          "label": "Reviewed report text",
+          "kind": "longtext"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,271 @@
+{
+  "id": "life.literature-radar",
+  "version": "1.0.0",
+  "authoringVersion": "1.1.1",
+  "authoringHash": "78b232d9a01713bdc80a7abe048b105126d895907444b8b063bb9e4bdfc754e7",
+  "canonicalVividHash": "e9314f6705fa06b5951e971e593ea4d9d8847a38abb8c0210d539de876ff2655",
+  "sourceHash": "1c47fe1eabed3425a0721abb33c43cc2e44798b8ab8248825df982c6a6f92048",
+  "screens": [
+    {
+      "name": "Research Overview",
+      "kind": "overview",
+      "role": "publications",
+      "description": "A considered view of what is new in your field.",
+      "route": "research-overview"
+    },
+    {
+      "name": "Research Topics",
+      "kind": "form",
+      "role": "requirements",
+      "description": "Turn a research question into a clear discovery scope.",
+      "route": "research-topics"
+    },
+    {
+      "name": "Publication Feed",
+      "kind": "table",
+      "role": "publications",
+      "description": "Papers worth examining, with their original sources.",
+      "route": "publication-feed"
+    },
+    {
+      "name": "Reading Queue",
+      "kind": "pipeline",
+      "role": "publications",
+      "description": "From discovery to a documented screening decision.",
+      "route": "reading-queue"
+    },
+    {
+      "name": "Literature Synthesis",
+      "kind": "report",
+      "role": "reports",
+      "description": "Compare findings without losing their limitations.",
+      "route": "literature-synthesis"
+    },
+    {
+      "name": "Monitoring Setup",
+      "kind": "monitor",
+      "role": "publications",
+      "description": "Recurring discovery belongs in ChatGPT, not a hidden crawler.",
+      "route": "monitoring-setup"
+    }
+  ],
+  "schemas": {
+    "requirements": {
+      "name": "Research topics",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Requirement",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "category",
+          "label": "Section",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Not assessed",
+            "In progress",
+            "Review",
+            "Approved",
+            "Rework"
+          ]
+        },
+        {
+          "key": "mandatory",
+          "label": "Required",
+          "kind": "boolean"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Due date",
+          "kind": "date"
+        },
+        {
+          "key": "weight",
+          "label": "Weight",
+          "kind": "number"
+        },
+        {
+          "key": "answer",
+          "label": "Response / assessment",
+          "kind": "longtext"
+        },
+        {
+          "key": "reviewer",
+          "label": "Reviewer",
+          "kind": "text"
+        },
+        {
+          "key": "version",
+          "label": "Requirement version",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Requirement source",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Rationale",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "publications": {
+      "name": "Publication feed",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Publication",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "category",
+          "label": "Topic",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Reading status",
+          "kind": "select",
+          "options": [
+            "New",
+            "Reading",
+            "Reviewed",
+            "Included",
+            "Excluded"
+          ]
+        },
+        {
+          "key": "journal",
+          "label": "Journal",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Reviewer",
+          "kind": "text"
+        },
+        {
+          "key": "date",
+          "label": "Publication date",
+          "kind": "date"
+        },
+        {
+          "key": "doi",
+          "label": "DOI / PMID",
+          "kind": "text"
+        },
+        {
+          "key": "authors",
+          "label": "Authors",
+          "kind": "text"
+        },
+        {
+          "key": "relevance",
+          "label": "Relevance",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Review due",
+          "kind": "date"
+        },
+        {
+          "key": "source",
+          "label": "Publisher URL",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Finding / limitations",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "reports": {
+      "name": "Literature syntheses",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Report",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "project",
+          "label": "Scope",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Draft",
+            "Review",
+            "Approved"
+          ]
+        },
+        {
+          "key": "date",
+          "label": "Report date",
+          "kind": "date"
+        },
+        {
+          "key": "owner",
+          "label": "Reviewer",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Next review",
+          "kind": "date"
+        },
+        {
+          "key": "period",
+          "label": "Reporting period",
+          "kind": "text"
+        },
+        {
+          "key": "cutoff",
+          "label": "Data cutoff",
+          "kind": "date"
+        },
+        {
+          "key": "version",
+          "label": "Report version",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Source reference",
+          "kind": "url"
+        },
+        {
+          "key": "sources",
+          "label": "Evidence references",
+          "kind": "longtext"
+        },
+        {
+          "key": "notes",
+          "label": "Reviewed report text",
+          "kind": "longtext"
+        }
+      ]
+    }
+  }
+}

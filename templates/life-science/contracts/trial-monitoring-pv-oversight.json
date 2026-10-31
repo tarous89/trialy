@@ -1,0 +1,424 @@
+{
+  "id": "life.trial-monitoring-pv-oversight",
+  "version": "1.0.0",
+  "authoringVersion": "1.1.1",
+  "authoringHash": "78b232d9a01713bdc80a7abe048b105126d895907444b8b063bb9e4bdfc754e7",
+  "canonicalVividHash": "e9314f6705fa06b5951e971e593ea4d9d8847a38abb8c0210d539de876ff2655",
+  "sourceHash": "fdff3d434152ecd2e3f0d88c14b76e0c230bb9fbbaafa23dc17c9134750cb489",
+  "screens": [
+    {
+      "name": "Oversight Dashboard",
+      "kind": "overview",
+      "role": "obligations",
+      "description": "Visit operations and periodic obligations, clearly separated.",
+      "route": "oversight-dashboard"
+    },
+    {
+      "name": "Monitoring Visits",
+      "kind": "timeline",
+      "role": "visits",
+      "description": "Institution-level visit plans and report status.",
+      "route": "monitoring-visits"
+    },
+    {
+      "name": "Monitoring Findings",
+      "kind": "form",
+      "role": "requirements",
+      "description": "Process findings only. No patient narratives.",
+      "route": "monitoring-findings"
+    },
+    {
+      "name": "PV Agreements",
+      "kind": "table",
+      "role": "documents",
+      "description": "Responsibility, document version and next review.",
+      "route": "pv-agreements"
+    },
+    {
+      "name": "Reporting Calendar",
+      "kind": "timeline",
+      "role": "obligations",
+      "description": "Periodic obligation deadlines, not individual case timelines.",
+      "route": "reporting-calendar"
+    },
+    {
+      "name": "Obligation Management",
+      "kind": "table",
+      "role": "obligations",
+      "description": "Evidence and accountability for each commitment.",
+      "route": "obligation-management"
+    },
+    {
+      "name": "Oversight Summary",
+      "kind": "report",
+      "role": "reports",
+      "description": "A management summary of operational obligations.",
+      "route": "oversight-summary"
+    }
+  ],
+  "schemas": {
+    "visits": {
+      "name": "Institution monitoring visits",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Site visit",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "site",
+          "label": "Institution",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Planned",
+            "In progress",
+            "Review",
+            "Completed",
+            "Blocked"
+          ]
+        },
+        {
+          "key": "category",
+          "label": "Visit type",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Monitor",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Planned visit",
+          "kind": "date"
+        },
+        {
+          "key": "start",
+          "label": "Window start",
+          "kind": "date"
+        },
+        {
+          "key": "actual",
+          "label": "Actual visit",
+          "kind": "date"
+        },
+        {
+          "key": "report_due",
+          "label": "Report due",
+          "kind": "date"
+        },
+        {
+          "key": "project",
+          "label": "Study",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Report location",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Operational notes only",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "requirements": {
+      "name": "Operational findings",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Requirement",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "category",
+          "label": "Section",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Not assessed",
+            "In progress",
+            "Review",
+            "Approved",
+            "Rework"
+          ]
+        },
+        {
+          "key": "mandatory",
+          "label": "Required",
+          "kind": "boolean"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Due date",
+          "kind": "date"
+        },
+        {
+          "key": "weight",
+          "label": "Weight",
+          "kind": "number"
+        },
+        {
+          "key": "answer",
+          "label": "Response / assessment",
+          "kind": "longtext"
+        },
+        {
+          "key": "reviewer",
+          "label": "Reviewer",
+          "kind": "text"
+        },
+        {
+          "key": "version",
+          "label": "Requirement version",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Requirement source",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Rationale",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "documents": {
+      "name": "PV agreement metadata",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Document / response",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "category",
+          "label": "Category",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Review status",
+          "kind": "select",
+          "options": [
+            "Not assessed",
+            "In progress",
+            "Review",
+            "Approved",
+            "Rework"
+          ]
+        },
+        {
+          "key": "version",
+          "label": "Version",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Review due",
+          "kind": "date"
+        },
+        {
+          "key": "date",
+          "label": "Updated on",
+          "kind": "date"
+        },
+        {
+          "key": "reviewer",
+          "label": "Reviewer",
+          "kind": "text"
+        },
+        {
+          "key": "project",
+          "label": "Study / project",
+          "kind": "text"
+        },
+        {
+          "key": "mandatory",
+          "label": "Required",
+          "kind": "boolean"
+        },
+        {
+          "key": "source",
+          "label": "Source / location",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Content / review notes",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "obligations": {
+      "name": "PV reporting obligations",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Obligation",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "company",
+          "label": "Partner / authority",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Planned",
+            "In progress",
+            "Review",
+            "Completed",
+            "Blocked"
+          ]
+        },
+        {
+          "key": "category",
+          "label": "Obligation type",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Due date",
+          "kind": "date"
+        },
+        {
+          "key": "start",
+          "label": "Reporting starts",
+          "kind": "date"
+        },
+        {
+          "key": "actual",
+          "label": "Completed on",
+          "kind": "date"
+        },
+        {
+          "key": "jurisdiction",
+          "label": "Jurisdiction",
+          "kind": "text"
+        },
+        {
+          "key": "version",
+          "label": "Agreement version",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Source reference",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Operational obligation only",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "reports": {
+      "name": "Operational oversight reports",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Report",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "project",
+          "label": "Scope",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Draft",
+            "Review",
+            "Approved"
+          ]
+        },
+        {
+          "key": "date",
+          "label": "Report date",
+          "kind": "date"
+        },
+        {
+          "key": "owner",
+          "label": "Reviewer",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Next review",
+          "kind": "date"
+        },
+        {
+          "key": "period",
+          "label": "Reporting period",
+          "kind": "text"
+        },
+        {
+          "key": "cutoff",
+          "label": "Data cutoff",
+          "kind": "date"
+        },
+        {
+          "key": "version",
+          "label": "Report version",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Source reference",
+          "kind": "url"
+        },
+        {
+          "key": "sources",
+          "label": "Evidence references",
+          "kind": "longtext"
+        },
+        {
+          "key": "notes",
+          "label": "Reviewed report text",
+          "kind": "longtext"
+        }
+      ]
+    }
+  }
+}

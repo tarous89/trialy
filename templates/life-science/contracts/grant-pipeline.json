@@ -1,0 +1,439 @@
+{
+  "id": "life.grant-pipeline",
+  "version": "1.0.0",
+  "authoringVersion": "1.1.1",
+  "authoringHash": "78b232d9a01713bdc80a7abe048b105126d895907444b8b063bb9e4bdfc754e7",
+  "canonicalVividHash": "e9314f6705fa06b5951e971e593ea4d9d8847a38abb8c0210d539de876ff2655",
+  "sourceHash": "0d0336156da3e99214af79ef37d0fdab2e98bce2fb38b800ce1a31f9bd5cac1c",
+  "screens": [
+    {
+      "name": "Funding Overview",
+      "kind": "overview",
+      "role": "grants",
+      "description": "Opportunities, deadlines and outcomes in one place.",
+      "route": "funding-overview"
+    },
+    {
+      "name": "Grant Opportunities",
+      "kind": "table",
+      "role": "grants",
+      "description": "Official calls, current deadlines and sources.",
+      "route": "grant-opportunities"
+    },
+    {
+      "name": "Eligibility Assessment",
+      "kind": "form",
+      "role": "requirements",
+      "description": "Make unknowns visible before you commit.",
+      "route": "eligibility-assessment"
+    },
+    {
+      "name": "Application Pipeline",
+      "kind": "pipeline",
+      "role": "grants",
+      "description": "Keep every application moving with a clear next step.",
+      "route": "application-pipeline"
+    },
+    {
+      "name": "Tasks & Deadlines",
+      "kind": "timeline",
+      "role": "tasks",
+      "description": "Leave room for good science and proper review.",
+      "route": "tasks-deadlines"
+    },
+    {
+      "name": "Grant Discovery",
+      "kind": "research",
+      "role": "signals",
+      "description": "Find relevant public calls with ChatGPT.",
+      "route": "grant-discovery"
+    },
+    {
+      "name": "Funding Reports",
+      "kind": "report",
+      "role": "reports",
+      "description": "A transparent picture of your research funding pipeline.",
+      "route": "funding-reports"
+    }
+  ],
+  "schemas": {
+    "grants": {
+      "name": "Funding opportunities",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Funding call",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "funder",
+          "label": "Funder",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Stage",
+          "kind": "select",
+          "options": [
+            "Discovered",
+            "Assessing",
+            "Drafting",
+            "Submitted",
+            "Awarded",
+            "Declined"
+          ]
+        },
+        {
+          "key": "amount",
+          "label": "Requested amount",
+          "kind": "money"
+        },
+        {
+          "key": "currency",
+          "label": "Currency",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Lead",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Official deadline",
+          "kind": "date"
+        },
+        {
+          "key": "call_id",
+          "label": "Call identifier",
+          "kind": "text"
+        },
+        {
+          "key": "category",
+          "label": "Research focus",
+          "kind": "text"
+        },
+        {
+          "key": "eligible",
+          "label": "Eligibility reviewed",
+          "kind": "boolean"
+        },
+        {
+          "key": "source",
+          "label": "Official call URL",
+          "kind": "url"
+        },
+        {
+          "key": "observed",
+          "label": "Verified on",
+          "kind": "date"
+        },
+        {
+          "key": "notes",
+          "label": "Eligibility / rationale",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "requirements": {
+      "name": "Eligibility assessments",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Requirement",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "category",
+          "label": "Section",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Not assessed",
+            "In progress",
+            "Review",
+            "Approved",
+            "Rework"
+          ]
+        },
+        {
+          "key": "mandatory",
+          "label": "Required",
+          "kind": "boolean"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Due date",
+          "kind": "date"
+        },
+        {
+          "key": "weight",
+          "label": "Weight",
+          "kind": "number"
+        },
+        {
+          "key": "answer",
+          "label": "Response / assessment",
+          "kind": "longtext"
+        },
+        {
+          "key": "reviewer",
+          "label": "Reviewer",
+          "kind": "text"
+        },
+        {
+          "key": "version",
+          "label": "Requirement version",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Requirement source",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Rationale",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "tasks": {
+      "name": "Application milestones",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Action / deliverable",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "project",
+          "label": "Project",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Planned",
+            "In progress",
+            "Review",
+            "Completed",
+            "Blocked"
+          ]
+        },
+        {
+          "key": "priority",
+          "label": "Priority",
+          "kind": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Due date",
+          "kind": "date"
+        },
+        {
+          "key": "start",
+          "label": "Start",
+          "kind": "date"
+        },
+        {
+          "key": "baseline",
+          "label": "Baseline date",
+          "kind": "date"
+        },
+        {
+          "key": "actual",
+          "label": "Actual completion",
+          "kind": "date"
+        },
+        {
+          "key": "category",
+          "label": "Workstream",
+          "kind": "text"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Evidence URL",
+          "kind": "url"
+        },
+        {
+          "key": "notes",
+          "label": "Rationale / evidence",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "signals": {
+      "name": "Grant discovery",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Finding",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "company",
+          "label": "Subject",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Review status",
+          "kind": "select",
+          "options": [
+            "New",
+            "Review",
+            "Verified",
+            "Excluded"
+          ]
+        },
+        {
+          "key": "category",
+          "label": "Signal type",
+          "kind": "text"
+        },
+        {
+          "key": "date",
+          "label": "Published date",
+          "kind": "date"
+        },
+        {
+          "key": "owner",
+          "label": "Reviewer",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Source URL",
+          "kind": "url"
+        },
+        {
+          "key": "observed",
+          "label": "Checked on",
+          "kind": "date"
+        },
+        {
+          "key": "source_id",
+          "label": "Stable source ID",
+          "kind": "text"
+        },
+        {
+          "key": "relevance",
+          "label": "Relevance",
+          "kind": "text"
+        },
+        {
+          "key": "next_step",
+          "label": "Next step",
+          "kind": "text"
+        },
+        {
+          "key": "coverage",
+          "label": "Coverage / limitations",
+          "kind": "text"
+        },
+        {
+          "key": "notes",
+          "label": "Fact and interpretation",
+          "kind": "longtext"
+        }
+      ]
+    },
+    "reports": {
+      "name": "Funding reports",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Report",
+          "kind": "text",
+          "required": true
+        },
+        {
+          "key": "project",
+          "label": "Scope",
+          "kind": "text"
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "kind": "select",
+          "options": [
+            "Draft",
+            "Review",
+            "Approved"
+          ]
+        },
+        {
+          "key": "date",
+          "label": "Report date",
+          "kind": "date"
+        },
+        {
+          "key": "owner",
+          "label": "Reviewer",
+          "kind": "text"
+        },
+        {
+          "key": "due",
+          "label": "Next review",
+          "kind": "date"
+        },
+        {
+          "key": "period",
+          "label": "Reporting period",
+          "kind": "text"
+        },
+        {
+          "key": "cutoff",
+          "label": "Data cutoff",
+          "kind": "date"
+        },
+        {
+          "key": "version",
+          "label": "Report version",
+          "kind": "text"
+        },
+        {
+          "key": "source",
+          "label": "Source reference",
+          "kind": "url"
+        },
+        {
+          "key": "sources",
+          "label": "Evidence references",
+          "kind": "longtext"
+        },
+        {
+          "key": "notes",
+          "label": "Reviewed report text",
+          "kind": "longtext"
+        }
+      ]
+    }
+  }
+}
