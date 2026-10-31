@@ -16,6 +16,7 @@ Foundation baseline updated 11 October 2026, with later implementation notes bel
 Repository: `tarous89/trialy`. Public name: **TrialAgents**. Internal name: **TrialAgents OS**. The 29 October 2026 rename changes product copy and plugin presentation, not URLs, OAuth scopes, database roles, saved identifiers or other TrialAgents products. See [naming and compatibility](docs/BRANDING.md).
 
 - [Current development steps](DEVELOPMENT.md)
+- [User-selected 23 biotech/ClinOps/CRO/research app blueprints — detailed screen specs, Vivid styling, no implementation](docs/product/app-template-blueprints/README.md)
 - [Proposed 11-function demo template showcase](docs/product/TEMPLATE_SHOWCASE_PLAN.md)
 - [Interface behavior decisions and proposals](docs/INTERFACE_RULES.md)
 - [Foundation architecture and dependency map](docs/FOUNDATION_ARCHITECTURE.md)
