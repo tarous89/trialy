@@ -12,7 +12,8 @@ export const schedule=z.discriminatedUnion('kind',[
  actionTrigger.options[4],actionTrigger.options[5]
 ]);
 export type AutomationSchedule=z.infer<typeof schedule>;
-export const runnerPreferences=z.object({time:clock.default('06:00'),timeZone,emptyChecks:z.boolean().default(true)}).strict();
+export const executionPreference={mode:'chat',model:'latest_most_capable_available',reasoning:'high'} as const;
+export const runnerPreferences=z.object({execution:z.object({mode:z.literal('chat'),model:z.literal('latest_most_capable_available'),reasoning:z.literal('high')}).strict().default(executionPreference),time:clock.default('06:00'),timeZone,emptyChecks:z.boolean().default(true)}).strict();
 export const runnerChange=z.object({preferences:runnerPreferences,expectedVersion:z.number().int().min(0).optional()}).strict();
 export const sharedAutomation=z.object({runnerId:id,trigger:schedule,initialLookbackDays:z.number().int().min(1).max(365).default(7),
  catchUp:z.enum(['coalesce','replay']).default('coalesce'),completionActionId:id.optional(),completionActionVersion:z.number().int().min(0).optional()

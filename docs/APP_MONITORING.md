@@ -1,5 +1,13 @@
 # App-level ChatGPT monitoring
 
+## Scope and compatibility
+
+This document describes the legacy per-app host-task adapter. Release 0.2.38 also implements the [shared automation engine](scopes/APP_AUTOMATION_ENGINE_2026-10-31.md), whose schedules are executable server configuration. The [revised app configuration scope](product/APP_CONFIGURATION_AND_AUTOMATIONS.md) adds a first-class Automations list and complete expandable editing across research and platform actions. The current implementation includes optional standard-tracker sections and management adapters; actual host activation remains separately unverified.
+
+New shared definitions belong to a saved app, reuse the owner/workspace runner, and remain optional for app availability. The target lifecycle is disable/enable/edit; retirement follows parent app deletion and retains records/history. Sharing app tabs never shares private monitoring prompts, execution identity or management authority. Existing legacy task links and receipts remain intact until explicitly migrated without dual scheduling.
+
+## Legacy implementation
+
 Optional monitoring attaches to any saved component without changing the component, template catalog, schema, public route or existing permissions. The runtime contract is served by `read_app_monitoring_guide` from the workspace skill reference. Existing app behavior does not depend on monitoring being configured.
 
 Migration 047 adds owner-scoped RLS tables for configuration, immutable completed run records and immutable links to real maintenance receipts. Existing service-review storage provides exact human-reviewed setup. Restricted runtime grants are additive. No new service, API key, worker schedule or external AI provider is required.

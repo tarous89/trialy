@@ -1,3 +1,4 @@
+import {appSections} from './app-sections.js';
 import {z} from 'zod';
 import {randomUUID} from 'node:crypto';
 import type {Database,Connection} from '../db/database.js';
@@ -41,6 +42,7 @@ export class AccessManagement{
    const rules:AccessRule[]=[...(p.permission_rules??[])];let changed:any=null;
    if(v.rule){const r:AccessRule={...v.rule,subject:v.subject};
     if(r.kind==='database'||r.kind==='connection'){if(r.resourceId!==w)fail(404,'not_found','Database unavailable');}
+    else if(r.kind==='app_section'){const c=(await tx.query('SELECT * FROM workspace_components WHERE workspace_id=$1 AND id=$2',[w,r.resourceId])).rows[0];if(!c||!appSections(c).some((s:any)=>s.id===r.field))fail(404,'section_unavailable','This app has no such registered section');if(r.read==='allow'||r.write==='allow')fail(400,'section_inheritance','Sections inherit app permissions and can only add restrictions');}
     else if(r.kind==='workflow'){const workflow=(await tx.query('SELECT user_id AS creator FROM foundation_functions WHERE workspace_id=$1 AND id=$2 UNION ALL SELECT owner_id FROM automations WHERE workspace_id=$1 AND id=$2',[w,r.resourceId])).rows[0];if(!workflow)fail(404,'not_found','Workflow unavailable');if((r.read==='allow'||r.write==='allow')&&workflow.creator!==v.subject)fail(403,'private_workflow','Workflows remain private to their creator');}
     else if(r.kind==='table'||r.kind==='column'){const t=(await tx.query('SELECT fields FROM entity_types WHERE workspace_id=$1 AND id=$2',[w,r.resourceId])).rows[0];if(!t||(r.kind==='column'&&!t.fields.some((f:any)=>f.key===r.field)))fail(404,'not_found','Table or column unavailable');}
     else {

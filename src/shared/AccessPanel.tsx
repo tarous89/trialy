@@ -6,12 +6,12 @@ import {useEmbeddedNavigation} from './ui/PageNavigation.js';
 import {Icon,type IconName} from './ui/Icon.js';
 export const AccessHost=React.createContext<((url:string)=>void)|null>(null);
 type Call=(name:string,args:any)=>Promise<any>;
-export type AccessScope={kind:'project'|'tool'|'database'|'table'|'column'|'workflow';resourceId:string;field?:string;name?:string};
+export type AccessScope={kind:'project'|'tool'|'database'|'table'|'column'|'workflow'|'app_section';resourceId:string;field?:string;name?:string};
 type State=boolean|'mixed';
 type Row=Omit<AccessScope,'kind'>&{kind:AccessScope['kind']|'connection';key:string;read:State;write:State;parentId?:string;canChange:boolean;canChangeWrite:boolean;sources?:any[];hint?:string};
 type Change={subject:string;kind:string;resourceId:string;field?:string;read:boolean;write:boolean};
 const keyOf=(r:{kind:string;resourceId:string;field?:string})=>[r.kind,r.resourceId,r.field??''].join(':');
-const iconFor:Record<string,IconName>={project:'folder',tool:'grid',database:'database',table:'tracker',column:'list',workflow:'automation',connection:'lock'};
+const iconFor:Record<string,IconName>={project:'folder',tool:'grid',app_section:'list',database:'database',table:'tracker',column:'list',workflow:'automation',connection:'lock'};
 export function AccessPage({call,initialWorkspaceId,initialDraft,initialReviewId,openLink}:{call:Call;initialWorkspaceId?:string;initialDraft?:any;initialReviewId?:string;openLink?:(url:string)=>void}){
  const [review,setReview]=useState<any>(initialDraft),[reviewReady,setReviewReady]=useState(!initialReviewId);
  const [directory,setDirectory]=useState<any[]>([]),[selected,setSelected]=useState(initialWorkspaceId??''),[group,setGroup]=useState('owned'),[dirty,setDirty]=useState(false),[error,setError]=useState('');
@@ -39,7 +39,8 @@ export function AccessPanel({call,scope,onClose,openLink,initialDraft,onDirty,tr
  function pending(row:Row){return selectedChanges.find(c=>keyOf(c)===row.key);}
  function values(row:Row){let read:State=pending(row)?.read??row.read,write:State=pending(row)?.write??row.write;
   const parents:Row[]=[];if(row.kind==='column')parents.push(...rows.filter(r=>r.kind==='table'&&r.resourceId===row.resourceId));if(['table','column'].includes(row.kind))parents.push(...rows.filter(r=>r.kind==='database'));
-  if(['project','tool'].includes(row.kind)){let id=row.parentId;while(id&&!parents.some(p=>p.resourceId===id)){const parent=rows.find(r=>r.kind==='project'&&r.resourceId===id);if(!parent)break;parents.push(parent);id=parent.parentId;}}
+  if(row.kind==='app_section')parents.push(...rows.filter(r=>r.kind==='tool'&&r.resourceId===row.resourceId));
+  if(['project','tool','app_section'].includes(row.kind)){let id=row.kind==='app_section'?rows.find(r=>r.kind==='tool'&&r.resourceId===row.resourceId)?.parentId:row.parentId;while(id&&!parents.some(p=>p.resourceId===id)){const parent=rows.find(r=>r.kind==='project'&&r.resourceId===id);if(!parent)break;parents.push(parent);id=parent.parentId;}}
   let blockedRead=false,blockedWrite=false;for(const p of parents){const change=pending(p),rules=(data?.restrictions??[]).filter((r:any)=>r.key===p.key);const noRead=change?!change.read:rules.some((r:any)=>r.read),noWrite=change?!change.write:rules.some((r:any)=>r.write);if(noRead){read=false;write=false;blockedRead=true;blockedWrite=true;}else if(noWrite){write=false;blockedWrite=true;}}
   return {read,write,blockedRead,blockedWrite};
  }
@@ -57,10 +58,10 @@ export function AccessPanel({call,scope,onClose,openLink,initialDraft,onDirty,tr
   return <div className="ty-access-cell"><button type="button" role="checkbox" aria-label={`${action==='read'?'Can view':'Can edit'} ${row.name}`} aria-checked={state==='mixed'?'mixed':state} disabled={disabled} title={title} className={`ty-access-check ${state===true?'is-allowed':state==='mixed'?'is-mixed':'is-denied'}`} onClick={()=>change(row,action)}><svg viewBox="0 0 20 20" aria-hidden="true"><path d={state===true?'M4 10l4 4 8-8':state==='mixed'?'M5 10h10':'M6 6l8 8M14 6l-8 8'}/></svg></button></div>;
  }
  const matches=(r:Row)=>!query||r.name?.toLowerCase().includes(query.toLowerCase());
- const children=(r:Row)=>rows.filter(c=>r.kind==='project'?['project','tool'].includes(c.kind)&&c.parentId===r.resourceId:r.kind==='table'?c.kind==='column'&&c.resourceId===r.resourceId:false);
+ const children=(r:Row)=>rows.filter(c=>r.kind==='project'?['project','tool'].includes(c.kind)&&c.parentId===r.resourceId:r.kind==='table'?c.kind==='column'&&c.resourceId===r.resourceId:r.kind==='tool'?c.kind==='app_section'&&c.resourceId===r.resourceId:false);
  function relevant(row:Row):boolean{return matches(row)||children(row).some(relevant);}
  function renderRow(row:Row,depth=0):React.ReactNode{
-  if(!relevant(row))return null;const nested=children(row),isOpen=!!expanded[row.key]||!!query||scope?.resourceId===row.resourceId,changed=!!pending(row),value=values(row);
+  if(!relevant(row))return null;const nested=children(row),isOpen=(expanded[row.key]??row.kind==='project')||!!query||scope?.kind===row.kind&&scope?.resourceId===row.resourceId,changed=!!pending(row),value=values(row);
   return <React.Fragment key={row.key}><div role="row" data-access-row={row.key} className={`ty-access-grid-row ${changed?'is-changed':''}`}><div role="cell" className="ty-access-resource-name" style={{paddingLeft:12+Math.min(depth,4)*18}}>{nested.length?<button className="ty-access-expand" aria-label={`${isOpen?'Collapse':'Expand'} ${row.name}`} aria-expanded={isOpen} onClick={()=>setExpanded(s=>({...s,[row.key]:!isOpen}))}><Icon name={isOpen?'down':'chevron'} size={14}/></button>:<span className="ty-access-expand-spacer"/>}<Icon name={iconFor[row.kind]??'grid'} size={16}/><span>{row.name}</span>{changed&&<span className="ty-access-unsaved" title="Unsaved change" aria-label="Unsaved change"/>}</div>{checkbox(row,'read')}{checkbox(row,'write')}</div>{isOpen&&nested.map(r=>renderRow(r,depth+1))}</React.Fragment>;
  }
  const section=(title:string,items:Row[])=> <React.Fragment key={title}><div className="ty-access-grid-section" role="row"><h3>{title}</h3></div>{items.length?items.map(r=>renderRow(r)):!query&&<p className="ty-access-empty">No {title.toLowerCase()} available.</p>}</React.Fragment>;

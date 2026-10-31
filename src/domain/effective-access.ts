@@ -1,8 +1,9 @@
+import {sectionFields} from './app-sections.js';
 import {z} from 'zod';
 import type {Connection} from '../db/database.js';
 import {fail,id,type Actor,type Field} from '../shared/schema.js';
 
-export const accessRuleSchema=z.object({shareId:id.optional(),subject:z.union([id,z.literal('chatgpt')]),kind:z.enum(['project','tool','table','column','database','workflow','connection']),resourceId:id,field:z.string().max(64).optional(),read:z.enum(['inherit','allow','deny']).default('inherit'),write:z.enum(['inherit','allow','deny']).default('inherit'),bindings:z.array(z.object({toolId:id.optional(),typeId:id,fields:z.array(z.string()),writable:z.array(z.string()),projectId:id.nullable()})).optional()}).strict();
+export const accessRuleSchema=z.object({shareId:id.optional(),subject:z.union([id,z.literal('chatgpt')]),kind:z.enum(['project','tool','table','column','database','workflow','connection','app_section']),resourceId:id,field:z.string().max(64).optional(),read:z.enum(['inherit','allow','deny']).default('inherit'),write:z.enum(['inherit','allow','deny']).default('inherit'),bindings:z.array(z.object({toolId:id.optional(),typeId:id,fields:z.array(z.string()),writable:z.array(z.string()),projectId:id.nullable()})).optional()}).strict();
 export type AccessRule=z.infer<typeof accessRuleSchema>;
 export function rulesFor(p:any,a:Actor):AccessRule[]{return (p.permission_rules??[]).filter((r:AccessRule)=>(r.subject===a.userId||(a.origin==='ai'&&r.subject==='chatgpt'))&&(r.kind!=='connection'||a.origin==='ai'));}
 export function dataRules(p:any,a:Actor,t:string,key?:string){return rulesFor(p,a).filter(r=>r.kind==='database'||r.kind==='connection'||r.resourceId===t&&(r.kind==='table'||(r.kind==='column'&&r.field===key)));}
@@ -33,15 +34,16 @@ export async function applyTypePolicy(db:Connection,a:Actor,p:any,type:any){
  const tool=a.accessToolId?await toolPolicy(db,a,p,a.accessToolId):null;
  const bound=tool?.c.bindings.find((b:any)=>b.typeId===type.id);
  const source=tool?.scopes.filter(s=>s.typeId===type.id&&(!s.toolId||s.toolId===tool.c.id)&&(s.projectId===null||s.projectId===tool.c.project_id&&tool.c.manifest?.scope==='project'))??[];
+ const sectionRead=tool?sectionFields(p,a,tool.c,type.id):null,sectionWrite=tool?sectionFields(p,a,tool.c,type.id,true):null;
  const read:string[]=[],write:string[]=[];
  for(const f of type.fields as Field[]){
   const rules=dataRules(p,a,type.id,f.key),base=legacy||rules.some(r=>r.subject===a.userId&&r.read==='allow');
   const toolRead=!!bound?.fields.includes(f.key)&&(owner||source.some(s=>s.fields.includes(f.key))||base);
   const canRead=(tool?toolRead:base)&&!denied(rules,'read');
-  if(!canRead)continue;read.push(f.key);
+  if(!canRead||sectionRead&&!sectionRead.includes(f.key))continue;read.push(f.key);
   const baseWrite=(legacy&&!['viewer','inspector'].includes(p.role))||rules.some(r=>r.subject===a.userId&&r.write==='allow');
   const toolWrite=!!tool?.grant.write&&(owner||source.some(s=>s.writable.includes(f.key))||baseWrite)&&(!tool.c.manifest||tool.c.manifest.fields.some((m:any)=>m.typeId===type.id&&m.field===f.key&&m.mode==='write'));
-  if(p.role!=='inspector'&&(tool?toolWrite:p.role!=='viewer'&&baseWrite)&&!denied(rules,'write'))write.push(f.key);
+  if((!sectionWrite||sectionWrite.includes(f.key))&&p.role!=='inspector'&&(tool?toolWrite:p.role!=='viewer'&&baseWrite)&&!denied(rules,'write'))write.push(f.key);
  }
  // Tool context always limits records to its declared project, even for an owner.
  const scopeProject=tool?.c.manifest?.scope==='project'?tool.c.project_id:null;

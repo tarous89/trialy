@@ -46,7 +46,7 @@ if(parts[0]==='move-column'||parts[0]==='reorder-column'){
 if(parts[0]==='visibility')state.layoutDraft.tabs[Number(parts[1])].columns[Number(parts[2])].visible=e.value==='visible';
 if(parts[0]==='details')state.detail=parts[1];
 if(action==='close-details')state.detail=null;
-if(action==='tracker:add'&&input.writable){state.newRow={tab:state.tab,data:{}};state.detail=null;}
+if(action==='tracker:add'&&input.writable&&config.tabs[state.tab]?.columns.some(c=>c.editable)){state.newRow={tab:state.tab,data:{}};state.detail=null;}
 if(action==='discard-new')state.newRow=null;
 if(parts[0]==='draft'&&state.newRow){const c=config.tabs[state.newRow.tab]?.columns.find(c=>c.field===parts[1]);if(c?.editable)state.newRow.data[c.field]=e.value;}
 
@@ -150,7 +150,7 @@ if(state.settings){
 
   const r=allRows.find(r=>r.id===state.detail);
   if(draft)html+='<div class="inline-row-actions">'+button('Save changes','save-new','primary')+button('Cancel','discard-new')+'</div>';
-  if(r)detailHtml='<div class="detail-page"><div class="detail-shade" data-action="close-details"></div><aside class="drawer" role="dialog" aria-modal="true" aria-label="Record details"><div class="drawer-resizer" role="separator" tabindex="0" aria-label="Resize details" aria-orientation="vertical"></div><header class="drawer-head"><div><h2>'+esc(r.data[tab.columns[0].field]||'Record details')+'</h2>'+(r.example?'<small>Fictional example · not saved</small>':'')+'</div>'+button('×','close-details','iconbutton','aria-label="Close details"')+'</header><div class="drawer-main"><dl class="details">'+tab.columns.map(c=>ui('detail',{label:c.label,value:raw(cell(c,r,state.tab))})).join('')+'</dl></div><footer class="drawer-actions">'+button('Save changes','save-edits','primary',r.example?'disabled':'')+button('Duplicate','tracker:duplicate:'+r.id,'secondary',!input.writable||r.example?'disabled':'')+button('Delete','tracker:delete:'+r.id,'secondary',!input.writable||r.example?'disabled':'')+'</footer></aside></div>';
+  if(r)detailHtml='<div class="detail-page"><div class="detail-shade" data-action="close-details"></div><aside class="drawer" role="dialog" aria-modal="true" aria-label="Record details"><div class="drawer-resizer" role="separator" tabindex="0" aria-label="Resize details" aria-orientation="vertical"></div><header class="drawer-head"><div><h2>'+esc(r.data[tab.columns[0].field]||'Record details')+'</h2>'+(r.example?'<small>Fictional example · not saved</small>':'')+'</div>'+button('×','close-details','iconbutton','aria-label="Close details"')+'</header><div class="drawer-main"><dl class="details">'+tab.columns.map(c=>ui('detail',{label:c.label,value:raw(cell(c,r,state.tab))})).join('')+'</dl></div><footer class="drawer-actions">'+button('Save changes','save-edits','primary',!input.writable||r.example||!tab.columns.some(c=>c.editable)?'disabled':'')+button('Duplicate','tracker:duplicate:'+r.id,'secondary',!input.writable||r.example||!tab.columns.some(c=>c.editable)?'disabled':'')+button('Delete','tracker:delete:'+r.id,'secondary',!input.writable||r.example||!tab.columns.some(c=>c.editable)?'disabled':'')+'</footer></aside></div>';
  }
  html+='</section>'+detailHtml;
 }

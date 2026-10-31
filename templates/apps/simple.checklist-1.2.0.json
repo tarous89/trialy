@@ -1,0 +1,66 @@
+{
+  "version": "1.2.0",
+  "deprecated": false,
+  "id": "simple.checklist",
+  "name": "Planning checklist",
+  "description": "A lightweight personal planning checklist with local checkboxes and a progress summary.",
+  "tags": [
+    "planning",
+    "checklist",
+    "tasks",
+    "readiness"
+  ],
+  "whenToUse": "A short disposable checklist or planning aid that does not need shared database records.",
+  "whenNotToUse": "Persistent task tracking, regulated sign-off, audit evidence or approvals; use a database-backed tracker for these.",
+  "instructions": "Read read_app_template_guidance(resource:\"usage\") and this template's documentation before preparation. Provide items as newline-separated text. Checkmarks are local session state only. Explain this limitation; choose the Vivid tracker if the user needs saved progress. Configuration is available in templateConfiguration. This template cannot grant approval or write to the database. Consider interface, data, app access, connectors and optional automations using current usage guidance. Missing optional setup never blocks saving or app use. Recheck the shared runner at app creation, respecting deliberate pauses; prefer a supported Work chat, high reasoning and the latest most capable subscription model without inventing unavailable host controls.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "Planning checklist",
+    "items": "Define the objective\nAgree the next steps\nReview the plan"
+  },
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "Checklist heading",
+      "required": true
+    },
+    "items": {
+      "type": "string",
+      "description": "One checklist item per line, up to 30 items",
+      "required": true
+    }
+  },
+  "examples": [
+    {
+      "heading": "Meeting preparation",
+      "items": "Review agenda\nGather questions\nConfirm attendees"
+    }
+  ],
+  "source": "const esc=v=>String(v).replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'}[c]));\nconst items=templateConfiguration.items.split('\\n').map(x=>x.trim()).filter(Boolean).slice(0,30);const state=input.state||{};if(input.event.action==='update')state.checked=items.map((_,i)=>!!input.event.form['item'+i]);const checked=state.checked||[];\nreturn {html:'<main><p>PLANNING</p><h1>'+esc(templateConfiguration.heading)+'</h1><form data-action=\"update\">'+items.map((item,i)=>'<label><input type=\"checkbox\" name=\"item'+i+'\" '+(checked[i]?'checked':'')+'>'+esc(item)+'</label>').join('')+'<button>Update progress</button></form><h2>'+checked.filter(Boolean).length+' / '+items.length+'</h2><p>Progress lasts for this session; it is not a saved record or approval.</p></main>',css:'body{font:16px system-ui;color:#193c31;background:#f4f7f5;margin:0}main{max-width:640px;margin:40px auto;padding:28px}label{display:flex;gap:12px;padding:16px;margin:8px 0;background:white;border-radius:8px}button{padding:12px 24px;background:#175f47;color:white;border:0;border-radius:8px}',state};",
+  "documentation": {
+    "quickStart": [
+      "Supply a heading and up to 30 newline-separated checklist items.",
+      "Prepare without database bindings and verify progress behavior. Choose a persistent tracker instead when checkmarks must be shared or saved."
+    ],
+    "dataContract": "No database tables or record writes. Checkbox state and progress are local session state and may reset when reopened.",
+    "interactionContract": "Labeled checkboxes submit Update progress and display a checked/total summary. Escape configured item text; do not treat checkmarks as audited approvals.",
+    "lifecycle": "Keep the same app ID for revisions. Use one requestKey for creation retries and verify its save receipt. The first-save prompt applies only to a new unsaved app. Loading failures retain the last usable view; publication never forces a reload. Local inputs are not committed records. Automation definitions are separate app configuration: list/read through unified management, keep stable authoring keys, disable rather than delete, and preserve disabled state when editing. Optional services cannot replace the app or discard input.",
+    "limitations": [
+      "No saved progress, shared tasks, regulated sign-off or audit evidence. Use a database-backed tracker when these are needed.",
+      "App-level backend access applies. This custom source has no separately protected sections; no automation is needed for local session-only interactions."
+    ],
+    "examples": [
+      {
+        "prompt": "Make a short meeting-preparation checklist.",
+        "expectedBehavior": "A local checklist that clearly states its progress is not saved."
+      }
+    ],
+    "tasks": {
+      "mode": "none",
+      "whenUseful": "No task is needed for this on-demand local tool. Consider a separate connected app only if the user requests recurring research or reporting.",
+      "readRequirements": "No scheduled database reads. Read read_app_automation_guide; use list_app_automations/read_app_automation for management. Setup status and requested model preferences are independent of proven unattended execution.",
+      "outputContract": "No scheduled writes, emails or notifications.",
+      "promptExample": "Do not create a task for this template by default. If requirements change, first define a saved data/output destination and use the generic monitoring guide."
+    }
+  }
+}

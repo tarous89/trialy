@@ -1,4 +1,5 @@
 import {monitoringReceiptRuns} from '../app-services/monitoring-guard.js';
+import {appSections,sectionGrant,projectAppSections,validateSectionRevision} from '../domain/app-sections.js';
 import {openRuntimeView,assertRuntimeReadAccess,assertRuntimeScope,assertRuntimeWriteSchema,incompatible} from './runtime-view.js';
 import {withReadMetadata} from '../db/read-metadata.js';
 import {AppActions} from '../app-services/service.js';
@@ -77,7 +78,7 @@ export class WorkspaceFoundation {
   if(c.source_access!=='bindings')await this.componentSourcePolicy(tx,a,w);
   await this.componentAssets(tx,a,w,c.assets);
   await assertRuntimeReadAccess(tx,a,w,latest,view);
-  return {view,c,latest};
+  const p=await access(tx,a,w);return {view,c:projectAppSections(p,a,c,latest),latest:projectAppSections(p,a,latest)};
  }
  private async componentSourcePolicy(tx:Connection,a:Actor,w:string){
   const p=await this.policy(tx,a,w);
@@ -102,7 +103,7 @@ export class WorkspaceFoundation {
  async components(a:Actor,w:string,projectId?:string){
   await access(this.db,a,w);if(projectId)await this.nodeAccess(this.db,a,w,projectId);
   const rows=(await this.db.query('SELECT * FROM workspace_components WHERE workspace_id=$1 ORDER BY name,id',[w])).rows;
-  const result=[];for(const c of rows){if(projectId&&c.project_id!==projectId)continue;try{const checked=await this.component(this.db,a,w,c.id);const {source,...metadata}=checked;result.push(metadata);}catch{}}
+  const p=await access(this.db,a,w),result=[];for(const c of rows){if(projectId&&c.project_id!==projectId)continue;try{const checked=await this.component(this.db,a,w,c.id);const {source,...metadata}=projectAppSections(p,a,checked);result.push(metadata);}catch{}}
   return result;
  }
  async toolTables(a:Actor,w:string,componentId:string):Promise<any>{
@@ -131,6 +132,7 @@ export class WorkspaceFoundation {
   let content:any,version:number|undefined,viewId=request.viewId;let draftTables:string[]=[];let draftSchema=false;
   if(request.componentId){const runtime=await this.runtimeComponent(this.db,a,w,request.componentId,request.expectedVersion,viewId);assertRuntimeScope(runtime.latest,runtime.c);content=runtime.c;version=content.version;viewId=runtime.view.id;}
   else {const draft=(await this.db.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[request.previewId,w,a.userId])).rows[0];if(!draft||!['save_component','create_tracker'].includes(draft.body.operation.kind)||draft.body.operation.content.format!=='frontend-js')fail(404,'not_found','Code preview unavailable');await this.validate(this.db,a,w,draft.body.operation);content={...draft.body.operation.content,project_id:draft.body.operation.setup?.projectId??draft.body.operation.projectId};draftTables=(draft.body.operation.setup?.newTables??[]).map((t:any)=>t.id);draftSchema=!!(draftTables.length||draft.body.operation.setup?.extendTables?.length);}
+  if(content.sectionsEmpty)return {html:'<p>No sections are shared with you.</p>',css:'',state:{},version,viewId,accessVersion:(await access(this.db,a,w)).access_version,accessStamp:await this.componentAccessStamp(a,w,content)};
   if(!draftSchema&&!request.viewId)await validateResource(this.db,a,w,content,true); // create_tracker validation checks generated bindings, including virtual tables.
   if(request.event.action.startsWith('bound:')||request.event.action==='bound-batch'){
    if(!request.componentId||!content.manifest)fail(403,'preview_read_only','Open a saved connected resource');
@@ -369,7 +371,7 @@ export class WorkspaceFoundation {
   if(a.accessToolId!==c.id)return withActor({...a,accessToolId:c.id},()=>this.componentAccessStamp({...a,accessToolId:c.id},w,c));
   const p=await access(this.db,a,w),tool=await toolPolicy(this.db,a,p,c.id),tables=[];
   for(const b of c.bindings){try{const {type,policy}=await typeAccess(this.db,a,w,b.typeId);tables.push({id:b.typeId,fields:visibleFields(type.fields,policy,a).filter(f=>b.fields.includes(f.key)),write:policy.write_fields.filter((k:string)=>b.fields.includes(k)),project:policy.scope_project});}catch(e){if(![403,404].includes((e as any).status))throw e;tables.push({id:b.typeId,fields:[]});}}
-  return checksum(J({archived:p.archived,write:tool.grant.write,tables}));
+  return checksum(J({archived:p.archived,write:tool.grant.write,tables,sections:appSections(tool.c).map((s:any)=>({id:s.id,...sectionGrant(p,a,c.id,s.id)}))}));
  }
  async checkComponentAccess(a:Actor,w:string,id:string,viewId?:string):Promise<any>{
   if(a.accessToolId!==id)return withActor({...a,accessToolId:id},()=>this.checkComponentAccess({...a,accessToolId:id},w,id,viewId));
@@ -377,11 +379,11 @@ export class WorkspaceFoundation {
   if(viewId){const row=(await this.db.query('SELECT version FROM app_runtime_views WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND app_id=$4 AND (origin=$5 OR ($5=\'human\' AND origin=\'ai\'))',[viewId,w,a.userId,id,a.origin])).rows[0];await this.runtimeComponent(this.db,a,w,id,row?.version,viewId);}
   return {id:c.id,version:c.version,accessVersion:(await access(this.db,a,w)).access_version,accessStamp:await this.componentAccessStamp(a,w,c)};
  }
- async readComponent(a:Actor,w:string,id:string,includeOutput=false){const component=await this.component(this.db,a,w,id);const initialOutput=includeOutput&&standardTracker(component.source)&&!component.archived&&!component.project_archived?await this.runFrontend(a,w,{componentId:id,expectedVersion:component.version,event:{kind:'open'}}):undefined;return {workspaceId:w,workspaceFoundation:true,component,...(initialOutput?{initialOutput}:{})};}
+ async readComponent(a:Actor,w:string,id:string,includeOutput=false){const component=projectAppSections(await access(this.db,a,w),a,await this.component(this.db,a,w,id));const initialOutput=includeOutput&&(standardTracker(component.source)||component.sectionsEmpty)&&!component.archived&&!component.project_archived?await this.runFrontend(a,w,{componentId:id,expectedVersion:component.version,event:{kind:'open'}}):undefined;return {workspaceId:w,workspaceFoundation:true,component,...(initialOutput?{initialOutput}:{})};}
  async componentHistory(a:Actor,w:string,id:string){
-  await this.component(this.db,a,w,id);
+  const current=await this.component(this.db,a,w,id),p=await access(this.db,a,w);
   const rows=(await this.db.query("SELECT * FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='workspace_component' ORDER BY version DESC",[w,id])).rows;
-  const result=[];for(const r of rows){try{if(r.snapshot.source_access!=='bindings')await this.componentSourcePolicy(this.db,a,w);await this.nodeAccess(this.db,a,w,r.snapshot.project_id);await this.componentBindings(this.db,a,w,r.snapshot.bindings);await this.componentAssets(this.db,a,w,r.snapshot.assets);result.push(r);}catch{}}return result;
+  const result=[];for(const r of rows){try{const snapshot=projectAppSections(p,a,{...r.snapshot,id},current);if(snapshot.source_access!=='bindings')await this.componentSourcePolicy(this.db,a,w);await this.nodeAccess(this.db,a,w,snapshot.project_id);await this.componentBindings(this.db,{...a,accessToolId:id},w,snapshot.bindings);await this.componentAssets(this.db,a,w,snapshot.assets);result.push({...r,snapshot});}catch{}}return result;
  }
  private async componentRevision(tx:Connection,w:string,id:string,version:number){
   const r=(await tx.query("SELECT snapshot FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='workspace_component' AND version=$3",[w,id,version])).rows[0];
@@ -458,12 +460,12 @@ export class WorkspaceFoundation {
   return {nodeId:node.id,name:node.name,archived:op.archived,nodes,components,scopes,schedules,consequence:op.archived?'Retain all source and shared data. Revoke task scopes, clear component function bindings, pause attached schedules. Independently invoked workspace functions are unchanged.':'Restore organization access only. Old task scopes, function bindings and schedules are not reactivated.'};
  }
  private async componentCopy(tx:Connection,a:Actor,w:string,op:Extract<WorkspaceOperation,{kind:'copy_component'}>){
-  const source=await this.component(tx,a,w,op.sourceComponentId);
+  const source=projectAppSections(await access(tx,a,w),a,await this.component(tx,a,w,op.sourceComponentId));
   if(source.version!==op.expectedVersion)fail(409,'stale_version','Source component changed; prepare a new copy');
   if(source.format==='trialy-ui')fail(400,'legacy_format','Create frontend-js code instead of copying the legacy renderer');
   if(op.projectId){const project=(await this.activeNode(tx,a,w,op.projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');}else if(source.manifest?.scope==='project')fail(400,'project_required','Keep a project-scoped app in a project');
   const keep=await this.moveRestrictions(tx,a,w,source.project_id,source);
-  return {name:op.name,format:source.format,source:source.source,resource_kind:source.resource_kind,manifest:source.manifest,bindings:source.bindings,assets:source.assets??[],source_access:source.source_access,execution:[],allowed_users:keep.users,ai_enabled:keep.ai,archived:false,copiedFrom:{componentId:source.id,version:source.version}};
+  return {name:op.name,format:source.format,source:source.source,resource_kind:source.resource_kind,manifest:source.manifest,bindings:source.bindings,assets:source.assets??[],source_access:source.source_access,execution:[],allowed_users:[a.userId],ai_enabled:keep.ai,archived:false,copiedFrom:{componentId:source.id,version:source.version}};
  }
  async projectRelationships(a:Actor,w:string,projectId:string,offset=0,typeIds?:string[]){
   await this.nodeAccess(this.db,a,w,projectId);
@@ -584,6 +586,7 @@ export class WorkspaceFoundation {
    await this.componentSourcePolicy(tx,a,w);
    if(op.componentId){const previous=await this.component(tx,a,w,op.componentId);if(previous.version!==op.expectedVersion)fail(409,'stale_version','App changed; reload its configuration');if(!standardTracker(previous.source))fail(400,'custom_tool','Custom apps require a custom source review');if(previous.project_id!==op.setup.projectId||previous.resource_kind!==op.setup.resourceKind||previous.execution?.length)fail(400,'revision_scope','Keep the project, app kind, and custom execution bindings unchanged');}
    if(op.setup.projectId){const project=(await this.activeNode(tx,a,w,op.setup.projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');}
+   validateSectionRevision(await access(tx,a,w),op.componentId?await this.component(tx,a,w,op.componentId):null,op.content);
    const generated=await trackerOperation(new WorkspaceFoundation(adapter(tx)),a,w,op.setup);
    const parsed=workspaceOperation.parse(generated),expected=workspaceOperation.parse(op);if(parsed.kind!=='save_component'||expected.kind!=='create_tracker'||!isDeepStrictEqual(parsed.content,expected.content))fail(409,'tracker_changed','Tracker fields or template changed; prepare the preview again');
   }
@@ -617,6 +620,7 @@ export class WorkspaceFoundation {
     if(op.componentId&&(await this.component(tx,a,w,op.componentId)).project_id!==op.projectId)fail(400,'move_required','Use the explicit move operation to change project');
     await this.componentBindings(tx,a,w,op.content.bindings);
     const previous=op.componentId?await this.component(tx,a,w,op.componentId):null;
+    validateSectionRevision(await access(tx,a,w),previous,op.content);
     if(previous?.manifest&&op.content.manifest===null)fail(400,'manifest_required','Connected apps must retain their data contract when changing presentation.');
     await validateResource(tx,a,w,{...op.content,resourceKind:op.content.resourceKind??previous?.resource_kind??'generic',manifest:op.content.manifest===undefined?previous?.manifest:op.content.manifest});await this.componentAssets(tx,a,w,op.content.assets);
     if(new Set(op.content.execution.map(e=>e.name)).size!==op.content.execution.length)fail(400,'duplicate_binding','Function binding names must be unique');
@@ -625,7 +629,7 @@ export class WorkspaceFoundation {
 
     if(op.content.format==='json'){try{JSON.parse(op.content.source);}catch{fail(400,'invalid_json','Component source must be valid JSON');}}
    }
-   if(op.kind==='restore_component'){const old=await this.componentRevision(tx,w,op.componentId,op.revisionVersion);await this.nodeAccess(tx,a,w,old.project_id);await this.componentBindings(tx,a,w,old.bindings);await validateResource(tx,a,w,old);await this.componentAssets(tx,a,w,old.assets);}
+   if(op.kind==='restore_component'){const old=await this.componentRevision(tx,w,op.componentId,op.revisionVersion);validateSectionRevision(await access(tx,a,w),await this.component(tx,a,w,op.componentId),old);await this.nodeAccess(tx,a,w,old.project_id);await this.componentBindings(tx,a,w,old.bindings);await validateResource(tx,a,w,old);await this.componentAssets(tx,a,w,old.assets);}
   }
   if(op.kind==='apply_component_records'){
    const runtime=op.viewId?await this.runtimeComponent(tx,a,w,op.componentId,op.expectedVersion,op.viewId):null,c=runtime?.c??await this.component(tx,a,w,op.componentId);if(runtime)assertRuntimeScope(runtime.latest,c);else await validateResource(tx,a,w,c,true);if(c.archived||c.project_archived||c.format!=='frontend-js'||c.version!==op.expectedVersion)fail(409,'component_changed','Interface changed');

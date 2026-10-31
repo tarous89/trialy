@@ -1,3 +1,4 @@
+import {appSections,sectionGrant} from './app-sections.js';
 import {withReadMetadata} from '../db/read-metadata.js';
 import {Foundation} from '../foundation/service.js';
 import {randomUUID,createHash} from 'node:crypto';
@@ -9,7 +10,7 @@ import {rulesFor,resourceGrant,toolPolicy,workflowGrant} from './effective-acces
 import {AccessManagement} from './access-management.js';
 import {Service} from './service.js';
 import {WorkspaceFoundation} from '../workspace/service.js';
-export const gridChange=z.object({subject:z.union([id,z.literal('all'),z.literal('chatgpt')]),kind:z.enum(['project','tool','database','table','column','workflow','connection']),resourceId:id,field:z.string().max(64).optional(),read:z.boolean(),write:z.boolean()}).strict().refine(v=>v.read||!v.write,{message:'Editing requires viewing'});
+export const gridChange=z.object({subject:z.union([id,z.literal('all'),z.literal('chatgpt')]),kind:z.enum(['project','tool','database','table','column','workflow','connection','app_section']),resourceId:id,field:z.string().max(64).optional(),read:z.boolean(),write:z.boolean()}).strict().refine(v=>v.read||!v.write,{message:'Editing requires viewing'});
 export const gridBatch=z.object({expectedVersion:z.number().int().min(0),changes:z.array(gridChange).min(1).max(200)}).strict();
 export type GridChange=z.infer<typeof gridChange>;
 type State=boolean|'mixed';
@@ -28,6 +29,7 @@ export class AccessGrid{
   const selected=subject==='chatgpt'?['chatgpt']:subject==='all'?(people.filter(x=>x.role!=='owner').length?people.filter(x=>x.role!=='owner'):people).map(x=>x.id):[subject];
   const trees=await f.nodes(a,w),components=await f.components(a,w);
   const projects=trees.nodes.filter(n=>!n.effective_archived),tools=components.filter(c=>!c.archived&&!c.project_archived);
+  const sectionApps=(await this.db.query('SELECT id,source FROM workspace_components WHERE workspace_id=$1 AND archived=false',[w])).rows;
   const workflows=(await this.db.query("SELECT id,name,user_id AS creator,'function' AS source FROM foundation_functions WHERE workspace_id=$1 UNION ALL SELECT id,name,owner_id,'legacy' FROM automations WHERE workspace_id=$1 ORDER BY name",[w])).rows;
   const subjects:any[]=[];
   for(const s of selected){
@@ -35,8 +37,8 @@ export class AccessGrid{
    // Human policy allows owners to inspect an explicitly disabled connection without enabling it.
    const policy=await access(this.db,{...actor,origin:'human'},w),blocked=actor.origin==='ai'&&(!policy.ai_enabled||(policy.role!=='owner'&&!policy.user_ai));
    const explanation=await am.explain(a,w,s==='chatgpt'?'chatgpt':s),rows:any[]=[];
-   const add=(kind:string,resourceId:string,name:string,read:State,write:State,extra:any={})=>rows.push({key:rowKey(kind,resourceId,extra.field),kind,resourceId,name,read:blocked?false:read,write:blocked?false:write,canChange:manage&&(s==='chatgpt'||policy.role!=='owner'),canChangeWrite:policy.role!=='inspector'&&(policy.role!=='viewer'||['project','tool','connection'].includes(kind)),...extra});
-   for(const c of tools){let read=false,write=false;try{const t=await toolPolicy(this.db,actor,policy,c.id);read=t.grant.read;write=t.grant.write;if(c.bindings.length){const exposed=explanation.tables.flatMap((t:any)=>t.fields.flatMap((field:any)=>field.sources.filter((x:any)=>x.id===c.id)));read=read&&exposed.length>0;write=write&&exposed.some((x:any)=>x.write);}}catch{}add('tool',c.id,c.name,read,write,{parentId:c.project_id});}
+   const add=(kind:string,resourceId:string,name:string,read:State,write:State,extra:any={})=>rows.push({key:rowKey(kind,resourceId,extra.field),kind,resourceId,name,read:blocked?false:read,write:blocked?false:write,canChange:manage&&(s==='chatgpt'||policy.role!=='owner'),canChangeWrite:policy.role!=='inspector'&&(policy.role!=='viewer'||['project','tool','app_section','connection'].includes(kind)),...extra});
+   for(const c of tools){let read=false,write=false;try{const t=await toolPolicy(this.db,actor,policy,c.id);read=t.grant.read;write=t.grant.write;if(c.bindings.length){const exposed=explanation.tables.flatMap((t:any)=>t.fields.flatMap((field:any)=>field.sources.filter((x:any)=>x.id===c.id)));read=read&&exposed.length>0;write=write&&exposed.some((x:any)=>x.write);}}catch{}add('tool',c.id,c.name,read,write,{parentId:c.project_id});for(const part of appSections(sectionApps.find(x=>x.id===c.id)??{})){const g=sectionGrant(policy,actor,c.id,part.id);add('app_section',c.id,part.name,read&&g.read,write&&g.write,{field:part.id,parentId:c.id,hint:'Inherits app access. Other authorized tabs or Database may expose the same records.'});}}
    for(const project of projects){const parents:string[]=[];let n=projects.find(x=>x.id===project.parent_id);while(n&&!parents.includes(n.id)){parents.push(n.id);n=projects.find(x=>x.id===n.parent_id);}const grant=resourceGrant(policy,actor,'project',project.id,parents);const children=rows.filter(r=>r.kind==='tool'&&r.parentId===project.id);add('project',project.id,project.name,children.length?combine(children.map(r=>r.read)):grant.read,children.length?combine(children.map(r=>r.write)):grant.write,{parentId:project.parent_id});}
    for(const table of explanation.tables){for(const field of table.fields)add('column',table.id,field.name,field.read,field.write,{field:field.key,parentId:table.id,sources:field.sources});add('table',table.id,table.name,combine(table.fields.map((x:any)=>x.read)),combine(table.fields.map((x:any)=>x.write)),{parentId:w});}
    const tables=rows.filter(r=>r.kind==='table');add('database',w,'Database',tables.length?combine(tables.map(r=>r.read)):policy.direct_data!==false,tables.length?combine(tables.map(r=>r.write)):policy.direct_data!==false&&!['viewer','inspector'].includes(policy.role));
@@ -54,7 +56,7 @@ export class AccessGrid{
  async save(a:Actor,w:string,input:unknown){if(a.origin!=='human')fail(403,'human_required','Save changes in your signed-in owner session');return this.db.transaction(async tx=>{await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const db:Database={query:tx.query.bind(tx),transaction:fn=>fn(tx),close:async()=>{}},grid=new AccessGrid(db),{batch,changes,people}=await grid.expand(a,w,input),am=new AccessManagement(db);let version=batch.expectedVersion;
   for(const c of changes){const person=people.find(p=>p.id===c.subject);if(c.kind==='connection'){if(c.resourceId!==w)fail(400,'invalid_resource','Connection is outside this workspace');const r=await am.update(a,w,{expectedVersion:version,subject:c.subject,chatgpt:c.read});version=r.version;const limits=await am.update(a,w,{expectedVersion:version,subject:c.subject,rule:{kind:'connection',resourceId:w,read:'inherit',write:c.write?'inherit':'deny'}});version=limits.version;continue;}
    // Connection checkmarks restore inheritance; they never create an independent grant.
-   const rule={kind:c.kind,resourceId:c.resourceId,...(c.field?{field:c.field}:{}),read:c.read?(c.subject==='chatgpt'?'inherit':'allow'):'deny',write:c.write?(c.subject==='chatgpt'?'inherit':'allow'):'deny'};
+   const rule={kind:c.kind,resourceId:c.resourceId,...(c.field?{field:c.field}:{}),read:c.read?(c.subject==='chatgpt'||c.kind==='app_section'?'inherit':'allow'):'deny',write:c.write?(c.subject==='chatgpt'||c.kind==='app_section'?'inherit':'allow'):'deny'};
    if(c.write&&person?.role==='inspector')fail(403,'read_only_role','Inspectors are read-only');
    if(c.write&&person?.role==='viewer'&&['database','table','column','workflow'].includes(c.kind))fail(403,'editor_required','Direct database and workflow editing requires the Editor role');
    const r=await am.update(a,w,{expectedVersion:version,subject:c.subject,rule,...(c.kind==='database'&&c.read&&c.subject!=='chatgpt'?{databaseBrowse:true}:{})});version=r.version;
