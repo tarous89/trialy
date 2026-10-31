@@ -28,7 +28,7 @@ test('23 life-science catalog contracts match all 143 scoped screens and authori
   const template=await appTemplates.read({templateId:item.id,version:item.version});const contract=JSON.parse(await readFile('templates/life-science/contracts/'+item.slug+'.json','utf8'));
   assert.equal(template.engine,'frontend-js');assert.ok(template.documentation?.quickStart.length);assert.equal(template.documentation?.tasks.mode,'optional');assert.ok(template.documentation?.dataContract.includes('writableFields'));assert.ok(template.source!.length<180000);assert.ok(template.documentation?.limitations.some((x:string)=>x.includes('patient-level')));
   assert.equal(contract.screens.length,item.screens);screens+=contract.screens.length;
-  const op=await appTemplates.operation({} as any,{} as any,'unused',{templateId:template.id,version:template.version,digest:template.digest,name:template.name});assert.equal(op.content.bindings.length,0);assert.equal(op.content.execution.length,0);
+  const op=await appTemplates.operation({} as any,{} as any,'unused',{templateId:template.id,version:template.version,digest:template.digest,name:template.name});assert.equal(op.content.bindings.length,0);assert.equal((op.content as any).execution.length,0);
   await assert.rejects(appTemplates.operation({} as any,{} as any,'unused',{templateId:template.id,version:template.version,digest:'0'.repeat(64),name:template.name}),/changed/);
  }
  assert.equal(screens,143);
