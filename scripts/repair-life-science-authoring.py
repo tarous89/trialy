@@ -35,3 +35,8 @@ if marker not in s:
     s += '\n' + marker + '\n.ls-data-disclosure th{color:#203b2f;background:#f4f8f5}\n'
 p.write_text(s)
 print('Verified accessible table names, type floor and readable supporting labels')
+p = Path('templates/life-science/theme.css')
+s = p.read_text()
+if '.ls-lane-empty{color:#52695d}' not in s:
+    s += '.ls-lane-empty{color:#52695d}\n'
+p.write_text(s)
