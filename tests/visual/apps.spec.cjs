@@ -59,12 +59,12 @@ test('Embedded app navigates safely and offers only the TrialAgents platform lin
  await expect(embed.getByRole('link',{name:'Open app ↗',exact:true})).toHaveCount(0);await embed.getByRole('button',{name:'Open TrialAgents',exact:true}).click();await expect.poll(()=>page.evaluate(()=>window.lastOpenedUrl)).toBe(base+'/?workspaceId='+f.workspaceId);
 });
 
-test('Embedded preview returns to Home after saving and unavailable previews show the platform',async({page})=>{
+test('Embedded preview returns to Home after saving and unavailable previews offer only in-surface Home',async({page})=>{
  const draft=await (await page.request.get(base+'/fixture/app-draft')).json();await page.goto(base+'/?apps=1');await page.waitForFunction(()=>window.hostReady);await page.evaluate(r=>window.deliver(r),draft);
  const embed=page.frameLocator('#app');await expect(embed.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Embedded draft'})).toBeVisible();await expect(embed.getByRole('button',{name:'Save app',exact:true})).toBeEnabled();
  const app=embed.frameLocator('iframe[title="Saved frontend code"]');await app.getByRole('link',{name:'Details',exact:true}).click();await expect(app.getByRole('heading',{name:'Draft details'})).toBeVisible();await embed.getByRole('button',{name:'Save app',exact:true}).click();await expect(embed.getByRole('button',{name:'Save app',exact:true})).toHaveCount(0);await expect(embed.getByRole('heading',{name:'Home',exact:true})).toBeVisible();await expect(embed.getByRole('link',{name:'Open Embedded draft',exact:true})).toBeVisible();await expect(embed.locator('.ty-tracker-preview')).toHaveCount(0);
- await page.evaluate(r=>window.deliver(r),{screen:'tracker-unavailable',workspaceId:draft.workspaceId,message:'This unsaved preview has expired.'});await expect(embed.getByRole('heading',{name:'Home',exact:true})).toBeVisible();await expect(embed.getByRole('button',{name:'Open saved apps',exact:true})).toBeVisible();
- const calls=await (await page.request.get(base+'/fixture/calls')).json();expect(calls).toContain('open_workspace');
+ await page.evaluate(r=>window.deliver(r),{screen:'tracker-unavailable',workspaceId:draft.workspaceId,message:'This unsaved preview has expired.'});await expect(embed.getByRole('heading',{name:'No app is available',exact:true})).toBeVisible();await expect(embed.getByRole('button',{name:'Open saved apps',exact:true})).toHaveCount(0);await embed.getByRole('button',{name:'Return to Home',exact:true}).click();await expect(embed.getByRole('heading',{name:'Home',exact:true})).toBeVisible();expect(await page.evaluate(()=>window.lastOpenedUrl)).toBeUndefined();
+ const calls=await (await page.request.get(base+'/fixture/calls')).json();expect(calls).toContain('read_account_home');
 });
 
 for(const width of [1440,390])test(`ChatGPT attribution does not break app links at ${width}px`,async({page})=>{

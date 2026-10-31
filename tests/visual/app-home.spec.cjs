@@ -34,7 +34,7 @@ for(const width of [1440,390])test(`Preview footer keeps both labeled actions in
   await expect(save).toBeEnabled();await expect(discard).toHaveText('Discard app');await expect(footer).toHaveCSS('background-color','rgb(13, 19, 17)');if(embedded)await expect(root.locator('.ty-topbar')).toHaveCSS('background-color','rgb(13, 19, 17)');
   const box=await footer.boundingBox();expect(box.x).toBe(0);expect(box.width).toBe(width);expect(box.y+box.height).toBe(1000);
   for(const button of [save,discard]){const b=await button.boundingBox();expect(b.x).toBeGreaterThanOrEqual(0);expect(b.x+b.width).toBeLessThanOrEqual(width);expect(b.y+b.height).toBeLessThanOrEqual(1000);}
-  await discard.click();if(embedded){await expect(footer).toHaveCount(0);await expect(root.getByRole('heading',{name:'Home',exact:true})).toBeVisible();}else await expect(page).toHaveURL(base+'/');
+  await discard.click();if(embedded){await expect(footer).toHaveCount(0);await expect(root.getByRole('heading',{name:'Home',exact:true})).toBeVisible();}else await expect(page).toHaveURL(base+'/?tab=home');
  }
 });
 test('Saving a preview opened from extension Home returns to the refreshed Home',async({page})=>{

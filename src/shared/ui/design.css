@@ -357,3 +357,5 @@
 @media(max-width:650px){.ty-workspace:has(.ty-app-update){--ty-update-space:88px}.ty-workspace .ty-app-update{left:8px;right:8px;flex-wrap:wrap;gap:3px;padding:8px 12px}.ty-workspace:is(.ty-standalone,.ty-workspace--embedded) .ty-app-update{left:8px}}
 
 .ty-workspace.ty-workspace:has(.ty-app-update) .ty-topbar{top:var(--ty-update-space)}
+
+.ty-app-revision-actions{display:flex;justify-content:flex-end;gap:8px;padding:12px 16px;background:var(--ty-sidebar-bg,#0d1311);position:sticky;top:0;z-index:10}

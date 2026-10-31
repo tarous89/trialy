@@ -1,0 +1,57 @@
+{
+  "version": "1.2.0",
+  "deprecated": false,
+  "id": "vivid.tracker",
+  "name": "Vivid tracker",
+  "description": "Editable multi-table tracker with overview, filters, details and pagination.",
+  "tags": [
+    "tracker",
+    "outreach",
+    "crm",
+    "pipeline",
+    "companies",
+    "contacts"
+  ],
+  "whenToUse": "Tracking records, relationships, statuses and follow-ups in one or more authorized database tables.",
+  "whenNotToUse": "A custom visual experience, calculator or app without stored records; use a custom app or another template.",
+  "instructions": "Read read_app_template_guidance(resource:\"usage\") and this template's documentation before preparation. Inspect authorized schema and suitable existing apps first. Keep the default Vivid design unless the user requests visual customization. Use the current read_app_design kit when changing styling. Supply tabs and columns using existing table IDs, or newTables with temporary UUIDs; relationship targetTypeId may reference another new table in this same bundle. All tables and the app save atomically after confirmation. Include all needed fields; includeDetailFields keeps additional new-table fields bound and available in details while hidden from the table. Source fields are optional and appropriate for sourced research, not required on every table. Use scalar status/date and fictional examples only for empty tabs. Reuse a stable requestKey for retries, and replacesPreviewId plus expectedDigest for corrections. Read configurationSchema for supported settings.",
+  "engine": "tracker",
+  "defaults": {
+    "pageSize": 25,
+    "showExample": true,
+    "includeDetailFields": true
+  },
+  "options": {},
+  "examples": [],
+  "documentation": {
+    "quickStart": [
+      "Inspect existing apps and authorized schema; reuse suitable company/contact or other business tables.",
+      "Configure tabs, visible columns, detail fields and relationships with verified IDs. Keep the Vivid renderer and default theme unless customization is requested.",
+      "Prepare one app preview, verify its interactions and save through review; verify the saved app ID. Offer monitoring only when ongoing research or reporting would help."
+    ],
+    "dataContract": "Persistent authorized tables and records. Use record IDs for relationships and readable display fields for company/contact labels. Status/date/boolean are scalar by default; use multiple values only when meaningful. Bind all detail fields, even those hidden from the main table. Research fields may include source URL, publication date, checked date and relevance rationale; they are not mandatory for unrelated workflows. Existing schemas and records are preserved.",
+    "interactionContract": "Overview and visible tabs; bounded pagination (25 by default), filters, sorting, details, inline edits, multi-value selection, add/duplicate/delete and reviewed layout edits use the shared renderer. Save/Ignore apply to the current user edits. Do not substitute a decorative table or invent separate save, navigation or project-move controls.",
+    "lifecycle": "Keep the same app ID for revisions. Use one requestKey for creation retries and verify its save receipt. The first-save prompt applies only to a new unsaved app. Loading failures retain the last usable view; publication never forces a reload. Local inputs are not committed records.",
+    "limitations": [
+      "This is a record workflow, not a mandatory layout for all apps. Use another template or custom source for a specialized calculator or visual experience.",
+      "A saved tracker does not itself research companies, send notifications or create a scheduled task. Those are optional separately configured services."
+    ],
+    "examples": [
+      {
+        "prompt": "Track biotech companies, their contacts, outreach status and next follow-up.",
+        "expectedBehavior": "Reuse or prepare linked company/contact tables, show readable company names with contacts, expose status filters and next steps, and save one reviewed tracker."
+      },
+      {
+        "prompt": "Monitor competitor announcements and keep this tracker current each Monday.",
+        "expectedBehavior": "Keep the app functional first; define source criteria and Europe/Berlin or the user-chosen time zone, review monitoring scope, create a real host task if available, and link its verified ID."
+      }
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "Recurring competitive research, BD signals, literature tracking, periodic analysis or follow-up reports. Do not schedule merely because a tracker exists.",
+      "readRequirements": "Use the saved app ID and monitor ID; grant the minimum authorized identity, status, source and coverage fields. Read the current monitoring guide.",
+      "outputContract": "Deduplicate relevant findings, preserve source evidence and dates, and write only through valid reviewed scopes. Otherwise return proposed changes. Record no_update versus partial/blocked/failed correctly.",
+      "promptExample": "For the configured occurrence, read the current monitor for this saved tracker, research only its approved sources and relevance criteria, compare against existing entries, preserve citations, perform only scoped authorized writes, and finish the run with actual coverage and the configured reporting preference."
+    }
+  }
+}

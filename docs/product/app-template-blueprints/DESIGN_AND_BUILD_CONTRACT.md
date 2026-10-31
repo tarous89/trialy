@@ -108,3 +108,7 @@ All edits: exact preview + Save/Ignore, accessible changed-field indication and 
 6. Research/LLM/report screen only offers verified ChatGPT handoff, properly cited result with report save if authorized, plus a manual fallback. Recurring monitoring only advertised after real Task/plugin integration test.
 7. Demo screenshots: four truthful frames per app — dashboard; records; action; resulting chart/report — at desktop and at least one narrow-screen pass, with clearly fictitious data.
 8. No patient data and no required external service. No compliance certification, live integration or email delivery claimed without acceptance evidence.
+
+## Shared implementation contract
+
+Follow the [living template authoring standard](../../../templates/TEMPLATE_AUTHORING.md) and [ChatGPT usage/task contract](../../../templates/TEMPLATE_USAGE.md). Domain blueprints supplement these shared runtime, documentation, lifecycle and acceptance requirements.

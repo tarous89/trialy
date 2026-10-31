@@ -17,7 +17,12 @@ export async function moveTool(db:Database,a:Actor,w:string,input:unknown){
   const f=new WorkspaceFoundation(local);
   if(v.projectId){const target=(await f.activeNode(tx,a,w,v.projectId))[0];if(target.kind!=='project')fail(400,'project_required','Choose a project');}
   let resource:any,offset:number|null=0;
-  do{const page=await workspaceHome(local,a,w,{offset,limit:100});resource=page.resources.find(r=>r.id===v.toolId&&r.source===v.source);offset=page.nextOffset;}while(!resource&&offset!==null);
+  if(v.source==='component'){
+   // A move needs the app's authorization and placement, never Home thumbnails,
+   // unrelated apps, generated code or database-row previews.
+   let c:any;try{c=await f.component(tx,a,w,v.toolId);}catch(e){if([403,404].includes((e as any).status))fail(404,'tool_unavailable','App is unavailable. Refresh Home.');throw e;}
+   if(!c.archived&&!c.project_archived)resource={placementVersion:c.home_placement_version,projectIds:(c.home_placement_version?c.home_project_id:c.project_id)?[c.home_placement_version?c.home_project_id:c.project_id]:[]};
+  }else do{const page=await workspaceHome(local,a,w,{offset,limit:100});resource=page.resources.find(r=>r.id===v.toolId&&r.source===v.source);offset=page.nextOffset;}while(!resource&&offset!==null);
   if(!resource)fail(404,'tool_unavailable','App is unavailable. Refresh Home.');
   if(resource.placementVersion!==v.expectedVersion)fail(409,'stale_version','The app was moved elsewhere. Refresh Home before moving again.');
   const table={component:'workspace_components',function:'foundation_functions',collection:'external_links',legacy:'automations'}[v.source];
