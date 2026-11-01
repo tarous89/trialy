@@ -1,0 +1,1172 @@
+{
+  "companies": {
+    "name": "companies",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "website",
+        "name": "website",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "focus",
+        "name": "focus",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "phase",
+        "name": "phase",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "Discovery",
+          "Preclinical",
+          "Phase 1",
+          "Phase 2",
+          "Phase 3",
+          "Commercial"
+        ]
+      },
+      {
+        "key": "country",
+        "name": "country",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "size_band",
+        "name": "size_band",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "1-10",
+          "11-19",
+          "20-49",
+          "50-99",
+          "100+",
+          "Not verified"
+        ]
+      },
+      {
+        "key": "size_source",
+        "name": "size_source",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "verified_at",
+        "name": "verified_at",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "priority",
+        "name": "priority",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "High",
+          "Medium",
+          "Low"
+        ]
+      },
+      {
+        "key": "notes",
+        "name": "notes",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "website": "website",
+      "focus": "focus",
+      "phase": "phase",
+      "country": "country",
+      "sizeBand": "size_band",
+      "sizeSource": "size_source",
+      "verifiedAt": "verified_at",
+      "owner": "owner",
+      "priority": "priority",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "writableFields": [
+      "name",
+      "website",
+      "focus",
+      "phase",
+      "country",
+      "sizeBand",
+      "sizeSource",
+      "verifiedAt",
+      "owner",
+      "priority",
+      "notes",
+      "archived"
+    ],
+    "scalarReferenceFields": {},
+    "access": "Existing TrialAgents workspace/app/table/column authorization only."
+  },
+  "contacts": {
+    "name": "contacts",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "company_id",
+        "name": "company_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "title",
+        "name": "title",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "contact_url",
+        "name": "contact_url",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "email",
+        "name": "email",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "channel",
+        "name": "channel",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "Not specified",
+          "Professional introduction",
+          "LinkedIn",
+          "Business email",
+          "Conference",
+          "Do not contact"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Identified",
+          "Contacted",
+          "Responded",
+          "Meeting",
+          "Declined",
+          "Inactive"
+        ]
+      },
+      {
+        "key": "opt_out",
+        "name": "opt_out",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "source_url",
+        "name": "source_url",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "verified_at",
+        "name": "verified_at",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "notes",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "companyId": "company_id",
+      "title": "title",
+      "contactUrl": "contact_url",
+      "email": "email",
+      "channel": "channel",
+      "status": "status",
+      "optOut": "opt_out",
+      "sourceUrl": "source_url",
+      "verifiedAt": "verified_at",
+      "owner": "owner",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "writableFields": [
+      "name",
+      "companyId",
+      "title",
+      "contactUrl",
+      "email",
+      "channel",
+      "status",
+      "optOut",
+      "sourceUrl",
+      "verifiedAt",
+      "owner",
+      "notes",
+      "archived"
+    ],
+    "scalarReferenceFields": {
+      "companyId": "companies"
+    },
+    "access": "Existing TrialAgents workspace/app/table/column authorization only."
+  },
+  "opportunities": {
+    "name": "opportunities",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "company_id",
+        "name": "company_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "service_need",
+        "name": "service_need",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "stage",
+        "name": "stage",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Identified",
+          "Qualified",
+          "Meeting",
+          "RFP",
+          "Negotiation",
+          "Won",
+          "Lost"
+        ]
+      },
+      {
+        "key": "qualification",
+        "name": "qualification",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Pending",
+          "Confirmed",
+          "Not qualified"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "next_step",
+        "name": "next_step",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "next_due",
+        "name": "next_due",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "timing",
+        "name": "timing",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "estimated_value",
+        "name": "estimated_value",
+        "kind": "number",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "currency",
+        "name": "currency",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "EUR",
+          "USD",
+          "GBP",
+          "CHF",
+          "Other"
+        ]
+      },
+      {
+        "key": "probability",
+        "name": "probability",
+        "kind": "number",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "stage_decision_at",
+        "name": "stage_decision_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "stage_rationale",
+        "name": "stage_rationale",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "source_url",
+        "name": "source_url",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "companyId": "company_id",
+      "serviceNeed": "service_need",
+      "stage": "stage",
+      "qualification": "qualification",
+      "owner": "owner",
+      "nextStep": "next_step",
+      "nextDue": "next_due",
+      "timing": "timing",
+      "estimatedValue": "estimated_value",
+      "currency": "currency",
+      "probability": "probability",
+      "stageDecisionAt": "stage_decision_at",
+      "stageRationale": "stage_rationale",
+      "sourceUrl": "source_url",
+      "archived": "archived"
+    },
+    "writableFields": [
+      "name",
+      "companyId",
+      "serviceNeed",
+      "stage",
+      "qualification",
+      "owner",
+      "nextStep",
+      "nextDue",
+      "timing",
+      "estimatedValue",
+      "currency",
+      "probability",
+      "stageDecisionAt",
+      "stageRationale",
+      "sourceUrl",
+      "archived"
+    ],
+    "scalarReferenceFields": {
+      "companyId": "companies"
+    },
+    "access": "Existing TrialAgents workspace/app/table/column authorization only."
+  },
+  "interactions": {
+    "name": "interactions",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "company_id",
+        "name": "company_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "contact_id",
+        "name": "contact_id",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "opportunity_id",
+        "name": "opportunity_id",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "channel",
+        "name": "channel",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Meeting",
+          "Call",
+          "Email",
+          "LinkedIn",
+          "Conference",
+          "Other"
+        ]
+      },
+      {
+        "key": "occurred_at",
+        "name": "occurred_at",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "outcome",
+        "name": "outcome",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "companyId": "company_id",
+      "contactId": "contact_id",
+      "opportunityId": "opportunity_id",
+      "channel": "channel",
+      "occurredAt": "occurred_at",
+      "owner": "owner",
+      "outcome": "outcome",
+      "archived": "archived"
+    },
+    "writableFields": [
+      "name",
+      "companyId",
+      "contactId",
+      "opportunityId",
+      "channel",
+      "occurredAt",
+      "owner",
+      "outcome",
+      "archived"
+    ],
+    "scalarReferenceFields": {
+      "companyId": "companies",
+      "contactId": "contacts",
+      "opportunityId": "opportunities"
+    },
+    "access": "Existing TrialAgents workspace/app/table/column authorization only."
+  },
+  "signals": {
+    "name": "signals",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "company_id",
+        "name": "company_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "type",
+        "name": "type",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Funding",
+          "Trial start",
+          "Regulatory",
+          "Hiring",
+          "Partnership",
+          "Other"
+        ]
+      },
+      {
+        "key": "source_url",
+        "name": "source_url",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "published_at",
+        "name": "published_at",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "observed_at",
+        "name": "observed_at",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "fact",
+        "name": "fact",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "interpretation",
+        "name": "interpretation",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "relevance",
+        "name": "relevance",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Unknown",
+          "High",
+          "Medium",
+          "Low"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Candidate",
+          "Reviewed",
+          "Rejected"
+        ]
+      },
+      {
+        "key": "reviewer",
+        "name": "reviewer",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "reviewed_at",
+        "name": "reviewed_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "caveat",
+        "name": "caveat",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "companyId": "company_id",
+      "type": "type",
+      "sourceUrl": "source_url",
+      "publishedAt": "published_at",
+      "observedAt": "observed_at",
+      "fact": "fact",
+      "interpretation": "interpretation",
+      "relevance": "relevance",
+      "status": "status",
+      "reviewer": "reviewer",
+      "reviewedAt": "reviewed_at",
+      "caveat": "caveat",
+      "archived": "archived"
+    },
+    "writableFields": [
+      "name",
+      "companyId",
+      "type",
+      "sourceUrl",
+      "publishedAt",
+      "observedAt",
+      "fact",
+      "interpretation",
+      "relevance",
+      "status",
+      "reviewer",
+      "reviewedAt",
+      "caveat",
+      "archived"
+    ],
+    "scalarReferenceFields": {
+      "companyId": "companies"
+    },
+    "access": "Existing TrialAgents workspace/app/table/column authorization only."
+  },
+  "followups": {
+    "name": "followups",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "company_id",
+        "name": "company_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "contact_id",
+        "name": "contact_id",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "opportunity_id",
+        "name": "opportunity_id",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "due_at",
+        "name": "due_at",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Open",
+          "In progress",
+          "Done",
+          "Cancelled"
+        ]
+      },
+      {
+        "key": "priority",
+        "name": "priority",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "High",
+          "Medium",
+          "Low"
+        ]
+      },
+      {
+        "key": "completed_at",
+        "name": "completed_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "detail",
+        "name": "detail",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "companyId": "company_id",
+      "contactId": "contact_id",
+      "opportunityId": "opportunity_id",
+      "owner": "owner",
+      "dueAt": "due_at",
+      "status": "status",
+      "priority": "priority",
+      "completedAt": "completed_at",
+      "detail": "detail",
+      "archived": "archived"
+    },
+    "writableFields": [
+      "name",
+      "companyId",
+      "contactId",
+      "opportunityId",
+      "owner",
+      "dueAt",
+      "status",
+      "priority",
+      "completedAt",
+      "detail",
+      "archived"
+    ],
+    "scalarReferenceFields": {
+      "companyId": "companies",
+      "contactId": "contacts",
+      "opportunityId": "opportunities"
+    },
+    "access": "Existing TrialAgents workspace/app/table/column authorization only."
+  },
+  "runs": {
+    "name": "runs",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "scope",
+        "name": "scope",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "window_start",
+        "name": "window_start",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "window_end",
+        "name": "window_end",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Planned",
+          "Partial",
+          "Completed",
+          "Failed"
+        ]
+      },
+      {
+        "key": "coverage",
+        "name": "coverage",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "run_receipt",
+        "name": "run_receipt",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "completed_at",
+        "name": "completed_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "summary",
+        "name": "summary",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "scope": "scope",
+      "windowStart": "window_start",
+      "windowEnd": "window_end",
+      "status": "status",
+      "coverage": "coverage",
+      "runReceipt": "run_receipt",
+      "completedAt": "completed_at",
+      "summary": "summary",
+      "archived": "archived"
+    },
+    "writableFields": [
+      "name",
+      "scope",
+      "windowStart",
+      "windowEnd",
+      "status",
+      "coverage",
+      "runReceipt",
+      "completedAt",
+      "summary",
+      "archived"
+    ],
+    "scalarReferenceFields": {},
+    "access": "Existing TrialAgents workspace/app/table/column authorization only."
+  },
+  "reports": {
+    "name": "reports",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "company_id",
+        "name": "company_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "period_start",
+        "name": "period_start",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "period_end",
+        "name": "period_end",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "evidence_refs",
+        "name": "evidence_refs",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "facts",
+        "name": "facts",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "interpretation",
+        "name": "interpretation",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Draft",
+          "Reviewed"
+        ]
+      },
+      {
+        "key": "reviewer",
+        "name": "reviewer",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "reviewed_at",
+        "name": "reviewed_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "companyId": "company_id",
+      "periodStart": "period_start",
+      "periodEnd": "period_end",
+      "evidenceRefs": "evidence_refs",
+      "facts": "facts",
+      "interpretation": "interpretation",
+      "status": "status",
+      "reviewer": "reviewer",
+      "reviewedAt": "reviewed_at",
+      "archived": "archived"
+    },
+    "writableFields": [
+      "name",
+      "companyId",
+      "periodStart",
+      "periodEnd",
+      "evidenceRefs",
+      "facts",
+      "interpretation",
+      "status",
+      "reviewer",
+      "reviewedAt",
+      "archived"
+    ],
+    "scalarReferenceFields": {
+      "companyId": "companies"
+    },
+    "access": "Existing TrialAgents workspace/app/table/column authorization only."
+  }
+}

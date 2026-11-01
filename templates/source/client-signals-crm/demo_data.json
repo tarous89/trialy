@@ -1,0 +1,2084 @@
+{
+  "records": [
+    {
+      "role": "companies",
+      "id": "c01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Asterlyn Biologics",
+        "website": "https://example.org/asterlyn-biologics",
+        "focus": "Oncology",
+        "phase": "Phase 2",
+        "country": "Germany",
+        "sizeBand": "11-19",
+        "sizeSource": "https://example.org/asterlyn-biologics/team",
+        "verifiedAt": "2026-10-02",
+        "owner": "Nina",
+        "priority": "High",
+        "notes": "Internal candidate record; independently verify current facts before outreach."
+      }
+    },
+    {
+      "role": "companies",
+      "id": "c02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Novara Cellworks",
+        "website": "https://example.org/novara-cellworks",
+        "focus": "Cell therapy",
+        "phase": "Phase 1",
+        "country": "UK",
+        "sizeBand": "1-10",
+        "sizeSource": "https://example.org/novara-cellworks/team",
+        "verifiedAt": "2026-10-03",
+        "owner": "Nina",
+        "priority": "High",
+        "notes": "Internal candidate record; independently verify current facts before outreach."
+      }
+    },
+    {
+      "role": "companies",
+      "id": "c03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Oriole Therapeutics",
+        "website": "https://example.org/oriole-therapeutics",
+        "focus": "Rare diseases",
+        "phase": "Phase 2",
+        "country": "France",
+        "sizeBand": "20-49",
+        "sizeSource": "https://example.org/oriole-therapeutics/team",
+        "verifiedAt": "2026-10-04",
+        "owner": "Alex",
+        "priority": "High",
+        "notes": "Internal candidate record; independently verify current facts before outreach."
+      }
+    },
+    {
+      "role": "companies",
+      "id": "c04",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Cedar BioSystems",
+        "website": "https://example.org/cedar-biosystems",
+        "focus": "Neurology",
+        "phase": "Preclinical",
+        "country": "Netherlands",
+        "sizeBand": "11-19",
+        "sizeSource": "https://example.org/cedar-biosystems/team",
+        "verifiedAt": "2026-10-05",
+        "owner": "Alex",
+        "priority": "Medium",
+        "notes": "Internal candidate record; independently verify current facts before outreach."
+      }
+    },
+    {
+      "role": "companies",
+      "id": "c05",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Crescenta Bio",
+        "website": "https://example.org/crescenta-bio",
+        "focus": "Immunology",
+        "phase": "Phase 1",
+        "country": "Switzerland",
+        "sizeBand": "1-10",
+        "sizeSource": "https://example.org/crescenta-bio/team",
+        "verifiedAt": "2026-10-06",
+        "owner": "Nina",
+        "priority": "High",
+        "notes": "Internal candidate record; independently verify current facts before outreach."
+      }
+    },
+    {
+      "role": "companies",
+      "id": "c06",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Eon Pathways",
+        "website": "https://example.org/eon-pathways",
+        "focus": "Oncology",
+        "phase": "Phase 3",
+        "country": "Denmark",
+        "sizeBand": "20-49",
+        "sizeSource": "https://example.org/eon-pathways/team",
+        "verifiedAt": "2026-10-07",
+        "owner": "Alex",
+        "priority": "Medium",
+        "notes": "Internal candidate record; independently verify current facts before outreach."
+      }
+    },
+    {
+      "role": "companies",
+      "id": "c07",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Bayfield Therapeutics",
+        "website": "https://example.org/bayfield-therapeutics",
+        "focus": "Metabolic",
+        "phase": "Phase 2",
+        "country": "US",
+        "sizeBand": "11-19",
+        "sizeSource": "https://example.org/bayfield-therapeutics/team",
+        "verifiedAt": "2026-10-08",
+        "owner": "Nina",
+        "priority": "Medium",
+        "notes": "Internal candidate record; independently verify current facts before outreach."
+      }
+    },
+    {
+      "role": "companies",
+      "id": "c08",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Helix Grove Pharma",
+        "website": "https://example.org/helix-grove-pharma",
+        "focus": "Rare diseases",
+        "phase": "Phase 1",
+        "country": "Spain",
+        "sizeBand": "1-10",
+        "sizeSource": "https://example.org/helix-grove-pharma/team",
+        "verifiedAt": "2026-10-09",
+        "owner": "Alex",
+        "priority": "Low",
+        "notes": "Internal candidate record; independently verify current facts before outreach."
+      }
+    },
+    {
+      "role": "companies",
+      "id": "c09",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Solstice RNA",
+        "website": "https://example.org/solstice-rna",
+        "focus": "RNA therapeutics",
+        "phase": "Preclinical",
+        "country": "Ireland",
+        "sizeBand": "11-19",
+        "sizeSource": "https://example.org/solstice-rna/team",
+        "verifiedAt": "2026-10-10",
+        "owner": "Nina",
+        "priority": "High",
+        "notes": "Internal candidate record; independently verify current facts before outreach."
+      }
+    },
+    {
+      "role": "companies",
+      "id": "c10",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Vectora Precision",
+        "website": "https://example.org/vectora-precision",
+        "focus": "Oncology",
+        "phase": "Phase 2",
+        "country": "Sweden",
+        "sizeBand": "20-49",
+        "sizeSource": "https://example.org/vectora-precision/team",
+        "verifiedAt": "2026-10-11",
+        "owner": "Alex",
+        "priority": "Medium",
+        "notes": "Internal candidate record; independently verify current facts before outreach."
+      }
+    },
+    {
+      "role": "companies",
+      "id": "c11",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Mora Therapeutics",
+        "website": "https://example.org/mora-therapeutics",
+        "focus": "Neurology",
+        "phase": "Phase 1",
+        "country": "US",
+        "sizeBand": "1-10",
+        "sizeSource": "https://example.org/mora-therapeutics/team",
+        "verifiedAt": "2026-10-12",
+        "owner": "Nina",
+        "priority": "High",
+        "notes": "Internal candidate record; independently verify current facts before outreach."
+      }
+    },
+    {
+      "role": "companies",
+      "id": "c12",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Aurine Biotech",
+        "website": "https://example.org/aurine-biotech",
+        "focus": "Immunology",
+        "phase": "Preclinical",
+        "country": "Austria",
+        "sizeBand": "11-19",
+        "sizeSource": "https://example.org/aurine-biotech/team",
+        "verifiedAt": "2026-10-13",
+        "owner": "Alex",
+        "priority": "Low",
+        "notes": "Internal candidate record; independently verify current facts before outreach."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "p01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Mira Kent",
+        "companyId": "c01",
+        "title": "CEO",
+        "contactUrl": "https://example.org/professional/p01",
+        "email": "",
+        "channel": "Professional introduction",
+        "status": "Contacted",
+        "optOut": false,
+        "sourceUrl": "https://example.org/public-profile/p01",
+        "verifiedAt": "2026-10-19",
+        "owner": "Nina",
+        "notes": "Professional role only; outreach requires team review."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "p02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Leon Hale",
+        "companyId": "c02",
+        "title": "VP Clinical Development",
+        "contactUrl": "https://example.org/professional/p02",
+        "email": "",
+        "channel": "Professional introduction",
+        "status": "Responded",
+        "optOut": false,
+        "sourceUrl": "https://example.org/public-profile/p02",
+        "verifiedAt": "2026-10-19",
+        "owner": "Alex",
+        "notes": "Professional role only; outreach requires team review."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "p03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Dina Walsh",
+        "companyId": "c03",
+        "title": "Medical Director",
+        "contactUrl": "https://example.org/professional/p03",
+        "email": "",
+        "channel": "Professional introduction",
+        "status": "Meeting",
+        "optOut": false,
+        "sourceUrl": "https://example.org/public-profile/p03",
+        "verifiedAt": "2026-10-19",
+        "owner": "Nina",
+        "notes": "Professional role only; outreach requires team review."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "p04",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Omar Silva",
+        "companyId": "c04",
+        "title": "Head of R&D",
+        "contactUrl": "https://example.org/professional/p04",
+        "email": "",
+        "channel": "LinkedIn",
+        "status": "Identified",
+        "optOut": false,
+        "sourceUrl": "https://example.org/public-profile/p04",
+        "verifiedAt": "2026-10-19",
+        "owner": "Alex",
+        "notes": "Professional role only; outreach requires team review."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "p05",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Lara Stern",
+        "companyId": "c05",
+        "title": "Chief Operating Officer",
+        "contactUrl": "https://example.org/professional/p05",
+        "email": "",
+        "channel": "Professional introduction",
+        "status": "Contacted",
+        "optOut": false,
+        "sourceUrl": "https://example.org/public-profile/p05",
+        "verifiedAt": "2026-10-19",
+        "owner": "Nina",
+        "notes": "Professional role only; outreach requires team review."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "p06",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Theo Moss",
+        "companyId": "c06",
+        "title": "Chief Medical Officer",
+        "contactUrl": "https://example.org/professional/p06",
+        "email": "",
+        "channel": "Professional introduction",
+        "status": "Responded",
+        "optOut": false,
+        "sourceUrl": "https://example.org/public-profile/p06",
+        "verifiedAt": "2026-10-19",
+        "owner": "Alex",
+        "notes": "Professional role only; outreach requires team review."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "p07",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Nora Beck",
+        "companyId": "c07",
+        "title": "CEO",
+        "contactUrl": "https://example.org/professional/p07",
+        "email": "",
+        "channel": "Professional introduction",
+        "status": "Meeting",
+        "optOut": false,
+        "sourceUrl": "https://example.org/public-profile/p07",
+        "verifiedAt": "2026-10-19",
+        "owner": "Nina",
+        "notes": "Professional role only; outreach requires team review."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "p08",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Eli Ramos",
+        "companyId": "c08",
+        "title": "VP Clinical Development",
+        "contactUrl": "https://example.org/professional/p08",
+        "email": "",
+        "channel": "LinkedIn",
+        "status": "Identified",
+        "optOut": false,
+        "sourceUrl": "https://example.org/public-profile/p08",
+        "verifiedAt": "2026-10-19",
+        "owner": "Alex",
+        "notes": "Professional role only; outreach requires team review."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "p09",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Mara Lowe",
+        "companyId": "c09",
+        "title": "Medical Director",
+        "contactUrl": "https://example.org/professional/p09",
+        "email": "",
+        "channel": "Professional introduction",
+        "status": "Contacted",
+        "optOut": false,
+        "sourceUrl": "https://example.org/public-profile/p09",
+        "verifiedAt": "2026-10-19",
+        "owner": "Nina",
+        "notes": "Professional role only; outreach requires team review."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "p10",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Anya Reed",
+        "companyId": "c10",
+        "title": "Head of R&D",
+        "contactUrl": "https://example.org/professional/p10",
+        "email": "",
+        "channel": "Professional introduction",
+        "status": "Responded",
+        "optOut": false,
+        "sourceUrl": "https://example.org/public-profile/p10",
+        "verifiedAt": "2026-10-19",
+        "owner": "Alex",
+        "notes": "Professional role only; outreach requires team review."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "p11",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Rui West",
+        "companyId": "c11",
+        "title": "Chief Operating Officer",
+        "contactUrl": "https://example.org/professional/p11",
+        "email": "",
+        "channel": "Professional introduction",
+        "status": "Meeting",
+        "optOut": false,
+        "sourceUrl": "https://example.org/public-profile/p11",
+        "verifiedAt": "2026-10-19",
+        "owner": "Nina",
+        "notes": "Professional role only; outreach requires team review."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "p12",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Sonia Patel",
+        "companyId": "c12",
+        "title": "Chief Medical Officer",
+        "contactUrl": "https://example.org/professional/p12",
+        "email": "",
+        "channel": "LinkedIn",
+        "status": "Identified",
+        "optOut": true,
+        "sourceUrl": "https://example.org/public-profile/p12",
+        "verifiedAt": "2026-10-19",
+        "owner": "Alex",
+        "notes": "Professional role only; outreach requires team review."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "p13",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Iris Cole",
+        "companyId": "c01",
+        "title": "CEO",
+        "contactUrl": "https://example.org/professional/p13",
+        "email": "",
+        "channel": "Professional introduction",
+        "status": "Contacted",
+        "optOut": false,
+        "sourceUrl": "https://example.org/public-profile/p13",
+        "verifiedAt": "2026-10-19",
+        "owner": "Nina",
+        "notes": "Professional role only; outreach requires team review."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "p14",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Leo Hart",
+        "companyId": "c02",
+        "title": "VP Clinical Development",
+        "contactUrl": "https://example.org/professional/p14",
+        "email": "",
+        "channel": "Professional introduction",
+        "status": "Responded",
+        "optOut": false,
+        "sourceUrl": "https://example.org/public-profile/p14",
+        "verifiedAt": "2026-10-19",
+        "owner": "Alex",
+        "notes": "Professional role only; outreach requires team review."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "p15",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Rosa Chen",
+        "companyId": "c03",
+        "title": "Medical Director",
+        "contactUrl": "https://example.org/professional/p15",
+        "email": "",
+        "channel": "Professional introduction",
+        "status": "Meeting",
+        "optOut": false,
+        "sourceUrl": "https://example.org/public-profile/p15",
+        "verifiedAt": "2026-10-19",
+        "owner": "Nina",
+        "notes": "Professional role only; outreach requires team review."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "p16",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Eva North",
+        "companyId": "c04",
+        "title": "Head of R&D",
+        "contactUrl": "https://example.org/professional/p16",
+        "email": "",
+        "channel": "LinkedIn",
+        "status": "Identified",
+        "optOut": false,
+        "sourceUrl": "https://example.org/public-profile/p16",
+        "verifiedAt": "2026-10-19",
+        "owner": "Alex",
+        "notes": "Professional role only; outreach requires team review."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "p17",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Alan Voss",
+        "companyId": "c05",
+        "title": "Chief Operating Officer",
+        "contactUrl": "https://example.org/professional/p17",
+        "email": "",
+        "channel": "Professional introduction",
+        "status": "Contacted",
+        "optOut": false,
+        "sourceUrl": "https://example.org/public-profile/p17",
+        "verifiedAt": "2026-10-19",
+        "owner": "Nina",
+        "notes": "Professional role only; outreach requires team review."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "p18",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Vera Lin",
+        "companyId": "c06",
+        "title": "Chief Medical Officer",
+        "contactUrl": "https://example.org/professional/p18",
+        "email": "",
+        "channel": "Professional introduction",
+        "status": "Responded",
+        "optOut": false,
+        "sourceUrl": "https://example.org/public-profile/p18",
+        "verifiedAt": "2026-10-19",
+        "owner": "Alex",
+        "notes": "Professional role only; outreach requires team review."
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "o01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Regulatory operations · Asterlyn Biologics",
+        "companyId": "c01",
+        "serviceNeed": "Regulatory support",
+        "stage": "Qualified",
+        "qualification": "Confirmed",
+        "owner": "Nina",
+        "nextStep": "Prepare capability deck",
+        "nextDue": "2026-11-02",
+        "timing": "2027 H1 (unconfirmed)",
+        "estimatedValue": 100000,
+        "currency": "EUR",
+        "probability": 23,
+        "stageDecisionAt": "2026-10-22",
+        "stageRationale": "BD owner documented discussion outcome and manually confirmed stage.",
+        "sourceUrl": "https://example.org/internal-reference"
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "o02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Site activation · Novara Cellworks",
+        "companyId": "c02",
+        "serviceNeed": "Site activation",
+        "stage": "Meeting",
+        "qualification": "Confirmed",
+        "owner": "Alex",
+        "nextStep": "Request study brief",
+        "nextDue": "2026-11-03",
+        "timing": "2027 H1 (unconfirmed)",
+        "estimatedValue": 115000,
+        "currency": "EUR",
+        "probability": 26,
+        "stageDecisionAt": "2026-10-22",
+        "stageRationale": "BD owner documented discussion outcome and manually confirmed stage.",
+        "sourceUrl": "https://example.org/internal-reference"
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "o03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Data management · Oriole Therapeutics",
+        "companyId": "c03",
+        "serviceNeed": "Data management",
+        "stage": "RFP",
+        "qualification": "Confirmed",
+        "owner": "Nina",
+        "nextStep": "Plan next meeting",
+        "nextDue": "2026-11-04",
+        "timing": "2027 H1 (unconfirmed)",
+        "estimatedValue": 130000,
+        "currency": "EUR",
+        "probability": 29,
+        "stageDecisionAt": "2026-10-22",
+        "stageRationale": "BD owner documented discussion outcome and manually confirmed stage.",
+        "sourceUrl": "https://example.org/internal-reference"
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "o04",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Medical writing · Cedar BioSystems",
+        "companyId": "c04",
+        "serviceNeed": "Medical writing",
+        "stage": "Negotiation",
+        "qualification": "Confirmed",
+        "owner": "Alex",
+        "nextStep": "Scope discussion",
+        "nextDue": "2026-11-05",
+        "timing": "2027 H1 (unconfirmed)",
+        "estimatedValue": 145000,
+        "currency": "EUR",
+        "probability": 32,
+        "stageDecisionAt": "2026-10-22",
+        "stageRationale": "BD owner documented discussion outcome and manually confirmed stage.",
+        "sourceUrl": "https://example.org/internal-reference"
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "o05",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Feasibility · Crescenta Bio",
+        "companyId": "c05",
+        "serviceNeed": "Feasibility",
+        "stage": "Won",
+        "qualification": "Confirmed",
+        "owner": "Nina",
+        "nextStep": "Prepare capability deck",
+        "nextDue": "2026-11-06",
+        "timing": "2027 H1 (unconfirmed)",
+        "estimatedValue": 160000,
+        "currency": "EUR",
+        "probability": 35,
+        "stageDecisionAt": "2026-10-22",
+        "stageRationale": "BD owner documented discussion outcome and manually confirmed stage.",
+        "sourceUrl": "https://example.org/internal-reference"
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "o06",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Phase II monitoring · Eon Pathways",
+        "companyId": "c06",
+        "serviceNeed": "Clinical monitoring",
+        "stage": "Lost",
+        "qualification": "Pending",
+        "owner": "Alex",
+        "nextStep": "Request study brief",
+        "nextDue": "2026-11-07",
+        "timing": "2027 H1 (unconfirmed)",
+        "estimatedValue": 175000,
+        "currency": "EUR",
+        "probability": 38,
+        "stageDecisionAt": "2026-10-22",
+        "stageRationale": "BD owner documented discussion outcome and manually confirmed stage.",
+        "sourceUrl": "https://example.org/internal-reference"
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "o07",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Regulatory operations · Bayfield Therapeutics",
+        "companyId": "c07",
+        "serviceNeed": "Regulatory support",
+        "stage": "Identified",
+        "qualification": "Pending",
+        "owner": "Nina",
+        "nextStep": "Plan next meeting",
+        "nextDue": "2026-11-08",
+        "timing": "2027 H1 (unconfirmed)",
+        "estimatedValue": 190000,
+        "currency": "EUR",
+        "probability": 41,
+        "stageDecisionAt": "2026-10-22",
+        "stageRationale": "BD owner documented discussion outcome and manually confirmed stage.",
+        "sourceUrl": "https://example.org/internal-reference"
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "o08",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Site activation · Helix Grove Pharma",
+        "companyId": "c08",
+        "serviceNeed": "Site activation",
+        "stage": "Qualified",
+        "qualification": "Confirmed",
+        "owner": "Alex",
+        "nextStep": "Scope discussion",
+        "nextDue": "2026-11-09",
+        "timing": "2027 H1 (unconfirmed)",
+        "estimatedValue": 205000,
+        "currency": "EUR",
+        "probability": 44,
+        "stageDecisionAt": "2026-10-22",
+        "stageRationale": "BD owner documented discussion outcome and manually confirmed stage.",
+        "sourceUrl": "https://example.org/internal-reference"
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "o09",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Data management · Solstice RNA",
+        "companyId": "c09",
+        "serviceNeed": "Data management",
+        "stage": "Meeting",
+        "qualification": "Confirmed",
+        "owner": "Nina",
+        "nextStep": "Prepare capability deck",
+        "nextDue": "2026-11-10",
+        "timing": "2027 H1 (unconfirmed)",
+        "estimatedValue": 220000,
+        "currency": "EUR",
+        "probability": 47,
+        "stageDecisionAt": "2026-10-22",
+        "stageRationale": "BD owner documented discussion outcome and manually confirmed stage.",
+        "sourceUrl": "https://example.org/internal-reference"
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "o10",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Medical writing · Vectora Precision",
+        "companyId": "c10",
+        "serviceNeed": "Medical writing",
+        "stage": "RFP",
+        "qualification": "Confirmed",
+        "owner": "Alex",
+        "nextStep": "Request study brief",
+        "nextDue": "2026-11-11",
+        "timing": "2027 H1 (unconfirmed)",
+        "estimatedValue": "",
+        "currency": "",
+        "probability": "",
+        "stageDecisionAt": "2026-10-22",
+        "stageRationale": "BD owner documented discussion outcome and manually confirmed stage.",
+        "sourceUrl": "https://example.org/internal-reference"
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "o11",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Feasibility · Mora Therapeutics",
+        "companyId": "c11",
+        "serviceNeed": "Feasibility",
+        "stage": "Negotiation",
+        "qualification": "Confirmed",
+        "owner": "Nina",
+        "nextStep": "Plan next meeting",
+        "nextDue": "2026-11-12",
+        "timing": "2027 H1 (unconfirmed)",
+        "estimatedValue": "",
+        "currency": "",
+        "probability": "",
+        "stageDecisionAt": "2026-10-22",
+        "stageRationale": "BD owner documented discussion outcome and manually confirmed stage.",
+        "sourceUrl": "https://example.org/internal-reference"
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "o12",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Phase II monitoring · Aurine Biotech",
+        "companyId": "c12",
+        "serviceNeed": "Clinical monitoring",
+        "stage": "Won",
+        "qualification": "Confirmed",
+        "owner": "Alex",
+        "nextStep": "Scope discussion",
+        "nextDue": "2026-11-13",
+        "timing": "2027 H1 (unconfirmed)",
+        "estimatedValue": "",
+        "currency": "",
+        "probability": "",
+        "stageDecisionAt": "2026-10-22",
+        "stageRationale": "BD owner documented discussion outcome and manually confirmed stage.",
+        "sourceUrl": "https://example.org/internal-reference"
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "o13",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Regulatory operations · Asterlyn Biologics",
+        "companyId": "c01",
+        "serviceNeed": "Regulatory support",
+        "stage": "Lost",
+        "qualification": "Pending",
+        "owner": "Nina",
+        "nextStep": "Prepare capability deck",
+        "nextDue": "2026-11-14",
+        "timing": "2027 H1 (unconfirmed)",
+        "estimatedValue": "",
+        "currency": "",
+        "probability": "",
+        "stageDecisionAt": "2026-10-22",
+        "stageRationale": "BD owner documented discussion outcome and manually confirmed stage.",
+        "sourceUrl": "https://example.org/internal-reference"
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "o14",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Site activation · Novara Cellworks",
+        "companyId": "c02",
+        "serviceNeed": "Site activation",
+        "stage": "Identified",
+        "qualification": "Pending",
+        "owner": "Alex",
+        "nextStep": "Request study brief",
+        "nextDue": "2026-11-15",
+        "timing": "2027 H1 (unconfirmed)",
+        "estimatedValue": "",
+        "currency": "",
+        "probability": "",
+        "stageDecisionAt": "2026-10-22",
+        "stageRationale": "BD owner documented discussion outcome and manually confirmed stage.",
+        "sourceUrl": "https://example.org/internal-reference"
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "o15",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Data management · Oriole Therapeutics",
+        "companyId": "c03",
+        "serviceNeed": "Data management",
+        "stage": "Qualified",
+        "qualification": "Confirmed",
+        "owner": "Nina",
+        "nextStep": "Plan next meeting",
+        "nextDue": "2026-11-16",
+        "timing": "2027 H1 (unconfirmed)",
+        "estimatedValue": "",
+        "currency": "",
+        "probability": "",
+        "stageDecisionAt": "2026-10-22",
+        "stageRationale": "BD owner documented discussion outcome and manually confirmed stage.",
+        "sourceUrl": "https://example.org/internal-reference"
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "o16",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Medical writing · Cedar BioSystems",
+        "companyId": "c04",
+        "serviceNeed": "Medical writing",
+        "stage": "Meeting",
+        "qualification": "Confirmed",
+        "owner": "Alex",
+        "nextStep": "Scope discussion",
+        "nextDue": "2026-11-17",
+        "timing": "2027 H1 (unconfirmed)",
+        "estimatedValue": "",
+        "currency": "",
+        "probability": "",
+        "stageDecisionAt": "2026-10-22",
+        "stageRationale": "BD owner documented discussion outcome and manually confirmed stage.",
+        "sourceUrl": "https://example.org/internal-reference"
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "o17",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Feasibility · Crescenta Bio",
+        "companyId": "c05",
+        "serviceNeed": "Feasibility",
+        "stage": "RFP",
+        "qualification": "Confirmed",
+        "owner": "Nina",
+        "nextStep": "Prepare capability deck",
+        "nextDue": "2026-11-18",
+        "timing": "2027 H1 (unconfirmed)",
+        "estimatedValue": "",
+        "currency": "",
+        "probability": "",
+        "stageDecisionAt": "2026-10-22",
+        "stageRationale": "BD owner documented discussion outcome and manually confirmed stage.",
+        "sourceUrl": "https://example.org/internal-reference"
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "o18",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Phase II monitoring · Eon Pathways",
+        "companyId": "c06",
+        "serviceNeed": "Clinical monitoring",
+        "stage": "Negotiation",
+        "qualification": "Confirmed",
+        "owner": "Alex",
+        "nextStep": "Request study brief",
+        "nextDue": "2026-11-01",
+        "timing": "2027 H1 (unconfirmed)",
+        "estimatedValue": "",
+        "currency": "",
+        "probability": "",
+        "stageDecisionAt": "2026-10-22",
+        "stageRationale": "BD owner documented discussion outcome and manually confirmed stage.",
+        "sourceUrl": "https://example.org/internal-reference"
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Trial start update · Asterlyn Biologics",
+        "companyId": "c01",
+        "type": "Trial start",
+        "sourceUrl": "https://example.org/biotech-news/01",
+        "publishedAt": "2026-10-02",
+        "observedAt": "2026-10-30",
+        "fact": "Company update reports initiation of a clinical program in its current development pipeline.",
+        "interpretation": "Potential outsourcing timing should be confirmed with company, not assumed.",
+        "relevance": "Medium",
+        "status": "Reviewed",
+        "reviewer": "Alex",
+        "reviewedAt": "2026-10-31",
+        "caveat": "No confirmed procurement need or CRO budget."
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Regulatory update · Novara Cellworks",
+        "companyId": "c02",
+        "type": "Regulatory",
+        "sourceUrl": "https://example.org/biotech-news/02",
+        "publishedAt": "2026-10-03",
+        "observedAt": "2026-10-30",
+        "fact": "Company release describes a regulatory milestone in its development plan.",
+        "interpretation": "Potential outsourcing timing should be confirmed with company, not assumed.",
+        "relevance": "Medium",
+        "status": "Reviewed",
+        "reviewer": "Alex",
+        "reviewedAt": "2026-10-31",
+        "caveat": "No confirmed procurement need or CRO budget."
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Hiring update · Oriole Therapeutics",
+        "companyId": "c03",
+        "type": "Hiring",
+        "sourceUrl": "https://example.org/biotech-news/03",
+        "publishedAt": "2026-10-04",
+        "observedAt": "2026-10-30",
+        "fact": "Company update identifies a new senior clinical-development appointment.",
+        "interpretation": "Potential outsourcing timing should be confirmed with company, not assumed.",
+        "relevance": "Medium",
+        "status": "Reviewed",
+        "reviewer": "Alex",
+        "reviewedAt": "2026-10-31",
+        "caveat": "No confirmed procurement need or CRO budget."
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s04",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Partnership update · Cedar BioSystems",
+        "companyId": "c04",
+        "type": "Partnership",
+        "sourceUrl": "https://example.org/biotech-news/04",
+        "publishedAt": "2026-10-05",
+        "observedAt": "2026-10-30",
+        "fact": "Company states a new research or clinical development partnership.",
+        "interpretation": "Potential outsourcing timing should be confirmed with company, not assumed.",
+        "relevance": "High",
+        "status": "Reviewed",
+        "reviewer": "Alex",
+        "reviewedAt": "2026-10-31",
+        "caveat": "No confirmed procurement need or CRO budget."
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s05",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Funding update · Crescenta Bio",
+        "companyId": "c05",
+        "type": "Funding",
+        "sourceUrl": "https://example.org/biotech-news/05",
+        "publishedAt": "2026-10-06",
+        "observedAt": "2026-10-30",
+        "fact": "Company announcement states new private financing to support pipeline execution.",
+        "interpretation": "Potential outsourcing timing should be confirmed with company, not assumed.",
+        "relevance": "Medium",
+        "status": "Candidate",
+        "reviewer": "",
+        "reviewedAt": "",
+        "caveat": "No confirmed procurement need or CRO budget."
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s06",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Trial start update · Eon Pathways",
+        "companyId": "c06",
+        "type": "Trial start",
+        "sourceUrl": "https://example.org/biotech-news/06",
+        "publishedAt": "2026-10-07",
+        "observedAt": "2026-10-30",
+        "fact": "Company update reports initiation of a clinical program in its current development pipeline.",
+        "interpretation": "Potential outsourcing timing should be confirmed with company, not assumed.",
+        "relevance": "Medium",
+        "status": "Reviewed",
+        "reviewer": "Alex",
+        "reviewedAt": "2026-10-31",
+        "caveat": "No confirmed procurement need or CRO budget."
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s07",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Regulatory update · Bayfield Therapeutics",
+        "companyId": "c07",
+        "type": "Regulatory",
+        "sourceUrl": "https://example.org/biotech-news/07",
+        "publishedAt": "2026-10-08",
+        "observedAt": "2026-10-30",
+        "fact": "Company release describes a regulatory milestone in its development plan.",
+        "interpretation": "Potential outsourcing timing should be confirmed with company, not assumed.",
+        "relevance": "Medium",
+        "status": "Reviewed",
+        "reviewer": "Alex",
+        "reviewedAt": "2026-10-31",
+        "caveat": "No confirmed procurement need or CRO budget."
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s08",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Hiring update · Helix Grove Pharma",
+        "companyId": "c08",
+        "type": "Hiring",
+        "sourceUrl": "https://example.org/biotech-news/08",
+        "publishedAt": "2026-10-09",
+        "observedAt": "2026-10-30",
+        "fact": "Company update identifies a new senior clinical-development appointment.",
+        "interpretation": "Potential outsourcing timing should be confirmed with company, not assumed.",
+        "relevance": "High",
+        "status": "Reviewed",
+        "reviewer": "Alex",
+        "reviewedAt": "2026-10-31",
+        "caveat": "No confirmed procurement need or CRO budget."
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s09",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Partnership update · Solstice RNA",
+        "companyId": "c09",
+        "type": "Partnership",
+        "sourceUrl": "https://example.org/biotech-news/09",
+        "publishedAt": "2026-10-10",
+        "observedAt": "2026-10-30",
+        "fact": "Company states a new research or clinical development partnership.",
+        "interpretation": "Potential outsourcing timing should be confirmed with company, not assumed.",
+        "relevance": "Medium",
+        "status": "Reviewed",
+        "reviewer": "Alex",
+        "reviewedAt": "2026-10-31",
+        "caveat": "No confirmed procurement need or CRO budget."
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s10",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Funding update · Vectora Precision",
+        "companyId": "c10",
+        "type": "Funding",
+        "sourceUrl": "https://example.org/biotech-news/10",
+        "publishedAt": "2026-10-11",
+        "observedAt": "2026-10-30",
+        "fact": "Company announcement states new private financing to support pipeline execution.",
+        "interpretation": "Potential outsourcing timing should be confirmed with company, not assumed.",
+        "relevance": "Medium",
+        "status": "Candidate",
+        "reviewer": "",
+        "reviewedAt": "",
+        "caveat": "No confirmed procurement need or CRO budget."
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s11",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Trial start update · Mora Therapeutics",
+        "companyId": "c11",
+        "type": "Trial start",
+        "sourceUrl": "https://example.org/biotech-news/11",
+        "publishedAt": "2026-10-12",
+        "observedAt": "2026-10-30",
+        "fact": "Company update reports initiation of a clinical program in its current development pipeline.",
+        "interpretation": "Potential outsourcing timing should be confirmed with company, not assumed.",
+        "relevance": "Medium",
+        "status": "Reviewed",
+        "reviewer": "Alex",
+        "reviewedAt": "2026-10-31",
+        "caveat": "No confirmed procurement need or CRO budget."
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s12",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Regulatory update · Aurine Biotech",
+        "companyId": "c12",
+        "type": "Regulatory",
+        "sourceUrl": "https://example.org/biotech-news/12",
+        "publishedAt": "2026-10-13",
+        "observedAt": "2026-10-30",
+        "fact": "Company release describes a regulatory milestone in its development plan.",
+        "interpretation": "Potential outsourcing timing should be confirmed with company, not assumed.",
+        "relevance": "High",
+        "status": "Reviewed",
+        "reviewer": "Alex",
+        "reviewedAt": "2026-10-31",
+        "caveat": "No confirmed procurement need or CRO budget."
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s13",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Hiring update · Asterlyn Biologics",
+        "companyId": "c01",
+        "type": "Hiring",
+        "sourceUrl": "https://example.org/biotech-news/13",
+        "publishedAt": "2026-10-14",
+        "observedAt": "2026-10-30",
+        "fact": "Company update identifies a new senior clinical-development appointment.",
+        "interpretation": "Potential outsourcing timing should be confirmed with company, not assumed.",
+        "relevance": "Medium",
+        "status": "Reviewed",
+        "reviewer": "Alex",
+        "reviewedAt": "2026-10-31",
+        "caveat": "No confirmed procurement need or CRO budget."
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s14",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Partnership update · Novara Cellworks",
+        "companyId": "c02",
+        "type": "Partnership",
+        "sourceUrl": "https://example.org/biotech-news/14",
+        "publishedAt": "2026-10-15",
+        "observedAt": "2026-10-30",
+        "fact": "Company states a new research or clinical development partnership.",
+        "interpretation": "Potential outsourcing timing should be confirmed with company, not assumed.",
+        "relevance": "Medium",
+        "status": "Reviewed",
+        "reviewer": "Alex",
+        "reviewedAt": "2026-10-31",
+        "caveat": "No confirmed procurement need or CRO budget."
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s15",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Funding update · Oriole Therapeutics",
+        "companyId": "c03",
+        "type": "Funding",
+        "sourceUrl": "https://example.org/biotech-news/15",
+        "publishedAt": "2026-10-16",
+        "observedAt": "2026-10-30",
+        "fact": "Company announcement states new private financing to support pipeline execution.",
+        "interpretation": "Potential outsourcing timing should be confirmed with company, not assumed.",
+        "relevance": "Medium",
+        "status": "Candidate",
+        "reviewer": "",
+        "reviewedAt": "",
+        "caveat": "No confirmed procurement need or CRO budget."
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s16",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Trial start update · Cedar BioSystems",
+        "companyId": "c04",
+        "type": "Trial start",
+        "sourceUrl": "https://example.org/biotech-news/16",
+        "publishedAt": "2026-10-17",
+        "observedAt": "2026-10-30",
+        "fact": "Company update reports initiation of a clinical program in its current development pipeline.",
+        "interpretation": "Potential outsourcing timing should be confirmed with company, not assumed.",
+        "relevance": "High",
+        "status": "Reviewed",
+        "reviewer": "Alex",
+        "reviewedAt": "2026-10-31",
+        "caveat": "No confirmed procurement need or CRO budget."
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s17",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Regulatory update · Crescenta Bio",
+        "companyId": "c05",
+        "type": "Regulatory",
+        "sourceUrl": "https://example.org/biotech-news/17",
+        "publishedAt": "2026-10-18",
+        "observedAt": "2026-10-30",
+        "fact": "Company release describes a regulatory milestone in its development plan.",
+        "interpretation": "Potential outsourcing timing should be confirmed with company, not assumed.",
+        "relevance": "Medium",
+        "status": "Reviewed",
+        "reviewer": "Alex",
+        "reviewedAt": "2026-10-31",
+        "caveat": "No confirmed procurement need or CRO budget."
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s18",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Hiring update · Eon Pathways",
+        "companyId": "c06",
+        "type": "Hiring",
+        "sourceUrl": "https://example.org/biotech-news/18",
+        "publishedAt": "2026-10-19",
+        "observedAt": "2026-10-30",
+        "fact": "Company update identifies a new senior clinical-development appointment.",
+        "interpretation": "Potential outsourcing timing should be confirmed with company, not assumed.",
+        "relevance": "Medium",
+        "status": "Reviewed",
+        "reviewer": "Alex",
+        "reviewedAt": "2026-10-31",
+        "caveat": "No confirmed procurement need or CRO budget."
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s19",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Partnership update · Bayfield Therapeutics",
+        "companyId": "c07",
+        "type": "Partnership",
+        "sourceUrl": "https://example.org/biotech-news/19",
+        "publishedAt": "2026-10-20",
+        "observedAt": "2026-10-30",
+        "fact": "Company states a new research or clinical development partnership.",
+        "interpretation": "Potential outsourcing timing should be confirmed with company, not assumed.",
+        "relevance": "Medium",
+        "status": "Reviewed",
+        "reviewer": "Alex",
+        "reviewedAt": "2026-10-31",
+        "caveat": "No confirmed procurement need or CRO budget."
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s20",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Funding update · Helix Grove Pharma",
+        "companyId": "c08",
+        "type": "Funding",
+        "sourceUrl": "https://example.org/biotech-news/20",
+        "publishedAt": "2026-10-21",
+        "observedAt": "2026-10-30",
+        "fact": "Company announcement states new private financing to support pipeline execution.",
+        "interpretation": "Potential outsourcing timing should be confirmed with company, not assumed.",
+        "relevance": "High",
+        "status": "Candidate",
+        "reviewer": "",
+        "reviewedAt": "",
+        "caveat": "No confirmed procurement need or CRO budget."
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s21",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Trial start update · Solstice RNA",
+        "companyId": "c09",
+        "type": "Trial start",
+        "sourceUrl": "https://example.org/biotech-news/21",
+        "publishedAt": "2026-10-22",
+        "observedAt": "2026-10-30",
+        "fact": "Company update reports initiation of a clinical program in its current development pipeline.",
+        "interpretation": "Potential outsourcing timing should be confirmed with company, not assumed.",
+        "relevance": "Medium",
+        "status": "Reviewed",
+        "reviewer": "Alex",
+        "reviewedAt": "2026-10-31",
+        "caveat": "No confirmed procurement need or CRO budget."
+      }
+    },
+    {
+      "role": "interactions",
+      "id": "i01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "BD follow-through 1",
+        "companyId": "c01",
+        "contactId": "p01",
+        "opportunityId": "o01",
+        "channel": "Call",
+        "occurredAt": "2026-10-02",
+        "owner": "Nina",
+        "outcome": "Discussed therapeutic pipeline and agreed on a suitable next step."
+      }
+    },
+    {
+      "role": "interactions",
+      "id": "i02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "BD follow-through 2",
+        "companyId": "c02",
+        "contactId": "p02",
+        "opportunityId": "o02",
+        "channel": "Conference",
+        "occurredAt": "2026-10-03",
+        "owner": "Alex",
+        "outcome": "Discussed therapeutic pipeline and agreed on a suitable next step."
+      }
+    },
+    {
+      "role": "interactions",
+      "id": "i03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "BD follow-through 3",
+        "companyId": "c03",
+        "contactId": "p03",
+        "opportunityId": "o03",
+        "channel": "Meeting",
+        "occurredAt": "2026-10-04",
+        "owner": "Nina",
+        "outcome": "Discussed therapeutic pipeline and agreed on a suitable next step."
+      }
+    },
+    {
+      "role": "interactions",
+      "id": "i04",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "BD follow-through 4",
+        "companyId": "c04",
+        "contactId": "p04",
+        "opportunityId": "o04",
+        "channel": "Call",
+        "occurredAt": "2026-10-05",
+        "owner": "Alex",
+        "outcome": "Discussed therapeutic pipeline and agreed on a suitable next step."
+      }
+    },
+    {
+      "role": "interactions",
+      "id": "i05",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "BD follow-through 5",
+        "companyId": "c05",
+        "contactId": "p05",
+        "opportunityId": "o05",
+        "channel": "Conference",
+        "occurredAt": "2026-10-06",
+        "owner": "Nina",
+        "outcome": "Discussed therapeutic pipeline and agreed on a suitable next step."
+      }
+    },
+    {
+      "role": "interactions",
+      "id": "i06",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "BD follow-through 6",
+        "companyId": "c06",
+        "contactId": "p06",
+        "opportunityId": "o06",
+        "channel": "Meeting",
+        "occurredAt": "2026-10-07",
+        "owner": "Alex",
+        "outcome": "Discussed therapeutic pipeline and agreed on a suitable next step."
+      }
+    },
+    {
+      "role": "interactions",
+      "id": "i07",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "BD follow-through 7",
+        "companyId": "c07",
+        "contactId": "p07",
+        "opportunityId": "o07",
+        "channel": "Call",
+        "occurredAt": "2026-10-08",
+        "owner": "Nina",
+        "outcome": "Discussed therapeutic pipeline and agreed on a suitable next step."
+      }
+    },
+    {
+      "role": "interactions",
+      "id": "i08",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "BD follow-through 8",
+        "companyId": "c08",
+        "contactId": "p08",
+        "opportunityId": "o08",
+        "channel": "Conference",
+        "occurredAt": "2026-10-09",
+        "owner": "Alex",
+        "outcome": "Discussed therapeutic pipeline and agreed on a suitable next step."
+      }
+    },
+    {
+      "role": "interactions",
+      "id": "i09",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "BD follow-through 9",
+        "companyId": "c09",
+        "contactId": "p09",
+        "opportunityId": "o09",
+        "channel": "Meeting",
+        "occurredAt": "2026-10-10",
+        "owner": "Nina",
+        "outcome": "Discussed therapeutic pipeline and agreed on a suitable next step."
+      }
+    },
+    {
+      "role": "interactions",
+      "id": "i10",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "BD follow-through 10",
+        "companyId": "c10",
+        "contactId": "p10",
+        "opportunityId": "o10",
+        "channel": "Call",
+        "occurredAt": "2026-10-11",
+        "owner": "Alex",
+        "outcome": "Discussed therapeutic pipeline and agreed on a suitable next step."
+      }
+    },
+    {
+      "role": "interactions",
+      "id": "i11",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "BD follow-through 11",
+        "companyId": "c11",
+        "contactId": "p11",
+        "opportunityId": "o11",
+        "channel": "Conference",
+        "occurredAt": "2026-10-12",
+        "owner": "Nina",
+        "outcome": "Discussed therapeutic pipeline and agreed on a suitable next step."
+      }
+    },
+    {
+      "role": "interactions",
+      "id": "i12",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "BD follow-through 12",
+        "companyId": "c12",
+        "contactId": "p12",
+        "opportunityId": "o12",
+        "channel": "Meeting",
+        "occurredAt": "2026-10-13",
+        "owner": "Alex",
+        "outcome": "Discussed therapeutic pipeline and agreed on a suitable next step."
+      }
+    },
+    {
+      "role": "interactions",
+      "id": "i13",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "BD follow-through 13",
+        "companyId": "c01",
+        "contactId": "p13",
+        "opportunityId": "o13",
+        "channel": "Call",
+        "occurredAt": "2026-10-14",
+        "owner": "Nina",
+        "outcome": "Discussed therapeutic pipeline and agreed on a suitable next step."
+      }
+    },
+    {
+      "role": "followups",
+      "id": "f01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Prepare credentials",
+        "companyId": "c01",
+        "contactId": "p01",
+        "opportunityId": "o01",
+        "owner": "Nina",
+        "dueAt": "2026-11-02",
+        "status": "Open",
+        "priority": "Medium",
+        "completedAt": "",
+        "detail": "Action requires personal team approval; no automated external outreach."
+      }
+    },
+    {
+      "role": "followups",
+      "id": "f02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Confirm feasibility",
+        "companyId": "c02",
+        "contactId": "p02",
+        "opportunityId": "o02",
+        "owner": "Alex",
+        "dueAt": "2026-11-03",
+        "status": "Open",
+        "priority": "Medium",
+        "completedAt": "",
+        "detail": "Action requires personal team approval; no automated external outreach."
+      }
+    },
+    {
+      "role": "followups",
+      "id": "f03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Follow up after conference",
+        "companyId": "c03",
+        "contactId": "p03",
+        "opportunityId": "o03",
+        "owner": "Nina",
+        "dueAt": "2026-11-04",
+        "status": "Open",
+        "priority": "High",
+        "completedAt": "",
+        "detail": "Action requires personal team approval; no automated external outreach."
+      }
+    },
+    {
+      "role": "followups",
+      "id": "f04",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Request brief",
+        "companyId": "c04",
+        "contactId": "p04",
+        "opportunityId": "o04",
+        "owner": "Alex",
+        "dueAt": "2026-11-05",
+        "status": "Open",
+        "priority": "Medium",
+        "completedAt": "",
+        "detail": "Action requires personal team approval; no automated external outreach."
+      }
+    },
+    {
+      "role": "followups",
+      "id": "f05",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Prepare credentials",
+        "companyId": "c05",
+        "contactId": "p05",
+        "opportunityId": "o05",
+        "owner": "Nina",
+        "dueAt": "2026-11-06",
+        "status": "Open",
+        "priority": "Medium",
+        "completedAt": "",
+        "detail": "Action requires personal team approval; no automated external outreach."
+      }
+    },
+    {
+      "role": "followups",
+      "id": "f06",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Confirm feasibility",
+        "companyId": "c06",
+        "contactId": "p06",
+        "opportunityId": "o06",
+        "owner": "Alex",
+        "dueAt": "2026-11-07",
+        "status": "Open",
+        "priority": "High",
+        "completedAt": "",
+        "detail": "Action requires personal team approval; no automated external outreach."
+      }
+    },
+    {
+      "role": "followups",
+      "id": "f07",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Follow up after conference",
+        "companyId": "c07",
+        "contactId": "p07",
+        "opportunityId": "o07",
+        "owner": "Nina",
+        "dueAt": "2026-11-08",
+        "status": "Done",
+        "priority": "Medium",
+        "completedAt": "2026-10-31",
+        "detail": "Action requires personal team approval; no automated external outreach."
+      }
+    },
+    {
+      "role": "followups",
+      "id": "f08",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Request brief",
+        "companyId": "c08",
+        "contactId": "p08",
+        "opportunityId": "o08",
+        "owner": "Alex",
+        "dueAt": "2026-11-09",
+        "status": "Open",
+        "priority": "Medium",
+        "completedAt": "",
+        "detail": "Action requires personal team approval; no automated external outreach."
+      }
+    },
+    {
+      "role": "followups",
+      "id": "f09",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Prepare credentials",
+        "companyId": "c09",
+        "contactId": "p09",
+        "opportunityId": "o09",
+        "owner": "Nina",
+        "dueAt": "2026-11-10",
+        "status": "Open",
+        "priority": "High",
+        "completedAt": "",
+        "detail": "Action requires personal team approval; no automated external outreach."
+      }
+    },
+    {
+      "role": "followups",
+      "id": "f10",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Confirm feasibility",
+        "companyId": "c10",
+        "contactId": "p10",
+        "opportunityId": "o10",
+        "owner": "Alex",
+        "dueAt": "2026-11-11",
+        "status": "Open",
+        "priority": "Medium",
+        "completedAt": "",
+        "detail": "Action requires personal team approval; no automated external outreach."
+      }
+    },
+    {
+      "role": "followups",
+      "id": "f11",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Follow up after conference",
+        "companyId": "c11",
+        "contactId": "p11",
+        "opportunityId": "o11",
+        "owner": "Nina",
+        "dueAt": "2026-11-12",
+        "status": "Open",
+        "priority": "Medium",
+        "completedAt": "",
+        "detail": "Action requires personal team approval; no automated external outreach."
+      }
+    },
+    {
+      "role": "followups",
+      "id": "f12",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Request brief",
+        "companyId": "c12",
+        "contactId": "p12",
+        "opportunityId": "o12",
+        "owner": "Alex",
+        "dueAt": "2026-11-13",
+        "status": "Open",
+        "priority": "High",
+        "completedAt": "",
+        "detail": "Action requires personal team approval; no automated external outreach."
+      }
+    },
+    {
+      "role": "followups",
+      "id": "f13",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Prepare credentials",
+        "companyId": "c01",
+        "contactId": "p13",
+        "opportunityId": "o13",
+        "owner": "Nina",
+        "dueAt": "2026-11-14",
+        "status": "Open",
+        "priority": "Medium",
+        "completedAt": "",
+        "detail": "Action requires personal team approval; no automated external outreach."
+      }
+    },
+    {
+      "role": "followups",
+      "id": "f14",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Confirm feasibility",
+        "companyId": "c02",
+        "contactId": "p14",
+        "opportunityId": "o14",
+        "owner": "Alex",
+        "dueAt": "2026-11-15",
+        "status": "Done",
+        "priority": "Medium",
+        "completedAt": "2026-10-31",
+        "detail": "Action requires personal team approval; no automated external outreach."
+      }
+    },
+    {
+      "role": "followups",
+      "id": "f15",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Follow up after conference",
+        "companyId": "c03",
+        "contactId": "p15",
+        "opportunityId": "o15",
+        "owner": "Nina",
+        "dueAt": "2026-11-16",
+        "status": "Open",
+        "priority": "High",
+        "completedAt": "",
+        "detail": "Action requires personal team approval; no automated external outreach."
+      }
+    },
+    {
+      "role": "followups",
+      "id": "f16",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Request brief",
+        "companyId": "c04",
+        "contactId": "p16",
+        "opportunityId": "o16",
+        "owner": "Alex",
+        "dueAt": "2026-11-17",
+        "status": "Open",
+        "priority": "Medium",
+        "completedAt": "",
+        "detail": "Action requires personal team approval; no automated external outreach."
+      }
+    },
+    {
+      "role": "followups",
+      "id": "f17",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Prepare credentials",
+        "companyId": "c05",
+        "contactId": "p17",
+        "opportunityId": "o17",
+        "owner": "Nina",
+        "dueAt": "2026-11-18",
+        "status": "Open",
+        "priority": "Medium",
+        "completedAt": "",
+        "detail": "Action requires personal team approval; no automated external outreach."
+      }
+    },
+    {
+      "role": "followups",
+      "id": "f18",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Confirm feasibility",
+        "companyId": "c06",
+        "contactId": "p18",
+        "opportunityId": "o18",
+        "owner": "Alex",
+        "dueAt": "2026-11-19",
+        "status": "Open",
+        "priority": "High",
+        "completedAt": "",
+        "detail": "Action requires personal team approval; no automated external outreach."
+      }
+    },
+    {
+      "role": "runs",
+      "id": "r01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "BD signal scan · 2026-10-26",
+        "scope": "EU and UK emerging oncology and rare-disease biotech announcements",
+        "windowStart": "2026-10-01",
+        "windowEnd": "2026-10-31",
+        "status": "Completed",
+        "coverage": "Public company releases and trial-registry spot checks. Not comprehensive.",
+        "runReceipt": "HOST-RECEIPT-1",
+        "completedAt": "2026-10-30",
+        "summary": "Draft candidate signals reviewed by BD; no automatic company write."
+      }
+    },
+    {
+      "role": "runs",
+      "id": "r02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "BD signal scan · 2026-10-27",
+        "scope": "EU and UK emerging oncology and rare-disease biotech announcements",
+        "windowStart": "2026-10-01",
+        "windowEnd": "2026-10-31",
+        "status": "Partial",
+        "coverage": "Public company releases and trial-registry spot checks. Not comprehensive.",
+        "runReceipt": "",
+        "completedAt": "",
+        "summary": "Draft candidate signals reviewed by BD; no automatic company write."
+      }
+    },
+    {
+      "role": "runs",
+      "id": "r03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "BD signal scan · 2026-10-28",
+        "scope": "EU and UK emerging oncology and rare-disease biotech announcements",
+        "windowStart": "2026-10-01",
+        "windowEnd": "2026-10-31",
+        "status": "Planned",
+        "coverage": "Public company releases and trial-registry spot checks. Not comprehensive.",
+        "runReceipt": "",
+        "completedAt": "",
+        "summary": "Draft candidate signals reviewed by BD; no automatic company write."
+      }
+    },
+    {
+      "role": "reports",
+      "id": "b01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Asterlyn Biologics · account brief",
+        "companyId": "c01",
+        "periodStart": "2026-10-01",
+        "periodEnd": "2026-10-31",
+        "evidenceRefs": "s01@1",
+        "facts": "Public company development was recorded with linked source evidence.",
+        "interpretation": "Potential clinical operations demand is a hypothesis pending a direct qualification call.",
+        "status": "Draft",
+        "reviewer": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "role": "reports",
+      "id": "b02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Novara Cellworks · account brief",
+        "companyId": "c02",
+        "periodStart": "2026-10-01",
+        "periodEnd": "2026-10-31",
+        "evidenceRefs": "s02@1",
+        "facts": "Public company development was recorded with linked source evidence.",
+        "interpretation": "Potential clinical operations demand is a hypothesis pending a direct qualification call.",
+        "status": "Draft",
+        "reviewer": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "role": "reports",
+      "id": "b03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Oriole Therapeutics · account brief",
+        "companyId": "c03",
+        "periodStart": "2026-10-01",
+        "periodEnd": "2026-10-31",
+        "evidenceRefs": "s03@1",
+        "facts": "Public company development was recorded with linked source evidence.",
+        "interpretation": "Potential clinical operations demand is a hypothesis pending a direct qualification call.",
+        "status": "Draft",
+        "reviewer": "",
+        "reviewedAt": ""
+      }
+    }
+  ]
+}

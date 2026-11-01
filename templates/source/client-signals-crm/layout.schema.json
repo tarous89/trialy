@@ -1,0 +1,230 @@
+{
+  "screens": [
+    {
+      "id": "overview",
+      "label": "Sales overview"
+    },
+    {
+      "id": "companies",
+      "label": "Company directory"
+    },
+    {
+      "id": "contacts",
+      "label": "Decision makers"
+    },
+    {
+      "id": "opportunities",
+      "label": "Deal pipeline"
+    },
+    {
+      "id": "signals",
+      "label": "Client signals"
+    },
+    {
+      "id": "monitor",
+      "label": "Signal monitoring"
+    },
+    {
+      "id": "reports",
+      "label": "Account briefings"
+    }
+  ],
+  "groups": {
+    "companies": [
+      {
+        "id": "name",
+        "label": "Company"
+      },
+      {
+        "id": "focus",
+        "label": "Therapeutic focus"
+      },
+      {
+        "id": "phase",
+        "label": "Development phase"
+      },
+      {
+        "id": "country",
+        "label": "Country"
+      },
+      {
+        "id": "sizeBand",
+        "label": "Employee band"
+      },
+      {
+        "id": "verifiedAt",
+        "label": "Last verified"
+      }
+    ],
+    "contacts": [
+      {
+        "id": "name",
+        "label": "Professional name"
+      },
+      {
+        "id": "companyId",
+        "label": "Company"
+      },
+      {
+        "id": "title",
+        "label": "Job title"
+      },
+      {
+        "id": "status",
+        "label": "Engagement status"
+      },
+      {
+        "id": "optOut",
+        "label": "Do not contact"
+      },
+      {
+        "id": "owner",
+        "label": "Relationship owner"
+      }
+    ],
+    "opportunities": [
+      {
+        "id": "name",
+        "label": "Opportunity"
+      },
+      {
+        "id": "companyId",
+        "label": "Company"
+      },
+      {
+        "id": "stage",
+        "label": "Stage"
+      },
+      {
+        "id": "qualification",
+        "label": "Qualification"
+      },
+      {
+        "id": "owner",
+        "label": "Deal owner"
+      },
+      {
+        "id": "nextDue",
+        "label": "Next due"
+      }
+    ],
+    "interactions": [
+      {
+        "id": "name",
+        "label": "Interaction summary"
+      },
+      {
+        "id": "companyId",
+        "label": "Company"
+      },
+      {
+        "id": "channel",
+        "label": "Channel"
+      },
+      {
+        "id": "occurredAt",
+        "label": "Interaction date"
+      },
+      {
+        "id": "owner",
+        "label": "Owner"
+      }
+    ],
+    "signals": [
+      {
+        "id": "name",
+        "label": "Signal headline"
+      },
+      {
+        "id": "companyId",
+        "label": "Linked company"
+      },
+      {
+        "id": "type",
+        "label": "Event type"
+      },
+      {
+        "id": "publishedAt",
+        "label": "Published date"
+      },
+      {
+        "id": "status",
+        "label": "Review state"
+      },
+      {
+        "id": "relevance",
+        "label": "Reviewer relevance"
+      }
+    ],
+    "followups": [
+      {
+        "id": "name",
+        "label": "Follow-up action"
+      },
+      {
+        "id": "companyId",
+        "label": "Company"
+      },
+      {
+        "id": "dueAt",
+        "label": "Due date"
+      },
+      {
+        "id": "status",
+        "label": "Status"
+      },
+      {
+        "id": "owner",
+        "label": "Action owner"
+      }
+    ],
+    "runs": [
+      {
+        "id": "name",
+        "label": "Research batch"
+      },
+      {
+        "id": "windowStart",
+        "label": "Source window from"
+      },
+      {
+        "id": "windowEnd",
+        "label": "Source window to"
+      },
+      {
+        "id": "status",
+        "label": "Observed run state"
+      },
+      {
+        "id": "completedAt",
+        "label": "Actual completion date"
+      }
+    ],
+    "reports": [
+      {
+        "id": "name",
+        "label": "Account briefing"
+      },
+      {
+        "id": "companyId",
+        "label": "Company"
+      },
+      {
+        "id": "periodStart",
+        "label": "Period from"
+      },
+      {
+        "id": "periodEnd",
+        "label": "Period to"
+      },
+      {
+        "id": "status",
+        "label": "Review state"
+      },
+      {
+        "id": "reviewer",
+        "label": "Internal reviewer"
+      }
+    ]
+  }
+}

@@ -1,0 +1,710 @@
+{
+  "companies": [
+    {
+      "key": "name",
+      "label": "Company",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "website",
+      "label": "Website URL",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "focus",
+      "label": "Therapeutic focus",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "phase",
+      "label": "Development phase",
+      "kind": "select",
+      "required": false,
+      "options": [
+        "Discovery",
+        "Preclinical",
+        "Phase 1",
+        "Phase 2",
+        "Phase 3",
+        "Commercial"
+      ]
+    },
+    {
+      "key": "country",
+      "label": "Country",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "sizeBand",
+      "label": "Employee band",
+      "kind": "select",
+      "required": false,
+      "options": [
+        "1-10",
+        "11-19",
+        "20-49",
+        "50-99",
+        "100+",
+        "Not verified"
+      ]
+    },
+    {
+      "key": "sizeSource",
+      "label": "Headcount source URL",
+      "kind": "text",
+      "required": false
+    },
+    {
+      "key": "verifiedAt",
+      "label": "Last verified",
+      "kind": "date",
+      "required": true
+    },
+    {
+      "key": "owner",
+      "label": "BD owner",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "priority",
+      "label": "Priority",
+      "kind": "select",
+      "required": false,
+      "options": [
+        "High",
+        "Medium",
+        "Low"
+      ]
+    },
+    {
+      "key": "notes",
+      "label": "Company context",
+      "kind": "long",
+      "required": false
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false
+    }
+  ],
+  "contacts": [
+    {
+      "key": "name",
+      "label": "Professional name",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "companyId",
+      "label": "Company",
+      "kind": "ref",
+      "required": true,
+      "parent": "companies"
+    },
+    {
+      "key": "title",
+      "label": "Job title",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "contactUrl",
+      "label": "Professional profile or work contact URL",
+      "kind": "text",
+      "required": false
+    },
+    {
+      "key": "email",
+      "label": "Public professional email",
+      "kind": "text",
+      "required": false
+    },
+    {
+      "key": "channel",
+      "label": "Preferred channel",
+      "kind": "select",
+      "required": false,
+      "options": [
+        "Not specified",
+        "Professional introduction",
+        "LinkedIn",
+        "Business email",
+        "Conference",
+        "Do not contact"
+      ]
+    },
+    {
+      "key": "status",
+      "label": "Engagement status",
+      "kind": "select",
+      "required": true,
+      "options": [
+        "Identified",
+        "Contacted",
+        "Responded",
+        "Meeting",
+        "Declined",
+        "Inactive"
+      ]
+    },
+    {
+      "key": "optOut",
+      "label": "Do not contact",
+      "kind": "boolean",
+      "required": false
+    },
+    {
+      "key": "sourceUrl",
+      "label": "Public / direct source URL",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "verifiedAt",
+      "label": "Source verified",
+      "kind": "date",
+      "required": true
+    },
+    {
+      "key": "owner",
+      "label": "Relationship owner",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "notes",
+      "label": "Relationship notes",
+      "kind": "long",
+      "required": false
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false
+    }
+  ],
+  "opportunities": [
+    {
+      "key": "name",
+      "label": "Opportunity",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "companyId",
+      "label": "Company",
+      "kind": "ref",
+      "required": true,
+      "parent": "companies"
+    },
+    {
+      "key": "serviceNeed",
+      "label": "CRO service need",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "stage",
+      "label": "Stage",
+      "kind": "select",
+      "required": true,
+      "options": [
+        "Identified",
+        "Qualified",
+        "Meeting",
+        "RFP",
+        "Negotiation",
+        "Won",
+        "Lost"
+      ]
+    },
+    {
+      "key": "qualification",
+      "label": "Qualification",
+      "kind": "select",
+      "required": true,
+      "options": [
+        "Pending",
+        "Confirmed",
+        "Not qualified"
+      ]
+    },
+    {
+      "key": "owner",
+      "label": "Deal owner",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "nextStep",
+      "label": "Next action",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "nextDue",
+      "label": "Next due",
+      "kind": "date",
+      "required": false
+    },
+    {
+      "key": "timing",
+      "label": "Expected study timing",
+      "kind": "text",
+      "required": false
+    },
+    {
+      "key": "estimatedValue",
+      "label": "Estimated value",
+      "kind": "number",
+      "required": false
+    },
+    {
+      "key": "currency",
+      "label": "Currency",
+      "kind": "select",
+      "required": false,
+      "options": [
+        "EUR",
+        "USD",
+        "GBP",
+        "CHF",
+        "Other"
+      ]
+    },
+    {
+      "key": "probability",
+      "label": "User-entered probability (%)",
+      "kind": "number",
+      "required": false
+    },
+    {
+      "key": "stageDecisionAt",
+      "label": "Stage decision date",
+      "kind": "date",
+      "required": false
+    },
+    {
+      "key": "stageRationale",
+      "label": "Stage change rationale",
+      "kind": "long",
+      "required": false
+    },
+    {
+      "key": "sourceUrl",
+      "label": "Evidence / reference URL",
+      "kind": "text",
+      "required": false
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false
+    }
+  ],
+  "interactions": [
+    {
+      "key": "name",
+      "label": "Interaction summary",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "companyId",
+      "label": "Company",
+      "kind": "ref",
+      "required": true,
+      "parent": "companies"
+    },
+    {
+      "key": "contactId",
+      "label": "Contact",
+      "kind": "ref",
+      "required": false,
+      "parent": "contacts"
+    },
+    {
+      "key": "opportunityId",
+      "label": "Opportunity",
+      "kind": "ref",
+      "required": false,
+      "parent": "opportunities"
+    },
+    {
+      "key": "channel",
+      "label": "Channel",
+      "kind": "select",
+      "required": true,
+      "options": [
+        "Meeting",
+        "Call",
+        "Email",
+        "LinkedIn",
+        "Conference",
+        "Other"
+      ]
+    },
+    {
+      "key": "occurredAt",
+      "label": "Interaction date",
+      "kind": "date",
+      "required": true
+    },
+    {
+      "key": "owner",
+      "label": "Owner",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "outcome",
+      "label": "Outcome / commitment",
+      "kind": "long",
+      "required": true
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false
+    }
+  ],
+  "signals": [
+    {
+      "key": "name",
+      "label": "Signal headline",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "companyId",
+      "label": "Linked company",
+      "kind": "ref",
+      "required": true,
+      "parent": "companies"
+    },
+    {
+      "key": "type",
+      "label": "Event type",
+      "kind": "select",
+      "required": true,
+      "options": [
+        "Funding",
+        "Trial start",
+        "Regulatory",
+        "Hiring",
+        "Partnership",
+        "Other"
+      ]
+    },
+    {
+      "key": "sourceUrl",
+      "label": "Original public source URL",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "publishedAt",
+      "label": "Published date",
+      "kind": "date",
+      "required": true
+    },
+    {
+      "key": "observedAt",
+      "label": "Observed date",
+      "kind": "date",
+      "required": true
+    },
+    {
+      "key": "fact",
+      "label": "Source-supported fact",
+      "kind": "long",
+      "required": true
+    },
+    {
+      "key": "interpretation",
+      "label": "Possible CRO relevance (interpretation)",
+      "kind": "long",
+      "required": false
+    },
+    {
+      "key": "relevance",
+      "label": "Reviewer relevance",
+      "kind": "select",
+      "required": true,
+      "options": [
+        "Unknown",
+        "High",
+        "Medium",
+        "Low"
+      ]
+    },
+    {
+      "key": "status",
+      "label": "Review state",
+      "kind": "select",
+      "required": true,
+      "options": [
+        "Candidate",
+        "Reviewed",
+        "Rejected"
+      ]
+    },
+    {
+      "key": "reviewer",
+      "label": "Reviewer",
+      "kind": "text",
+      "required": false
+    },
+    {
+      "key": "reviewedAt",
+      "label": "Reviewed date",
+      "kind": "date",
+      "required": false
+    },
+    {
+      "key": "caveat",
+      "label": "Uncertainty / caveat",
+      "kind": "long",
+      "required": false
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false
+    }
+  ],
+  "followups": [
+    {
+      "key": "name",
+      "label": "Follow-up action",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "companyId",
+      "label": "Company",
+      "kind": "ref",
+      "required": true,
+      "parent": "companies"
+    },
+    {
+      "key": "contactId",
+      "label": "Contact",
+      "kind": "ref",
+      "required": false,
+      "parent": "contacts"
+    },
+    {
+      "key": "opportunityId",
+      "label": "Opportunity",
+      "kind": "ref",
+      "required": false,
+      "parent": "opportunities"
+    },
+    {
+      "key": "owner",
+      "label": "Action owner",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "dueAt",
+      "label": "Due date",
+      "kind": "date",
+      "required": true
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "kind": "select",
+      "required": true,
+      "options": [
+        "Open",
+        "In progress",
+        "Done",
+        "Cancelled"
+      ]
+    },
+    {
+      "key": "priority",
+      "label": "Priority",
+      "kind": "select",
+      "required": false,
+      "options": [
+        "High",
+        "Medium",
+        "Low"
+      ]
+    },
+    {
+      "key": "completedAt",
+      "label": "Completion date",
+      "kind": "date",
+      "required": false
+    },
+    {
+      "key": "detail",
+      "label": "Notes",
+      "kind": "long",
+      "required": false
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false
+    }
+  ],
+  "runs": [
+    {
+      "key": "name",
+      "label": "Research batch",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "scope",
+      "label": "Research scope",
+      "kind": "long",
+      "required": true
+    },
+    {
+      "key": "windowStart",
+      "label": "Source window from",
+      "kind": "date",
+      "required": true
+    },
+    {
+      "key": "windowEnd",
+      "label": "Source window to",
+      "kind": "date",
+      "required": true
+    },
+    {
+      "key": "status",
+      "label": "Observed run state",
+      "kind": "select",
+      "required": true,
+      "options": [
+        "Planned",
+        "Partial",
+        "Completed",
+        "Failed"
+      ]
+    },
+    {
+      "key": "coverage",
+      "label": "Source coverage / limitations",
+      "kind": "long",
+      "required": true
+    },
+    {
+      "key": "runReceipt",
+      "label": "Verified host run receipt",
+      "kind": "text",
+      "required": false
+    },
+    {
+      "key": "completedAt",
+      "label": "Actual completion date",
+      "kind": "date",
+      "required": false
+    },
+    {
+      "key": "summary",
+      "label": "Research handoff",
+      "kind": "long",
+      "required": false
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false
+    }
+  ],
+  "reports": [
+    {
+      "key": "name",
+      "label": "Account briefing",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "companyId",
+      "label": "Company",
+      "kind": "ref",
+      "required": true,
+      "parent": "companies"
+    },
+    {
+      "key": "periodStart",
+      "label": "Period from",
+      "kind": "date",
+      "required": true
+    },
+    {
+      "key": "periodEnd",
+      "label": "Period to",
+      "kind": "date",
+      "required": true
+    },
+    {
+      "key": "evidenceRefs",
+      "label": "Reviewed signal IDs@versions (comma separated)",
+      "kind": "long",
+      "required": true
+    },
+    {
+      "key": "facts",
+      "label": "Verified developments",
+      "kind": "long",
+      "required": true
+    },
+    {
+      "key": "interpretation",
+      "label": "Commercial hypothesis (not fact)",
+      "kind": "long",
+      "required": false
+    },
+    {
+      "key": "status",
+      "label": "Review state",
+      "kind": "select",
+      "required": true,
+      "options": [
+        "Draft",
+        "Reviewed"
+      ]
+    },
+    {
+      "key": "reviewer",
+      "label": "Internal reviewer",
+      "kind": "text",
+      "required": false
+    },
+    {
+      "key": "reviewedAt",
+      "label": "Review date",
+      "kind": "date",
+      "required": false
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false
+    }
+  ]
+}
