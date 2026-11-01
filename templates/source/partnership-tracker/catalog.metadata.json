@@ -1,0 +1,138 @@
+{
+  "id": "life.partnership-tracker",
+  "version": "1.1.1",
+  "name": "Partnership Tracker",
+  "description": "An original six-screen internal biotech partnering workspace with reusable partner identities, reviewed deal stages, evidence-weighted fit, meetings, agreement milestones and source-linked public discovery.",
+  "tags": [
+    "biotech",
+    "business-development",
+    "partnering",
+    "licensing",
+    "alliances",
+    "deals",
+    "evaluation"
+  ],
+  "whenToUse": "Small biotech CEOs, BD and alliance leads managing nonconfidential scientific/commercial partner prospects across programs and stages, without an enterprise CRM or signing system.",
+  "whenNotToUse": "Do not use as secure deal room, journal/clinical system, regulated authoring platform, legal/e-signature tool, medical/patient records, private CRM sync or external email marketing portal.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "Partnership Tracker",
+    "tableMap": "{}",
+    "layoutProfile": "{}",
+    "pageSize": 25,
+    "asOf": "",
+    "readOnly": false,
+    "demoLabel": false
+  },
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "App title. The full name remains visible without an icon.",
+      "default": "Partnership Tracker"
+    },
+    "tableMap": {
+      "type": "string",
+      "description": "Authorized table map, scalar physical field names and logical writableFields JSON.",
+      "default": "{}"
+    },
+    "layoutProfile": {
+      "type": "string",
+      "description": "Native reviewed layout JSON: heading, tabs, cols, visible.",
+      "default": "{}"
+    },
+    "pageSize": {
+      "type": "number",
+      "description": "Manual register page size, clamped from 1 to 50; pipeline lanes use 8.",
+      "default": 25
+    },
+    "asOf": {
+      "type": "string",
+      "description": "Reporting UTC date YYYY-MM-DD for overdue calculations; no live timezone API inside sandbox.",
+      "default": ""
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "Suppress all proposals when true, no access rights granted by template.",
+      "default": false
+    },
+    "demoLabel": {
+      "type": "boolean",
+      "description": "Fictional demo warning for standalone preview only; do not enable in production.",
+      "default": false
+    }
+  },
+  "instructions": "Read the latest TrialAgents template guidance authoring and usage 1.3.9 (follow nextOffset), design kit and current schema before preparing this app. Use one reviewed catalog preparation with the existing component identity, exact version and digest. This is an internal TrialAgents app: no app-local login or account; the host supplies the official linked watermark. Source must not declare templateConfiguration or templateBindings because AppTemplates injects both. Preserve the six distinct partnering screens with an editorial cream and deep-jade relationship-workbench design with one title and one subline each, full name in sidebar and no in-app logo. Declare native templateLayoutSchema and persist Layout gear changes using the host reviewed customLayout. Create mapped authorized scalar tables in parent-to-child order: programs, organizations, contacts, opportunities, evaluations, meetings, milestones, signals. Exact field schema and logical-to-physical maps follow in dataContract; UUID refs are scalar text fields with multiple:false and archived boolean, not array relations. Use real saved parent receipt UUIDs when linking children, never fictional IDs and never seed demo data. Map writableFields to logical names only within allowed permissions, and bind each physical field with matching manifest schemaVersion, field kind, read/write mode. Support fixed weighted evaluation 35% scientific, 30% strategy, 20% commercial, 15% execution; scores only from a unique complete Reviewed assessment matched to current criteriaVersion and supported by reviewer/date/rationale/HTTPS source. Missing and duplicate reviewed evidence is not zero and never suggests ranking. Stage changes require stageAt and stageNote, documented as a reviewed mutation; Agreement milestones Done require actualAt and evidence. Keep original parent identity/criteria revisions, and block orphan links and dependent archives in the app. Do not assume browser guards are server foreign keys. Use configurable 25-row register pages, 8-row pipeline lane pages and 5-row comparison pages, complete source reads before authoritative metrics and archive eligibility; missing binding, short page, unknown total or denied reads are incomplete. Drafts retain original record version for edit/archive; proposals only count as committed after host receipt. All real inputs/selects/textarea have data-ui-state and stable data-action plus name. Use native review; no fake e-signatures, direct outbound messaging, secret API access, private uploads or external deal room. Save app first; optional ChatGPT/TrialAgents email automations must use the platform shared runner and reviewed action, not per-app tasks or embedded automation settings. Research public nonconfidential partner/company signals only; no proprietary confidential docs sent to websites. Never claim an automation scheduled, email delivered, app installed or backend acceptance without real host evidence. Existing apps must not be silently replaced on retries. Read documentation tasks, examples, limitations and the separate field schema before preparing. Check empty/denied/partial data, 320\u20131440px, host sandbox with manifest, exact source and database receipts before publication. Require all fields mapped and scalar. Edits and archives use recordId and the original expectedVersion, including zero. Keep proposal drafts until trusted host confirmation; reconcile ambiguous receipts before retrying creates. Partner identity changes require complete reads of evaluations, meetings and milestones and no linked evidence. Program scope and linked company identity cannot silently reinterpret existing evidence. Native field order and visibility applies to editor fields; Additional fields keeps every hidden required input reachable. Do not infer automation setup from this app; use the platform Automations page.",
+  "documentation": {
+    "quickStart": [
+      "Open an internal TrialAgents project. No separate app authentication or TrialAgents logo injection is required; the host watermark links to https://platform.trialagents.com.",
+      "Inspect current authorized database tables. Create programs and organizations first; after reviewed saves replace temporary references with real receipt UUIDs. Then optionally create contacts, opportunities, evaluations, meetings, milestones and signals.",
+      "Map each role typeId and logicalFields to real snake_case keys using tableMap and declared manifest field permissions. If any role unavailable, keep an explicit incomplete-data state and explain how to connect it.",
+      "Prepare this exact life.partnership-tracker@1.1.1 catalog version and digest, inspect in host sandbox, review and save once. Open Settings gear for native layout changes and confirm the same saved component after review.",
+      "No ongoing work needed? Use the app manually. Optional ChatGPT public partner discovery and evidence-based email are separately configured through the TrialAgents Automations page after the app has a verified saved ID.",
+      "Optional dependent completion email example, never install unchanged: substitute saved app UUID/current version, registered authorized owner/team and approved expiry, then prepare_app_action and confirm. Attach returned action ID/version to the approved research monitor as completionActionId/completionActionVersion; no second schedule. {\"name\":\"Partner discovery ready\",\"authoringKey\":\"partnership_discovery_email_v1\",\"appId\":\"REPLACE_WITH_SAVED_APP_UUID\",\"appVersion\":0,\"trigger\":{\"kind\":\"manual\"},\"fields\":[],\"conditions\":[],\"steps\":[{\"id\":\"notify_owner\",\"kind\":\"email\",\"to\":[\"REPLACE_WITH_REGISTERED_AUTHORIZED_OWNER_EMAIL\"],\"subject\":\"Partner discovery ready\",\"text\":\"Open https://platform.trialagents.com to review newly saved partner signals.\"}],\"users\":[],\"expiresAt\":\"REPLACE_WITH_APPROVED_ISO_EXPIRY\",\"maxRunsPerDay\":10}"
+    ],
+    "dataContract": "Six-screen internal biotech Partnering Tracker, eight scalar table roles: programs: name=>name, modality=>modality, indication=>indication, owner=>owner, brief=>brief, archived=>archived | organizations: name=>name, domain=>domain, category=>category, region=>region, focus=>focus, priority=>priority, sourceUrl=>source_url, verifiedAt=>verified_at, notes=>notes, archived=>archived | contacts: name=>name, organizationId=>organization_id, title=>title, team=>team, linkedin=>linkedin, lastContacted=>last_contacted, notes=>notes, archived=>archived | opportunities: name=>name, organizationId=>organization_id, programId=>program_id, stage=>stage, owner=>owner, dealType=>deal_type, nextAction=>next_action, nextDate=>next_date, stageAt=>stage_at, stageNote=>stage_note, criteriaVersion=>criteria_version, valuation=>valuation, archived=>archived | evaluations: name=>name, opportunityId=>opportunity_id, science=>science, strategy=>strategy, commercial=>commercial, execution=>execution, status=>status, criteriaVersion=>criteria_version, reviewer=>reviewer, reviewedAt=>reviewed_at, rationale=>rationale, sourceUrl=>source_url, archived=>archived | meetings: name=>name, opportunityId=>opportunity_id, heldAt=>held_at, owner=>owner, participants=>participants, summary=>summary, nextAction=>next_action, nextDate=>next_date, archived=>archived | milestones: name=>name, opportunityId=>opportunity_id, kind=>kind, status=>status, owner=>owner, due=>due, actualAt=>actual_at, evidence=>evidence, notes=>notes, archived=>archived | signals: name=>name, organizationId=>organization_id, publishedAt=>published_at, sourceUrl=>source_url, sourceLabel=>source_label, status=>status, rationale=>rationale, reviewer=>reviewer, reviewedAt=>reviewed_at, archived=>archived. Full host field setup (key:kind; ! means required; select lists allowed options): programs name!:text, modality:text, indication:text, owner:text, brief:text, archived:boolean | organizations name!:text, domain:text, category!:select[Pharma/Biotech/Academic/Investor/Other], region!:select[Europe/North America/APAC/Global/Other], focus:text, priority!:select[High/Medium/Low], source_url:text, verified_at:date, notes:text, archived:boolean | contacts name!:text, organization_id!:text, title:text, team:text, linkedin:text, last_contacted:date, notes:text, archived:boolean | opportunities name!:text, organization_id!:text, program_id!:text, stage!:select[Identified/Qualified/Evaluating/Discussing/Negotiating/Closed/Inactive], owner!:text, deal_type!:select[Out-license/Co-development/Platform/Research collaboration/Other], next_action:text, next_date:date, stage_at:date, stage_note:text, criteria_version:number, valuation:text, archived:boolean | evaluations name!:text, opportunity_id!:text, science:number, strategy:number, commercial:number, execution:number, status!:select[Draft/Reviewed], criteria_version!:number, reviewer:text, reviewed_at:date, rationale:text, source_url:text, archived:boolean | meetings name!:text, opportunity_id!:text, held_at!:date, owner:text, participants:text, summary:text, next_action:text, next_date:date, archived:boolean | milestones name!:text, opportunity_id!:text, kind!:select[CDA/Term sheet/Diligence/Agreement/Other], status!:select[Planned/In progress/Done/Cancelled], owner:text, due:date, actual_at:date, evidence:text, notes:text, archived:boolean | signals name!:text, organization_id!:text, published_at!:date, source_url!:text, source_label:text, status!:select[New/Reviewed/Dismissed], rationale:text, reviewer:text, reviewed_at:date, archived:boolean. All fields have multiple:false. Source URL/notes/text evidence use kind=text; refs organizationId, programId and opportunityId use kind=text containing exact reviewed parent UUID, not array objects. Required: programs name; organizations name/category/region/priority; contacts name/organizationId; opportunities name/organizationId/programId/stage/owner/dealType; evaluations name/opportunityId/status/criteriaVersion; meetings name/opportunityId/heldAt; milestones name/opportunityId/kind/status; signals name/organizationId/publishedAt/sourceUrl/status. Human-readable names are never used as foreign keys. Trust only complete authorized reads including total, all pages and all required fields; incomplete coverage suppresses authoritative totals and archive decisions. Fictional data never seeded. Weighted fit uses 35/30/20/15 and 1\u20135 scores; require one Reviewed assessment per opportunity/criteriaVersion, complete dimensions and source. No missing-as-zero or silently normalized multiple reviews. App-level access is host-enforced; custom HTML section visibility is presentation only, not an independent security permission. Configure tableMap as JSON string {role:{typeId:actual UUID,fields:{logicalKey:physical_key},writableFields:[authorized logical keys]}}. Map all fields, including optional evidence fields; bind each in the manifest with actual schemaVersion/kind/mode. Optional dates/numbers/selects/references use null, text can be empty; all archived values initialize false. Reads stop at 800 rows per role (64 read calls maximum); larger or invalid/multiple/denied data remains incomplete.",
+    "interactionContract": "The six stable screens are overview, directory, pipeline, evaluation, meetings and discovery. Single title + one subline each; full sidebar name without a logo. Native Settings gear emits tracker:layout; declared templateLayoutSchema groups support reviewed drag-and-drop order/visibility. Hidden required schema fields remain in the editor and continue to be validated. Transient controls have data-ui-state/name/data-action and edits hold draft in returned state, including failed proposals. Use records.read with bounded paging, records.propose with exact physical field names, expectedVersion captured at edit/archive open and reviewed outer confirmation. Menus expose Open, Edit, Duplicate and Archive with safeguards; no destructive hard delete. All registers, Kanban lanes and 5-item comparisons paginate. Signals are not searched by frontend JS. Research is performed by ChatGPT using authorized public sources and saved through TrialAgents. Automations and Logs are host pages, not app panels. No app local credentials, OAuth, private emails or e-signature. Validation is shown in the active dialog. Drafts stay until confirmation/reopen; Cancel discards. Native field order and visibility applies to the table or editor, with hidden fields under Additional fields. Source URLs are clickable through the host adapter.",
+    "lifecycle": "Use a stable app ID and semantic catalog version. Never mutate prior template versions or recreate a saved app after ambiguous receipt. Claims about saved changes require host confirmations. Draft and review are separate from persisted records; duplicate opportunity resets its pipeline stage and stage proof, duplicate evaluation resets review status, and duplicate milestones reset completion proof. Organization and program records cannot archive while dependent records exist; opportunity cannot archive with evaluations/meetings/milestones. Reviewed evaluations return to Draft before changed evidence; current-criteria fit is recalculated, not permanently copied. Disabling/archiving an app suspends optional automations and no copy automatically activates them. Preserve previously saved platform automation states/IDs. Research and email are independent reviewed platform definitions and execution is not a template side effect. Use one requestKey for initial prepare_app_from_template; correct that preview with replacesPreviewId and expectedDigest. Saved revisions retain component ID and current expectedVersion. Reconcile the original receipt after ambiguous confirmation; do not repeat creates or create replacement apps. Read saved layout via read_project_component(includeOutput:true). asOf is a date-comparison reference, not a historical snapshot. No database-wide foreign keys or guarantees against independent Database edits are supplied.",
+    "limitations": [
+      "Not a legal contracting, external CRM, e-signature, deal room, finance, due diligence, patient data or licensed intelligence platform.",
+      "No automatic inbox/Outlook/Gmail sync, proprietary partner enrichment, actual external outreach or private-data sharing. Manual meeting and milestone records only.",
+      "Incomplete sources, unauthorized fields or the 800-row-per-role read budget suppress complete claims. Historical data beyond the authorized bounded read needs host pagination or curated records.",
+      "No section-level custom source security is promised: TrialAgents app-level and database policies remain authoritative; UI-only tab hiding is not access.",
+      "The official TrialAgents watermark with link to https://platform.trialagents.com is owned by the host. This app contains no duplicate logo.",
+      "Host QuickJS, real catalog discovery and prepared app, reviewed database writes, native layout persistence and unattended automation are not certified by offline preview alone; test in the real platform."
+    ],
+    "examples": [
+      {
+        "prompt": "Build an internal biotech Partnership Tracker for our RNA delivery program, reusing existing authorized partner companies; use one reviewed new opportunity per company-program pair, show stage and next action.",
+        "expectedBehavior": "Six-page app with bound organization, program and opportunity IDs; no app login or automatically seeded demo rows, with reviewed writes."
+      },
+      {
+        "prompt": "Show our best evaluated partners for the current RNA program and explain missing scores.",
+        "expectedBehavior": "Compare up to five at a time with 35/30/20/15 weights; only one complete Reviewed evaluation for the same criteriaVersion yields a score, incomplete sources withhold rankings."
+      },
+      {
+        "prompt": "Record the CDA milestone discussed yesterday and keep an audit trail.",
+        "expectedBehavior": "New reviewed milestone proposal with original target and opportunity ID, no signed-contract claim. Done requires actual completion date and evidence."
+      },
+      {
+        "prompt": "Find new potential collaborators in public RNA platform news this week.",
+        "expectedBehavior": "Run ChatGPT research only on public sources, deduplicate existing authorized companies/signals, cite dated URLs, propose reviewed candidate records. No automated emails or confidential document upload."
+      },
+      {
+        "prompt": "Create a weekly public partner signal monitor and email a short note when reviewed new partners have been saved.",
+        "expectedBehavior": "Offer separately approved ChatGPT app monitoring and TrialAgents completion email, bounded to authorized sources/recipients, no_update only with complete successful coverage; status remains inactive until actually confirmed."
+      }
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "Only if an owner asks to monitor public partner signals or send a reviewed next-step email. Manual mode fully works without any automation.",
+      "readRequirements": "Read currently saved app and authorized organization, opportunity and signal IDs; verify complete list or mark partial. Use public pharma press releases, official corporate news and registries, with verified publication/observation dates. No confidential deal materials, contact personal emails or private diligence. Record no-new-evidence separately from missing coverage. Save app first. Read read_automation_setup and read_app_automation_guide; inspect list_app_automations/read_app_automation before preparation. Stable research authoringKey partnership_discovery_v1; separate email authoringKey partnership_discovery_email_v1. Use prepare_app_monitoring with the shared owner/workspace runner and prepare_app_action for email. Suggest Monday 09:00 in owner-confirmed IANA timezone with approved anchor, expiry, scopes and write limits. Prefer supported Work chat, high reasoning and latest most capable available model; do not invent host model parameters or claim settings verified. No per-app ChatGPT task.",
+      "outputContract": "For newly confirmed public partner signals only, draft exact organization/signal record proposals with source URL, date, rationale and stable dedupe key. New record creation requires reviewed type-specific app write grant and real commit receipt. Report total searched, duplicates, source coverage and partial/error status; do not advance coverage on partial. Owner alone by default, additional registered members only with current app/data permission. Optional completion email is a separate approved TrialAgents email action using a fixed non-dynamic message; no ChatGPT email sending. Completion email uses a separate single-step manual action, attached as completionActionId/completionActionVersion to successful research, with no second timer or database rule. Subject: Partner discovery ready. Body: Open https://platform.trialagents.com to review newly saved partner signals. Fixed text only. Registered owner and explicitly selected currently app-authorized team only. Do not send for partial, failed, blocked, no_update or missing receipts. Delivery failure never reruns successful research. Preserve disabled state and hidden settings on edits; archive suspends work, restore/copy does not activate it. Outcomes belong in Logs; no standalone automation Delete action. App opens and saves without scheduler/email reads. Setup failure/decline leaves manual research available.",
+      "promptExample": "After saving Partnership Tracker and accepting explicit authorization: use the authorized app-linked weekly ChatGPT research monitor (timezone Europe/Berlin, public pharma/corporate sources, 14-day overlap) to find newly announced licensing/co-development signals for selected nonconfidential programs. Read saved organization/signal identities and dedupe company domain + official source URL + published date. Propose verified records within the approved quota/expiry and reconcile every save receipt. If a complete scan yields zero new records use no_update only if approved silent policy; partial/blocked scans never claim no_update. No email unless the owner separately approves the TrialAgents completion action, and no email is sent by ChatGPT. If scheduling is not enabled, provide the same instructions as a manual run."
+    }
+  },
+  "examples": [
+    {
+      "prompt": "Build an internal biotech Partnership Tracker for our RNA delivery program, reusing existing authorized partner companies; use one reviewed new opportunity per company-program pair, show stage and next action.",
+      "kind": "chatgpt"
+    },
+    {
+      "prompt": "Show our best evaluated partners for the current RNA program and explain missing scores.",
+      "kind": "chatgpt"
+    },
+    {
+      "prompt": "Record the CDA milestone discussed yesterday and keep an audit trail.",
+      "kind": "chatgpt"
+    },
+    {
+      "prompt": "Find new potential collaborators in public RNA platform news this week.",
+      "kind": "chatgpt"
+    },
+    {
+      "prompt": "Create a weekly public partner signal monitor and email a short note when reviewed new partners have been saved.",
+      "kind": "chatgpt"
+    }
+  ],
+  "deprecated": false
+}

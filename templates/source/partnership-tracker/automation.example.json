@@ -1,0 +1,25 @@
+{
+  "name": "Partner discovery ready",
+  "authoringKey": "partnership_discovery_email_v1",
+  "appId": "REPLACE_WITH_SAVED_APP_UUID",
+  "appVersion": 0,
+  "trigger": {
+    "kind": "manual"
+  },
+  "fields": [],
+  "conditions": [],
+  "steps": [
+    {
+      "id": "notify_owner",
+      "kind": "email",
+      "to": [
+        "REPLACE_WITH_REGISTERED_AUTHORIZED_OWNER_EMAIL"
+      ],
+      "subject": "Partner discovery ready",
+      "text": "Open https://platform.trialagents.com to review newly saved partner signals."
+    }
+  ],
+  "users": [],
+  "expiresAt": "REPLACE_WITH_APPROVED_ISO_EXPIRY",
+  "maxRunsPerDay": 10
+}

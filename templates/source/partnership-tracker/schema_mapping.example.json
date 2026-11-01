@@ -1,0 +1,834 @@
+{
+  "programs": {
+    "name": "programs",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "modality",
+        "name": "modality",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "indication",
+        "name": "indication",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "brief",
+        "name": "brief",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "modality": "modality",
+      "indication": "indication",
+      "owner": "owner",
+      "brief": "brief",
+      "archived": "archived"
+    },
+    "description": "TrialAgents authoring guide 1.3.9: scalar references store reviewed host UUID values; all writes require permission and expected version."
+  },
+  "organizations": {
+    "name": "organizations",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "domain",
+        "name": "domain",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "category",
+        "name": "category",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Pharma",
+          "Biotech",
+          "Academic",
+          "Investor",
+          "Other"
+        ]
+      },
+      {
+        "key": "region",
+        "name": "region",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Europe",
+          "North America",
+          "APAC",
+          "Global",
+          "Other"
+        ]
+      },
+      {
+        "key": "focus",
+        "name": "focus",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "priority",
+        "name": "priority",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "High",
+          "Medium",
+          "Low"
+        ]
+      },
+      {
+        "key": "source_url",
+        "name": "sourceUrl",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "verified_at",
+        "name": "verifiedAt",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "domain": "domain",
+      "category": "category",
+      "region": "region",
+      "focus": "focus",
+      "priority": "priority",
+      "sourceUrl": "source_url",
+      "verifiedAt": "verified_at",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "description": "TrialAgents authoring guide 1.3.9: scalar references store reviewed host UUID values; all writes require permission and expected version."
+  },
+  "contacts": {
+    "name": "contacts",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "organization_id",
+        "name": "organizationId",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "title",
+        "name": "title",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "team",
+        "name": "team",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "linkedin",
+        "name": "linkedin",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "last_contacted",
+        "name": "lastContacted",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "organizationId": "organization_id",
+      "title": "title",
+      "team": "team",
+      "linkedin": "linkedin",
+      "lastContacted": "last_contacted",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "description": "TrialAgents authoring guide 1.3.9: scalar references store reviewed host UUID values; all writes require permission and expected version."
+  },
+  "opportunities": {
+    "name": "opportunities",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "organization_id",
+        "name": "organizationId",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "program_id",
+        "name": "programId",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "stage",
+        "name": "stage",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Identified",
+          "Qualified",
+          "Evaluating",
+          "Discussing",
+          "Negotiating",
+          "Closed",
+          "Inactive"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "deal_type",
+        "name": "dealType",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Out-license",
+          "Co-development",
+          "Platform",
+          "Research collaboration",
+          "Other"
+        ]
+      },
+      {
+        "key": "next_action",
+        "name": "nextAction",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "next_date",
+        "name": "nextDate",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "stage_at",
+        "name": "stageAt",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "stage_note",
+        "name": "stageNote",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "criteria_version",
+        "name": "criteriaVersion",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "valuation",
+        "name": "valuation",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "organizationId": "organization_id",
+      "programId": "program_id",
+      "stage": "stage",
+      "owner": "owner",
+      "dealType": "deal_type",
+      "nextAction": "next_action",
+      "nextDate": "next_date",
+      "stageAt": "stage_at",
+      "stageNote": "stage_note",
+      "criteriaVersion": "criteria_version",
+      "valuation": "valuation",
+      "archived": "archived"
+    },
+    "description": "TrialAgents authoring guide 1.3.9: scalar references store reviewed host UUID values; all writes require permission and expected version."
+  },
+  "evaluations": {
+    "name": "evaluations",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "opportunity_id",
+        "name": "opportunityId",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "science",
+        "name": "science",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "strategy",
+        "name": "strategy",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "commercial",
+        "name": "commercial",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "execution",
+        "name": "execution",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Draft",
+          "Reviewed"
+        ]
+      },
+      {
+        "key": "criteria_version",
+        "name": "criteriaVersion",
+        "kind": "number",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "reviewer",
+        "name": "reviewer",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "reviewed_at",
+        "name": "reviewedAt",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "rationale",
+        "name": "rationale",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source_url",
+        "name": "sourceUrl",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "opportunityId": "opportunity_id",
+      "science": "science",
+      "strategy": "strategy",
+      "commercial": "commercial",
+      "execution": "execution",
+      "status": "status",
+      "criteriaVersion": "criteria_version",
+      "reviewer": "reviewer",
+      "reviewedAt": "reviewed_at",
+      "rationale": "rationale",
+      "sourceUrl": "source_url",
+      "archived": "archived"
+    },
+    "description": "TrialAgents authoring guide 1.3.9: scalar references store reviewed host UUID values; all writes require permission and expected version."
+  },
+  "meetings": {
+    "name": "meetings",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "opportunity_id",
+        "name": "opportunityId",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "held_at",
+        "name": "heldAt",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "participants",
+        "name": "participants",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "summary",
+        "name": "summary",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "next_action",
+        "name": "nextAction",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "next_date",
+        "name": "nextDate",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "opportunityId": "opportunity_id",
+      "heldAt": "held_at",
+      "owner": "owner",
+      "participants": "participants",
+      "summary": "summary",
+      "nextAction": "next_action",
+      "nextDate": "next_date",
+      "archived": "archived"
+    },
+    "description": "TrialAgents authoring guide 1.3.9: scalar references store reviewed host UUID values; all writes require permission and expected version."
+  },
+  "milestones": {
+    "name": "milestones",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "opportunity_id",
+        "name": "opportunityId",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "kind",
+        "name": "kind",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "CDA",
+          "Term sheet",
+          "Diligence",
+          "Agreement",
+          "Other"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Planned",
+          "In progress",
+          "Done",
+          "Cancelled"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "due",
+        "name": "due",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "actual_at",
+        "name": "actualAt",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "evidence",
+        "name": "evidence",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "opportunityId": "opportunity_id",
+      "kind": "kind",
+      "status": "status",
+      "owner": "owner",
+      "due": "due",
+      "actualAt": "actual_at",
+      "evidence": "evidence",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "description": "TrialAgents authoring guide 1.3.9: scalar references store reviewed host UUID values; all writes require permission and expected version."
+  },
+  "signals": {
+    "name": "signals",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "organization_id",
+        "name": "organizationId",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "published_at",
+        "name": "publishedAt",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source_url",
+        "name": "sourceUrl",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source_label",
+        "name": "sourceLabel",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "New",
+          "Reviewed",
+          "Dismissed"
+        ]
+      },
+      {
+        "key": "rationale",
+        "name": "rationale",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "reviewer",
+        "name": "reviewer",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "reviewed_at",
+        "name": "reviewedAt",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "organizationId": "organization_id",
+      "publishedAt": "published_at",
+      "sourceUrl": "source_url",
+      "sourceLabel": "source_label",
+      "status": "status",
+      "rationale": "rationale",
+      "reviewer": "reviewer",
+      "reviewedAt": "reviewed_at",
+      "archived": "archived"
+    },
+    "description": "TrialAgents authoring guide 1.3.9: scalar references store reviewed host UUID values; all writes require permission and expected version."
+  }
+}
