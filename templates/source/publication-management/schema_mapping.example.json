@@ -1,0 +1,904 @@
+{
+  "projects": {
+    "name": "projects",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "objective",
+        "name": "Objective",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "lead",
+        "name": "Lead",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "objective": "objective",
+      "lead": "lead",
+      "archived": "archived"
+    }
+  },
+  "manuscripts": {
+    "name": "manuscripts",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "project_id",
+        "name": "Project id",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "type",
+        "name": "Type",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Manuscript",
+          "Abstract",
+          "Poster",
+          "Presentation"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Concept",
+          "Drafting",
+          "Review",
+          "Submitted",
+          "Revision",
+          "Published",
+          "Withdrawn"
+        ]
+      },
+      {
+        "key": "version_label",
+        "name": "Version label",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "lead",
+        "name": "Lead",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "target_id",
+        "name": "Target id",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "target_date",
+        "name": "Target date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "initial_target",
+        "name": "Initial target",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source_url",
+        "name": "Source url",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "next_action",
+        "name": "Next action",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "submitted_at",
+        "name": "Submitted at",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "published_at",
+        "name": "Published at",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "doi",
+        "name": "Doi",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "projectId": "project_id",
+      "type": "type",
+      "status": "status",
+      "versionLabel": "version_label",
+      "lead": "lead",
+      "targetId": "target_id",
+      "targetDate": "target_date",
+      "initialTarget": "initial_target",
+      "sourceUrl": "source_url",
+      "nextAction": "next_action",
+      "submittedAt": "submitted_at",
+      "publishedAt": "published_at",
+      "doi": "doi",
+      "archived": "archived"
+    }
+  },
+  "authors": {
+    "name": "authors",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "manuscript_id",
+        "name": "Manuscript id",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "affiliation",
+        "name": "Affiliation",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "contribution",
+        "name": "Contribution",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "order",
+        "name": "Order",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "invited",
+        "name": "Invited",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "declaration",
+        "name": "Declaration",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Pending",
+          "Provided",
+          "Not required"
+        ]
+      },
+      {
+        "key": "approval",
+        "name": "Approval",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Pending",
+          "Changes requested",
+          "Approved"
+        ]
+      },
+      {
+        "key": "approved_version",
+        "name": "Approved version",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "approved_at",
+        "name": "Approved at",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "Notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "manuscriptId": "manuscript_id",
+      "affiliation": "affiliation",
+      "contribution": "contribution",
+      "order": "order",
+      "invited": "invited",
+      "declaration": "declaration",
+      "approval": "approval",
+      "approvedVersion": "approved_version",
+      "approvedAt": "approved_at",
+      "notes": "notes",
+      "archived": "archived"
+    }
+  },
+  "reviews": {
+    "name": "reviews",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "manuscript_id",
+        "name": "Manuscript id",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "draft_version",
+        "name": "Draft version",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "reviewer",
+        "name": "Reviewer",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "feedback_type",
+        "name": "Feedback type",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Scientific",
+          "Editorial",
+          "Medical",
+          "Legal",
+          "QA"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Pending",
+          "Comments",
+          "Resolved",
+          "Approved"
+        ]
+      },
+      {
+        "key": "due",
+        "name": "Due",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "reviewed_at",
+        "name": "Reviewed at",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "resolved_at",
+        "name": "Resolved at",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "approved_at",
+        "name": "Approved at",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "action",
+        "name": "Action",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "Notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "manuscriptId": "manuscript_id",
+      "draftVersion": "draft_version",
+      "reviewer": "reviewer",
+      "feedbackType": "feedback_type",
+      "status": "status",
+      "due": "due",
+      "reviewedAt": "reviewed_at",
+      "resolvedAt": "resolved_at",
+      "approvedAt": "approved_at",
+      "action": "action",
+      "notes": "notes",
+      "archived": "archived"
+    }
+  },
+  "targets": {
+    "name": "targets",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "kind",
+        "name": "Kind",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Journal",
+          "Congress"
+        ]
+      },
+      {
+        "key": "category",
+        "name": "Category",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "scope",
+        "name": "Scope",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "url",
+        "name": "Url",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "verified_at",
+        "name": "Verified at",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "deadline",
+        "name": "Deadline",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "original_deadline",
+        "name": "Original deadline",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "alternative",
+        "name": "Alternative",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "Notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "kind": "kind",
+      "category": "category",
+      "scope": "scope",
+      "url": "url",
+      "verifiedAt": "verified_at",
+      "deadline": "deadline",
+      "originalDeadline": "original_deadline",
+      "alternative": "alternative",
+      "notes": "notes",
+      "archived": "archived"
+    }
+  },
+  "milestones": {
+    "name": "milestones",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "manuscript_id",
+        "name": "Manuscript id",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "phase",
+        "name": "Phase",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Draft",
+          "Author review",
+          "Proofing",
+          "Submission",
+          "Revision"
+        ]
+      },
+      {
+        "key": "baseline",
+        "name": "Baseline",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "due",
+        "name": "Due",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "actual_at",
+        "name": "Actual at",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Planned",
+          "In progress",
+          "Done"
+        ]
+      },
+      {
+        "key": "notes",
+        "name": "Notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "manuscriptId": "manuscript_id",
+      "phase": "phase",
+      "baseline": "baseline",
+      "due": "due",
+      "actualAt": "actual_at",
+      "owner": "owner",
+      "status": "status",
+      "notes": "notes",
+      "archived": "archived"
+    }
+  },
+  "submissions": {
+    "name": "submissions",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "manuscript_id",
+        "name": "Manuscript id",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "kind",
+        "name": "Kind",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Submitted",
+          "Decision",
+          "Published",
+          "Withdrawn"
+        ]
+      },
+      {
+        "key": "at",
+        "name": "At",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "decision",
+        "name": "Decision",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Pending",
+          "Revision requested",
+          "Rejected",
+          "Accepted",
+          "Published",
+          "Withdrawn"
+        ]
+      },
+      {
+        "key": "confirmation",
+        "name": "Confirmation",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source_url",
+        "name": "Source url",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "doi",
+        "name": "Doi",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "Notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "manuscriptId": "manuscript_id",
+      "kind": "kind",
+      "at": "at",
+      "decision": "decision",
+      "confirmation": "confirmation",
+      "sourceUrl": "source_url",
+      "doi": "doi",
+      "notes": "notes",
+      "archived": "archived"
+    }
+  },
+  "reports": {
+    "name": "reports",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "project_id",
+        "name": "Project id",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "period",
+        "name": "Period",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "cutoff",
+        "name": "Cutoff",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Draft",
+          "Reviewed"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "approved_at",
+        "name": "Approved at",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "references",
+        "name": "References",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "body",
+        "name": "Body",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "risks",
+        "name": "Risks",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "projectId": "project_id",
+      "period": "period",
+      "cutoff": "cutoff",
+      "status": "status",
+      "owner": "owner",
+      "approvedAt": "approved_at",
+      "references": "references",
+      "body": "body",
+      "risks": "risks",
+      "archived": "archived"
+    }
+  }
+}

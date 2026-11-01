@@ -1,0 +1,950 @@
+{
+  "description": "FICTIONAL data for offline review only; never seed live TrialAgents records",
+  "records": [
+    {
+      "role": "projects",
+      "id": "proj-rna",
+      "version": 1,
+      "data": {
+        "name": "Lipid RNA platform",
+        "archived": false,
+        "objective": "Nonclinical formulation and analytical methods",
+        "lead": "Research program lead"
+      }
+    },
+    {
+      "role": "projects",
+      "id": "proj-cell",
+      "version": 1,
+      "data": {
+        "name": "Cell engineering research",
+        "archived": false,
+        "objective": "Method development and translational assay strategy",
+        "lead": "Biology program lead"
+      }
+    },
+    {
+      "role": "projects",
+      "id": "proj-assay",
+      "version": 1,
+      "data": {
+        "name": "Analytical platform",
+        "archived": false,
+        "objective": "Quality and reproducibility methods",
+        "lead": "Analytical program lead"
+      }
+    },
+    {
+      "role": "targets",
+      "id": "target-j1",
+      "version": 1,
+      "data": {
+        "name": "Journal of Demonstration Methods",
+        "archived": false,
+        "kind": "Journal",
+        "category": "Research article",
+        "scope": "Nonclinical assay method detail; fictional outlet.",
+        "url": "https://example.org/fictional-target/target-j1",
+        "verifiedAt": "2026-10-18",
+        "deadline": "2026-12-15",
+        "originalDeadline": "2026-12-15",
+        "alternative": "",
+        "notes": "Illustrative review-only outlet; verify genuine rules before use."
+      }
+    },
+    {
+      "role": "targets",
+      "id": "target-j2",
+      "version": 1,
+      "data": {
+        "name": "Example Translational Science",
+        "archived": false,
+        "kind": "Journal",
+        "category": "Short report",
+        "scope": "Experimental technique reproducibility; fictional outlet.",
+        "url": "https://example.org/fictional-target/target-j2",
+        "verifiedAt": "2026-10-20",
+        "deadline": "2027-01-20",
+        "originalDeadline": "2027-01-20",
+        "alternative": "",
+        "notes": "Illustrative review-only outlet; verify genuine rules before use."
+      }
+    },
+    {
+      "role": "targets",
+      "id": "target-c1",
+      "version": 1,
+      "data": {
+        "name": "Model Biotech Research Congress",
+        "archived": false,
+        "kind": "Congress",
+        "category": "Poster",
+        "scope": "Nonclinical experimental results and poster abstracts; fictional event.",
+        "url": "https://example.org/fictional-target/target-c1",
+        "verifiedAt": "2026-10-22",
+        "deadline": "2026-11-18",
+        "originalDeadline": "2026-11-18",
+        "alternative": "",
+        "notes": "Illustrative review-only outlet; verify genuine rules before use."
+      }
+    },
+    {
+      "role": "targets",
+      "id": "target-c2",
+      "version": 1,
+      "data": {
+        "name": "Analytical Methods Symposium",
+        "archived": false,
+        "kind": "Congress",
+        "category": "Abstract",
+        "scope": "Instrument characterization methods; fictional event.",
+        "url": "https://example.org/fictional-target/target-c2",
+        "verifiedAt": "2026-10-25",
+        "deadline": "2027-03-01",
+        "originalDeadline": "2027-03-01",
+        "alternative": "",
+        "notes": "Illustrative review-only outlet; verify genuine rules before use."
+      }
+    },
+    {
+      "role": "manuscripts",
+      "id": "m1",
+      "version": 1,
+      "data": {
+        "name": "Characterization methods for model RNA formulations",
+        "archived": false,
+        "projectId": "proj-rna",
+        "type": "Manuscript",
+        "status": "Submitted",
+        "versionLabel": "v3",
+        "lead": "R. Martin",
+        "targetId": "target-j1",
+        "targetDate": "2026-10-25",
+        "initialTarget": "2026-10-20",
+        "sourceUrl": "https://example.org/fictional-draft/m1",
+        "nextAction": "Journal receipt received; await decision",
+        "submittedAt": "2026-10-25",
+        "publishedAt": null,
+        "doi": ""
+      }
+    },
+    {
+      "role": "manuscripts",
+      "id": "m2",
+      "version": 1,
+      "data": {
+        "name": "Fluorescent uptake assay control framework",
+        "archived": false,
+        "projectId": "proj-rna",
+        "type": "Manuscript",
+        "status": "Review",
+        "versionLabel": "v2",
+        "lead": "L. Shah",
+        "targetId": "target-j2",
+        "targetDate": "2026-11-19",
+        "initialTarget": "2026-11-15",
+        "sourceUrl": "https://example.org/fictional-draft/m2",
+        "nextAction": "Collect final author comments",
+        "submittedAt": null,
+        "publishedAt": null,
+        "doi": ""
+      }
+    },
+    {
+      "role": "manuscripts",
+      "id": "m3",
+      "version": 1,
+      "data": {
+        "name": "Lipid particle sizing repeatability",
+        "archived": false,
+        "projectId": "proj-rna",
+        "type": "Poster",
+        "status": "Drafting",
+        "versionLabel": "v1",
+        "lead": "A. Chen",
+        "targetId": "target-c1",
+        "targetDate": "2026-11-16",
+        "initialTarget": "2026-11-16",
+        "sourceUrl": "https://example.org/fictional-draft/m3",
+        "nextAction": "Finalize figure legends",
+        "submittedAt": null,
+        "publishedAt": null,
+        "doi": ""
+      }
+    },
+    {
+      "role": "manuscripts",
+      "id": "m4",
+      "version": 1,
+      "data": {
+        "name": "Cross-method comparison for analytical RNA readouts",
+        "archived": false,
+        "projectId": "proj-rna",
+        "type": "Manuscript",
+        "status": "Revision",
+        "versionLabel": "v4",
+        "lead": "R. Martin",
+        "targetId": "target-j2",
+        "targetDate": "2026-12-18",
+        "initialTarget": "2026-10-04",
+        "sourceUrl": "https://example.org/fictional-draft/m4",
+        "nextAction": "Address reviewer request for replicate detail",
+        "submittedAt": "2026-10-04",
+        "publishedAt": null,
+        "doi": ""
+      }
+    },
+    {
+      "role": "manuscripts",
+      "id": "m5",
+      "version": 1,
+      "data": {
+        "name": "Bench-scale analytical controls for delivery systems",
+        "archived": false,
+        "projectId": "proj-rna",
+        "type": "Abstract",
+        "status": "Published",
+        "versionLabel": "v2",
+        "lead": "L. Shah",
+        "targetId": "target-c1",
+        "targetDate": "2026-09-30",
+        "initialTarget": "2026-09-30",
+        "sourceUrl": "https://example.org/fictional-draft/m5",
+        "nextAction": "Archive final abstract",
+        "submittedAt": "2026-09-12",
+        "publishedAt": "2026-10-20",
+        "doi": "10.0000/fictional-abstract-05"
+      }
+    },
+    {
+      "role": "manuscripts",
+      "id": "m6",
+      "version": 1,
+      "data": {
+        "name": "Candidate model for screening assay robustness",
+        "archived": false,
+        "projectId": "proj-rna",
+        "type": "Abstract",
+        "status": "Concept",
+        "versionLabel": "v1",
+        "lead": "A. Chen",
+        "targetId": "target-c2",
+        "targetDate": "2027-02-22",
+        "initialTarget": "2027-02-22",
+        "sourceUrl": "https://example.org/fictional-draft/m6",
+        "nextAction": "Confirm scope and collaborators",
+        "submittedAt": null,
+        "publishedAt": null,
+        "doi": ""
+      }
+    },
+    {
+      "role": "manuscripts",
+      "id": "m7",
+      "version": 1,
+      "data": {
+        "name": "A reproducible method for cell culture quality review",
+        "archived": false,
+        "projectId": "proj-cell",
+        "type": "Manuscript",
+        "status": "Review",
+        "versionLabel": "v2",
+        "lead": "T. Morgan",
+        "targetId": "target-j1",
+        "targetDate": "2026-11-14",
+        "initialTarget": "2026-11-14",
+        "sourceUrl": "https://example.org/fictional-draft/m7",
+        "nextAction": "Obtain final sign-off",
+        "submittedAt": null,
+        "publishedAt": null,
+        "doi": ""
+      }
+    },
+    {
+      "role": "manuscripts",
+      "id": "m8",
+      "version": 1,
+      "data": {
+        "name": "Comparative analytical instrument controls",
+        "archived": false,
+        "projectId": "proj-assay",
+        "type": "Poster",
+        "status": "Drafting",
+        "versionLabel": "v1",
+        "lead": "J. Vale",
+        "targetId": "target-c2",
+        "targetDate": "2027-02-15",
+        "initialTarget": "2027-02-15",
+        "sourceUrl": "https://example.org/fictional-draft/m8",
+        "nextAction": "Consolidate instrument notes",
+        "submittedAt": null,
+        "publishedAt": null,
+        "doi": ""
+      }
+    },
+    {
+      "role": "manuscripts",
+      "id": "m9",
+      "version": 1,
+      "data": {
+        "name": "Fictional extended assay study methods",
+        "archived": false,
+        "projectId": "proj-rna",
+        "type": "Manuscript",
+        "status": "Drafting",
+        "versionLabel": "v1",
+        "lead": "D. Wong",
+        "targetId": "target-j1",
+        "targetDate": "2026-12-10",
+        "initialTarget": "2026-12-10",
+        "sourceUrl": "https://example.org/fictional-draft/m9",
+        "nextAction": "Complete methods outline",
+        "submittedAt": null,
+        "publishedAt": null,
+        "doi": ""
+      }
+    },
+    {
+      "role": "authors",
+      "id": "a1",
+      "version": 1,
+      "data": {
+        "name": "R. Martin",
+        "archived": false,
+        "manuscriptId": "m1",
+        "affiliation": "Fictional research group",
+        "contribution": "Lead author and analysis",
+        "order": 1,
+        "invited": true,
+        "declaration": "Provided",
+        "approval": "Approved",
+        "approvedVersion": "v3",
+        "approvedAt": "2026-10-17",
+        "notes": "Illustrative professional contribution, not an account."
+      }
+    },
+    {
+      "role": "authors",
+      "id": "a2",
+      "version": 1,
+      "data": {
+        "name": "L. Shah",
+        "archived": false,
+        "manuscriptId": "m1",
+        "affiliation": "Fictional research group",
+        "contribution": "Scientific review",
+        "order": 2,
+        "invited": true,
+        "declaration": "Provided",
+        "approval": "Approved",
+        "approvedVersion": "v3",
+        "approvedAt": "2026-10-18",
+        "notes": "Illustrative professional contribution, not an account."
+      }
+    },
+    {
+      "role": "authors",
+      "id": "a3",
+      "version": 1,
+      "data": {
+        "name": "L. Shah",
+        "archived": false,
+        "manuscriptId": "m2",
+        "affiliation": "Fictional research group",
+        "contribution": "Lead writing",
+        "order": 1,
+        "invited": false,
+        "declaration": "Pending",
+        "approval": "Pending",
+        "approvedVersion": "v2",
+        "approvedAt": null,
+        "notes": "Illustrative professional contribution, not an account."
+      }
+    },
+    {
+      "role": "authors",
+      "id": "a4",
+      "version": 1,
+      "data": {
+        "name": "A. Chen",
+        "archived": false,
+        "manuscriptId": "m2",
+        "affiliation": "Fictional research group",
+        "contribution": "Figure review",
+        "order": 2,
+        "invited": true,
+        "declaration": "Provided",
+        "approval": "Approved",
+        "approvedVersion": "v1",
+        "approvedAt": "2026-10-02",
+        "notes": "Illustrative professional contribution, not an account."
+      }
+    },
+    {
+      "role": "authors",
+      "id": "a5",
+      "version": 1,
+      "data": {
+        "name": "A. Chen",
+        "archived": false,
+        "manuscriptId": "m3",
+        "affiliation": "Fictional research group",
+        "contribution": "Lead author",
+        "order": 1,
+        "invited": false,
+        "declaration": "Pending",
+        "approval": "Pending",
+        "approvedVersion": "v1",
+        "approvedAt": null,
+        "notes": "Illustrative professional contribution, not an account."
+      }
+    },
+    {
+      "role": "authors",
+      "id": "a6",
+      "version": 1,
+      "data": {
+        "name": "R. Martin",
+        "archived": false,
+        "manuscriptId": "m4",
+        "affiliation": "Fictional research group",
+        "contribution": "Lead author",
+        "order": 1,
+        "invited": true,
+        "declaration": "Provided",
+        "approval": "Approved",
+        "approvedVersion": "v3",
+        "approvedAt": "2026-09-25",
+        "notes": "Illustrative professional contribution, not an account."
+      }
+    },
+    {
+      "role": "authors",
+      "id": "a7",
+      "version": 1,
+      "data": {
+        "name": "L. Shah",
+        "archived": false,
+        "manuscriptId": "m5",
+        "affiliation": "Fictional research group",
+        "contribution": "Corresponding author",
+        "order": 2,
+        "invited": true,
+        "declaration": "Provided",
+        "approval": "Approved",
+        "approvedVersion": "v2",
+        "approvedAt": "2026-09-03",
+        "notes": "Illustrative professional contribution, not an account."
+      }
+    },
+    {
+      "role": "authors",
+      "id": "a8",
+      "version": 1,
+      "data": {
+        "name": "R. Martin",
+        "archived": false,
+        "manuscriptId": "m5",
+        "affiliation": "Fictional research group",
+        "contribution": "Senior reviewer",
+        "order": 2,
+        "invited": true,
+        "declaration": "Not required",
+        "approval": "Approved",
+        "approvedVersion": "v2",
+        "approvedAt": "2026-09-04",
+        "notes": "Illustrative professional contribution, not an account."
+      }
+    },
+    {
+      "role": "authors",
+      "id": "a9",
+      "version": 1,
+      "data": {
+        "name": "T. Morgan",
+        "archived": false,
+        "manuscriptId": "m7",
+        "affiliation": "Fictional research group",
+        "contribution": "Lead author",
+        "order": 1,
+        "invited": false,
+        "declaration": "Pending",
+        "approval": "Pending",
+        "approvedVersion": "v2",
+        "approvedAt": null,
+        "notes": "Illustrative professional contribution, not an account."
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "r1",
+      "version": 1,
+      "data": {
+        "name": "Round 1",
+        "archived": false,
+        "manuscriptId": "m1",
+        "draftVersion": "v3",
+        "reviewer": "Scientific reviewer A",
+        "feedbackType": "Scientific",
+        "status": "Approved",
+        "due": "2026-10-15",
+        "reviewedAt": "2026-10-16",
+        "resolvedAt": null,
+        "approvedAt": "2026-10-16",
+        "action": "",
+        "notes": "Approved methods and evidence."
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "r2",
+      "version": 1,
+      "data": {
+        "name": "Round 2",
+        "archived": false,
+        "manuscriptId": "m1",
+        "draftVersion": "v3",
+        "reviewer": "Editorial reviewer B",
+        "feedbackType": "Scientific",
+        "status": "Approved",
+        "due": "2026-10-17",
+        "reviewedAt": "2026-10-18",
+        "resolvedAt": null,
+        "approvedAt": "2026-10-18",
+        "action": "",
+        "notes": "Approved final editorial version."
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "r3",
+      "version": 1,
+      "data": {
+        "name": "Round 3",
+        "archived": false,
+        "manuscriptId": "m2",
+        "draftVersion": "v2",
+        "reviewer": "Biology reviewer",
+        "feedbackType": "Scientific",
+        "status": "Comments",
+        "due": "2026-11-04",
+        "reviewedAt": "2026-10-29",
+        "resolvedAt": null,
+        "approvedAt": null,
+        "action": "Resolve review comments",
+        "notes": "More detail requested for assay controls."
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "r4",
+      "version": 1,
+      "data": {
+        "name": "Round 4",
+        "archived": false,
+        "manuscriptId": "m2",
+        "draftVersion": "v2",
+        "reviewer": "Analytics reviewer",
+        "feedbackType": "Scientific",
+        "status": "Pending",
+        "due": "2026-11-03",
+        "reviewedAt": null,
+        "resolvedAt": null,
+        "approvedAt": null,
+        "action": "",
+        "notes": ""
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "r5",
+      "version": 1,
+      "data": {
+        "name": "Round 5",
+        "archived": false,
+        "manuscriptId": "m3",
+        "draftVersion": "v1",
+        "reviewer": "Poster reviewer",
+        "feedbackType": "Scientific",
+        "status": "Pending",
+        "due": "2026-11-11",
+        "reviewedAt": null,
+        "resolvedAt": null,
+        "approvedAt": null,
+        "action": "",
+        "notes": ""
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "r6",
+      "version": 1,
+      "data": {
+        "name": "Round 6",
+        "archived": false,
+        "manuscriptId": "m4",
+        "draftVersion": "v4",
+        "reviewer": "Methods reviewer",
+        "feedbackType": "Scientific",
+        "status": "Pending",
+        "due": "2026-11-06",
+        "reviewedAt": null,
+        "resolvedAt": null,
+        "approvedAt": null,
+        "action": "",
+        "notes": ""
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "r7",
+      "version": 1,
+      "data": {
+        "name": "Round 7",
+        "archived": false,
+        "manuscriptId": "m5",
+        "draftVersion": "v2",
+        "reviewer": "Scientific reviewer",
+        "feedbackType": "Scientific",
+        "status": "Approved",
+        "due": "2026-09-02",
+        "reviewedAt": "2026-09-02",
+        "resolvedAt": null,
+        "approvedAt": "2026-09-03",
+        "action": "",
+        "notes": "Methods accepted for conference abstract."
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "r8",
+      "version": 1,
+      "data": {
+        "name": "Round 8",
+        "archived": false,
+        "manuscriptId": "m7",
+        "draftVersion": "v2",
+        "reviewer": "External coauthor",
+        "feedbackType": "Scientific",
+        "status": "Comments",
+        "due": "2026-11-05",
+        "reviewedAt": "2026-10-31",
+        "resolvedAt": null,
+        "approvedAt": null,
+        "action": "Resolve review comments",
+        "notes": "Requests additional detail on cell model."
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "r9",
+      "version": 1,
+      "data": {
+        "name": "Round 9",
+        "archived": false,
+        "manuscriptId": "m8",
+        "draftVersion": "v1",
+        "reviewer": "Analytical lead",
+        "feedbackType": "Scientific",
+        "status": "Pending",
+        "due": "2026-11-12",
+        "reviewedAt": null,
+        "resolvedAt": null,
+        "approvedAt": null,
+        "action": "",
+        "notes": ""
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "ms1",
+      "version": 1,
+      "data": {
+        "name": "Draft complete",
+        "archived": false,
+        "manuscriptId": "m1",
+        "phase": "Draft",
+        "baseline": "2026-09-02",
+        "due": "2026-09-02",
+        "actualAt": "2026-09-02",
+        "owner": "Publication coordinator",
+        "status": "Done",
+        "notes": "Fictional milestone history, baseline retained."
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "ms2",
+      "version": 1,
+      "data": {
+        "name": "Author review",
+        "archived": false,
+        "manuscriptId": "m1",
+        "phase": "Author review",
+        "baseline": "2026-10-16",
+        "due": "2026-10-18",
+        "actualAt": "2026-10-18",
+        "owner": "Publication coordinator",
+        "status": "Done",
+        "notes": "Fictional milestone history, baseline retained."
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "ms3",
+      "version": 1,
+      "data": {
+        "name": "Journal / congress submission",
+        "archived": false,
+        "manuscriptId": "m1",
+        "phase": "Submission",
+        "baseline": "2026-10-20",
+        "due": "2026-10-25",
+        "actualAt": "2026-10-25",
+        "owner": "Publication coordinator",
+        "status": "Done",
+        "notes": "Fictional milestone history, baseline retained."
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "ms4",
+      "version": 1,
+      "data": {
+        "name": "Draft complete",
+        "archived": false,
+        "manuscriptId": "m2",
+        "phase": "Draft",
+        "baseline": "2026-10-12",
+        "due": "2026-10-15",
+        "actualAt": "2026-10-15",
+        "owner": "Publication coordinator",
+        "status": "Done",
+        "notes": "Fictional milestone history, baseline retained."
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "ms5",
+      "version": 1,
+      "data": {
+        "name": "Author review",
+        "archived": false,
+        "manuscriptId": "m2",
+        "phase": "Author review",
+        "baseline": "2026-10-27",
+        "due": "2026-11-07",
+        "actualAt": null,
+        "owner": "Publication coordinator",
+        "status": "In progress",
+        "notes": "Fictional milestone history, baseline retained."
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "ms6",
+      "version": 1,
+      "data": {
+        "name": "Journal / congress submission",
+        "archived": false,
+        "manuscriptId": "m2",
+        "phase": "Submission",
+        "baseline": "2026-11-15",
+        "due": "2026-11-19",
+        "actualAt": null,
+        "owner": "Publication coordinator",
+        "status": "Planned",
+        "notes": "Fictional milestone history, baseline retained."
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "ms7",
+      "version": 1,
+      "data": {
+        "name": "Draft complete",
+        "archived": false,
+        "manuscriptId": "m3",
+        "phase": "Draft",
+        "baseline": "2026-11-02",
+        "due": "2026-11-05",
+        "actualAt": null,
+        "owner": "Publication coordinator",
+        "status": "In progress",
+        "notes": "Fictional milestone history, baseline retained."
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "ms8",
+      "version": 1,
+      "data": {
+        "name": "Journal / congress submission",
+        "archived": false,
+        "manuscriptId": "m3",
+        "phase": "Submission",
+        "baseline": "2026-11-16",
+        "due": "2026-11-16",
+        "actualAt": null,
+        "owner": "Publication coordinator",
+        "status": "Planned",
+        "notes": "Fictional milestone history, baseline retained."
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "ms9",
+      "version": 1,
+      "data": {
+        "name": "Revision response",
+        "archived": false,
+        "manuscriptId": "m4",
+        "phase": "Revision",
+        "baseline": "2026-11-04",
+        "due": "2026-11-10",
+        "actualAt": null,
+        "owner": "Publication coordinator",
+        "status": "In progress",
+        "notes": "Fictional milestone history, baseline retained."
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "ms10",
+      "version": 1,
+      "data": {
+        "name": "Journal / congress submission",
+        "archived": false,
+        "manuscriptId": "m5",
+        "phase": "Submission",
+        "baseline": "2026-09-10",
+        "due": "2026-09-12",
+        "actualAt": "2026-09-12",
+        "owner": "Publication coordinator",
+        "status": "Done",
+        "notes": "Fictional milestone history, baseline retained."
+      }
+    },
+    {
+      "role": "submissions",
+      "id": "sub1",
+      "version": 1,
+      "data": {
+        "name": "Original submission",
+        "archived": false,
+        "manuscriptId": "m1",
+        "kind": "Submitted",
+        "at": "2026-10-25",
+        "decision": "Pending",
+        "confirmation": "FICT-REC-2026-01",
+        "sourceUrl": "https://example.org/fictional-proof/sub1",
+        "doi": "",
+        "notes": "Fictional evidence for UI testing only."
+      }
+    },
+    {
+      "role": "submissions",
+      "id": "sub2",
+      "version": 1,
+      "data": {
+        "name": "Original submission",
+        "archived": false,
+        "manuscriptId": "m4",
+        "kind": "Submitted",
+        "at": "2026-10-04",
+        "decision": "Revision requested",
+        "confirmation": "FICT-REC-2026-02",
+        "sourceUrl": "https://example.org/fictional-proof/sub2",
+        "doi": "",
+        "notes": "Fictional evidence for UI testing only."
+      }
+    },
+    {
+      "role": "submissions",
+      "id": "sub3",
+      "version": 1,
+      "data": {
+        "name": "Editor decision",
+        "archived": false,
+        "manuscriptId": "m4",
+        "kind": "Decision",
+        "at": "2026-10-21",
+        "decision": "Revision requested",
+        "confirmation": "FICT-DEC-2026-04",
+        "sourceUrl": "https://example.org/fictional-proof/sub3",
+        "doi": "",
+        "notes": "Fictional evidence for UI testing only."
+      }
+    },
+    {
+      "role": "submissions",
+      "id": "sub4",
+      "version": 1,
+      "data": {
+        "name": "Original submission",
+        "archived": false,
+        "manuscriptId": "m5",
+        "kind": "Submitted",
+        "at": "2026-09-12",
+        "decision": "Accepted",
+        "confirmation": "FICT-CONF-2026-05",
+        "sourceUrl": "https://example.org/fictional-proof/sub4",
+        "doi": "",
+        "notes": "Fictional evidence for UI testing only."
+      }
+    },
+    {
+      "role": "submissions",
+      "id": "sub5",
+      "version": 1,
+      "data": {
+        "name": "Publication evidence",
+        "archived": false,
+        "manuscriptId": "m5",
+        "kind": "Published",
+        "at": "2026-10-20",
+        "decision": "Published",
+        "confirmation": "FICT-PUB-2026-05",
+        "sourceUrl": "https://example.org/fictional-proof/sub5",
+        "doi": "10.0000/fictional-abstract-05",
+        "notes": "Fictional evidence for UI testing only."
+      }
+    },
+    {
+      "role": "reports",
+      "id": "rep1",
+      "version": 1,
+      "data": {
+        "name": "October editorial progress",
+        "archived": false,
+        "projectId": "proj-rna",
+        "period": "2026-10-31",
+        "cutoff": "2026-10-31",
+        "status": "Reviewed",
+        "owner": "Research program lead",
+        "approvedAt": "2026-10-31",
+        "references": "m1,m2,m3,m4,m5",
+        "body": "Five publication records were tracked through 31 October 2026. Two manuscripts have active reviewer responses. One abstract was published according to a fictional recorded output event. The upcoming poster abstract remains a plan, not a completed submission.",
+        "risks": "Fictional portfolio. Several author approvals and reviewer decisions remain open. No live publisher system was queried."
+      }
+    },
+    {
+      "role": "reports",
+      "id": "rep2",
+      "version": 1,
+      "data": {
+        "name": "November early outlook",
+        "archived": false,
+        "projectId": "proj-rna",
+        "period": "2026-11-01",
+        "cutoff": "2026-11-01",
+        "status": "Draft",
+        "owner": "Publication coordinator",
+        "approvedAt": null,
+        "references": "m2,m3,m4",
+        "body": "Draft only. Assess revisions, author feedback and the approaching congress deadline.",
+        "risks": "Not reviewed or approved; dates are fictitious."
+      }
+    }
+  ]
+}

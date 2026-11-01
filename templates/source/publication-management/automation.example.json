@@ -1,0 +1,48 @@
+{
+  "name": "Publication report reviewed",
+  "authoringKey": "publication_reviewed_report_email_v1",
+  "appId": "REPLACE_WITH_SAVED_APP_UUID",
+  "appVersion": 0,
+  "trigger": {
+    "kind": "database",
+    "typeId": "REPLACE_WITH_REPORTS_TABLE_UUID",
+    "events": [
+      "created",
+      "updated"
+    ],
+    "fields": [
+      "status"
+    ],
+    "becomes": {
+      "field": "status",
+      "operator": "equals",
+      "value": "Reviewed"
+    }
+  },
+  "recordTypeId": "REPLACE_WITH_REPORTS_TABLE_UUID",
+  "fields": [
+    "status",
+    "archived"
+  ],
+  "conditions": [
+    {
+      "field": "archived",
+      "operator": "not_equals",
+      "value": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "notify_owner",
+      "kind": "email",
+      "to": [
+        "REPLACE_WITH_REGISTERED_OWNER_EMAIL"
+      ],
+      "subject": "Publication report reviewed",
+      "text": "Open https://platform.trialagents.com to review your authorized publication report."
+    }
+  ],
+  "users": [],
+  "expiresAt": "REPLACE_WITH_APPROVED_ISO_EXPIRY",
+  "maxRunsPerDay": 10
+}
