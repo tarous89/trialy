@@ -121,7 +121,30 @@ test('shared automations isolate failures, preserve saved apps and enforce revie
    await pg.query("UPDATE automation_occurrences SET status='blocked' WHERE status='queued'");
    const actions=new AppActions(db),draft=await actions.prepare(human,w.id,{config:{name:'Research email',appId:app.id,appVersion:0,trigger:{kind:'manual'},steps:[{id:'notify',kind:'email',to:[human.userId+'@example.invalid'],subject:'Research report',text:'{{steps.research.summary}}'}],expiresAt:expiry}}),action=await actions.confirm(human,w.id,draft.id,draft.digest);
    const p=await m.prepare(ai,w.id,{config:{...config,name:'Report and notify',automation:{...config.automation,completionActionId:action.id,completionActionVersion:0}}}),mon=await m.confirm(human,w.id,p.id,p.digest);await withDatabaseContext({service:'worker'},()=>dispatchDue(db));const o=(await s.agenda(ai,w.id,runner.id)).rows.find((r:any)=>r.monitor_id===mon.id),c:any=await s.claim(ai,w.id,{runnerId:runner.id,occurrenceId:o.id,requestKey:randomUUID()});
-   await s.finish(ai,w.id,{occurrenceId:o.id,claimToken:c.claimToken,result:{status:'completed',summary:'Confirmed final report'}});await withDatabaseContext({service:'worker'},()=>dispatchCompletions(db));await withDatabaseContext({service:'worker'},()=>dispatchCompletions(db));const runs=(await pg.query<any>('SELECT * FROM app_notification_batches WHERE action_id=$1',[action.id])).rows;assert.equal(runs.length,1);assert.equal((await pg.query<any>('SELECT context FROM app_notification_items WHERE batch_id=$1',[runs[0].id])).rows[0].context.research.summary,'Confirmed final report');
+   await s.finish(ai,w.id,{occurrenceId:o.id,claimToken:c.claimToken,result:{status:'completed',summary:'Confirmed final report'}});await withDatabaseContext({service:'worker'},()=>dispatchCompletions(db));await withDatabaseContext({service:'worker'},()=>dispatchCompletions(db));const runs=(await pg.query<any>('SELECT * FROM app_notification_batches WHERE action_id=$1',[action.id])).rows;assert.equal(runs.length,1);const savedEmailContext=(await pg.query<any>('SELECT context FROM app_notification_items WHERE batch_id=$1',[runs[0].id])).rows[0].context.research;
+   assert.equal(savedEmailContext.summary,'Confirmed final report');
+   assert.equal(savedEmailContext.savedChanges,0);
+   assert.match(savedEmailContext.completedAt,/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$/);
+   assert.ok(savedEmailContext.appUrl.includes(app.id),'The email must link to the actual saved app');
+   assert.equal(savedEmailContext.runId,o.id);
+   // Collection monitors can complete an exhaustive search without saving new records.
+   // A model reporting completed instead of no_update must still not send an empty "new entries" email.
+   const draftCollection=await m.prepare(ai,w.id,{config:{
+    ...config,name:'Prospect discovery requiring saved findings',
+    automation:{...config.automation,completionActionId:action.id,completionActionVersion:0,completionRequiresSavedChanges:true}
+   }}),collection=await m.confirm(human,w.id,draftCollection.id,draftCollection.digest);
+   await withDatabaseContext({service:'worker'},()=>dispatchDue(db));
+   const dueCollection=(await s.agenda(ai,w.id,runner.id)).rows.find((r:any)=>r.monitor_id===collection.id);
+   assert.ok(dueCollection,'The collection job was scheduled');
+   const collectionClaim:any=await s.claim(ai,w.id,{runnerId:runner.id,occurrenceId:dueCollection.id,requestKey:randomUUID()});
+   const collectionFinished=await s.finish(ai,w.id,{occurrenceId:dueCollection.id,claimToken:collectionClaim.claimToken,result:{status:'completed',summary:'Completed search without qualifying new records.'}});
+   assert.equal(collectionFinished.result.savedChanges,0);
+   await withDatabaseContext({service:'worker'},()=>dispatchCompletions(db));
+   await withDatabaseContext({service:'worker'},()=>dispatchCompletions(db));
+   assert.equal((await pg.query<any>('SELECT count(*)::int AS n FROM app_notification_batches WHERE action_id=$1',[action.id])).rows[0].n,1,'No empty second notification');
+   const skipped=(await pg.query<any>('SELECT completion_dispatched_at,result FROM automation_occurrences WHERE id=$1',[dueCollection.id])).rows[0];
+   assert.ok(skipped.completion_dispatched_at);
+   assert.equal(skipped.result.deliveryStatus,'skipped');
    await m.control(human,w.id,mon.id,0,false);const {dispatchNotificationBatch}=await import('../src/app-services/notifications.js');await pg.query('UPDATE app_notification_batches SET not_before=now() WHERE id=$1',[runs[0].id]);await withDatabaseContext({service:'worker'},()=>dispatchNotificationBatch(db));assert.equal((await actions.status(human,w.id,runs[0].id)).status,'cancelled');await withDatabaseContext({service:'worker'},()=>processAppAction(db));assert.equal((await pg.query<any>('SELECT count(*)::int AS n FROM app_service_jobs')).rows[0].n,0);assert.equal((await pg.query<any>('SELECT status FROM automation_occurrences WHERE id=$1',[o.id])).rows[0].status,'completed');
    assert.deepEqual((await pg.query<any>('SELECT source,version,bindings FROM workspace_components WHERE id=$1',[app.id])).rows[0],original);
    const revision=await f.preview(human,w.id,{kind:'save_component',componentId:app.id,expectedVersion:0,content:{name:'Always available',format:'frontend-js',sourceAccess:'bindings',source:'return {html:"<h1>Updated saved app</h1>"};',bindings:[]}});await f.confirm(human,w.id,revision.id,revision.digest);await m.control(human,w.id,mon.id,0,true);
