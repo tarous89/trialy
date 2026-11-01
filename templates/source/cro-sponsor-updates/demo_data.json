@@ -1,0 +1,806 @@
+{
+  "fictional": true,
+  "records": [
+    {
+      "role": "sponsors",
+      "id": "demo-sponsors-1",
+      "version": 1,
+      "data": {
+        "name": "Northstar Therapeutics",
+        "sponsor_code": "NSTR",
+        "liaison_role": "Development director",
+        "contact_channel": "Sponsor-approved shared workspace",
+        "archived": false
+      }
+    },
+    {
+      "role": "sponsors",
+      "id": "demo-sponsors-2",
+      "version": 1,
+      "data": {
+        "name": "Aurora Bioinnovations",
+        "sponsor_code": "AURA",
+        "liaison_role": "Clinical Operations lead",
+        "contact_channel": "Approved project contact list",
+        "archived": false
+      }
+    },
+    {
+      "role": "sponsors",
+      "id": "demo-sponsors-3",
+      "version": 1,
+      "data": {
+        "name": "Ternion Biologics",
+        "sponsor_code": "TERN",
+        "liaison_role": "Program director",
+        "contact_channel": "CRO-approved contact channel",
+        "archived": false
+      }
+    },
+    {
+      "role": "projects",
+      "id": "demo-projects-1",
+      "version": 1,
+      "data": {
+        "name": "NS-26 Phase 2 Delivery",
+        "sponsor_id": "demo-sponsors-1",
+        "project_code": "NS-26-041",
+        "phase": "Active delivery",
+        "cro_pm": "M. Laurent",
+        "cadence": "Weekly",
+        "expected_teams": "Clinical Operations|Data Management|Regulatory|Quality",
+        "status": "Active",
+        "archived": false
+      }
+    },
+    {
+      "role": "projects",
+      "id": "demo-projects-2",
+      "version": 1,
+      "data": {
+        "name": "AUR-11 Clinical Operations",
+        "sponsor_id": "demo-sponsors-2",
+        "project_code": "AUR-26-011",
+        "phase": "Active delivery",
+        "cro_pm": "A. Richter",
+        "cadence": "Biweekly",
+        "expected_teams": "Clinical Operations|Data Management|Biostatistics",
+        "status": "Active",
+        "archived": false
+      }
+    },
+    {
+      "role": "projects",
+      "id": "demo-projects-3",
+      "version": 1,
+      "data": {
+        "name": "TERN-03 Startup",
+        "sponsor_id": "demo-sponsors-3",
+        "project_code": "TERN-03",
+        "phase": "Startup",
+        "cro_pm": "I. Weber",
+        "cadence": "Monthly",
+        "expected_teams": "Clinical Operations|Regulatory",
+        "status": "Active",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-1",
+      "version": 1,
+      "data": {
+        "name": "Final monitoring plan",
+        "project_id": "demo-projects-1",
+        "owner": "Clinical lead",
+        "baseline_date": "2026-10-21",
+        "current_date": "2026-10-21",
+        "actual_date": "2026-10-20",
+        "status": "Achieved",
+        "change_reason": null,
+        "evidence_ref": "DOC-MON-41",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-2",
+      "version": 1,
+      "data": {
+        "name": "First site activation package",
+        "project_id": "demo-projects-1",
+        "owner": "Regulatory",
+        "baseline_date": "2026-10-27",
+        "current_date": "2026-10-29",
+        "actual_date": "2026-10-29",
+        "status": "Achieved",
+        "change_reason": "Sponsor and CRO approved revised document transfer sequence",
+        "evidence_ref": "DOC-REG-92",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-3",
+      "version": 1,
+      "data": {
+        "name": "Database specification sign-off",
+        "project_id": "demo-projects-1",
+        "owner": "Data lead",
+        "baseline_date": "2026-10-30",
+        "current_date": "2026-10-31",
+        "actual_date": null,
+        "status": "In progress",
+        "change_reason": "Sponsor and CRO approved revised document transfer sequence",
+        "evidence_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-4",
+      "version": 1,
+      "data": {
+        "name": "Vendor data transfer mapping",
+        "project_id": "demo-projects-1",
+        "owner": "Data lead",
+        "baseline_date": "2026-11-01",
+        "current_date": "2026-11-01",
+        "actual_date": null,
+        "status": "Blocked",
+        "change_reason": null,
+        "evidence_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-5",
+      "version": 1,
+      "data": {
+        "name": "Regulatory document review",
+        "project_id": "demo-projects-1",
+        "owner": "Regulatory",
+        "baseline_date": "2026-11-12",
+        "current_date": "2026-11-12",
+        "actual_date": null,
+        "status": "Planned",
+        "change_reason": null,
+        "evidence_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-6",
+      "version": 1,
+      "data": {
+        "name": "Site readiness handoff",
+        "project_id": "demo-projects-1",
+        "owner": "Clinical lead",
+        "baseline_date": "2026-11-18",
+        "current_date": "2026-11-20",
+        "actual_date": null,
+        "status": "In progress",
+        "change_reason": "Sponsor and CRO approved revised document transfer sequence",
+        "evidence_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-7",
+      "version": 1,
+      "data": {
+        "name": "November risk review",
+        "project_id": "demo-projects-1",
+        "owner": "CRO PM",
+        "baseline_date": "2026-11-27",
+        "current_date": "2026-11-27",
+        "actual_date": null,
+        "status": "Planned",
+        "change_reason": null,
+        "evidence_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-8",
+      "version": 1,
+      "data": {
+        "name": "December governance meeting",
+        "project_id": "demo-projects-1",
+        "owner": "CRO PM",
+        "baseline_date": "2026-12-04",
+        "current_date": "2026-12-04",
+        "actual_date": null,
+        "status": "Planned",
+        "change_reason": null,
+        "evidence_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-9",
+      "version": 1,
+      "data": {
+        "name": "Other program milestone 9",
+        "project_id": "demo-projects-2",
+        "owner": "Operations",
+        "baseline_date": "2026-11-14",
+        "current_date": "2026-11-14",
+        "actual_date": null,
+        "status": "Planned",
+        "change_reason": null,
+        "evidence_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-10",
+      "version": 1,
+      "data": {
+        "name": "Other program milestone 10",
+        "project_id": "demo-projects-2",
+        "owner": "Operations",
+        "baseline_date": "2026-11-14",
+        "current_date": "2026-11-14",
+        "actual_date": null,
+        "status": "Planned",
+        "change_reason": null,
+        "evidence_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-11",
+      "version": 1,
+      "data": {
+        "name": "Other program milestone 11",
+        "project_id": "demo-projects-2",
+        "owner": "Operations",
+        "baseline_date": "2026-11-14",
+        "current_date": "2026-11-14",
+        "actual_date": null,
+        "status": "Planned",
+        "change_reason": null,
+        "evidence_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-1",
+      "version": 1,
+      "data": {
+        "name": "Clinical monitoring plan",
+        "project_id": "demo-projects-1",
+        "owner": "Clinical lead",
+        "due_date": "2026-10-21",
+        "status": "Accepted",
+        "acceptance_evidence": "SP-ACCEPT-21",
+        "accepted_at": "2026-10-22",
+        "sponsor_feedback": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-2",
+      "version": 1,
+      "data": {
+        "name": "Site qualification checklist",
+        "project_id": "demo-projects-1",
+        "owner": "Clinical lead",
+        "due_date": "2026-10-30",
+        "status": "Accepted",
+        "acceptance_evidence": "SP-ACCEPT-22",
+        "accepted_at": "2026-10-30",
+        "sponsor_feedback": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-3",
+      "version": 1,
+      "data": {
+        "name": "Data review plan",
+        "project_id": "demo-projects-1",
+        "owner": "Data lead",
+        "due_date": "2026-11-01",
+        "status": "Submitted",
+        "acceptance_evidence": null,
+        "accepted_at": null,
+        "sponsor_feedback": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-4",
+      "version": 1,
+      "data": {
+        "name": "Regulatory correspondence index",
+        "project_id": "demo-projects-1",
+        "owner": "Regulatory",
+        "due_date": "2026-10-29",
+        "status": "Rework",
+        "acceptance_evidence": null,
+        "accepted_at": null,
+        "sponsor_feedback": "Revise before final signoff",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-5",
+      "version": 1,
+      "data": {
+        "name": "QA oversight memo",
+        "project_id": "demo-projects-1",
+        "owner": "Quality lead",
+        "due_date": "2026-10-28",
+        "status": "Submitted",
+        "acceptance_evidence": null,
+        "accepted_at": null,
+        "sponsor_feedback": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-6",
+      "version": 1,
+      "data": {
+        "name": "Vendor data mapping spec",
+        "project_id": "demo-projects-1",
+        "owner": "Data lead",
+        "due_date": "2026-11-01",
+        "status": "In progress",
+        "acceptance_evidence": null,
+        "accepted_at": null,
+        "sponsor_feedback": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-7",
+      "version": 1,
+      "data": {
+        "name": "November sponsor slide pack",
+        "project_id": "demo-projects-1",
+        "owner": "CRO PM",
+        "due_date": "2026-11-06",
+        "status": "Planned",
+        "acceptance_evidence": null,
+        "accepted_at": null,
+        "sponsor_feedback": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-8",
+      "version": 1,
+      "data": {
+        "name": "Training evidence register",
+        "project_id": "demo-projects-1",
+        "owner": "Clinical lead",
+        "due_date": "2026-11-16",
+        "status": "Planned",
+        "acceptance_evidence": null,
+        "accepted_at": null,
+        "sponsor_feedback": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-9",
+      "version": 1,
+      "data": {
+        "name": "Archive readiness list",
+        "project_id": "demo-projects-1",
+        "owner": "Quality lead",
+        "due_date": "2026-11-28",
+        "status": "Planned",
+        "acceptance_evidence": null,
+        "accepted_at": null,
+        "sponsor_feedback": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "actions",
+      "id": "demo-actions-1",
+      "version": 1,
+      "data": {
+        "name": "Vendor mapping delays data checks",
+        "project_id": "demo-projects-1",
+        "kind": "Issue",
+        "owner": "Data lead",
+        "priority": "High",
+        "status": "Blocked",
+        "due_date": "2026-10-30",
+        "mitigation": "Escalate vendor mapping and agree handoff",
+        "evidence_ref": null,
+        "decision_by": null,
+        "decision_at": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "actions",
+      "id": "demo-actions-2",
+      "version": 1,
+      "data": {
+        "name": "Quality review evidence outstanding",
+        "project_id": "demo-projects-1",
+        "kind": "Risk",
+        "owner": "Quality lead",
+        "priority": "High",
+        "status": "Open",
+        "due_date": "2026-10-31",
+        "mitigation": "Obtain reviewer sign-off",
+        "evidence_ref": null,
+        "decision_by": null,
+        "decision_at": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "actions",
+      "id": "demo-actions-3",
+      "version": 1,
+      "data": {
+        "name": "Confirm site activation sequencing",
+        "project_id": "demo-projects-1",
+        "kind": "Decision",
+        "owner": "Sponsor lead",
+        "priority": "High",
+        "status": "Open",
+        "due_date": "2026-11-01",
+        "mitigation": "Sponsor to decide staggered vs simultaneous startup",
+        "evidence_ref": null,
+        "decision_by": null,
+        "decision_at": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "actions",
+      "id": "demo-actions-4",
+      "version": 1,
+      "data": {
+        "name": "Clarify regulatory response owner",
+        "project_id": "demo-projects-1",
+        "kind": "Action",
+        "owner": "Regulatory",
+        "priority": "Medium",
+        "status": "Open",
+        "due_date": "2026-11-01",
+        "mitigation": "Name final accountable owner",
+        "evidence_ref": null,
+        "decision_by": null,
+        "decision_at": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "actions",
+      "id": "demo-actions-5",
+      "version": 1,
+      "data": {
+        "name": "Review revised data plan",
+        "project_id": "demo-projects-1",
+        "kind": "Action",
+        "owner": "Data lead",
+        "priority": "Medium",
+        "status": "Open",
+        "due_date": "2026-11-05",
+        "mitigation": "Present at CRO-sponsor forum",
+        "evidence_ref": null,
+        "decision_by": null,
+        "decision_at": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "actions",
+      "id": "demo-actions-6",
+      "version": 1,
+      "data": {
+        "name": "Decision on interim monitoring",
+        "project_id": "demo-projects-1",
+        "kind": "Decision",
+        "owner": "Sponsor lead",
+        "priority": "Low",
+        "status": "Approved",
+        "due_date": "2026-10-20",
+        "mitigation": "Approve interim monitoring oversight",
+        "evidence_ref": "DEC-151",
+        "decision_by": "Sponsor governance chair",
+        "decision_at": "2026-10-20",
+        "archived": false
+      }
+    },
+    {
+      "role": "actions",
+      "id": "demo-actions-7",
+      "version": 1,
+      "data": {
+        "name": "Update quality risk log",
+        "project_id": "demo-projects-1",
+        "kind": "Action",
+        "owner": "Quality lead",
+        "priority": "Low",
+        "status": "Resolved",
+        "due_date": "2026-10-23",
+        "mitigation": "Captured in approved risk register",
+        "evidence_ref": "QMS-92",
+        "decision_by": null,
+        "decision_at": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "actions",
+      "id": "demo-actions-8",
+      "version": 1,
+      "data": {
+        "name": "Monitor CRO vendor capacity",
+        "project_id": "demo-projects-1",
+        "kind": "Risk",
+        "owner": "Operations",
+        "priority": "Medium",
+        "status": "Open",
+        "due_date": "2026-11-12",
+        "mitigation": "Weekly resourcing checkpoint",
+        "evidence_ref": null,
+        "decision_by": null,
+        "decision_at": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-1",
+      "version": 1,
+      "data": {
+        "name": "Clinical site readiness",
+        "project_id": "demo-projects-1",
+        "period_key": "2026-W44",
+        "team": "Clinical Operations",
+        "revision": 1,
+        "contributor": "T. Novak",
+        "submitted_at": "2026-10-30",
+        "status": "Accepted",
+        "highlights": "Two monitoring deliverables received",
+        "blockers": "One site document pending",
+        "next_steps": "Confirm site pack by Wednesday",
+        "source_refs": "DOC-CLIN-821",
+        "reviewer": "M. Laurent",
+        "reviewed_at": "2026-10-31",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-2",
+      "version": 1,
+      "data": {
+        "name": "Data management progress",
+        "project_id": "demo-projects-1",
+        "period_key": "2026-W44",
+        "team": "Data Management",
+        "revision": 1,
+        "contributor": "F. Martin",
+        "submitted_at": "2026-10-31",
+        "status": "Submitted",
+        "highlights": "Data specification reviewed",
+        "blockers": "Vendor mapping is late",
+        "next_steps": "Confirm transfer layout by Tuesday",
+        "source_refs": "DATA-DB-115",
+        "reviewer": null,
+        "reviewed_at": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-3",
+      "version": 1,
+      "data": {
+        "name": "Regulatory correspondence",
+        "project_id": "demo-projects-1",
+        "period_key": "2026-W44",
+        "team": "Regulatory",
+        "revision": 1,
+        "contributor": "K. Nguyen",
+        "submitted_at": "2026-10-30",
+        "status": "Accepted",
+        "highlights": "Submission response matrix prepared",
+        "blockers": "One response owner unresolved",
+        "next_steps": "Finalize sponsor response package",
+        "source_refs": "REG-33",
+        "reviewer": "M. Laurent",
+        "reviewed_at": "2026-10-31",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-4",
+      "version": 1,
+      "data": {
+        "name": "Quality action review",
+        "project_id": "demo-projects-1",
+        "period_key": "2026-W44",
+        "team": "Quality",
+        "revision": 1,
+        "contributor": "E. Weber",
+        "submitted_at": null,
+        "status": "Draft",
+        "highlights": "QMS checks ongoing",
+        "blockers": "Missing reviewer availability",
+        "next_steps": "Complete action review",
+        "source_refs": null,
+        "reviewer": null,
+        "reviewed_at": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-5",
+      "version": 1,
+      "data": {
+        "name": "Clinical previous update",
+        "project_id": "demo-projects-1",
+        "period_key": "2026-W43",
+        "team": "Clinical Operations",
+        "revision": 1,
+        "contributor": "T. Novak",
+        "submitted_at": "2026-10-23",
+        "status": "Accepted",
+        "highlights": "Site start-up checklist received",
+        "blockers": "None",
+        "next_steps": "Continue readiness assessments",
+        "source_refs": "CLIN-810",
+        "reviewer": "M. Laurent",
+        "reviewed_at": "2026-10-24",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-6",
+      "version": 1,
+      "data": {
+        "name": "Data previous update",
+        "project_id": "demo-projects-1",
+        "period_key": "2026-W43",
+        "team": "Data Management",
+        "revision": 1,
+        "contributor": "F. Martin",
+        "submitted_at": "2026-10-23",
+        "status": "Accepted",
+        "highlights": "Database deliverables in review",
+        "blockers": "Pending data transfer",
+        "next_steps": "Finalize vendor agreement",
+        "source_refs": "DATA-110",
+        "reviewer": "M. Laurent",
+        "reviewed_at": "2026-10-24",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-7",
+      "version": 1,
+      "data": {
+        "name": "Regulatory previous update",
+        "project_id": "demo-projects-1",
+        "period_key": "2026-W43",
+        "team": "Regulatory",
+        "revision": 1,
+        "contributor": "K. Nguyen",
+        "submitted_at": "2026-10-23",
+        "status": "Accepted",
+        "highlights": "Regulatory index published",
+        "blockers": "None",
+        "next_steps": "Ready response to CRO",
+        "source_refs": "REG-19",
+        "reviewer": "M. Laurent",
+        "reviewed_at": "2026-10-24",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-8",
+      "version": 1,
+      "data": {
+        "name": "Quality previous update",
+        "project_id": "demo-projects-1",
+        "period_key": "2026-W43",
+        "team": "Quality",
+        "revision": 1,
+        "contributor": "E. Weber",
+        "submitted_at": "2026-10-23",
+        "status": "Accepted",
+        "highlights": "Quality control completed",
+        "blockers": "None",
+        "next_steps": "Archive reference",
+        "source_refs": "QMS-51",
+        "reviewer": "M. Laurent",
+        "reviewed_at": "2026-10-24",
+        "archived": false
+      }
+    },
+    {
+      "role": "reports",
+      "id": "demo-reports-1",
+      "version": 1,
+      "data": {
+        "name": "NS-26 Sponsor Update \u2014 week 43",
+        "project_id": "demo-projects-1",
+        "period_key": "2026-W43",
+        "revision": 1,
+        "as_of": "2026-10-25",
+        "status": "Approved",
+        "prepared_by": "M. Laurent",
+        "narrative": "Sponsor-approved review of operational milestones, deliverables, and next week actions. Fictional example.",
+        "source_refs": "updates:demo-updates-5:v1\nupdates:demo-updates-6:v1",
+        "source_digest": "fictional approved historical snapshot",
+        "coverage_note": "4/4 team updates accepted",
+        "reviewer": "Independent CRO director",
+        "reviewed_at": "2026-10-26",
+        "archived": false
+      }
+    },
+    {
+      "role": "reports",
+      "id": "demo-reports-2",
+      "version": 1,
+      "data": {
+        "name": "NS-26 Sponsor Update \u2014 week 44",
+        "project_id": "demo-projects-1",
+        "period_key": "2026-W44",
+        "revision": 1,
+        "as_of": "2026-11-01",
+        "status": "Draft",
+        "prepared_by": "M. Laurent",
+        "narrative": "Draft: Site readiness is progressing. Vendor mapping and quality review remain unresolved.",
+        "source_refs": null,
+        "source_digest": null,
+        "coverage_note": "2/4 accepted team updates",
+        "reviewer": null,
+        "reviewed_at": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "distributions",
+      "id": "demo-distributions-1",
+      "version": 1,
+      "data": {
+        "name": "Week 43 sponsor status call",
+        "project_id": "demo-projects-1",
+        "report_id": "demo-reports-1",
+        "sent_date": "2026-10-27",
+        "channel": "Sponsor meeting",
+        "recipient_role": "Sponsor Clinical Operations lead",
+        "recorded_by": "M. Laurent",
+        "confirmation_ref": "Fictional meeting minutes MIN-2026-103",
+        "archived": false
+      }
+    }
+  ]
+}

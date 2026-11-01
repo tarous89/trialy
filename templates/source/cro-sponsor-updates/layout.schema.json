@@ -1,0 +1,206 @@
+{
+  "screens": [
+    {
+      "id": "overview",
+      "label": "Overview"
+    },
+    {
+      "id": "delivery",
+      "label": "Delivery"
+    },
+    {
+      "id": "actions",
+      "label": "Risks & decisions"
+    },
+    {
+      "id": "inputs",
+      "label": "Team updates"
+    },
+    {
+      "id": "reports",
+      "label": "Sponsor reports"
+    }
+  ],
+  "groups": {
+    "sponsors": [
+      {
+        "id": "name",
+        "label": "Sponsor organization"
+      },
+      {
+        "id": "sponsor_code",
+        "label": "Internal sponsor key"
+      },
+      {
+        "id": "liaison_role",
+        "label": "Sponsor contact role"
+      }
+    ],
+    "projects": [
+      {
+        "id": "name",
+        "label": "Study / project"
+      },
+      {
+        "id": "project_code",
+        "label": "Project code"
+      },
+      {
+        "id": "phase",
+        "label": "Development stage"
+      },
+      {
+        "id": "cro_pm",
+        "label": "CRO project lead"
+      },
+      {
+        "id": "cadence",
+        "label": "Sponsor reporting cadence"
+      },
+      {
+        "id": "status",
+        "label": "Project status"
+      }
+    ],
+    "milestones": [
+      {
+        "id": "name",
+        "label": "Milestone"
+      },
+      {
+        "id": "owner",
+        "label": "Accountable owner"
+      },
+      {
+        "id": "current_date",
+        "label": "Current target date"
+      },
+      {
+        "id": "status",
+        "label": "Status"
+      },
+      {
+        "id": "actual_date",
+        "label": "Actual completion date"
+      }
+    ],
+    "deliverables": [
+      {
+        "id": "name",
+        "label": "Deliverable"
+      },
+      {
+        "id": "owner",
+        "label": "Owner"
+      },
+      {
+        "id": "due_date",
+        "label": "Due date"
+      },
+      {
+        "id": "status",
+        "label": "Sponsor acceptance state"
+      },
+      {
+        "id": "accepted_at",
+        "label": "Date accepted"
+      }
+    ],
+    "actions": [
+      {
+        "id": "name",
+        "label": "Risk, issue, action or decision"
+      },
+      {
+        "id": "kind",
+        "label": "Record kind"
+      },
+      {
+        "id": "owner",
+        "label": "Accountable owner"
+      },
+      {
+        "id": "priority",
+        "label": "Priority"
+      },
+      {
+        "id": "status",
+        "label": "Action state"
+      },
+      {
+        "id": "due_date",
+        "label": "Target decision / action date"
+      }
+    ],
+    "updates": [
+      {
+        "id": "name",
+        "label": "Workstream update title"
+      },
+      {
+        "id": "team",
+        "label": "Function / workstream"
+      },
+      {
+        "id": "revision",
+        "label": "Update revision"
+      },
+      {
+        "id": "contributor",
+        "label": "Contributor"
+      },
+      {
+        "id": "status",
+        "label": "Review state"
+      },
+      {
+        "id": "submitted_at",
+        "label": "Submitted date"
+      }
+    ],
+    "reports": [
+      {
+        "id": "name",
+        "label": "Sponsor report title"
+      },
+      {
+        "id": "period_key",
+        "label": "Reporting period"
+      },
+      {
+        "id": "revision",
+        "label": "Report revision"
+      },
+      {
+        "id": "status",
+        "label": "Review state"
+      },
+      {
+        "id": "reviewer",
+        "label": "Approved by"
+      },
+      {
+        "id": "reviewed_at",
+        "label": "Date approved"
+      }
+    ],
+    "distributions": [
+      {
+        "id": "name",
+        "label": "Distribution entry"
+      },
+      {
+        "id": "sent_date",
+        "label": "Confirmed distribution date"
+      },
+      {
+        "id": "channel",
+        "label": "Manual channel"
+      },
+      {
+        "id": "recipient_role",
+        "label": "Recipient role / group"
+      }
+    ]
+  }
+}

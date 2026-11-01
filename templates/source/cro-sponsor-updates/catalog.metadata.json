@@ -1,0 +1,123 @@
+{
+  "id": "life.cro-sponsor-updates",
+  "version": "1.0.1",
+  "name": "Sponsor Updates \u2014 CRO",
+  "description": "Lean CRO sponsor reporting workspace for teams under 50 FTE. Collect functional updates, track milestone and sponsor-accepted deliverable evidence, coordinate risks and decisions, review versioned sponsor reports, and log only confirmed manual distribution.",
+  "tags": [
+    "cro",
+    "sponsor-updates",
+    "project-health",
+    "milestones",
+    "client-reporting",
+    "clinical-operations",
+    "small-teams"
+  ],
+  "whenToUse": "Use for CRO-to-sponsor reporting where authorized functional leads provide periodic execution updates, milestones, deliverables, issues, independently approved sponsor reports and manually documented communication.",
+  "whenNotToUse": "Not an EDC, patient or safety case system, automated email sender, e-signature or legal submission engine; not for enterprise PSA billing, time tracking, HR allocation, supplier procurement or regulatory attestation.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "Sponsor Updates",
+    "tableMap": "{}",
+    "layoutProfile": "{}",
+    "initialProjectId": "",
+    "initialPeriod": "",
+    "asOfDate": "",
+    "pageSize": 25,
+    "readOnly": false
+  },
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "Sidebar title; platform handles all accounts and access.",
+      "default": "Sponsor Updates"
+    },
+    "tableMap": {
+      "type": "string",
+      "description": "JSON approved eight-role table map: role => {typeId,fields,writableFields}; use saved UUIDs.",
+      "default": "{}"
+    },
+    "layoutProfile": {
+      "type": "string",
+      "description": "Host-reviewed presentation order, fields and visibility; not access controls.",
+      "default": "{}"
+    },
+    "initialProjectId": {
+      "type": "string",
+      "description": "Optional authorized CRO project UUID (blank selects first permitted project).",
+      "default": ""
+    },
+    "initialPeriod": {
+      "type": "string",
+      "description": "Reporting period YYYY-MM or YYYY-Www.",
+      "default": ""
+    },
+    "asOfDate": {
+      "type": "string",
+      "description": "Evidence date cutoff in YYYY-MM-DD (defaults current UTC date).",
+      "default": ""
+    },
+    "pageSize": {
+      "type": "number",
+      "description": "Register page size clamped 10-50.",
+      "default": 25
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "Additional presentation-layer write suppression; does not grant access.",
+      "default": false
+    }
+  },
+  "instructions": "CR-05 Sponsor Updates for small CRO teams, not a sponsor portal. Do not add app login, signup, role accounts, patient records, patient enrollment metrics, billing, staffing optimization, finance, automatic sending, e-signature, or any speculative metrics. TrialAgents supplies account access and watermark; if its logo is added use actual icon and link https://platform.trialagents.com.\nRead current TrialAgents authoring + usage guidance. Discover the exact id/version/digest with list_app_templates and read_app_template, then use prepare_app_from_template with that version/digest and one stable requestKey. Revise the same preview using replacesPreviewId/expectedDigest. Save only through host review; verify the receipt and stable component ID. Reconcile an ambiguous save before retrying; never create a duplicate app. Host injects templateConfiguration and templateBindings exactly once; source must not redeclare either. Use only authorized records.read and reviewed records.propose. No silent writes. No saved application claimed merely by preparing a ZIP.\nExactly eight role tables: sponsors, projects, milestones, deliverables, actions, updates, reports, distributions. All fields are scalar with multiple:false. Create Sponsors and Projects first, then their child records. Reuse existing permitted masters where possible. Ask a CRO PM to define exact expected teams and cadence per project. Log manual distribution only after real sponsor communication occurs.\nFull exact schema and setup contract is embedded in documentation.dataContract (plus schema.example.json for maintainers). Use saved approved table UUIDs and column mappings; do not invent keys or assume human-readable names are related UUIDs. Use real TrialAgents Access per sponsor/project and field. Do not aggregate sponsor A project data into sponsor B; UI filter is not a security boundary.\nFive screens: Overview; Delivery (Milestones and Deliverables tabs); Risks & Decisions; Team Updates; Sponsor Reports (versioned draft/review/report, manual distribution log). Use project/period selector and explicit data cutoff. One title and subline per page, no redundant banners, fake login or extra teams modules.\nMilestone baseline date is immutable; due vs achieved and sponsor acceptance are not the same. Report coverage counts latest revision for every configured expected team, Accepted only. Never treat a missing update as healthy. Approved report requires complete sources, current snapshot signature, approved functional contributions, independent dated review. Any source changes after preparation require new report revision. Approved records cannot be edited; copy resets approval and evidence fields.\nRead totals strictly: unavailable/missing/unknown/short/over-budget source is incomplete; withhold authoritative totals and report approval. Backend paging still allows later records beyond analytic budget, and search in that case is page-local. Capture original version at form opening and send expectedVersion for all edit/archive proposals; retain drafts on conflicts.\nNative tracker:layout uses host review/persist; columns hidden in the table remain reachable in the record editor. Host account and table access are authoritative. No direct external integrations or automated distribution. Optional ChatGPT drafts are only text suggestions requested in chat; they are not approved reports until independently reviewed and saved.\nOptional shared ChatGPT monitoring (no per-app schedule) may summarize approved sponsor-specific sources at user-authorized cadence if actually connected. TrialAgents internal email notifications may go to the owner and explicitly chosen registered authorized teammates upon separately approved configuration. No sponsor email is sent by the app, by metadata, or by a preview. Partial coverage returns needs_review; never silently no_update on missing sources.\nRequire every listed field, including nullable evidence and archived booleans, to be mapped and authorized. Missing fields, invalid scalars or incomplete pages are unknown coverage. Initialize optional values as null. Record creation requires all mapped fields writable. Child writes require project name write access for atomic consistency checks; project changes require sponsor name write access. Original parent versions are captured on opening. Conflict means reopen and reconcile, never silently retry. Accepted inputs/deliverables, approved/rejected decisions, approved reports and distribution history cannot be archived. Report fingerprints use SHA-256 over complete scoped source IDs/versions plus project business data; same-name project guard writes do not change fingerprints. Legacy report signatures remain historical; create a new report revision to review current evidence. Preserve app identity, current version, manifest and unrelated settings on upgrades.",
+  "documentation": {
+    "quickStart": [
+      "Confirm the sponsor and project; use existing TrialAgents Access rather than creating a new account.",
+      "Create/reuse the eight scalar tables with all enumerated required fields and all status options; map approved typeId, logical fields and writableFields.",
+      "Define project cadence and expected teams with pipe-separated names from the Team update select list.",
+      "Add milestones, deliverables and risks with source evidence. Team leads submit and CRO PM accepts their period updates after independent review.",
+      "Use the Sponsor reports screen for a cited draft, review it with a separate owner, and only log distribution that actually occurred."
+    ],
+    "dataContract": "Eight authorized scalar (multiple:false) role tables. Every field may have null when not required; an empty date is null. Relationship fields are text containing the saved, authorized parent UUID (not display names or relationship arrays). Physical field keys are snake_case; map logical keys to approved physical names. The source table map must contain typeId, fields and writableFields per role. Do not invent UUIDs.\nExpected teams: projects.expected_teams is a pipe-separated exact list from the updates.team select choices; a missing expected team can never count as zero work. Report period accepts YYYY-MM or ISO YYYY-Www. Sponsor-specific projects are independently scoped; TrialAgents Access enforces actual permission.\nsponsors { name:text!, sponsor_code:text!, liaison_role:text?, contact_channel:text?, archived:boolean? }\nprojects { name:text!, sponsor_id:text!(UUID sponsors), project_code:text!, phase:select![Startup / Active delivery / Closeout / On hold], cro_pm:text!, cadence:select![Weekly / Biweekly / Monthly / Ad hoc], expected_teams:text!, status:select![Active / On hold / Closed], archived:boolean? }\nmilestones { name:text!, project_id:text!(UUID projects), owner:text!, baseline_date:date?, current_date:date!, actual_date:date?, status:select![Planned / In progress / Achieved / Blocked / Cancelled], change_reason:text?, evidence_ref:text?, archived:boolean? }\ndeliverables { name:text!, project_id:text!(UUID projects), owner:text!, due_date:date!, status:select![Planned / In progress / Submitted / Accepted / Rework], acceptance_evidence:text?, accepted_at:date?, sponsor_feedback:text?, archived:boolean? }\nactions { name:text!, project_id:text!(UUID projects), kind:select![Risk / Issue / Action / Decision], owner:text!, priority:select![High / Medium / Low], status:select![Open / Blocked / Resolved / Approved / Rejected], due_date:date?, mitigation:text?, evidence_ref:text?, decision_by:text?, decision_at:date?, archived:boolean? }\nupdates { name:text!, project_id:text!(UUID projects), period_key:text!, team:select![Clinical Operations / Data Management / Regulatory / Medical Writing / Biostatistics / Quality / Vendor Management / Project Management / Other], revision:number!, contributor:text!, submitted_at:date?, status:select![Draft / Submitted / Changes requested / Accepted], highlights:text?, blockers:text?, next_steps:text?, source_refs:text?, reviewer:text?, reviewed_at:date?, archived:boolean? }\nreports { name:text!, project_id:text!(UUID projects), period_key:text!, revision:number!, as_of:date!, status:select![Draft / In review / Approved], prepared_by:text!, narrative:text?, source_refs:text?, source_digest:text?, coverage_note:text?, reviewer:text?, reviewed_at:date?, archived:boolean? }\ndistributions { name:text!, project_id:text!(UUID projects), report_id:text!(UUID reports), sent_date:date!, channel:select![Manual email / Sponsor meeting / Shared workspace / Other], recipient_role:text!, recorded_by:text!, confirmation_ref:text!, archived:boolean? }\nSpecial: milestone baseline_date is set from the initial current_date and immutable. A revised current_date requires change_reason. Accepted deliverable needs a prior Submitted record, evidence reference and actual accepted_at date. Accepted team input needs prior Submitted state, contributor-independent reviewer, reviewed_at and source_refs. Approved report requires prior In review, complete project evidence, every expected team accepted, current source_digest, narrative and independent reviewer. Manual distribution log requires approved report and dated confirmation_ref; it does NOT send anything.",
+    "interactionContract": "All views are project/period scoped. Each input, select and textarea is data-ui-state with a stable data-action and name; submitted event.form named values merge into retained drafts. All records use reviewed records.propose with expectedVersion from edit/archive opening; conflicts preserve drafts. All registers include page navigation, search, add/edit/copy/archive and opened details. No false zero on partial reads; analytics limit 600 records per role, then page-local search with warning. Complete-empty is different from unavailable. Native tracker:layout changes presentation only; hidden fields remain available in editor. Initial first sponsor and project can be created empty. Approved team inputs/reports remain immutable; use versioned revisions.",
+    "lifecycle": "Build catalog life.cro-sponsor-updates@1.0.1 and verify all metadata contract limits, source injection and whole-catalog validation. Create parent tables via reviewed approvals; use returned persisted IDs in child relationships. Run host QuickJS + production sanitizer/manifest and original-version reviewed writes before publication. Revalidate the captured source signature before independently approving a report; confirmed report versions remain historical. App remains usable if any optional scheduled task or email fails. No external sponsor communication without separate user action. Any future schema change needs a new semantic version and reviewed migration. Keep a stable requestKey and reconcile receipts; retain the same saved component ID, current app version, bindings and manifest on revision. Parent version guards serialize participating source writes with report approval. Local drafts survive failed review; reopen and reconcile after conflicts.",
+    "limitations": [
+      "Not a validated GxP regulatory reporting system, CDMS, EDC, CTMS, or patient recruitment analytics. No patient-level information.",
+      "No automated sponsor email, distribution integration, PDF export inside app, or guaranteed external delivery. Distribution history is a manually evidenced log.",
+      "No automatic source pull from systems outside approved TrialAgents tables; ChatGPT narrative prompts are handoffs, not automatic execution.",
+      "No authoritative counts or approvals when permissions/read totals/schema/version coverage are incomplete.",
+      "Reviewed record proposals and native layout require live TrialAgents host verification; standalone HTML uses simulated local approval.",
+      "Reported metrics use current stored source rows and a selected cutoff, not historic-as-known-at-cutoff audit reconstruction.",
+      "Coverage is bounded to 600 rows per role and 100,000 JSON characters per read page. Report source references are limited to 50,000 characters; oversized reports fail visibly without writing. Direct Database changes do not participate in app-level parent guards and require reconciliation before approval."
+    ],
+    "examples": [
+      {
+        "prompt": "Set up a sponsor updates tracker for our CRO-managed Phase 2 programs.",
+        "expectedBehavior": "Create/reuse eight approved scalar role tables with sponsor-specific project scoping, five compact pages, expected functional teams and no custom account or sponsor email system."
+      },
+      {
+        "prompt": "Prepare this week\u2019s sponsor report from our clinical, data, regulatory and QA team updates.",
+        "expectedBehavior": "Show latest accepted revision per expected team; note missing/awaiting review, preserve milestone baseline, link evidence, and produce a draft only. No automatic sponsor distribution."
+      },
+      {
+        "prompt": "The sponsor accepted our monitoring plan; document the acceptance.",
+        "expectedBehavior": "Review a prior Submitted deliverable, require evidence and actual acceptance date, and prepare a reviewed update; completed CRO work alone is insufficient."
+      },
+      {
+        "prompt": "Our weekly status report was approved and sent during a client call.",
+        "expectedBehavior": "Confirm an independently approved report version and request the actual meeting date, recipient role and confirmation source before logging manual distribution."
+      },
+      {
+        "prompt": "Create a new sponsor report version after the data team corrected an update.",
+        "expectedBehavior": "Copy the prior report as a new Draft with reset signatures/approvals, re-read the latest authorized sources, and seek independent review before approving."
+      }
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "Only when an authorized CRO owner explicitly asks for recurring internal sponsor report drafting; not needed for core application use. Never enable by generating the template. After app save and opt-in, read read_app_automation_guide/read_automation_setup and list_app_automations/read_app_automation; reuse the shared owner/workspace runner and stable authoringKey cr05_sponsor_draft_v1, never a per-app ChatGPT Task.",
+      "readRequirements": "Use selected project UUID and sponsor permission boundaries, cutoff and period, expected team list, latest revision accepted team updates, milestone baseline/current/actual, deliverable acceptance evidence, open issues/decisions, approved reports. Access denied, partial, stale or unknown data => needs_review; do not infer no_update. Use inheritAppAccess:true and actual saved app/table identities and schema versions. Preserve existing IDs, disabled state, grants and hidden settings; owner-confirmed timezone, anchor, expiry and lookback with coalesced catch-up. Respect paused/disconnected setup. Prefer supported Work chat, high reasoning and latest capable model; report actual settings without inventing parameters.",
+      "outputContract": "Return project ID, reporting period, exact source IDs/versions, accepted/expected teams, changes, risks, decisions needed, missing coverage and a DRAFT narrative; no write/disclosure by default. Deduplicate by project+period+source signature. Do not claim successful schedule, sponsor email or approval without host receipt. One-time drafts stay in authorized chat; recurring drafts default to private permission-checked history. Any approved write destination must be the existing reports table with Draft status and scoped expiring grants; never overwrite approval. Complete zero findings is completed; no_update requires full coverage and approved quiet policy. Partial/denied/expired results do not advance coverage; preserve checkpoints and receipts. Optional email is a separate single-step fixed-content database notification when reports.status enters In review and archived is not true; owner plus explicitly chosen registered currently authorized teammates only. No external sponsor/contact recipients, second schedule or research-completion send. Delivery failure never reruns research or blocks the app. Inspect Logs and actual receipts; metadata enables nothing.",
+      "promptExample": "For the authorized CRO project and selected week, prepare a draft sponsor update citing source record IDs and original milestone baselines. Distinguish accepted from submitted deliverables, flag missing functional inputs and permissions. Do not access patient data, publish, email or approve. If complete sources are unchanged report the deduplicated state; partial evidence requires needs_review."
+    }
+  },
+  "examples": [],
+  "deprecated": false
+}

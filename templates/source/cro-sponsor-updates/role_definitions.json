@@ -1,0 +1,747 @@
+{
+  "sponsors": [
+    {
+      "key": "name",
+      "label": "Sponsor organization",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "sponsor_code",
+      "label": "Internal sponsor key",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "liaison_role",
+      "label": "Sponsor contact role",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "contact_channel",
+      "label": "Contact channel / approved location",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ],
+  "projects": [
+    {
+      "key": "name",
+      "label": "Study / project",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "sponsor_id",
+      "label": "Sponsor organization",
+      "kind": "relation-sponsors",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "project_code",
+      "label": "Project code",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "phase",
+      "label": "Development stage",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Startup",
+        "Active delivery",
+        "Closeout",
+        "On hold"
+      ]
+    },
+    {
+      "key": "cro_pm",
+      "label": "CRO project lead",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "cadence",
+      "label": "Sponsor reporting cadence",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Weekly",
+        "Biweekly",
+        "Monthly",
+        "Ad hoc"
+      ]
+    },
+    {
+      "key": "expected_teams",
+      "label": "Expected reporting teams (pipe-separated)",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "status",
+      "label": "Project status",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Active",
+        "On hold",
+        "Closed"
+      ]
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ],
+  "milestones": [
+    {
+      "key": "name",
+      "label": "Milestone",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "project_id",
+      "label": "Study / project",
+      "kind": "relation-projects",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "owner",
+      "label": "Accountable owner",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "baseline_date",
+      "label": "Original baseline date",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "current_date",
+      "label": "Current target date",
+      "kind": "date",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "actual_date",
+      "label": "Actual completion date",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Planned",
+        "In progress",
+        "Achieved",
+        "Blocked",
+        "Cancelled"
+      ]
+    },
+    {
+      "key": "change_reason",
+      "label": "Reason for revised target",
+      "kind": "longtext",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "evidence_ref",
+      "label": "Completion source reference",
+      "kind": "longtext",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ],
+  "deliverables": [
+    {
+      "key": "name",
+      "label": "Deliverable",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "project_id",
+      "label": "Study / project",
+      "kind": "relation-projects",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "owner",
+      "label": "Owner",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "due_date",
+      "label": "Due date",
+      "kind": "date",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "status",
+      "label": "Sponsor acceptance state",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Planned",
+        "In progress",
+        "Submitted",
+        "Accepted",
+        "Rework"
+      ]
+    },
+    {
+      "key": "acceptance_evidence",
+      "label": "Sponsor acceptance evidence reference",
+      "kind": "longtext",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "accepted_at",
+      "label": "Date accepted",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "sponsor_feedback",
+      "label": "Sponsor feedback / rework action",
+      "kind": "longtext",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ],
+  "actions": [
+    {
+      "key": "name",
+      "label": "Risk, issue, action or decision",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "project_id",
+      "label": "Study / project",
+      "kind": "relation-projects",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "kind",
+      "label": "Record kind",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Risk",
+        "Issue",
+        "Action",
+        "Decision"
+      ]
+    },
+    {
+      "key": "owner",
+      "label": "Accountable owner",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "priority",
+      "label": "Priority",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "High",
+        "Medium",
+        "Low"
+      ]
+    },
+    {
+      "key": "status",
+      "label": "Action state",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Open",
+        "Blocked",
+        "Resolved",
+        "Approved",
+        "Rejected"
+      ]
+    },
+    {
+      "key": "due_date",
+      "label": "Target decision / action date",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "mitigation",
+      "label": "Mitigation, decision rationale or next step",
+      "kind": "longtext",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "evidence_ref",
+      "label": "Outcome evidence reference",
+      "kind": "longtext",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "decision_by",
+      "label": "Decision approver",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "decision_at",
+      "label": "Date approved or rejected",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ],
+  "updates": [
+    {
+      "key": "name",
+      "label": "Workstream update title",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "project_id",
+      "label": "Study / project",
+      "kind": "relation-projects",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "period_key",
+      "label": "Reporting period (YYYY-MM or YYYY-Www)",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "team",
+      "label": "Function / workstream",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Clinical Operations",
+        "Data Management",
+        "Regulatory",
+        "Medical Writing",
+        "Biostatistics",
+        "Quality",
+        "Vendor Management",
+        "Project Management",
+        "Other"
+      ]
+    },
+    {
+      "key": "revision",
+      "label": "Update revision",
+      "kind": "number",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "contributor",
+      "label": "Contributor",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "submitted_at",
+      "label": "Submitted date",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "status",
+      "label": "Review state",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Draft",
+        "Submitted",
+        "Changes requested",
+        "Accepted"
+      ]
+    },
+    {
+      "key": "highlights",
+      "label": "Progress and achievements",
+      "kind": "longtext",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "blockers",
+      "label": "Blockers and changes",
+      "kind": "longtext",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "next_steps",
+      "label": "Next steps",
+      "kind": "longtext",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "source_refs",
+      "label": "Source record references / evidence",
+      "kind": "longtext",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "reviewer",
+      "label": "Reviewer",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "reviewed_at",
+      "label": "Reviewed date",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ],
+  "reports": [
+    {
+      "key": "name",
+      "label": "Sponsor report title",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "project_id",
+      "label": "Study / project",
+      "kind": "relation-projects",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "period_key",
+      "label": "Reporting period",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "revision",
+      "label": "Report revision",
+      "kind": "number",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "as_of",
+      "label": "Reporting data cutoff",
+      "kind": "date",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "status",
+      "label": "Review state",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Draft",
+        "In review",
+        "Approved"
+      ]
+    },
+    {
+      "key": "prepared_by",
+      "label": "Prepared by",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "narrative",
+      "label": "Sponsor-facing approved narrative",
+      "kind": "longtext",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "source_refs",
+      "label": "Snapshot source references",
+      "kind": "longtext",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "source_digest",
+      "label": "Source version signature",
+      "kind": "longtext",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "coverage_note",
+      "label": "Team input coverage at preparation",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "reviewer",
+      "label": "Approved by",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "reviewed_at",
+      "label": "Date approved",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ],
+  "distributions": [
+    {
+      "key": "name",
+      "label": "Distribution entry",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "project_id",
+      "label": "Study / project",
+      "kind": "relation-projects",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "report_id",
+      "label": "Approved report version",
+      "kind": "relation-reports",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "sent_date",
+      "label": "Confirmed distribution date",
+      "kind": "date",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "channel",
+      "label": "Manual channel",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Manual email",
+        "Sponsor meeting",
+        "Shared workspace",
+        "Other"
+      ]
+    },
+    {
+      "key": "recipient_role",
+      "label": "Recipient role / group",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "recorded_by",
+      "label": "Recorded by",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "confirmation_ref",
+      "label": "Independent evidence of manual distribution",
+      "kind": "longtext",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ]
+}

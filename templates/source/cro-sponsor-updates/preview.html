@@ -1,0 +1,2560 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CRO Sponsor Updates fictional preview</title><style>/* CR-05 Sponsor Updates — original, reference-informed, responsive TrialAgents frontend-js */
+*{box-sizing:border-box}.su-shell{--ink:#2b3048;--navy:#2e2840;--plum:#7655c3;--purple:#6350b3;--mint:#16a99c;--paper:#f6f7fb;--border:#e5e7f0;--muted:#59596f;display:flex;min-height:740px;background:#f7f8fc;color:var(--ink);font:15px/1.48 Inter,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden}.su-shell button,.su-shell input,.su-shell select,.su-shell textarea{font:inherit}.su-shell button{cursor:pointer}.su-shell button:disabled{opacity:1;cursor:not-allowed}.su-shell *:focus-visible{outline:2px solid #9075f0;outline-offset:2px}.su-sidebar{width:232px;flex-shrink:0;background:linear-gradient(174deg,#292238 0%,#373049 63%,#2d293f 100%);color:#ece9f7;padding:27px 13px 18px;display:flex;flex-direction:column;gap:23px;min-height:740px}.su-brand{padding:5px 13px 18px;border-bottom:1px solid #ffffff1c;display:flex;flex-direction:column;gap:2px}.su-brand b{font-size:18px;letter-spacing:-.55px;color:#fff;font-weight:740}.su-brand span{color:#c3bcd4;font-size:12px}.su-sidebar nav{display:flex;flex-direction:column;gap:4px}.su-navitem{display:flex;align-items:center;gap:13px;text-align:left;width:100%;min-height:41px;border:1px solid transparent;border-radius:9px;padding:10px 12px;background:transparent;color:#ded8ee;font-weight:570;font-size:12px}.su-navitem:hover{background:#ffffff10}.su-navitem.on{color:#fff;background:#ffffff1b;border-left:3px solid #c2a8ff;padding-left:10px;font-weight:710}.su-nav-icon{font-size:15px;width:19px;text-align:center;color:#ccbdea}.su-sidebar-foot{margin-top:auto;border-top:1px solid #ffffff24;padding:19px 12px 4px;display:flex;flex-direction:column;gap:3px;color:#d9d4e2;font-size:12px}.su-sidebar-foot small{font-size:12px;color:#aca7be}.su-right{min-width:0;flex:1;display:flex;flex-direction:column}.su-topbar{height:65px;flex-shrink:0;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;padding:9px 28px;position:sticky;top:0;z-index:10}.su-topbar label{display:flex;flex-direction:column;font-size:12px;letter-spacing:1.1px;color:var(--muted);font-weight:730;gap:3px}.su-topbar select,.su-topbar input{padding:5px 25px 5px 9px;min-width:175px;max-width:330px;height:29px;background:#fff;color:#35334e;border:1px solid #dfe1ec;border-radius:7px;font-size:12px;letter-spacing:0;font-weight:550}.su-topbar select{max-width:280px}.su-topspacer{flex:1}.su-top-right{display:flex;gap:12px;align-items:center}.su-sponsor{font-size:12px;color:#59596f;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.su-main{padding:22px 28px 22px;min-width:0;flex:1;max-width:1510px;width:100%;margin:0 auto}.su-report-tools{display:flex;justify-content:flex-end;min-height:34px}.su-cutoff{display:flex;align-items:center;gap:8px;color:#59596f;font-size:12px}.su-cutoff input{border:1px solid #e0e3eb;border-radius:8px;background:white;padding:6px 9px;font-size:12px;color:#4e5167;min-width:131px}.su-heading{margin:2px 0 18px;display:flex;align-items:flex-start;justify-content:space-between;gap:15px}.su-heading h1{margin:0;font-size:25px;letter-spacing:-1.1px;color:#2e314b;font-weight:780;line-height:1.24}.su-heading p{margin:5px 0 0;color:#59596f;font-size:12px}.su-heading-side{display:flex;align-items:center;gap:7px}.su-btn{padding:8px 12px;min-height:32px;border-radius:8px;border:1px solid #e1e2eb;color:#4b5069;background:#fff;white-space:nowrap;font-size:12px;font-weight:620;transition:background .1s}.su-btn:hover{background:#f3f0fc}.su-btn.primary{background:#7454bf;color:#fff;border-color:#7454bf;box-shadow:0 2px 7px #704fb221}.su-btn.primary:hover{background:#6244ad}.su-btn.quiet{color:#66677e;background:#fff}.su-btn.link{color:#7051b6;background:transparent;border-color:transparent;padding:4px 6px;min-height:26px}.su-btn.link:hover{background:#f5f0ff}.su-btn.icon{font-size:20px;line-height:1;padding:4px 9px;min-height:28px}.su-btn.inverted{background:#fff;color:#3e355e;border-color:#ffffff60}.su-btn.danger{color:#ac586a}.su-btn.dangerfill{color:#fff;background:#ae405d;border-color:#ae405d}.su-notice{background:#f5edff;border:1px solid #e2d0ff;color:#5e438f;border-radius:10px;padding:9px 12px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}.su-warning{color:#745f38;background:#fff6e9;border:1px solid #f5dfbf;padding:10px 13px;border-radius:10px;margin-bottom:15px;line-height:1.55}.su-report-hero{border-radius:15px;background:linear-gradient(115deg,#3a2d51 0%,#51416c 67%,#68519a 100%);color:white;padding:26px 30px;display:flex;justify-content:space-between;gap:35px;margin:0 0 17px;box-shadow:0 10px 25px #44346516}.su-hero-left{min-width:0;flex:1}.su-eyebrow{font-size:12px;letter-spacing:1.7px;font-weight:770;color:#dbd1ed;display:block;margin-bottom:8px}.su-hero-left>strong{font-size:29px;line-height:1.16;letter-spacing:-.9px;display:block;font-weight:780}.su-hero-left>p{font-size:12px;color:#ddd3f5;margin:5px 0 18px}.su-hero-coverage{display:inline-block;border-radius:30px;padding:6px 12px;background:#ffffff20;color:#eae6fb;font-size:12px;font-weight:640}.su-hero-right{min-width:200px;display:flex;flex-direction:column;align-items:flex-end;gap:7px}.su-hero-right span{font-size:12px;color:#e0d8f3}.su-hero-right b{font-size:29px;line-height:1.2;letter-spacing:-1px}.su-hero-meter{height:7px;background:#ffffff3b;border-radius:10px;width:190px;overflow:hidden;margin-bottom:4px}.su-hero-meter i{display:block;height:100%;background:#5be3cd;border-radius:10px}.su-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:17px}.su-stat{background:white;border:1px solid var(--border);border-top:3px solid #9371d4;border-radius:12px;padding:16px 17px;display:flex;flex-direction:column;gap:5px;min-height:116px;box-shadow:0 4px 12px #2d325c07}.su-stat:nth-child(2){border-top-color:#4aafaf}.su-stat:nth-child(3){border-top-color:#e0a85c}.su-stat:nth-child(4){border-top-color:#7560c5}.su-stat span{font-size:12px;font-weight:720;color:#59596f}.su-stat strong{font-size:25px;letter-spacing:-1px;line-height:1.2;color:#32314a}.su-stat small{font-size:12px;color:#59596f}.su-duo{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;align-items:start}.su-duo.large-left{grid-template-columns:.85fr 1.15fr}.su-card{min-width:0;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 3px 9px #25294b05;margin-bottom:15px;overflow:hidden}.su-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 17px 12px}.su-card-head h2{font-size:14px;line-height:1.3;letter-spacing:-.3px;margin:0;color:#31334e;font-weight:760}.su-card>.su-muted,.su-card>.su-briefstats,.su-card>.su-briefbtns,.su-card>.su-caution,.su-card>.su-oknote,.su-card>.su-prompt{margin-left:17px;margin-right:17px}.su-card>.su-muted{margin-top:0}.su-card>.su-btn{margin:4px 0 18px 17px}.su-card>.su-card-head+.su-priority{margin-top:0}.su-priority,.su-milestone{display:flex;align-items:center;gap:10px;padding:12px 17px;border-top:1px solid #eef0f5}.su-priority>div,.su-milestone>div{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}.su-priority strong,.su-milestone b{font-size:12px;color:#3c3a58;overflow-wrap:anywhere}.su-priority small,.su-milestone small{font-size:12px;color:#59596f}.su-prio-mark{width:6px;height:27px;border-radius:8px;background:#a38bd2}.su-prio-mark.late{background:#df8066}.su-milestone>span{min-width:78px;font-size:12px;color:#6c608a;background:#f4f0fa;padding:7px 8px;border-radius:7px}.su-chip{font-size:12px;border-radius:30px;padding:4px 9px;display:inline-flex;align-items:center;white-space:nowrap;font-weight:680;background:#f0f1f6;color:#59596f}.su-chip.good{background:#e5f7f1;color:#18684f}.su-chip.warn{background:#fff4e5;color:#79571e}.su-chip.bad{background:#ffedef;color:#a33b48}.su-chip.neutral{background:#f0f2f7;color:#59596f}.su-subtabs{display:flex;gap:8px;margin-bottom:17px;border-bottom:1px solid #e7e8f1;padding-bottom:8px;overflow-x:auto}.su-subtabs .su-btn{border:none;border-radius:7px;padding:9px 14px}.su-subtabs .su-btn.selected{color:#6548ac;background:#ece6f9;border-color:transparent}.su-toolbar{display:flex;align-items:center;gap:9px;padding:11px 15px 8px;flex-wrap:wrap}.su-search-wrap{flex:1;min-width:150px}.su-toolbar input{width:100%;height:34px;background:#fff;border:1px solid #e3e5ed;border-radius:8px;padding:8px 11px;color:#4d5067;font-size:12px}.su-toolbar-tail{display:flex;margin-left:auto;align-items:center}.su-filters{padding:0 16px 12px;display:flex;gap:7px;flex-wrap:wrap}.su-filters .su-btn.active{background:#eae3fa;border-color:#cbb8e5;color:#6348a9}.su-table-wrap{width:100%;overflow-x:auto;max-width:100%}.su-table{border-collapse:collapse;width:100%;min-width:580px}.su-table th{text-align:left;white-space:nowrap;background:#f6f6fa;border-top:1px solid #eef0f5;border-bottom:1px solid #ececf4;padding:10px 13px;font-size:12px;color:#59596f;font-weight:720}.su-table td{padding:11px 13px;border-bottom:1px solid #f0f1f6;vertical-align:middle;color:#61667c;font-size:12px;max-width:260px;overflow-wrap:anywhere}.su-table td b{color:#353852;font-weight:690}.su-table tr:hover td{background:#fbfaff}.su-table .su-actions-col{min-width:225px}.su-row-actions{display:flex;align-items:center;gap:2px;white-space:nowrap}.su-row-actions .su-btn{font-size:12px}.su-pager{padding:13px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#59596f;font-size:12px}.su-pager>div{display:flex;align-items:center;gap:6px}.su-pager small{white-space:nowrap;font-size:12px}.su-pager button{min-height:26px;padding:4px 9px}.su-empty{margin:8px 17px 18px;font-size:12px;color:#59596f;line-height:1.6}.su-muted{font-size:12px;color:#59596f;line-height:1.6}.su-team-row{display:flex;align-items:center;gap:11px;padding:11px 16px;border-top:1px solid #eceef4;min-width:0}.su-team-row>div:nth-child(2){min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}.su-team-row b{font-size:12px;color:#363754}.su-team-row small{color:#59596f;font-size:12px}.su-team-icon{width:31px;height:31px;flex-shrink:0;background:#efe9fa;color:#7657b9;font-size:13px;font-weight:780;border-radius:9px;display:grid;place-items:center}.su-input-summary{margin:0 0 17px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 20px}.su-input-summary p{margin:8px 0 0;color:#59596f;font-size:12px}.su-bar-row{display:flex;align-items:center;gap:12px;color:#59596f;font-size:12px}.su-bar-row>span{width:130px;flex-shrink:0;font-weight:650}.su-bar-row>b{width:40px;text-align:right;font-size:12px;color:#484661}.su-bar{height:8px;background:#efedf4;border-radius:10px;flex:1;overflow:hidden}.su-bar>i{display:block;height:100%;background:linear-gradient(90deg,#7c60cb,#37b7b1);border-radius:10px}.su-briefstats{padding:8px 0 12px}.su-briefstats>span{display:block;margin-top:9px;color:#59596f;font-size:12px}.su-briefbtns{display:flex;gap:9px;padding-bottom:10px}.su-prompt{background:#f9f7ff;border:1px solid #e8e1f6;padding:14px;border-radius:10px;margin-top:8px;margin-bottom:15px;color:#5b5473}.su-prompt b{font-size:12px}.su-prompt p{font-size:12px;line-height:1.7;overflow-wrap:anywhere}.su-prompt small{color:#59596f}.su-caution,.su-oknote{font-size:12px;margin-top:3px;margin-bottom:16px;padding:10px 11px;border-radius:8px;line-height:1.5}.su-caution{color:#8d662f;background:#fff5e7}.su-oknote{color:#1c6753;background:#e9f8f3}.su-boundary{font-size:12px;color:#59596f;text-align:center;margin:20px 0 0}.su-overlay{position:fixed;z-index:50;inset:0;display:flex;justify-content:flex-end;background:#1d1b32a0}.su-drawer{display:flex;flex-direction:column;background:#fff;width:min(625px,100vw);height:100%;overflow:hidden;box-shadow:-11px 0 40px #17132c30}.su-drawer-head{display:flex;justify-content:space-between;align-items:flex-start;padding:20px 23px;border-bottom:1px solid #e7e7f2;gap:10px}.su-drawer-head b{font-size:17px;letter-spacing:-.3px}.su-drawer-head p{font-size:12px;color:#59596f;margin:2px 0 0}.su-drawer form{display:flex;flex:1;min-height:0;flex-direction:column}.su-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px;padding:19px 22px;overflow-y:auto;align-content:start}.su-field{min-width:0;display:flex;flex-direction:column;gap:5px}.su-field span{font-size:12px;font-weight:700;color:#59596f}.su-field em{color:#b45365;font-style:normal}.su-field.wide{grid-column:1/-1}.su-field input,.su-field select,.su-field textarea{border:1px solid #dfe1ea;border-radius:8px;min-height:36px;padding:9px;color:#3c3a54;background:#fff;font-size:12px;width:100%;resize:vertical}.su-field input[type=checkbox]{width:20px;height:20px;min-height:20px;accent-color:#7957bb}.su-extra{padding:4px 22px 12px}.su-drawer-foot{padding:14px 22px;border-top:1px solid #e6e6ee;display:flex;justify-content:flex-end;align-items:center;gap:9px;margin-top:auto}.su-detail{padding:10px 24px 20px;overflow-y:auto;min-height:0;flex:1}.su-detail>div:not(.su-linked){border-bottom:1px solid #eff0f4;display:grid;grid-template-columns:190px 1fr;gap:10px;padding:11px 0}.su-detail>div>span{font-size:12px;color:#59596f}.su-detail>div>b{font-size:12px;color:#414158;font-weight:600;white-space:pre-wrap;overflow-wrap:anywhere}.su-linked{border-top:1px solid #ececf3;padding-top:15px;margin-top:17px}.su-linked h3{margin:0 0 10px;font-size:13px}.su-linkedline{padding:10px 0;display:flex;justify-content:space-between;align-items:center;gap:9px;border-bottom:1px solid #f1f1f5}.su-linkedline>span{flex:1;font-size:12px;color:#494962;display:flex;flex-direction:column}.su-linkedline small{color:#59596f}.su-center{align-items:center;justify-content:center}.su-dialog{background:#fff;max-width:min(435px,94vw);border-radius:15px;padding:24px;box-shadow:0 14px 45px #18132630}.su-dialog h2{margin:0 0 10px;font-size:18px}.su-dialog p{font-size:12px;color:#59596f}.su-dialog>div{display:flex;justify-content:flex-end;gap:9px;margin-top:18px}
+@media(max-width:1100px){.su-sidebar{width:196px}.su-main{padding:20px}.su-topbar{padding-left:18px;padding-right:18px}.su-stats{gap:10px}.su-hero-left>strong{font-size:26px}.su-sponsor{display:none}.su-table td{padding:10px 9px}.su-card-head{padding:14px}}
+@media(max-width:850px){.su-sidebar{width:67px;padding:18px 8px}.su-brand{padding:4px 2px 14px;text-align:center}.su-brand b{font-size:12px;letter-spacing:-.1px}.su-brand span{display:none}.su-navitem{justify-content:center;padding:11px 0;min-height:45px}.su-navitem.on{padding-left:0;border-left:0;border-top:3px solid #c2a8ff}.su-navitem span:last-child{display:none}.su-sidebar-foot{display:none}.su-duo,.su-duo.large-left{grid-template-columns:1fr}.su-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.su-main{padding:18px}.su-heading h1{font-size:22px}.su-topbar select{min-width:130px;max-width:215px}.su-topbar input{min-width:135px}}
+@media(max-width:560px){.su-shell{min-height:670px}.su-sidebar{width:53px;padding:14px 5px}.su-brand b{font-size:12px}.su-nav-icon{font-size:17px}.su-topbar{height:auto;min-height:63px;padding:8px 10px;gap:6px}.su-topbar label{font-size:12px;min-width:0;flex:1}.su-topbar select,.su-topbar input{width:100%;min-width:0;max-width:100%;padding:4px 4px;font-size:12px}.su-top-right .su-btn{padding:7px;font-size:12px}.su-topspacer{display:none}.su-main{padding:14px 11px}.su-heading{gap:8px;flex-direction:column;margin-bottom:14px}.su-heading h1{font-size:20px}.su-heading p{font-size:12px}.su-heading-side{align-self:flex-end}.su-report-hero{padding:19px;flex-direction:column;gap:14px}.su-hero-right{min-width:0;align-items:flex-start}.su-hero-left>strong{font-size:25px}.su-hero-right b{font-size:24px}.su-stats{gap:8px}.su-stat{min-height:103px;padding:13px 10px}.su-stat span{font-size:12px}.su-stat strong{font-size:20px}.su-stat small{font-size:12px}.su-priority,.su-milestone{padding:11px 10px;gap:7px;flex-wrap:wrap}.su-priority .su-chip{display:none}.su-card-head{padding:14px 11px 8px}.su-card-head h2{font-size:13px}.su-card-head .su-btn{font-size:12px}.su-team-row{padding:10px;gap:7px;flex-wrap:wrap}.su-team-row .su-chip{font-size:12px}.su-toolbar{padding:10px;gap:5px}.su-toolbar .su-search-wrap{flex-basis:100%}.su-toolbar-tail{margin-left:auto}.su-toolbar .su-btn{font-size:12px;padding:7px 9px}.su-pager{padding:10px;flex-wrap:wrap}.su-pager>div{margin-left:auto}.su-card>.su-muted,.su-card>.su-briefstats,.su-card>.su-briefbtns,.su-card>.su-caution,.su-card>.su-oknote,.su-card>.su-prompt{margin-left:11px;margin-right:11px}.su-briefbtns{flex-wrap:wrap}.su-cutoff{font-size:12px}.su-cutoff input{min-width:112px}.su-fields{grid-template-columns:1fr;padding:15px;gap:10px}.su-field.wide{grid-column:1}.su-drawer-head{padding:18px 15px}.su-drawer-foot{padding:13px 15px}.su-detail{padding:10px 15px}.su-detail>div:not(.su-linked){grid-template-columns:105px 1fr}.su-report-tools{margin-bottom:2px}}
+
+/* On small screens, registers become readable detail cards. No horizontal cut-off. */
+@media(max-width:560px){.su-table-wrap{overflow:visible;padding:4px 10px 10px}.su-table{min-width:0;width:100%;display:block}.su-table thead{display:none}.su-table tbody{display:block}.su-table tbody tr{display:block;border:1px solid #ebeaf4;background:#fff;border-radius:10px;margin:0 0 9px;padding:10px 12px}.su-table td{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;max-width:none;width:100%;min-width:0;padding:5px 0;border:0!important;white-space:normal;font-size:12px}.su-table td:before{content:attr(data-label);display:block;flex:0 0 91px;color:#59596f;font-size:12px;font-weight:700;padding-top:2px;line-height:1.4}.su-table td:first-child{display:block;padding-bottom:8px;border-bottom:1px solid #f0eff5!important;font-size:12px}.su-table td:first-child:before{display:none}.su-table td:last-child{border-top:1px solid #f0eff5!important;display:block;margin-top:6px;padding-top:8px}.su-table td:last-child:before{display:none}.su-row-actions{display:flex;flex-wrap:wrap;justify-content:flex-start;gap:5px}.su-row-actions .su-btn{font-size:12px;padding:6px}.su-table td b{min-width:0;overflow-wrap:anywhere}.su-table .su-chip{max-width:170px;white-space:normal}}
+
+.su-shell button:disabled{opacity:1;color:#59596f;background:#edf0f5;border-color:#d2d6e2}.su-brand b{overflow-wrap:anywhere}.su-heading-side,.su-card-head{max-width:100%;flex-wrap:wrap}.su-toolbar{flex-wrap:nowrap}.su-search-wrap,.su-toolbar .su-search-wrap{min-width:35px;flex:1 1 0}.su-toolbar-tail{flex:none}.su-drawer .su-warning{margin:8px 15px}.su-bar-row{flex-wrap:wrap}.su-topbar{height:auto;min-height:65px}.su-pager>div{flex-wrap:wrap}.su-hero-meter{max-width:100%}
+
+/* Keep navigation named and reachable on narrow touch screens. */
+@media(max-width:560px){.su-shell{display:block;padding-bottom:0}.su-sidebar{position:relative;z-index:40;bottom:0;left:0;right:0;width:100%;min-height:0;height:90px;padding:4px;display:block}.su-brand,.su-sidebar-foot{display:none}.su-sidebar nav{display:flex;flex-direction:row;gap:2px;height:100%}.su-navitem,.su-navitem.on{flex:1;min-width:0;max-width:20%;flex-direction:column;justify-content:center;gap:3px;padding:4px 1px;border:0}.su-navitem span:last-child{display:block;font-size:12px;line-height:1.2;white-space:normal;text-align:center;overflow-wrap:normal}.su-nav-icon{font-size:16px}.su-right{width:100%;min-width:0}}
+</style><body><div id="surface"></div><script>
+const source="const templateLayoutSchema={\"screens\":[{\"id\":\"overview\",\"label\":\"Overview\"},{\"id\":\"delivery\",\"label\":\"Delivery\"},{\"id\":\"actions\",\"label\":\"Risks & decisions\"},{\"id\":\"inputs\",\"label\":\"Team updates\"},{\"id\":\"reports\",\"label\":\"Sponsor reports\"}],\"groups\":{\"sponsors\":[{\"id\":\"name\",\"label\":\"Sponsor organization\"},{\"id\":\"sponsor_code\",\"label\":\"Internal sponsor key\"},{\"id\":\"liaison_role\",\"label\":\"Sponsor contact role\"}],\"projects\":[{\"id\":\"name\",\"label\":\"Study / project\"},{\"id\":\"project_code\",\"label\":\"Project code\"},{\"id\":\"phase\",\"label\":\"Development stage\"},{\"id\":\"cro_pm\",\"label\":\"CRO project lead\"},{\"id\":\"cadence\",\"label\":\"Sponsor reporting cadence\"},{\"id\":\"status\",\"label\":\"Project status\"}],\"milestones\":[{\"id\":\"name\",\"label\":\"Milestone\"},{\"id\":\"owner\",\"label\":\"Accountable owner\"},{\"id\":\"current_date\",\"label\":\"Current target date\"},{\"id\":\"status\",\"label\":\"Status\"},{\"id\":\"actual_date\",\"label\":\"Actual completion date\"}],\"deliverables\":[{\"id\":\"name\",\"label\":\"Deliverable\"},{\"id\":\"owner\",\"label\":\"Owner\"},{\"id\":\"due_date\",\"label\":\"Due date\"},{\"id\":\"status\",\"label\":\"Sponsor acceptance state\"},{\"id\":\"accepted_at\",\"label\":\"Date accepted\"}],\"actions\":[{\"id\":\"name\",\"label\":\"Risk, issue, action or decision\"},{\"id\":\"kind\",\"label\":\"Record kind\"},{\"id\":\"owner\",\"label\":\"Accountable owner\"},{\"id\":\"priority\",\"label\":\"Priority\"},{\"id\":\"status\",\"label\":\"Action state\"},{\"id\":\"due_date\",\"label\":\"Target decision / action date\"}],\"updates\":[{\"id\":\"name\",\"label\":\"Workstream update title\"},{\"id\":\"team\",\"label\":\"Function / workstream\"},{\"id\":\"revision\",\"label\":\"Update revision\"},{\"id\":\"contributor\",\"label\":\"Contributor\"},{\"id\":\"status\",\"label\":\"Review state\"},{\"id\":\"submitted_at\",\"label\":\"Submitted date\"}],\"reports\":[{\"id\":\"name\",\"label\":\"Sponsor report title\"},{\"id\":\"period_key\",\"label\":\"Reporting period\"},{\"id\":\"revision\",\"label\":\"Report revision\"},{\"id\":\"status\",\"label\":\"Review state\"},{\"id\":\"reviewer\",\"label\":\"Approved by\"},{\"id\":\"reviewed_at\",\"label\":\"Date approved\"}],\"distributions\":[{\"id\":\"name\",\"label\":\"Distribution entry\"},{\"id\":\"sent_date\",\"label\":\"Confirmed distribution date\"},{\"id\":\"channel\",\"label\":\"Manual channel\"},{\"id\":\"recipient_role\",\"label\":\"Recipient role / group\"}]}};\n/* CR-05 Sponsor Updates v1.0.1 — internal CRO sponsor reporting.\n   Host injects templateConfiguration & templateBindings once before this source.\n   No automatic sponsor disclosure, patient data, app login, or external email. */\nconst R={\"sponsors\":[{\"key\":\"name\",\"label\":\"Sponsor organization\",\"kind\":\"text\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"sponsor_code\",\"label\":\"Internal sponsor key\",\"kind\":\"text\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"liaison_role\",\"label\":\"Sponsor contact role\",\"kind\":\"text\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"contact_channel\",\"label\":\"Contact channel / approved location\",\"kind\":\"text\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"archived\",\"label\":\"Archived\",\"kind\":\"boolean\",\"required\":false,\"multiple\":false,\"options\":null}],\"projects\":[{\"key\":\"name\",\"label\":\"Study / project\",\"kind\":\"text\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"sponsor_id\",\"label\":\"Sponsor organization\",\"kind\":\"relation-sponsors\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"project_code\",\"label\":\"Project code\",\"kind\":\"text\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"phase\",\"label\":\"Development stage\",\"kind\":\"select\",\"required\":true,\"multiple\":false,\"options\":[\"Startup\",\"Active delivery\",\"Closeout\",\"On hold\"]},{\"key\":\"cro_pm\",\"label\":\"CRO project lead\",\"kind\":\"text\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"cadence\",\"label\":\"Sponsor reporting cadence\",\"kind\":\"select\",\"required\":true,\"multiple\":false,\"options\":[\"Weekly\",\"Biweekly\",\"Monthly\",\"Ad hoc\"]},{\"key\":\"expected_teams\",\"label\":\"Expected reporting teams (pipe-separated)\",\"kind\":\"text\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"status\",\"label\":\"Project status\",\"kind\":\"select\",\"required\":true,\"multiple\":false,\"options\":[\"Active\",\"On hold\",\"Closed\"]},{\"key\":\"archived\",\"label\":\"Archived\",\"kind\":\"boolean\",\"required\":false,\"multiple\":false,\"options\":null}],\"milestones\":[{\"key\":\"name\",\"label\":\"Milestone\",\"kind\":\"text\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"project_id\",\"label\":\"Study / project\",\"kind\":\"relation-projects\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"owner\",\"label\":\"Accountable owner\",\"kind\":\"text\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"baseline_date\",\"label\":\"Original baseline date\",\"kind\":\"date\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"current_date\",\"label\":\"Current target date\",\"kind\":\"date\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"actual_date\",\"label\":\"Actual completion date\",\"kind\":\"date\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"status\",\"label\":\"Status\",\"kind\":\"select\",\"required\":true,\"multiple\":false,\"options\":[\"Planned\",\"In progress\",\"Achieved\",\"Blocked\",\"Cancelled\"]},{\"key\":\"change_reason\",\"label\":\"Reason for revised target\",\"kind\":\"longtext\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"evidence_ref\",\"label\":\"Completion source reference\",\"kind\":\"longtext\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"archived\",\"label\":\"Archived\",\"kind\":\"boolean\",\"required\":false,\"multiple\":false,\"options\":null}],\"deliverables\":[{\"key\":\"name\",\"label\":\"Deliverable\",\"kind\":\"text\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"project_id\",\"label\":\"Study / project\",\"kind\":\"relation-projects\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"owner\",\"label\":\"Owner\",\"kind\":\"text\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"due_date\",\"label\":\"Due date\",\"kind\":\"date\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"status\",\"label\":\"Sponsor acceptance state\",\"kind\":\"select\",\"required\":true,\"multiple\":false,\"options\":[\"Planned\",\"In progress\",\"Submitted\",\"Accepted\",\"Rework\"]},{\"key\":\"acceptance_evidence\",\"label\":\"Sponsor acceptance evidence reference\",\"kind\":\"longtext\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"accepted_at\",\"label\":\"Date accepted\",\"kind\":\"date\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"sponsor_feedback\",\"label\":\"Sponsor feedback / rework action\",\"kind\":\"longtext\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"archived\",\"label\":\"Archived\",\"kind\":\"boolean\",\"required\":false,\"multiple\":false,\"options\":null}],\"actions\":[{\"key\":\"name\",\"label\":\"Risk, issue, action or decision\",\"kind\":\"text\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"project_id\",\"label\":\"Study / project\",\"kind\":\"relation-projects\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"kind\",\"label\":\"Record kind\",\"kind\":\"select\",\"required\":true,\"multiple\":false,\"options\":[\"Risk\",\"Issue\",\"Action\",\"Decision\"]},{\"key\":\"owner\",\"label\":\"Accountable owner\",\"kind\":\"text\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"priority\",\"label\":\"Priority\",\"kind\":\"select\",\"required\":true,\"multiple\":false,\"options\":[\"High\",\"Medium\",\"Low\"]},{\"key\":\"status\",\"label\":\"Action state\",\"kind\":\"select\",\"required\":true,\"multiple\":false,\"options\":[\"Open\",\"Blocked\",\"Resolved\",\"Approved\",\"Rejected\"]},{\"key\":\"due_date\",\"label\":\"Target decision / action date\",\"kind\":\"date\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"mitigation\",\"label\":\"Mitigation, decision rationale or next step\",\"kind\":\"longtext\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"evidence_ref\",\"label\":\"Outcome evidence reference\",\"kind\":\"longtext\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"decision_by\",\"label\":\"Decision approver\",\"kind\":\"text\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"decision_at\",\"label\":\"Date approved or rejected\",\"kind\":\"date\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"archived\",\"label\":\"Archived\",\"kind\":\"boolean\",\"required\":false,\"multiple\":false,\"options\":null}],\"updates\":[{\"key\":\"name\",\"label\":\"Workstream update title\",\"kind\":\"text\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"project_id\",\"label\":\"Study / project\",\"kind\":\"relation-projects\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"period_key\",\"label\":\"Reporting period (YYYY-MM or YYYY-Www)\",\"kind\":\"text\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"team\",\"label\":\"Function / workstream\",\"kind\":\"select\",\"required\":true,\"multiple\":false,\"options\":[\"Clinical Operations\",\"Data Management\",\"Regulatory\",\"Medical Writing\",\"Biostatistics\",\"Quality\",\"Vendor Management\",\"Project Management\",\"Other\"]},{\"key\":\"revision\",\"label\":\"Update revision\",\"kind\":\"number\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"contributor\",\"label\":\"Contributor\",\"kind\":\"text\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"submitted_at\",\"label\":\"Submitted date\",\"kind\":\"date\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"status\",\"label\":\"Review state\",\"kind\":\"select\",\"required\":true,\"multiple\":false,\"options\":[\"Draft\",\"Submitted\",\"Changes requested\",\"Accepted\"]},{\"key\":\"highlights\",\"label\":\"Progress and achievements\",\"kind\":\"longtext\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"blockers\",\"label\":\"Blockers and changes\",\"kind\":\"longtext\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"next_steps\",\"label\":\"Next steps\",\"kind\":\"longtext\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"source_refs\",\"label\":\"Source record references / evidence\",\"kind\":\"longtext\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"reviewer\",\"label\":\"Reviewer\",\"kind\":\"text\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"reviewed_at\",\"label\":\"Reviewed date\",\"kind\":\"date\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"archived\",\"label\":\"Archived\",\"kind\":\"boolean\",\"required\":false,\"multiple\":false,\"options\":null}],\"reports\":[{\"key\":\"name\",\"label\":\"Sponsor report title\",\"kind\":\"text\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"project_id\",\"label\":\"Study / project\",\"kind\":\"relation-projects\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"period_key\",\"label\":\"Reporting period\",\"kind\":\"text\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"revision\",\"label\":\"Report revision\",\"kind\":\"number\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"as_of\",\"label\":\"Reporting data cutoff\",\"kind\":\"date\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"status\",\"label\":\"Review state\",\"kind\":\"select\",\"required\":true,\"multiple\":false,\"options\":[\"Draft\",\"In review\",\"Approved\"]},{\"key\":\"prepared_by\",\"label\":\"Prepared by\",\"kind\":\"text\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"narrative\",\"label\":\"Sponsor-facing approved narrative\",\"kind\":\"longtext\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"source_refs\",\"label\":\"Snapshot source references\",\"kind\":\"longtext\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"source_digest\",\"label\":\"Source version signature\",\"kind\":\"longtext\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"coverage_note\",\"label\":\"Team input coverage at preparation\",\"kind\":\"text\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"reviewer\",\"label\":\"Approved by\",\"kind\":\"text\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"reviewed_at\",\"label\":\"Date approved\",\"kind\":\"date\",\"required\":false,\"multiple\":false,\"options\":null},{\"key\":\"archived\",\"label\":\"Archived\",\"kind\":\"boolean\",\"required\":false,\"multiple\":false,\"options\":null}],\"distributions\":[{\"key\":\"name\",\"label\":\"Distribution entry\",\"kind\":\"text\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"project_id\",\"label\":\"Study / project\",\"kind\":\"relation-projects\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"report_id\",\"label\":\"Approved report version\",\"kind\":\"relation-reports\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"sent_date\",\"label\":\"Confirmed distribution date\",\"kind\":\"date\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"channel\",\"label\":\"Manual channel\",\"kind\":\"select\",\"required\":true,\"multiple\":false,\"options\":[\"Manual email\",\"Sponsor meeting\",\"Shared workspace\",\"Other\"]},{\"key\":\"recipient_role\",\"label\":\"Recipient role / group\",\"kind\":\"text\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"recorded_by\",\"label\":\"Recorded by\",\"kind\":\"text\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"confirmation_ref\",\"label\":\"Independent evidence of manual distribution\",\"kind\":\"longtext\",\"required\":true,\"multiple\":false,\"options\":null},{\"key\":\"archived\",\"label\":\"Archived\",\"kind\":\"boolean\",\"required\":false,\"multiple\":false,\"options\":null}]};\nconst CSS=\"/* CR-05 Sponsor Updates — original, reference-informed, responsive TrialAgents frontend-js */\\n*{box-sizing:border-box}.su-shell{--ink:#2b3048;--navy:#2e2840;--plum:#7655c3;--purple:#6350b3;--mint:#16a99c;--paper:#f6f7fb;--border:#e5e7f0;--muted:#59596f;display:flex;min-height:740px;background:#f7f8fc;color:var(--ink);font:15px/1.48 Inter,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden}.su-shell button,.su-shell input,.su-shell select,.su-shell textarea{font:inherit}.su-shell button{cursor:pointer}.su-shell button:disabled{opacity:1;cursor:not-allowed}.su-shell *:focus-visible{outline:2px solid #9075f0;outline-offset:2px}.su-sidebar{width:232px;flex-shrink:0;background:linear-gradient(174deg,#292238 0%,#373049 63%,#2d293f 100%);color:#ece9f7;padding:27px 13px 18px;display:flex;flex-direction:column;gap:23px;min-height:740px}.su-brand{padding:5px 13px 18px;border-bottom:1px solid #ffffff1c;display:flex;flex-direction:column;gap:2px}.su-brand b{font-size:18px;letter-spacing:-.55px;color:#fff;font-weight:740}.su-brand span{color:#c3bcd4;font-size:12px}.su-sidebar nav{display:flex;flex-direction:column;gap:4px}.su-navitem{display:flex;align-items:center;gap:13px;text-align:left;width:100%;min-height:41px;border:1px solid transparent;border-radius:9px;padding:10px 12px;background:transparent;color:#ded8ee;font-weight:570;font-size:12px}.su-navitem:hover{background:#ffffff10}.su-navitem.on{color:#fff;background:#ffffff1b;border-left:3px solid #c2a8ff;padding-left:10px;font-weight:710}.su-nav-icon{font-size:15px;width:19px;text-align:center;color:#ccbdea}.su-sidebar-foot{margin-top:auto;border-top:1px solid #ffffff24;padding:19px 12px 4px;display:flex;flex-direction:column;gap:3px;color:#d9d4e2;font-size:12px}.su-sidebar-foot small{font-size:12px;color:#aca7be}.su-right{min-width:0;flex:1;display:flex;flex-direction:column}.su-topbar{height:65px;flex-shrink:0;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;padding:9px 28px;position:sticky;top:0;z-index:10}.su-topbar label{display:flex;flex-direction:column;font-size:12px;letter-spacing:1.1px;color:var(--muted);font-weight:730;gap:3px}.su-topbar select,.su-topbar input{padding:5px 25px 5px 9px;min-width:175px;max-width:330px;height:29px;background:#fff;color:#35334e;border:1px solid #dfe1ec;border-radius:7px;font-size:12px;letter-spacing:0;font-weight:550}.su-topbar select{max-width:280px}.su-topspacer{flex:1}.su-top-right{display:flex;gap:12px;align-items:center}.su-sponsor{font-size:12px;color:#59596f;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.su-main{padding:22px 28px 22px;min-width:0;flex:1;max-width:1510px;width:100%;margin:0 auto}.su-report-tools{display:flex;justify-content:flex-end;min-height:34px}.su-cutoff{display:flex;align-items:center;gap:8px;color:#59596f;font-size:12px}.su-cutoff input{border:1px solid #e0e3eb;border-radius:8px;background:white;padding:6px 9px;font-size:12px;color:#4e5167;min-width:131px}.su-heading{margin:2px 0 18px;display:flex;align-items:flex-start;justify-content:space-between;gap:15px}.su-heading h1{margin:0;font-size:25px;letter-spacing:-1.1px;color:#2e314b;font-weight:780;line-height:1.24}.su-heading p{margin:5px 0 0;color:#59596f;font-size:12px}.su-heading-side{display:flex;align-items:center;gap:7px}.su-btn{padding:8px 12px;min-height:32px;border-radius:8px;border:1px solid #e1e2eb;color:#4b5069;background:#fff;white-space:nowrap;font-size:12px;font-weight:620;transition:background .1s}.su-btn:hover{background:#f3f0fc}.su-btn.primary{background:#7454bf;color:#fff;border-color:#7454bf;box-shadow:0 2px 7px #704fb221}.su-btn.primary:hover{background:#6244ad}.su-btn.quiet{color:#66677e;background:#fff}.su-btn.link{color:#7051b6;background:transparent;border-color:transparent;padding:4px 6px;min-height:26px}.su-btn.link:hover{background:#f5f0ff}.su-btn.icon{font-size:20px;line-height:1;padding:4px 9px;min-height:28px}.su-btn.inverted{background:#fff;color:#3e355e;border-color:#ffffff60}.su-btn.danger{color:#ac586a}.su-btn.dangerfill{color:#fff;background:#ae405d;border-color:#ae405d}.su-notice{background:#f5edff;border:1px solid #e2d0ff;color:#5e438f;border-radius:10px;padding:9px 12px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}.su-warning{color:#745f38;background:#fff6e9;border:1px solid #f5dfbf;padding:10px 13px;border-radius:10px;margin-bottom:15px;line-height:1.55}.su-report-hero{border-radius:15px;background:linear-gradient(115deg,#3a2d51 0%,#51416c 67%,#68519a 100%);color:white;padding:26px 30px;display:flex;justify-content:space-between;gap:35px;margin:0 0 17px;box-shadow:0 10px 25px #44346516}.su-hero-left{min-width:0;flex:1}.su-eyebrow{font-size:12px;letter-spacing:1.7px;font-weight:770;color:#dbd1ed;display:block;margin-bottom:8px}.su-hero-left>strong{font-size:29px;line-height:1.16;letter-spacing:-.9px;display:block;font-weight:780}.su-hero-left>p{font-size:12px;color:#ddd3f5;margin:5px 0 18px}.su-hero-coverage{display:inline-block;border-radius:30px;padding:6px 12px;background:#ffffff20;color:#eae6fb;font-size:12px;font-weight:640}.su-hero-right{min-width:200px;display:flex;flex-direction:column;align-items:flex-end;gap:7px}.su-hero-right span{font-size:12px;color:#e0d8f3}.su-hero-right b{font-size:29px;line-height:1.2;letter-spacing:-1px}.su-hero-meter{height:7px;background:#ffffff3b;border-radius:10px;width:190px;overflow:hidden;margin-bottom:4px}.su-hero-meter i{display:block;height:100%;background:#5be3cd;border-radius:10px}.su-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:17px}.su-stat{background:white;border:1px solid var(--border);border-top:3px solid #9371d4;border-radius:12px;padding:16px 17px;display:flex;flex-direction:column;gap:5px;min-height:116px;box-shadow:0 4px 12px #2d325c07}.su-stat:nth-child(2){border-top-color:#4aafaf}.su-stat:nth-child(3){border-top-color:#e0a85c}.su-stat:nth-child(4){border-top-color:#7560c5}.su-stat span{font-size:12px;font-weight:720;color:#59596f}.su-stat strong{font-size:25px;letter-spacing:-1px;line-height:1.2;color:#32314a}.su-stat small{font-size:12px;color:#59596f}.su-duo{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;align-items:start}.su-duo.large-left{grid-template-columns:.85fr 1.15fr}.su-card{min-width:0;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 3px 9px #25294b05;margin-bottom:15px;overflow:hidden}.su-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 17px 12px}.su-card-head h2{font-size:14px;line-height:1.3;letter-spacing:-.3px;margin:0;color:#31334e;font-weight:760}.su-card>.su-muted,.su-card>.su-briefstats,.su-card>.su-briefbtns,.su-card>.su-caution,.su-card>.su-oknote,.su-card>.su-prompt{margin-left:17px;margin-right:17px}.su-card>.su-muted{margin-top:0}.su-card>.su-btn{margin:4px 0 18px 17px}.su-card>.su-card-head+.su-priority{margin-top:0}.su-priority,.su-milestone{display:flex;align-items:center;gap:10px;padding:12px 17px;border-top:1px solid #eef0f5}.su-priority>div,.su-milestone>div{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}.su-priority strong,.su-milestone b{font-size:12px;color:#3c3a58;overflow-wrap:anywhere}.su-priority small,.su-milestone small{font-size:12px;color:#59596f}.su-prio-mark{width:6px;height:27px;border-radius:8px;background:#a38bd2}.su-prio-mark.late{background:#df8066}.su-milestone>span{min-width:78px;font-size:12px;color:#6c608a;background:#f4f0fa;padding:7px 8px;border-radius:7px}.su-chip{font-size:12px;border-radius:30px;padding:4px 9px;display:inline-flex;align-items:center;white-space:nowrap;font-weight:680;background:#f0f1f6;color:#59596f}.su-chip.good{background:#e5f7f1;color:#18684f}.su-chip.warn{background:#fff4e5;color:#79571e}.su-chip.bad{background:#ffedef;color:#a33b48}.su-chip.neutral{background:#f0f2f7;color:#59596f}.su-subtabs{display:flex;gap:8px;margin-bottom:17px;border-bottom:1px solid #e7e8f1;padding-bottom:8px;overflow-x:auto}.su-subtabs .su-btn{border:none;border-radius:7px;padding:9px 14px}.su-subtabs .su-btn.selected{color:#6548ac;background:#ece6f9;border-color:transparent}.su-toolbar{display:flex;align-items:center;gap:9px;padding:11px 15px 8px;flex-wrap:wrap}.su-search-wrap{flex:1;min-width:150px}.su-toolbar input{width:100%;height:34px;background:#fff;border:1px solid #e3e5ed;border-radius:8px;padding:8px 11px;color:#4d5067;font-size:12px}.su-toolbar-tail{display:flex;margin-left:auto;align-items:center}.su-filters{padding:0 16px 12px;display:flex;gap:7px;flex-wrap:wrap}.su-filters .su-btn.active{background:#eae3fa;border-color:#cbb8e5;color:#6348a9}.su-table-wrap{width:100%;overflow-x:auto;max-width:100%}.su-table{border-collapse:collapse;width:100%;min-width:580px}.su-table th{text-align:left;white-space:nowrap;background:#f6f6fa;border-top:1px solid #eef0f5;border-bottom:1px solid #ececf4;padding:10px 13px;font-size:12px;color:#59596f;font-weight:720}.su-table td{padding:11px 13px;border-bottom:1px solid #f0f1f6;vertical-align:middle;color:#61667c;font-size:12px;max-width:260px;overflow-wrap:anywhere}.su-table td b{color:#353852;font-weight:690}.su-table tr:hover td{background:#fbfaff}.su-table .su-actions-col{min-width:225px}.su-row-actions{display:flex;align-items:center;gap:2px;white-space:nowrap}.su-row-actions .su-btn{font-size:12px}.su-pager{padding:13px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#59596f;font-size:12px}.su-pager>div{display:flex;align-items:center;gap:6px}.su-pager small{white-space:nowrap;font-size:12px}.su-pager button{min-height:26px;padding:4px 9px}.su-empty{margin:8px 17px 18px;font-size:12px;color:#59596f;line-height:1.6}.su-muted{font-size:12px;color:#59596f;line-height:1.6}.su-team-row{display:flex;align-items:center;gap:11px;padding:11px 16px;border-top:1px solid #eceef4;min-width:0}.su-team-row>div:nth-child(2){min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}.su-team-row b{font-size:12px;color:#363754}.su-team-row small{color:#59596f;font-size:12px}.su-team-icon{width:31px;height:31px;flex-shrink:0;background:#efe9fa;color:#7657b9;font-size:13px;font-weight:780;border-radius:9px;display:grid;place-items:center}.su-input-summary{margin:0 0 17px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 20px}.su-input-summary p{margin:8px 0 0;color:#59596f;font-size:12px}.su-bar-row{display:flex;align-items:center;gap:12px;color:#59596f;font-size:12px}.su-bar-row>span{width:130px;flex-shrink:0;font-weight:650}.su-bar-row>b{width:40px;text-align:right;font-size:12px;color:#484661}.su-bar{height:8px;background:#efedf4;border-radius:10px;flex:1;overflow:hidden}.su-bar>i{display:block;height:100%;background:linear-gradient(90deg,#7c60cb,#37b7b1);border-radius:10px}.su-briefstats{padding:8px 0 12px}.su-briefstats>span{display:block;margin-top:9px;color:#59596f;font-size:12px}.su-briefbtns{display:flex;gap:9px;padding-bottom:10px}.su-prompt{background:#f9f7ff;border:1px solid #e8e1f6;padding:14px;border-radius:10px;margin-top:8px;margin-bottom:15px;color:#5b5473}.su-prompt b{font-size:12px}.su-prompt p{font-size:12px;line-height:1.7;overflow-wrap:anywhere}.su-prompt small{color:#59596f}.su-caution,.su-oknote{font-size:12px;margin-top:3px;margin-bottom:16px;padding:10px 11px;border-radius:8px;line-height:1.5}.su-caution{color:#8d662f;background:#fff5e7}.su-oknote{color:#1c6753;background:#e9f8f3}.su-boundary{font-size:12px;color:#59596f;text-align:center;margin:20px 0 0}.su-overlay{position:fixed;z-index:50;inset:0;display:flex;justify-content:flex-end;background:#1d1b32a0}.su-drawer{display:flex;flex-direction:column;background:#fff;width:min(625px,100vw);height:100%;overflow:hidden;box-shadow:-11px 0 40px #17132c30}.su-drawer-head{display:flex;justify-content:space-between;align-items:flex-start;padding:20px 23px;border-bottom:1px solid #e7e7f2;gap:10px}.su-drawer-head b{font-size:17px;letter-spacing:-.3px}.su-drawer-head p{font-size:12px;color:#59596f;margin:2px 0 0}.su-drawer form{display:flex;flex:1;min-height:0;flex-direction:column}.su-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px;padding:19px 22px;overflow-y:auto;align-content:start}.su-field{min-width:0;display:flex;flex-direction:column;gap:5px}.su-field span{font-size:12px;font-weight:700;color:#59596f}.su-field em{color:#b45365;font-style:normal}.su-field.wide{grid-column:1/-1}.su-field input,.su-field select,.su-field textarea{border:1px solid #dfe1ea;border-radius:8px;min-height:36px;padding:9px;color:#3c3a54;background:#fff;font-size:12px;width:100%;resize:vertical}.su-field input[type=checkbox]{width:20px;height:20px;min-height:20px;accent-color:#7957bb}.su-extra{padding:4px 22px 12px}.su-drawer-foot{padding:14px 22px;border-top:1px solid #e6e6ee;display:flex;justify-content:flex-end;align-items:center;gap:9px;margin-top:auto}.su-detail{padding:10px 24px 20px;overflow-y:auto;min-height:0;flex:1}.su-detail>div:not(.su-linked){border-bottom:1px solid #eff0f4;display:grid;grid-template-columns:190px 1fr;gap:10px;padding:11px 0}.su-detail>div>span{font-size:12px;color:#59596f}.su-detail>div>b{font-size:12px;color:#414158;font-weight:600;white-space:pre-wrap;overflow-wrap:anywhere}.su-linked{border-top:1px solid #ececf3;padding-top:15px;margin-top:17px}.su-linked h3{margin:0 0 10px;font-size:13px}.su-linkedline{padding:10px 0;display:flex;justify-content:space-between;align-items:center;gap:9px;border-bottom:1px solid #f1f1f5}.su-linkedline>span{flex:1;font-size:12px;color:#494962;display:flex;flex-direction:column}.su-linkedline small{color:#59596f}.su-center{align-items:center;justify-content:center}.su-dialog{background:#fff;max-width:min(435px,94vw);border-radius:15px;padding:24px;box-shadow:0 14px 45px #18132630}.su-dialog h2{margin:0 0 10px;font-size:18px}.su-dialog p{font-size:12px;color:#59596f}.su-dialog>div{display:flex;justify-content:flex-end;gap:9px;margin-top:18px}\\n@media(max-width:1100px){.su-sidebar{width:196px}.su-main{padding:20px}.su-topbar{padding-left:18px;padding-right:18px}.su-stats{gap:10px}.su-hero-left>strong{font-size:26px}.su-sponsor{display:none}.su-table td{padding:10px 9px}.su-card-head{padding:14px}}\\n@media(max-width:850px){.su-sidebar{width:67px;padding:18px 8px}.su-brand{padding:4px 2px 14px;text-align:center}.su-brand b{font-size:12px;letter-spacing:-.1px}.su-brand span{display:none}.su-navitem{justify-content:center;padding:11px 0;min-height:45px}.su-navitem.on{padding-left:0;border-left:0;border-top:3px solid #c2a8ff}.su-navitem span:last-child{display:none}.su-sidebar-foot{display:none}.su-duo,.su-duo.large-left{grid-template-columns:1fr}.su-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.su-main{padding:18px}.su-heading h1{font-size:22px}.su-topbar select{min-width:130px;max-width:215px}.su-topbar input{min-width:135px}}\\n@media(max-width:560px){.su-shell{min-height:670px}.su-sidebar{width:53px;padding:14px 5px}.su-brand b{font-size:12px}.su-nav-icon{font-size:17px}.su-topbar{height:auto;min-height:63px;padding:8px 10px;gap:6px}.su-topbar label{font-size:12px;min-width:0;flex:1}.su-topbar select,.su-topbar input{width:100%;min-width:0;max-width:100%;padding:4px 4px;font-size:12px}.su-top-right .su-btn{padding:7px;font-size:12px}.su-topspacer{display:none}.su-main{padding:14px 11px}.su-heading{gap:8px;flex-direction:column;margin-bottom:14px}.su-heading h1{font-size:20px}.su-heading p{font-size:12px}.su-heading-side{align-self:flex-end}.su-report-hero{padding:19px;flex-direction:column;gap:14px}.su-hero-right{min-width:0;align-items:flex-start}.su-hero-left>strong{font-size:25px}.su-hero-right b{font-size:24px}.su-stats{gap:8px}.su-stat{min-height:103px;padding:13px 10px}.su-stat span{font-size:12px}.su-stat strong{font-size:20px}.su-stat small{font-size:12px}.su-priority,.su-milestone{padding:11px 10px;gap:7px;flex-wrap:wrap}.su-priority .su-chip{display:none}.su-card-head{padding:14px 11px 8px}.su-card-head h2{font-size:13px}.su-card-head .su-btn{font-size:12px}.su-team-row{padding:10px;gap:7px;flex-wrap:wrap}.su-team-row .su-chip{font-size:12px}.su-toolbar{padding:10px;gap:5px}.su-toolbar .su-search-wrap{flex-basis:100%}.su-toolbar-tail{margin-left:auto}.su-toolbar .su-btn{font-size:12px;padding:7px 9px}.su-pager{padding:10px;flex-wrap:wrap}.su-pager>div{margin-left:auto}.su-card>.su-muted,.su-card>.su-briefstats,.su-card>.su-briefbtns,.su-card>.su-caution,.su-card>.su-oknote,.su-card>.su-prompt{margin-left:11px;margin-right:11px}.su-briefbtns{flex-wrap:wrap}.su-cutoff{font-size:12px}.su-cutoff input{min-width:112px}.su-fields{grid-template-columns:1fr;padding:15px;gap:10px}.su-field.wide{grid-column:1}.su-drawer-head{padding:18px 15px}.su-drawer-foot{padding:13px 15px}.su-detail{padding:10px 15px}.su-detail>div:not(.su-linked){grid-template-columns:105px 1fr}.su-report-tools{margin-bottom:2px}}\\n\\n/* On small screens, registers become readable detail cards. No horizontal cut-off. */\\n@media(max-width:560px){.su-table-wrap{overflow:visible;padding:4px 10px 10px}.su-table{min-width:0;width:100%;display:block}.su-table thead{display:none}.su-table tbody{display:block}.su-table tbody tr{display:block;border:1px solid #ebeaf4;background:#fff;border-radius:10px;margin:0 0 9px;padding:10px 12px}.su-table td{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;max-width:none;width:100%;min-width:0;padding:5px 0;border:0!important;white-space:normal;font-size:12px}.su-table td:before{content:attr(data-label);display:block;flex:0 0 91px;color:#59596f;font-size:12px;font-weight:700;padding-top:2px;line-height:1.4}.su-table td:first-child{display:block;padding-bottom:8px;border-bottom:1px solid #f0eff5!important;font-size:12px}.su-table td:first-child:before{display:none}.su-table td:last-child{border-top:1px solid #f0eff5!important;display:block;margin-top:6px;padding-top:8px}.su-table td:last-child:before{display:none}.su-row-actions{display:flex;flex-wrap:wrap;justify-content:flex-start;gap:5px}.su-row-actions .su-btn{font-size:12px;padding:6px}.su-table td b{min-width:0;overflow-wrap:anywhere}.su-table .su-chip{max-width:170px;white-space:normal}}\\n\\n.su-shell button:disabled{opacity:1;color:#59596f;background:#edf0f5;border-color:#d2d6e2}.su-brand b{overflow-wrap:anywhere}.su-heading-side,.su-card-head{max-width:100%;flex-wrap:wrap}.su-toolbar{flex-wrap:nowrap}.su-search-wrap,.su-toolbar .su-search-wrap{min-width:35px;flex:1 1 0}.su-toolbar-tail{flex:none}.su-drawer .su-warning{margin:8px 15px}.su-bar-row{flex-wrap:wrap}.su-topbar{height:auto;min-height:65px}.su-pager>div{flex-wrap:wrap}.su-hero-meter{max-width:100%}\\n\\n/* Keep navigation named and reachable on narrow touch screens. */\\n@media(max-width:560px){.su-shell{display:block;padding-bottom:0}.su-sidebar{position:relative;z-index:40;bottom:0;left:0;right:0;width:100%;min-height:0;height:90px;padding:4px;display:block}.su-brand,.su-sidebar-foot{display:none}.su-sidebar nav{display:flex;flex-direction:row;gap:2px;height:100%}.su-navitem,.su-navitem.on{flex:1;min-width:0;max-width:20%;flex-direction:column;justify-content:center;gap:3px;padding:4px 1px;border:0}.su-navitem span:last-child{display:block;font-size:12px;line-height:1.2;white-space:normal;text-align:center;overflow-wrap:normal}.su-nav-icon{font-size:16px}.su-right{width:100%;min-width:0}}\\n\";\nconst defaultCols={\"sponsors\":[\"name\",\"sponsor_code\",\"liaison_role\"],\"projects\":[\"name\",\"project_code\",\"phase\",\"cro_pm\",\"cadence\",\"status\"],\"milestones\":[\"name\",\"owner\",\"current_date\",\"status\",\"actual_date\"],\"deliverables\":[\"name\",\"owner\",\"due_date\",\"status\",\"accepted_at\"],\"actions\":[\"name\",\"kind\",\"owner\",\"priority\",\"status\",\"due_date\"],\"updates\":[\"name\",\"team\",\"revision\",\"contributor\",\"status\",\"submitted_at\"],\"reports\":[\"name\",\"period_key\",\"revision\",\"status\",\"reviewer\",\"reviewed_at\"],\"distributions\":[\"name\",\"sent_date\",\"channel\",\"recipient_role\"]};\nconst cfg=(typeof templateConfiguration==='object'&&templateConfiguration)?templateConfiguration:{};\nconst inp=input||{},ev=inp.event||{},action=String(ev.action||'');\nconst screens=[['overview','Overview'],['delivery','Delivery'],['actions','Risks & decisions'],['inputs','Team updates'],['reports','Sponsor reports']];\nconst TEAMS=['Clinical Operations','Data Management','Regulatory','Medical Writing','Biostatistics','Quality','Vendor Management','Project Management','Other'];\nconst esc=x=>String(x===null||x===undefined?'':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#39;');\nfunction shortText(value,max=120){let out='',size=0;for(const ch of String(value??'')){const encoded=esc(ch);if(size+encoded.length>max-1)return out+'…';out+=encoded;size+=encoded.length;}return out;}\nconst bool=x=>x===true||x==='true'||x===1||x==='1';\nconst num=x=>(x===null||x===undefined||x===''||!Number.isFinite(Number(x)))?null:Number(x);\nconst iso=x=>{let s=String(x||'');if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(s))return '';let d=new Date(s+'T00:00:00Z');return Number.isNaN(+d)||d.toISOString().slice(0,10)!==s?'':s;};\nconst periodValid=p=>/^\\d{4}-(0[1-9]|1[0-2]|W(0[1-9]|[1-4]\\d|5[0-3]))$/.test(String(p||''));\nconst systemToday=new Date().toISOString().slice(0,10);\nconst today=iso(cfg.asOfDate)||systemToday;\nlet mappings={},layout={};try{mappings=JSON.parse(cfg.tableMap||'{}')||{}}catch(e){}try{layout=JSON.parse(cfg.layoutProfile||'{}')||{}}catch(e){}\nconst mp={};for(let role of Object.keys(R)){let m=mappings[role]||{};mp[role]={typeId:String(m.typeId||''),fields:m.fields||{},writable:m.writableFields||[],valid:!!m.typeId};}\nconst req={};for(let role of Object.keys(R))req[role]=R[role].map(f=>f.key);\nlet st=Object.assign({route:'overview',projectId:String(cfg.initialProjectId||''),period:String(cfg.initialPeriod||today.slice(0,7)),asOf:today,query:'',filter:'all',pageByRole:{},deliveryTab:'milestones',manageTab:'projects',reportsTab:'reports',moreFilters:false,detail:null,editor:null,del:null,showMore:false,showPrompt:false,notice:''},inp.state||{});\nif(!st.pageByRole||typeof st.pageByRole!=='object')st.pageByRole={};\nconst per=Math.min(50,Math.max(10,num(cfg.pageSize)||25)),cache={},pageCache={};\nfunction norm(role,row){let d={};for(let f of R[role]){let k=mp[role].fields[f.key];if(k&&row.data&&Object.prototype.hasOwnProperty.call(row.data,k))d[f.key]=row.data[k];}return{id:row.id,version:row.version,data:d};}\nfunction scalar(f,v){if(v===null)return !f.required&&f.kind!=='boolean';if(f.kind==='boolean')return typeof v==='boolean';if(f.kind==='number')return typeof v==='number'&&Number.isFinite(v);if(typeof v!=='string'||(f.required&&!v.trim()))return false;if(f.kind==='date')return !!iso(v);if(f.kind==='select')return f.options.includes(v);return true;}\nfunction read(role,offset,limit){const key=role+':'+offset+':'+limit;if(pageCache[key])return pageCache[key];return pageCache[key]=readPage(role,offset,limit);}\nfunction readPage(role,offset,limit){let m=mp[role];if(!m.valid)return{rows:[],total:null,raw:0,issue:'No authorized '+role+' table'};let binding=Array.isArray(templateBindings)?templateBindings.find(b=>b.typeId===m.typeId):null;let miss=req[role].filter(k=>!m.fields[k]||!binding?.fields?.includes(m.fields[k]));if(miss.length)return{rows:[],total:null,raw:0,issue:'Missing approved bindings: '+miss.join(', ')};\n try{let r=tools.call('records.read',{typeId:m.typeId,offset,limit,filters:{}});if(!r||r.unavailable||!Array.isArray(r.rows)||!Number.isInteger(r.total)||r.total<0)return{rows:[],total:null,raw:0,issue:'Source unavailable or total unknown'};if(JSON.stringify(r.rows).length>100000)return{rows:[],total:r.total,raw:0,issue:'Source page exceeds safe data budget'};let n=Math.min(limit,Math.max(0,r.total-offset));if(r.rows.length!==n)return{rows:[],total:r.total,raw:0,issue:'Incomplete / short page'};\n if(r.rows.some(x=>!x||typeof x.id!=='string'||!x.id||!Number.isInteger(x.version)||x.version<0||!x.data||typeof x.data!=='object'||R[role].some(f=>!Object.prototype.hasOwnProperty.call(x.data,m.fields[f.key])||!scalar(f,x.data[m.fields[f.key]]))))return{rows:[],total:r.total,raw:0,issue:'Missing or invalid fields, denied data or invalid envelope'};return{rows:r.rows.map(x=>norm(role,x)).filter(x=>!x.data.archived),ids:r.rows.map(x=>x.id),total:r.total,raw:r.rows.length,issue:''};}\n catch(e){return{rows:[],total:null,raw:0,issue:'Read unavailable: '+String(e.message||e).slice(0,100)}}}\nfunction all(role){if(cache[role])return cache[role];let rows=[],total=null,off=0,issue='',seen=new Set();for(let i=0;i<6;i++){let v=read(role,off,100);if(v.issue){issue=v.issue;break;}if(total!==null&&v.total!==total){issue='Source changed during reading';break;}if(v.ids.some(id=>seen.has(id))||new Set(v.ids).size!==v.ids.length){issue='Duplicate source records';break;}v.ids.forEach(id=>seen.add(id));total=v.total;rows.push(...v.rows);off+=v.raw;if(off===total)break;if(v.raw!==100){issue='Short page';break;}if(i===5&&off<total)issue='Over 600 records: aggregate coverage incomplete';}return cache[role]={rows,total,complete:!issue&&total!==null&&off===total,issue};}\nfunction complete(...roles){for(let r of roles)if(!all(r).complete)throw Error('Incomplete '+r+' coverage: '+all(r).issue);}\nfunction covered(...roles){return roles.every(r=>all(r).complete);}\nfunction warn(...roles){let x=roles.filter(r=>!all(r).complete);return x.length?'<div class=\"su-warning\" role=\"status\"><b>Coverage incomplete.</b> '+esc(x.map(r=>r+': '+all(r).issue).join(' · '))+'. Exact totals and report approval are withheld.</div>':'';}\nfunction get(role,id){if(!id)return null;return all(role).rows.find(x=>x.id===id)||(!all(role).complete?page(role).rows.find(x=>x.id===id):null)||null;}\nfunction label(role,id){let x=get(role,id);return x?String(x.data.name||x.data.project_code||x.id):id?'Unavailable / not authorized':'—';}\nfunction can(role,keys=['name']){let m=mp[role];return inp.saved===true&&inp.writable===true&&cfg.readOnly!==true&&m.valid&&keys.every(k=>m.fields[k]&&m.writable.includes(k));}\nfunction currentPage(role){return Math.max(0,Math.floor(num(st.pageByRole[role])||0));}\nfunction page(role,p=currentPage(role)){return read(role,p*per,per);}\nfunction project(){let p=get('projects',st.projectId);return p||null;}\nfunction scope(role,rows){if(st.route==='manage'&&['projects','sponsors'].includes(role))return rows;if(!st.projectId)return role==='sponsors'?rows:role==='projects'?rows:[];return role==='projects'?rows.filter(x=>x.id===st.projectId):role==='sponsors'?rows.filter(x=>x.id===project()?.data.sponsor_id):rows.filter(x=>x.data.project_id===st.projectId);}\nfunction teams(projectRow=project()){if(!projectRow)return[];let a=String(projectRow.data.expected_teams||'').split('|').map(x=>x.trim()).filter(Boolean);return [...new Set(a)];}\nfunction checkTeams(arr){if(arr.length===0||arr.some(t=>!TEAMS.includes(t))||arr.length>TEAMS.length)throw Error('Expected teams must be a nonempty pipe-separated list from: '+TEAMS.join(', '));}\nfunction latestInputs(p=st.projectId,period=st.period){let map={};for(let u of all('updates').rows){let d=u.data;if(d.project_id!==p||d.period_key!==period)continue;let v=map[d.team];if(!v||Number(d.revision)>Number(v.data.revision))map[d.team]=u;}return map;}\nfunction coverage(){let required=teams(),known=latestInputs(),accepted=required.filter(t=>acceptedInput(known[t],st.asOf)),missing=required.filter(t=>!accepted.includes(t));return{expected:required.length,accepted:accepted.length,missing,known};}\nfunction datePeriodBounds(k){let p=String(k||'');if(!periodValid(p))return null;if(p.includes('-W')){let year=Number(p.slice(0,4)),week=Number(p.slice(6));let jan4=new Date(Date.UTC(year,0,4)),weekday=(jan4.getUTCDay()+6)%7;let monday=new Date(jan4.getTime()-weekday*86400000+(week-1)*7*86400000);let end=new Date(monday.getTime()+6*86400000);return[startDate(monday),startDate(end)];}let yy=Number(p.slice(0,4)),mm=Number(p.slice(5,7));return[p+'-01',startDate(new Date(Date.UTC(yy,mm,0)))];}\nfunction startDate(d){return d.toISOString().slice(0,10);}\nfunction inPeriod(date){let b=datePeriodBounds(st.period),d=iso(date);return!!(b&&d&&d>=b[0]&&d<=b[1]&&d<=st.asOf);}\nfunction relevant(role,p=st.projectId,period=st.period,cutoff=st.asOf){let rows=all(role).rows.filter(x=>x.data.project_id===p);if(role==='updates')rows=rows.filter(x=>x.data.period_key===period);if(role==='milestones')rows=rows.filter(x=>!x.data.current_date||x.data.current_date<=cutoff||x.data.actual_date&&x.data.actual_date<=cutoff);if(role==='deliverables')rows=rows.filter(x=>!x.data.due_date||x.data.due_date<=cutoff);if(role==='actions')rows=rows.filter(x=>!x.data.due_date||x.data.due_date<=cutoff||x.data.status==='Open');return rows;}\nfunction sha256(text){\n const bytes=[];for(const ch of text){const n=ch.codePointAt(0);if(n<128)bytes.push(n);else if(n<2048)bytes.push(192|(n>>6),128|(n&63));else if(n<65536)bytes.push(224|(n>>12),128|((n>>6)&63),128|(n&63));else bytes.push(240|(n>>18),128|((n>>12)&63),128|((n>>6)&63),128|(n&63));}\n const bitlen=bytes.length*8;bytes.push(128);while(bytes.length%64!==56)bytes.push(0);for(let i=7;i>=0;i--)bytes.push(Math.floor(bitlen/2**(8*i))&255);\n const k=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];\n const h=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19],rot=(v,n)=>(v>>>n)|(v<<(32-n));\n for(let o=0;o<bytes.length;o+=64){const w=[];for(let i=0;i<16;i++)w[i]=(bytes[o+4*i]<<24)|(bytes[o+4*i+1]<<16)|(bytes[o+4*i+2]<<8)|bytes[o+4*i+3];for(let i=16;i<64;i++){const a=w[i-15],b=w[i-2];w[i]=(w[i-16]+(rot(a,7)^rot(a,18)^(a>>>3))+w[i-7]+(rot(b,17)^rot(b,19)^(b>>>10)))|0;}let [a,b,c,d,e,f,g,j]=h;for(let i=0;i<64;i++){const t=(j+(rot(e,6)^rot(e,11)^rot(e,25))+((e&f)^(~e&g))+k[i]+w[i])|0,u=((rot(a,2)^rot(a,13)^rot(a,22))+((a&b)^(a&c)^(b&c)))|0;j=g;g=f;f=e;e=(d+t)|0;d=c;c=b;b=a;a=(t+u)|0;}[a,b,c,d,e,f,g,j].forEach((v,i)=>h[i]=(h[i]+v)|0);}\n return h.map(v=>(v>>>0).toString(16).padStart(8,'0')).join('');\n}\nfunction sourceSignature(p=st.projectId,period=st.period,cutoff=st.asOf){complete('projects','milestones','deliverables','actions','updates');const pr=get('projects',p);if(!pr)throw Error('Project unavailable');let payload=[p,period,cutoff,R.projects.map(f=>[f.key,pr.data[f.key]])];for(let role of ['milestones','deliverables','actions','updates'])payload.push([role,relevant(role,p,period,cutoff).map(x=>[x.id,x.version]).sort((a,b)=>a[0].localeCompare(b[0]))]);return 'cr05:sha256:'+sha256(JSON.stringify(payload));}\nfunction versions(role){return Object.fromEntries(all(role).rows.map(r=>[r.id,r.version]));}\nfunction parentGuard(ed,data){complete(...Object.keys(R));const role=ed.role==='projects'?'sponsors':'projects',id=ed.role==='projects'?data.sponsor_id:data.project_id;if(ed.role==='sponsors')return [];const row=get(role,id);if(!row||row.version!==ed.parentVersions?.[role]?.[id])throw Error('Parent changed after opening. Reopen before review; draft retained.');if(!can(role,['name']))throw Error('Approved parent name write binding is required for evidence consistency');return [{kind:'update_record',recordId:id,expectedVersion:row.version,data:{[mp[role].fields.name]:row.data.name}}];}\nfunction acceptedInput(row,cutoff){const d=row?.data;return !!d&&d.status==='Accepted'&&iso(d.submitted_at)&&iso(d.reviewed_at)&&d.reviewed_at>=d.submitted_at&&d.reviewed_at<=cutoff&&d.reviewer?.trim()&&d.reviewer.trim().toLowerCase()!==String(d.contributor||'').trim().toLowerCase()&&d.source_refs?.trim();}\nfunction consistency(){for(const role of Object.keys(R))for(const row of all(role).rows)validateLinks(role,row.data);}\nfunction sourceIds(p=st.projectId,period=st.period,cutoff=st.asOf){let ids=[];for(let role of ['milestones','deliverables','actions','updates'])for(let x of relevant(role,p,period,cutoff))ids.push(role+':'+x.id+':v'+x.version);return ids.sort().join('\\n');}\nfunction rels(role){return R[role].filter(f=>f.kind.startsWith('relation-'));}\nfunction validateLinks(role,d){for(let f of rels(role)){let id=d[f.key];if(!id){if(f.required)throw Error('Required parent: '+f.label);continue;}let parent=f.kind.slice(9);complete(parent);let row=get(parent,id);if(!row)throw Error('Missing or inaccessible parent '+parent);if(parent==='reports'&&d.project_id&&row.data.project_id!==d.project_id)throw Error('Report belongs to another project');if(parent!=='sponsors'&&parent!=='projects'&&d.project_id&&row.data.project_id&&d.project_id!==row.data.project_id)throw Error('Cross-project reference');}}\nfunction guard(role,d,prev,id){validateLinks(role,d);if(prev&&role!=='projects'&&d.project_id&&prev.project_id&&d.project_id!==prev.project_id)throw Error('Saved project association cannot be reassigned across sponsors');let keys=R[role].map(f=>f.key);\n if(role==='sponsors'){complete('sponsors');if(all('sponsors').rows.some(x=>x.id!==id&&x.data.sponsor_code===d.sponsor_code))throw Error('Sponsor key already used');}\n if(role==='projects'){complete('projects');checkTeams(String(d.expected_teams||'').split('|').map(x=>x.trim()).filter(Boolean));if(all('projects').rows.some(x=>x.id!==id&&x.data.project_code===d.project_code))throw Error('Project code already used');if(prev&&prev.sponsor_id!==d.sponsor_id)throw Error('Sponsor relationship is immutable; create a new project with reviewed access instead');}\n if(role==='milestones'){complete('milestones');if(all('milestones').rows.some(x=>x.id!==id&&x.data.project_id===d.project_id&&x.data.name===d.name))throw Error('Duplicate milestone in project');if(prev&&d.baseline_date!==prev.baseline_date)throw Error('Original baseline is immutable');if(prev&&d.current_date!==prev.current_date&&!String(d.change_reason||'').trim())throw Error('Revised target requires change reason');if(d.status==='Achieved'&&(!iso(d.actual_date)||d.actual_date>systemToday||d.actual_date>st.asOf||!String(d.evidence_ref||'').trim()))throw Error('Achieved milestone needs dated actual completion and source evidence');}\n if(role==='deliverables'){if(prev&&prev.status==='Accepted'&&JSON.stringify(d)!==JSON.stringify(prev))throw Error('Accepted deliverable evidence is historical; create a new record for rework');if(d.status==='Accepted'&&(!prev||prev.status!=='Submitted'))throw Error('Acceptance requires prior reviewed Submitted state');if(d.status==='Accepted'&&(!String(d.acceptance_evidence||'').trim()||!iso(d.accepted_at)||d.accepted_at>systemToday))throw Error('Accepted deliverable needs sponsor evidence and valid acceptance date');}\n if(role==='actions'){if(prev&&['Approved','Rejected'].includes(prev.status))throw Error('Previously approved decision is a historical record; log a new decision revision');if(d.kind==='Decision'&&['Approved','Rejected'].includes(d.status)&&(!String(d.decision_by||'').trim()||!iso(d.decision_at)||d.decision_at>systemToday||!String(d.evidence_ref||'').trim()))throw Error('Decision approval requires approver, date and evidence');if(d.kind!=='Decision'&&['Approved','Rejected'].includes(d.status))throw Error('Only decisions use Approved/Rejected states');if(d.status==='Resolved'&&!String(d.evidence_ref||'').trim())throw Error('Resolution requires evidence');}\n if(role==='updates'){complete('updates');if(!periodValid(d.period_key))throw Error('Use reporting period YYYY-MM or YYYY-Www');if(!Number.isInteger(d.revision)||d.revision<1)throw Error('Revision must be positive integer');if(all('updates').rows.some(x=>x.id!==id&&x.data.project_id===d.project_id&&x.data.period_key===d.period_key&&x.data.team===d.team&&Number(x.data.revision)===d.revision))throw Error('Duplicate team/period/revision');if(prev&&prev.status==='Accepted')throw Error('Accepted input locked; copy to next revision');if(['Submitted','Accepted'].includes(d.status)&&(!iso(d.submitted_at)||d.submitted_at>systemToday))throw Error('Submitted input needs actual submitted date');if(d.status==='Accepted'){if(!prev||prev.status!=='Submitted')throw Error('Accepted input requires a previous reviewed Submitted version');if(!String(d.reviewer||'').trim()||d.reviewer.trim().toLowerCase()===String(d.contributor||'').trim().toLowerCase()||!iso(d.reviewed_at)||d.reviewed_at>systemToday||d.reviewed_at<d.submitted_at||!String(d.source_refs||'').trim())throw Error('Accepted input requires independent reviewer, date and source references');}}\n if(role==='reports'){complete('reports');if(!periodValid(d.period_key)||!Number.isInteger(d.revision)||d.revision<1)throw Error('Report period/revision invalid');if(all('reports').rows.some(x=>x.id!==id&&x.data.project_id===d.project_id&&x.data.period_key===d.period_key&&Number(x.data.revision)===d.revision))throw Error('Duplicate project/period/report revision');if(prev&&prev.status==='Approved')throw Error('Approved report immutable; copy a new version');if(d.status==='Approved'){complete(...Object.keys(R));consistency();if(!iso(d.as_of)||d.as_of>systemToday)throw Error('Report cutoff cannot be in the future');if(!prev||prev.status!=='In review')throw Error('Approval requires previously reviewed In review status');if(!covered('projects','milestones','deliverables','actions','updates'))throw Error('Incomplete source coverage: cannot approve');let cov=coverageFor(d.project_id,d.period_key,d.as_of);if(!cov.expected||cov.missing.length)throw Error('Missing accepted team updates: '+cov.missing.join(', '));if(d.source_digest!==sourceSignature(d.project_id,d.period_key,d.as_of))throw Error('Report snapshot stale: refresh sources and create new version');if(String(d.source_refs||'')!==sourceIds(d.project_id,d.period_key,d.as_of))throw Error('Report source references do not match the current authorized snapshot');if(d.coverage_note!==cov.accepted+'/'+cov.expected+' accepted team updates')throw Error('Report coverage label does not match accepted source evidence');if(!String(d.source_refs||'').trim()||!String(d.narrative||'').trim()||!String(d.reviewer||'').trim()||String(d.reviewer).trim().toLowerCase()===String(d.prepared_by).trim().toLowerCase()||!iso(d.reviewed_at)||d.reviewed_at<d.as_of||d.reviewed_at>systemToday)throw Error('Report approval needs source IDs, narrative and independent dated sign-off');}}\n if(role==='distributions'){complete('reports','distributions');let rpt=get('reports',d.report_id);if(!rpt||rpt.data.status!=='Approved')throw Error('Only an approved report version can be logged as manually distributed');if(d.project_id!==rpt.data.project_id)throw Error('Distribution/report project mismatch');if(!iso(d.sent_date)||d.sent_date<rpt.data.reviewed_at||d.sent_date>systemToday||!String(d.confirmation_ref||'').trim())throw Error('Manual distribution needs actual dated confirmation evidence');if(all('distributions').rows.some(x=>x.id!==id&&x.data.report_id===d.report_id&&x.data.sent_date===d.sent_date&&x.data.recipient_role===d.recipient_role&&x.data.channel===d.channel))throw Error('Duplicate manual distribution entry');}\n}\nfunction coverageFor(p,period,cutoff=st.asOf){let required=teams(get('projects',p)),map=latestInputs(p,period),ok=required.filter(t=>acceptedInput(map[t],cutoff));return{expected:required.length,accepted:ok.length,missing:required.filter(t=>!ok.includes(t))};}\nfunction archivable(role,id){const row=get(role,id);if((['updates','deliverables'].includes(role)&&row?.data.status==='Accepted')||(role==='reports'&&row?.data.status==='Approved')||(role==='actions'&&['Approved','Rejected'].includes(row?.data.status))||role==='distributions')throw Error('Reviewed historical evidence cannot be archived');complete(...Object.keys(R));let guards={sponsors:[['projects','sponsor_id']],projects:[['milestones','project_id'],['deliverables','project_id'],['actions','project_id'],['updates','project_id'],['reports','project_id'],['distributions','project_id']],reports:[['distributions','report_id']]};for(let [target,key] of guards[role]||[])if(all(target).rows.some(x=>x.data[key]===id))throw Error('Cannot archive: linked '+target+' records exist');if(['milestones','deliverables','actions','updates'].includes(role))for(let rpt of all('reports').rows)if(rpt.data.status==='Approved'&&String(rpt.data.source_refs||'').split(/\\s+/).some(v=>v.startsWith(role+':'+id+':')))throw Error('Approved sponsor report references this source record');}\nfunction clean(role,draft,prev,mode){let d=prev?{...prev}:Object.fromEntries(R[role].map(f=>[f.key,f.kind==='boolean'?false:null]));for(let f of R[role]){if(f.key==='archived')continue;if(!Object.prototype.hasOwnProperty.call(draft,f.key))continue;let v=draft[f.key];if(v===null||v===undefined||typeof v==='string'&&!v.trim())v=null;else{if(!['string','number','boolean'].includes(typeof v))throw Error('Invalid scalar: '+f.label);if(f.kind==='boolean'){if(![true,false,'true','false'].includes(v))throw Error('Invalid boolean: '+f.label);v=bool(v);}else if(f.kind==='number'){v=num(v);if(v===null)throw Error('Invalid number: '+f.label);}else if(f.kind==='date'){if(!iso(v))throw Error('Invalid date: '+f.label);}else{if(typeof v!=='string')throw Error('Invalid text: '+f.label);v=v.trim();if(v.length>(f.key==='source_refs'?50000:f.kind==='longtext'?4000:850))throw Error('Text exceeds field limit: '+f.label);if(f.kind==='select'&&!f.options.includes(v))throw Error('Unsupported selection: '+f.label);}}if(!mp[role].writable.includes(f.key)&&(v??null)!==(prev?.[f.key]??null))throw Error('Field is not writable: '+f.label);d[f.key]=v;}\n if(mode==='create')d.archived=false;\n if(role==='milestones'&&mode==='create')d.baseline_date=d.current_date||null;\n if(role==='updates'&&mode==='create')d.revision=Number(d.revision)||1;\n if(role==='reports'&&mode==='create'){d.revision=Number(d.revision)||1;if(!d.as_of)d.as_of=st.asOf;if(!d.period_key)d.period_key=st.period;if(covered('projects','milestones','deliverables','actions','updates')&&d.project_id){d.source_digest=sourceSignature(d.project_id,d.period_key,d.as_of);d.source_refs=sourceIds(d.project_id,d.period_key,d.as_of);let cv=coverageFor(d.project_id,d.period_key,d.as_of);d.coverage_note=cv.accepted+'/'+cv.expected+' accepted team updates';}}\n for(let f of R[role])if(f.required&&(d[f.key]===null||d[f.key]===undefined||d[f.key]===''||f.kind==='number'&&!Number.isFinite(d[f.key])))throw Error('Required: '+f.label);\n if(d.project_id&&st.projectId&&d.project_id!==st.projectId&&role!=='projects'&&mode==='create')throw Error('Cannot create outside selected project');\n return d;}\nfunction createProposal(ed){if(!can(ed.role))throw Error('Authorized write permission unavailable');let prev=null;if(ed.mode==='edit'){let current=get(ed.role,ed.id);if(!current||current.version!==ed.baseVersion)throw Error('Conflict: original record changed or access was removed; draft retained');prev=current.data;}\n let d=clean(ed.role,ed.draft,prev,ed.mode);guard(ed.role,d,prev,ed.id);\n if(ed.mode==='create'&&R[ed.role].some(f=>!mp[ed.role].fields[f.key]||!mp[ed.role].writable.includes(f.key)))throw Error('Creation requires every approved field write binding');if(ed.role==='reports'&&String(d.source_refs||'').length>50000)throw Error('Report source references exceed 50,000 characters; narrow the authorized report dataset');let data={};for(let f of R[ed.role])if(mp[ed.role].fields[f.key]&&mp[ed.role].writable.includes(f.key))data[mp[ed.role].fields[f.key]]=d[f.key]===undefined?null:d[f.key];\n if(ed.mode==='edit')return{kind:'update_record',recordId:ed.id,expectedVersion:ed.baseVersion,data};return{kind:'create_record',typeId:mp[ed.role].typeId,data};}\nfunction propose(changes){tools.call('records.propose',changes);st.notice='Change submitted for TrialAgents review. Nothing is saved until approved in the host.';}\nfunction defaultDraft(role){let d={};for(let f of R[role]){if(f.kind==='select'&&f.required)d[f.key]=f.options[0];if(f.kind==='boolean')d[f.key]=false;}\n if(role==='projects')d.expected_teams='Clinical Operations|Data Management|Regulatory';\n if(role==='milestones'||role==='deliverables'||role==='actions'||role==='updates'||role==='reports'||role==='distributions')d.project_id=st.projectId||'';\n if(role==='milestones'){d.current_date=st.asOf;d.status='Planned';}\n if(role==='deliverables'){d.due_date=st.asOf;}\n if(role==='updates'){d.period_key=st.period;d.revision=1;d.status='Draft';}\n if(role==='reports'){d.period_key=st.period;d.as_of=st.asOf;d.revision=1;d.status='Draft';}\n if(role==='distributions')d.sent_date=st.asOf;\n return d;}\nfunction copied(role,old){let d={...old,name:(old.name||'Entry')+' · revised'};delete d.archived;\n if(role==='sponsors')d.sponsor_code='';if(role==='projects')d.project_code='';\n if(role==='milestones'){d.actual_date=null;d.baseline_date=null;d.evidence_ref=null;d.status='Planned';}\n if(role==='deliverables'){d.status='Planned';d.accepted_at=null;d.acceptance_evidence=null;d.sponsor_feedback=null;}\n if(role==='actions'){d.status='Open';d.evidence_ref=null;d.decision_by=null;d.decision_at=null;}\n if(role==='updates'){d.revision=Number(old.revision||0)+1;d.status='Draft';d.submitted_at=null;d.reviewed_at=null;d.reviewer=null;d.source_refs=null;}\n if(role==='reports'){d.revision=Number(old.revision||0)+1;d.status='Draft';d.narrative=null;d.source_refs=null;d.source_digest=null;d.coverage_note=null;d.reviewer=null;d.reviewed_at=null;}\n if(role==='distributions'){d.confirmation_ref=null;d.sent_date=st.asOf;}\n return d;}\nfunction openEditor(role,mode='create',id='',prefill={}){if(!R[role])throw Error('Unrecognized record type');let row=mode==='edit'||mode==='copy'?get(role,id):null;if((mode==='edit'||mode==='copy')&&!row)throw Error('Record inaccessible; reload');if(mode!=='edit'&&!can(role))throw Error('Write access unavailable');st.notice='';st.editor={role,parentVersions:{projects:versions('projects'),sponsors:versions('sponsors')},mode:mode==='copy'?'create':mode,id:mode==='edit'?id:null,baseVersion:mode==='edit'?row.version:null,draft:mode==='create'?{...defaultDraft(role),...prefill}:mode==='copy'?{...copied(role,row.data),...prefill}:{...row.data},additional:false};st.detail=null;st.del=null;}\nfunction requestArchive(role,id){if(!can(role,['archived']))throw Error('Archive access unavailable');let row=get(role,id);if(!row)throw Error('Record missing');st.notice='';st.del={role,id,baseVersion:row.version,parentVersions:{projects:versions('projects'),sponsors:versions('sponsors')}};}\nfunction confirmArchive(){let ed=st.del;if(!ed)throw Error('No archive selected');let current=get(ed.role,ed.id);if(!current||current.version!==ed.baseVersion)throw Error('Conflict: record changed since archive opened');if(!can(ed.role,['archived']))throw Error('Archive permission denied');archivable(ed.role,ed.id);propose([...parentGuard(ed,current.data),{kind:'update_record',recordId:ed.id,expectedVersion:ed.baseVersion,data:{[mp[ed.role].fields.archived]:true}}]);}\nfunction fieldHtml(role,f,val){let name=esc(f.key),v=val===null||val===undefined?'':String(val),kind=f.kind;let ctrl='';\n if(kind.startsWith('relation-')){let rr=kind.slice(9),list=all(rr);ctrl='<select name=\"'+name+'\" data-ui-state=\"true\" data-action=\"field:'+name+'\" '+(f.required?'required':'')+'><option value=\"\">Select '+esc(f.label)+'</option>'+list.rows.map(r=>'<option value=\"'+esc(r.id)+'\" '+(r.id===v?'selected':'')+'>'+shortText(r.data.name||r.data.project_code||r.id,60)+'</option>').join('')+'</select>';}\n else if(kind==='select')ctrl='<select name=\"'+name+'\" data-ui-state=\"true\" data-action=\"field:'+name+'\">'+f.options.map(o=>'<option value=\"'+esc(o)+'\" '+(o===v?'selected':'')+'>'+esc(o)+'</option>').join('')+'</select>';\n else if(kind==='longtext')ctrl='<textarea rows=\"3\" name=\"'+name+'\" data-ui-state=\"true\" data-action=\"field:'+name+'\" placeholder=\"'+esc(f.label)+'\">'+esc(v)+'</textarea>';\n else if(kind==='boolean')ctrl='<input type=\"checkbox\" name=\"'+name+'\" data-ui-state=\"true\" data-action=\"field:'+name+'\" '+(bool(val)?'checked':'')+'>';\n else ctrl='<input type=\"'+(kind==='date'?'date':kind==='number'?'number':'text')+'\" name=\"'+name+'\" data-ui-state=\"true\" data-action=\"field:'+name+'\" value=\"'+esc(v)+'\" '+(f.required?'required':'')+' '+(kind==='number'?'min=\"1\" step=\"1\"':'')+'>';\n return'<label class=\"su-field '+(kind==='longtext'?'wide':'')+'\"><span>'+esc(f.label)+(f.required?' <em>*</em>':'')+'</span>'+ctrl+'</label>';}\nfunction editor(){let ed=st.editor;if(!ed)return'';let fs=R[ed.role].filter(f=>!['archived','baseline_date'].includes(f.key)&&!(ed.role==='reports'&&['source_refs','source_digest','coverage_note'].includes(f.key))),primary=fs.filter(f=>f.required||['actual_date','current_date','status','acceptance_evidence','accepted_at','reviewer','reviewed_at','submitted_at','due_date','narrative','source_refs','source_digest','period_key','report_id','sent_date','confirmation_ref','mitigation','highlights','blockers','next_steps','decision_by','decision_at','evidence_ref','change_reason'].includes(f.key));const order=columns(ed.role);for(const list of [fs,primary])list.sort((a,b)=>(order.includes(a.key)?order.indexOf(a.key):999)-(order.includes(b.key)?order.indexOf(b.key):999));let shown=ed.additional?fs:primary;\n return'<div class=\"su-overlay\"><aside class=\"su-drawer\" role=\"dialog\" aria-label=\"Record editor\"><div class=\"su-drawer-head\"><div><b>'+esc(ed.mode==='edit'?'Edit':'Add')+' '+esc(ed.role.replace(/s$/,''))+'</b><p>All changes require TrialAgents review</p></div>'+btn('×','cancel-editor','icon')+'</div><form data-action=\"save-form\"><div class=\"su-fields\">'+shown.map(f=>fieldHtml(ed.role,f,ed.draft[f.key])).join('')+'</div>'+(st.notice?'<p class=\"su-warning\" role=\"alert\">'+esc(st.notice)+'</p>':'')+'<div class=\"su-extra\">'+btn(ed.additional?'Fewer fields':'Additional fields','more-fields','quiet')+'</div><div class=\"su-drawer-foot\">'+btn('Ignore','cancel-editor','quiet')+'<button class=\"su-btn primary\" type=\"submit\">Review '+(ed.mode==='edit'?'changes':'new record')+'</button></div></form></aside></div>';}\nfunction pretty(role,key,value){let f=R[role].find(x=>x.key===key);if(f?.kind.startsWith('relation-'))return label(f.kind.slice(9),value);if(f?.kind==='boolean')return bool(value)?'Yes':'No';if(value===null||value===undefined||value==='')return '—';return String(value);}\nfunction detail(){let q=st.detail;if(!q)return'';let r=get(q.role,q.id);if(!r)return'<div class=\"su-overlay\">'+btn('Close','close-detail')+'Record no longer available</div>';\n let extra='';if(q.role==='projects')extra='<div class=\"su-linked\"><h3>Related work</h3>'+[['milestones','Milestones'],['deliverables','Deliverables'],['actions','Risks & actions'],['updates','Team updates'],['reports','Reports']].map(([role,t])=>'<div class=\"su-linkedline\"><span>'+t+'</span><strong>'+all(role).rows.filter(x=>x.data.project_id===r.id).length+'</strong>'+btn('Add','prefill:'+role+':project_id:'+r.id,'link')+'</div>').join('')+'</div>';\n if(q.role==='reports'){extra='<div class=\"su-linked\"><h3>Manual distribution history</h3><p>First 15 records; use the distribution register for full history.</p>'+all('distributions').rows.filter(x=>x.data.report_id===r.id).slice(0,15).map(x=>'<div class=\"su-linkedline\"><span>'+esc(x.data.channel)+' · '+esc(x.data.recipient_role)+'<small>'+esc(x.data.sent_date)+'</small></span>'+btn('Open','detail:distributions:'+x.id,'link')+'</div>').join('')+(r.data.status==='Approved'?btn('Log confirmed distribution','prefill:distributions:report_id:'+r.id,'primary',!can('distributions')):'<p class=\"su-muted\">Approve the report before logging any manual distribution.</p>')+'</div>';}\n if(q.role==='sponsors')extra='<div class=\"su-linked\"><h3>Projects for this sponsor</h3><p>First 15 records; use Manage sponsors &amp; projects for the full directory.</p>'+all('projects').rows.filter(x=>x.data.sponsor_id===r.id).slice(0,15).map(x=>'<div class=\"su-linkedline\"><span>'+shortText(x.data.name)+'</span>'+btn('Open','detail:projects:'+x.id,'link')+'</div>').join('')+'</div>';\n return'<div class=\"su-overlay\"><aside class=\"su-drawer\" role=\"dialog\" aria-label=\"Record details\"><div class=\"su-drawer-head\"><div><b>'+esc(r.data.name)+'</b><p>'+esc(q.role.replace(/s$/,''))+' · reviewed source record v'+r.version+'</p></div>'+btn('×','close-detail','icon')+'</div><div class=\"su-detail\">'+R[q.role].filter(f=>f.key!=='archived').map(f=>'<div><span>'+esc(f.label)+'</span><b>'+esc(pretty(q.role,f.key,r.data[f.key]))+'</b></div>').join('')+extra+'</div><div class=\"su-drawer-foot\">'+btn('Copy as new version','copy:'+q.role+':'+q.id,'quiet',!can(q.role))+btn('Edit','edit:'+q.role+':'+q.id,'primary',!can(q.role))+'</div></aside></div>';}\nfunction btn(labelN,a,cls='',disabled=false){return'<button class=\"su-btn '+cls+'\" type=\"button\" data-action=\"'+esc(a)+'\" '+(disabled?'disabled':'')+'>'+labelN+'</button>';}\nfunction chip(x){let s=String(x||'Not provided'),style=['Accepted','Approved','Achieved','Resolved'].includes(s)?'good':['Blocked','Rework','Changes requested','Overdue'].includes(s)?'bad':['Submitted','In review','High','Open'].includes(s)?'warn':'neutral';return'<span class=\"su-chip '+style+'\">'+esc(s)+'</span>';}\nfunction title(t,sub,extra=''){return'<div class=\"su-heading\"><div><h1>'+esc(t)+'</h1><p>'+esc(sub)+'</p></div><div class=\"su-heading-side\">'+extra+'</div></div>';}\nfunction card(t,body,extra=''){return'<section class=\"su-card\"><div class=\"su-card-head\"><h2>'+esc(t)+'</h2>'+extra+'</div>'+body+'</section>';}\nfunction actions(role,row){return'<span class=\"su-row-actions\">'+btn('Open','detail:'+role+':'+row.id,'link')+btn('Edit','edit:'+role+':'+row.id,'link',!can(role))+btn('Copy','copy:'+role+':'+row.id,'link',!can(role))+btn('Archive','archive:'+role+':'+row.id,'link danger',!can(role,['archived']))+'</span>';}\nfunction columns(role){let ordered=Array.isArray(layout.cols?.[role])?layout.cols[role].filter(k=>R[role].some(f=>f.key===k)):defaultCols[role];for(let k of defaultCols[role])if(!ordered.includes(k))ordered.push(k);let allowed=ordered.filter(k=>layout.visible?.[role+':'+k]!==false);return allowed.length?allowed:[ordered[0]];}\nfunction table(role,opts={}){let cacheR=all(role),p=currentPage(role),pData=page(role),isAll=cacheR.complete;let rows=isAll?scope(role,cacheR.rows):scope(role,pData.rows);\n let q=String(st.query||'').trim().toLowerCase(),filter=st.filter;rows=rows.filter(x=>(!q||R[role].some(f=>String(pretty(role,f.key,x.data[f.key])).toLowerCase().includes(q)))&&(filter==='all'||x.data.status===filter||x.data.priority===filter||x.data.kind===filter));\n if(opts.filterRows)rows=rows.filter(opts.filterRows);\n rows.sort((a,b)=>String(a.data.due_date||a.data.current_date||a.data.period_key||a.data.name||'').localeCompare(String(b.data.due_date||b.data.current_date||b.data.period_key||b.data.name||'')));\n let total=isAll?rows.length:pData.total;if(isAll){p=Math.min(p,Math.max(0,Math.ceil(total/per)-1));st.pageByRole[role]=p;}let shown=isAll?rows.slice(p*per,(p+1)*per):rows,cols=columns(role),pages=Math.max(1,Math.ceil((total||0)/per));let noRows=shown.length===0?'<div class=\"su-empty\">No '+esc(role)+' to show in this view. Add a first record or adjust the filters.</div>':'';\n return'<div class=\"su-table-wrap\"><table class=\"su-table\"><thead><tr>'+cols.map(k=>'<th>'+esc(R[role].find(f=>f.key===k)?.label||k)+'</th>').join('')+'<th class=\"su-actions-col\">Actions</th></tr></thead><tbody>'+shown.map(x=>'<tr>'+cols.map(k=>'<td data-label=\"'+esc(R[role].find(f=>f.key===k)?.label||k)+'\">'+((k==='name')?'<b>'+shortText(pretty(role,k,x.data[k]),160)+'</b>':(k==='status'||k==='priority')?chip(pretty(role,k,x.data[k])):shortText(pretty(role,k,x.data[k]),160))+'</td>').join('')+'<td data-label=\"Actions\">'+actions(role,x)+'</td></tr>').join('')+'</tbody></table></div>'+noRows+'<div class=\"su-pager\"><span>'+esc(isAll?'Authorized scoped records':'Page-local results · coverage incomplete')+' · '+(total===null?'count unavailable':total+' listed')+'</span><div>'+btn('Previous','page:'+role+':'+(p-1),'quiet',p===0)+ '<small>Page '+(p+1)+' of '+(isAll?pages:Math.max(pages,p+1))+'</small>'+btn('Next','page:'+role+':'+(p+1),'quiet',isAll?p>=pages-1:!(pData.raw===per&&((p+1)*per)<pData.total))+'</div></div>';}\nfunction bar(x,n,labelN){let w=n?Math.min(100,Math.round(x/n*100)):0;return'<div class=\"su-bar-row\"><span>'+esc(labelN)+'</span><div class=\"su-bar\"><i style=\"width:'+w+'%\"></i></div><b>'+(n?x+'/'+n:'—')+'</b></div>';}\nfunction stat(labelN,value,hint,kind=''){return'<div class=\"su-stat '+kind+'\"><span>'+esc(labelN)+'</span><strong>'+esc(value)+'</strong><small>'+esc(hint)+'</small></div>';}\nfunction currentContext(){let candidates=all('projects').rows;let a=candidates.find(x=>x.id===st.projectId);if(!st.projectId&&candidates.length){st.projectId=candidates[0].id;a=candidates[0];}return a||null;}\nfunction reportStats(){let p=currentContext();if(!p||!covered('projects','milestones','deliverables','actions','updates','reports'))return null;let cov=coverage();let milestones=scope('milestones',all('milestones').rows);let dlv=scope('deliverables',all('deliverables').rows);let acts=scope('actions',all('actions').rows);let dueMil=milestones.filter(x=>inPeriod(x.data.current_date)&&x.data.status!=='Cancelled');let hit=dueMil.filter(x=>x.data.status==='Achieved'&&x.data.actual_date<=x.data.current_date&&x.data.actual_date<=st.asOf);\n let dueDel=dlv.filter(x=>inPeriod(x.data.due_date)),accepted=dueDel.filter(x=>x.data.status==='Accepted'&&x.data.acceptance_evidence&&x.data.accepted_at<=st.asOf);\n let escalations=acts.filter(x=>['Open','Blocked'].includes(x.data.status)&&x.data.priority==='High');let overdue=acts.filter(x=>['Open','Blocked'].includes(x.data.status)&&iso(x.data.due_date)&&x.data.due_date<st.asOf);\n let reports=all('reports').rows.filter(x=>x.data.project_id===st.projectId&&x.data.period_key===st.period);let approved=reports.filter(x=>x.data.status==='Approved');return{cov,dueMil,hit,dueDel,accepted,escalations,overdue,reports,approved};}\nfunction overview(){let p=currentContext(),stats=reportStats();let head=title('Sponsor overview','Reporting status, delivery changes and the decisions that need attention',btn('Manage sponsors & projects','manage','quiet'));\n if(!p)return head+warn('projects','sponsors')+card('Start here','<p class=\"su-muted\">Create a sponsor and a project before collecting team updates.</p>'+btn('Add sponsor','add:sponsors','primary')+btn('Add project','add:projects','quiet'));\n let ready=stats&&stats.cov.expected&&stats.cov.missing.length===0;\n let cover=stats?stats.cov.accepted+'/'+stats.cov.expected:'—';let info=ready?'Team inputs complete':'Waiting for '+(stats?stats.cov.missing.length:'?')+' teams';\n let hero='<section class=\"su-report-hero\"><div class=\"su-hero-left\"><span class=\"su-eyebrow\">CURRENT REPORTING PERIOD</span><strong>'+esc(st.period)+'</strong><p>'+shortText(p.data.name)+' · '+esc(p.data.cro_pm)+'</p><div class=\"su-hero-coverage\">'+esc(info)+'</div></div><div class=\"su-hero-right\"><span>Team updates accepted</span><b>'+esc(cover)+'</b><div class=\"su-hero-meter\"><i style=\"width:'+(stats&&stats.cov.expected?Math.round(100*stats.cov.accepted/stats.cov.expected):0)+'%\"></i></div>'+btn('Open team updates','nav:inputs','inverted')+'</div></section>';\n let summary='<div class=\"su-stats\">'+stat('Milestones met on time',stats?(stats.dueMil.length?stats.hit.length+'/'+stats.dueMil.length:'—'):'—','Due in selected period')+stat('Sponsor-accepted outputs',stats?(stats.dueDel.length?stats.accepted.length+'/'+stats.dueDel.length:'—'):'—','Due in selected period')+stat('High-priority escalations',stats?stats.escalations.length:'—','Open or blocked')+stat('Approved sponsor reports',stats?stats.approved.length:'—','Selected period')+'</div>';\n let attention='';if(stats){let items=stats.cov.missing.map(t=>({name:t+' update missing',small:'Team input not accepted for '+st.period,route:'inputs',priority:'Waiting'}));for(let a of stats.overdue.slice(0,4))items.push({name:a.data.name,small:'Action due '+a.data.due_date+' · '+a.data.owner,route:'actions',priority:'Overdue'});for(let m of stats.dueMil.filter(x=>x.data.status==='Blocked').slice(0,3))items.push({name:m.data.name,small:'Blocked milestone · '+m.data.owner,route:'delivery',priority:'Blocked'});\n attention=items.slice(0,7).map(x=>'<div class=\"su-priority\"><span class=\"su-prio-mark '+(x.priority==='Overdue'?'late':'')+'\"></span><div><strong>'+esc(x.name)+'</strong><small>'+esc(x.small)+'</small></div>'+chip(x.priority)+btn('Open','nav:'+x.route,'link')+'</div>').join('')||'<p class=\"su-empty\">No missing team updates or overdue priority actions in complete authorized sources.</p>';}\n let next=stats?stats.dueMil.slice(0,5).map(x=>'<div class=\"su-milestone\"><span>'+esc(x.data.current_date)+'</span><div><b>'+shortText(x.data.name)+'</b><small>'+esc(x.data.owner)+'</small></div>'+chip(x.data.status)+'</div>').join(''):'<p class=\"su-empty\">Complete source access required.</p>';\n return head+warn('sponsors','projects','milestones','deliverables','actions','updates','reports')+hero+summary+'<div class=\"su-duo\">'+card('Needs attention',attention,btn('Open risks','nav:actions','link'))+card('Milestone outlook',next||'<p class=\"su-empty\">No milestones in this reporting period.</p>',btn('Open delivery','nav:delivery','link'))+'</div>';\n}\nfunction toolbar(role,statuses=[]){return'<div class=\"su-toolbar\"><div class=\"su-search-wrap\"><input aria-label=\"Search visible '+esc(role)+'\" type=\"search\" name=\"search\" value=\"'+esc(st.query)+'\" data-ui-state=\"true\" data-action=\"search\" placeholder=\"Search '+esc(role)+'\"></div>'+btn('Filters','more-filters','quiet')+'<div class=\"su-toolbar-tail\">'+btn('Add '+(role==='actions'?'item':role==='updates'?'update':role==='reports'?'report':role==='distributions'?'distribution':role.slice(0,-1)),'add:'+role,'primary',!can(role))+'</div></div>'+(st.moreFilters?'<div class=\"su-filters\">'+btn('All','filter:all',st.filter==='all'?'active':'quiet')+statuses.map(x=>btn(esc(x),'filter:'+x,st.filter===x?'active':'quiet')).join('')+'</div>':'');}\nfunction subs(items,current,key){return'<div class=\"su-subtabs\" role=\"tablist\">'+items.map(([id,t])=>btn(esc(t),'subtab:'+key+':'+id,current===id?'selected':'quiet')).join('')+'</div>';}\nfunction delivery(){let role=st.deliveryTab,titleN=role==='milestones'?'Milestones':'Deliverables';return title('Delivery tracking','Original dates, sponsor-accepted outputs and documented changes')+subs([['milestones','Milestones'],['deliverables','Deliverables'] ],role,'deliveryTab')+warn('projects',role)+toolbar(role,role==='milestones'?['Planned','In progress','Achieved','Blocked']:['Planned','Submitted','Accepted','Rework'])+card(titleN,table(role),btn('Open project','detail:projects:'+esc(st.projectId),'link',!st.projectId));}\nfunction actionsScreen(){return title('Risks & decisions','Operational exceptions, sponsor escalations and recorded decisions')+warn('actions','projects')+toolbar('actions',['Risk','Issue','Action','Decision','Open','Blocked','High'])+card('Action register',table('actions'));}\nfunction inputs(){let p=currentContext(),stats=reportStats(),cv=stats?.cov||null;let rows=cv?teams().map(t=>{let record=cv.known[t];return'<div class=\"su-team-row\"><div class=\"su-team-icon\">'+esc(t.slice(0,1))+'</div><div><b>'+esc(t)+'</b><small>'+esc(record?'Revision '+record.data.revision+' · '+record.data.contributor:'No accepted update for this period')+'</small></div>'+chip(record?.data.status||'Not provided')+(record?btn('Review','detail:updates:'+record.id,'link'):btn('Add','prefill:updates:team:'+esc(t),'link'))+'</div>';}).join(''):'<p class=\"su-empty\">Choose a permitted project to see expected teams.</p>';\n return title('Team updates','Collect one structured update per expected function and reporting period')+warn('projects','updates')+(cv?'<div class=\"su-input-summary\">'+bar(cv.accepted,cv.expected,'Accepted inputs')+'<p>'+esc(cv.missing.length?cv.missing.join(' · ')+' still needed':'Every expected function has an accepted update')+'</p></div>':'')+'<div class=\"su-duo large-left\">'+card('Contributor checklist',rows)+card('Update history',toolbar('updates',['Draft','Submitted','Accepted','Changes requested'])+table('updates'))+'</div>';\n}\nfunction reportPrompt(){let p=currentContext(),stats=reportStats();let textP='Draft a sponsor-facing CRO progress update for '+(p?.data.name||'selected project')+' for '+st.period+' using only authorized TrialAgents records for the selected project and cutoff '+st.asOf+'. Summarize accepted functional updates, milestones due versus achieved, sponsor-accepted deliverables, open high-priority risks, and decisions needed. Cite source IDs and note missing data or permissions. Do not disclose patient details, infer recruitment, claim sponsor acceptance without evidence, or send an email. Output a DRAFT only for CRO PM review.';return'<div class=\"su-prompt\"><b>ChatGPT draft handoff</b><p>'+esc(textP)+'</p><small>Use in your connected ChatGPT conversation. This button does not execute AI or send to the sponsor.</small></div>';}\nfunction reports(){let stat=reportStats(),cov=stat?.cov;let n=stat?.reports.length||0;let ready=!!(cov&&cov.expected&&cov.missing.length===0);\n let summary=card('Prepare sponsor report','<p class=\"su-muted\">Prepare a source-linked draft, verify coverage, then require a second, independent human review before approval. Record any external distribution separately.</p>'+(cov?'<div class=\"su-briefstats\">'+bar(cov.accepted,cov.expected,'Accepted teams')+'<span>Report versions this period: '+n+'</span></div>':'')+'<div class=\"su-briefbtns\">'+btn('New report draft','add:reports','primary',!can('reports'))+btn('Show ChatGPT brief','toggle-prompt','quiet')+'</div>'+(st.showPrompt?reportPrompt():'')+(ready?'<p class=\"su-oknote\">Source coverage is complete; approval still requires an independently reviewed current snapshot.</p>':'<p class=\"su-caution\">Drafting is allowed, but final approval is blocked until required updates and data sources are complete.</p>'));\n let history=card('Report history — all periods',toolbar('reports',['Draft','In review','Approved'])+table('reports'));\n let dist=card('Manual distribution log','<p class=\"su-muted\">Record who sent an approved report, when, through which manual channel, and its confirmation reference. This app sends nothing.</p>'+toolbar('distributions')+table('distributions'));\n return title('Sponsor reports','Cited drafts, independent approval and manual distribution history')+warn('projects','updates','milestones','deliverables','actions','reports','distributions')+summary+history+dist;}\nfunction manage(){return title('Manage sponsors & projects','Maintain a reusable sponsor directory and authorized CRO project setup')+subs([['projects','Projects'],['sponsors','Sponsors']],st.manageTab,'manageTab')+warn('projects','sponsors')+toolbar(st.manageTab)+card(st.manageTab==='projects'?'Project directory':'Sponsor directory',table(st.manageTab));}\nif(action==='nav:overview'||action==='nav:delivery'||action==='nav:actions'||action==='nav:inputs'||action==='nav:reports'){st.route=action.slice(4);st.query='';st.filter='all';st.moreFilters=false;}\nelse if(action==='manage'){st.route='manage';st.query='';st.filter='all';}\nelse if(action.startsWith('subtab:')){let parts=action.split(':');st[parts[1]]=parts[2];st.query='';st.filter='all';st.pageByRole={};}\nelse if(action==='scope-project'){st.projectId=String(ev.value||'');st.query='';st.filter='all';st.pageByRole={};st.notice='';}\nelse if(action==='scope-period'){let v=String(ev.value||'').trim();st.period=v;st.pageByRole={};}\nelse if(action==='scope-date'&&iso(ev.value)){st.asOf=ev.value;}\nelse if(action==='search'){st.query=String(ev.value||'');st.pageByRole={};}\nelse if(action==='more-filters')st.moreFilters=!st.moreFilters;\nelse if(action.startsWith('filter:')){st.filter=action.slice(7);st.pageByRole={};}\nelse if(action.startsWith('page:')){let [,role,pageN]=action.split(':');st.pageByRole[role]=Math.max(0,Number(pageN)||0);}\nelse if(action==='toggle-prompt')st.showPrompt=!st.showPrompt;\nelse if(action==='tracker:layout'){/* Native host routes this action. Preview adapter simulates reviewed persistence. */}\nelse if(action.startsWith('detail:')){let [,role,id]=action.split(':');st.detail={role,id};st.editor=null;}\nelse if(action==='close-detail')st.detail=null;\nelse if(action==='cancel-editor')st.editor=null;\nelse if(action==='more-fields'&&st.editor)st.editor.additional=!st.editor.additional;\nelse if(action.startsWith('add:'))openEditor(action.slice(4));\nelse if(action.startsWith('prefill:')){let parts=action.split(':');let role=parts[1],key=parts[2],id=parts.slice(3).join(':');let pref={[key]:id};if(role==='distributions'&&key==='report_id'){let r=get('reports',id);if(r)pref.project_id=r.data.project_id;}openEditor(role,'create','',pref);}\nelse if(action.startsWith('edit:')){let [,role,id]=action.split(':');openEditor(role,'edit',id);}\nelse if(action.startsWith('copy:')){let [,role,id]=action.split(':');openEditor(role,'copy',id);}\nelse if(action.startsWith('archive:')){let [,role,id]=action.split(':');requestArchive(role,id);}\nelse if(action==='cancel-archive')st.del=null;\nelse if(action==='review-archive'){try{confirmArchive();}catch(e){st.notice=String(e.message||e)};}\nelse if(action.startsWith('field:')&&st.editor){let field=action.slice(6);st.editor.draft[field]=(ev.form&&Object.prototype.hasOwnProperty.call(ev.form,field))?ev.form[field]:ev.value;}\nelse if(action==='save-form'&&st.editor){try{let edit=st.editor,submitted=ev.form||{};edit.draft={...edit.draft,...submitted};let op=createProposal(edit);propose([op,...parentGuard(edit,edit.draft)]);}catch(e){st.notice='Review blocked: '+String(e.message||e);}}\ncurrentContext();\nlet tabs=Array.isArray(layout.tabs)?layout.tabs.filter(id=>screens.some(t=>t[0]===id)):screens.map(t=>t[0]);for(let [id]of screens)if(!tabs.includes(id))tabs.push(id);tabs=tabs.filter(id=>layout.visible?.[id]!==false);if(!tabs.length)tabs=['overview'];if(!tabs.includes(st.route)&&st.route!=='manage')st.route=tabs[0];\n/* Stable order from reviewed host presentation profile. */\nlet navHtml=tabs.map(id=>{let t=screens.find(x=>x[0]===id),ic={overview:'◫',delivery:'▤',actions:'◇',inputs:'☷',reports:'▣'}[id];return'<button type=\"button\" data-action=\"nav:'+id+'\" aria-label=\"Open '+esc(t[1])+'\" title=\"'+esc(t[1])+'\" class=\"su-navitem '+(st.route===id?'on':'')+'\"><span class=\"su-nav-icon\">'+ic+'</span><span>'+esc(t[1])+'</span></button>';}).join('');\nlet projectSelect=all('projects').rows.map(r=>'<option value=\"'+esc(r.id)+'\" '+(r.id===st.projectId?'selected':'')+'>'+shortText(r.data.project_code+' · '+r.data.name,60)+'</option>').join('');\nlet ctx=project();let sponsor=ctx?label('sponsors',ctx.data.sponsor_id):'No sponsor selected';\nlet top='<header class=\"su-topbar\"><label>PROJECT <select aria-label=\"Selected CRO project\" data-ui-state=\"true\" data-action=\"scope-project\" name=\"projectId\"><option value=\"\">Select project</option>'+projectSelect+'</select></label><label>PERIOD <input type=\"text\" aria-label=\"Reporting period\" data-ui-state=\"true\" data-action=\"scope-period\" name=\"period\" value=\"'+esc(st.period)+'\" placeholder=\"2026-11 or 2026-W44\"></label><span class=\"su-topspacer\"></span><div class=\"su-top-right\"><span class=\"su-sponsor\">'+esc(sponsor)+'</span>'+btn('⚙ Layout','tracker:layout','quiet')+'</div></header>';\nconst modal=!!(st.editor||st.detail||st.del);let body=modal?title('Record review','Close the drawer to return to the selected screen.'):st.route==='overview'?overview():st.route==='delivery'?delivery():st.route==='actions'?actionsScreen():st.route==='inputs'?inputs():st.route==='reports'?reports():manage();\nlet cutoffCtrl='<label class=\"su-cutoff\">Data cutoff <input aria-label=\"Reporting data cutoff\" data-ui-state=\"true\" data-action=\"scope-date\" type=\"date\" name=\"asOf\" value=\"'+esc(st.asOf)+'\"></label>';\nlet banner=st.notice?'<div class=\"su-notice\" role=\"status\">'+esc(st.notice)+btn('×','dismiss-notice','icon')+'</div>':'';\nif(action==='dismiss-notice')st.notice='';\nlet archive=st.del?'<div class=\"su-overlay su-center\"><div class=\"su-dialog\" role=\"dialog\" aria-modal=\"true\"><h2>Archive this record?</h2><p>Linked active records and approved report evidence will be checked before any reviewed change. Original version '+st.del.baseVersion+'.</p>'+(st.notice?'<p class=\"su-warning\" role=\"alert\">'+esc(st.notice)+'</p>':'')+'<div>'+btn('Cancel','cancel-archive','quiet')+btn('Review archive','review-archive','dangerfill')+'</div></div></div>':'';\nlet html='<div class=\"su-shell\"><aside class=\"su-sidebar\"><div class=\"su-brand\"><b>'+esc(layout.heading||cfg.heading||'Sponsor Updates')+'</b><span>CRO sponsor reporting</span></div><nav aria-label=\"Application sections\">'+navHtml+'</nav><div class=\"su-sidebar-foot\"><span>Internal CRO workspace</span><small>Access controlled by TrialAgents</small></div></aside><div class=\"su-right\">'+(modal?'':top)+'<main class=\"su-main\"><div class=\"su-report-tools\">'+(modal?'':cutoffCtrl)+'</div>'+banner+body+'<p class=\"su-boundary\">Internal CRO reporting workspace · no patient-level data, automatic sponsor emails, or independent report approval.</p></main></div>'+detail()+editor()+archive+'</div>';\nreturn{html,css:CSS,state:st};\n";
+const demo=({
+  "fictional": true,
+  "records": [
+    {
+      "role": "sponsors",
+      "id": "demo-sponsors-1",
+      "version": 1,
+      "data": {
+        "name": "Northstar Therapeutics",
+        "sponsor_code": "NSTR",
+        "liaison_role": "Development director",
+        "contact_channel": "Sponsor-approved shared workspace",
+        "archived": false
+      }
+    },
+    {
+      "role": "sponsors",
+      "id": "demo-sponsors-2",
+      "version": 1,
+      "data": {
+        "name": "Aurora Bioinnovations",
+        "sponsor_code": "AURA",
+        "liaison_role": "Clinical Operations lead",
+        "contact_channel": "Approved project contact list",
+        "archived": false
+      }
+    },
+    {
+      "role": "sponsors",
+      "id": "demo-sponsors-3",
+      "version": 1,
+      "data": {
+        "name": "Ternion Biologics",
+        "sponsor_code": "TERN",
+        "liaison_role": "Program director",
+        "contact_channel": "CRO-approved contact channel",
+        "archived": false
+      }
+    },
+    {
+      "role": "projects",
+      "id": "demo-projects-1",
+      "version": 1,
+      "data": {
+        "name": "NS-26 Phase 2 Delivery",
+        "sponsor_id": "demo-sponsors-1",
+        "project_code": "NS-26-041",
+        "phase": "Active delivery",
+        "cro_pm": "M. Laurent",
+        "cadence": "Weekly",
+        "expected_teams": "Clinical Operations|Data Management|Regulatory|Quality",
+        "status": "Active",
+        "archived": false
+      }
+    },
+    {
+      "role": "projects",
+      "id": "demo-projects-2",
+      "version": 1,
+      "data": {
+        "name": "AUR-11 Clinical Operations",
+        "sponsor_id": "demo-sponsors-2",
+        "project_code": "AUR-26-011",
+        "phase": "Active delivery",
+        "cro_pm": "A. Richter",
+        "cadence": "Biweekly",
+        "expected_teams": "Clinical Operations|Data Management|Biostatistics",
+        "status": "Active",
+        "archived": false
+      }
+    },
+    {
+      "role": "projects",
+      "id": "demo-projects-3",
+      "version": 1,
+      "data": {
+        "name": "TERN-03 Startup",
+        "sponsor_id": "demo-sponsors-3",
+        "project_code": "TERN-03",
+        "phase": "Startup",
+        "cro_pm": "I. Weber",
+        "cadence": "Monthly",
+        "expected_teams": "Clinical Operations|Regulatory",
+        "status": "Active",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-1",
+      "version": 1,
+      "data": {
+        "name": "Final monitoring plan",
+        "project_id": "demo-projects-1",
+        "owner": "Clinical lead",
+        "baseline_date": "2026-10-21",
+        "current_date": "2026-10-21",
+        "actual_date": "2026-10-20",
+        "status": "Achieved",
+        "change_reason": null,
+        "evidence_ref": "DOC-MON-41",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-2",
+      "version": 1,
+      "data": {
+        "name": "First site activation package",
+        "project_id": "demo-projects-1",
+        "owner": "Regulatory",
+        "baseline_date": "2026-10-27",
+        "current_date": "2026-10-29",
+        "actual_date": "2026-10-29",
+        "status": "Achieved",
+        "change_reason": "Sponsor and CRO approved revised document transfer sequence",
+        "evidence_ref": "DOC-REG-92",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-3",
+      "version": 1,
+      "data": {
+        "name": "Database specification sign-off",
+        "project_id": "demo-projects-1",
+        "owner": "Data lead",
+        "baseline_date": "2026-10-30",
+        "current_date": "2026-10-31",
+        "actual_date": null,
+        "status": "In progress",
+        "change_reason": "Sponsor and CRO approved revised document transfer sequence",
+        "evidence_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-4",
+      "version": 1,
+      "data": {
+        "name": "Vendor data transfer mapping",
+        "project_id": "demo-projects-1",
+        "owner": "Data lead",
+        "baseline_date": "2026-11-01",
+        "current_date": "2026-11-01",
+        "actual_date": null,
+        "status": "Blocked",
+        "change_reason": null,
+        "evidence_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-5",
+      "version": 1,
+      "data": {
+        "name": "Regulatory document review",
+        "project_id": "demo-projects-1",
+        "owner": "Regulatory",
+        "baseline_date": "2026-11-12",
+        "current_date": "2026-11-12",
+        "actual_date": null,
+        "status": "Planned",
+        "change_reason": null,
+        "evidence_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-6",
+      "version": 1,
+      "data": {
+        "name": "Site readiness handoff",
+        "project_id": "demo-projects-1",
+        "owner": "Clinical lead",
+        "baseline_date": "2026-11-18",
+        "current_date": "2026-11-20",
+        "actual_date": null,
+        "status": "In progress",
+        "change_reason": "Sponsor and CRO approved revised document transfer sequence",
+        "evidence_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-7",
+      "version": 1,
+      "data": {
+        "name": "November risk review",
+        "project_id": "demo-projects-1",
+        "owner": "CRO PM",
+        "baseline_date": "2026-11-27",
+        "current_date": "2026-11-27",
+        "actual_date": null,
+        "status": "Planned",
+        "change_reason": null,
+        "evidence_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-8",
+      "version": 1,
+      "data": {
+        "name": "December governance meeting",
+        "project_id": "demo-projects-1",
+        "owner": "CRO PM",
+        "baseline_date": "2026-12-04",
+        "current_date": "2026-12-04",
+        "actual_date": null,
+        "status": "Planned",
+        "change_reason": null,
+        "evidence_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-9",
+      "version": 1,
+      "data": {
+        "name": "Other program milestone 9",
+        "project_id": "demo-projects-2",
+        "owner": "Operations",
+        "baseline_date": "2026-11-14",
+        "current_date": "2026-11-14",
+        "actual_date": null,
+        "status": "Planned",
+        "change_reason": null,
+        "evidence_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-10",
+      "version": 1,
+      "data": {
+        "name": "Other program milestone 10",
+        "project_id": "demo-projects-2",
+        "owner": "Operations",
+        "baseline_date": "2026-11-14",
+        "current_date": "2026-11-14",
+        "actual_date": null,
+        "status": "Planned",
+        "change_reason": null,
+        "evidence_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-11",
+      "version": 1,
+      "data": {
+        "name": "Other program milestone 11",
+        "project_id": "demo-projects-2",
+        "owner": "Operations",
+        "baseline_date": "2026-11-14",
+        "current_date": "2026-11-14",
+        "actual_date": null,
+        "status": "Planned",
+        "change_reason": null,
+        "evidence_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-1",
+      "version": 1,
+      "data": {
+        "name": "Clinical monitoring plan",
+        "project_id": "demo-projects-1",
+        "owner": "Clinical lead",
+        "due_date": "2026-10-21",
+        "status": "Accepted",
+        "acceptance_evidence": "SP-ACCEPT-21",
+        "accepted_at": "2026-10-22",
+        "sponsor_feedback": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-2",
+      "version": 1,
+      "data": {
+        "name": "Site qualification checklist",
+        "project_id": "demo-projects-1",
+        "owner": "Clinical lead",
+        "due_date": "2026-10-30",
+        "status": "Accepted",
+        "acceptance_evidence": "SP-ACCEPT-22",
+        "accepted_at": "2026-10-30",
+        "sponsor_feedback": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-3",
+      "version": 1,
+      "data": {
+        "name": "Data review plan",
+        "project_id": "demo-projects-1",
+        "owner": "Data lead",
+        "due_date": "2026-11-01",
+        "status": "Submitted",
+        "acceptance_evidence": null,
+        "accepted_at": null,
+        "sponsor_feedback": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-4",
+      "version": 1,
+      "data": {
+        "name": "Regulatory correspondence index",
+        "project_id": "demo-projects-1",
+        "owner": "Regulatory",
+        "due_date": "2026-10-29",
+        "status": "Rework",
+        "acceptance_evidence": null,
+        "accepted_at": null,
+        "sponsor_feedback": "Revise before final signoff",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-5",
+      "version": 1,
+      "data": {
+        "name": "QA oversight memo",
+        "project_id": "demo-projects-1",
+        "owner": "Quality lead",
+        "due_date": "2026-10-28",
+        "status": "Submitted",
+        "acceptance_evidence": null,
+        "accepted_at": null,
+        "sponsor_feedback": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-6",
+      "version": 1,
+      "data": {
+        "name": "Vendor data mapping spec",
+        "project_id": "demo-projects-1",
+        "owner": "Data lead",
+        "due_date": "2026-11-01",
+        "status": "In progress",
+        "acceptance_evidence": null,
+        "accepted_at": null,
+        "sponsor_feedback": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-7",
+      "version": 1,
+      "data": {
+        "name": "November sponsor slide pack",
+        "project_id": "demo-projects-1",
+        "owner": "CRO PM",
+        "due_date": "2026-11-06",
+        "status": "Planned",
+        "acceptance_evidence": null,
+        "accepted_at": null,
+        "sponsor_feedback": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-8",
+      "version": 1,
+      "data": {
+        "name": "Training evidence register",
+        "project_id": "demo-projects-1",
+        "owner": "Clinical lead",
+        "due_date": "2026-11-16",
+        "status": "Planned",
+        "acceptance_evidence": null,
+        "accepted_at": null,
+        "sponsor_feedback": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-9",
+      "version": 1,
+      "data": {
+        "name": "Archive readiness list",
+        "project_id": "demo-projects-1",
+        "owner": "Quality lead",
+        "due_date": "2026-11-28",
+        "status": "Planned",
+        "acceptance_evidence": null,
+        "accepted_at": null,
+        "sponsor_feedback": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "actions",
+      "id": "demo-actions-1",
+      "version": 1,
+      "data": {
+        "name": "Vendor mapping delays data checks",
+        "project_id": "demo-projects-1",
+        "kind": "Issue",
+        "owner": "Data lead",
+        "priority": "High",
+        "status": "Blocked",
+        "due_date": "2026-10-30",
+        "mitigation": "Escalate vendor mapping and agree handoff",
+        "evidence_ref": null,
+        "decision_by": null,
+        "decision_at": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "actions",
+      "id": "demo-actions-2",
+      "version": 1,
+      "data": {
+        "name": "Quality review evidence outstanding",
+        "project_id": "demo-projects-1",
+        "kind": "Risk",
+        "owner": "Quality lead",
+        "priority": "High",
+        "status": "Open",
+        "due_date": "2026-10-31",
+        "mitigation": "Obtain reviewer sign-off",
+        "evidence_ref": null,
+        "decision_by": null,
+        "decision_at": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "actions",
+      "id": "demo-actions-3",
+      "version": 1,
+      "data": {
+        "name": "Confirm site activation sequencing",
+        "project_id": "demo-projects-1",
+        "kind": "Decision",
+        "owner": "Sponsor lead",
+        "priority": "High",
+        "status": "Open",
+        "due_date": "2026-11-01",
+        "mitigation": "Sponsor to decide staggered vs simultaneous startup",
+        "evidence_ref": null,
+        "decision_by": null,
+        "decision_at": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "actions",
+      "id": "demo-actions-4",
+      "version": 1,
+      "data": {
+        "name": "Clarify regulatory response owner",
+        "project_id": "demo-projects-1",
+        "kind": "Action",
+        "owner": "Regulatory",
+        "priority": "Medium",
+        "status": "Open",
+        "due_date": "2026-11-01",
+        "mitigation": "Name final accountable owner",
+        "evidence_ref": null,
+        "decision_by": null,
+        "decision_at": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "actions",
+      "id": "demo-actions-5",
+      "version": 1,
+      "data": {
+        "name": "Review revised data plan",
+        "project_id": "demo-projects-1",
+        "kind": "Action",
+        "owner": "Data lead",
+        "priority": "Medium",
+        "status": "Open",
+        "due_date": "2026-11-05",
+        "mitigation": "Present at CRO-sponsor forum",
+        "evidence_ref": null,
+        "decision_by": null,
+        "decision_at": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "actions",
+      "id": "demo-actions-6",
+      "version": 1,
+      "data": {
+        "name": "Decision on interim monitoring",
+        "project_id": "demo-projects-1",
+        "kind": "Decision",
+        "owner": "Sponsor lead",
+        "priority": "Low",
+        "status": "Approved",
+        "due_date": "2026-10-20",
+        "mitigation": "Approve interim monitoring oversight",
+        "evidence_ref": "DEC-151",
+        "decision_by": "Sponsor governance chair",
+        "decision_at": "2026-10-20",
+        "archived": false
+      }
+    },
+    {
+      "role": "actions",
+      "id": "demo-actions-7",
+      "version": 1,
+      "data": {
+        "name": "Update quality risk log",
+        "project_id": "demo-projects-1",
+        "kind": "Action",
+        "owner": "Quality lead",
+        "priority": "Low",
+        "status": "Resolved",
+        "due_date": "2026-10-23",
+        "mitigation": "Captured in approved risk register",
+        "evidence_ref": "QMS-92",
+        "decision_by": null,
+        "decision_at": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "actions",
+      "id": "demo-actions-8",
+      "version": 1,
+      "data": {
+        "name": "Monitor CRO vendor capacity",
+        "project_id": "demo-projects-1",
+        "kind": "Risk",
+        "owner": "Operations",
+        "priority": "Medium",
+        "status": "Open",
+        "due_date": "2026-11-12",
+        "mitigation": "Weekly resourcing checkpoint",
+        "evidence_ref": null,
+        "decision_by": null,
+        "decision_at": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-1",
+      "version": 1,
+      "data": {
+        "name": "Clinical site readiness",
+        "project_id": "demo-projects-1",
+        "period_key": "2026-W44",
+        "team": "Clinical Operations",
+        "revision": 1,
+        "contributor": "T. Novak",
+        "submitted_at": "2026-10-30",
+        "status": "Accepted",
+        "highlights": "Two monitoring deliverables received",
+        "blockers": "One site document pending",
+        "next_steps": "Confirm site pack by Wednesday",
+        "source_refs": "DOC-CLIN-821",
+        "reviewer": "M. Laurent",
+        "reviewed_at": "2026-10-31",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-2",
+      "version": 1,
+      "data": {
+        "name": "Data management progress",
+        "project_id": "demo-projects-1",
+        "period_key": "2026-W44",
+        "team": "Data Management",
+        "revision": 1,
+        "contributor": "F. Martin",
+        "submitted_at": "2026-10-31",
+        "status": "Submitted",
+        "highlights": "Data specification reviewed",
+        "blockers": "Vendor mapping is late",
+        "next_steps": "Confirm transfer layout by Tuesday",
+        "source_refs": "DATA-DB-115",
+        "reviewer": null,
+        "reviewed_at": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-3",
+      "version": 1,
+      "data": {
+        "name": "Regulatory correspondence",
+        "project_id": "demo-projects-1",
+        "period_key": "2026-W44",
+        "team": "Regulatory",
+        "revision": 1,
+        "contributor": "K. Nguyen",
+        "submitted_at": "2026-10-30",
+        "status": "Accepted",
+        "highlights": "Submission response matrix prepared",
+        "blockers": "One response owner unresolved",
+        "next_steps": "Finalize sponsor response package",
+        "source_refs": "REG-33",
+        "reviewer": "M. Laurent",
+        "reviewed_at": "2026-10-31",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-4",
+      "version": 1,
+      "data": {
+        "name": "Quality action review",
+        "project_id": "demo-projects-1",
+        "period_key": "2026-W44",
+        "team": "Quality",
+        "revision": 1,
+        "contributor": "E. Weber",
+        "submitted_at": null,
+        "status": "Draft",
+        "highlights": "QMS checks ongoing",
+        "blockers": "Missing reviewer availability",
+        "next_steps": "Complete action review",
+        "source_refs": null,
+        "reviewer": null,
+        "reviewed_at": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-5",
+      "version": 1,
+      "data": {
+        "name": "Clinical previous update",
+        "project_id": "demo-projects-1",
+        "period_key": "2026-W43",
+        "team": "Clinical Operations",
+        "revision": 1,
+        "contributor": "T. Novak",
+        "submitted_at": "2026-10-23",
+        "status": "Accepted",
+        "highlights": "Site start-up checklist received",
+        "blockers": "None",
+        "next_steps": "Continue readiness assessments",
+        "source_refs": "CLIN-810",
+        "reviewer": "M. Laurent",
+        "reviewed_at": "2026-10-24",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-6",
+      "version": 1,
+      "data": {
+        "name": "Data previous update",
+        "project_id": "demo-projects-1",
+        "period_key": "2026-W43",
+        "team": "Data Management",
+        "revision": 1,
+        "contributor": "F. Martin",
+        "submitted_at": "2026-10-23",
+        "status": "Accepted",
+        "highlights": "Database deliverables in review",
+        "blockers": "Pending data transfer",
+        "next_steps": "Finalize vendor agreement",
+        "source_refs": "DATA-110",
+        "reviewer": "M. Laurent",
+        "reviewed_at": "2026-10-24",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-7",
+      "version": 1,
+      "data": {
+        "name": "Regulatory previous update",
+        "project_id": "demo-projects-1",
+        "period_key": "2026-W43",
+        "team": "Regulatory",
+        "revision": 1,
+        "contributor": "K. Nguyen",
+        "submitted_at": "2026-10-23",
+        "status": "Accepted",
+        "highlights": "Regulatory index published",
+        "blockers": "None",
+        "next_steps": "Ready response to CRO",
+        "source_refs": "REG-19",
+        "reviewer": "M. Laurent",
+        "reviewed_at": "2026-10-24",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-8",
+      "version": 1,
+      "data": {
+        "name": "Quality previous update",
+        "project_id": "demo-projects-1",
+        "period_key": "2026-W43",
+        "team": "Quality",
+        "revision": 1,
+        "contributor": "E. Weber",
+        "submitted_at": "2026-10-23",
+        "status": "Accepted",
+        "highlights": "Quality control completed",
+        "blockers": "None",
+        "next_steps": "Archive reference",
+        "source_refs": "QMS-51",
+        "reviewer": "M. Laurent",
+        "reviewed_at": "2026-10-24",
+        "archived": false
+      }
+    },
+    {
+      "role": "reports",
+      "id": "demo-reports-1",
+      "version": 1,
+      "data": {
+        "name": "NS-26 Sponsor Update \u2014 week 43",
+        "project_id": "demo-projects-1",
+        "period_key": "2026-W43",
+        "revision": 1,
+        "as_of": "2026-10-25",
+        "status": "Approved",
+        "prepared_by": "M. Laurent",
+        "narrative": "Sponsor-approved review of operational milestones, deliverables, and next week actions. Fictional example.",
+        "source_refs": "updates:demo-updates-5:v1\nupdates:demo-updates-6:v1",
+        "source_digest": "fictional approved historical snapshot",
+        "coverage_note": "4/4 team updates accepted",
+        "reviewer": "Independent CRO director",
+        "reviewed_at": "2026-10-26",
+        "archived": false
+      }
+    },
+    {
+      "role": "reports",
+      "id": "demo-reports-2",
+      "version": 1,
+      "data": {
+        "name": "NS-26 Sponsor Update \u2014 week 44",
+        "project_id": "demo-projects-1",
+        "period_key": "2026-W44",
+        "revision": 1,
+        "as_of": "2026-11-01",
+        "status": "Draft",
+        "prepared_by": "M. Laurent",
+        "narrative": "Draft: Site readiness is progressing. Vendor mapping and quality review remain unresolved.",
+        "source_refs": null,
+        "source_digest": null,
+        "coverage_note": "2/4 accepted team updates",
+        "reviewer": null,
+        "reviewed_at": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "distributions",
+      "id": "demo-distributions-1",
+      "version": 1,
+      "data": {
+        "name": "Week 43 sponsor status call",
+        "project_id": "demo-projects-1",
+        "report_id": "demo-reports-1",
+        "sent_date": "2026-10-27",
+        "channel": "Sponsor meeting",
+        "recipient_role": "Sponsor Clinical Operations lead",
+        "recorded_by": "M. Laurent",
+        "confirmation_ref": "Fictional meeting minutes MIN-2026-103",
+        "archived": false
+      }
+    }
+  ]
+}
+).records; const metadata={
+  "id": "life.cro-sponsor-updates",
+  "version": "1.0.1",
+  "name": "Sponsor Updates \u2014 CRO",
+  "description": "Lean CRO sponsor reporting workspace for teams under 50 FTE. Collect functional updates, track milestone and sponsor-accepted deliverable evidence, coordinate risks and decisions, review versioned sponsor reports, and log only confirmed manual distribution.",
+  "tags": [
+    "cro",
+    "sponsor-updates",
+    "project-health",
+    "milestones",
+    "client-reporting",
+    "clinical-operations",
+    "small-teams"
+  ],
+  "whenToUse": "Use for CRO-to-sponsor reporting where authorized functional leads provide periodic execution updates, milestones, deliverables, issues, independently approved sponsor reports and manually documented communication.",
+  "whenNotToUse": "Not an EDC, patient or safety case system, automated email sender, e-signature or legal submission engine; not for enterprise PSA billing, time tracking, HR allocation, supplier procurement or regulatory attestation.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "Sponsor Updates",
+    "tableMap": "{}",
+    "layoutProfile": "{}",
+    "initialProjectId": "",
+    "initialPeriod": "",
+    "asOfDate": "",
+    "pageSize": 25,
+    "readOnly": false
+  },
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "Sidebar title; platform handles all accounts and access.",
+      "default": "Sponsor Updates"
+    },
+    "tableMap": {
+      "type": "string",
+      "description": "JSON approved eight-role table map: role => {typeId,fields,writableFields}; use saved UUIDs.",
+      "default": "{}"
+    },
+    "layoutProfile": {
+      "type": "string",
+      "description": "Host-reviewed presentation order, fields and visibility; not access controls.",
+      "default": "{}"
+    },
+    "initialProjectId": {
+      "type": "string",
+      "description": "Optional authorized CRO project UUID (blank selects first permitted project).",
+      "default": ""
+    },
+    "initialPeriod": {
+      "type": "string",
+      "description": "Reporting period YYYY-MM or YYYY-Www.",
+      "default": ""
+    },
+    "asOfDate": {
+      "type": "string",
+      "description": "Evidence date cutoff in YYYY-MM-DD (defaults current UTC date).",
+      "default": ""
+    },
+    "pageSize": {
+      "type": "number",
+      "description": "Register page size clamped 10-50.",
+      "default": 25
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "Additional presentation-layer write suppression; does not grant access.",
+      "default": false
+    }
+  },
+  "instructions": "CR-05 Sponsor Updates for small CRO teams, not a sponsor portal. Do not add app login, signup, role accounts, patient records, patient enrollment metrics, billing, staffing optimization, finance, automatic sending, e-signature, or any speculative metrics. TrialAgents supplies account access and watermark; if its logo is added use actual icon and link https://platform.trialagents.com.\nRead current TrialAgents authoring + usage guidance. Discover the exact id/version/digest with list_app_templates and read_app_template, then use prepare_app_from_template with that version/digest and one stable requestKey. Revise the same preview using replacesPreviewId/expectedDigest. Save only through host review; verify the receipt and stable component ID. Reconcile an ambiguous save before retrying; never create a duplicate app. Host injects templateConfiguration and templateBindings exactly once; source must not redeclare either. Use only authorized records.read and reviewed records.propose. No silent writes. No saved application claimed merely by preparing a ZIP.\nExactly eight role tables: sponsors, projects, milestones, deliverables, actions, updates, reports, distributions. All fields are scalar with multiple:false. Create Sponsors and Projects first, then their child records. Reuse existing permitted masters where possible. Ask a CRO PM to define exact expected teams and cadence per project. Log manual distribution only after real sponsor communication occurs.\nFull exact schema and setup contract is embedded in documentation.dataContract (plus schema.example.json for maintainers). Use saved approved table UUIDs and column mappings; do not invent keys or assume human-readable names are related UUIDs. Use real TrialAgents Access per sponsor/project and field. Do not aggregate sponsor A project data into sponsor B; UI filter is not a security boundary.\nFive screens: Overview; Delivery (Milestones and Deliverables tabs); Risks & Decisions; Team Updates; Sponsor Reports (versioned draft/review/report, manual distribution log). Use project/period selector and explicit data cutoff. One title and subline per page, no redundant banners, fake login or extra teams modules.\nMilestone baseline date is immutable; due vs achieved and sponsor acceptance are not the same. Report coverage counts latest revision for every configured expected team, Accepted only. Never treat a missing update as healthy. Approved report requires complete sources, current snapshot signature, approved functional contributions, independent dated review. Any source changes after preparation require new report revision. Approved records cannot be edited; copy resets approval and evidence fields.\nRead totals strictly: unavailable/missing/unknown/short/over-budget source is incomplete; withhold authoritative totals and report approval. Backend paging still allows later records beyond analytic budget, and search in that case is page-local. Capture original version at form opening and send expectedVersion for all edit/archive proposals; retain drafts on conflicts.\nNative tracker:layout uses host review/persist; columns hidden in the table remain reachable in the record editor. Host account and table access are authoritative. No direct external integrations or automated distribution. Optional ChatGPT drafts are only text suggestions requested in chat; they are not approved reports until independently reviewed and saved.\nOptional shared ChatGPT monitoring (no per-app schedule) may summarize approved sponsor-specific sources at user-authorized cadence if actually connected. TrialAgents internal email notifications may go to the owner and explicitly chosen registered authorized teammates upon separately approved configuration. No sponsor email is sent by the app, by metadata, or by a preview. Partial coverage returns needs_review; never silently no_update on missing sources.\nRequire every listed field, including nullable evidence and archived booleans, to be mapped and authorized. Missing fields, invalid scalars or incomplete pages are unknown coverage. Initialize optional values as null. Record creation requires all mapped fields writable. Child writes require project name write access for atomic consistency checks; project changes require sponsor name write access. Original parent versions are captured on opening. Conflict means reopen and reconcile, never silently retry. Accepted inputs/deliverables, approved/rejected decisions, approved reports and distribution history cannot be archived. Report fingerprints use SHA-256 over complete scoped source IDs/versions plus project business data; same-name project guard writes do not change fingerprints. Legacy report signatures remain historical; create a new report revision to review current evidence. Preserve app identity, current version, manifest and unrelated settings on upgrades.",
+  "documentation": {
+    "quickStart": [
+      "Confirm the sponsor and project; use existing TrialAgents Access rather than creating a new account.",
+      "Create/reuse the eight scalar tables with all enumerated required fields and all status options; map approved typeId, logical fields and writableFields.",
+      "Define project cadence and expected teams with pipe-separated names from the Team update select list.",
+      "Add milestones, deliverables and risks with source evidence. Team leads submit and CRO PM accepts their period updates after independent review.",
+      "Use the Sponsor reports screen for a cited draft, review it with a separate owner, and only log distribution that actually occurred."
+    ],
+    "dataContract": "Eight authorized scalar (multiple:false) role tables. Every field may have null when not required; an empty date is null. Relationship fields are text containing the saved, authorized parent UUID (not display names or relationship arrays). Physical field keys are snake_case; map logical keys to approved physical names. The source table map must contain typeId, fields and writableFields per role. Do not invent UUIDs.\nExpected teams: projects.expected_teams is a pipe-separated exact list from the updates.team select choices; a missing expected team can never count as zero work. Report period accepts YYYY-MM or ISO YYYY-Www. Sponsor-specific projects are independently scoped; TrialAgents Access enforces actual permission.\nsponsors { name:text!, sponsor_code:text!, liaison_role:text?, contact_channel:text?, archived:boolean? }\nprojects { name:text!, sponsor_id:text!(UUID sponsors), project_code:text!, phase:select![Startup / Active delivery / Closeout / On hold], cro_pm:text!, cadence:select![Weekly / Biweekly / Monthly / Ad hoc], expected_teams:text!, status:select![Active / On hold / Closed], archived:boolean? }\nmilestones { name:text!, project_id:text!(UUID projects), owner:text!, baseline_date:date?, current_date:date!, actual_date:date?, status:select![Planned / In progress / Achieved / Blocked / Cancelled], change_reason:text?, evidence_ref:text?, archived:boolean? }\ndeliverables { name:text!, project_id:text!(UUID projects), owner:text!, due_date:date!, status:select![Planned / In progress / Submitted / Accepted / Rework], acceptance_evidence:text?, accepted_at:date?, sponsor_feedback:text?, archived:boolean? }\nactions { name:text!, project_id:text!(UUID projects), kind:select![Risk / Issue / Action / Decision], owner:text!, priority:select![High / Medium / Low], status:select![Open / Blocked / Resolved / Approved / Rejected], due_date:date?, mitigation:text?, evidence_ref:text?, decision_by:text?, decision_at:date?, archived:boolean? }\nupdates { name:text!, project_id:text!(UUID projects), period_key:text!, team:select![Clinical Operations / Data Management / Regulatory / Medical Writing / Biostatistics / Quality / Vendor Management / Project Management / Other], revision:number!, contributor:text!, submitted_at:date?, status:select![Draft / Submitted / Changes requested / Accepted], highlights:text?, blockers:text?, next_steps:text?, source_refs:text?, reviewer:text?, reviewed_at:date?, archived:boolean? }\nreports { name:text!, project_id:text!(UUID projects), period_key:text!, revision:number!, as_of:date!, status:select![Draft / In review / Approved], prepared_by:text!, narrative:text?, source_refs:text?, source_digest:text?, coverage_note:text?, reviewer:text?, reviewed_at:date?, archived:boolean? }\ndistributions { name:text!, project_id:text!(UUID projects), report_id:text!(UUID reports), sent_date:date!, channel:select![Manual email / Sponsor meeting / Shared workspace / Other], recipient_role:text!, recorded_by:text!, confirmation_ref:text!, archived:boolean? }\nSpecial: milestone baseline_date is set from the initial current_date and immutable. A revised current_date requires change_reason. Accepted deliverable needs a prior Submitted record, evidence reference and actual accepted_at date. Accepted team input needs prior Submitted state, contributor-independent reviewer, reviewed_at and source_refs. Approved report requires prior In review, complete project evidence, every expected team accepted, current source_digest, narrative and independent reviewer. Manual distribution log requires approved report and dated confirmation_ref; it does NOT send anything.",
+    "interactionContract": "All views are project/period scoped. Each input, select and textarea is data-ui-state with a stable data-action and name; submitted event.form named values merge into retained drafts. All records use reviewed records.propose with expectedVersion from edit/archive opening; conflicts preserve drafts. All registers include page navigation, search, add/edit/copy/archive and opened details. No false zero on partial reads; analytics limit 600 records per role, then page-local search with warning. Complete-empty is different from unavailable. Native tracker:layout changes presentation only; hidden fields remain available in editor. Initial first sponsor and project can be created empty. Approved team inputs/reports remain immutable; use versioned revisions.",
+    "lifecycle": "Build catalog life.cro-sponsor-updates@1.0.1 and verify all metadata contract limits, source injection and whole-catalog validation. Create parent tables via reviewed approvals; use returned persisted IDs in child relationships. Run host QuickJS + production sanitizer/manifest and original-version reviewed writes before publication. Revalidate the captured source signature before independently approving a report; confirmed report versions remain historical. App remains usable if any optional scheduled task or email fails. No external sponsor communication without separate user action. Any future schema change needs a new semantic version and reviewed migration. Keep a stable requestKey and reconcile receipts; retain the same saved component ID, current app version, bindings and manifest on revision. Parent version guards serialize participating source writes with report approval. Local drafts survive failed review; reopen and reconcile after conflicts.",
+    "limitations": [
+      "Not a validated GxP regulatory reporting system, CDMS, EDC, CTMS, or patient recruitment analytics. No patient-level information.",
+      "No automated sponsor email, distribution integration, PDF export inside app, or guaranteed external delivery. Distribution history is a manually evidenced log.",
+      "No automatic source pull from systems outside approved TrialAgents tables; ChatGPT narrative prompts are handoffs, not automatic execution.",
+      "No authoritative counts or approvals when permissions/read totals/schema/version coverage are incomplete.",
+      "Reviewed record proposals and native layout require live TrialAgents host verification; standalone HTML uses simulated local approval.",
+      "Reported metrics use current stored source rows and a selected cutoff, not historic-as-known-at-cutoff audit reconstruction.",
+      "Coverage is bounded to 600 rows per role and 100,000 JSON characters per read page. Report source references are limited to 50,000 characters; oversized reports fail visibly without writing. Direct Database changes do not participate in app-level parent guards and require reconciliation before approval."
+    ],
+    "examples": [
+      {
+        "prompt": "Set up a sponsor updates tracker for our CRO-managed Phase 2 programs.",
+        "expectedBehavior": "Create/reuse eight approved scalar role tables with sponsor-specific project scoping, five compact pages, expected functional teams and no custom account or sponsor email system."
+      },
+      {
+        "prompt": "Prepare this week\u2019s sponsor report from our clinical, data, regulatory and QA team updates.",
+        "expectedBehavior": "Show latest accepted revision per expected team; note missing/awaiting review, preserve milestone baseline, link evidence, and produce a draft only. No automatic sponsor distribution."
+      },
+      {
+        "prompt": "The sponsor accepted our monitoring plan; document the acceptance.",
+        "expectedBehavior": "Review a prior Submitted deliverable, require evidence and actual acceptance date, and prepare a reviewed update; completed CRO work alone is insufficient."
+      },
+      {
+        "prompt": "Our weekly status report was approved and sent during a client call.",
+        "expectedBehavior": "Confirm an independently approved report version and request the actual meeting date, recipient role and confirmation source before logging manual distribution."
+      },
+      {
+        "prompt": "Create a new sponsor report version after the data team corrected an update.",
+        "expectedBehavior": "Copy the prior report as a new Draft with reset signatures/approvals, re-read the latest authorized sources, and seek independent review before approving."
+      }
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "Only when an authorized CRO owner explicitly asks for recurring internal sponsor report drafting; not needed for core application use. Never enable by generating the template. After app save and opt-in, read read_app_automation_guide/read_automation_setup and list_app_automations/read_app_automation; reuse the shared owner/workspace runner and stable authoringKey cr05_sponsor_draft_v1, never a per-app ChatGPT Task.",
+      "readRequirements": "Use selected project UUID and sponsor permission boundaries, cutoff and period, expected team list, latest revision accepted team updates, milestone baseline/current/actual, deliverable acceptance evidence, open issues/decisions, approved reports. Access denied, partial, stale or unknown data => needs_review; do not infer no_update. Use inheritAppAccess:true and actual saved app/table identities and schema versions. Preserve existing IDs, disabled state, grants and hidden settings; owner-confirmed timezone, anchor, expiry and lookback with coalesced catch-up. Respect paused/disconnected setup. Prefer supported Work chat, high reasoning and latest capable model; report actual settings without inventing parameters.",
+      "outputContract": "Return project ID, reporting period, exact source IDs/versions, accepted/expected teams, changes, risks, decisions needed, missing coverage and a DRAFT narrative; no write/disclosure by default. Deduplicate by project+period+source signature. Do not claim successful schedule, sponsor email or approval without host receipt. One-time drafts stay in authorized chat; recurring drafts default to private permission-checked history. Any approved write destination must be the existing reports table with Draft status and scoped expiring grants; never overwrite approval. Complete zero findings is completed; no_update requires full coverage and approved quiet policy. Partial/denied/expired results do not advance coverage; preserve checkpoints and receipts. Optional email is a separate single-step fixed-content database notification when reports.status enters In review and archived is not true; owner plus explicitly chosen registered currently authorized teammates only. No external sponsor/contact recipients, second schedule or research-completion send. Delivery failure never reruns research or blocks the app. Inspect Logs and actual receipts; metadata enables nothing.",
+      "promptExample": "For the authorized CRO project and selected week, prepare a draft sponsor update citing source record IDs and original milestone baselines. Distinguish accepted from submitted deliverables, flag missing functional inputs and permissions. Do not access patient data, publish, email or approve. If complete sources are unchanged report the deduplicated state; partial evidence requires needs_review."
+    }
+  },
+  "examples": [],
+  "deprecated": false
+}
+;
+const roles=Object.keys({
+  "sponsors": {
+    "name": "cr05_sponsors",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Sponsor organization",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "sponsor_code",
+        "name": "Internal sponsor key",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "liaison_role",
+        "name": "Sponsor contact role",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "contact_channel",
+        "name": "Contact channel / approved location",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "sponsor_code": "sponsor_code",
+      "liaison_role": "liaison_role",
+      "contact_channel": "contact_channel",
+      "archived": "archived"
+    }
+  },
+  "projects": {
+    "name": "cr05_projects",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Study / project",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "sponsor_id",
+        "name": "Sponsor organization",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "project_code",
+        "name": "Project code",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "phase",
+        "name": "Development stage",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Startup",
+          "Active delivery",
+          "Closeout",
+          "On hold"
+        ]
+      },
+      {
+        "key": "cro_pm",
+        "name": "CRO project lead",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "cadence",
+        "name": "Sponsor reporting cadence",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Weekly",
+          "Biweekly",
+          "Monthly",
+          "Ad hoc"
+        ]
+      },
+      {
+        "key": "expected_teams",
+        "name": "Expected reporting teams (pipe-separated)",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "status",
+        "name": "Project status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Active",
+          "On hold",
+          "Closed"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "sponsor_id": "sponsor_id",
+      "project_code": "project_code",
+      "phase": "phase",
+      "cro_pm": "cro_pm",
+      "cadence": "cadence",
+      "expected_teams": "expected_teams",
+      "status": "status",
+      "archived": "archived"
+    }
+  },
+  "milestones": {
+    "name": "cr05_milestones",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Milestone",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "project_id",
+        "name": "Study / project",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "owner",
+        "name": "Accountable owner",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "baseline_date",
+        "name": "Original baseline date",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "current_date",
+        "name": "Current target date",
+        "kind": "date",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "actual_date",
+        "name": "Actual completion date",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Planned",
+          "In progress",
+          "Achieved",
+          "Blocked",
+          "Cancelled"
+        ]
+      },
+      {
+        "key": "change_reason",
+        "name": "Reason for revised target",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "evidence_ref",
+        "name": "Completion source reference",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "owner": "owner",
+      "baseline_date": "baseline_date",
+      "current_date": "current_date",
+      "actual_date": "actual_date",
+      "status": "status",
+      "change_reason": "change_reason",
+      "evidence_ref": "evidence_ref",
+      "archived": "archived"
+    }
+  },
+  "deliverables": {
+    "name": "cr05_deliverables",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Deliverable",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "project_id",
+        "name": "Study / project",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "due_date",
+        "name": "Due date",
+        "kind": "date",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "status",
+        "name": "Sponsor acceptance state",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Planned",
+          "In progress",
+          "Submitted",
+          "Accepted",
+          "Rework"
+        ]
+      },
+      {
+        "key": "acceptance_evidence",
+        "name": "Sponsor acceptance evidence reference",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "accepted_at",
+        "name": "Date accepted",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "sponsor_feedback",
+        "name": "Sponsor feedback / rework action",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "owner": "owner",
+      "due_date": "due_date",
+      "status": "status",
+      "acceptance_evidence": "acceptance_evidence",
+      "accepted_at": "accepted_at",
+      "sponsor_feedback": "sponsor_feedback",
+      "archived": "archived"
+    }
+  },
+  "actions": {
+    "name": "cr05_actions",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Risk, issue, action or decision",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "project_id",
+        "name": "Study / project",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "kind",
+        "name": "Record kind",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Risk",
+          "Issue",
+          "Action",
+          "Decision"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "Accountable owner",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "priority",
+        "name": "Priority",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "High",
+          "Medium",
+          "Low"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "Action state",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Open",
+          "Blocked",
+          "Resolved",
+          "Approved",
+          "Rejected"
+        ]
+      },
+      {
+        "key": "due_date",
+        "name": "Target decision / action date",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "mitigation",
+        "name": "Mitigation, decision rationale or next step",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "evidence_ref",
+        "name": "Outcome evidence reference",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "decision_by",
+        "name": "Decision approver",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "decision_at",
+        "name": "Date approved or rejected",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "kind": "kind",
+      "owner": "owner",
+      "priority": "priority",
+      "status": "status",
+      "due_date": "due_date",
+      "mitigation": "mitigation",
+      "evidence_ref": "evidence_ref",
+      "decision_by": "decision_by",
+      "decision_at": "decision_at",
+      "archived": "archived"
+    }
+  },
+  "updates": {
+    "name": "cr05_updates",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Workstream update title",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "project_id",
+        "name": "Study / project",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "period_key",
+        "name": "Reporting period (YYYY-MM or YYYY-Www)",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "team",
+        "name": "Function / workstream",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Clinical Operations",
+          "Data Management",
+          "Regulatory",
+          "Medical Writing",
+          "Biostatistics",
+          "Quality",
+          "Vendor Management",
+          "Project Management",
+          "Other"
+        ]
+      },
+      {
+        "key": "revision",
+        "name": "Update revision",
+        "kind": "number",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "contributor",
+        "name": "Contributor",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "submitted_at",
+        "name": "Submitted date",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "status",
+        "name": "Review state",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Draft",
+          "Submitted",
+          "Changes requested",
+          "Accepted"
+        ]
+      },
+      {
+        "key": "highlights",
+        "name": "Progress and achievements",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "blockers",
+        "name": "Blockers and changes",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "next_steps",
+        "name": "Next steps",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "source_refs",
+        "name": "Source record references / evidence",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "reviewer",
+        "name": "Reviewer",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "reviewed_at",
+        "name": "Reviewed date",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "period_key": "period_key",
+      "team": "team",
+      "revision": "revision",
+      "contributor": "contributor",
+      "submitted_at": "submitted_at",
+      "status": "status",
+      "highlights": "highlights",
+      "blockers": "blockers",
+      "next_steps": "next_steps",
+      "source_refs": "source_refs",
+      "reviewer": "reviewer",
+      "reviewed_at": "reviewed_at",
+      "archived": "archived"
+    }
+  },
+  "reports": {
+    "name": "cr05_reports",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Sponsor report title",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "project_id",
+        "name": "Study / project",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "period_key",
+        "name": "Reporting period",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "revision",
+        "name": "Report revision",
+        "kind": "number",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "as_of",
+        "name": "Reporting data cutoff",
+        "kind": "date",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "status",
+        "name": "Review state",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Draft",
+          "In review",
+          "Approved"
+        ]
+      },
+      {
+        "key": "prepared_by",
+        "name": "Prepared by",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "narrative",
+        "name": "Sponsor-facing approved narrative",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "source_refs",
+        "name": "Snapshot source references",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "source_digest",
+        "name": "Source version signature",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "coverage_note",
+        "name": "Team input coverage at preparation",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "reviewer",
+        "name": "Approved by",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "reviewed_at",
+        "name": "Date approved",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "period_key": "period_key",
+      "revision": "revision",
+      "as_of": "as_of",
+      "status": "status",
+      "prepared_by": "prepared_by",
+      "narrative": "narrative",
+      "source_refs": "source_refs",
+      "source_digest": "source_digest",
+      "coverage_note": "coverage_note",
+      "reviewer": "reviewer",
+      "reviewed_at": "reviewed_at",
+      "archived": "archived"
+    }
+  },
+  "distributions": {
+    "name": "cr05_distributions",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Distribution entry",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "project_id",
+        "name": "Study / project",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "report_id",
+        "name": "Approved report version",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "sent_date",
+        "name": "Confirmed distribution date",
+        "kind": "date",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "channel",
+        "name": "Manual channel",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Manual email",
+          "Sponsor meeting",
+          "Shared workspace",
+          "Other"
+        ]
+      },
+      {
+        "key": "recipient_role",
+        "name": "Recipient role / group",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "recorded_by",
+        "name": "Recorded by",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "confirmation_ref",
+        "name": "Independent evidence of manual distribution",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "report_id": "report_id",
+      "sent_date": "sent_date",
+      "channel": "channel",
+      "recipient_role": "recipient_role",
+      "recorded_by": "recorded_by",
+      "confirmation_ref": "confirmation_ref",
+      "archived": "archived"
+    }
+  }
+}
+);
+const map=Object.fromEntries(roles.map(role=>{const fields=Object.keys(({
+  "sponsors": {
+    "name": "cr05_sponsors",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Sponsor organization",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "sponsor_code",
+        "name": "Internal sponsor key",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "liaison_role",
+        "name": "Sponsor contact role",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "contact_channel",
+        "name": "Contact channel / approved location",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "sponsor_code": "sponsor_code",
+      "liaison_role": "liaison_role",
+      "contact_channel": "contact_channel",
+      "archived": "archived"
+    }
+  },
+  "projects": {
+    "name": "cr05_projects",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Study / project",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "sponsor_id",
+        "name": "Sponsor organization",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "project_code",
+        "name": "Project code",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "phase",
+        "name": "Development stage",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Startup",
+          "Active delivery",
+          "Closeout",
+          "On hold"
+        ]
+      },
+      {
+        "key": "cro_pm",
+        "name": "CRO project lead",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "cadence",
+        "name": "Sponsor reporting cadence",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Weekly",
+          "Biweekly",
+          "Monthly",
+          "Ad hoc"
+        ]
+      },
+      {
+        "key": "expected_teams",
+        "name": "Expected reporting teams (pipe-separated)",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "status",
+        "name": "Project status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Active",
+          "On hold",
+          "Closed"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "sponsor_id": "sponsor_id",
+      "project_code": "project_code",
+      "phase": "phase",
+      "cro_pm": "cro_pm",
+      "cadence": "cadence",
+      "expected_teams": "expected_teams",
+      "status": "status",
+      "archived": "archived"
+    }
+  },
+  "milestones": {
+    "name": "cr05_milestones",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Milestone",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "project_id",
+        "name": "Study / project",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "owner",
+        "name": "Accountable owner",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "baseline_date",
+        "name": "Original baseline date",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "current_date",
+        "name": "Current target date",
+        "kind": "date",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "actual_date",
+        "name": "Actual completion date",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Planned",
+          "In progress",
+          "Achieved",
+          "Blocked",
+          "Cancelled"
+        ]
+      },
+      {
+        "key": "change_reason",
+        "name": "Reason for revised target",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "evidence_ref",
+        "name": "Completion source reference",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "owner": "owner",
+      "baseline_date": "baseline_date",
+      "current_date": "current_date",
+      "actual_date": "actual_date",
+      "status": "status",
+      "change_reason": "change_reason",
+      "evidence_ref": "evidence_ref",
+      "archived": "archived"
+    }
+  },
+  "deliverables": {
+    "name": "cr05_deliverables",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Deliverable",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "project_id",
+        "name": "Study / project",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "due_date",
+        "name": "Due date",
+        "kind": "date",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "status",
+        "name": "Sponsor acceptance state",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Planned",
+          "In progress",
+          "Submitted",
+          "Accepted",
+          "Rework"
+        ]
+      },
+      {
+        "key": "acceptance_evidence",
+        "name": "Sponsor acceptance evidence reference",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "accepted_at",
+        "name": "Date accepted",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "sponsor_feedback",
+        "name": "Sponsor feedback / rework action",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "owner": "owner",
+      "due_date": "due_date",
+      "status": "status",
+      "acceptance_evidence": "acceptance_evidence",
+      "accepted_at": "accepted_at",
+      "sponsor_feedback": "sponsor_feedback",
+      "archived": "archived"
+    }
+  },
+  "actions": {
+    "name": "cr05_actions",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Risk, issue, action or decision",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "project_id",
+        "name": "Study / project",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "kind",
+        "name": "Record kind",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Risk",
+          "Issue",
+          "Action",
+          "Decision"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "Accountable owner",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "priority",
+        "name": "Priority",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "High",
+          "Medium",
+          "Low"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "Action state",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Open",
+          "Blocked",
+          "Resolved",
+          "Approved",
+          "Rejected"
+        ]
+      },
+      {
+        "key": "due_date",
+        "name": "Target decision / action date",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "mitigation",
+        "name": "Mitigation, decision rationale or next step",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "evidence_ref",
+        "name": "Outcome evidence reference",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "decision_by",
+        "name": "Decision approver",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "decision_at",
+        "name": "Date approved or rejected",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "kind": "kind",
+      "owner": "owner",
+      "priority": "priority",
+      "status": "status",
+      "due_date": "due_date",
+      "mitigation": "mitigation",
+      "evidence_ref": "evidence_ref",
+      "decision_by": "decision_by",
+      "decision_at": "decision_at",
+      "archived": "archived"
+    }
+  },
+  "updates": {
+    "name": "cr05_updates",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Workstream update title",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "project_id",
+        "name": "Study / project",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "period_key",
+        "name": "Reporting period (YYYY-MM or YYYY-Www)",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "team",
+        "name": "Function / workstream",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Clinical Operations",
+          "Data Management",
+          "Regulatory",
+          "Medical Writing",
+          "Biostatistics",
+          "Quality",
+          "Vendor Management",
+          "Project Management",
+          "Other"
+        ]
+      },
+      {
+        "key": "revision",
+        "name": "Update revision",
+        "kind": "number",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "contributor",
+        "name": "Contributor",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "submitted_at",
+        "name": "Submitted date",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "status",
+        "name": "Review state",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Draft",
+          "Submitted",
+          "Changes requested",
+          "Accepted"
+        ]
+      },
+      {
+        "key": "highlights",
+        "name": "Progress and achievements",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "blockers",
+        "name": "Blockers and changes",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "next_steps",
+        "name": "Next steps",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "source_refs",
+        "name": "Source record references / evidence",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "reviewer",
+        "name": "Reviewer",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "reviewed_at",
+        "name": "Reviewed date",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "period_key": "period_key",
+      "team": "team",
+      "revision": "revision",
+      "contributor": "contributor",
+      "submitted_at": "submitted_at",
+      "status": "status",
+      "highlights": "highlights",
+      "blockers": "blockers",
+      "next_steps": "next_steps",
+      "source_refs": "source_refs",
+      "reviewer": "reviewer",
+      "reviewed_at": "reviewed_at",
+      "archived": "archived"
+    }
+  },
+  "reports": {
+    "name": "cr05_reports",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Sponsor report title",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "project_id",
+        "name": "Study / project",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "period_key",
+        "name": "Reporting period",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "revision",
+        "name": "Report revision",
+        "kind": "number",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "as_of",
+        "name": "Reporting data cutoff",
+        "kind": "date",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "status",
+        "name": "Review state",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Draft",
+          "In review",
+          "Approved"
+        ]
+      },
+      {
+        "key": "prepared_by",
+        "name": "Prepared by",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "narrative",
+        "name": "Sponsor-facing approved narrative",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "source_refs",
+        "name": "Snapshot source references",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "source_digest",
+        "name": "Source version signature",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "coverage_note",
+        "name": "Team input coverage at preparation",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "reviewer",
+        "name": "Approved by",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "reviewed_at",
+        "name": "Date approved",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "period_key": "period_key",
+      "revision": "revision",
+      "as_of": "as_of",
+      "status": "status",
+      "prepared_by": "prepared_by",
+      "narrative": "narrative",
+      "source_refs": "source_refs",
+      "source_digest": "source_digest",
+      "coverage_note": "coverage_note",
+      "reviewer": "reviewer",
+      "reviewed_at": "reviewed_at",
+      "archived": "archived"
+    }
+  },
+  "distributions": {
+    "name": "cr05_distributions",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Distribution entry",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "project_id",
+        "name": "Study / project",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "report_id",
+        "name": "Approved report version",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "sent_date",
+        "name": "Confirmed distribution date",
+        "kind": "date",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "channel",
+        "name": "Manual channel",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Manual email",
+          "Sponsor meeting",
+          "Shared workspace",
+          "Other"
+        ]
+      },
+      {
+        "key": "recipient_role",
+        "name": "Recipient role / group",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "recorded_by",
+        "name": "Recorded by",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "confirmation_ref",
+        "name": "Independent evidence of manual distribution",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "report_id": "report_id",
+      "sent_date": "sent_date",
+      "channel": "channel",
+      "recipient_role": "recipient_role",
+      "recorded_by": "recorded_by",
+      "confirmation_ref": "confirmation_ref",
+      "archived": "archived"
+    }
+  }
+}
+)[role].logicalFields);return [role,{typeId:role,fields:Object.fromEntries(fields.map(k=>[k,k])),writableFields:fields}]}));
+const bindings=roles.map(role=>({typeId:role,fields:Object.keys(map[role].fields)}));
+const config={...metadata.defaults,demoLabel:true,asOfDate:"2026-11-01",tableMap:JSON.stringify(map)};
+const render=new Function('input','tools','templateConfiguration','templateBindings',source);
+let state={},rows=demo,proposal=null;
+function dispatch(event){if(event.action==='tracker:layout'){alert('Layout is managed in native TrialAgents App Settings. This file demonstrates the sponsor reporting screens only.');return;}
+ const out=render({saved:true,writable:true,state,event},{call:(name,v)=>{if(name==='records.read'){const all=rows.filter(r=>r.role===v.typeId);return {rows:all.slice(v.offset,v.offset+v.limit),total:all.length};}if(name==='records.propose'){proposal=v;return {status:'proposed'};}throw Error('Unsupported preview capability');}},config,bindings);
+ state=out.state;document.getElementById('surface').innerHTML=out.html;
+ if(proposal){const changes=proposal;proposal=null;if(confirm('FICTIONAL LOCAL REVIEW ONLY\n'+JSON.stringify(changes,null,2))){for(const c of changes){if(c.kind==='create_record')rows.push({role:c.typeId,id:crypto.randomUUID(),version:0,data:c.data});else{const r=rows.find(r=>r.id===c.recordId);if(r&&r.version===c.expectedVersion){r.data={...r.data,...c.data};r.version++;}}}state={...state,editor:null,del:null,detail:null,notice:'Fictional change applied in this preview only.'};dispatch({kind:'open',action:''});}}
+}
+function eventFor(kind,target){const trigger=target.closest('[data-action]');if(!trigger)return;const form=trigger.closest('form');dispatch({kind,action:trigger.dataset.action,value:target.type==='checkbox'?target.checked:target.value??null,form:form?Object.fromEntries(new FormData(form)):{}});}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&!b.disabled&&b.type!=='submit')eventFor('click',b);});
+document.addEventListener('submit',e=>{e.preventDefault();eventFor('submit',e.target);});
+document.addEventListener('change',e=>eventFor('change',e.target));
+dispatch({kind:'open',action:''});
+</script></body></html>

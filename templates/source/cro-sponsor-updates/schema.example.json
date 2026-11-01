@@ -1,0 +1,799 @@
+{
+  "sponsors": {
+    "name": "cr05_sponsors",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Sponsor organization",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "sponsor_code",
+        "name": "Internal sponsor key",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "liaison_role",
+        "name": "Sponsor contact role",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "contact_channel",
+        "name": "Contact channel / approved location",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "sponsor_code": "sponsor_code",
+      "liaison_role": "liaison_role",
+      "contact_channel": "contact_channel",
+      "archived": "archived"
+    }
+  },
+  "projects": {
+    "name": "cr05_projects",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Study / project",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "sponsor_id",
+        "name": "Sponsor organization",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "project_code",
+        "name": "Project code",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "phase",
+        "name": "Development stage",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Startup",
+          "Active delivery",
+          "Closeout",
+          "On hold"
+        ]
+      },
+      {
+        "key": "cro_pm",
+        "name": "CRO project lead",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "cadence",
+        "name": "Sponsor reporting cadence",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Weekly",
+          "Biweekly",
+          "Monthly",
+          "Ad hoc"
+        ]
+      },
+      {
+        "key": "expected_teams",
+        "name": "Expected reporting teams (pipe-separated)",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "status",
+        "name": "Project status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Active",
+          "On hold",
+          "Closed"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "sponsor_id": "sponsor_id",
+      "project_code": "project_code",
+      "phase": "phase",
+      "cro_pm": "cro_pm",
+      "cadence": "cadence",
+      "expected_teams": "expected_teams",
+      "status": "status",
+      "archived": "archived"
+    }
+  },
+  "milestones": {
+    "name": "cr05_milestones",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Milestone",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "project_id",
+        "name": "Study / project",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "owner",
+        "name": "Accountable owner",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "baseline_date",
+        "name": "Original baseline date",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "current_date",
+        "name": "Current target date",
+        "kind": "date",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "actual_date",
+        "name": "Actual completion date",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Planned",
+          "In progress",
+          "Achieved",
+          "Blocked",
+          "Cancelled"
+        ]
+      },
+      {
+        "key": "change_reason",
+        "name": "Reason for revised target",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "evidence_ref",
+        "name": "Completion source reference",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "owner": "owner",
+      "baseline_date": "baseline_date",
+      "current_date": "current_date",
+      "actual_date": "actual_date",
+      "status": "status",
+      "change_reason": "change_reason",
+      "evidence_ref": "evidence_ref",
+      "archived": "archived"
+    }
+  },
+  "deliverables": {
+    "name": "cr05_deliverables",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Deliverable",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "project_id",
+        "name": "Study / project",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "due_date",
+        "name": "Due date",
+        "kind": "date",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "status",
+        "name": "Sponsor acceptance state",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Planned",
+          "In progress",
+          "Submitted",
+          "Accepted",
+          "Rework"
+        ]
+      },
+      {
+        "key": "acceptance_evidence",
+        "name": "Sponsor acceptance evidence reference",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "accepted_at",
+        "name": "Date accepted",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "sponsor_feedback",
+        "name": "Sponsor feedback / rework action",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "owner": "owner",
+      "due_date": "due_date",
+      "status": "status",
+      "acceptance_evidence": "acceptance_evidence",
+      "accepted_at": "accepted_at",
+      "sponsor_feedback": "sponsor_feedback",
+      "archived": "archived"
+    }
+  },
+  "actions": {
+    "name": "cr05_actions",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Risk, issue, action or decision",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "project_id",
+        "name": "Study / project",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "kind",
+        "name": "Record kind",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Risk",
+          "Issue",
+          "Action",
+          "Decision"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "Accountable owner",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "priority",
+        "name": "Priority",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "High",
+          "Medium",
+          "Low"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "Action state",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Open",
+          "Blocked",
+          "Resolved",
+          "Approved",
+          "Rejected"
+        ]
+      },
+      {
+        "key": "due_date",
+        "name": "Target decision / action date",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "mitigation",
+        "name": "Mitigation, decision rationale or next step",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "evidence_ref",
+        "name": "Outcome evidence reference",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "decision_by",
+        "name": "Decision approver",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "decision_at",
+        "name": "Date approved or rejected",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "kind": "kind",
+      "owner": "owner",
+      "priority": "priority",
+      "status": "status",
+      "due_date": "due_date",
+      "mitigation": "mitigation",
+      "evidence_ref": "evidence_ref",
+      "decision_by": "decision_by",
+      "decision_at": "decision_at",
+      "archived": "archived"
+    }
+  },
+  "updates": {
+    "name": "cr05_updates",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Workstream update title",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "project_id",
+        "name": "Study / project",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "period_key",
+        "name": "Reporting period (YYYY-MM or YYYY-Www)",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "team",
+        "name": "Function / workstream",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Clinical Operations",
+          "Data Management",
+          "Regulatory",
+          "Medical Writing",
+          "Biostatistics",
+          "Quality",
+          "Vendor Management",
+          "Project Management",
+          "Other"
+        ]
+      },
+      {
+        "key": "revision",
+        "name": "Update revision",
+        "kind": "number",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "contributor",
+        "name": "Contributor",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "submitted_at",
+        "name": "Submitted date",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "status",
+        "name": "Review state",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Draft",
+          "Submitted",
+          "Changes requested",
+          "Accepted"
+        ]
+      },
+      {
+        "key": "highlights",
+        "name": "Progress and achievements",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "blockers",
+        "name": "Blockers and changes",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "next_steps",
+        "name": "Next steps",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "source_refs",
+        "name": "Source record references / evidence",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "reviewer",
+        "name": "Reviewer",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "reviewed_at",
+        "name": "Reviewed date",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "period_key": "period_key",
+      "team": "team",
+      "revision": "revision",
+      "contributor": "contributor",
+      "submitted_at": "submitted_at",
+      "status": "status",
+      "highlights": "highlights",
+      "blockers": "blockers",
+      "next_steps": "next_steps",
+      "source_refs": "source_refs",
+      "reviewer": "reviewer",
+      "reviewed_at": "reviewed_at",
+      "archived": "archived"
+    }
+  },
+  "reports": {
+    "name": "cr05_reports",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Sponsor report title",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "project_id",
+        "name": "Study / project",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "period_key",
+        "name": "Reporting period",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "revision",
+        "name": "Report revision",
+        "kind": "number",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "as_of",
+        "name": "Reporting data cutoff",
+        "kind": "date",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "status",
+        "name": "Review state",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Draft",
+          "In review",
+          "Approved"
+        ]
+      },
+      {
+        "key": "prepared_by",
+        "name": "Prepared by",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "narrative",
+        "name": "Sponsor-facing approved narrative",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "source_refs",
+        "name": "Snapshot source references",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "source_digest",
+        "name": "Source version signature",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "coverage_note",
+        "name": "Team input coverage at preparation",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "reviewer",
+        "name": "Approved by",
+        "kind": "text",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "reviewed_at",
+        "name": "Date approved",
+        "kind": "date",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "period_key": "period_key",
+      "revision": "revision",
+      "as_of": "as_of",
+      "status": "status",
+      "prepared_by": "prepared_by",
+      "narrative": "narrative",
+      "source_refs": "source_refs",
+      "source_digest": "source_digest",
+      "coverage_note": "coverage_note",
+      "reviewer": "reviewer",
+      "reviewed_at": "reviewed_at",
+      "archived": "archived"
+    }
+  },
+  "distributions": {
+    "name": "cr05_distributions",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Distribution entry",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "project_id",
+        "name": "Study / project",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "report_id",
+        "name": "Approved report version",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "sent_date",
+        "name": "Confirmed distribution date",
+        "kind": "date",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "channel",
+        "name": "Manual channel",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Manual email",
+          "Sponsor meeting",
+          "Shared workspace",
+          "Other"
+        ]
+      },
+      {
+        "key": "recipient_role",
+        "name": "Recipient role / group",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "recorded_by",
+        "name": "Recorded by",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "confirmation_ref",
+        "name": "Independent evidence of manual distribution",
+        "kind": "text",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "report_id": "report_id",
+      "sent_date": "sent_date",
+      "channel": "channel",
+      "recipient_role": "recipient_role",
+      "recorded_by": "recorded_by",
+      "confirmation_ref": "confirmation_ref",
+      "archived": "archived"
+    }
+  }
+}
