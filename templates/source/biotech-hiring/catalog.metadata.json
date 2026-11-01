@@ -1,0 +1,125 @@
+{
+  "id": "life.hiring-resource-management",
+  "version": "1.4.2",
+  "name": "Biotech Hiring & Resource Management",
+  "description": "Vivid, six-screen hiring and cross-functional resource planner for biotech companies with fewer than 50 FTE: people and skills, discovery/preclinical/CMC/clinical/regulatory/business activities, allocations, capacity gaps, hiring approvals and what-if staffing.",
+  "tags": [
+    "biotech",
+    "biotech-hiring",
+    "headcount",
+    "small-biotech",
+    "under-50-fte",
+    "resource-management",
+    "capacity-planning",
+    "research-development",
+    "cmc",
+    "operations"
+  ],
+  "whenToUse": "Biotech startups and growth-stage biotech teams below 50 FTE distributing staff/contractors across all scientific, development, regulatory, financing and business work.",
+  "whenNotToUse": "Not an ATS or large-company HRIS, payroll, timesheet, employee assessment or medical/leave system. Clinical study delivery is only one optional work area.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "Biotech Hiring & Resource Management",
+    "tableMap": "{}",
+    "pageSize": 25,
+    "planMonth": "",
+    "layoutProfile": "{}",
+    "readOnly": false,
+    "demoLabel": false
+  },
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "Display name of biotech hiring and resource management app.",
+      "default": "Biotech Hiring & Resource Management"
+    },
+    "tableMap": {
+      "type": "string",
+      "description": "Authorized JSON mapping of logical roles to exact typeIds, field names and allowed writable keys.",
+      "default": "{}"
+    },
+    "pageSize": {
+      "type": "number",
+      "description": "Rows per page, clamped to 10\u201325.",
+      "default": 25
+    },
+    "planMonth": {
+      "type": "string",
+      "description": "Planning anchor in YYYY-MM; empty uses the current UTC month. Choose an explicit month for a fixed plan.",
+      "default": ""
+    },
+    "layoutProfile": {
+      "type": "string",
+      "description": "JSON presentation profile saved by native TrialAgents Settings through reviewed versioned updates.",
+      "default": "{}"
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "Disable write proposals.",
+      "default": false
+    },
+    "demoLabel": {
+      "type": "boolean",
+      "description": "Mark fictional standalone demonstration; off in normal use.",
+      "default": false
+    }
+  },
+  "instructions": "Read current read_app_template_guidance usage and authoring to completion, read_app_design, list_app_templates and this exact read_app_template version/digest. Build one six-screen internal app for biotech/CRO teams below 50 FTE, covering company activities, not only clinical studies. Preserve the compact design: one H1 per screen, useful content immediately below, no decorative banners or duplicate introductions. Use the existing TrialAgents identity/access and official linked watermark; no app-local accounts, auth, payroll or ATS. Inspect authorized schemas before proposing five role tables staff/projects/allocations/requests/scenarios. Use the scalar database types and logical-to-real field mappings in dataContract. Month fields are text in validated YYYY-MM format, narrative fields are text, personId/projectId are text containing actual saved record UUIDs, not labels. Bind every mapped field through actual table IDs, field keys and schema versions in the manifest. writableFields uses logical names and must match authorized manifest write modes. Do not seed fictional demo data. Configure the planning anchor with the owner. Only Active people whose availableFrom month has arrived supply baseline capacity; Upcoming hires are scenario assumptions only. Capacity/forecast results are withheld on unavailable, unbound, truncated, invalid or unresolved required data. Save with one requestKey and exact review; reconcile receipt, saved ID and version. All form inputs hold temporary draft state; records.propose is not a save. Record edits/archive retain their original version so concurrent edits fail. Duplicate creates a reviewed draft, Delete is reviewed archived:true. Preview all six screens in the actual manifest-bound sanitized host and test empty, 49-person, denied and partial data. Use tracker:layout and the existing native templateLayoutSchema/layoutProfile support; review/confirm layout and reopen. Keep app ID, permissions, bindings, assets and execution on revisions; preserve disabled state and reconcile ambiguous receipts rather than creating replacement apps. Custom sections have app-level access, not security through hiding. Save the app before optional monitoring/email. Read read_automation_setup, read_app_automation_guide and list_app_automations; only prepare_app_monitoring/prepare_app_action within owner authorization. Use stable authoring keys, retain saved IDs on edits/retries, distinguish enabled from runner readiness, and keep results in Logs. No per-app ChatGPT host task or ChatGPT email sending.",
+  "documentation": {
+    "quickStart": [
+      "Read current authoring/usage/design guidance and the exact template version/digest; preserve internal account and host-logo rules.",
+      "Inspect authorized schemas and use the platform-valid scalar contract. Explicitly map camelCase logical fields to lowercase real keys; months and narratives are text, record references are actual UUID text.",
+      "Prepare reviewed schema changes if needed. Map five roles, real IDs and every field in bindings/manifest with real schema versions and authorized modes. Choose the planning anchor month.",
+      "Preview all six screens in the real sanitized host with manifest attached. Test empty, 49-person and incomplete sources; pending hires must not supply capacity. Do not seed demo records.",
+      "Use one requestKey for save/retries, confirm and verify app ID/version. Test reviewed creation, edits, duplication and archive; reject stale versions.",
+      "Use the gear for native screen/field dragging, visibility and heading. Review/Confirm and reopen; Ignore preserves the saved profile and access.",
+      "Optionally prepare separately approved weekly ChatGPT analysis and/or Pending-to-Approved internal email. No automation is the default; report saved definition, enabled state, runner readiness and delivery separately."
+    ],
+    "dataContract": "All fields are scalar (multiple:false). staff: name:text required, function:select [Discovery R&D|Preclinical|CMC|Clinical Development|Regulatory|Quality|BD & Finance|Operations], role:text, fte:number required, skills:text, employment_type:select [Employee|Contractor], available_from:text, status:select required [Active|Upcoming|Inactive], archived:boolean. projects: name:text required, program:text, function:select [Discovery R&D|Preclinical|CMC|Clinical Development|Regulatory|Quality|BD & Finance|Operations], status:select required [Active|Tentative|On hold|Complete], owner:text, activity_type:select [Discovery R&D|Preclinical|CMC|Clinical Development|Regulatory|Quality|Business Development|Company Operations], archived:boolean. allocations: name:text required, person_id:text, placeholder_role:text, project_id:text required, month:text required, fte:number required, status:select required [Committed|Tentative], archived:boolean. requests: name:text required, function:select [Discovery R&D|Preclinical|CMC|Clinical Development|Regulatory|Quality|BD & Finance|Operations], role:text, fte:number, target_start:text, priority:select [High|Medium|Low], status:select [Draft|Pending|Approved|Deferred|Cancelled|Filled], program:text, justification:text, archived:boolean. scenarios: name:text required, hire_shift_months:number required, hiring_fte:number required, contractor_fte:number required, note:text, archived:boolean. Logical-to-database field mapping: {\"staff\": {\"employmentType\": \"employment_type\", \"availableFrom\": \"available_from\"}, \"projects\": {\"activityType\": \"activity_type\"}, \"allocations\": {\"personId\": \"person_id\", \"placeholderRole\": \"placeholder_role\", \"projectId\": \"project_id\"}, \"requests\": {\"targetStart\": \"target_start\"}, \"scenarios\": {\"hireShiftMonths\": \"hire_shift_months\", \"hiringFte\": \"hiring_fte\", \"contractorFte\": \"contractor_fte\"}}. Other logical names map directly. Months are text validated as YYYY-MM (01\u201312), never a month database type or a full date. Narratives use text, not longtext. person_id/project_id store actual saved People/Activity record UUIDs as scalar text; the app resolves names only through permitted reads and validates choices before proposals. Do not replace these with relationship arrays without adapting source. archived:boolean is a soft-delete marker. tableMap is a JSON string {role:{typeId:<real UUID>,fields:{<logical key>:<real key>},writableFields:[<logical keys>]}}. Bind all mapped fields with real schemaVersion/kind/read-write mode in a version 1 manifest; workspace scope unless project-only data is requested. No example UUID is a real table binding. Only Active staff supply baseline FTE, after available_from. Upcoming/Inactive and placeholders never supply baseline capacity. Allocations add committed or tentative demand; placeholders encode function as \"Function \u2014 role\" for function rollups. Scenario hires add explicitly hypothetical capacity at the plan anchor plus delay, not saved staff capacity. Reads are bounded to 500 rows per role; denied/unbound/truncated data are not empty completed sources. Required unreadable/missing values or unresolved allocation identities withhold capacity results. Monthly text dates must be valid. Record drafts are local until a trusted receipt confirms writes. Layout is versioned app configuration, not a second database. No candidate/PHI/payroll/credential records. Fictional examples are never saved as production data.",
+    "interactionContract": "Six compact screens retain their distinct jobs: Team Pulse metrics; Our People directory; Work Planner with a 25-resource-per-page timeline including placeholders, a paginated assignment register and Manage activities toggle; Capacity Outlook with 3/6/12-month comparison; Hiring Needs with reviewed decisions; What-if Plans comparing baseline against one selected saved scenario. Search, month and scenario selection are transient UI state. Record forms use data-ui-state with distinct draft actions; changes preserve draft values and original record version, submit creates records.propose only. Duplicate resets Hiring Needs to Draft; archive requires confirmation and the original version. Permission-denied/unbound/truncated sources are flagged, never treated as complete zero datasets. Capacity totals/forecasts are withheld when required sources/values are incomplete. Native Settings uses tracker:layout, templateLayoutSchema and layoutProfile; supports screen/field dragging or keyboard/touch pick-and-place, visibility and heading. Review/Confirm is versioned and persistent; Ignore leaves saved configuration intact. Screen hiding is presentation only. Automation management belongs in platform Automations, results in Logs. Keep one page H1, no decorative banners or promotional panels; only genuine data-quality/action errors may be shown.",
+    "lifecycle": "Pin immutable life.hiring-resource-management@1.4.2 and its raw catalog digest. Prepare once with a stable requestKey; verify saved app ID/version and receipts. Revise the same app with expectedVersion. On uncertain writes reconcile the existing receipt before retry; never create a second app to repair a response. Draft forms are local until exact reviewed commit. Record edits/archive preserve the version shown when editing/confirmation began and fail on concurrency. Layout revisions preserve source logic, manifest, bindings, assets, execution and access; saved configuration is authoritative on every render. Optional automations use stable authoring keys, remain visible when Disabled, preserve disabled state on edit, suspend on archive, and never activate on restore/copy. Runner or delivery failures cannot block app loading or erase unsaved input. Automation definition state, runner readiness and actual completion are separate outcomes.",
+    "limitations": [
+      "Small-biotech/CRO monthly FTE planning; no enterprise HR, ATS, payroll, leave or timesheets.",
+      "Custom source has app-level access only; hiding screens/columns never changes permissions.",
+      "At most 500 rows per role are read. Unavailable/incomplete/invalid required data withholds capacity results rather than claiming no shortage. Timeline and record pages expose all fetched rows through pagination.",
+      "Only Active staff contribute baseline supply after available_from. Planned hires are hypothetical scenario inputs; scenario start is the configured plan month plus hire delay.",
+      "Record references use scalar UUID text with permitted lookup, not native relationship arrays; schema adapters are required to reuse other representations.",
+      "Delete means reviewed archived:true; no physical deletion. Restore through authorized database edits/history.",
+      "Requires the native custom-layout host support introduced with Cash Runway. Standalone HTML simulates review only and does not validate server access or save layouts.",
+      "Automation is optional and separately authorized. Requested model preferences are not verified host settings; missing subscription support leaves setup pending without blocking the app."
+    ],
+    "examples": [
+      {
+        "prompt": "Create Biotech Hiring & Resource Management for our 18-person biotech: discovery, preclinical, CMC, clinical, finance and BD all share specialists. No automation.",
+        "expectedBehavior": "Create a six-screen cross-functional app, bind company projects and people by authorized IDs, and show workload gaps using monthly FTE; no study-only assumptions or new user accounts."
+      },
+      {
+        "prompt": "Can we add an extra CMC scale-up initiative without overloading regulatory and lab operations?",
+        "expectedBehavior": "Compare saved company allocations and an explicitly hypothetical hiring scenario, flag incomplete data and person/function overload, and propose any new activity/allocation records for exact review. Never treat pending hires as baseline supply."
+      },
+      {
+        "prompt": "Email the team lead after I approve a 0.5-FTE analytical development contractor request.",
+        "expectedBehavior": "After saved app approval, propose a separate platform email action triggered only by Pending\u2192Approved; use authorized recipients, no ChatGPT email or premature activation claim."
+      }
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "When biotech leadership wants weekly cross-functional shortage reviews or an internal approval message. None is the default.",
+      "readRequirements": "Current read_app_automation_guide, list_app_automations, read_automation_setup, current permitted People, Activities, Allocations, Hiring Needs and Scenario pages, versions and sources. Use authoringKey biotech-hiring.weekly-capacity.v1 and biotech-hiring.approval-email.v1; inherit app access and separately approved write scope/expiry. Inspect the actual status field and current email placeholder schema before setup.",
+      "outputContract": "ChatGPT creates an evidence-linked risk/action review with stable dedupe keys and no unauthorized record writes; optional TrialAgents email sends only after approved status transition and current permission/state checks. Outcomes stay in Logs. Default weekly analysis returns a review to the owner without database writes; a saved destination requires an explicit reviewed schema/write scope. No findings is no_update only under an approved quiet policy. An incomplete read is partial, not no_update. Do not invent placeholder substitution support: use a supported trusted app link and static notification text if record fields are not supported. Disable/edit via platform Automations and retain existing IDs/authoring keys; no automatic reactivation.",
+      "promptExample": "Optional weekly ChatGPT biotech capacity review. Frequency: weekly (Europe/Berlin) only after saving the app, explicit owner approval and verified shared runner. Read authorized People, Activities, Allocations and Hiring Needs records and all available pages. Identify overallocated person-months, unfilled critical expertise, competing work across discovery R&D, preclinical, CMC, clinical development, regulatory, quality, business development and operations. Cite each relevant source record ID and month, distinguish committed versus tentative demand and never count pending hires or placeholders as supply. Propose at most five prioritized actions and accountable owners; deduplicate by kind, activity/person and month. Do not assess applicant protected traits, invent capacities, send emails or change records without a reviewed scope and confirmed write receipt. On no findings, return no_update only if silent completion was approved. Failed runs preserve prior app data and coverage.\n\nEMAIL: Optional TrialAgents email action (not ChatGPT email). Trigger only when a Hiring Need / Role Gap record changes from Pending to Approved. Owner is recipient by default; include additional members only when explicitly selected and authorized for app data. Subject: Biotech resource request approved: {{role}}. Message: The {{fte}} FTE request for {{role}} supporting {{program}} has been approved, needed by {{targetStart}}. Please open Biotech Hiring & Resource Management in TrialAgents to review. Do not send on unrelated updates or reversed approval. Backend enforces settling, current-state revalidation, per-app hourly and account-wide delivery limits and deduplication; manage enabled state, timing and recipients in platform Automations, outcomes in Logs. No external recipients without separately supported and approved policy.\n\nNO AUTOMATION: No automation: manual people directory, monthly project allocations, capacity outlook, approved support requests and what-if scenarios all work without scheduling, email, connectors or ChatGPT research."
+    }
+  },
+  "examples": [
+    {
+      "heading": "Biotech Hiring & Resource Management",
+      "tableMap": "{}",
+      "pageSize": 25,
+      "planMonth": "2026-11",
+      "layoutProfile": "{}",
+      "readOnly": false,
+      "demoLabel": false
+    }
+  ],
+  "deprecated": false
+}

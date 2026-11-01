@@ -1,0 +1,469 @@
+{
+  "staff": {
+    "name": "staff",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Person",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "function",
+        "name": "Team / function",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "Discovery R&D",
+          "Preclinical",
+          "CMC",
+          "Clinical Development",
+          "Regulatory",
+          "Quality",
+          "BD & Finance",
+          "Operations"
+        ]
+      },
+      {
+        "key": "role",
+        "name": "Role",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "fte",
+        "name": "Available FTE",
+        "kind": "number",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "skills",
+        "name": "Key skills",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "employment_type",
+        "name": "Engagement",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "Employee",
+          "Contractor"
+        ]
+      },
+      {
+        "key": "available_from",
+        "name": "Available from",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Active",
+          "Upcoming",
+          "Inactive"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "function": "function",
+      "role": "role",
+      "fte": "fte",
+      "skills": "skills",
+      "employmentType": "employment_type",
+      "availableFrom": "available_from",
+      "status": "status",
+      "archived": "archived"
+    }
+  },
+  "projects": {
+    "name": "projects",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Activity / project",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "program",
+        "name": "Asset / initiative",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "function",
+        "name": "Lead function",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "Discovery R&D",
+          "Preclinical",
+          "CMC",
+          "Clinical Development",
+          "Regulatory",
+          "Quality",
+          "BD & Finance",
+          "Operations"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Active",
+          "Tentative",
+          "On hold",
+          "Complete"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "Activity owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "activity_type",
+        "name": "Work area",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "Discovery R&D",
+          "Preclinical",
+          "CMC",
+          "Clinical Development",
+          "Regulatory",
+          "Quality",
+          "Business Development",
+          "Company Operations"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "program": "program",
+      "function": "function",
+      "status": "status",
+      "owner": "owner",
+      "activityType": "activity_type",
+      "archived": "archived"
+    }
+  },
+  "allocations": {
+    "name": "allocations",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Assignment",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "person_id",
+        "name": "Team member",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "placeholder_role",
+        "name": "Unfilled skill",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "project_id",
+        "name": "Activity / project",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "month",
+        "name": "Month (YYYY-MM)",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "fte",
+        "name": "Allocated FTE",
+        "kind": "number",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Plan status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Committed",
+          "Tentative"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "personId": "person_id",
+      "placeholderRole": "placeholder_role",
+      "projectId": "project_id",
+      "month": "month",
+      "fte": "fte",
+      "status": "status",
+      "archived": "archived"
+    }
+  },
+  "requests": {
+    "name": "requests",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Need",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "function",
+        "name": "Team / function",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "Discovery R&D",
+          "Preclinical",
+          "CMC",
+          "Clinical Development",
+          "Regulatory",
+          "Quality",
+          "BD & Finance",
+          "Operations"
+        ]
+      },
+      {
+        "key": "role",
+        "name": "Role / skill needed",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "fte",
+        "name": "Needed FTE",
+        "kind": "number",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "target_start",
+        "name": "Needed by",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "priority",
+        "name": "Priority",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "High",
+          "Medium",
+          "Low"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "Decision",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "Draft",
+          "Pending",
+          "Approved",
+          "Deferred",
+          "Cancelled",
+          "Filled"
+        ]
+      },
+      {
+        "key": "program",
+        "name": "Activity / initiative",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "justification",
+        "name": "Why support is needed",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "function": "function",
+      "role": "role",
+      "fte": "fte",
+      "targetStart": "target_start",
+      "priority": "priority",
+      "status": "status",
+      "program": "program",
+      "justification": "justification",
+      "archived": "archived"
+    }
+  },
+  "scenarios": {
+    "name": "scenarios",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Scenario",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "hire_shift_months",
+        "name": "Hire delay (months)",
+        "kind": "number",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "hiring_fte",
+        "name": "Add employee FTE",
+        "kind": "number",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "contractor_fte",
+        "name": "Add contractor FTE",
+        "kind": "number",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "note",
+        "name": "Assumptions",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "hireShiftMonths": "hire_shift_months",
+      "hiringFte": "hiring_fte",
+      "contractorFte": "contractor_fte",
+      "note": "note",
+      "archived": "archived"
+    }
+  }
+}

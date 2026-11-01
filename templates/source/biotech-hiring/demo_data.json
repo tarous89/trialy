@@ -1,0 +1,1719 @@
+[
+  {
+    "role": "staff",
+    "id": "demo-staff-001",
+    "version": 1,
+    "data": {
+      "name": "Ava Meyer",
+      "archived": false,
+      "function": "Discovery R&D",
+      "role": "Head of Discovery",
+      "fte": 1,
+      "skills": "hit validation, assays",
+      "employmentType": "Employee",
+      "availableFrom": "2026-10",
+      "status": "Active"
+    }
+  },
+  {
+    "role": "staff",
+    "id": "demo-staff-002",
+    "version": 1,
+    "data": {
+      "name": "Leo Fischer",
+      "archived": false,
+      "function": "Discovery R&D",
+      "role": "Medicinal Chemist",
+      "fte": 1,
+      "skills": "lead optimization, chemistry",
+      "employmentType": "Employee",
+      "availableFrom": "2026-10",
+      "status": "Active"
+    }
+  },
+  {
+    "role": "staff",
+    "id": "demo-staff-003",
+    "version": 1,
+    "data": {
+      "name": "Mia Vogel",
+      "archived": false,
+      "function": "Preclinical",
+      "role": "DMPK Scientist",
+      "fte": 0.8,
+      "skills": "ADME, PK/PD",
+      "employmentType": "Employee",
+      "availableFrom": "2026-10",
+      "status": "Active"
+    }
+  },
+  {
+    "role": "staff",
+    "id": "demo-staff-004",
+    "version": 1,
+    "data": {
+      "name": "Noah Weber",
+      "archived": false,
+      "function": "Preclinical",
+      "role": "Toxicology Lead",
+      "fte": 0.7,
+      "skills": "GLP studies, safety",
+      "employmentType": "Contractor",
+      "availableFrom": "2026-10",
+      "status": "Active"
+    }
+  },
+  {
+    "role": "staff",
+    "id": "demo-staff-005",
+    "version": 1,
+    "data": {
+      "name": "Iris Wolff",
+      "archived": false,
+      "function": "CMC",
+      "role": "Process Development Lead",
+      "fte": 1,
+      "skills": "formulation, process scale-up",
+      "employmentType": "Employee",
+      "availableFrom": "2026-10",
+      "status": "Active"
+    }
+  },
+  {
+    "role": "staff",
+    "id": "demo-staff-006",
+    "version": 1,
+    "data": {
+      "name": "Finn Kruger",
+      "archived": false,
+      "function": "CMC",
+      "role": "Analytical Development Scientist",
+      "fte": 0.6,
+      "skills": "method validation, release",
+      "employmentType": "Contractor",
+      "availableFrom": "2026-10",
+      "status": "Active"
+    }
+  },
+  {
+    "role": "staff",
+    "id": "demo-staff-007",
+    "version": 1,
+    "data": {
+      "name": "Nora Schmid",
+      "archived": false,
+      "function": "Regulatory",
+      "role": "Regulatory Affairs Lead",
+      "fte": 1,
+      "skills": "IND/CTA, strategy",
+      "employmentType": "Employee",
+      "availableFrom": "2026-10",
+      "status": "Active"
+    }
+  },
+  {
+    "role": "staff",
+    "id": "demo-staff-008",
+    "version": 1,
+    "data": {
+      "name": "Ben Richter",
+      "archived": false,
+      "function": "Clinical Development",
+      "role": "Clinical Program Lead",
+      "fte": 0.8,
+      "skills": "protocol planning, vendors",
+      "employmentType": "Employee",
+      "availableFrom": "2026-10",
+      "status": "Active"
+    }
+  },
+  {
+    "role": "staff",
+    "id": "demo-staff-009",
+    "version": 1,
+    "data": {
+      "name": "Elena Graf",
+      "archived": false,
+      "function": "Quality",
+      "role": "Quality Manager",
+      "fte": 0.8,
+      "skills": "GxP, SOPs, audits",
+      "employmentType": "Employee",
+      "availableFrom": "2026-10",
+      "status": "Active"
+    }
+  },
+  {
+    "role": "staff",
+    "id": "demo-staff-010",
+    "version": 1,
+    "data": {
+      "name": "Sara Braun",
+      "archived": false,
+      "function": "BD & Finance",
+      "role": "Business Development Director",
+      "fte": 1,
+      "skills": "partnering, licensing",
+      "employmentType": "Employee",
+      "availableFrom": "2026-10",
+      "status": "Active"
+    }
+  },
+  {
+    "role": "staff",
+    "id": "demo-staff-011",
+    "version": 1,
+    "data": {
+      "name": "Theo Klein",
+      "archived": false,
+      "function": "Operations",
+      "role": "Operations & Finance Lead",
+      "fte": 0.8,
+      "skills": "budget, procurement, hiring",
+      "employmentType": "Employee",
+      "availableFrom": "2026-10",
+      "status": "Active"
+    }
+  },
+  {
+    "role": "staff",
+    "id": "demo-staff-012",
+    "version": 1,
+    "data": {
+      "name": "Jonas Becker",
+      "archived": false,
+      "function": "Operations",
+      "role": "Lab Operations Specialist",
+      "fte": 0.5,
+      "skills": "equipment, vendors, facilities",
+      "employmentType": "Contractor",
+      "availableFrom": "2026-10",
+      "status": "Active"
+    }
+  },
+  {
+    "role": "projects",
+    "id": "demo-projects-001",
+    "version": 1,
+    "data": {
+      "name": "Lead optimization campaign",
+      "archived": false,
+      "program": "Asset A",
+      "function": "Discovery R&D",
+      "status": "Active",
+      "owner": "Ava Meyer",
+      "activityType": "Discovery R&D"
+    }
+  },
+  {
+    "role": "projects",
+    "id": "demo-projects-002",
+    "version": 1,
+    "data": {
+      "name": "IND-enabling DMPK and tox",
+      "archived": false,
+      "program": "Asset A",
+      "function": "Preclinical",
+      "status": "Active",
+      "owner": "Mia Vogel",
+      "activityType": "Preclinical"
+    }
+  },
+  {
+    "role": "projects",
+    "id": "demo-projects-003",
+    "version": 1,
+    "data": {
+      "name": "Formulation scale-up",
+      "archived": false,
+      "program": "Asset A",
+      "function": "CMC",
+      "status": "Active",
+      "owner": "Iris Wolff",
+      "activityType": "CMC"
+    }
+  },
+  {
+    "role": "projects",
+    "id": "demo-projects-004",
+    "version": 1,
+    "data": {
+      "name": "CTA/IND preparation",
+      "archived": false,
+      "program": "Asset A",
+      "function": "Regulatory",
+      "status": "Active",
+      "owner": "Nora Schmid",
+      "activityType": "Regulatory"
+    }
+  },
+  {
+    "role": "projects",
+    "id": "demo-projects-005",
+    "version": 1,
+    "data": {
+      "name": "Partnering outreach",
+      "archived": false,
+      "program": "Corporate",
+      "function": "BD & Finance",
+      "status": "Active",
+      "owner": "Sara Braun",
+      "activityType": "Business Development"
+    }
+  },
+  {
+    "role": "projects",
+    "id": "demo-projects-006",
+    "version": 1,
+    "data": {
+      "name": "Lab automation rollout",
+      "archived": false,
+      "program": "Operations",
+      "function": "Operations",
+      "status": "Tentative",
+      "owner": "Theo Klein",
+      "activityType": "Company Operations"
+    }
+  },
+  {
+    "role": "projects",
+    "id": "demo-projects-007",
+    "version": 1,
+    "data": {
+      "name": "Phase I feasibility",
+      "archived": false,
+      "program": "Asset A",
+      "function": "Clinical Development",
+      "status": "Tentative",
+      "owner": "Ben Richter",
+      "activityType": "Clinical Development"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-001",
+    "version": 1,
+    "data": {
+      "name": "Head of Discovery / 2026-11",
+      "archived": false,
+      "personId": "demo-staff-001",
+      "placeholderRole": "",
+      "projectId": "demo-projects-001",
+      "month": "2026-11",
+      "fte": 0.75,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-002",
+    "version": 1,
+    "data": {
+      "name": "Head of Discovery / 2026-12",
+      "archived": false,
+      "personId": "demo-staff-001",
+      "placeholderRole": "",
+      "projectId": "demo-projects-001",
+      "month": "2026-12",
+      "fte": 0.75,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-003",
+    "version": 1,
+    "data": {
+      "name": "Head of Discovery / 2027-01",
+      "archived": false,
+      "personId": "demo-staff-001",
+      "placeholderRole": "",
+      "projectId": "demo-projects-001",
+      "month": "2027-01",
+      "fte": 1.1,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-004",
+    "version": 1,
+    "data": {
+      "name": "Head of Discovery / 2027-02",
+      "archived": false,
+      "personId": "demo-staff-001",
+      "placeholderRole": "",
+      "projectId": "demo-projects-001",
+      "month": "2027-02",
+      "fte": 1.1,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-005",
+    "version": 1,
+    "data": {
+      "name": "Head of Discovery / 2027-03",
+      "archived": false,
+      "personId": "demo-staff-001",
+      "placeholderRole": "",
+      "projectId": "demo-projects-001",
+      "month": "2027-03",
+      "fte": 0.75,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-006",
+    "version": 1,
+    "data": {
+      "name": "Head of Discovery / 2027-04",
+      "archived": false,
+      "personId": "demo-staff-001",
+      "placeholderRole": "",
+      "projectId": "demo-projects-001",
+      "month": "2027-04",
+      "fte": 0.75,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-007",
+    "version": 1,
+    "data": {
+      "name": "Medicinal Chemist / 2026-11",
+      "archived": false,
+      "personId": "demo-staff-002",
+      "placeholderRole": "",
+      "projectId": "demo-projects-001",
+      "month": "2026-11",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-008",
+    "version": 1,
+    "data": {
+      "name": "Medicinal Chemist / 2026-12",
+      "archived": false,
+      "personId": "demo-staff-002",
+      "placeholderRole": "",
+      "projectId": "demo-projects-001",
+      "month": "2026-12",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-009",
+    "version": 1,
+    "data": {
+      "name": "Medicinal Chemist / 2027-01",
+      "archived": false,
+      "personId": "demo-staff-002",
+      "placeholderRole": "",
+      "projectId": "demo-projects-001",
+      "month": "2027-01",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-010",
+    "version": 1,
+    "data": {
+      "name": "Medicinal Chemist / 2027-02",
+      "archived": false,
+      "personId": "demo-staff-002",
+      "placeholderRole": "",
+      "projectId": "demo-projects-001",
+      "month": "2027-02",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-011",
+    "version": 1,
+    "data": {
+      "name": "Medicinal Chemist / 2027-03",
+      "archived": false,
+      "personId": "demo-staff-002",
+      "placeholderRole": "",
+      "projectId": "demo-projects-001",
+      "month": "2027-03",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-012",
+    "version": 1,
+    "data": {
+      "name": "Medicinal Chemist / 2027-04",
+      "archived": false,
+      "personId": "demo-staff-002",
+      "placeholderRole": "",
+      "projectId": "demo-projects-001",
+      "month": "2027-04",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-013",
+    "version": 1,
+    "data": {
+      "name": "DMPK Scientist / 2026-11",
+      "archived": false,
+      "personId": "demo-staff-003",
+      "placeholderRole": "",
+      "projectId": "demo-projects-002",
+      "month": "2026-11",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-014",
+    "version": 1,
+    "data": {
+      "name": "DMPK Scientist / 2026-12",
+      "archived": false,
+      "personId": "demo-staff-003",
+      "placeholderRole": "",
+      "projectId": "demo-projects-002",
+      "month": "2026-12",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-015",
+    "version": 1,
+    "data": {
+      "name": "DMPK Scientist / 2027-01",
+      "archived": false,
+      "personId": "demo-staff-003",
+      "placeholderRole": "",
+      "projectId": "demo-projects-002",
+      "month": "2027-01",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-016",
+    "version": 1,
+    "data": {
+      "name": "DMPK Scientist / 2027-02",
+      "archived": false,
+      "personId": "demo-staff-003",
+      "placeholderRole": "",
+      "projectId": "demo-projects-002",
+      "month": "2027-02",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-017",
+    "version": 1,
+    "data": {
+      "name": "DMPK Scientist / 2027-03",
+      "archived": false,
+      "personId": "demo-staff-003",
+      "placeholderRole": "",
+      "projectId": "demo-projects-002",
+      "month": "2027-03",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-018",
+    "version": 1,
+    "data": {
+      "name": "DMPK Scientist / 2027-04",
+      "archived": false,
+      "personId": "demo-staff-003",
+      "placeholderRole": "",
+      "projectId": "demo-projects-002",
+      "month": "2027-04",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-019",
+    "version": 1,
+    "data": {
+      "name": "Toxicology Lead / 2026-11",
+      "archived": false,
+      "personId": "demo-staff-004",
+      "placeholderRole": "",
+      "projectId": "demo-projects-002",
+      "month": "2026-11",
+      "fte": 0.75,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-020",
+    "version": 1,
+    "data": {
+      "name": "Toxicology Lead / 2026-12",
+      "archived": false,
+      "personId": "demo-staff-004",
+      "placeholderRole": "",
+      "projectId": "demo-projects-002",
+      "month": "2026-12",
+      "fte": 0.75,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-021",
+    "version": 1,
+    "data": {
+      "name": "Toxicology Lead / 2027-01",
+      "archived": false,
+      "personId": "demo-staff-004",
+      "placeholderRole": "",
+      "projectId": "demo-projects-002",
+      "month": "2027-01",
+      "fte": 0.75,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-022",
+    "version": 1,
+    "data": {
+      "name": "Toxicology Lead / 2027-02",
+      "archived": false,
+      "personId": "demo-staff-004",
+      "placeholderRole": "",
+      "projectId": "demo-projects-002",
+      "month": "2027-02",
+      "fte": 0.75,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-023",
+    "version": 1,
+    "data": {
+      "name": "Toxicology Lead / 2027-03",
+      "archived": false,
+      "personId": "demo-staff-004",
+      "placeholderRole": "",
+      "projectId": "demo-projects-002",
+      "month": "2027-03",
+      "fte": 0.75,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-024",
+    "version": 1,
+    "data": {
+      "name": "Toxicology Lead / 2027-04",
+      "archived": false,
+      "personId": "demo-staff-004",
+      "placeholderRole": "",
+      "projectId": "demo-projects-002",
+      "month": "2027-04",
+      "fte": 0.75,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-025",
+    "version": 1,
+    "data": {
+      "name": "Process Development Lead / 2026-11",
+      "archived": false,
+      "personId": "demo-staff-005",
+      "placeholderRole": "",
+      "projectId": "demo-projects-003",
+      "month": "2026-11",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-026",
+    "version": 1,
+    "data": {
+      "name": "Process Development Lead / 2026-12",
+      "archived": false,
+      "personId": "demo-staff-005",
+      "placeholderRole": "",
+      "projectId": "demo-projects-003",
+      "month": "2026-12",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-027",
+    "version": 1,
+    "data": {
+      "name": "Process Development Lead / 2027-01",
+      "archived": false,
+      "personId": "demo-staff-005",
+      "placeholderRole": "",
+      "projectId": "demo-projects-003",
+      "month": "2027-01",
+      "fte": 0.95,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-028",
+    "version": 1,
+    "data": {
+      "name": "Process Development Lead / 2027-02",
+      "archived": false,
+      "personId": "demo-staff-005",
+      "placeholderRole": "",
+      "projectId": "demo-projects-003",
+      "month": "2027-02",
+      "fte": 0.95,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-029",
+    "version": 1,
+    "data": {
+      "name": "Process Development Lead / 2027-03",
+      "archived": false,
+      "personId": "demo-staff-005",
+      "placeholderRole": "",
+      "projectId": "demo-projects-003",
+      "month": "2027-03",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-030",
+    "version": 1,
+    "data": {
+      "name": "Process Development Lead / 2027-04",
+      "archived": false,
+      "personId": "demo-staff-005",
+      "placeholderRole": "",
+      "projectId": "demo-projects-003",
+      "month": "2027-04",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-031",
+    "version": 1,
+    "data": {
+      "name": "Analytical Development Scientist / 2026-11",
+      "archived": false,
+      "personId": "demo-staff-006",
+      "placeholderRole": "",
+      "projectId": "demo-projects-003",
+      "month": "2026-11",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-032",
+    "version": 1,
+    "data": {
+      "name": "Analytical Development Scientist / 2026-12",
+      "archived": false,
+      "personId": "demo-staff-006",
+      "placeholderRole": "",
+      "projectId": "demo-projects-003",
+      "month": "2026-12",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-033",
+    "version": 1,
+    "data": {
+      "name": "Analytical Development Scientist / 2027-01",
+      "archived": false,
+      "personId": "demo-staff-006",
+      "placeholderRole": "",
+      "projectId": "demo-projects-003",
+      "month": "2027-01",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-034",
+    "version": 1,
+    "data": {
+      "name": "Analytical Development Scientist / 2027-02",
+      "archived": false,
+      "personId": "demo-staff-006",
+      "placeholderRole": "",
+      "projectId": "demo-projects-003",
+      "month": "2027-02",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-035",
+    "version": 1,
+    "data": {
+      "name": "Analytical Development Scientist / 2027-03",
+      "archived": false,
+      "personId": "demo-staff-006",
+      "placeholderRole": "",
+      "projectId": "demo-projects-003",
+      "month": "2027-03",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-036",
+    "version": 1,
+    "data": {
+      "name": "Analytical Development Scientist / 2027-04",
+      "archived": false,
+      "personId": "demo-staff-006",
+      "placeholderRole": "",
+      "projectId": "demo-projects-003",
+      "month": "2027-04",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-037",
+    "version": 1,
+    "data": {
+      "name": "Regulatory Affairs Lead / 2026-11",
+      "archived": false,
+      "personId": "demo-staff-007",
+      "placeholderRole": "",
+      "projectId": "demo-projects-004",
+      "month": "2026-11",
+      "fte": 0.75,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-038",
+    "version": 1,
+    "data": {
+      "name": "Regulatory Affairs Lead / 2026-12",
+      "archived": false,
+      "personId": "demo-staff-007",
+      "placeholderRole": "",
+      "projectId": "demo-projects-004",
+      "month": "2026-12",
+      "fte": 0.75,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-039",
+    "version": 1,
+    "data": {
+      "name": "Regulatory Affairs Lead / 2027-01",
+      "archived": false,
+      "personId": "demo-staff-007",
+      "placeholderRole": "",
+      "projectId": "demo-projects-004",
+      "month": "2027-01",
+      "fte": 1.1,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-040",
+    "version": 1,
+    "data": {
+      "name": "Regulatory Affairs Lead / 2027-02",
+      "archived": false,
+      "personId": "demo-staff-007",
+      "placeholderRole": "",
+      "projectId": "demo-projects-004",
+      "month": "2027-02",
+      "fte": 1.1,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-041",
+    "version": 1,
+    "data": {
+      "name": "Regulatory Affairs Lead / 2027-03",
+      "archived": false,
+      "personId": "demo-staff-007",
+      "placeholderRole": "",
+      "projectId": "demo-projects-004",
+      "month": "2027-03",
+      "fte": 0.75,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-042",
+    "version": 1,
+    "data": {
+      "name": "Regulatory Affairs Lead / 2027-04",
+      "archived": false,
+      "personId": "demo-staff-007",
+      "placeholderRole": "",
+      "projectId": "demo-projects-004",
+      "month": "2027-04",
+      "fte": 0.75,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-043",
+    "version": 1,
+    "data": {
+      "name": "Clinical Program Lead / 2026-11",
+      "archived": false,
+      "personId": "demo-staff-008",
+      "placeholderRole": "",
+      "projectId": "demo-projects-007",
+      "month": "2026-11",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-044",
+    "version": 1,
+    "data": {
+      "name": "Clinical Program Lead / 2026-12",
+      "archived": false,
+      "personId": "demo-staff-008",
+      "placeholderRole": "",
+      "projectId": "demo-projects-007",
+      "month": "2026-12",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-045",
+    "version": 1,
+    "data": {
+      "name": "Clinical Program Lead / 2027-01",
+      "archived": false,
+      "personId": "demo-staff-008",
+      "placeholderRole": "",
+      "projectId": "demo-projects-007",
+      "month": "2027-01",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-046",
+    "version": 1,
+    "data": {
+      "name": "Clinical Program Lead / 2027-02",
+      "archived": false,
+      "personId": "demo-staff-008",
+      "placeholderRole": "",
+      "projectId": "demo-projects-007",
+      "month": "2027-02",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-047",
+    "version": 1,
+    "data": {
+      "name": "Clinical Program Lead / 2027-03",
+      "archived": false,
+      "personId": "demo-staff-008",
+      "placeholderRole": "",
+      "projectId": "demo-projects-007",
+      "month": "2027-03",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-048",
+    "version": 1,
+    "data": {
+      "name": "Clinical Program Lead / 2027-04",
+      "archived": false,
+      "personId": "demo-staff-008",
+      "placeholderRole": "",
+      "projectId": "demo-projects-007",
+      "month": "2027-04",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-049",
+    "version": 1,
+    "data": {
+      "name": "Quality Manager / 2026-11",
+      "archived": false,
+      "personId": "demo-staff-009",
+      "placeholderRole": "",
+      "projectId": "demo-projects-004",
+      "month": "2026-11",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-050",
+    "version": 1,
+    "data": {
+      "name": "Quality Manager / 2026-12",
+      "archived": false,
+      "personId": "demo-staff-009",
+      "placeholderRole": "",
+      "projectId": "demo-projects-004",
+      "month": "2026-12",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-051",
+    "version": 1,
+    "data": {
+      "name": "Quality Manager / 2027-01",
+      "archived": false,
+      "personId": "demo-staff-009",
+      "placeholderRole": "",
+      "projectId": "demo-projects-004",
+      "month": "2027-01",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-052",
+    "version": 1,
+    "data": {
+      "name": "Quality Manager / 2027-02",
+      "archived": false,
+      "personId": "demo-staff-009",
+      "placeholderRole": "",
+      "projectId": "demo-projects-004",
+      "month": "2027-02",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-053",
+    "version": 1,
+    "data": {
+      "name": "Quality Manager / 2027-03",
+      "archived": false,
+      "personId": "demo-staff-009",
+      "placeholderRole": "",
+      "projectId": "demo-projects-004",
+      "month": "2027-03",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-054",
+    "version": 1,
+    "data": {
+      "name": "Quality Manager / 2027-04",
+      "archived": false,
+      "personId": "demo-staff-009",
+      "placeholderRole": "",
+      "projectId": "demo-projects-004",
+      "month": "2027-04",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-055",
+    "version": 1,
+    "data": {
+      "name": "Business Development Director / 2026-11",
+      "archived": false,
+      "personId": "demo-staff-010",
+      "placeholderRole": "",
+      "projectId": "demo-projects-005",
+      "month": "2026-11",
+      "fte": 0.75,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-056",
+    "version": 1,
+    "data": {
+      "name": "Business Development Director / 2026-12",
+      "archived": false,
+      "personId": "demo-staff-010",
+      "placeholderRole": "",
+      "projectId": "demo-projects-005",
+      "month": "2026-12",
+      "fte": 0.75,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-057",
+    "version": 1,
+    "data": {
+      "name": "Business Development Director / 2027-01",
+      "archived": false,
+      "personId": "demo-staff-010",
+      "placeholderRole": "",
+      "projectId": "demo-projects-005",
+      "month": "2027-01",
+      "fte": 1.1,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-058",
+    "version": 1,
+    "data": {
+      "name": "Business Development Director / 2027-02",
+      "archived": false,
+      "personId": "demo-staff-010",
+      "placeholderRole": "",
+      "projectId": "demo-projects-005",
+      "month": "2027-02",
+      "fte": 1.1,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-059",
+    "version": 1,
+    "data": {
+      "name": "Business Development Director / 2027-03",
+      "archived": false,
+      "personId": "demo-staff-010",
+      "placeholderRole": "",
+      "projectId": "demo-projects-005",
+      "month": "2027-03",
+      "fte": 0.75,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-060",
+    "version": 1,
+    "data": {
+      "name": "Business Development Director / 2027-04",
+      "archived": false,
+      "personId": "demo-staff-010",
+      "placeholderRole": "",
+      "projectId": "demo-projects-005",
+      "month": "2027-04",
+      "fte": 0.75,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-061",
+    "version": 1,
+    "data": {
+      "name": "Operations & Finance Lead / 2026-11",
+      "archived": false,
+      "personId": "demo-staff-011",
+      "placeholderRole": "",
+      "projectId": "demo-projects-006",
+      "month": "2026-11",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-062",
+    "version": 1,
+    "data": {
+      "name": "Operations & Finance Lead / 2026-12",
+      "archived": false,
+      "personId": "demo-staff-011",
+      "placeholderRole": "",
+      "projectId": "demo-projects-006",
+      "month": "2026-12",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-063",
+    "version": 1,
+    "data": {
+      "name": "Operations & Finance Lead / 2027-01",
+      "archived": false,
+      "personId": "demo-staff-011",
+      "placeholderRole": "",
+      "projectId": "demo-projects-006",
+      "month": "2027-01",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-064",
+    "version": 1,
+    "data": {
+      "name": "Operations & Finance Lead / 2027-02",
+      "archived": false,
+      "personId": "demo-staff-011",
+      "placeholderRole": "",
+      "projectId": "demo-projects-006",
+      "month": "2027-02",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-065",
+    "version": 1,
+    "data": {
+      "name": "Operations & Finance Lead / 2027-03",
+      "archived": false,
+      "personId": "demo-staff-011",
+      "placeholderRole": "",
+      "projectId": "demo-projects-006",
+      "month": "2027-03",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-066",
+    "version": 1,
+    "data": {
+      "name": "Operations & Finance Lead / 2027-04",
+      "archived": false,
+      "personId": "demo-staff-011",
+      "placeholderRole": "",
+      "projectId": "demo-projects-006",
+      "month": "2027-04",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-067",
+    "version": 1,
+    "data": {
+      "name": "Lab Operations Specialist / 2026-11",
+      "archived": false,
+      "personId": "demo-staff-012",
+      "placeholderRole": "",
+      "projectId": "demo-projects-006",
+      "month": "2026-11",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-068",
+    "version": 1,
+    "data": {
+      "name": "Lab Operations Specialist / 2026-12",
+      "archived": false,
+      "personId": "demo-staff-012",
+      "placeholderRole": "",
+      "projectId": "demo-projects-006",
+      "month": "2026-12",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-069",
+    "version": 1,
+    "data": {
+      "name": "Lab Operations Specialist / 2027-01",
+      "archived": false,
+      "personId": "demo-staff-012",
+      "placeholderRole": "",
+      "projectId": "demo-projects-006",
+      "month": "2027-01",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-070",
+    "version": 1,
+    "data": {
+      "name": "Lab Operations Specialist / 2027-02",
+      "archived": false,
+      "personId": "demo-staff-012",
+      "placeholderRole": "",
+      "projectId": "demo-projects-006",
+      "month": "2027-02",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-071",
+    "version": 1,
+    "data": {
+      "name": "Lab Operations Specialist / 2027-03",
+      "archived": false,
+      "personId": "demo-staff-012",
+      "placeholderRole": "",
+      "projectId": "demo-projects-006",
+      "month": "2027-03",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-072",
+    "version": 1,
+    "data": {
+      "name": "Lab Operations Specialist / 2027-04",
+      "archived": false,
+      "personId": "demo-staff-012",
+      "placeholderRole": "",
+      "projectId": "demo-projects-006",
+      "month": "2027-04",
+      "fte": 0.6,
+      "status": "Committed"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-073",
+    "version": 1,
+    "data": {
+      "name": "CMC extra support / 2026-11",
+      "archived": false,
+      "personId": "",
+      "placeholderRole": "CMC — expertise needed",
+      "projectId": "demo-projects-003",
+      "month": "2026-11",
+      "fte": 0.3,
+      "status": "Tentative"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-074",
+    "version": 1,
+    "data": {
+      "name": "Preclinical extra support / 2026-11",
+      "archived": false,
+      "personId": "",
+      "placeholderRole": "Preclinical — expertise needed",
+      "projectId": "demo-projects-002",
+      "month": "2026-11",
+      "fte": 0.4,
+      "status": "Tentative"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-075",
+    "version": 1,
+    "data": {
+      "name": "BD & Finance extra support / 2026-11",
+      "archived": false,
+      "personId": "",
+      "placeholderRole": "BD & Finance — expertise needed",
+      "projectId": "demo-projects-005",
+      "month": "2026-11",
+      "fte": 0.2,
+      "status": "Tentative"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-076",
+    "version": 1,
+    "data": {
+      "name": "CMC extra support / 2026-12",
+      "archived": false,
+      "personId": "",
+      "placeholderRole": "CMC — expertise needed",
+      "projectId": "demo-projects-003",
+      "month": "2026-12",
+      "fte": 0.3,
+      "status": "Tentative"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-077",
+    "version": 1,
+    "data": {
+      "name": "Preclinical extra support / 2026-12",
+      "archived": false,
+      "personId": "",
+      "placeholderRole": "Preclinical — expertise needed",
+      "projectId": "demo-projects-002",
+      "month": "2026-12",
+      "fte": 0.4,
+      "status": "Tentative"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-078",
+    "version": 1,
+    "data": {
+      "name": "BD & Finance extra support / 2026-12",
+      "archived": false,
+      "personId": "",
+      "placeholderRole": "BD & Finance — expertise needed",
+      "projectId": "demo-projects-005",
+      "month": "2026-12",
+      "fte": 0.2,
+      "status": "Tentative"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-079",
+    "version": 1,
+    "data": {
+      "name": "CMC extra support / 2027-01",
+      "archived": false,
+      "personId": "",
+      "placeholderRole": "CMC — expertise needed",
+      "projectId": "demo-projects-003",
+      "month": "2027-01",
+      "fte": 0.3,
+      "status": "Tentative"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-080",
+    "version": 1,
+    "data": {
+      "name": "Preclinical extra support / 2027-01",
+      "archived": false,
+      "personId": "",
+      "placeholderRole": "Preclinical — expertise needed",
+      "projectId": "demo-projects-002",
+      "month": "2027-01",
+      "fte": 0.4,
+      "status": "Tentative"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-081",
+    "version": 1,
+    "data": {
+      "name": "BD & Finance extra support / 2027-01",
+      "archived": false,
+      "personId": "",
+      "placeholderRole": "BD & Finance — expertise needed",
+      "projectId": "demo-projects-005",
+      "month": "2027-01",
+      "fte": 0.2,
+      "status": "Tentative"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-082",
+    "version": 1,
+    "data": {
+      "name": "CMC extra support / 2027-02",
+      "archived": false,
+      "personId": "",
+      "placeholderRole": "CMC — expertise needed",
+      "projectId": "demo-projects-003",
+      "month": "2027-02",
+      "fte": 0.3,
+      "status": "Tentative"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-083",
+    "version": 1,
+    "data": {
+      "name": "Preclinical extra support / 2027-02",
+      "archived": false,
+      "personId": "",
+      "placeholderRole": "Preclinical — expertise needed",
+      "projectId": "demo-projects-002",
+      "month": "2027-02",
+      "fte": 0.4,
+      "status": "Tentative"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-084",
+    "version": 1,
+    "data": {
+      "name": "BD & Finance extra support / 2027-02",
+      "archived": false,
+      "personId": "",
+      "placeholderRole": "BD & Finance — expertise needed",
+      "projectId": "demo-projects-005",
+      "month": "2027-02",
+      "fte": 0.2,
+      "status": "Tentative"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-085",
+    "version": 1,
+    "data": {
+      "name": "CMC extra support / 2027-03",
+      "archived": false,
+      "personId": "",
+      "placeholderRole": "CMC — expertise needed",
+      "projectId": "demo-projects-003",
+      "month": "2027-03",
+      "fte": 0.3,
+      "status": "Tentative"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-086",
+    "version": 1,
+    "data": {
+      "name": "Preclinical extra support / 2027-03",
+      "archived": false,
+      "personId": "",
+      "placeholderRole": "Preclinical — expertise needed",
+      "projectId": "demo-projects-002",
+      "month": "2027-03",
+      "fte": 0.4,
+      "status": "Tentative"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-087",
+    "version": 1,
+    "data": {
+      "name": "BD & Finance extra support / 2027-03",
+      "archived": false,
+      "personId": "",
+      "placeholderRole": "BD & Finance — expertise needed",
+      "projectId": "demo-projects-005",
+      "month": "2027-03",
+      "fte": 0.2,
+      "status": "Tentative"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-088",
+    "version": 1,
+    "data": {
+      "name": "CMC extra support / 2027-04",
+      "archived": false,
+      "personId": "",
+      "placeholderRole": "CMC — expertise needed",
+      "projectId": "demo-projects-003",
+      "month": "2027-04",
+      "fte": 0.3,
+      "status": "Tentative"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-089",
+    "version": 1,
+    "data": {
+      "name": "Preclinical extra support / 2027-04",
+      "archived": false,
+      "personId": "",
+      "placeholderRole": "Preclinical — expertise needed",
+      "projectId": "demo-projects-002",
+      "month": "2027-04",
+      "fte": 0.4,
+      "status": "Tentative"
+    }
+  },
+  {
+    "role": "allocations",
+    "id": "demo-allocations-090",
+    "version": 1,
+    "data": {
+      "name": "BD & Finance extra support / 2027-04",
+      "archived": false,
+      "personId": "",
+      "placeholderRole": "BD & Finance — expertise needed",
+      "projectId": "demo-projects-005",
+      "month": "2027-04",
+      "fte": 0.2,
+      "status": "Tentative"
+    }
+  },
+  {
+    "role": "requests",
+    "id": "demo-requests-001",
+    "version": 1,
+    "data": {
+      "name": "Analytical capacity gap",
+      "archived": false,
+      "function": "CMC",
+      "role": "Analytical scientist",
+      "fte": 0.5,
+      "targetStart": "2027-01",
+      "priority": "High",
+      "status": "Pending",
+      "program": "Formulation scale-up",
+      "justification": "Fictional capacity request tied to a specific biotech activity"
+    }
+  },
+  {
+    "role": "requests",
+    "id": "demo-requests-002",
+    "version": 1,
+    "data": {
+      "name": "DMPK execution surge",
+      "archived": false,
+      "function": "Preclinical",
+      "role": "DMPK consultant",
+      "fte": 0.4,
+      "targetStart": "2026-12",
+      "priority": "High",
+      "status": "Approved",
+      "program": "IND-enabling DMPK and tox",
+      "justification": "Fictional capacity request tied to a specific biotech activity"
+    }
+  },
+  {
+    "role": "requests",
+    "id": "demo-requests-003",
+    "version": 1,
+    "data": {
+      "name": "Partnering data room",
+      "archived": false,
+      "function": "BD & Finance",
+      "role": "BD analyst",
+      "fte": 0.3,
+      "targetStart": "2027-03",
+      "priority": "Medium",
+      "status": "Draft",
+      "program": "Partnering outreach",
+      "justification": "Fictional capacity request tied to a specific biotech activity"
+    }
+  },
+  {
+    "role": "scenarios",
+    "id": "demo-scenarios-001",
+    "version": 1,
+    "data": {
+      "name": "Accelerated development",
+      "archived": false,
+      "hireShiftMonths": 0,
+      "hiringFte": 0.5,
+      "contractorFte": 0.4,
+      "note": "Fictional small-biotech resourcing assumption"
+    }
+  },
+  {
+    "role": "scenarios",
+    "id": "demo-scenarios-002",
+    "version": 1,
+    "data": {
+      "name": "Lean hiring plan",
+      "archived": false,
+      "hireShiftMonths": 2,
+      "hiringFte": 0.5,
+      "contractorFte": 0,
+      "note": "Fictional small-biotech resourcing assumption"
+    }
+  }
+]
