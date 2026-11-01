@@ -1,6 +1,6 @@
 # 23 life-sciences templates — prepublication refinement review
 
-**Status:** DRAFT / NOT PUBLISHED / NOT ACTIVATED. **Recorded:** 1 November 2026. **Authority:** [TEMPLATE_AUTHORING.md](../../../templates/TEMPLATE_AUTHORING.md) v1.3.6 and [APP_CONFIGURATION_AND_AUTOMATIONS.md](../APP_CONFIGURATION_AND_AUTOMATIONS.md). The preceding [23-app blueprint catalog](README.md) remains the functional scope.
+**Status:** DRAFT / NOT PUBLISHED / NOT ACTIVATED. **Recorded:** 1 November 2026. **Authority:** [TEMPLATE_AUTHORING.md](../../../templates/TEMPLATE_AUTHORING.md) v1.3.7 and [APP_CONFIGURATION_AND_AUTOMATIONS.md](../APP_CONFIGURATION_AND_AUTOMATIONS.md). The preceding [23-app blueprint catalog](README.md) remains the functional scope.
 
 ## Requested outcomes and verified draft state
 
