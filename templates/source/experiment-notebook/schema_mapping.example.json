@@ -1,0 +1,697 @@
+{
+  "projects": {
+    "name": "experiment_notebook_projects",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "objective",
+        "name": "objective",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "lead",
+        "name": "lead",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "area",
+        "name": "area",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Active",
+          "Paused",
+          "Complete"
+        ]
+      },
+      {
+        "key": "source_ref",
+        "name": "sourceRef",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "objective": "objective",
+      "lead": "lead",
+      "area": "area",
+      "status": "status",
+      "sourceRef": "source_ref",
+      "archived": "archived"
+    }
+  },
+  "experiments": {
+    "name": "experiment_notebook_experiments",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "code",
+        "name": "code",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "project_id",
+        "name": "projectId",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "objective",
+        "name": "objective",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "hypothesis",
+        "name": "hypothesis",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "protocol_id",
+        "name": "protocolId",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "scientist",
+        "name": "scientist",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Planned",
+          "Running",
+          "Needs review",
+          "Completed",
+          "Repeat required"
+        ]
+      },
+      {
+        "key": "start_date",
+        "name": "startDate",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "end_date",
+        "name": "endDate",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "method",
+        "name": "method",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "conditions",
+        "name": "conditions",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "batch_refs",
+        "name": "batchRefs",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "raw_file_refs",
+        "name": "rawFileRefs",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "code": "code",
+      "projectId": "project_id",
+      "objective": "objective",
+      "hypothesis": "hypothesis",
+      "protocolId": "protocol_id",
+      "scientist": "scientist",
+      "status": "status",
+      "startDate": "start_date",
+      "endDate": "end_date",
+      "method": "method",
+      "conditions": "conditions",
+      "batchRefs": "batch_refs",
+      "rawFileRefs": "raw_file_refs",
+      "notes": "notes",
+      "archived": "archived"
+    }
+  },
+  "protocols": {
+    "name": "experiment_notebook_protocols",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "version_label",
+        "name": "versionLabel",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "author",
+        "name": "author",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "effective_date",
+        "name": "effectiveDate",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Current",
+          "Obsolete",
+          "Draft"
+        ]
+      },
+      {
+        "key": "source_ref",
+        "name": "sourceRef",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "method_text",
+        "name": "methodText",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "versionLabel": "version_label",
+      "author": "author",
+      "effectiveDate": "effective_date",
+      "status": "status",
+      "sourceRef": "source_ref",
+      "methodText": "method_text",
+      "archived": "archived"
+    }
+  },
+  "observations": {
+    "name": "experiment_notebook_observations",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "experiment_id",
+        "name": "experimentId",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "observed_at",
+        "name": "observedAt",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "observation",
+        "name": "observation",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source_ref",
+        "name": "sourceRef",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "experimentId": "experiment_id",
+      "observedAt": "observed_at",
+      "observation": "observation",
+      "sourceRef": "source_ref",
+      "archived": "archived"
+    }
+  },
+  "measurements": {
+    "name": "experiment_notebook_measurements",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "experiment_id",
+        "name": "experimentId",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "analyte",
+        "name": "analyte",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "value",
+        "name": "value",
+        "kind": "number",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "unit",
+        "name": "unit",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "replicate",
+        "name": "replicate",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "condition",
+        "name": "condition",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "time_point",
+        "name": "timePoint",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "control",
+        "name": "control",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "batch_ref",
+        "name": "batchRef",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "measured_at",
+        "name": "measuredAt",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source_ref",
+        "name": "sourceRef",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "experimentId": "experiment_id",
+      "analyte": "analyte",
+      "value": "value",
+      "unit": "unit",
+      "replicate": "replicate",
+      "condition": "condition",
+      "timePoint": "time_point",
+      "control": "control",
+      "batchRef": "batch_ref",
+      "measuredAt": "measured_at",
+      "sourceRef": "source_ref",
+      "archived": "archived"
+    }
+  },
+  "interpretations": {
+    "name": "experiment_notebook_interpretations",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "experiment_id",
+        "name": "experimentId",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "conclusion",
+        "name": "conclusion",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "limitations",
+        "name": "limitations",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "author",
+        "name": "author",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "reviewed_on",
+        "name": "reviewedOn",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Draft",
+          "Reviewed"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "experimentId": "experiment_id",
+      "conclusion": "conclusion",
+      "limitations": "limitations",
+      "author": "author",
+      "reviewedOn": "reviewed_on",
+      "status": "status",
+      "archived": "archived"
+    }
+  },
+  "reports": {
+    "name": "experiment_notebook_reports",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "project_id",
+        "name": "projectId",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "period",
+        "name": "period",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "cutoff",
+        "name": "cutoff",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Draft",
+          "Reviewed"
+        ]
+      },
+      {
+        "key": "author",
+        "name": "author",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "approved_at",
+        "name": "approvedAt",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "references",
+        "name": "references",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "content",
+        "name": "content",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "limitations",
+        "name": "limitations",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "projectId": "project_id",
+      "period": "period",
+      "cutoff": "cutoff",
+      "status": "status",
+      "author": "author",
+      "approvedAt": "approved_at",
+      "references": "references",
+      "content": "content",
+      "limitations": "limitations",
+      "archived": "archived"
+    }
+  }
+}
