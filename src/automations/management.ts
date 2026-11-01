@@ -5,6 +5,7 @@ import {requireHuman} from '../domain/write-authorization.js';
 import {access} from '../domain/permissions.js';
 import {AppMonitoring} from '../app-services/monitoring.js';
 import {AppActions} from '../app-services/service.js';
+import {notificationRecipients} from '../app-services/notifications.js';
 import {WorkspaceFoundation} from '../workspace/service.js';
 import {appUrl} from '../shared/app-route.js';
 import {adapter} from './service.js';
@@ -19,7 +20,7 @@ export class AutomationManagement{
   if(app.archived||app.project_archived)fail(409,'app_archived','Choose an active app');
   const tables=(await f.toolTables(a,w,appId)).map((t:any)=>({...t,fields:t.fields.filter((field:any)=>field.ai!==false&&app.bindings.some((b:any)=>b.typeId===t.id&&b.fields.includes(field.key)))}));
   const candidates=(await this.db.query("SELECT u.id,u.name,u.email FROM users u JOIN memberships m ON m.user_id=u.id WHERE m.tenant_id=$1 AND u.subject NOT LIKE 'public-app|%' ORDER BY u.name,u.id",[p.tenant_id])).rows;
-  const members=[];for(const member of candidates){try{await f.component(this.db,{userId:member.id,origin:'human'},w,appId);members.push(member);}catch(e){if(![403,404].includes((e as any).status))throw e;}}
+  const members=[];for(const member of candidates){try{await notificationRecipients(this.db,a,w,{appId,steps:[{kind:'email',to:[member.email]}]} as any);members.push(member);}catch(e){if(![403,404,409].includes((e as any).status))throw e;}}
   const owner=members.find(m=>m.id===a.userId);if(!owner)fail(403,'owner_required','Owner unavailable');
   const scopes=(await f.scopes(a,w)).filter((s:any)=>!s.revoked_at&&!s.schemaChanged&&s.body.autoWrite&&Date.parse(s.body.expiresAt)>Date.now()&&s.body.projectId===app.project_id&&s.body.bindings.length===1&&s.body.bindings.every((b:any)=>b.fields.every((key:string)=>tables.some((t:any)=>t.id===b.typeId&&t.fields.some((field:any)=>field.key===key&&field.writable))))).map((s:any)=>({scopeId:s.id,version:s.version}));
   return {owner,members:members.filter(m=>m.id!==owner.id),tables,writeScopes:scopes};
@@ -58,7 +59,7 @@ export class AutomationManagement{
  async history(a:Actor,w:string,kind:'research'|'action',automationId:string,offset=0){await this.read(a,w,kind,automationId);
   if(kind==='research')return new AppMonitoring(this.db).runs(a,w,automationId,offset);
   // Summaries do not release historical record payloads or old execution prompts.
-  const sql=`SELECT id,status,created_at AS started_at,finished_at FROM app_action_runs WHERE action_id=$1 AND user_id=$2 ORDER BY created_at DESC,id DESC LIMIT 21 OFFSET $3`;
+  const sql=`SELECT id,status,started_at,finished_at FROM (SELECT id,status,created_at AS started_at,finished_at FROM app_action_runs WHERE action_id=$1 AND user_id=$2 UNION ALL SELECT id,CASE status WHEN 'collecting' THEN 'queued' WHEN 'sending' THEN 'waiting' ELSE status END,created_at,finished_at FROM app_notification_batches WHERE action_id=$1 AND user_id=$2) h ORDER BY started_at DESC,id DESC LIMIT 21 OFFSET $3`;
   const rows=(await this.db.query(sql,[automationId,a.userId,offset])).rows;return {rows:rows.slice(0,20),nextOffset:rows.length>20?offset+20:null};
  }
 }

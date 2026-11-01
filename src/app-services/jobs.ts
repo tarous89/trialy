@@ -8,13 +8,13 @@ import {fail,type Actor} from '../shared/schema.js';
 import {Connectors} from '../connectors/service.js';
 import {WorkspaceFoundation} from '../workspace/service.js';
 const J=JSON.stringify;
-export async function enqueueServiceJob(db:Database,a:Actor,w:string,appId:string|null,kind:'email'|'connector',requestKey:string,payload:any,seconds=300){
+export async function enqueueServiceJob(db:Database,a:Actor,w:string,appId:string|null,kind:'email'|'connector',requestKey:string,payload:any,seconds=300,jobId?:string){
  await access(db,a,w);if(Buffer.byteLength(J(payload))>150000)fail(413,'job_size','Request is too large');
  const digest=checksum(J(payload));return db.transaction(async tx=>{
   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);
   const previous=(await tx.query('SELECT id,status,digest FROM app_service_jobs WHERE workspace_id=$1 AND user_id=$2 AND request_key=$3',[w,a.userId,requestKey])).rows[0];if(previous){if(previous.digest!==digest)fail(409,'request_changed','Request key already used');return {id:previous.id,status:previous.status,replayed:true};}
   const n=Number((await tx.query("SELECT count(*) AS n FROM app_service_jobs WHERE workspace_id=$1 AND created_at>now()-interval '24 hours'",[w])).rows[0].n);if(n>=1000)fail(429,'job_limit','Daily workspace action limit reached');
-  const id=randomUUID();await tx.query('INSERT INTO app_service_jobs(id,workspace_id,user_id,app_id,kind,request_key,digest,payload,deadline_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',[id,w,a.userId,appId,kind,requestKey,digest,J(payload),new Date(Date.now()+Math.min(86400000,Math.max(60000,seconds*1000)))]);return {id,status:'queued'};
+  const id=jobId??randomUUID();await tx.query('INSERT INTO app_service_jobs(id,workspace_id,user_id,app_id,kind,request_key,digest,payload,deadline_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',[id,w,a.userId,appId,kind,requestKey,digest,J(payload),new Date(Date.now()+Math.min(86400000,Math.max(60000,seconds*1000)))]);return {id,status:'queued'};
  });
 }
 export async function serviceJob(db:Database,a:Actor,w:string,id:string,appId?:string){
@@ -24,7 +24,8 @@ export async function serviceJob(db:Database,a:Actor,w:string,id:string,appId?:s
 export async function authorizeJob(db:Database,j:any,reading=false){
  const a:Actor={userId:j.user_id,origin:j.payload.origin??'ai',...(j.app_id?{accessToolId:j.app_id}:{})};
  return withActor(a,async()=>{
-  if(j.payload.action){const {AppActions}=await import('./service.js');await new AppActions(db).authorizeRun(j.payload.action.runId,j.payload.action.version,reading);}
+  if(j.payload.notification){const {authorizeNotificationJob}=await import('./notifications.js');await authorizeNotificationJob(db,j,reading);}
+  else if(j.payload.action){if(j.kind==='email'&&!reading)fail(403,'notification_policy','Notification requires current safety checks');const {AppActions}=await import('./service.js');await new AppActions(db).authorizeRun(j.payload.action.runId,j.payload.action.version,reading);}
   else if(j.kind==='connector'){const f=new WorkspaceFoundation(db),c=new Connectors(db,(tx,a,w,id)=>f.component(tx,a,w,id)),b=await c.inspect(db,a,j.workspace_id,j.payload.call);if(b.digest!==j.payload.digest)fail(409,'connector_changed','Connector request changed');if(b.reviewRequired){const r=(await db.query("SELECT * FROM connector_reviews WHERE id=$1 AND user_id=$2 AND kind='invoke'",[j.payload.reviewId,j.user_id])).rows[0];if(!r||r.body.digest!==j.payload.digest)fail(403,'connector_review','Missing exact approval');}}
   else if(j.payload.invitation&&!reading){const {checkInvitationDelivery}=await import('./sharing.js');await checkInvitationDelivery(db,j);}
   else if(!j.payload.invitation)fail(403,'job_authority','Job has no active authority');
@@ -42,7 +43,14 @@ export async function processServiceJob(db:Database,options:{email?:EmailTranspo
  // Never blindly resubmit an interrupted external operation. Email retries share the same provider key.
  await db.query("UPDATE app_service_jobs SET status='unknown',diagnostic='interrupted_request',finished_at=now() WHERE status='running' AND lease_until<now() AND kind='connector'");
  await db.query("UPDATE app_service_jobs SET status='queued',available_at=now(),lease_token=NULL,lease_until=NULL WHERE status='running' AND lease_until<now() AND kind='email'");
- const j=await db.transaction(async tx=>{const row=(await tx.query("SELECT * FROM app_service_jobs WHERE status='queued' AND available_at<=now() AND ($1::text IS NULL OR kind=$1) ORDER BY created_at FOR UPDATE SKIP LOCKED LIMIT 1",[options.kind??null])).rows[0];if(!row)return null;const token=randomUUID();await tx.query("UPDATE app_service_jobs SET status='running',lease_token=$2,lease_until=now()+interval '45 seconds',attempts=attempts+1 WHERE id=$1",[row.id,token]);return {...row,lease_token:token,attempts:row.attempts+1};});if(!j)return false;
+ const j=await db.transaction(async tx=>{await tx.query("SELECT set_config('trialy.notification_policy','1',true)");const row=(await tx.query("SELECT * FROM app_service_jobs WHERE status='queued' AND available_at<=now() AND ($1::text IS NULL OR kind=$1) ORDER BY created_at FOR UPDATE SKIP LOCKED LIMIT 1",[options.kind??null])).rows[0];if(!row)return null;const token=randomUUID();await tx.query("UPDATE app_service_jobs SET status='running',lease_token=$2,lease_until=now()+interval '45 seconds',attempts=attempts+1 WHERE id=$1",[row.id,token]);return {...row,lease_token:token,attempts:row.attempts+1};});if(!j)return false;
+ // A stopped or quota-delayed message that never reached the provider may be
+ // rebuilt from current pending work after its immutable retry window expires.
+ // An attempted message keeps its key and must never enter this regeneration path.
+ if(j.payload.notification&&new Date(j.deadline_at).getTime()<=Date.now()&&!(await db.query('SELECT job_id FROM app_notification_reservations WHERE job_id=$1 AND attempted_at IS NOT NULL',[j.id])).rows.length){
+  await db.query("UPDATE app_service_jobs SET status='failed',diagnostic='notification_changed',finished_at=now(),lease_until=NULL WHERE id=$1 AND status='running' AND lease_token=$2",[j.id,j.lease_token]);
+  await db.query('UPDATE app_notification_reservations SET released=true WHERE job_id=$1 AND attempted_at IS NULL',[j.id]);return true;
+ }
  const controller=new AbortController(),stop=()=>controller.abort();options.signal?.addEventListener('abort',stop,{once:true});let checking=false;
  const heartbeat=setInterval(()=>{if(checking)return;checking=true;void db.query("UPDATE app_service_jobs SET lease_until=now()+interval '45 seconds' WHERE id=$1 AND status='running' AND lease_token=$2 RETURNING id",[j.id,j.lease_token]).then(r=>{if(!r.rows.length)controller.abort();}).catch(()=>controller.abort()).finally(()=>{checking=false;});},10000);
  const timeout=setTimeout(()=>controller.abort(),Math.max(1,new Date(j.deadline_at).getTime()-Date.now()));
@@ -53,7 +61,10 @@ export async function processServiceJob(db:Database,options:{email?:EmailTranspo
    const message=z.object({to:z.array(z.email()).min(1).max(20),subject:z.string().min(1).max(200),text:z.string().min(1).max(20000),appName:z.string().max(100).optional()}).parse(j.payload.message);
    if((await db.query('SELECT email FROM notification_suppressions WHERE email=ANY($1::text[])',[message.to.map(e=>e.toLowerCase())])).rows.length)throw Object.assign(Error('Recipient suppressed'),{permanent:true});
    if(j.attempts>6||Date.now()-new Date(j.created_at).getTime()>23*3600000)throw Object.assign(Error('Retry window exceeded'),{permanent:true});
-   await active();const display=(message.appName??'TrialAgents').replace(/[<>\r\n"]/g,'').slice(0,80);
+   await active();
+   if(j.payload.notification){const {reserveNotification}=await import('./notifications.js');const b=(await db.query('SELECT b.tenant_id,b.action_id,a.config FROM app_notification_batches b JOIN app_actions a ON a.id=b.action_id WHERE b.id=$1',[j.payload.notification.batchId])).rows[0];const reservation=await reserveNotification(db,b.tenant_id,message.to[0].toLowerCase(),j.id,true,{actionId:b.action_id,trigger:b.config.trigger});if(!reservation.allowed){await db.query("UPDATE app_service_jobs SET status='queued',attempts=attempts-1,available_at=$2,lease_until=NULL,diagnostic=$3 WHERE id=$1 AND lease_token=$4",[j.id,reservation.nextAt,reservation.reason,j.lease_token]);return true;}}
+   await active();
+   const display=(message.appName??'TrialAgents').replace(/[<>\r\n"]/g,'').slice(0,80);
    result=await (options.email??resendEmail)({from:`${display}${display==='TrialAgents'?'':' via TrialAgents'} <notifications@trialagents.com>`,to:message.to,subject:message.subject,text:message.text},j.id,AbortSignal.any([controller.signal,AbortSignal.timeout(20000)]));providerId=result.id;
   }else{
    const f=new WorkspaceFoundation(db),c=options.connector??new Connectors(db,(tx,a,w,id)=>f.component(tx,a,w,id));result=await withActor(a,()=>c.executeAuthorized(a,j.workspace_id,j.payload.call,async()=>{await active();},controller.signal));if(result.status!=='succeeded')throw Object.assign(Error('Connector outcome '+result.status),{unknown:result.status==='unknown',permanent:true});
@@ -61,7 +72,8 @@ export async function processServiceJob(db:Database,options:{email?:EmailTranspo
   await db.query("UPDATE app_service_jobs SET status='succeeded',result=$2,provider_id=$3,delivery_status=$4,finished_at=now(),lease_until=NULL WHERE id=$1 AND status='running' AND lease_token=$5",[j.id,J(result),providerId,j.kind==='email'?'accepted':null,j.lease_token]);
  }catch(e:any){
   const retry=j.kind==='email'&&!e.permanent&&![403,404,409].includes(e.status)&&j.attempts<6&&Date.now()+300000<new Date(j.deadline_at).getTime();
-  await db.query("UPDATE app_service_jobs SET status=$2,diagnostic=$3,available_at=$4,finished_at=CASE WHEN $2='queued' THEN NULL ELSE now() END,lease_until=NULL WHERE id=$1 AND status='running' AND lease_token=$5",[j.id,retry?'queued':e.unknown||j.kind==='connector'&&!e.permanent?'unknown':'failed',e.status?'authorization_unavailable':e.permanent?'provider_rejected':'request_failed',new Date(Date.now()+Math.min(300000,1000*2**j.attempts)),j.lease_token]);
+  await db.query("UPDATE app_service_jobs SET status=$2,diagnostic=$3,available_at=$4,finished_at=CASE WHEN $2='queued' THEN NULL ELSE now() END,lease_until=NULL WHERE id=$1 AND status='running' AND lease_token=$5",[j.id,retry?'queued':e.unknown||j.kind==='connector'&&!e.permanent?'unknown':'failed',e.code==='notification_changed'?'notification_changed':e.status?'authorization_unavailable':e.permanent?'provider_rejected':'request_failed',new Date(Date.now()+Math.min(300000,1000*2**j.attempts)),j.lease_token]);
+  if(j.payload.notification)await db.query('UPDATE app_notification_reservations SET released=true WHERE job_id=$1 AND attempted_at IS NULL',[j.id]);
  }finally{clearInterval(heartbeat);clearTimeout(timeout);options.signal?.removeEventListener('abort',stop);}return true;
 }
 export async function receiveDeliveryEvent(db:Database,raw:Buffer,headers:Record<string,any>,secret=process.env.RESEND_WEBHOOK_SECRET){

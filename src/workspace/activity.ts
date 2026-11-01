@@ -47,6 +47,10 @@ async function activityPageRead(db:Database,a:Actor,w:string,input:unknown){
  SELECT 'action:'||r.id::text,r.created_at,r.user_id,'app_action.'||r.status,j.id,r.status,'worker','automation',c.project_id,j.config->>'name',c.id,c.name
  FROM app_action_runs r JOIN app_actions j ON j.id=r.action_id AND j.workspace_id=r.workspace_id JOIN workspace_components c ON c.id=j.app_id AND c.workspace_id=r.workspace_id
  WHERE r.workspace_id=$1 AND r.user_id=$2 AND ($3::boolean OR c.id=ANY($4::uuid[]))
+ UNION ALL
+ SELECT 'notification:'||b.id::text,b.created_at,b.user_id,'app_notification.'||CASE b.status WHEN 'collecting' THEN 'queued' WHEN 'sending' THEN 'waiting' ELSE b.status END,j.id,CASE b.status WHEN 'collecting' THEN 'queued' WHEN 'sending' THEN 'waiting' ELSE b.status END,'worker','automation',c.project_id,j.config->>'name',c.id,c.name
+ FROM app_notification_batches b JOIN app_actions j ON j.id=b.action_id JOIN workspace_components c ON c.id=b.app_id
+ WHERE b.workspace_id=$1 AND b.user_id=$2 AND ($3::boolean OR c.id=ANY($4::uuid[]))
  ) SELECT events.*,count(*) OVER() AS total_count,u.name AS actor_name FROM events JOIN users u ON u.id=events.actor_id WHERE ($5='' OR strpos(lower(action||' '||resource_name||' '||coalesce(app_name,'')||' '||coalesce(resource_id::text,'')||' '||actor_id::text||' '||u.name),lower($5))>0)
  AND ($18::uuid IS NULL OR app_id=$18) AND ($17::uuid IS NULL OR events.id=$17::text) AND ($6='all' OR category=$6) AND ($7='all' OR outcome=$7) AND ($8::uuid IS NULL OR actor_id=$8) AND ($9::uuid IS NULL OR project_id=$9 OR EXISTS(SELECT 1 FROM project_records pr WHERE pr.workspace_id=$1 AND pr.project_id=$9 AND pr.record_id=events.resource_id AND pr.revoked_at IS NULL AND ($3::boolean OR pr.project_id=ANY($4::uuid[])))) AND ($10::uuid IS NULL OR resource_id=$10)
  AND ($11::timestamptz IS NULL OR events.created_at >= $11) AND ($12::timestamptz IS NULL OR events.created_at <= $12) AND events.created_at <= $13::timestamptz

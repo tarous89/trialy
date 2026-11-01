@@ -2,6 +2,8 @@
 
 ## Current implementation — 1 November 2026
 
+Release **0.2.41** implements the [notification scope](docs/scopes/NOTIFICATION_GUARDRAILS_2026-11-01.md). Delivery budgets, settling, current-state revalidation, immutable retries, queue bounds and the email emergency stop are backend policy; the UI retains only business configuration. Verified-email signup remains separate onboarding work.
+
 Read [CONTEXT.md](CONTEXT.md) first. The six-step simple-app roadmap is implemented; release **0.2.39** adds unified app automation management and optional standard-tracker section permissions. [Current app configuration contract](docs/product/APP_CONFIGURATION_AND_AUTOMATIONS.md) · [Template authoring](templates/TEMPLATE_AUTHORING.md) · [Template usage](templates/TEMPLATE_USAGE.md).
 
 - Access keeps Projects → apps visible by default → optional expandable tabs. Missing section metadata is valid; app-level authorization always applies. No existing-app retrofit.
