@@ -1,0 +1,115 @@
+{
+  "id": "life.investor-crm",
+  "version": "1.0.1",
+  "name": "Investor CRM",
+  "description": "Fundraising workspace for small biotech teams: investors, contacts, approved round pipeline, meeting history, followups and source-backed research, inspired by Foundersuite.",
+  "tags": [
+    "biotech",
+    "fundraising",
+    "investor-relations",
+    "investor-crm",
+    "venture-capital",
+    "series-a",
+    "financing-pipeline",
+    "founders",
+    "life-sciences"
+  ],
+  "whenToUse": "A small biotech CEO/CFO is raising a financing round and needs to track professional investors, opportunities, interactions, signed evidence and research in one internal TrialAgents workspace.",
+  "whenNotToUse": "Investor solicitation email campaigns, proprietary data brokerage, legal investment subscription/signature, cap-table management, fund accounting, bank reconciliation, patient data, consumer CRM or enterprise deal-room integration.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "Investor CRM",
+    "tableMap": "{}",
+    "layoutProfile": "{}",
+    "asOfDate": "",
+    "pageSize": 25,
+    "readOnly": false
+  },
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "App title, internal TrialAgents finance workspace",
+      "default": "Investor CRM"
+    },
+    "tableMap": {
+      "type": "string",
+      "description": "JSON with real authorized UUID role-table IDs, physical field keys and logical writable names",
+      "default": "{}"
+    },
+    "layoutProfile": {
+      "type": "string",
+      "description": "Host-reviewed settings layout (heading,tabs,cols,visible) only",
+      "default": "{}"
+    },
+    "asOfDate": {
+      "type": "string",
+      "description": "Reporting date YYYY-MM-DD (blank uses current UTC date)",
+      "default": ""
+    },
+    "pageSize": {
+      "type": "number",
+      "description": "Authorized directory register page size, clamped 10–50",
+      "default": 25
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "Disable proposals while keeping all authorized read screens available",
+      "default": false
+    }
+  },
+  "instructions": "Read current authoring and usage contracts via read_app_template_guidance to completion (1.3.9+), read_app_design, exact template catalog metadata and allowed manifests. Pin this version/source digest and keep one requestKey. This app is internal to TrialAgents, with host account/Access and official clickable host watermark linked to https://platform.trialagents.com; never add fake logo/login/user billing. Build the BT-01 six-screen investor workflow, not a generic sales CRM. Bind or create EIGHT scalar roles with complete lower_snake_case physical field kinds, multiple:false, select enums and reviewed parent receipt IDs as specified in documentation.dataContract; return field/type mappings in tableMap and give every bound field an authorized manifest with current schemaVersion and writable mode. No independent account tables, no seed data. Show one active round with signed vs verbal amounts separated. Commitments count only with Committed stage, Signed status, valid signed date, positive amount, reference and exact currency. No cross-currency summation or missing-target percent. All forms require name, data-ui-state and stable data-action per input, using input.event.kind/action/value/form and retained draft state. Treat duplicate opportunity, orphan links, inaccessible reads and historic evidence change as blockers; edit/archive keeps baseVersion from opening and requires reviewed records.propose, with no unapproved writes. Parent archives need complete dependent coverage; copied commitments never inherit Signed. Header toolbar stays inline; page-based search scope is labelled and paged registers remain reachable past the 800-row analytic cap; selected-round followups require complete sources within that cap. Native layout gear tracker:layout invokes host review/prepare_tool_layout with schema and stable saved layoutProfile, no app-local settings. Preview without weakening sanitizer, test production QuickJS/manifest and reconcile receipts before declaring published. Research handoff is manual unless saved app owner separately authorizes shared-runner schedule. Optional internal owner notification uses separately approved TrialAgents email action after verified successful saved findings; no investor emails or external API. Automation never blocks app opening; distinguish draft, app saved, definition enabled, runner active, delivered. Do not treat local demo as installed/deployed.",
+  "documentation": {
+    "quickStart": [
+      "Read `read_app_template_guidance` authoring and usage v1.3.9 or newer, `read_app_design`, `list_app_templates` and exact `read_app_template` version+digest; use one requestKey for creation and receipt reconciliation.",
+      "Create/reuse eight scalar role tables with the roles/fields and select enums in dataContract and full schema.example.json. Use lowercase snake_case physical keys, multiple:false everywhere, text for source URLs and UUID references, and real reviewed parent receipt IDs. Never create app accounts.",
+      "Save fundraise rounds, then investor organizations and contacts, then investor/round-linked opportunities; finally interactions, tasks, research briefs and findings. A fund with several contacts remains one organization, and a fund/round should have one opportunity. Do not seed fictional examples.",
+      "Pin authorized field/type/schema versions and manifest read/write modes. Set tableMap JSON string with `role:{typeId:UUID,fields:{logical:physical},writableFields:[logical fields]}` and provide templateBindings only in the host. No host-injection declarations inside catalog source.",
+      "Require actual signed evidence/amount/date plus currency matching active round before including in commitments. Provisional amount, verbal intent, expected close or stage label alone never count. Target missing yields unavailable progress.",
+      "Preview/sanitize all six screens at 320, 390, 768, 1100 and 1440 px with real bounded host reads and optimistic writes. Confirm each transient control has data-ui-state/name/action; test empty, duplicate, invalid, overbudget, partially denied and stale-version cases. Real saved component and receipts must be checked independently.",
+      "Approve app save with exact preview/version; revisions use expectedVersion of same app. Native gear emits tracker:layout and saves reviewed customLayout without modifying data/access. Keep source IDs and disabled automations unchanged.",
+      "Optional: after saving, separately review one weekly shared-ChatGPT investor signal monitor and an after-success INTERNAL TrialAgents email; no automation and no investor outreach is the default. Verify runner/setup/delivery separately."
+    ],
+    "dataContract": "EIGHT scalar roles, all `multiple:false`; `*` required at creation, blank optional means null; status/priority and date scalar, money:number with approved currency; no record objects/arrays for relationships. Exact source schema: rounds [name:text*,target_amount:money,currency:select*,status:select*,expected_close:date,owner:text,notes:text,archived:boolean]; investors [name:text*,kind:select*,geography:text,focus:text,stage_focus:text,ticket_min:money,ticket_max:money,currency:select,website:text,source:text,source_date:date,owner:text,notes:text,archived:boolean]; contacts [name:text*,investor_id:text(UUID->investors)*,title:text,channel:select,email:text,linkedin:text,notes:text,archived:boolean]; opportunities [name:text*,investor_id:text(UUID->investors)*,round_id:text(UUID->rounds)*,stage:select*,indicative_amount:money,committed_amount:money,commitment_status:select,currency:select*,commitment_date:date,evidence_ref:text,owner:text,next_step:text,next_due:date,expected_close:date,last_contact:date,priority:select,notes:text,archived:boolean]; interactions [name:text*,opportunity_id:text(UUID->opportunities)*,contact_id:text(UUID->contacts),date:date*,channel:select*,outcome:select,summary:text*,source:text,owner:text,archived:boolean]; tasks [name:text*,opportunity_id:text(UUID->opportunities)*,owner:text,due:date*,status:select*,outcome:text,archived:boolean]; briefs [name:text*,sector:text*,geography:text,stage_focus:text,ticket:text,exclusions:text,notes:text,owner:text,archived:boolean]; findings [name:text*,brief_id:text(UUID->briefs)*,investor_id:text(UUID->investors),topic:select*,observed_date:date*,source_url:text*,relevance:text*,status:select*,archived:boolean]. Select enums: rounds.currency EUR/USD/GBP/CHF; rounds.status Planning/Active/Closed; investors.kind VC/Corporate VC/Family office/Angel/Foundation/Other; investors.currency EUR/USD/GBP/CHF; contacts.channel Email/LinkedIn/Phone/Introducer; opportunities.stage Identified/Qualified/Contacted/Due diligence/Committed/Declined; opportunities.commitment_status None/Verbal/Signed; opportunities.priority High/Medium/Low; opportunities.currency EUR/USD/GBP/CHF; interactions.channel Meeting/Call/Email/Warm intro/Other; interactions.outcome Positive/Neutral/Negative/No response; tasks.status Open/Done/Cancelled; findings.topic Fund focus/New funding/Investment activity/Hiring / team/Other; findings.status Candidate/Approved/Excluded. New tasks Open, new findings Candidate; duplicate opportunity resets stage Identified, Signed evidence, amount and date; archived defaults false. `tableMap` is JSON string of {role:{typeId:<real authorized UUID>,fields:{logicalKey:snake_case_physical_key},writableFields:[logicalKeys]}}. Required mappings must be present and readable in the actual bound manifest. IDs link records only by stable stored scalar UUID, not display labels; save parents first and substitute receipt IDs. Read-only/denied/unavailable/short/unknown total/split/overbudget rows never imply zero or ready. `committed_amount` counts only stage Committed + commitment_status Signed + date + evidence reference + positive amount + matching round currency; verbal/indicative and unsigned stages never count. Funding progress signed/target only if complete target and opportunities/round/investor evidence. No FX conversion, cap-table math, received cash or founder equity calculations. No external emails or patient data.",
+    "interactionContract": "Six screens: overview by selected round with three financing metrics, stage-count chart and followup priorities; investor directory with paged search/filter and details + linked contacts; active-round pipeline with stage board or paged list, reviewed moves; interaction log with validated contact/opportunity and optional followup as one reviewed proposal; followups with due-week metrics and editable tasks; research briefs/findings, approved-candidate Add Investor and explicit ChatGPT instruction handoff. All forms mark each editable field with name, data-action and data-ui-state. `input.event.kind/action/value/form` is used; form merging and per-input changes persist in returned transient state. Edit/archive captures original id/version at opening; missing or stale record is a conflict and preserves draft. `records.propose` creates only a host review and must not be described as committed. Duplicate resets approval. Parent archives require COMPLETE linked role coverage and no live children. Delete means reviewed archived:true, not hard deletion. All header search/filter scope is within currently loaded page and reachable pager traverses full server-reported total even after 800-read analytic cap. Native Settings gear uses tracker:layout, declared stable templateLayoutSchema, and host-saved layoutProfile for tab/column order/visibility. Hidden fields remain in the full modal editor. No app accounts or local automation settings. Production brand is the trusted official TrialAgents host watermark linked to https://platform.trialagents.com. Pipeline cards and list use the same selected round; pagination totals are scoped before paging. Follow-up KPIs and list share the selected round; the list is withheld if complete task/opportunity coverage is unavailable. Research briefs have independent pagination and remain editable beyond the first page. Standalone preview uses fictional local review; native Layout is available inside TrialAgents only. Every record editor exposes reviewed Archive for saved records, with dependent-evidence and original-version checks.",
+    "lifecycle": "Stable ID life.investor-crm, version 1.0.1; pin exact source digest and requestKey when preparing, preserve app ID across revisions and use expectedVersion + save-status reconciliation. Data stays in authorized saved host tables, not local app state. Draft values, navigation and filters are transient and never committed until trusted record confirmation. Host settings customLayout updates only presentation profile, not bindings, source, access or record rights. A denied/partial read disables authoritative totals and dangerous parent archival but preserves viewing drafts. Saved apps open even when ChatGPT monitoring/email setup is missing or failed; no second identity/account/store/scheduler. Archive disables applicable tasks; restoring/copying never silently reactivates them. Automation definitions are optional suggestions until separately reviewed and activated; delivery and execution require independent receipts.",
+    "limitations": [
+      "Internal biotech fundraising coordination only, not cap table, bank accounting, subscription legal documents, valuation, investor database/API, verified data room, deck analytics, securities solicitation or email campaigns.",
+      "Investor names and emails in standalone demo are entirely fictional; no seed to live databases and no private investor email sends. Benchmark Foundersuite workflows only.",
+      "The custom frontend-js security boundary is app-wide; individual screen visibility is presentation, not server-enforced per-tab privacy. Protect confidential financing through platform Access, field/table/record permissions.",
+      "Exact fundraising totals require complete authorized rounds, investor and opportunity reads within bounded 800 rows each; >800 requires verified server-side aggregate. Large directories remain browseable page-by-page, with page-local search/filter.",
+      "One investor/round opportunity is enforced in app proposals, not an intrinsic DB foreign-key constraint: database changes outside app can introduce duplicates/orphans. If detected, aggregate totals are withheld until reconciled.",
+      "No automatic email to investors, web search by app source, scraped data, external investor records or live ChatGPT monitoring; optional platform Automations only after separate approval.",
+      "Standalone browser preview simulates fictional reviewed proposals; native layout is available only in the host and it does not prove QuickJS/sanitizer, real host manifest grants, persisted layout, deployment or email delivery. All require production acceptance.",
+      "Selected-round follow-ups and linked-contact editing require complete authorized dependency reads within 800 rows per role. Above this bound they show unavailable rather than partial lists. Server-paged investor, opportunity, interaction, brief and finding registers remain readable; create/edit guards that require complete evidence may block writes until coverage is resolved."
+    ],
+    "examples": [
+      {
+        "prompt": "Set up Investor CRM for our 22-person oncology biotech raising an €18 million Series A with a shortlist of 30 investors.",
+        "expectedBehavior": "Create six-screen internal app with one approved round, distinct funds and professional contacts; link one opportunity per fund/round; no data broker, investor email campaign or app account."
+      },
+      {
+        "prompt": "We spoke with Harborfront Ventures yesterday; log a call, make a followup for next Thursday and move diligence ahead.",
+        "expectedBehavior": "Prepare an approved interaction and linked task, with original records unchanged until reviewed. Move the opportunity only with a separate reviewed stage change, preserving version and history."
+      },
+      {
+        "prompt": "A fund informally indicated €1.2m but has not signed anything; show our financing progress.",
+        "expectedBehavior": "Show interest only in provisional pipeline. Do not increase signed commitments or percent-of-target until verified date/evidence and matching currency."
+      },
+      {
+        "prompt": "Search for relevant early-stage European oncology investors weekly and email our team when new reviewed findings are saved.",
+        "expectedBehavior": "Only after app save, separately approve a narrow weekly shared ChatGPT monitor and dependent internal TrialAgents email to current authorized members; no outbound investor email or email for no_update/partial."
+      },
+      {
+        "prompt": "We only need an investor list and a meeting log; no automation.",
+        "expectedBehavior": "The six-screen app works without ChatGPT monitoring or email configuration; keep optional research on manual initiation."
+      }
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "Manual investor discovery and brief writing, or one owner-approved weekly public investment signal monitor with optional linked internal completion notification. No automation is fully valid.",
+      "readRequirements": "A saved app, selected research brief and round, explicit source criteria + exclusions, verified authorized investor/opportunity/brief/finding relationships and coverage, user-approved Europe/Berlin weekly timing, narrow read/write scope with expiry, deduplication and primary links, authorized destination and status. No investor mail recipients, no automatic signed changes.",
+      "outputContract": "Candidate findings for human review with source URL/observed date, existing investor IDs where matched, stable dedupe by fund/URL/window, saved record IDs, count and UTC timestamp after verified authorized commits. With complete no-new-change evidence return no_update and verified check; if missing/blocked return partial. Internal TrialAgents after-success email only under a separate approved manual-trigger action, no independent schedule, no fabricated placeholders or inferred team access. Enabled status is not evidence of successful execution/delivery.",
+      "promptExample": "For the saved internal TrialAgents Investor CRM app and the specifically approved financing round, review the latest authorized fund, professional contact, opportunity, research brief and finding records. Search verifiable public primary sources for newly announced life-sciences investor focus, investment stage and geography, dated fund or biotech financing, and newly relevant institutional investor contacts. Evaluate against the saved research brief sector, ticket range and exclusion criteria. Cite evidence dates and HTTPS links, distinguish source observation from your interpretation and de-duplicate by normalized investor identity and authoritative source URL. Prefer existing investor record IDs over duplicates. Draft candidate findings for owner review; use only the approved findings table/schema and exact scoped standing grant, if any. Never fabricate investment amounts, professional contact details, investor commitments, valuations or meetings; do not modify Signed evidence, fundraising targets, permissions or stage statuses. Do not email any investor, scrape gated datasets, or make broad unapproved record changes. Write only after reviewed permission; reconcile real receipts and output saved record IDs, counts and UTC completion time. If all sources were checked completely with no new qualifying items, report no_update and the last verified check time, with no dependent email under the approved quiet policy. Missing or partially inaccessible source records mean partial/blocked, not no_update. No task activates from template metadata alone.\n\nInternal completion email (optional): Optional separate TrialAgents email action ONLY for notifying authorized internal team members after an approved research run has saved reviewed findings. Executor: TrialAgents, not ChatGPT. Trigger: manual after-success completion linkage, never an independent email schedule. Subject: Investor research findings ready. Fixed body: New investor research findings have been saved for review. Open the Investor CRM in your TrialAgents workspace at https://platform.trialagents.com. Recipients: the app owner by default, and any additional existing TrialAgents team member separately selected with current access. Don't send to investor addresses from Contacts. If the research produced no new approved saved changes or was partial, blocked, denied, unsuccessful or unverified, do not send. Delivery failure does not re-run research; the platform Logs hold outcomes. No unsupported template placeholders or double scheduling.\n\nNo automation: Create Investor CRM for a 20-person biotech with a Series A round, no scheduled tasks, no email and no outside investor sourcing. Add reviewed funds, professional contacts, opportunities, interactions and follow-ups manually. Record only signed evidence-backed commitments in financing totals. All six app screens work without automation or provider connections."
+    }
+  }
+}

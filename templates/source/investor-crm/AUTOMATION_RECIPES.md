@@ -1,0 +1,21 @@
+# Investor CRM · optional shared ChatGPT and TrialAgents Email
+
+These are **owner-reviewed suggestions**, not active tasks. They use one shared workspace ChatGPT runner and the TrialAgents email executor, never one external Task per app, and never an in-app authentication/email sender. No automation remains the fully supported default.
+
+## Optional weekly public investor research
+
+Suggested `authoringKey`: `life.investor-crm.monitor.public-investor-signals.v1` · Weekly Monday 09:00 Europe/Berlin only if the owner requests it, after app save. Target the selected existing research brief and round. Inputs: permitted saved Investor/Contact/Opportunity/Brief/Finding rows. Permission: saved, reviewed, narrow source/write grants with expiry. Outputs: new candidate findings with source records, verified receipts and UTC completion time or a draft for review without write. Never infer outcome from metadata.
+
+For the saved internal TrialAgents Investor CRM app and the specifically approved financing round, review the latest authorized fund, professional contact, opportunity, research brief and finding records. Search verifiable public primary sources for newly announced life-sciences investor focus, investment stage and geography, dated fund or biotech financing, and newly relevant institutional investor contacts. Evaluate against the saved research brief sector, ticket range and exclusion criteria. Cite evidence dates and HTTPS links, distinguish source observation from your interpretation and de-duplicate by normalized investor identity and authoritative source URL. Prefer existing investor record IDs over duplicates. Draft candidate findings for owner review; use only the approved findings table/schema and exact scoped standing grant, if any. Never fabricate investment amounts, professional contact details, investor commitments, valuations or meetings; do not modify Signed evidence, fundraising targets, permissions or stage statuses. Do not email any investor, scrape gated datasets, or make broad unapproved record changes. Write only after reviewed permission; reconcile real receipts and output saved record IDs, counts and UTC completion time. If all sources were checked completely with no new qualifying items, report no_update and the last verified check time, with no dependent email under the approved quiet policy. Missing or partially inaccessible source records mean partial/blocked, not no_update. No task activates from template metadata alone.
+
+## Optional after-success INTERNAL completion email
+
+Suggested `authoringKey`: `life.investor-crm.email.internal-reviewed-findings.v1` · separate reviewed TrialAgents Email action, manually linked to confirmed successful analysis only. Not a separate schedule.
+
+Optional separate TrialAgents email action ONLY for notifying authorized internal team members after an approved research run has saved reviewed findings. Executor: TrialAgents, not ChatGPT. Trigger: manual after-success completion linkage, never an independent email schedule. Subject: Investor research findings ready. Fixed body: New investor research findings have been saved for review. Open the Investor CRM in your TrialAgents workspace at https://platform.trialagents.com. Recipients: the app owner by default, and any additional existing TrialAgents team member separately selected with current access. Don't send to investor addresses from Contacts. If the research produced no new approved saved changes or was partial, blocked, denied, unsuccessful or unverified, do not send. Delivery failure does not re-run research; the platform Logs hold outcomes. No unsupported template placeholders or double scheduling.
+
+## Explicit no-automation variant
+
+Create Investor CRM for a 20-person biotech with a Series A round, no scheduled tasks, no email and no outside investor sourcing. Add reviewed funds, professional contacts, opportunities, interactions and follow-ups manually. Record only signed evidence-backed commitments in financing totals. All six app screens work without automation or provider connections.
+
+Enabled definitions are not evidence of runner readiness or email delivery; check platform Automations, setup diagnostics and Logs independently. Preserve disabled state on revisions. Investor email campaigns are OUT OF SCOPE.

@@ -1,0 +1,138 @@
+{
+  "screens": [
+    {
+      "id": "overview",
+      "label": "Fundraising overview"
+    },
+    {
+      "id": "investors",
+      "label": "Investor directory"
+    },
+    {
+      "id": "pipeline",
+      "label": "Investment pipeline"
+    },
+    {
+      "id": "interactions",
+      "label": "Interaction log"
+    },
+    {
+      "id": "followups",
+      "label": "Follow-ups"
+    },
+    {
+      "id": "research",
+      "label": "Investor research"
+    }
+  ],
+  "groups": {
+    "investors": [
+      {
+        "id": "name",
+        "label": "Investor"
+      },
+      {
+        "id": "kind",
+        "label": "Type"
+      },
+      {
+        "id": "geography",
+        "label": "Geography"
+      },
+      {
+        "id": "focus",
+        "label": "Focus"
+      },
+      {
+        "id": "ticket_min",
+        "label": "Ticket min"
+      },
+      {
+        "id": "ticket_max",
+        "label": "Ticket max"
+      },
+      {
+        "id": "owner",
+        "label": "Owner"
+      }
+    ],
+    "opportunities": [
+      {
+        "id": "name",
+        "label": "Opportunity"
+      },
+      {
+        "id": "investor_id",
+        "label": "Investor"
+      },
+      {
+        "id": "stage",
+        "label": "Stage"
+      },
+      {
+        "id": "indicative_amount",
+        "label": "Interest"
+      },
+      {
+        "id": "committed_amount",
+        "label": "Signed"
+      },
+      {
+        "id": "next_due",
+        "label": "Next due"
+      },
+      {
+        "id": "owner",
+        "label": "Owner"
+      }
+    ],
+    "tasks": [
+      {
+        "id": "name",
+        "label": "Action"
+      },
+      {
+        "id": "opportunity_id",
+        "label": "Opportunity"
+      },
+      {
+        "id": "due",
+        "label": "Due"
+      },
+      {
+        "id": "status",
+        "label": "Status"
+      },
+      {
+        "id": "owner",
+        "label": "Owner"
+      }
+    ],
+    "findings": [
+      {
+        "id": "name",
+        "label": "Finding"
+      },
+      {
+        "id": "investor_id",
+        "label": "Investor"
+      },
+      {
+        "id": "topic",
+        "label": "Topic"
+      },
+      {
+        "id": "observed_date",
+        "label": "Observed"
+      },
+      {
+        "id": "status",
+        "label": "Status"
+      },
+      {
+        "id": "source_url",
+        "label": "Source"
+      }
+    ]
+  }
+}
