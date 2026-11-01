@@ -845,7 +845,8 @@ export class WorkspaceFoundation {
   for(const change of batch.changes){if(change.kind!=='update_record')continue;const record=await this.record(this.db,a,w,change.recordId,true);for(const field of Object.keys(change.data)){if(record.data[field]!==undefined&&record.data[field]!==null&&record.data[field]!=='')fail(409,'existing_value','Backfill does not replace existing values; prepare an explicit correction');}}
   return this.maintain(a,w,batch,undefined,true);
  }
- async maintain(a:Actor,w:string,input:unknown,approval?:WriteAuthorization,previewOnly=false,monitorRunId?:string){
+ async maintain(a:Actor,w:string,input:unknown,approval?:WriteAuthorization,previewOnly=false,monitorRunId?:string):Promise<any>{
+  if(monitorRunId){const state=await new AppMonitoring(this.db).active({...a,origin:'ai'},w,monitorRunId);if(state.config.inheritAppAccess&&a.accessToolId!==state.config.appId){const scoped={...a,accessToolId:state.config.appId};return withActor(scoped,()=>this.maintain(scoped,w,input,approval,previewOnly,monitorRunId));}}
   const v=maintenanceBatch.parse(input),digest=checksum(J(v));const actor:Actor={...a,origin:'ai'};
   return this.db.transaction(async tx=>{
    await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await this.policy(tx,actor,w,true);

@@ -392,3 +392,26 @@
 .ty-workspace .ty-log-text-filter input{flex:1;width:100%;min-width:0;border:0;padding:0;font-size:13px;background:transparent}
 .ty-workspace .ty-log-extra-filters>label{order:1}
 @container(max-width:650px){.ty-workspace .ty-log-filters .ty-search{flex-basis:100%}.ty-workspace .ty-log-filters .ty-select{max-width:none}.ty-workspace .ty-log-extra-filters>label{flex:1 1 210px}}
+
+/* Automation entry uses the same open, full-width layout as Connectors. */
+.ty-automation-composer{min-width:0;padding-block:24px}
+.ty-automation-tabs{display:flex;gap:24px;border-bottom:1px solid var(--ty-border);margin-bottom:28px}
+.ty-automation-tabs button{font:inherit;background:none;border:0;border-bottom:3px solid transparent;padding:12px 8px;cursor:pointer;color:var(--ty-muted)}
+.ty-automation-tabs button[aria-selected=true]{color:var(--ty-text);border-bottom-color:var(--ty-accent,#2c9b70);font-weight:600}
+.ty-automation-composer form,.ty-automation-content{display:flex;flex-direction:column;gap:24px}
+.ty-automation-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.ty-automation-composer label{display:flex;flex-direction:column;gap:8px;margin:0;min-width:0}
+.ty-automation-composer input:not([type=checkbox]),.ty-automation-composer select,.ty-automation-composer textarea{box-sizing:border-box;width:100%;min-width:0;font:inherit;padding:12px 14px;border:1px solid var(--ty-border);border-radius:8px;background:var(--ty-surface,#fff);color:inherit}
+.ty-automation-composer textarea{resize:vertical;line-height:1.6}
+.ty-automation-composer .ty-automation-fields{gap:20px 24px;margin:0;padding:24px}
+.ty-automation-composer legend{padding-inline:6px}
+.ty-automation-composer .ty-automation-fields fieldset label,.ty-automation-recipients>label:has(input[type=checkbox]){flex-direction:row;align-items:center;gap:10px}
+.ty-automation-recipients{display:flex;flex-direction:column;gap:20px;padding:24px;border:1px solid var(--ty-border);border-radius:10px;min-width:0}
+.ty-automation-recipients small{display:block;color:var(--ty-muted);margin-top:4px;overflow-wrap:anywhere}
+.ty-automation-recipient{display:flex;align-items:center;justify-content:space-between;gap:16px;overflow-wrap:anywhere}
+.ty-automation-help{color:var(--ty-muted);margin:0}
+.ty-automation-review{margin-top:28px;padding:24px;border:1px solid var(--ty-border);border-radius:10px}
+.ty-automation-review-text{white-space:pre-wrap;overflow-wrap:anywhere}
+@media(max-width:700px){.ty-automation-form-grid{grid-template-columns:minmax(0,1fr)}.ty-automation-composer .ty-automation-fields,.ty-automation-recipients,.ty-automation-review{padding:16px}.ty-automation-composer{padding-block:16px}}
+
+.ty-automation-review{display:grid;gap:12px}.ty-automation-review p,.ty-automation-review h3{margin:0}.ty-automation-review>button{justify-self:start}

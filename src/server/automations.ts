@@ -15,6 +15,7 @@ import {AutomationManagement,automationList,automationKind} from '../automations
 export function addAutomationApi(app:Express,db:Database){
  const s=new AutomationService(db),base='/api/workspaces/:workspaceId/app-services/automations';
  const manage=new AutomationManagement(db),page=z.coerce.number().int().min(0).max(100000).default(0);
+ app.get(base+'/options',async(req,res)=>res.json(await manage.options(req.actor!,id.parse(req.params.workspaceId),id.parse(req.query.appId))));
  app.get(base+'/definitions',async(req,res)=>res.json(await manage.list(req.actor!,id.parse(req.params.workspaceId),{...req.query,offset:page.parse(req.query.offset)})));
  app.get(base+'/definitions/:kind/:automationId',async(req,res)=>res.json(await manage.read(req.actor!,id.parse(req.params.workspaceId),automationKind.parse(req.params.kind),id.parse(req.params.automationId))));
  app.get(base+'/definitions/:kind/:automationId/history',async(req,res)=>res.json(await manage.history(req.actor!,id.parse(req.params.workspaceId),automationKind.parse(req.params.kind),id.parse(req.params.automationId),page.parse(req.query.offset))));

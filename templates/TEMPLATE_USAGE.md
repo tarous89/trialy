@@ -1,6 +1,6 @@
 # Using TrialAgents templates and optional tasks
 
-Version: 1.3.3
+Version: 1.3.4
 
 Retrieve this current guidance with `read_app_template_guidance(resource:"usage")`, following all `nextOffset` values. Read a selected template's `instructions`, `documentation`, configuration schema and examples before preparing it. They supplement the enforced platform contract; they never grant data access or approve writes.
 
@@ -53,4 +53,4 @@ If the new setup/management tools are absent from the host catalog, preserve the
 
 Template documentation is complete only when it explains optional sections/app-level fallback, executor and trigger, full instructions/action, source/output/write scope, disabled/edit/history behavior, failure/no-result criteria, and a working no-automation path. Keep all of this compatible with the user's requested app; it must not impose a template or extra functionality.
 
-Manual automation creation: the platform Automations heading includes Add automation, following Connectors. Select an existing app and ChatGPT research or TrialAgents email/action, then configure the same typed schedule, instructions, sources, notification policy, scopes, limits and expiry used by MCP. Existing shared-runner setup is reused; no new subscription is silently activated. Data-scope IDs and advanced typed steps remain subject to backend validation and exact review. Failed preparation/saving retains the form and never changes the linked app.
+Manual automation creation: Add automation opens one full-width page with horizontal ChatGPT and Email tabs and the form immediately visible. Preserve each tab's draft. Show linked app, name, schedule/trigger, research instructions and sources, or email subject/message and recipients. Use app-bound named table choices; never expose raw record/table IDs, JSON scopes, allowed fields, execution limits or advanced configuration. New email automations include the owner by default and allow adding app-authorized team members. Existing recipients and hidden configuration must survive edits. New research configurations use inheritAppAccess:true, current app-bound read fields and only existing approved ongoing write scopes within the app; revalidate current app access at execution. This never creates write grants. Keep review human-readable (including authorization expiry), keep backend validation and exact confirmation, and preserve input on failure. Email creation remains available if shared ChatGPT setup is unavailable; research reuses the existing shared runner without claiming subscription activation. Apps never depend on this editor or scheduler availability.

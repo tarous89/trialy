@@ -14,6 +14,16 @@ export const automationList=z.object({appId:id.optional(),query:z.string().max(1
 export class AutomationManagement{
  constructor(readonly db:Database){}
  async owner(a:Actor,w:string){const p=await access(this.db,a,w);if(p.role!=='owner')fail(403,'owner_required','Only the owner can manage app automations');}
+ async options(a:Actor,w:string,appId:string){
+  await this.owner(a,w);const f=new WorkspaceFoundation(this.db),p=await access(this.db,a,w),app=await f.component(this.db,a,w,appId);
+  if(app.archived||app.project_archived)fail(409,'app_archived','Choose an active app');
+  const tables=(await f.toolTables(a,w,appId)).map((t:any)=>({...t,fields:t.fields.filter((field:any)=>field.ai!==false&&app.bindings.some((b:any)=>b.typeId===t.id&&b.fields.includes(field.key)))}));
+  const candidates=(await this.db.query("SELECT u.id,u.name,u.email FROM users u JOIN memberships m ON m.user_id=u.id WHERE m.tenant_id=$1 AND u.subject NOT LIKE 'public-app|%' ORDER BY u.name,u.id",[p.tenant_id])).rows;
+  const members=[];for(const member of candidates){try{await f.component(this.db,{userId:member.id,origin:'human'},w,appId);members.push(member);}catch(e){if(![403,404].includes((e as any).status))throw e;}}
+  const owner=members.find(m=>m.id===a.userId);if(!owner)fail(403,'owner_required','Owner unavailable');
+  const scopes=(await f.scopes(a,w)).filter((s:any)=>!s.revoked_at&&!s.schemaChanged&&s.body.autoWrite&&Date.parse(s.body.expiresAt)>Date.now()&&s.body.projectId===app.project_id&&s.body.bindings.length===1&&s.body.bindings.every((b:any)=>b.fields.every((key:string)=>tables.some((t:any)=>t.id===b.typeId&&t.fields.some((field:any)=>field.key===key&&field.writable))))).map((s:any)=>({scopeId:s.id,version:s.version}));
+  return {owner,members:members.filter(m=>m.id!==owner.id),tables,writeScopes:scopes};
+ }
  async list(a:Actor,w:string,input:unknown){await this.owner(a,w);const v=automationList.parse(input);
   const rows=(await this.db.query(`SELECT d.*,c.name AS app_name,c.archived AS app_archived FROM (
    SELECT m.id,m.app_id,m.workspace_id,m.user_id,m.version,'research' AS kind,'chatgpt' AS executor,m.config->>'name' AS name,m.enabled,m.config->>'expiresAt' AS expires_at,coalesce(m.config->'automation'->'trigger',m.config->'schedule') AS trigger,m.created_at,

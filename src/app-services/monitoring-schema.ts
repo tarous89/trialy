@@ -6,6 +6,7 @@ const text=(max:number)=>z.string().trim().min(1).max(max);
 const version=z.number().int().min(0);
 const zone=text(100).refine(v=>{try{new Intl.DateTimeFormat('en',{timeZone:v});return true;}catch{return false;}},'Use an IANA timezone');
 export const monitoringConfig=z.object({
+ inheritAppAccess:z.boolean().optional(),
  name:text(100),appId:id,objective:text(2000),instructions:text(12000),sourcePolicy:text(4000),
  schedule:z.object({description:text(300),timeZone:zone}).strict(),
  notificationPolicy:text(1000).default('Report meaningful findings and blockers; remain quiet when there is no relevant update.'),
