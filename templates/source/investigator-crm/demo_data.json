@@ -1,0 +1,1065 @@
+{
+  "records": [
+    {
+      "role": "people",
+      "id": "p01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Dr Elena Voss",
+        "professionalId": "PUBLIC-DEMO-p01",
+        "specialty": "Oncology",
+        "title": "Clinical investigator",
+        "country": "Germany",
+        "status": "Engaged",
+        "priority": "High",
+        "interest": "Interested",
+        "sourceUrl": "https://example.org/researchers/voss",
+        "verifiedAt": "2026-10-21",
+        "optOut": false,
+        "notes": "Illustrative professional research profile, not a real investigator identity."
+      }
+    },
+    {
+      "role": "people",
+      "id": "p02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Prof Marco Feld",
+        "professionalId": "PUBLIC-DEMO-p02",
+        "specialty": "Neurology",
+        "title": "Professor of Neurology",
+        "country": "Germany",
+        "status": "Collaborating",
+        "priority": "High",
+        "interest": "Interested",
+        "sourceUrl": "https://example.org/researchers/feld",
+        "verifiedAt": "2026-10-10",
+        "optOut": false,
+        "notes": "Illustrative professional research profile, not a real investigator identity."
+      }
+    },
+    {
+      "role": "people",
+      "id": "p03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Dr Sofia Marin",
+        "professionalId": "PUBLIC-DEMO-p03",
+        "specialty": "Rare diseases",
+        "title": "Clinical scientist",
+        "country": "Spain",
+        "status": "Prospect",
+        "priority": "High",
+        "interest": "Unconfirmed",
+        "sourceUrl": "https://example.org/researchers/marin",
+        "verifiedAt": "2026-06-02",
+        "optOut": false,
+        "notes": "Illustrative professional research profile, not a real investigator identity."
+      }
+    },
+    {
+      "role": "people",
+      "id": "p04",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Dr Amira Laurent",
+        "professionalId": "PUBLIC-DEMO-p04",
+        "specialty": "Oncology",
+        "title": "Oncologist",
+        "country": "France",
+        "status": "Introduced",
+        "priority": "Medium",
+        "interest": "Interested",
+        "sourceUrl": "https://example.org/researchers/laurent",
+        "verifiedAt": "2026-08-25",
+        "optOut": false,
+        "notes": "Illustrative professional research profile, not a real investigator identity."
+      }
+    },
+    {
+      "role": "people",
+      "id": "p05",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Prof Theo Birch",
+        "professionalId": "PUBLIC-DEMO-p05",
+        "specialty": "Cardiology",
+        "title": "Professor of Cardiology",
+        "country": "UK",
+        "status": "Engaged",
+        "priority": "Medium",
+        "interest": "Not currently interested",
+        "sourceUrl": "https://example.org/researchers/birch",
+        "verifiedAt": "2026-09-29",
+        "optOut": false,
+        "notes": "Illustrative professional research profile, not a real investigator identity."
+      }
+    },
+    {
+      "role": "people",
+      "id": "p06",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Dr Ines Rocha",
+        "professionalId": "PUBLIC-DEMO-p06",
+        "specialty": "Immunology",
+        "title": "Immunology investigator",
+        "country": "Portugal",
+        "status": "Prospect",
+        "priority": "Low",
+        "interest": "Unconfirmed",
+        "sourceUrl": "https://example.org/researchers/rocha",
+        "verifiedAt": "2026-05-14",
+        "optOut": false,
+        "notes": "Illustrative professional research profile, not a real investigator identity."
+      }
+    },
+    {
+      "role": "people",
+      "id": "p07",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Dr Leo Hart",
+        "professionalId": "PUBLIC-DEMO-p07",
+        "specialty": "Rare diseases",
+        "title": "Rare disease researcher",
+        "country": "UK",
+        "status": "Collaborating",
+        "priority": "High",
+        "interest": "Interested",
+        "sourceUrl": "https://example.org/researchers/hart",
+        "verifiedAt": "2026-10-18",
+        "optOut": false,
+        "notes": "Illustrative professional research profile, not a real investigator identity."
+      }
+    },
+    {
+      "role": "people",
+      "id": "p08",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Dr Marie Chen",
+        "professionalId": "PUBLIC-DEMO-p08",
+        "specialty": "Oncology",
+        "title": "Clinical investigator",
+        "country": "France",
+        "status": "Introduced",
+        "priority": "Medium",
+        "interest": "Declined",
+        "sourceUrl": "https://example.org/researchers/chen",
+        "verifiedAt": "2026-10-27",
+        "optOut": true,
+        "notes": "Illustrative professional research profile, not a real investigator identity."
+      }
+    },
+    {
+      "role": "people",
+      "id": "p09",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Dr Daniel Stein",
+        "professionalId": "PUBLIC-DEMO-p09",
+        "specialty": "Neurology",
+        "title": "Principal investigator",
+        "country": "Germany",
+        "status": "Prospect",
+        "priority": "Medium",
+        "interest": "Unconfirmed",
+        "sourceUrl": "https://example.org/researchers/stein",
+        "verifiedAt": "2026-09-04",
+        "optOut": false,
+        "notes": "Illustrative professional research profile, not a real investigator identity."
+      }
+    },
+    {
+      "role": "institutions",
+      "id": "i01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Northgate University Hospital",
+        "city": "Berlin",
+        "country": "Germany",
+        "kind": "University hospital",
+        "sourceUrl": "https://example.org/institutions/i01",
+        "verifiedAt": "2026-10-24"
+      }
+    },
+    {
+      "role": "institutions",
+      "id": "i02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Westmere Clinical Research Center",
+        "city": "Munich",
+        "country": "Germany",
+        "kind": "Academic center",
+        "sourceUrl": "https://example.org/institutions/i02",
+        "verifiedAt": "2026-10-24"
+      }
+    },
+    {
+      "role": "institutions",
+      "id": "i03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Horizon Institute of Neurology",
+        "city": "London",
+        "country": "UK",
+        "kind": "Research institute",
+        "sourceUrl": "https://example.org/institutions/i03",
+        "verifiedAt": "2026-10-24"
+      }
+    },
+    {
+      "role": "institutions",
+      "id": "i04",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Riverstone Biomedical Institute",
+        "city": "Paris",
+        "country": "France",
+        "kind": "Research institute",
+        "sourceUrl": "https://example.org/institutions/i04",
+        "verifiedAt": "2026-10-24"
+      }
+    },
+    {
+      "role": "institutions",
+      "id": "i05",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Solana University Medical Centre",
+        "city": "Madrid",
+        "country": "Spain",
+        "kind": "University hospital",
+        "sourceUrl": "https://example.org/institutions/i05",
+        "verifiedAt": "2026-10-24"
+      }
+    },
+    {
+      "role": "institutions",
+      "id": "i06",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Porto Translational Medicine Group",
+        "city": "Porto",
+        "country": "Portugal",
+        "kind": "Academic center",
+        "sourceUrl": "https://example.org/institutions/i06",
+        "verifiedAt": "2026-10-24"
+      }
+    },
+    {
+      "role": "institutions",
+      "id": "i07",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Cambridge Research Hospital",
+        "city": "Cambridge",
+        "country": "UK",
+        "kind": "University hospital",
+        "sourceUrl": "https://example.org/institutions/i07",
+        "verifiedAt": "2026-10-24"
+      }
+    },
+    {
+      "role": "affiliations",
+      "id": "a01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Affiliation p01/i01",
+        "personId": "p01",
+        "institutionId": "i01",
+        "role": "Lead investigator",
+        "startAt": "2023-01-01",
+        "endAt": "",
+        "sourceUrl": "https://example.org/affiliations/a01",
+        "verifiedAt": "2026-10-20"
+      }
+    },
+    {
+      "role": "affiliations",
+      "id": "a02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Affiliation p01/i02",
+        "personId": "p01",
+        "institutionId": "i02",
+        "role": "Visiting researcher",
+        "startAt": "2025-04-01",
+        "endAt": "",
+        "sourceUrl": "https://example.org/affiliations/a02",
+        "verifiedAt": "2026-10-20"
+      }
+    },
+    {
+      "role": "affiliations",
+      "id": "a03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Affiliation p02/i03",
+        "personId": "p02",
+        "institutionId": "i03",
+        "role": "Principal investigator",
+        "startAt": "2021-07-01",
+        "endAt": "",
+        "sourceUrl": "https://example.org/affiliations/a03",
+        "verifiedAt": "2026-10-20"
+      }
+    },
+    {
+      "role": "affiliations",
+      "id": "a04",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Affiliation p03/i05",
+        "personId": "p03",
+        "institutionId": "i05",
+        "role": "Senior researcher",
+        "startAt": "2024-03-01",
+        "endAt": "",
+        "sourceUrl": "https://example.org/affiliations/a04",
+        "verifiedAt": "2026-10-20"
+      }
+    },
+    {
+      "role": "affiliations",
+      "id": "a05",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Affiliation p04/i04",
+        "personId": "p04",
+        "institutionId": "i04",
+        "role": "Clinician researcher",
+        "startAt": "2022-02-01",
+        "endAt": "",
+        "sourceUrl": "https://example.org/affiliations/a05",
+        "verifiedAt": "2026-10-20"
+      }
+    },
+    {
+      "role": "affiliations",
+      "id": "a06",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Affiliation p05/i07",
+        "personId": "p05",
+        "institutionId": "i07",
+        "role": "Cardiology investigator",
+        "startAt": "2019-04-01",
+        "endAt": "",
+        "sourceUrl": "https://example.org/affiliations/a06",
+        "verifiedAt": "2026-10-20"
+      }
+    },
+    {
+      "role": "affiliations",
+      "id": "a07",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Affiliation p06/i06",
+        "personId": "p06",
+        "institutionId": "i06",
+        "role": "Study investigator",
+        "startAt": "2024-10-01",
+        "endAt": "",
+        "sourceUrl": "https://example.org/affiliations/a07",
+        "verifiedAt": "2026-10-20"
+      }
+    },
+    {
+      "role": "affiliations",
+      "id": "a08",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Affiliation p07/i03",
+        "personId": "p07",
+        "institutionId": "i03",
+        "role": "Genetics clinical lead",
+        "startAt": "2020-08-01",
+        "endAt": "",
+        "sourceUrl": "https://example.org/affiliations/a08",
+        "verifiedAt": "2026-10-20"
+      }
+    },
+    {
+      "role": "affiliations",
+      "id": "a09",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Affiliation p07/i07",
+        "personId": "p07",
+        "institutionId": "i07",
+        "role": "Research associate",
+        "startAt": "2018-01-01",
+        "endAt": "2020-07-31",
+        "sourceUrl": "https://example.org/affiliations/a09",
+        "verifiedAt": "2026-10-20"
+      }
+    },
+    {
+      "role": "affiliations",
+      "id": "a10",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Affiliation p08/i04",
+        "personId": "p08",
+        "institutionId": "i04",
+        "role": "Clinical investigator",
+        "startAt": "2024-05-01",
+        "endAt": "",
+        "sourceUrl": "https://example.org/affiliations/a10",
+        "verifiedAt": "2026-10-20"
+      }
+    },
+    {
+      "role": "affiliations",
+      "id": "a11",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Affiliation p09/i02",
+        "personId": "p09",
+        "institutionId": "i02",
+        "role": "Clinical neurology investigator",
+        "startAt": "2022-11-01",
+        "endAt": "",
+        "sourceUrl": "https://example.org/affiliations/a11",
+        "verifiedAt": "2026-10-20"
+      }
+    },
+    {
+      "role": "experience",
+      "id": "e01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Registry trial 2025-500001-12-00",
+        "personId": "p01",
+        "institutionId": "i01",
+        "registryId": "2025-500001-12-00",
+        "trialRole": "Principal investigator",
+        "specialty": "Clinical research",
+        "sourceUrl": "https://example.org/registries/e01",
+        "verifiedAt": "2026-10-15"
+      }
+    },
+    {
+      "role": "experience",
+      "id": "e02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Registry trial NCT06666001",
+        "personId": "p02",
+        "institutionId": "i03",
+        "registryId": "NCT06666001",
+        "trialRole": "Subinvestigator",
+        "specialty": "Clinical research",
+        "sourceUrl": "https://example.org/registries/e02",
+        "verifiedAt": "2026-10-15"
+      }
+    },
+    {
+      "role": "experience",
+      "id": "e03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Registry trial NCT06666002",
+        "personId": "p03",
+        "institutionId": "i05",
+        "registryId": "NCT06666002",
+        "trialRole": "Principal investigator",
+        "specialty": "Clinical research",
+        "sourceUrl": "https://example.org/registries/e03",
+        "verifiedAt": "2026-10-15"
+      }
+    },
+    {
+      "role": "experience",
+      "id": "e04",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Registry trial 2024-500002-10-00",
+        "personId": "p04",
+        "institutionId": "i04",
+        "registryId": "2024-500002-10-00",
+        "trialRole": "Site investigator",
+        "specialty": "Clinical research",
+        "sourceUrl": "https://example.org/registries/e04",
+        "verifiedAt": "2026-10-15"
+      }
+    },
+    {
+      "role": "experience",
+      "id": "e05",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Registry trial NCT06666003",
+        "personId": "p07",
+        "institutionId": "i03",
+        "registryId": "NCT06666003",
+        "trialRole": "Principal investigator",
+        "specialty": "Clinical research",
+        "sourceUrl": "https://example.org/registries/e05",
+        "verifiedAt": "2026-10-15"
+      }
+    },
+    {
+      "role": "experience",
+      "id": "e06",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Registry trial NCT06666004",
+        "personId": "p05",
+        "institutionId": "i07",
+        "registryId": "NCT06666004",
+        "trialRole": "Study investigator",
+        "specialty": "Clinical research",
+        "sourceUrl": "https://example.org/registries/e06",
+        "verifiedAt": "2026-10-15"
+      }
+    },
+    {
+      "role": "experience",
+      "id": "e07",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Registry trial NCT06666005",
+        "personId": "p01",
+        "institutionId": "i02",
+        "registryId": "NCT06666005",
+        "trialRole": "Site investigator",
+        "specialty": "Clinical research",
+        "sourceUrl": "https://example.org/registries/e07",
+        "verifiedAt": "2026-10-15"
+      }
+    },
+    {
+      "role": "engagements",
+      "id": "g01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Phase 1 feasibility check",
+        "personId": "p01",
+        "institutionId": "i01",
+        "projectRef": "CLINOPS-RESEARCH",
+        "channel": "Feasibility discussion",
+        "occurredAt": "2026-10-28",
+        "owner": "ClinOps relationship lead",
+        "purpose": "Nonconfidential professional discussion",
+        "outcome": "Discussed site activation and team readiness.",
+        "nextStep": "Share protocol synopsis",
+        "notes": "Internal professional relationship note; access governed by TrialAgents."
+      }
+    },
+    {
+      "role": "engagements",
+      "id": "g02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Neurology advisory introduction",
+        "personId": "p02",
+        "institutionId": "i03",
+        "projectRef": "CLINOPS-RESEARCH",
+        "channel": "Meeting",
+        "occurredAt": "2026-10-22",
+        "owner": "ClinOps relationship lead",
+        "purpose": "Nonconfidential professional discussion",
+        "outcome": "Discussed nonconfidential study concept.",
+        "nextStep": "Arrange follow-up",
+        "notes": "Internal professional relationship note; access governed by TrialAgents."
+      }
+    },
+    {
+      "role": "engagements",
+      "id": "g03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Rare disease introduction",
+        "personId": "p03",
+        "institutionId": "i05",
+        "projectRef": "CLINOPS-RESEARCH",
+        "channel": "Conference",
+        "occurredAt": "2026-09-08",
+        "owner": "ClinOps relationship lead",
+        "purpose": "Nonconfidential professional discussion",
+        "outcome": "Initial scientific exchange; no site commitment.",
+        "nextStep": "Confirm specialty scope",
+        "notes": "Internal professional relationship note; access governed by TrialAgents."
+      }
+    },
+    {
+      "role": "engagements",
+      "id": "g04",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "EU oncology capacity call",
+        "personId": "p04",
+        "institutionId": "i04",
+        "projectRef": "CLINOPS-RESEARCH",
+        "channel": "Call",
+        "occurredAt": "2026-10-11",
+        "owner": "ClinOps relationship lead",
+        "purpose": "Nonconfidential professional discussion",
+        "outcome": "Discussed prospective operational interest.",
+        "nextStep": "Verify institutional capability",
+        "notes": "Internal professional relationship note; access governed by TrialAgents."
+      }
+    },
+    {
+      "role": "engagements",
+      "id": "g05",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Cardiology scoping discussion",
+        "personId": "p05",
+        "institutionId": "i07",
+        "projectRef": "CLINOPS-RESEARCH",
+        "channel": "Meeting",
+        "occurredAt": "2026-09-22",
+        "owner": "ClinOps relationship lead",
+        "purpose": "Nonconfidential professional discussion",
+        "outcome": "Exploratory professional discussion.",
+        "nextStep": "No next step",
+        "notes": "Internal professional relationship note; access governed by TrialAgents."
+      }
+    },
+    {
+      "role": "engagements",
+      "id": "g06",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Rare disease registry collaboration",
+        "personId": "p07",
+        "institutionId": "i03",
+        "projectRef": "CLINOPS-RESEARCH",
+        "channel": "Feasibility discussion",
+        "occurredAt": "2026-10-24",
+        "owner": "ClinOps relationship lead",
+        "purpose": "Nonconfidential professional discussion",
+        "outcome": "Discussed research readiness with documented public source.",
+        "nextStep": "Coordinate concept summary",
+        "notes": "Internal professional relationship note; access governed by TrialAgents."
+      }
+    },
+    {
+      "role": "engagements",
+      "id": "g07",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Scientific workshop",
+        "personId": "p01",
+        "institutionId": "i02",
+        "projectRef": "CLINOPS-RESEARCH",
+        "channel": "Conference",
+        "occurredAt": "2026-09-14",
+        "owner": "ClinOps relationship lead",
+        "purpose": "Nonconfidential professional discussion",
+        "outcome": "Exploratory research workshop.",
+        "nextStep": "Send approved public bibliography",
+        "notes": "Internal professional relationship note; access governed by TrialAgents."
+      }
+    },
+    {
+      "role": "engagements",
+      "id": "g08",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Professional outreach response",
+        "personId": "p08",
+        "institutionId": "i04",
+        "projectRef": "CLINOPS-RESEARCH",
+        "channel": "Correspondence",
+        "occurredAt": "2026-10-25",
+        "owner": "ClinOps relationship lead",
+        "purpose": "Nonconfidential professional discussion",
+        "outcome": "Declined further contact.",
+        "nextStep": "Respect opt-out",
+        "notes": "Internal professional relationship note; access governed by TrialAgents."
+      }
+    },
+    {
+      "role": "engagements",
+      "id": "g09",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Neurology publication exchange",
+        "personId": "p09",
+        "institutionId": "i02",
+        "projectRef": "CLINOPS-RESEARCH",
+        "channel": "Conference",
+        "occurredAt": "2026-10-06",
+        "owner": "ClinOps relationship lead",
+        "purpose": "Nonconfidential professional discussion",
+        "outcome": "Discussed public study methods.",
+        "nextStep": "Review new registry work",
+        "notes": "Internal professional relationship note; access governed by TrialAgents."
+      }
+    },
+    {
+      "role": "engagements",
+      "id": "g10",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Follow-up study scoping",
+        "personId": "p02",
+        "institutionId": "i03",
+        "projectRef": "CLINOPS-RESEARCH",
+        "channel": "Meeting",
+        "occurredAt": "2026-09-17",
+        "owner": "ClinOps relationship lead",
+        "purpose": "Nonconfidential professional discussion",
+        "outcome": "Mapped institutional teams.",
+        "nextStep": "Update professional records",
+        "notes": "Internal professional relationship note; access governed by TrialAgents."
+      }
+    },
+    {
+      "role": "collaborations",
+      "id": "c01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Collaboration RNA-01",
+        "personId": "p01",
+        "institutionId": "i01",
+        "projectRef": "RNA-01",
+        "status": "Discussing",
+        "invitedAt": "2026-10-05",
+        "respondedAt": "2026-10-20",
+        "owner": "Study lead",
+        "notes": "Manual partnership status; no external invitation sent by this template."
+      }
+    },
+    {
+      "role": "collaborations",
+      "id": "c02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Collaboration NEURO-2",
+        "personId": "p02",
+        "institutionId": "i03",
+        "projectRef": "NEURO-2",
+        "status": "Confirmed",
+        "invitedAt": "2026-09-10",
+        "respondedAt": "2026-10-21",
+        "owner": "Study lead",
+        "notes": "Manual partnership status; no external invitation sent by this template."
+      }
+    },
+    {
+      "role": "collaborations",
+      "id": "c03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Collaboration RARE-3",
+        "personId": "p07",
+        "institutionId": "i03",
+        "projectRef": "RARE-3",
+        "status": "Invited",
+        "invitedAt": "2026-10-18",
+        "respondedAt": "",
+        "owner": "Study lead",
+        "notes": "Manual partnership status; no external invitation sent by this template."
+      }
+    },
+    {
+      "role": "collaborations",
+      "id": "c04",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Collaboration ONCO-4",
+        "personId": "p04",
+        "institutionId": "i04",
+        "projectRef": "ONCO-4",
+        "status": "Considering",
+        "invitedAt": "",
+        "respondedAt": "",
+        "owner": "Study lead",
+        "notes": "Manual partnership status; no external invitation sent by this template."
+      }
+    },
+    {
+      "role": "actions",
+      "id": "t01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Share approved synopsis",
+        "personId": "p01",
+        "engagementId": "g01",
+        "owner": "ClinOps relationship lead",
+        "dueAt": "2026-11-04",
+        "status": "Open",
+        "completedAt": "",
+        "detail": "Approved internal action; no automatic outward message."
+      }
+    },
+    {
+      "role": "actions",
+      "id": "t02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Book study scoping call",
+        "personId": "p02",
+        "engagementId": "g02",
+        "owner": "ClinOps relationship lead",
+        "dueAt": "2026-11-08",
+        "status": "Open",
+        "completedAt": "",
+        "detail": "Approved internal action; no automatic outward message."
+      }
+    },
+    {
+      "role": "actions",
+      "id": "t03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Review rare-disease publication evidence",
+        "personId": "p03",
+        "engagementId": "g03",
+        "owner": "ClinOps relationship lead",
+        "dueAt": "2026-11-10",
+        "status": "Open",
+        "completedAt": "",
+        "detail": "Approved internal action; no automatic outward message."
+      }
+    },
+    {
+      "role": "actions",
+      "id": "t04",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Validate institution facilities",
+        "personId": "p04",
+        "engagementId": "g04",
+        "owner": "ClinOps relationship lead",
+        "dueAt": "2026-11-05",
+        "status": "In progress",
+        "completedAt": "",
+        "detail": "Approved internal action; no automatic outward message."
+      }
+    },
+    {
+      "role": "actions",
+      "id": "t05",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Confirm research project contact",
+        "personId": "p07",
+        "engagementId": "g06",
+        "owner": "ClinOps relationship lead",
+        "dueAt": "2026-11-09",
+        "status": "Open",
+        "completedAt": "",
+        "detail": "Approved internal action; no automatic outward message."
+      }
+    },
+    {
+      "role": "actions",
+      "id": "t06",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "File bibliography",
+        "personId": "p01",
+        "engagementId": "g07",
+        "owner": "ClinOps relationship lead",
+        "dueAt": "2026-10-10",
+        "status": "Done",
+        "completedAt": "2026-10-09",
+        "detail": "Approved internal action; no automatic outward message."
+      }
+    },
+    {
+      "role": "actions",
+      "id": "t07",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Update registry source",
+        "personId": "p09",
+        "engagementId": "g09",
+        "owner": "ClinOps relationship lead",
+        "dueAt": "2026-11-07",
+        "status": "Open",
+        "completedAt": "",
+        "detail": "Approved internal action; no automatic outward message."
+      }
+    },
+    {
+      "role": "actions",
+      "id": "t08",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Review institution contact map",
+        "personId": "p02",
+        "engagementId": "g10",
+        "owner": "ClinOps relationship lead",
+        "dueAt": "2026-10-28",
+        "status": "Done",
+        "completedAt": "2026-10-27",
+        "detail": "Approved internal action; no automatic outward message."
+      }
+    },
+    {
+      "role": "findings",
+      "id": "f01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "PI registry participation",
+        "personId": "p01",
+        "sourceUrl": "https://example.org/evidence/f01",
+        "sourceType": "Registry",
+        "topic": "Oncology",
+        "verifiedAt": "2026-10-17",
+        "reviewer": "Research coordinator",
+        "reviewedAt": "2026-10-22",
+        "status": "Reviewed",
+        "rationale": "Professional identity and institutional affiliation checked against public source."
+      }
+    },
+    {
+      "role": "findings",
+      "id": "f02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Professional publication profile",
+        "personId": "p02",
+        "sourceUrl": "https://example.org/evidence/f02",
+        "sourceType": "Publication",
+        "topic": "Neurology",
+        "verifiedAt": "2026-10-15",
+        "reviewer": "Research coordinator",
+        "reviewedAt": "2026-10-22",
+        "status": "Reviewed",
+        "rationale": "Professional identity and institutional affiliation checked against public source."
+      }
+    },
+    {
+      "role": "findings",
+      "id": "f03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Specialty qualification profile",
+        "personId": "p03",
+        "sourceUrl": "https://example.org/evidence/f03",
+        "sourceType": "Institution profile",
+        "topic": "Rare diseases",
+        "verifiedAt": "2026-10-01",
+        "reviewer": "",
+        "reviewedAt": "",
+        "status": "Candidate",
+        "rationale": "Awaiting reviewer identity confirmation."
+      }
+    },
+    {
+      "role": "findings",
+      "id": "f04",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Public study role update",
+        "personId": "p07",
+        "sourceUrl": "https://example.org/evidence/f04",
+        "sourceType": "Registry",
+        "topic": "Rare diseases",
+        "verifiedAt": "2026-10-28",
+        "reviewer": "",
+        "reviewedAt": "",
+        "status": "Draft",
+        "rationale": "Awaiting reviewer identity confirmation."
+      }
+    },
+    {
+      "role": "findings",
+      "id": "f05",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Research collaboration publication",
+        "personId": "p09",
+        "sourceUrl": "https://example.org/evidence/f05",
+        "sourceType": "Publication",
+        "topic": "Neurology",
+        "verifiedAt": "2026-10-19",
+        "reviewer": "",
+        "reviewedAt": "",
+        "status": "Candidate",
+        "rationale": "Awaiting reviewer identity confirmation."
+      }
+    },
+    {
+      "role": "findings",
+      "id": "f06",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Institutional research contact page",
+        "personId": "p04",
+        "sourceUrl": "https://example.org/evidence/f06",
+        "sourceType": "Institution profile",
+        "topic": "Oncology",
+        "verifiedAt": "2026-09-19",
+        "reviewer": "Research coordinator",
+        "reviewedAt": "2026-09-27",
+        "status": "Reviewed",
+        "rationale": "Professional identity and institutional affiliation checked against public source."
+      }
+    }
+  ],
+  "notice": "Every displayed person, institution, registry ID and URL is fictional test data. No patient records or personal outreach addresses are included."
+}

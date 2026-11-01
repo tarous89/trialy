@@ -1,0 +1,878 @@
+{
+  "people": {
+    "name": "people",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "professional_id",
+        "name": "professional_id",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "specialty",
+        "name": "specialty",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Oncology",
+          "Neurology",
+          "Rare diseases",
+          "Immunology",
+          "Cardiology",
+          "Other"
+        ]
+      },
+      {
+        "key": "title",
+        "name": "title",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "country",
+        "name": "country",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Prospect",
+          "Introduced",
+          "Engaged",
+          "Collaborating",
+          "Inactive"
+        ]
+      },
+      {
+        "key": "priority",
+        "name": "priority",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "High",
+          "Medium",
+          "Low"
+        ]
+      },
+      {
+        "key": "interest",
+        "name": "interest",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "Unconfirmed",
+          "Interested",
+          "Not currently interested",
+          "Declined"
+        ]
+      },
+      {
+        "key": "source_url",
+        "name": "source_url",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "verified_at",
+        "name": "verified_at",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "opt_out",
+        "name": "opt_out",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "notes",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "professionalId": "professional_id",
+      "specialty": "specialty",
+      "title": "title",
+      "country": "country",
+      "status": "status",
+      "priority": "priority",
+      "interest": "interest",
+      "sourceUrl": "source_url",
+      "verifiedAt": "verified_at",
+      "optOut": "opt_out",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "parentReferences": {},
+    "accessNote": "Inherit host app/table/field permissions; names, evidence and restricted professional notes remain under one host app-level boundary."
+  },
+  "institutions": {
+    "name": "institutions",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "city",
+        "name": "city",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "country",
+        "name": "country",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "kind",
+        "name": "kind",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "University hospital",
+          "Academic center",
+          "Research institute",
+          "Clinic",
+          "Other"
+        ]
+      },
+      {
+        "key": "source_url",
+        "name": "source_url",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "verified_at",
+        "name": "verified_at",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "city": "city",
+      "country": "country",
+      "kind": "kind",
+      "sourceUrl": "source_url",
+      "verifiedAt": "verified_at",
+      "archived": "archived"
+    },
+    "parentReferences": {},
+    "accessNote": "Inherit host app/table/field permissions; names, evidence and restricted professional notes remain under one host app-level boundary."
+  },
+  "affiliations": {
+    "name": "affiliations",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "person_id",
+        "name": "person_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "institution_id",
+        "name": "institution_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "role",
+        "name": "role",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "start_at",
+        "name": "start_at",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "end_at",
+        "name": "end_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "source_url",
+        "name": "source_url",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "verified_at",
+        "name": "verified_at",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "personId": "person_id",
+      "institutionId": "institution_id",
+      "role": "role",
+      "startAt": "start_at",
+      "endAt": "end_at",
+      "sourceUrl": "source_url",
+      "verifiedAt": "verified_at",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "personId": "people",
+      "institutionId": "institutions"
+    },
+    "accessNote": "Inherit host app/table/field permissions; names, evidence and restricted professional notes remain under one host app-level boundary."
+  },
+  "experience": {
+    "name": "experience",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "person_id",
+        "name": "person_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "institution_id",
+        "name": "institution_id",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "registry_id",
+        "name": "registry_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "trial_role",
+        "name": "trial_role",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "specialty",
+        "name": "specialty",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "source_url",
+        "name": "source_url",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "verified_at",
+        "name": "verified_at",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "personId": "person_id",
+      "institutionId": "institution_id",
+      "registryId": "registry_id",
+      "trialRole": "trial_role",
+      "specialty": "specialty",
+      "sourceUrl": "source_url",
+      "verifiedAt": "verified_at",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "personId": "people",
+      "institutionId": "institutions"
+    },
+    "accessNote": "Inherit host app/table/field permissions; names, evidence and restricted professional notes remain under one host app-level boundary."
+  },
+  "engagements": {
+    "name": "engagements",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "person_id",
+        "name": "person_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "institution_id",
+        "name": "institution_id",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "project_ref",
+        "name": "project_ref",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "channel",
+        "name": "channel",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Meeting",
+          "Call",
+          "Conference",
+          "Feasibility discussion",
+          "Correspondence",
+          "Other"
+        ]
+      },
+      {
+        "key": "occurred_at",
+        "name": "occurred_at",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "purpose",
+        "name": "purpose",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "outcome",
+        "name": "outcome",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "next_step",
+        "name": "next_step",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "notes",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "personId": "person_id",
+      "institutionId": "institution_id",
+      "projectRef": "project_ref",
+      "channel": "channel",
+      "occurredAt": "occurred_at",
+      "owner": "owner",
+      "purpose": "purpose",
+      "outcome": "outcome",
+      "nextStep": "next_step",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "personId": "people",
+      "institutionId": "institutions"
+    },
+    "accessNote": "Inherit host app/table/field permissions; names, evidence and restricted professional notes remain under one host app-level boundary."
+  },
+  "collaborations": {
+    "name": "collaborations",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "person_id",
+        "name": "person_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "institution_id",
+        "name": "institution_id",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "project_ref",
+        "name": "project_ref",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Considering",
+          "Invited",
+          "Discussing",
+          "Confirmed",
+          "Closed",
+          "Declined"
+        ]
+      },
+      {
+        "key": "invited_at",
+        "name": "invited_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "responded_at",
+        "name": "responded_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "notes",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "personId": "person_id",
+      "institutionId": "institution_id",
+      "projectRef": "project_ref",
+      "status": "status",
+      "invitedAt": "invited_at",
+      "respondedAt": "responded_at",
+      "owner": "owner",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "personId": "people",
+      "institutionId": "institutions"
+    },
+    "accessNote": "Inherit host app/table/field permissions; names, evidence and restricted professional notes remain under one host app-level boundary."
+  },
+  "actions": {
+    "name": "actions",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "person_id",
+        "name": "person_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "engagement_id",
+        "name": "engagement_id",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "due_at",
+        "name": "due_at",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Open",
+          "In progress",
+          "Done",
+          "Cancelled"
+        ]
+      },
+      {
+        "key": "completed_at",
+        "name": "completed_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "detail",
+        "name": "detail",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "personId": "person_id",
+      "engagementId": "engagement_id",
+      "owner": "owner",
+      "dueAt": "due_at",
+      "status": "status",
+      "completedAt": "completed_at",
+      "detail": "detail",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "personId": "people",
+      "engagementId": "engagements"
+    },
+    "accessNote": "Inherit host app/table/field permissions; names, evidence and restricted professional notes remain under one host app-level boundary."
+  },
+  "findings": {
+    "name": "findings",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "person_id",
+        "name": "person_id",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "source_url",
+        "name": "source_url",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "source_type",
+        "name": "source_type",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Registry",
+          "Publication",
+          "Institution profile",
+          "Other public source"
+        ]
+      },
+      {
+        "key": "topic",
+        "name": "topic",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "verified_at",
+        "name": "verified_at",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "reviewer",
+        "name": "reviewer",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "reviewed_at",
+        "name": "reviewed_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Candidate",
+          "Draft",
+          "Reviewed",
+          "Rejected"
+        ]
+      },
+      {
+        "key": "rationale",
+        "name": "rationale",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "personId": "person_id",
+      "sourceUrl": "source_url",
+      "sourceType": "source_type",
+      "topic": "topic",
+      "verifiedAt": "verified_at",
+      "reviewer": "reviewer",
+      "reviewedAt": "reviewed_at",
+      "status": "status",
+      "rationale": "rationale",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "personId": "people"
+    },
+    "accessNote": "Inherit host app/table/field permissions; names, evidence and restricted professional notes remain under one host app-level boundary."
+  }
+}

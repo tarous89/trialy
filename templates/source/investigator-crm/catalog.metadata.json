@@ -1,0 +1,132 @@
+{
+  "id": "life.investigator-crm",
+  "version": "1.0.1",
+  "name": "Investigator CRM",
+  "description": "Sponsor-side investigator relationship book: professional profiles, verified institutional affiliations, trial-experience evidence, dated engagement history, action entry and public research candidates. Built for small biotech clinical operations teams.",
+  "tags": [
+    "clinical-operations",
+    "investigators",
+    "relationship-management",
+    "research",
+    "biotech",
+    "crm"
+  ],
+  "whenToUse": "Use for internal sponsor clinical operations investigator engagement, public professional evidence and institution networks across multiple studies, without importing patient information.",
+  "whenNotToUse": "Not a patient record system, trial participant list, medical contact scraping service, site EDC/CTMS replacement, e-signature, sending system, public directory or standalone external account app.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "Investigator CRM",
+    "tableMap": "{}",
+    "layoutProfile": "{}",
+    "readOnly": false,
+    "pageSize": 20,
+    "asOf": "",
+    "demoLabel": false
+  },
+  "options": {
+    "heading": {
+      "type": "string",
+      "default": "Investigator CRM",
+      "description": "Full app name; no logo is added to sidebar."
+    },
+    "tableMap": {
+      "type": "string",
+      "default": "{}",
+      "description": "Eight role objects with actual typeId UUIDs, physical field mappings and logical writableFields, encoded as JSON string."
+    },
+    "layoutProfile": {
+      "type": "string",
+      "default": "{}",
+      "description": "Versioned native heading, tabs, cols and visible profile JSON text."
+    },
+    "readOnly": {
+      "type": "boolean",
+      "default": false,
+      "description": "Disable UI proposals; backend host access remains authoritative."
+    },
+    "pageSize": {
+      "type": "number",
+      "default": 20,
+      "description": "Read and display bounded records per page; source uses 8-12 pages for dense views."
+    },
+    "asOf": {
+      "type": "string",
+      "default": "",
+      "description": "Approved YYYY-MM-DD cutoff for dashboard dates."
+    },
+    "demoLabel": {
+      "type": "boolean",
+      "default": false,
+      "description": "Metadata only; no fictional-record banner displayed."
+    }
+  },
+  "instructions": "Build TrialAgents CO-04 Investigator CRM using authoring/usage guidance v1.3.9. This is sponsor-side professional PI relationship management, not patient management or CTMS. Reference Veeva CTMS investigator relationship workflow; use the original six-screen source and editorial profile-network UI. No app-specific auth, login, logout, account system, credentials, individual outreach connector or logo in the sidebar. Trusted platform supplies official linked TrialAgents watermark, https://platform.trialagents.com.\n\nMANDATORY SETUP: Read this catalog instructions/documentation first. Build real scalar host tables through reviewed database schema creation. Record order: people/institutions first, affiliations/experience/engagements/collaborations next, actions and findings last. Bind actual type UUIDs and snake_case physical field keys, with multiple:false and exact select options. Use mappings tableMap JSON: {\"people\":{\"typeId\":\"<real-table-uuid>\",\"fields\":{\"name\":\"name\", \"professionalId\":\"professional_id\", ...},\"writableFields\":[\"name\",...]}, ...}. Every declared role requires a real authorized binding, with templateBindings typeId and field allowlist, or the UI clearly shows partial data. Use exact saved parent IDs from approved receipts when creating children; never guess IDs or use fictional sample IDs in production. All reference fields are nullable scalar text UUIDs where optional. Do not coerce arrays or references to strings, or invent document relationship joins.\n\nEight role schemas and fields (logical -> physical snake_case, unless supplied): people=name,professionalId,specialty,title,country,status,priority,interest,sourceUrl,verifiedAt,optOut,notes,archived. institutions=name,city,country,kind,sourceUrl,verifiedAt,archived. affiliations=name,personId,institutionId,role,startAt,endAt,sourceUrl,verifiedAt,archived. experience=name,personId,institutionId,registryId,trialRole,specialty,sourceUrl,verifiedAt,archived. engagements=name,personId,institutionId,projectRef,channel,occurredAt,owner,purpose,outcome,nextStep,notes,archived. collaborations=name,personId,institutionId,projectRef,status,invitedAt,respondedAt,owner,notes,archived. actions=name,personId,engagementId,owner,dueAt,status,completedAt,detail,archived. findings=name,personId,sourceUrl,sourceType,topic,verifiedAt,reviewer,reviewedAt,status,rationale,archived. Consult DATA_CONTRACT/schema_mapping.example.json in maintainer package for full field definitions; **do not assume the ZIP is accessible to MCP consumer**: types are scalar text except all *At date fields, archived and optOut booleans, and declared select fields; every scalar multiple:false. Select choices for people specialty Oncology/Neurology/Rare diseases/Immunology/Cardiology/Other; status Prospect/Introduced/Engaged/Collaborating/Inactive; priority High/Medium/Low; interest Unconfirmed/Interested/Not currently interested/Declined. Institutions.kind University hospital/Academic center/Research institute/Clinic/Other. Engagements.channel Meeting/Call/Conference/Feasibility discussion/Correspondence/Other. Collaborations.status Considering/Invited/Discussing/Confirmed/Closed/Declined. Actions.status Open/In progress/Done/Cancelled. Findings.sourceType Registry/Publication/Institution profile/Other public source; status Candidate/Draft/Reviewed/Rejected.\n\nAll 6 screens use a single page heading/subline and full plain app name, no fictional-data banner. Directory, affiliation list, activity timeline, research queue and register provide reachable paging. Native gear emits tracker:layout; templateLayoutSchema declares stable screens/field groups. Host-injected templateConfiguration contains versioned layoutProfile, and all required fields remain accessible in edit drawer. Every input/select/textarea has data-ui-state, stable data-action, and name; form submit uses event.form. Preserve transient draft on validation or proposal failure. Use records.read with verifiable total and bounded pages; treat incomplete/denied/short/missing source as unknown, never zero. All writes are only via reviewed records.propose create_record/update_record; archive is archived=true and exact pinned expectedVersion. Linked dependencies block archiving, review changes require explicit new evidence revision. Research evidence needs public source URL, last verified and manual reviewer. A similar full name is not a unique investigator ID; use distinct professional source identity + affiliation. No patient or sensitive private contact collection, email scraping, patient relationship inference, unapproved auto-outreach, real external email or built-in authentication. Do not infer investigator availability or willingness from status; opt-out forbids new outreach invitations.\n\nOPTIONAL AUTOMATION: Follow documentation.tasks and the typed quickStart example.  Require all mapped fields, explicit boolean archived and optOut values, and scalar rows. Read at most 960 rows per role (96 calls total); incomplete sources remain unknown and block dependent writes. Use recordId and the original expectedVersion, including zero. Forms emit save/save-quick through data-action; retain proposed and failed drafts until confirmed receipt/reopen. Native field order/visibility applies to tables and editors, with hidden fields reachable under Additional fields. Never treat a partial or unavailable contact preference as permission to invite.",
+  "documentation": {
+    "quickStart": [
+      "Discover list_app_templates, then read_app_template(templateId:\"life.investigator-crm\",version:\"1.0.1\") and current usage/authoring guidance. Pin returned digest/version in prepare_app_from_template with one stable requestKey. Review/confirm the exact preview and reconcile receipt. Correct previews using replacesPreviewId/expectedDigest; revisions retain component ID/current expectedVersion. Read saved component with includeOutput:true. Never recreate an app or repeat creates after an ambiguous receipt.",
+      "Open TrialAgents under the existing workspace session; no app-level account, login, branding icon, or subscription is required.",
+      "Review eight-role schema here and map saved real UUID tables, snake_case scalar fields, allowed read and writable field scope before preparing frontend-js.",
+      "Pass tableMap as a JSON string {role:{typeId:real UUID,fields:{logicalKey:physical_key},writableFields:[authorized logical keys]}}. Bind every physical field in templateBindings and the manifest using its current schemaVersion, kind and read/write mode. Set asOf to an explicit YYYY-MM-DD reporting cutoff; it is not a historical database snapshot. A quick interaction and optional follow-up are proposed atomically; after confirmed receipts the initially empty follow-up engagementId may be linked once to the same investigator\u2019s saved interaction. Existing populated links are immutable.",
+      "Create authorized people and institutions first via reviewed saves, then use saved receipt IDs for affiliations, trial experience, engagements, collaborations, actions and research evidence.",
+      "Open six screens, check available source coverage and denied/missing table warnings; the settings gear uses native host layout review.",
+      "Log and review a professional interaction, then separately confirm any follow-up proposal; no external correspondence is sent.",
+      "Optionally arrange explicitly approved ongoing ChatGPT professional-source review and separate platform email only after host setup verification.",
+      "If explicitly requested, replace placeholders, actual field keys, saved appVersion, expiry and selected recipient user UUIDs in users; prepare/review/confirm this optional action: {\"name\":\"Investigator follow-up recorded\",\"authoringKey\":\"co04_followup_email_v1\",\"appId\":\"REPLACE_WITH_SAVED_APP_UUID\",\"appVersion\":0,\"recordTypeId\":\"REPLACE_WITH_ACTIONS_TABLE_UUID\",\"trigger\":{\"kind\":\"database\",\"typeId\":\"REPLACE_WITH_ACTIONS_TABLE_UUID\",\"events\":[\"created\",\"updated\"],\"fields\":[\"status\"],\"becomes\":{\"field\":\"status\",\"operator\":\"equals\",\"value\":\"Open\"}},\"fields\":[\"status\",\"archived\"],\"conditions\":[{\"field\":\"archived\",\"operator\":\"not_equals\",\"value\":true}],\"steps\":[{\"id\":\"notify_owner\",\"kind\":\"email\",\"to\":[\"REPLACE_WITH_REGISTERED_AUTHORIZED_OWNER_EMAIL\"],\"subject\":\"Investigator follow-up recorded\",\"text\":\"Open https://platform.trialagents.com to review your authorized investigator follow-up.\"}],\"users\":[],\"expiresAt\":\"REPLACE_WITH_APPROVED_ISO_EXPIRY\",\"maxRunsPerDay\":10}"
+    ],
+    "dataContract": "Eight roles with explicit saved real database type IDs and logical-to-snake_case physical fieldMap. All fields scalar, multiple:false. People (name, professional_id, specialty, title, country, status, priority, interest, source_url, verified_at, opt_out, notes, archived); institutions (name, city, country, kind, source_url, verified_at, archived); affiliations (name, person_id, institution_id, role, start_at, end_at, source_url, verified_at, archived); experience (name, person_id, institution_id, registry_id, trial_role, specialty, source_url, verified_at, archived); engagements (name, person_id, institution_id, project_ref, channel, occurred_at, owner, purpose, outcome, next_step, notes, archived); collaborations (name, person_id, institution_id, project_ref, status, invited_at, responded_at, owner, notes, archived); actions (name, person_id, engagement_id, owner, due_at, status, completed_at, detail, archived); findings (name, person_id, source_url, source_type, topic, verified_at, reviewer, reviewed_at, status, rationale, archived). Date fields typed date; archived and opt_out boolean; enum choices embedded in instructions. URLs and notes use text, UUID references scalar text. Required fields: people name/specialty/status/source_url/verified_at; institutions name/country/source_url/verified_at; affiliations name/person_id/institution_id/role/start_at/source_url/verified_at; experience name/person_id/registry_id/trial_role/source_url/verified_at; engagements name/person_id/channel/occurred_at/owner/purpose/outcome; collaborations name/person_id/project_ref/status/owner; actions name/person_id/owner/due_at/status; findings name/source_url/source_type/topic/verified_at/status. Optional identifiers null, no arrays, no patient records. Source URLs https, verified date must be recorded; duplicate affiliation person+institution+start, experience person+registry+role, professional ID unique when known; name-only duplicate not inferred. Map every field including optional relationships, archived and optOut; missing access is unknown. All archived and optOut values must be explicit booleans (initialize false only on a genuinely new record; never infer false for an existing unknown preference). Empty optional dates, references and selects use null, text may be empty. Arrays/objects are invalid. Reads cap at 960 rows per role and 96 calls overall. Independent Database edits require reconciliation; these are app guards, not database foreign keys.",
+    "interactionContract": "Native layout uses leading JSON templateLayoutSchema (screens + groups) and host-injected templateConfiguration.layoutProfile (tabs, cols, visible). All required fields remain reachable in editor even when hidden in registers. One page h1/subline only. Settings gear tracker:layout, not a custom settings modal. Every input/select/textarea data-ui-state, named data-action; input.event.form carries submit, input.event.action/value carries changes. Every register has bounded bottom paging; counts are unknown on denied/partial reads. Directory selection updates dossier and history immediately; evidence links stay associated with original IDs. Drafts and pinned expectedVersion survive validation or denied proposals; review is separate from committed data. Buttons duplicate into unapproved drafts and archive via reviewed archived=true, never hard delete. Trusted host official logo/watermark to https://platform.trialagents.com only. No in-app accounts or external sending. Editor and quick forms emit save/save-quick on data-action. Proposals use recordId and original expectedVersion. Hidden fields are reachable under Additional fields; layout changes preserve data bindings. Cancel discards a local draft; proposal errors retain it.",
+    "lifecycle": "Prepare with AppTemplates.operation (host inserts templateConfiguration and templateBindings once); catalog source must not redeclare them. Build parent records before children through exact approved IDs, then validate complete authorized source bindings. App save independent of optional automations; no automation is created by loading app. Source edits or new research change reviewed records only; report/monitor definition changes require explicit platform review and receipts. Existing saved apps are not silently migrated; new versions preserve prior catalogue records. Locked evidence uses append/review, not rewrite. Disable automation without erasing research history. Review access and version conflicts server-side on each save. Production integrity requires live catalog loader, QuickJS, host sanitized frame and manifest, real database write receipts, and optional live runner checks. Use original requestKey and receipt reconciliation after interruptions; preserve component identity on revisions. Archive suspends monitoring; restore/copy never auto-activates it. Preserve disabled states and existing automation IDs/grants. No standalone automation Delete action.",
+    "limitations": [
+      "This is a nonclinical professional investigator relationship workspace, not an operational CTMS, patient CRM, AE intake, site enrollment record or e-signature system.",
+      "All demo names, institutions, registry IDs and URLs are invented. The standalone HTML local approval modifies only browser-memory fixtures.",
+      "Separate host app-level access applies to arbitrary custom source. HTML-hidden sections are not a data security boundary; restricted notes require authorized host source permission.",
+      "The in-app relationship network is a presentation of saved affiliations, not geolocation or a complete institutional identity-resolution service.",
+      "The UI does not infer availability, interest, consent, recruitment suitability or specialty from absent evidence. Source staleness is a verification cue.",
+      "Live host catalog discovery, actual QuickJS, sanitizer with manifest, SQL persistence, versioned layout save and ChatGPT/email automation execution are not verified by the standalone preview."
+    ],
+    "examples": [
+      {
+        "prompt": "Create an internal Investigator CRM for a small biotech with EU/UK investigators.",
+        "expectedBehavior": "Prepare the eight scalar database tables and exact bindings under existing TrialAgents permissions, then open the six-screen app. Use approved current source evidence; never create app accounts."
+      },
+      {
+        "prompt": "Record two public affiliations for the same investigator.",
+        "expectedBehavior": "Retain one person identity, two dated institution links and verified public sources; no merging by similar names."
+      },
+      {
+        "prompt": "Log a clinical feasibility call and assign a follow-up.",
+        "expectedBehavior": "Prepare a reviewed engagement and optional person-linked action in one proposal. Reconcile approved record receipts before filling a new engagement ID; do not send outreach."
+      },
+      {
+        "prompt": "Research professional investigators in rare diseases in Europe.",
+        "expectedBehavior": "Draft source-linked candidates with identity disambiguation, provenance, verified date and uncertainty; user reviews before saving."
+      },
+      {
+        "prompt": "Use without recurring monitoring.",
+        "expectedBehavior": "Open and edit the internal app normally. No automation account, schedule, email or task is required."
+      }
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "When sponsor clinical operations needs recurring, consented professional-source verification or deadline-based team notifications. Manual use remains fully functional without it.",
+      "readRequirements": "After saving, read read_app_automation_guide, read_automation_setup, list_app_automations and read_app_automation. Reuse the shared owner/workspace runner and existing objective; stable authoringKey co04-investigator-public-source-update. Suggested Monday 09:00 in the owner-confirmed IANA timezone, approved anchor and expiry, 7-day initial lookback, coalesced catch-up, bounded 20 profiles/run. Use current app-bound read fields/inheritAppAccess:true, check optOut and approved source scope at execution. No per-app ChatGPT Task. Respect paused/disconnected setup; prefer supported Work chat, high reasoning and latest most capable available model, reporting actual host settings separately. Never invent host IDs or model parameters.",
+      "outputContract": "Use public CTIS/trial registry, institution and publication metadata only. Match professional identifier plus affiliation; dedupe by identity, URL and evidence date. Return exact URLs, verification dates, ambiguity and source gaps. One-time drafts stay in the authorized conversation; recurring drafts stay in private permission-checked monitoring results/history. No reports table and no automatic database writes. A user can separately review Candidate findings using real optional person UUIDs. No winner, availability or consent inference. Complete scope with zero findings is completed; no_update only with complete coverage and an approved quiet policy. Partial/blocked/expired/revoked work does not advance coverage. Preserve receipts/checkpoints on retries. Optional email is a separate single-step TrialAgents action when actions.status enters Open, rechecking archived is not true; fixed subject Investigator follow-up recorded, fixed body Open https://platform.trialagents.com to review your authorized investigator follow-up. Only the registered owner and specifically selected currently authorized teammates; never investigator/contact addresses. No research completion email or second schedule. Delivery failure does not rerun research. No job/email is activated by template metadata; manual use works without setup. Preserve IDs, disabled state, hidden configuration and grants on edits; outcomes belong in Logs.",
+      "promptExample": "Weekly, if expressly approved: inspect the existing authorized investigator profile and affiliation records, query public CTIS/trial registry/institution/publication sources for updated professional evidence in EU/UK oncology/neurology/rare diseases, de-duplicate by professional identifier and institution, and propose candidate evidence with source URLs and verified dates. Preserve original evidence and report partial coverage, no auto-contact. No task should be configured unless user opts in."
+    }
+  },
+  "examples": [
+    {
+      "prompt": "Create an internal Investigator CRM for a small biotech with EU/UK investigators.",
+      "expectedBehavior": "Prepare the eight scalar database tables and exact bindings under existing TrialAgents permissions, then open the six-screen app. Use approved current source evidence; never create app accounts."
+    },
+    {
+      "prompt": "Record two public affiliations for the same investigator.",
+      "expectedBehavior": "Retain one person identity, two dated institution links and verified public sources; no merging by similar names."
+    },
+    {
+      "prompt": "Log a clinical feasibility call and assign a follow-up.",
+      "expectedBehavior": "Prepare a reviewed engagement and optional person-linked action in one proposal. Reconcile approved record receipts before filling a new engagement ID; do not send outreach."
+    }
+  ],
+  "deprecated": false
+}
