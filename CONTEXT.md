@@ -2,9 +2,13 @@
 
 Updated 1 November 2026 (Europe/Berlin). Start here before changing the platform or writing templates. Repository: `tarous89/trialy`. Public platform: https://platform.trialagents.com. MCP: https://platform.trialagents.com/mcp. This project is separate from TrialAgents Intel and CTIS.
 
+## App account and branding guardrails — 0.2.42
+
+Apps are internal tools accessed through existing TrialAgents accounts and permissions. Generated apps never add authentication, accounts or credential storage. Any TrialAgents logo/wordmark must include the supplied official icon and link to https://platform.trialagents.com; no text-only or redrawn substitute. Template guidance 1.3.7, plugin skills and the live design kit state these authoring guardrails. Trusted app watermarks include the official icon and canonical link. Existing saved source is not rewritten.
+
 ## Release 0.2.41 changes
 
-Simple ChatGPT/Email forms and guarded app notifications. Migration 051 adds pending batches, current-state revalidation, global recipient/account allowances and a mixed-version worker fence. Incompatible legacy email rules pause for review; unsent legacy app email jobs are cancelled while source records/research/history remain. Template guidance is 1.3.6; automation guide 1.2.0. Every automation row explicitly shows Enabled or Disabled. Template guidance covers standalone scheduled/database email and processing-to-email handoffs, with minimal forms and platform-enforced guardrails. The shared daily runner remains independent backend infrastructure.
+Simple ChatGPT/Email forms and guarded app notifications. Migration 051 adds pending batches, current-state revalidation, global recipient/account allowances and a mixed-version worker fence. Incompatible legacy email rules pause for review; unsent legacy app email jobs are cancelled while source records/research/history remain. Template guidance is 1.3.7; automation guide 1.2.0. Every automation row explicitly shows Enabled or Disabled. Template guidance covers standalone scheduled/database email and processing-to-email handoffs, with minimal forms and platform-enforced guardrails. The shared daily runner remains independent backend infrastructure.
 
 ## Previously verified baseline
 

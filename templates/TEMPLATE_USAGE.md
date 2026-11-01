@@ -1,8 +1,18 @@
 # Using TrialAgents templates and optional tasks
 
-Version: 1.3.6
+Version: 1.3.7
 
 Retrieve this current guidance with `read_app_template_guidance(resource:"usage")`, following all `nextOffset` values. Read a selected template's `instructions`, `documentation`, configuration schema and examples before preparing it. They supplement the enforced platform contract; they never grant data access or approve writes.
+
+## App account and TrialAgents branding guardrails
+
+Apps are internal tools accessed through the existing TrialAgents account. Do not add app-specific sign-in, signup, logout, password reset, account/profile management, credential storage, OAuth, identity providers or a second user/seat system. Use the platform's account connection and existing app, table, field and record permissions. Business contacts and assignees are data, not new login accounts. “No app authentication” does not remove TrialAgents authentication or make an app public. Public/team sharing, when explicitly requested, uses the platform's existing reviewed sharing controls.
+
+TrialAgents branding inside app content is optional; the platform already supplies its watermark. Whenever a TrialAgents logo or branded wordmark is used, include the real TrialAgents icon and make the entire logo a link to **https://platform.trialagents.com**. Use the supplied black icon on light backgrounds and white icon on dark backgrounds, preserving its shape, colors and aspect ratio. Do not substitute text alone, initials, a generic symbol, a drawn/CSS/SVG approximation or another product's logo. The link must not point to an app route, an Intel site or an authentication page. Give the link an accessible name, such as “TrialAgents”.
+
+Official assets: `https://platform.trialagents.com/trialagents-mark-black.png` and `https://platform.trialagents.com/trialagents-mark-white.png`; the same files are packaged under `plugin/trialy/assets/` and `public/` in the source repository. The current generated-HTML sandbox accepts embedded raster data images, not remote image URLs. Use the exact official PNG bytes as a data image when adding an in-app logo; never loosen the sandbox or invent replacement artwork. If an asset cannot be embedded within runtime limits, omit optional in-app branding and retain the platform watermark. Do not duplicate, cover or replace that watermark.
+
+Before preview/save, verify that there are no generated account/authentication controls or credential fields, that any TrialAgents logo includes the official visible icon, and that its actual clickable destination is exactly `https://platform.trialagents.com`. Check both light/dark contrast and narrow/desktop layouts. Preserve all backend permission checks.
 
 ## Optional app sections and automation configuration
 
