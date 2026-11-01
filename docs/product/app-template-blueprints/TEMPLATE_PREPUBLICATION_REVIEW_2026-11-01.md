@@ -25,6 +25,14 @@ All screen IDs must remain stable on rename, move or layout revision. Restrictio
 
 **Privacy/safety:** no patient-level data, ICSR/SAE case processing, human specimen provenance or mandatory third-party app integration. Investigator and employee details still require normal professional-contact/HR privacy restrictions. Do not auto-copy restricted context into a less protected dashboard or report.
 
+## New-entry discovery and completed-update notifications — 1 November refinement
+
+For the **11 discovery-dependent templates**, the authoritative [discovery/update completion contract](DISCOVERY_UPDATE_COMPLETION_CONTRACT.md) now requires ChatGPT to search for **new entries first**, deduplicate against saved records, commit eligible new records under separately approved type-specific permission, and **only then** complete the durable run. The backend's `automation_occurrences.finished_at` UTC instant supplies **Update completed at [timestamp]**; `last_success_at` and source coverage are updated after a verified completed or no-update check.
+
+The app's separately approved TrialAgents notification uses the same occurrence's `completed` dependency and the proposed opt-in `completionRequiresSavedChanges:true` gate. **No independently scheduled email.** Only `completed` with `savedChanges>0` sends a new-records email with server completion timestamp, saved-count, summary and trusted app link. A completed no-findings scan is `no_update` (successful check timestamp, no email); partial/blocked/failed and save proposals cannot generate a finished-update email. This remains **draft and unactivated**.
+
+The other 12 templates remain report/internal-analysis workflows. Their successful reviewed report completion may still justify an email even when no database records changed; the new gate defaults off for backward compatibility.
+
 ## Automation lifecycle (must be configured on TrialAgents, not inside app)
 
 1. Save and reopen the **actual app ID**, with approved bindings, stable access and source; failure to configure optional automation must not block app use.
