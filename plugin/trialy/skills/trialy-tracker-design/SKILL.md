@@ -9,6 +9,12 @@ Treat Vivid as a starting point. Users may change colors, fonts, icons, spacing,
 
 For new apps, first follow the dynamic discovery and existing-app reuse workflow in [TrialAgents workspace](../trialy-workspace/SKILL.md). Check `list_app_templates` and read the selected template with `read_app_template`. Its current server instructions and schema govern that template. The packaged Vivid references below describe the legacy Vivid renderer only; they are not a complete template catalog or a restriction on other designs. Existing app source is reusable only after `read_app` succeeds under current permissions.
 
+## App account and branding guardrails
+
+Build internal tools that use the existing TrialAgents account and platform permissions. Do not generate separate app sign-in, signup, logout, password resets, account management, credential storage, OAuth or a second user/seat system. Contacts/assignees are business records, not app login accounts. Use the host connection flow when needed; never remove platform access checks or make an app public to avoid them. Explicit sharing uses existing reviewed platform controls.
+
+If app content uses the TrialAgents logo or wordmark, include the real icon and link the whole logo to **https://platform.trialagents.com**. Use the exact [black icon](../../assets/trialagents-mark-black.png) on light backgrounds or [white icon](../../assets/trialagents-mark-white.png) on dark backgrounds. Preserve colors/aspect ratio; no text-only logo, initials, generic icon or redrawn substitute. Give the link an accessible name. Generated HTML must embed the official PNG bytes as a supported data image; remote image URLs are not supported in the sandbox. Omit optional in-app branding if the asset cannot be embedded, and retain the platform watermark. Check the actual icon and destination before preview/save. Read current `read_app_template_guidance` for the full guardrails.
+
 ## Workflow
 
 1. Call `read_app_design` for the current server-managed design kit, palettes and validation rules. Establish the user's job and inspect the relevant authorized schema and saved app. Reuse suitable tables and preserve field identities, types and cardinality unless the user requests a reviewed schema change.

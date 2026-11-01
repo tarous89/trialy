@@ -2,6 +2,10 @@
 
 **Status:** Design and functional scoping proposal. No HTML, CSS, JS, template JSON or backend changes are approved or performed by this document. Detailed candidates: [catalog](README.md). Platform contracts below are updated for deployed release 0.2.39 and guidance 1.3.1 on 1 November 2026; this does not mark any candidate app implemented. [Current project context](../../../CONTEXT.md).
 
+## Account and logo guardrails
+
+All generated apps are internal tools accessed through the TrialAgents account. Do not build separate app authentication, account management or credential stores. Preserve existing platform access controls. Any TrialAgents logo or wordmark must include the official icon and link to https://platform.trialagents.com. Use the supplied black/white PNG, never a text-only or approximate substitute. See [current template authoring standard](../../../templates/TEMPLATE_AUTHORING.md#app-account-and-trialagents-branding-guardrails) for assets, sandbox compatibility and acceptance checks.
+
 ## 1. Product and template philosophy
 
 - Each app solves **one bounded professional job** in 4–8 screens. “Screen” can be an overview, editable tracker, input form, pipeline, chart/timeline, saved-report viewer or ChatGPT task-setup guidance. Never add an entire CRM/CTMS/ELN/ERP/clinical safety platform merely to match the benchmark.

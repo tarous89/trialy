@@ -5,6 +5,10 @@ This file records meaningful decisions and completed development work. It is not
 - [Scope and decisions](README.md)
 - [Current development plan](DEVELOPMENT.md)
 
+## App account and branding standards — 1 November 2026
+
+Release 0.2.42 adds explicit no-app-auth/account rules and official-icon/canonical-link requirements to template guidance 1.3.7, plugin authoring skills, QA guardrails and the live design kit. Supplied PNGs match the existing assets exactly. Standalone and public-share watermarks consistently include the official icon and link to https://platform.trialagents.com, preserving the standalone unsaved-edit guard. Platform authentication/permissions and existing customer source remain intact.
+
 ## Explicit automation status and current template guidance — 1 November 2026
 
 Automation rows now show Enabled or Disabled as a readable badge on both desktop and mobile, independently of the action button label. Template guidance 1.3.6 distinguishes no automation, ChatGPT processing, standalone scheduled/database email and processing-to-email handoffs. It includes concrete authoring examples, current recipient/delivery safeguards and minimal UI expectations. Definition state remains distinct from connection readiness and delivery outcome; no scheduling or permission behavior changes.

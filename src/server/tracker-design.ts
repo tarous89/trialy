@@ -10,7 +10,7 @@ export async function readTrackerDesign(input:unknown){
  if(resource==='skeleton')source=await readFile(new URL('../../plugin/trialy/skills/trialy-tracker-design/assets/vivid-template/runtime.js',import.meta.url),'utf8')+source;
  if(offset>source.length)throw new Error('Offset exceeds resource length');
  const text=source.slice(offset,offset+12000),end=offset+text.length;
- return {resource,version:'0.7.0',resources:Object.keys(paths),sha256:createHash('sha256').update(source).digest('hex'),offset,totalCharacters:source.length,nextOffset:end<source.length?end:null,text};
+ return {resource,version:'0.7.1',resources:Object.keys(paths),sha256:createHash('sha256').update(source).digest('hex'),offset,totalCharacters:source.length,nextOffset:end<source.length?end:null,text};
 }
 export function addTrackerDesignMcp(server:McpServer){
  server.registerTool('read_app_monitoring_guide',{description:'Read template-independent recurring research, analysis and reporting setup for any saved app. Explains ChatGPT task creation, scoped data permissions, durable runs and task linking. Page through nextOffset; contains no account data.',inputSchema:{offset:z.number().int().min(0).default(0)},annotations:{readOnlyHint:true,openWorldHint:false},_meta:{securitySchemes:[{type:'noauth'}]}},async({offset})=>{const result=await readTrackerDesign({resource:'monitoring',offset});return {content:[{type:'text' as const,text:JSON.stringify(result)}],structuredContent:{result}};});

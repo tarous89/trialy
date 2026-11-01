@@ -4,6 +4,12 @@ Read before declaring a tracker done. This is a *testing contract* and reusable 
 
 ## 1. Completion gates (all relevant items required)
 
+### App account and branding guardrails
+
+- [ ] Apps use existing TrialAgents accounts/permissions, with no separate login/signup, account management or credential storage.
+- [ ] Every TrialAgents logo/wordmark includes the official icon with preserved proportions/colors, and the entire logo links to https://platform.trialagents.com.
+- [ ] Optional in-app branding does not duplicate or cover the platform watermark; no fabricated logo or broken remote image.
+
 ### A. Concept and business meaning
 
 - [ ] Can a user describe the tracked objective in one sentence?
