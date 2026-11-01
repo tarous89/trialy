@@ -1,0 +1,762 @@
+{
+  "studies": [
+    {
+      "key": "name",
+      "label": "Study / protocol",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "protocol_code",
+      "label": "Study code",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "indication",
+      "label": "Therapeutic indication (non-patient)",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "phase",
+      "label": "Phase",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Phase 1",
+        "Phase 2",
+        "Phase 3",
+        "Phase 4",
+        "Other"
+      ]
+    },
+    {
+      "key": "target_countries",
+      "label": "Target countries (text)",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "owner",
+      "label": "Sponsor feasibility owner",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "status",
+      "label": "Study status",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Planning",
+        "Feasibility",
+        "Selection",
+        "Active",
+        "Closed"
+      ]
+    },
+    {
+      "key": "target_sites",
+      "label": "Planned site count",
+      "kind": "number",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "target_date",
+      "label": "Selection target",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "notes",
+      "label": "Study scope notes",
+      "kind": "longtext",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ],
+  "sites": [
+    {
+      "key": "name",
+      "label": "Institution",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "country",
+      "label": "Country",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Germany",
+        "France",
+        "Italy",
+        "Spain",
+        "United Kingdom",
+        "Netherlands",
+        "Poland",
+        "Belgium",
+        "Sweden",
+        "Switzerland",
+        "United States",
+        "Other"
+      ]
+    },
+    {
+      "key": "city",
+      "label": "City",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "institution_type",
+      "label": "Facility type",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "University hospital",
+        "Academic medical center",
+        "General hospital",
+        "Research institute",
+        "Specialty clinic",
+        "Other"
+      ]
+    },
+    {
+      "key": "specialty",
+      "label": "Therapeutic focus",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "capability",
+      "label": "Relevant infrastructure",
+      "kind": "longtext",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "site_history",
+      "label": "Public study track record",
+      "kind": "longtext",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "source",
+      "label": "Profile evidence URL / reference",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "verified_date",
+      "label": "Last verified",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "contact_channel",
+      "label": "Institutional contact channel",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ],
+  "investigators": [
+    {
+      "key": "name",
+      "label": "Professional investigator name",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "site_id",
+      "label": "Institution",
+      "kind": "relation-sites",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "specialty",
+      "label": "Professional specialty",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "position",
+      "label": "Professional role",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "experience",
+      "label": "Public trial experience",
+      "kind": "longtext",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "source",
+      "label": "Professional evidence URL",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "affiliation_date",
+      "label": "Affiliation verified date",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ],
+  "candidates": [
+    {
+      "key": "name",
+      "label": "Candidate label",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "study_id",
+      "label": "Study",
+      "kind": "relation-studies",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "site_id",
+      "label": "Institution",
+      "kind": "relation-sites",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "lead_investigator_id",
+      "label": "Professional PI (optional)",
+      "kind": "relation-investigators",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "owner",
+      "label": "Sponsor reviewer",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "stage",
+      "label": "Selection stage",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Identified",
+        "Contacted",
+        "Questioned",
+        "Assessed",
+        "Selected",
+        "Declined"
+      ]
+    },
+    {
+      "key": "questionnaire_due",
+      "label": "Questionnaire due",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "decision_due",
+      "label": "Selection decision target",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "last_contact",
+      "label": "Last communication",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "capacity_band",
+      "label": "Aggregate feasibility band",
+      "kind": "select",
+      "required": false,
+      "multiple": false,
+      "options": [
+        "Unknown",
+        "Low",
+        "Moderate",
+        "High"
+      ]
+    },
+    {
+      "key": "capacity_date",
+      "label": "Aggregate estimate vintage",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "capacity_source",
+      "label": "Estimate basis / provenance",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "selection_reason",
+      "label": "Selection / decline rationale",
+      "kind": "longtext",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "decision_date",
+      "label": "Decision date",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "decision_owner",
+      "label": "Decision approver",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ],
+  "criteria": [
+    {
+      "key": "name",
+      "label": "Institutional criterion",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "study_id",
+      "label": "Study",
+      "kind": "relation-studies",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "section",
+      "label": "Question section",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "People & staffing",
+        "Facilities",
+        "Prior research",
+        "Operations",
+        "Capacity estimate",
+        "Other"
+      ]
+    },
+    {
+      "key": "mandatory",
+      "label": "Mandatory",
+      "kind": "boolean",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "weight",
+      "label": "Weight (1–5)",
+      "kind": "number",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "version",
+      "label": "Criterion version",
+      "kind": "number",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "prompt",
+      "label": "Question / evidence requirement",
+      "kind": "longtext",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "owner",
+      "label": "Criterion owner",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ],
+  "responses": [
+    {
+      "key": "name",
+      "label": "Response label",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "candidate_id",
+      "label": "Study-site candidate",
+      "kind": "relation-candidates",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "criterion_id",
+      "label": "Question",
+      "kind": "relation-criteria",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "answer",
+      "label": "Assessment answer",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Yes",
+        "Partial",
+        "No",
+        "Unknown",
+        "Not applicable"
+      ]
+    },
+    {
+      "key": "respondent_role",
+      "label": "Respondent function",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "source_date",
+      "label": "Response evidence date",
+      "kind": "date",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "source",
+      "label": "Source link / evidence",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "rationale",
+      "label": "Institution-level explanation",
+      "kind": "longtext",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "clarification",
+      "label": "Clarification / follow-up",
+      "kind": "longtext",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ],
+  "evaluations": [
+    {
+      "key": "name",
+      "label": "Evaluation title",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "candidate_id",
+      "label": "Study-site candidate",
+      "kind": "relation-candidates",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "reviewer",
+      "label": "Reviewer",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "review_date",
+      "label": "Review date",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "status",
+      "label": "Review state",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Draft",
+        "Reviewed",
+        "Approved"
+      ]
+    },
+    {
+      "key": "rationale",
+      "label": "Selection assessment / review rationale",
+      "kind": "longtext",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "evidence_snapshot",
+      "label": "Source versions fingerprint (managed)",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "weighted_score",
+      "label": "Computed score (managed)",
+      "kind": "number",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ],
+  "startup": [
+    {
+      "key": "name",
+      "label": "Readiness milestone",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "candidate_id",
+      "label": "Selected study-site candidate",
+      "kind": "relation-candidates",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "item_type",
+      "label": "Milestone type",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Qualification",
+        "Contract",
+        "Essential document",
+        "Training",
+        "Other"
+      ]
+    },
+    {
+      "key": "owner",
+      "label": "Task owner",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "planned_date",
+      "label": "Planned completion",
+      "kind": "date",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "actual_date",
+      "label": "Actual completion",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "status",
+      "label": "Milestone status",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Not started",
+        "In progress",
+        "Blocked",
+        "Completed"
+      ]
+    },
+    {
+      "key": "evidence",
+      "label": "Document metadata / proof",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "blocker",
+      "label": "Current blocker",
+      "kind": "longtext",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ]
+}

@@ -1,0 +1,897 @@
+{
+  "studies": {
+    "name": "studies",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Study / protocol",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "protocol_code",
+        "name": "Study code",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "indication",
+        "name": "Therapeutic indication (non-patient)",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "phase",
+        "name": "Phase",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Phase 1",
+          "Phase 2",
+          "Phase 3",
+          "Phase 4",
+          "Other"
+        ]
+      },
+      {
+        "key": "target_countries",
+        "name": "Target countries (text)",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Sponsor feasibility owner",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Study status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Planning",
+          "Feasibility",
+          "Selection",
+          "Active",
+          "Closed"
+        ]
+      },
+      {
+        "key": "target_sites",
+        "name": "Planned site count",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "target_date",
+        "name": "Selection target",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "Study scope notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "protocol_code": "protocol_code",
+      "indication": "indication",
+      "phase": "phase",
+      "target_countries": "target_countries",
+      "owner": "owner",
+      "status": "status",
+      "target_sites": "target_sites",
+      "target_date": "target_date",
+      "notes": "notes",
+      "archived": "archived"
+    }
+  },
+  "sites": {
+    "name": "sites",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Institution",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "country",
+        "name": "Country",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Germany",
+          "France",
+          "Italy",
+          "Spain",
+          "United Kingdom",
+          "Netherlands",
+          "Poland",
+          "Belgium",
+          "Sweden",
+          "Switzerland",
+          "United States",
+          "Other"
+        ]
+      },
+      {
+        "key": "city",
+        "name": "City",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "institution_type",
+        "name": "Facility type",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "University hospital",
+          "Academic medical center",
+          "General hospital",
+          "Research institute",
+          "Specialty clinic",
+          "Other"
+        ]
+      },
+      {
+        "key": "specialty",
+        "name": "Therapeutic focus",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "capability",
+        "name": "Relevant infrastructure",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "site_history",
+        "name": "Public study track record",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source",
+        "name": "Profile evidence URL / reference",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "verified_date",
+        "name": "Last verified",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "contact_channel",
+        "name": "Institutional contact channel",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "country": "country",
+      "city": "city",
+      "institution_type": "institution_type",
+      "specialty": "specialty",
+      "capability": "capability",
+      "site_history": "site_history",
+      "source": "source",
+      "verified_date": "verified_date",
+      "contact_channel": "contact_channel",
+      "archived": "archived"
+    }
+  },
+  "investigators": {
+    "name": "investigators",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Professional investigator name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "site_id",
+        "name": "Institution",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "specialty",
+        "name": "Professional specialty",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "position",
+        "name": "Professional role",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "experience",
+        "name": "Public trial experience",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source",
+        "name": "Professional evidence URL",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "affiliation_date",
+        "name": "Affiliation verified date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "site_id": "site_id",
+      "specialty": "specialty",
+      "position": "position",
+      "experience": "experience",
+      "source": "source",
+      "affiliation_date": "affiliation_date",
+      "archived": "archived"
+    }
+  },
+  "candidates": {
+    "name": "candidates",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Candidate label",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "study_id",
+        "name": "Study",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "site_id",
+        "name": "Institution",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "lead_investigator_id",
+        "name": "Professional PI (optional)",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Sponsor reviewer",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "stage",
+        "name": "Selection stage",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Identified",
+          "Contacted",
+          "Questioned",
+          "Assessed",
+          "Selected",
+          "Declined"
+        ]
+      },
+      {
+        "key": "questionnaire_due",
+        "name": "Questionnaire due",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "decision_due",
+        "name": "Selection decision target",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "last_contact",
+        "name": "Last communication",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "capacity_band",
+        "name": "Aggregate feasibility band",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Unknown",
+          "Low",
+          "Moderate",
+          "High"
+        ]
+      },
+      {
+        "key": "capacity_date",
+        "name": "Aggregate estimate vintage",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "capacity_source",
+        "name": "Estimate basis / provenance",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "selection_reason",
+        "name": "Selection / decline rationale",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "decision_date",
+        "name": "Decision date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "decision_owner",
+        "name": "Decision approver",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "study_id": "study_id",
+      "site_id": "site_id",
+      "lead_investigator_id": "lead_investigator_id",
+      "owner": "owner",
+      "stage": "stage",
+      "questionnaire_due": "questionnaire_due",
+      "decision_due": "decision_due",
+      "last_contact": "last_contact",
+      "capacity_band": "capacity_band",
+      "capacity_date": "capacity_date",
+      "capacity_source": "capacity_source",
+      "selection_reason": "selection_reason",
+      "decision_date": "decision_date",
+      "decision_owner": "decision_owner",
+      "archived": "archived"
+    }
+  },
+  "criteria": {
+    "name": "criteria",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Institutional criterion",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "study_id",
+        "name": "Study",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "section",
+        "name": "Question section",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "People & staffing",
+          "Facilities",
+          "Prior research",
+          "Operations",
+          "Capacity estimate",
+          "Other"
+        ]
+      },
+      {
+        "key": "mandatory",
+        "name": "Mandatory",
+        "kind": "boolean",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "weight",
+        "name": "Weight (1\u20135)",
+        "kind": "number",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "version",
+        "name": "Criterion version",
+        "kind": "number",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "prompt",
+        "name": "Question / evidence requirement",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Criterion owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "study_id": "study_id",
+      "section": "section",
+      "mandatory": "mandatory",
+      "weight": "weight",
+      "version": "version",
+      "prompt": "prompt",
+      "owner": "owner",
+      "archived": "archived"
+    }
+  },
+  "responses": {
+    "name": "responses",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Response label",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "candidate_id",
+        "name": "Study-site candidate",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "criterion_id",
+        "name": "Question",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "answer",
+        "name": "Assessment answer",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Yes",
+          "Partial",
+          "No",
+          "Unknown",
+          "Not applicable"
+        ]
+      },
+      {
+        "key": "respondent_role",
+        "name": "Respondent function",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source_date",
+        "name": "Response evidence date",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source",
+        "name": "Source link / evidence",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "rationale",
+        "name": "Institution-level explanation",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "clarification",
+        "name": "Clarification / follow-up",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "candidate_id": "candidate_id",
+      "criterion_id": "criterion_id",
+      "answer": "answer",
+      "respondent_role": "respondent_role",
+      "source_date": "source_date",
+      "source": "source",
+      "rationale": "rationale",
+      "clarification": "clarification",
+      "archived": "archived"
+    }
+  },
+  "evaluations": {
+    "name": "evaluations",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Evaluation title",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "candidate_id",
+        "name": "Study-site candidate",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "reviewer",
+        "name": "Reviewer",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "review_date",
+        "name": "Review date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Review state",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Draft",
+          "Reviewed",
+          "Approved"
+        ]
+      },
+      {
+        "key": "rationale",
+        "name": "Selection assessment / review rationale",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "evidence_snapshot",
+        "name": "Source versions fingerprint (managed)",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "weighted_score",
+        "name": "Computed score (managed)",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "candidate_id": "candidate_id",
+      "reviewer": "reviewer",
+      "review_date": "review_date",
+      "status": "status",
+      "rationale": "rationale",
+      "evidence_snapshot": "evidence_snapshot",
+      "weighted_score": "weighted_score",
+      "archived": "archived"
+    }
+  },
+  "startup": {
+    "name": "startup",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Readiness milestone",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "candidate_id",
+        "name": "Selected study-site candidate",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "item_type",
+        "name": "Milestone type",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Qualification",
+          "Contract",
+          "Essential document",
+          "Training",
+          "Other"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "Task owner",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "planned_date",
+        "name": "Planned completion",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "actual_date",
+        "name": "Actual completion",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Milestone status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Not started",
+          "In progress",
+          "Blocked",
+          "Completed"
+        ]
+      },
+      {
+        "key": "evidence",
+        "name": "Document metadata / proof",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "blocker",
+        "name": "Current blocker",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "candidate_id": "candidate_id",
+      "item_type": "item_type",
+      "owner": "owner",
+      "planned_date": "planned_date",
+      "actual_date": "actual_date",
+      "status": "status",
+      "evidence": "evidence",
+      "blocker": "blocker",
+      "archived": "archived"
+    }
+  }
+}

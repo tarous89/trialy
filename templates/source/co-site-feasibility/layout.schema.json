@@ -1,0 +1,198 @@
+{
+  "screens": [
+    {
+      "id": "overview",
+      "label": "Overview"
+    },
+    {
+      "id": "sites",
+      "label": "Study sites"
+    },
+    {
+      "id": "questionnaire",
+      "label": "Questionnaires"
+    },
+    {
+      "id": "comparison",
+      "label": "Compare sites"
+    },
+    {
+      "id": "pipeline",
+      "label": "Selection"
+    },
+    {
+      "id": "startup",
+      "label": "Startup readiness"
+    }
+  ],
+  "groups": {
+    "studies": [
+      {
+        "id": "name",
+        "label": "Study / protocol"
+      },
+      {
+        "id": "protocol_code",
+        "label": "Study code"
+      },
+      {
+        "id": "phase",
+        "label": "Phase"
+      },
+      {
+        "id": "owner",
+        "label": "Sponsor feasibility owner"
+      },
+      {
+        "id": "status",
+        "label": "Study status"
+      }
+    ],
+    "sites": [
+      {
+        "id": "name",
+        "label": "Institution"
+      },
+      {
+        "id": "country",
+        "label": "Country"
+      },
+      {
+        "id": "institution_type",
+        "label": "Facility type"
+      },
+      {
+        "id": "specialty",
+        "label": "Therapeutic focus"
+      },
+      {
+        "id": "verified_date",
+        "label": "Last verified"
+      }
+    ],
+    "investigators": [
+      {
+        "id": "name",
+        "label": "Professional investigator name"
+      },
+      {
+        "id": "site_id",
+        "label": "Institution"
+      },
+      {
+        "id": "specialty",
+        "label": "Professional specialty"
+      },
+      {
+        "id": "affiliation_date",
+        "label": "Affiliation verified date"
+      }
+    ],
+    "candidates": [
+      {
+        "id": "site_id",
+        "label": "Institution"
+      },
+      {
+        "id": "stage",
+        "label": "Selection stage"
+      },
+      {
+        "id": "owner",
+        "label": "Sponsor reviewer"
+      },
+      {
+        "id": "decision_due",
+        "label": "Selection decision target"
+      }
+    ],
+    "criteria": [
+      {
+        "id": "name",
+        "label": "Institutional criterion"
+      },
+      {
+        "id": "section",
+        "label": "Question section"
+      },
+      {
+        "id": "mandatory",
+        "label": "Mandatory"
+      },
+      {
+        "id": "weight",
+        "label": "Weight (1–5)"
+      },
+      {
+        "id": "version",
+        "label": "Criterion version"
+      }
+    ],
+    "responses": [
+      {
+        "id": "name",
+        "label": "Response label"
+      },
+      {
+        "id": "criterion_id",
+        "label": "Question"
+      },
+      {
+        "id": "answer",
+        "label": "Assessment answer"
+      },
+      {
+        "id": "source_date",
+        "label": "Response evidence date"
+      },
+      {
+        "id": "respondent_role",
+        "label": "Respondent function"
+      }
+    ],
+    "evaluations": [
+      {
+        "id": "name",
+        "label": "Evaluation title"
+      },
+      {
+        "id": "candidate_id",
+        "label": "Study-site candidate"
+      },
+      {
+        "id": "status",
+        "label": "Review state"
+      },
+      {
+        "id": "reviewer",
+        "label": "Reviewer"
+      },
+      {
+        "id": "review_date",
+        "label": "Review date"
+      }
+    ],
+    "startup": [
+      {
+        "id": "name",
+        "label": "Readiness milestone"
+      },
+      {
+        "id": "candidate_id",
+        "label": "Selected study-site candidate"
+      },
+      {
+        "id": "item_type",
+        "label": "Milestone type"
+      },
+      {
+        "id": "planned_date",
+        "label": "Planned completion"
+      },
+      {
+        "id": "status",
+        "label": "Milestone status"
+      }
+    ]
+  }
+}

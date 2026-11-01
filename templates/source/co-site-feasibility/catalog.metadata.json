@@ -1,0 +1,123 @@
+{
+  "id": "life.co-site-feasibility",
+  "version": "1.1.1",
+  "name": "Site Feasibility Management — Sponsor",
+  "description": "Redesigned study-first, six-screen sponsor-side site feasibility and startup coordination for small biotech teams: institution directory, versioned questionnaires, transparent mandatory assessments, selection and selected-site readiness. Veeva Study Startup and Oracle Site Select workflow benchmarks only, no proprietary software or data.",
+  "tags": [
+    "clinical-operations",
+    "site-feasibility",
+    "sponsor",
+    "biotech",
+    "clinical-research",
+    "site-selection",
+    "questionnaires",
+    "startup",
+    "investigators"
+  ],
+  "whenToUse": "Use when a sponsor ClinOps or feasibility lead needs a traceable institution-level assessment and shortlist for one or more studies, with reviewed source records and selected-site startup tasks.",
+  "whenNotToUse": "Not for CRO-wide reusable feasibility scoring, patient eligibility/patient records, screening lists, EHR integration, recruitment forecasts, site contracting signatures, validated GxP qualification or automatic greenlight.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "Site Feasibility",
+    "tableMap": "{}",
+    "layoutProfile": "{}",
+    "initialStudyId": "",
+    "asOfDate": "",
+    "pageSize": 25,
+    "readOnly": false,
+    "demoLabel": false
+  },
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "Editable app title in the sidebar; does not change platform identity",
+      "default": "Site Feasibility"
+    },
+    "tableMap": {
+      "type": "string",
+      "description": "JSON mapping of 8 roles to existing authorized type UUIDs and physical lowercase field keys; only listed logical writable keys can be edited",
+      "default": "{}"
+    },
+    "layoutProfile": {
+      "type": "string",
+      "description": "Saved presentation-only host layout JSON, reviewed via native gear",
+      "default": "{}"
+    },
+    "initialStudyId": {
+      "type": "string",
+      "description": "Optional saved study UUID; blank means all studies",
+      "default": ""
+    },
+    "asOfDate": {
+      "type": "string",
+      "description": "User-selected reporting cutoff YYYY-MM-DD; defaults to current date when absent",
+      "default": ""
+    },
+    "pageSize": {
+      "type": "number",
+      "description": "Visible page size, clamp 10–50; registers page on the backend",
+      "default": 25
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "Suppress all proposals when true, in addition to host permissions",
+      "default": false
+    },
+    "demoLabel": {
+      "type": "boolean",
+      "description": "Standalone fictional preview flag; not a production record source",
+      "default": false
+    }
+  },
+  "instructions": "Read full current read_app_template_guidance authoring and usage (v1.3.9), read_app_design, list_app_templates and exact template/digest before preparing. Treat CO-03 as sponsor-side feasibility; do not substitute the separate CRO Site Feasibility template. This is an internal TrialAgents app: no second login, OAuth or user management; rely on the official linked host watermark to https://platform.trialagents.com and current server-side database, app, table and field permissions. Build/reuse eight scalar roles as detailed in documentation.dataContract: studies, sites, investigators, candidates, criteria, responses, evaluations, startup. All physical keys lowercase snake_case and scalar multiple:false; relation- roles store authorized parent record UUID as text. Create or reuse parent studies and institutions first; save them and bind their actual receipt IDs before study-site candidates, criteria and children. Configure tableMap JSON {role:{typeId:<authorized UUID>,fields:{logical_key:physical_snake_key},writableFields:[logical_key]}}. Manifest must include every displayed/edited mapped field, exact schemaVersion and permitted read/write modes; no guesses from labels or fabricated UUIDs. Reuse shared site/PI identities and put confidential sponsor-study answers only on participation-specific tables. Read and validate sample schema in MCP documentation instead of relying on ZIP-only files. Do not seed fictional demo data. No patient-level data. Prepare the revised study-first, evidence-first six-screen interface and test in the real QuickJS isolated runtime and sanitized production frame with manifest; do not rewrite catalog source to add templateConfiguration or templateBindings (host prepends them once). Handle all data-ui-state named controls and actual event.form. Stage and source/answer edits are reviewed records.propose only; original record versions gate updates and archives. Never count unavailable/truncated data as zero or rank without complete required evidence; missing parent or duplicate candidate/reference blocks approval. Mandatory institutional questions and dated evidence must pass before Approved evaluation; selected candidates require a current approved evaluation and sponsor decision owner/date/rationale. No auto greenlight. Native settings gear emits tracker:layout; prepare_tool_layout persists reviewed screen/field changes and app configuration, leaving records and access unchanged. Reconcile app save by stable requestKey, exact version and digest; revise saved app identity rather than creating duplicates. Optional shared-runner ChatGPT research is configured only after save, through read_automation_setup, read_app_automation_guide and reviewed prepare_app_monitoring; optional owner/team email via separately reviewed prepare_app_action, not ChatGPT email. No automation is fully supported. Report saved app, access, optional task definition, runner readiness, actual run and delivery as separate outcomes.",
+  "documentation": {
+    "quickStart": [
+      "Read latest current authoring and usage guidance, design kit, exact catalog version and digest. Preserve TrialAgents host account, permissions and linked official watermark; no app authentication.",
+      "Inspect available authorized studies, institutions and professional investigator organization tables. Reuse them when compatible instead of creating duplicate masters. Collect study code, indication, countries and sponsor owner.",
+      "Prepare/review real scalar schemas for all eight roles as specified in dataContract; required fields, exact select enums, multiple:false, lowercase keys, archived boolean, real UUID relations. Set tableMap and complete binding manifest, never fabricate IDs.",
+      "Create and save parent studies/sites, then link investigators, candidates, study-specific questions, responses, evaluations, and selected-site startup tasks using actual saved IDs. No patient or recruitment lists.",
+      "Prepare six-screen source from catalog without duplicate host declarations. Verify local drafts, select/date/textarea events and read scopes with manifest in QuickJS and sanitized host, including denied/incomplete data.",
+      "Review exact create/edit/duplicate/archive proposals and returned versions; validate mandatory evidence, criterion revisions, approvals, selected decisions and dependency-safe archives before saving.",
+      "Open native layout gear, reorder six screens and visible fields, Review/Confirm and reopen versioned saved configuration. Required editor fields always accessible.",
+      "Keep manual app use working by default. If requested, separately review one app-linked shared-runner monitoring recipe and a TrialAgents-controlled internal email action; verify their readiness independently."
+    ],
+    "dataContract": "Eight role tables, all scalar multiple:false; physical keys must match ^[a-z][a-z0-9_]{0,63}$ and logical keys map 1:1 through tableMap. ! denotes required, ? optional; select choices in brackets are exact. studies: name:text!, protocol_code:text!, indication:text!, phase:select![Phase 1|Phase 2|Phase 3|Phase 4|Other], target_countries:text?, owner:text!, status:select![Planning|Feasibility|Selection|Active|Closed], target_sites:number?, target_date:date?, notes:text?, archived:boolean?; sites: name:text!, country:select![Germany|France|Italy|Spain|United Kingdom|Netherlands|Poland|Belgium|Sweden|Switzerland|United States|Other], city:text?, institution_type:select![University hospital|Academic medical center|General hospital|Research institute|Specialty clinic|Other], specialty:text!, capability:text?, site_history:text?, source:text?, verified_date:date?, contact_channel:text?, archived:boolean?; investigators: name:text!, site_id:text!, specialty:text!, position:text?, experience:text?, source:text?, affiliation_date:date?, archived:boolean?; candidates: name:text!, study_id:text!, site_id:text!, lead_investigator_id:text?, owner:text!, stage:select![Identified|Contacted|Questioned|Assessed|Selected|Declined], questionnaire_due:date?, decision_due:date?, last_contact:date?, capacity_band:select?[Unknown|Low|Moderate|High], capacity_date:date?, capacity_source:text?, selection_reason:text?, decision_date:date?, decision_owner:text?, archived:boolean?; criteria: name:text!, study_id:text!, section:select![People & staffing|Facilities|Prior research|Operations|Capacity estimate|Other], mandatory:boolean!, weight:number!, version:number!, prompt:text!, owner:text?, archived:boolean?; responses: name:text!, candidate_id:text!, criterion_id:text!, answer:select![Yes|Partial|No|Unknown|Not applicable], respondent_role:text!, source_date:date!, source:text!, rationale:text?, clarification:text?, archived:boolean?; evaluations: name:text!, candidate_id:text!, reviewer:text!, review_date:date?, status:select![Draft|Reviewed|Approved], rationale:text?, evidence_snapshot:text?, weighted_score:number?, archived:boolean?; startup: name:text!, candidate_id:text!, item_type:select![Qualification|Contract|Essential document|Training|Other], owner:text!, planned_date:date!, actual_date:date?, status:select![Not started|In progress|Blocked|Completed], evidence:text?, blocker:text?, archived:boolean?. Relations are text fields containing saved authorized UUIDs of target roles (investigators.site_id→sites, candidates.study_id/site_id/lead_investigator_id→studies/sites/investigators, criteria.study_id→studies, responses.candidate_id/criterion_id→candidates/criteria, evaluations.candidate_id→candidates, startup.candidate_id→candidates). URL, source, rationale and narrative fields use database text, not URL or longtext type. Blank optional values become null and required fields reject blank; numeric weights integer 1–5, criteria versions positive integer, dates valid ISO YYYY-MM-DD. Site identity is global and study-specific evidence is not written to site master. All reads/writes require complete real manifest with exact schemaVersion, field kind and authorized mode. Parent saves precede children, unique (study_id,site_id) candidate and (candidate_id,criterion_id) current response, one current evaluation per candidate. Approved evaluation binds to evidence_snapshot of response and criteria IDs/versions, has a weighted_score derived from Yes=1, Partial=.5, No=0; Unknown/missing/NA mandatory blocks selection. Inapplicable optional criteria are excluded only with documented source rationale. Select site only with explicit reviewer/date/rationale, complete current approved evaluation and mandatory criteria. Capacity_band is an institution-provided qualitative band, never patient-level estimate. Parent archives require complete dependent reads, stored history and reviewed archived:true. Bounded aggregate reads at 600 rows per role; unscoped backend paging remains available beyond this bound; selected-study child registers and country joins with incomplete dependencies display unavailable until scope is cleared. Short, denied or unknown total means not verified, never 0.",
+    "interactionContract": "Six study-first screens: (1) evidence-gated overview with prioritized action worklist, stage journey and country coverage, (2) study-site worklist with separate reusable institution and professional PI tabs, (3) paginated questionnaire inbox by site plus answer/question registers, (4) three-site criteria matrix on desktop and single-site evidence cards on mobile, (5) filtered decision worklist rather than six-column Kanban, (6) startup readiness grouped by selected institution plus complete task register. One page scroll and narrow tables scroll only in labelled regions. Buttons and forms provide live study scope, Filters, Add, paging, Details/Edit/Copy/Archive, review and approval. Bounded backend page search is labelled; complete small-scope worklists search the entire authorized bounded dataset. Native gear emits tracker:layout with stable templateLayoutSchema and host reviewed configuration. Each form element has data-ui-state and name, collects event.form fields, preserves transient editor draft on change and conflict, including hidden table fields. Create/edit/archive issue records.propose to trusted review only; do not claim saved based on proposal. Read scope selector updates before calculations. Missing evidence withholds ranking/authority. All record identities/permissions maintained by TrialAgents. No duplicate app-level account, nav or automation editor. Study/country filters apply before pagination. Linked filters require complete dependency coverage within 600 rows; otherwise show unavailable and let users clear scope to browse backend pages. Unknown totals never display zero. Unwritable/managed fields are read only, and required clears reject with retained drafts.",
+    "lifecycle": "Preview is unsaved and fictional examples are never imported. One exact version/digest and stable requestKey per preparation; reconcile interrupted receipts; modifications revise same saved app. Records remain in authorized TrialAgents database; editor uses original opened record version. Confirm review produces host save receipt; rejected/failed/stale proposals retain local draft. Duplicate resets decision/approval/response links and does not inherit restricted evidence. Archive changes archived:boolean only after complete dependent checks; no hard deletion or orphan. Saved layout supplied by host templateConfiguration on every render, Ignore retains prior layout. Zero automations is valid, setup failure never blocks app or wipes draft, disabled definitions stay disabled. Logs/access policies remain platform-owned and cannot be bypassed by hidden UI. This custom frontend uses app-level access plus server table/field permissions; its six screens are not independent security boundaries. App archive suspends linked automation; restore/copy never authorizes automatic reactivation. Preserve automation IDs and disabled state during revisions.",
+    "limitations": [
+      "Standalone preview uses fictional institutions and simulated record review. Native layout settings require the actual host; the preview is not a server save or a substitute for real QuickJS/sanitized host acceptance.",
+      "No clinical participant/patient screening data, PHI, real-time EHR, patient prediction, automated site outreach, legally binding contracts, e-signature or greenlight. Capacity bands are human-reported institution-level only.",
+      "Source counts, scores and ranking require complete authorized reads. Analytics loads at most 600 per table; page-local search does not search the entire database. Over-budget aggregations remain unknown.",
+      "Comparison requires one selected study and uses three institutions per page on desktop or three vertical site cards per view on mobile; no automatic ranked award and no scientific validated site suitability model.",
+      "The independent database can still change outside this app; true foreign keys and audit permissions require host enforcement, not just frontend guards.",
+      "Automations are optional recipes only. Repository publication does not activate a ChatGPT runner, email delivery or a customer app. Deployed MCP discovery and user-specific access/setup remain separate operational checks. Requested runner model/reasoning preferences are not verified host settings; report them separately.",
+      "Selected-study response/evaluation/startup registers and country joins require complete reads within 600 rows per involved role. Clear study and country filters to browse beyond the analysis bound; direct study-filtered criteria/candidates and country-filtered institutions remain server-pageable. Larger exact joins need a vetted backend aggregate."
+    ],
+    "examples": [
+      {
+        "prompt": "Create a sponsor-side site feasibility tracker for our Phase 2 neurology trial in Germany, France and Spain. Do not import example data.",
+        "expectedBehavior": "Reuse authorized site/PI organization records, create one study and study-specific candidate/question/response/evaluation/startup roles, scope access through TrialAgents, preview six screens and request the exact reviewed save."
+      },
+      {
+        "prompt": "Compare five shortlisted institutions with consistent mandatory staffing, pharmacy, imaging and startup criteria.",
+        "expectedBehavior": "Use the same authorized study criteria and source-linked response versions; show missing evidence explicitly, reveal weights and do not rank unassessed sites or use patient-level predictions."
+      },
+      {
+        "prompt": "Track startup documents after our medical director explicitly selects a site. We do not need automation.",
+        "expectedBehavior": "Create dated startup metadata only for authorized selected-site candidate records; keep consent/greenlight out of scope, leave automations disabled and provide an immediately usable manual app."
+      },
+      {
+        "prompt": "Prepare a monthly internal site-feasibility briefing with ChatGPT and notify only approved team members.",
+        "expectedBehavior": "Save the app first; separately review one shared-runner ChatGPT monitor and a separate TrialAgents completion email if authorized. Do not activate or send from template metadata."
+      }
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "Optional evidence-backed monthly site-feasibility review when a study owner needs a new internal briefing; the no-automation flow is fully supported. No external site outreach by default.",
+      "readRequirements": "Study-scoped, role-authorized parent tables (studies/sites/candidates/criteria/responses/evaluations/startup) with versions, source dates and completed coverage. No patient-level source. Live web research optional only when separately authorized and verified, with study/PI source dates.",
+      "outputContract": "Owner-reviewed Draft internal feasibility briefing with study ID, cutoff, country/stage summary, unresolved questions, documented mandatory unmet criteria, selected-site startup blockers, linked record references and partial-evidence warnings. Deduplicate by study/candidate/criterion/version; no autonomous stage change. Optional separately approved TrialAgents email sends a fixed message to registered, authorized owner/team recipients upon successful completed briefing, no double independent schedule. No external contact by default.",
+      "promptExample": "For the selected CO-03 sponsor feasibility study, read only currently authorized, study-linked institution, candidate, questionnaire, evaluation and startup records plus the latest approved source date. Confirm completeness of every required role, exact parent UUIDs, criterion versions, evidence dates and response revisions; no private patient or screening data. Summarize country coverage, pending questionnaires, mandatory institutional gaps, eligible assessments, selected-site handoffs and overdue readiness tasks. Never infer actual eligible patient numbers or imply authorization/greenlight. Cite each significant finding to saved record identifiers and source URLs. Propose a Draft internal sponsor briefing with cutoff, coverage caveats, deduplication by study/candidate/criterion version and next actions for named owners, for user review. If denied, truncated or missing evidence, return partial coverage with unknown totals, not zero or a reassuring ranking; no_update only when full coverage and explicitly approved quiet policy. Do not initiate site contact or send email, do not modify approved evaluations, and do not create a separate ChatGPT scheduled task."
+    }
+  },
+  "examples": []
+}

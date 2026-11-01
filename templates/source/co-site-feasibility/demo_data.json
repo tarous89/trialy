@@ -1,0 +1,1356 @@
+{
+  "notice": "ALL RECORDS FICTIONAL. Local preview only; not imported into TrialAgents. No patient information.",
+  "records": [
+    {
+      "role": "studies",
+      "id": "demo-studies-1",
+      "version": 1,
+      "data": {
+        "name": "NEURO-17 · Exploratory phase 2",
+        "protocol_code": "EX-NEU-026",
+        "indication": "Neuroinflammation (fictional)",
+        "phase": "Phase 2",
+        "target_countries": "Germany, France, Netherlands, Spain",
+        "owner": "Sponsor feasibility lead",
+        "status": "Selection",
+        "target_sites": 8,
+        "target_date": "2026-12-04",
+        "notes": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "studies",
+      "id": "demo-studies-2",
+      "version": 1,
+      "data": {
+        "name": "ONCO-08 · Biomarker program",
+        "protocol_code": "EX-ONC-008",
+        "indication": "Solid tumor biomarker study (fictional)",
+        "phase": "Phase 1",
+        "target_countries": "Germany, Italy",
+        "owner": "Clinical operations lead",
+        "status": "Feasibility",
+        "target_sites": 4,
+        "target_date": "2027-01-18",
+        "notes": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "sites",
+      "id": "demo-sites-1",
+      "version": 1,
+      "data": {
+        "name": "Northbridge University Hospital",
+        "country": "Germany",
+        "city": "Berlin",
+        "institution_type": "University hospital",
+        "specialty": "Neurology / translational research",
+        "capability": "Clinical research unit; on-site imaging and investigational product handling (fictional self-report)",
+        "site_history": "Published institutional trial activity (example, unverified)",
+        "source": "https://example.org/institutions/1",
+        "verified_date": "2026-10-02",
+        "contact_channel": "Institutional research office",
+        "archived": false
+      }
+    },
+    {
+      "role": "sites",
+      "id": "demo-sites-2",
+      "version": 1,
+      "data": {
+        "name": "Riverside Clinical Research Center",
+        "country": "France",
+        "city": "Lyon",
+        "institution_type": "Academic medical center",
+        "specialty": "Neurology / translational research",
+        "capability": "Clinical research unit; on-site imaging and investigational product handling (fictional self-report)",
+        "site_history": "Published institutional trial activity (example, unverified)",
+        "source": "https://example.org/institutions/2",
+        "verified_date": "2026-10-03",
+        "contact_channel": "Institutional research office",
+        "archived": false
+      }
+    },
+    {
+      "role": "sites",
+      "id": "demo-sites-3",
+      "version": 1,
+      "data": {
+        "name": "Westhaven Institute of Medicine",
+        "country": "Netherlands",
+        "city": "Utrecht",
+        "institution_type": "University hospital",
+        "specialty": "Neurology / translational research",
+        "capability": "Clinical research unit; on-site imaging and investigational product handling (fictional self-report)",
+        "site_history": "Published institutional trial activity (example, unverified)",
+        "source": "https://example.org/institutions/3",
+        "verified_date": "2026-10-04",
+        "contact_channel": "Institutional research office",
+        "archived": false
+      }
+    },
+    {
+      "role": "sites",
+      "id": "demo-sites-4",
+      "version": 1,
+      "data": {
+        "name": "Linden University Clinic",
+        "country": "Spain",
+        "city": "Madrid",
+        "institution_type": "Academic medical center",
+        "specialty": "Neurology / translational research",
+        "capability": "Clinical research unit; on-site imaging and investigational product handling (fictional self-report)",
+        "site_history": "Published institutional trial activity (example, unverified)",
+        "source": "https://example.org/institutions/4",
+        "verified_date": "2026-10-05",
+        "contact_channel": "Institutional research office",
+        "archived": false
+      }
+    },
+    {
+      "role": "sites",
+      "id": "demo-sites-5",
+      "version": 1,
+      "data": {
+        "name": "Harborfield Research Hospital",
+        "country": "Germany",
+        "city": "Hamburg",
+        "institution_type": "University hospital",
+        "specialty": "Neurology / translational research",
+        "capability": "Clinical research unit; on-site imaging and investigational product handling (fictional self-report)",
+        "site_history": "Published institutional trial activity (example, unverified)",
+        "source": "https://example.org/institutions/5",
+        "verified_date": "2026-10-06",
+        "contact_channel": "Institutional research office",
+        "archived": false
+      }
+    },
+    {
+      "role": "sites",
+      "id": "demo-sites-6",
+      "version": 1,
+      "data": {
+        "name": "Atlas Medical Research Campus",
+        "country": "France",
+        "city": "Paris",
+        "institution_type": "Academic medical center",
+        "specialty": "Neurology / translational research",
+        "capability": "Clinical research unit; on-site imaging and investigational product handling (fictional self-report)",
+        "site_history": "Published institutional trial activity (example, unverified)",
+        "source": "https://example.org/institutions/6",
+        "verified_date": "2026-10-07",
+        "contact_channel": "Institutional research office",
+        "archived": false
+      }
+    },
+    {
+      "role": "sites",
+      "id": "demo-sites-7",
+      "version": 1,
+      "data": {
+        "name": "Silverpine Academic Hospital",
+        "country": "Germany",
+        "city": "Munich",
+        "institution_type": "University hospital",
+        "specialty": "Neurology / translational research",
+        "capability": "Clinical research unit; on-site imaging and investigational product handling (fictional self-report)",
+        "site_history": "Published institutional trial activity (example, unverified)",
+        "source": "https://example.org/institutions/7",
+        "verified_date": "2026-10-08",
+        "contact_channel": "Institutional research office",
+        "archived": false
+      }
+    },
+    {
+      "role": "sites",
+      "id": "demo-sites-8",
+      "version": 1,
+      "data": {
+        "name": "Eastlake Clinical Institute",
+        "country": "Spain",
+        "city": "Barcelona",
+        "institution_type": "Academic medical center",
+        "specialty": "Neurology / translational research",
+        "capability": "Clinical research unit; on-site imaging and investigational product handling (fictional self-report)",
+        "site_history": "Published institutional trial activity (example, unverified)",
+        "source": "https://example.org/institutions/8",
+        "verified_date": "2026-10-09",
+        "contact_channel": "Institutional research office",
+        "archived": false
+      }
+    },
+    {
+      "role": "sites",
+      "id": "demo-sites-9",
+      "version": 1,
+      "data": {
+        "name": "Valley Research University",
+        "country": "Italy",
+        "city": "Milan",
+        "institution_type": "University hospital",
+        "specialty": "Oncology / diagnostics",
+        "capability": "Clinical research unit; on-site imaging and investigational product handling (fictional self-report)",
+        "site_history": "Published institutional trial activity (example, unverified)",
+        "source": "https://example.org/institutions/9",
+        "verified_date": "2026-10-10",
+        "contact_channel": "Institutional research office",
+        "archived": false
+      }
+    },
+    {
+      "role": "sites",
+      "id": "demo-sites-10",
+      "version": 1,
+      "data": {
+        "name": "Meridian Hospital Research Hub",
+        "country": "Germany",
+        "city": "Frankfurt",
+        "institution_type": "Academic medical center",
+        "specialty": "Oncology / diagnostics",
+        "capability": "Clinical research unit; on-site imaging and investigational product handling (fictional self-report)",
+        "site_history": "Published institutional trial activity (example, unverified)",
+        "source": "https://example.org/institutions/10",
+        "verified_date": "2026-10-11",
+        "contact_channel": "Institutional research office",
+        "archived": false
+      }
+    },
+    {
+      "role": "investigators",
+      "id": "demo-investigators-1",
+      "version": 1,
+      "data": {
+        "name": "Dr. Example Investigator 1",
+        "site_id": "demo-sites-1",
+        "specialty": "Neurology research",
+        "position": "Study investigator",
+        "experience": "Professional public research example (fictional)",
+        "source": "https://example.org/investigators/1",
+        "affiliation_date": "2026-09-04",
+        "archived": false
+      }
+    },
+    {
+      "role": "investigators",
+      "id": "demo-investigators-2",
+      "version": 1,
+      "data": {
+        "name": "Dr. Example Investigator 2",
+        "site_id": "demo-sites-2",
+        "specialty": "Neurology research",
+        "position": "Study investigator",
+        "experience": "Professional public research example (fictional)",
+        "source": "https://example.org/investigators/2",
+        "affiliation_date": "2026-09-05",
+        "archived": false
+      }
+    },
+    {
+      "role": "investigators",
+      "id": "demo-investigators-3",
+      "version": 1,
+      "data": {
+        "name": "Dr. Example Investigator 3",
+        "site_id": "demo-sites-3",
+        "specialty": "Neurology research",
+        "position": "Study investigator",
+        "experience": "Professional public research example (fictional)",
+        "source": "https://example.org/investigators/3",
+        "affiliation_date": "2026-09-06",
+        "archived": false
+      }
+    },
+    {
+      "role": "investigators",
+      "id": "demo-investigators-4",
+      "version": 1,
+      "data": {
+        "name": "Dr. Example Investigator 4",
+        "site_id": "demo-sites-4",
+        "specialty": "Neurology research",
+        "position": "Study investigator",
+        "experience": "Professional public research example (fictional)",
+        "source": "https://example.org/investigators/4",
+        "affiliation_date": "2026-09-07",
+        "archived": false
+      }
+    },
+    {
+      "role": "investigators",
+      "id": "demo-investigators-5",
+      "version": 1,
+      "data": {
+        "name": "Dr. Example Investigator 5",
+        "site_id": "demo-sites-5",
+        "specialty": "Neurology research",
+        "position": "Study investigator",
+        "experience": "Professional public research example (fictional)",
+        "source": "https://example.org/investigators/5",
+        "affiliation_date": "2026-09-08",
+        "archived": false
+      }
+    },
+    {
+      "role": "investigators",
+      "id": "demo-investigators-6",
+      "version": 1,
+      "data": {
+        "name": "Dr. Example Investigator 6",
+        "site_id": "demo-sites-6",
+        "specialty": "Clinical research",
+        "position": "Study investigator",
+        "experience": "Professional public research example (fictional)",
+        "source": "https://example.org/investigators/6",
+        "affiliation_date": "2026-09-09",
+        "archived": false
+      }
+    },
+    {
+      "role": "investigators",
+      "id": "demo-investigators-7",
+      "version": 1,
+      "data": {
+        "name": "Dr. Example Investigator 7",
+        "site_id": "demo-sites-7",
+        "specialty": "Clinical research",
+        "position": "Study investigator",
+        "experience": "Professional public research example (fictional)",
+        "source": "https://example.org/investigators/7",
+        "affiliation_date": "2026-09-10",
+        "archived": false
+      }
+    },
+    {
+      "role": "candidates",
+      "id": "demo-candidates-1",
+      "version": 1,
+      "data": {
+        "name": "Northbridge University Hospital / NEURO-17",
+        "study_id": "demo-studies-1",
+        "site_id": "demo-sites-1",
+        "lead_investigator_id": "demo-investigators-1",
+        "owner": "Feasibility lead",
+        "stage": "Selected",
+        "questionnaire_due": "2026-10-23",
+        "decision_due": "2026-12-04",
+        "last_contact": "2026-10-25",
+        "capacity_band": "Moderate",
+        "capacity_date": "2026-10-19",
+        "capacity_source": "Institution-provided organization-level capacity band; no patients described",
+        "selection_reason": "Sponsor committee reviewed complete institutional evidence",
+        "decision_date": "2026-10-28",
+        "decision_owner": "Sponsor selection committee",
+        "archived": false
+      }
+    },
+    {
+      "role": "candidates",
+      "id": "demo-candidates-2",
+      "version": 1,
+      "data": {
+        "name": "Riverside Clinical Research Center / NEURO-17",
+        "study_id": "demo-studies-1",
+        "site_id": "demo-sites-2",
+        "lead_investigator_id": "demo-investigators-2",
+        "owner": "ClinOps manager",
+        "stage": "Assessed",
+        "questionnaire_due": "2026-11-05",
+        "decision_due": "2026-12-04",
+        "last_contact": "2026-10-25",
+        "capacity_band": "High",
+        "capacity_date": "2026-10-19",
+        "capacity_source": "Institution-provided organization-level capacity band; no patients described",
+        "selection_reason": null,
+        "decision_date": null,
+        "decision_owner": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "candidates",
+      "id": "demo-candidates-3",
+      "version": 1,
+      "data": {
+        "name": "Westhaven Institute of Medicine / NEURO-17",
+        "study_id": "demo-studies-1",
+        "site_id": "demo-sites-3",
+        "lead_investigator_id": "demo-investigators-3",
+        "owner": "Site startup lead",
+        "stage": "Assessed",
+        "questionnaire_due": "2026-11-03",
+        "decision_due": "2026-12-04",
+        "last_contact": "2026-10-25",
+        "capacity_band": "Moderate",
+        "capacity_date": "2026-10-19",
+        "capacity_source": "Institution-provided organization-level capacity band; no patients described",
+        "selection_reason": null,
+        "decision_date": null,
+        "decision_owner": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "candidates",
+      "id": "demo-candidates-4",
+      "version": 1,
+      "data": {
+        "name": "Linden University Clinic / NEURO-17",
+        "study_id": "demo-studies-1",
+        "site_id": "demo-sites-4",
+        "lead_investigator_id": "demo-investigators-4",
+        "owner": "Feasibility lead",
+        "stage": "Questioned",
+        "questionnaire_due": "2026-10-25",
+        "decision_due": "2026-12-04",
+        "last_contact": "2026-10-25",
+        "capacity_band": "Unknown",
+        "capacity_date": null,
+        "capacity_source": null,
+        "selection_reason": null,
+        "decision_date": null,
+        "decision_owner": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "candidates",
+      "id": "demo-candidates-5",
+      "version": 1,
+      "data": {
+        "name": "Harborfield Research Hospital / NEURO-17",
+        "study_id": "demo-studies-1",
+        "site_id": "demo-sites-5",
+        "lead_investigator_id": "demo-investigators-5",
+        "owner": "ClinOps manager",
+        "stage": "Questioned",
+        "questionnaire_due": "2026-11-08",
+        "decision_due": "2026-12-04",
+        "last_contact": "2026-10-25",
+        "capacity_band": "Low",
+        "capacity_date": null,
+        "capacity_source": null,
+        "selection_reason": null,
+        "decision_date": null,
+        "decision_owner": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "candidates",
+      "id": "demo-candidates-6",
+      "version": 1,
+      "data": {
+        "name": "Atlas Medical Research Campus / NEURO-17",
+        "study_id": "demo-studies-1",
+        "site_id": "demo-sites-6",
+        "lead_investigator_id": "demo-investigators-6",
+        "owner": "Site startup lead",
+        "stage": "Contacted",
+        "questionnaire_due": "2026-11-17",
+        "decision_due": "2026-12-04",
+        "last_contact": "2026-10-25",
+        "capacity_band": "Unknown",
+        "capacity_date": null,
+        "capacity_source": null,
+        "selection_reason": null,
+        "decision_date": null,
+        "decision_owner": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "candidates",
+      "id": "demo-candidates-7",
+      "version": 1,
+      "data": {
+        "name": "Silverpine Academic Hospital / NEURO-17",
+        "study_id": "demo-studies-1",
+        "site_id": "demo-sites-7",
+        "lead_investigator_id": "demo-investigators-7",
+        "owner": "Feasibility lead",
+        "stage": "Identified",
+        "questionnaire_due": "2026-11-24",
+        "decision_due": "2026-12-04",
+        "last_contact": "2026-10-25",
+        "capacity_band": "Unknown",
+        "capacity_date": null,
+        "capacity_source": null,
+        "selection_reason": null,
+        "decision_date": null,
+        "decision_owner": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "candidates",
+      "id": "demo-candidates-8",
+      "version": 1,
+      "data": {
+        "name": "Eastlake Clinical Institute / NEURO-17",
+        "study_id": "demo-studies-1",
+        "site_id": "demo-sites-8",
+        "lead_investigator_id": null,
+        "owner": "ClinOps manager",
+        "stage": "Declined",
+        "questionnaire_due": "2026-10-08",
+        "decision_due": "2026-12-04",
+        "last_contact": "2026-10-25",
+        "capacity_band": "Low",
+        "capacity_date": null,
+        "capacity_source": null,
+        "selection_reason": "Sponsor declined after capability discussion",
+        "decision_date": "2026-10-28",
+        "decision_owner": "Sponsor selection committee",
+        "archived": false
+      }
+    },
+    {
+      "role": "candidates",
+      "id": "demo-candidates-9",
+      "version": 1,
+      "data": {
+        "name": "Harborfield Research Hospital / ONCO-08",
+        "study_id": "demo-studies-2",
+        "site_id": "demo-sites-5",
+        "lead_investigator_id": null,
+        "owner": "Site startup lead",
+        "stage": "Questioned",
+        "questionnaire_due": "2026-11-16",
+        "decision_due": "2027-01-18",
+        "last_contact": "2026-10-25",
+        "capacity_band": "Unknown",
+        "capacity_date": null,
+        "capacity_source": null,
+        "selection_reason": null,
+        "decision_date": null,
+        "decision_owner": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "candidates",
+      "id": "demo-candidates-10",
+      "version": 1,
+      "data": {
+        "name": "Atlas Medical Research Campus / ONCO-08",
+        "study_id": "demo-studies-2",
+        "site_id": "demo-sites-6",
+        "lead_investigator_id": null,
+        "owner": "Feasibility lead",
+        "stage": "Contacted",
+        "questionnaire_due": "2026-11-29",
+        "decision_due": "2027-01-18",
+        "last_contact": "2026-10-25",
+        "capacity_band": "Unknown",
+        "capacity_date": null,
+        "capacity_source": null,
+        "selection_reason": null,
+        "decision_date": null,
+        "decision_owner": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "candidates",
+      "id": "demo-candidates-11",
+      "version": 1,
+      "data": {
+        "name": "Silverpine Academic Hospital / ONCO-08",
+        "study_id": "demo-studies-2",
+        "site_id": "demo-sites-7",
+        "lead_investigator_id": null,
+        "owner": "ClinOps manager",
+        "stage": "Identified",
+        "questionnaire_due": "2026-12-03",
+        "decision_due": "2027-01-18",
+        "last_contact": "2026-10-25",
+        "capacity_band": "Unknown",
+        "capacity_date": null,
+        "capacity_source": null,
+        "selection_reason": null,
+        "decision_date": null,
+        "decision_owner": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "candidates",
+      "id": "demo-candidates-12",
+      "version": 1,
+      "data": {
+        "name": "Eastlake Clinical Institute / ONCO-08",
+        "study_id": "demo-studies-2",
+        "site_id": "demo-sites-8",
+        "lead_investigator_id": null,
+        "owner": "Site startup lead",
+        "stage": "Identified",
+        "questionnaire_due": "2026-12-12",
+        "decision_due": "2027-01-18",
+        "last_contact": "2026-10-25",
+        "capacity_band": "Unknown",
+        "capacity_date": null,
+        "capacity_source": null,
+        "selection_reason": null,
+        "decision_date": null,
+        "decision_owner": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "criteria",
+      "id": "demo-criteria-1",
+      "version": 1,
+      "data": {
+        "name": "PI and coordinator availability",
+        "study_id": "demo-studies-1",
+        "section": "People & staffing",
+        "mandatory": true,
+        "weight": 5,
+        "version": 1,
+        "prompt": "Confirm availability of study-specific coordinator and clinical supervision",
+        "owner": "Sponsor feasibility lead",
+        "archived": false
+      }
+    },
+    {
+      "role": "criteria",
+      "id": "demo-criteria-2",
+      "version": 1,
+      "data": {
+        "name": "Investigational product process",
+        "study_id": "demo-studies-1",
+        "section": "Facilities",
+        "mandatory": true,
+        "weight": 5,
+        "version": 1,
+        "prompt": "Confirm compliant site-level investigational product handling",
+        "owner": "Sponsor feasibility lead",
+        "archived": false
+      }
+    },
+    {
+      "role": "criteria",
+      "id": "demo-criteria-3",
+      "version": 1,
+      "data": {
+        "name": "Equipment and imaging",
+        "study_id": "demo-studies-1",
+        "section": "Facilities",
+        "mandatory": false,
+        "weight": 3,
+        "version": 1,
+        "prompt": "List relevant imaging/research equipment",
+        "owner": "Sponsor feasibility lead",
+        "archived": false
+      }
+    },
+    {
+      "role": "criteria",
+      "id": "demo-criteria-4",
+      "version": 1,
+      "data": {
+        "name": "Previous sponsor trial experience",
+        "study_id": "demo-studies-1",
+        "section": "Prior research",
+        "mandatory": false,
+        "weight": 2,
+        "version": 1,
+        "prompt": "Provide relevant study operation experience",
+        "owner": "Sponsor feasibility lead",
+        "archived": false
+      }
+    },
+    {
+      "role": "criteria",
+      "id": "demo-criteria-5",
+      "version": 1,
+      "data": {
+        "name": "Operational aggregate capacity",
+        "study_id": "demo-studies-1",
+        "section": "Capacity estimate",
+        "mandatory": false,
+        "weight": 2,
+        "version": 1,
+        "prompt": "Estimate qualitative institution capacity band and vintage",
+        "owner": "Sponsor feasibility lead",
+        "archived": false
+      }
+    },
+    {
+      "role": "criteria",
+      "id": "demo-criteria-6",
+      "version": 1,
+      "data": {
+        "name": "PI and coordinator availability",
+        "study_id": "demo-studies-2",
+        "section": "People & staffing",
+        "mandatory": true,
+        "weight": 5,
+        "version": 1,
+        "prompt": "Confirm availability of study-specific coordinator and clinical supervision",
+        "owner": "Sponsor feasibility lead",
+        "archived": false
+      }
+    },
+    {
+      "role": "criteria",
+      "id": "demo-criteria-7",
+      "version": 1,
+      "data": {
+        "name": "Investigational product process",
+        "study_id": "demo-studies-2",
+        "section": "Facilities",
+        "mandatory": true,
+        "weight": 5,
+        "version": 1,
+        "prompt": "Confirm compliant site-level investigational product handling",
+        "owner": "Sponsor feasibility lead",
+        "archived": false
+      }
+    },
+    {
+      "role": "criteria",
+      "id": "demo-criteria-8",
+      "version": 1,
+      "data": {
+        "name": "Equipment and imaging",
+        "study_id": "demo-studies-2",
+        "section": "Facilities",
+        "mandatory": false,
+        "weight": 3,
+        "version": 1,
+        "prompt": "List relevant imaging/research equipment",
+        "owner": "Sponsor feasibility lead",
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-1",
+      "version": 1,
+      "data": {
+        "name": "Northbridge University Hospital · Q1",
+        "candidate_id": "demo-candidates-1",
+        "criterion_id": "demo-criteria-1",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-13",
+        "source": "https://example.org/feasibility/1/1",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-2",
+      "version": 1,
+      "data": {
+        "name": "Northbridge University Hospital · Q2",
+        "candidate_id": "demo-candidates-1",
+        "criterion_id": "demo-criteria-2",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-14",
+        "source": "https://example.org/feasibility/1/2",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-3",
+      "version": 1,
+      "data": {
+        "name": "Northbridge University Hospital · Q3",
+        "candidate_id": "demo-candidates-1",
+        "criterion_id": "demo-criteria-3",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-15",
+        "source": "https://example.org/feasibility/1/3",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-4",
+      "version": 1,
+      "data": {
+        "name": "Northbridge University Hospital · Q4",
+        "candidate_id": "demo-candidates-1",
+        "criterion_id": "demo-criteria-4",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-16",
+        "source": "https://example.org/feasibility/1/4",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-5",
+      "version": 1,
+      "data": {
+        "name": "Northbridge University Hospital · Q5",
+        "candidate_id": "demo-candidates-1",
+        "criterion_id": "demo-criteria-5",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-17",
+        "source": "https://example.org/feasibility/1/5",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-6",
+      "version": 1,
+      "data": {
+        "name": "Riverside Clinical Research Center · Q1",
+        "candidate_id": "demo-candidates-2",
+        "criterion_id": "demo-criteria-1",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-14",
+        "source": "https://example.org/feasibility/2/1",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-7",
+      "version": 1,
+      "data": {
+        "name": "Riverside Clinical Research Center · Q2",
+        "candidate_id": "demo-candidates-2",
+        "criterion_id": "demo-criteria-2",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-15",
+        "source": "https://example.org/feasibility/2/2",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-8",
+      "version": 1,
+      "data": {
+        "name": "Riverside Clinical Research Center · Q3",
+        "candidate_id": "demo-candidates-2",
+        "criterion_id": "demo-criteria-3",
+        "answer": "Partial",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-16",
+        "source": "https://example.org/feasibility/2/3",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": "Awaiting specification",
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-9",
+      "version": 1,
+      "data": {
+        "name": "Riverside Clinical Research Center · Q4",
+        "candidate_id": "demo-candidates-2",
+        "criterion_id": "demo-criteria-4",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-17",
+        "source": "https://example.org/feasibility/2/4",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-10",
+      "version": 1,
+      "data": {
+        "name": "Riverside Clinical Research Center · Q5",
+        "candidate_id": "demo-candidates-2",
+        "criterion_id": "demo-criteria-5",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-18",
+        "source": "https://example.org/feasibility/2/5",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-11",
+      "version": 1,
+      "data": {
+        "name": "Westhaven Institute of Medicine · Q1",
+        "candidate_id": "demo-candidates-3",
+        "criterion_id": "demo-criteria-1",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-15",
+        "source": "https://example.org/feasibility/3/1",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-12",
+      "version": 1,
+      "data": {
+        "name": "Westhaven Institute of Medicine · Q2",
+        "candidate_id": "demo-candidates-3",
+        "criterion_id": "demo-criteria-2",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-16",
+        "source": "https://example.org/feasibility/3/2",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-13",
+      "version": 1,
+      "data": {
+        "name": "Westhaven Institute of Medicine · Q3",
+        "candidate_id": "demo-candidates-3",
+        "criterion_id": "demo-criteria-3",
+        "answer": "Partial",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-17",
+        "source": "https://example.org/feasibility/3/3",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": "Awaiting specification",
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-14",
+      "version": 1,
+      "data": {
+        "name": "Westhaven Institute of Medicine · Q4",
+        "candidate_id": "demo-candidates-3",
+        "criterion_id": "demo-criteria-4",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-18",
+        "source": "https://example.org/feasibility/3/4",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-15",
+      "version": 1,
+      "data": {
+        "name": "Westhaven Institute of Medicine · Q5",
+        "candidate_id": "demo-candidates-3",
+        "criterion_id": "demo-criteria-5",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-19",
+        "source": "https://example.org/feasibility/3/5",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-16",
+      "version": 1,
+      "data": {
+        "name": "Linden University Clinic · Q1",
+        "candidate_id": "demo-candidates-4",
+        "criterion_id": "demo-criteria-1",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-16",
+        "source": "https://example.org/feasibility/4/1",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-17",
+      "version": 1,
+      "data": {
+        "name": "Harborfield Research Hospital · Q1",
+        "candidate_id": "demo-candidates-5",
+        "criterion_id": "demo-criteria-1",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-17",
+        "source": "https://example.org/feasibility/5/1",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-18",
+      "version": 1,
+      "data": {
+        "name": "Harborfield Research Hospital · Q2",
+        "candidate_id": "demo-candidates-5",
+        "criterion_id": "demo-criteria-2",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-18",
+        "source": "https://example.org/feasibility/5/2",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-19",
+      "version": 1,
+      "data": {
+        "name": "Harborfield Research Hospital · Q3",
+        "candidate_id": "demo-candidates-5",
+        "criterion_id": "demo-criteria-3",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-19",
+        "source": "https://example.org/feasibility/5/3",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-20",
+      "version": 1,
+      "data": {
+        "name": "Harborfield Research Hospital · Q4",
+        "candidate_id": "demo-candidates-5",
+        "criterion_id": "demo-criteria-4",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-20",
+        "source": "https://example.org/feasibility/5/4",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-21",
+      "version": 1,
+      "data": {
+        "name": "Atlas Medical Research Campus · Q1",
+        "candidate_id": "demo-candidates-6",
+        "criterion_id": "demo-criteria-1",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-18",
+        "source": "https://example.org/feasibility/6/1",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-22",
+      "version": 1,
+      "data": {
+        "name": "Atlas Medical Research Campus · Q2",
+        "candidate_id": "demo-candidates-6",
+        "criterion_id": "demo-criteria-2",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-19",
+        "source": "https://example.org/feasibility/6/2",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-23",
+      "version": 1,
+      "data": {
+        "name": "Atlas Medical Research Campus · Q3",
+        "candidate_id": "demo-candidates-6",
+        "criterion_id": "demo-criteria-3",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-20",
+        "source": "https://example.org/feasibility/6/3",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-24",
+      "version": 1,
+      "data": {
+        "name": "Silverpine Academic Hospital · Q1",
+        "candidate_id": "demo-candidates-7",
+        "criterion_id": "demo-criteria-1",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-19",
+        "source": "https://example.org/feasibility/7/1",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-25",
+      "version": 1,
+      "data": {
+        "name": "Silverpine Academic Hospital · Q2",
+        "candidate_id": "demo-candidates-7",
+        "criterion_id": "demo-criteria-2",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-20",
+        "source": "https://example.org/feasibility/7/2",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-26",
+      "version": 1,
+      "data": {
+        "name": "Eastlake Clinical Institute · Q1",
+        "candidate_id": "demo-candidates-8",
+        "criterion_id": "demo-criteria-1",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-20",
+        "source": "https://example.org/feasibility/8/1",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-27",
+      "version": 1,
+      "data": {
+        "name": "Harborfield Research Hospital · Q1",
+        "candidate_id": "demo-candidates-9",
+        "criterion_id": "demo-criteria-6",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-21",
+        "source": "https://example.org/feasibility/9/1",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-28",
+      "version": 1,
+      "data": {
+        "name": "Harborfield Research Hospital · Q2",
+        "candidate_id": "demo-candidates-9",
+        "criterion_id": "demo-criteria-7",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-22",
+        "source": "https://example.org/feasibility/9/2",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "responses",
+      "id": "demo-responses-29",
+      "version": 1,
+      "data": {
+        "name": "Atlas Medical Research Campus · Q1",
+        "candidate_id": "demo-candidates-10",
+        "criterion_id": "demo-criteria-6",
+        "answer": "Yes",
+        "respondent_role": "Institution study coordination team",
+        "source_date": "2026-10-22",
+        "source": "https://example.org/feasibility/10/1",
+        "rationale": "Organization capability only; no participant details",
+        "clarification": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "evaluations",
+      "id": "demo-evaluations-1",
+      "version": 1,
+      "data": {
+        "name": "Sponsor feasibility review · Northbridge University Hospital",
+        "candidate_id": "demo-candidates-1",
+        "reviewer": "Sponsor feasibility committee",
+        "review_date": "2026-10-28",
+        "status": "Approved",
+        "rationale": "Reviewed source evidence and mandatory organization criteria",
+        "evidence_snapshot": "demo-criteria-1:1:1:demo-responses-1:1|demo-criteria-2:1:1:demo-responses-2:1|demo-criteria-3:1:1:demo-responses-3:1|demo-criteria-4:1:1:demo-responses-4:1|demo-criteria-5:1:1:demo-responses-5:1",
+        "weighted_score": 100.0,
+        "archived": false
+      }
+    },
+    {
+      "role": "evaluations",
+      "id": "demo-evaluations-2",
+      "version": 1,
+      "data": {
+        "name": "Sponsor feasibility review · Riverside Clinical Research Center",
+        "candidate_id": "demo-candidates-2",
+        "reviewer": "Sponsor feasibility committee",
+        "review_date": "2026-10-28",
+        "status": "Reviewed",
+        "rationale": "Reviewed source evidence and mandatory organization criteria",
+        "evidence_snapshot": "demo-criteria-1:1:1:demo-responses-6:1|demo-criteria-2:1:1:demo-responses-7:1|demo-criteria-3:1:1:demo-responses-8:1|demo-criteria-4:1:1:demo-responses-9:1|demo-criteria-5:1:1:demo-responses-10:1",
+        "weighted_score": 91.2,
+        "archived": false
+      }
+    },
+    {
+      "role": "evaluations",
+      "id": "demo-evaluations-3",
+      "version": 1,
+      "data": {
+        "name": "Sponsor feasibility review · Westhaven Institute of Medicine",
+        "candidate_id": "demo-candidates-3",
+        "reviewer": "Sponsor feasibility committee",
+        "review_date": "2026-10-28",
+        "status": "Draft",
+        "rationale": "Pending reviewer confirmation",
+        "evidence_snapshot": null,
+        "weighted_score": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "startup",
+      "id": "demo-startup-1",
+      "version": 1,
+      "data": {
+        "name": "Institutional contract",
+        "candidate_id": "demo-candidates-1",
+        "item_type": "Contract",
+        "owner": "Study startup specialist",
+        "planned_date": "2026-11-06",
+        "actual_date": null,
+        "status": "In progress",
+        "evidence": null,
+        "blocker": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "startup",
+      "id": "demo-startup-2",
+      "version": 1,
+      "data": {
+        "name": "Qualification documentation",
+        "candidate_id": "demo-candidates-1",
+        "item_type": "Qualification",
+        "owner": "Site coordinator",
+        "planned_date": "2026-10-29",
+        "actual_date": "2026-10-28",
+        "status": "Completed",
+        "evidence": "Internal qualification log ref Q-28",
+        "blocker": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "startup",
+      "id": "demo-startup-3",
+      "version": 1,
+      "data": {
+        "name": "Site training metadata",
+        "candidate_id": "demo-candidates-1",
+        "item_type": "Training",
+        "owner": "Sponsor study manager",
+        "planned_date": "2026-11-13",
+        "actual_date": null,
+        "status": "Not started",
+        "evidence": null,
+        "blocker": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "startup",
+      "id": "demo-startup-4",
+      "version": 1,
+      "data": {
+        "name": "Essential document index",
+        "candidate_id": "demo-candidates-1",
+        "item_type": "Essential document",
+        "owner": "Study startup specialist",
+        "planned_date": "2026-11-09",
+        "actual_date": null,
+        "status": "Blocked",
+        "evidence": null,
+        "blocker": "Awaiting sponsor review",
+        "archived": false
+      }
+    },
+    {
+      "role": "startup",
+      "id": "demo-startup-5",
+      "version": 1,
+      "data": {
+        "name": "Vendor setup confirmation",
+        "candidate_id": "demo-candidates-1",
+        "item_type": "Other",
+        "owner": "Site coordinator",
+        "planned_date": "2026-11-17",
+        "actual_date": null,
+        "status": "Not started",
+        "evidence": null,
+        "blocker": null,
+        "archived": false
+      }
+    }
+  ]
+}
