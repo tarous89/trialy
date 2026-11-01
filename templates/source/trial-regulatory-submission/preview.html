@@ -1,0 +1,2408 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Trial Regulatory Submission fictional preview</title><style>:root{--ink:#20313b;--ink2:#344c58;--muted:#71818a;--nav:#192d36;--nav2:#243d49;--blue:#247299;--blue-dark:#145071;--ice:#e9f3f6;--paper:#fffefd;--back:#f3f6f5;--stroke:#dbe4e5;--line:#edf0f0;--amber:#b07728;--amber-bg:#fbf3e6;--mint:#247d67;--mint-bg:#e9f5ef;--radius:15px;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}*{box-sizing:border-box}html,body{margin:0;padding:0;color:var(--ink);background:var(--back);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px}button,input,textarea,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #9ac7d7;outline-offset:2px}a{color:var(--blue-dark)}p{line-height:1.52}.rg-layout{display:grid;grid-template-columns:224px minmax(0,1fr);min-height:100vh}.rg-sidebar{background:var(--nav);color:#d5e4e8;padding:32px 15px 20px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:36px;min-width:0}.rg-sidebar-name{color:#fff;font-size:17px;line-height:1.35;letter-spacing:-.03em;font-weight:760;padding:0 14px;white-space:normal;overflow-wrap:break-word}.rg-nav{display:grid;gap:7px}.rg-nav-btn{display:flex;gap:12px;align-items:center;width:100%;text-align:left;border:1px solid transparent;background:transparent;color:#506570;border-radius:10px;padding:13px 12px;min-height:47px;font-weight:520;font-size:13px;line-height:1.3}.rg-nav-btn svg{flex:none;opacity:.85}.rg-nav-btn:hover{color:#fff;background:#ffffff16}.rg-nav-btn.active{background:#cde5ec17;color:#fff;border-color:#82c6d344;box-shadow:inset 3px 0 #66b5cf;font-weight:700}.rg-sidebar-foot{margin-top:auto;padding:14px 10px 0;border-top:1px solid #ffffff18;color:#506570;font-size:12px;display:flex;align-items:center;gap:8px;line-height:1.4}.rg-foot-dot{background:#59bb98;width:7px;height:7px;border-radius:50%;flex:none}.rg-main{padding:34px clamp(18px,3.4vw,52px) 65px;min-width:0;width:100%;max-width:1680px}.rg-page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:27px}.rg-page-head h1{margin:0;color:#213640;font-size:clamp(26px,2.7vw,37px);letter-spacing:-.045em;line-height:1.18;font-weight:770}.rg-page-head p{margin:9px 0 0;font-size:13px;color:#506570;max-width:750px}.rg-head-actions{display:flex;align-items:center;gap:10px;flex:none}.rg-chooser{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--stroke);border-radius:9px;padding:7px 9px 7px 12px;color:#506570;font-size:12px}.rg-chooser select{border:0;background:white;color:#294551;max-width:245px;min-width:90px;font-weight:650;font-size:12px;padding:4px;cursor:pointer;min-height:27px}.rg-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--stroke);border-radius:9px;padding:10px 13px;background:#fff;color:#365565;font-weight:690;font-size:12px;white-space:nowrap;min-height:37px;line-height:1.2;text-decoration:none}.rg-btn:hover:not(:disabled){background:#ecf4f6;border-color:#c0d8dc}.rg-btn.primary{background:#24799b;border-color:#24799b;color:#fff}.rg-btn.primary:hover:not(:disabled){background:#17617c}.rg-btn.secondary{background:#f8fbfb;border-color:#c8d9df;color:#365767}.rg-btn.link,.rg-btn.minimal{border:0;background:transparent;color:#286b8b;padding:4px 7px;min-height:28px}.rg-btn.link:hover,.rg-btn.minimal:hover{background:#edf5f7}.rg-btn.danger{background:#a54548;color:#fff;border-color:#a54548}.rg-btn.tiny{padding:6px 9px;font-size:12px;min-height:29px}.rg-btn.small{padding:7px 11px;min-height:32px}.rg-btn.icon-only{width:39px;height:39px;padding:0}.rg-btn.minimal.danger{color:#a54548}.rg-btn.minimal.danger:hover{background:#fff1f0}.rg-paper{min-width:0;border:1px solid var(--stroke);border-radius:var(--radius);padding:23px 24px;background:var(--paper);box-shadow:0 5px 24px #20313b07;margin-bottom:20px}.rg-paper h2{margin:0;font-size:17px;font-weight:730;letter-spacing:-.026em;color:#213640;line-height:1.3}.rg-paper h3{font-size:13px;margin:19px 0 12px;color:#29424d}.rg-panel-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}.rg-panel-heading p{margin:5px 0 0;color:#506570;font-size:12px}.rg-section-kicker,.rg-eyebrow{font-size:12px;font-weight:790;letter-spacing:.12em;color:#506570;text-transform:uppercase}.rg-pill{display:inline-flex;align-items:center;border-radius:7px;padding:5px 8px;background:#edf3f5;color:#436478;border:1px solid #e2ecee;font-weight:690;font-size:12px;line-height:1.15;max-width:100%;white-space:normal}.rg-pill.ok{background:var(--mint-bg);border-color:#cce8dc;color:#26765b}.rg-pill.warn{background:var(--amber-bg);border-color:#f0dfba;color:#506570}.rg-pill.mute{background:#f0f2f3;border-color:#e1e5e7;color:#506570}.rg-pill.outline{background:#ffffff19;border-color:#ffffff35;color:#ccebf3}.rg-data-alert,.rg-notice{border-radius:10px;padding:12px 16px;margin-bottom:20px;border:1px solid #efd6ab;background:#fff8e9;color:#825c22;line-height:1.45;font-size:12px}.rg-notice{background:#edf6f9;border-color:#bdd9e4;color:#345b6b}.rg-progress{height:7px;background:#e8edef;overflow:hidden;border-radius:8px;width:100%}.rg-progress div{height:100%;background:linear-gradient(90deg,#8bc2cf,#24799b);border-radius:8px}.rg-desk-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);gap:18px}.rg-desk-hero{background:linear-gradient(122deg,#183844,#203641 57%,#15313d);border:1px solid #2d4d58;border-radius:16px;min-height:286px;color:#eaf5f7;padding:28px 30px;position:relative;overflow:hidden;margin-bottom:20px}.rg-desk-hero:after{content:"";position:absolute;width:330px;height:330px;border-radius:50%;right:-110px;top:-155px;border:1px solid #9bc7c224;box-shadow:0 0 0 33px #aad3c50a,0 0 0 70px #a0d1d008;pointer-events:none}.rg-hero-top{display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative;z-index:1}.rg-hero-top .rg-eyebrow{color:#506570}.rg-hero-name{font-size:clamp(22px,2.4vw,29px);font-weight:720;letter-spacing:-.035em;margin-top:25px;max-width:570px;position:relative;z-index:1}.rg-desk-hero>p{color:#506570;font-size:12px;margin:6px 0 17px;position:relative;z-index:1}.rg-hero-rule{border-bottom:1px solid #ffffff28;margin:20px 0 17px}.rg-hero-meta{display:flex;gap:50px;position:relative;z-index:1;margin-bottom:14px}.rg-hero-meta>div{display:flex;flex-direction:column;gap:5px}.rg-hero-meta span{color:#506570;font-size:12px}.rg-hero-meta strong{font-size:24px;letter-spacing:-.03em;color:#fff}.rg-hero-meta small{font-size:12px;color:#d2e5e9}.rg-desk-hero .rg-progress{background:#34515a;max-width:480px}.rg-desk-side{background:#fff;border:1px solid var(--stroke);border-radius:16px;padding:23px 20px;margin-bottom:20px;min-width:0}.rg-country-stack{margin-top:18px;display:grid;gap:8px}.rg-country-item{width:100%;display:flex;align-items:center;text-align:left;gap:12px;border:1px solid #e4ebeb;background:#fbfdfd;border-radius:10px;padding:12px 10px;color:var(--ink);min-width:0}.rg-country-item:hover{background:#eef6f9}.rg-country-item>span:nth-child(2){min-width:0;flex:1;display:grid;gap:4px}.rg-country-item strong{font-size:12px;font-weight:680;overflow-wrap:break-word}.rg-country-item small{font-size:12px;color:#506570}.rg-country-initial{background:#e5f1f6;display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:10px;color:#176c8d;font-weight:740;font-size:12px}.rg-country-score{flex:none;font-weight:780;font-size:15px;color:#24536a}.rg-lower-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:18px}.rg-gap-row{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:13px 0;color:var(--ink)}.rg-gap-row:hover{background:#f5fafb}.rg-gap-row>span:nth-child(2){min-width:0;flex:1;display:grid;gap:4px}.rg-gap-row strong{font-size:12px;overflow-wrap:anywhere}.rg-gap-row small{color:#506570;font-size:12px}.rg-gap-dot{width:9px;height:9px;flex:none;border-radius:50%;background:#cb9254;box-shadow:0 0 0 4px #fbf1e3}.rg-gap-right{color:#506570;font-size:12px}.rg-watch-row{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);font-size:12px}.rg-watch-row span:nth-child(2){display:grid;gap:5px;min-width:0}.rg-watch-row strong{font-size:12px}.rg-watch-row small{color:#506570}.rg-watch-date{font-weight:760;color:#7c6570;min-width:80px;font-size:12px}.rg-runway{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;overflow-x:auto;padding:8px 0 6px}.rg-runway-step{flex:1;min-width:125px;border-top:2px solid #b2cbd5;display:flex;flex-direction:column;gap:8px;padding:16px 5px 5px;position:relative}.rg-runway-node{position:absolute;top:-8px;left:4px;width:13px;height:13px;background:#2d7896;border:2px solid #fff;box-shadow:0 0 0 2px #abcdd8;border-radius:50%}.rg-runway-step strong{font-size:13px;color:#1f627d}.rg-runway-step span:not(.rg-runway-node){font-size:12px;font-weight:650}.rg-runway-step small{font-size:12px;color:#506570}.rg-two-col{display:grid;grid-template-columns:minmax(235px,.34fr) minmax(0,.66fr);gap:18px}.rg-project-list{padding:20px 13px}.rg-project-list .rg-panel-heading{padding:0 8px}.rg-file-row{display:flex;align-items:center;gap:12px;text-align:left;width:100%;border:1px solid transparent;background:white;border-radius:10px;color:var(--ink);padding:13px 10px;margin:3px 0}.rg-file-row:hover{background:#f2f7f8}.rg-file-row.selected{background:#eaf3f6;border-color:#c5dfe7}.rg-file-row span:nth-child(2){display:grid;gap:5px;min-width:0}.rg-file-row strong{font-size:12px;overflow-wrap:anywhere}.rg-file-row small{font-size:12px;color:#506570}.rg-file-number{display:grid;place-items:center;background:#edf3f6;color:#2b6d8a;border-radius:9px;font-weight:760;width:40px;min-width:40px;height:35px;font-size:12px}.rg-dossier{background:linear-gradient(135deg,#fff,#fcfefc);padding:26px 28px}.rg-dossier .rg-panel-heading h2{font-size:21px;margin-top:6px}.rg-dossier-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:16px 0 24px;border-bottom:1px solid var(--stroke)}.rg-dossier-meta>span{display:grid;gap:7px}.rg-dossier-meta small,.rg-labelpair span{color:#506570;font-size:12px}.rg-dossier-meta strong,.rg-labelpair strong{font-size:12px;overflow-wrap:anywhere}.rg-dossier-line{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;padding:20px 0 14px}.rg-labelpair{display:grid;gap:8px}.rg-milestone-list{display:grid;gap:7px}.rg-milestone{display:grid;grid-template-columns:1.3fr .8fr .8fr .8fr auto;gap:11px;align-items:center;background:#f7fafb;border:1px solid #ecf1f2;border-radius:9px;padding:10px 13px;font-size:12px;color:#506570}.rg-milestone>span:first-child{display:grid;gap:5px}.rg-milestone strong,.rg-milestone b{color:#294451;font-size:12px}.rg-milestone small{font-size:12px;color:#506570}.rg-scroll-region,.rg-matrix-scroll{width:100%;overflow-x:auto;max-width:100%;padding-bottom:4px}.rg-table{width:100%;border-collapse:separate;border-spacing:0;min-width:720px;font-size:12px}.rg-table thead th{font-size:12px;text-transform:uppercase;letter-spacing:.065em;color:#506570;text-align:left;background:#f4f8f9;border-top:1px solid #e7eeee;border-bottom:1px solid #e7eeee;padding:11px 9px}.rg-table thead th:first-child{border-radius:8px 0 0 0}.rg-table thead th:last-child{border-radius:0 8px 0 0}.rg-table tbody td{border-bottom:1px solid var(--line);padding:10px 9px;color:#38535f;vertical-align:middle;line-height:1.4;word-break:normal;overflow-wrap:anywhere;max-width:260px}.rg-table tbody td:first-child{font-weight:650;color:#274450}.rg-table .rg-actions{display:flex;gap:0;flex-wrap:wrap}.rg-pagination{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px 0 0;font-size:12px;color:#506570;flex-wrap:wrap}.rg-pagination>div{display:flex;gap:7px}.rg-empty{padding:30px;text-align:center;border:1px dashed #cadbe0;border-radius:12px;background:#fbfdfd}.rg-empty strong{display:block;font-size:16px}.rg-empty p{color:#506570;font-size:12px}.rg-plan-shell{display:grid;grid-template-columns:minmax(225px,.32fr) minmax(0,.68fr);gap:19px}.rg-plan-intro{align-self:start;position:sticky;top:14px;background:#f9fbfb}.rg-plan-intro .rg-panel-heading{display:block}.rg-plan-intro .rg-panel-heading .rg-btn{margin-top:16px}.rg-plan-intro p{color:#506570;font-size:12px}.rg-plan-status{margin:24px 0;display:grid;gap:12px;font-size:12px;font-weight:710;color:#29546b}.rg-plan-legend{display:flex;gap:7px;flex-wrap:wrap}.rg-plan-tree{min-width:0}.rg-plan-section{background:#fff;border:1px solid var(--stroke);border-radius:14px;margin-bottom:17px;box-shadow:0 4px 15px #00000005;padding:7px 20px 6px}.rg-plan-section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:17px 0 15px;border-bottom:1px solid #e5eded}.rg-plan-section-title>div{display:flex;align-items:center;gap:11px}.rg-plan-section-title h3{margin:0;font-size:15px}.rg-plan-section-title>span{color:#506570;font-size:12px}.rg-plan-index{font-size:12px;font-weight:740;color:#506570}.rg-plan-line{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #f0f3f2}.rg-plan-line:last-child{border-bottom:0}.rg-plan-mark{width:25px;height:25px;border-radius:50%;display:grid;place-items:center;flex:none;background:#f1f3f3;color:#506570;font-weight:780}.rg-plan-mark.done{background:#d9f1e7;color:#506570}.rg-plan-mark.unknown{background:#fff2db;color:#506570}.rg-plan-main{display:grid;gap:4px;min-width:0;flex:1}.rg-plan-main strong{font-size:12px;overflow-wrap:anywhere}.rg-plan-main small{font-size:12px;color:#506570}.rg-plan-state{display:flex;align-items:flex-start;flex-direction:column;gap:5px;min-width:115px}.rg-plan-state small{color:#506570;font-size:12px}.rg-document-shell{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(255px,.5fr);gap:19px}.rg-version-families{display:grid;gap:12px}.rg-doc-family{padding:15px 17px;border:1px solid #e1eaec;border-radius:12px;background:#fcfdfd}.rg-family-top{display:flex;gap:11px;align-items:center;margin-bottom:13px}.rg-family-top>span:nth-child(2){display:grid;gap:4px}.rg-family-top strong{font-size:13px}.rg-family-top small{font-size:12px;color:#506570}.rg-file-symbol{display:grid;place-items:center;background:#e6f2f7;color:#506570;border-radius:9px;width:37px;height:37px}.rg-doc-versions{display:grid;gap:5px;margin-left:48px}.rg-doc-version{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid #edf0f2;font-size:12px}.rg-version-pill{display:inline-flex;align-items:center;justify-content:center;background:#eef2f2;border-radius:6px;padding:5px 7px;color:#516875;font-weight:780}.rg-doc-version .rg-btn{margin-left:auto}.rg-muted{color:#84939c!important}.rg-review-sidebar{align-self:start}.rg-review-tile{border-bottom:1px solid var(--line);padding:13px 0;display:grid;gap:6px}.rg-review-tile strong{font-size:12px}.rg-review-tile small{font-size:12px;color:#506570}.rg-review-top{display:flex;justify-content:space-between;align-items:center}.rg-question-shell{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:19px}.rg-question-aside{display:grid;gap:20px;align-content:start}.rg-question-aside .rg-paper{margin-bottom:0}.rg-inbox .rg-panel-heading{border-bottom:1px solid var(--stroke);padding-bottom:16px}.rg-question{display:grid;grid-template-columns:100px minmax(0,1fr) auto;align-items:center;gap:18px;padding:18px 0;border-bottom:1px solid var(--line)}.rg-question-date{display:grid;gap:7px;font-size:12px;color:#506570}.rg-question-date strong{font-size:12px;color:#4d6b7a}.rg-question-body{min-width:0}.rg-question-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.rg-question-row strong{font-size:13px}.rg-question-body p{font-size:12px;color:#506570;margin:6px 0 9px}.rg-question-details{display:flex;gap:15px;flex-wrap:wrap;font-size:12px;color:#506570}.rg-dark-note{border-radius:14px;background:#244553;color:#d3e9eb;padding:23px 22px}.rg-dark-note .rg-section-kicker{color:#506570}.rg-dark-note>strong{display:block;margin:17px 0 5px;font-size:44px;letter-spacing:-.05em;color:#fff}.rg-dark-note p{font-size:12px}.rg-dark-note small{font-size:12px;color:#506570;line-height:1.6}.rg-matrix{min-width:660px;width:100%;border-spacing:0;border-collapse:collapse}.rg-matrix th{text-align:left;background:#ecf4f6;color:#506570;font-size:12px;padding:12px}.rg-matrix td{padding:15px 12px;border-bottom:1px solid var(--line);font-size:12px;color:#344f5c}.rg-matrix td:first-child{min-width:170px}.rg-matrix td small{display:block;color:#506570;font-size:12px;margin-top:5px}.rg-readiness-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.rg-briefing-pane>p{font-size:12px;color:#506570}.rg-briefing-pane .rg-prompt{background:#f2f7f9;border-radius:9px;border:1px solid #d5e7eb;padding:13px;margin-top:12px}.rg-prompt strong{color:#205d79;font-size:12px}.rg-prompt p{color:#506570;font-size:12px}.rg-mini-rule{border-bottom:1px solid var(--line);margin:22px 0}.rg-report-row{display:flex;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding:12px 0}.rg-report-row>span:first-child{min-width:0;flex:1;display:grid;gap:4px}.rg-report-row strong{font-size:12px}.rg-report-row small{color:#506570;font-size:12px}.rg-overlay{position:fixed;inset:0;background:#10212b9c;z-index:100;display:flex;justify-content:flex-end;align-items:stretch;padding:0}.rg-editor{width:min(640px,100%);height:100vh;background:white;box-shadow:-30px 0 80px #0003;display:flex;flex-direction:column}.rg-editor-head{padding:28px 30px 21px;border-bottom:1px solid var(--stroke);display:flex;align-items:flex-start;justify-content:space-between;gap:16px}.rg-editor-head h2{margin:6px 0 0;font-size:23px;color:var(--ink);text-transform:capitalize}.rg-edit-form{display:flex;min-height:0;flex-direction:column;flex:1}.rg-edit-form>p{margin:18px 30px 7px;color:#506570;font-size:12px}.rg-fields{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:17px 30px 32px;overflow-y:auto;flex:1;align-content:start}.rg-field{display:flex;flex-direction:column;min-width:0;gap:7px}.rg-field span{font-size:12px;font-weight:650;color:#46616f}.rg-field em{color:#506570;font-style:normal}.rg-field input,.rg-field select,.rg-field textarea{background:#fff;border:1px solid #cbdbdf;border-radius:8px;color:#243d49;min-width:0;min-height:39px;padding:10px 11px;font-size:12px;line-height:1.45;width:100%}.rg-field textarea{resize:vertical;min-height:90px}.rg-field:has(textarea){grid-column:1/-1}.rg-editor-foot{display:flex;justify-content:flex-end;gap:10px;background:#f9fbfc;border-top:1px solid var(--stroke);padding:18px 30px}.rg-error{grid-column:1/-1;background:#fff0e9;color:#994d2a;border:1px solid #f0d4c6;border-radius:8px;padding:12px;margin:4px 30px 0;font-size:12px}.rg-confirm{align-self:center;margin:auto;width:min(440px,calc(100% - 40px));padding:26px;border-radius:15px;background:white;box-shadow:0 15px 70px #0005}.rg-confirm h2{margin:0}.rg-confirm p{font-size:12px;color:#506570}.rg-confirm .rg-btn{margin-right:8px;margin-top:10px}
+@media(max-width:1260px){.rg-layout{grid-template-columns:206px minmax(0,1fr)}.rg-sidebar{padding-left:11px;padding-right:11px}.rg-main{padding:26px 23px 50px}.rg-document-shell{grid-template-columns:1fr}.rg-review-sidebar{display:block}.rg-dossier-meta{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:1000px){.rg-desk-grid,.rg-lower-grid,.rg-readiness-grid{grid-template-columns:1fr}.rg-plan-shell,.rg-two-col{grid-template-columns:1fr}.rg-plan-intro{position:static}.rg-question-shell{grid-template-columns:1fr}.rg-question-aside{grid-template-columns:1fr 1fr}.rg-main{padding:25px 20px 46px}.rg-milestone{grid-template-columns:1.2fr repeat(3,.8fr)}.rg-milestone .rg-btn{grid-column:1/-1;justify-self:start}.rg-document-shell{grid-template-columns:1fr}}@media(max-width:680px){.rg-layout{display:block}.rg-sidebar{position:static;height:auto;padding:14px 14px 8px;gap:12px}.rg-sidebar-name{font-size:15px;padding:0 3px}.rg-nav{display:flex;overflow-x:auto;scrollbar-width:thin;gap:6px;padding-bottom:6px}.rg-nav-btn{width:auto;flex:none;white-space:nowrap;min-height:37px;padding:9px 10px;font-size:12px}.rg-nav-btn svg{display:none}.rg-sidebar-foot{display:none}.rg-main{padding:21px 14px 44px}.rg-page-head{flex-direction:column;gap:15px;margin-bottom:20px}.rg-page-head h1{font-size:27px}.rg-page-head p{font-size:12px}.rg-head-actions{width:100%;justify-content:space-between}.rg-chooser{flex:1;min-width:0}.rg-chooser select{flex:1;min-width:0;max-width:100%;font-size:12px}.rg-paper,.rg-desk-side{padding:17px 16px;border-radius:12px}.rg-desk-hero{padding:20px 19px;min-height:0}.rg-hero-meta{gap:22px}.rg-hero-meta strong{font-size:19px}.rg-desk-grid,.rg-lower-grid,.rg-readiness-grid{gap:0}.rg-panel-heading{gap:10px;align-items:flex-start}.rg-panel-heading h2{font-size:16px}.rg-panel-heading .rg-btn{font-size:12px}.rg-dossier-meta{grid-template-columns:repeat(2,minmax(0,1fr))}.rg-dossier-line{grid-template-columns:1fr 1fr}.rg-milestone{grid-template-columns:repeat(2,minmax(0,1fr))}.rg-milestone>span:first-child{grid-column:1/-1}.rg-plan-line{flex-wrap:wrap}.rg-plan-state{margin-left:36px}.rg-question{grid-template-columns:1fr;gap:9px}.rg-question-date{display:flex;gap:10px}.rg-question-aside{grid-template-columns:1fr}.rg-fields{grid-template-columns:1fr;padding:15px 17px 22px}.rg-field:has(textarea){grid-column:auto}.rg-editor-head{padding:20px 17px}.rg-edit-form>p{margin:13px 17px}.rg-editor-foot{padding:14px 17px}.rg-error{margin:7px 17px}.rg-runway-step{min-width:145px}.rg-doc-versions{margin-left:0}.rg-doc-version{flex-wrap:wrap}.rg-question-details{gap:9px}}
+
+/* Final UI audit: visible destructive action labels and stacked mobile milestone chronology. */
+.rg-btn.minimal.danger{background:transparent;border:0;color:#a54548;min-width:52px}.rg-btn.minimal.danger:hover{background:#fff0ed;color:#8f3434}.rg-actions{gap:3px;flex-wrap:nowrap}.rg-table th:last-child,.rg-table td:last-child{min-width:172px}
+@media(max-width:680px){.rg-runway{display:grid;overflow:visible;gap:6px;padding-left:8px}.rg-runway-step{min-width:0;border-left:2px solid #b2cbd5;border-top:0;padding:5px 7px 17px 19px}.rg-runway-node{top:6px;left:-8px}.rg-sidebar{gap:12px}}
+
+/* Accessible complete mobile navigation; no hidden active page off-screen. */
+.rg-mobile-label{display:none}.rg-scroll-hint{display:none}
+@media(max-width:680px){.rg-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible;gap:5px;padding-bottom:2px}.rg-nav-btn{width:100%;min-width:0;justify-content:center;text-align:center;padding:8px 5px;min-height:36px;white-space:normal;font-size:12px}.rg-desktop-label{display:none}.rg-mobile-label{display:inline;overflow-wrap:break-word}.rg-scroll-hint{display:block;color:#506570;font-size:12px;margin:0 0 8px;text-align:right}}
+
+/* Readability and bounded headers in the production frame. */
+:root{--muted:#506570}.rg-page-head{flex-wrap:wrap}.rg-head-actions{max-width:100%}.rg-chooser{min-width:0}.rg-hero-top .rg-eyebrow{color:#b8d5df}.rg-desk-hero>p{color:#c7dce4}.rg-hero-meta span{color:#bbd5df}.rg-hero-meta small{color:#d2e5e9}.rg-pill.outline{color:#e2f2f7}.rg-dark-note .rg-section-kicker,.rg-dark-note p,.rg-dark-note small{color:#d2e5e9}.rg-editor .rg-notice{margin:12px 18px}.rg-editor .rg-btn[data-action="more-fields"]{margin:12px 18px}.rg-editor-foot{flex-wrap:wrap}
+.rg-nav-btn{color:#d0e0e7}.rg-nav-btn.active{color:#fff}
+
+.rg-muted{color:#506570!important}
+</style><body><div id="surface"></div><script>
+const source="const templateLayoutSchema={\"screens\":[{\"id\":\"desk\",\"label\":\"Submission desk\"},{\"id\":\"tracker\",\"label\":\"Submission tracker\"},{\"id\":\"plan\",\"label\":\"Content plan\"},{\"id\":\"documents\",\"label\":\"Document register\"},{\"id\":\"questions\",\"label\":\"Authority questions\"},{\"id\":\"readiness\",\"label\":\"Readiness & briefings\"}],\"groups\":{\"submissions\":[{\"id\":\"name\",\"label\":\"Submission\"},{\"id\":\"country\",\"label\":\"Country\"},{\"id\":\"authority\",\"label\":\"Authority\"},{\"id\":\"pathway\",\"label\":\"Pathway\"},{\"id\":\"status\",\"label\":\"Phase\"},{\"id\":\"plannedAt\",\"label\":\"Target date\"}],\"items\":[{\"id\":\"name\",\"label\":\"Required item\"},{\"id\":\"section\",\"label\":\"Section\"},{\"id\":\"applicability\",\"label\":\"Applicability\"},{\"id\":\"owner\",\"label\":\"Owner\"},{\"id\":\"dueAt\",\"label\":\"Due date\"},{\"id\":\"documentId\",\"label\":\"Current document\"}],\"documents\":[{\"id\":\"name\",\"label\":\"Document\"},{\"id\":\"docKey\",\"label\":\"Document key\"},{\"id\":\"versionTag\",\"label\":\"Version\"},{\"id\":\"status\",\"label\":\"Status\"},{\"id\":\"owner\",\"label\":\"Owner\"},{\"id\":\"sourceUrl\",\"label\":\"Source reference\"}],\"reviews\":[{\"id\":\"name\",\"label\":\"Review\"},{\"id\":\"documentId\",\"label\":\"Document\"},{\"id\":\"versionTag\",\"label\":\"Reviewed version\"},{\"id\":\"status\",\"label\":\"Decision\"},{\"id\":\"reviewer\",\"label\":\"Reviewer\"},{\"id\":\"decidedAt\",\"label\":\"Decision date\"}],\"questions\":[{\"id\":\"name\",\"label\":\"Authority question\"},{\"id\":\"submissionId\",\"label\":\"Submission\"},{\"id\":\"receivedAt\",\"label\":\"Received\"},{\"id\":\"dueAt\",\"label\":\"Due\"},{\"id\":\"status\",\"label\":\"Status\"},{\"id\":\"owner\",\"label\":\"Owner\"}],\"milestones\":[{\"id\":\"name\",\"label\":\"Milestone\"},{\"id\":\"submissionId\",\"label\":\"Submission\"},{\"id\":\"baselineAt\",\"label\":\"Baseline\"},{\"id\":\"currentAt\",\"label\":\"Current\"},{\"id\":\"actualAt\",\"label\":\"Actual\"},{\"id\":\"owner\",\"label\":\"Owner\"}],\"reports\":[{\"id\":\"name\",\"label\":\"Readiness report\"},{\"id\":\"submissionId\",\"label\":\"Submission\"},{\"id\":\"cutoffAt\",\"label\":\"Cutoff\"},{\"id\":\"status\",\"label\":\"Review\"},{\"id\":\"reviewer\",\"label\":\"Reviewer\"},{\"id\":\"reviewedAt\",\"label\":\"Review date\"}]}};\nconst REG_CSS=\":root{--ink:#20313b;--ink2:#344c58;--muted:#71818a;--nav:#192d36;--nav2:#243d49;--blue:#247299;--blue-dark:#145071;--ice:#e9f3f6;--paper:#fffefd;--back:#f3f6f5;--stroke:#dbe4e5;--line:#edf0f0;--amber:#b07728;--amber-bg:#fbf3e6;--mint:#247d67;--mint-bg:#e9f5ef;--radius:15px;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}*{box-sizing:border-box}html,body{margin:0;padding:0;color:var(--ink);background:var(--back);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px}button,input,textarea,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #9ac7d7;outline-offset:2px}a{color:var(--blue-dark)}p{line-height:1.52}.rg-layout{display:grid;grid-template-columns:224px minmax(0,1fr);min-height:100vh}.rg-sidebar{background:var(--nav);color:#d5e4e8;padding:32px 15px 20px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:36px;min-width:0}.rg-sidebar-name{color:#fff;font-size:17px;line-height:1.35;letter-spacing:-.03em;font-weight:760;padding:0 14px;white-space:normal;overflow-wrap:break-word}.rg-nav{display:grid;gap:7px}.rg-nav-btn{display:flex;gap:12px;align-items:center;width:100%;text-align:left;border:1px solid transparent;background:transparent;color:#506570;border-radius:10px;padding:13px 12px;min-height:47px;font-weight:520;font-size:13px;line-height:1.3}.rg-nav-btn svg{flex:none;opacity:.85}.rg-nav-btn:hover{color:#fff;background:#ffffff16}.rg-nav-btn.active{background:#cde5ec17;color:#fff;border-color:#82c6d344;box-shadow:inset 3px 0 #66b5cf;font-weight:700}.rg-sidebar-foot{margin-top:auto;padding:14px 10px 0;border-top:1px solid #ffffff18;color:#506570;font-size:12px;display:flex;align-items:center;gap:8px;line-height:1.4}.rg-foot-dot{background:#59bb98;width:7px;height:7px;border-radius:50%;flex:none}.rg-main{padding:34px clamp(18px,3.4vw,52px) 65px;min-width:0;width:100%;max-width:1680px}.rg-page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:27px}.rg-page-head h1{margin:0;color:#213640;font-size:clamp(26px,2.7vw,37px);letter-spacing:-.045em;line-height:1.18;font-weight:770}.rg-page-head p{margin:9px 0 0;font-size:13px;color:#506570;max-width:750px}.rg-head-actions{display:flex;align-items:center;gap:10px;flex:none}.rg-chooser{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--stroke);border-radius:9px;padding:7px 9px 7px 12px;color:#506570;font-size:12px}.rg-chooser select{border:0;background:white;color:#294551;max-width:245px;min-width:90px;font-weight:650;font-size:12px;padding:4px;cursor:pointer;min-height:27px}.rg-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--stroke);border-radius:9px;padding:10px 13px;background:#fff;color:#365565;font-weight:690;font-size:12px;white-space:nowrap;min-height:37px;line-height:1.2;text-decoration:none}.rg-btn:hover:not(:disabled){background:#ecf4f6;border-color:#c0d8dc}.rg-btn.primary{background:#24799b;border-color:#24799b;color:#fff}.rg-btn.primary:hover:not(:disabled){background:#17617c}.rg-btn.secondary{background:#f8fbfb;border-color:#c8d9df;color:#365767}.rg-btn.link,.rg-btn.minimal{border:0;background:transparent;color:#286b8b;padding:4px 7px;min-height:28px}.rg-btn.link:hover,.rg-btn.minimal:hover{background:#edf5f7}.rg-btn.danger{background:#a54548;color:#fff;border-color:#a54548}.rg-btn.tiny{padding:6px 9px;font-size:12px;min-height:29px}.rg-btn.small{padding:7px 11px;min-height:32px}.rg-btn.icon-only{width:39px;height:39px;padding:0}.rg-btn.minimal.danger{color:#a54548}.rg-btn.minimal.danger:hover{background:#fff1f0}.rg-paper{min-width:0;border:1px solid var(--stroke);border-radius:var(--radius);padding:23px 24px;background:var(--paper);box-shadow:0 5px 24px #20313b07;margin-bottom:20px}.rg-paper h2{margin:0;font-size:17px;font-weight:730;letter-spacing:-.026em;color:#213640;line-height:1.3}.rg-paper h3{font-size:13px;margin:19px 0 12px;color:#29424d}.rg-panel-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}.rg-panel-heading p{margin:5px 0 0;color:#506570;font-size:12px}.rg-section-kicker,.rg-eyebrow{font-size:12px;font-weight:790;letter-spacing:.12em;color:#506570;text-transform:uppercase}.rg-pill{display:inline-flex;align-items:center;border-radius:7px;padding:5px 8px;background:#edf3f5;color:#436478;border:1px solid #e2ecee;font-weight:690;font-size:12px;line-height:1.15;max-width:100%;white-space:normal}.rg-pill.ok{background:var(--mint-bg);border-color:#cce8dc;color:#26765b}.rg-pill.warn{background:var(--amber-bg);border-color:#f0dfba;color:#506570}.rg-pill.mute{background:#f0f2f3;border-color:#e1e5e7;color:#506570}.rg-pill.outline{background:#ffffff19;border-color:#ffffff35;color:#ccebf3}.rg-data-alert,.rg-notice{border-radius:10px;padding:12px 16px;margin-bottom:20px;border:1px solid #efd6ab;background:#fff8e9;color:#825c22;line-height:1.45;font-size:12px}.rg-notice{background:#edf6f9;border-color:#bdd9e4;color:#345b6b}.rg-progress{height:7px;background:#e8edef;overflow:hidden;border-radius:8px;width:100%}.rg-progress div{height:100%;background:linear-gradient(90deg,#8bc2cf,#24799b);border-radius:8px}.rg-desk-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);gap:18px}.rg-desk-hero{background:linear-gradient(122deg,#183844,#203641 57%,#15313d);border:1px solid #2d4d58;border-radius:16px;min-height:286px;color:#eaf5f7;padding:28px 30px;position:relative;overflow:hidden;margin-bottom:20px}.rg-desk-hero:after{content:\\\"\\\";position:absolute;width:330px;height:330px;border-radius:50%;right:-110px;top:-155px;border:1px solid #9bc7c224;box-shadow:0 0 0 33px #aad3c50a,0 0 0 70px #a0d1d008;pointer-events:none}.rg-hero-top{display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative;z-index:1}.rg-hero-top .rg-eyebrow{color:#506570}.rg-hero-name{font-size:clamp(22px,2.4vw,29px);font-weight:720;letter-spacing:-.035em;margin-top:25px;max-width:570px;position:relative;z-index:1}.rg-desk-hero>p{color:#506570;font-size:12px;margin:6px 0 17px;position:relative;z-index:1}.rg-hero-rule{border-bottom:1px solid #ffffff28;margin:20px 0 17px}.rg-hero-meta{display:flex;gap:50px;position:relative;z-index:1;margin-bottom:14px}.rg-hero-meta>div{display:flex;flex-direction:column;gap:5px}.rg-hero-meta span{color:#506570;font-size:12px}.rg-hero-meta strong{font-size:24px;letter-spacing:-.03em;color:#fff}.rg-hero-meta small{font-size:12px;color:#d2e5e9}.rg-desk-hero .rg-progress{background:#34515a;max-width:480px}.rg-desk-side{background:#fff;border:1px solid var(--stroke);border-radius:16px;padding:23px 20px;margin-bottom:20px;min-width:0}.rg-country-stack{margin-top:18px;display:grid;gap:8px}.rg-country-item{width:100%;display:flex;align-items:center;text-align:left;gap:12px;border:1px solid #e4ebeb;background:#fbfdfd;border-radius:10px;padding:12px 10px;color:var(--ink);min-width:0}.rg-country-item:hover{background:#eef6f9}.rg-country-item>span:nth-child(2){min-width:0;flex:1;display:grid;gap:4px}.rg-country-item strong{font-size:12px;font-weight:680;overflow-wrap:break-word}.rg-country-item small{font-size:12px;color:#506570}.rg-country-initial{background:#e5f1f6;display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:10px;color:#176c8d;font-weight:740;font-size:12px}.rg-country-score{flex:none;font-weight:780;font-size:15px;color:#24536a}.rg-lower-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:18px}.rg-gap-row{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:13px 0;color:var(--ink)}.rg-gap-row:hover{background:#f5fafb}.rg-gap-row>span:nth-child(2){min-width:0;flex:1;display:grid;gap:4px}.rg-gap-row strong{font-size:12px;overflow-wrap:anywhere}.rg-gap-row small{color:#506570;font-size:12px}.rg-gap-dot{width:9px;height:9px;flex:none;border-radius:50%;background:#cb9254;box-shadow:0 0 0 4px #fbf1e3}.rg-gap-right{color:#506570;font-size:12px}.rg-watch-row{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);font-size:12px}.rg-watch-row span:nth-child(2){display:grid;gap:5px;min-width:0}.rg-watch-row strong{font-size:12px}.rg-watch-row small{color:#506570}.rg-watch-date{font-weight:760;color:#7c6570;min-width:80px;font-size:12px}.rg-runway{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;overflow-x:auto;padding:8px 0 6px}.rg-runway-step{flex:1;min-width:125px;border-top:2px solid #b2cbd5;display:flex;flex-direction:column;gap:8px;padding:16px 5px 5px;position:relative}.rg-runway-node{position:absolute;top:-8px;left:4px;width:13px;height:13px;background:#2d7896;border:2px solid #fff;box-shadow:0 0 0 2px #abcdd8;border-radius:50%}.rg-runway-step strong{font-size:13px;color:#1f627d}.rg-runway-step span:not(.rg-runway-node){font-size:12px;font-weight:650}.rg-runway-step small{font-size:12px;color:#506570}.rg-two-col{display:grid;grid-template-columns:minmax(235px,.34fr) minmax(0,.66fr);gap:18px}.rg-project-list{padding:20px 13px}.rg-project-list .rg-panel-heading{padding:0 8px}.rg-file-row{display:flex;align-items:center;gap:12px;text-align:left;width:100%;border:1px solid transparent;background:white;border-radius:10px;color:var(--ink);padding:13px 10px;margin:3px 0}.rg-file-row:hover{background:#f2f7f8}.rg-file-row.selected{background:#eaf3f6;border-color:#c5dfe7}.rg-file-row span:nth-child(2){display:grid;gap:5px;min-width:0}.rg-file-row strong{font-size:12px;overflow-wrap:anywhere}.rg-file-row small{font-size:12px;color:#506570}.rg-file-number{display:grid;place-items:center;background:#edf3f6;color:#2b6d8a;border-radius:9px;font-weight:760;width:40px;min-width:40px;height:35px;font-size:12px}.rg-dossier{background:linear-gradient(135deg,#fff,#fcfefc);padding:26px 28px}.rg-dossier .rg-panel-heading h2{font-size:21px;margin-top:6px}.rg-dossier-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:16px 0 24px;border-bottom:1px solid var(--stroke)}.rg-dossier-meta>span{display:grid;gap:7px}.rg-dossier-meta small,.rg-labelpair span{color:#506570;font-size:12px}.rg-dossier-meta strong,.rg-labelpair strong{font-size:12px;overflow-wrap:anywhere}.rg-dossier-line{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;padding:20px 0 14px}.rg-labelpair{display:grid;gap:8px}.rg-milestone-list{display:grid;gap:7px}.rg-milestone{display:grid;grid-template-columns:1.3fr .8fr .8fr .8fr auto;gap:11px;align-items:center;background:#f7fafb;border:1px solid #ecf1f2;border-radius:9px;padding:10px 13px;font-size:12px;color:#506570}.rg-milestone>span:first-child{display:grid;gap:5px}.rg-milestone strong,.rg-milestone b{color:#294451;font-size:12px}.rg-milestone small{font-size:12px;color:#506570}.rg-scroll-region,.rg-matrix-scroll{width:100%;overflow-x:auto;max-width:100%;padding-bottom:4px}.rg-table{width:100%;border-collapse:separate;border-spacing:0;min-width:720px;font-size:12px}.rg-table thead th{font-size:12px;text-transform:uppercase;letter-spacing:.065em;color:#506570;text-align:left;background:#f4f8f9;border-top:1px solid #e7eeee;border-bottom:1px solid #e7eeee;padding:11px 9px}.rg-table thead th:first-child{border-radius:8px 0 0 0}.rg-table thead th:last-child{border-radius:0 8px 0 0}.rg-table tbody td{border-bottom:1px solid var(--line);padding:10px 9px;color:#38535f;vertical-align:middle;line-height:1.4;word-break:normal;overflow-wrap:anywhere;max-width:260px}.rg-table tbody td:first-child{font-weight:650;color:#274450}.rg-table .rg-actions{display:flex;gap:0;flex-wrap:wrap}.rg-pagination{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px 0 0;font-size:12px;color:#506570;flex-wrap:wrap}.rg-pagination>div{display:flex;gap:7px}.rg-empty{padding:30px;text-align:center;border:1px dashed #cadbe0;border-radius:12px;background:#fbfdfd}.rg-empty strong{display:block;font-size:16px}.rg-empty p{color:#506570;font-size:12px}.rg-plan-shell{display:grid;grid-template-columns:minmax(225px,.32fr) minmax(0,.68fr);gap:19px}.rg-plan-intro{align-self:start;position:sticky;top:14px;background:#f9fbfb}.rg-plan-intro .rg-panel-heading{display:block}.rg-plan-intro .rg-panel-heading .rg-btn{margin-top:16px}.rg-plan-intro p{color:#506570;font-size:12px}.rg-plan-status{margin:24px 0;display:grid;gap:12px;font-size:12px;font-weight:710;color:#29546b}.rg-plan-legend{display:flex;gap:7px;flex-wrap:wrap}.rg-plan-tree{min-width:0}.rg-plan-section{background:#fff;border:1px solid var(--stroke);border-radius:14px;margin-bottom:17px;box-shadow:0 4px 15px #00000005;padding:7px 20px 6px}.rg-plan-section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:17px 0 15px;border-bottom:1px solid #e5eded}.rg-plan-section-title>div{display:flex;align-items:center;gap:11px}.rg-plan-section-title h3{margin:0;font-size:15px}.rg-plan-section-title>span{color:#506570;font-size:12px}.rg-plan-index{font-size:12px;font-weight:740;color:#506570}.rg-plan-line{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #f0f3f2}.rg-plan-line:last-child{border-bottom:0}.rg-plan-mark{width:25px;height:25px;border-radius:50%;display:grid;place-items:center;flex:none;background:#f1f3f3;color:#506570;font-weight:780}.rg-plan-mark.done{background:#d9f1e7;color:#506570}.rg-plan-mark.unknown{background:#fff2db;color:#506570}.rg-plan-main{display:grid;gap:4px;min-width:0;flex:1}.rg-plan-main strong{font-size:12px;overflow-wrap:anywhere}.rg-plan-main small{font-size:12px;color:#506570}.rg-plan-state{display:flex;align-items:flex-start;flex-direction:column;gap:5px;min-width:115px}.rg-plan-state small{color:#506570;font-size:12px}.rg-document-shell{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(255px,.5fr);gap:19px}.rg-version-families{display:grid;gap:12px}.rg-doc-family{padding:15px 17px;border:1px solid #e1eaec;border-radius:12px;background:#fcfdfd}.rg-family-top{display:flex;gap:11px;align-items:center;margin-bottom:13px}.rg-family-top>span:nth-child(2){display:grid;gap:4px}.rg-family-top strong{font-size:13px}.rg-family-top small{font-size:12px;color:#506570}.rg-file-symbol{display:grid;place-items:center;background:#e6f2f7;color:#506570;border-radius:9px;width:37px;height:37px}.rg-doc-versions{display:grid;gap:5px;margin-left:48px}.rg-doc-version{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid #edf0f2;font-size:12px}.rg-version-pill{display:inline-flex;align-items:center;justify-content:center;background:#eef2f2;border-radius:6px;padding:5px 7px;color:#516875;font-weight:780}.rg-doc-version .rg-btn{margin-left:auto}.rg-muted{color:#84939c!important}.rg-review-sidebar{align-self:start}.rg-review-tile{border-bottom:1px solid var(--line);padding:13px 0;display:grid;gap:6px}.rg-review-tile strong{font-size:12px}.rg-review-tile small{font-size:12px;color:#506570}.rg-review-top{display:flex;justify-content:space-between;align-items:center}.rg-question-shell{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:19px}.rg-question-aside{display:grid;gap:20px;align-content:start}.rg-question-aside .rg-paper{margin-bottom:0}.rg-inbox .rg-panel-heading{border-bottom:1px solid var(--stroke);padding-bottom:16px}.rg-question{display:grid;grid-template-columns:100px minmax(0,1fr) auto;align-items:center;gap:18px;padding:18px 0;border-bottom:1px solid var(--line)}.rg-question-date{display:grid;gap:7px;font-size:12px;color:#506570}.rg-question-date strong{font-size:12px;color:#4d6b7a}.rg-question-body{min-width:0}.rg-question-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.rg-question-row strong{font-size:13px}.rg-question-body p{font-size:12px;color:#506570;margin:6px 0 9px}.rg-question-details{display:flex;gap:15px;flex-wrap:wrap;font-size:12px;color:#506570}.rg-dark-note{border-radius:14px;background:#244553;color:#d3e9eb;padding:23px 22px}.rg-dark-note .rg-section-kicker{color:#506570}.rg-dark-note>strong{display:block;margin:17px 0 5px;font-size:44px;letter-spacing:-.05em;color:#fff}.rg-dark-note p{font-size:12px}.rg-dark-note small{font-size:12px;color:#506570;line-height:1.6}.rg-matrix{min-width:660px;width:100%;border-spacing:0;border-collapse:collapse}.rg-matrix th{text-align:left;background:#ecf4f6;color:#506570;font-size:12px;padding:12px}.rg-matrix td{padding:15px 12px;border-bottom:1px solid var(--line);font-size:12px;color:#344f5c}.rg-matrix td:first-child{min-width:170px}.rg-matrix td small{display:block;color:#506570;font-size:12px;margin-top:5px}.rg-readiness-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.rg-briefing-pane>p{font-size:12px;color:#506570}.rg-briefing-pane .rg-prompt{background:#f2f7f9;border-radius:9px;border:1px solid #d5e7eb;padding:13px;margin-top:12px}.rg-prompt strong{color:#205d79;font-size:12px}.rg-prompt p{color:#506570;font-size:12px}.rg-mini-rule{border-bottom:1px solid var(--line);margin:22px 0}.rg-report-row{display:flex;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding:12px 0}.rg-report-row>span:first-child{min-width:0;flex:1;display:grid;gap:4px}.rg-report-row strong{font-size:12px}.rg-report-row small{color:#506570;font-size:12px}.rg-overlay{position:fixed;inset:0;background:#10212b9c;z-index:100;display:flex;justify-content:flex-end;align-items:stretch;padding:0}.rg-editor{width:min(640px,100%);height:100vh;background:white;box-shadow:-30px 0 80px #0003;display:flex;flex-direction:column}.rg-editor-head{padding:28px 30px 21px;border-bottom:1px solid var(--stroke);display:flex;align-items:flex-start;justify-content:space-between;gap:16px}.rg-editor-head h2{margin:6px 0 0;font-size:23px;color:var(--ink);text-transform:capitalize}.rg-edit-form{display:flex;min-height:0;flex-direction:column;flex:1}.rg-edit-form>p{margin:18px 30px 7px;color:#506570;font-size:12px}.rg-fields{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:17px 30px 32px;overflow-y:auto;flex:1;align-content:start}.rg-field{display:flex;flex-direction:column;min-width:0;gap:7px}.rg-field span{font-size:12px;font-weight:650;color:#46616f}.rg-field em{color:#506570;font-style:normal}.rg-field input,.rg-field select,.rg-field textarea{background:#fff;border:1px solid #cbdbdf;border-radius:8px;color:#243d49;min-width:0;min-height:39px;padding:10px 11px;font-size:12px;line-height:1.45;width:100%}.rg-field textarea{resize:vertical;min-height:90px}.rg-field:has(textarea){grid-column:1/-1}.rg-editor-foot{display:flex;justify-content:flex-end;gap:10px;background:#f9fbfc;border-top:1px solid var(--stroke);padding:18px 30px}.rg-error{grid-column:1/-1;background:#fff0e9;color:#994d2a;border:1px solid #f0d4c6;border-radius:8px;padding:12px;margin:4px 30px 0;font-size:12px}.rg-confirm{align-self:center;margin:auto;width:min(440px,calc(100% - 40px));padding:26px;border-radius:15px;background:white;box-shadow:0 15px 70px #0005}.rg-confirm h2{margin:0}.rg-confirm p{font-size:12px;color:#506570}.rg-confirm .rg-btn{margin-right:8px;margin-top:10px}\\n@media(max-width:1260px){.rg-layout{grid-template-columns:206px minmax(0,1fr)}.rg-sidebar{padding-left:11px;padding-right:11px}.rg-main{padding:26px 23px 50px}.rg-document-shell{grid-template-columns:1fr}.rg-review-sidebar{display:block}.rg-dossier-meta{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:1000px){.rg-desk-grid,.rg-lower-grid,.rg-readiness-grid{grid-template-columns:1fr}.rg-plan-shell,.rg-two-col{grid-template-columns:1fr}.rg-plan-intro{position:static}.rg-question-shell{grid-template-columns:1fr}.rg-question-aside{grid-template-columns:1fr 1fr}.rg-main{padding:25px 20px 46px}.rg-milestone{grid-template-columns:1.2fr repeat(3,.8fr)}.rg-milestone .rg-btn{grid-column:1/-1;justify-self:start}.rg-document-shell{grid-template-columns:1fr}}@media(max-width:680px){.rg-layout{display:block}.rg-sidebar{position:static;height:auto;padding:14px 14px 8px;gap:12px}.rg-sidebar-name{font-size:15px;padding:0 3px}.rg-nav{display:flex;overflow-x:auto;scrollbar-width:thin;gap:6px;padding-bottom:6px}.rg-nav-btn{width:auto;flex:none;white-space:nowrap;min-height:37px;padding:9px 10px;font-size:12px}.rg-nav-btn svg{display:none}.rg-sidebar-foot{display:none}.rg-main{padding:21px 14px 44px}.rg-page-head{flex-direction:column;gap:15px;margin-bottom:20px}.rg-page-head h1{font-size:27px}.rg-page-head p{font-size:12px}.rg-head-actions{width:100%;justify-content:space-between}.rg-chooser{flex:1;min-width:0}.rg-chooser select{flex:1;min-width:0;max-width:100%;font-size:12px}.rg-paper,.rg-desk-side{padding:17px 16px;border-radius:12px}.rg-desk-hero{padding:20px 19px;min-height:0}.rg-hero-meta{gap:22px}.rg-hero-meta strong{font-size:19px}.rg-desk-grid,.rg-lower-grid,.rg-readiness-grid{gap:0}.rg-panel-heading{gap:10px;align-items:flex-start}.rg-panel-heading h2{font-size:16px}.rg-panel-heading .rg-btn{font-size:12px}.rg-dossier-meta{grid-template-columns:repeat(2,minmax(0,1fr))}.rg-dossier-line{grid-template-columns:1fr 1fr}.rg-milestone{grid-template-columns:repeat(2,minmax(0,1fr))}.rg-milestone>span:first-child{grid-column:1/-1}.rg-plan-line{flex-wrap:wrap}.rg-plan-state{margin-left:36px}.rg-question{grid-template-columns:1fr;gap:9px}.rg-question-date{display:flex;gap:10px}.rg-question-aside{grid-template-columns:1fr}.rg-fields{grid-template-columns:1fr;padding:15px 17px 22px}.rg-field:has(textarea){grid-column:auto}.rg-editor-head{padding:20px 17px}.rg-edit-form>p{margin:13px 17px}.rg-editor-foot{padding:14px 17px}.rg-error{margin:7px 17px}.rg-runway-step{min-width:145px}.rg-doc-versions{margin-left:0}.rg-doc-version{flex-wrap:wrap}.rg-question-details{gap:9px}}\\n\\n/* Final UI audit: visible destructive action labels and stacked mobile milestone chronology. */\\n.rg-btn.minimal.danger{background:transparent;border:0;color:#a54548;min-width:52px}.rg-btn.minimal.danger:hover{background:#fff0ed;color:#8f3434}.rg-actions{gap:3px;flex-wrap:nowrap}.rg-table th:last-child,.rg-table td:last-child{min-width:172px}\\n@media(max-width:680px){.rg-runway{display:grid;overflow:visible;gap:6px;padding-left:8px}.rg-runway-step{min-width:0;border-left:2px solid #b2cbd5;border-top:0;padding:5px 7px 17px 19px}.rg-runway-node{top:6px;left:-8px}.rg-sidebar{gap:12px}}\\n\\n/* Accessible complete mobile navigation; no hidden active page off-screen. */\\n.rg-mobile-label{display:none}.rg-scroll-hint{display:none}\\n@media(max-width:680px){.rg-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible;gap:5px;padding-bottom:2px}.rg-nav-btn{width:100%;min-width:0;justify-content:center;text-align:center;padding:8px 5px;min-height:36px;white-space:normal;font-size:12px}.rg-desktop-label{display:none}.rg-mobile-label{display:inline;overflow-wrap:break-word}.rg-scroll-hint{display:block;color:#506570;font-size:12px;margin:0 0 8px;text-align:right}}\\n\\n/* Readability and bounded headers in the production frame. */\\n:root{--muted:#506570}.rg-page-head{flex-wrap:wrap}.rg-head-actions{max-width:100%}.rg-chooser{min-width:0}.rg-hero-top .rg-eyebrow{color:#b8d5df}.rg-desk-hero>p{color:#c7dce4}.rg-hero-meta span{color:#bbd5df}.rg-hero-meta small{color:#d2e5e9}.rg-pill.outline{color:#e2f2f7}.rg-dark-note .rg-section-kicker,.rg-dark-note p,.rg-dark-note small{color:#d2e5e9}.rg-editor .rg-notice{margin:12px 18px}.rg-editor .rg-btn[data-action=\\\"more-fields\\\"]{margin:12px 18px}.rg-editor-foot{flex-wrap:wrap}\\n.rg-nav-btn{color:#d0e0e7}.rg-nav-btn.active{color:#fff}\\n\\n.rg-muted{color:#506570!important}\\n\";\n/* Internal, non-validated regulatory submission preparation. TrialAgents injects templateConfiguration and templateBindings. No CTIS integration or portal action. */\nconst cfg=typeof templateConfiguration==='object'&&templateConfiguration||{};\nconst ev=(input&&input.event)||{kind:'open',action:'',value:null,form:{}};\nconst act=String(ev.action||'');\nconst t=v=>String(v===null||v===undefined?'':v).trim();\nconst h=v=>String(v===null||v===undefined?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#39;');\nconst iso=v=>{const x=t(v);if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(x))return false;const d=new Date(x+'T00:00:00Z');return !isNaN(d.getTime())&&d.toISOString().slice(0,10)===x;};\nconst fmt=v=>iso(v)?v.slice(8)+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][Number(v.slice(5,7))-1]+' '+v.slice(0,4):'—';\nconst cleanURL=v=>!t(v)||/^https:\\/\\/[^\\s\"'<>]+$/i.test(t(v));\nconst roles=['submissions','items','documents','reviews','questions','milestones','reports'];\nconst fieldDefs={\nsubmissions:[['name','Submission name','text',true],['studyRef','Study / internal reference','text',true],['country','Country','text',true],['authority','Authority','text',true],['pathway','Submission pathway','select',true,['CTIS','IND','Other']],['status','Internal phase','select',true,['Planning','Drafting','Internal review','Ready for manual submission','Submitted (manually recorded)','Authority follow-up','Closed']],['owner','Lead','text',true],['plannedAt','Planned date','date'],['submittedAt','Actual submitted date','date'],['submissionProof','Official receipt reference','text'],['sourceUrl','Source / protocol URL','text'],['archived','Archived','boolean']],\nitems:[['name','Requirement','text',true],['submissionId','Submission','ref',true],['section','Content-plan section','select',true,['Part I','Part II','Country annex','Safety','Other']],['applicability','Applicability','select',true,['Required','Not applicable','Unknown']],['owner','Owner','text'],['dueAt','Target date','date'],['documentId','Current document version ID','ref'],['versionTag','Expected document version','text'],['reason','Applicability rationale','text'],['sourceUrl','Source reference URL','text'],['archived','Archived','boolean']],\ndocuments:[['name','Document title','text',true],['submissionId','Submission','ref',true],['docKey','Persistent document family key','text',true],['versionTag','Internal version','text',true],['status','Draft status','select',true,['Draft','In review','Rework','Approved','Superseded']],['owner','Author/owner','text'],['sourceUrl','Internal document link','text'],['updatedAt','Revision date','date'],['archived','Archived','boolean']],\nreviews:[['name','Review title','text',true],['documentId','Document record ID','ref',true],['versionTag','Reviewed version','text',true],['status','Decision','select',true,['Pending','Changes requested','Approved','Rejected']],['reviewer','Reviewer','text'],['decidedAt','Decision date','date'],['evidenceUrl','Decision evidence link','text'],['notes','Reviewer notes','text'],['archived','Archived','boolean']],\nquestions:[['name','Authority question / RFI','text',true],['submissionId','Submission','ref',true],['authorityRef','Official question ID','text',true],['receivedAt','Received','date',true],['dueAt','Reply target date','date'],['status','Internal response status','select',true,['Open','Drafting','Under review','Response recorded','Resolved']],['owner','Response owner','text'],['answerUrl','Recorded answer source','text'],['respondedAt','Actual response date','date'],['notes','Question summary','text'],['archived','Archived','boolean']],\nmilestones:[['name','Milestone','text',true],['submissionId','Submission','ref',true],['baselineAt','Original date','date'],['currentAt','Current target','date'],['actualAt','Actual date','date'],['owner','Owner','text'],['reason','Change reason','text'],['archived','Archived','boolean']],\nreports:[['name','Briefing title','text',true],['submissionId','Submission','ref',true],['cutoffAt','Evidence cutoff','date',true],['status','Review state','select',true,['Draft','Reviewed']],['reviewer','Reviewer','text'],['reviewedAt','Reviewed date','date'],['sourceRefs','Exact evidence IDs and versions','text'],['summary','Narrative / draft','text'],['archived','Archived','boolean']]\n};\nconst fd={};for(const role of roles)fd[role]=fieldDefs[role].map(f=>({key:f[0],label:f[1],kind:f[2],required:!!f[3],options:f[4]||[]}));\nlet tableMap={};try{tableMap=JSON.parse(cfg.tableMap||'{}')||{}}catch{};\nconst bindings=Array.isArray(templateBindings)?templateBindings:[];\nconst dataset={};let incomplete=[];for(const role of roles){const m=tableMap[role],required=fd[role].filter(f=>f.required).map(f=>f.key);const out={rows:[],complete:false,reason:'Missing authorized binding',total:null};dataset[role]=out;\n if(!m||!t(m.typeId)||!m.fields||typeof m.fields!=='object'||fd[role].some(f=>!t(m.fields[f.key]))||new Set(Object.values(m.fields)).size!==Object.values(m.fields).length||!bindings.some(b=>b.typeId===m.typeId)){incomplete.push(role);continue;}\n const allowed=bindings.find(b=>b.typeId===m.typeId).fields||[];\n if(fd[role].some(f=>t(m.fields[f.key])&&!allowed.includes(m.fields[f.key]))){out.reason='Required/optional field not bound';incomplete.push(role);continue;}\n let offset=0,seen=new Set();let max=12;\n while(max--){let x;try{x=tools.call('records.read',{typeId:m.typeId,offset,limit:80});}catch(e){out.reason='Denied read';break;}\n if(!x||x.unavailable===true||!Array.isArray(x.rows)||!Number.isInteger(x.total)||x.total<0||(out.total!==null&&x.total!==out.total)||x.rows.length>80||offset+x.rows.length>x.total){out.reason='Missing, denied or unknown total';break;}out.total=x.total;\n let invalid=false;for(const z of x.rows){if(!z||!t(z.id)||(!Number.isInteger(z.version)||z.version<0)||!z.data||typeof z.data!=='object'||seen.has(z.id)){invalid=true;break;}const d={};for(const f of fd[role]){const key=m.fields[f.key];if(key&&Object.hasOwn(z.data,key))d[f.key]=z.data[key];}if(fd[role].some(f=>{const v=d[f.key];return !Object.hasOwn(d,f.key)||(f.required&&!t(v))||(f.kind==='boolean'?typeof v!=='boolean':v!==null&&typeof v!=='string')||(f.kind==='date'&&t(v)&&!iso(v))||(f.kind==='select'&&t(v)&&!f.options.includes(v));})){invalid=true;break;}seen.add(z.id);out.rows.push({id:z.id,version:z.version,data:d});}\n if(invalid){out.reason='Invalid or missing required mapped fields';break;}offset+=x.rows.length;if(offset>=x.total){out.complete=true;out.reason='';break;}if(!x.rows.length||x.rows.length<80){out.reason='Short page before total';break;}}\n if(!out.complete){if(!out.reason)out.reason='Bounded read budget exhausted';incomplete.push(role);}\n}\nconst all=role=>dataset[role].rows.filter(r=>r.data.archived!==true);\nconst one=(role,id)=>all(role).find(r=>r.id===id);\nconst label=(role,id)=>one(role,id)?.data.name||'Unavailable record';\nconst has=arr=>arr.every(k=>dataset[k]?.complete);\nconst asOf=iso(cfg.asOf)?cfg.asOf:'';\nconst daydiff=(b,a)=>iso(b)&&iso(a)?Math.round((new Date(b+'T00:00:00Z').getTime()-new Date(a+'T00:00:00Z').getTime())/86400000):null;\nconst layout=(()=>{let g={};try{g=JSON.parse(cfg.layoutProfile||'{}')||{}}catch{};const def=templateLayoutSchema.screens.map(x=>x.id);const tabs=[...new Set((Array.isArray(g.tabs)?g.tabs:[]).filter(x=>def.includes(x)).concat(def))];const cols={},v=g.visible&&typeof g.visible==='object'?g.visible:{};for(const role of roles){const base=templateLayoutSchema.groups[role].map(f=>f.id);cols[role]=[...new Set((Array.isArray(g.cols?.[role])?g.cols[role]:[]).filter(x=>base.includes(x)).concat(base))];}return {tabs,cols,visible:v,heading:t(g.heading||cfg.heading||'Trial Regulatory Submission')};})();\nconst vis=x=>layout.visible[x]!==false;\nconst tabs=layout.tabs.filter(vis);\nconst st={screen:'desk',submission:'',search:'',section:'All sections',country:'All',pages:{},editor:null,confirm:null,notice:'',showExtra:false,prompt:false,reportText:'',...(input&&input.state||{})};\nif(!tabs.includes(st.screen))st.screen=tabs[0]||'desk';\nconst writable=input?.saved===true&&input?.writable===true&&cfg.readOnly!==true;\nconst btn=(v,action,cls='',disabled=false,aria='')=>'<button type=\"button\" class=\"rg-btn '+cls+'\" data-action=\"'+h(action)+'\" '+(disabled?'disabled':'')+' '+aria+'>'+v+'</button>';\nconst pill=(x,kind='')=>'<span class=\"rg-pill '+h(kind)+'\">'+h(x||'Not recorded')+'</span>';\nconst escAttr=h;\nconst ico={desk:'<path d=\"M3 8h18v12H3zM7 8V4h10v4M3 13h18\"/>',tracker:'<rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\"/><path d=\"M8 9h8M8 13h8M8 17h5\"/>',plan:'<path d=\"M5 4h14v16H5zM8 8h2m3 0h3M8 12h2m3 0h3M8 16h2m3 0h3\"/>',documents:'<path d=\"M7 2h8l4 4v16H7zM15 2v5h4M10 11h6M10 15h6\"/>',questions:'<path d=\"M12 20V9M8 12l4-4 4 4M5 4h14v16H5\"/>',readiness:'<path d=\"M4 20V4M4 20h17M8 14l4-4 3 2 5-7\"/>',gear:'<circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2\"/>',plus:'<path d=\"M12 5v14M5 12h14\"/>',arrow:'<path d=\"M5 12h14m-6-6 6 6-6 6\"/>',check:'<path d=\"m5 12 4 4L19 6\"/>',clock:'<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 7v5l4 2\"/>'};\nconst icon=(k,n=17)=>'<svg width=\"'+n+'\" height=\"'+n+'\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">'+(ico[k]||ico.check)+'</svg>';\nconst cap=(a,n=115)=>h(t(a).slice(0,n));\nconst size=v=>Math.max(8,Math.min(30,Number(v)||20));\nconst pag=(key,arr,count=8)=>{const mx=Math.max(0,Math.ceil(arr.length/count)-1);const p=Math.max(0,Math.min(mx,Number(st.pages[key])||0));st.pages[key]=p;return {part:arr.slice(p*count,(p+1)*count),total:arr.length,p,mx,count};};\nconst pager=(key,p)=>p.mx?'<div class=\"rg-pagination\"><span>Page '+(p.p+1)+' of '+(p.mx+1)+' · '+p.total+' shown from currently authorized read</span><div>'+btn('Previous','page:'+key+':'+(p.p-1),'tiny',p.p<=0)+btn('Next','page:'+key+':'+(p.p+1),'tiny',p.p>=p.mx)+'</div></div>':'';\nconst activeSub=()=>one('submissions',st.submission)||all('submissions')[0];\nlet sub=activeSub();st.submission=sub?.id||'';\nconst scope=role=>all(role).filter(r=>r.data.submissionId===st.submission);\nconst docValid=(r)=>r&&r.data.status==='Approved'&&t(r.data.versionTag)&&iso(r.data.updatedAt)&&t(r.data.sourceUrl)&&cleanURL(r.data.sourceUrl);\nconst approvedReview=(id,version)=>{const rr=all('reviews').filter(x=>x.data.documentId===id&&x.data.versionTag===version);return rr.length===1&&rr[0].data.status==='Approved'&&t(rr[0].data.reviewer)&&iso(rr[0].data.decidedAt)&&cleanURL(rr[0].data.evidenceUrl)&&t(rr[0].data.evidenceUrl);};\nconst currentDoc=(item)=>{const d=one('documents',item.data.documentId);if(!d||d.data.submissionId!==item.data.submissionId||d.data.versionTag!==item.data.versionTag||!docValid(d))return null;const siblings=all('documents').filter(x=>x.data.submissionId===d.data.submissionId&&x.data.docKey===d.data.docKey);const active=siblings.filter(x=>x.data.status!=='Superseded');if(active.length!==1||active[0].id!==d.id)return null;return approvedReview(d.id,d.data.versionTag)?d:null;};\nconst readiness=(id)=>{const items=all('items').filter(r=>r.data.submissionId===id);const req=items.filter(x=>x.data.applicability==='Required');const unknown=items.filter(x=>x.data.applicability==='Unknown');const ready=req.filter(currentDoc);const unexplained=items.filter(x=>x.data.applicability==='Not applicable'&&!t(x.data.reason));const gaps=req.filter(x=>!currentDoc(x));const coverage=has(['submissions','items','documents','reviews']);const valid=coverage&&!unknown.length&&!unexplained.length&&req.length>0&&gaps.length===0;return {req,unknown,ready,gaps,unexplained,coverage,valid,pct:coverage&&req.length?Math.round(ready.length/req.length*100):null};};\nlet rt=sub?readiness(sub.id):null;\nconst coverageBanner=incomplete.length?'<div class=\"rg-data-alert\" role=\"status\"><strong>Partial source coverage</strong> · '+h(incomplete.join(', '))+' cannot be fully verified. Readiness, totals and decisions are withheld where affected.</div>':'';\nconst options=(role,id)=>all(role).map(x=>'<option value=\"'+h(x.id)+'\" '+(x.id===id?'selected':'')+'>'+cap(x.data.name,60)+'</option>').join('');\nconst makeChooser=()=>sub?'<label class=\"rg-chooser\"><span>Submission</span><select name=\"submission\" data-ui-state data-action=\"select-submission\"><option value=\"\">Choose submission</option>'+options('submissions',st.submission)+'</select></label>':'';\nconst selectActions=()=>'<div class=\"rg-head-actions\">'+makeChooser()+btn(icon('gear',18),'tracker:layout','icon-only',false,'aria-label=\"Customize layout\"')+'</div>';\nconst heads={desk:['Submission desk','Track jurisdiction readiness, open gaps and upcoming regulatory work.'],tracker:['Submission tracker','Maintain submission phases and country-specific target dates.'],plan:['Content plan','Resolve applicable document requirements before internal readiness approval.'],documents:['Document register','Track exact versions, reviewer evidence and document provenance.'],questions:['Authority questions','Record questions, response owners and documented reply actions.'],readiness:['Readiness & briefings','Review jurisdictional gaps and prepare source-linked internal summaries.']};\nconst mainhead=()=>'<div class=\"rg-page-head\"><div><h1>'+h(heads[st.screen][0])+'</h1><p>'+h(heads[st.screen][1])+'</p></div>'+selectActions()+'</div>';\nconst progress=(n,pct)=>'<div class=\"rg-progress\"><div style=\"width:'+Math.max(0,Math.min(100,pct||0))+'%\"></div></div>';\nconst statusFlag=(r)=>!r?.coverage?'Coverage unverified':r.unknown.length?'Applicability unknown':r.valid?'Internally ready':'Review required';\nconst cardAction=(role,r)=>'<div class=\"rg-actions\">'+btn('Edit','edit:'+role+':'+r.id,'minimal',!writable)+btn('Duplicate','duplicate:'+role+':'+r.id,'minimal',!writable)+btn('Archive','archive:'+role+':'+r.id,'minimal danger',!writable)+'</div>';\nconst register=(role,list,choice)=>{const fields=layout.cols[role].filter(k=>vis(role+':'+k));const f=fields.length?fields:[fd[role][0]?.key];const p=pag('table-'+role,list,10);return '<div class=\"rg-scroll-region\" role=\"region\" aria-label=\"'+h(role)+' register, horizontal scroll\"><table class=\"rg-table\"><thead><tr>'+f.map(k=>'<th>'+h(fd[role].find(x=>x.key===k)?.label||k)+'</th>').join('')+'<th>Actions</th></tr></thead><tbody>'+p.part.map(r=>'<tr>'+f.map(k=>'<td data-label=\"'+h(fd[role].find(x=>x.key===k)?.label||k)+'\">'+(k.endsWith('Id')?cap(label(k==='documentId'?'documents':'submissions',r.data[k]),50):cap(r.data[k]===true?'Yes':r.data[k]===false?'No':r.data[k]||'—',65))+'</td>').join('')+'<td data-label=\"Actions\">'+cardAction(role,r)+'</td></tr>').join('')+'</tbody></table></div>'+pager('table-'+role,p);};\nconst emptyBlock=(title,subline,role)=>'<div class=\"rg-empty\"><strong>'+h(title)+'</strong><p>'+h(subline)+'</p>'+btn('Add '+(role==='submissions'?'submission':role.slice(0,-1)),'new:'+role,'primary',!writable)+'</div>';\n// Regulatory dossier cover + milestone runway: specific visual metaphors, no generic KPI card grid.\nconst screenDesk=()=>{const ss=all('submissions');if(!ss.length)return '<section class=\"rg-paper\">'+emptyBlock('No submissions yet','Start with an internal regulatory submission and select a country.', 'submissions')+'</section>';\n const featured=ss.map(r=>({r,v:readiness(r.id)})).sort((a,b)=>t(a.r.data.plannedAt).localeCompare(t(b.r.data.plannedAt)))[0];let q=all('questions').filter(x=>x.data.status!=='Resolved'&&x.data.status!=='Response recorded').sort((a,b)=>t(a.data.dueAt).localeCompare(t(b.data.dueAt)));const activity=all('milestones').filter(x=>t(x.data.currentAt)).slice().sort((a,b)=>t(a.data.currentAt).localeCompare(t(b.data.currentAt)));const soon=asOf?activity.filter(x=>x.data.currentAt>=asOf).slice(0,4):activity.slice(0,4);\n return '<div class=\"rg-desk-grid\"><section class=\"rg-desk-hero\"><div class=\"rg-hero-top\"><span class=\"rg-eyebrow\">NEXT REGULATORY PACKAGE</span>'+pill(featured.r.data.pathway,'outline')+'</div><div class=\"rg-hero-name\">'+cap(featured.r.data.name,80)+'</div><p>'+cap(featured.r.data.country+' · '+featured.r.data.authority+' · '+featured.r.data.studyRef)+'</p><div class=\"rg-hero-rule\"></div><div class=\"rg-hero-meta\"><div><span>Internal readiness</span><strong>'+((featured.v.pct===null)?'—':featured.v.pct+'%')+'</strong><small>'+h(statusFlag(featured.v))+'</small></div><div><span>Planned date</span><strong>'+fmt(featured.r.data.plannedAt)+'</strong><small>'+cap(featured.r.data.owner)+'</small></div></div>'+progress('',featured.v.pct||0)+'</section><section class=\"rg-desk-side\"><div class=\"rg-section-kicker\">COUNTRY PACKAGES</div><div class=\"rg-country-stack\">'+ss.slice(0,8).map(x=>{let a=readiness(x.id);return '<button type=\"button\" class=\"rg-country-item\" data-action=\"pick:'+x.id+'\"><span class=\"rg-country-initial\">'+cap(x.data.country,2).toUpperCase()+'</span><span><strong>'+cap(x.data.name,48)+'</strong><small>'+cap(x.data.authority+' · '+x.data.status,55)+'</small></span><span class=\"rg-country-score\">'+(a.pct===null?'—':a.pct+'%')+'</span></button>'}).join('')+'</div></section></div><div class=\"rg-lower-grid\"><section class=\"rg-paper\"><div class=\"rg-panel-heading\"><h2>Critical content gaps</h2>'+btn('Open content plan '+icon('arrow'),'nav:plan','link')+'</div>'+(!sub?'<p>Select a submission</p>':!rt?.coverage?'<p>Evidence coverage incomplete; gap count withheld.</p>':!rt.gaps.length&&!rt.unknown.length?'<p class=\"rg-muted\">No current required-item gaps identified from complete reads.</p>':rt.gaps.concat(rt.unknown).slice(0,6).map(x=>'<button type=\"button\" class=\"rg-gap-row\" data-action=\"edit:items:'+x.id+'\"><span class=\"rg-gap-dot\"></span><span><strong>'+cap(x.data.name,72)+'</strong><small>'+cap(x.data.section+' · '+x.data.applicability,45)+'</small></span><span class=\"rg-gap-right\">'+fmt(x.data.dueAt)+'</span></button>').join(''))+'</section><section class=\"rg-paper\"><div class=\"rg-panel-heading\"><h2>Authority watchlist</h2>'+btn('Open questions '+icon('arrow'),'nav:questions','link')+'</div>'+(!has(['questions'])?'<p>Authority question data unavailable.</p>':!q.length?'<p class=\"rg-muted\">No open questions recorded.</p>':q.slice(0,5).map(x=>'<div class=\"rg-watch-row\"><span class=\"rg-watch-date\">'+fmt(x.data.dueAt)+'</span><span><strong>'+cap(x.data.name,57)+'</strong><small>'+cap(label('submissions',x.data.submissionId),60)+'</small></span></div>').join(''))+'</section></div><section class=\"rg-paper\"><div class=\"rg-panel-heading\"><h2>Regulatory milestone runway</h2>'+btn('Manage dates','nav:tracker','link')+'</div><div class=\"rg-runway\">'+(soon.length?soon.map(x=>'<div class=\"rg-runway-step\"><span class=\"rg-runway-node\"></span><strong>'+fmt(x.data.currentAt)+'</strong><span>'+cap(x.data.name,34)+'</span><small>'+cap(label('submissions',x.data.submissionId),40)+'</small></div>').join(''):'<p>No dated milestones recorded.</p>')+'</div></section>';\n};\nconst screenTracker=()=>{const ss=all('submissions');if(!ss.length)return emptyBlock('Start a regulatory package','Set study, authority and pathway before adding requirements.','submissions');const r=sub||ss[0];const ms=all('milestones').filter(x=>x.data.submissionId===r.id).sort((a,b)=>t(a.data.currentAt).localeCompare(t(b.data.currentAt)));return '<div class=\"rg-two-col\"><div class=\"rg-paper rg-project-list\"><div class=\"rg-panel-heading\"><h2>Jurisdiction files</h2>'+btn('+ New','new:submissions','primary small',!writable)+'</div>'+ss.map(x=>'<button type=\"button\" data-action=\"pick:'+x.id+'\" class=\"rg-file-row '+(x.id===r.id?'selected':'')+'\"><span class=\"rg-file-number\">'+cap(x.data.country,4).toUpperCase()+'</span><span><strong>'+cap(x.data.name,65)+'</strong><small>'+cap(x.data.pathway+' · '+x.data.status,55)+'</small></span></button>').join('')+'</div><div class=\"rg-paper rg-dossier\"><div class=\"rg-panel-heading\"><div><div class=\"rg-section-kicker\">DOSSIER / '+h(r.data.pathway)+'</div><h2>'+cap(r.data.name,85)+'</h2></div>'+btn('Edit dossier','edit:submissions:'+r.id,'secondary',!writable)+'</div><div class=\"rg-dossier-meta\"><span><small>Authority</small><strong>'+cap(r.data.authority)+'</strong></span><span><small>Study</small><strong>'+cap(r.data.studyRef)+'</strong></span><span><small>Country</small><strong>'+cap(r.data.country)+'</strong></span><span><small>Recorded internal phase</small>'+pill(r.data.status)+'</span><span><small>Current evidence readiness</small>'+pill(statusFlag(readiness(r.id)))+'</span></div><div class=\"rg-dossier-line\"><div class=\"rg-labelpair\"><span>Original plan</span><strong>'+fmt(r.data.plannedAt)+'</strong></div><div class=\"rg-labelpair\"><span>Actual manual submission</span><strong>'+fmt(r.data.submittedAt)+'</strong></div><div class=\"rg-labelpair\"><span>Recorded portal evidence</span><strong>'+cap(r.data.submissionProof||'No receipt recorded',100)+'</strong></div></div><h3>Country milestones</h3><div class=\"rg-milestone-list\">'+(ms.length?ms.map(x=>'<div class=\"rg-milestone\"><span><strong>'+cap(x.data.name,72)+'</strong><small>'+cap(x.data.owner||'Not assigned')+'</small></span><span>Baseline<br><b>'+fmt(x.data.baselineAt)+'</b></span><span>Current<br><b>'+fmt(x.data.currentAt)+'</b></span><span>Actual<br><b>'+fmt(x.data.actualAt)+'</b></span>'+btn('Edit','edit:milestones:'+x.id,'minimal',!writable)+'</div>').join(''):'<p class=\"rg-muted\">No milestones yet.</p>')+'</div>'+btn('+ Add milestone','new:milestones','secondary',!writable)+'</div></div><section class=\"rg-paper\"><div class=\"rg-panel-heading\"><h2>Submission register</h2>'+btn('Add submission','new:submissions','secondary',!writable)+'</div>'+register('submissions',ss)+'</section><section class=\"rg-paper\"><h2>Milestone register</h2>'+register('milestones',ms)+'</section>';\n};\nconst screenPlan=()=>{if(!sub)return emptyBlock('Create the submission first','Requirements must be scoped to a single country package.','submissions');const i=scope('items');const sect=['Part I','Part II','Country annex','Safety','Other'];let boxes=sect.filter(s=>i.some(x=>x.data.section===s));let allCounts=rt?.coverage?' '+rt.ready.length+' / '+rt.req.length+' approved required items':'Coverage unverified';const groups=boxes.map(s=>{let rows=i.filter(x=>x.data.section===s);return '<section class=\"rg-plan-section\"><div class=\"rg-plan-section-title\"><div><span class=\"rg-plan-index\">'+String(sect.indexOf(s)+1).padStart(2,'0')+'</span><h3>'+h(s)+'</h3></div><span>'+rows.length+' items</span></div>'+rows.map(x=>{const d=currentDoc(x);return '<div class=\"rg-plan-line\"><div class=\"rg-plan-mark '+(d?'done':x.data.applicability==='Unknown'?'unknown':'')+'\">'+(d?icon('check',15):x.data.applicability==='Not applicable'?'—':'•')+'</div><div class=\"rg-plan-main\"><strong>'+cap(x.data.name,83)+'</strong><small>'+cap(x.data.owner||'Unassigned')+' · '+fmt(x.data.dueAt)+'</small></div><div class=\"rg-plan-state\">'+pill(x.data.applicability,x.data.applicability==='Unknown'?'warn':'')+'<small>'+(x.data.applicability==='Not applicable'?'Not applicable':d?'Approved '+cap(d.data.versionTag):x.data.applicability==='Unknown'?'Review applicability':'Evidence required')+'</small></div>'+btn('Edit','edit:items:'+x.id,'tiny',!writable)+'</div>'}).join('')+'</section>'}).join('');return '<div class=\"rg-plan-shell\"><section class=\"rg-paper rg-plan-intro\"><div class=\"rg-panel-heading\"><div><div class=\"rg-section-kicker\">'+cap(sub.data.country.toUpperCase())+' / '+cap(sub.data.pathway)+'</div><h2>Document content plan</h2></div>'+btn('+ Add requirement','new:items','primary',!writable)+'</div><p>'+cap(sub.data.name)+'</p><div class=\"rg-plan-status\"><span>'+allCounts+'</span>'+progress('',rt?.pct||0)+'</div><div class=\"rg-plan-legend\">'+pill('Required')+pill('Unknown','warn')+pill('Not applicable')+'</div></section><div class=\"rg-plan-tree\">'+(groups||emptyBlock('No content-plan items','Add requirements and record jurisdiction-specific applicability.','items'))+'</div></div><section class=\"rg-paper\"><div class=\"rg-panel-heading\"><h2>Requirement register</h2>'+btn('Add requirement','new:items','secondary',!writable)+'</div>'+register('items',i)+'</section>';\n};\nconst screenDocuments=()=>{if(!sub)return emptyBlock('No submission selected','Choose a submission to inspect document versions.','submissions');const docs=scope('documents');const families=[...new Set(docs.map(x=>x.data.docKey))];return '<div class=\"rg-document-shell\"><section class=\"rg-paper\"><div class=\"rg-panel-heading\"><div><h2>Version ledger</h2><p>Current and historical internal document records</p></div>'+btn('+ Register version','new:documents','primary',!writable)+'</div><div class=\"rg-version-families\">'+families.slice(0,12).map(k=>{const vs=docs.filter(x=>x.data.docKey===k).sort((a,b)=>t(b.data.updatedAt).localeCompare(t(a.data.updatedAt)));return '<div class=\"rg-doc-family\"><div class=\"rg-family-top\"><span class=\"rg-file-symbol\">'+icon('documents',18)+'</span><span><strong>'+cap(vs[0].data.name,90)+'</strong><small>'+cap(k)+' · '+vs.length+' version(s)</small></span></div><div class=\"rg-doc-versions\">'+vs.map(x=>'<div class=\"rg-doc-version\"><span class=\"rg-version-pill\">'+cap(x.data.versionTag,12)+'</span><span>'+pill(x.data.status,x.data.status==='Superseded'?'mute':'')+'</span><span class=\"rg-muted\">'+fmt(x.data.updatedAt)+'</span>'+btn('Edit','edit:documents:'+x.id,'minimal',!writable)+'</div>').join('')+'</div></div>'}).join('')+'</div></section><section class=\"rg-paper rg-review-sidebar\"><div class=\"rg-panel-heading\"><h2>Review trail</h2>'+btn('Add review','new:reviews','secondary',!writable)+'</div>'+(!has(['documents','reviews'])?'<p>Review evidence coverage unavailable.</p>':all('reviews').filter(x=>docs.some(d=>d.id===x.data.documentId)).slice(0,9).map(x=>'<div class=\"rg-review-tile\"><div class=\"rg-review-top\">'+pill(x.data.status)+btn('Edit','edit:reviews:'+x.id,'minimal',!writable)+'</div><strong>'+cap(x.data.name,77)+'</strong><small>'+cap(x.data.reviewer||'Reviewer missing')+' · '+fmt(x.data.decidedAt)+'</small><small>'+cap('Version '+x.data.versionTag)+'</small></div>').join('')||'<p>No reviews yet.</p>')+'</section></div><section class=\"rg-paper\"><div class=\"rg-panel-heading\"><h2>All document versions</h2>'+btn('New document','new:documents','secondary',!writable)+'</div>'+register('documents',docs)+'</section><section class=\"rg-paper\"><h2>All review decisions</h2>'+register('reviews',all('reviews').filter(x=>docs.some(d=>d.id===x.data.documentId)))+'</section>';\n};\nconst screenQuestions=()=>{if(!sub)return emptyBlock('Choose a country package','Authority questions are scoped to a submission.','submissions');const qs=scope('questions').slice().sort((a,b)=>t(a.data.dueAt).localeCompare(t(b.data.dueAt)));const p=pag('q-feed',qs,9);const open=qs.filter(x=>!['Resolved','Response recorded'].includes(x.data.status));return '<div class=\"rg-question-shell\"><section class=\"rg-paper rg-inbox\"><div class=\"rg-panel-heading\"><div><h2>Question inbox</h2><p>Manual authority RFI and reply tracking</p></div>'+btn('+ Record question','new:questions','primary',!writable)+'</div>'+(p.part.length?p.part.map(x=>'<article class=\"rg-question\"><div class=\"rg-question-date\"><strong>'+fmt(x.data.receivedAt)+'</strong><span>'+cap(x.data.authorityRef,22)+'</span></div><div class=\"rg-question-body\"><div class=\"rg-question-row\"><strong>'+cap(x.data.name,110)+'</strong>'+pill(x.data.status,x.data.status==='Open'?'warn':'')+'</div><p>'+cap(x.data.notes||'No summary recorded.',200)+'</p><div class=\"rg-question-details\"><span>Owner: '+cap(x.data.owner||'Unassigned')+'</span><span>Target: '+fmt(x.data.dueAt)+'</span><span>Response: '+fmt(x.data.respondedAt)+'</span></div></div>'+btn('Update','edit:questions:'+x.id,'secondary small',!writable)+'</article>').join(''):'<div class=\"rg-empty\"><strong>No authority questions recorded.</strong><p>Log a question as soon as the team receives it through the official authority channel.</p></div>')+pager('q-feed',p)+'</section><section class=\"rg-question-aside\"><div class=\"rg-dark-note\"><div class=\"rg-section-kicker\">RESPONSE CONTROL</div><strong>'+(!has(['questions'])?'—':String(open.length))+'</strong><p>Open or in-progress authority questions in this submission.</p><small>Targets are manually entered; no statutory clock is inferred.</small></div><div class=\"rg-paper\"><h2>Urgent reply dates</h2>'+(!asOf?'<p>Supply an approved cutoff to evaluate overdue targets.</p>':!has(['questions'])?'<p>Coverage incomplete.</p>':open.filter(x=>iso(x.data.dueAt)&&x.data.dueAt<asOf).length?open.filter(x=>iso(x.data.dueAt)&&x.data.dueAt<asOf).slice(0,5).map(x=>'<div class=\"rg-watch-row\"><strong>'+cap(x.data.name,65)+'</strong><span>'+fmt(x.data.dueAt)+'</span></div>').join(''):'<p class=\"rg-muted\">No overdue targets in complete current reads.</p>')+'</div></section></div><section class=\"rg-paper\"><div class=\"rg-panel-heading\"><h2>Question register</h2></div>'+register('questions',qs)+'</section>';\n};\nconst screenReadiness=()=>{const submissions=all('submissions');const matrix=submissions.map(x=>({r:x,v:readiness(x.id)}));const gaps=rt?[...rt.gaps.map(x=>({x,reason:'Document not approved for the exact current version'})),...rt.unknown.map(x=>({x,reason:'Applicability has not been determined'})),...rt.unexplained.map(x=>({x,reason:'Not-applicable rationale is missing'}))]:[];const reports=sub?scope('reports'):[];const p=pag('reports',reports,6);return '<section class=\"rg-paper\"><div class=\"rg-panel-heading\"><div><h2>Jurisdiction readiness matrix</h2><p>Manual evidence readiness, not regulatory acceptance</p></div>'+btn('New report','new:reports','secondary',!writable)+'</div><div class=\"rg-scroll-hint\">Swipe table for additional evidence columns</div><div class=\"rg-matrix-scroll\" role=\"region\" aria-label=\"Country readiness comparison, horizontal scroll\"><table class=\"rg-matrix\"><thead><tr><th>Package</th><th>Required</th><th>Current approvals</th><th>Unknown</th><th>Readiness</th></tr></thead><tbody>'+matrix.map(x=>'<tr><td><strong>'+cap(x.r.data.name,50)+'</strong><small>'+cap(x.r.data.country+' · '+x.r.data.pathway)+'</small></td><td>'+(x.v.coverage?x.v.req.length:'—')+'</td><td>'+(x.v.coverage?x.v.ready.length:'—')+'</td><td>'+(x.v.coverage?x.v.unknown.length:'—')+'</td><td>'+pill(statusFlag(x.v),x.v.valid?'ok':x.v.unknown.length?'warn':'')+'</td></tr>').join('')+'</tbody></table></div></section><div class=\"rg-readiness-grid\"><section class=\"rg-paper\"><div class=\"rg-panel-heading\"><h2>Open validation gaps</h2>'+btn('Content plan','nav:plan','link')+'</div>'+(!rt?'<p>Select a package.</p>':!rt.coverage?'<p>Coverage incomplete; gap count withheld.</p>':!gaps.length?'<p class=\"rg-muted\">No gaps in the complete current evidence set.</p>':gaps.slice(0,9).map(x=>'<button type=\"button\" class=\"rg-gap-row\" data-action=\"edit:items:'+x.x.id+'\"><span class=\"rg-gap-dot\"></span><span><strong>'+cap(x.x.data.name,70)+'</strong><small>'+cap(x.reason,110)+'</small></span></button>').join(''))+'</section><section class=\"rg-paper rg-briefing-pane\"><div class=\"rg-panel-heading\"><h2>Internal regulatory brief</h2></div><p>ChatGPT may draft a source-linked gap summary for an authorized regulatory reviewer. It must not submit to CTIS or certify compliance.</p>'+btn('Show ChatGPT instructions','toggle-prompt','secondary')+(st.prompt?'<div class=\"rg-prompt\"><strong>Regulatory briefing prompt</strong><p>Using only authorized evidence from the selected submission, list exact missing or unknown requirements, document record IDs and current versions, reviewer decisions and dates, authority questions with recorded due dates, missing coverage, and source citations. Distinguish proposed actions from submitted authority responses. Mark partial evidence clearly and do not infer statutory deadlines or regulatory compliance.</p></div>':'')+'<div class=\"rg-mini-rule\"></div><h3>Briefing history</h3>'+p.part.map(x=>'<div class=\"rg-report-row\"><span><strong>'+cap(x.data.name,65)+'</strong><small>'+fmt(x.data.cutoffAt)+' · '+cap(x.data.reviewer||'Reviewer pending')+'</small></span>'+pill(x.data.status)+btn('Edit','edit:reports:'+x.id,'tiny',!writable)+'</div>').join('')+pager('reports',p)+btn('+ Add reviewed brief','new:reports','secondary',!writable)+'</section></div>';\n};\nconst screenHTML=()=>({desk:screenDesk,tracker:screenTracker,plan:screenPlan,documents:screenDocuments,questions:screenQuestions,readiness:screenReadiness}[st.screen]||screenDesk)();\n// Reviewable, version-aware record forms; no silent direct record writes.\nconst fieldControl=(role,f,v)=>{let value=v===undefined||v===null?'':String(v);if(f.key==='archived')return '';const required=f.required?' required':'';const fieldAction='field:'+f.key;const base='name=\"'+h(f.key)+'\" data-ui-state data-action=\"'+h(fieldAction)+'\" '+required;let control='';if(f.key==='submissionId'){control='<select '+base+'><option value=\"\">Choose submission</option>'+options('submissions',value)+'</select>';}else if(f.key==='documentId'){control='<select '+base+'><option value=\"\">No document</option>'+options('documents',value)+'</select>';}else if(f.kind==='select'){control='<select '+base+'><option value=\"\">Choose value</option>'+f.options.map(opt=>'<option value=\"'+h(opt)+'\" '+(opt===value?'selected':'')+'>'+h(opt)+'</option>').join('')+'</select>';}else if(f.kind==='date'){control='<input type=\"date\" '+base+' value=\"'+h(value)+'\">';}else if(['summary','notes','reason','sourceRefs','submissionProof'].includes(f.key)){control='<textarea '+base+' rows=\"3\">'+h(value)+'</textarea>';}else {control='<input type=\"text\" '+base+' value=\"'+h(value)+'\" maxlength=\"500\">';}return '<label class=\"rg-field\"><span>'+h(f.label)+(f.required?' <em>*</em>':'')+'</span>'+control+'</label>';};\nconst formCard=()=>{const ed=st.editor;if(!ed)return '';const primary=layout.cols[ed.role].filter(k=>vis(ed.role+':'+k));const fields=primary.map(k=>fd[ed.role].find(f=>f.key===k)).filter(Boolean);const extra=fd[ed.role].filter(f=>!primary.includes(f.key)&&f.key!=='archived');return '<div class=\"rg-overlay\" role=\"dialog\" aria-label=\"Reviewed record editor\" aria-modal=\"true\"><section class=\"rg-editor\"><div class=\"rg-editor-head\"><div><span class=\"rg-section-kicker\">'+h(ed.mode.toUpperCase())+' / '+h(ed.role)+'</span><h2>'+h(ed.mode==='new'?'New':ed.mode==='copy'?'Duplicate':'Edit')+' '+h(ed.role.slice(0,-1))+'</h2></div>'+btn('×','cancel-editor','icon-only',false,'aria-label=\"Close editor\"')+'</div><form novalidate data-form=\"record\" data-ui-state data-action=\"save-record\" class=\"rg-edit-form\"><p>Propose exact changes for TrialAgents review; this form does not save without confirmation.</p>'+(st.notice?'<div class=\"rg-notice\" role=\"status\">'+h(st.notice)+'</div>':'')+(ed.error?'<div class=\"rg-error\" role=\"alert\">'+h(ed.error)+'</div>':'')+'<div class=\"rg-fields\">'+fields.map(f=>fieldControl(ed.role,f,ed.draft[f.key])).join('')+'</div>'+btn(st.showExtra?'Hide additional fields':'Show additional fields','more-fields','secondary')+(st.showExtra?'<div class=\"rg-fields\">'+extra.map(f=>fieldControl(ed.role,f,ed.draft[f.key])).join('')+'</div>':'')+'<div class=\"rg-editor-foot\">'+btn('Cancel','cancel-editor','secondary')+'<button type=\"submit\" class=\"rg-btn primary\">Review changes</button></div></form></section></div>';};\nconst confirmCard=()=>{if(!st.confirm)return '';return '<div class=\"rg-overlay\" role=\"dialog\" aria-label=\"Archive record\" aria-modal=\"true\"><section class=\"rg-confirm\"><h2>Archive this record?</h2>'+(st.notice?'<div class=\"rg-notice\" role=\"status\">'+h(st.notice)+'</div>':'')+'<p>History is retained. Linked dependent records and incomplete evidence prevent archival.</p>'+btn('Keep record','cancel-archive','secondary')+btn('Review archive','confirm-archive','danger',!writable)+'</section></div>';};\nconst parents={items:[['submissionId','submissions']],documents:[['submissionId','submissions']],reviews:[['documentId','documents']],questions:[['submissionId','submissions']],milestones:[['submissionId','submissions']],reports:[['submissionId','submissions']]};\nconst dependents={submissions:['items','documents','questions','milestones','reports'],documents:['items','reviews']};\nconst forbiddenRole={submissions:['country','authority','pathway','studyRef'],documents:['submissionId','docKey'],reviews:['documentId','versionTag'],items:['submissionId'],questions:['submissionId','authorityRef','receivedAt'],milestones:['submissionId','baselineAt'],reports:['submissionId']};\nconst submissionVersions=()=>Object.fromEntries(all('submissions').map(r=>[r.id,r.version]));\nconst proposed=(cs,role,data,versions)=>{try{if(role!=='submissions'){const sid=role==='reviews'?one('documents',data.documentId)?.data.submissionId:data.submissionId;const parent=one('submissions',sid);if(!parent||parent.version!==versions?.[sid])throw Error('Submission changed after opening; reopen and reconcile.');if(!writableFields('submissions').includes('status'))throw Error('Submission status write scope is required for version-checked evidence changes.');cs.push({kind:'update_record',typeId:tableMap.submissions.typeId,recordId:sid,expectedVersion:versions[sid],data:{[tableMap.submissions.fields.status]:parent.data.status}});}const r=tools.call('records.propose',cs);if(r?.status==='proposed'||r?.status==='pending'){st.notice='Changes proposed for host review. No data saved until approved.';return true;}st.notice='Host did not confirm a proposal; draft retained.';return false;}catch(e){st.notice='Proposal not accepted; draft retained. '+t(e?.message);return false;}};\nconst writableFields=(role)=>tableMap[role]?.writableFields||[];\nconst mapped=(role,obj)=>{const m=tableMap[role]||{},x={};for(const k of Object.keys(obj)){if(k==='id'||k==='version')continue;if(!writableFields(role).includes(k))continue;const physical=m.fields?.[k];if(physical)x[physical]=obj[k]===undefined||obj[k]===null||obj[k]===''?null:obj[k];}return x;};\nconst initDraft=(role,record,copy)=>{let o={};for(const f of fd[role])o[f.key]=record?.data[f.key]??(f.kind==='boolean'?false:'');if(!record&&role!=='submissions')o.submissionId=st.submission||'';if(copy){o.archived=false;if(role==='submissions'){o.name=t(o.name)+' (copy)';o.status='Planning';o.submittedAt='';o.submissionProof='';}if(role==='documents'){o.docKey='';o.versionTag='';o.status='Draft';o.sourceUrl='';}if(role==='reviews'){o.status='Pending';o.reviewer='';o.decidedAt='';o.evidenceUrl='';}if(role==='questions'){o.authorityRef='';o.status='Open';o.respondedAt='';o.answerUrl='';}if(role==='reports'){o.status='Draft';o.reviewer='';o.reviewedAt='';o.sourceRefs='';}if(role==='items'){o.documentId='';o.versionTag='';}if(role==='milestones'){o.actualAt='';}}return o;};\nconst isReadyPhase=s=>['Ready for manual submission','Submitted (manually recorded)','Authority follow-up','Closed'].includes(s);\nconst validation=(role,d,original,mode)=>{\n if(mode!=='edit'&&fd[role].some(f=>!writableFields(role).includes(f.key)))return 'Creating a complete record requires write scope for all mapped fields, including explicit archived false.';\n for(const f of fd[role]){const v=d[f.key];if(v!==null&&v!==undefined&&(typeof v==='object'||(f.kind==='boolean'?typeof v!=='boolean':typeof v!=='string')))return f.label+' must be a scalar of the declared type.';if(!writableFields(role).includes(f.key)&&t(v)!==t(original?.data[f.key]??(f.kind==='boolean'?false:'')))return f.label+' is not authorized for writing.';if(f.required&&(!t(d[f.key])||d[f.key]===null))return f.label+' is required.';if(f.kind==='date'&&t(d[f.key])&&!iso(d[f.key]))return 'Invalid '+f.label.toLowerCase()+' date.';if(f.kind==='select'&&t(d[f.key])&&!f.options.includes(d[f.key]))return 'Invalid '+f.label.toLowerCase()+' choice.';if(['sourceUrl','answerUrl','evidenceUrl'].includes(f.key)&&!cleanURL(d[f.key]))return 'Source links must be HTTPS or empty.';}\n if(!has(roles))return 'Source reads incomplete; changes cannot be validated safely.';\n for(const [key,parent] of (parents[role]||[])){if(!one(parent,d[key]))return 'Linked '+parent+' record unavailable or archived.';}\n if(original){for(const k of forbiddenRole[role]||[])if(t(d[k])!==t(original.data[k]))return 'Historical identity or baseline cannot be silently reassigned; create a new reviewed record.';}\n if(role==='submissions'){\n if(isReadyPhase(d.status)&&!readiness(original?.id||'').valid)return 'Cannot declare ready/submitted until current applicable documents are approved and coverage complete.';\n if(['Submitted (manually recorded)','Authority follow-up','Closed'].includes(d.status)&&(!iso(d.submittedAt)||!t(d.submissionProof)))return 'Manual submission needs actual date and official receipt reference.';\n if(original&&['Submitted (manually recorded)','Authority follow-up','Closed'].includes(original.data.status)&&['name','plannedAt','submissionProof','submittedAt','status'].some(k=>k!=='status'&&t(d[k])!==t(original.data[k])))return 'Historical submitted dossier evidence is protected; record a separate correction.';\n }\n if(role==='items'){\n if(d.applicability==='Not applicable'&&!t(d.reason))return 'Not-applicable items require a recorded justification.';\n if(d.documentId){const doc=one('documents',d.documentId);if(!doc||doc.data.submissionId!==d.submissionId)return 'Document must belong to the same submission.';if(t(d.versionTag)!==t(doc.data.versionTag))return 'Selected document version does not match the documented item version.';}\n if(original&&original.data.documentId&&d.documentId!==original.data.documentId){const old=currentDoc(original);if(old)return 'Change to an approved evidence link requires a new checklist revision and reviewer reapproval.';}\n }\n if(role==='documents'){\n if(!t(d.docKey)||!t(d.versionTag))return 'Document key and version are required.';\n if(all('documents').some(x=>x.id!==original?.id&&x.data.submissionId===d.submissionId&&x.data.docKey===d.docKey&&x.data.versionTag===d.versionTag))return 'Duplicate document family/version for this submission.';\n if(d.status==='Approved'&&(!iso(d.updatedAt)||!t(d.sourceUrl)))return 'Approval requires document revision date and source URL.';\n if(d.status==='Approved'&&!approvedReview(original?.id,d.versionTag))return 'Current exact-version approved review evidence is required before marking document approved.';\n if(original&&(['Approved','Superseded'].includes(original.data.status)||all('reviews').some(x=>x.data.documentId===original.id&&x.data.status==='Approved'))&&['name','versionTag','sourceUrl','docKey','updatedAt'].some(k=>t(d[k])!==t(original.data[k])))return 'Reviewed document history is immutable; create a new version.';\n }\n if(role==='reviews'){\n const doc=one('documents',d.documentId);if(!doc||doc.data.versionTag!==d.versionTag)return 'Review version must exactly match the linked document.';\n if(d.status==='Approved'&&(!t(d.reviewer)||!iso(d.decidedAt)||!t(d.evidenceUrl)))return 'Approved review needs reviewer, decision date and evidence URL.';\n if(original&&original.data.status==='Approved'&&['status','reviewer','decidedAt','versionTag','evidenceUrl','documentId'].some(k=>t(original.data[k])!==t(d[k])))return 'Approved decision is immutable; create a new review event.';\n if(d.status==='Approved'&&all('reviews').some(x=>x.id!==original?.id&&x.data.documentId===d.documentId&&x.data.versionTag===d.versionTag&&x.data.status==='Approved'))return 'Duplicate exact-version approval.';\n }\n if(role==='questions'){\n if(['Response recorded','Resolved'].includes(d.status)&&(!t(d.answerUrl)||!iso(d.respondedAt)))return 'A recorded response requires source URL and actual response date.';\n if(original&&['Response recorded','Resolved'].includes(original.data.status)&&['answerUrl','respondedAt','receivedAt','authorityRef'].some(k=>t(d[k])!==t(original.data[k])))return 'Recorded authority response history is immutable.';\n }\n if(role==='milestones'&&original&&t(d.baselineAt)!==t(original.data.baselineAt))return 'Original milestone baseline is immutable; log a changed target and reason.';\n if(role==='milestones'&&original&&t(d.currentAt)!==t(original.data.currentAt)&&!t(d.reason))return 'Date changes require a reason.';\n if(role==='reports'){\n if(d.status==='Reviewed'&&(!t(d.reviewer)||!iso(d.reviewedAt)||!t(d.sourceRefs)||!t(d.summary)||!iso(d.cutoffAt)||!readiness(d.submissionId).coverage))return 'Reviewed briefing needs reviewer, date, exact evidence IDs and complete coverage.';\n if(d.status==='Reviewed'){\n  const refTokens=t(d.sourceRefs).split(',').map(x=>t(x)).filter(Boolean);\n  if(!refTokens.length)return 'Review requires exact referenced record IDs and versions.';\n  for(const ref of refTokens){const m=/^(submissions|items|documents|reviews|questions|milestones):([a-zA-Z0-9-]+)@v(0|[1-9][0-9]*)$/.exec(ref);if(!m)return 'Use role:recordId@vN references for every reviewed source.';\n   const z=one(m[1],m[2]);if(!z||z.version!==Number(m[3]))return 'Referenced source is unavailable, archived or has changed version.';\n   const sid=m[1]==='submissions'?z.id:m[1]==='reviews'?one('documents',z.data.documentId)?.data.submissionId:z.data.submissionId;\n   if(sid!==d.submissionId)return 'Review sources must belong to the selected submission.';\n  }\n }\n\n if(original&&original.data.status==='Reviewed'&&['summary','sourceRefs','submissionId','cutoffAt','status','reviewer','reviewedAt'].some(k=>t(d[k])!==t(original.data[k])))return 'Reviewed report evidence cannot be silently edited; create a new draft revision.';\n }\n return '';\n};\n// Single event-driven render. Form inputs carry data-ui-state, and state retains all transient edits.\nif(ev.kind==='change'){\n if(act==='select-submission'){st.submission=t(ev.value);st.pages={};st.notice='';}\n else if(act==='search')st.search=t(ev.value);\n else if(act==='section')st.section=t(ev.value);\n else if(act.startsWith('field:')&&st.editor)st.editor.draft[act.slice(6)]=ev.value;\n}\nif(ev.kind==='click'){\n if(act.startsWith('nav:')){st.screen=act.slice(4);st.editor=null;st.confirm=null;st.notice='';}\n else if(act.startsWith('pick:')){st.submission=act.slice(5);st.pages={};st.screen='tracker';st.notice='';}\n else if(act.startsWith('page:')){const x=act.slice(5).split(':');st.pages[x[0]]=Number(x[1]);}\n else if(act==='tracker:layout')st.notice='Open TrialAgents Settings > Layout to drag, review and persist screens/field order.';\n else if(act==='more-fields')st.showExtra=!st.showExtra;\n else if(act==='toggle-prompt')st.prompt=!st.prompt;\n else if(act==='cancel-editor'){st.editor=null;st.showExtra=false;}\n else if(act==='cancel-archive')st.confirm=null;\n else if(act.startsWith('new:')){const role=act.slice(4);if(roles.includes(role)){st.notice='';st.showExtra=false;st.editor={role,mode:'new',id:'',version:null,draft:initDraft(role,null,false),submissions:submissionVersions(),error:''};}}\n else if(act.startsWith('edit:')||act.startsWith('duplicate:')){const parts=act.split(':'),role=parts[1],r=one(role,parts.slice(2).join(':'));if(r){st.notice='';st.showExtra=false;st.editor={role,mode:parts[0]==='duplicate'?'copy':'edit',id:r.id,version:r.version,draft:initDraft(role,r,parts[0]==='duplicate'),submissions:submissionVersions(),error:''};}}\n else if(act.startsWith('archive:')){const parts=act.split(':'),role=parts[1],r=one(role,parts.slice(2).join(':'));if(r){st.notice='';st.confirm={role,id:r.id,version:r.version,submissions:submissionVersions()};}}\n else if(act==='confirm-archive'&&st.confirm){const z=st.confirm,r=one(z.role,z.id);if(!writable||!has(roles)){st.notice='Archive blocked: read or edit access unavailable.';}else if(!r||r.version!==z.version){st.notice='Record changed since archive opened; refresh required.';}else if(!writableFields(z.role).includes('archived')){st.notice='Archive field is not authorized for writing.';}else if((z.role==='reviews'&&r.data.status==='Approved')||(z.role==='documents'&&['Approved','Superseded'].includes(r.data.status))||(z.role==='reports'&&r.data.status==='Reviewed')||(z.role==='questions'&&['Response recorded','Resolved'].includes(r.data.status))||(z.role==='submissions'&&isReadyPhase(r.data.status))){st.notice='Approved or recorded historical evidence cannot be archived; retain it and create a reviewed revision.';}else if((dependents[z.role]||[]).some(rel=>all(rel).some(x=>rel==='items'&&x.data.submissionId===r.id||rel==='documents'&&x.data.submissionId===r.id||rel==='questions'&&x.data.submissionId===r.id||rel==='milestones'&&x.data.submissionId===r.id||rel==='reports'&&x.data.submissionId===r.id||rel==='reviews'&&x.data.documentId===r.id||rel==='items'&&x.data.documentId===r.id))){st.notice='Linked active evidence exists; archive dependents first.';}else{const payload={kind:'update_record',typeId:tableMap[z.role].typeId,recordId:z.id,expectedVersion:z.version,data:mapped(z.role,{archived:true})};proposed([payload],z.role,r.data,z.submissions);}\n }\n}\nif(ev.kind==='submit'&&act==='save-record'&&st.editor){const e=st.editor;for(const [k,v]of Object.entries(ev.form||{}))if(fd[e.role].some(f=>f.key===k))e.draft[k]=v;const original=e.mode==='edit'?one(e.role,e.id):null;if(!writable)e.error='Edits are not authorized.';else if(!has(roles))e.error='Incomplete read coverage prevents safe proposal.';else if(e.mode==='edit'&&(!original||original.version!==e.version))e.error='Record changed since editing began; original draft retained.';else{e.error=validation(e.role,e.draft,original,e.mode);if(!e.error){let payload={kind:e.mode==='edit'?'update_record':'create_record',typeId:tableMap[e.role].typeId,data:mapped(e.role,e.draft)};if(e.mode==='edit'){payload.recordId=e.id;payload.expectedVersion=e.version;}if(!proposed([payload],e.role,e.draft,e.submissions))e.error='Proposal failed; draft retained for retry.';}}}\nsub=activeSub();st.submission=sub?.id||'';rt=sub?readiness(sub.id):null;\nif(st.editor?.error)st.showExtra=true;\nconst mobileNav={desk:'Desk',tracker:'Tracker',plan:'Content plan',documents:'Documents',questions:'Questions',readiness:'Readiness'};\nconst nav=templateLayoutSchema.screens.filter(x=>tabs.includes(x.id)).sort((a,b)=>tabs.indexOf(a.id)-tabs.indexOf(b.id)).map(x=>'<button type=\"button\" class=\"rg-nav-btn '+(st.screen===x.id?'active':'')+'\" data-action=\"nav:'+x.id+'\">'+icon(x.id,18)+'<span class=\"rg-desktop-label\">'+h(x.label)+'</span><span class=\"rg-mobile-label\">'+h(mobileNav[x.id])+'</span></button>').join('');\nconst page='<div class=\"rg-layout\"><aside class=\"rg-sidebar\"><div class=\"rg-sidebar-name\">'+h(layout.heading)+'</div><nav aria-label=\"App sections\" class=\"rg-nav\">'+nav+'</nav></aside><main class=\"rg-main\">'+(st.notice&&!st.editor&&!st.confirm?'<div class=\"rg-notice\" role=\"status\">'+h(st.notice)+'</div>':'')+mainhead()+coverageBanner+screenHTML()+'</main></div>'+formCard()+confirmCard();\nreturn {html:page,css:REG_CSS,state:st};\n";
+const demo=({
+  "records": [
+    {
+      "role": "submissions",
+      "id": "sub-de",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "AT-401 EU CTIS application",
+        "studyRef": "AT-401 / Protocol 3.2",
+        "country": "Germany",
+        "authority": "BfArM / ethics",
+        "pathway": "CTIS",
+        "status": "Internal review",
+        "owner": "Regulatory lead",
+        "plannedAt": "2026-11-21",
+        "sourceUrl": "https://example.org/mock-protocol/at401",
+        "submittedAt": null,
+        "submissionProof": null
+      }
+    },
+    {
+      "role": "submissions",
+      "id": "sub-fr",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "AT-401 French CTIS package",
+        "studyRef": "AT-401 / Protocol 3.2",
+        "country": "France",
+        "authority": "ANSM / ethics",
+        "pathway": "CTIS",
+        "status": "Drafting",
+        "owner": "Regulatory affairs",
+        "plannedAt": "2026-12-11",
+        "sourceUrl": "https://example.org/mock-protocol/at401-fr",
+        "submittedAt": null,
+        "submissionProof": null
+      }
+    },
+    {
+      "role": "submissions",
+      "id": "sub-us",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "AT-512 US IND preparation",
+        "studyRef": "AT-512 / Protocol 1.0",
+        "country": "United States",
+        "authority": "FDA",
+        "pathway": "IND",
+        "status": "Planning",
+        "owner": "Clinical operations",
+        "plannedAt": "2027-01-15",
+        "sourceUrl": "https://example.org/mock-protocol/at512",
+        "submittedAt": null,
+        "submissionProof": null
+      }
+    },
+    {
+      "role": "documents",
+      "id": "d01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Clinical trial protocol",
+        "submissionId": "sub-de",
+        "docKey": "protocol",
+        "versionTag": "3.1",
+        "status": "Superseded",
+        "owner": "Clinical writing",
+        "sourceUrl": "https://example.org/mock-documents/d01",
+        "updatedAt": "2026-09-21"
+      }
+    },
+    {
+      "role": "documents",
+      "id": "d02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Clinical trial protocol",
+        "submissionId": "sub-de",
+        "docKey": "protocol",
+        "versionTag": "3.2",
+        "status": "Approved",
+        "owner": "Clinical writing",
+        "sourceUrl": "https://example.org/mock-documents/d02",
+        "updatedAt": "2026-10-21"
+      }
+    },
+    {
+      "role": "documents",
+      "id": "d03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Investigator brochure",
+        "submissionId": "sub-de",
+        "docKey": "ib",
+        "versionTag": "8.0",
+        "status": "Approved",
+        "owner": "Medical writing",
+        "sourceUrl": "https://example.org/mock-documents/d03",
+        "updatedAt": "2026-10-12"
+      }
+    },
+    {
+      "role": "documents",
+      "id": "d04",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Participant information package",
+        "submissionId": "sub-de",
+        "docKey": "consent",
+        "versionTag": "2.0",
+        "status": "In review",
+        "owner": "Country lead",
+        "sourceUrl": "https://example.org/mock-documents/d04",
+        "updatedAt": "2026-10-28"
+      }
+    },
+    {
+      "role": "documents",
+      "id": "d05",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Site suitability statement",
+        "submissionId": "sub-de",
+        "docKey": "site",
+        "versionTag": "1.0",
+        "status": "Draft",
+        "owner": "Study startup",
+        "sourceUrl": "https://example.org/mock-documents/d05",
+        "updatedAt": "2026-10-26"
+      }
+    },
+    {
+      "role": "documents",
+      "id": "d06",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Safety management overview",
+        "submissionId": "sub-de",
+        "docKey": "safety",
+        "versionTag": "1.0",
+        "status": "Approved",
+        "owner": "PV operations",
+        "sourceUrl": "https://example.org/mock-documents/d06",
+        "updatedAt": "2026-10-19"
+      }
+    },
+    {
+      "role": "documents",
+      "id": "d07",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Clinical trial protocol",
+        "submissionId": "sub-fr",
+        "docKey": "protocol",
+        "versionTag": "3.2",
+        "status": "Approved",
+        "owner": "Clinical writing",
+        "sourceUrl": "https://example.org/mock-documents/d07",
+        "updatedAt": "2026-10-21"
+      }
+    },
+    {
+      "role": "documents",
+      "id": "d08",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Patient information translation",
+        "submissionId": "sub-fr",
+        "docKey": "consent-fr",
+        "versionTag": "1.0",
+        "status": "Draft",
+        "owner": "Country lead",
+        "sourceUrl": "https://example.org/mock-documents/d08",
+        "updatedAt": "2026-10-22"
+      }
+    },
+    {
+      "role": "documents",
+      "id": "d09",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Insurance certificate",
+        "submissionId": "sub-fr",
+        "docKey": "insurance-fr",
+        "versionTag": "1.0",
+        "status": "In review",
+        "owner": "Legal",
+        "sourceUrl": "https://example.org/mock-documents/d09",
+        "updatedAt": "2026-10-25"
+      }
+    },
+    {
+      "role": "documents",
+      "id": "d10",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Clinical trial protocol",
+        "submissionId": "sub-us",
+        "docKey": "protocol",
+        "versionTag": "1.0",
+        "status": "Draft",
+        "owner": "Clinical writing",
+        "sourceUrl": "https://example.org/mock-documents/d10",
+        "updatedAt": "2026-10-23"
+      }
+    },
+    {
+      "role": "documents",
+      "id": "d11",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Investigator brochure",
+        "submissionId": "sub-us",
+        "docKey": "ib",
+        "versionTag": "2.0",
+        "status": "In review",
+        "owner": "Medical writing",
+        "sourceUrl": "https://example.org/mock-documents/d11",
+        "updatedAt": "2026-10-27"
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "r02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Version 3.2 / d02",
+        "documentId": "d02",
+        "versionTag": "3.2",
+        "status": "Approved",
+        "reviewer": "Quality reviewer",
+        "decidedAt": "2026-10-23",
+        "evidenceUrl": "https://example.org/mock-decisions/r02",
+        "notes": "Internal reviewer evidence record"
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "r03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Version 8.0 / d03",
+        "documentId": "d03",
+        "versionTag": "8.0",
+        "status": "Approved",
+        "reviewer": "Medical lead",
+        "decidedAt": "2026-10-15",
+        "evidenceUrl": "https://example.org/mock-decisions/r03",
+        "notes": "Internal reviewer evidence record"
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "r06",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Version 1.0 / d06",
+        "documentId": "d06",
+        "versionTag": "1.0",
+        "status": "Approved",
+        "reviewer": "Safety lead",
+        "decidedAt": "2026-10-20",
+        "evidenceUrl": "https://example.org/mock-decisions/r06",
+        "notes": "Internal reviewer evidence record"
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "r07",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Version 3.2 / d07",
+        "documentId": "d07",
+        "versionTag": "3.2",
+        "status": "Approved",
+        "reviewer": "Quality reviewer",
+        "decidedAt": "2026-10-23",
+        "evidenceUrl": "https://example.org/mock-decisions/r07",
+        "notes": "Internal reviewer evidence record"
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "r04",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Version 2.0 / d04",
+        "documentId": "d04",
+        "versionTag": "2.0",
+        "status": "Changes requested",
+        "reviewer": "Country reviewer",
+        "decidedAt": "2026-10-30",
+        "evidenceUrl": null,
+        "notes": "Internal reviewer evidence record"
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "r09",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Version 1.0 / d09",
+        "documentId": "d09",
+        "versionTag": "1.0",
+        "status": "Pending",
+        "reviewer": "Legal reviewer",
+        "decidedAt": null,
+        "evidenceUrl": null,
+        "notes": "Internal reviewer evidence record"
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "r11",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Version 2.0 / d11",
+        "documentId": "d11",
+        "versionTag": "2.0",
+        "status": "Pending",
+        "reviewer": "Medical reviewer",
+        "decidedAt": null,
+        "evidenceUrl": null,
+        "notes": "Internal reviewer evidence record"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Protocol 3.2",
+        "submissionId": "sub-de",
+        "section": "Part I",
+        "applicability": "Required",
+        "owner": "Clinical writing",
+        "dueAt": "2026-11-06",
+        "documentId": "d02",
+        "versionTag": "3.2",
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i01"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Current investigator brochure",
+        "submissionId": "sub-de",
+        "section": "Part I",
+        "applicability": "Required",
+        "owner": "Medical writing",
+        "dueAt": "2026-11-07",
+        "documentId": "d03",
+        "versionTag": "8.0",
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i02"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Country participant package",
+        "submissionId": "sub-de",
+        "section": "Part II",
+        "applicability": "Required",
+        "owner": "Country lead",
+        "dueAt": "2026-11-10",
+        "documentId": "d04",
+        "versionTag": "2.0",
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i03"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i04",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Institution suitability",
+        "submissionId": "sub-de",
+        "section": "Part II",
+        "applicability": "Required",
+        "owner": "Study startup",
+        "dueAt": "2026-11-14",
+        "documentId": "d05",
+        "versionTag": "1.0",
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i04"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i05",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Safety reporting plan",
+        "submissionId": "sub-de",
+        "section": "Safety",
+        "applicability": "Required",
+        "owner": "PV operations",
+        "dueAt": "2026-11-11",
+        "documentId": "d06",
+        "versionTag": "1.0",
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i05"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i06",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Local insurance evidence",
+        "submissionId": "sub-de",
+        "section": "Country annex",
+        "applicability": "Unknown",
+        "owner": "Legal",
+        "dueAt": "2026-11-17",
+        "documentId": null,
+        "versionTag": null,
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i06"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i07",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Protocol 3.2",
+        "submissionId": "sub-fr",
+        "section": "Part I",
+        "applicability": "Required",
+        "owner": "Clinical writing",
+        "dueAt": "2026-11-26",
+        "documentId": "d07",
+        "versionTag": "3.2",
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i07"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i08",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Country consent translation",
+        "submissionId": "sub-fr",
+        "section": "Part II",
+        "applicability": "Required",
+        "owner": "Country lead",
+        "dueAt": "2026-12-01",
+        "documentId": "d08",
+        "versionTag": "1.0",
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i08"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i09",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Insurance certificate",
+        "submissionId": "sub-fr",
+        "section": "Country annex",
+        "applicability": "Required",
+        "owner": "Legal",
+        "dueAt": "2026-12-05",
+        "documentId": "d09",
+        "versionTag": "1.0",
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i09"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i10",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Optional lab advertisement",
+        "submissionId": "sub-fr",
+        "section": "Other",
+        "applicability": "Not applicable",
+        "owner": "Country lead",
+        "dueAt": "2026-12-05",
+        "documentId": null,
+        "versionTag": null,
+        "reason": "Not part of this internal scope",
+        "sourceUrl": "https://example.org/mock-requirements/i10"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i11",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Protocol 1.0",
+        "submissionId": "sub-us",
+        "section": "Part I",
+        "applicability": "Required",
+        "owner": "Clinical writing",
+        "dueAt": "2026-12-20",
+        "documentId": "d10",
+        "versionTag": "1.0",
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i11"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i12",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Investigator brochure",
+        "submissionId": "sub-us",
+        "section": "Part I",
+        "applicability": "Required",
+        "owner": "Medical writing",
+        "dueAt": "2026-12-18",
+        "documentId": "d11",
+        "versionTag": "2.0",
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i12"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i13",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Local consent materials",
+        "submissionId": "sub-us",
+        "section": "Part II",
+        "applicability": "Unknown",
+        "owner": "Regulatory affairs",
+        "dueAt": "2027-01-01",
+        "documentId": null,
+        "versionTag": null,
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i13"
+      }
+    },
+    {
+      "role": "questions",
+      "id": "q01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Request for Part II wording clarification",
+        "submissionId": "sub-de",
+        "authorityRef": "DE-RFI-001",
+        "receivedAt": "2026-10-29",
+        "dueAt": "2026-11-08",
+        "status": "Drafting",
+        "owner": "Country lead",
+        "respondedAt": null,
+        "answerUrl": null,
+        "notes": "Illustrative authority correspondence entry"
+      }
+    },
+    {
+      "role": "questions",
+      "id": "q02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Clarify investigator brochure summary",
+        "submissionId": "sub-de",
+        "authorityRef": "DE-RFI-002",
+        "receivedAt": "2026-10-16",
+        "dueAt": "2026-10-30",
+        "status": "Response recorded",
+        "owner": "Medical lead",
+        "respondedAt": "2026-10-28",
+        "answerUrl": "https://example.org/mock-responses/q02",
+        "notes": "Illustrative authority correspondence entry"
+      }
+    },
+    {
+      "role": "questions",
+      "id": "q03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Insurance applicability inquiry",
+        "submissionId": "sub-fr",
+        "authorityRef": "FR-RFI-001",
+        "receivedAt": "2026-10-30",
+        "dueAt": "2026-11-18",
+        "status": "Open",
+        "owner": "Country RA",
+        "respondedAt": null,
+        "answerUrl": null,
+        "notes": "Illustrative authority correspondence entry"
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "m01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Final document approval",
+        "submissionId": "sub-de",
+        "baselineAt": "2026-11-07",
+        "currentAt": "2026-11-11",
+        "actualAt": null,
+        "owner": "Regulatory lead",
+        "reason": "Updated after internal cross-team review"
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "m02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Manual portal application",
+        "submissionId": "sub-de",
+        "baselineAt": "2026-11-21",
+        "currentAt": "2026-11-21",
+        "actualAt": null,
+        "owner": "Regulatory lead",
+        "reason": null
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "m03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Country legal review",
+        "submissionId": "sub-fr",
+        "baselineAt": "2026-11-29",
+        "currentAt": "2026-12-04",
+        "actualAt": null,
+        "owner": "Country lead",
+        "reason": "Updated after internal cross-team review"
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "m04",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Manual submission target",
+        "submissionId": "sub-fr",
+        "baselineAt": "2026-12-11",
+        "currentAt": "2026-12-11",
+        "actualAt": null,
+        "owner": "Country lead",
+        "reason": null
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "m05",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Pre-IND content freeze",
+        "submissionId": "sub-us",
+        "baselineAt": "2026-12-20",
+        "currentAt": "2026-12-20",
+        "actualAt": null,
+        "owner": "Clinical operations",
+        "reason": null
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "m06",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "IND planning target",
+        "submissionId": "sub-us",
+        "baselineAt": "2027-01-15",
+        "currentAt": "2027-01-15",
+        "actualAt": null,
+        "owner": "Regulatory affairs",
+        "reason": null
+      }
+    },
+    {
+      "role": "reports",
+      "id": "p01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "German CTIS readiness memo - draft",
+        "submissionId": "sub-de",
+        "cutoffAt": "2026-11-01",
+        "status": "Draft",
+        "reviewer": null,
+        "reviewedAt": null,
+        "sourceRefs": "items:i01@v1, items:i02@v1, items:i03@v1, items:i04@v1, items:i05@v1, items:i06@v1",
+        "summary": "Partial content readiness; consent and site documentation require attention. This is not a compliance decision."
+      }
+    },
+    {
+      "role": "reports",
+      "id": "p02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "French package internal update",
+        "submissionId": "sub-fr",
+        "cutoffAt": "2026-10-28",
+        "status": "Draft",
+        "reviewer": null,
+        "reviewedAt": null,
+        "sourceRefs": "items:i07@v1, items:i08@v1, items:i09@v1, items:i10@v1",
+        "summary": "Country planning only. Review source-specific requirements before manual submission."
+      }
+    }
+  ],
+  "fictional": true,
+  "note": "All titles, sources, identifiers, authorities/dates in preview are invented illustrative test records; not an actual CTIS package."
+}
+).records; const metadata={
+  "id": "life.trial-regulatory-submission",
+  "version": "1.0.1",
+  "name": "Trial Regulatory Submission",
+  "description": "Lean sponsor-side clinical trial regulatory submission content plans, exact-version approvals, authority-question inbox and evidence-linked readiness briefs. No regulatory portal integration.",
+  "tags": [
+    "clinical-operations",
+    "regulatory",
+    "ctis",
+    "submission-planning",
+    "biotech",
+    "documents"
+  ],
+  "whenToUse": "A small sponsor or biotech regulatory operations team wants a shared operational tracker for country submissions, document requirements, versioned reviews, correspondence and readiness evidence.",
+  "whenNotToUse": "Actual CTIS/IND submission, eCTD publishing, regulated signatures, patient data, adverse event reporting or automatic legal deadline calculation.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "Trial Regulatory Submission",
+    "tableMap": "{}",
+    "layoutProfile": "{}",
+    "asOf": "",
+    "readOnly": false
+  },
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "Full app name shown in sidebar without a duplicate platform logo.",
+      "default": "Trial Regulatory Submission"
+    },
+    "tableMap": {
+      "type": "string",
+      "description": "JSON exact authorized per-role {typeId,fields,writableFields}; all logical fields require scalar authorized physical mappings.",
+      "default": "{}"
+    },
+    "layoutProfile": {
+      "type": "string",
+      "description": "JSON-string profile for native versioned Layout screen and column edits.",
+      "default": "{}"
+    },
+    "asOf": {
+      "type": "string",
+      "description": "Human-approved YYYY-MM-DD reporting cutoff; blank withholds overdue claims.",
+      "default": ""
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "Disable local record proposals without changing host permissions.",
+      "default": false
+    }
+  },
+  "instructions": "Create and operate the Trial Regulatory Submission template as an INTERNAL TrialAgents app. Follow current authoring/usage guidance 1.3.9 and this catalog documentation with its exact seven-table schema; no app login, no app logo, no production fictional-data banners. The TrialAgents host handles account, permission, watermark linked to https://platform.trialagents.com, save/review and audit. This is a planning tool, NOT a CTIS, IND, eCTD submission system or certified regulatory compliance system. Never send information to EMA/FDA/CTIS or make an official filing from this app. 1. Ask for sponsor scope (study, authority/country/pathway, reporting cutoff and source document location). 2. Create seven scalar record tables through reviewed schema APIs; use physical snake_case fields with multiple:false, required, select options, URLs as text, single-valued UUID-like parent IDs as text; create parent submissions, documents, then child items/reviews/questions/milestones/reports using actual committed IDs from receipts. 3. Prepare EXACT authorized tableMap role objects {typeId,fields,writableFields}, binding manifest and host-granted fields. Never use demonstration ids, arrays in scalar fields or invented permissions. 4. Catalog source starts with templateLayoutSchema only, never templateConfiguration/templateBindings; the actual host injects configuration+bindings once, and the preview does so once. 5. Set asOf to a human-authorized YYYY-MM-DD cutoff, or blank to suppress overdue claims; no internal current time guessing. 6. Use native gear tracker:layout with stable six screen/column identities and saved layoutProfile; all fields remain reachable under Additional fields. 7. Capture edit/archive original record versions, use reviewed records.propose only, preserve draft on error and block parent archival with live dependents and incomplete reads. 8. Read all seven roles with bounded paging; denied, unknown total, missing mapped fields, short page or budget exhaustion make source incomplete and prevent authoritative readiness or approval. 9. Ready is an INTERNAL metadata state only: require explicit applicable required items, exact current document/version, current approved review dated with reviewer and source, no unknown applicability and complete source reads. Newer document family version revokes old readiness; never count a superseded version. 10. Submitted status requires human-entered date and official receipt; do not claim CTIS submission occurred automatically. Authority reply due dates are recorded values, not legal deadlines derived by the app. 11. Optional ChatGPT research/synthesis or email notifications configured only after app saved and approved, through shared TrialAgents Automations; NEVER auto-activate, send emails from app, create app-local tasks or grant writes. Without automation the app works fully. Avoid patient, participant, adverse event or protected medical case data. No validation / e-signature / eCTD publishing claim. Return html, css and state separately: the production sanitizer removes style tags. Updates use recordId plus the version captured on editor open, including zero. Blank optional fields become null. Never treat a proposed preview as committed: keep draft, confirm or discard via the host, inspect receipt and reopen fresh; after ignore/failure preserve original draft/version and require reopening on conflict. Source reads are capped at 80 rows x 12 pages per role, 84 calls total plus a proposal, below the host limit of 100. Full mappings include optional fields and explicit archived booleans; unavailable/invalid fields and unstable totals mean incomplete. Multiple active review events for one document version are ambiguous and cannot establish readiness: reconcile pending/rejected decisions before approval. Approved decision and reviewed report evidence cannot be archived or downgraded. Stored phases are historical human-entered labels; only current readiness reflects the latest evidence. Database edits outside this app must be reconciled; app guards are not database-wide constraints. Reuse compatible authorized tables first; create missing tables through reviewed schema changes. Validate existing rows and explicitly normalize optional blanks and archived false through review; do not infer archived state from missing access. Creating a record requires write scope for all mapped fields. Child changes also require submission status write scope: append a same-status parent update with its version captured at editor open, as one atomic reviewed batch, so simultaneous evidence changes conflict. Preserve historical report source refs as a pre-transaction snapshot; re-read and create a new draft revision when the evidence changes. Missing required fields automatically reveal Additional fields. Hiding a custom screen is presentation only; authorization remains app/table/field based.",
+  "documentation": {
+    "quickStart": [
+      "Under the current TrialAgents session, reuse compatible authorized tables or create the missing scalar tables: submissions, items, documents, reviews, questions, milestones and reports; use schema_mapping.example.json field kinds and options described in dataContract. No app-specific identity, user table or portal auth.",
+      "Create one authorized submission for each study/country/pathway with explicit owner and baseline date. Keep separate country records even if they share studyRef.",
+      "Create documents as immutable version rows by (submissionId,docKey,versionTag); create exact-version reviews and checklist items linked to the correct document receipt ID.",
+      "Prepare template with authorized real table IDs and exact snake_case mappings, a binding manifest and explicit read/write permissions. Set asOf to an approved date or leave blank; do not reuse demo data or dates.",
+      "Use one of six interfaces to track readiness, questions and dates. All edits/archives are reviewed and use expectedVersion. Export/send any regulatory filing manually in the authority portal after separate approvals.",
+      "Native gear invokes tracker:layout with stable tabs/cols/visible. Optional automations must be explicitly created and verified after app save; do not assume metadata means enabled.",
+      "Exact logical-to-physical mappings (all fields must be authorized; writableFields contains only granted logical keys): {\"submissions\":{\"name\":\"name\",\"studyRef\":\"study_ref\",\"country\":\"country\",\"authority\":\"authority\",\"pathway\":\"pathway\",\"status\":\"status\",\"owner\":\"owner\",\"plannedAt\":\"planned_at\",\"submittedAt\":\"submitted_at\",\"submissionProof\":\"submission_proof\",\"sourceUrl\":\"source_url\",\"archived\":\"archived\"},\"items\":{\"name\":\"name\",\"submissionId\":\"submission_id\",\"section\":\"section\",\"applicability\":\"applicability\",\"owner\":\"owner\",\"dueAt\":\"due_at\",\"documentId\":\"document_id\",\"versionTag\":\"version_tag\",\"reason\":\"reason\",\"sourceUrl\":\"source_url\",\"archived\":\"archived\"},\"documents\":{\"name\":\"name\",\"submissionId\":\"submission_id\",\"docKey\":\"doc_key\",\"versionTag\":\"version_tag\",\"status\":\"status\",\"owner\":\"owner\",\"sourceUrl\":\"source_url\",\"updatedAt\":\"updated_at\",\"archived\":\"archived\"},\"reviews\":{\"name\":\"name\",\"documentId\":\"document_id\",\"versionTag\":\"version_tag\",\"status\":\"status\",\"reviewer\":\"reviewer\",\"decidedAt\":\"decided_at\",\"evidenceUrl\":\"evidence_url\",\"notes\":\"notes\",\"archived\":\"archived\"},\"questions\":{\"name\":\"name\",\"submissionId\":\"submission_id\",\"authorityRef\":\"authority_ref\",\"receivedAt\":\"received_at\",\"dueAt\":\"due_at\",\"status\":\"status\",\"owner\":\"owner\",\"answerUrl\":\"answer_url\",\"respondedAt\":\"responded_at\",\"notes\":\"notes\",\"archived\":\"archived\"},\"milestones\":{\"name\":\"name\",\"submissionId\":\"submission_id\",\"baselineAt\":\"baseline_at\",\"currentAt\":\"current_at\",\"actualAt\":\"actual_at\",\"owner\":\"owner\",\"reason\":\"reason\",\"archived\":\"archived\"},\"reports\":{\"name\":\"name\",\"submissionId\":\"submission_id\",\"cutoffAt\":\"cutoff_at\",\"status\":\"status\",\"reviewer\":\"reviewer\",\"reviewedAt\":\"reviewed_at\",\"sourceRefs\":\"source_refs\",\"summary\":\"summary\",\"archived\":\"archived\"}}",
+      "Use list_app_templates/read_app_template for the actual ID, version and digest; prepare and confirm through the current host catalog operation. Never redeclare injected templateConfiguration or templateBindings. Confirm schema and parent receipt IDs before children. Binding manifest has scalar fields with actual schema versions and granted read/write modes. No app records, automations or layout are saved just because a proposal was prepared. Reopen after confirmation; retain drafts on ignore, deny or conflict. Blank optional dates and references are null; valid record versions start at 0.",
+      "Optional typed single-step email configuration; replace all placeholders with verified authorized values and current app version only when requested: {\"name\":\"Regulatory question recorded\",\"authoringKey\":\"co05_question_email_v1\",\"appId\":\"REPLACE_WITH_SAVED_APP_UUID\",\"appVersion\":0,\"recordTypeId\":\"REPLACE_WITH_QUESTIONS_TABLE_UUID\",\"trigger\":{\"kind\":\"database\",\"typeId\":\"REPLACE_WITH_QUESTIONS_TABLE_UUID\",\"events\":[\"created\",\"updated\"],\"fields\":[\"status\"],\"becomes\":{\"field\":\"status\",\"operator\":\"equals\",\"value\":\"Open\"}},\"fields\":[\"status\",\"archived\"],\"conditions\":[{\"field\":\"archived\",\"operator\":\"not_equals\",\"value\":true}],\"steps\":[{\"id\":\"notify_owner\",\"kind\":\"email\",\"to\":[\"REPLACE_WITH_REGISTERED_AUTHORIZED_OWNER_EMAIL\"],\"subject\":\"Regulatory question recorded\",\"text\":\"Open https://platform.trialagents.com to review the recorded authority question and its manually entered target date.\"}],\"users\":[],\"expiresAt\":\"REPLACE_WITH_APPROVED_ISO_EXPIRY\",\"maxRunsPerDay\":10}"
+    ],
+    "dataContract": "Exact scalar mapping for all roles: submissions {name:text required, study_ref:text required, country:text required, authority:text required, pathway:select required [CTIS,IND,Other], status:select required [Planning,Drafting,Internal review,Ready for manual submission,Submitted (manually recorded),Authority follow-up,Closed], owner:text required, planned_at:date, submitted_at:date, submission_proof:text, source_url:text, archived:boolean}; items {name:text required, submission_id:text required, section:select required [Part I,Part II,Country annex,Safety,Other], applicability:select required [Required,Not applicable,Unknown], owner:text, due_at:date, document_id:text, version_tag:text, reason:text, source_url:text, archived:boolean}; documents {name:text required, submission_id:text required, doc_key:text required, version_tag:text required, status:select required [Draft,In review,Rework,Approved,Superseded], owner:text, source_url:text, updated_at:date, archived:boolean}; reviews {name:text required, document_id:text required, version_tag:text required, status:select required [Pending,Changes requested,Approved,Rejected], reviewer:text, decided_at:date, evidence_url:text, notes:text, archived:boolean}; questions {name:text required, submission_id:text required, authority_ref:text required, received_at:date required, due_at:date, status:select required [Open,Drafting,Under review,Response recorded,Resolved], owner:text, answer_url:text, responded_at:date, notes:text, archived:boolean}; milestones {name:text required, submission_id:text required, baseline_at:date, current_at:date, actual_at:date, owner:text, reason:text, archived:boolean}; reports {name:text required, submission_id:text required, cutoff_at:date required, status:select required [Draft,Reviewed], reviewer:text, reviewed_at:date, source_refs:text, summary:text, archived:boolean}. All fields multiple:false, ai:true, physical names match [a-z][a-z0-9_]*, empty optional text/date/reference/select as null; archived must be explicit false or true, no arrays or object references. Reference fields are scalar IDs from actual confirmed parent receipts (submission_id->submissions; document_id->documents). Do not reuse or fabricate receipt IDs. Use seven tableMap objects with {typeId:<real UUID>, fields:{logicalCamelKey:physical_snake_case}, writableFields:[approved logical keys]}, alongside authorized templateBindings and manifest. Reviewed briefing sources must be encoded role:recordId@vN with authorized exact-version linkage to the same submission. Source reads use 80/page, at most 12 pages/role (960 rows each, 84 reads across all roles), require known numeric total and all mapped fields including optional fields and explicit archived boolean; incomplete read never implies zero or ready. Only complete authorized empty can be counted as zero. N in role:recordId@vN is a nonnegative integer, including 0. Do not confuse internal versionTag with the host record version. Reviewed sources must still have those exact versions at review time. Every row must include every mapped field (optional null is distinct from denied/missing access); explicitly initialize archived:false. Record creation requires all mapped write fields; child evidence changes require submission status write scope for an atomic version guard.",
+    "interactionContract": "Six screens: desk (next package/authority watchlist), tracker (jurisdiction dossier and date history), plan (sectioned applicable item tree), documents (version ledger and reviewed decisions), questions (authority inbox), readiness (gap matrix and human-reviewed briefing). Every input/select/textarea has data-ui-state, stable data-action and name. Host input event.kind=change, event.action and event.value maintain state; submit merges named event.form values. Native layout uses templateLayoutSchema + JSON-string layoutProfile, with gear tracker:layout; a hidden/unlisted field remains reachable through Additional fields. Edits, duplicate and archival via records.propose (create_record/update_record), exact physical mapped keys, recordId and original expectedVersion (including 0), no hard delete. An archive must inspect all authorized dependents before proposal; approval and historical evidence protected. Internal readiness requires complete reads and zero unknown-applicability items. Percentage is approved_current_required/required, only if denominator positive and required/unknown sets fully read; no legal approval inferred. Do not show an official CTIS/IND Submit button or claim authority connectivity. Emails and ChatGPT tasks are platform-managed separately. Evidence proposals include a same-status parent submission update pinned to the editor-open version; concurrent changes in this app cannot approve the same stale dossier. Reviewed source references identify the evidence snapshot before the proposal transaction, including the parent version before this guard advances it. Validation errors reveal additional fields. Recorded internal phase is shown separately from current evidence readiness.",
+    "lifecycle": "The app uses current TrialAgents project/user/data access and audit; app sessions never create login or auth. Manual workflow works without automations, credentials, connectors or email service. Saved app is independent of research runner health. For future revisions, add a new catalog semver; do not overwrite published template versions or silently migrate saved apps. Real submission and authority response events entered by staff are evidence metadata only. Document versions and approved reviews are historical records, not silently overwritten. Retain original milestone baseline; manual target revisions need explanation. Exported evidence and report snapshots require regulated reviewer sign-off outside the app. Setup must check current host tools/authorization and save receipts before claiming deployment, a functioning layout, schedule, email or real CTIS integration.",
+    "limitations": [
+      "Internal planning, readiness and evidence tracking only. No CTIS, EMA, FDA, IRAS or eCTD portal integration; no official submission or authority response action; no electronic signatures or validated regulatory compliance.",
+      "Not for patient data, participant information, adverse event cases or clinical safety reporting; only non-patient document metadata, source links and business approvals.",
+      "The preview uses invented test records and local simulated review; no real database save, account, authority connection or scheduled process is created. The application itself displays no demo disclaimer banner.",
+      "A required item is considered ready only with exact-current version approved document and date/evidence-linked reviewer; no source means unknown, not zero or complete. No automatic jurisdictional legal requirements or RFI deadlines are generated.",
+      "Native layout persistence, QuickJS execution, manifest/field grants and live record writes must pass host acceptance before production release. No claim of deployed MCP or automation activation."
+    ],
+    "examples": [
+      {
+        "prompt": "Prepare CTIS application plans for Germany and France for our AT-401 study.",
+        "expectedBehavior": "Create two country-specific reviewed submission records under one study reference, record their actual jurisdiction/pathway, build explicit applicable content items, and keep unknowns visible without inferring legal completeness."
+      },
+      {
+        "prompt": "The IB has changed from v8.0 to v8.1. Update the readiness matrix.",
+        "expectedBehavior": "Create a new document version and reviewed evidence for v8.1; retain v8.0 history; linked prior version no longer qualifies as current approval until exact-version review is recorded."
+      },
+      {
+        "prompt": "A health authority question arrived and is due in 10 days.",
+        "expectedBehavior": "Record the actual received date and authority-provided target date with evidence, owner and status. No portal action or email without separate authorized platform action."
+      },
+      {
+        "prompt": "Draft an internal country-by-country submission briefing.",
+        "expectedBehavior": "Only from complete authorized records, include exact gaps/unknowns, source versions, reviewer evidence and dates, and mark as draft pending human review."
+      }
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "When the user explicitly requests ongoing regulatory guideline monitoring, an internal weekly readiness briefing or an approved email reminder for a manually recorded RFI due date. Zero automations is normal.",
+      "readRequirements": "After save and explicit opt-in, read read_app_automation_guide, read_automation_setup, list_app_automations and read_app_automation. Reuse the shared owner/workspace runner and existing objective with stable authoringKey co05_regulatory_source_update. No app-local scheduler or per-app ChatGPT Task. Suggested Monday 09:00 in owner-confirmed IANA timezone with approved anchor, expiry, 7-day initial lookback, coalesced catch-up and at most 20 official source updates/run. Use inheritAppAccess:true and current authorized app fields; preserve existing IDs, grants, disabled state and hidden configuration on edits. Respect paused/disconnected setup; prefer supported Work chat, high reasoning and latest most capable available model, reporting actual settings without inventing parameters. Scope sources to official authority guidance for approved study/country/pathway; deduplicate by URL, jurisdiction and publication date. Findings are internal drafts with URL/date, exact source record IDs/versions, cutoff, coverage and missing evidence. One-time drafts stay in the authorized conversation; recurring drafts default to private permission-checked monitoring history. No automatic table writes. An explicitly approved report destination must be the actual existing reports type with current scoped expiring grants and Draft status, never invented IDs, approvals or overwrites of Reviewed evidence. Zero complete findings is completed; no_update only for full coverage plus approved quiet policy. Partial/denied/blocked/expired results do not advance coverage. Preserve checkpoints and receipts on retry. Optional email is a separate single-step database action when questions.status enters Open, archived not true, fixed text, owner plus explicitly chosen registered currently authorized teammates only. Never authority/contact addresses or research-completion mail; no second schedule. Delivery failure never reruns research. Outcomes belong in Logs; template metadata does not enable jobs, create grants or send email. Manual app remains functional without setup.",
+      "outputContract": "Draft evidence only; never infer legal deadlines, statutory requirements, compliance, readiness approval or official submissions. Revalidate scope at every run and never write to reviewed records. Produce evidence-linked draft findings in the authorized app or approved reviewed report destination only. Source date, jurisdiction, coverage, incomplete/error state and zero-result policy stated. No direct CTIS/FDA submission or third-party emailing. Fixed email body and selected registered TrialAgents team recipients only, current access revalidated. Disable/edit/archive remains under platform UI; no inferred activation, no unapproved writes.",
+      "promptExample": "Only if user explicitly approves: once weekly until an explicitly approved expiry, inspect official EMA CTIS sponsor training/handbook updates and any authorized saved study-country submission gaps. Cite the official URL and published update date. Draft a source-linked internal summary and list records needing human review; do not change legal requirements, infer deadlines, mark ready, send mail or interact with CTIS. If partial coverage occurs, report it and retain the previous run state. Without user opt-in, keep this as a manual on-demand prompt with no automation."
+    }
+  },
+  "examples": [
+    {
+      "prompt": "Prepare CTIS application plans for Germany and France for our AT-401 study.",
+      "expectedBehavior": "Create two country-specific reviewed submission records under one study reference, record their actual jurisdiction/pathway, build explicit applicable content items, and keep unknowns visible without inferring legal completeness."
+    },
+    {
+      "prompt": "The IB has changed from v8.0 to v8.1. Update the readiness matrix.",
+      "expectedBehavior": "Create a new document version and reviewed evidence for v8.1; retain v8.0 history; linked prior version no longer qualifies as current approval until exact-version review is recorded."
+    },
+    {
+      "prompt": "A health authority question arrived and is due in 10 days.",
+      "expectedBehavior": "Record the actual received date and authority-provided target date with evidence, owner and status. No portal action or email without separate authorized platform action."
+    }
+  ],
+  "deprecated": false
+}
+;
+const roles=Object.keys({
+  "submissions": {
+    "name": "submissions",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "study_ref",
+        "name": "study_ref",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "country",
+        "name": "country",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "authority",
+        "name": "authority",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "pathway",
+        "name": "pathway",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "CTIS",
+          "IND",
+          "Other"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Planning",
+          "Drafting",
+          "Internal review",
+          "Ready for manual submission",
+          "Submitted (manually recorded)",
+          "Authority follow-up",
+          "Closed"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "planned_at",
+        "name": "planned_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "submitted_at",
+        "name": "submitted_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "submission_proof",
+        "name": "submission_proof",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "source_url",
+        "name": "source_url",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "studyRef": "study_ref",
+      "country": "country",
+      "authority": "authority",
+      "pathway": "pathway",
+      "status": "status",
+      "owner": "owner",
+      "plannedAt": "planned_at",
+      "submittedAt": "submitted_at",
+      "submissionProof": "submission_proof",
+      "sourceUrl": "source_url",
+      "archived": "archived"
+    },
+    "parentReferences": {},
+    "accessNote": "TrialAgents enforces app/table/field access; custom frontend layout does not grant a separate section permission. Record versions support optimistic edits."
+  },
+  "items": {
+    "name": "items",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "submission_id",
+        "name": "submission_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "section",
+        "name": "section",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Part I",
+          "Part II",
+          "Country annex",
+          "Safety",
+          "Other"
+        ]
+      },
+      {
+        "key": "applicability",
+        "name": "applicability",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Required",
+          "Not applicable",
+          "Unknown"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "due_at",
+        "name": "due_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "document_id",
+        "name": "document_id",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "version_tag",
+        "name": "version_tag",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "reason",
+        "name": "reason",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "source_url",
+        "name": "source_url",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "submissionId": "submission_id",
+      "section": "section",
+      "applicability": "applicability",
+      "owner": "owner",
+      "dueAt": "due_at",
+      "documentId": "document_id",
+      "versionTag": "version_tag",
+      "reason": "reason",
+      "sourceUrl": "source_url",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "submissionId": "submissions"
+    },
+    "accessNote": "TrialAgents enforces app/table/field access; custom frontend layout does not grant a separate section permission. Record versions support optimistic edits."
+  },
+  "documents": {
+    "name": "documents",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "submission_id",
+        "name": "submission_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "doc_key",
+        "name": "doc_key",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "version_tag",
+        "name": "version_tag",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Draft",
+          "In review",
+          "Rework",
+          "Approved",
+          "Superseded"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "source_url",
+        "name": "source_url",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "updated_at",
+        "name": "updated_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "submissionId": "submission_id",
+      "docKey": "doc_key",
+      "versionTag": "version_tag",
+      "status": "status",
+      "owner": "owner",
+      "sourceUrl": "source_url",
+      "updatedAt": "updated_at",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "submissionId": "submissions"
+    },
+    "accessNote": "TrialAgents enforces app/table/field access; custom frontend layout does not grant a separate section permission. Record versions support optimistic edits."
+  },
+  "reviews": {
+    "name": "reviews",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "document_id",
+        "name": "document_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "version_tag",
+        "name": "version_tag",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Pending",
+          "Changes requested",
+          "Approved",
+          "Rejected"
+        ]
+      },
+      {
+        "key": "reviewer",
+        "name": "reviewer",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "decided_at",
+        "name": "decided_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "evidence_url",
+        "name": "evidence_url",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "notes",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "documentId": "document_id",
+      "versionTag": "version_tag",
+      "status": "status",
+      "reviewer": "reviewer",
+      "decidedAt": "decided_at",
+      "evidenceUrl": "evidence_url",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "documentId": "documents"
+    },
+    "accessNote": "TrialAgents enforces app/table/field access; custom frontend layout does not grant a separate section permission. Record versions support optimistic edits."
+  },
+  "questions": {
+    "name": "questions",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "submission_id",
+        "name": "submission_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "authority_ref",
+        "name": "authority_ref",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "received_at",
+        "name": "received_at",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "due_at",
+        "name": "due_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Open",
+          "Drafting",
+          "Under review",
+          "Response recorded",
+          "Resolved"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "answer_url",
+        "name": "answer_url",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "responded_at",
+        "name": "responded_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "notes",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "submissionId": "submission_id",
+      "authorityRef": "authority_ref",
+      "receivedAt": "received_at",
+      "dueAt": "due_at",
+      "status": "status",
+      "owner": "owner",
+      "answerUrl": "answer_url",
+      "respondedAt": "responded_at",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "submissionId": "submissions"
+    },
+    "accessNote": "TrialAgents enforces app/table/field access; custom frontend layout does not grant a separate section permission. Record versions support optimistic edits."
+  },
+  "milestones": {
+    "name": "milestones",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "submission_id",
+        "name": "submission_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "baseline_at",
+        "name": "baseline_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "current_at",
+        "name": "current_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "actual_at",
+        "name": "actual_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "reason",
+        "name": "reason",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "submissionId": "submission_id",
+      "baselineAt": "baseline_at",
+      "currentAt": "current_at",
+      "actualAt": "actual_at",
+      "owner": "owner",
+      "reason": "reason",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "submissionId": "submissions"
+    },
+    "accessNote": "TrialAgents enforces app/table/field access; custom frontend layout does not grant a separate section permission. Record versions support optimistic edits."
+  },
+  "reports": {
+    "name": "reports",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "submission_id",
+        "name": "submission_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "cutoff_at",
+        "name": "cutoff_at",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Draft",
+          "Reviewed"
+        ]
+      },
+      {
+        "key": "reviewer",
+        "name": "reviewer",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "reviewed_at",
+        "name": "reviewed_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "source_refs",
+        "name": "source_refs",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "summary",
+        "name": "summary",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "submissionId": "submission_id",
+      "cutoffAt": "cutoff_at",
+      "status": "status",
+      "reviewer": "reviewer",
+      "reviewedAt": "reviewed_at",
+      "sourceRefs": "source_refs",
+      "summary": "summary",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "submissionId": "submissions"
+    },
+    "accessNote": "TrialAgents enforces app/table/field access; custom frontend layout does not grant a separate section permission. Record versions support optimistic edits."
+  }
+}
+);
+const map=Object.fromEntries(roles.map(role=>{const fields=Object.keys(({
+  "submissions": {
+    "name": "submissions",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "study_ref",
+        "name": "study_ref",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "country",
+        "name": "country",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "authority",
+        "name": "authority",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "pathway",
+        "name": "pathway",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "CTIS",
+          "IND",
+          "Other"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Planning",
+          "Drafting",
+          "Internal review",
+          "Ready for manual submission",
+          "Submitted (manually recorded)",
+          "Authority follow-up",
+          "Closed"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "planned_at",
+        "name": "planned_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "submitted_at",
+        "name": "submitted_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "submission_proof",
+        "name": "submission_proof",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "source_url",
+        "name": "source_url",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "studyRef": "study_ref",
+      "country": "country",
+      "authority": "authority",
+      "pathway": "pathway",
+      "status": "status",
+      "owner": "owner",
+      "plannedAt": "planned_at",
+      "submittedAt": "submitted_at",
+      "submissionProof": "submission_proof",
+      "sourceUrl": "source_url",
+      "archived": "archived"
+    },
+    "parentReferences": {},
+    "accessNote": "TrialAgents enforces app/table/field access; custom frontend layout does not grant a separate section permission. Record versions support optimistic edits."
+  },
+  "items": {
+    "name": "items",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "submission_id",
+        "name": "submission_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "section",
+        "name": "section",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Part I",
+          "Part II",
+          "Country annex",
+          "Safety",
+          "Other"
+        ]
+      },
+      {
+        "key": "applicability",
+        "name": "applicability",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Required",
+          "Not applicable",
+          "Unknown"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "due_at",
+        "name": "due_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "document_id",
+        "name": "document_id",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "version_tag",
+        "name": "version_tag",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "reason",
+        "name": "reason",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "source_url",
+        "name": "source_url",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "submissionId": "submission_id",
+      "section": "section",
+      "applicability": "applicability",
+      "owner": "owner",
+      "dueAt": "due_at",
+      "documentId": "document_id",
+      "versionTag": "version_tag",
+      "reason": "reason",
+      "sourceUrl": "source_url",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "submissionId": "submissions"
+    },
+    "accessNote": "TrialAgents enforces app/table/field access; custom frontend layout does not grant a separate section permission. Record versions support optimistic edits."
+  },
+  "documents": {
+    "name": "documents",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "submission_id",
+        "name": "submission_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "doc_key",
+        "name": "doc_key",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "version_tag",
+        "name": "version_tag",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Draft",
+          "In review",
+          "Rework",
+          "Approved",
+          "Superseded"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "source_url",
+        "name": "source_url",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "updated_at",
+        "name": "updated_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "submissionId": "submission_id",
+      "docKey": "doc_key",
+      "versionTag": "version_tag",
+      "status": "status",
+      "owner": "owner",
+      "sourceUrl": "source_url",
+      "updatedAt": "updated_at",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "submissionId": "submissions"
+    },
+    "accessNote": "TrialAgents enforces app/table/field access; custom frontend layout does not grant a separate section permission. Record versions support optimistic edits."
+  },
+  "reviews": {
+    "name": "reviews",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "document_id",
+        "name": "document_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "version_tag",
+        "name": "version_tag",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Pending",
+          "Changes requested",
+          "Approved",
+          "Rejected"
+        ]
+      },
+      {
+        "key": "reviewer",
+        "name": "reviewer",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "decided_at",
+        "name": "decided_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "evidence_url",
+        "name": "evidence_url",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "notes",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "documentId": "document_id",
+      "versionTag": "version_tag",
+      "status": "status",
+      "reviewer": "reviewer",
+      "decidedAt": "decided_at",
+      "evidenceUrl": "evidence_url",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "documentId": "documents"
+    },
+    "accessNote": "TrialAgents enforces app/table/field access; custom frontend layout does not grant a separate section permission. Record versions support optimistic edits."
+  },
+  "questions": {
+    "name": "questions",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "submission_id",
+        "name": "submission_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "authority_ref",
+        "name": "authority_ref",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "received_at",
+        "name": "received_at",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "due_at",
+        "name": "due_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Open",
+          "Drafting",
+          "Under review",
+          "Response recorded",
+          "Resolved"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "answer_url",
+        "name": "answer_url",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "responded_at",
+        "name": "responded_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "notes",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "submissionId": "submission_id",
+      "authorityRef": "authority_ref",
+      "receivedAt": "received_at",
+      "dueAt": "due_at",
+      "status": "status",
+      "owner": "owner",
+      "answerUrl": "answer_url",
+      "respondedAt": "responded_at",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "submissionId": "submissions"
+    },
+    "accessNote": "TrialAgents enforces app/table/field access; custom frontend layout does not grant a separate section permission. Record versions support optimistic edits."
+  },
+  "milestones": {
+    "name": "milestones",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "submission_id",
+        "name": "submission_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "baseline_at",
+        "name": "baseline_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "current_at",
+        "name": "current_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "actual_at",
+        "name": "actual_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "reason",
+        "name": "reason",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "submissionId": "submission_id",
+      "baselineAt": "baseline_at",
+      "currentAt": "current_at",
+      "actualAt": "actual_at",
+      "owner": "owner",
+      "reason": "reason",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "submissionId": "submissions"
+    },
+    "accessNote": "TrialAgents enforces app/table/field access; custom frontend layout does not grant a separate section permission. Record versions support optimistic edits."
+  },
+  "reports": {
+    "name": "reports",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "submission_id",
+        "name": "submission_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "cutoff_at",
+        "name": "cutoff_at",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Draft",
+          "Reviewed"
+        ]
+      },
+      {
+        "key": "reviewer",
+        "name": "reviewer",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "reviewed_at",
+        "name": "reviewed_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "source_refs",
+        "name": "source_refs",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "summary",
+        "name": "summary",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "submissionId": "submission_id",
+      "cutoffAt": "cutoff_at",
+      "status": "status",
+      "reviewer": "reviewer",
+      "reviewedAt": "reviewed_at",
+      "sourceRefs": "source_refs",
+      "summary": "summary",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "submissionId": "submissions"
+    },
+    "accessNote": "TrialAgents enforces app/table/field access; custom frontend layout does not grant a separate section permission. Record versions support optimistic edits."
+  }
+}
+)[role].logicalFields);return [role,{typeId:role,fields:Object.fromEntries(fields.map(k=>[k,k])),writableFields:fields}]}));
+const bindings=roles.map(role=>({typeId:role,fields:Object.keys(map[role].fields)}));
+const config={...metadata.defaults,demoLabel:true,asOf:"2026-11-01",tableMap:JSON.stringify(map)};
+const render=new Function('input','tools','templateConfiguration','templateBindings',source);
+let state={},rows=demo,proposal=null;
+function dispatch(event){if(event.action==='tracker:layout'){alert('Layout is managed in native TrialAgents App Settings. This file demonstrates the regulatory submission screens only.');return;}
+ const out=render({saved:true,writable:true,state,event},{call:(name,v)=>{if(name==='records.read'){const all=rows.filter(r=>r.role===v.typeId);return {rows:all.slice(v.offset,v.offset+v.limit),total:all.length};}if(name==='records.propose'){proposal=v;return {status:'proposed'};}throw Error('Unsupported preview capability');}},config,bindings);
+ state=out.state;document.getElementById('surface').innerHTML=out.html;
+ if(proposal){const changes=proposal;proposal=null;if(confirm('FICTIONAL LOCAL REVIEW ONLY\n'+JSON.stringify(changes,null,2))){for(const c of changes){if(c.kind==='create_record')rows.push({role:c.typeId,id:crypto.randomUUID(),version:0,data:c.data});else{const r=rows.find(r=>r.id===c.recordId);if(r&&r.version===c.expectedVersion){r.data={...r.data,...c.data};r.version++;}}}state={...state,editor:null,confirm:null,quick:{},notice:'Fictional change applied in this preview only.'};dispatch({kind:'open',action:''});}}
+}
+function eventFor(kind,target){const trigger=target.closest('[data-action]');if(!trigger)return;const form=trigger.closest('form');dispatch({kind,action:trigger.dataset.action,value:target.type==='checkbox'?target.checked:target.value??null,form:form?Object.fromEntries(new FormData(form)):{}});}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&!b.disabled&&b.type!=='submit')eventFor('click',b);});
+document.addEventListener('submit',e=>{e.preventDefault();eventFor('submit',e.target);});
+document.addEventListener('change',e=>eventFor('change',e.target));
+dispatch({kind:'open',action:''});
+</script></body></html>

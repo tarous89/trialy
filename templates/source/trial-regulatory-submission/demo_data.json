@@ -1,0 +1,761 @@
+{
+  "records": [
+    {
+      "role": "submissions",
+      "id": "sub-de",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "AT-401 EU CTIS application",
+        "studyRef": "AT-401 / Protocol 3.2",
+        "country": "Germany",
+        "authority": "BfArM / ethics",
+        "pathway": "CTIS",
+        "status": "Internal review",
+        "owner": "Regulatory lead",
+        "plannedAt": "2026-11-21",
+        "sourceUrl": "https://example.org/mock-protocol/at401",
+        "submittedAt": null,
+        "submissionProof": null
+      }
+    },
+    {
+      "role": "submissions",
+      "id": "sub-fr",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "AT-401 French CTIS package",
+        "studyRef": "AT-401 / Protocol 3.2",
+        "country": "France",
+        "authority": "ANSM / ethics",
+        "pathway": "CTIS",
+        "status": "Drafting",
+        "owner": "Regulatory affairs",
+        "plannedAt": "2026-12-11",
+        "sourceUrl": "https://example.org/mock-protocol/at401-fr",
+        "submittedAt": null,
+        "submissionProof": null
+      }
+    },
+    {
+      "role": "submissions",
+      "id": "sub-us",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "AT-512 US IND preparation",
+        "studyRef": "AT-512 / Protocol 1.0",
+        "country": "United States",
+        "authority": "FDA",
+        "pathway": "IND",
+        "status": "Planning",
+        "owner": "Clinical operations",
+        "plannedAt": "2027-01-15",
+        "sourceUrl": "https://example.org/mock-protocol/at512",
+        "submittedAt": null,
+        "submissionProof": null
+      }
+    },
+    {
+      "role": "documents",
+      "id": "d01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Clinical trial protocol",
+        "submissionId": "sub-de",
+        "docKey": "protocol",
+        "versionTag": "3.1",
+        "status": "Superseded",
+        "owner": "Clinical writing",
+        "sourceUrl": "https://example.org/mock-documents/d01",
+        "updatedAt": "2026-09-21"
+      }
+    },
+    {
+      "role": "documents",
+      "id": "d02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Clinical trial protocol",
+        "submissionId": "sub-de",
+        "docKey": "protocol",
+        "versionTag": "3.2",
+        "status": "Approved",
+        "owner": "Clinical writing",
+        "sourceUrl": "https://example.org/mock-documents/d02",
+        "updatedAt": "2026-10-21"
+      }
+    },
+    {
+      "role": "documents",
+      "id": "d03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Investigator brochure",
+        "submissionId": "sub-de",
+        "docKey": "ib",
+        "versionTag": "8.0",
+        "status": "Approved",
+        "owner": "Medical writing",
+        "sourceUrl": "https://example.org/mock-documents/d03",
+        "updatedAt": "2026-10-12"
+      }
+    },
+    {
+      "role": "documents",
+      "id": "d04",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Participant information package",
+        "submissionId": "sub-de",
+        "docKey": "consent",
+        "versionTag": "2.0",
+        "status": "In review",
+        "owner": "Country lead",
+        "sourceUrl": "https://example.org/mock-documents/d04",
+        "updatedAt": "2026-10-28"
+      }
+    },
+    {
+      "role": "documents",
+      "id": "d05",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Site suitability statement",
+        "submissionId": "sub-de",
+        "docKey": "site",
+        "versionTag": "1.0",
+        "status": "Draft",
+        "owner": "Study startup",
+        "sourceUrl": "https://example.org/mock-documents/d05",
+        "updatedAt": "2026-10-26"
+      }
+    },
+    {
+      "role": "documents",
+      "id": "d06",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Safety management overview",
+        "submissionId": "sub-de",
+        "docKey": "safety",
+        "versionTag": "1.0",
+        "status": "Approved",
+        "owner": "PV operations",
+        "sourceUrl": "https://example.org/mock-documents/d06",
+        "updatedAt": "2026-10-19"
+      }
+    },
+    {
+      "role": "documents",
+      "id": "d07",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Clinical trial protocol",
+        "submissionId": "sub-fr",
+        "docKey": "protocol",
+        "versionTag": "3.2",
+        "status": "Approved",
+        "owner": "Clinical writing",
+        "sourceUrl": "https://example.org/mock-documents/d07",
+        "updatedAt": "2026-10-21"
+      }
+    },
+    {
+      "role": "documents",
+      "id": "d08",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Patient information translation",
+        "submissionId": "sub-fr",
+        "docKey": "consent-fr",
+        "versionTag": "1.0",
+        "status": "Draft",
+        "owner": "Country lead",
+        "sourceUrl": "https://example.org/mock-documents/d08",
+        "updatedAt": "2026-10-22"
+      }
+    },
+    {
+      "role": "documents",
+      "id": "d09",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Insurance certificate",
+        "submissionId": "sub-fr",
+        "docKey": "insurance-fr",
+        "versionTag": "1.0",
+        "status": "In review",
+        "owner": "Legal",
+        "sourceUrl": "https://example.org/mock-documents/d09",
+        "updatedAt": "2026-10-25"
+      }
+    },
+    {
+      "role": "documents",
+      "id": "d10",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Clinical trial protocol",
+        "submissionId": "sub-us",
+        "docKey": "protocol",
+        "versionTag": "1.0",
+        "status": "Draft",
+        "owner": "Clinical writing",
+        "sourceUrl": "https://example.org/mock-documents/d10",
+        "updatedAt": "2026-10-23"
+      }
+    },
+    {
+      "role": "documents",
+      "id": "d11",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Investigator brochure",
+        "submissionId": "sub-us",
+        "docKey": "ib",
+        "versionTag": "2.0",
+        "status": "In review",
+        "owner": "Medical writing",
+        "sourceUrl": "https://example.org/mock-documents/d11",
+        "updatedAt": "2026-10-27"
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "r02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Version 3.2 / d02",
+        "documentId": "d02",
+        "versionTag": "3.2",
+        "status": "Approved",
+        "reviewer": "Quality reviewer",
+        "decidedAt": "2026-10-23",
+        "evidenceUrl": "https://example.org/mock-decisions/r02",
+        "notes": "Internal reviewer evidence record"
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "r03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Version 8.0 / d03",
+        "documentId": "d03",
+        "versionTag": "8.0",
+        "status": "Approved",
+        "reviewer": "Medical lead",
+        "decidedAt": "2026-10-15",
+        "evidenceUrl": "https://example.org/mock-decisions/r03",
+        "notes": "Internal reviewer evidence record"
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "r06",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Version 1.0 / d06",
+        "documentId": "d06",
+        "versionTag": "1.0",
+        "status": "Approved",
+        "reviewer": "Safety lead",
+        "decidedAt": "2026-10-20",
+        "evidenceUrl": "https://example.org/mock-decisions/r06",
+        "notes": "Internal reviewer evidence record"
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "r07",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Version 3.2 / d07",
+        "documentId": "d07",
+        "versionTag": "3.2",
+        "status": "Approved",
+        "reviewer": "Quality reviewer",
+        "decidedAt": "2026-10-23",
+        "evidenceUrl": "https://example.org/mock-decisions/r07",
+        "notes": "Internal reviewer evidence record"
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "r04",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Version 2.0 / d04",
+        "documentId": "d04",
+        "versionTag": "2.0",
+        "status": "Changes requested",
+        "reviewer": "Country reviewer",
+        "decidedAt": "2026-10-30",
+        "evidenceUrl": null,
+        "notes": "Internal reviewer evidence record"
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "r09",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Version 1.0 / d09",
+        "documentId": "d09",
+        "versionTag": "1.0",
+        "status": "Pending",
+        "reviewer": "Legal reviewer",
+        "decidedAt": null,
+        "evidenceUrl": null,
+        "notes": "Internal reviewer evidence record"
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "r11",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Version 2.0 / d11",
+        "documentId": "d11",
+        "versionTag": "2.0",
+        "status": "Pending",
+        "reviewer": "Medical reviewer",
+        "decidedAt": null,
+        "evidenceUrl": null,
+        "notes": "Internal reviewer evidence record"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Protocol 3.2",
+        "submissionId": "sub-de",
+        "section": "Part I",
+        "applicability": "Required",
+        "owner": "Clinical writing",
+        "dueAt": "2026-11-06",
+        "documentId": "d02",
+        "versionTag": "3.2",
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i01"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Current investigator brochure",
+        "submissionId": "sub-de",
+        "section": "Part I",
+        "applicability": "Required",
+        "owner": "Medical writing",
+        "dueAt": "2026-11-07",
+        "documentId": "d03",
+        "versionTag": "8.0",
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i02"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Country participant package",
+        "submissionId": "sub-de",
+        "section": "Part II",
+        "applicability": "Required",
+        "owner": "Country lead",
+        "dueAt": "2026-11-10",
+        "documentId": "d04",
+        "versionTag": "2.0",
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i03"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i04",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Institution suitability",
+        "submissionId": "sub-de",
+        "section": "Part II",
+        "applicability": "Required",
+        "owner": "Study startup",
+        "dueAt": "2026-11-14",
+        "documentId": "d05",
+        "versionTag": "1.0",
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i04"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i05",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Safety reporting plan",
+        "submissionId": "sub-de",
+        "section": "Safety",
+        "applicability": "Required",
+        "owner": "PV operations",
+        "dueAt": "2026-11-11",
+        "documentId": "d06",
+        "versionTag": "1.0",
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i05"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i06",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Local insurance evidence",
+        "submissionId": "sub-de",
+        "section": "Country annex",
+        "applicability": "Unknown",
+        "owner": "Legal",
+        "dueAt": "2026-11-17",
+        "documentId": null,
+        "versionTag": null,
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i06"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i07",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Protocol 3.2",
+        "submissionId": "sub-fr",
+        "section": "Part I",
+        "applicability": "Required",
+        "owner": "Clinical writing",
+        "dueAt": "2026-11-26",
+        "documentId": "d07",
+        "versionTag": "3.2",
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i07"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i08",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Country consent translation",
+        "submissionId": "sub-fr",
+        "section": "Part II",
+        "applicability": "Required",
+        "owner": "Country lead",
+        "dueAt": "2026-12-01",
+        "documentId": "d08",
+        "versionTag": "1.0",
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i08"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i09",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Insurance certificate",
+        "submissionId": "sub-fr",
+        "section": "Country annex",
+        "applicability": "Required",
+        "owner": "Legal",
+        "dueAt": "2026-12-05",
+        "documentId": "d09",
+        "versionTag": "1.0",
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i09"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i10",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Optional lab advertisement",
+        "submissionId": "sub-fr",
+        "section": "Other",
+        "applicability": "Not applicable",
+        "owner": "Country lead",
+        "dueAt": "2026-12-05",
+        "documentId": null,
+        "versionTag": null,
+        "reason": "Not part of this internal scope",
+        "sourceUrl": "https://example.org/mock-requirements/i10"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i11",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Protocol 1.0",
+        "submissionId": "sub-us",
+        "section": "Part I",
+        "applicability": "Required",
+        "owner": "Clinical writing",
+        "dueAt": "2026-12-20",
+        "documentId": "d10",
+        "versionTag": "1.0",
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i11"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i12",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Investigator brochure",
+        "submissionId": "sub-us",
+        "section": "Part I",
+        "applicability": "Required",
+        "owner": "Medical writing",
+        "dueAt": "2026-12-18",
+        "documentId": "d11",
+        "versionTag": "2.0",
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i12"
+      }
+    },
+    {
+      "role": "items",
+      "id": "i13",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Local consent materials",
+        "submissionId": "sub-us",
+        "section": "Part II",
+        "applicability": "Unknown",
+        "owner": "Regulatory affairs",
+        "dueAt": "2027-01-01",
+        "documentId": null,
+        "versionTag": null,
+        "reason": null,
+        "sourceUrl": "https://example.org/mock-requirements/i13"
+      }
+    },
+    {
+      "role": "questions",
+      "id": "q01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Request for Part II wording clarification",
+        "submissionId": "sub-de",
+        "authorityRef": "DE-RFI-001",
+        "receivedAt": "2026-10-29",
+        "dueAt": "2026-11-08",
+        "status": "Drafting",
+        "owner": "Country lead",
+        "respondedAt": null,
+        "answerUrl": null,
+        "notes": "Illustrative authority correspondence entry"
+      }
+    },
+    {
+      "role": "questions",
+      "id": "q02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Clarify investigator brochure summary",
+        "submissionId": "sub-de",
+        "authorityRef": "DE-RFI-002",
+        "receivedAt": "2026-10-16",
+        "dueAt": "2026-10-30",
+        "status": "Response recorded",
+        "owner": "Medical lead",
+        "respondedAt": "2026-10-28",
+        "answerUrl": "https://example.org/mock-responses/q02",
+        "notes": "Illustrative authority correspondence entry"
+      }
+    },
+    {
+      "role": "questions",
+      "id": "q03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Insurance applicability inquiry",
+        "submissionId": "sub-fr",
+        "authorityRef": "FR-RFI-001",
+        "receivedAt": "2026-10-30",
+        "dueAt": "2026-11-18",
+        "status": "Open",
+        "owner": "Country RA",
+        "respondedAt": null,
+        "answerUrl": null,
+        "notes": "Illustrative authority correspondence entry"
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "m01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Final document approval",
+        "submissionId": "sub-de",
+        "baselineAt": "2026-11-07",
+        "currentAt": "2026-11-11",
+        "actualAt": null,
+        "owner": "Regulatory lead",
+        "reason": "Updated after internal cross-team review"
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "m02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Manual portal application",
+        "submissionId": "sub-de",
+        "baselineAt": "2026-11-21",
+        "currentAt": "2026-11-21",
+        "actualAt": null,
+        "owner": "Regulatory lead",
+        "reason": null
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "m03",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Country legal review",
+        "submissionId": "sub-fr",
+        "baselineAt": "2026-11-29",
+        "currentAt": "2026-12-04",
+        "actualAt": null,
+        "owner": "Country lead",
+        "reason": "Updated after internal cross-team review"
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "m04",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Manual submission target",
+        "submissionId": "sub-fr",
+        "baselineAt": "2026-12-11",
+        "currentAt": "2026-12-11",
+        "actualAt": null,
+        "owner": "Country lead",
+        "reason": null
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "m05",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Pre-IND content freeze",
+        "submissionId": "sub-us",
+        "baselineAt": "2026-12-20",
+        "currentAt": "2026-12-20",
+        "actualAt": null,
+        "owner": "Clinical operations",
+        "reason": null
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "m06",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "IND planning target",
+        "submissionId": "sub-us",
+        "baselineAt": "2027-01-15",
+        "currentAt": "2027-01-15",
+        "actualAt": null,
+        "owner": "Regulatory affairs",
+        "reason": null
+      }
+    },
+    {
+      "role": "reports",
+      "id": "p01",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "German CTIS readiness memo - draft",
+        "submissionId": "sub-de",
+        "cutoffAt": "2026-11-01",
+        "status": "Draft",
+        "reviewer": null,
+        "reviewedAt": null,
+        "sourceRefs": "items:i01@v1, items:i02@v1, items:i03@v1, items:i04@v1, items:i05@v1, items:i06@v1",
+        "summary": "Partial content readiness; consent and site documentation require attention. This is not a compliance decision."
+      }
+    },
+    {
+      "role": "reports",
+      "id": "p02",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "French package internal update",
+        "submissionId": "sub-fr",
+        "cutoffAt": "2026-10-28",
+        "status": "Draft",
+        "reviewer": null,
+        "reviewedAt": null,
+        "sourceRefs": "items:i07@v1, items:i08@v1, items:i09@v1, items:i10@v1",
+        "summary": "Country planning only. Review source-specific requirements before manual submission."
+      }
+    }
+  ],
+  "fictional": true,
+  "note": "All titles, sources, identifiers, authorities/dates in preview are invented illustrative test records; not an actual CTIS package."
+}

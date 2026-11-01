@@ -1,0 +1,748 @@
+{
+  "submissions": {
+    "name": "submissions",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "study_ref",
+        "name": "study_ref",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "country",
+        "name": "country",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "authority",
+        "name": "authority",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "pathway",
+        "name": "pathway",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "CTIS",
+          "IND",
+          "Other"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Planning",
+          "Drafting",
+          "Internal review",
+          "Ready for manual submission",
+          "Submitted (manually recorded)",
+          "Authority follow-up",
+          "Closed"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "planned_at",
+        "name": "planned_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "submitted_at",
+        "name": "submitted_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "submission_proof",
+        "name": "submission_proof",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "source_url",
+        "name": "source_url",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "studyRef": "study_ref",
+      "country": "country",
+      "authority": "authority",
+      "pathway": "pathway",
+      "status": "status",
+      "owner": "owner",
+      "plannedAt": "planned_at",
+      "submittedAt": "submitted_at",
+      "submissionProof": "submission_proof",
+      "sourceUrl": "source_url",
+      "archived": "archived"
+    },
+    "parentReferences": {},
+    "accessNote": "TrialAgents enforces app/table/field access; custom frontend layout does not grant a separate section permission. Record versions support optimistic edits."
+  },
+  "items": {
+    "name": "items",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "submission_id",
+        "name": "submission_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "section",
+        "name": "section",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Part I",
+          "Part II",
+          "Country annex",
+          "Safety",
+          "Other"
+        ]
+      },
+      {
+        "key": "applicability",
+        "name": "applicability",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Required",
+          "Not applicable",
+          "Unknown"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "due_at",
+        "name": "due_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "document_id",
+        "name": "document_id",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "version_tag",
+        "name": "version_tag",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "reason",
+        "name": "reason",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "source_url",
+        "name": "source_url",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "submissionId": "submission_id",
+      "section": "section",
+      "applicability": "applicability",
+      "owner": "owner",
+      "dueAt": "due_at",
+      "documentId": "document_id",
+      "versionTag": "version_tag",
+      "reason": "reason",
+      "sourceUrl": "source_url",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "submissionId": "submissions"
+    },
+    "accessNote": "TrialAgents enforces app/table/field access; custom frontend layout does not grant a separate section permission. Record versions support optimistic edits."
+  },
+  "documents": {
+    "name": "documents",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "submission_id",
+        "name": "submission_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "doc_key",
+        "name": "doc_key",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "version_tag",
+        "name": "version_tag",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Draft",
+          "In review",
+          "Rework",
+          "Approved",
+          "Superseded"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "source_url",
+        "name": "source_url",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "updated_at",
+        "name": "updated_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "submissionId": "submission_id",
+      "docKey": "doc_key",
+      "versionTag": "version_tag",
+      "status": "status",
+      "owner": "owner",
+      "sourceUrl": "source_url",
+      "updatedAt": "updated_at",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "submissionId": "submissions"
+    },
+    "accessNote": "TrialAgents enforces app/table/field access; custom frontend layout does not grant a separate section permission. Record versions support optimistic edits."
+  },
+  "reviews": {
+    "name": "reviews",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "document_id",
+        "name": "document_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "version_tag",
+        "name": "version_tag",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Pending",
+          "Changes requested",
+          "Approved",
+          "Rejected"
+        ]
+      },
+      {
+        "key": "reviewer",
+        "name": "reviewer",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "decided_at",
+        "name": "decided_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "evidence_url",
+        "name": "evidence_url",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "notes",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "documentId": "document_id",
+      "versionTag": "version_tag",
+      "status": "status",
+      "reviewer": "reviewer",
+      "decidedAt": "decided_at",
+      "evidenceUrl": "evidence_url",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "documentId": "documents"
+    },
+    "accessNote": "TrialAgents enforces app/table/field access; custom frontend layout does not grant a separate section permission. Record versions support optimistic edits."
+  },
+  "questions": {
+    "name": "questions",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "submission_id",
+        "name": "submission_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "authority_ref",
+        "name": "authority_ref",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "received_at",
+        "name": "received_at",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "due_at",
+        "name": "due_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Open",
+          "Drafting",
+          "Under review",
+          "Response recorded",
+          "Resolved"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "answer_url",
+        "name": "answer_url",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "responded_at",
+        "name": "responded_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "notes",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "submissionId": "submission_id",
+      "authorityRef": "authority_ref",
+      "receivedAt": "received_at",
+      "dueAt": "due_at",
+      "status": "status",
+      "owner": "owner",
+      "answerUrl": "answer_url",
+      "respondedAt": "responded_at",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "submissionId": "submissions"
+    },
+    "accessNote": "TrialAgents enforces app/table/field access; custom frontend layout does not grant a separate section permission. Record versions support optimistic edits."
+  },
+  "milestones": {
+    "name": "milestones",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "submission_id",
+        "name": "submission_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "baseline_at",
+        "name": "baseline_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "current_at",
+        "name": "current_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "actual_at",
+        "name": "actual_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "reason",
+        "name": "reason",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "submissionId": "submission_id",
+      "baselineAt": "baseline_at",
+      "currentAt": "current_at",
+      "actualAt": "actual_at",
+      "owner": "owner",
+      "reason": "reason",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "submissionId": "submissions"
+    },
+    "accessNote": "TrialAgents enforces app/table/field access; custom frontend layout does not grant a separate section permission. Record versions support optimistic edits."
+  },
+  "reports": {
+    "name": "reports",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "submission_id",
+        "name": "submission_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "cutoff_at",
+        "name": "cutoff_at",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Draft",
+          "Reviewed"
+        ]
+      },
+      {
+        "key": "reviewer",
+        "name": "reviewer",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "reviewed_at",
+        "name": "reviewed_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "source_refs",
+        "name": "source_refs",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "summary",
+        "name": "summary",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "submissionId": "submission_id",
+      "cutoffAt": "cutoff_at",
+      "status": "status",
+      "reviewer": "reviewer",
+      "reviewedAt": "reviewed_at",
+      "sourceRefs": "source_refs",
+      "summary": "summary",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "submissionId": "submissions"
+    },
+    "accessNote": "TrialAgents enforces app/table/field access; custom frontend layout does not grant a separate section permission. Record versions support optimistic edits."
+  }
+}
