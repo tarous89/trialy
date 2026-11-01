@@ -1,0 +1,34 @@
+# Project Oversight — optional ChatGPT and internal TrialAgents email automation
+
+**Default: no automation.** Every core screen, form, timeline, record approval and manual report works even if no shared ChatGPT subscription or email delivery exists. Never create a per-app ChatGPT scheduled task or ask app JavaScript to run an external API. Only the existing TrialAgents platform connects the account/runner and stores supported schedules. **No automation is activated by this template.**
+
+## Recipe A — Manual owner-directed management report (no setup required)
+
+**Purpose:** Produce a source-linked draft leadership brief for one explicit reporting cutoff. **Trigger:** User selects the report screen, reads the displayed ChatGPT prompt and asks ChatGPT to process the authorized app. No recurring background task. **Executor:** ChatGPT with permitted TrialAgents MCP tools; not local app code. **Source scope:** Current approved project, workstream, milestone, deliverable, risk, decision and **Reviewed** owner update records as of cutoff. **Output:** Draft `reports` row (not Approved), human-readable bullets with exact cited source record IDs or URLs, reviewed by owner before any save. **Permissions:** App read rights plus a separately authorized write proposal/grant, no arbitrary database expansion. **No findings:** report full coverage and no change, not a fabricated summary. **Partial:** label missing sources, withhold exact totals and any claimed project Green. **Failure:** preserve existing reports and any unsaved text; record failure in platform Logs. **Dedup:** app ID + reporting cutoff + evidence source version. **Expiry:** only as authorized per request; never assume standing write grants.
+
+## Recipe B — Optional weekly leadership synthesis via the shared ChatGPT runner
+
+**Only after app save and an explicit owner request.** Read `read_automation_setup`, `read_app_automation_guide`, `list_app_automations`, existing permissions, and the authorized workspace subscription. If supported, prepare **one** app-linked `prepare_app_monitoring` definition with a stable `authoringKey` such as `project-oversight:leadership-weekly:v1` and reviewed digest. Example proposed cadence is **Monday 08:00 Europe/Berlin** (one-week calendar trigger); the owner must approve the actual timing. Do not duplicate any existing enabled/disabled definition, invent task IDs or callbacks, or assert a future run is active. Declined setup is respected. Definitions remain editable while Disabled.
+
+**Proposed exact ChatGPT instruction (to review with owner):**
+
+> Read only authorized, complete source records for our saved Project Oversight application and the most recent completed reporting period, preserving source record versions and owner-approved status dates. Inspect project and workstream identities, immutable milestone baseline dates versus current/actual dates, due deliverables and completion evidence, active High/Critical risks, pending decisions and missing Reviewed status updates. Cite exact saved IDs/dates in the proposed report narrative, and state the reviewed data cutoff and scope. Exclude patient and personal medical data. If any required table, field, page, relationship or prior period is missing, mark coverage Partial and do not make company-wide, zero-risk or Green claims. Do not change project health, automatically complete milestones, approve decisions, send emails, or contact third parties. Deduplicate by (app ID, reporting cutoff, evidence record version set). Propose an explicitly owner-reviewed **Draft** report row only within approved table fields. If the source was complete and nothing changed, provide a clear no-change status; `no_update` silence is only allowed if the owner separately approved a quiet policy. Never claim a proposal is saved before the trusted confirmation receipt.
+
+**Scope and safeguards:** Read only the named saved app's approved manifest and project bound tables; no external sources needed. `inheritAppAccess:true`, no automatic grant extension, no cross-workspace joining. Define exact current field write scope, action count/expiry (e.g. 90 days if explicitly approved), maximum per-run report count (e.g. 1), dedup and partial/failure outcomes in reviewed platform configuration. Do **not** place internal IDs, JSON grant scope editors, retries, quotas or subscription setup in the generated app UI. Authorization review and immutable Logs remain on the platform.
+
+**Success signal:** actual committed Draft report ID/version and write receipt from approved platform flow, with data source cutoff. A schedule due time, an Enabled badge or a local dry run is **not** proof of completed research. **Failures:** incomplete/blocked status, no report write, no automatic retry with fresh requestKey; existing app and drafts stay accessible. Platform Logs track result. Research can be disabled without deleting it.
+
+## Recipe C — Optional separate internal TrialAgents email
+
+**Not recommended by default.** Only if the accountable owner explicitly requests notifications, use `prepare_app_action` for **one separately reviewed** TrialAgents email rule. This backend action never asks ChatGPT to send mail. Recipients: current app owner, optionally already authorized TrialAgents members explicitly selected during review; addresses stored in project/contact records are not recipient permission. Avoid external investor/vendor outreach. **Trigger example:** supported database transition for a report from `In review` to `Approved` *after* a separate owner approval. This is a backend field transition, not any update. Alternatively, attach a manually triggered completion action following successful ChatGPT processing, but do not create both paths or give a second schedule to a completion-linked email.
+
+**Fixed text, no unsupported placeholders:**
+
+- Subject: `Project Oversight report is ready`
+- Body: `A management report is available for review in your Project Oversight app. Please open the saved report in TrialAgents to review the exact period, evidence and authorized content.`
+
+**Email guardrails:** Not more often than platform recipient/global limits; coalescing and obsolescence checks and current access revalidation are host responsibilities. Invalid/unknown recipient or revoked access cancels work, not a reason to send externally. Email failure does not rerun successful ChatGPT research. Verify delivery separately in platform Logs; do not treat Enabled as delivered. Disabled rules remain listed and editable. No credential/key/SMTP code inside the generated source.
+
+## Required setup status report to user
+
+Report separately: app saved? access inherited or configured? automation definition saved and enabled/disabled? shared runner ready? next eligible run? last actual result, report write receipt, and email delivery receipt? Any unspecified status is **unverified**, not silently successful. A failed automation is not a failed app.

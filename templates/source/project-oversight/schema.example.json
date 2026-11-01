@@ -1,0 +1,1007 @@
+{
+  "projects": {
+    "name": "projects",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Project / program",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "objective",
+        "name": "Objective",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "program",
+        "name": "Program / therapeutic area",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "department",
+        "name": "Department",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "R&D",
+          "Clinical",
+          "Regulatory",
+          "Operations",
+          "Finance",
+          "Corporate",
+          "Other"
+        ]
+      },
+      {
+        "key": "phase",
+        "name": "Phase",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Discovery",
+          "Preclinical",
+          "Phase 1",
+          "Phase 2",
+          "Phase 3",
+          "Platform",
+          "Operations",
+          "Other"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "Accountable owner",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Project state",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Planned",
+          "Active",
+          "On hold",
+          "Completed"
+        ]
+      },
+      {
+        "key": "health",
+        "name": "Owner-assessed health",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Unassessed",
+          "Green",
+          "Amber",
+          "Red"
+        ]
+      },
+      {
+        "key": "health_rationale",
+        "name": "Health rationale",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status_date",
+        "name": "Health reviewed on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "start_date",
+        "name": "Start date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "target_date",
+        "name": "Target end",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "baseline_budget",
+        "name": "Baseline budget",
+        "kind": "money",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "currency",
+        "name": "Budget currency",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "EUR",
+          "USD",
+          "GBP",
+          "CHF"
+        ]
+      },
+      {
+        "key": "source",
+        "name": "Planning source",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "objective": "objective",
+      "program": "program",
+      "department": "department",
+      "phase": "phase",
+      "owner": "owner",
+      "status": "status",
+      "health": "health",
+      "health_rationale": "health_rationale",
+      "status_date": "status_date",
+      "start_date": "start_date",
+      "target_date": "target_date",
+      "baseline_budget": "baseline_budget",
+      "currency": "currency",
+      "source": "source",
+      "archived": "archived"
+    },
+    "mappingContract": "tableMap[role]={typeId:authorized UUID,fields:{logical_key:actual_snake_case},writableFields:[authorized logical keys]}. Provide real schema versions and field reads/writes in component manifest."
+  },
+  "workstreams": {
+    "name": "workstreams",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Workstream",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "project_id",
+        "name": "Project",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "function",
+        "name": "Function",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "R&D",
+          "Clinical",
+          "Regulatory",
+          "Quality",
+          "Operations",
+          "Finance",
+          "Business development",
+          "Other"
+        ]
+      },
+      {
+        "key": "lead",
+        "name": "Lead",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Planned",
+          "Active",
+          "On hold",
+          "Completed"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "function": "function",
+      "lead": "lead",
+      "status": "status",
+      "archived": "archived"
+    },
+    "mappingContract": "tableMap[role]={typeId:authorized UUID,fields:{logical_key:actual_snake_case},writableFields:[authorized logical keys]}. Provide real schema versions and field reads/writes in component manifest.",
+    "references": {
+      "project_id": {
+        "targetRole": "projects",
+        "storage": "scalar authorized parent record UUID (text), no nested objects or labels"
+      }
+    }
+  },
+  "milestones": {
+    "name": "milestones",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Milestone",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "project_id",
+        "name": "Project",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "workstream_id",
+        "name": "Workstream",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "baseline_date",
+        "name": "Original baseline",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "current_date",
+        "name": "Current target",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "actual_date",
+        "name": "Actual completion",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Planned",
+          "In progress",
+          "Blocked",
+          "Completed",
+          "Cancelled"
+        ]
+      },
+      {
+        "key": "dependency_id",
+        "name": "Depends on milestone",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "change_reason",
+        "name": "Schedule change explanation",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "evidence",
+        "name": "Completion / source reference",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "workstream_id": "workstream_id",
+      "owner": "owner",
+      "baseline_date": "baseline_date",
+      "current_date": "current_date",
+      "actual_date": "actual_date",
+      "status": "status",
+      "dependency_id": "dependency_id",
+      "change_reason": "change_reason",
+      "evidence": "evidence",
+      "archived": "archived"
+    },
+    "mappingContract": "tableMap[role]={typeId:authorized UUID,fields:{logical_key:actual_snake_case},writableFields:[authorized logical keys]}. Provide real schema versions and field reads/writes in component manifest.",
+    "references": {
+      "project_id": {
+        "targetRole": "projects",
+        "storage": "scalar authorized parent record UUID (text), no nested objects or labels"
+      },
+      "workstream_id": {
+        "targetRole": "workstreams",
+        "storage": "scalar authorized parent record UUID (text), no nested objects or labels"
+      },
+      "dependency_id": {
+        "targetRole": "milestones",
+        "storage": "scalar authorized parent record UUID (text), no nested objects or labels"
+      }
+    }
+  },
+  "deliverables": {
+    "name": "deliverables",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Deliverable",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "project_id",
+        "name": "Project",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "workstream_id",
+        "name": "Workstream",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "milestone_id",
+        "name": "Linked milestone",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "due_date",
+        "name": "Due date",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "actual_date",
+        "name": "Actual completion",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Planned",
+          "In progress",
+          "Blocked",
+          "Completed",
+          "Cancelled"
+        ]
+      },
+      {
+        "key": "evidence",
+        "name": "Completion evidence link / ID",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "Working notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "workstream_id": "workstream_id",
+      "milestone_id": "milestone_id",
+      "owner": "owner",
+      "due_date": "due_date",
+      "actual_date": "actual_date",
+      "status": "status",
+      "evidence": "evidence",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "mappingContract": "tableMap[role]={typeId:authorized UUID,fields:{logical_key:actual_snake_case},writableFields:[authorized logical keys]}. Provide real schema versions and field reads/writes in component manifest.",
+    "references": {
+      "project_id": {
+        "targetRole": "projects",
+        "storage": "scalar authorized parent record UUID (text), no nested objects or labels"
+      },
+      "workstream_id": {
+        "targetRole": "workstreams",
+        "storage": "scalar authorized parent record UUID (text), no nested objects or labels"
+      },
+      "milestone_id": {
+        "targetRole": "milestones",
+        "storage": "scalar authorized parent record UUID (text), no nested objects or labels"
+      }
+    }
+  },
+  "risks": {
+    "name": "risks",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Risk or issue",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "project_id",
+        "name": "Project",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "kind",
+        "name": "Record type",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Risk",
+          "Issue"
+        ]
+      },
+      {
+        "key": "impact",
+        "name": "Impact",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Low",
+          "Medium",
+          "High"
+        ]
+      },
+      {
+        "key": "likelihood",
+        "name": "Likelihood",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Low",
+          "Medium",
+          "High"
+        ]
+      },
+      {
+        "key": "priority",
+        "name": "Priority",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Low",
+          "Medium",
+          "High",
+          "Critical"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Open",
+          "Mitigating",
+          "Resolved",
+          "Accepted"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "Accountable owner",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "mitigation",
+        "name": "Response and mitigation",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "next_review",
+        "name": "Next review",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "resolution_evidence",
+        "name": "Closure evidence",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "kind": "kind",
+      "impact": "impact",
+      "likelihood": "likelihood",
+      "priority": "priority",
+      "status": "status",
+      "owner": "owner",
+      "mitigation": "mitigation",
+      "next_review": "next_review",
+      "resolution_evidence": "resolution_evidence",
+      "archived": "archived"
+    },
+    "mappingContract": "tableMap[role]={typeId:authorized UUID,fields:{logical_key:actual_snake_case},writableFields:[authorized logical keys]}. Provide real schema versions and field reads/writes in component manifest.",
+    "references": {
+      "project_id": {
+        "targetRole": "projects",
+        "storage": "scalar authorized parent record UUID (text), no nested objects or labels"
+      }
+    }
+  },
+  "decisions": {
+    "name": "decisions",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Decision topic",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "project_id",
+        "name": "Project",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Decision owner",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "due_date",
+        "name": "Decision due",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Decision state",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Pending",
+          "Approved",
+          "Declined",
+          "Deferred"
+        ]
+      },
+      {
+        "key": "decision_date",
+        "name": "Decision date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "approver",
+        "name": "Accountable approver",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "options",
+        "name": "Options considered",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "rationale",
+        "name": "Decision rationale",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "evidence",
+        "name": "Decision evidence / minutes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "owner": "owner",
+      "due_date": "due_date",
+      "status": "status",
+      "decision_date": "decision_date",
+      "approver": "approver",
+      "options": "options",
+      "rationale": "rationale",
+      "evidence": "evidence",
+      "archived": "archived"
+    },
+    "mappingContract": "tableMap[role]={typeId:authorized UUID,fields:{logical_key:actual_snake_case},writableFields:[authorized logical keys]}. Provide real schema versions and field reads/writes in component manifest.",
+    "references": {
+      "project_id": {
+        "targetRole": "projects",
+        "storage": "scalar authorized parent record UUID (text), no nested objects or labels"
+      }
+    }
+  },
+  "updates": {
+    "name": "updates",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Status update title",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "project_id",
+        "name": "Project",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "period",
+        "name": "Reporting period",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Report contributor",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "health",
+        "name": "Reported health",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Unassessed",
+          "Green",
+          "Amber",
+          "Red"
+        ]
+      },
+      {
+        "key": "summary",
+        "name": "Owner status narrative",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source",
+        "name": "Evidence reference",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Review state",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Draft",
+          "Submitted",
+          "Reviewed"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "project_id": "project_id",
+      "period": "period",
+      "owner": "owner",
+      "health": "health",
+      "summary": "summary",
+      "source": "source",
+      "status": "status",
+      "archived": "archived"
+    },
+    "mappingContract": "tableMap[role]={typeId:authorized UUID,fields:{logical_key:actual_snake_case},writableFields:[authorized logical keys]}. Provide real schema versions and field reads/writes in component manifest.",
+    "references": {
+      "project_id": {
+        "targetRole": "projects",
+        "storage": "scalar authorized parent record UUID (text), no nested objects or labels"
+      }
+    }
+  },
+  "reports": {
+    "name": "reports",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Management report",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "period",
+        "name": "Report period",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "cutoff",
+        "name": "Coverage cutoff",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Review state",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Draft",
+          "In review",
+          "Approved"
+        ]
+      },
+      {
+        "key": "reviewer",
+        "name": "Approver",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "narrative",
+        "name": "Saved management narrative",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "sources",
+        "name": "Evidence record references",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Report owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "period": "period",
+      "cutoff": "cutoff",
+      "status": "status",
+      "reviewer": "reviewer",
+      "narrative": "narrative",
+      "sources": "sources",
+      "owner": "owner",
+      "archived": "archived"
+    },
+    "mappingContract": "tableMap[role]={typeId:authorized UUID,fields:{logical_key:actual_snake_case},writableFields:[authorized logical keys]}. Provide real schema versions and field reads/writes in component manifest."
+  }
+}

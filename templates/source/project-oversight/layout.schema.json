@@ -1,0 +1,180 @@
+{
+  "screens": [
+    {
+      "id": "overview",
+      "label": "Portfolio overview"
+    },
+    {
+      "id": "projects",
+      "label": "Project directory"
+    },
+    {
+      "id": "timeline",
+      "label": "Milestone timeline"
+    },
+    {
+      "id": "deliverables",
+      "label": "Deliverables"
+    },
+    {
+      "id": "risks",
+      "label": "Risks & decisions"
+    },
+    {
+      "id": "reports",
+      "label": "Management reports"
+    }
+  ],
+  "groups": {
+    "projects": [
+      {
+        "id": "name",
+        "label": "Project"
+      },
+      {
+        "id": "phase",
+        "label": "Phase"
+      },
+      {
+        "id": "owner",
+        "label": "Owner"
+      },
+      {
+        "id": "department",
+        "label": "Department"
+      },
+      {
+        "id": "health",
+        "label": "Health"
+      },
+      {
+        "id": "target_date",
+        "label": "Target"
+      }
+    ],
+    "milestones": [
+      {
+        "id": "name",
+        "label": "Milestone"
+      },
+      {
+        "id": "project_id",
+        "label": "Project"
+      },
+      {
+        "id": "baseline_date",
+        "label": "Baseline"
+      },
+      {
+        "id": "current_date",
+        "label": "Current"
+      },
+      {
+        "id": "status",
+        "label": "Status"
+      },
+      {
+        "id": "owner",
+        "label": "Owner"
+      }
+    ],
+    "deliverables": [
+      {
+        "id": "name",
+        "label": "Deliverable"
+      },
+      {
+        "id": "project_id",
+        "label": "Project"
+      },
+      {
+        "id": "owner",
+        "label": "Owner"
+      },
+      {
+        "id": "due_date",
+        "label": "Due"
+      },
+      {
+        "id": "status",
+        "label": "Status"
+      }
+    ],
+    "risks": [
+      {
+        "id": "name",
+        "label": "Risk / issue"
+      },
+      {
+        "id": "project_id",
+        "label": "Project"
+      },
+      {
+        "id": "priority",
+        "label": "Priority"
+      },
+      {
+        "id": "owner",
+        "label": "Owner"
+      },
+      {
+        "id": "status",
+        "label": "Status"
+      }
+    ],
+    "decisions": [
+      {
+        "id": "name",
+        "label": "Decision"
+      },
+      {
+        "id": "project_id",
+        "label": "Project"
+      },
+      {
+        "id": "owner",
+        "label": "Owner"
+      },
+      {
+        "id": "due_date",
+        "label": "Due"
+      },
+      {
+        "id": "status",
+        "label": "Status"
+      }
+    ],
+    "updates": [
+      {
+        "id": "name",
+        "label": "Update"
+      },
+      {
+        "id": "project_id",
+        "label": "Project"
+      },
+      {
+        "id": "period",
+        "label": "Period"
+      },
+      {
+        "id": "status",
+        "label": "Status"
+      }
+    ],
+    "reports": [
+      {
+        "id": "name",
+        "label": "Report"
+      },
+      {
+        "id": "period",
+        "label": "Period"
+      },
+      {
+        "id": "status",
+        "label": "Status"
+      }
+    ]
+  }
+}

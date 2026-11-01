@@ -1,0 +1,118 @@
+{
+  "id": "life.project-oversight",
+  "version": "1.0.1",
+  "name": "Project Oversight",
+  "description": "Six-screen, Smartsheet-inspired project execution console for biotech companies under 50 staff: owner-assessed portfolio health, baseline-vs-current milestones, deliverables, cross-functional risk/decision tracking and evidence-linked management reports.",
+  "tags": [
+    "biotech",
+    "project-management",
+    "executive-oversight",
+    "milestone-tracking",
+    "risks",
+    "management-reporting",
+    "research-operations"
+  ],
+  "whenToUse": "A biotech CEO, PMO or functional lead needs to coordinate internal cross-functional initiatives and leadership reviews with source-linked milestones, commitments and decisions.",
+  "whenNotToUse": "Not a validated GxP project system, CTMS, eTMF, patient data repository, ERP, legal authorization engine, Smartsheet clone or enterprise resource simulation suite. No mandatory external sync or automatic health classification.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "Project Oversight",
+    "tableMap": "{}",
+    "layoutProfile": "{}",
+    "asOfDate": "",
+    "pageSize": 25,
+    "readOnly": false,
+    "demoLabel": false
+  },
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "Concise user-defined app title.",
+      "default": "Project Oversight"
+    },
+    "tableMap": {
+      "type": "string",
+      "description": "JSON: per-role actual authorized typeId UUID, logical-to-snake_case field map and writableFields. Must use real schema versions and granted manifest.",
+      "default": "{}"
+    },
+    "layoutProfile": {
+      "type": "string",
+      "description": "Host-saved reviewed layout {heading,tabs,cols,visible}, with stable IDs, persisted through prepare_tool_layout.",
+      "default": "{}"
+    },
+    "asOfDate": {
+      "type": "string",
+      "description": "Optional ISO reporting cutoff YYYY-MM-DD. In production defaults to current calendar date if omitted.",
+      "default": ""
+    },
+    "pageSize": {
+      "type": "number",
+      "description": "Record page size 10-50, default 25; register and timeline paging use the authorized backend source.",
+      "default": 25
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "Disable all local write proposals; platform permissions still authoritative.",
+      "default": false
+    },
+    "demoLabel": {
+      "type": "boolean",
+      "description": "Mark local sample only; never import fictional records to production.",
+      "default": false
+    }
+  },
+  "instructions": "Read current read_app_template_guidance authoring/usage 1.3.9 to end and read_app_design. Select this exact template ID, version and digest; do not inject duplicate templateConfiguration/templateBindings into catalog source. Internal app inherits TrialAgents identity and permissions; use official host watermark with canonical https://platform.trialagents.com link and no fabricated logo or app-level auth. Read authorized schemas first; create/reuse eight scalar role tables with actual snake_case fields from documentation.dataContract: projects, workstreams, milestones, deliverables, risks, decisions, updates, reports. Every select has exact options and every scalar multiple:false. References project_id/workstream_id/milestone_id/dependency_id are scalar parent UUID text, and parents must be saved before children with actual receipt IDs. Configure tableMap real IDs/field mappings and manifest read/write kinds and schema versions; no demo data. Default active project health Unassessed, not Green. Keep original baseline immutable; current date changes require dated source rationale; completed milestones/deliverables require actual and evidence, signed decisions require approver/date/rationale/evidence, approved reports require reviewed sources. Authoritative metrics require complete authorized reads; missing reports do not imply Green or zero. Prepare the exact six-screen source without app-local user management or external integration. Preview in the production sanitized frame with manifest and actual event.form values, then save through trusted review; record actions propose exact data with original record version, archive is reviewed archived:true with dependency check. Native layout uses templateLayoutSchema and tracker:layout, prepare_tool_layout / review/confirm and saved layoutProfile, never store layout as a database row. Save once with stable requestKey; reconcile receipts; revise existing app with expectedVersion. Optional monitoring uses shared workspace ChatGPT and separate backend TrialAgents email, only after separate consent. No automation is valid. Do not infer that ZIP publication is MCP registration, that Enabled verifies execution, or that a local preview is a live host acceptance.",
+  "documentation": {
+    "quickStart": [
+      "Retrieve complete current authoring/usage guidance 1.3.9, design kit and exact catalog digest; keep six distinct screens and official linked host watermark.",
+      "Inspect approved workspace/project data and required CRUD permissions. Create or reuse project/workstream/milestone/deliverable/risk/decision/update/report scalar schema according to dataContract, with fields as documented including each select enum and multiple:false.",
+      "Save project parent first; use actual returned UUIDs for linked child references. No sample data, patient records, app accounts or unverified external connectors.",
+      "Prepare and preview exact source with real tableMap, manifest read/write kinds, schema versions, no duplicate templateConfiguration declarations; test text/select/date and denied and partial reads in sanitized host.",
+      "After reviewed app save, edit status, copy non-approved draft, add dependency-safe child, archive only with complete child reads, then reopen versioned record and reconcile confirmation.",
+      "Open native gear, reorder screens and columns, review/confirm, reopen saved app and verify layoutProfile survives. All required editor fields remain visible even if table columns are hidden.",
+      "Use manual report creation by default. Optionally obtain separate approval for shared weekly ChatGPT research and separately for internal TrialAgents email; verify setup/run status and delivery independently."
+    ],
+    "dataContract": "Eight related role schemas, each scalar multiple:false; actual physical keys are lowercase snake_case, logical fields map 1:1. projects: name:text, objective:text, program:text, department:select[R&D|Clinical|Regulatory|Operations|Finance|Corporate|Other], phase:select[Discovery|Preclinical|Phase 1|Phase 2|Phase 3|Platform|Operations|Other], owner:text, status:select[Planned|Active|On hold|Completed], health:select[Unassessed|Green|Amber|Red], health_rationale:text, status_date:date, start_date:date, target_date:date, baseline_budget:money, currency:select[EUR|USD|GBP|CHF], source:text, archived:boolean; workstreams: name:text, project_id:text, function:select[R&D|Clinical|Regulatory|Quality|Operations|Finance|Business development|Other], lead:text, status:select[Planned|Active|On hold|Completed], archived:boolean; milestones: name:text, project_id:text, workstream_id:text, owner:text, baseline_date:date, current_date:date, actual_date:date, status:select[Planned|In progress|Blocked|Completed|Cancelled], dependency_id:text, change_reason:text, evidence:text, archived:boolean; deliverables: name:text, project_id:text, workstream_id:text, milestone_id:text, owner:text, due_date:date, actual_date:date, status:select[Planned|In progress|Blocked|Completed|Cancelled], evidence:text, notes:text, archived:boolean; risks: name:text, project_id:text, kind:select[Risk|Issue], impact:select[Low|Medium|High], likelihood:select[Low|Medium|High], priority:select[Low|Medium|High|Critical], status:select[Open|Mitigating|Resolved|Accepted], owner:text, mitigation:text, next_review:date, resolution_evidence:text, archived:boolean; decisions: name:text, project_id:text, owner:text, due_date:date, status:select[Pending|Approved|Declined|Deferred], decision_date:date, approver:text, options:text, rationale:text, evidence:text, archived:boolean; updates: name:text, project_id:text, period:date, owner:text, health:select[Unassessed|Green|Amber|Red], summary:text, source:text, status:select[Draft|Submitted|Reviewed], archived:boolean; reports: name:text, period:date, cutoff:date, status:select[Draft|In review|Approved], reviewer:text, narrative:text, sources:text, owner:text, archived:boolean. Every text URL, evidence reference and narrative uses database text, not URL/longtext type. Every select must use exactly listed options; date YYYY-MM-DD (real calendar date), money and number real finite scalar. Required fields reject blank, optional blank=>null, archived:boolean for reviewed soft deletion. project_id, workstream_id, milestone_id, dependency_id are scalar IDs of saved authorized parents; no nested relation objects. On app setup, tableMap JSON maps each role to the real typeId and each logical key to physical key, with writableFields explicit logical names and current schemaVersion in the bindings/manifest. Rows are authorized, versioned, never demo data. Parent archive validates complete children; independent DB changes still require host referential and permissions checks. Baseline dates immutable once created. Counts/rollups/overdue rates withhold authoritative values unless required source totals complete; per-role analytics bounded at 600 rows, per-page registers continue beyond this cap. Budget amounts are not aggregated across currencies. Unassessed or missing-reviewed-owner-update means missing status, never Green. Required at creation: projects: name, objective, phase, owner, status, health; workstreams: name, project_id, function, status; milestones: name, project_id, baseline_date, current_date, status; deliverables: name, project_id, owner, due_date, status; risks: name, project_id, kind, priority, status, owner; decisions: name, project_id, owner, status; updates: name, project_id, period, owner, health, summary, status; reports: name, period, cutoff, status, narrative.",
+    "interactionContract": "Six screens: portfolio owner-health dashboard, project/workstream directory, seven-month baseline/current/actual milestone timeline with table alternative, deliverables, segmented risks/decisions, saved report/status update viewer. Toolbar shrinkable search+Add, current-page filters, next/previous backend pages, details drawer and all-scalar edit form. Add/Edit/Duplicate/Delete(archive) on every relevant role; reviews through records.propose only, same record ID/expectedVersion on edit, cancel retains saved data, conflict retains local draft. Settings gear emits tracker:layout for native host; stable templateLayoutSchema supports reorder/visibility via versioned prepare_tool_layout, no data access changes. All required and hidden table fields remain accessible in editor. Scope and as-of input are local data-ui-state events handled before metrics. Reports show saved owner-approved narrative; ChatGPT handoff is text-only, platform Automations owns optional scheduled research and email. Custom sections inherit app-level access, not silently partitioned by HTML tab. Project selection filters the server query before pagination; totals and pages share the same scope. Read-only fields are labelled and disabled; required clears are rejected. Currency changes require clearing the prior budget in a separate reviewed change.",
+    "lifecycle": "Unsaved preview => trusted save => reopen exact app/version; metadata/draft not saved until reviewed write receipt. Retry ambiguous save with same request key and reconcile receipt, do not duplicate app. Edition retains original record version from open for conflict; in-flight failures keep local editor draft. Copy resets approvals/completion evidence and owner health, archive validates linked dependencies, never hard-deletes historical milestones. Disabled automations stay disabled, app continues without setup and execution. Native layout uses newly saved host-injected configuration on each render; Ignore retains old layout. Existing saved apps are not migrated by this new catalog version. Preserve current published view on failed optional backend operations and audit logs at platform level.",
+    "limitations": [
+      "Standalone HTML uses fictional local review; native layout is available only in the TrialAgents host. It does not prove deployment or live automation.",
+      "Actual deployment needs whole-catalog loader validation, exact-version digest read, QuickJS, sanitized production frame with authorized manifest, real proposed writes, browser/UI design inspection and connected ChatGPT review.",
+      "Exact cross-record analytics are bounded to 600 authorized records per role; overflow or partial reads suppress total claims. Current-page search is not server-side full-text search.",
+      "Timeline has a fixed seven-month display window; exact milestone dates remain accessible through Details.",
+      "App records project metadata only: not a validated GxP system, clinical trial patient platform, expense ledger, contract signer or legal/financial approval executor.",
+      "No automatic health scoring. Prior-period actual trend requires owner-reviewed versioned snapshots, not inferred from today's status; periods missing such snapshots are reported unavailable.",
+      "ChatGPT/TrialAgents automation metadata is a suggestion, not activation or delivery; no scheduler or email operations on app render."
+    ],
+    "examples": [
+      {
+        "prompt": "Set up Project Oversight for our 18-person biotech with no initial records or recurring automation.",
+        "expectedBehavior": "Six usable empty screens and eight authorized scalar role schemas; no sample records, app-local auth, required external integrations or automatic research task."
+      },
+      {
+        "prompt": "Create a project and two workstreams, then add a project milestone with original baseline and revised target.",
+        "expectedBehavior": "Create parent project first, reuse its actual UUID, then workstreams/milestone with source evidence; never overwrite baseline and require dated explanation for later target changes."
+      },
+      {
+        "prompt": "Show overdue deliverables for our oncology project and the accountable owners.",
+        "expectedBehavior": "Filter to authorized project identity; show due dates and completion evidence, page through all records and withhold exact totals on incomplete required sources."
+      },
+      {
+        "prompt": "Capture a critical operational risk and record the approved vendor decision.",
+        "expectedBehavior": "Use separate linked risk and decision records; approved decision requires approver, date, rationale and evidence; every proposal requires trusted review."
+      },
+      {
+        "prompt": "Prepare a leadership project report without scheduling anything, and explain the optional weekly ChatGPT research setup.",
+        "expectedBehavior": "Display cited manual handoff and reviewed Draft report. Optional shared-runner weekly monitoring requires separate owner consent; no promise of background run or automatic delivery."
+      }
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "After first saving the app, only if an accountable owner requests recurring evidence-backed leadership status synthesis or internal follow-up notification. No automation needed for manual project tracking/reporting.",
+      "readRequirements": "Read current guidance 1.3.9, design kit, actual eight table schemas and complete authorized project/related-source pages. Explicit setup is inherited host identity, app-only access for arbitrary custom screens, with no authentication or sample-data import. Include a meaningful IANA timezone, approved cadence, period cutoff, eligible owner-reviewed status updates, dedup identity (app ID + reporting cutoff), allowed fields, expiry, no-findings policy and completion evidence. Do not treat a missing submitted report as healthy. Source ids/versions and review permission must be checked just before any write.",
+      "outputContract": "Default NONE: no automation needed. Optional once-weekly shared-ChatGPT owner workspace monitor only after saved app/consent, using reviewed project records to draft a source-linked Draft management report; only authorized writes under a bounded reviewed grant. Failed/partial evidence returns blocked or partial, preserves app and draft, never silently no_update. Optional separate TrialAgents email action is independently approved, uses a fixed non-confidential instruction to review the saved app, owner plus separately approved authorized TrialAgents members, and fires on a reviewed completion status transition or authorized manual completion. Do not schedule both an independent email and a completion email, do not send from ChatGPT or contact external project vendors. Disabled states remain editable; effects/outcomes go to platform Logs. For an approved internal notification, fixed subject: Project Oversight report is ready. Fixed body: A management report is available for review in your Project Oversight app. Open the saved report in TrialAgents to review its period, evidence and status. This notification does not imply report approval. Read the current automation guide before selecting typed triggers or action fields.",
+      "promptExample": "For the saved Project Oversight app, use only owner-authorized project, workstream, milestone, deliverable, risk, decision, and reviewed update records for the chosen cutoff. Confirm source coverage, project IDs, reviewer status and record dates. Compare baseline/current/actual milestones without overwriting baselines. List dated overdue deliverables and evidence, high/critical open risks, unresolved decisions, absent monthly owner updates, and follow-up owners. Draft a succinct leadership report citing record IDs/source links and publication cutoff; propose only a Draft report for human review. Distinguish facts, qualified interpretations and missing data. If required pages are missing, denied, short or over budget, return partial coverage, not false Green / zero / no_update. No automatic email, external outreach, unreviewed status changes, or patient-level data."
+    }
+  },
+  "examples": []
+}
