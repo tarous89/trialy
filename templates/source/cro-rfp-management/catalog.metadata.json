@@ -1,0 +1,142 @@
+{
+  "id": "life.cro-rfp-management",
+  "version": "1.2.1",
+  "name": "RFP Management",
+  "description": "A modern CRO bid-response workspace: sponsor RFP intake, assigned requirements, approved answer library, dated reviews and controlled proposal preparation.",
+  "tags": [
+    "CRO",
+    "biotech",
+    "business-development",
+    "rfp-response",
+    "proposal-management",
+    "bid-writing",
+    "approved-content"
+  ],
+  "whenToUse": "For CRO BD/bid/proposal teams under 50 FTE responding to sponsor RFPs, collecting required answers, reusing approved content, coordinating scientific/operations/QA/Finance review and manually tracking submissions.",
+  "whenNotToUse": "Sponsor-side CRO supplier evaluation, procure-to-pay, external vendor portal, patient/safety case data, e-signature, automated emailing/submission, full enterprise CLM or real contract revenue accounting.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "RFP Management",
+    "tableMap": "{}",
+    "layoutProfile": "{}",
+    "pageSize": 25,
+    "asOf": "",
+    "readOnly": false,
+    "demoLabel": false,
+    "currency": "EUR"
+  },
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "Single user-visible application heading.",
+      "default": "RFP Management"
+    },
+    "tableMap": {
+      "type": "string",
+      "description": "JSON mapping of five authorized roles to real TrialAgents database IDs, field names and reviewed write scopes.",
+      "default": "{}"
+    },
+    "layoutProfile": {
+      "type": "string",
+      "description": "Reviewed host-persisted JSON of presentation screen order, field order and visibility.",
+      "default": "{}"
+    },
+    "pageSize": {
+      "type": "number",
+      "description": "Bottom-paginated 10-50 records per page.",
+      "default": 25
+    },
+    "asOf": {
+      "type": "string",
+      "description": "Optional YYYY-MM-DD for date arithmetic; blank uses current UTC date.",
+      "default": ""
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "Explicitly prevent record change proposals.",
+      "default": false
+    },
+    "demoLabel": {
+      "type": "boolean",
+      "description": "Fictional standalone demo label only.",
+      "default": false
+    },
+    "currency": {
+      "type": "string",
+      "description": "Default currency for NEW bid records only. Existing values retain their own currency; totals are grouped without conversion.",
+      "default": "EUR",
+      "enum": [
+        "EUR",
+        "USD",
+        "GBP",
+        "CHF"
+      ]
+    }
+  },
+  "instructions": "Read current TrialAgents `read_app_template_guidance` authoring/usage v1.3.8, native app design guidance and the selected digest-pinned template. User goal: CRO-side RFP response, NOT sponsor-side CRO selection. Internal app: existing TrialAgents session and server permissions only, no app-local authentication/accounts or external SaaS portals. Production uses the official clickable host watermark linking to https://platform.trialagents.com: no fabricated/duplicate text-only TrialAgents logo. Reuse five existing authorized tables or prepare reviewed schema and mappings for bids/questions/library/reviews/proposals, with required scalar types, record IDs, expected versions, and archived boolean. Verify authorized `templateBindings`, `tableMap`, manifest, read/write permissions, complete bounded pagination and sensitive content scope; do NOT seed demo records. Use frontend-js specialized six-screen source and one-line templateLayoutSchema; gear calls `tracker:layout` and host persists `customLayout` through reviewed `prepare_tool_layout`, NOT a fake in-frame arrow editor. Run a real preview; test active bid selection, intake, requirement approval, library reuse as Draft, required review gates, submission guards and record-menu duplicate/archive. Save once with stable requestKey and verify receipt / app ID. The template cannot send sponsor proposals or emails. Optional automations are configured only after app save: ChatGPT drafting/research via shared runner, optional dependent TrialAgents email for internal authorized recipients; no email to external sponsor contacts and no ChatGPT email sender. Do not activate any automations or claim model settings until owner approval and backend verification. Work fully without automation or connectors; failures preserve usable app and data. Explicitly create every field with multiple:false, bidId/libraryId as scalar text UUID references, and snake_case DB keys. Use the packaged schema.example.json contract; never bind native relationship arrays without an adapter. Resolve incompatible existing schema through reviewed migration or a compatible table, preserving original records.",
+  "documentation": {
+    "quickStart": [
+      "Read live authoring and usage guidance v1.3.8; distinguish CRO bid responder from sponsor RFP issuer; verify the template version/digest.",
+      "Open under existing TrialAgents platform account. No app login, user directory, OAuth, account/profile settings or extra billing.",
+      "Reuse or review-create five tables with stable identity: bids, questions, library, reviews, proposals. Bind actual authorized table IDs, field names and visible/writable scopes; use scalar date/boolean/status data. Reuse the existing Sponsor Organization directory where available by a reviewed reference field, not a duplicate account table.",
+      "Preview the six original screens against empty, small, long and restricted sample datasets. Never seed the fictional demo into a real workspace. Keep only reviewed user data.",
+      "Before saving, test three-dot Edit/Duplicate/Delete reviewed proposals; library reuse must create a draft, missing approvals must block Ready/Submitted, and no external email/file transfer is triggered.",
+      "Pin exact catalog version and requestKey, confirm app once with `prepare_app_from_template` / `confirm_workspace_change`, verify returned saved app/component versions. Layout gear uses the platform native settings and reviewed customLayout; verify persistence on real saved host.",
+      "After saving, optionally offer an on-demand ChatGPT RFP intake assistant, a weekly internal bid risk scan or a dependent approved internal email; zero automations is valid."
+    ],
+    "dataContract": "Five authorized DB tables. Every field explicitly multiple:false. Logical\u2192DB key:type mappings below; text supports multiline. bidId/libraryId store canonical saved UUIDs as scalar text, not native relationship arrays. Resolve labels from bound records. Native relationship or multiple fields need an explicit adapter or reviewed compatible migration; never silently recreate tables.\nbids: name\u2192name:text required, sponsor\u2192sponsor:text required, contact\u2192contact:text, scope\u2192scope:text, service\u2192service:text, countries\u2192countries:text, received\u2192received:date, due\u2192due:date required, owner\u2192owner:text, decision\u2192decision:select [Undecided|Bid|No bid], decisionRationale\u2192decision_rationale:text, decisionOwner\u2192decision_owner:text, decisionDate\u2192decision_date:date, status\u2192status:select [New|In progress|Review|Ready|Submitted|Won|Lost|Declined], valueEstimate\u2192value_estimate:number, currency\u2192currency:select [EUR|USD|GBP|CHF], pricingNotes\u2192pricing_notes:text, rfpSource\u2192rfp_source:text, submittedOn\u2192submitted_on:date, deliveryStatus\u2192delivery_status:select [Not sent|Manually sent|Receipt confirmed], archived\u2192archived:boolean\nquestions: name\u2192name:text required, bidId\u2192bid_id:text required, section\u2192section:select [Scientific|Operations|Data & statistics|Quality|Commercial|Legal|Other], sourceSection\u2192source_section:text, mandatory\u2192mandatory:boolean, owner\u2192owner:text, due\u2192due:date, status\u2192status:select [Not started|Drafted|Reviewed|Approved|Revision requested|Not applicable], answer\u2192answer:text, libraryId\u2192library_id:text, libraryVersion\u2192library_version:text, reviewer\u2192reviewer:text, approvedOn\u2192approved_on:date, source\u2192source:text, notes\u2192notes:text, archived\u2192archived:boolean\nlibrary: name\u2192name:text required, topic\u2192topic:text, service\u2192service:text, therapy\u2192therapy:text, body\u2192body:text, versionTag\u2192version_tag:text, status\u2192status:select [Draft|In review|Approved|Retired], approvedBy\u2192approved_by:text, approvedOn\u2192approved_on:date, reviewDue\u2192review_due:date, source\u2192source:text, archived\u2192archived:boolean\nreviews: name\u2192name:text required, bidId\u2192bid_id:text required, gate\u2192gate:select [Scientific|Operations|QA|Finance|Legal], required\u2192required:boolean, owner\u2192owner:text, due\u2192due:date, status\u2192status:select [Pending|Changes requested|Approved], reviewedAt\u2192reviewed_at:date, evidence\u2192evidence:text, archived\u2192archived:boolean\nproposals: name\u2192name:text required, bidId\u2192bid_id:text required, revision\u2192revision:text, status\u2192status:select [Draft|In review|Approved], owner\u2192owner:text, reviewer\u2192reviewer:text, reviewedOn\u2192reviewed_on:date, body\u2192body:text, sources\u2192sources:text, gaps\u2192gaps:text, archived\u2192archived:boolean\nUse real table UUIDs in tableMap and templateBindings; writableFields are logical keys while bindings.fields are DB keys. Every role field must be mapped for complete readiness, and editable forms require write access to all their fields. Missing/denied/partial data cannot establish readiness. Reads are bounded at 800 rows per role. Data are records; only drafts, filters and selection are local state. Archive is reviewed archived=true with original version and complete child checks. App-level access is authoritative; hidden columns are not permissions. Never seed fictional demo data. Estimates require their currency; totals are grouped by currency, never converted.",
+    "interactionContract": "Six specialized screens: dark deadline Bid Overview, structured RFP Intake and bid/no-bid decisions, Requirements Matrix with section readiness and owner/status, Response Library with approved-version validity and copy-as-Draft to selected question, Proposal Review with dated scientific/operations/QA/finance/legal gates and estimates, Proposal Preparation with approved source IDs, versioned narrative, gaps and manual submission log. Search and Add share one row, secondary filter in disclosure, 25 rows/page by default and bottom Prev/Next. Record three-dot Edit/Duplicate/Delete (reviewed archive) on all records, keyboard names, required input validation and preservable drafts with data-ui-state. Required approved answer needs actual text, reviewer and approval date. Approval gate needs owner, dated evidence. An approved proposal requires review gates, mandatory answers and its own evidence. A bid can only become Ready or Submitted after all checks pass; Submitted requires an explicit manual send date/record. The app has no supplier portal, invoice/ERP, CRM sync, auto emailing or hidden login. `templateLayoutSchema` declares stable screen and field keys; saved `templateConfiguration.layoutProfile` is authoritative on every render. The platform gear emits tracker:layout and native drag+keyboard/touch editor persists versioned `customLayout` without modifying source or access. Standalone preview may only simulate approval, never claim server persistence. Native column layout is available for the intake and requirements tables; library/review/proposal card content uses its fixed design. All six screens support reordering and visibility.",
+    "lifecycle": "Catalog identity life.cro-rfp-management@1.2.0. One app ID and stable requestKey across preview/save/retry; subsequent edits preserve component ID and expected version. Checked record changes use authorized expectedVersion, no duplicate app/record on lost response. Layout-only revisions modify reviewed heading/layoutProfile, not bindings or permissions. Library reuse captures approved library ID/version in question Draft; source approved library remains unchanged and source reviewer stamps cleared. Deleting/archive an RFP with linked active requirements, reviews or proposals is blocked until those are reassigned/archived. Previously saved approved records keep audit history; no hard erase. New automations created only on separately approved post-save setup, with stable authoringKey, inherited app permissions, existing owner/workspace shared ChatGPT runner. Disabled remains disabled through edits/copies. Archive suspends automations and restore does not reenable. Backend scheduler or email outages never prevent opening, navigating or reviewing records. Archive snapshots the displayed version and requires complete child reads with no active dependencies. Restore/copy never enables automations; disabled definitions remain listed and editable. Changes preserve authoringKey and receipts.",
+    "limitations": [
+      "Local preview is an offline fictional browser demonstration. No real TrialAgents session, actual data writes or native persisted Layout settings are exercised here. Real-host acceptance remains mandatory.",
+      "The source does not ingest RFP PDF automatically, synchronize email/CRM, produce real Word exports, sign contracts or transmit proposals. Sponsor delivery is recorded only after a person does it outside this app.",
+      "No separate user accounts/authentication or identity storage. Trusted TrialAgents host supplies official clickable platform watermark, existing team members, review, and server permissions.",
+      "Custom frontend-js runs at app-level authorization. Hiding fields/screens does not isolate secrets. Confidential bid prices or source content require correct existing host access.",
+      "Unmapped or restricted records, mixed currencies and any 800-record bounded read truncation block readiness claims; no zero-as-missing fallback or fabricated bid win rate.",
+      "No scheduled ChatGPT/email automation has been activated by publishing catalog metadata. Requested execution models, current permissions, authorization scopes and runner subscription must be independently verified.",
+      "No exchange-rate conversion: portfolio estimates are grouped by each record currency; missing currencies or amounts withhold totals. No production deployment or automation activation is implied by catalog publication."
+    ],
+    "examples": [
+      {
+        "prompt": "Build a small-CRO RFP response workspace with sponsor requests, answer owners, approved snippets and a release checklist. No automation.",
+        "expectedBehavior": "One internal 6-screen app with five reviewed authorized data tables. No new user accounts, external bid portal or seeded examples."
+      },
+      {
+        "prompt": "Copy the approved EU monitoring library answer into the Alpine Bio monitoring question.",
+        "expectedBehavior": "Select a current approved library version, choose a question in selected RFP, propose a new Draft answer with library source/version; remove old approval stamps; original unchanged."
+      },
+      {
+        "prompt": "Approve the oncology proposal and mark the bid Submitted.",
+        "expectedBehavior": "Block until every mandatory answer has reviewed text, required dated reviewer/Finance gates and one approved proposal with source IDs. Then require manual send date/status; never automatically email sponsor."
+      },
+      {
+        "prompt": "Reorder Requirements columns by dragging from the settings icon.",
+        "expectedBehavior": "Open native `tracker:layout` and use reviewed customLayout with stable field keys, not local arrows, preserving app access and source."
+      },
+      {
+        "prompt": "Create the CRO RFP workspace without automation.",
+        "expectedBehavior": "Save one reviewed app with authorized bindings and no monitoring or email definition."
+      }
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "Optional Monday weekly bid coverage research in Europe/Berlin, or a separately approved internal email after a committed report. No automation is the default. No sponsor delivery.",
+      "readRequirements": "After app save, check read_automation_setup, list_app_automations and read_app_automation_guide. Reuse shared owner/workspace ChatGPT subscription if verified. Use inheritAppAccess true and only already-approved app-bound read fields. Do not treat sample data, pending drafts, sponsor contact addresses, or unauthorized source files as eligible. Stable keys life.cro-rfp-management.weekly-bid-risk.v1 and life.cro-rfp-management.email.after-verified-report.v1; scheduled weekly Europe/Berlin only if approved.",
+      "outputContract": "ChatGPT produces concise report with exact bid IDs, sponsor names, verified due dates, mandatory answers missing, content approvals stale, internal reviewer gates missing, cutoff and data-coverage caveats. Draft recommendation only; no external recipient. Write a versioned report only if the user separately authorized a destination and reviewed save. Result no_update when no eligible changes and user opted for silence. Email must run through TrialAgents and only after verified committed new report with saved component/record ID, UTC completion timestamp and nonzero committed changes; no email on partial/denied/failed/unapproved/dedupe. A separate standalone internal reminder may use a reviewed record-date trigger but must not send sponsor mail. Before enabling saved reports choose the actual authorized destination, map its title/body/review_period/dedupe_key fields and review exact scope and expiry; otherwise use chat-only analysis with no dependent email. Use only current typed action fields and supported placeholders from read_app_automation_guide; do not invent message interpolation.",
+      "promptExample": "After saving, optionally review active sponsor bids each Monday in Europe/Berlin. Read complete authorized bids, questions, library, reviews and proposals; identify mandatory answer gaps, required Finance and other gates, stale sources and deadlines within 30 days. Cite record IDs, versions, evidence and cutoff. Return a chat-only analysis unless the owner selects an authorized saved report destination and exact fields. Never invent claims, change approvals or submit to sponsors. Deduplicate by app ID and review period. Partial or denied reads are incomplete, never no_update. Use no_update only after complete coverage and an approved quiet policy. Any write requires exact trusted review or an explicit unexpired scoped grant. Configure no email until a saved-report destination and committed receipt are verified."
+    }
+  },
+  "examples": [
+    {
+      "heading": "RFP Management",
+      "tableMap": "{}",
+      "layoutProfile": "{}",
+      "pageSize": 25,
+      "asOf": "",
+      "readOnly": false,
+      "demoLabel": false,
+      "currency": "EUR"
+    }
+  ],
+  "deprecated": false
+}

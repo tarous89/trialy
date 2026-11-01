@@ -1,0 +1,180 @@
+{
+  "NOTICE": "EXAMPLE ONLY. Real table IDs and fields require authorized schema creation/discovery. Lowercase/snake platform field names; exact type/permissions verified before prepare_app.",
+  "roles": {
+    "bids": {
+      "typeId": "REPLACE_WITH_AUTHORIZED_BIDS_UUID",
+      "fields": {
+        "name": "name",
+        "sponsor": "sponsor",
+        "contact": "contact",
+        "scope": "scope",
+        "service": "service",
+        "countries": "countries",
+        "received": "received",
+        "due": "due",
+        "owner": "owner",
+        "decision": "decision",
+        "decisionRationale": "decision_rationale",
+        "decisionOwner": "decision_owner",
+        "decisionDate": "decision_date",
+        "status": "status",
+        "valueEstimate": "value_estimate",
+        "currency": "currency",
+        "pricingNotes": "pricing_notes",
+        "rfpSource": "rfp_source",
+        "submittedOn": "submitted_on",
+        "deliveryStatus": "delivery_status",
+        "archived": "archived"
+      },
+      "writableFields": [
+        "name",
+        "sponsor",
+        "contact",
+        "scope",
+        "service",
+        "countries",
+        "received",
+        "due",
+        "owner",
+        "decision",
+        "decisionRationale",
+        "decisionOwner",
+        "decisionDate",
+        "status",
+        "valueEstimate",
+        "currency",
+        "pricingNotes",
+        "rfpSource",
+        "submittedOn",
+        "deliveryStatus",
+        "archived"
+      ]
+    },
+    "questions": {
+      "typeId": "REPLACE_WITH_AUTHORIZED_QUESTIONS_UUID",
+      "fields": {
+        "name": "name",
+        "bidId": "bid_id",
+        "section": "section",
+        "sourceSection": "source_section",
+        "mandatory": "mandatory",
+        "owner": "owner",
+        "due": "due",
+        "status": "status",
+        "answer": "answer",
+        "libraryId": "library_id",
+        "libraryVersion": "library_version",
+        "reviewer": "reviewer",
+        "approvedOn": "approved_on",
+        "source": "source",
+        "notes": "notes",
+        "archived": "archived"
+      },
+      "writableFields": [
+        "name",
+        "bidId",
+        "section",
+        "sourceSection",
+        "mandatory",
+        "owner",
+        "due",
+        "status",
+        "answer",
+        "libraryId",
+        "libraryVersion",
+        "reviewer",
+        "approvedOn",
+        "source",
+        "notes",
+        "archived"
+      ]
+    },
+    "library": {
+      "typeId": "REPLACE_WITH_AUTHORIZED_LIBRARY_UUID",
+      "fields": {
+        "name": "name",
+        "topic": "topic",
+        "service": "service",
+        "therapy": "therapy",
+        "body": "body",
+        "versionTag": "version_tag",
+        "status": "status",
+        "approvedBy": "approved_by",
+        "approvedOn": "approved_on",
+        "reviewDue": "review_due",
+        "source": "source",
+        "archived": "archived"
+      },
+      "writableFields": [
+        "name",
+        "topic",
+        "service",
+        "therapy",
+        "body",
+        "versionTag",
+        "status",
+        "approvedBy",
+        "approvedOn",
+        "reviewDue",
+        "source",
+        "archived"
+      ]
+    },
+    "reviews": {
+      "typeId": "REPLACE_WITH_AUTHORIZED_REVIEWS_UUID",
+      "fields": {
+        "name": "name",
+        "bidId": "bid_id",
+        "gate": "gate",
+        "required": "required",
+        "owner": "owner",
+        "due": "due",
+        "status": "status",
+        "reviewedAt": "reviewed_at",
+        "evidence": "evidence",
+        "archived": "archived"
+      },
+      "writableFields": [
+        "name",
+        "bidId",
+        "gate",
+        "required",
+        "owner",
+        "due",
+        "status",
+        "reviewedAt",
+        "evidence",
+        "archived"
+      ]
+    },
+    "proposals": {
+      "typeId": "REPLACE_WITH_AUTHORIZED_PROPOSALS_UUID",
+      "fields": {
+        "name": "name",
+        "bidId": "bid_id",
+        "revision": "revision",
+        "status": "status",
+        "owner": "owner",
+        "reviewer": "reviewer",
+        "reviewedOn": "reviewed_on",
+        "body": "body",
+        "sources": "sources",
+        "gaps": "gaps",
+        "archived": "archived"
+      },
+      "writableFields": [
+        "name",
+        "bidId",
+        "revision",
+        "status",
+        "owner",
+        "reviewer",
+        "reviewedOn",
+        "body",
+        "sources",
+        "gaps",
+        "archived"
+      ]
+    }
+  }
+}

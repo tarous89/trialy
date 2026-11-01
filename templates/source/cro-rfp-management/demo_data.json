@@ -1,0 +1,676 @@
+{
+  "fictional": true,
+  "records": [
+    {
+      "id": "demo-bids-001",
+      "role": "bids",
+      "version": 1,
+      "data": {
+        "name": "Clinical development proposal · oncology",
+        "archived": false,
+        "sponsor": "Alpine Bio",
+        "contact": "Sponsor clinical operations",
+        "scope": "European Phase II solid tumor clinical operations; 18 sites across 6 countries",
+        "service": "Full-service CRO, monitoring and data management",
+        "countries": "DE, FR, ES, IT, NL, PL",
+        "received": "2026-10-12",
+        "due": "2026-11-18",
+        "owner": "Proposal Lead",
+        "decision": "Bid",
+        "decisionRationale": "Strong oncology operations fit and realistic startup",
+        "decisionOwner": "CRO Managing Director",
+        "decisionDate": "2026-10-15",
+        "status": "Review",
+        "valueEstimate": 2450000,
+        "currency": "EUR",
+        "pricingNotes": "Indicative estimate; monitoring visit mix and site contracting timeline require finance sign-off.",
+        "rfpSource": "https://example.org/fictional-rfp-001",
+        "submittedOn": "",
+        "deliveryStatus": "Not sent"
+      }
+    },
+    {
+      "id": "demo-bids-002",
+      "role": "bids",
+      "version": 1,
+      "data": {
+        "name": "Rare disease observational program",
+        "archived": false,
+        "sponsor": "Veridian Therapeutics",
+        "contact": "Clinical development director",
+        "scope": "Multicountry rare disease natural-history study",
+        "service": "Site management, data collection and medical writing",
+        "countries": "DE, AT, FR",
+        "received": "2026-10-27",
+        "due": "2026-11-10",
+        "owner": "BD Director",
+        "decision": "Bid",
+        "decisionRationale": "Rare disease capability and existing affiliate sites",
+        "decisionOwner": "Managing Director",
+        "decisionDate": "2026-10-29",
+        "status": "In progress",
+        "valueEstimate": 1180000,
+        "currency": "EUR",
+        "pricingNotes": "Estimated 24 months; kickoff dependent on sponsor availability.",
+        "rfpSource": "https://example.org/fictional-rfp-002",
+        "submittedOn": "",
+        "deliveryStatus": "Not sent"
+      }
+    },
+    {
+      "id": "demo-bids-003",
+      "role": "bids",
+      "version": 1,
+      "data": {
+        "name": "APAC vaccine data services",
+        "archived": false,
+        "sponsor": "Northstar Life Sciences",
+        "contact": "Procurement lead",
+        "scope": "Large vaccine registry in APAC",
+        "service": "Statistical programming and clinical data services",
+        "countries": "JP, SG, AU",
+        "received": "2026-10-09",
+        "due": "2026-11-05",
+        "owner": "BD Director",
+        "decision": "No bid",
+        "decisionRationale": "Outside in-country resourcing and service strategy",
+        "decisionOwner": "CRO Managing Director",
+        "decisionDate": "2026-10-14",
+        "status": "Declined",
+        "valueEstimate": 650000,
+        "currency": "EUR",
+        "pricingNotes": "Nonbinding",
+        "rfpSource": "https://example.org/fictional-rfp-003",
+        "deliveryStatus": "Not sent"
+      }
+    },
+    {
+      "id": "demo-library-001",
+      "role": "library",
+      "version": 1,
+      "data": {
+        "name": "European monitoring coverage",
+        "archived": false,
+        "topic": "Operations",
+        "service": "Clinical operations",
+        "therapy": "Oncology / Rare disease",
+        "body": "Our monitoring model uses regional study managers, documented visit planning and sponsor-agreed quality oversight. Named capacity and country coverage require study-specific verification.",
+        "versionTag": "3.2",
+        "status": "Approved",
+        "approvedBy": "Functional lead",
+        "approvedOn": "2026-08-31",
+        "reviewDue": "2027-06-30",
+        "source": "https://example.org/fictional-library/operations"
+      }
+    },
+    {
+      "id": "demo-library-002",
+      "role": "library",
+      "version": 1,
+      "data": {
+        "name": "Clinical data management approach",
+        "archived": false,
+        "topic": "Data management",
+        "service": "Data management",
+        "therapy": "Oncology / Rare disease",
+        "body": "Our data-management scope includes edit-check planning, query workflow design and database lock preparation, subject to the agreed data-management plan.",
+        "versionTag": "2.1",
+        "status": "Approved",
+        "approvedBy": "Functional lead",
+        "approvedOn": "2026-08-31",
+        "reviewDue": "2027-04-15",
+        "source": "https://example.org/fictional-library/data-management"
+      }
+    },
+    {
+      "id": "demo-library-003",
+      "role": "library",
+      "version": 1,
+      "data": {
+        "name": "Quality governance structure",
+        "archived": false,
+        "topic": "Quality",
+        "service": "QA",
+        "therapy": "Oncology / Rare disease",
+        "body": "Our Quality team applies documented internal procedures and sponsor-agreed vendor oversight points. Specific certifications and inspection history require separate evidence.",
+        "versionTag": "1.7",
+        "status": "Approved",
+        "approvedBy": "Functional lead",
+        "approvedOn": "2026-08-31",
+        "reviewDue": "2027-02-28",
+        "source": "https://example.org/fictional-library/quality"
+      }
+    },
+    {
+      "id": "demo-library-004",
+      "role": "library",
+      "version": 1,
+      "data": {
+        "name": "Rare disease recruitment strategy",
+        "archived": false,
+        "topic": "Scientific",
+        "service": "Clinical operations",
+        "therapy": "Oncology / Rare disease",
+        "body": "Rare disease recruitment feasibility depends on site identification, screening pathways and local standard-of-care; site projections are evidence-dependent.",
+        "versionTag": "1.1",
+        "status": "Approved",
+        "approvedBy": "Functional lead",
+        "approvedOn": "2026-08-31",
+        "reviewDue": "2026-10-20",
+        "source": "https://example.org/fictional-library/scientific"
+      }
+    },
+    {
+      "id": "demo-library-005",
+      "role": "library",
+      "version": 1,
+      "data": {
+        "name": "Statistical analysis planning",
+        "archived": false,
+        "topic": "Data & statistics",
+        "service": "Biostatistics",
+        "therapy": "Oncology / Rare disease",
+        "body": "The statistical analysis plan is developed collaboratively with sponsor statisticians and approved before key analysis milestones.",
+        "versionTag": "2.0",
+        "status": "Approved",
+        "approvedBy": "Functional lead",
+        "approvedOn": "2026-08-31",
+        "reviewDue": "2027-08-01",
+        "source": "https://example.org/fictional-library/data-&-statistics"
+      }
+    },
+    {
+      "id": "demo-questions-001",
+      "role": "questions",
+      "version": 1,
+      "data": {
+        "name": "Describe EU site activation process",
+        "archived": false,
+        "bidId": "demo-bids-001",
+        "section": "Operations",
+        "sourceSection": "2.1",
+        "mandatory": true,
+        "owner": "Clinical operations",
+        "due": "2026-11-06",
+        "status": "Approved",
+        "answer": "Illustrative answer describe eu site activation process; verify study specifics and source versions.",
+        "libraryId": "demo-library-001",
+        "libraryVersion": "3.2",
+        "reviewer": "Proposal reviewer",
+        "approvedOn": "2026-10-29",
+        "source": "https://example.org/fictional-rfp-001",
+        "notes": "Fictional requirement for UX testing"
+      }
+    },
+    {
+      "id": "demo-questions-002",
+      "role": "questions",
+      "version": 1,
+      "data": {
+        "name": "Explain data query handling",
+        "archived": false,
+        "bidId": "demo-bids-001",
+        "section": "Data & statistics",
+        "sourceSection": "2.2",
+        "mandatory": true,
+        "owner": "Data manager",
+        "due": "2026-11-07",
+        "status": "Reviewed",
+        "answer": "Illustrative answer explain data query handling; verify study specifics and source versions.",
+        "libraryId": "",
+        "libraryVersion": "",
+        "reviewer": "",
+        "approvedOn": "",
+        "source": "https://example.org/fictional-rfp-001",
+        "notes": "Fictional requirement for UX testing"
+      }
+    },
+    {
+      "id": "demo-questions-003",
+      "role": "questions",
+      "version": 1,
+      "data": {
+        "name": "Describe sponsor/CRO issue escalation",
+        "archived": false,
+        "bidId": "demo-bids-001",
+        "section": "Quality",
+        "sourceSection": "2.3",
+        "mandatory": true,
+        "owner": "Quality lead",
+        "due": "2026-11-08",
+        "status": "Approved",
+        "answer": "Illustrative answer describe sponsor/cro issue escalation; verify study specifics and source versions.",
+        "libraryId": "demo-library-003",
+        "libraryVersion": "3.2",
+        "reviewer": "Proposal reviewer",
+        "approvedOn": "2026-10-29",
+        "source": "https://example.org/fictional-rfp-001",
+        "notes": "Fictional requirement for UX testing"
+      }
+    },
+    {
+      "id": "demo-questions-004",
+      "role": "questions",
+      "version": 1,
+      "data": {
+        "name": "Provide EU monitoring resourcing plan",
+        "archived": false,
+        "bidId": "demo-bids-001",
+        "section": "Operations",
+        "sourceSection": "2.4",
+        "mandatory": true,
+        "owner": "Study manager",
+        "due": "2026-11-09",
+        "status": "Drafted",
+        "answer": "Illustrative answer provide eu monitoring resourcing plan; verify study specifics and source versions.",
+        "libraryId": "",
+        "libraryVersion": "",
+        "reviewer": "",
+        "approvedOn": "",
+        "source": "https://example.org/fictional-rfp-001",
+        "notes": "Fictional requirement for UX testing"
+      }
+    },
+    {
+      "id": "demo-questions-005",
+      "role": "questions",
+      "version": 1,
+      "data": {
+        "name": "List applicable quality procedures",
+        "archived": false,
+        "bidId": "demo-bids-001",
+        "section": "Quality",
+        "sourceSection": "3.5",
+        "mandatory": true,
+        "owner": "Quality lead",
+        "due": "2026-11-10",
+        "status": "Not started",
+        "answer": "",
+        "libraryId": "",
+        "libraryVersion": "",
+        "reviewer": "",
+        "approvedOn": "",
+        "source": "https://example.org/fictional-rfp-001",
+        "notes": "Fictional requirement for UX testing"
+      }
+    },
+    {
+      "id": "demo-questions-006",
+      "role": "questions",
+      "version": 1,
+      "data": {
+        "name": "Describe statistics delivery milestones",
+        "archived": false,
+        "bidId": "demo-bids-001",
+        "section": "Data & statistics",
+        "sourceSection": "3.6",
+        "mandatory": false,
+        "owner": "Biostatistics",
+        "due": "2026-11-11",
+        "status": "Approved",
+        "answer": "Illustrative answer describe statistics delivery milestones; verify study specifics and source versions.",
+        "libraryId": "demo-library-001",
+        "libraryVersion": "3.2",
+        "reviewer": "Proposal reviewer",
+        "approvedOn": "2026-10-29",
+        "source": "https://example.org/fictional-rfp-001",
+        "notes": "Fictional requirement for UX testing"
+      }
+    },
+    {
+      "id": "demo-questions-007",
+      "role": "questions",
+      "version": 1,
+      "data": {
+        "name": "Specify startup risks and mitigation",
+        "archived": false,
+        "bidId": "demo-bids-001",
+        "section": "Scientific",
+        "sourceSection": "3.7",
+        "mandatory": true,
+        "owner": "Program director",
+        "due": "2026-11-12",
+        "status": "Drafted",
+        "answer": "Illustrative answer specify startup risks and mitigation; verify study specifics and source versions.",
+        "libraryId": "",
+        "libraryVersion": "",
+        "reviewer": "",
+        "approvedOn": "",
+        "source": "https://example.org/fictional-rfp-001",
+        "notes": "Fictional requirement for UX testing"
+      }
+    },
+    {
+      "id": "demo-questions-008",
+      "role": "questions",
+      "version": 1,
+      "data": {
+        "name": "Describe central monitoring coverage",
+        "archived": false,
+        "bidId": "demo-bids-001",
+        "section": "Operations",
+        "sourceSection": "3.8",
+        "mandatory": false,
+        "owner": "Study manager",
+        "due": "2026-11-13",
+        "status": "Reviewed",
+        "answer": "Illustrative answer describe central monitoring coverage; verify study specifics and source versions.",
+        "libraryId": "",
+        "libraryVersion": "",
+        "reviewer": "",
+        "approvedOn": "",
+        "source": "https://example.org/fictional-rfp-001",
+        "notes": "Fictional requirement for UX testing"
+      }
+    },
+    {
+      "id": "demo-questions-009",
+      "role": "questions",
+      "version": 1,
+      "data": {
+        "name": "Explain subcontractor management",
+        "archived": false,
+        "bidId": "demo-bids-001",
+        "section": "Legal",
+        "sourceSection": "4.9",
+        "mandatory": true,
+        "owner": "Legal reviewer",
+        "due": "2026-11-14",
+        "status": "Not started",
+        "answer": "",
+        "libraryId": "",
+        "libraryVersion": "",
+        "reviewer": "",
+        "approvedOn": "",
+        "source": "https://example.org/fictional-rfp-001",
+        "notes": "Fictional requirement for UX testing"
+      }
+    },
+    {
+      "id": "demo-questions-010",
+      "role": "questions",
+      "version": 1,
+      "data": {
+        "name": "Confirm natural history data sources",
+        "archived": false,
+        "bidId": "demo-bids-002",
+        "section": "Scientific",
+        "sourceSection": "B.1",
+        "mandatory": true,
+        "owner": "Bid SME",
+        "due": "2026-11-04",
+        "status": "Drafted",
+        "answer": "Draft of observational study services.",
+        "reviewer": "",
+        "approvedOn": "",
+        "source": "https://example.org/fictional-rfp-002"
+      }
+    },
+    {
+      "id": "demo-questions-011",
+      "role": "questions",
+      "version": 1,
+      "data": {
+        "name": "Describe biostatistical quality controls",
+        "archived": false,
+        "bidId": "demo-bids-002",
+        "section": "Data & statistics",
+        "sourceSection": "B.2",
+        "mandatory": true,
+        "owner": "Bid SME",
+        "due": "2026-11-05",
+        "status": "Approved",
+        "answer": "Draft of observational study services.",
+        "reviewer": "Review lead",
+        "approvedOn": "2026-11-01",
+        "source": "https://example.org/fictional-rfp-002"
+      }
+    },
+    {
+      "id": "demo-questions-012",
+      "role": "questions",
+      "version": 1,
+      "data": {
+        "name": "Outline site partnership capability",
+        "archived": false,
+        "bidId": "demo-bids-002",
+        "section": "Operations",
+        "sourceSection": "B.3",
+        "mandatory": true,
+        "owner": "Bid SME",
+        "due": "2026-11-06",
+        "status": "Not started",
+        "answer": "",
+        "reviewer": "",
+        "approvedOn": "",
+        "source": "https://example.org/fictional-rfp-002"
+      }
+    },
+    {
+      "id": "demo-questions-013",
+      "role": "questions",
+      "version": 1,
+      "data": {
+        "name": "Explain consent-document handling at aggregate level",
+        "archived": false,
+        "bidId": "demo-bids-002",
+        "section": "Quality",
+        "sourceSection": "B.4",
+        "mandatory": true,
+        "owner": "Bid SME",
+        "due": "2026-11-07",
+        "status": "Not started",
+        "answer": "",
+        "reviewer": "",
+        "approvedOn": "",
+        "source": "https://example.org/fictional-rfp-002"
+      }
+    },
+    {
+      "id": "demo-reviews-001",
+      "role": "reviews",
+      "version": 1,
+      "data": {
+        "name": "Scientific review",
+        "archived": false,
+        "bidId": "demo-bids-001",
+        "gate": "Scientific",
+        "required": true,
+        "owner": "Scientific lead",
+        "due": "2026-11-12",
+        "status": "Approved",
+        "reviewedAt": "2026-10-30",
+        "evidence": "Reviewed representative proposal claims against source questions."
+      }
+    },
+    {
+      "id": "demo-reviews-002",
+      "role": "reviews",
+      "version": 1,
+      "data": {
+        "name": "Operations review",
+        "archived": false,
+        "bidId": "demo-bids-001",
+        "gate": "Operations",
+        "required": true,
+        "owner": "Operations lead",
+        "due": "2026-11-12",
+        "status": "Changes requested",
+        "reviewedAt": "",
+        "evidence": ""
+      }
+    },
+    {
+      "id": "demo-reviews-003",
+      "role": "reviews",
+      "version": 1,
+      "data": {
+        "name": "QA review",
+        "archived": false,
+        "bidId": "demo-bids-001",
+        "gate": "QA",
+        "required": true,
+        "owner": "QA lead",
+        "due": "2026-11-12",
+        "status": "Pending",
+        "reviewedAt": "",
+        "evidence": ""
+      }
+    },
+    {
+      "id": "demo-reviews-004",
+      "role": "reviews",
+      "version": 1,
+      "data": {
+        "name": "Finance review",
+        "archived": false,
+        "bidId": "demo-bids-001",
+        "gate": "Finance",
+        "required": true,
+        "owner": "Finance lead",
+        "due": "2026-11-12",
+        "status": "Pending",
+        "reviewedAt": "",
+        "evidence": ""
+      }
+    },
+    {
+      "id": "demo-reviews-005",
+      "role": "reviews",
+      "version": 1,
+      "data": {
+        "name": "Legal review",
+        "archived": false,
+        "bidId": "demo-bids-001",
+        "gate": "Legal",
+        "required": false,
+        "owner": "Legal lead",
+        "due": "2026-11-12",
+        "status": "Pending",
+        "reviewedAt": "",
+        "evidence": ""
+      }
+    },
+    {
+      "id": "demo-reviews-006",
+      "role": "reviews",
+      "version": 1,
+      "data": {
+        "name": "Scientific review",
+        "archived": false,
+        "bidId": "demo-bids-002",
+        "gate": "Scientific",
+        "required": true,
+        "owner": "Scientific lead",
+        "due": "2026-11-12",
+        "status": "Approved",
+        "reviewedAt": "2026-10-30",
+        "evidence": "Reviewed representative proposal claims against source questions."
+      }
+    },
+    {
+      "id": "demo-reviews-007",
+      "role": "reviews",
+      "version": 1,
+      "data": {
+        "name": "Operations review",
+        "archived": false,
+        "bidId": "demo-bids-002",
+        "gate": "Operations",
+        "required": true,
+        "owner": "Operations lead",
+        "due": "2026-11-12",
+        "status": "Changes requested",
+        "reviewedAt": "",
+        "evidence": ""
+      }
+    },
+    {
+      "id": "demo-reviews-008",
+      "role": "reviews",
+      "version": 1,
+      "data": {
+        "name": "QA review",
+        "archived": false,
+        "bidId": "demo-bids-002",
+        "gate": "QA",
+        "required": true,
+        "owner": "QA lead",
+        "due": "2026-11-12",
+        "status": "Pending",
+        "reviewedAt": "",
+        "evidence": ""
+      }
+    },
+    {
+      "id": "demo-reviews-009",
+      "role": "reviews",
+      "version": 1,
+      "data": {
+        "name": "Finance review",
+        "archived": false,
+        "bidId": "demo-bids-002",
+        "gate": "Finance",
+        "required": true,
+        "owner": "Finance lead",
+        "due": "2026-11-12",
+        "status": "Pending",
+        "reviewedAt": "",
+        "evidence": ""
+      }
+    },
+    {
+      "id": "demo-reviews-010",
+      "role": "reviews",
+      "version": 1,
+      "data": {
+        "name": "Legal review",
+        "archived": false,
+        "bidId": "demo-bids-002",
+        "gate": "Legal",
+        "required": false,
+        "owner": "Legal lead",
+        "due": "2026-11-12",
+        "status": "Pending",
+        "reviewedAt": "",
+        "evidence": ""
+      }
+    },
+    {
+      "id": "demo-proposals-001",
+      "role": "proposals",
+      "version": 1,
+      "data": {
+        "name": "Alpine Bio · initial proposal narrative",
+        "archived": false,
+        "bidId": "demo-bids-001",
+        "revision": "0.3",
+        "status": "Draft",
+        "owner": "Proposal Lead",
+        "reviewer": "",
+        "reviewedOn": "",
+        "body": "Executive summary\nOur CRO proposes an operational approach combining trial management and data services for the planned European oncology program.\n\nWorkplan\nA sponsor-reviewed startup plan, documented monitoring strategy and quality oversight checkpoints will underpin delivery.\n\nCommercial note\nNumbers are indicative and subject to validated scope and finance approval.",
+        "sources": "demo-questions-001, demo-questions-003 · fictional references",
+        "gaps": "Missing country-level staffing assumptions, legal response, two required reviewer gates and sponsor-specific estimates."
+      }
+    },
+    {
+      "id": "demo-proposals-002",
+      "role": "proposals",
+      "version": 1,
+      "data": {
+        "name": "Veridian · response outline",
+        "archived": false,
+        "bidId": "demo-bids-002",
+        "revision": "0.1",
+        "status": "Draft",
+        "owner": "BD Director",
+        "reviewer": "",
+        "reviewedOn": "",
+        "body": "Preliminary natural history study delivery narrative. Pending scientific feasibility and quality review.",
+        "sources": "demo-questions-011",
+        "gaps": "Site feasibility and study assumptions remain unverified."
+      }
+    }
+  ]
+}

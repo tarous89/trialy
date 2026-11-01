@@ -1,0 +1,663 @@
+{
+  "bids": {
+    "name": "CRO RFP bids",
+    "logicalFields": {
+      "name": "name",
+      "sponsor": "sponsor",
+      "contact": "contact",
+      "scope": "scope",
+      "service": "service",
+      "countries": "countries",
+      "received": "received",
+      "due": "due",
+      "owner": "owner",
+      "decision": "decision",
+      "decisionRationale": "decision_rationale",
+      "decisionOwner": "decision_owner",
+      "decisionDate": "decision_date",
+      "status": "status",
+      "valueEstimate": "value_estimate",
+      "currency": "currency",
+      "pricingNotes": "pricing_notes",
+      "rfpSource": "rfp_source",
+      "submittedOn": "submitted_on",
+      "deliveryStatus": "delivery_status",
+      "archived": "archived"
+    },
+    "fields": [
+      {
+        "key": "name",
+        "name": "RFP title",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "sponsor",
+        "name": "Sponsor company",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "contact",
+        "name": "Professional contact",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "scope",
+        "name": "Study and service scope",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "service",
+        "name": "Core services",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "countries",
+        "name": "Countries",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "received",
+        "name": "Received",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "due",
+        "name": "Submission deadline",
+        "kind": "date",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "owner",
+        "name": "Bid lead",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "decision",
+        "name": "Bid / No bid",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Undecided",
+          "Bid",
+          "No bid"
+        ]
+      },
+      {
+        "key": "decision_rationale",
+        "name": "Decision rationale",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "decision_owner",
+        "name": "Decision approver",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "decision_date",
+        "name": "Decision date",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "status",
+        "name": "Bid stage",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "New",
+          "In progress",
+          "Review",
+          "Ready",
+          "Submitted",
+          "Won",
+          "Lost",
+          "Declined"
+        ]
+      },
+      {
+        "key": "value_estimate",
+        "name": "Indicative bid value",
+        "kind": "number",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "currency",
+        "name": "Currency",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "EUR",
+          "USD",
+          "GBP",
+          "CHF"
+        ]
+      },
+      {
+        "key": "pricing_notes",
+        "name": "Commercial assumptions",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "rfp_source",
+        "name": "RFP document reference",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "submitted_on",
+        "name": "Manual submission date",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "delivery_status",
+        "name": "Delivery record",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Not sent",
+          "Manually sent",
+          "Receipt confirmed"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ]
+  },
+  "questions": {
+    "name": "CRO RFP questions",
+    "logicalFields": {
+      "name": "name",
+      "bidId": "bid_id",
+      "section": "section",
+      "sourceSection": "source_section",
+      "mandatory": "mandatory",
+      "owner": "owner",
+      "due": "due",
+      "status": "status",
+      "answer": "answer",
+      "libraryId": "library_id",
+      "libraryVersion": "library_version",
+      "reviewer": "reviewer",
+      "approvedOn": "approved_on",
+      "source": "source",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "fields": [
+      {
+        "key": "name",
+        "name": "Requirement / question",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "bid_id",
+        "name": "Linked RFP",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "section",
+        "name": "Section",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Scientific",
+          "Operations",
+          "Data & statistics",
+          "Quality",
+          "Commercial",
+          "Legal",
+          "Other"
+        ]
+      },
+      {
+        "key": "source_section",
+        "name": "RFP source section",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "mandatory",
+        "name": "Mandatory",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "owner",
+        "name": "SME owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "due",
+        "name": "Internal due",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "status",
+        "name": "Response status",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Not started",
+          "Drafted",
+          "Reviewed",
+          "Approved",
+          "Revision requested",
+          "Not applicable"
+        ]
+      },
+      {
+        "key": "answer",
+        "name": "Draft response",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "library_id",
+        "name": "Reused library record ID",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "library_version",
+        "name": "Reused approved version",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "reviewer",
+        "name": "Answer reviewer",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "approved_on",
+        "name": "Answer approval date",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "source",
+        "name": "Evidence reference",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "notes",
+        "name": "Owner notes",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ]
+  },
+  "library": {
+    "name": "CRO RFP library",
+    "logicalFields": {
+      "name": "name",
+      "topic": "topic",
+      "service": "service",
+      "therapy": "therapy",
+      "body": "body",
+      "versionTag": "version_tag",
+      "status": "status",
+      "approvedBy": "approved_by",
+      "approvedOn": "approved_on",
+      "reviewDue": "review_due",
+      "source": "source",
+      "archived": "archived"
+    },
+    "fields": [
+      {
+        "key": "name",
+        "name": "Reusable answer title",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "topic",
+        "name": "Topic",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "service",
+        "name": "Service",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "therapy",
+        "name": "Therapeutic area",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "body",
+        "name": "Approved content",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "version_tag",
+        "name": "Content version",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "status",
+        "name": "Library approval",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Draft",
+          "In review",
+          "Approved",
+          "Retired"
+        ]
+      },
+      {
+        "key": "approved_by",
+        "name": "Approved by",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "approved_on",
+        "name": "Approved date",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "review_due",
+        "name": "Review due",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "source",
+        "name": "Evidence / source URL",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ]
+  },
+  "reviews": {
+    "name": "CRO RFP reviews",
+    "logicalFields": {
+      "name": "name",
+      "bidId": "bid_id",
+      "gate": "gate",
+      "required": "required",
+      "owner": "owner",
+      "due": "due",
+      "status": "status",
+      "reviewedAt": "reviewed_at",
+      "evidence": "evidence",
+      "archived": "archived"
+    },
+    "fields": [
+      {
+        "key": "name",
+        "name": "Review gate",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "bid_id",
+        "name": "Linked RFP",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "gate",
+        "name": "Discipline",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Scientific",
+          "Operations",
+          "QA",
+          "Finance",
+          "Legal"
+        ]
+      },
+      {
+        "key": "required",
+        "name": "Required",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "owner",
+        "name": "Reviewer",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "due",
+        "name": "Due",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "status",
+        "name": "Review status",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Pending",
+          "Changes requested",
+          "Approved"
+        ]
+      },
+      {
+        "key": "reviewed_at",
+        "name": "Review date",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "evidence",
+        "name": "Signed rationale / evidence",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ]
+  },
+  "proposals": {
+    "name": "CRO RFP proposals",
+    "logicalFields": {
+      "name": "name",
+      "bidId": "bid_id",
+      "revision": "revision",
+      "status": "status",
+      "owner": "owner",
+      "reviewer": "reviewer",
+      "reviewedOn": "reviewed_on",
+      "body": "body",
+      "sources": "sources",
+      "gaps": "gaps",
+      "archived": "archived"
+    },
+    "fields": [
+      {
+        "key": "name",
+        "name": "Proposal title",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "bid_id",
+        "name": "Linked RFP",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "revision",
+        "name": "Version",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "status",
+        "name": "Approval status",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Draft",
+          "In review",
+          "Approved"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "Draft owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "reviewer",
+        "name": "Approving reviewer",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "reviewed_on",
+        "name": "Approved date",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "body",
+        "name": "Draft narrative",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "sources",
+        "name": "Approved answer IDs and evidence",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "gaps",
+        "name": "Unanswered points and assumptions",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ]
+  }
+}
