@@ -1,0 +1,146 @@
+{
+  "selections": {
+    "typeId": "REPLACE_WITH_SAVED_TABLE_UUID",
+    "fields": {
+      "name": "name",
+      "program": "program",
+      "scope": "scope",
+      "owner": "owner",
+      "dueDate": "due_date",
+      "status": "status",
+      "currency": "currency",
+      "archived": "archived"
+    },
+    "writableFields": [
+      "name",
+      "program",
+      "scope",
+      "owner",
+      "due_date",
+      "status",
+      "currency",
+      "archived"
+    ]
+  },
+  "vendors": {
+    "typeId": "REPLACE_WITH_SAVED_TABLE_UUID",
+    "fields": {
+      "name": "name",
+      "services": "services",
+      "regions": "regions",
+      "experience": "experience",
+      "website": "website",
+      "contact": "contact",
+      "lastVerified": "last_verified",
+      "archived": "archived"
+    },
+    "writableFields": [
+      "name",
+      "services",
+      "regions",
+      "experience",
+      "website",
+      "contact",
+      "last_verified",
+      "archived"
+    ]
+  },
+  "bids": {
+    "typeId": "REPLACE_WITH_SAVED_TABLE_UUID",
+    "fields": {
+      "selectionId": "selection_id",
+      "vendorId": "vendor_id",
+      "status": "status",
+      "fee": "fee",
+      "passThrough": "pass_through",
+      "startupWeeks": "startup_weeks",
+      "assumptions": "assumptions",
+      "clarification": "clarification",
+      "clarificationDue": "clarification_due",
+      "submittedAt": "submitted_at",
+      "archived": "archived"
+    },
+    "writableFields": [
+      "selection_id",
+      "vendor_id",
+      "status",
+      "fee",
+      "pass_through",
+      "startup_weeks",
+      "assumptions",
+      "clarification",
+      "clarification_due",
+      "submitted_at",
+      "archived"
+    ]
+  },
+  "criteria": {
+    "typeId": "REPLACE_WITH_SAVED_TABLE_UUID",
+    "fields": {
+      "selectionId": "selection_id",
+      "name": "name",
+      "category": "category",
+      "weight": "weight",
+      "mandatory": "mandatory",
+      "minimum": "minimum",
+      "owner": "owner",
+      "archived": "archived"
+    },
+    "writableFields": [
+      "selection_id",
+      "name",
+      "category",
+      "weight",
+      "mandatory",
+      "minimum",
+      "owner",
+      "archived"
+    ]
+  },
+  "ratings": {
+    "typeId": "REPLACE_WITH_SAVED_TABLE_UUID",
+    "fields": {
+      "selectionId": "selection_id",
+      "vendorId": "vendor_id",
+      "criterionId": "criterion_id",
+      "reviewer": "reviewer",
+      "score": "score",
+      "evidence": "evidence",
+      "rationale": "rationale",
+      "archived": "archived"
+    },
+    "writableFields": [
+      "selection_id",
+      "vendor_id",
+      "criterion_id",
+      "reviewer",
+      "score",
+      "evidence",
+      "rationale",
+      "archived"
+    ]
+  },
+  "decisions": {
+    "typeId": "REPLACE_WITH_SAVED_TABLE_UUID",
+    "fields": {
+      "selectionId": "selection_id",
+      "vendorId": "vendor_id",
+      "status": "status",
+      "rationale": "rationale",
+      "approver": "approver",
+      "approvedAt": "approved_at",
+      "nextStep": "next_step",
+      "archived": "archived"
+    },
+    "writableFields": [
+      "selection_id",
+      "vendor_id",
+      "status",
+      "rationale",
+      "approver",
+      "approved_at",
+      "next_step",
+      "archived"
+    ]
+  }
+}

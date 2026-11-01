@@ -1,0 +1,1185 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CRO Selection fictional preview</title><style>/* CRO Selection — intentionally distinctive comparison-first interface. */
+.sel-shell{--sel-ink:#20243f;--sel-muted:#777f99;--sel-line:#e5e9f3;--sel-primary:#6d55f2;--sel-mint:#0fb69c;--sel-orange:#f19b65;--sel-rose:#f06c84;--sel-surface:#fff;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--sel-ink);background:#f7f8fc;display:grid;grid-template-columns:224px minmax(0,1fr);min-height:840px;width:100%;font-size:13.0px;line-height:1.48}
+.sel-shell *{box-sizing:border-box}.sel-shell button,.sel-shell input,.sel-shell select,.sel-shell textarea{font:inherit}.sel-shell button{cursor:pointer}.sel-shell button:disabled{cursor:not-allowed;opacity:.55}.sel-rail{background:linear-gradient(165deg,#202346 0%,#171c38 80%);color:#d8dcef;padding:28px 14px 18px;display:flex;flex-direction:column;min-width:0}.sel-brand{font-weight:800;font-size:19.0px;letter-spacing:-.65px;color:#fff;padding:10px 14px 34px;line-height:1.1;white-space:normal}.sel-nav{display:grid;gap:6px}.sel-navbtn{border:0;display:flex;gap:12px;align-items:center;text-align:left;border-radius:10px;color:#c6cae0;padding:12px 14px;background:transparent;font-weight:600;letter-spacing:-.15px;width:100%;min-width:0;font-size:12.5px}.sel-navbtn:hover{background:#ffffff15;color:#fff}.sel-navbtn[aria-current="page"]{background:#7964fb;color:#fff;box-shadow:0 8px 22px #0b10384a}.sel-navnum{display:inline-flex;align-items:center;justify-content:center;width:20px;font-size:12px;opacity:.75;font-weight:700;flex:none}.sel-railfoot{margin-top:auto;border-top:1px solid #ffffff15;padding:18px 13px 0;color:#56617e;font-size:12px}.sel-main{min-width:0;padding:31px 34px 55px;max-width:1540px;width:100%;margin:0 auto}.sel-header{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:24px;min-height:43px}.sel-header h1{margin:0;font-size:27.0px;letter-spacing:-1.15px;font-weight:820;line-height:1.22;color:#202544}.sel-headtools{display:flex;align-items:center;gap:9px;min-width:0}.sel-pick,.sel-input,.sel-form input,.sel-form select,.sel-form textarea{border:1px solid #dfe5f0;background:#fff;border-radius:9px;color:#2d3554;outline:none}.sel-pick{height:37px;padding:0 32px 0 11px;max-width:228px;font-size:12px}.sel-input{height:39px;padding:0 12px;min-width:0;font-size:12px}.sel-input:focus,.sel-pick:focus,.sel-form input:focus,.sel-form select:focus,.sel-form textarea:focus{border-color:#9685ff;box-shadow:0 0 0 3px #9685ff25}.sel-btn{border:1px solid #dfe4ef;color:#3c4663;font-size:12px;font-weight:680;border-radius:9px;padding:9px 13px;background:#fff;min-height:37px;display:inline-flex;align-items:center;gap:7px;justify-content:center;white-space:nowrap}.sel-btn:hover{background:#f3f1ff;border-color:#c9c2ff}.sel-btn.primary{background:#7058ee;border-color:#7058ee;color:white;box-shadow:0 7px 15px #7458ef30}.sel-btn.primary:hover{background:#6049d6}.sel-btn.ghost{background:transparent;border:0}.sel-btn.icon{padding:7px;width:37px;height:37px}.sel-btn.warn{color:#bc4769}.sel-btn.small{min-height:31px;padding:6px 9px;font-size:12px}.sel-btn svg{flex:none}.sel-card{background:#fff;border:1px solid var(--sel-line);border-radius:15px;min-width:0;overflow:hidden;box-shadow:0 3px 20px #1a235006}.sel-pad{padding:21px}.sel-grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}.sel-metric{padding:21px 20px;min-height:137px;display:flex;flex-direction:column;justify-content:space-between;position:relative}.sel-metric::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent,#7c66f8)}.sel-metric>span{font-size:12px;font-weight:650;color:#56617e;letter-spacing:-.1px}.sel-metric>strong{font-size:34.0px;font-weight:790;letter-spacing:-1.7px;color:#262950;white-space:nowrap}.sel-metric>small{font-size:12px;color:#56617e}.sel-metric.purple{--accent:#7d66f9}.sel-metric.green{--accent:#18c0a6}.sel-metric.orange{--accent:#ffb054}.sel-metric.rose{--accent:#f4778b}.sel-split{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,.85fr);gap:15px;margin-top:16px}.sel-split.equal{grid-template-columns:1fr 1fr}.sel-sectiontop{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:17px}.sel-sectiontop h2{font-size:15.2px;margin:0;font-weight:780;letter-spacing:-.35px}.sel-sectiontop>span,.sel-sectiontop small{font-size:12px;color:#56617e}.sel-progress-steps{display:flex;gap:7px;align-items:center;padding:3px 0 13px}.sel-step{min-width:0;flex:1}.sel-step>div{height:7px;border-radius:8px;background:#eaedf4;margin-bottom:8px}.sel-step.done>div{background:#14bd9d}.sel-step.current>div{background:#7866ef}.sel-step span{font-size:12px;font-weight:630;color:#56617e;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sel-step.current span{color:#6655d7}.sel-bidrow{display:grid;grid-template-columns:minmax(105px,1fr) 78px minmax(80px,1.2fr) 70px;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f0f2f7;min-width:0}.sel-bidrow:last-child{border-bottom:0}.sel-bidrow .sel-vname{font-weight:730;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sel-bidrow small{display:block;color:#56617e;font-size:12px;margin-top:2px}.sel-bidrow strong{font-size:13.0px;text-align:right;white-space:nowrap}.sel-track{height:7px;background:#eff0f7;border-radius:12px;overflow:hidden;min-width:0}.sel-track>i{height:100%;background:#7866f2;border-radius:8px;display:block}.sel-track.green>i{background:#18bca3}.sel-track.coral>i{background:#f38579}.sel-empty{padding:18px 0;color:#56617e;font-size:12px}.sel-alertline{display:flex;gap:11px;align-items:flex-start;padding:12px 0;border-bottom:1px solid #f1f2f7;font-size:12px;color:#4d5975}.sel-alertline:last-child{border-bottom:0}.sel-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#bfc6d9;margin-top:5px;flex:none}.sel-dot.warn{background:#f3a562}.sel-dot.bad{background:#ef7890}.sel-dot.good{background:#10b99f}.sel-alertline strong{color:#2d3450}.sel-alertline small{display:block;margin-top:3px;color:#56617e;font-size:12px}.sel-chip{display:inline-flex;align-items:center;padding:4px 9px;border-radius:20px;font-weight:720;font-size:12px;white-space:nowrap;background:#f0f2f7;color:#56617e}.sel-chip.good{background:#e7f8f4;color:#087e69}.sel-chip.warn{background:#fff3e4;color:#ac6c29}.sel-chip.bad{background:#ffedf0;color:#b84b69}.sel-chip.purple{background:#eeebff;color:#6857d4}.sel-toolbar{display:flex;gap:9px;align-items:center;margin-bottom:14px;min-width:0}.sel-toolbar .sel-input{width:100%;flex:1}.sel-toolbar .sel-pick{max-width:200px}.sel-toolbar .sel-btn.primary{flex:none}.sel-vendorgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.sel-vendorcard{padding:19px 20px;min-height:217px;display:flex;flex-direction:column}.sel-vendorcard h3{font-size:15.0px;font-weight:780;letter-spacing:-.4px;margin:0;line-height:1.4}.sel-vendorcard p{font-size:12px;line-height:1.55;margin:11px 0 14px;color:#56617e;min-height:34px}.sel-vendorhead{display:flex;justify-content:space-between;align-items:start;gap:10px}.sel-vendorhead h3{flex:1}.sel-tags{display:flex;gap:5px;flex-wrap:wrap}.sel-tag{background:#f1f3f9;padding:4px 7px;border-radius:5px;font-size:12px;color:#56617e;font-weight:630}.sel-vendorbottom{margin-top:auto;padding-top:16px;display:flex;justify-content:space-between;align-items:end;border-top:1px solid #f0f2f7}.sel-vendorbottom small{font-size:12px;color:#56617e;display:block}.sel-vendorbottom strong{font-size:15.0px;letter-spacing:-.4px}.sel-morewrap{position:relative}.sel-more{font-size:22.0px;line-height:1;border:0;background:transparent;color:#56617e;min-width:30px;height:28px;border-radius:7px}.sel-more:hover{background:#f0edff}.sel-menu{position:absolute;right:0;top:29px;z-index:10;min-width:150px;border-radius:10px;border:1px solid #e1e5ef;background:#fff;padding:5px;box-shadow:0 12px 27px #20203b21}.sel-menu button{width:100%;padding:8px;border:0;text-align:left;background:transparent;font-weight:600;color:#43506d;border-radius:6px;font-size:12px}.sel-menu button:hover{background:#f0edff}.sel-menu button.danger{color:#bb5270}.sel-tablewrap{max-width:100%;overflow-x:auto}.sel-table{border-collapse:collapse;width:100%;min-width:630px;text-align:left;font-size:12px}.sel-table th{background:#fafbfe;border-bottom:1px solid #e8ebf2;color:#56617e;text-transform:none;font-size:12px;font-weight:720;white-space:nowrap}.sel-table td,.sel-table th{padding:13px 15px;vertical-align:middle;border-bottom:1px solid #f0f2f6}.sel-table tbody tr:last-child td{border-bottom:0}.sel-table td b{font-size:12px;color:#333c5c}.sel-table td small{display:block;font-size:12px;color:#56617e;margin-top:4px}.sel-table .sel-actions{text-align:right;width:34px;padding-left:6px}.sel-table .sel-right{text-align:right;white-space:nowrap}.sel-table .sel-center{text-align:center}.sel-weightbar{display:flex;gap:4px;height:14px;border-radius:8px;overflow:hidden;margin:18px 0 20px;background:#e9ebf7}.sel-weightbar>i{display:block;min-width:0}.sel-legendrow{display:flex;align-items:center;gap:9px;padding:10px 0;border-bottom:1px solid #f1f2f7;font-size:12px}.sel-legendrow:last-child{border:0}.sel-legendrow span:first-child{width:9px;height:9px;border-radius:3px;flex:none}.sel-legendrow b{margin-left:auto;font-size:12px}.sel-notice{padding:12px 14px;background:#fff6e8;border:1px solid #f4dfb7;color:#9e6b31;border-radius:10px;font-size:12px;margin:0 0 13px}.sel-notice.info{background:#eff3ff;border-color:#dbe4ff;color:#5367a6}.sel-comparewrap{overflow-x:auto;max-width:100%}.sel-compare{display:grid;grid-template-columns:180px repeat(var(--sel-colcount),minmax(170px,1fr));min-width:710px}.sel-compare>div{min-width:0;padding:13px 16px;border-bottom:1px solid #edf0f6;font-size:12px}.sel-compare>div:nth-child(-n+var(--sel-headercount)){background:#f9f9fe}.sel-compare .sel-comparelabel{font-weight:700;color:#56617e;background:#fafbfe}.sel-compare .sel-comparevendor{font-size:13.0px;font-weight:800;color:#2e3658}.sel-compare .sel-compareval{color:#3e4968;line-height:1.5}.sel-compare .sel-compareval strong{font-size:15.0px}.sel-compare .sel-compareval.missing{color:#56617e;font-style:italic}.sel-compare .sel-compareval small{font-size:12px;color:#56617e;display:block;margin-top:3px}.sel-ranking{display:grid;grid-template-columns:minmax(0,1fr) 87px 100px;gap:11px;align-items:center;border-bottom:1px solid #f0f2f7;padding:13px 0}.sel-ranking:last-child{border:0}.sel-ranking strong{display:block;font-size:12.5px}.sel-ranking small{font-size:12px;color:#56617e}.sel-ranking b{text-align:right;font-size:14.0px}.sel-scoregrid{display:grid;grid-template-columns:minmax(125px,1.4fr) repeat(var(--sel-colcount),minmax(100px,1fr));min-width:670px}.sel-scoregrid>div{border-bottom:1px solid #edf0f7;padding:13px 10px;min-width:0;display:flex;align-items:center;gap:6px;font-size:12px}.sel-scoregrid .sel-hdr{background:#f8f9fe;font-weight:750;color:#56617e}.sel-scorecell{display:flex;gap:6px;align-items:center;justify-content:space-between;width:100%}.sel-scorepill{padding:4px 8px;border-radius:8px;background:#f0ecff;color:#725bdc;font-weight:780;white-space:nowrap}.sel-scorepill.missing{background:#fff3e7;color:#aa7433}.sel-scorepill.blocked{background:#ffecef;color:#b64961}.sel-scorecell button{padding:3px 6px;border:0;border-radius:5px;background:#f4f6fb;color:#56617e;font-size:12px}.sel-decisionform{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.85fr);gap:13px}.sel-decisionform .sel-field{margin:0}.sel-decisionform .sel-field.wide{grid-column:1/-1}.sel-bottombar{display:flex;gap:9px;align-items:center;justify-content:flex-end;margin-top:17px}.sel-footnote{font-size:12px;color:#56617e;margin-top:13px}.sel-overlay{position:fixed;inset:0;z-index:100;background:rgba(19,22,47,.48);display:flex;justify-content:flex-end}.sel-drawer{width:min(540px,100%);background:#fff;display:flex;flex-direction:column;height:100%;box-shadow:-13px 0 35px #1b194b33}.sel-drawerhead{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;border-bottom:1px solid #e9ecf3;gap:10px}.sel-drawerhead h2{font-size:19.0px;margin:0;letter-spacing:-.65px}.sel-drawerbody{flex:1;overflow-y:auto;padding:24px}.sel-form{display:grid;grid-template-columns:1fr 1fr;gap:13px;align-content:start}.sel-field{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:690;color:#56617e;min-width:0}.sel-field.wide{grid-column:1/-1}.sel-form input,.sel-form select,.sel-form textarea{width:100%;min-width:0;padding:10px 11px;min-height:40px;font-size:12px}.sel-form textarea{min-height:86px;resize:vertical}.sel-field small{color:#56617e;font-weight:400;font-size:12px}.sel-drawerfoot{display:flex;justify-content:flex-end;gap:9px;border-top:1px solid #edf0f5;padding:17px 24px}.sel-confirm{width:min(440px,92%);margin:auto;background:#fff;border-radius:15px;padding:28px;box-shadow:0 16px 40px #0002}.sel-confirm h2{margin:0 0 10px}.sel-confirm p{font-size:12px;color:#56617e;line-height:1.65}.sel-pager{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:12px 16px;border-top:1px solid #edf0f5;color:#56617e;font-size:12px}.sel-pager .sel-btn{padding:5px 10px;min-height:30px}.sel-layoutrows{display:grid;gap:7px}.sel-layoutrow{display:flex;align-items:center;gap:12px;padding:11px 12px;border:1px solid #e3e8f1;border-radius:8px;background:#f9faff;font-size:12px}.sel-layoutrow span:nth-child(2){flex:1}.sel-layoutrow[draggable=true]{cursor:grab}.sel-grip{color:#56617e}.sel-demo{font-size:12px;color:#56617e;margin-top:16px}
+@media(max-width:1180px){.sel-shell{grid-template-columns:206px minmax(0,1fr)}.sel-main{padding:26px 22px 45px}.sel-grid4{grid-template-columns:repeat(2,minmax(0,1fr))}.sel-metric{min-height:124px}.sel-split{grid-template-columns:minmax(0,1.4fr) minmax(240px,.8fr)}}
+@media(max-width:880px){.sel-shell{display:block;min-height:0}.sel-rail{padding:12px 16px 12px;display:block}.sel-brand{padding:8px 3px 12px;font-size:17.0px}.sel-nav{display:flex;overflow-x:auto;gap:5px}.sel-navbtn{flex:none;width:auto;padding:9px 12px;white-space:nowrap;font-size:12px}.sel-navnum{display:none}.sel-railfoot{display:none}.sel-main{padding:25px 19px 37px}.sel-split,.sel-split.equal{grid-template-columns:1fr}.sel-vendorgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.sel-header{align-items:flex-start}}
+@media(max-width:600px){.sel-main{padding:21px 14px 32px}.sel-header{flex-wrap:wrap;gap:11px;margin-bottom:18px}.sel-header h1{font-size:24.0px}.sel-headtools{width:100%;justify-content:space-between}.sel-headtools .sel-pick{flex:1;max-width:none}.sel-grid4{gap:9px}.sel-metric{padding:16px;min-height:116px}.sel-metric strong{font-size:27.0px}.sel-vendorgrid{grid-template-columns:1fr}.sel-toolbar .sel-input{min-width:78px}.sel-toolbar .sel-pick{max-width:122px;padding-left:7px;font-size:12px}.sel-toolbar .sel-btn{padding:8px}.sel-btn .sel-hide-mobile{display:none}.sel-vendorcard{min-height:185px}.sel-decisionform{grid-template-columns:1fr}.sel-split{gap:11px;margin-top:11px}.sel-pad{padding:16px}.sel-metric>small{font-size:12px}.sel-form{grid-template-columns:1fr}}
+@media(max-width:350px){.sel-main{padding:16px 10px 27px}.sel-header h1{font-size:22.0px}.sel-metric strong{font-size:24.0px}.sel-btn{font-size:12px}.sel-toolbar{gap:5px}}
+
+.sel-mobile-hint{display:none;color:#56617e;font-size:12px;margin-bottom:8px}@media(max-width:880px){.sel-navbtn[aria-current="page"]{order:-1}.sel-mobile-hint{display:block}}
+
+/* Host publication contrast and narrow-container corrections. */
+.sel-shell{font-size:15px}.sel-navnum{opacity:1}.sel-navbtn[aria-current="page"]{background:#6049d6}.sel-card p{font-size:15px}.sel-metric>strong{white-space:normal;overflow-wrap:anywhere;font-size:28px;letter-spacing:-1px}.sel-bidrow{grid-template-columns:minmax(0,1fr) auto minmax(35px,.6fr) 48px;gap:8px}.sel-ranking{grid-template-columns:minmax(0,1fr) 55px 45px}.sel-more{color:#56617e}.sel-chip.warn,.sel-notice{color:#825019}.sel-compare .sel-compareval.missing{color:#805643}.sel-menu{position:static;min-width:120px}.sel-vendorcard{overflow:visible}.sel-form{min-height:0}.sel-sectiontop{flex-wrap:wrap}.sel-headtools .sel-pick{min-width:0}.sel-alertline>div{min-width:0;overflow-wrap:anywhere}.sel-pager{flex-wrap:wrap}.sel-shell button:focus-visible{outline:2px solid #6049d6;outline-offset:2px}
+@media(max-width:600px){.sel-metric>strong{font-size:23px}.sel-bidrow{grid-template-columns:minmax(0,1fr) auto 42px}.sel-bidrow>.sel-track{display:none}.sel-metric>small{font-size:12px}.sel-vendorbottom{gap:12px;flex-wrap:wrap}.sel-vendorbottom>div{min-width:0;overflow-wrap:anywhere}.sel-drawerbody{padding:16px}.sel-drawerfoot{padding:16px 0}.sel-form{grid-template-columns:minmax(0,1fr)}}
+
+.sel-chip.bad{color:#a53754}.sel-scorepill{color:#6044bf}.sel-scorepill.missing{color:#805219}
+</style><body><div id="surface"></div><script>
+const source="const SELECT_CSS=\"/* CRO Selection — intentionally distinctive comparison-first interface. */\\n.sel-shell{--sel-ink:#20243f;--sel-muted:#777f99;--sel-line:#e5e9f3;--sel-primary:#6d55f2;--sel-mint:#0fb69c;--sel-orange:#f19b65;--sel-rose:#f06c84;--sel-surface:#fff;font-family:Inter,-apple-system,BlinkMacSystemFont,\\\"Segoe UI\\\",Arial,sans-serif;color:var(--sel-ink);background:#f7f8fc;display:grid;grid-template-columns:224px minmax(0,1fr);min-height:840px;width:100%;font-size:13.0px;line-height:1.48}\\n.sel-shell *{box-sizing:border-box}.sel-shell button,.sel-shell input,.sel-shell select,.sel-shell textarea{font:inherit}.sel-shell button{cursor:pointer}.sel-shell button:disabled{cursor:not-allowed;opacity:.55}.sel-rail{background:linear-gradient(165deg,#202346 0%,#171c38 80%);color:#d8dcef;padding:28px 14px 18px;display:flex;flex-direction:column;min-width:0}.sel-brand{font-weight:800;font-size:19.0px;letter-spacing:-.65px;color:#fff;padding:10px 14px 34px;line-height:1.1;white-space:normal}.sel-nav{display:grid;gap:6px}.sel-navbtn{border:0;display:flex;gap:12px;align-items:center;text-align:left;border-radius:10px;color:#c6cae0;padding:12px 14px;background:transparent;font-weight:600;letter-spacing:-.15px;width:100%;min-width:0;font-size:12.5px}.sel-navbtn:hover{background:#ffffff15;color:#fff}.sel-navbtn[aria-current=\\\"page\\\"]{background:#7964fb;color:#fff;box-shadow:0 8px 22px #0b10384a}.sel-navnum{display:inline-flex;align-items:center;justify-content:center;width:20px;font-size:12px;opacity:.75;font-weight:700;flex:none}.sel-railfoot{margin-top:auto;border-top:1px solid #ffffff15;padding:18px 13px 0;color:#56617e;font-size:12px}.sel-main{min-width:0;padding:31px 34px 55px;max-width:1540px;width:100%;margin:0 auto}.sel-header{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:24px;min-height:43px}.sel-header h1{margin:0;font-size:27.0px;letter-spacing:-1.15px;font-weight:820;line-height:1.22;color:#202544}.sel-headtools{display:flex;align-items:center;gap:9px;min-width:0}.sel-pick,.sel-input,.sel-form input,.sel-form select,.sel-form textarea{border:1px solid #dfe5f0;background:#fff;border-radius:9px;color:#2d3554;outline:none}.sel-pick{height:37px;padding:0 32px 0 11px;max-width:228px;font-size:12px}.sel-input{height:39px;padding:0 12px;min-width:0;font-size:12px}.sel-input:focus,.sel-pick:focus,.sel-form input:focus,.sel-form select:focus,.sel-form textarea:focus{border-color:#9685ff;box-shadow:0 0 0 3px #9685ff25}.sel-btn{border:1px solid #dfe4ef;color:#3c4663;font-size:12px;font-weight:680;border-radius:9px;padding:9px 13px;background:#fff;min-height:37px;display:inline-flex;align-items:center;gap:7px;justify-content:center;white-space:nowrap}.sel-btn:hover{background:#f3f1ff;border-color:#c9c2ff}.sel-btn.primary{background:#7058ee;border-color:#7058ee;color:white;box-shadow:0 7px 15px #7458ef30}.sel-btn.primary:hover{background:#6049d6}.sel-btn.ghost{background:transparent;border:0}.sel-btn.icon{padding:7px;width:37px;height:37px}.sel-btn.warn{color:#bc4769}.sel-btn.small{min-height:31px;padding:6px 9px;font-size:12px}.sel-btn svg{flex:none}.sel-card{background:#fff;border:1px solid var(--sel-line);border-radius:15px;min-width:0;overflow:hidden;box-shadow:0 3px 20px #1a235006}.sel-pad{padding:21px}.sel-grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}.sel-metric{padding:21px 20px;min-height:137px;display:flex;flex-direction:column;justify-content:space-between;position:relative}.sel-metric::before{content:\\\"\\\";position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent,#7c66f8)}.sel-metric>span{font-size:12px;font-weight:650;color:#56617e;letter-spacing:-.1px}.sel-metric>strong{font-size:34.0px;font-weight:790;letter-spacing:-1.7px;color:#262950;white-space:nowrap}.sel-metric>small{font-size:12px;color:#56617e}.sel-metric.purple{--accent:#7d66f9}.sel-metric.green{--accent:#18c0a6}.sel-metric.orange{--accent:#ffb054}.sel-metric.rose{--accent:#f4778b}.sel-split{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,.85fr);gap:15px;margin-top:16px}.sel-split.equal{grid-template-columns:1fr 1fr}.sel-sectiontop{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:17px}.sel-sectiontop h2{font-size:15.2px;margin:0;font-weight:780;letter-spacing:-.35px}.sel-sectiontop>span,.sel-sectiontop small{font-size:12px;color:#56617e}.sel-progress-steps{display:flex;gap:7px;align-items:center;padding:3px 0 13px}.sel-step{min-width:0;flex:1}.sel-step>div{height:7px;border-radius:8px;background:#eaedf4;margin-bottom:8px}.sel-step.done>div{background:#14bd9d}.sel-step.current>div{background:#7866ef}.sel-step span{font-size:12px;font-weight:630;color:#56617e;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sel-step.current span{color:#6655d7}.sel-bidrow{display:grid;grid-template-columns:minmax(105px,1fr) 78px minmax(80px,1.2fr) 70px;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f0f2f7;min-width:0}.sel-bidrow:last-child{border-bottom:0}.sel-bidrow .sel-vname{font-weight:730;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sel-bidrow small{display:block;color:#56617e;font-size:12px;margin-top:2px}.sel-bidrow strong{font-size:13.0px;text-align:right;white-space:nowrap}.sel-track{height:7px;background:#eff0f7;border-radius:12px;overflow:hidden;min-width:0}.sel-track>i{height:100%;background:#7866f2;border-radius:8px;display:block}.sel-track.green>i{background:#18bca3}.sel-track.coral>i{background:#f38579}.sel-empty{padding:18px 0;color:#56617e;font-size:12px}.sel-alertline{display:flex;gap:11px;align-items:flex-start;padding:12px 0;border-bottom:1px solid #f1f2f7;font-size:12px;color:#4d5975}.sel-alertline:last-child{border-bottom:0}.sel-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#bfc6d9;margin-top:5px;flex:none}.sel-dot.warn{background:#f3a562}.sel-dot.bad{background:#ef7890}.sel-dot.good{background:#10b99f}.sel-alertline strong{color:#2d3450}.sel-alertline small{display:block;margin-top:3px;color:#56617e;font-size:12px}.sel-chip{display:inline-flex;align-items:center;padding:4px 9px;border-radius:20px;font-weight:720;font-size:12px;white-space:nowrap;background:#f0f2f7;color:#56617e}.sel-chip.good{background:#e7f8f4;color:#087e69}.sel-chip.warn{background:#fff3e4;color:#ac6c29}.sel-chip.bad{background:#ffedf0;color:#b84b69}.sel-chip.purple{background:#eeebff;color:#6857d4}.sel-toolbar{display:flex;gap:9px;align-items:center;margin-bottom:14px;min-width:0}.sel-toolbar .sel-input{width:100%;flex:1}.sel-toolbar .sel-pick{max-width:200px}.sel-toolbar .sel-btn.primary{flex:none}.sel-vendorgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.sel-vendorcard{padding:19px 20px;min-height:217px;display:flex;flex-direction:column}.sel-vendorcard h3{font-size:15.0px;font-weight:780;letter-spacing:-.4px;margin:0;line-height:1.4}.sel-vendorcard p{font-size:12px;line-height:1.55;margin:11px 0 14px;color:#56617e;min-height:34px}.sel-vendorhead{display:flex;justify-content:space-between;align-items:start;gap:10px}.sel-vendorhead h3{flex:1}.sel-tags{display:flex;gap:5px;flex-wrap:wrap}.sel-tag{background:#f1f3f9;padding:4px 7px;border-radius:5px;font-size:12px;color:#56617e;font-weight:630}.sel-vendorbottom{margin-top:auto;padding-top:16px;display:flex;justify-content:space-between;align-items:end;border-top:1px solid #f0f2f7}.sel-vendorbottom small{font-size:12px;color:#56617e;display:block}.sel-vendorbottom strong{font-size:15.0px;letter-spacing:-.4px}.sel-morewrap{position:relative}.sel-more{font-size:22.0px;line-height:1;border:0;background:transparent;color:#56617e;min-width:30px;height:28px;border-radius:7px}.sel-more:hover{background:#f0edff}.sel-menu{position:absolute;right:0;top:29px;z-index:10;min-width:150px;border-radius:10px;border:1px solid #e1e5ef;background:#fff;padding:5px;box-shadow:0 12px 27px #20203b21}.sel-menu button{width:100%;padding:8px;border:0;text-align:left;background:transparent;font-weight:600;color:#43506d;border-radius:6px;font-size:12px}.sel-menu button:hover{background:#f0edff}.sel-menu button.danger{color:#bb5270}.sel-tablewrap{max-width:100%;overflow-x:auto}.sel-table{border-collapse:collapse;width:100%;min-width:630px;text-align:left;font-size:12px}.sel-table th{background:#fafbfe;border-bottom:1px solid #e8ebf2;color:#56617e;text-transform:none;font-size:12px;font-weight:720;white-space:nowrap}.sel-table td,.sel-table th{padding:13px 15px;vertical-align:middle;border-bottom:1px solid #f0f2f6}.sel-table tbody tr:last-child td{border-bottom:0}.sel-table td b{font-size:12px;color:#333c5c}.sel-table td small{display:block;font-size:12px;color:#56617e;margin-top:4px}.sel-table .sel-actions{text-align:right;width:34px;padding-left:6px}.sel-table .sel-right{text-align:right;white-space:nowrap}.sel-table .sel-center{text-align:center}.sel-weightbar{display:flex;gap:4px;height:14px;border-radius:8px;overflow:hidden;margin:18px 0 20px;background:#e9ebf7}.sel-weightbar>i{display:block;min-width:0}.sel-legendrow{display:flex;align-items:center;gap:9px;padding:10px 0;border-bottom:1px solid #f1f2f7;font-size:12px}.sel-legendrow:last-child{border:0}.sel-legendrow span:first-child{width:9px;height:9px;border-radius:3px;flex:none}.sel-legendrow b{margin-left:auto;font-size:12px}.sel-notice{padding:12px 14px;background:#fff6e8;border:1px solid #f4dfb7;color:#9e6b31;border-radius:10px;font-size:12px;margin:0 0 13px}.sel-notice.info{background:#eff3ff;border-color:#dbe4ff;color:#5367a6}.sel-comparewrap{overflow-x:auto;max-width:100%}.sel-compare{display:grid;grid-template-columns:180px repeat(var(--sel-colcount),minmax(170px,1fr));min-width:710px}.sel-compare>div{min-width:0;padding:13px 16px;border-bottom:1px solid #edf0f6;font-size:12px}.sel-compare>div:nth-child(-n+var(--sel-headercount)){background:#f9f9fe}.sel-compare .sel-comparelabel{font-weight:700;color:#56617e;background:#fafbfe}.sel-compare .sel-comparevendor{font-size:13.0px;font-weight:800;color:#2e3658}.sel-compare .sel-compareval{color:#3e4968;line-height:1.5}.sel-compare .sel-compareval strong{font-size:15.0px}.sel-compare .sel-compareval.missing{color:#56617e;font-style:italic}.sel-compare .sel-compareval small{font-size:12px;color:#56617e;display:block;margin-top:3px}.sel-ranking{display:grid;grid-template-columns:minmax(0,1fr) 87px 100px;gap:11px;align-items:center;border-bottom:1px solid #f0f2f7;padding:13px 0}.sel-ranking:last-child{border:0}.sel-ranking strong{display:block;font-size:12.5px}.sel-ranking small{font-size:12px;color:#56617e}.sel-ranking b{text-align:right;font-size:14.0px}.sel-scoregrid{display:grid;grid-template-columns:minmax(125px,1.4fr) repeat(var(--sel-colcount),minmax(100px,1fr));min-width:670px}.sel-scoregrid>div{border-bottom:1px solid #edf0f7;padding:13px 10px;min-width:0;display:flex;align-items:center;gap:6px;font-size:12px}.sel-scoregrid .sel-hdr{background:#f8f9fe;font-weight:750;color:#56617e}.sel-scorecell{display:flex;gap:6px;align-items:center;justify-content:space-between;width:100%}.sel-scorepill{padding:4px 8px;border-radius:8px;background:#f0ecff;color:#725bdc;font-weight:780;white-space:nowrap}.sel-scorepill.missing{background:#fff3e7;color:#aa7433}.sel-scorepill.blocked{background:#ffecef;color:#b64961}.sel-scorecell button{padding:3px 6px;border:0;border-radius:5px;background:#f4f6fb;color:#56617e;font-size:12px}.sel-decisionform{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.85fr);gap:13px}.sel-decisionform .sel-field{margin:0}.sel-decisionform .sel-field.wide{grid-column:1/-1}.sel-bottombar{display:flex;gap:9px;align-items:center;justify-content:flex-end;margin-top:17px}.sel-footnote{font-size:12px;color:#56617e;margin-top:13px}.sel-overlay{position:fixed;inset:0;z-index:100;background:rgba(19,22,47,.48);display:flex;justify-content:flex-end}.sel-drawer{width:min(540px,100%);background:#fff;display:flex;flex-direction:column;height:100%;box-shadow:-13px 0 35px #1b194b33}.sel-drawerhead{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;border-bottom:1px solid #e9ecf3;gap:10px}.sel-drawerhead h2{font-size:19.0px;margin:0;letter-spacing:-.65px}.sel-drawerbody{flex:1;overflow-y:auto;padding:24px}.sel-form{display:grid;grid-template-columns:1fr 1fr;gap:13px;align-content:start}.sel-field{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:690;color:#56617e;min-width:0}.sel-field.wide{grid-column:1/-1}.sel-form input,.sel-form select,.sel-form textarea{width:100%;min-width:0;padding:10px 11px;min-height:40px;font-size:12px}.sel-form textarea{min-height:86px;resize:vertical}.sel-field small{color:#56617e;font-weight:400;font-size:12px}.sel-drawerfoot{display:flex;justify-content:flex-end;gap:9px;border-top:1px solid #edf0f5;padding:17px 24px}.sel-confirm{width:min(440px,92%);margin:auto;background:#fff;border-radius:15px;padding:28px;box-shadow:0 16px 40px #0002}.sel-confirm h2{margin:0 0 10px}.sel-confirm p{font-size:12px;color:#56617e;line-height:1.65}.sel-pager{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:12px 16px;border-top:1px solid #edf0f5;color:#56617e;font-size:12px}.sel-pager .sel-btn{padding:5px 10px;min-height:30px}.sel-layoutrows{display:grid;gap:7px}.sel-layoutrow{display:flex;align-items:center;gap:12px;padding:11px 12px;border:1px solid #e3e8f1;border-radius:8px;background:#f9faff;font-size:12px}.sel-layoutrow span:nth-child(2){flex:1}.sel-layoutrow[draggable=true]{cursor:grab}.sel-grip{color:#56617e}.sel-demo{font-size:12px;color:#56617e;margin-top:16px}\\n@media(max-width:1180px){.sel-shell{grid-template-columns:206px minmax(0,1fr)}.sel-main{padding:26px 22px 45px}.sel-grid4{grid-template-columns:repeat(2,minmax(0,1fr))}.sel-metric{min-height:124px}.sel-split{grid-template-columns:minmax(0,1.4fr) minmax(240px,.8fr)}}\\n@media(max-width:880px){.sel-shell{display:block;min-height:0}.sel-rail{padding:12px 16px 12px;display:block}.sel-brand{padding:8px 3px 12px;font-size:17.0px}.sel-nav{display:flex;overflow-x:auto;gap:5px}.sel-navbtn{flex:none;width:auto;padding:9px 12px;white-space:nowrap;font-size:12px}.sel-navnum{display:none}.sel-railfoot{display:none}.sel-main{padding:25px 19px 37px}.sel-split,.sel-split.equal{grid-template-columns:1fr}.sel-vendorgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.sel-header{align-items:flex-start}}\\n@media(max-width:600px){.sel-main{padding:21px 14px 32px}.sel-header{flex-wrap:wrap;gap:11px;margin-bottom:18px}.sel-header h1{font-size:24.0px}.sel-headtools{width:100%;justify-content:space-between}.sel-headtools .sel-pick{flex:1;max-width:none}.sel-grid4{gap:9px}.sel-metric{padding:16px;min-height:116px}.sel-metric strong{font-size:27.0px}.sel-vendorgrid{grid-template-columns:1fr}.sel-toolbar .sel-input{min-width:78px}.sel-toolbar .sel-pick{max-width:122px;padding-left:7px;font-size:12px}.sel-toolbar .sel-btn{padding:8px}.sel-btn .sel-hide-mobile{display:none}.sel-vendorcard{min-height:185px}.sel-decisionform{grid-template-columns:1fr}.sel-split{gap:11px;margin-top:11px}.sel-pad{padding:16px}.sel-metric>small{font-size:12px}.sel-form{grid-template-columns:1fr}}\\n@media(max-width:350px){.sel-main{padding:16px 10px 27px}.sel-header h1{font-size:22.0px}.sel-metric strong{font-size:24.0px}.sel-btn{font-size:12px}.sel-toolbar{gap:5px}}\\n\\n.sel-mobile-hint{display:none;color:#56617e;font-size:12px;margin-bottom:8px}@media(max-width:880px){.sel-navbtn[aria-current=\\\"page\\\"]{order:-1}.sel-mobile-hint{display:block}}\\n\\n/* Host publication contrast and narrow-container corrections. */\\n.sel-shell{font-size:15px}.sel-navnum{opacity:1}.sel-navbtn[aria-current=\\\"page\\\"]{background:#6049d6}.sel-card p{font-size:15px}.sel-metric>strong{white-space:normal;overflow-wrap:anywhere;font-size:28px;letter-spacing:-1px}.sel-bidrow{grid-template-columns:minmax(0,1fr) auto minmax(35px,.6fr) 48px;gap:8px}.sel-ranking{grid-template-columns:minmax(0,1fr) 55px 45px}.sel-more{color:#56617e}.sel-chip.warn,.sel-notice{color:#825019}.sel-compare .sel-compareval.missing{color:#805643}.sel-menu{position:static;min-width:120px}.sel-vendorcard{overflow:visible}.sel-form{min-height:0}.sel-sectiontop{flex-wrap:wrap}.sel-headtools .sel-pick{min-width:0}.sel-alertline>div{min-width:0;overflow-wrap:anywhere}.sel-pager{flex-wrap:wrap}.sel-shell button:focus-visible{outline:2px solid #6049d6;outline-offset:2px}\\n@media(max-width:600px){.sel-metric>strong{font-size:23px}.sel-bidrow{grid-template-columns:minmax(0,1fr) auto 42px}.sel-bidrow>.sel-track{display:none}.sel-metric>small{font-size:12px}.sel-vendorbottom{gap:12px;flex-wrap:wrap}.sel-vendorbottom>div{min-width:0;overflow-wrap:anywhere}.sel-drawerbody{padding:16px}.sel-drawerfoot{padding:16px 0}.sel-form{grid-template-columns:minmax(0,1fr)}}\\n\\n.sel-chip.bad{color:#a53754}.sel-scorepill{color:#6044bf}.sel-scorepill.missing{color:#805219}\\n\";\n/* TrialAgents CRO Selection v1.0.1. Runs inside the approved frontend-js runtime.\n   The host reads templateConfiguration and templateLayoutSchema as JSON declarations.\n   No external networking, custom auth, direct DB writes or hidden app permissions. */\nconst templateLayoutSchema={\"screens\":[{\"id\":\"overview\",\"label\":\"Selection overview\"},{\"id\":\"shortlist\",\"label\":\"CRO shortlist\"},{\"id\":\"criteria\",\"label\":\"Requirements\"},{\"id\":\"comparison\",\"label\":\"Bid comparison\"},{\"id\":\"decision\",\"label\":\"Decision scorecard\"}],\"groups\":{\"selections\":[{\"id\":\"name\",\"label\":\"Selection\"},{\"id\":\"program\",\"label\":\"Program\"},{\"id\":\"scope\",\"label\":\"Service scope\"},{\"id\":\"owner\",\"label\":\"Owner\"},{\"id\":\"dueDate\",\"label\":\"RFP due\"},{\"id\":\"status\",\"label\":\"Status\"}],\"vendors\":[{\"id\":\"name\",\"label\":\"CRO\"},{\"id\":\"services\",\"label\":\"Services\"},{\"id\":\"regions\",\"label\":\"Regions\"},{\"id\":\"experience\",\"label\":\"Experience\"},{\"id\":\"website\",\"label\":\"Evidence URL\"},{\"id\":\"contact\",\"label\":\"Contact\"}],\"bids\":[{\"id\":\"vendorId\",\"label\":\"Bidder\"},{\"id\":\"status\",\"label\":\"Bid status\"},{\"id\":\"fee\",\"label\":\"Professional fee\"},{\"id\":\"passThrough\",\"label\":\"Pass through\"},{\"id\":\"startupWeeks\",\"label\":\"Startup weeks\"},{\"id\":\"assumptions\",\"label\":\"Assumptions\"}],\"criteria\":[{\"id\":\"name\",\"label\":\"Criterion\"},{\"id\":\"category\",\"label\":\"Category\"},{\"id\":\"weight\",\"label\":\"Weight\"},{\"id\":\"mandatory\",\"label\":\"Mandatory\"},{\"id\":\"minimum\",\"label\":\"Minimum rating\"},{\"id\":\"owner\",\"label\":\"Reviewer\"}],\"ratings\":[{\"id\":\"vendorId\",\"label\":\"CRO\"},{\"id\":\"criterionId\",\"label\":\"Criterion\"},{\"id\":\"reviewer\",\"label\":\"Reviewer\"},{\"id\":\"score\",\"label\":\"Rating\"},{\"id\":\"evidence\",\"label\":\"Evidence\"}],\"decisions\":[{\"id\":\"vendorId\",\"label\":\"Selected CRO\"},{\"id\":\"status\",\"label\":\"Approval\"},{\"id\":\"rationale\",\"label\":\"Reason\"},{\"id\":\"approver\",\"label\":\"Approved by\"},{\"id\":\"nextStep\",\"label\":\"Next step\"}]}};\nconst config=(typeof templateConfiguration==='object'&&templateConfiguration)||{};\nconst bindings=Array.isArray(templateBindings)?templateBindings:[];\nconst E=input.event||{kind:'open',action:'',value:null,form:{}};\nconst action=String(E.action||'');\nconst esc=x=>String(x===null||x===undefined?'':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#39;');\nconst n=(x,d=0)=>x!==null&&x!==undefined&&x!==''&&isFinite(Number(x))?Number(x):d;\nconst bool=x=>x===true||x==='true'||x==='on'||x===1;\nconst cash=(x,currency)=>x===null||x===undefined||x===''?'Not submitted':String(currency||'EUR')+' '+Math.round(n(x)).toLocaleString('en-GB');\nconst pct=x=>Math.round(x)+'%';\nconst datestring=x=>/^\\d{4}-\\d{2}-\\d{2}$/.test(String(x||''))?String(x):'';\nconst roleDefs={\n selections:[['name','Selection name','text'],['program','Program or asset','text'],['scope','Outsourced work','text'],['owner','Decision owner','text'],['dueDate','RFP response deadline','date'],['status','Phase','select','Draft|RFP open|Evaluation|Decision|Awarded'],['currency','Bid currency','select','EUR|USD|GBP'],['archived','Archived','boolean']],\n vendors:[['name','CRO name','text'],['services','Services and scope','text'],['regions','Geographic delivery','text'],['experience','Therapeutic / phase expertise','text'],['website','Evidence or company URL','text'],['contact','Professional CRO contact','text'],['lastVerified','Verified on','date'],['archived','Archived','boolean']],\n bids:[['selectionId','Selection','rel:selections'],['vendorId','CRO','rel:vendors'],['status','Response status','select','Invited|Received|Declined'],['fee','Professional fee (selection currency)','number'],['passThrough','Pass-through estimate','number'],['startupWeeks','Startup time (weeks)','number'],['assumptions','Scope / commercial assumptions','textarea'],['clarification','Open clarification','textarea'],['clarificationDue','Clarification due','date'],['submittedAt','Received on','date'],['archived','Archived','boolean']],\n criteria:[['selectionId','Selection','rel:selections'],['name','Evaluation criterion','text'],['category','Category','select','Scientific|Operations|Quality|Technology|Commercial'],['weight','Weight (%)','number'],['mandatory','Mandatory pass check','boolean'],['minimum','Minimum acceptable rating','number'],['owner','Responsible reviewer','text'],['archived','Archived','boolean']],\n ratings:[['selectionId','Selection','rel:selections'],['vendorId','CRO','rel:vendors'],['criterionId','Criterion','rel:criteria'],['reviewer','Reviewer','text'],['score','Assessment (1–5)','number'],['evidence','Evidence reference / proposal page','text'],['rationale','Short justification','textarea'],['archived','Archived','boolean']],\n decisions:[['selectionId','Selection','rel:selections'],['vendorId','Recommended CRO','rel:vendors'],['status','Decision status','select','Draft|Approved'],['rationale','Evidence-based decision rationale','textarea'],['approver','Decision approver','text'],['approvedAt','Approval date','date'],['nextStep','Negotiation / contract handoff','text'],['archived','Archived','boolean']]\n};\nconst requireNames={selections:'name',vendors:'name',bids:'vendorId',criteria:'name',ratings:'reviewer',decisions:'vendorId'};\nlet map={};try{map=JSON.parse(String(config.tableMap||'{}'))}catch(e){}\nconst available={};for(const key of Object.keys(roleDefs)){const m=map[key];if(!m)continue;const b=bindings.find(x=>x&&x.typeId===m.typeId);if(!b||!Array.isArray(b.fields))continue;const fields={};for(const [id] of roleDefs[key]){const f=(m.fields||{})[id]||id;if(b.fields.includes(f))fields[id]=f;}if(roleDefs[key].every(([k])=>fields[k]))available[key]={typeId:m.typeId,fields,writable:Array.isArray(m.writableFields)?Object.keys(fields).filter(k=>m.writableFields.includes(fields[k])||m.writableFields.includes(k)):[]};}\nfunction read(key){const a=available[key];if(!a)return {rows:[],complete:false,unbound:true,total:0};try{const found=[];let offset=0,total=0,complete=false;for(let q=0;q<2;q++){const res=tools.call('records.read',{typeId:a.typeId,limit:100,offset,filters:{}})||{};if(res.unavailable||!Array.isArray(res.rows)||!Number.isInteger(res.total)||res.total<0)return {rows:found,complete:false,total:0};const list=res.rows;total=res.total;for(const r of list){const d={};for(const [k,f] of Object.entries(a.fields))if(Object.prototype.hasOwnProperty.call(r.data||{},f))d[k]=r.data[f];if(!bool(d.archived))found.push({id:r.id,version:r.version,data:d});}offset+=list.length;if(offset>=total){complete=true;break;}if(list.length<100)break;}return {rows:found,complete,total,unbound:false};}catch(e){return {rows:[],complete:false,total:0,error:String(e.message||e)}}}\nconst fetched={};for(const role of Object.keys(roleDefs))fetched[role]=read(role);\nconst rows=role=>fetched[role].rows;\nconst record=(role,id)=>rows(role).find(r=>r.id===id);\nconst label=(role,id)=>record(role,id)?.data.name||'Unassigned';\nlet layout={};try{layout=JSON.parse(String(config.layoutProfile||'{}'))}catch(e){}\nconst allViews=templateLayoutSchema.screens.map(s=>s.id);\nconst customViews=[...new Set((Array.isArray(layout.tabs)?layout.tabs:allViews).filter(x=>allViews.includes(x)).concat(allViews))];\nconst visible=typeof layout.visible==='object'&&layout.visible?layout.visible:{};\nconst activeViews=customViews.filter(x=>visible[x]!==false);\nconst cfgCols=typeof layout.cols==='object'&&layout.cols?layout.cols:{};\nconst chosenCols={};for(const [role,spec] of Object.entries(templateLayoutSchema.groups)){const all=spec.map(x=>x.id);chosenCols[role]=[...new Set((Array.isArray(cfgCols[role])?cfgCols[role]:all).filter(x=>all.includes(x)).concat(all))].filter(x=>visible[role+':'+x]!==false);if(!chosenCols[role].length)chosenCols[role]=[all[0]];}\nconst st=JSON.parse(JSON.stringify(input.state||{}));st.screen=activeViews.includes(st.screen)?st.screen:activeViews[0]||'overview';st.selectionId=String(st.selectionId||'');st.query=String(st.query||'').slice(0,120);st.statusFilter=String(st.statusFilter||'All');st.page=Math.max(0,Math.floor(n(st.page)));st.menu=String(st.menu||'');st.notice='';\nif(!record('selections',st.selectionId))st.selectionId=rows('selections')[0]?.id||'';\nif(action==='selection:choose'&&record('selections',String(E.value||'')))st.selectionId=String(E.value);\nconst selection=record('selections',st.selectionId);const sel=selection?.data||{};\nconst bids=rows('bids').filter(x=>x.data.selectionId===st.selectionId);\nconst criteria=rows('criteria').filter(x=>x.data.selectionId===st.selectionId);\nconst ratingRows=rows('ratings').filter(x=>x.data.selectionId===st.selectionId);\nconst decisionRows=rows('decisions').filter(x=>x.data.selectionId===st.selectionId);\nconst invited=()=>bids.filter(x=>x.data.status!=='Declined');\nconst received=()=>bids.filter(x=>x.data.status==='Received');\nconst readComplete=()=>Object.values(fetched).every(r=>r.complete);\nconst writable=role=>!!input.saved&&!!input.writable&&config.readOnly!==true&&!!available[role]&&roleDefs[role].every(([k])=>available[role].writable.includes(k));\nconst byVendor=(id)=>bids.find(x=>x.data.vendorId===id);\nfunction scoreVendor(id){const bid=byVendor(id);const weightTotal=criteria.reduce((a,c)=>a+Math.max(0,n(c.data.weight)),0);let sum=0,gradedWeight=0,answered=0,mandatoryMissing=0,mandatoryFailed=0,disagreements=0;for(const criterion of criteria){const c=criterion.data;const w=Math.max(0,n(c.weight));const rr=ratingRows.filter(r=>r.data.vendorId===id&&r.data.criterionId===criterion.id&&r.data.reviewer&&r.data.evidence&&n(r.data.score,-1)>=1&&n(r.data.score,-1)<=5);if(rr.length){const s=rr.reduce((a,r)=>a+n(r.data.score),0)/rr.length;sum+=w*(s/5);gradedWeight+=w;answered++;const mm=Math.min(...rr.map(x=>n(x.data.score))),mx=Math.max(...rr.map(x=>n(x.data.score)));if(mx-mm>=2)disagreements++;if(bool(c.mandatory)&&s<n(c.minimum,3))mandatoryFailed++;}else if(bool(c.mandatory))mandatoryMissing++;}\n const coverage=weightTotal>0?gradedWeight/weightTotal*100:0;\n const point=gradedWeight>0?sum/gradedWeight*100:null;\n const allGraded=criteria.length>0&&answered===criteria.length;\n const ready=!!record('vendors',id)&&bids.filter(b=>b.data.vendorId===id).length===1&&!!bid&&Number.isFinite(bid.data.fee)&&Number.isFinite(bid.data.passThrough)&&bid.data.status==='Received'&&weightTotal===100&&allGraded&&mandatoryMissing===0&&mandatoryFailed===0&&readComplete();\n return {bid,point,coverage,answered,total:criteria.length,mandatoryFailed,mandatoryMissing,ready,disagreements,weightTotal,allGraded};}\nconst scores=invited().map(b=>({bid:b,vendor:record('vendors',b.data.vendorId),score:scoreVendor(b.data.vendorId)}));\nconst countReady=scores.filter(x=>x.score.ready).length;\nconst scoreText=s=>s.point===null?'Not scored':(s.ready?'Verified ': 'Provisional ')+pct(s.point);\nconst allWeights=criteria.reduce((a,c)=>a+Math.max(0,n(c.data.weight)),0);\nconst colorFor=x=>({Scientific:'#7461ed',Operations:'#13bfa1',Quality:'#ee8b73',Technology:'#58aee7',Commercial:'#efbd65'})[x]||'#a0a9bf';\nfunction tag(v){const s=String(v||'—');const cls=/^(Received|Approved|Awarded)$/.test(s)?'good':/^(Invited|RFP open|Evaluation|Draft|Decision)$/.test(s)?'warn':/^(Declined|Blocked)$/.test(s)?'bad':'purple';return '<span class=\"sel-chip '+cls+'\">'+esc(s)+'</span>';}\nfunction button(t,act,cl='sel-btn',extra=''){return '<button type=\"button\" data-action=\"'+esc(act)+'\" class=\"'+cl+'\" '+extra+'>'+t+'</button>';}\nconst svg=name=>{const paths={gear:'<circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10 2 2m0-14-2 2M7 17l-2 2\"/>',plus:'<path d=\"M12 5v14M5 12h14\"/>',close:'<path d=\"M5 5l14 14m0-14L5 19\"/>',chev:'<path d=\"m9 18 6-6-6-6\"/>',dots:'<circle cx=\"5\" cy=\"12\" r=\"1\"/><circle cx=\"12\" cy=\"12\" r=\"1\"/><circle cx=\"19\" cy=\"12\" r=\"1\"/>'};return '<svg width=\"17\" height=\"17\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">'+(paths[name]||paths.plus)+'</svg>';};\nfunction menu(role,id){const key=role+':'+id;let html='<div class=\"sel-morewrap\">'+button('•••','menu:'+role+':'+id,'sel-more','aria-label=\"Record actions\" aria-expanded=\"'+(st.menu===key?'true':'false')+'\"');if(st.menu===key)html+='<div class=\"sel-menu\" role=\"menu\">'+button('Edit','edit:'+role+':'+id,'','role=\"menuitem\"')+button('Duplicate','duplicate:'+role+':'+id,'','role=\"menuitem\"')+button('Archive','archive:'+role+':'+id,'danger','role=\"menuitem\"')+'</div>';return html+'</div>';}\nfunction limitPage(list){const per=Math.min(25,Math.max(10,Math.floor(n(config.pageSize,20))));const max=Math.max(0,Math.ceil(list.length/per)-1);st.page=Math.min(st.page,max);return {list:list.slice(st.page*per,st.page*per+per),pages:max+1,per,total:list.length};}\nfunction pager(p){if(p.pages<=1)return '';return '<div class=\"sel-pager\"><span>Page '+(st.page+1)+' of '+p.pages+' · '+p.total+' records</span><div>'+button('Previous','page:prev','sel-btn small',st.page===0?'disabled':'')+' '+button('Next','page:next','sel-btn small',st.page>=p.pages-1?'disabled':'')+'</div></div>';}\nfunction scoreBar(sc,cl=''){return '<div class=\"sel-track '+cl+'\"><i style=\"width:'+Math.min(100,Math.max(0,n(sc.point)))+'%\"></i></div>';}\nfunction topMetric(text,value,sub,cl){return '<div class=\"sel-card sel-metric '+cl+'\"><span>'+esc(text)+'</span><strong>'+esc(value)+'</strong><small>'+esc(sub)+'</small></div>';}\nfunction sectionTitle(title,right=''){return '<div class=\"sel-sectiontop\"><h2>'+esc(title)+'</h2>'+(right?'<span>'+right+'</span>':'')+'</div>';}\nfunction overview(){const amount=received().map(x=>n(x.data.fee,NaN)+n(x.data.passThrough,NaN)).filter(Number.isFinite);const low=amount.length?cash(Math.min(...amount),sel.currency):'—';const responseCount=received().length;\n let html='<div class=\"sel-grid4\">'+topMetric('CROs invited',invited().length,'Small, focused bid field','purple')+topMetric('Bids received',responseCount,invited().length+' vendors in scope','green')+topMetric('Complete evaluations',countReady,'Mandatory checks passed','orange')+topMetric('Lowest submitted total',low,'Bid costs not weighted into score','rose')+'</div>';\n const statuses=['Draft','RFP open','Evaluation','Decision','Awarded'];let index=statuses.indexOf(sel.status);html+='<div class=\"sel-split\"><div class=\"sel-card sel-pad\">'+sectionTitle('Selection progress','RFP deadline '+esc(sel.dueDate||'not set'))+'<div class=\"sel-progress-steps\">'+statuses.map((x,i)=>'<div class=\"sel-step '+(i<index?'done':i===index?'current':'')+'\"><div></div><span>'+esc(x)+'</span></div>').join('')+'</div>'+sectionTitle('CRO evaluation status')+\n (scores.length?scores.map(x=>'<div class=\"sel-bidrow\"><div class=\"sel-vname\">'+esc(x.vendor?.data.name||'CRO')+'<small>'+esc(x.bid.data.status)+'</small></div><div>'+tag(x.score.ready?'Ready':x.score.coverage===0?'Unscored':'In progress')+'</div>'+scoreBar(x.score,x.score.ready?'green':'')+'<strong>'+(x.score.point===null?'—':pct(x.score.point))+'</strong></div>').join(''):'<p class=\"sel-empty\">Add 3–5 CROs and their bids to start comparing.</p>')+'</div>';\n let issues=[];if(!allWeights)issues.push(['bad','Define evaluation criteria','Agree on a small, weighted list before reviewing proposals']);else if(allWeights!==100)issues.push(['warn','Criteria weights total '+allWeights+'%','Use 100% before treating results as complete']);\n if(!responseCount)issues.push(['warn','No received proposals','Record bids when the CROs respond']);\n const incomplete=scores.filter(x=>x.bid.data.status==='Received'&&!x.score.allGraded).length;if(incomplete)issues.push(['warn',incomplete+' proposals need scoring','Missing ratings are not counted as zero']);\n const blocked=scores.filter(x=>x.score.mandatoryFailed).length;if(blocked)issues.push(['bad',blocked+' proposals failed a mandatory check','Review evidence and discuss the exception']);\n const questions=bids.filter(x=>x.data.clarification&&x.data.status==='Received').length;if(questions)issues.push(['warn',questions+' open clarification notes','Confirm responses before approval']);\n if(!decisionRows.some(x=>x.data.status==='Approved'))issues.push(['warn','Final award needs approval','Record rationale and accountable decision owner']);\n if(!readComplete())issues.unshift(['bad','Data coverage incomplete','Some authorized tables are unmapped or beyond read limits']);\n html+='<div class=\"sel-card sel-pad\">'+sectionTitle('Next actions',issues.length+' open')+(issues.length?issues.slice(0,5).map(q=>'<div class=\"sel-alertline\"><i class=\"sel-dot '+q[0]+'\"></i><div><strong>'+esc(q[1])+'</strong><small>'+esc(q[2])+'</small></div></div>').join(''):'<div class=\"sel-alertline\"><i class=\"sel-dot good\"></i><div><strong>Evaluation is ready for decision review</strong><small>Approval remains a separate, reviewed action.</small></div></div>')+'</div></div>';\n return html+'<div class=\"sel-toolbar\">'+button('Edit selection','edit:selections:'+selection?.id)+menu('selections',selection?.id)+'</div>';}\nfunction shortlist(){let search=st.query.toLowerCase();let selected=rows('vendors').slice();if(search)selected=selected.filter(v=>[v.data.name,v.data.services,v.data.regions,v.data.experience].join(' ').toLowerCase().includes(search));\n const p=limitPage(selected);\n let html='<div class=\"sel-toolbar\"><input data-ui-state class=\"sel-input\" data-action=\"filter:search\" value=\"'+esc(st.query)+'\" placeholder=\"Search CRO, region, service\" aria-label=\"Search CRO shortlist\">'+button(svg('plus')+' <span class=\"sel-hide-mobile\">Add CRO</span>','add:vendors','sel-btn primary')+button('Add bid','add:bids','sel-btn')+'</div><div class=\"sel-vendorgrid\">';\n for(const v of p.list){const d=v.data,b=byVendor(v.id);html+='<article class=\"sel-card sel-vendorcard\"><div class=\"sel-vendorhead\"><h3>'+esc(d.name)+'</h3>'+menu('vendors',v.id)+'</div><div style=\"margin-top:8px\">'+tag(b?.data.status||'Not invited')+'</div><p>'+esc(d.experience||'Relevant experience not yet documented')+'</p><div class=\"sel-tags\">'+String(d.services||'').split(/[;,]/).slice(0,2).filter(Boolean).map(x=>'<span class=\"sel-tag\">'+esc(x.trim())+'</span>').join('')+String(d.regions||'').split(/[;,]/).slice(0,2).filter(Boolean).map(x=>'<span class=\"sel-tag\">'+esc(x.trim())+'</span>').join('')+'</div><div class=\"sel-vendorbottom\"><div><small>Contact</small><strong style=\"font-size:12px\">'+esc(d.contact||'—')+'</strong></div><div style=\"text-align:right\"><small>Bid total</small><strong>'+esc(b&&b.data.status==='Received'?cash(n(b.data.fee)+n(b.data.passThrough),sel.currency):'—')+'</strong></div></div></article>';}\n html+='</div>'+(!p.total?'<p class=\"sel-empty\">No CRO matches this shortlist. Add a CRO or adjust your search.</p>':'')+pager(p);return html;}\nfunction criteriaView(){let html='<div class=\"sel-toolbar\"><input data-ui-state class=\"sel-input\" data-action=\"filter:search\" value=\"'+esc(st.query)+'\" placeholder=\"Search criteria, category, owner\" aria-label=\"Search evaluation criteria\">'+button(svg('plus')+' <span class=\"sel-hide-mobile\">Criterion</span>','add:criteria','sel-btn primary')+'</div>';\n const search=st.query.toLowerCase();const filtered=criteria.filter(x=>[x.data.name,x.data.category,x.data.owner].join(' ').toLowerCase().includes(search));const p=limitPage(filtered);\n html+='<div class=\"sel-split\" style=\"margin-top:0\"><section class=\"sel-card\"><div class=\"sel-tablewrap\"><table class=\"sel-table\"><thead><tr><th>Requirement</th><th>Category</th><th class=\"sel-right\">Weight</th><th>Gate</th><th>Owner</th><th></th></tr></thead><tbody>';\n for(const x of p.list){const c=x.data;html+='<tr><td><b>'+esc(c.name)+'</b></td><td>'+esc(c.category)+'</td><td class=\"sel-right\"><b>'+n(c.weight)+'%</b></td><td>'+(bool(c.mandatory)?tag('Mandatory ≥'+n(c.minimum,3)):'<span class=\"sel-chip\">Scored</span>')+'</td><td>'+esc(c.owner||'—')+'</td><td class=\"sel-actions\">'+menu('criteria',x.id)+'</td></tr>';}\n html+='</tbody></table></div>'+(!p.total?'<div class=\"sel-empty\" style=\"padding:16px\">No criteria found.</div>':'')+pager(p)+'</section>';\n let groups={};for(const x of criteria){const k=x.data.category||'Other';groups[k]=n(groups[k])+Math.max(0,n(x.data.weight));}\n html+='<section class=\"sel-card sel-pad\">'+sectionTitle('Weighting','Total '+allWeights+'%')+'<div class=\"sel-weightbar\">'+Object.keys(groups).map(k=>'<i style=\"width:'+(allWeights?groups[k]/allWeights*100:0)+'%;background:'+colorFor(k)+'\"></i>').join('')+'</div>'+Object.keys(groups).map(k=>'<div class=\"sel-legendrow\"><span style=\"background:'+colorFor(k)+'\"></span>'+esc(k)+'<b>'+groups[k]+'%</b></div>').join('')+'<div style=\"margin-top:18px\">'+(allWeights===100?'<span class=\"sel-chip good\">Weights total 100%</span>':'<span class=\"sel-chip warn\">Adjust weights to total 100%</span>')+'</div><p class=\"sel-footnote\">Scores are 1–5. Mandatory criteria require at least the indicated rating. Missing ratings remain unscored, never zero.</p></section></div>';\n return html;}\nfunction comparePage(list){st.comparePage=Math.max(0,Math.min(Math.floor(n(st.comparePage)),Math.ceil(list.length/5)-1));return {list:list.slice(st.comparePage*5,st.comparePage*5+5),pages:Math.max(1,Math.ceil(list.length/5))};}\nfunction comparePager(p){return p.pages>1?'<div class=\"sel-pager\"><span>Page '+(st.comparePage+1)+' of '+p.pages+'</span>'+button('Previous','compare:prev','sel-btn',st.comparePage===0?'disabled':'')+button('Next','compare:next','sel-btn',st.comparePage>=p.pages-1?'disabled':'')+'</div>':'';}\nfunction comparison(){const cp=comparePage(invited());const bs=cp.list;const colcount=Math.max(1,bs.length);const hdr='<div class=\"sel-comparelabel\">CRO / question</div>'+bs.map(b=>'<div class=\"sel-comparevendor\">'+esc(label('vendors',b.data.vendorId))+'<div style=\"margin-top:6px\">'+tag(b.data.status)+'</div></div>').join('');\n let html='<div class=\"sel-toolbar\">'+button(svg('plus')+' Add proposal','add:bids','sel-btn primary')+'<span style=\"font-size:12px;color:#56617e;margin-left:auto\">One currency: '+esc(sel.currency||'EUR')+' · Up to 5 CROs</span></div>';\n const row=(name,fn)=>'<div class=\"sel-comparelabel\">'+name+'</div>'+bs.map(b=>'<div class=\"sel-compareval\">'+fn(b)+'</div>').join('');\n html+='<div class=\"sel-mobile-hint\">Swipe to compare CRO columns</div><div class=\"sel-card sel-comparewrap\" aria-label=\"Side-by-side CRO bid comparison; scroll horizontally to see further CROs\"><div class=\"sel-compare\" style=\"--sel-colcount:'+colcount+';--sel-headercount:'+(colcount+1)+'\">'+hdr+\n row('Professional fee',b=>b.data.status==='Received'&&b.data.fee!==''&&b.data.fee!=null?'<strong>'+esc(cash(b.data.fee,sel.currency))+'</strong>':'<span class=\"sel-compareval missing\">Not provided</span>')+\n row('Pass-through estimate',b=>b.data.status==='Received'&&b.data.passThrough!==''&&b.data.passThrough!=null?'<strong>'+esc(cash(b.data.passThrough,sel.currency))+'</strong>':'<span class=\"sel-compareval missing\">Not provided</span>')+\n row('Total indicated cost',b=>b.data.status==='Received'&&b.data.fee!=null&&b.data.fee!==''&&b.data.passThrough!=null&&b.data.passThrough!==''?'<strong>'+esc(cash(n(b.data.fee)+n(b.data.passThrough),sel.currency))+'</strong>':'<span class=\"sel-compareval missing\">Incomplete pricing</span>')+\n row('Start-up estimate',b=>b.data.startupWeeks!==null&&b.data.startupWeeks!==undefined&&b.data.startupWeeks!==''?'<strong>'+n(b.data.startupWeeks)+' weeks</strong>':'<span class=\"sel-compareval missing\">Not provided</span>')+\n row('Capability score',b=>{const q=scoreVendor(b.data.vendorId);return q.point===null?'Not scored':'<strong>'+pct(q.point)+'</strong><small>'+pct(q.coverage)+' weighted coverage</small>';})+\n row('Mandatory checks',b=>{const q=scoreVendor(b.data.vendorId);return q.mandatoryFailed?'<span class=\"sel-chip bad\">'+q.mandatoryFailed+' failed</span>':q.mandatoryMissing?'<span class=\"sel-chip warn\">'+q.mandatoryMissing+' missing</span>':'<span class=\"sel-chip good\">No failed gates</span>';})+\n row('Scope / assumptions',b=>esc(b.data.assumptions||'Not submitted'))+\n row('Clarification',b=>b.data.clarification?'<span class=\"sel-chip warn\">Open question</span><small>'+esc(b.data.clarification)+'</small>':'No open question')+\n row('Action',b=>menu('bids',b.id))+'</div></div>';\n if(!bs.length)html+='<p class=\"sel-empty\">No invited CROs in this selection. Add bidders to compare them.</p>';\n html+='<p class=\"sel-footnote\">Professional fees and pass-throughs are displayed separately. The tool does not assume identical bid scope; human review of exclusions is required.</p>'+comparePager(cp);return html;}\nfunction decision(){const cp=comparePage(received());const bs=cp.list;let sorted=bs.map(b=>({bid:b,q:scoreVendor(b.data.vendorId)})).sort((a,b)=>(b.q.point||-1)-(a.q.point||-1));\n let html='<div class=\"sel-split\" style=\"margin-top:0\"><section class=\"sel-card sel-pad\">'+sectionTitle('Evaluation results',allWeights+'% total criterion weight');if(sorted.length){html+=sorted.map(({bid,q})=>'<div class=\"sel-ranking\"><div><strong>'+esc(label('vendors',bid.data.vendorId))+'</strong><small>'+pct(q.coverage)+' scored · '+q.answered+'/'+q.total+' criteria · '+(q.mandatoryFailed?'mandatory gate failed':q.mandatoryMissing?'mandatory ratings missing':q.ready?'eligible for decision':'evaluation incomplete')+'</small></div>'+scoreBar(q,q.ready?'green':q.mandatoryFailed?'coral':'')+'<b>'+(q.point===null?'—':pct(q.point))+'</b></div>').join('');}else html+='<div class=\"sel-empty\">Record received bids to begin scoring.</div>';html+='</section><section class=\"sel-card sel-pad\">'+sectionTitle('Decision record')+(decisionRows.length?decisionRows.map(d=>'<div class=\"sel-alertline\"><i class=\"sel-dot '+(d.data.status==='Approved'?'good':'warn')+'\"></i><div><strong>'+esc(label('vendors',d.data.vendorId))+' · '+esc(d.data.status)+'</strong><small>'+esc(d.data.rationale||'Rationale not yet recorded')+'</small><div style=\"margin-top:10px\">'+menu('decisions',d.id)+'</div></div></div>').join(''):'<p class=\"sel-empty\">No decision recorded.</p>')+'<div style=\"margin-top:12px\">'+button(svg('plus')+' Record decision','add:decisions','sel-btn primary')+'</div><p class=\"sel-footnote\">Highest score is never an automatic award. Human approval is required.</p></section></div>';\n const colcount=Math.max(1,Math.min(5,bs.length));html+='<section class=\"sel-card\" style=\"margin-top:16px\"><div class=\"sel-pad\" style=\"padding-bottom:0\">'+sectionTitle('Score by requirement','Select a score to edit or add an assessment')+'</div><div class=\"sel-tablewrap\"><div class=\"sel-scoregrid\" style=\"--sel-colcount:'+colcount+'\"><div class=\"sel-hdr\">Criterion</div>'+bs.map(b=>'<div class=\"sel-hdr\">'+esc(label('vendors',b.data.vendorId))+'</div>').join('');for(const c of criteria){html+='<div><div><strong>'+esc(c.data.name)+'</strong><div style=\"font-size:12px;color:#56617e\">'+n(c.data.weight)+'%'+(bool(c.data.mandatory)?' · Mandatory':'')+'</div></div></div>';for(const b of bs){const rr=ratingRows.filter(r=>r.data.vendorId===b.data.vendorId&&r.data.criterionId===c.id&&n(r.data.score)>=1&&n(r.data.score)<=5);const avg=rr.length?rr.reduce((s,r)=>s+n(r.data.score),0)/rr.length:null;const blocked=bool(c.data.mandatory)&&avg!==null&&avg<n(c.data.minimum,3);const text=avg===null?'Not rated':avg.toFixed(1)+' / 5';html+='<div><div class=\"sel-scorecell\"><span class=\"sel-scorepill '+(blocked?'blocked':avg===null?'missing':'')+'\">'+text+'</span>'+button('Add','rate:'+b.data.vendorId+':'+c.id,'','aria-label=\"Score '+esc(c.data.name)+' for '+esc(label('vendors',b.data.vendorId))+'\"')+'</div></div>';}}\n html+='</div></div></section><section class=\"sel-card sel-pad\" style=\"margin-top:16px\">'+sectionTitle('Individual assessments')+ratingRows.slice(st.page*20,st.page*20+20).map(r=>'<div class=\"sel-alertline\"><div>'+esc(label('vendors',r.data.vendorId))+' · '+esc(label('criteria',r.data.criterionId))+'<small>'+esc(r.data.reviewer)+' · '+esc(r.data.score)+' / 5</small></div>'+menu('ratings',r.id)+'</div>').join('')+pager({pages:Math.max(1,Math.ceil(ratingRows.length/20)),total:ratingRows.length})+'</section><p class=\"sel-footnote\">Each rating must have a named reviewer and evidence. A provisional weighted score excludes missing criteria rather than treating them as zero. No automatic external CRO contact or contract award.</p>'+comparePager(cp);return html;}\nfunction formField(role,def,data){const [id,l,type,options]=def;if(id==='archived')return '';if(id==='selectionId'&&st.selectionId&&role!=='selections')data={...data,selectionId:data.selectionId||st.selectionId};let value=data[id]===null||data[id]===undefined?'':String(data[id]);if(id==='score'&&data[id]==='')value='';const wide=type==='textarea'||id==='name'&&role!=='ratings'||id==='rationale';const label='<label class=\"sel-field'+(wide?' wide':'')+'\"><span>'+esc(l)+'</span>';\n let control='';if(type==='select'){control='<select name=\"'+id+'\" aria-label=\"'+esc(l)+'\"><option value=\"\">Select</option>'+String(options).split('|').map(x=>'<option value=\"'+esc(x)+'\"'+(value===x?' selected':'')+'>'+esc(x)+'</option>').join('')+'</select>';}else if(type==='boolean'){control='<select name=\"'+id+'\" aria-label=\"'+esc(l)+'\"><option value=\"false\"'+(!bool(value)?' selected':'')+'>No</option><option value=\"true\"'+(bool(value)?' selected':'')+'>Yes</option></select>';}else if(type.startsWith('rel:')){const target=type.slice(4);let opts=rows(target);if(target==='criteria')opts=opts.filter(x=>x.data.selectionId===(data.selectionId||st.selectionId));control='<select name=\"'+id+'\" aria-label=\"'+esc(l)+'\"><option value=\"\">Select</option>'+opts.map(x=>'<option value=\"'+esc(x.id)+'\"'+(value===x.id?' selected':'')+'>'+esc(x.data.name)+'</option>').join('')+'</select>';}else if(type==='textarea'){control='<textarea name=\"'+id+'\" rows=\"3\" aria-label=\"'+esc(l)+'\">'+esc(value)+'</textarea>';}else{control='<input type=\"'+(type==='date'?'date':type==='number'?'number':'text')+'\" name=\"'+id+'\" value=\"'+esc(value)+'\"'+(type==='number'?' step=\"any\" min=\"0\"':'')+' aria-label=\"'+esc(l)+'\">';}control=control.replace(/<(input|select|textarea) /,'<$1 data-ui-state data-action=\"draft:'+id+'\" ');return label+control+'</label>';}\nfunction archiveBlock(role,id){const r=record(role,id);if(role!=='decisions'&&rows('decisions').some(d=>d.data.status==='Approved'&&(role==='vendors'?d.data.vendorId===id:d.data.selectionId===(role==='selections'?id:r?.data.selectionId))))return 'Return the linked approved decision to Draft before archiving evidence.';if(!readComplete())return 'Complete authorized data is required to check linked records before archiving.';if(role==='bids'&&r&&['ratings','decisions'].some(k=>rows(k).some(x=>x.data.selectionId===r.data.selectionId&&x.data.vendorId===r.data.vendorId)))return 'This bid has linked assessments or decisions. Archive those links first.';if(role==='selections'&&(rows('ratings').some(x=>x.data.selectionId===id)||rows('bids').some(x=>x.data.selectionId===id)||rows('criteria').some(x=>x.data.selectionId===id)||rows('decisions').some(x=>x.data.selectionId===id)))return 'This selection has linked bids, criteria or decisions. Close those records before archiving the selection.';if(role==='vendors'&&(rows('bids').some(x=>x.data.vendorId===id)||rows('ratings').some(x=>x.data.vendorId===id)||rows('decisions').some(x=>x.data.vendorId===id)))return 'This CRO has linked bids, ratings or decisions. Keep it visible for evidence review, or archive those links first.';if(role==='criteria'&&rows('ratings').some(x=>x.data.criterionId===id))return 'This criterion has recorded assessments. Archive linked assessments first to preserve scorecard integrity.';return '';}\nfunction initDraft(){ const d=st.drawer;let base=d.id?record(d.role,d.id):null;let data={...(base?.data||{})};d.version=base?.version??null;if(d.role==='ratings'&&!d.id&&st.prefill)data={...data,...st.prefill};if(d.duplicate){delete data.archived;if(d.role==='selections')data.status='Draft';if(d.role==='decisions'){data.status='Draft';data.approver='';data.approvedAt='';}if(d.role==='ratings'){data.score='';data.evidence='';data.rationale='';}if(d.role==='bids'){data.status='Invited';data.fee='';data.passThrough='';data.submittedAt='';}}\n if(!d.id){if(d.role==='bids')data.status='Invited';if(d.role==='decisions')data.status='Draft';if(d.role==='criteria'){data.weight=20;data.minimum=3;data.mandatory=false;}if(d.role==='ratings')data.score='';}\n if(d.role!=='selections'&&d.role!=='vendors')data.selectionId=data.selectionId||st.selectionId;d.draft=data;\n}\nfunction drawer(){const d=st.drawer;if(!d)return '';if(d.type==='archive'&&archiveBlock(d.role,d.id))return '<div class=\"sel-overlay\"><section class=\"sel-confirm\" role=\"alertdialog\" aria-modal=\"true\"><h2>Cannot archive linked record</h2><p>'+esc(archiveBlock(d.role,d.id))+'</p>'+button('Close','close','sel-btn')+'</section></div>';if(d.type==='archive')return '<div class=\"sel-overlay\"><section class=\"sel-confirm\" role=\"alertdialog\" aria-modal=\"true\"><h2>Archive record?</h2>'+(st.notice?'<p role=\"status\">'+esc(st.notice)+'</p>':'')+'<p>This prepares a reviewed update. The original record and audit history remain intact. Linked records are not automatically deleted.</p>'+button('Cancel','close','sel-btn')+' '+button('Prepare archive','confirm-archive','sel-btn primary')+'</section></div>';\n const data=d.draft||{};const extra=roleDefs[d.role].filter(f=>visible[d.role+':'+f[0]]===false);const extraFields=extra.length?'<div class=\"sel-field wide\">'+button(d.extra?'Hide additional fields':'Show additional fields','draft-extra','sel-btn','aria-expanded=\"'+(d.extra?'true':'false')+'\"')+'</div>'+(d.extra?extra.map(f=>formField(d.role,f,data)).join(''):''):'';\n const t=(d.duplicate?'Duplicate ':d.id?'Edit ':'New ')+({selections:'selection',vendors:'CRO',bids:'proposal',criteria:'criterion',ratings:'assessment',decisions:'decision'}[d.role]||'record');\n return '<div class=\"sel-overlay\"><section class=\"sel-drawer\" role=\"dialog\" aria-modal=\"true\" aria-label=\"'+esc(t)+'\"><div class=\"sel-drawerhead\"><h2>'+esc(t)+'</h2>'+button(svg('close'),'close','sel-btn icon','aria-label=\"Close\"')+'</div><form class=\"sel-drawerbody sel-form\" data-ui-state=\"true\" data-action=\"save-record\">'+(st.notice?'<div class=\"sel-notice wide\" role=\"status\" style=\"grid-column:1/-1\">'+esc(st.notice)+'</div>':'')+[...chosenCols[d.role],...roleDefs[d.role].map(f=>f[0]).filter(k=>!templateLayoutSchema.groups[d.role].some(f=>f.id===k))].map(k=>roleDefs[d.role].find(f=>f[0]===k)).filter(Boolean).map(f=>formField(d.role,f,data)).join('')+extraFields+'<div class=\"sel-field wide\"><small>Changes must be confirmed through the TrialAgents record review process. This form never writes directly.</small></div><div class=\"sel-field wide\"></div><div class=\"sel-drawerfoot\" style=\"grid-column:1/-1\">'+button('Cancel','close','sel-btn')+'<button class=\"sel-btn primary\" type=\"submit\">Prepare reviewed save</button></div></form></section></div>';}\nfunction submit(){const d=st.drawer;if(!d||d.type!=='edit'||!writable(d.role)){st.notice='No authorized write mapping is available.';return;}\n d.draft={...d.draft,...(E.form||{})};if(!readComplete()){st.notice='Complete authorized data is required before preparing changes.';return;}if(d.id&&!d.duplicate&&record(d.role,d.id)?.version!==d.version){st.notice='Record version changed. Reopen the record to review current values; your draft is retained.';return;}const data={};for(const [id,,type] of roleDefs[d.role]){if(id==='archived')continue;const val=d.draft[id];if(type==='number'){if(val===''||val===undefined)data[id]=null;else if(isFinite(Number(val)))data[id]=Number(val);else {st.notice='Enter a valid number for '+id;return;}}else if(type==='boolean')data[id]=bool(val);else {data[id]=String(val??'').trim();if(type==='date'&&!data[id])data[id]=null;}}\n if(d.role!=='selections'&&d.role!=='vendors'&&!data.selectionId)data.selectionId=st.selectionId;\n if(d.role==='vendors'&&(!data.name||data.name.length<2)){st.notice='CRO name is required.';return;}\n if(d.role==='selections'&&data.status==='Awarded'&&!rows('decisions').some(x=>x.data.selectionId===d.id&&x.data.status==='Approved')){st.notice='Record an approved decision before marking the selection Awarded.';return;}\n if(d.role==='selections'&&!data.name){st.notice='Selection name is required.';return;}\n if(d.role==='criteria'&&(!data.name||!record('selections',data.selectionId)||data.weight===null||data.weight<0||data.weight>100||bool(data.mandatory)&&(data.minimum<1||data.minimum>5))){st.notice='Criterion needs a valid selection, name, weight 0–100, and mandatory threshold 1–5.';return;}\n if(d.role==='ratings'&&(!data.reviewer||!record('vendors',data.vendorId)||!record('criteria',data.criterionId)||!data.score||data.score<1||data.score>5||!data.evidence)){st.notice='Assessment needs a reviewer, vendor, criterion, score 1–5 and evidence.';return;}\n if(d.role==='bids'&&(!record('vendors',data.vendorId)||!record('selections',data.selectionId)||data.fee<0||data.passThrough<0||data.startupWeeks<0)){st.notice='Select a CRO and selection; cost and time cannot be negative.';return;}\n if(d.role==='bids'&&rows('bids').some(r=>(d.duplicate||r.id!==d.id)&&r.data.selectionId===data.selectionId&&r.data.vendorId===data.vendorId)){st.notice='This CRO already has a proposal in the selection. Edit that record.';return;}\n if(d.role==='bids'&&d.duplicate&&rows('bids').some(r=>r.data.selectionId===data.selectionId&&r.data.vendorId===data.vendorId)){st.notice='Choose a different CRO before duplicating this proposal.';return;}\n if(d.role==='ratings'&&rows('ratings').some(r=>(d.duplicate||r.id!==d.id)&&r.data.selectionId===data.selectionId&&r.data.vendorId===data.vendorId&&r.data.criterionId===data.criterionId&&String(r.data.reviewer||'').toLowerCase()===data.reviewer.toLowerCase())){st.notice='This reviewer already rated this CRO/criterion. Edit the existing assessment.';return;}\n if(d.role==='decisions'&&(!record('selections',data.selectionId)||!record('vendors',data.vendorId)||!data.rationale)){st.notice='Choose a CRO and enter the decision rationale.';return;}\n if(d.role==='decisions'&&data.status==='Approved'){\n const q=data.selectionId===st.selectionId?scoreVendor(data.vendorId):{ready:false};\n if(!q.ready||!data.approver||!datestring(data.approvedAt)){st.notice='Approval requires complete mandatory-passing criteria, 100% weights, a named approver and date.';return;}\n }\n if(d.role==='ratings'&&record('criteria',data.criterionId)?.data.selectionId!==data.selectionId){st.notice='Criterion must belong to this selection.';return;}\n if(d.role==='decisions'&&rows('decisions').some(x=>x.data.selectionId===data.selectionId&&x.id!==d.id&&x.data.status==='Approved'&&data.status==='Approved')){st.notice='Only one approved decision can be active per selection.';return;}\n if(d.role==='bids'&&data.status==='Received'&&(data.fee===null||data.passThrough===null)){st.notice='Enter both fee and pass-through, even if an amount is zero.';return;}\n if(d.role==='decisions'&&data.status==='Draft'){data.approver='';data.approvedAt=null;}\n const existing=d.id&&!d.duplicate?record(d.role,d.id):null;\n if(existing&&d.role==='selections'&&data.currency!==existing.data.currency&&rows('bids').some(x=>x.data.selectionId===d.id)){st.notice='Existing bids use the selection currency. Create a separate selection for another currency.';return;}\n const selectionKey=d.role==='selections'?d.id:data.selectionId;const phaseOnly=d.role==='selections'&&existing&&['name','program','scope','owner','dueDate','currency'].every(k=>data[k]===existing.data[k]);\n if(d.role!=='decisions'&&!phaseOnly&&rows('decisions').some(x=>x.data.status==='Approved'&&(d.role==='vendors'?x.data.vendorId===d.id:x.data.selectionId===selectionKey))){st.notice='Return the linked approved decision to Draft before changing its evidence.';return;}\n if(existing&&d.role==='criteria'&&rows('ratings').some(x=>x.data.criterionId===d.id)&&['selectionId','name','weight','mandatory','minimum'].some(k=>data[k]!==existing.data[k])){st.notice='Archive linked assessments before changing the scored criterion.';return;}\n if(existing&&['bids','ratings','criteria','decisions'].includes(d.role)&&data.selectionId!==existing.data.selectionId){st.notice='Existing records cannot move between selections. Create a new record instead.';return;}\n const m=available[d.role];const actual={};for(const [id,v] of Object.entries(data)){const f=m.fields[id];if(f&&m.writable.includes(id))actual[f]=v;}\n if(!Object.keys(actual).length){st.notice='No authorized writable fields; cannot prepare record.';return;}\n const prior=d.id&&!d.duplicate?record(d.role,d.id):null;\n const op=prior?{kind:'update_record',typeId:m.typeId,recordId:prior.id,expectedVersion:d.version,data:actual}:{kind:'create_record',typeId:m.typeId,data:actual};\n try{tools.call('records.propose',[op]);st.notice='Record update prepared for TrialAgents review; not saved yet.';}catch(e){st.notice='Review could not be prepared. Your source data was not changed: '+String(e.message||e).slice(0,130);}\n}\nfunction archive(){const d=st.drawer;if(!d||!writable(d.role)){st.notice='Archive permission unavailable';return;}const m=available[d.role],r=record(d.role,d.id);if(!r||r.version!==d.version){st.notice='Record version changed. Reopen before archiving.';return;}if(archiveBlock(d.role,d.id)){st.notice=archiveBlock(d.role,d.id);return;}if(!m.fields.archived||!m.writable.includes('archived')||!r){st.notice='Archive is not supported for this record';return;}try{tools.call('records.propose',[{kind:'update_record',typeId:m.typeId,recordId:r.id,expectedVersion:d.version,data:{[m.fields.archived]:true}}]);st.drawer=null;st.notice='Archive prepared for review; no record has been deleted.';}catch(e){st.notice='Archive could not be prepared. No changes were made.';}}\nif(action.startsWith('nav:')){st.screen=action.slice(4);st.page=0;st.query='';st.menu='';st.drawer=null;}\nelse if(action==='selection:choose'){if(record('selections',String(E.value||'')))st.selectionId=String(E.value);st.page=0;st.query='';st.drawer=null;}\nelse if(action==='filter:search'){st.query=String(E.value||'').slice(0,120);st.page=0;}\nelse if(action==='compare:prev')st.comparePage=Math.max(0,n(st.comparePage)-1);\nelse if(action==='compare:next')st.comparePage=n(st.comparePage)+1;\nelse if(action==='page:prev')st.page=Math.max(0,st.page-1);\nelse if(action==='page:next')st.page+=1;\nelse if(action.startsWith('menu:')){const key=action.slice(5);st.menu=st.menu===key?'':key;}\nelse if(action.startsWith('add:')){st.drawer={type:'edit',role:action.slice(4),id:null,duplicate:false};st.menu='';}\nelse if(action.startsWith('edit:')||action.startsWith('duplicate:')||action.startsWith('archive:')){const parts=action.split(':');if(roleDefs[parts[1]]&&record(parts[1],parts[2]))st.drawer={type:parts[0]==='archive'?'archive':'edit',role:parts[1],id:parts[2],duplicate:parts[0]==='duplicate'};st.menu='';}\nelse if(action.startsWith('rate:')){const bits=action.split(':');const old=null;st.drawer={type:'edit',role:'ratings',id:old?.id||null,duplicate:false};st.prefill={vendorId:bits[1],criterionId:bits[2]};}\nelse if(action==='draft-extra'&&st.drawer)st.drawer.extra=!st.drawer.extra;\nelse if(action.startsWith('draft:')&&st.drawer?.type==='edit'){const key=action.slice(6);if(roleDefs[st.drawer.role].some(f=>f[0]===key))st.drawer.draft={...st.drawer.draft,[key]:E.value};}\nelse if(action==='close'){st.drawer=null;st.prefill=null;}\nelse if(action==='save-record'&&E.kind==='submit')submit();\nelse if(action==='confirm-archive')archive();\nif(st.drawer&&!st.drawer.draft)initDraft();\nconst titles={overview:'Selection overview',shortlist:'CRO shortlist',criteria:'Requirements',comparison:'Bid comparison',decision:'Decision scorecard'};\nlet view='';if(st.screen==='overview')view=overview();else if(st.screen==='shortlist')view=shortlist();else if(st.screen==='criteria')view=criteriaView();else if(st.screen==='comparison')view=comparison();else view=decision();\nconst navigation=customViews.filter(v=>visible[v]!==false).map((v,i)=>'<button type=\"button\" class=\"sel-navbtn\" data-action=\"nav:'+v+'\" aria-current=\"'+(st.screen===v?'page':'false')+'\"><span class=\"sel-navnum\">'+String(i+1).padStart(2,'0')+'</span>'+esc(titles[v])+'</button>').join('');\nconst topSelect='<select data-ui-state class=\"sel-pick\" data-action=\"selection:choose\" aria-label=\"Selection project\">'+rows('selections').map(x=>'<option value=\"'+esc(x.id)+'\"'+(st.selectionId===x.id?' selected':'')+'>'+esc(x.data.name)+'</option>').join('')+'</select>';\nconst header='<header class=\"sel-header\"><h1>'+esc(titles[st.screen])+'</h1><div class=\"sel-headtools\">'+topSelect+button(svg('plus'),'add:selections','sel-btn icon','aria-label=\"New selection\" title=\"New selection\"')+button(svg('gear'),'tracker:layout','sel-btn icon','aria-label=\"Layout settings\" title=\"Layout settings\"')+'</div></header>';\nconst status=st.notice?'<div class=\"sel-notice info\" role=\"status\">'+esc(st.notice)+'</div>':'';\nconst incomplete=!readComplete()?'<div class=\"sel-notice\" role=\"status\">Some data bindings are absent or incomplete. The tables and scores below must not be treated as complete until all authorized records are accessible.</div>':'';\nconst content=!selection?'<div class=\"sel-card sel-pad\"><strong>No selection configured</strong><p class=\"sel-empty\">Connect your existing TrialAgents tables and add a CRO selection. Example records are only present in the offline preview.</p></div>':view;\nconst rail='<aside class=\"sel-rail\"><div class=\"sel-brand\">'+esc(layout.heading||config.heading||'CRO Selection')+'</div><nav class=\"sel-nav\" aria-label=\"CRO Selection screens\">'+navigation+'</nav><div class=\"sel-railfoot\">'+(config.demoLabel?'Fictional review data':'Internal sourcing workspace')+'</div></aside>';\nconst html='<div class=\"sel-shell\">'+rail+'<main class=\"sel-main\">'+header+status+incomplete+content+(config.demoLabel?'<div class=\"sel-demo\">FICTIONAL EXAMPLE · All modifications are reviewed locally, not saved to TrialAgents.</div>':'')+'</main>'+drawer()+'</div>';\nreturn {html,css:typeof SELECT_CSS==='string'?SELECT_CSS:'',state:st};\n";
+const demo=Object.entries({
+  "selections": [
+    {
+      "id": "sel001",
+      "version": 1,
+      "data": {
+        "name": "AX-217 Oncology Phase II",
+        "program": "AX-217",
+        "scope": "EU full-service CRO for a multicountry Phase II",
+        "owner": "Head of Clinical Operations",
+        "dueDate": "2026-11-18",
+        "status": "Evaluation",
+        "currency": "EUR",
+        "archived": false
+      }
+    },
+    {
+      "id": "sel002",
+      "version": 1,
+      "data": {
+        "name": "NX-204 Rare Disease FIH",
+        "program": "NX-204",
+        "scope": "EU Phase I clinical operations, data and statistics",
+        "owner": "COO",
+        "dueDate": "2026-12-04",
+        "status": "RFP open",
+        "currency": "EUR",
+        "archived": false
+      }
+    }
+  ],
+  "vendors": [
+    {
+      "id": "ven001",
+      "version": 1,
+      "data": {
+        "name": "Asteria Clinical",
+        "services": "Full-service; Monitoring",
+        "regions": "EU; UK",
+        "experience": "Phase II oncology · 12-country operations",
+        "website": "https://example.org/asteria",
+        "contact": "Business Development Lead",
+        "lastVerified": "2026-10-28",
+        "archived": false
+      }
+    },
+    {
+      "id": "ven002",
+      "version": 1,
+      "data": {
+        "name": "Northbridge Research",
+        "services": "Oncology trials; Data",
+        "regions": "EU; UK",
+        "experience": "Solid tumor oncology and EU site networks",
+        "website": "https://example.org/northbridge",
+        "contact": "Clinical Operations Director",
+        "lastVerified": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "ven003",
+      "version": 1,
+      "data": {
+        "name": "Vireo Trials",
+        "services": "Biometrics; Clinical operations",
+        "regions": "EU; US",
+        "experience": "Phase I–III oncology and rare disease",
+        "website": "https://example.org/vireo",
+        "contact": "Scientific Partnerships Lead",
+        "lastVerified": "2026-10-30",
+        "archived": false
+      }
+    },
+    {
+      "id": "ven004",
+      "version": 1,
+      "data": {
+        "name": "Bluefield BioServices",
+        "services": "Site startup; Monitoring",
+        "regions": "EU",
+        "experience": "Phase II site activation and recruitment operations",
+        "website": "https://example.org/bluefield",
+        "contact": "Commercial Lead",
+        "lastVerified": "2026-10-27",
+        "archived": false
+      }
+    },
+    {
+      "id": "ven005",
+      "version": 1,
+      "data": {
+        "name": "Origo Research Group",
+        "services": "Phase I; Data Management",
+        "regions": "EU; UK",
+        "experience": "Early phase rare disease studies",
+        "website": "https://example.org/origo",
+        "contact": "BD Manager",
+        "lastVerified": "2026-10-27",
+        "archived": false
+      }
+    }
+  ],
+  "bids": [
+    {
+      "id": "bid001",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven001",
+        "status": "Received",
+        "fee": 1850000,
+        "passThrough": 420000,
+        "startupWeeks": 13,
+        "assumptions": "Full-service with central data handling; excludes imaging vendor fees.",
+        "clarification": "Confirm monitoring capacity in Spain and Italy.",
+        "clarificationDue": "2026-11-07",
+        "submittedAt": "2026-10-21",
+        "archived": false
+      }
+    },
+    {
+      "id": "bid002",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven002",
+        "status": "Received",
+        "fee": 1930000,
+        "passThrough": 360000,
+        "startupWeeks": 10,
+        "assumptions": "Includes named oncology CTM; investigator grants included; lab costs excluded.",
+        "clarification": "",
+        "clarificationDue": "",
+        "submittedAt": "2026-10-22",
+        "archived": false
+      }
+    },
+    {
+      "id": "bid003",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven003",
+        "status": "Received",
+        "fee": 1760000,
+        "passThrough": 510000,
+        "startupWeeks": 12,
+        "assumptions": "Split clinical and data workstreams; pass-through depends on country mix.",
+        "clarification": "Request detailed start-up milestone assumptions.",
+        "clarificationDue": "2026-11-09",
+        "submittedAt": "2026-10-25",
+        "archived": false
+      }
+    },
+    {
+      "id": "bid004",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven004",
+        "status": "Invited",
+        "fee": null,
+        "passThrough": null,
+        "startupWeeks": null,
+        "assumptions": "",
+        "clarification": "",
+        "clarificationDue": "",
+        "submittedAt": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "bid005",
+      "version": 1,
+      "data": {
+        "selectionId": "sel002",
+        "vendorId": "ven003",
+        "status": "Invited",
+        "fee": null,
+        "passThrough": null,
+        "startupWeeks": null,
+        "assumptions": "",
+        "clarification": "",
+        "clarificationDue": "",
+        "submittedAt": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "bid006",
+      "version": 1,
+      "data": {
+        "selectionId": "sel002",
+        "vendorId": "ven005",
+        "status": "Invited",
+        "fee": null,
+        "passThrough": null,
+        "startupWeeks": null,
+        "assumptions": "",
+        "clarification": "",
+        "clarificationDue": "",
+        "submittedAt": "",
+        "archived": false
+      }
+    }
+  ],
+  "criteria": [
+    {
+      "id": "crit001",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "name": "Therapeutic fit",
+        "category": "Scientific",
+        "weight": 25,
+        "mandatory": true,
+        "minimum": 3,
+        "owner": "Medical Director",
+        "archived": false
+      }
+    },
+    {
+      "id": "crit002",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "name": "EU site execution",
+        "category": "Operations",
+        "weight": 20,
+        "mandatory": true,
+        "minimum": 3,
+        "owner": "Clinical Operations",
+        "archived": false
+      }
+    },
+    {
+      "id": "crit003",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "name": "Study start-up team",
+        "category": "Operations",
+        "weight": 20,
+        "mandatory": true,
+        "minimum": 3,
+        "owner": "Clinical Operations",
+        "archived": false
+      }
+    },
+    {
+      "id": "crit004",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "name": "Quality & oversight",
+        "category": "Quality",
+        "weight": 20,
+        "mandatory": true,
+        "minimum": 3,
+        "owner": "Quality Lead",
+        "archived": false
+      }
+    },
+    {
+      "id": "crit005",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "name": "Commercial terms",
+        "category": "Commercial",
+        "weight": 15,
+        "mandatory": false,
+        "minimum": 3,
+        "owner": "Finance",
+        "archived": false
+      }
+    },
+    {
+      "id": "crit006",
+      "version": 1,
+      "data": {
+        "selectionId": "sel002",
+        "name": "Early-phase execution",
+        "category": "Scientific",
+        "weight": 40,
+        "mandatory": true,
+        "minimum": 3,
+        "owner": "Medical Director",
+        "archived": false
+      }
+    },
+    {
+      "id": "crit007",
+      "version": 1,
+      "data": {
+        "selectionId": "sel002",
+        "name": "Phase I start-up",
+        "category": "Operations",
+        "weight": 35,
+        "mandatory": true,
+        "minimum": 3,
+        "owner": "COO",
+        "archived": false
+      }
+    },
+    {
+      "id": "crit008",
+      "version": 1,
+      "data": {
+        "selectionId": "sel002",
+        "name": "Commercial transparency",
+        "category": "Commercial",
+        "weight": 25,
+        "mandatory": false,
+        "minimum": 3,
+        "owner": "Finance",
+        "archived": false
+      }
+    }
+  ],
+  "ratings": [
+    {
+      "id": "rat001",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven001",
+        "criterionId": "crit001",
+        "reviewer": "Medical Director",
+        "score": 4,
+        "evidence": "Bid response, section 1",
+        "rationale": "Evidence documented in received proposal.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat002",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven001",
+        "criterionId": "crit002",
+        "reviewer": "Clinical Operations",
+        "score": 3,
+        "evidence": "Bid response, section 2",
+        "rationale": "Evidence documented in received proposal.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat003",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven001",
+        "criterionId": "crit003",
+        "reviewer": "Clinical Operations",
+        "score": 4,
+        "evidence": "Bid response, section 3",
+        "rationale": "Evidence documented in received proposal.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat004",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven001",
+        "criterionId": "crit004",
+        "reviewer": "Quality Lead",
+        "score": 4,
+        "evidence": "Bid response, section 4",
+        "rationale": "Evidence documented in received proposal.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat005",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven001",
+        "criterionId": "crit005",
+        "reviewer": "Finance",
+        "score": 3,
+        "evidence": "Bid response, section 5",
+        "rationale": "Evidence documented in received proposal.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat006",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven002",
+        "criterionId": "crit001",
+        "reviewer": "Medical Director",
+        "score": 5,
+        "evidence": "Bid response, section 1",
+        "rationale": "Evidence documented in received proposal.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat007",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven002",
+        "criterionId": "crit002",
+        "reviewer": "Clinical Operations",
+        "score": 4,
+        "evidence": "Bid response, section 2",
+        "rationale": "Evidence documented in received proposal.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat008",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven002",
+        "criterionId": "crit003",
+        "reviewer": "Clinical Operations",
+        "score": 5,
+        "evidence": "Bid response, section 3",
+        "rationale": "Evidence documented in received proposal.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat009",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven002",
+        "criterionId": "crit004",
+        "reviewer": "Quality Lead",
+        "score": 4,
+        "evidence": "Bid response, section 4",
+        "rationale": "Evidence documented in received proposal.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat010",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven002",
+        "criterionId": "crit005",
+        "reviewer": "Finance",
+        "score": 3,
+        "evidence": "Bid response, section 5",
+        "rationale": "Evidence documented in received proposal.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat011",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven003",
+        "criterionId": "crit001",
+        "reviewer": "Medical Director",
+        "score": 4,
+        "evidence": "Bid response, section 1",
+        "rationale": "Documented bidder response requires team confirmation.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat012",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven003",
+        "criterionId": "crit002",
+        "reviewer": "Clinical Operations",
+        "score": 3,
+        "evidence": "Bid response, section 2",
+        "rationale": "Documented bidder response requires team confirmation.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat013",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven003",
+        "criterionId": "crit003",
+        "reviewer": "Clinical Operations",
+        "score": 3,
+        "evidence": "Bid response, section 3",
+        "rationale": "Documented bidder response requires team confirmation.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat014",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven003",
+        "criterionId": "crit004",
+        "reviewer": "Quality Lead",
+        "score": 2,
+        "evidence": "Bid response, section 4",
+        "rationale": "Documented bidder response requires team confirmation.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat015",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven001",
+        "criterionId": "crit001",
+        "reviewer": "Chief Medical Officer",
+        "score": 2,
+        "evidence": "Medical review 2026-10-30",
+        "rationale": "Questioned direct experience at proposed sites.",
+        "archived": false
+      }
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec001",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven002",
+        "status": "Draft",
+        "rationale": "Tentative preference pending quality and commercial due diligence.",
+        "approver": "",
+        "approvedAt": "",
+        "nextStep": "Clarify resource commitments and negotiate draft scope.",
+        "archived": false
+      }
+    }
+  ]
+}
+).flatMap(([role,records])=>records.map(r=>({...r,role}))); const metadata={
+  "id": "life.cro-selection",
+  "version": "1.0.1",
+  "name": "CRO Selection",
+  "description": "Internal, sponsor-side evaluation of 3\u20135 CRO bids for small biotech teams: requirements, vendor comparison, evidence-based scoring and accountable selection.",
+  "tags": [
+    "biotech",
+    "CRO",
+    "vendor selection",
+    "procurement",
+    "outsourcing",
+    "sponsor",
+    "RFP",
+    "scorecard"
+  ],
+  "whenToUse": "Use when a biotech or pharma sponsor with a lean outsourcing team wants to choose a CRO across one program/service scope using consistent requirements, comparable bids, documented evaluations and reviewable decisions.",
+  "whenNotToUse": "Not for CRO-side proposal writing or multi-tier ERP procurement, regulated supplier qualification certification, vendor payments, or exposing supplier portals.",
+  "engine": "frontend-js",
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "Single app heading in native TrialAgents layout.",
+      "required": false,
+      "default": "CRO Selection"
+    },
+    "tableMap": {
+      "type": "string",
+      "description": "Owner-approved role map to existing TrialAgents table IDs and allowed field names.",
+      "required": false,
+      "default": "{}"
+    },
+    "layoutProfile": {
+      "type": "string",
+      "description": "Native, reviewed presentation-only layout profile.",
+      "required": false,
+      "default": "{\"heading\":\"CRO Selection\",\"tabs\":[\"overview\",\"shortlist\",\"criteria\",\"comparison\",\"decision\"],\"cols\":{\"selections\":[\"name\",\"program\",\"scope\",\"owner\",\"dueDate\",\"status\"],\"vendors\":[\"name\",\"services\",\"regions\",\"experience\",\"website\",\"contact\"],\"bids\":[\"vendorId\",\"status\",\"fee\",\"passThrough\",\"startupWeeks\",\"assumptions\"],\"criteria\":[\"name\",\"category\",\"weight\",\"mandatory\",\"minimum\",\"owner\"],\"ratings\":[\"vendorId\",\"criterionId\",\"reviewer\",\"score\",\"evidence\"],\"decisions\":[\"vendorId\",\"status\",\"rationale\",\"approver\",\"nextStep\"]},\"visible\":{\"vendors:website\":false,\"ratings:evidence\":false,\"decisions:approver\":false}}"
+    },
+    "pageSize": {
+      "type": "number",
+      "description": "Small-team pagination; clamped 10\u201325.",
+      "required": false,
+      "default": 20
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "Disable proposed changes without altering platform permissions.",
+      "required": false,
+      "default": false
+    },
+    "demoLabel": {
+      "type": "boolean",
+      "description": "Only for fictional standalone screenshot preview.",
+      "required": false,
+      "default": false
+    }
+  },
+  "defaults": {
+    "heading": "CRO Selection",
+    "tableMap": "{}",
+    "layoutProfile": "{\"heading\":\"CRO Selection\",\"tabs\":[\"overview\",\"shortlist\",\"criteria\",\"comparison\",\"decision\"],\"cols\":{\"selections\":[\"name\",\"program\",\"scope\",\"owner\",\"dueDate\",\"status\"],\"vendors\":[\"name\",\"services\",\"regions\",\"experience\",\"website\",\"contact\"],\"bids\":[\"vendorId\",\"status\",\"fee\",\"passThrough\",\"startupWeeks\",\"assumptions\"],\"criteria\":[\"name\",\"category\",\"weight\",\"mandatory\",\"minimum\",\"owner\"],\"ratings\":[\"vendorId\",\"criterionId\",\"reviewer\",\"score\",\"evidence\"],\"decisions\":[\"vendorId\",\"status\",\"rationale\",\"approver\",\"nextStep\"]},\"visible\":{\"vendors:website\":false,\"ratings:evidence\":false,\"decisions:approver\":false}}",
+    "pageSize": 20,
+    "readOnly": false,
+    "demoLabel": false
+  },
+  "instructions": "Retrieve latest `read_app_template_guidance(resource:\"authoring\")` and `resource:\"usage\"` in full, plus `read_app_design`. Select CRO Selection by exact template ID/version and SHA digest via list/read tools. Confirm user needs a sponsor-side selection, not a CRO proposal authoring tracker; create/reuse only authorized internal TrialAgents app and record tables. Respect no app auth or account pages; the platform watermark handles the official TrialAgents logo/link to https://platform.trialagents.com. Set the reviewed, explicit tableMap of selection, vendor, bid, criterion, rating, decision roles and actual field IDs; do not use fictional demo rows. Reuse source and presentation CSS unless the user requests changes. Preview all five routes, review responsive behavior, results and missing-data states, and submit through normal app preview/save approvals. Configure optional ChatGPT via prepare_app_monitoring or deterministic/email via prepare_app_action only AFTER the saved app and separate approval; list/read existing automations, reuse stable authoringKeys, preserve disabled state and never create ChatGPT tasks per app. Keep sourcing confidential, use existing app access, never promise completion, never send bidder email or approve CRO automatically. The native gear and templateLayoutSchema/layoutProfile support versioned, presentation-only layout reordering; preserve tab/field IDs and existing access. Follow HOST_INTEGRATION.md and AUTOMATION_RECIPES.md for scope. Use the exact scalar schema and logical-to-snake_case mapping in documentation.dataContract. The host prepends templateConfiguration/templateBindings: never prepend another declaration inside catalog source. Preserve template source/style; configure through options and native layout. Preview through the real host before reviewed save. Reconcile app and record receipts before retries. Never bypass unavailable data checks or stale version errors. Read the current usage/automation guides for optional setup.",
+  "documentation": {
+    "quickStart": [
+      "Read the current authoring and usage guidance, then retrieve the selected version and digest via TrialAgents MCP. Do not create a separate login or accounts.",
+      "Confirm this is a sponsor-side CRO selection (not a CRO proposal-writing app). Choose a real trial/program and a single bid currency.",
+      "Inspect actual schemas/access, create or reuse six authorized scalar tables according to dataContract and schema.example.json. Use multiple:false on every field. Save parents first and bind actual table UUIDs and snake_case keys through tableMap plus bindings/manifest. Scope tables to the intended small team; reads are bounded to 200 rows per role.",
+      "Invite or record 3\u20135 CROs in one selection, record proposal costs and timelines, define a concise set of five or fewer weighted requirements totaling 100%, and mark mandatory thresholds.",
+      "Record evidence-backed scores from 1\u20133 internal reviewers. Compare complete/incomplete assessments, verify mandatory criteria and clarify scope assumptions.",
+      "Preview desktop/mobile routes; review prepared changes, save the app, and separately confirm any optional ChatGPT/email automation. Never automatically approve awards.",
+      "Save with no automation by default. If requested, read read_automation_setup and read_app_automation_guide, then list_app_automations; configure only separately approved app-linked definitions and reconcile receipts. Do not claim a schedule or delivery was activated by this package."
+    ],
+    "dataContract": "Six normalized data roles: selections{name(required),program,scope,owner,dueDate ISO date,status Draft|RFP open|Evaluation|Decision|Awarded,currency EUR|USD|GBP,archived}; vendors{name(required),services,regions,experience,website text,contact text,lastVerified ISO date,archived}; bids{selectionId,vendorId,status Invited|Received|Declined,fee nullable nonnegative number,passThrough nullable nonnegative number,startupWeeks nullable number,assumptions,clarification,clarificationDue,submittedAt,archived}; criteria{selectionId,name,category Scientific|Operations|Quality|Technology|Commercial,weight percentage 0..100,mandatory boolean,minimum 1..5,owner,archived}; ratings{selectionId,vendorId,criterionId,reviewer,score 1..5,evidence,rationale,archived}; decisions{selectionId,vendorId,status Draft|Approved,rationale,approver,approvedAt,nextStep,archived}. Normalize vendors globally, bids/criteria/ratings/decisions per selection. Read only authorized fields using tableMap and templateBindings. Score one criterion as average of recorded ratings (not imputed) then provisional normalized score=sum(weight*meanRating/5)/sum(scoredWeights)*100. Coverage=sum(scoredWeights)/sum(allWeights). Gate approval on Received bid, 100% defined total weight, complete ratings and each mandatory mean>=minimum. Price is never part of composite rating unless explicitly rated as Commercial criterion. Cost and pass-through are separate and a single owner-chosen currency. Never automatically award. Demo records fictional and never committed. Auth and privacy always inherited from TrialAgents. All fields are scalar: set multiple:false explicitly. Use text for URLs, evidence, multiline notes and references containing saved record UUIDs; number for fee/passThrough/startupWeeks/weight/minimum/score; date for dueDate/lastVerified/clarificationDue/submittedAt/approvedAt; boolean for mandatory/archived; select for status/currency/category with the values listed above. Map every logical camelCase key to its lowercase snake_case database key (selectionId\u2192selection_id, vendorId\u2192vendor_id, criterionId\u2192criterion_id, passThrough\u2192pass_through, startupWeeks\u2192startup_weeks, dueDate\u2192due_date, lastVerified\u2192last_verified, clarificationDue\u2192clarification_due, submittedAt\u2192submitted_at, approvedAt\u2192approved_at, nextStep\u2192next_step). All other keys are already valid. Bind every listed field; partial/multiple schemas require explicit repair before use. Amounts are scalar numbers in the selected currency, missing values null. Do not use multi-value relationship fields. Save parent selections/vendors/criteria first and use their receipt IDs in dependent records. Reuse verified records; never commit fictional demo data.",
+    "interactionContract": "Five routes: selection overview, 3\u20135 CRO shortlist, weighted requirements, comparable side-by-side bid matrix, decision scorecard. Sidebar app name has no decorative logo/icon. Header uses exactly one page heading and a selection chooser; no welcome banners, duplicate headlines or login controls. Search the vendor/criterion page, paginate at 20 (max 25), use per-record three-dot menu with Edit, Duplicate and Archive; archive is a reviewed soft update, not permanent deletion. Record drawers use data-ui-state and data-action, submit records.propose only through host review; no unreviewed writes. Native settings gear uses tracker:layout and declared templateLayoutSchema plus versioned layoutProfile; host provides drag reordering and persistence. On mobile, compare/score matrices scroll in labelled regions, no page-level overflow. Esc/keyboard interactions and drawer confirmation are ultimately host responsibilities. Native layout controls screen order/visibility and drawer field order/visibility; fixed overview cards and comparison metrics retain their meaning. Hidden draft fields retain values and remain subject to validation. All actual input/select/textarea controls use data-ui-state; drafts retain opening versions and survive failed proposals. Compare at most five CROs per page with next/previous controls. Individual assessment actions identify each reviewer. Manage automations in platform Automations, outcomes in Logs.",
+    "lifecycle": "Template catalog is a versioned, read-on-demand starter, not deployed app source. Prepare app draft with authorized table bindings, preview, obtain approval, then save; the code does not create actual tables without reviewed operations. Keep stable role and record identifiers. Every mutation is a records.propose create_record or update_record with expectedVersion, subject to outer user confirmation; failed/stale reviews leave old data and draft intact. Selection changes never grant access. Archive retains history. Layout-only changes use host prepare_tool_layout with saved component version and update only templateConfiguration.layoutProfile. Optional automations are configured after app save, never block opening. Reuse app IDs and exact versions; on a lost confirmation response reconcile its receipt before retrying. Ignore/discard pending previews without replacing the saved app. Automation definitions keep stable IDs/authoringKeys and disabled state on edit; archive suspends them and restore/copy never automatically resumes them. Approved decision evidence is frozen in this UI until reset to Draft. Database editors can change evidence independently: revalidate current evidence before relying on an approval, which is a recorded human decision, not a live certification.",
+    "limitations": [
+      "No bidder self-service portal, supplier account, e-signatures, invoice/payroll, formal regulated qualification sign-off, or automated direct outreach to CROs.",
+      "The custom UI inherits app-wide TrialAgents access; a hidden HTML section is not a permission boundary. Use separate protected apps/standard tabs when proposal confidentiality requires narrower access.",
+      "Side-by-side comparison is intended for 3\u20135 CROs in one selection, with one currency. No exchange-rate conversion, bid line-item cost normalization or vendor response extraction from PDFs.",
+      "Live record reads are bounded (200 per role). Missing bindings and incomplete data cause a visible warning. No authoritative score or approval if required data is incomplete.",
+      "Standalone HTML uses fictional local simulation only. Host layout drag persistence, record writes, email delivery and automation execution must be independently verified on TrialAgents."
+    ],
+    "examples": [
+      {
+        "prompt": "Create a CRO selection for our EU Phase II oncology program, inviting four CROs and a five-criterion scorecard.",
+        "expectedBehavior": "Make a private app-linked selection with brief scope, 4 CRO organizations and explicit weighted criteria after review. No emails are sent or bids invented."
+      },
+      {
+        "prompt": "Compare three received CRO proposals on price, start-up timeline, therapeutic fit, oversight quality and staffing.",
+        "expectedBehavior": "Use recorded bids and 1\u20135 cited ratings only; show missing answers, mandatory gates, score coverage and separate price figures. No automatic award."
+      },
+      {
+        "prompt": "Draft a leadership CRO selection memo and notify internal reviewers when approved.",
+        "expectedBehavior": "Prepare evidence-based narrative from approved records; request human review. Optionally prepare a TrialAgents email automation only after saved decision, with authorized recipients."
+      },
+      {
+        "prompt": "Create a CRO selection app with no automation.",
+        "expectedBehavior": "Save a usable app with inherited access and no runner, email or schedule dependency."
+      }
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "Default: no automation; use an on-demand decision memo. Optional weekly Europe/Berlin readiness review for one explicitly selected saved selection, until its award/owner-approved end date. Save the app first. Reuse shared runner through prepare_app_monitoring, authoringKey life.cro-selection.readiness.v1. Read current setup/automation guides; no per-app ChatGPT Task. Missing setup leaves the app usable.",
+      "readRequirements": "Read complete authorized selection, bids, criteria, reviewer ratings/evidence and decisions using persisted IDs. Do not treat denied, partial or >200-row template snapshots as complete; automation must page its authorized source to completion independently. Deduplicate by selection ID, source record versions and run receipt. Reconcile successful output before retrying. Never research private supplier contacts or infer ratings.",
+      "outputContract": "On-demand draft in the current conversation, or an explicitly approved saved report destination chosen during setup. No unspecified report table. Writes always require exact review unless an unexpired scoped ongoing grant covers them. Missing destination/authority is blocked, not saved. no_update requires complete coverage and an approved silence policy; incomplete/denied reads report a gap. Stop at scope expiry or award. Optional independent TrialAgents email via prepare_app_action on actual decisions.status transition into Approved; authoringKey life.cro-selection.email.approved.v1. Owner by default; add only approved registered team members with current access. Fixed subject: CRO selection approved. Fixed body: A CRO selection decision was approved. Open the linked app to review the rationale and handoff. Use only platform-supported app link placeholders after reading current guide, never invented record interpolation. Recheck committed transition/current state, coalesce duplicates, cancel obsolete/revoked work, respect delivery limits. No completion email for the same transition. Failed delivery never reruns research. Disable/edit in Automations; execution history in Logs. Definitions retain disabled state on edit and never auto-resume after copy/restore.",
+      "promptExample": "For the one authorized saved CRO selection, read all eligible bids, criteria and reviewer evidence. Summarize changed or unresolved responses, mandatory failures, missing evidence, reviewer disagreements, cost assumptions and internal next actions with source IDs and evidence dates. Compare only complete evidence. Do not invent ratings, select a CRO, approve an award or send email. Deliver to the specifically approved destination; proposed writes require review or a valid scoped grant. Reconcile prior receipts and source versions. Report incomplete coverage; silence only after complete coverage under the approved quiet policy."
+    }
+  },
+  "examples": [
+    {
+      "heading": "CRO Selection",
+      "pageSize": 20,
+      "readOnly": false
+    }
+  ],
+  "deprecated": false
+}
+;
+const roles=['selections','vendors','bids','criteria','ratings','decisions'];
+const map=Object.fromEntries(roles.map(role=>{const fields=Object.keys(({
+  "selections": {
+    "name": "CRO Selection selections",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Selection name",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "program",
+        "name": "Program or asset",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "scope",
+        "name": "Outsourced work",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "owner",
+        "name": "Decision owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "due_date",
+        "name": "RFP response deadline",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "status",
+        "name": "Phase",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Draft",
+          "RFP open",
+          "Evaluation",
+          "Decision",
+          "Awarded"
+        ]
+      },
+      {
+        "key": "currency",
+        "name": "Bid currency",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "EUR",
+          "USD",
+          "GBP"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "program": "program",
+      "scope": "scope",
+      "owner": "owner",
+      "dueDate": "due_date",
+      "status": "status",
+      "currency": "currency",
+      "archived": "archived"
+    }
+  },
+  "vendors": {
+    "name": "CRO Selection vendors",
+    "fields": [
+      {
+        "key": "name",
+        "name": "CRO name",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "services",
+        "name": "Services and scope",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "regions",
+        "name": "Geographic delivery",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "experience",
+        "name": "Therapeutic / phase expertise",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "website",
+        "name": "Evidence or company URL",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "contact",
+        "name": "Professional CRO contact",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "last_verified",
+        "name": "Verified on",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "services": "services",
+      "regions": "regions",
+      "experience": "experience",
+      "website": "website",
+      "contact": "contact",
+      "lastVerified": "last_verified",
+      "archived": "archived"
+    }
+  },
+  "bids": {
+    "name": "CRO Selection bids",
+    "fields": [
+      {
+        "key": "selection_id",
+        "name": "Selection",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "vendor_id",
+        "name": "CRO",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "status",
+        "name": "Response status",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Invited",
+          "Received",
+          "Declined"
+        ]
+      },
+      {
+        "key": "fee",
+        "name": "Professional fee (selection currency)",
+        "kind": "number",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "pass_through",
+        "name": "Pass-through estimate",
+        "kind": "number",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "startup_weeks",
+        "name": "Startup time (weeks)",
+        "kind": "number",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "assumptions",
+        "name": "Scope / commercial assumptions",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "clarification",
+        "name": "Open clarification",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "clarification_due",
+        "name": "Clarification due",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "submitted_at",
+        "name": "Received on",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ],
+    "logicalFields": {
+      "selectionId": "selection_id",
+      "vendorId": "vendor_id",
+      "status": "status",
+      "fee": "fee",
+      "passThrough": "pass_through",
+      "startupWeeks": "startup_weeks",
+      "assumptions": "assumptions",
+      "clarification": "clarification",
+      "clarificationDue": "clarification_due",
+      "submittedAt": "submitted_at",
+      "archived": "archived"
+    }
+  },
+  "criteria": {
+    "name": "CRO Selection criteria",
+    "fields": [
+      {
+        "key": "selection_id",
+        "name": "Selection",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "name",
+        "name": "Evaluation criterion",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "category",
+        "name": "Category",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Scientific",
+          "Operations",
+          "Quality",
+          "Technology",
+          "Commercial"
+        ]
+      },
+      {
+        "key": "weight",
+        "name": "Weight (%)",
+        "kind": "number",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "mandatory",
+        "name": "Mandatory pass check",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "minimum",
+        "name": "Minimum acceptable rating",
+        "kind": "number",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "owner",
+        "name": "Responsible reviewer",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ],
+    "logicalFields": {
+      "selectionId": "selection_id",
+      "name": "name",
+      "category": "category",
+      "weight": "weight",
+      "mandatory": "mandatory",
+      "minimum": "minimum",
+      "owner": "owner",
+      "archived": "archived"
+    }
+  },
+  "ratings": {
+    "name": "CRO Selection ratings",
+    "fields": [
+      {
+        "key": "selection_id",
+        "name": "Selection",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "vendor_id",
+        "name": "CRO",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "criterion_id",
+        "name": "Criterion",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "reviewer",
+        "name": "Reviewer",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "score",
+        "name": "Assessment (1\u20135)",
+        "kind": "number",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "evidence",
+        "name": "Evidence reference / proposal page",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "rationale",
+        "name": "Short justification",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ],
+    "logicalFields": {
+      "selectionId": "selection_id",
+      "vendorId": "vendor_id",
+      "criterionId": "criterion_id",
+      "reviewer": "reviewer",
+      "score": "score",
+      "evidence": "evidence",
+      "rationale": "rationale",
+      "archived": "archived"
+    }
+  },
+  "decisions": {
+    "name": "CRO Selection decisions",
+    "fields": [
+      {
+        "key": "selection_id",
+        "name": "Selection",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "vendor_id",
+        "name": "Recommended CRO",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "status",
+        "name": "Decision status",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Draft",
+          "Approved"
+        ]
+      },
+      {
+        "key": "rationale",
+        "name": "Evidence-based decision rationale",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "approver",
+        "name": "Decision approver",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "approved_at",
+        "name": "Approval date",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "next_step",
+        "name": "Negotiation / contract handoff",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ],
+    "logicalFields": {
+      "selectionId": "selection_id",
+      "vendorId": "vendor_id",
+      "status": "status",
+      "rationale": "rationale",
+      "approver": "approver",
+      "approvedAt": "approved_at",
+      "nextStep": "next_step",
+      "archived": "archived"
+    }
+  }
+}
+)[role].logicalFields);return [role,{typeId:role,fields:Object.fromEntries(fields.map(k=>[k,k])),writableFields:fields}]}));
+const bindings=roles.map(role=>({typeId:role,fields:Object.keys(map[role].fields)}));
+const config={...metadata.defaults,demoLabel:true,tableMap:JSON.stringify(map)};
+const render=new Function('input','tools','templateConfiguration','templateBindings',source);
+let state={},rows=demo,proposal=null;
+function dispatch(event){if(event.action==='tracker:layout'){alert('Layout is managed in native TrialAgents App Settings. This file demonstrates the CRO selection screens only.');return;}
+ const out=render({saved:true,writable:true,state,event},{call:(name,v)=>{if(name==='records.read'){const all=rows.filter(r=>r.role===v.typeId);return {rows:all.slice(v.offset,v.offset+v.limit),total:all.length};}if(name==='records.propose'){proposal=v;return {status:'proposed'};}throw Error('Unsupported preview capability');}},config,bindings);
+ state=out.state;document.getElementById('surface').innerHTML=out.html;
+ if(proposal){const changes=proposal;proposal=null;if(confirm('FICTIONAL LOCAL REVIEW ONLY\n'+JSON.stringify(changes,null,2))){for(const c of changes){if(c.kind==='create_record')rows.push({role:c.typeId,id:crypto.randomUUID(),version:0,data:c.data});else{const r=rows.find(r=>r.id===c.recordId);if(r&&r.version===c.expectedVersion){r.data={...r.data,...c.data};r.version++;}}}dispatch({kind:'open',action:''});}}
+}
+function eventFor(kind,target){const trigger=target.closest('[data-action]');if(!trigger)return;const form=trigger.closest('form');dispatch({kind,action:trigger.dataset.action,value:target.type==='checkbox'?target.checked:target.value??null,form:form?Object.fromEntries(new FormData(form)):{}});}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&!b.disabled&&b.type!=='submit')eventFor('click',b);});
+document.addEventListener('submit',e=>{e.preventDefault();eventFor('submit',e.target);});
+document.addEventListener('change',e=>eventFor('change',e.target));
+dispatch({kind:'open',action:''});
+</script></body></html>

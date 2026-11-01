@@ -1,0 +1,480 @@
+{
+  "selections": {
+    "name": "CRO Selection selections",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Selection name",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "program",
+        "name": "Program or asset",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "scope",
+        "name": "Outsourced work",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "owner",
+        "name": "Decision owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "due_date",
+        "name": "RFP response deadline",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "status",
+        "name": "Phase",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Draft",
+          "RFP open",
+          "Evaluation",
+          "Decision",
+          "Awarded"
+        ]
+      },
+      {
+        "key": "currency",
+        "name": "Bid currency",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "EUR",
+          "USD",
+          "GBP"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "program": "program",
+      "scope": "scope",
+      "owner": "owner",
+      "dueDate": "due_date",
+      "status": "status",
+      "currency": "currency",
+      "archived": "archived"
+    }
+  },
+  "vendors": {
+    "name": "CRO Selection vendors",
+    "fields": [
+      {
+        "key": "name",
+        "name": "CRO name",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "services",
+        "name": "Services and scope",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "regions",
+        "name": "Geographic delivery",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "experience",
+        "name": "Therapeutic / phase expertise",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "website",
+        "name": "Evidence or company URL",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "contact",
+        "name": "Professional CRO contact",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "last_verified",
+        "name": "Verified on",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "services": "services",
+      "regions": "regions",
+      "experience": "experience",
+      "website": "website",
+      "contact": "contact",
+      "lastVerified": "last_verified",
+      "archived": "archived"
+    }
+  },
+  "bids": {
+    "name": "CRO Selection bids",
+    "fields": [
+      {
+        "key": "selection_id",
+        "name": "Selection",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "vendor_id",
+        "name": "CRO",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "status",
+        "name": "Response status",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Invited",
+          "Received",
+          "Declined"
+        ]
+      },
+      {
+        "key": "fee",
+        "name": "Professional fee (selection currency)",
+        "kind": "number",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "pass_through",
+        "name": "Pass-through estimate",
+        "kind": "number",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "startup_weeks",
+        "name": "Startup time (weeks)",
+        "kind": "number",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "assumptions",
+        "name": "Scope / commercial assumptions",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "clarification",
+        "name": "Open clarification",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "clarification_due",
+        "name": "Clarification due",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "submitted_at",
+        "name": "Received on",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ],
+    "logicalFields": {
+      "selectionId": "selection_id",
+      "vendorId": "vendor_id",
+      "status": "status",
+      "fee": "fee",
+      "passThrough": "pass_through",
+      "startupWeeks": "startup_weeks",
+      "assumptions": "assumptions",
+      "clarification": "clarification",
+      "clarificationDue": "clarification_due",
+      "submittedAt": "submitted_at",
+      "archived": "archived"
+    }
+  },
+  "criteria": {
+    "name": "CRO Selection criteria",
+    "fields": [
+      {
+        "key": "selection_id",
+        "name": "Selection",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "name",
+        "name": "Evaluation criterion",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "category",
+        "name": "Category",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Scientific",
+          "Operations",
+          "Quality",
+          "Technology",
+          "Commercial"
+        ]
+      },
+      {
+        "key": "weight",
+        "name": "Weight (%)",
+        "kind": "number",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "mandatory",
+        "name": "Mandatory pass check",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "minimum",
+        "name": "Minimum acceptable rating",
+        "kind": "number",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "owner",
+        "name": "Responsible reviewer",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ],
+    "logicalFields": {
+      "selectionId": "selection_id",
+      "name": "name",
+      "category": "category",
+      "weight": "weight",
+      "mandatory": "mandatory",
+      "minimum": "minimum",
+      "owner": "owner",
+      "archived": "archived"
+    }
+  },
+  "ratings": {
+    "name": "CRO Selection ratings",
+    "fields": [
+      {
+        "key": "selection_id",
+        "name": "Selection",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "vendor_id",
+        "name": "CRO",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "criterion_id",
+        "name": "Criterion",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "reviewer",
+        "name": "Reviewer",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "score",
+        "name": "Assessment (1\u20135)",
+        "kind": "number",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "evidence",
+        "name": "Evidence reference / proposal page",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "rationale",
+        "name": "Short justification",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ],
+    "logicalFields": {
+      "selectionId": "selection_id",
+      "vendorId": "vendor_id",
+      "criterionId": "criterion_id",
+      "reviewer": "reviewer",
+      "score": "score",
+      "evidence": "evidence",
+      "rationale": "rationale",
+      "archived": "archived"
+    }
+  },
+  "decisions": {
+    "name": "CRO Selection decisions",
+    "fields": [
+      {
+        "key": "selection_id",
+        "name": "Selection",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "vendor_id",
+        "name": "Recommended CRO",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "status",
+        "name": "Decision status",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Draft",
+          "Approved"
+        ]
+      },
+      {
+        "key": "rationale",
+        "name": "Evidence-based decision rationale",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "approver",
+        "name": "Decision approver",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "approved_at",
+        "name": "Approval date",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "next_step",
+        "name": "Negotiation / contract handoff",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ],
+    "logicalFields": {
+      "selectionId": "selection_id",
+      "vendorId": "vendor_id",
+      "status": "status",
+      "rationale": "rationale",
+      "approver": "approver",
+      "approvedAt": "approved_at",
+      "nextStep": "next_step",
+      "archived": "archived"
+    }
+  }
+}

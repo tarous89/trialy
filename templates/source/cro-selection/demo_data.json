@@ -1,0 +1,550 @@
+{
+  "selections": [
+    {
+      "id": "sel001",
+      "version": 1,
+      "data": {
+        "name": "AX-217 Oncology Phase II",
+        "program": "AX-217",
+        "scope": "EU full-service CRO for a multicountry Phase II",
+        "owner": "Head of Clinical Operations",
+        "dueDate": "2026-11-18",
+        "status": "Evaluation",
+        "currency": "EUR",
+        "archived": false
+      }
+    },
+    {
+      "id": "sel002",
+      "version": 1,
+      "data": {
+        "name": "NX-204 Rare Disease FIH",
+        "program": "NX-204",
+        "scope": "EU Phase I clinical operations, data and statistics",
+        "owner": "COO",
+        "dueDate": "2026-12-04",
+        "status": "RFP open",
+        "currency": "EUR",
+        "archived": false
+      }
+    }
+  ],
+  "vendors": [
+    {
+      "id": "ven001",
+      "version": 1,
+      "data": {
+        "name": "Asteria Clinical",
+        "services": "Full-service; Monitoring",
+        "regions": "EU; UK",
+        "experience": "Phase II oncology · 12-country operations",
+        "website": "https://example.org/asteria",
+        "contact": "Business Development Lead",
+        "lastVerified": "2026-10-28",
+        "archived": false
+      }
+    },
+    {
+      "id": "ven002",
+      "version": 1,
+      "data": {
+        "name": "Northbridge Research",
+        "services": "Oncology trials; Data",
+        "regions": "EU; UK",
+        "experience": "Solid tumor oncology and EU site networks",
+        "website": "https://example.org/northbridge",
+        "contact": "Clinical Operations Director",
+        "lastVerified": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "ven003",
+      "version": 1,
+      "data": {
+        "name": "Vireo Trials",
+        "services": "Biometrics; Clinical operations",
+        "regions": "EU; US",
+        "experience": "Phase I–III oncology and rare disease",
+        "website": "https://example.org/vireo",
+        "contact": "Scientific Partnerships Lead",
+        "lastVerified": "2026-10-30",
+        "archived": false
+      }
+    },
+    {
+      "id": "ven004",
+      "version": 1,
+      "data": {
+        "name": "Bluefield BioServices",
+        "services": "Site startup; Monitoring",
+        "regions": "EU",
+        "experience": "Phase II site activation and recruitment operations",
+        "website": "https://example.org/bluefield",
+        "contact": "Commercial Lead",
+        "lastVerified": "2026-10-27",
+        "archived": false
+      }
+    },
+    {
+      "id": "ven005",
+      "version": 1,
+      "data": {
+        "name": "Origo Research Group",
+        "services": "Phase I; Data Management",
+        "regions": "EU; UK",
+        "experience": "Early phase rare disease studies",
+        "website": "https://example.org/origo",
+        "contact": "BD Manager",
+        "lastVerified": "2026-10-27",
+        "archived": false
+      }
+    }
+  ],
+  "bids": [
+    {
+      "id": "bid001",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven001",
+        "status": "Received",
+        "fee": 1850000,
+        "passThrough": 420000,
+        "startupWeeks": 13,
+        "assumptions": "Full-service with central data handling; excludes imaging vendor fees.",
+        "clarification": "Confirm monitoring capacity in Spain and Italy.",
+        "clarificationDue": "2026-11-07",
+        "submittedAt": "2026-10-21",
+        "archived": false
+      }
+    },
+    {
+      "id": "bid002",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven002",
+        "status": "Received",
+        "fee": 1930000,
+        "passThrough": 360000,
+        "startupWeeks": 10,
+        "assumptions": "Includes named oncology CTM; investigator grants included; lab costs excluded.",
+        "clarification": "",
+        "clarificationDue": "",
+        "submittedAt": "2026-10-22",
+        "archived": false
+      }
+    },
+    {
+      "id": "bid003",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven003",
+        "status": "Received",
+        "fee": 1760000,
+        "passThrough": 510000,
+        "startupWeeks": 12,
+        "assumptions": "Split clinical and data workstreams; pass-through depends on country mix.",
+        "clarification": "Request detailed start-up milestone assumptions.",
+        "clarificationDue": "2026-11-09",
+        "submittedAt": "2026-10-25",
+        "archived": false
+      }
+    },
+    {
+      "id": "bid004",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven004",
+        "status": "Invited",
+        "fee": null,
+        "passThrough": null,
+        "startupWeeks": null,
+        "assumptions": "",
+        "clarification": "",
+        "clarificationDue": "",
+        "submittedAt": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "bid005",
+      "version": 1,
+      "data": {
+        "selectionId": "sel002",
+        "vendorId": "ven003",
+        "status": "Invited",
+        "fee": null,
+        "passThrough": null,
+        "startupWeeks": null,
+        "assumptions": "",
+        "clarification": "",
+        "clarificationDue": "",
+        "submittedAt": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "bid006",
+      "version": 1,
+      "data": {
+        "selectionId": "sel002",
+        "vendorId": "ven005",
+        "status": "Invited",
+        "fee": null,
+        "passThrough": null,
+        "startupWeeks": null,
+        "assumptions": "",
+        "clarification": "",
+        "clarificationDue": "",
+        "submittedAt": "",
+        "archived": false
+      }
+    }
+  ],
+  "criteria": [
+    {
+      "id": "crit001",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "name": "Therapeutic fit",
+        "category": "Scientific",
+        "weight": 25,
+        "mandatory": true,
+        "minimum": 3,
+        "owner": "Medical Director",
+        "archived": false
+      }
+    },
+    {
+      "id": "crit002",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "name": "EU site execution",
+        "category": "Operations",
+        "weight": 20,
+        "mandatory": true,
+        "minimum": 3,
+        "owner": "Clinical Operations",
+        "archived": false
+      }
+    },
+    {
+      "id": "crit003",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "name": "Study start-up team",
+        "category": "Operations",
+        "weight": 20,
+        "mandatory": true,
+        "minimum": 3,
+        "owner": "Clinical Operations",
+        "archived": false
+      }
+    },
+    {
+      "id": "crit004",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "name": "Quality & oversight",
+        "category": "Quality",
+        "weight": 20,
+        "mandatory": true,
+        "minimum": 3,
+        "owner": "Quality Lead",
+        "archived": false
+      }
+    },
+    {
+      "id": "crit005",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "name": "Commercial terms",
+        "category": "Commercial",
+        "weight": 15,
+        "mandatory": false,
+        "minimum": 3,
+        "owner": "Finance",
+        "archived": false
+      }
+    },
+    {
+      "id": "crit006",
+      "version": 1,
+      "data": {
+        "selectionId": "sel002",
+        "name": "Early-phase execution",
+        "category": "Scientific",
+        "weight": 40,
+        "mandatory": true,
+        "minimum": 3,
+        "owner": "Medical Director",
+        "archived": false
+      }
+    },
+    {
+      "id": "crit007",
+      "version": 1,
+      "data": {
+        "selectionId": "sel002",
+        "name": "Phase I start-up",
+        "category": "Operations",
+        "weight": 35,
+        "mandatory": true,
+        "minimum": 3,
+        "owner": "COO",
+        "archived": false
+      }
+    },
+    {
+      "id": "crit008",
+      "version": 1,
+      "data": {
+        "selectionId": "sel002",
+        "name": "Commercial transparency",
+        "category": "Commercial",
+        "weight": 25,
+        "mandatory": false,
+        "minimum": 3,
+        "owner": "Finance",
+        "archived": false
+      }
+    }
+  ],
+  "ratings": [
+    {
+      "id": "rat001",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven001",
+        "criterionId": "crit001",
+        "reviewer": "Medical Director",
+        "score": 4,
+        "evidence": "Bid response, section 1",
+        "rationale": "Evidence documented in received proposal.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat002",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven001",
+        "criterionId": "crit002",
+        "reviewer": "Clinical Operations",
+        "score": 3,
+        "evidence": "Bid response, section 2",
+        "rationale": "Evidence documented in received proposal.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat003",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven001",
+        "criterionId": "crit003",
+        "reviewer": "Clinical Operations",
+        "score": 4,
+        "evidence": "Bid response, section 3",
+        "rationale": "Evidence documented in received proposal.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat004",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven001",
+        "criterionId": "crit004",
+        "reviewer": "Quality Lead",
+        "score": 4,
+        "evidence": "Bid response, section 4",
+        "rationale": "Evidence documented in received proposal.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat005",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven001",
+        "criterionId": "crit005",
+        "reviewer": "Finance",
+        "score": 3,
+        "evidence": "Bid response, section 5",
+        "rationale": "Evidence documented in received proposal.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat006",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven002",
+        "criterionId": "crit001",
+        "reviewer": "Medical Director",
+        "score": 5,
+        "evidence": "Bid response, section 1",
+        "rationale": "Evidence documented in received proposal.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat007",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven002",
+        "criterionId": "crit002",
+        "reviewer": "Clinical Operations",
+        "score": 4,
+        "evidence": "Bid response, section 2",
+        "rationale": "Evidence documented in received proposal.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat008",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven002",
+        "criterionId": "crit003",
+        "reviewer": "Clinical Operations",
+        "score": 5,
+        "evidence": "Bid response, section 3",
+        "rationale": "Evidence documented in received proposal.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat009",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven002",
+        "criterionId": "crit004",
+        "reviewer": "Quality Lead",
+        "score": 4,
+        "evidence": "Bid response, section 4",
+        "rationale": "Evidence documented in received proposal.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat010",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven002",
+        "criterionId": "crit005",
+        "reviewer": "Finance",
+        "score": 3,
+        "evidence": "Bid response, section 5",
+        "rationale": "Evidence documented in received proposal.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat011",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven003",
+        "criterionId": "crit001",
+        "reviewer": "Medical Director",
+        "score": 4,
+        "evidence": "Bid response, section 1",
+        "rationale": "Documented bidder response requires team confirmation.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat012",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven003",
+        "criterionId": "crit002",
+        "reviewer": "Clinical Operations",
+        "score": 3,
+        "evidence": "Bid response, section 2",
+        "rationale": "Documented bidder response requires team confirmation.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat013",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven003",
+        "criterionId": "crit003",
+        "reviewer": "Clinical Operations",
+        "score": 3,
+        "evidence": "Bid response, section 3",
+        "rationale": "Documented bidder response requires team confirmation.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat014",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven003",
+        "criterionId": "crit004",
+        "reviewer": "Quality Lead",
+        "score": 2,
+        "evidence": "Bid response, section 4",
+        "rationale": "Documented bidder response requires team confirmation.",
+        "archived": false
+      }
+    },
+    {
+      "id": "rat015",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven001",
+        "criterionId": "crit001",
+        "reviewer": "Chief Medical Officer",
+        "score": 2,
+        "evidence": "Medical review 2026-10-30",
+        "rationale": "Questioned direct experience at proposed sites.",
+        "archived": false
+      }
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec001",
+      "version": 1,
+      "data": {
+        "selectionId": "sel001",
+        "vendorId": "ven002",
+        "status": "Draft",
+        "rationale": "Tentative preference pending quality and commercial due diligence.",
+        "approver": "",
+        "approvedAt": "",
+        "nextStep": "Clarify resource commitments and negotiate draft scope.",
+        "archived": false
+      }
+    }
+  ]
+}
