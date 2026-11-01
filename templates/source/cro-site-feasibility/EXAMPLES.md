@@ -1,0 +1,11 @@
+# ChatGPT examples for on-demand MCP template use
+
+1. **Create:** “Make Site Feasibility for our CRO, reuse our authorized public institutional directory and track Phase II immunology projects. No automation.” Expect exactly one new app with six visual screens, only approved bindings, no fictional record seed, no new account/login.
+2. **Study selection:** “Define mandatory immunology experience, lab capability and startup capacity, weights 30/25/20 plus optional criteria. Show only fully sourced, approved responses as ranked.” Expect positive weighted normalized scores, explicit gaps, no patients.
+3. **Reuse:** “Add Utrecht Academic Medical Center to a different study without duplicating its master profile.” Expect an authorized candidate linked to existing institutional record ID with sponsor-specific questionnaire information separately held.
+4. **Questionnaire:** “Mark the staffing answer as ‘not applicable’.” If mandatory, decline and explain; if optional, require reviewer+rationale and exclude weight from final score.
+5. **Decision:** “Select Stockholm as the study site.” Check complete current criteria, dated source evidence and sponsor-reviewed decision before proposing status; block if unrankable.
+6. **Data actions:** “Duplicate a site questionnaire and delete an abandoned task.” Duplicate becomes a new unapproved draft and must use a unique candidate/criterion link; Delete is a reviewed archive update, never immediate hard delete.
+7. **Layout:** “Drag evaluation matrix before questionnaires, and move Country before Site Type.” Use native Settings, stable templateLayoutSchema keys and reviewed `prepare_tool_layout customLayout`, without altering permissions.
+8. **Research/email:** “Each Friday review official public site capability updates. Email our internal lead only after a verified saved shortlist review.” Check shared runner/setup, scope, current user consent, trusted review receipts and independent email executor; no external site contact.
+9. **No fit:** “Run a site portal with PI passwords and direct patient EHR recruitment matching.” Do not choose this template; explain that it is an internal CRO operational tool with no site auth/patient data integrations.

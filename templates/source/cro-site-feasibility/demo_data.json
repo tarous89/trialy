@@ -1,0 +1,885 @@
+{
+  "notice": "FICTIONAL DEMONSTRATION DATA ONLY. Never seed production workspace. Sponsor and people invented for layout review.",
+  "records": [
+    {
+      "id": "p-101",
+      "role": "projects",
+      "version": 1,
+      "data": {
+        "name": "MCT-401 · Phase II Immunology",
+        "archived": false,
+        "sponsor": "Meridian Cell Therapeutics (fictional)",
+        "therapy": "Autoimmune disease",
+        "phase": "II",
+        "countries": "Germany, Netherlands, Sweden",
+        "siteType": "Academic",
+        "deadline": "2026-11-18",
+        "owner": "Feasibility lead",
+        "status": "Open",
+        "revision": "v3",
+        "source": "https://example.org/fictional-mct401-brief",
+        "notes": "Fictional restricted sponsor study brief. Verify local immunology research teams, access to lab capabilities, and startup feasibility. No patient counts or individual clinical data."
+      }
+    },
+    {
+      "id": "p-102",
+      "role": "projects",
+      "version": 1,
+      "data": {
+        "name": "MCT-220 · Rare Disease Study",
+        "archived": false,
+        "sponsor": "Meridian Cell Therapeutics (fictional)",
+        "therapy": "Rare neuromuscular disorders",
+        "phase": "II",
+        "countries": "Germany, Denmark, Netherlands",
+        "siteType": "Any",
+        "deadline": "2026-12-04",
+        "owner": "Startup manager",
+        "status": "Open",
+        "revision": "v1",
+        "source": "https://example.org/fictional-mct220-brief",
+        "notes": "Fictional sponsor-specific requirements. No sponsor information may be copied into reusable institutional site facts."
+      }
+    },
+    {
+      "id": "s-berlin",
+      "role": "sites",
+      "version": 1,
+      "data": {
+        "name": "Charité Research Campus",
+        "archived": false,
+        "country": "Germany",
+        "city": "Berlin",
+        "type": "Academic",
+        "specialties": "Immunology, rare disease",
+        "facilities": "Specialty immunology labs, research pharmacy",
+        "experience": "Public multicenter trial experience",
+        "staffBand": "9–15",
+        "leadPi": "Dr. Lena Hartmann",
+        "piRole": "Principal investigator",
+        "website": "https://example.org/fictional-site-0",
+        "evidenceSource": "https://example.org/fictional-institution-profile-0",
+        "evidenceDate": "2026-10-21",
+        "status": "Verified",
+        "notes": "Fictional professional/institutional data for visual template review; does not represent a real site or person."
+      }
+    },
+    {
+      "id": "s-utrecht",
+      "role": "sites",
+      "version": 1,
+      "data": {
+        "name": "Utrecht Academic Medical Center",
+        "archived": false,
+        "country": "Netherlands",
+        "city": "Utrecht",
+        "type": "Academic",
+        "specialties": "Immunology, translational medicine",
+        "facilities": "Specialty imaging, central sample processing",
+        "experience": "Prior academic immunology trials",
+        "staffBand": "9–15",
+        "leadPi": "Prof. Eva Lind",
+        "piRole": "Research lead",
+        "website": "https://example.org/fictional-site-1",
+        "evidenceSource": "https://example.org/fictional-institution-profile-1",
+        "evidenceDate": "2026-10-22",
+        "status": "Verified",
+        "notes": "Fictional professional/institutional data for visual template review; does not represent a real site or person."
+      }
+    },
+    {
+      "id": "s-stockholm",
+      "role": "sites",
+      "version": 1,
+      "data": {
+        "name": "Stockholm Clinical Research Center",
+        "archived": false,
+        "country": "Sweden",
+        "city": "Stockholm",
+        "type": "Specialty center",
+        "specialties": "Autoimmune disease, dermatology",
+        "facilities": "Biobank collaboration, immunophenotyping",
+        "experience": "Prior sponsor trials",
+        "staffBand": "4–8",
+        "leadPi": "Dr. Anna Norberg",
+        "piRole": "Principal investigator",
+        "website": "https://example.org/fictional-site-2",
+        "evidenceSource": "https://example.org/fictional-institution-profile-2",
+        "evidenceDate": "2026-10-23",
+        "status": "Verified",
+        "notes": "Fictional professional/institutional data for visual template review; does not represent a real site or person."
+      }
+    },
+    {
+      "id": "s-munich",
+      "role": "sites",
+      "version": 1,
+      "data": {
+        "name": "Munich Translational Studies Unit",
+        "archived": false,
+        "country": "Germany",
+        "city": "Munich",
+        "type": "Hospital",
+        "specialties": "Immunology, oncology",
+        "facilities": "Local biochemistry, centralized pharmacy",
+        "experience": "Past Phase II trials",
+        "staffBand": "4–8",
+        "leadPi": "Dr. Emil Weber",
+        "piRole": "Clinical research director",
+        "website": "https://example.org/fictional-site-3",
+        "evidenceSource": "https://example.org/fictional-institution-profile-3",
+        "evidenceDate": "2026-10-24",
+        "status": "Verified",
+        "notes": "Fictional professional/institutional data for visual template review; does not represent a real site or person."
+      }
+    },
+    {
+      "id": "s-copenhagen",
+      "role": "sites",
+      "version": 1,
+      "data": {
+        "name": "Copenhagen Neuromuscular Institute",
+        "archived": false,
+        "country": "Denmark",
+        "city": "Copenhagen",
+        "type": "Academic",
+        "specialties": "Rare neuromuscular disease",
+        "facilities": "Genetics laboratory, neurology unit",
+        "experience": "Published research trials",
+        "staffBand": "9–15",
+        "leadPi": "Prof. Nils Sorensen",
+        "piRole": "Investigator",
+        "website": "https://example.org/fictional-site-4",
+        "evidenceSource": "https://example.org/fictional-institution-profile-4",
+        "evidenceDate": "2026-10-25",
+        "status": "Needs review",
+        "notes": "Fictional professional/institutional data for visual template review; does not represent a real site or person."
+      }
+    },
+    {
+      "id": "s-essen",
+      "role": "sites",
+      "version": 1,
+      "data": {
+        "name": "Essen Community Research Network",
+        "archived": false,
+        "country": "Germany",
+        "city": "Essen",
+        "type": "Community",
+        "specialties": "Autoimmune disease",
+        "facilities": "Referral network, trained study nurses",
+        "experience": "Community investigator-led studies",
+        "staffBand": "1–3",
+        "leadPi": "Dr. Robin Adler",
+        "piRole": "Principal investigator",
+        "website": "https://example.org/fictional-site-5",
+        "evidenceSource": "https://example.org/fictional-institution-profile-5",
+        "evidenceDate": "2026-10-26",
+        "status": "Needs review",
+        "notes": "Fictional professional/institutional data for visual template review; does not represent a real site or person."
+      }
+    },
+    {
+      "id": "c-101",
+      "role": "criteria",
+      "version": 1,
+      "data": {
+        "name": "Therapeutic expertise",
+        "archived": false,
+        "projectId": "p-101",
+        "category": "Experience",
+        "mandatory": true,
+        "weight": 30,
+        "expected": "Prior institutional immunology trial experience",
+        "revision": "v3",
+        "source": "https://example.org/fictional-study-criteria-v3"
+      }
+    },
+    {
+      "id": "c-102",
+      "role": "criteria",
+      "version": 1,
+      "data": {
+        "name": "Specialized facilities",
+        "archived": false,
+        "projectId": "p-101",
+        "category": "Facilities",
+        "mandatory": true,
+        "weight": 25,
+        "expected": "Immunology laboratory and sample management capability",
+        "revision": "v3",
+        "source": "https://example.org/fictional-study-criteria-v3"
+      }
+    },
+    {
+      "id": "c-103",
+      "role": "criteria",
+      "version": 1,
+      "data": {
+        "name": "Study coordinator availability",
+        "archived": false,
+        "projectId": "p-101",
+        "category": "Staffing",
+        "mandatory": true,
+        "weight": 20,
+        "expected": "Aggregate operational FTE band for study startup",
+        "revision": "v3",
+        "source": "https://example.org/fictional-study-criteria-v3"
+      }
+    },
+    {
+      "id": "c-104",
+      "role": "criteria",
+      "version": 1,
+      "data": {
+        "name": "Startup timeline",
+        "archived": false,
+        "projectId": "p-101",
+        "category": "Startup",
+        "mandatory": false,
+        "weight": 15,
+        "expected": "Estimated contract-to-first-site-visit timelines; no patient detail",
+        "revision": "v3",
+        "source": "https://example.org/fictional-study-criteria-v3"
+      }
+    },
+    {
+      "id": "c-105",
+      "role": "criteria",
+      "version": 1,
+      "data": {
+        "name": "Site quality history",
+        "archived": false,
+        "projectId": "p-101",
+        "category": "Quality",
+        "mandatory": false,
+        "weight": 10,
+        "expected": "Documented public or authorized aggregate quality record",
+        "revision": "v3",
+        "source": "https://example.org/fictional-study-criteria-v3"
+      }
+    },
+    {
+      "id": "c-201",
+      "role": "criteria",
+      "version": 1,
+      "data": {
+        "name": "Neuromuscular experience",
+        "archived": false,
+        "projectId": "p-102",
+        "category": "Experience",
+        "mandatory": true,
+        "weight": 45,
+        "expected": "Relevant neurology/rare disease experience",
+        "revision": "v1",
+        "source": "https://example.org/fictional-study-criteria-v1"
+      }
+    },
+    {
+      "id": "c-202",
+      "role": "criteria",
+      "version": 1,
+      "data": {
+        "name": "Molecular testing equipment",
+        "archived": false,
+        "projectId": "p-102",
+        "category": "Facilities",
+        "mandatory": true,
+        "weight": 30,
+        "expected": "Institutional laboratory capability",
+        "revision": "v1",
+        "source": "https://example.org/fictional-study-criteria-v1"
+      }
+    },
+    {
+      "id": "c-203",
+      "role": "criteria",
+      "version": 1,
+      "data": {
+        "name": "Startup readiness",
+        "archived": false,
+        "projectId": "p-102",
+        "category": "Startup",
+        "mandatory": false,
+        "weight": 25,
+        "expected": "Institutional availability and document readiness",
+        "revision": "v1",
+        "source": "https://example.org/fictional-study-criteria-v1"
+      }
+    },
+    {
+      "id": "k-101",
+      "role": "candidates",
+      "version": 1,
+      "data": {
+        "name": "Candidate · Charité Research Campus",
+        "archived": false,
+        "projectId": "p-101",
+        "siteId": "s-berlin",
+        "stage": "Selected",
+        "owner": "Feasibility lead",
+        "contactDue": "2026-11-19",
+        "respondedOn": "2026-10-27",
+        "sponsorDecision": "Approved",
+        "decisionBy": "Sponsor medical lead",
+        "decisionDate": "2026-10-24",
+        "rationale": "Selected following reviewed institutional feasibility",
+        "activationTarget": "2027-01-22",
+        "source": "https://example.org/fictional-sponsor-decision"
+      }
+    },
+    {
+      "id": "k-102",
+      "role": "candidates",
+      "version": 1,
+      "data": {
+        "name": "Candidate · Utrecht Academic Medical Center",
+        "archived": false,
+        "projectId": "p-101",
+        "siteId": "s-utrecht",
+        "stage": "Proposed",
+        "owner": "Feasibility lead",
+        "contactDue": "2026-11-19",
+        "respondedOn": "2026-10-27",
+        "sponsorDecision": "Pending",
+        "decisionBy": "Sponsor medical lead",
+        "decisionDate": "2026-10-28",
+        "rationale": "Proposed following complete approved site assessment",
+        "activationTarget": "",
+        "source": "https://example.org/fictional-sponsor-decision"
+      }
+    },
+    {
+      "id": "k-103",
+      "role": "candidates",
+      "version": 1,
+      "data": {
+        "name": "Candidate · Stockholm Clinical Research Center",
+        "archived": false,
+        "projectId": "p-101",
+        "siteId": "s-stockholm",
+        "stage": "Responded",
+        "owner": "Feasibility lead",
+        "contactDue": "2026-11-07",
+        "respondedOn": "2026-10-27",
+        "sponsorDecision": "Pending",
+        "decisionBy": "",
+        "decisionDate": "",
+        "rationale": "",
+        "activationTarget": "",
+        "source": ""
+      }
+    },
+    {
+      "id": "k-104",
+      "role": "candidates",
+      "version": 1,
+      "data": {
+        "name": "Candidate · Munich Translational Studies Unit",
+        "archived": false,
+        "projectId": "p-101",
+        "siteId": "s-munich",
+        "stage": "Contacted",
+        "owner": "Feasibility lead",
+        "contactDue": "2026-11-07",
+        "respondedOn": "",
+        "sponsorDecision": "Pending",
+        "decisionBy": "",
+        "decisionDate": "",
+        "rationale": "",
+        "activationTarget": "",
+        "source": ""
+      }
+    },
+    {
+      "id": "k-105",
+      "role": "candidates",
+      "version": 1,
+      "data": {
+        "name": "Candidate · Essen Community Research Network",
+        "archived": false,
+        "projectId": "p-101",
+        "siteId": "s-essen",
+        "stage": "Identified",
+        "owner": "Feasibility lead",
+        "contactDue": "2026-11-19",
+        "respondedOn": "",
+        "sponsorDecision": "Pending",
+        "decisionBy": "",
+        "decisionDate": "",
+        "rationale": "",
+        "activationTarget": "",
+        "source": ""
+      }
+    },
+    {
+      "id": "k-201",
+      "role": "candidates",
+      "version": 1,
+      "data": {
+        "name": "Candidate · Copenhagen Neuromuscular Institute",
+        "archived": false,
+        "projectId": "p-102",
+        "siteId": "s-copenhagen",
+        "stage": "Responded",
+        "owner": "Feasibility lead",
+        "contactDue": "2026-11-07",
+        "respondedOn": "2026-10-27",
+        "sponsorDecision": "Pending",
+        "decisionBy": "",
+        "decisionDate": "",
+        "rationale": "",
+        "activationTarget": "",
+        "source": ""
+      }
+    },
+    {
+      "id": "k-202",
+      "role": "candidates",
+      "version": 1,
+      "data": {
+        "name": "Candidate · Charité Research Campus",
+        "archived": false,
+        "projectId": "p-102",
+        "siteId": "s-berlin",
+        "stage": "Identified",
+        "owner": "Feasibility lead",
+        "contactDue": "2026-11-19",
+        "respondedOn": "",
+        "sponsorDecision": "Pending",
+        "decisionBy": "",
+        "decisionDate": "",
+        "rationale": "",
+        "activationTarget": "",
+        "source": ""
+      }
+    },
+    {
+      "id": "r-k-101-1",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Therapeutic expertise",
+        "archived": false,
+        "candidateId": "k-101",
+        "criterionId": "c-101",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 5,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-101",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-101-2",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Specialized facilities",
+        "archived": false,
+        "candidateId": "k-101",
+        "criterionId": "c-102",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 4,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-101",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-101-3",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Study coordinator availability",
+        "archived": false,
+        "candidateId": "k-101",
+        "criterionId": "c-103",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 4,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-101",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-101-4",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Startup timeline",
+        "archived": false,
+        "candidateId": "k-101",
+        "criterionId": "c-104",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 4,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-101",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-101-5",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Site quality history",
+        "archived": false,
+        "candidateId": "k-101",
+        "criterionId": "c-105",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 5,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-101",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-102-1",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Therapeutic expertise",
+        "archived": false,
+        "candidateId": "k-102",
+        "criterionId": "c-101",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 4,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-102",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-102-2",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Specialized facilities",
+        "archived": false,
+        "candidateId": "k-102",
+        "criterionId": "c-102",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 5,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-102",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-102-3",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Study coordinator availability",
+        "archived": false,
+        "candidateId": "k-102",
+        "criterionId": "c-103",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 3,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-102",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-102-4",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Startup timeline",
+        "archived": false,
+        "candidateId": "k-102",
+        "criterionId": "c-104",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 4,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-102",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-102-5",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Site quality history",
+        "archived": false,
+        "candidateId": "k-102",
+        "criterionId": "c-105",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 4,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-102",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-103-1",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Therapeutic expertise",
+        "archived": false,
+        "candidateId": "k-103",
+        "criterionId": "c-101",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 4,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-103",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-103-2",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Specialized facilities",
+        "archived": false,
+        "candidateId": "k-103",
+        "criterionId": "c-102",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 3,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-103",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-103-3",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Study coordinator availability",
+        "archived": false,
+        "candidateId": "k-103",
+        "criterionId": "c-103",
+        "answer": "",
+        "rating": null,
+        "status": "Clarification",
+        "answeredAt": "",
+        "source": "",
+        "respondent": "",
+        "reviewer": "",
+        "notes": "Pending dated clarification from site administrator"
+      }
+    },
+    {
+      "id": "r-k-103-4",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Startup timeline",
+        "archived": false,
+        "candidateId": "k-103",
+        "criterionId": "c-104",
+        "answer": "",
+        "rating": null,
+        "status": "Requested",
+        "answeredAt": "",
+        "source": "",
+        "respondent": "",
+        "reviewer": "",
+        "notes": "Pending dated clarification from site administrator"
+      }
+    },
+    {
+      "id": "r-k-103-5",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Site quality history",
+        "archived": false,
+        "candidateId": "k-103",
+        "criterionId": "c-105",
+        "answer": "",
+        "rating": null,
+        "status": "Clarification",
+        "answeredAt": "",
+        "source": "",
+        "respondent": "",
+        "reviewer": "",
+        "notes": "Pending dated clarification from site administrator"
+      }
+    },
+    {
+      "id": "r-k-201-1",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Neuromuscular experience",
+        "archived": false,
+        "candidateId": "k-201",
+        "criterionId": "c-201",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 5,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-201",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-201-2",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Molecular testing equipment",
+        "archived": false,
+        "candidateId": "k-201",
+        "criterionId": "c-202",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 4,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-201",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-201-3",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Startup readiness",
+        "archived": false,
+        "candidateId": "k-201",
+        "criterionId": "c-203",
+        "answer": "",
+        "rating": null,
+        "status": "Clarification",
+        "answeredAt": "",
+        "source": "",
+        "respondent": "",
+        "reviewer": "",
+        "notes": "Pending dated clarification from site administrator"
+      }
+    },
+    {
+      "id": "t-101",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Collect investigator qualification summary",
+        "archived": false,
+        "candidateId": "k-101",
+        "projectId": "p-101",
+        "kind": "Documentation",
+        "owner": "Study startup lead",
+        "due": "2026-11-08",
+        "status": "In progress",
+        "evidence": "",
+        "notes": "Sponsor-confidential startup notes. No PHI."
+      }
+    },
+    {
+      "id": "t-102",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Confirm site contracting contacts",
+        "archived": false,
+        "candidateId": "k-101",
+        "projectId": "p-101",
+        "kind": "Contracts",
+        "owner": "Legal coordinator",
+        "due": "2026-11-12",
+        "status": "Open",
+        "evidence": "",
+        "notes": "Internal handoff only."
+      }
+    },
+    {
+      "id": "t-103",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Review institutional regulatory checklist",
+        "archived": false,
+        "candidateId": "k-101",
+        "projectId": "p-101",
+        "kind": "Regulatory",
+        "owner": "Startup lead",
+        "due": "2026-11-15",
+        "status": "Open",
+        "evidence": "",
+        "notes": "Collect document metadata, not patient records."
+      }
+    },
+    {
+      "id": "t-104",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Share internal shortlist rationale",
+        "archived": false,
+        "candidateId": "k-102",
+        "projectId": "p-101",
+        "kind": "Other",
+        "owner": "Feasibility lead",
+        "due": "2026-11-10",
+        "status": "Done",
+        "evidence": "https://example.org/fictional-approved-minutes",
+        "notes": "Recorded internal decision only."
+      }
+    },
+    {
+      "id": "t-201",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Confirm lab feasibility",
+        "archived": false,
+        "candidateId": "k-201",
+        "projectId": "p-102",
+        "kind": "Startup",
+        "owner": "Study manager",
+        "due": "2026-11-23",
+        "status": "Open",
+        "evidence": "",
+        "notes": "No patient-level cohort estimates."
+      }
+    }
+  ]
+}

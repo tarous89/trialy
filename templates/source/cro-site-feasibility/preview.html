@@ -1,0 +1,1845 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CRO Site Feasibility fictional preview</title><style>:root{--sf-ink:#203443;--sf-muted:#6d7e8d;--sf-ocean:#166da2;--sf-dark:#173849;--sf-teal:#138f8a;--sf-pale:#eef6f9;--sf-line:#e0e9ee;--sf-bg:#f5f8fb;--sf-white:#fff;--sf-amber:#a76a23;--sf-red:#b45257;--sf-green:#24785f}
+*{box-sizing:border-box}
+body{margin:0;background:var(--sf-bg);color:var(--sf-ink);font:15px/1.48 Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}button:disabled{opacity:.43;cursor:not-allowed}button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid #58a6c9;outline-offset:2px}
+.sf-icon{vertical-align:middle;flex-shrink:0}
+.sf-top{display:flex;align-items:center;justify-content:space-between;padding:26px clamp(20px,3vw,42px) 20px;gap:16px;background:#fff;border-bottom:1px solid var(--sf-line)}
+.sf-top-kicker{font-size:12px;text-transform:uppercase;color:#1683a6;font-weight:760;letter-spacing:1.6px}
+.sf-top h1{font-size:31px;font-weight:770;letter-spacing:-1.15px;line-height:1.12;margin:5px 0 0;color:#1d3343}
+.sf-top-tools{display:flex;gap:10px;align-items:flex-end;min-width:0;flex-wrap:wrap}
+.sf-project-select{display:flex;flex-direction:column;gap:4px;min-width:220px;max-width:330px}
+.sf-project-select span{font-size:12px;color:#4c6576;font-weight:700;letter-spacing:.65px;text-transform:uppercase}
+.sf-project-select select{background:#f8fbfd;border:1px solid #d7e4eb;border-radius:9px;max-width:330px;min-width:170px;padding:9px 13px;color:#2a4658;font-weight:680;font-size:12px}
+.sf-settings{height:38px;width:39px;display:grid;place-items:center;background:#fff;border:1px solid #d9e4eb;border-radius:9px;color:#537086}
+.sf-tabs{display:flex;gap:24px;align-items:center;overflow-x:auto;white-space:nowrap;padding:0 clamp(20px,3vw,42px);background:#fff;border-bottom:1px solid var(--sf-line);scrollbar-width:thin}
+.sf-tab{display:inline-flex;gap:8px;align-items:center;justify-content:center;border:0;background:transparent;padding:16px 1px 14px;color:#4c6576;font-size:12px;font-weight:630;border-bottom:3px solid transparent;white-space:nowrap;flex:none}
+.sf-tab:hover{color:#236c97}.sf-tab-current{color:#145d8e;border-bottom-color:#1d83b1;font-weight:760}
+.sf-content{margin:0 auto;max-width:1600px;padding:28px clamp(20px,3vw,42px) 52px;min-height:660px}
+.sf-panel{background:#fff;border:1px solid var(--sf-line);border-radius:13px;box-shadow:0 3px 14px #28516908;padding:21px 22px;min-width:0}
+.sf-panel h2{font-size:15px;margin:0;letter-spacing:-.18px;font-weight:765;color:#273e4e}
+.sf-panel-head{display:flex;gap:15px;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap}
+.sf-subtle{color:#4c6576;font-size:12px;margin:4px 0 15px}
+.sf-alert{padding:12px 15px;background:#fff6e8;border:1px solid #f1dfbe;border-radius:10px;color:#916a28;margin-bottom:18px;font-size:12px}
+.sf-alert-info{background:#eaf5fa;color:#2a6787;border-color:#d5e9f2}
+.sf-btn{background:#fff;border:1px solid #d8e3ea;border-radius:8px;min-height:34px;padding:7px 12px;display:inline-flex;align-items:center;justify-content:center;gap:7px;color:#426073;font-size:12px;font-weight:700;white-space:nowrap}
+.sf-btn:hover{border-color:#70a9c8;color:#155c82}
+.sf-btn-primary{background:var(--sf-ocean);border-color:var(--sf-ocean);color:white}
+.sf-btn-primary:hover{background:#145781;color:#fff}
+.sf-btn-small{padding:6px 10px;min-height:30px;font-size:12px}
+.sf-btn-danger{border-color:#dfb8be;color:#a33e4d}
+.sf-btn-outline{border-color:#bcd6e3;color:#20698f}
+.sf-link-button{padding:0;background:none;border:0;margin-top:15px;color:#186c98;display:inline-flex;gap:5px;align-items:center;font-weight:720;font-size:12px}
+.sf-pill{display:inline-flex;padding:4px 10px;border-radius:100px;align-items:center;font-size:12px;font-weight:750;line-height:1.4;background:#f0f3f6;color:#4c6576;white-space:nowrap}
+.sf-pill.success{color:#206650;background:#e6f6ed}.sf-pill.warning{color:#805018;background:#fff2dd}.sf-pill.danger{color:#a8414d;background:#ffecee}.sf-pill.info{color:#226d94;background:#e8f3fa}
+.sf-dashgrid{display:grid;grid-template-columns:1.42fr 1fr;gap:18px;align-items:stretch;margin-bottom:17px}
+.sf-feature{min-height:259px;border-radius:14px;padding:27px 30px;color:#eef7fa;background:linear-gradient(117deg,#18394c,#15516b 63%,#1a7b99);position:relative;overflow:hidden}
+.sf-feature:after{content:'';position:absolute;width:340px;height:340px;border-radius:50%;right:-100px;top:-155px;border:1px solid #b5eaff20;box-shadow:0 0 0 35px #b5eaff08,0 0 0 70px #b5eaff09,0 0 0 105px #b5eaff06;pointer-events:none}
+.sf-feature-top{display:flex;justify-content:space-between;gap:6px;color:#b1d2e2;font-size:12px;letter-spacing:1.45px;font-weight:730}
+.sf-scope-dot{letter-spacing:.3px;color:#9be3db}
+.sf-feature h2{margin:18px 0 6px;font-size:29px;letter-spacing:-.8px;line-height:1.24;font-weight:755;position:relative;max-width:690px}
+.sf-feature p{margin:0;color:#b8d4de;font-size:13px}
+.sf-feature-footer{display:grid;grid-template-columns:1.6fr 1fr .7fr;gap:15px;margin-top:36px;position:relative}
+.sf-feature-footer div{border-top:1px solid #b8e3f02c;padding-top:12px;min-width:0}
+.sf-feature-footer small{font-size:12px;letter-spacing:.9px;color:#9bc3d3;display:block;margin-bottom:6px}
+.sf-feature-footer b{font-size:13px;font-weight:760;overflow-wrap:anywhere}
+.sf-urgent{min-height:259px}.sf-urgent .sf-panel-head{margin-bottom:9px}
+.sf-urgent-row{display:flex;align-items:center;gap:18px;justify-content:space-between;padding:14px 0;border-bottom:1px solid #eaf0f3;font-size:12px;font-weight:620}
+.sf-urgent-row strong{font-size:16px;color:#17698e}
+.sf-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px;margin-bottom:18px}
+.sf-stat{background:white;border:1px solid var(--sf-line);border-radius:12px;padding:18px 22px;display:flex;flex-direction:column;min-width:0}
+.sf-stat-label{font-size:12px;color:#4c6576;font-weight:660}.sf-stat strong{font-size:28px;color:#234354;font-weight:770;letter-spacing:-.65px;margin:8px 0 2px}.sf-stat small{font-size:12px;color:#4c6576}
+.sf-grid-two{display:grid;grid-template-columns:1.08fr .92fr;gap:18px;align-items:start}
+.sf-country-row{display:grid;grid-template-columns:126px minmax(0,1fr) 26px;gap:13px;align-items:center;padding:9px 0}
+.sf-country-row b{font-size:12px;font-weight:685}.sf-country-row strong{font-size:12px;text-align:right}
+.sf-track{height:9px;background:#edf2f6;border-radius:100px;overflow:hidden}.sf-track span{background:linear-gradient(90deg,#2686a7,#25ab99);height:100%;display:block;border-radius:100px}
+.sf-mini-steps{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-top:22px}
+.sf-mini-steps div{background:#f3f8fa;border:1px solid #e8f0f4;border-radius:8px;padding:9px 7px;min-width:0}.sf-mini-steps b{display:block;color:#205e7e;font-size:17px}.sf-mini-steps small{font-size:12px;color:#4c6576;overflow-wrap:anywhere}
+.sf-list{margin:9px 0 14px}.sf-list-row{display:flex;gap:12px;align-items:center;border-bottom:1px solid #edf2f6;padding:11px 0}.sf-list-row:last-child{border:0}.sf-list-row div{flex:1;min-width:0}.sf-list-row strong{display:block;font-size:12px}.sf-list-row small{color:#4c6576;font-size:12px}.sf-list-row>span{color:#4c6576;font-size:12px;white-space:nowrap}
+.sf-grid-study{display:grid;grid-template-columns:1.5fr .7fr;gap:18px;margin-bottom:18px}
+.sf-study-brief{min-height:305px}.sf-brief-heading{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:20px}.sf-brief-heading strong{font-size:19px;letter-spacing:-.4px}
+.sf-brief-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 13px}.sf-brief-facts>div{min-width:0}.sf-brief-facts small,.sf-site-details small,.sf-qa-point small{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:#4c6576;margin-bottom:5px}.sf-brief-facts b,.sf-site-details strong,.sf-qa-point b{font-size:12px;color:#334c5c;font-weight:725;overflow-wrap:anywhere}
+.sf-brief-notes{margin-top:22px;padding:13px 15px;border-radius:9px;background:#f4f8fb}.sf-brief-notes strong{font-size:12px}.sf-brief-notes p{font-size:12px;color:#4c6576;margin:5px 0 0;line-height:1.55}
+.sf-criteria-note{background:linear-gradient(145deg,#fff,#f4fbfe)}.sf-circle-stat{width:113px;height:113px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:50%;border:10px solid #d8f0ee;border-left-color:#148d90;border-top-color:#148d90;margin:6px auto 24px;font-size:37px;font-weight:760;color:#135b77}.sf-circle-stat span{font-size:12px;font-weight:660;color:#4c6576}.sf-criteria-metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:center;margin-bottom:12px}.sf-criteria-metrics b{display:block;font-size:18px}.sf-criteria-metrics small{font-size:12px;color:#4c6576}
+.sf-data-panel{padding:22px 0 0}.sf-data-panel>.sf-panel-head,.sf-data-panel>.sf-toolbar,.sf-data-panel>.sf-filters{margin-left:22px;margin-right:22px}.sf-data-panel>.sf-panel-head{margin-bottom:17px}
+.sf-toolbar{display:flex;align-items:center;gap:9px;margin-bottom:14px;max-width:100%}
+.sf-search-label{display:flex;flex:1 1 180px;align-items:center;gap:8px;border:1px solid #dae6ec;background:#fff;border-radius:8px;padding:0 11px;min-width:95px}.sf-search-label .sf-icon{width:15px;color:#4c6576}.sf-search-label input{border:0;min-width:0;outline:none;padding:9px 0;width:100%;font-size:12px}.sf-search-label input:focus-visible{outline:none}
+.sf-filters{margin-bottom:14px;padding:12px;background:#f5f9fc;border:1px solid #e4edf2;border-radius:9px}.sf-filters label{font-size:12px;color:#5c7280}.sf-filters select{margin-left:8px;border:1px solid #d1e1ea;padding:5px 8px;border-radius:7px;max-width:190px}
+.sf-tablebox{max-width:100%;overflow-x:auto;overflow-y:visible;min-width:0}.sf-table{border-collapse:collapse;width:100%;min-width:720px}.sf-table th{background:#f7fafc;color:#4c6576;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.75px;padding:13px 15px;font-weight:780;white-space:nowrap;border-top:1px solid var(--sf-line);border-bottom:1px solid var(--sf-line)}
+.sf-table td{padding:13px 15px;font-size:12px;vertical-align:middle;color:#617383;border-bottom:1px solid #eef2f5;max-width:280px;overflow-wrap:anywhere}.sf-table td strong{color:#31485a;font-weight:710}.sf-table tbody tr:hover{background:#f9fbfd}.sf-table tbody tr:last-child td{border-bottom:0}.sf-table .sf-last{width:73px;text-align:right;white-space:nowrap}
+.sf-actions{position:relative;display:inline-flex}.sf-more{padding:4px 7px;min-width:33px;font-size:18px;border:1px solid transparent;border-radius:7px;background:transparent;color:#4c6576;line-height:1.1}.sf-more:hover{background:#ecf4f8}
+.sf-menu{position:absolute;z-index:15;right:0;top:30px;background:white;padding:5px;border:1px solid #dce6ed;box-shadow:0 15px 34px #153c5730;width:142px;border-radius:9px}.sf-menu-item{display:block;width:100%;border:0;background:none;text-align:left;padding:8px 9px;border-radius:6px;font-size:12px;color:#385669}.sf-menu-item:hover{background:#edf6fa}.sf-menu-danger{color:#b14d5b}.sf-menu-danger:hover{background:#fff0f1}
+.sf-pager{border-top:1px solid #eaf0f4;padding:12px 17px;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#4c6576;font-size:12px;flex-wrap:wrap}.sf-pager>span:last-child{display:flex;gap:8px;align-items:center}.sf-page-count{white-space:nowrap}
+.sf-directory-summary{display:flex;gap:16px;justify-content:space-between;align-items:center;background:linear-gradient(110deg,#e8f5fa,#f6fbfd);border:1px solid #d7e9f2;border-radius:13px;padding:25px;margin-bottom:18px}.sf-directory-summary small{font-size:12px;font-weight:750;color:#19769c;letter-spacing:1.2px}.sf-directory-summary h2{font-size:27px;letter-spacing:-.7px;margin:7px 0}.sf-directory-summary p{font-size:12px;color:#4c6576;max-width:710px}.sf-directory-countries{display:flex;gap:7px;flex-wrap:wrap}.sf-directory-countries span{border:1px solid #cde6ef;background:white;color:#50768b;border-radius:40px;padding:8px 10px;font-size:12px;white-space:nowrap}.sf-directory-countries b{color:#156b91;margin-left:6px}
+.sf-bottom-space{margin-top:18px}.sf-detail-selector{margin-bottom:17px}.sf-detail-selector label{font-size:12px;color:#4c6576}.sf-detail-selector select,.sf-question-picker select{padding:8px 10px;border:1px solid #d1e3ec;border-radius:8px;background:#fff;color:#2a546a;margin-left:9px;max-width:300px}
+.sf-site-details{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.sf-site-details>div{border-radius:9px;background:#f6f9fb;padding:14px}.sf-source-line{font-size:12px;color:#4c6576;margin:15px 0 0;overflow-wrap:anywhere}
+.sf-question-head{margin-bottom:18px}.sf-question-picker{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.sf-question-picker label{font-size:12px;color:#5d788c;font-weight:710}.sf-question-picker>div:not(.sf-progress){margin-left:auto}.sf-question-picker small{display:block;font-size:12px;color:#4c6576}.sf-question-picker strong{display:block;font-size:14px}.sf-progress{flex:0 0 135px;height:8px;background:#e3eef3;overflow:hidden;border-radius:9px}.sf-progress span{height:100%;display:block;background:#1d99a3;border-radius:9px}
+.sf-question-grid{display:grid;grid-template-columns:1.5fr .7fr;gap:18px;align-items:start}.sf-question-items{margin-top:-2px}.sf-question-item{border-top:1px solid #ecf1f5;padding:16px 0;display:flex;gap:12px;justify-content:space-between}.sf-question-n{display:flex;flex-direction:column;gap:5px;flex:1;min-width:0}.sf-question-n strong{font-size:13px}.sf-question-n small{font-size:12px;color:#4c6576}.sf-question-category{color:#176885;font-size:12px;text-transform:uppercase;letter-spacing:.75px;font-weight:740}.sf-question-answer{display:flex;align-items:flex-end;flex-direction:column;gap:7px;min-width:120px}.sf-question-rate{font-size:12px;color:#4c6576}
+.sf-question-aside{background:linear-gradient(160deg,#edf8fb,#fff)}.sf-question-aside h2{margin-bottom:13px}.sf-qa-point{padding:12px 0;border-bottom:1px solid #dfe9ef}.sf-qa-progress{display:flex;align-items:center;gap:13px;padding:24px 0}.sf-big-percent{font-size:36px;color:#1388a2;font-weight:800;letter-spacing:-1px}.sf-qa-progress small{font-size:12px;color:#4c6576;line-height:1.5}
+.sf-matrix-title{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:20px}.sf-matrix-title h2{font-size:22px;letter-spacing:-.45px;margin:0}.sf-matrix-title p{font-size:12px;color:#4c6576}.sf-panel-large{margin-bottom:18px}.sf-rank-list{display:grid;gap:9px}.sf-rank-item{display:grid;grid-template-columns:28px minmax(170px,1fr) minmax(80px,1fr) 70px;gap:17px;align-items:center;padding:12px;border:1px solid #eaf0f4;border-radius:9px}.sf-rank-index{color:#4c6576;font-size:12px;font-weight:800}.sf-rank-item strong{font-size:12px;display:block}.sf-rank-item small{color:#4c6576;font-size:12px}.sf-rank-bar{height:11px;border-radius:20px;background:#e8f1f5;overflow:hidden}.sf-rank-bar span{display:block;background:linear-gradient(90deg,#2274a4,#21b19d);height:100%;border-radius:20px}.sf-rank-item b{font-size:13px;color:#175e8a;text-align:right}
+.sf-matrix-scroll{max-width:100%;overflow-x:auto}.sf-matrix-table{border-collapse:collapse;width:100%;min-width:720px;table-layout:fixed}.sf-matrix-table th,.sf-matrix-table td{border-bottom:1px solid #e7eef3;text-align:center;padding:13px 10px;font-size:12px;overflow-wrap:anywhere}.sf-matrix-table th{color:#4c6576;font-size:12px;background:#f8fbfd}.sf-matrix-table th:first-child,.sf-matrix-table td:first-child{text-align:left;min-width:220px;width:240px}.sf-matrix-table td:first-child strong{display:block;font-size:12px}.sf-matrix-table td:first-child small{display:block;color:#4c6576}.sf-rating{font-weight:760;color:#1c637f;background:#e5f4fa;padding:6px 9px;border-radius:7px;white-space:nowrap}.sf-unranked{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.sf-unranked div{padding:13px;border-radius:8px;background:#f7f9fb;border:1px solid #eaf0f4}.sf-unranked strong,.sf-unranked small{display:block}.sf-unranked small{font-size:12px;color:#4c6576;margin-top:4px}
+.sf-handoff-banner{background:#203c50;color:#fff;border-radius:13px;padding:25px 28px;display:flex;gap:25px;justify-content:space-between;align-items:center;margin-bottom:18px}.sf-handoff-banner small{font-size:12px;color:#91c7d8;letter-spacing:1.15px}.sf-handoff-banner h2{font-size:23px;letter-spacing:-.7px;margin:8px 0}.sf-handoff-banner p{font-size:12px;color:#b7cdd6}.sf-handoff-banner>div:last-child{display:flex;flex-direction:column;text-align:center;min-width:90px}.sf-handoff-banner b{font-size:36px;font-weight:800}
+.sf-pipeline{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:18px}.sf-stage{border:1px solid #e0e8ee;border-radius:11px;min-width:0;background:#f7fafc;padding:10px}.sf-stage-head{display:flex;align-items:center;justify-content:space-between;gap:5px;padding:6px 5px 12px;border-bottom:1px solid #e1eaf0}.sf-stage-head strong{font-size:12px;color:#496d83}.sf-stage-head span{background:#e1edf3;color:#345b70;border-radius:7px;padding:3px 7px;font-size:12px}.sf-stage-cards{display:grid;gap:8px;margin-top:10px}.sf-site-card{background:white;border:1px solid #dfebef;border-radius:9px;padding:11px;min-width:0}.sf-site-card>strong{display:block;font-size:12px;overflow-wrap:anywhere}.sf-site-card>small{display:block;font-size:12px;color:#4c6576;margin:4px 0 8px}.sf-site-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:11px}.sf-site-card-footer .sf-more{padding:4px 5px}.sf-stage-empty{color:#4c6576;text-align:center;font-size:12px;padding:14px 0}.sf-handoff-actions{display:flex;gap:8px;align-items:center}.sf-handoff-actions+ .sf-toolbar{margin-bottom:12px}
+.sf-empty{padding:27px;text-align:center;color:#4c6576;font-size:12px}.sf-empty-small{padding:24px 14px;color:#4c6576;font-size:12px;text-align:center}.sf-footnote{margin:26px 0;color:#4c6576;font-size:12px}.sf-demo-footer{height:0}
+.sf-overlay{position:fixed;inset:0;background:#1c324a70;z-index:40;display:flex;align-items:stretch;justify-content:flex-end}.sf-drawer{height:100vh;max-height:100vh;width:min(545px,100%);background:#fff;display:flex;flex-direction:column;box-shadow:-16px 0 44px #16324938}.sf-drawer-head{padding:22px 25px;border-bottom:1px solid #e2eaf0;display:flex;justify-content:space-between;gap:12px}.sf-drawer-head h2{font-size:22px;letter-spacing:-.6px;margin:5px 0}.sf-drawer-head small{font-size:12px;letter-spacing:1.2px;color:#1685a7;font-weight:760}.sf-close{min-width:32px;height:32px;border-radius:8px;border:1px solid #d4e4eb;background:#fff;font-size:20px;color:#4c6576}.sf-edit-form{display:contents}.sf-drawer-content{padding:20px 25px;overflow:auto;flex:1}.sf-inform{font-size:12px;color:#536f83;background:#edf7fb;border:1px solid #d7eaf3;border-radius:8px;padding:11px 13px;margin:0 0 19px}.sf-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.sf-field{display:flex;flex-direction:column;gap:5px;color:#5e7788;font-size:12px;font-weight:695}.sf-field textarea,.sf-field input,.sf-field select{width:100%;padding:9px 10px;border:1px solid #d7e4eb;border-radius:8px;background:#fff;color:#334e60;min-width:0}.sf-field textarea{min-height:90px;resize:vertical}.sf-field:has(textarea){grid-column:span 2}.sf-field input:disabled,.sf-field select:disabled,.sf-field textarea:disabled{background:#f1f4f6}.sf-drawer-foot{padding:17px 24px;border-top:1px solid #e2eaf0;display:flex;gap:9px;justify-content:flex-end}.sf-dialog{background:white;max-width:450px;width:calc(100vw - 30px);padding:28px;border-radius:13px;margin:auto;box-shadow:0 10px 40px #16324830}.sf-dialog h2{margin:0 0 12px;font-size:20px}.sf-dialog p{line-height:1.7;font-size:13px;color:#4c6576}.sf-dialog-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+@media(max-width:1180px){.sf-tabs{gap:16px}.sf-dashgrid{grid-template-columns:1fr}.sf-grid-two{grid-template-columns:1fr}.sf-pipeline{grid-template-columns:repeat(3,minmax(0,1fr))}.sf-site-details{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:830px){.sf-top{padding:20px 22px 18px}.sf-tabs{padding:0 22px;gap:22px}.sf-content{padding:22px}.sf-grid-study,.sf-question-grid{grid-template-columns:1fr}.sf-criteria-note{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center}.sf-criteria-note .sf-panel-head{grid-column:span 2}.sf-circle-stat{margin:5px auto}.sf-criteria-metrics{gap:20px}.sf-panel{padding:19px}.sf-data-panel{padding:19px 0 0}.sf-data-panel>.sf-panel-head,.sf-data-panel>.sf-toolbar,.sf-data-panel>.sf-filters{margin-left:19px;margin-right:19px}.sf-feature-footer{margin-top:30px}}
+@media(max-width:620px){.sf-top{padding:16px 16px 13px;align-items:flex-start;flex-wrap:wrap}.sf-top h1{font-size:27px}.sf-top-tools{width:100%;justify-content:space-between}.sf-project-select{flex:1;max-width:none;min-width:0}.sf-project-select select{width:100%;min-width:0;max-width:none}.sf-tabs{padding:0 16px;gap:18px}.sf-tab{padding:12px 0;font-size:12px}.sf-icon{width:16px;height:16px}.sf-content{padding:17px 15px 32px;min-height:500px}.sf-panel{padding:16px}.sf-data-panel{padding:16px 0 0}.sf-data-panel>.sf-panel-head,.sf-data-panel>.sf-toolbar,.sf-data-panel>.sf-filters{margin-left:15px;margin-right:15px}.sf-feature{padding:21px;min-height:auto}.sf-feature h2{font-size:23px}.sf-feature-footer{gap:12px;margin-top:25px}.sf-feature-footer b{font-size:12px}.sf-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.sf-stat{padding:15px}.sf-stat strong{font-size:25px}.sf-mini-steps{grid-template-columns:repeat(3,minmax(0,1fr))}.sf-brief-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.sf-criteria-note{display:block}.sf-directory-summary{padding:18px;align-items:flex-start;flex-direction:column}.sf-directory-summary h2{font-size:23px}.sf-site-details{grid-template-columns:1fr}.sf-question-picker>div:not(.sf-progress){margin-left:0}.sf-question-item{display:block}.sf-question-answer{align-items:flex-start;flex-direction:row;margin-top:12px;min-width:0}.sf-question-grid{gap:12px}.sf-rank-item{grid-template-columns:26px minmax(80px,1fr) 55px;gap:9px}.sf-rank-item .sf-rank-bar{grid-column:2/4}.sf-matrix-title{align-items:flex-start}.sf-matrix-title h2{font-size:18px}.sf-unranked{grid-template-columns:1fr}.sf-pipeline{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.sf-handoff-banner{padding:18px}.sf-handoff-banner h2{font-size:18px}.sf-handoff-banner p{font-size:12px}.sf-toolbar{gap:6px}.sf-toolbar .sf-btn{padding:7px 8px;font-size:12px}.sf-search-label{padding:0 7px}.sf-form-grid{grid-template-columns:1fr}.sf-field:has(textarea){grid-column:span 1}}
+@media(max-width:390px){.sf-pipeline{grid-template-columns:1fr 1fr}.sf-stats{grid-template-columns:1fr 1fr}.sf-top-tools{gap:5px}.sf-feature-footer{grid-template-columns:1.2fr 1fr .6fr}}
+
+.sf-panel,.sf-feature,.sf-top-text{min-width:0}.sf-toolbar .sf-search-label{min-width:45px}.sf-pager>span:last-child{flex-wrap:wrap}.sf-panel-head{flex-wrap:wrap}.sf-question-picker select,.sf-detail-selector select{max-width:100%;margin-left:0}.sf-question-picker label,.sf-detail-selector label{min-width:0;max-width:100%;display:block}.sf-stage-head,.sf-site-card-footer{flex-wrap:wrap}.sf-scope-dot{white-space:normal}
+</style><body><div id="surface"></div><script>
+const source="const FEASIBILITY_CSS=\":root{--sf-ink:#203443;--sf-muted:#6d7e8d;--sf-ocean:#166da2;--sf-dark:#173849;--sf-teal:#138f8a;--sf-pale:#eef6f9;--sf-line:#e0e9ee;--sf-bg:#f5f8fb;--sf-white:#fff;--sf-amber:#a76a23;--sf-red:#b45257;--sf-green:#24785f}\\n*{box-sizing:border-box}\\nbody{margin:0;background:var(--sf-bg);color:var(--sf-ink);font:15px/1.48 Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif}\\nbutton,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}button:disabled{opacity:.43;cursor:not-allowed}button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid #58a6c9;outline-offset:2px}\\n.sf-icon{vertical-align:middle;flex-shrink:0}\\n.sf-top{display:flex;align-items:center;justify-content:space-between;padding:26px clamp(20px,3vw,42px) 20px;gap:16px;background:#fff;border-bottom:1px solid var(--sf-line)}\\n.sf-top-kicker{font-size:12px;text-transform:uppercase;color:#1683a6;font-weight:760;letter-spacing:1.6px}\\n.sf-top h1{font-size:31px;font-weight:770;letter-spacing:-1.15px;line-height:1.12;margin:5px 0 0;color:#1d3343}\\n.sf-top-tools{display:flex;gap:10px;align-items:flex-end;min-width:0;flex-wrap:wrap}\\n.sf-project-select{display:flex;flex-direction:column;gap:4px;min-width:220px;max-width:330px}\\n.sf-project-select span{font-size:12px;color:#4c6576;font-weight:700;letter-spacing:.65px;text-transform:uppercase}\\n.sf-project-select select{background:#f8fbfd;border:1px solid #d7e4eb;border-radius:9px;max-width:330px;min-width:170px;padding:9px 13px;color:#2a4658;font-weight:680;font-size:12px}\\n.sf-settings{height:38px;width:39px;display:grid;place-items:center;background:#fff;border:1px solid #d9e4eb;border-radius:9px;color:#537086}\\n.sf-tabs{display:flex;gap:24px;align-items:center;overflow-x:auto;white-space:nowrap;padding:0 clamp(20px,3vw,42px);background:#fff;border-bottom:1px solid var(--sf-line);scrollbar-width:thin}\\n.sf-tab{display:inline-flex;gap:8px;align-items:center;justify-content:center;border:0;background:transparent;padding:16px 1px 14px;color:#4c6576;font-size:12px;font-weight:630;border-bottom:3px solid transparent;white-space:nowrap;flex:none}\\n.sf-tab:hover{color:#236c97}.sf-tab-current{color:#145d8e;border-bottom-color:#1d83b1;font-weight:760}\\n.sf-content{margin:0 auto;max-width:1600px;padding:28px clamp(20px,3vw,42px) 52px;min-height:660px}\\n.sf-panel{background:#fff;border:1px solid var(--sf-line);border-radius:13px;box-shadow:0 3px 14px #28516908;padding:21px 22px;min-width:0}\\n.sf-panel h2{font-size:15px;margin:0;letter-spacing:-.18px;font-weight:765;color:#273e4e}\\n.sf-panel-head{display:flex;gap:15px;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap}\\n.sf-subtle{color:#4c6576;font-size:12px;margin:4px 0 15px}\\n.sf-alert{padding:12px 15px;background:#fff6e8;border:1px solid #f1dfbe;border-radius:10px;color:#916a28;margin-bottom:18px;font-size:12px}\\n.sf-alert-info{background:#eaf5fa;color:#2a6787;border-color:#d5e9f2}\\n.sf-btn{background:#fff;border:1px solid #d8e3ea;border-radius:8px;min-height:34px;padding:7px 12px;display:inline-flex;align-items:center;justify-content:center;gap:7px;color:#426073;font-size:12px;font-weight:700;white-space:nowrap}\\n.sf-btn:hover{border-color:#70a9c8;color:#155c82}\\n.sf-btn-primary{background:var(--sf-ocean);border-color:var(--sf-ocean);color:white}\\n.sf-btn-primary:hover{background:#145781;color:#fff}\\n.sf-btn-small{padding:6px 10px;min-height:30px;font-size:12px}\\n.sf-btn-danger{border-color:#dfb8be;color:#a33e4d}\\n.sf-btn-outline{border-color:#bcd6e3;color:#20698f}\\n.sf-link-button{padding:0;background:none;border:0;margin-top:15px;color:#186c98;display:inline-flex;gap:5px;align-items:center;font-weight:720;font-size:12px}\\n.sf-pill{display:inline-flex;padding:4px 10px;border-radius:100px;align-items:center;font-size:12px;font-weight:750;line-height:1.4;background:#f0f3f6;color:#4c6576;white-space:nowrap}\\n.sf-pill.success{color:#206650;background:#e6f6ed}.sf-pill.warning{color:#805018;background:#fff2dd}.sf-pill.danger{color:#a8414d;background:#ffecee}.sf-pill.info{color:#226d94;background:#e8f3fa}\\n.sf-dashgrid{display:grid;grid-template-columns:1.42fr 1fr;gap:18px;align-items:stretch;margin-bottom:17px}\\n.sf-feature{min-height:259px;border-radius:14px;padding:27px 30px;color:#eef7fa;background:linear-gradient(117deg,#18394c,#15516b 63%,#1a7b99);position:relative;overflow:hidden}\\n.sf-feature:after{content:'';position:absolute;width:340px;height:340px;border-radius:50%;right:-100px;top:-155px;border:1px solid #b5eaff20;box-shadow:0 0 0 35px #b5eaff08,0 0 0 70px #b5eaff09,0 0 0 105px #b5eaff06;pointer-events:none}\\n.sf-feature-top{display:flex;justify-content:space-between;gap:6px;color:#b1d2e2;font-size:12px;letter-spacing:1.45px;font-weight:730}\\n.sf-scope-dot{letter-spacing:.3px;color:#9be3db}\\n.sf-feature h2{margin:18px 0 6px;font-size:29px;letter-spacing:-.8px;line-height:1.24;font-weight:755;position:relative;max-width:690px}\\n.sf-feature p{margin:0;color:#b8d4de;font-size:13px}\\n.sf-feature-footer{display:grid;grid-template-columns:1.6fr 1fr .7fr;gap:15px;margin-top:36px;position:relative}\\n.sf-feature-footer div{border-top:1px solid #b8e3f02c;padding-top:12px;min-width:0}\\n.sf-feature-footer small{font-size:12px;letter-spacing:.9px;color:#9bc3d3;display:block;margin-bottom:6px}\\n.sf-feature-footer b{font-size:13px;font-weight:760;overflow-wrap:anywhere}\\n.sf-urgent{min-height:259px}.sf-urgent .sf-panel-head{margin-bottom:9px}\\n.sf-urgent-row{display:flex;align-items:center;gap:18px;justify-content:space-between;padding:14px 0;border-bottom:1px solid #eaf0f3;font-size:12px;font-weight:620}\\n.sf-urgent-row strong{font-size:16px;color:#17698e}\\n.sf-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px;margin-bottom:18px}\\n.sf-stat{background:white;border:1px solid var(--sf-line);border-radius:12px;padding:18px 22px;display:flex;flex-direction:column;min-width:0}\\n.sf-stat-label{font-size:12px;color:#4c6576;font-weight:660}.sf-stat strong{font-size:28px;color:#234354;font-weight:770;letter-spacing:-.65px;margin:8px 0 2px}.sf-stat small{font-size:12px;color:#4c6576}\\n.sf-grid-two{display:grid;grid-template-columns:1.08fr .92fr;gap:18px;align-items:start}\\n.sf-country-row{display:grid;grid-template-columns:126px minmax(0,1fr) 26px;gap:13px;align-items:center;padding:9px 0}\\n.sf-country-row b{font-size:12px;font-weight:685}.sf-country-row strong{font-size:12px;text-align:right}\\n.sf-track{height:9px;background:#edf2f6;border-radius:100px;overflow:hidden}.sf-track span{background:linear-gradient(90deg,#2686a7,#25ab99);height:100%;display:block;border-radius:100px}\\n.sf-mini-steps{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-top:22px}\\n.sf-mini-steps div{background:#f3f8fa;border:1px solid #e8f0f4;border-radius:8px;padding:9px 7px;min-width:0}.sf-mini-steps b{display:block;color:#205e7e;font-size:17px}.sf-mini-steps small{font-size:12px;color:#4c6576;overflow-wrap:anywhere}\\n.sf-list{margin:9px 0 14px}.sf-list-row{display:flex;gap:12px;align-items:center;border-bottom:1px solid #edf2f6;padding:11px 0}.sf-list-row:last-child{border:0}.sf-list-row div{flex:1;min-width:0}.sf-list-row strong{display:block;font-size:12px}.sf-list-row small{color:#4c6576;font-size:12px}.sf-list-row>span{color:#4c6576;font-size:12px;white-space:nowrap}\\n.sf-grid-study{display:grid;grid-template-columns:1.5fr .7fr;gap:18px;margin-bottom:18px}\\n.sf-study-brief{min-height:305px}.sf-brief-heading{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:20px}.sf-brief-heading strong{font-size:19px;letter-spacing:-.4px}\\n.sf-brief-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 13px}.sf-brief-facts>div{min-width:0}.sf-brief-facts small,.sf-site-details small,.sf-qa-point small{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:#4c6576;margin-bottom:5px}.sf-brief-facts b,.sf-site-details strong,.sf-qa-point b{font-size:12px;color:#334c5c;font-weight:725;overflow-wrap:anywhere}\\n.sf-brief-notes{margin-top:22px;padding:13px 15px;border-radius:9px;background:#f4f8fb}.sf-brief-notes strong{font-size:12px}.sf-brief-notes p{font-size:12px;color:#4c6576;margin:5px 0 0;line-height:1.55}\\n.sf-criteria-note{background:linear-gradient(145deg,#fff,#f4fbfe)}.sf-circle-stat{width:113px;height:113px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:50%;border:10px solid #d8f0ee;border-left-color:#148d90;border-top-color:#148d90;margin:6px auto 24px;font-size:37px;font-weight:760;color:#135b77}.sf-circle-stat span{font-size:12px;font-weight:660;color:#4c6576}.sf-criteria-metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:center;margin-bottom:12px}.sf-criteria-metrics b{display:block;font-size:18px}.sf-criteria-metrics small{font-size:12px;color:#4c6576}\\n.sf-data-panel{padding:22px 0 0}.sf-data-panel>.sf-panel-head,.sf-data-panel>.sf-toolbar,.sf-data-panel>.sf-filters{margin-left:22px;margin-right:22px}.sf-data-panel>.sf-panel-head{margin-bottom:17px}\\n.sf-toolbar{display:flex;align-items:center;gap:9px;margin-bottom:14px;max-width:100%}\\n.sf-search-label{display:flex;flex:1 1 180px;align-items:center;gap:8px;border:1px solid #dae6ec;background:#fff;border-radius:8px;padding:0 11px;min-width:95px}.sf-search-label .sf-icon{width:15px;color:#4c6576}.sf-search-label input{border:0;min-width:0;outline:none;padding:9px 0;width:100%;font-size:12px}.sf-search-label input:focus-visible{outline:none}\\n.sf-filters{margin-bottom:14px;padding:12px;background:#f5f9fc;border:1px solid #e4edf2;border-radius:9px}.sf-filters label{font-size:12px;color:#5c7280}.sf-filters select{margin-left:8px;border:1px solid #d1e1ea;padding:5px 8px;border-radius:7px;max-width:190px}\\n.sf-tablebox{max-width:100%;overflow-x:auto;overflow-y:visible;min-width:0}.sf-table{border-collapse:collapse;width:100%;min-width:720px}.sf-table th{background:#f7fafc;color:#4c6576;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.75px;padding:13px 15px;font-weight:780;white-space:nowrap;border-top:1px solid var(--sf-line);border-bottom:1px solid var(--sf-line)}\\n.sf-table td{padding:13px 15px;font-size:12px;vertical-align:middle;color:#617383;border-bottom:1px solid #eef2f5;max-width:280px;overflow-wrap:anywhere}.sf-table td strong{color:#31485a;font-weight:710}.sf-table tbody tr:hover{background:#f9fbfd}.sf-table tbody tr:last-child td{border-bottom:0}.sf-table .sf-last{width:73px;text-align:right;white-space:nowrap}\\n.sf-actions{position:relative;display:inline-flex}.sf-more{padding:4px 7px;min-width:33px;font-size:18px;border:1px solid transparent;border-radius:7px;background:transparent;color:#4c6576;line-height:1.1}.sf-more:hover{background:#ecf4f8}\\n.sf-menu{position:absolute;z-index:15;right:0;top:30px;background:white;padding:5px;border:1px solid #dce6ed;box-shadow:0 15px 34px #153c5730;width:142px;border-radius:9px}.sf-menu-item{display:block;width:100%;border:0;background:none;text-align:left;padding:8px 9px;border-radius:6px;font-size:12px;color:#385669}.sf-menu-item:hover{background:#edf6fa}.sf-menu-danger{color:#b14d5b}.sf-menu-danger:hover{background:#fff0f1}\\n.sf-pager{border-top:1px solid #eaf0f4;padding:12px 17px;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#4c6576;font-size:12px;flex-wrap:wrap}.sf-pager>span:last-child{display:flex;gap:8px;align-items:center}.sf-page-count{white-space:nowrap}\\n.sf-directory-summary{display:flex;gap:16px;justify-content:space-between;align-items:center;background:linear-gradient(110deg,#e8f5fa,#f6fbfd);border:1px solid #d7e9f2;border-radius:13px;padding:25px;margin-bottom:18px}.sf-directory-summary small{font-size:12px;font-weight:750;color:#19769c;letter-spacing:1.2px}.sf-directory-summary h2{font-size:27px;letter-spacing:-.7px;margin:7px 0}.sf-directory-summary p{font-size:12px;color:#4c6576;max-width:710px}.sf-directory-countries{display:flex;gap:7px;flex-wrap:wrap}.sf-directory-countries span{border:1px solid #cde6ef;background:white;color:#50768b;border-radius:40px;padding:8px 10px;font-size:12px;white-space:nowrap}.sf-directory-countries b{color:#156b91;margin-left:6px}\\n.sf-bottom-space{margin-top:18px}.sf-detail-selector{margin-bottom:17px}.sf-detail-selector label{font-size:12px;color:#4c6576}.sf-detail-selector select,.sf-question-picker select{padding:8px 10px;border:1px solid #d1e3ec;border-radius:8px;background:#fff;color:#2a546a;margin-left:9px;max-width:300px}\\n.sf-site-details{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.sf-site-details>div{border-radius:9px;background:#f6f9fb;padding:14px}.sf-source-line{font-size:12px;color:#4c6576;margin:15px 0 0;overflow-wrap:anywhere}\\n.sf-question-head{margin-bottom:18px}.sf-question-picker{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.sf-question-picker label{font-size:12px;color:#5d788c;font-weight:710}.sf-question-picker>div:not(.sf-progress){margin-left:auto}.sf-question-picker small{display:block;font-size:12px;color:#4c6576}.sf-question-picker strong{display:block;font-size:14px}.sf-progress{flex:0 0 135px;height:8px;background:#e3eef3;overflow:hidden;border-radius:9px}.sf-progress span{height:100%;display:block;background:#1d99a3;border-radius:9px}\\n.sf-question-grid{display:grid;grid-template-columns:1.5fr .7fr;gap:18px;align-items:start}.sf-question-items{margin-top:-2px}.sf-question-item{border-top:1px solid #ecf1f5;padding:16px 0;display:flex;gap:12px;justify-content:space-between}.sf-question-n{display:flex;flex-direction:column;gap:5px;flex:1;min-width:0}.sf-question-n strong{font-size:13px}.sf-question-n small{font-size:12px;color:#4c6576}.sf-question-category{color:#176885;font-size:12px;text-transform:uppercase;letter-spacing:.75px;font-weight:740}.sf-question-answer{display:flex;align-items:flex-end;flex-direction:column;gap:7px;min-width:120px}.sf-question-rate{font-size:12px;color:#4c6576}\\n.sf-question-aside{background:linear-gradient(160deg,#edf8fb,#fff)}.sf-question-aside h2{margin-bottom:13px}.sf-qa-point{padding:12px 0;border-bottom:1px solid #dfe9ef}.sf-qa-progress{display:flex;align-items:center;gap:13px;padding:24px 0}.sf-big-percent{font-size:36px;color:#1388a2;font-weight:800;letter-spacing:-1px}.sf-qa-progress small{font-size:12px;color:#4c6576;line-height:1.5}\\n.sf-matrix-title{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:20px}.sf-matrix-title h2{font-size:22px;letter-spacing:-.45px;margin:0}.sf-matrix-title p{font-size:12px;color:#4c6576}.sf-panel-large{margin-bottom:18px}.sf-rank-list{display:grid;gap:9px}.sf-rank-item{display:grid;grid-template-columns:28px minmax(170px,1fr) minmax(80px,1fr) 70px;gap:17px;align-items:center;padding:12px;border:1px solid #eaf0f4;border-radius:9px}.sf-rank-index{color:#4c6576;font-size:12px;font-weight:800}.sf-rank-item strong{font-size:12px;display:block}.sf-rank-item small{color:#4c6576;font-size:12px}.sf-rank-bar{height:11px;border-radius:20px;background:#e8f1f5;overflow:hidden}.sf-rank-bar span{display:block;background:linear-gradient(90deg,#2274a4,#21b19d);height:100%;border-radius:20px}.sf-rank-item b{font-size:13px;color:#175e8a;text-align:right}\\n.sf-matrix-scroll{max-width:100%;overflow-x:auto}.sf-matrix-table{border-collapse:collapse;width:100%;min-width:720px;table-layout:fixed}.sf-matrix-table th,.sf-matrix-table td{border-bottom:1px solid #e7eef3;text-align:center;padding:13px 10px;font-size:12px;overflow-wrap:anywhere}.sf-matrix-table th{color:#4c6576;font-size:12px;background:#f8fbfd}.sf-matrix-table th:first-child,.sf-matrix-table td:first-child{text-align:left;min-width:220px;width:240px}.sf-matrix-table td:first-child strong{display:block;font-size:12px}.sf-matrix-table td:first-child small{display:block;color:#4c6576}.sf-rating{font-weight:760;color:#1c637f;background:#e5f4fa;padding:6px 9px;border-radius:7px;white-space:nowrap}.sf-unranked{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.sf-unranked div{padding:13px;border-radius:8px;background:#f7f9fb;border:1px solid #eaf0f4}.sf-unranked strong,.sf-unranked small{display:block}.sf-unranked small{font-size:12px;color:#4c6576;margin-top:4px}\\n.sf-handoff-banner{background:#203c50;color:#fff;border-radius:13px;padding:25px 28px;display:flex;gap:25px;justify-content:space-between;align-items:center;margin-bottom:18px}.sf-handoff-banner small{font-size:12px;color:#91c7d8;letter-spacing:1.15px}.sf-handoff-banner h2{font-size:23px;letter-spacing:-.7px;margin:8px 0}.sf-handoff-banner p{font-size:12px;color:#b7cdd6}.sf-handoff-banner>div:last-child{display:flex;flex-direction:column;text-align:center;min-width:90px}.sf-handoff-banner b{font-size:36px;font-weight:800}\\n.sf-pipeline{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:18px}.sf-stage{border:1px solid #e0e8ee;border-radius:11px;min-width:0;background:#f7fafc;padding:10px}.sf-stage-head{display:flex;align-items:center;justify-content:space-between;gap:5px;padding:6px 5px 12px;border-bottom:1px solid #e1eaf0}.sf-stage-head strong{font-size:12px;color:#496d83}.sf-stage-head span{background:#e1edf3;color:#345b70;border-radius:7px;padding:3px 7px;font-size:12px}.sf-stage-cards{display:grid;gap:8px;margin-top:10px}.sf-site-card{background:white;border:1px solid #dfebef;border-radius:9px;padding:11px;min-width:0}.sf-site-card>strong{display:block;font-size:12px;overflow-wrap:anywhere}.sf-site-card>small{display:block;font-size:12px;color:#4c6576;margin:4px 0 8px}.sf-site-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:11px}.sf-site-card-footer .sf-more{padding:4px 5px}.sf-stage-empty{color:#4c6576;text-align:center;font-size:12px;padding:14px 0}.sf-handoff-actions{display:flex;gap:8px;align-items:center}.sf-handoff-actions+ .sf-toolbar{margin-bottom:12px}\\n.sf-empty{padding:27px;text-align:center;color:#4c6576;font-size:12px}.sf-empty-small{padding:24px 14px;color:#4c6576;font-size:12px;text-align:center}.sf-footnote{margin:26px 0;color:#4c6576;font-size:12px}.sf-demo-footer{height:0}\\n.sf-overlay{position:fixed;inset:0;background:#1c324a70;z-index:40;display:flex;align-items:stretch;justify-content:flex-end}.sf-drawer{height:100vh;max-height:100vh;width:min(545px,100%);background:#fff;display:flex;flex-direction:column;box-shadow:-16px 0 44px #16324938}.sf-drawer-head{padding:22px 25px;border-bottom:1px solid #e2eaf0;display:flex;justify-content:space-between;gap:12px}.sf-drawer-head h2{font-size:22px;letter-spacing:-.6px;margin:5px 0}.sf-drawer-head small{font-size:12px;letter-spacing:1.2px;color:#1685a7;font-weight:760}.sf-close{min-width:32px;height:32px;border-radius:8px;border:1px solid #d4e4eb;background:#fff;font-size:20px;color:#4c6576}.sf-edit-form{display:contents}.sf-drawer-content{padding:20px 25px;overflow:auto;flex:1}.sf-inform{font-size:12px;color:#536f83;background:#edf7fb;border:1px solid #d7eaf3;border-radius:8px;padding:11px 13px;margin:0 0 19px}.sf-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.sf-field{display:flex;flex-direction:column;gap:5px;color:#5e7788;font-size:12px;font-weight:695}.sf-field textarea,.sf-field input,.sf-field select{width:100%;padding:9px 10px;border:1px solid #d7e4eb;border-radius:8px;background:#fff;color:#334e60;min-width:0}.sf-field textarea{min-height:90px;resize:vertical}.sf-field:has(textarea){grid-column:span 2}.sf-field input:disabled,.sf-field select:disabled,.sf-field textarea:disabled{background:#f1f4f6}.sf-drawer-foot{padding:17px 24px;border-top:1px solid #e2eaf0;display:flex;gap:9px;justify-content:flex-end}.sf-dialog{background:white;max-width:450px;width:calc(100vw - 30px);padding:28px;border-radius:13px;margin:auto;box-shadow:0 10px 40px #16324830}.sf-dialog h2{margin:0 0 12px;font-size:20px}.sf-dialog p{line-height:1.7;font-size:13px;color:#4c6576}.sf-dialog-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}\\n@media(max-width:1180px){.sf-tabs{gap:16px}.sf-dashgrid{grid-template-columns:1fr}.sf-grid-two{grid-template-columns:1fr}.sf-pipeline{grid-template-columns:repeat(3,minmax(0,1fr))}.sf-site-details{grid-template-columns:repeat(2,1fr)}}\\n@media(max-width:830px){.sf-top{padding:20px 22px 18px}.sf-tabs{padding:0 22px;gap:22px}.sf-content{padding:22px}.sf-grid-study,.sf-question-grid{grid-template-columns:1fr}.sf-criteria-note{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center}.sf-criteria-note .sf-panel-head{grid-column:span 2}.sf-circle-stat{margin:5px auto}.sf-criteria-metrics{gap:20px}.sf-panel{padding:19px}.sf-data-panel{padding:19px 0 0}.sf-data-panel>.sf-panel-head,.sf-data-panel>.sf-toolbar,.sf-data-panel>.sf-filters{margin-left:19px;margin-right:19px}.sf-feature-footer{margin-top:30px}}\\n@media(max-width:620px){.sf-top{padding:16px 16px 13px;align-items:flex-start;flex-wrap:wrap}.sf-top h1{font-size:27px}.sf-top-tools{width:100%;justify-content:space-between}.sf-project-select{flex:1;max-width:none;min-width:0}.sf-project-select select{width:100%;min-width:0;max-width:none}.sf-tabs{padding:0 16px;gap:18px}.sf-tab{padding:12px 0;font-size:12px}.sf-icon{width:16px;height:16px}.sf-content{padding:17px 15px 32px;min-height:500px}.sf-panel{padding:16px}.sf-data-panel{padding:16px 0 0}.sf-data-panel>.sf-panel-head,.sf-data-panel>.sf-toolbar,.sf-data-panel>.sf-filters{margin-left:15px;margin-right:15px}.sf-feature{padding:21px;min-height:auto}.sf-feature h2{font-size:23px}.sf-feature-footer{gap:12px;margin-top:25px}.sf-feature-footer b{font-size:12px}.sf-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.sf-stat{padding:15px}.sf-stat strong{font-size:25px}.sf-mini-steps{grid-template-columns:repeat(3,minmax(0,1fr))}.sf-brief-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.sf-criteria-note{display:block}.sf-directory-summary{padding:18px;align-items:flex-start;flex-direction:column}.sf-directory-summary h2{font-size:23px}.sf-site-details{grid-template-columns:1fr}.sf-question-picker>div:not(.sf-progress){margin-left:0}.sf-question-item{display:block}.sf-question-answer{align-items:flex-start;flex-direction:row;margin-top:12px;min-width:0}.sf-question-grid{gap:12px}.sf-rank-item{grid-template-columns:26px minmax(80px,1fr) 55px;gap:9px}.sf-rank-item .sf-rank-bar{grid-column:2/4}.sf-matrix-title{align-items:flex-start}.sf-matrix-title h2{font-size:18px}.sf-unranked{grid-template-columns:1fr}.sf-pipeline{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.sf-handoff-banner{padding:18px}.sf-handoff-banner h2{font-size:18px}.sf-handoff-banner p{font-size:12px}.sf-toolbar{gap:6px}.sf-toolbar .sf-btn{padding:7px 8px;font-size:12px}.sf-search-label{padding:0 7px}.sf-form-grid{grid-template-columns:1fr}.sf-field:has(textarea){grid-column:span 1}}\\n@media(max-width:390px){.sf-pipeline{grid-template-columns:1fr 1fr}.sf-stats{grid-template-columns:1fr 1fr}.sf-top-tools{gap:5px}.sf-feature-footer{grid-template-columns:1.2fr 1fr .6fr}}\\n\\n.sf-panel,.sf-feature,.sf-top-text{min-width:0}.sf-toolbar .sf-search-label{min-width:45px}.sf-pager>span:last-child{flex-wrap:wrap}.sf-panel-head{flex-wrap:wrap}.sf-question-picker select,.sf-detail-selector select{max-width:100%;margin-left:0}.sf-question-picker label,.sf-detail-selector label{min-width:0;max-width:100%;display:block}.sf-stage-head,.sf-site-card-footer{flex-wrap:wrap}.sf-scope-dot{white-space:normal}\\n\";\nconst templateLayoutSchema={\"screens\":[{\"id\":\"portfolio\",\"label\":\"Feasibility portfolio\"},{\"id\":\"requirements\",\"label\":\"Study requirements\"},{\"id\":\"sites\",\"label\":\"Site profiles\"},{\"id\":\"questionnaire\",\"label\":\"Questionnaires\"},{\"id\":\"matrix\",\"label\":\"Evaluation matrix\"},{\"id\":\"handoff\",\"label\":\"Selection & handoff\"}],\"groups\":{\"projects\":[{\"id\":\"name\",\"label\":\"Study\"},{\"id\":\"sponsor\",\"label\":\"Sponsor\"},{\"id\":\"therapy\",\"label\":\"Therapeutic area\"},{\"id\":\"countries\",\"label\":\"Countries\"},{\"id\":\"deadline\",\"label\":\"Deadline\"},{\"id\":\"status\",\"label\":\"Stage\"}],\"sites\":[{\"id\":\"name\",\"label\":\"Institution\"},{\"id\":\"country\",\"label\":\"Country\"},{\"id\":\"specialties\",\"label\":\"Specialties\"},{\"id\":\"type\",\"label\":\"Site type\"},{\"id\":\"evidenceDate\",\"label\":\"Evidence date\"}],\"candidates\":[{\"id\":\"name\",\"label\":\"Candidate\"},{\"id\":\"siteId\",\"label\":\"Institution\"},{\"id\":\"stage\",\"label\":\"Stage\"},{\"id\":\"owner\",\"label\":\"Owner\"},{\"id\":\"contactDue\",\"label\":\"Response due\"}],\"criteria\":[{\"id\":\"name\",\"label\":\"Criterion\"},{\"id\":\"category\",\"label\":\"Category\"},{\"id\":\"mandatory\",\"label\":\"Mandatory\"},{\"id\":\"weight\",\"label\":\"Weight\"},{\"id\":\"revision\",\"label\":\"Revision\"}],\"responses\":[{\"id\":\"name\",\"label\":\"Questionnaire entry\"},{\"id\":\"candidateId\",\"label\":\"Candidate\"},{\"id\":\"criterionId\",\"label\":\"Criterion\"},{\"id\":\"status\",\"label\":\"Review\"},{\"id\":\"rating\",\"label\":\"Rating\"},{\"id\":\"answeredAt\",\"label\":\"Answered\"}],\"tasks\":[{\"id\":\"name\",\"label\":\"Handoff task\"},{\"id\":\"candidateId\",\"label\":\"Site candidate\"},{\"id\":\"owner\",\"label\":\"Owner\"},{\"id\":\"due\",\"label\":\"Due\"},{\"id\":\"status\",\"label\":\"Status\"}]}};\n/* TrialAgents CRO Site Feasibility Management v1.2.1\n * Official TrialAgents watermark, internal identity & access provided by the host.\n * No patient information, site portal, automated outreach, login or external integration.\n * Custom layout is native tracker:layout with reviewed layoutProfile; source never changes access.\n */\nconst cfg=typeof templateConfiguration==='object'&&templateConfiguration?templateConfiguration:{};\nconst inp=input||{},ev=inp.event||{kind:'open',action:'',value:null,form:{}};\nconst act=String(ev.action||'');\nconst esc=v=>String(v===null||v===undefined?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#39;');\nconst trim=(v,max=1400)=>String(v===undefined||v===null?'':v).slice(0,max);\nconst val=v=>v===null||v===undefined||v===''?null:Number.isFinite(Number(v))?Number(v):null;\nconst bool=v=>v===true||v==='true'||v==='1'||v==='on';\nconst iso=v=>/^\\d{4}-\\d{2}-\\d{2}$/.test(String(v||'').slice(0,10))?String(v).slice(0,10):'';\nconst today=iso(cfg.asOf)||new Date().toISOString().slice(0,10);\nconst dayDiff=d=>{const a=iso(d),x=Date.parse(a+'T12:00:00Z'),y=Date.parse(today+'T12:00:00Z');return a&&Number.isFinite(x)&&Number.isFinite(y)?Math.round((x-y)/86400000):null;};\nconst dateLabel=d=>{let v=iso(d);if(!v)return '—';return v.slice(8)+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][Number(v.slice(5,7))-1]+' '+v.slice(0,4)};\nconst pct=v=>val(v)===null?'—':Math.round(v)+'%';\nconst pill=(s,kind='')=>'<span class=\"sf-pill '+esc(kind)+'\">'+esc(s||'—')+'</span>';\nconst btn=(label,action,cls='sf-btn',disabled=false,extra='')=>'<button type=\"button\" class=\"'+cls+'\" data-action=\"'+esc(action)+'\" '+(disabled?'disabled ':'')+extra+'>'+label+'</button>';\nconst icon=name=>{const paths={portfolio:'<path d=\"M3 3v18h18\"/><path d=\"m7 14 4-5 3 2 5-7\"/>',requirements:'<rect x=\"4\" y=\"3\" width=\"16\" height=\"18\" rx=\"2\"/><path d=\"M8 8h9M8 12h9M8 16h5\"/>',sites:'<path d=\"M4 21V6l8-4 8 4v15M2 21h20M9 8h1m4 0h1m-6 4h1m4 0h1M9 21v-5h6v5\"/>',questionnaire:'<rect x=\"4\" y=\"3\" width=\"16\" height=\"18\" rx=\"2\"/><path d=\"m8 9 2 2 4-4M8 15h8\"/>',matrix:'<rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2\"/><path d=\"M3 10h18M9 4v16M15 4v16\"/>',handoff:'<circle cx=\"6\" cy=\"7\" r=\"2\"/><circle cx=\"18\" cy=\"17\" r=\"2\"/><path d=\"M6 9v8h10l-3-3m3 3-3 3\"/>',settings:'<circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2\"/>',plus:'<path d=\"M12 4v16M4 12h16\"/>',search:'<circle cx=\"10.5\" cy=\"10.5\" r=\"6.5\"/><path d=\"m16 16 5 5\"/>',chevron:'<path d=\"m9 6 6 6-6 6\"/>',check:'<path d=\"m4 12 5 5L20 6\"/>',clock:'<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 7v6l4 2\"/>',map:'<path d=\"m3 5 6-2 6 3 6-3v16l-6 2-6-3-6 2Z\"/><path d=\"M9 3v15M15 6v15\"/>',alert:'<path d=\"M12 3 2 21h20Z\"/><path d=\"M12 9v5m0 3h.01\"/>'};return '<svg class=\"sf-icon\" viewBox=\"0 0 24 24\" width=\"17\" height=\"17\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">'+(paths[name]||paths.portfolio)+'</svg>';};\nconst tabs=templateLayoutSchema.screens;\nconst fields={\n projects:[{k:'name',label:'Study name',required:true},{k:'sponsor',label:'Sponsor',required:true},{k:'therapy',label:'Therapeutic area'},{k:'phase',label:'Phase',options:['I','II','III','IV','Other']},{k:'countries',label:'Target countries'},{k:'siteType',label:'Preferred site type',options:['Any','Academic','Hospital','Community','Specialty center']},{k:'deadline',label:'Feasibility deadline',type:'date'},{k:'owner',label:'Feasibility lead'},{k:'status',label:'Status',options:['Open','Review','Closed']},{k:'revision',label:'Criteria revision'},{k:'source',label:'Study brief reference',type:'text'},{k:'notes',label:'Sponsor-specific requirements',type:'long'},{k:'archived',label:'Archived',type:'boolean'}],\n sites:[{k:'name',label:'Institution',required:true},{k:'country',label:'Country',required:true},{k:'city',label:'City'},{k:'type',label:'Site type',options:['Academic','Hospital','Community','Specialty center']},{k:'specialties',label:'Specialties'},{k:'facilities',label:'Facilities / equipment',type:'long'},{k:'experience',label:'Prior public trial experience',type:'long'},{k:'staffBand',label:'Research team capacity band',options:['1–3','4–8','9–15','16+','Unknown']},{k:'leadPi',label:'Professional PI'},{k:'piRole',label:'PI professional role'},{k:'website',label:'Institution website'},{k:'evidenceSource',label:'Source URL / reference'},{k:'evidenceDate',label:'Source checked on',type:'date'},{k:'status',label:'Profile status',options:['Verified','Needs review','Draft']},{k:'notes',label:'Public institutional notes',type:'long'},{k:'archived',label:'Archived',type:'boolean'}],\n candidates:[{k:'name',label:'Candidate label',required:true},{k:'projectId',label:'Sponsor study',type:'relation',required:true},{k:'siteId',label:'Institution',type:'relation',required:true},{k:'stage',label:'Feasibility stage',options:['Identified','Contacted','Responded','Assessed','Proposed','Selected','Declined']},{k:'owner',label:'CRO owner'},{k:'contactDue',label:'Questionnaire due',type:'date'},{k:'respondedOn',label:'Response received',type:'date'},{k:'sponsorDecision',label:'Sponsor approval',options:['Pending','Approved','Rejected']},{k:'decisionBy',label:'Decision reviewer'},{k:'decisionDate',label:'Decision date',type:'date'},{k:'rationale',label:'Shortlist rationale / decision',type:'long'},{k:'activationTarget',label:'Startup target',type:'date'},{k:'source',label:'Study-specific evidence',type:'text'},{k:'archived',label:'Archived',type:'boolean'}],\n criteria:[{k:'name',label:'Assessment criterion',required:true},{k:'projectId',label:'Sponsor study',type:'relation',required:true},{k:'category',label:'Category',options:['Experience','Facilities','Staffing','Startup','Quality','Other']},{k:'mandatory',label:'Mandatory',type:'boolean'},{k:'weight',label:'Weight',type:'number'},{k:'expected',label:'Expected evidence / answer',type:'long'},{k:'revision',label:'Requirements revision'},{k:'source',label:'Sponsor-approved reference',type:'text'},{k:'archived',label:'Archived',type:'boolean'}],\n responses:[{k:'name',label:'Response item',required:true},{k:'candidateId',label:'Site candidate',type:'relation',required:true},{k:'criterionId',label:'Criterion',type:'relation',required:true},{k:'answer',label:'Aggregate institutional response',type:'long'},{k:'rating',label:'Reviewer rating 1–5',type:'number'},{k:'status',label:'Response review',options:['Requested','Draft','Clarification','Reviewed','Approved','Not applicable']},{k:'answeredAt',label:'Answered date',type:'date'},{k:'source',label:'Response source / evidence',type:'text'},{k:'respondent',label:'Respondent professional role'},{k:'reviewer',label:'Reviewer'},{k:'notes',label:'Clarification / N/A rationale',type:'long'},{k:'archived',label:'Archived',type:'boolean'}],\n tasks:[{k:'name',label:'Handoff task',required:true},{k:'candidateId',label:'Site candidate',type:'relation',required:true},{k:'projectId',label:'Sponsor study',type:'relation',required:true},{k:'kind',label:'Workstream',options:['Documentation','Contracts','Regulatory','Startup','Other']},{k:'owner',label:'Task owner'},{k:'due',label:'Due date',type:'date'},{k:'status',label:'Status',options:['Open','In progress','Done']},{k:'evidence',label:'Completion reference',type:'text'},{k:'notes',label:'CRO handoff notes',type:'long'},{k:'archived',label:'Archived',type:'boolean'}]\n};\nconst fmap=(()=>{try{return JSON.parse(cfg.tableMap||'{}')||{}}catch(e){return {}}})();\nconst declared=Array.isArray(templateBindings)?templateBindings:[];\nconst bound={};for(const role of Object.keys(fields)){const m=fmap[role],b=m&&declared.find(x=>x.typeId===m.typeId);if(!b)continue;const allowed=new Set(b.fields||[]),names={};for(const field of fields[role]){const key=(m.fields||{})[field.k]||field.k;if(allowed.has(key))names[field.k]=key;}if(names.name)bound[role]={typeId:m.typeId,names,writable:new Set((m.writableFields||[]).filter(k=>names[k]))};}\nconst cache={};function read(role){if(cache[role])return cache[role];const m=bound[role];if(!m)return cache[role]={rows:[],complete:false,unmapped:true,total:0};let items=[],total=0,offset=0,complete=false;for(let i=0;i<8;i++){let res;try{res=tools.call('records.read',{typeId:m.typeId,offset,limit:100,filters:{}})}catch(e){return cache[role]={rows:[],total:0,complete:false,denied:true};}if(!res||res.unavailable)return cache[role]={rows:[],total:0,complete:false,denied:true};const part=Array.isArray(res.rows)?res.rows:[];if(!Array.isArray(res.rows)||!Number.isInteger(res.total)||res.total<0)return cache[role]={rows:[],total:0,complete:false,denied:true};total=res.total;for(const r of part){const data={};for(const [k,key]of Object.entries(m.names))if(Object.prototype.hasOwnProperty.call(r.data||{},key))data[k]=r.data[key];if(Object.values(data).some(v=>v!==null&&typeof v==='object'))return cache[role]={rows:[],total:0,complete:false,denied:true};if(!bool(data.archived))items.push({id:r.id,version:r.version,data});}offset+=part.length;if(offset>=total){complete=true;break;}if(part.length<100||offset>=800)break;}return cache[role]={rows:items,total,complete};}\nfor(const role of Object.keys(fields))read(role);\nconst all=role=>role==='projects'&&cfg.sponsorScope?cache[role].rows.filter(r=>r.data.sponsor===cfg.sponsorScope):cache[role].rows;\nconst full=Object.keys(cache).every(r=>cache[r].complete&&fields[r].every(f=>bound[r]?.names[f.k])),mapped=Object.keys(bound).length===Object.keys(fields).length;\nconst find=(role,id)=>all(role).find(r=>r.id===id)||null;\nconst projectName=id=>find('projects',id)?.data.name||'Unknown study';\nconst siteName=id=>find('sites',id)?.data.name||'Unknown institution';\nconst candidateName=id=>{const r=find('candidates',id);return r?siteName(r.data.siteId):'Unknown candidate'};\nconst canWrite=role=>!!inp.saved&&!!inp.writable&&cfg.readOnly!==true&&!!bound[role]&&!cache[role].denied&&fields[role].filter(f=>f.k!=='archived').every(f=>bound[role].writable.has(f.k))&&cache[role].complete&&(role==='sites'||full)&&(role==='sites'||!!String(cfg.sponsorScope||'').trim());\nconst st=JSON.parse(JSON.stringify(inp.state||{}));\nlet layout={};try{layout=JSON.parse(cfg.layoutProfile||'{}')||{}}catch(e){}\nconst ordered=(Array.isArray(layout.tabs)?layout.tabs:tabs.map(x=>x.id)).filter(k=>tabs.some(s=>s.id===k));\nconst tabOrder=[...new Set([...ordered,...tabs.map(x=>x.id)])];\nconst visible=layout.visible||{},activeTabs=tabOrder.filter(k=>visible[k]!==false);\nif(!activeTabs.length)activeTabs.push('portfolio');\nif(!activeTabs.includes(st.tab))st.tab=activeTabs[0];\nconst cols={};for(const role of Object.keys(templateLayoutSchema.groups)){const avail=templateLayoutSchema.groups[role].map(x=>x.id),mine=Array.isArray(layout.cols?.[role])?layout.cols[role]:avail;cols[role]=[...new Set(mine.filter(k=>avail.includes(k)).concat(avail))].filter(k=>visible[role+':'+k]!==false);if(!cols[role].length)cols[role]=avail.slice(0,1);}\nif(!find('projects',st.project))st.project=all('projects')[0]?.id||'';\nif(!find('sites',st.site))st.site=all('sites')[0]?.id||'';\nconst proj=()=>find('projects',st.project);\nconst scoped=role=>all(role).filter(r=>r.data.projectId===st.project);\nconst currentCandidates=()=>scoped('candidates');\nconst filteredRows=(role)=>{let items=all(role);if(['candidates','criteria','tasks'].includes(role))items=items.filter(r=>r.data.projectId===st.project);if(role==='responses')items=items.filter(r=>{const c=find('candidates',r.data.candidateId);return c&&c.data.projectId===st.project;});if(st.query){const q=st.query.toLowerCase();items=items.filter(r=>Object.values(r.data).some(v=>String(v??'').toLowerCase().includes(q)));}if(st.filter&&st.filter!=='All')items=items.filter(r=>String(r.data.stage||r.data.status||'')===st.filter);return items;};\nconst isComplete=role=>cache[role].complete;\nconst scoreFor=(cand)=>{if(!cand||!full)return {complete:false,reason:'Restricted or incomplete source',score:null,completed:0,count:0};if(!find('sites',cand.data.siteId))return {complete:false,reason:'Institution is missing or archived',score:null,completed:0,count:0};let project=proj();if(!project||cand.data.projectId!==project.id)return {complete:false,reason:'Different study scope',score:null,completed:0,count:0};const cs=scoped('criteria'),rs=all('responses').filter(x=>x.data.candidateId===cand.id),missing=[],weights=[];if(!cs.length)return {complete:false,reason:'No criteria defined',score:null,completed:0,count:0};if(!String(project.data.revision||'').trim()||cs.some(c=>String(c.data.revision||'')!==String(project.data.revision)))return {complete:false,reason:'Criterion revisions do not match the approved study brief',score:null,completed:0,count:cs.length};for(const c of cs){const matching=rs.filter(x=>x.data.criterionId===c.id);const r=matching.length===1?matching[0]:null;const w=val(c.data.weight);if(w===null||w<=0){missing.push(c.data.name+' (weight)');continue;}if(!r){missing.push(c.data.name+' (missing)');continue;}if(r.data.status==='Not applicable'){if(bool(c.data.mandatory)||!String(r.data.notes||'').trim()||!String(r.data.reviewer||'').trim()){missing.push(c.data.name+' (unreviewed N/A)');}continue;}const n=val(r.data.rating);if(r.data.status!=='Approved'||n===null||n<1||n>5||!Number.isInteger(n)||!String(r.data.answer||'').trim()||!String(r.data.reviewer||'').trim()||!iso(r.data.answeredAt)||!String(r.data.source||'').trim()){missing.push(c.data.name+' (unapproved or unrated)');continue;}weights.push({w,n});}\n const denominator=weights.reduce((n,x)=>n+x.w,0),computed=weights.reduce((n,x)=>n+x.w*x.n,0);\n return {complete:missing.length===0&&denominator>0,score:missing.length===0&&denominator>0?Math.round(computed/denominator/5*100):null,completed:cs.length-missing.length,count:cs.length,missing,reason:missing.length?missing.slice(0,2).join(' · '):denominator===0?'No scored applicable criteria':''};};\nconst notice=s=>st.notice=trim(s,450);\nfunction proposal(change,text){tools.call('records.propose',[change]);notice(text||'Change proposed for host review. Nothing has been saved yet.');}\nfunction startEditor(role,mode,id){if(!fields[role])throw Error('Unknown record type');if(!canWrite(role))throw Error('This record type is not authorized for changes.');let draft={};let version=null;if(mode!=='create'){const r=find(role,id);if(!r)throw Error('Record not found');draft={...r.data};version=r.version;if(mode==='duplicate'){draft.name='Copy of '+String(draft.name||'record');version=null;if(role==='candidates'){draft.stage='Identified';draft.sponsorDecision='Pending';draft.decisionBy='';draft.decisionDate='';draft.rationale='';}if(role==='responses'){draft.status='Draft';draft.reviewer='';draft.answeredAt='';draft.rating=null;draft.source='';}if(role==='tasks'){draft.status='Open';draft.evidence='';}if(role==='projects'){draft.status='Open';draft.sponsor='';}if(role==='sites'){draft.status='Draft';draft.evidenceDate='';}}}\n if(mode==='create'){if(role==='projects'&&cfg.sponsorScope)draft.sponsor=cfg.sponsorScope;if(['candidates','criteria','tasks'].includes(role))draft.projectId=st.project;if(role==='responses'&&st.candidate)draft.candidateId=st.candidate;if(role==='candidates'&&st.site)draft.siteId=st.site;}\n st.editor={role,mode,id:mode==='edit'?id:null,expectedVersion:version,draft};st.menu='';st.confirm=null;}\nfunction parseForm(role,form,mode){const m=bound[role],data={};if(!m)throw Error('No authorized field mapping');for(const f of fields[role]){if(f.k==='archived')continue;if(!Object.prototype.hasOwnProperty.call(form,f.k))continue;if(!m.writable.has(f.k))continue;let v=form[f.k];if(f.type==='boolean')v=bool(v);else if(f.type==='number'){v=val(v);if(v!==null&&!Number.isFinite(v))throw Error('Invalid '+f.label);}else if(f.type==='date'){v=iso(v)||null;}else v=trim(v,f.type==='long'?5000:500);if(v==='')v=null;data[f.k]=v;}if(mode==='create'&&m.writable.has('archived'))data.archived=false;\n for(const f of fields[role].filter(x=>x.required))if(!String(data[f.k]??'').trim())throw Error('Required: '+f.label);\n if(role==='projects'){if(!String(cfg.sponsorScope||'').trim()||String(data.sponsor||'')!==String(cfg.sponsorScope))throw Error('This app requires its explicitly approved sponsorScope. Do not co-locate different sponsors in one custom app.');}if(role==='criteria'){const previous=st.editor?.mode==='edit'?find('criteria',st.editor.id):null;if(previous&&previous.data.projectId!==data.projectId)throw Error('Study-specific criteria cannot be moved between projects. Create a new criterion.');if(!find('projects',data.projectId))throw Error('Select an authorized study.');if(previous&&['name','category','mandatory','weight','expected','revision','source'].some(k=>String(previous.data[k]??'')!==String(data[k]??''))&&all('responses').some(x=>x.data.criterionId===previous.id&&['Approved','Not applicable'].includes(x.data.status)))throw Error('Reset linked response approvals to Draft before changing a criterion.');const w=val(data.weight);if(w===null||w<=0||w>100)throw Error('Criterion weight must be > 0 and ≤ 100');}\n if(role==='responses'){const old=st.editor?.mode==='edit'?find('responses',st.editor.id):null;if(old&&(old.data.candidateId!==data.candidateId||old.data.criterionId!==data.criterionId))throw Error('A saved response cannot be moved to a different site or criterion; duplicate it as an unapproved draft.');const candidate=find('candidates',data.candidateId),criterion=find('criteria',data.criterionId);if(!candidate||!criterion||candidate.data.projectId!==criterion.data.projectId)throw Error('The response candidate and criterion must belong to the same authorized project.');const dupe=all('responses').find(x=>x.id!==st.editor?.id&&x.data.candidateId===data.candidateId&&x.data.criterionId===data.criterionId);if(dupe)throw Error('A response for this site and criterion already exists. Edit the original instead.');if(old&&['Approved','Not applicable'].includes(old.data.status)&&['Approved','Not applicable'].includes(data.status)&&['answer','rating','source','notes','respondent'].some(k=>String(data[k]??'')!==String(old.data[k]??'')))throw Error('Changed approved evidence must return to Draft for fresh review.');if(!['Approved','Not applicable'].includes(data.status)){data.reviewer=null;data.answeredAt=null;}const n=val(data.rating);if(n!==null&&(n<1||n>5||Math.floor(n)!==n))throw Error('Rating must be a whole number from 1 to 5');if(data.status==='Approved'&&(!String(data.answer||'').trim()||!data.answeredAt||!String(data.source||'').trim()||!String(data.reviewer||'').trim()))throw Error('An approved response requires an answer, date, source and reviewer.');if(data.status==='Not applicable'&&(bool(criterion.data.mandatory)||!String(data.notes||'').trim()||!String(data.reviewer||'').trim()))throw Error('Not applicable requires a nonmandatory criterion, reviewer and rationale.');if(/patient\\s+(?:name|id|identifier)|subject\\s*(?:id|number)|date of birth|personal health record|medical record number/i.test(String(data.answer||'')))throw Error('Do not enter patient identifiers or personal health records.');}\n if(role==='candidates'){const previous=st.editor?.mode==='edit'?find('candidates',st.editor.id):null;if(previous&&(previous.data.projectId!==data.projectId||previous.data.siteId!==data.siteId))throw Error('Study and institution links are immutable. Create a new candidate instead of transferring confidential feasibility history.');const pr=find('projects',data.projectId),site=find('sites',data.siteId);if(!pr||!site)throw Error('Select an authorized study and institution.');const dupe=all('candidates').find(x=>x.id!==st.editor?.id&&x.data.projectId===data.projectId&&x.data.siteId===data.siteId);if(dupe)throw Error('Institution is already linked to this study. Update the existing candidate instead.');const stage=data.stage||'Identified';if(['Assessed','Proposed','Selected'].includes(stage)){const existing=st.editor?.id?find('candidates',st.editor.id):null;const status=scoreFor(existing);if(!status.complete)throw Error('Complete reviewed questionnaire evidence before advancing to '+stage+'.');}if(['Proposed','Selected','Declined'].includes(stage)&&(!String(data.rationale||'').trim()||!data.decisionBy||!data.decisionDate))throw Error('Decision rationale, reviewer and date are required.');if(stage==='Selected'&&data.sponsorDecision!=='Approved')throw Error('Selected requires recorded sponsor approval.');if(stage==='Selected'&&(!String(data.source||'').trim()))throw Error('Selected requires an evidence reference.');}\n if(role==='tasks'){const c=find('candidates',data.candidateId);if(!c||c.data.projectId!==data.projectId)throw Error('Task must be linked to an authorized site candidate and study.');if(data.status==='Done'&&(!String(data.evidence||'').trim()))throw Error('Completed handoff tasks need evidence.');}\n if(role==='sites'&&!data.country)throw Error('Site country is required.');\n const out={};for(const [k,v]of Object.entries(data))if(m.names[k])out[m.names[k]]=v;return out;\n}\ntry{\n if(act.startsWith('nav:')){st.tab=act.slice(4);st.page=0;st.comparePage=0;st.questionPage=0;st.query='';st.filter='All';st.editor=null;st.menu='';st.confirm=null;notice('');}\n else if(act==='set-study'&&ev.kind==='change'){if(find('projects',ev.value)){st.project=String(ev.value);st.page=0;st.comparePage=0;st.questionPage=0;st.query='';st.filter='All';st.candidate='';}}\n else if(act==='set-site'&&ev.kind==='change'){if(find('sites',ev.value))st.site=String(ev.value);}\n else if(act==='set-candidate'&&ev.kind==='change'){if(find('candidates',ev.value))st.candidate=String(ev.value);}\n else if(act==='search'&&ev.kind==='change'){st.query=trim(ev.value,100);st.page=0;}\n else if(act==='filter'&&ev.kind==='change'){st.filter=trim(ev.value,60);st.page=0;}\n else if(act==='more-filters')st.filtersOpen=!st.filtersOpen;\n else if(act==='question-prev')st.questionPage=Math.max(0,(st.questionPage||0)-1);else if(act==='question-next')st.questionPage=(st.questionPage||0)+1;\n else if(act==='compare-prev')st.comparePage=Math.max(0,(st.comparePage||0)-1);else if(act==='compare-next')st.comparePage=(st.comparePage||0)+1;\n else if(act==='prev')st.page=Math.max(0,Number(st.page||0)-1);\n else if(act==='next')st.page=Math.max(0,Number(st.page||0)+1);\n else if(act.startsWith('menu:'))st.menu=st.menu===act.slice(5)?'':act.slice(5);\n else if(act.startsWith('new:'))startEditor(act.slice(4),'create');\n else if(act.startsWith('edit:')){const [role,id]=act.slice(5).split(':');startEditor(role,'edit',id);}\n else if(act.startsWith('copy:')){const [role,id]=act.slice(5).split(':');startEditor(role,'duplicate',id);}\n else if(act.startsWith('delete:')){const [role,id]=act.slice(7).split(':');if(!canWrite(role)||!bound[role].writable.has('archived'))throw Error('Archive not authorized.');st.confirm={role,id,expectedVersion:find(role,id)?.version};st.menu='';}\n else if(act==='confirm-delete'){if(!st.confirm)throw Error('Nothing selected');const {role,id,expectedVersion}=st.confirm,m=bound[role],r=find(role,id);if(!r||!canWrite(role)||!m.writable.has('archived'))throw Error('Archive not authorized.');if(r.version!==expectedVersion)throw Error('Record version changed. Reopen archive confirmation.');const deps={projects:[['candidates','projectId'],['criteria','projectId'],['tasks','projectId']],sites:[['candidates','siteId']],candidates:[['responses','candidateId'],['tasks','candidateId']],criteria:[['responses','criterionId']]}[role]||[];if(deps.some(([child])=>!cache[child].complete))throw Error('Cannot verify dependencies: child records are incomplete or denied.');if(deps.some(([child,key])=>cache[child].rows.some(x=>x.data[key]===id)))throw Error('Active linked records prevent archive. Reassign or archive dependent records first.');proposal({kind:'update_record',recordId:id,expectedVersion,data:{[m.names.archived]:true}},'Archive proposed for host review. The original audit history is retained.');st.confirm=null;}\n else if(act==='cancel'){st.confirm=null;st.editor=null;}\n else if(act.startsWith('draft:')&&ev.kind==='change'){const k=act.slice(6);if(st.editor&&fields[st.editor.role].some(f=>f.k===k))st.editor.draft[k]=ev.value;}\n else if(act==='save'&&ev.kind==='submit'){const ed=st.editor;if(!ed||!canWrite(ed.role))throw Error('No authorized editor.');const form={...ed.draft,...ev.form};const data=parseForm(ed.role,form,ed.mode);if(ed.mode==='edit'){const existing=find(ed.role,ed.id);if(!existing||existing.version!==ed.expectedVersion)throw Error('Record version changed. Reopen the record before editing.');proposal({kind:'update_record',recordId:ed.id,expectedVersion:ed.expectedVersion,data},'Versioned edit proposed for review.');}else{proposal({kind:'create_record',typeId:bound[ed.role].typeId,data},'New record proposed for review.');}st.editor=null;}\n else if(act.startsWith('focus:')){const [role,id]=act.slice(6).split(':');if(role==='sites'&&find('sites',id)){st.site=id;st.tab='sites';}if(role==='candidates'&&find('candidates',id)){st.candidate=id;st.tab='questionnaire';}if(role==='projects'&&find('projects',id)){st.project=id;st.tab='requirements';}if(role==='responses'&&find('responses',id)){const r=find('responses',id);st.candidate=r.data.candidateId;st.tab='questionnaire';}st.page=0;}\n else if(act==='prompt-toggle')st.prompt=!st.prompt;\n else if(act==='clear-notice')notice('');\n}catch(err){notice('Action not completed: '+String(err?.message||err).slice(0,350));}\nconst pageSize=Math.min(50,Math.max(10,Number(cfg.pageSize)||25));\nfunction pageData(rows){const n=Math.max(0,Math.ceil(rows.length/pageSize)-1),idx=Math.min(Math.max(0,Number(st.page)||0),n);st.page=idx;return {rows:rows.slice(idx*pageSize,(idx+1)*pageSize),idx,total:rows.length,pages:n+1};}\nconst statusColor=s=>/Selected|Approved|Verified|Done|Proposed/i.test(String(s||''))?'success':/Overdue|Declined|Rejected|Missing|Blocked/i.test(String(s||''))?'danger':/Contacted|Clarification|In progress|Pending|Draft|Requested/i.test(String(s||''))?'warning':'neutral';\nfunction rowActions(role,r){const key=role+':'+r.id;return '<div class=\"sf-actions\">'+btn('···','menu:'+key,'sf-more',false,'aria-label=\"Actions for '+esc(r.data.name)+'\" aria-expanded=\"'+(st.menu===key)+'\"')+(st.menu===key?'<div class=\"sf-menu\">'+btn('Edit record','edit:'+key,'sf-menu-item',!canWrite(role))+btn('Duplicate','copy:'+key,'sf-menu-item',!canWrite(role))+btn('Delete','delete:'+key,'sf-menu-item sf-menu-danger',!canWrite(role)||!bound[role]?.writable.has('archived'))+'</div>':'')+'</div>';}\nfunction tableVal(role,k,r){const v=r.data[k];if(k==='name')return role==='projects'?btn(esc(v||'—'),'focus:projects:'+r.id,'sf-link-button'):'<strong>'+esc(v||'—')+'</strong>';if(['projectId','siteId','candidateId','criterionId'].includes(k)){const rel={projectId:'projects',siteId:'sites',candidateId:'candidates',criterionId:'criteria'}[k];return esc(rel==='projects'?projectName(v):rel==='sites'?siteName(v):rel==='candidates'?candidateName(v):find('criteria',v)?.data.name||'Unlinked criterion');}if(['stage','status','sponsorDecision'].includes(k))return pill(v,statusColor(v));if(k==='weight')return val(v)===null?'—':esc(v)+' pts';if(k==='rating')return val(v)===null?'—':esc(v)+'/5';if(typeof v==='boolean')return v?'Yes':'No';if(/Date|deadline|Due|answeredAt/i.test(k))return dateLabel(v);return esc(v===0?0:v||'—');}\nfunction recordTable(role,rows){const avail=cols[role]||['name'];return '<div class=\"sf-tablebox\"><table class=\"sf-table\"><thead><tr>'+avail.map(k=>'<th>'+esc(fields[role].find(f=>f.k===k)?.label||k)+'</th>').join('')+'<th class=\"sf-last\">Actions</th></tr></thead><tbody>'+rows.map(r=>'<tr>'+avail.map(k=>'<td>'+tableVal(role,k,r)+'</td>').join('')+'<td class=\"sf-last\">'+rowActions(role,r)+'</td></tr>').join('')+'</tbody></table></div>';}\nfunction pager(p){return '<div class=\"sf-pager\"><span>'+ (p.total?1+p.idx*pageSize:0)+'–'+Math.min(p.total,(p.idx+1)*pageSize)+' of '+p.total+'</span><span>'+btn('Previous','prev','sf-btn sf-btn-small',p.idx===0)+' <span class=\"sf-page-count\">Page '+(p.idx+1)+' / '+p.pages+'</span> '+btn('Next','next','sf-btn sf-btn-small',p.idx>=p.pages-1)+'</span></div>';}\nfunction toolbar(role,label='Add record',filters=[]){return '<div class=\"sf-toolbar\"><label class=\"sf-search-label\">'+icon('search')+'<input type=\"search\" placeholder=\"Search '+esc(role)+'\" value=\"'+esc(st.query||'')+'\" data-ui-state=\"true\" data-action=\"search\" aria-label=\"Search '+esc(role)+'\"></label>'+btn('Filters','more-filters','sf-btn sf-filter-button')+btn(icon('plus')+' '+esc(label),'new:'+role,'sf-btn sf-btn-primary',!canWrite(role))+'</div>'+(st.filtersOpen?'<div class=\"sf-filters\"><label>Stage <select data-ui-state=\"true\" data-action=\"filter\" aria-label=\"Filter by status\"><option>All</option>'+filters.map(k=>'<option '+(st.filter===k?'selected ':'')+'value=\"'+esc(k)+'\">'+esc(k)+'</option>').join('')+'</select></label></div>':'');}\nfunction panel(title,body,aside=''){return '<section class=\"sf-panel\"><div class=\"sf-panel-head\"><h2>'+esc(title)+'</h2>'+aside+'</div>'+body+'</section>';}\nfunction metric(label,value,foot,accent=''){return '<div class=\"sf-stat '+esc(accent)+'\"><span class=\"sf-stat-label\">'+esc(label)+'</span><strong>'+esc(value)+'</strong><small>'+esc(foot||'')+'</small></div>';}\nfunction header(){const studyOpts=all('projects').map(r=>'<option value=\"'+esc(r.id)+'\" '+(st.project===r.id?'selected':'')+'>'+esc(r.data.name)+'</option>').join('');const studyPick='<label class=\"sf-project-select\"><span>Study</span><select data-ui-state=\"true\" data-action=\"set-study\" aria-label=\"Choose feasibility study\">'+(studyOpts||'<option value=\"\">No authorized studies</option>')+'</select></label>';\nreturn '<header class=\"sf-top\"><div class=\"sf-top-text\"><h1>'+esc(layout.heading||cfg.heading||'Site Feasibility')+'</h1></div><div class=\"sf-top-tools\">'+studyPick+btn(icon('settings'),'tracker:layout','sf-settings',!inp.saved,'aria-label=\"Layout settings\" title=\"Layout settings\"')+'</div></header><nav class=\"sf-tabs\" aria-label=\"App sections\">'+activeTabs.map(id=>{const x=tabs.find(t=>t.id===id);return btn(icon(id)+'<span>'+esc(x.label)+'</span>','nav:'+id,'sf-tab '+(st.tab===id?'sf-tab-current':''),false,'aria-current=\"'+(st.tab===id?'page':'false')+'\"')}).join('')+'</nav>';}\nconst problemBanner=()=>!mapped?'<div class=\"sf-alert\">This preview needs reviewed database bindings. No demonstration records will be copied into production.</div>':!cfg.sponsorScope?'<div class=\"sf-alert\">Set the approved sponsor boundary in the app template configuration before editing study-specific data. This UI setting does not replace server permissions.</div>':!full?'<div class=\"sf-alert\">Some authorized records are unavailable or exceed the bounded read window; scores, counts and promotion decisions are disabled until complete.</div>':'';\nfunction portfolio(){const projects=all('projects');let cs=all('candidates');const active=projects.filter(r=>r.data.status!=='Closed'),soon=active.filter(r=>{const d=dayDiff(r.data.deadline);return d!==null&&d<=14;});const selected=currentCandidates();const selectedScore=selected.filter(x=>scoreFor(x).complete).length;const countries={};for(const c of selected){const site=find('sites',c.data.siteId);if(site?.data.country)countries[site.data.country]=(countries[site.data.country]||0)+1;}const max=Math.max(1,...Object.values(countries));\nconst next=active.slice().sort((a,b)=>String(a.data.deadline||'9999').localeCompare(String(b.data.deadline||'9999')))[0];const byStage=['Identified','Contacted','Responded','Assessed','Proposed','Selected'].map(s=>({s,n:selected.filter(x=>x.data.stage===s).length}));\nreturn '<div class=\"sf-dashgrid\"><section class=\"sf-feature\"><div class=\"sf-feature-top\">ACTIVE FEASIBILITY ASSIGNMENT <span class=\"sf-scope-dot\">● INTERNAL CRO</span></div><h2>'+esc(proj()?.data.name||'Set up your first study')+'</h2><p>'+esc(proj()?.data.therapy||'Select an authorized study to review its site network and response readiness.')+'</p><div class=\"sf-feature-footer\"><div><small>COUNTRY COVERAGE</small><b>'+esc(proj()?.data.countries||'Not defined')+'</b></div><div><small>FEASIBILITY DEADLINE</small><b>'+dateLabel(proj()?.data.deadline)+'</b></div><div><small>STUDY SITES</small><b>'+selected.length+'</b></div></div></section><section class=\"sf-panel sf-urgent\"><div class=\"sf-panel-head\"><h2>Priority decisions</h2>'+pill('Current study','neutral')+'</div><div class=\"sf-urgent-row\"><span>Questionnaires requiring evidence</span><strong>'+selected.filter(c=>!scoreFor(c).complete).length+'</strong></div><div class=\"sf-urgent-row\"><span>Due questionnaires</span><strong>'+selected.filter(c=>{const d=dayDiff(c.data.contactDue);return d!==null&&d<=7&&c.data.stage!=='Selected'&&c.data.stage!=='Declined';}).length+'</strong></div><div class=\"sf-urgent-row\"><span>Rankable institutions</span><strong>'+selectedScore+'</strong></div>'+btn('Open evaluation matrix '+icon('chevron'),'nav:matrix','sf-link-button')+'</section></div>'+\n'<div class=\"sf-stats\">'+metric('Open feasibility studies',active.length,'Authorized sponsor assignments')+metric('Site candidates',cs.length,'Across authorized studies')+metric('Upcoming deadlines',soon.length,'Due in 14 days or overdue')+'</div><div class=\"sf-grid-two\">'+panel('Study-site coverage','<p class=\"sf-subtle\">Current study · country distribution of linked candidates</p>'+(Object.keys(countries).length?Object.entries(countries).sort((a,b)=>b[1]-a[1]).map(([country,n])=>'<div class=\"sf-country-row\"><b>'+esc(country)+'</b><div class=\"sf-track\"><span style=\"width:'+Math.round(n/max*100)+'%\"></span></div><strong>'+n+'</strong></div>').join(''):'<div class=\"sf-empty-small\">No candidate countries recorded</div>')+'<div class=\"sf-mini-steps\">'+byStage.map(x=>'<div><b>'+x.n+'</b><small>'+esc(x.s)+'</small></div>').join('')+'</div>')+\n panel('Active study assignments',recordTable('projects',pageData(projects).rows)+pager(pageData(projects))+btn('Add study','new:projects','sf-btn sf-btn-outline',!canWrite('projects')))+\n'</div>';\n}\nfunction requirements(){const p=proj(),criterion=scoped('criteria').sort((a,b)=>String(a.data.category||'').localeCompare(String(b.data.category||'')));const weight=criterion.reduce((n,c)=>n+(val(c.data.weight)||0),0);const mandatory=criterion.filter(c=>bool(c.data.mandatory)).length;let weightsInvalid=criterion.some(c=>val(c.data.weight)===null||val(c.data.weight)<=0);\nreturn '<div class=\"sf-grid-study\"><section class=\"sf-panel sf-study-brief\"><div class=\"sf-panel-head\"><h2>Study brief</h2>'+btn('Edit brief','edit:projects:'+st.project,'sf-btn sf-btn-outline',!canWrite('projects')||!p)+'</div>'+(p?'<div class=\"sf-brief-heading\"><strong>'+esc(p.data.name)+'</strong><span>'+pill('Revision '+(p.data.revision||'not set'),'info')+'</span></div><div class=\"sf-brief-facts\"><div><small>Sponsor</small><b>'+esc(p.data.sponsor||'—')+'</b></div><div><small>Phase / therapy</small><b>'+esc((p.data.phase||'?')+' · '+(p.data.therapy||'—'))+'</b></div><div><small>Target markets</small><b>'+esc(p.data.countries||'—')+'</b></div><div><small>Site type</small><b>'+esc(p.data.siteType||'Any')+'</b></div><div><small>Criteria owner</small><b>'+esc(p.data.owner||'—')+'</b></div><div><small>Review by</small><b>'+dateLabel(p.data.deadline)+'</b></div></div><div class=\"sf-brief-notes\"><strong>Study-specific constraints</strong><p>'+esc(p.data.notes||'Add sponsor-approved constraints and eligibility of site types. No patient data.')+'</p></div>':'<div class=\"sf-empty-small\">Create an authorized feasibility study to begin.</div>')+'</section><section class=\"sf-panel sf-criteria-note\"><div class=\"sf-panel-head\"><h2>Assessment model</h2></div><div class=\"sf-circle-stat\">'+criterion.length+'<span>criteria</span></div><div class=\"sf-criteria-metrics\"><div><b>'+mandatory+'</b><small>mandatory</small></div><div><b>'+weight+'</b><small>weight points</small></div></div>'+pill(!criterion.length?'Not configured':weightsInvalid?'Invalid weights':'Defined weights',(!criterion.length||weightsInvalid)?'warning':'success')+'<p class=\"sf-subtle\">Weights are normalized at evaluation. Missing or unapproved responses never score zero or enter rankings.</p></section></div>'+\n'<section class=\"sf-panel sf-data-panel\"><div class=\"sf-panel-head\"><h2>Study evaluation criteria</h2>'+pill('Study-specific · '+criterion.length+' rows')+'</div>'+toolbar('criteria','Add criterion')+(criterion.length?recordTable('criteria',pageData(filteredRows('criteria')).rows):'<div class=\"sf-empty\">No criteria defined for this study.</div>')+pager(pageData(filteredRows('criteria')))+'</section>';\n}\nfunction sitesScreen(){const countryCount={};for(const s of all('sites'))if(s.data.country)countryCount[s.data.country]=(countryCount[s.data.country]||0)+1;const r=filteredRows('sites'),pg=pageData(r);const top=Object.entries(countryCount).sort((a,b)=>b[1]-a[1]).slice(0,3);\nreturn '<section class=\"sf-directory-summary\"><div><small>REUSABLE SITE DIRECTORY</small><h2>'+all('sites').length+' institutions</h2><p>Institution capabilities are reusable; sponsor-specific answers are kept on candidate/response records.</p></div><div class=\"sf-directory-countries\">'+top.map(([k,n])=>'<span>'+esc(k)+' <b>'+n+'</b></span>').join('')+'</div></section><section class=\"sf-panel sf-data-panel\"><div class=\"sf-panel-head\"><h2>Institution master</h2><span class=\"sf-subtle\">Profiles are not copied for every sponsor study</span></div>'+toolbar('sites','Add institution',['Verified','Needs review','Draft'])+(pg.total?recordTable('sites',pg.rows):'<div class=\"sf-empty\">No matching institutions.</div>')+pager(pg)+'</section><section class=\"sf-panel sf-bottom-space\"><div class=\"sf-panel-head\"><h2>Institution details</h2><span class=\"sf-subtle\">Reuse documented capabilities, not study-specific estimates</span></div><div class=\"sf-detail-selector\"><label>Institution <select data-ui-state=\"true\" data-action=\"set-site\" aria-label=\"Choose institution\">'+all('sites').map(s=>'<option value=\"'+esc(s.id)+'\" '+(st.site===s.id?'selected':'')+'>'+esc(s.data.name)+'</option>').join('')+'</select></label></div>'+(()=>{const d=find('sites',st.site)?.data;return d?'<div class=\"sf-site-details\"><div><small>Specialties</small><strong>'+esc(d.specialties||'Not specified')+'</strong></div><div><small>Facilities</small><strong>'+esc(d.facilities||'Not documented')+'</strong></div><div><small>Professional PI</small><strong>'+esc(d.leadPi||'Not recorded')+' · '+esc(d.piRole||'')+'</strong></div><div><small>Profile checked</small><strong>'+dateLabel(d.evidenceDate)+'</strong></div></div><p class=\"sf-source-line\">Evidence: '+esc(d.evidenceSource||'No source recorded')+'</p>':'<div class=\"sf-empty-small\">Choose a site</div>';})()+'</section>';\n}\nfunction questionnaire(){let candidates=currentCandidates();if(!candidates.find(x=>x.id===st.candidate))st.candidate=candidates[0]?.id||'';const selected=find('candidates',st.candidate),criteria=scoped('criteria');const responses=selected?all('responses').filter(x=>x.data.candidateId===selected.id):[];const approved=criteria.filter(c=>{const r=responses.find(x=>x.data.criterionId===c.id);return r&&r.data.status==='Approved'&&String(r.data.answer||'').trim()&&r.data.reviewer&&iso(r.data.answeredAt)&&r.data.source&&val(r.data.rating)>=1&&val(r.data.rating)<=5;}).length;const progress=criteria.length?Math.round(approved/criteria.length*100):0;const questionPages=Math.max(1,Math.ceil(criteria.length/pageSize));st.questionPage=Math.min(Math.max(0,st.questionPage||0),questionPages-1);\nreturn '<section class=\"sf-panel sf-question-head\"><div class=\"sf-panel-head\"><h2>Site questionnaire</h2>'+pill('Study-specific information','info')+'</div><div class=\"sf-question-picker\"><label>Site candidate <select data-ui-state=\"true\" data-action=\"set-candidate\" aria-label=\"Choose site candidate\">'+(candidates.length?candidates.map(c=>'<option value=\"'+esc(c.id)+'\" '+(c.id===st.candidate?'selected':'')+'>'+esc(siteName(c.data.siteId))+'</option>').join(''):'<option value=\"\">No candidates</option>')+'</select></label><div><small>Response completeness</small><strong>'+approved+' of '+criteria.length+' approved</strong></div><div class=\"sf-progress\"><span style=\"width:'+progress+'%\"></span></div></div><p class=\"sf-subtle\">Questionnaire answers are aggregate institutional estimates, manually reviewed and linked to a source. No patient-level information.</p></section>'+\n'<div class=\"sf-question-grid\"><section class=\"sf-panel\"><div class=\"sf-panel-head\"><h2>Requirement questionnaire</h2>'+btn(icon('plus')+' Add response','new:responses','sf-btn sf-btn-primary',!canWrite('responses')||!selected)+'</div><div class=\"sf-question-items\">'+(criteria.length?criteria.slice(st.questionPage*pageSize,(st.questionPage+1)*pageSize).map(c=>{const r=responses.find(x=>x.data.criterionId===c.id);return '<div class=\"sf-question-item\"><div class=\"sf-question-n\"><span class=\"sf-question-category\">'+esc(c.data.category||'Site capability')+'</span><strong>'+esc(c.data.name)+'</strong><small>'+esc(c.data.expected||'No expected evidence defined')+'</small></div><div class=\"sf-question-answer\">'+pill(r?.data.status||'Missing',statusColor(r?.data.status||'Missing'))+'<span class=\"sf-question-rate\">'+(val(r?.data.rating)===null?'Unrated':esc(r.data.rating)+'/5')+'</span>'+(r?btn('Review','edit:responses:'+r.id,'sf-btn sf-btn-small',!canWrite('responses')):'')+'</div></div>';}).join(''):'<div class=\"sf-empty-small\">Define study criteria first.</div>')+'</div></section><section class=\"sf-panel sf-question-aside\"><h2>Site response context</h2><div class=\"sf-qa-point\"><small>Institution</small><b>'+esc(siteName(selected?.data.siteId))+'</b></div><div class=\"sf-qa-point\"><small>Study</small><b>'+esc(proj()?.data.name||'—')+'</b></div><div class=\"sf-qa-point\"><small>Questionnaire due</small><b>'+dateLabel(selected?.data.contactDue)+'</b></div><div class=\"sf-qa-point\"><small>Response received</small><b>'+dateLabel(selected?.data.respondedOn)+'</b></div><div class=\"sf-qa-progress\"><div class=\"sf-big-percent\">'+progress+'%</div><small>Responses approved against current criteria (not an assessment score)</small></div>'+btn('Compare evaluated sites '+icon('chevron'),'nav:matrix','sf-btn sf-btn-primary')+'</section></div>'+register('responses','Response records');\n}\nfunction register(role,label){const pg=pageData(filteredRows(role));return '<section class=\"sf-panel sf-data-panel sf-bottom-space\"><div class=\"sf-panel-head\"><h2>'+esc(label)+'</h2></div>'+toolbar(role,'Add')+recordTable(role,pg.rows)+pager(pg)+'</section>';}\nfunction matrix(){const cs=currentCandidates(),criteria=scoped('criteria'),scored=cs.map(c=>({c,s:scoreFor(c)}));const ranked=scored.filter(x=>x.s.complete).sort((a,b)=>b.s.score-a.s.score);const unrated=scored.filter(x=>!x.s.complete);const count=scored.length;\nconst ranking='<div class=\"sf-rank-list\">'+(ranked.length?ranked.map((item,i)=>'<div class=\"sf-rank-item\"><span class=\"sf-rank-index\">0'+(i+1)+'</span><div><strong>'+esc(siteName(item.c.data.siteId))+'</strong><small>'+esc(find('sites',item.c.data.siteId)?.data.country||'—')+' · complete reviewed criteria</small></div><div class=\"sf-rank-bar\"><span style=\"width:'+item.s.score+'%\"></span></div><b>'+item.s.score+'/100</b></div>').join(''):'<div class=\"sf-empty-small\">No sites can be ranked yet. Complete every applicable, approved criterion with reviewed ratings.</div>')+'</div>';\nconst maxCompare=Math.max(0,Math.ceil(scored.length/5)-1);st.comparePage=Math.min(maxCompare,Math.max(0,Number(st.comparePage)||0));const viewCandidates=scored.slice(st.comparePage*5,st.comparePage*5+5);const matrixCells=criteria.length&&viewCandidates.length?'<div class=\"sf-matrix-scroll\"><table class=\"sf-matrix-table\"><thead><tr><th>Criterion</th>'+viewCandidates.map(x=>'<th>'+esc(siteName(x.c.data.siteId))+'</th>').join('')+'</tr></thead><tbody>'+criteria.map(c=>'<tr><td><strong>'+esc(c.data.name)+'</strong><small>'+esc(c.data.weight||'—')+' weight · '+(bool(c.data.mandatory)?'Required':'Optional')+'</small></td>'+viewCandidates.map(x=>{const r=all('responses').find(p=>p.data.criterionId===c.id&&p.data.candidateId===x.c.id);const ok=r?.data.status==='Approved'&&val(r?.data.rating)!==null&&!!r.data.reviewer&&!!r.data.answeredAt&&!!r.data.source;return '<td>'+ (ok?'<span class=\"sf-rating\">'+esc(r.data.rating)+'/5</span>':pill(r?.data.status==='Not applicable'?'N/A':'Missing','warning'))+'</td>';}).join('')+'</tr>').join('')+'</tbody></table></div>':'<div class=\"sf-empty-small\">Define criteria and link site candidates before comparing them.</div>';\nreturn '<div class=\"sf-matrix-title\"><div><h2>Evidence-weighted shortlist</h2><p>Same study and criterion revision for every institution. Missing responses remain unranked.</p></div>'+pill(ranked.length+' / '+count+' rankable',ranked.length?'success':'warning')+'</div><section class=\"sf-panel sf-panel-large\"><div class=\"sf-panel-head\"><h2>Comparable site ratings</h2><span class=\"sf-subtle\">Reviewed weighted rating · 0–100</span></div>'+ranking+'</section><section class=\"sf-panel sf-panel-large\"><div class=\"sf-panel-head\"><h2>Criteria-by-site assessment</h2><span class=\"sf-subtle\">Five candidates per comparison view; all candidates remain in the source register</span></div>'+matrixCells+'<div class=\"sf-pager\">'+btn('Previous sites','compare-prev','sf-btn',st.comparePage===0)+'<span>Page '+(st.comparePage+1)+' of '+(maxCompare+1)+'</span>'+btn('Next sites','compare-next','sf-btn',st.comparePage>=maxCompare)+'</div></section>'+(unrated.length?'<section class=\"sf-panel sf-panel-large\"><h2>Cannot rank yet</h2><div class=\"sf-unranked\">'+unrated.map(x=>'<div><strong>'+esc(siteName(x.c.data.siteId))+'</strong><small>'+esc(x.s.reason||'Evidence incomplete')+'</small></div>').join('')+'</div></section>':'')+register('candidates','Study site candidates');\n}\nfunction handoff(){const stages=['Identified','Contacted','Responded','Assessed','Proposed','Selected','Declined'];const data=currentCandidates();const tasks=scoped('tasks').filter(x=>find('candidates',x.data.candidateId));const pending=tasks.filter(x=>x.data.status!=='Done');const stageLabel=(status)=>data.filter(x=>x.data.stage===status);\nreturn '<section class=\"sf-handoff-banner\"><div><small>SELECTION PIPELINE</small><h2>From feasibility to site startup</h2><p>Only reviewed and approved selections may proceed to handoff. No external site contact is sent from this app.</p></div><div><b>'+stageLabel('Selected').length+'</b><small>selected sites</small></div></section><section class=\"sf-pipeline\">'+stages.map(stage=>'<div class=\"sf-stage\"><div class=\"sf-stage-head\"><strong>'+esc(stage)+'</strong><span>'+stageLabel(stage).length+'</span></div><div class=\"sf-stage-cards\">'+(stageLabel(stage).length?stageLabel(stage).map(c=>'<article class=\"sf-site-card\"><strong>'+esc(siteName(c.data.siteId))+'</strong><small>'+esc(find('sites',c.data.siteId)?.data.country||'—')+'</small><div>'+pill(c.data.sponsorDecision||'Pending','neutral')+'</div><div class=\"sf-site-card-footer\">'+btn('Details','edit:candidates:'+c.id,'sf-btn sf-btn-small',!canWrite('candidates'))+rowActions('candidates',c)+'</div></article>').join(''):'<div class=\"sf-stage-empty\">No sites</div>')+'</div></div>').join('')+'</section><section class=\"sf-panel sf-data-panel\"><div class=\"sf-panel-head\"><h2>Startup handoff actions</h2><div class=\"sf-handoff-actions\">'+pill(pending.length+' open','warning')+'</div></div>'+toolbar('tasks','Add handoff task',['Open','In progress','Done'])+(filteredRows('tasks').length?recordTable('tasks',pageData(filteredRows('tasks')).rows):'<div class=\"sf-empty\">No linked handoff tasks.</div>')+pager(pageData(filteredRows('tasks')))+'</section>';\n}\nfunction editor(){const ed=st.editor;if(!ed)return '';const role=ed.role;const name={projects:'study',sites:'institution',candidates:'site candidate',criteria:'assessment criterion',responses:'questionnaire response',tasks:'handoff task'}[role];function formField(f){const v=ed.draft[f.k]??'',m=bound[role],disabled=!m?.writable.has(f.k);if(f.k==='archived')return '';let control='';if(f.type==='relation'){const rel={projectId:'projects',siteId:'sites',candidateId:'candidates',criterionId:'criteria'}[f.k];let options=all(rel);if(f.k==='candidateId')options=options.filter(x=>x.data.projectId===st.project);if(f.k==='criterionId')options=options.filter(x=>x.data.projectId===(ed.draft.projectId||find('candidates',ed.draft.candidateId)?.data.projectId||st.project));control='<select name=\"'+f.k+'\" data-action=\"draft:'+f.k+'\" data-ui-state=\"true\" '+(f.required?'required':'')+' '+(disabled?'disabled':'')+'><option value=\"\">Choose</option>'+options.map(x=>'<option value=\"'+esc(x.id)+'\" '+(x.id===v?'selected':'')+'>'+esc(rel==='sites'?siteName(x.id):rel==='candidates'?candidateName(x.id):x.data.name)+'</option>').join('')+'</select>';}\n else if(f.options){control='<select name=\"'+f.k+'\" data-action=\"draft:'+f.k+'\" data-ui-state=\"true\" '+(disabled?'disabled':'')+'><option value=\"\">Select</option>'+f.options.map(o=>'<option value=\"'+esc(o)+'\" '+(v===o?'selected':'')+'>'+esc(o)+'</option>').join('')+'</select>';}\n else if(f.type==='long'){control='<textarea rows=\"3\" name=\"'+f.k+'\" data-action=\"draft:'+f.k+'\" data-ui-state=\"true\" '+(disabled?'disabled':'')+'>'+esc(v)+'</textarea>';}\n else if(f.type==='boolean'){control='<select name=\"'+f.k+'\" data-action=\"draft:'+f.k+'\" data-ui-state=\"true\" '+(disabled?'disabled':'')+'><option value=\"false\" '+(!bool(v)?'selected':'')+'>No</option><option value=\"true\" '+(bool(v)?'selected':'')+'>Yes</option></select>';}\n else{const type=f.type==='date'?'date':f.type==='number'?'number':'text';control='<input name=\"'+f.k+'\" type=\"'+type+'\" data-action=\"draft:'+f.k+'\" data-ui-state=\"true\" value=\"'+esc(v)+'\" '+(f.type==='number'?'step=\"any\" ':'')+(f.required?'required ':'')+(disabled?'disabled':'')+'>';}\n return '<label class=\"sf-field\"><span>'+esc(f.label)+(f.required?' *':'')+'</span>'+control+'</label>';}\nconst title=(ed.mode==='edit'?'Edit ':ed.mode==='duplicate'?'Duplicate ':'New ')+name;return '<div class=\"sf-overlay\"><section class=\"sf-drawer\" role=\"dialog\" aria-modal=\"true\" aria-label=\"'+esc(title)+'\"><div class=\"sf-drawer-head\"><div><small>REVIEWED DATA CHANGE</small><h2>'+esc(title)+'</h2></div>'+btn('×','cancel','sf-close',false,'aria-label=\"Close editor\"')+'</div><form data-action=\"save\" class=\"sf-edit-form\"><div class=\"sf-drawer-content\"><p class=\"sf-inform\">This form prepares a proposed record change. A trusted TrialAgents review must approve it before anything is saved.</p><div class=\"sf-form-grid\">'+fields[role].map(formField).join('')+'</div></div><div class=\"sf-drawer-foot\">'+btn('Cancel','cancel','sf-btn')+'<button class=\"sf-btn sf-btn-primary\" type=\"submit\">Prepare reviewed save</button></div></form></section></div>';}\nfunction confirmModal(){if(!st.confirm)return '';const r=find(st.confirm.role,st.confirm.id);return '<div class=\"sf-overlay\"><section class=\"sf-dialog\" role=\"alertdialog\" aria-modal=\"true\" aria-label=\"Archive record\"><h2>Delete this record?</h2><p><strong>'+esc(r?.data.name||'Record')+'</strong> will be archived after a reviewed write. It will disappear from this app, but its version history and underlying record identity remain available to authorized administrators. It is not permanently erased.</p><div class=\"sf-dialog-actions\">'+btn('Cancel','cancel','sf-btn')+btn('Review archive','confirm-delete','sf-btn sf-btn-danger')+'</div></section></div>';}\nconst PROMPT='Review the currently authorized CRO feasibility study and its site candidates, criteria, institutional profiles, dated responses and handoff tasks. Cite exact TrialAgents record IDs internally, source links and evidence dates; do not infer patient populations or add patient data. Separate reusable public institution facts from sponsor-confidential study responses. Identify new or stale public site capability evidence from official institution/trial registries; normalize institution identity and de-duplicate. Provide a candidate shortlist only when all mandatory criteria and weighted reviewer ratings are complete, and clearly label missing or unapproved answers as unranked. Prepare source-linked draft evidence changes or a concise internal feasibility briefing for human review. Do not contact sites or sponsors, do not invent enrollment capacity, and do not treat a draft as approved. Only after complete coverage and an approved quiet policy may no new information produce no_update; denied or partial access is incomplete; do not send email from ChatGPT.';\nfunction main(){if(!full&&mapped){const role={portfolio:'projects',requirements:'criteria',sites:'sites',questionnaire:'responses',matrix:'candidates',handoff:'tasks'}[st.tab];return '<div class=\"sf-empty-small\">No sites can be ranked; summaries are withheld until all required sources are complete.</div>'+register(role,'Available records — incomplete coverage');}if(st.tab==='portfolio')return portfolio();if(st.tab==='requirements')return requirements();if(st.tab==='sites')return sitesScreen();if(st.tab==='questionnaire')return questionnaire();if(st.tab==='matrix')return matrix();if(st.tab==='handoff')return handoff();return portfolio();}\nlet html=header()+'<main class=\"sf-content\">'+problemBanner()+(st.notice?'<div class=\"sf-alert sf-alert-info\" role=\"status\">'+esc(st.notice)+' '+btn('Dismiss','clear-notice','sf-btn sf-btn-small')+'</div>':'')+main()+'<p class=\"sf-footnote\">'+(cfg.demoLabel?'Fictional demo data · local review only · no site contact or patient information.':'Internal TrialAgents app · sponsor confidentiality enforced by authorized bindings and the platform, not tab visibility.')+'</p></main>';\nif(st.tab==='matrix'&&st.prompt)html+='<div class=\"sf-panel sf-prompt-panel\">'+esc(PROMPT)+'</div>';\nhtml+='<footer class=\"sf-demo-footer\"></footer>'+editor()+confirmModal();\nreturn {html,css:typeof FEASIBILITY_CSS==='string'?FEASIBILITY_CSS:'',state:st};\n";
+const demo=({
+  "notice": "FICTIONAL DEMONSTRATION DATA ONLY. Never seed production workspace. Sponsor and people invented for layout review.",
+  "records": [
+    {
+      "id": "p-101",
+      "role": "projects",
+      "version": 1,
+      "data": {
+        "name": "MCT-401 · Phase II Immunology",
+        "archived": false,
+        "sponsor": "Meridian Cell Therapeutics (fictional)",
+        "therapy": "Autoimmune disease",
+        "phase": "II",
+        "countries": "Germany, Netherlands, Sweden",
+        "siteType": "Academic",
+        "deadline": "2026-11-18",
+        "owner": "Feasibility lead",
+        "status": "Open",
+        "revision": "v3",
+        "source": "https://example.org/fictional-mct401-brief",
+        "notes": "Fictional restricted sponsor study brief. Verify local immunology research teams, access to lab capabilities, and startup feasibility. No patient counts or individual clinical data."
+      }
+    },
+    {
+      "id": "p-102",
+      "role": "projects",
+      "version": 1,
+      "data": {
+        "name": "MCT-220 · Rare Disease Study",
+        "archived": false,
+        "sponsor": "Meridian Cell Therapeutics (fictional)",
+        "therapy": "Rare neuromuscular disorders",
+        "phase": "II",
+        "countries": "Germany, Denmark, Netherlands",
+        "siteType": "Any",
+        "deadline": "2026-12-04",
+        "owner": "Startup manager",
+        "status": "Open",
+        "revision": "v1",
+        "source": "https://example.org/fictional-mct220-brief",
+        "notes": "Fictional sponsor-specific requirements. No sponsor information may be copied into reusable institutional site facts."
+      }
+    },
+    {
+      "id": "s-berlin",
+      "role": "sites",
+      "version": 1,
+      "data": {
+        "name": "Charité Research Campus",
+        "archived": false,
+        "country": "Germany",
+        "city": "Berlin",
+        "type": "Academic",
+        "specialties": "Immunology, rare disease",
+        "facilities": "Specialty immunology labs, research pharmacy",
+        "experience": "Public multicenter trial experience",
+        "staffBand": "9–15",
+        "leadPi": "Dr. Lena Hartmann",
+        "piRole": "Principal investigator",
+        "website": "https://example.org/fictional-site-0",
+        "evidenceSource": "https://example.org/fictional-institution-profile-0",
+        "evidenceDate": "2026-10-21",
+        "status": "Verified",
+        "notes": "Fictional professional/institutional data for visual template review; does not represent a real site or person."
+      }
+    },
+    {
+      "id": "s-utrecht",
+      "role": "sites",
+      "version": 1,
+      "data": {
+        "name": "Utrecht Academic Medical Center",
+        "archived": false,
+        "country": "Netherlands",
+        "city": "Utrecht",
+        "type": "Academic",
+        "specialties": "Immunology, translational medicine",
+        "facilities": "Specialty imaging, central sample processing",
+        "experience": "Prior academic immunology trials",
+        "staffBand": "9–15",
+        "leadPi": "Prof. Eva Lind",
+        "piRole": "Research lead",
+        "website": "https://example.org/fictional-site-1",
+        "evidenceSource": "https://example.org/fictional-institution-profile-1",
+        "evidenceDate": "2026-10-22",
+        "status": "Verified",
+        "notes": "Fictional professional/institutional data for visual template review; does not represent a real site or person."
+      }
+    },
+    {
+      "id": "s-stockholm",
+      "role": "sites",
+      "version": 1,
+      "data": {
+        "name": "Stockholm Clinical Research Center",
+        "archived": false,
+        "country": "Sweden",
+        "city": "Stockholm",
+        "type": "Specialty center",
+        "specialties": "Autoimmune disease, dermatology",
+        "facilities": "Biobank collaboration, immunophenotyping",
+        "experience": "Prior sponsor trials",
+        "staffBand": "4–8",
+        "leadPi": "Dr. Anna Norberg",
+        "piRole": "Principal investigator",
+        "website": "https://example.org/fictional-site-2",
+        "evidenceSource": "https://example.org/fictional-institution-profile-2",
+        "evidenceDate": "2026-10-23",
+        "status": "Verified",
+        "notes": "Fictional professional/institutional data for visual template review; does not represent a real site or person."
+      }
+    },
+    {
+      "id": "s-munich",
+      "role": "sites",
+      "version": 1,
+      "data": {
+        "name": "Munich Translational Studies Unit",
+        "archived": false,
+        "country": "Germany",
+        "city": "Munich",
+        "type": "Hospital",
+        "specialties": "Immunology, oncology",
+        "facilities": "Local biochemistry, centralized pharmacy",
+        "experience": "Past Phase II trials",
+        "staffBand": "4–8",
+        "leadPi": "Dr. Emil Weber",
+        "piRole": "Clinical research director",
+        "website": "https://example.org/fictional-site-3",
+        "evidenceSource": "https://example.org/fictional-institution-profile-3",
+        "evidenceDate": "2026-10-24",
+        "status": "Verified",
+        "notes": "Fictional professional/institutional data for visual template review; does not represent a real site or person."
+      }
+    },
+    {
+      "id": "s-copenhagen",
+      "role": "sites",
+      "version": 1,
+      "data": {
+        "name": "Copenhagen Neuromuscular Institute",
+        "archived": false,
+        "country": "Denmark",
+        "city": "Copenhagen",
+        "type": "Academic",
+        "specialties": "Rare neuromuscular disease",
+        "facilities": "Genetics laboratory, neurology unit",
+        "experience": "Published research trials",
+        "staffBand": "9–15",
+        "leadPi": "Prof. Nils Sorensen",
+        "piRole": "Investigator",
+        "website": "https://example.org/fictional-site-4",
+        "evidenceSource": "https://example.org/fictional-institution-profile-4",
+        "evidenceDate": "2026-10-25",
+        "status": "Needs review",
+        "notes": "Fictional professional/institutional data for visual template review; does not represent a real site or person."
+      }
+    },
+    {
+      "id": "s-essen",
+      "role": "sites",
+      "version": 1,
+      "data": {
+        "name": "Essen Community Research Network",
+        "archived": false,
+        "country": "Germany",
+        "city": "Essen",
+        "type": "Community",
+        "specialties": "Autoimmune disease",
+        "facilities": "Referral network, trained study nurses",
+        "experience": "Community investigator-led studies",
+        "staffBand": "1–3",
+        "leadPi": "Dr. Robin Adler",
+        "piRole": "Principal investigator",
+        "website": "https://example.org/fictional-site-5",
+        "evidenceSource": "https://example.org/fictional-institution-profile-5",
+        "evidenceDate": "2026-10-26",
+        "status": "Needs review",
+        "notes": "Fictional professional/institutional data for visual template review; does not represent a real site or person."
+      }
+    },
+    {
+      "id": "c-101",
+      "role": "criteria",
+      "version": 1,
+      "data": {
+        "name": "Therapeutic expertise",
+        "archived": false,
+        "projectId": "p-101",
+        "category": "Experience",
+        "mandatory": true,
+        "weight": 30,
+        "expected": "Prior institutional immunology trial experience",
+        "revision": "v3",
+        "source": "https://example.org/fictional-study-criteria-v3"
+      }
+    },
+    {
+      "id": "c-102",
+      "role": "criteria",
+      "version": 1,
+      "data": {
+        "name": "Specialized facilities",
+        "archived": false,
+        "projectId": "p-101",
+        "category": "Facilities",
+        "mandatory": true,
+        "weight": 25,
+        "expected": "Immunology laboratory and sample management capability",
+        "revision": "v3",
+        "source": "https://example.org/fictional-study-criteria-v3"
+      }
+    },
+    {
+      "id": "c-103",
+      "role": "criteria",
+      "version": 1,
+      "data": {
+        "name": "Study coordinator availability",
+        "archived": false,
+        "projectId": "p-101",
+        "category": "Staffing",
+        "mandatory": true,
+        "weight": 20,
+        "expected": "Aggregate operational FTE band for study startup",
+        "revision": "v3",
+        "source": "https://example.org/fictional-study-criteria-v3"
+      }
+    },
+    {
+      "id": "c-104",
+      "role": "criteria",
+      "version": 1,
+      "data": {
+        "name": "Startup timeline",
+        "archived": false,
+        "projectId": "p-101",
+        "category": "Startup",
+        "mandatory": false,
+        "weight": 15,
+        "expected": "Estimated contract-to-first-site-visit timelines; no patient detail",
+        "revision": "v3",
+        "source": "https://example.org/fictional-study-criteria-v3"
+      }
+    },
+    {
+      "id": "c-105",
+      "role": "criteria",
+      "version": 1,
+      "data": {
+        "name": "Site quality history",
+        "archived": false,
+        "projectId": "p-101",
+        "category": "Quality",
+        "mandatory": false,
+        "weight": 10,
+        "expected": "Documented public or authorized aggregate quality record",
+        "revision": "v3",
+        "source": "https://example.org/fictional-study-criteria-v3"
+      }
+    },
+    {
+      "id": "c-201",
+      "role": "criteria",
+      "version": 1,
+      "data": {
+        "name": "Neuromuscular experience",
+        "archived": false,
+        "projectId": "p-102",
+        "category": "Experience",
+        "mandatory": true,
+        "weight": 45,
+        "expected": "Relevant neurology/rare disease experience",
+        "revision": "v1",
+        "source": "https://example.org/fictional-study-criteria-v1"
+      }
+    },
+    {
+      "id": "c-202",
+      "role": "criteria",
+      "version": 1,
+      "data": {
+        "name": "Molecular testing equipment",
+        "archived": false,
+        "projectId": "p-102",
+        "category": "Facilities",
+        "mandatory": true,
+        "weight": 30,
+        "expected": "Institutional laboratory capability",
+        "revision": "v1",
+        "source": "https://example.org/fictional-study-criteria-v1"
+      }
+    },
+    {
+      "id": "c-203",
+      "role": "criteria",
+      "version": 1,
+      "data": {
+        "name": "Startup readiness",
+        "archived": false,
+        "projectId": "p-102",
+        "category": "Startup",
+        "mandatory": false,
+        "weight": 25,
+        "expected": "Institutional availability and document readiness",
+        "revision": "v1",
+        "source": "https://example.org/fictional-study-criteria-v1"
+      }
+    },
+    {
+      "id": "k-101",
+      "role": "candidates",
+      "version": 1,
+      "data": {
+        "name": "Candidate · Charité Research Campus",
+        "archived": false,
+        "projectId": "p-101",
+        "siteId": "s-berlin",
+        "stage": "Selected",
+        "owner": "Feasibility lead",
+        "contactDue": "2026-11-19",
+        "respondedOn": "2026-10-27",
+        "sponsorDecision": "Approved",
+        "decisionBy": "Sponsor medical lead",
+        "decisionDate": "2026-10-24",
+        "rationale": "Selected following reviewed institutional feasibility",
+        "activationTarget": "2027-01-22",
+        "source": "https://example.org/fictional-sponsor-decision"
+      }
+    },
+    {
+      "id": "k-102",
+      "role": "candidates",
+      "version": 1,
+      "data": {
+        "name": "Candidate · Utrecht Academic Medical Center",
+        "archived": false,
+        "projectId": "p-101",
+        "siteId": "s-utrecht",
+        "stage": "Proposed",
+        "owner": "Feasibility lead",
+        "contactDue": "2026-11-19",
+        "respondedOn": "2026-10-27",
+        "sponsorDecision": "Pending",
+        "decisionBy": "Sponsor medical lead",
+        "decisionDate": "2026-10-28",
+        "rationale": "Proposed following complete approved site assessment",
+        "activationTarget": "",
+        "source": "https://example.org/fictional-sponsor-decision"
+      }
+    },
+    {
+      "id": "k-103",
+      "role": "candidates",
+      "version": 1,
+      "data": {
+        "name": "Candidate · Stockholm Clinical Research Center",
+        "archived": false,
+        "projectId": "p-101",
+        "siteId": "s-stockholm",
+        "stage": "Responded",
+        "owner": "Feasibility lead",
+        "contactDue": "2026-11-07",
+        "respondedOn": "2026-10-27",
+        "sponsorDecision": "Pending",
+        "decisionBy": "",
+        "decisionDate": "",
+        "rationale": "",
+        "activationTarget": "",
+        "source": ""
+      }
+    },
+    {
+      "id": "k-104",
+      "role": "candidates",
+      "version": 1,
+      "data": {
+        "name": "Candidate · Munich Translational Studies Unit",
+        "archived": false,
+        "projectId": "p-101",
+        "siteId": "s-munich",
+        "stage": "Contacted",
+        "owner": "Feasibility lead",
+        "contactDue": "2026-11-07",
+        "respondedOn": "",
+        "sponsorDecision": "Pending",
+        "decisionBy": "",
+        "decisionDate": "",
+        "rationale": "",
+        "activationTarget": "",
+        "source": ""
+      }
+    },
+    {
+      "id": "k-105",
+      "role": "candidates",
+      "version": 1,
+      "data": {
+        "name": "Candidate · Essen Community Research Network",
+        "archived": false,
+        "projectId": "p-101",
+        "siteId": "s-essen",
+        "stage": "Identified",
+        "owner": "Feasibility lead",
+        "contactDue": "2026-11-19",
+        "respondedOn": "",
+        "sponsorDecision": "Pending",
+        "decisionBy": "",
+        "decisionDate": "",
+        "rationale": "",
+        "activationTarget": "",
+        "source": ""
+      }
+    },
+    {
+      "id": "k-201",
+      "role": "candidates",
+      "version": 1,
+      "data": {
+        "name": "Candidate · Copenhagen Neuromuscular Institute",
+        "archived": false,
+        "projectId": "p-102",
+        "siteId": "s-copenhagen",
+        "stage": "Responded",
+        "owner": "Feasibility lead",
+        "contactDue": "2026-11-07",
+        "respondedOn": "2026-10-27",
+        "sponsorDecision": "Pending",
+        "decisionBy": "",
+        "decisionDate": "",
+        "rationale": "",
+        "activationTarget": "",
+        "source": ""
+      }
+    },
+    {
+      "id": "k-202",
+      "role": "candidates",
+      "version": 1,
+      "data": {
+        "name": "Candidate · Charité Research Campus",
+        "archived": false,
+        "projectId": "p-102",
+        "siteId": "s-berlin",
+        "stage": "Identified",
+        "owner": "Feasibility lead",
+        "contactDue": "2026-11-19",
+        "respondedOn": "",
+        "sponsorDecision": "Pending",
+        "decisionBy": "",
+        "decisionDate": "",
+        "rationale": "",
+        "activationTarget": "",
+        "source": ""
+      }
+    },
+    {
+      "id": "r-k-101-1",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Therapeutic expertise",
+        "archived": false,
+        "candidateId": "k-101",
+        "criterionId": "c-101",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 5,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-101",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-101-2",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Specialized facilities",
+        "archived": false,
+        "candidateId": "k-101",
+        "criterionId": "c-102",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 4,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-101",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-101-3",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Study coordinator availability",
+        "archived": false,
+        "candidateId": "k-101",
+        "criterionId": "c-103",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 4,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-101",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-101-4",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Startup timeline",
+        "archived": false,
+        "candidateId": "k-101",
+        "criterionId": "c-104",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 4,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-101",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-101-5",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Site quality history",
+        "archived": false,
+        "candidateId": "k-101",
+        "criterionId": "c-105",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 5,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-101",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-102-1",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Therapeutic expertise",
+        "archived": false,
+        "candidateId": "k-102",
+        "criterionId": "c-101",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 4,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-102",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-102-2",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Specialized facilities",
+        "archived": false,
+        "candidateId": "k-102",
+        "criterionId": "c-102",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 5,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-102",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-102-3",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Study coordinator availability",
+        "archived": false,
+        "candidateId": "k-102",
+        "criterionId": "c-103",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 3,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-102",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-102-4",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Startup timeline",
+        "archived": false,
+        "candidateId": "k-102",
+        "criterionId": "c-104",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 4,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-102",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-102-5",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Site quality history",
+        "archived": false,
+        "candidateId": "k-102",
+        "criterionId": "c-105",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 4,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-102",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-103-1",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Therapeutic expertise",
+        "archived": false,
+        "candidateId": "k-103",
+        "criterionId": "c-101",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 4,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-103",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-103-2",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Specialized facilities",
+        "archived": false,
+        "candidateId": "k-103",
+        "criterionId": "c-102",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 3,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-103",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-103-3",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Study coordinator availability",
+        "archived": false,
+        "candidateId": "k-103",
+        "criterionId": "c-103",
+        "answer": "",
+        "rating": null,
+        "status": "Clarification",
+        "answeredAt": "",
+        "source": "",
+        "respondent": "",
+        "reviewer": "",
+        "notes": "Pending dated clarification from site administrator"
+      }
+    },
+    {
+      "id": "r-k-103-4",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Startup timeline",
+        "archived": false,
+        "candidateId": "k-103",
+        "criterionId": "c-104",
+        "answer": "",
+        "rating": null,
+        "status": "Requested",
+        "answeredAt": "",
+        "source": "",
+        "respondent": "",
+        "reviewer": "",
+        "notes": "Pending dated clarification from site administrator"
+      }
+    },
+    {
+      "id": "r-k-103-5",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Site quality history",
+        "archived": false,
+        "candidateId": "k-103",
+        "criterionId": "c-105",
+        "answer": "",
+        "rating": null,
+        "status": "Clarification",
+        "answeredAt": "",
+        "source": "",
+        "respondent": "",
+        "reviewer": "",
+        "notes": "Pending dated clarification from site administrator"
+      }
+    },
+    {
+      "id": "r-k-201-1",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Neuromuscular experience",
+        "archived": false,
+        "candidateId": "k-201",
+        "criterionId": "c-201",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 5,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-201",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-201-2",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Molecular testing equipment",
+        "archived": false,
+        "candidateId": "k-201",
+        "criterionId": "c-202",
+        "answer": "Site confirms institutional experience and facilities via aggregate operational capability summary.",
+        "rating": 4,
+        "status": "Approved",
+        "answeredAt": "2026-10-29",
+        "source": "https://example.org/fictional-questionnaire-evidence/k-201",
+        "respondent": "Institutional research office",
+        "reviewer": "CRO feasibility reviewer",
+        "notes": ""
+      }
+    },
+    {
+      "id": "r-k-201-3",
+      "role": "responses",
+      "version": 1,
+      "data": {
+        "name": "Response · Startup readiness",
+        "archived": false,
+        "candidateId": "k-201",
+        "criterionId": "c-203",
+        "answer": "",
+        "rating": null,
+        "status": "Clarification",
+        "answeredAt": "",
+        "source": "",
+        "respondent": "",
+        "reviewer": "",
+        "notes": "Pending dated clarification from site administrator"
+      }
+    },
+    {
+      "id": "t-101",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Collect investigator qualification summary",
+        "archived": false,
+        "candidateId": "k-101",
+        "projectId": "p-101",
+        "kind": "Documentation",
+        "owner": "Study startup lead",
+        "due": "2026-11-08",
+        "status": "In progress",
+        "evidence": "",
+        "notes": "Sponsor-confidential startup notes. No PHI."
+      }
+    },
+    {
+      "id": "t-102",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Confirm site contracting contacts",
+        "archived": false,
+        "candidateId": "k-101",
+        "projectId": "p-101",
+        "kind": "Contracts",
+        "owner": "Legal coordinator",
+        "due": "2026-11-12",
+        "status": "Open",
+        "evidence": "",
+        "notes": "Internal handoff only."
+      }
+    },
+    {
+      "id": "t-103",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Review institutional regulatory checklist",
+        "archived": false,
+        "candidateId": "k-101",
+        "projectId": "p-101",
+        "kind": "Regulatory",
+        "owner": "Startup lead",
+        "due": "2026-11-15",
+        "status": "Open",
+        "evidence": "",
+        "notes": "Collect document metadata, not patient records."
+      }
+    },
+    {
+      "id": "t-104",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Share internal shortlist rationale",
+        "archived": false,
+        "candidateId": "k-102",
+        "projectId": "p-101",
+        "kind": "Other",
+        "owner": "Feasibility lead",
+        "due": "2026-11-10",
+        "status": "Done",
+        "evidence": "https://example.org/fictional-approved-minutes",
+        "notes": "Recorded internal decision only."
+      }
+    },
+    {
+      "id": "t-201",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Confirm lab feasibility",
+        "archived": false,
+        "candidateId": "k-201",
+        "projectId": "p-102",
+        "kind": "Startup",
+        "owner": "Study manager",
+        "due": "2026-11-23",
+        "status": "Open",
+        "evidence": "",
+        "notes": "No patient-level cohort estimates."
+      }
+    }
+  ]
+}
+).records;const metadata={
+  "id": "life.cro-site-feasibility",
+  "version": "1.2.1",
+  "name": "Site Feasibility Management",
+  "description": "Internal CRO site feasibility workspace for multiple authorized studies: reusable institution profiles, study-specific questionnaires, evidence-weighted selection and controlled startup handoff.",
+  "tags": [
+    "CRO",
+    "clinical-operations",
+    "site-feasibility",
+    "site-qualification",
+    "institutional-research",
+    "study-startup",
+    "feasibility-questionnaire"
+  ],
+  "whenToUse": "For CRO clinical feasibility managers and small study startup teams assessing documented institutional capabilities, collecting aggregate questionnaire responses, ranking complete site evidence and preparing approved site handoff.",
+  "whenNotToUse": "Not a sponsor-side sourcing procurement system, public site registration portal, patient matching product, live EHR/EDC or CTMS connection, or a messaging/contracting/signature platform.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "Site Feasibility",
+    "sponsorScope": "",
+    "tableMap": "{}",
+    "pageSize": 25,
+    "layoutProfile": "{}",
+    "readOnly": false,
+    "demoLabel": false,
+    "asOf": ""
+  },
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "The single app title displayed above its six native-layout sections.",
+      "default": "Site Feasibility"
+    },
+    "sponsorScope": {
+      "type": "string",
+      "description": "Owner-approved exact sponsor legal/organizational label for project-scoped views and writes. It is a UI/data guard, NOT a replacement for host access restrictions; separate authorized bindings are mandatory.",
+      "default": ""
+    },
+    "tableMap": {
+      "type": "string",
+      "description": "JSON mapping of six authorized role IDs, field keys and writable logical keys.",
+      "default": "{}"
+    },
+    "pageSize": {
+      "type": "number",
+      "description": "Page size 10\u201350, default 25.",
+      "default": 25
+    },
+    "layoutProfile": {
+      "type": "string",
+      "description": "Versioned native-layout JSON; reviewed changes of tabs, groups and visibility only.",
+      "default": "{}"
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "Disable proposed writes (not a new permission grant).",
+      "default": false
+    },
+    "demoLabel": {
+      "type": "boolean",
+      "description": "Fictional preview copy only; must remain false in production.",
+      "default": false
+    },
+    "asOf": {
+      "type": "string",
+      "description": "Optional YYYY-MM-DD date for deterministic previews. Do not reuse a stale demo cutoff in live app.",
+      "default": ""
+    }
+  },
+  "instructions": "Read current read_app_template_guidance authoring and usage (v1.3.8 or newer) in full, read_app_design, then list_app_templates/read_app_template to pin the catalog digest and version. Use a single requestKey and the existing workspace, with real authorized app/table/schema permissions. This is internal CRO-side site feasibility, not sponsor-side selection or an investigator portal; never create app-level login, user registration, payment, outbound contact or EHR/patient integration. Use the official linked TrialAgents host watermark at https://platform.trialagents.com; no fake or duplicate logo. Preserve the six distinct screens and current project-specific confidentiality rules. The proposed tables are projects, sites, candidates, criteria, responses and tasks; reuse shared institution records without copying them, store relationship record IDs only, and map camelCase logical fields to verified snake_case database keys with scalar text/date/number/select/boolean field kinds. Keep sponsor-specific site feasibility responses, evaluations and decisions bound inside the same approved sponsor-data boundary; section visibility does not create privacy isolation. NEVER combine incompatible sponsor permissions in one custom-source app or reuse confidential source rows across clients. Set sponsorScope to the explicitly approved sponsor organization and make study-specific tables host-authorized for that exact boundary; this UI scope is not security. Populate tableMap with actual authorized type IDs and writable LOGICAL field keys after reading exact schema/manifest. No fictional records become real. Run complete bounded reads; if a source is partial or denied, display gaps and disable ranking and promotion. Score only when each applicable criterion has Approved dated sourced reviewer evidence, rating 1\u20135 and positive weight. Mandatory criterion cannot be N/A. Use normalized weighted scores only for complete evaluation; do not invent patient counts or projected enrollment. The native settings gear sends tracker:layout; a one-line templateLayoutSchema declares six stable screen IDs and field-group keys. Reorder only through native prepare_tool_layout customLayout with existing app ID and expected version, then trusted review; keep source, bindings, access and automation status unchanged. All records use owned forms, data-ui-state and named actions. Duplicate prepares a reviewed create_record (institution reuse is preferred); Delete is reviewed archived:true update retaining history, not hard-delete. All edits use current record IDs with expectedVersion and trusted confirm receipt. A draft is never a saved record. Save the app first, verify app identity, then optionally check read_automation_setup, list_app_automations and read_app_automation_guide; create optional shared ChatGPT research/assessment monitor with prepare_app_monitoring, and separately approved internal TrialAgents email through prepare_app_action only with authorized recipients and eligibility. Never send email from generated source or ChatGPT; no independent ChatGPT Task per app, no automatic enrollment or external investigator messaging. No automation is also a complete valid setup. Validate 390/768/1440px, empty/full/partial/revoked fixtures and actual sanitized QuickJS host when possible. A preview ZIP is not a published catalog entry; publish only after owner approval and live host acceptance. Explicitly set multiple:false on every field and store canonical reference IDs in scalar text. Verify schema.example.json or the complete catalog dataContract before creating bindings. Preserve historical data when resolving incompatible schemas. Leave asOf blank for live use. Preserve original draft/confirmation versions and retain input on failures.",
+  "documentation": {
+    "quickStart": [
+      "Start within one existing TrialAgents authorized internal CRO sponsor scope; no app-specific login, new accounts or credentials. Retrieve current authoring/usage, design kit and exact catalog version/digest.",
+      "Set sponsorScope to an existing owner-approved sponsor label and ensure the backend manifest/bindings enforce the same confidentiality boundary. Inspect six business tables, their real IDs, scalar schemas, record access and source ownership. Reuse institution master only where the team is authorized; separate sponsor-specific study/project/candidate/response/criterion/task records.",
+      "Map logical field keys to authorized real snake_case database fields and bind using verified schemaVersion and manifest permissions. Do not seed the fictional preview.",
+      "Define a study brief plus a versioned positive-weight criterion set, link existing institutional site masters as distinct study-site candidates, collect sourced dated questionnaire responses and explicit reviewer ratings.",
+      "Preview all six screens, missing values, partial-denied reads, study switch, duplicate/archival and draft form review. Save and reopen using one requestKey, existing app ID and version.",
+      "Use native Settings (tracker:layout) for drag-and-drop screen and column ordering; review layoutProfile using prepare_tool_layout and expectedVersion. Custom source does not grant per-screen access.",
+      "Optionally set up a weekly shared ChatGPT research check and/or a separate authorized TrialAgents email after a committed internal update. Default no automation is supported."
+    ],
+    "dataContract": "Six authorized business tables. All fields explicitly multiple:false. Logical\u2192DB key:type mappings follow. All references projectId/siteId/candidateId/criterionId are scalar text containing saved record UUIDs, not native relationship arrays. Text supports multiline. Native arrays need an explicit adapter or reviewed compatible migration.\nprojects: name\u2192name:text required, sponsor\u2192sponsor:text required, therapy\u2192therapy:text, phase\u2192phase:select [I|II|III|IV|Other], countries\u2192countries:text, siteType\u2192site_type:select [Any|Academic|Hospital|Community|Specialty center], deadline\u2192deadline:date, owner\u2192owner:text, status\u2192status:select [Open|Review|Closed], revision\u2192revision:text, source\u2192source:text, notes\u2192notes:text, archived\u2192archived:boolean\nsites: name\u2192name:text required, country\u2192country:text required, city\u2192city:text, type\u2192type:select [Academic|Hospital|Community|Specialty center], specialties\u2192specialties:text, facilities\u2192facilities:text, experience\u2192experience:text, staffBand\u2192staff_band:select [1\u20133|4\u20138|9\u201315|16+|Unknown], leadPi\u2192lead_pi:text, piRole\u2192pi_role:text, website\u2192website:text, evidenceSource\u2192evidence_source:text, evidenceDate\u2192evidence_date:date, status\u2192status:select [Verified|Needs review|Draft], notes\u2192notes:text, archived\u2192archived:boolean\ncandidates: name\u2192name:text required, projectId\u2192project_id:text required, siteId\u2192site_id:text required, stage\u2192stage:select [Identified|Contacted|Responded|Assessed|Proposed|Selected|Declined], owner\u2192owner:text, contactDue\u2192contact_due:date, respondedOn\u2192responded_on:date, sponsorDecision\u2192sponsor_decision:select [Pending|Approved|Rejected], decisionBy\u2192decision_by:text, decisionDate\u2192decision_date:date, rationale\u2192rationale:text, activationTarget\u2192activation_target:date, source\u2192source:text, archived\u2192archived:boolean\ncriteria: name\u2192name:text required, projectId\u2192project_id:text required, category\u2192category:select [Experience|Facilities|Staffing|Startup|Quality|Other], mandatory\u2192mandatory:boolean, weight\u2192weight:number, expected\u2192expected:text, revision\u2192revision:text, source\u2192source:text, archived\u2192archived:boolean\nresponses: name\u2192name:text required, candidateId\u2192candidate_id:text required, criterionId\u2192criterion_id:text required, answer\u2192answer:text, rating\u2192rating:number, status\u2192status:select [Requested|Draft|Clarification|Reviewed|Approved|Not applicable], answeredAt\u2192answered_at:date, source\u2192source:text, respondent\u2192respondent:text, reviewer\u2192reviewer:text, notes\u2192notes:text, archived\u2192archived:boolean\ntasks: name\u2192name:text required, candidateId\u2192candidate_id:text required, projectId\u2192project_id:text required, kind\u2192kind:select [Documentation|Contracts|Regulatory|Startup|Other], owner\u2192owner:text, due\u2192due:date, status\u2192status:select [Open|In progress|Done], evidence\u2192evidence:text, notes\u2192notes:text, archived\u2192archived:boolean\nUse real table IDs and schema versions; binding fields are real DB keys, writableFields are logical keys. Map all fields for reliable completeness and write all editable fields for enabled forms. The sponsorScope label is UI context, not authorization: bind only host-authorized data from one sponsor boundary. Never seed demo records or create app auth. Reads are bounded to 800 rows per role; incomplete/denied/unknown totals withhold scores and summaries. Drafts are local; records.propose needs trusted review. Archive uses original versions and complete child dependency checks. Changed approved responses reset to Draft with reviewer/date cleared. Reset linked approvals before changing criteria. Scores describe reviewed evidence, not enrollment predictions.",
+    "interactionContract": "Six distinct workflows: portfolio with study-by-country coverage and deadlines; study brief/criteria form+register; reusable institution directory and professional PI details; sponsor-specific questionnaire response workflow and reviewed evidence; comparative weighted ranking matrix with explicit unranked candidates; sponsor-reviewed selection pipeline and dated startup handoff tasks. One page title, top navigation and study selector (only within currently authorized app) with light tables and ocean/teal accents. Settings gear emits tracker:layout and native host reviewed drag-and-drop editing; do not implement custom arrows or a second settings account. Search + Add record remain in one toolbar row with expandable filters; tables have keyboard-reachable row action menus with Edit, Duplicate and Delete. Duplicate is a proposed new draft and never bypasses approval, Delete archives through reviewed optimistic-version update after confirmation. Draft form controls have unique data-action and data-ui-state; on change draft state is preserved, submit calls records.propose then platform confirmation, no claims of saved until receipt. Sponsor selected/Proposed status requires full evaluation and accountable reviewer/date/rationale; Selected also requires sponsor approval and evidence reference. No automated outward notification. Platform Automations management only outside the app. The matrix has a candidate register with Add/Edit/Duplicate/Archive and paged five-site comparison. The questionnaire includes a response register and independent criteria paging. Parent archives require complete child reads with no active dependencies. Native layout fields apply to the six record tables; comparison cards retain their fixed design.",
+    "lifecycle": "Template life.cro-site-feasibility v1.2.0. Existing app identity, binding schema versions, source, manifest and permissions survive native layoutProfile review. App is created/saved with one requestKey and deterministic version/digest; amend same ID using expectedVersion. Reconcile ambiguous proposals and do not retry with a new key. Archive is reversible via host authority and does not delete linked source records. Reuse institution identity across studies rather than copying sponsor-specific values. Optional automation definitions are disabled until separate reviewed activation; editing preserves IDs, stable authoringKey, disabled state, trigger and current grants. Archive suspends automation, restoring does not auto-resume. Failure in automation or shared ChatGPT task cannot interrupt data/visual navigation or lose the last published frame. No app-specific identity lifecycle, billing or patient-data accounts. Preserve authoringKey, app identity, grant expiry, receipts and disabled state. Disabled definitions remain editable/listed; archive suspends runs and restore/copy never reactivates them.",
+    "limitations": [
+      "PRE-PUBLISH review candidate. Interactive HTML is a fictional stand-alone renderer with local approval simulation; it is not a saved live TrialAgents app or deployed MCP template.",
+      "The native custom Layout declaration must be verified against the live connected host, including drag-and-drop persistence and conflict behavior. The standalone preview only illustrates host layout handoff.",
+      "Custom frontend-js has app-level access boundaries; hiding a section is not backend isolation. Different sponsor permissions cannot be safely combined solely by UI filters.",
+      "Institution data is professional and public/authorized only, no individual patient/subject or EHR records. Capacity means aggregate operational staffing, never inferred patient availability or eligibility.",
+      "No automatic site invitation, portal, PI messaging, investigator authentication, contract signing, external EDC/CTMS connection, or patient-level matching is offered.",
+      "Optional ChatGPT and TrialAgents email definitions are documentation only, require separately approved setup and verified runner; no scheduled automation or email is activated by installing template.",
+      "Approval/readiness is calculated from complete authorized read pages (maximum 800 per role), not from an unbounded analytics backend. Oversized datasets require backend aggregation before rollout."
+    ],
+    "examples": [
+      {
+        "prompt": "Create a Site Feasibility app for our CRO using our existing authorized institution master and an internal study from Meridian Cell Therapeutics. No automation yet.",
+        "expectedBehavior": "One six-screen internal CRO app in one authorized sponsor scope; reuse site profiles; create linked study criteria and questionnaire drafts for review; no demo records, no patient data or app login."
+      },
+      {
+        "prompt": "Compare our German and Dutch institutional candidates against five approved study criteria, and recommend a shortlist only if all mandatory responses are approved.",
+        "expectedBehavior": "Read complete authorized candidate and criterion pages, compute normalized weighted scores only with fully approved reviewer/rating/source/date evidence, list unranked and reasons; no patient forecasts."
+      },
+      {
+        "prompt": "Duplicate a questionnaire entry for a different eligible site, and delete an incorrect draft.",
+        "expectedBehavior": "Duplicated response becomes new unapproved Draft and requires a unique candidate/criterion pair and explicit reviewed create; Delete archives after confirmation with expectedVersion."
+      },
+      {
+        "prompt": "Reorder the questionnaire and evaluation screens, move Country before Specialties and save in TrialAgents Settings.",
+        "expectedBehavior": "Native Settings drag edit uses templateLayoutSchema, reviewed customLayout and expected app version; preserve stable screen/field IDs and current access."
+      },
+      {
+        "prompt": "Monitor public new academic site capabilities each week and optionally email our existing team when a verified approved summary is committed.",
+        "expectedBehavior": "After saving app check current setup and grant, prepare one shared ChatGPT research definition plus separate dependent internal TrialAgents email with approved recipients; no outside emails or automatic activation."
+      }
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "Optional weekly public site-capability research in Europe/Berlin, or an independent internal handoff notification when a saved candidate stage transitions to Proposed. Choose only useful owner-approved work after app save.",
+      "readRequirements": "Only after app is saved and the user explicitly authorizes setup: read_automation_setup, list_app_automations, read_app_automation_guide; verify the shared ChatGPT runner, app-bound table read grants and only specific ongoing write grants if approved. Weekly Europe/Berlin only upon owner approval. Public institution websites, professional trial registry evidence and dated official source pages permitted; never patient identities/EHR or sponsor-confidential sources from another client. Stable authoring keys life.cro-site-feasibility.weekly-site-capability.v1 and life.cro-site-feasibility.email.after-verified-shortlist.v1. Recipients are existing authorized TrialAgents team members, owner first; sponsor or PI email fields are not permission.",
+      "outputContract": "Research produces source-linked proposed public institution updates only, keyed by saved site ID and source revision/observed date. Use exact reviewed writes or an explicit unexpired app-scoped grant; never grant itself access. No_update requires complete coverage and an approved quiet policy; denied/partial data is incomplete. Preserve previous receipts and committed work on retry. No automatic approval, site selection or outbound outreach. Use a separate owner-approved typed TrialAgents email on a verified saved candidates.stage transition to Proposed if useful. Select owner plus approved authorized registered members, never record contact addresses. Use only supported message placeholders from the current automation guide. No email on pending, failed, duplicate or revoked work; delivery retries never rerun research. No automation is the default.",
+      "promptExample": "After the app is saved, optionally review authorized institution capabilities weekly in Europe/Berlin using official public institution sources and trial registries. Match saved IDs, city/country and website before proposing deduplicated changes. Cite source URLs and observed dates. Never put sponsor-private questionnaire answers into the reusable site master. Write only through exact trusted review or an explicit unexpired scoped grant; preserve receipts on retry. Denied or partial reads are incomplete, never no_update. Use no_update only after complete coverage and an owner-approved quiet policy. Never change approvals, select sites or send outreach. No automation is required."
+    }
+  },
+  "examples": [
+    {
+      "heading": "Site Feasibility",
+      "sponsorScope": "",
+      "tableMap": "{}",
+      "pageSize": 25,
+      "layoutProfile": "{}",
+      "readOnly": false,
+      "demoLabel": false,
+      "asOf": ""
+    }
+  ],
+  "deprecated": false
+}
+;
+const roles=['projects','sites','candidates','criteria','responses','tasks'];
+const map=Object.fromEntries(roles.map(role=>{const fields=Object.keys(({
+  "projects": {
+    "name": "CRO feasibility projects",
+    "logicalFields": {
+      "name": "name",
+      "sponsor": "sponsor",
+      "therapy": "therapy",
+      "phase": "phase",
+      "countries": "countries",
+      "siteType": "site_type",
+      "deadline": "deadline",
+      "owner": "owner",
+      "status": "status",
+      "revision": "revision",
+      "source": "source",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "fields": [
+      {
+        "key": "name",
+        "name": "Study name",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "sponsor",
+        "name": "Sponsor",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "therapy",
+        "name": "Therapeutic area",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "phase",
+        "name": "Phase",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "I",
+          "II",
+          "III",
+          "IV",
+          "Other"
+        ]
+      },
+      {
+        "key": "countries",
+        "name": "Target countries",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "site_type",
+        "name": "Preferred site type",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Any",
+          "Academic",
+          "Hospital",
+          "Community",
+          "Specialty center"
+        ]
+      },
+      {
+        "key": "deadline",
+        "name": "Feasibility deadline",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "owner",
+        "name": "Feasibility lead",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Open",
+          "Review",
+          "Closed"
+        ]
+      },
+      {
+        "key": "revision",
+        "name": "Criteria revision",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "source",
+        "name": "Study brief reference",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "notes",
+        "name": "Sponsor-specific requirements",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ]
+  },
+  "sites": {
+    "name": "CRO feasibility sites",
+    "logicalFields": {
+      "name": "name",
+      "country": "country",
+      "city": "city",
+      "type": "type",
+      "specialties": "specialties",
+      "facilities": "facilities",
+      "experience": "experience",
+      "staffBand": "staff_band",
+      "leadPi": "lead_pi",
+      "piRole": "pi_role",
+      "website": "website",
+      "evidenceSource": "evidence_source",
+      "evidenceDate": "evidence_date",
+      "status": "status",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "fields": [
+      {
+        "key": "name",
+        "name": "Institution",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "country",
+        "name": "Country",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "city",
+        "name": "City",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "type",
+        "name": "Site type",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Academic",
+          "Hospital",
+          "Community",
+          "Specialty center"
+        ]
+      },
+      {
+        "key": "specialties",
+        "name": "Specialties",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "facilities",
+        "name": "Facilities / equipment",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "experience",
+        "name": "Prior public trial experience",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "staff_band",
+        "name": "Research team capacity band",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "1–3",
+          "4–8",
+          "9–15",
+          "16+",
+          "Unknown"
+        ]
+      },
+      {
+        "key": "lead_pi",
+        "name": "Professional PI",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "pi_role",
+        "name": "PI professional role",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "website",
+        "name": "Institution website",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "evidence_source",
+        "name": "Source URL / reference",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "evidence_date",
+        "name": "Source checked on",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "status",
+        "name": "Profile status",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Verified",
+          "Needs review",
+          "Draft"
+        ]
+      },
+      {
+        "key": "notes",
+        "name": "Public institutional notes",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ]
+  },
+  "candidates": {
+    "name": "CRO feasibility candidates",
+    "logicalFields": {
+      "name": "name",
+      "projectId": "project_id",
+      "siteId": "site_id",
+      "stage": "stage",
+      "owner": "owner",
+      "contactDue": "contact_due",
+      "respondedOn": "responded_on",
+      "sponsorDecision": "sponsor_decision",
+      "decisionBy": "decision_by",
+      "decisionDate": "decision_date",
+      "rationale": "rationale",
+      "activationTarget": "activation_target",
+      "source": "source",
+      "archived": "archived"
+    },
+    "fields": [
+      {
+        "key": "name",
+        "name": "Candidate label",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "project_id",
+        "name": "Sponsor study",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "site_id",
+        "name": "Institution",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "stage",
+        "name": "Feasibility stage",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Identified",
+          "Contacted",
+          "Responded",
+          "Assessed",
+          "Proposed",
+          "Selected",
+          "Declined"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "CRO owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "contact_due",
+        "name": "Questionnaire due",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "responded_on",
+        "name": "Response received",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "sponsor_decision",
+        "name": "Sponsor approval",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Pending",
+          "Approved",
+          "Rejected"
+        ]
+      },
+      {
+        "key": "decision_by",
+        "name": "Decision reviewer",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "decision_date",
+        "name": "Decision date",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "rationale",
+        "name": "Shortlist rationale / decision",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "activation_target",
+        "name": "Startup target",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "source",
+        "name": "Study-specific evidence",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ]
+  },
+  "criteria": {
+    "name": "CRO feasibility criteria",
+    "logicalFields": {
+      "name": "name",
+      "projectId": "project_id",
+      "category": "category",
+      "mandatory": "mandatory",
+      "weight": "weight",
+      "expected": "expected",
+      "revision": "revision",
+      "source": "source",
+      "archived": "archived"
+    },
+    "fields": [
+      {
+        "key": "name",
+        "name": "Assessment criterion",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "project_id",
+        "name": "Sponsor study",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "category",
+        "name": "Category",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Experience",
+          "Facilities",
+          "Staffing",
+          "Startup",
+          "Quality",
+          "Other"
+        ]
+      },
+      {
+        "key": "mandatory",
+        "name": "Mandatory",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "weight",
+        "name": "Weight",
+        "kind": "number",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "expected",
+        "name": "Expected evidence / answer",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "revision",
+        "name": "Requirements revision",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "source",
+        "name": "Sponsor-approved reference",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ]
+  },
+  "responses": {
+    "name": "CRO feasibility responses",
+    "logicalFields": {
+      "name": "name",
+      "candidateId": "candidate_id",
+      "criterionId": "criterion_id",
+      "answer": "answer",
+      "rating": "rating",
+      "status": "status",
+      "answeredAt": "answered_at",
+      "source": "source",
+      "respondent": "respondent",
+      "reviewer": "reviewer",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "fields": [
+      {
+        "key": "name",
+        "name": "Response item",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "candidate_id",
+        "name": "Site candidate",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "criterion_id",
+        "name": "Criterion",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "answer",
+        "name": "Aggregate institutional response",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "rating",
+        "name": "Reviewer rating 1–5",
+        "kind": "number",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "status",
+        "name": "Response review",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Requested",
+          "Draft",
+          "Clarification",
+          "Reviewed",
+          "Approved",
+          "Not applicable"
+        ]
+      },
+      {
+        "key": "answered_at",
+        "name": "Answered date",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "source",
+        "name": "Response source / evidence",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "respondent",
+        "name": "Respondent professional role",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "reviewer",
+        "name": "Reviewer",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "notes",
+        "name": "Clarification / N/A rationale",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ]
+  },
+  "tasks": {
+    "name": "CRO feasibility tasks",
+    "logicalFields": {
+      "name": "name",
+      "candidateId": "candidate_id",
+      "projectId": "project_id",
+      "kind": "kind",
+      "owner": "owner",
+      "due": "due",
+      "status": "status",
+      "evidence": "evidence",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "fields": [
+      {
+        "key": "name",
+        "name": "Handoff task",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "candidate_id",
+        "name": "Site candidate",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "project_id",
+        "name": "Sponsor study",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "kind",
+        "name": "Workstream",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Documentation",
+          "Contracts",
+          "Regulatory",
+          "Startup",
+          "Other"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "Task owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "due",
+        "name": "Due date",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Open",
+          "In progress",
+          "Done"
+        ]
+      },
+      {
+        "key": "evidence",
+        "name": "Completion reference",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "notes",
+        "name": "CRO handoff notes",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ]
+  }
+}
+)[role].logicalFields);return [role,{typeId:role,fields:Object.fromEntries(fields.map(k=>[k,k])),writableFields:fields}]}));
+const bindings=roles.map(role=>({typeId:role,fields:Object.keys(map[role].fields)}));
+const config={...metadata.defaults,asOf:'2026-11-01',sponsorScope:'Meridian Cell Therapeutics (fictional)',demoLabel:true,tableMap:JSON.stringify(map)};
+const render=new Function('input','tools','templateConfiguration','templateBindings',source);
+let state={},rows=demo,proposal=null;
+function dispatch(event){if(event.action==='tracker:layout'){alert('Layout is managed in native TrialAgents App Settings. This file demonstrates the CRO feasibility screens only.');return;}
+ const out=render({saved:true,writable:true,state,event},{call:(name,v)=>{if(name==='records.read'){const all=rows.filter(r=>r.role===v.typeId);return {rows:all.slice(v.offset,v.offset+v.limit),total:all.length};}if(name==='records.propose'){proposal=v;return {status:'proposed'};}throw Error('Unsupported preview capability');}},config,bindings);
+ state=out.state;document.getElementById('surface').innerHTML=out.html;
+ if(proposal){const changes=proposal;proposal=null;if(confirm('FICTIONAL LOCAL REVIEW ONLY\n'+JSON.stringify(changes,null,2))){for(const c of changes){if(c.kind==='create_record')rows.push({role:c.typeId,id:crypto.randomUUID(),version:0,data:c.data});else{const r=rows.find(r=>r.id===c.recordId);if(r&&r.version===c.expectedVersion){r.data={...r.data,...c.data};r.version++;}}}dispatch({kind:'open',action:''});}}
+}
+function eventFor(kind,target){const trigger=target.closest('[data-action]');if(!trigger)return;const form=trigger.closest('form');dispatch({kind,action:trigger.dataset.action,value:target.type==='checkbox'?target.checked:target.value??null,form:form?Object.fromEntries(new FormData(form)):{}});}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&!b.disabled&&b.type!=='submit')eventFor('click',b);});
+document.addEventListener('submit',e=>{e.preventDefault();eventFor('submit',e.target);});
+document.addEventListener('change',e=>eventFor('change',e.target));
+dispatch({kind:'open',action:''});
+</script></body></html>

@@ -1,0 +1,822 @@
+{
+  "notice": "Schematic only, not valid table UUIDs. Check current backend field types and actual schemaVersions; no demo values are production records. Use only owner-authorized role mapping and write keys.",
+  "roles": {
+    "projects": {
+      "tableName": "projects",
+      "fields": [
+        {
+          "key": "name",
+          "name": "Study name",
+          "kind": "text",
+          "multiple": false,
+          "required": true
+        },
+        {
+          "key": "sponsor",
+          "name": "Sponsor",
+          "kind": "text",
+          "multiple": false,
+          "required": true
+        },
+        {
+          "key": "therapy",
+          "name": "Therapeutic area",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "phase",
+          "name": "Phase",
+          "kind": "select",
+          "multiple": false,
+          "required": false,
+          "options": [
+            "I",
+            "II",
+            "III",
+            "IV",
+            "Other"
+          ]
+        },
+        {
+          "key": "countries",
+          "name": "Target countries",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "site_type",
+          "name": "Preferred site type",
+          "kind": "select",
+          "multiple": false,
+          "required": false,
+          "options": [
+            "Any",
+            "Academic",
+            "Hospital",
+            "Community",
+            "Specialty center"
+          ]
+        },
+        {
+          "key": "deadline",
+          "name": "Feasibility deadline",
+          "kind": "date",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "owner",
+          "name": "Feasibility lead",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "status",
+          "name": "Status",
+          "kind": "select",
+          "multiple": false,
+          "required": false,
+          "options": [
+            "Open",
+            "Review",
+            "Closed"
+          ]
+        },
+        {
+          "key": "revision",
+          "name": "Criteria revision",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "source",
+          "name": "Study brief reference",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "notes",
+          "name": "Sponsor-specific requirements",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "archived",
+          "name": "Archived",
+          "kind": "boolean",
+          "multiple": false,
+          "required": false
+        }
+      ],
+      "tableMap": {
+        "typeId": "REPLACE_WITH_AUTHORIZED_PROJECTS_TABLE_UUID",
+        "fields": {
+          "name": "name",
+          "sponsor": "sponsor",
+          "therapy": "therapy",
+          "phase": "phase",
+          "countries": "countries",
+          "siteType": "site_type",
+          "deadline": "deadline",
+          "owner": "owner",
+          "status": "status",
+          "revision": "revision",
+          "source": "source",
+          "notes": "notes",
+          "archived": "archived"
+        },
+        "writableFields": [
+          "name",
+          "sponsor",
+          "therapy",
+          "phase",
+          "countries",
+          "siteType",
+          "deadline",
+          "owner",
+          "status",
+          "revision",
+          "source",
+          "notes",
+          "archived"
+        ]
+      }
+    },
+    "sites": {
+      "tableName": "sites",
+      "fields": [
+        {
+          "key": "name",
+          "name": "Institution",
+          "kind": "text",
+          "multiple": false,
+          "required": true
+        },
+        {
+          "key": "country",
+          "name": "Country",
+          "kind": "text",
+          "multiple": false,
+          "required": true
+        },
+        {
+          "key": "city",
+          "name": "City",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "type",
+          "name": "Site type",
+          "kind": "select",
+          "multiple": false,
+          "required": false,
+          "options": [
+            "Academic",
+            "Hospital",
+            "Community",
+            "Specialty center"
+          ]
+        },
+        {
+          "key": "specialties",
+          "name": "Specialties",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "facilities",
+          "name": "Facilities / equipment",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "experience",
+          "name": "Prior public trial experience",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "staff_band",
+          "name": "Research team capacity band",
+          "kind": "select",
+          "multiple": false,
+          "required": false,
+          "options": [
+            "1\u20133",
+            "4\u20138",
+            "9\u201315",
+            "16+",
+            "Unknown"
+          ]
+        },
+        {
+          "key": "lead_pi",
+          "name": "Professional PI",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "pi_role",
+          "name": "PI professional role",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "website",
+          "name": "Institution website",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "evidence_source",
+          "name": "Source URL / reference",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "evidence_date",
+          "name": "Source checked on",
+          "kind": "date",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "status",
+          "name": "Profile status",
+          "kind": "select",
+          "multiple": false,
+          "required": false,
+          "options": [
+            "Verified",
+            "Needs review",
+            "Draft"
+          ]
+        },
+        {
+          "key": "notes",
+          "name": "Public institutional notes",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "archived",
+          "name": "Archived",
+          "kind": "boolean",
+          "multiple": false,
+          "required": false
+        }
+      ],
+      "tableMap": {
+        "typeId": "REPLACE_WITH_AUTHORIZED_SITES_TABLE_UUID",
+        "fields": {
+          "name": "name",
+          "country": "country",
+          "city": "city",
+          "type": "type",
+          "specialties": "specialties",
+          "facilities": "facilities",
+          "experience": "experience",
+          "staffBand": "staff_band",
+          "leadPi": "lead_pi",
+          "piRole": "pi_role",
+          "website": "website",
+          "evidenceSource": "evidence_source",
+          "evidenceDate": "evidence_date",
+          "status": "status",
+          "notes": "notes",
+          "archived": "archived"
+        },
+        "writableFields": [
+          "name",
+          "country",
+          "city",
+          "type",
+          "specialties",
+          "facilities",
+          "experience",
+          "staffBand",
+          "leadPi",
+          "piRole",
+          "website",
+          "evidenceSource",
+          "evidenceDate",
+          "status",
+          "notes",
+          "archived"
+        ]
+      }
+    },
+    "candidates": {
+      "tableName": "candidates",
+      "fields": [
+        {
+          "key": "name",
+          "name": "Candidate label",
+          "kind": "text",
+          "multiple": false,
+          "required": true
+        },
+        {
+          "key": "project_id",
+          "name": "Sponsor study",
+          "kind": "text",
+          "multiple": false,
+          "required": true
+        },
+        {
+          "key": "site_id",
+          "name": "Institution",
+          "kind": "text",
+          "multiple": false,
+          "required": true
+        },
+        {
+          "key": "stage",
+          "name": "Feasibility stage",
+          "kind": "select",
+          "multiple": false,
+          "required": false,
+          "options": [
+            "Identified",
+            "Contacted",
+            "Responded",
+            "Assessed",
+            "Proposed",
+            "Selected",
+            "Declined"
+          ]
+        },
+        {
+          "key": "owner",
+          "name": "CRO owner",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "contact_due",
+          "name": "Questionnaire due",
+          "kind": "date",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "responded_on",
+          "name": "Response received",
+          "kind": "date",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "sponsor_decision",
+          "name": "Sponsor approval",
+          "kind": "select",
+          "multiple": false,
+          "required": false,
+          "options": [
+            "Pending",
+            "Approved",
+            "Rejected"
+          ]
+        },
+        {
+          "key": "decision_by",
+          "name": "Decision reviewer",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "decision_date",
+          "name": "Decision date",
+          "kind": "date",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "rationale",
+          "name": "Shortlist rationale / decision",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "activation_target",
+          "name": "Startup target",
+          "kind": "date",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "source",
+          "name": "Study-specific evidence",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "archived",
+          "name": "Archived",
+          "kind": "boolean",
+          "multiple": false,
+          "required": false
+        }
+      ],
+      "tableMap": {
+        "typeId": "REPLACE_WITH_AUTHORIZED_CANDIDATES_TABLE_UUID",
+        "fields": {
+          "name": "name",
+          "projectId": "project_id",
+          "siteId": "site_id",
+          "stage": "stage",
+          "owner": "owner",
+          "contactDue": "contact_due",
+          "respondedOn": "responded_on",
+          "sponsorDecision": "sponsor_decision",
+          "decisionBy": "decision_by",
+          "decisionDate": "decision_date",
+          "rationale": "rationale",
+          "activationTarget": "activation_target",
+          "source": "source",
+          "archived": "archived"
+        },
+        "writableFields": [
+          "name",
+          "projectId",
+          "siteId",
+          "stage",
+          "owner",
+          "contactDue",
+          "respondedOn",
+          "sponsorDecision",
+          "decisionBy",
+          "decisionDate",
+          "rationale",
+          "activationTarget",
+          "source",
+          "archived"
+        ]
+      }
+    },
+    "criteria": {
+      "tableName": "criteria",
+      "fields": [
+        {
+          "key": "name",
+          "name": "Assessment criterion",
+          "kind": "text",
+          "multiple": false,
+          "required": true
+        },
+        {
+          "key": "project_id",
+          "name": "Sponsor study",
+          "kind": "text",
+          "multiple": false,
+          "required": true
+        },
+        {
+          "key": "category",
+          "name": "Category",
+          "kind": "select",
+          "multiple": false,
+          "required": false,
+          "options": [
+            "Experience",
+            "Facilities",
+            "Staffing",
+            "Startup",
+            "Quality",
+            "Other"
+          ]
+        },
+        {
+          "key": "mandatory",
+          "name": "Mandatory",
+          "kind": "boolean",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "weight",
+          "name": "Weight",
+          "kind": "number",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "expected",
+          "name": "Expected evidence / answer",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "revision",
+          "name": "Requirements revision",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "source",
+          "name": "Sponsor-approved reference",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "archived",
+          "name": "Archived",
+          "kind": "boolean",
+          "multiple": false,
+          "required": false
+        }
+      ],
+      "tableMap": {
+        "typeId": "REPLACE_WITH_AUTHORIZED_CRITERIA_TABLE_UUID",
+        "fields": {
+          "name": "name",
+          "projectId": "project_id",
+          "category": "category",
+          "mandatory": "mandatory",
+          "weight": "weight",
+          "expected": "expected",
+          "revision": "revision",
+          "source": "source",
+          "archived": "archived"
+        },
+        "writableFields": [
+          "name",
+          "projectId",
+          "category",
+          "mandatory",
+          "weight",
+          "expected",
+          "revision",
+          "source",
+          "archived"
+        ]
+      }
+    },
+    "responses": {
+      "tableName": "responses",
+      "fields": [
+        {
+          "key": "name",
+          "name": "Response item",
+          "kind": "text",
+          "multiple": false,
+          "required": true
+        },
+        {
+          "key": "candidate_id",
+          "name": "Site candidate",
+          "kind": "text",
+          "multiple": false,
+          "required": true
+        },
+        {
+          "key": "criterion_id",
+          "name": "Criterion",
+          "kind": "text",
+          "multiple": false,
+          "required": true
+        },
+        {
+          "key": "answer",
+          "name": "Aggregate institutional response",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "rating",
+          "name": "Reviewer rating 1\u20135",
+          "kind": "number",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "status",
+          "name": "Response review",
+          "kind": "select",
+          "multiple": false,
+          "required": false,
+          "options": [
+            "Requested",
+            "Draft",
+            "Clarification",
+            "Reviewed",
+            "Approved",
+            "Not applicable"
+          ]
+        },
+        {
+          "key": "answered_at",
+          "name": "Answered date",
+          "kind": "date",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "source",
+          "name": "Response source / evidence",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "respondent",
+          "name": "Respondent professional role",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "reviewer",
+          "name": "Reviewer",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "notes",
+          "name": "Clarification / N/A rationale",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "archived",
+          "name": "Archived",
+          "kind": "boolean",
+          "multiple": false,
+          "required": false
+        }
+      ],
+      "tableMap": {
+        "typeId": "REPLACE_WITH_AUTHORIZED_RESPONSES_TABLE_UUID",
+        "fields": {
+          "name": "name",
+          "candidateId": "candidate_id",
+          "criterionId": "criterion_id",
+          "answer": "answer",
+          "rating": "rating",
+          "status": "status",
+          "answeredAt": "answered_at",
+          "source": "source",
+          "respondent": "respondent",
+          "reviewer": "reviewer",
+          "notes": "notes",
+          "archived": "archived"
+        },
+        "writableFields": [
+          "name",
+          "candidateId",
+          "criterionId",
+          "answer",
+          "rating",
+          "status",
+          "answeredAt",
+          "source",
+          "respondent",
+          "reviewer",
+          "notes",
+          "archived"
+        ]
+      }
+    },
+    "tasks": {
+      "tableName": "tasks",
+      "fields": [
+        {
+          "key": "name",
+          "name": "Handoff task",
+          "kind": "text",
+          "multiple": false,
+          "required": true
+        },
+        {
+          "key": "candidate_id",
+          "name": "Site candidate",
+          "kind": "text",
+          "multiple": false,
+          "required": true
+        },
+        {
+          "key": "project_id",
+          "name": "Sponsor study",
+          "kind": "text",
+          "multiple": false,
+          "required": true
+        },
+        {
+          "key": "kind",
+          "name": "Workstream",
+          "kind": "select",
+          "multiple": false,
+          "required": false,
+          "options": [
+            "Documentation",
+            "Contracts",
+            "Regulatory",
+            "Startup",
+            "Other"
+          ]
+        },
+        {
+          "key": "owner",
+          "name": "Task owner",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "due",
+          "name": "Due date",
+          "kind": "date",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "status",
+          "name": "Status",
+          "kind": "select",
+          "multiple": false,
+          "required": false,
+          "options": [
+            "Open",
+            "In progress",
+            "Done"
+          ]
+        },
+        {
+          "key": "evidence",
+          "name": "Completion reference",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "notes",
+          "name": "CRO handoff notes",
+          "kind": "text",
+          "multiple": false,
+          "required": false
+        },
+        {
+          "key": "archived",
+          "name": "Archived",
+          "kind": "boolean",
+          "multiple": false,
+          "required": false
+        }
+      ],
+      "tableMap": {
+        "typeId": "REPLACE_WITH_AUTHORIZED_TASKS_TABLE_UUID",
+        "fields": {
+          "name": "name",
+          "candidateId": "candidate_id",
+          "projectId": "project_id",
+          "kind": "kind",
+          "owner": "owner",
+          "due": "due",
+          "status": "status",
+          "evidence": "evidence",
+          "notes": "notes",
+          "archived": "archived"
+        },
+        "writableFields": [
+          "name",
+          "candidateId",
+          "projectId",
+          "kind",
+          "owner",
+          "due",
+          "status",
+          "evidence",
+          "notes",
+          "archived"
+        ]
+      }
+    }
+  }
+}
