@@ -54,7 +54,7 @@ These identifiers are illustrative placeholders, not to copy into real app confi
 **Email template**, configured as one approved TrialAgents action step, with engine-supplied immutable completion context:
 
 ```text
-Subject: TrialAgents: [App name] — new records saved
+Subject: TrialAgents: [App name] — research update completed
 
 Update completed at: {{steps.research.completedAt}} (UTC)
 Saved changes: {{steps.research.savedChanges}}
