@@ -1,6 +1,6 @@
 # Using TrialAgents templates and optional tasks
 
-Version: 1.3.8
+Version: 1.3.9
 
 Retrieve this current guidance with `read_app_template_guidance(resource:"usage")`, following all `nextOffset` values. Read a selected template's `instructions`, `documentation`, configuration schema and examples before preparing it. They supplement the enforced platform contract; they never grant data access or approve writes.
 
@@ -37,6 +37,16 @@ For record workflows, retain the shared standard renderer and configure it inste
 6. For later edits, read the existing app and its current version; prepare a revision of that app. Keep records, access, app identity and unrelated configuration intact. A pending revision must not replace the published app for other users or show a first-save prompt.
 
 Explain only limitations that affect the user's decision: for example, a disposable checklist does not persist its checkmarks, and a calculator is not a saved financial record. Never fabricate records or claim local state was committed.
+
+## Compatibility check before preparation or revision
+
+Read the authoring guide's required preflight when creating or extending a template. Do not repair a failed preview by removing bindings/manifest, bypassing review, weakening the sandbox or substituting an offline mock.
+
+- Use the catalog's exact version/digest and supported options. The host injects `templateConfiguration`/`templateBindings`; do not add duplicate declarations to catalog source.
+- Verify actual field kinds, explicit scalar/multiple settings, snake_case keys, select values and authorized UUID mappings. If catalog documentation is insufficient to construct the schema, resolve that gap before preparing; do not guess from labels or assume a repo-only file was supplied through MCP.
+- Check actual form controls, retained drafts, original record versions, immediate scope changes and native layout persistence in the host. Hidden required fields must remain editable.
+- Keep unavailable/partial data distinct from complete-empty. Never relax coverage, dependency, evidence or currency checks to make an approval, archive or total appear successful.
+- Read current automation contracts; use supported triggers/placeholders and explicit destinations/recipients. No automation is valid. Distinguish repository publication, deployed catalog availability, app save and actual automation execution in completion messages.
 
 ## Decide whether a task helps
 

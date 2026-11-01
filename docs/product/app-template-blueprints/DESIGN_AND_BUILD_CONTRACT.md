@@ -2,6 +2,8 @@
 
 **Status:** Design and functional scoping proposal. No HTML, CSS, JS, template JSON or backend changes are approved or performed by this document. Detailed candidates: [catalog](README.md). Platform contracts below are updated for deployed release 0.2.39 and guidance 1.3.1 on 1 November 2026; this does not mark any candidate app implemented. [Current project context](../../../CONTEXT.md).
 
+Before implementing any of these 23 blueprints, retrieve the current authoring/usage guidance through `read_app_template_guidance` and follow every `nextOffset`. The historical versions above describe the scoping baseline, not the current implementation contract. The [required preflight for recurring template failures](../../../templates/TEMPLATE_AUTHORING.md#required-preflight-recurring-failures-from-the-first-seven-packages) is the publication checklist: validate real catalog/schema/runtime/form/layout contracts before treating an offline preview as usable. Keep this shared checklist authoritative rather than copying a stale version into each blueprint.
+
 ## Account and logo guardrails
 
 All generated apps are internal tools accessed through the TrialAgents account. Do not build separate app authentication, account management or credential stores. Preserve existing platform access controls. Any TrialAgents logo or wordmark must include the official icon and link to https://platform.trialagents.com. Use the supplied black/white PNG, never a text-only or approximate substitute. See [current template authoring standard](../../../templates/TEMPLATE_AUTHORING.md#app-account-and-trialagents-branding-guardrails) for assets, sandbox compatibility and acceptance checks.
