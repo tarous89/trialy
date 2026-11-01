@@ -15,6 +15,14 @@ test('Empty automations contain no setup, filters, pagination or history',async(
  await page.route('**/app-services/automations/definitions?*',route=>route.fulfill({json:{rows:[],nextOffset:null}}));
  await page.goto(base+`/app-home?tab=automations&workspaceId=${f.workspaceId}`);
  await expect(page.getByText('No automations configured.')).toBeVisible();expect(setupReads).toBe(0);
- const panel=page.getByRole('region',{name:'App automations'});await expect(panel.locator('input,select,button,details')).toHaveCount(0);
+ const panel=page.getByRole('region',{name:'App automations'});await expect(panel.locator('input,select,details')).toHaveCount(0);await expect(panel.getByRole('button',{name:'Add automation'})).toBeVisible();
  const labels=await page.getByRole('navigation',{name:'Main navigation',exact:true}).getByRole('button').allTextContents();expect(labels.slice(1)).toEqual(['Home','Database','Access','Automations','Connectors','Logs']);
+});
+
+test('Manual automation creation opens the typed configuration without changing the app',async({page})=>{
+ const f=await(await page.request.get(base+'/fixture/apps')).json();
+ await page.route('**/app-services/automations',route=>route.fulfill({json:{id:'31000000-0000-4000-8000-000000000001',state:'ready'}}));
+ await page.goto(base+`/app-home?tab=automations&workspaceId=${f.workspaceId}`);await page.getByRole('button',{name:'Add automation'}).click();await expect(page.getByLabel('Linked app',{exact:true})).toBeVisible();await expect(page.getByLabel('Linked app',{exact:true}).locator('option')).not.toHaveCount(1);await page.getByLabel('Linked app',{exact:true}).selectOption(f.appId);await page.getByRole('button',{name:'Configure automation'}).click();
+ await expect(page.getByLabel('Prompt / instructions')).toBeVisible();await expect(page.getByLabel('Frequency',{exact:true})).toHaveValue('daily');await expect(page.getByLabel('Database read bindings',{exact:false})).toBeVisible();await page.getByLabel('Name',{exact:true}).fill('Manual research');await page.getByLabel('Objective',{exact:true}).fill('Find updates');await page.getByLabel('Prompt / instructions').fill('Research and summarize relevant updates');await page.getByLabel('Sources and eligibility').fill('Official sources');
+ let body;await page.route('**/app-services/monitoring/prepare',route=>{body=route.request().postDataJSON();return route.fulfill({status:503,json:{message:'Unavailable'}});});await page.getByRole('button',{name:'Review changes',exact:true}).click();await expect(page.getByRole('status')).toContainText('Unavailable');expect(body.monitorId).toBeUndefined();expect(body.config.appId).toBe(f.appId);await expect(page.getByLabel('Prompt / instructions')).toHaveValue('Research and summarize relevant updates');
 });

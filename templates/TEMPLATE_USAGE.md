@@ -1,6 +1,6 @@
 # Using TrialAgents templates and optional tasks
 
-Version: 1.3.2
+Version: 1.3.3
 
 Retrieve this current guidance with `read_app_template_guidance(resource:"usage")`, following all `nextOffset` values. Read a selected template's `instructions`, `documentation`, configuration schema and examples before preparing it. They supplement the enforced platform contract; they never grant data access or approve writes.
 
@@ -52,3 +52,5 @@ Schedule/prompt changes update the stored definition, not the host subscription.
 If the new setup/management tools are absent from the host catalog, preserve the saved app and disclose pending setup. For a custom MCP connection, refresh its metadata and use a new Work chat; then recheck supported event discovery. This is a recovery step, not proof of host support. Never invent a successful subscription, substitute a polling task, or ask for a new model/API subscription as an assumed fix. Operator encryption-key setup is platform infrastructure and must not be embedded in an app or task prompt.
 
 Template documentation is complete only when it explains optional sections/app-level fallback, executor and trigger, full instructions/action, source/output/write scope, disabled/edit/history behavior, failure/no-result criteria, and a working no-automation path. Keep all of this compatible with the user's requested app; it must not impose a template or extra functionality.
+
+Manual automation creation: the platform Automations heading includes Add automation, following Connectors. Select an existing app and ChatGPT research or TrialAgents email/action, then configure the same typed schedule, instructions, sources, notification policy, scopes, limits and expiry used by MCP. Existing shared-runner setup is reused; no new subscription is silently activated. Data-scope IDs and advanced typed steps remain subject to backend validation and exact review. Failed preparation/saving retains the form and never changes the linked app.

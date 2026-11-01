@@ -1,6 +1,6 @@
 # TrialAgents template authoring standard
 
-Version: 1.3.2
+Version: 1.3.3
 
 This is the living engineering contract for templates served by TrialAgents. Update it when a verified renderer, lifecycle or host-integration lesson changes. Retrieve the current copy with `read_app_template_guidance(resource:"authoring")`; follow `nextOffset` to the end. The response includes a version and content hash. Packaged plugin examples are not the catalog.
 
@@ -145,3 +145,5 @@ Before promoting a template version, verify:
 8. Build/type checks and the affected backend/browser suites. Keep regression tests for failures discovered in use; do not merely assert that implementation strings exist.
 
 Record each lesson as a reproducible failure, the contract it changes, its regression test, applicable versions and migration impact. Keep template-specific docs beside the template and shared rules here. Review guidance changes with source changes. Changes to the server-served catalog/guidance ship through the repository deployment; packaged plugin skills or manifests require their own package release when changed.
+
+Manual automation creation: the platform Automations heading includes Add automation, following Connectors. Select an existing app and ChatGPT research or TrialAgents email/action, then configure the same typed schedule, instructions, sources, notification policy, scopes, limits and expiry used by MCP. Existing shared-runner setup is reused; no new subscription is silently activated. Data-scope IDs and advanced typed steps remain subject to backend validation and exact review. Failed preparation/saving retains the form and never changes the linked app.
