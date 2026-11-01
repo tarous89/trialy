@@ -5,6 +5,10 @@ This file records meaningful decisions and completed development work. It is not
 - [Scope and decisions](README.md)
 - [Current development plan](DEVELOPMENT.md)
 
+## Explicit automation status and current template guidance — 1 November 2026
+
+Automation rows now show Enabled or Disabled as a readable badge on both desktop and mobile, independently of the action button label. Template guidance 1.3.6 distinguishes no automation, ChatGPT processing, standalone scheduled/database email and processing-to-email handoffs. It includes concrete authoring examples, current recipient/delivery safeguards and minimal UI expectations. Definition state remains distinct from connection readiness and delivery outcome; no scheduling or permission behavior changes.
+
 ## Simple automations and guarded email — 1 November 2026
 
 Release 0.2.41 implements the approved notification scope with daily-or-slower email schedules, explicit database transitions, two-minute settling and current-state/access checks. Pending items coalesce, recipient deliveries are serialized globally (one/hour) and per account (15/rolling day), and ordinary limits defer delivery without disabling the rule. Bounded queue growth suspends abnormal rules. Research and its receipts remain independent of email failures. Migration 051 cancels unsent legacy app emails and fences old workers; unsafe legacy definitions pause for review.
