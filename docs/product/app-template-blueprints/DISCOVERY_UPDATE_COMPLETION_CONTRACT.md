@@ -1,6 +1,6 @@
 # Discovery and data collection — run completion and email dependency (draft)
 
-**Status:** Prepublication refinement, not activated. **Date:** 1 November 2026. Applies to the 23-app [candidate catalog](README.md) and the [prepublication review](TEMPLATE_PREPUBLICATION_REVIEW_2026-11-01.md). Conforms to [TEMPLATE_AUTHORING.md](../../../templates/TEMPLATE_AUTHORING.md) v1.3.6 and the [shared automation engine](../../scopes/APP_AUTOMATION_ENGINE_2026-10-31.md). This is a *template-level requirement* for applications whose main AI job is ongoing discovery and collection, not reporting-only apps.
+**Status:** Prepublication refinement, not activated. **Date:** 1 November 2026. Applies to the 23-app [candidate catalog](README.md) and the [prepublication review](TEMPLATE_PREPUBLICATION_REVIEW_2026-11-01.md). Conforms to [TEMPLATE_AUTHORING.md](../../../templates/TEMPLATE_AUTHORING.md) v1.3.7 and the [shared automation engine](../../scopes/APP_AUTOMATION_ENGINE_2026-10-31.md). This is a *template-level requirement* for applications whose main AI job is ongoing discovery and collection, not reporting-only apps.
 
 ## Default monitored-collection sequence
 
