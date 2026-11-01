@@ -45,3 +45,5 @@ See [operator steps](docs/OPERATIONS.md#shared-automation-activation) and [ChatG
 | Remaining work and dated decisions | [Development](DEVELOPMENT.md), [history](HISTORY.md) |
 
 Read current guidance through `read_app_template_guidance` and follow every `nextOffset`. Update its declared version with both Markdown guides when changing the shared contract. Keep released template JSON immutable. Server-served guidance ships through repository deployment; imported skill/package publication is a separate step. Older roadmap/history dates are historical and do not override the current contracts above.
+
+Manual automation creation: the platform Automations heading includes Add automation, following Connectors. Select an existing app and ChatGPT research or TrialAgents email/action, then configure the same typed schedule, instructions, sources, notification policy, scopes, limits and expiry used by MCP. Existing shared-runner setup is reused; no new subscription is silently activated. Data-scope IDs and advanced typed steps remain subject to backend validation and exact review. Failed preparation/saving retains the form and never changes the linked app.
