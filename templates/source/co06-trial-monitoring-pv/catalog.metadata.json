@@ -1,0 +1,113 @@
+{
+  "id": "life.co-trial-monitoring-pv",
+  "version": "1.1.1",
+  "name": "Trial Monitoring & PV Oversight \u2014 Sponsor",
+  "description": "Lean five-screen sponsor operational oversight for small biotech teams. Monitoring events with linked actions, partner PV agreements with versioned obligation definitions, dated occurrence activity calendar, and optional internal briefing. Veeva CTMS and SafetyDocs information-architecture references; no patient safety-case handling.",
+  "tags": [
+    "clinical-operations",
+    "trial-monitoring",
+    "pharmacovigilance",
+    "pv-agreements",
+    "pv-activity-calendar",
+    "sponsor",
+    "small-biotech",
+    "operational-oversight"
+  ],
+  "whenToUse": "Use when small sponsor teams need dated monitoring event and follow-up workflows together with partner PV agreement obligations and their specific due activities.",
+  "whenNotToUse": "Not for patient, AE/SAE, ICSR, subject narratives, case processing, MedDRA, validated safety content, legal deadline computation, electronic submission or clinical safety interpretation.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "Trial Oversight",
+    "tableMap": "{}",
+    "layoutProfile": "{}",
+    "initialStudyId": "",
+    "asOfDate": "",
+    "pageSize": 25,
+    "readOnly": false
+  },
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "Sidebar label; platform manages accounts and access.",
+      "default": "Trial Oversight"
+    },
+    "tableMap": {
+      "type": "string",
+      "description": "Eight approved table role mappings JSON: role => {typeId, fields, writableFields}. Never fabricate UUIDs.",
+      "default": "{}"
+    },
+    "layoutProfile": {
+      "type": "string",
+      "description": "Native host-reviewed presentation-only order, column visibility and heading.",
+      "default": "{}"
+    },
+    "initialStudyId": {
+      "type": "string",
+      "description": "Optional authorized saved study UUID, blank shows all permitted studies.",
+      "default": ""
+    },
+    "asOfDate": {
+      "type": "string",
+      "description": "YYYY-MM-DD operational evidence cutoff.",
+      "default": ""
+    },
+    "pageSize": {
+      "type": "number",
+      "description": "Visible record page size, clamped to 10-50.",
+      "default": 25
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "Optional additional suppression of write proposals; never widens actual access.",
+      "default": false
+    }
+  },
+  "instructions": "CO-06 lean sponsor operational oversight. Read current template authoring and usage guidance and choose this exact template version/digest. No app login/account controls, custom platform watermark, patient data or safety case handling.\nSet up EXACTLY eight approved tables: studies, sites, visits, findings, agreements, obligations, activities, snapshots. Each has scalar fields multiple:false. Reuse compatible authorized study/institution masters where possible. Do not introduce separate governance, document, or patient registers. A business contact is not a platform user.\nSee documentation.dataContract for every exact field, type, select choice, optional/null meaning and relationship. Physical keys must match ^[a-z][a-z0-9_]{0,63}$; use text for multiline notes, source URLs and related saved UUIDs. Map logical keys to actual approved physical keys. Never assume a collection or select relation is a scalar UUID.\nCreate study first, site next, monitoring event then linked finding; separately create agreement with document reference/approved date, obligation definition pinned to agreement version, and dated activity occurrence for each planned cycle. Do not generate recurrences from frequency alone or infer regulatory submission dates.\nFive screens: Overview; Monitoring events (event register and follow-up tab, linked detail drawer); PV agreements (agreement register and definition tab, linked drawer); PV activity calendar (individual dated occurrence records); Briefings (optional internal ChatGPT draft and reviewed snapshot archive). No redundant screens or separate compliance dashboard.\nMonitoring event baseline is derived from initial planned date and stays immutable. Rescheduled current date requires reason. Conducted event needs actual date. Final report needs dated evidence. Operational finding can be marked verified closed only after a prior reviewed closure proposal with evidence/date and separate verifier.\nAgreement Active requires approved agreement document reference and approved date. Definitions pin the exact agreement version. To revise a used agreement or historically executed obligation, create a new version/definition, do not silently change an approved parent. Dated activities pin definitions and have immutable original due dates. Completion requires previously Ready for review, evidence, completion date, independent reviewer and review date.\nFor every role, map approved table UUIDs, field names and writable field list with current manifest and schema version. The host injects templateConfiguration and templateBindings exactly once; do not redeclare them. Use records.read and records.propose only through authorized APIs with independent trusted confirmation and original edit/archive version. Incomplete/denied/truncated sources must not display authoritative counts, ranking, legal readiness or compliant status.\nUse native tracker:layout gear and host-reviewed presentation changes; hidden table fields remain editable in the record drawer and never bypass permission checks. Keep one vertical scroll, accessible search/action toolbar and bottom paging at mobile and desktop widths.\nApp works with zero automation. Optional, separately owner-approved ChatGPT summary uses prepare_app_monitoring when available, shared runner, scoped data, source deduplication and no case records; optional TrialAgents email needs its own reviewed recipient and purpose. Do not create a per-app ChatGPT task or claim any message was sent.\nVerify whole catalog loader, exact-version digest, host-prepared QuickJS source and manifest-attached sanitized frame, real backend schema/record proposal and stale-version conflict fixtures, persisted native layout, 320/390/768/1100/1440 viewport behavior and failure isolation. Fictional HTML preview never equals deployment acceptance.\nRequire every listed field to be bound and projected, including nullable optional fields and archived as an explicit boolean. Create nullable values as null, never empty dates. A missing field is incomplete coverage, not absence. For evidence writes include approved study name write access: the app atomically pins and updates the study version to prevent concurrent reviews. Evidence cannot move between studies. Completed activities, verified findings, final reports and reviewed briefings cannot be archived. Briefings fingerprint the complete authorized study evidence with SHA-256; re-review through a new draft after source changes. For saved app revisions preserve app identity and require the current app version and manifest. Failed/conflicted proposals retain drafts; refresh and reopen to retry.",
+  "documentation": {
+    "quickStart": [
+      "Connect with your existing TrialAgents account; select a project and CO-06 version 1.1.1. Do not add app-specific sign-in, accounts, or user management.",
+      "Reuse or create the eight scalar role tables. Use exact keys and select options from dataContract; confirm table and column access; do not seed fictional examples.",
+      "Save parent records in order: study, institution, event and follow-ups; separately PV agreement, defined obligation and dated activity. Use actual saved UUIDs, never demo IDs.",
+      "Configure tableMap, full field identities and approved writableFields; attach current host manifest; prepare the exact catalog source through the platform and inspect the first rendered view.",
+      "Review/confirm the app once, then test event detail with linked follow-ups and agreement detail with obligations, and one dated activity through a real reviewed record proposal.",
+      "Check overdue reminders against manually approved agreement sources. Save any briefing only after human review. No automation or email needs to be enabled."
+    ],
+    "dataContract": "Eight role tables. All fields scalar multiple:false; ! denotes required, ? nullable and [a|b] allowed choices. Relation-* is actual text UUID pointing to an authorized saved parent; URLs and multiline notes are database text; dates ISO YYYY-MM-DD. studies: name:text!, protocol_code:text!, phase:select![Phase 1|Phase 2|Phase 3|Phase 4|Other], sponsor_owner:text!, status:select![Planning|Active|On hold|Closed], archived:boolean?; sites: name:text!, study_id:text!, country:text!, site_code:text!, archived:boolean?; visits: name:text!, study_id:text!, site_id:text!, visit_type:select![Initiation|Routine|Remote|Close-out], monitor:text!, baseline_date:date!, planned_date:date!, actual_date:date?, report_status:select![Not started|In review|Final], report_date:date?, status:select![Planned|Confirmed|Completed|Cancelled], reschedule_reason:text?, source_ref:text?, archived:boolean?; findings: name:text!, study_id:text!, visit_id:text!, priority:select![Low|Medium|High], owner:text!, due_date:date!, status:select![Open|In progress|Closure proposed|Verified closed], corrective_action:text!, source_ref:text!, closure_evidence:text?, closure_proposed_at:date?, closure_verified_at:date?, verified_by:text?, archived:boolean?; agreements: name:text!, study_id:text!, partner:text!, scope:text!, version:number!, effective_date:date!, review_date:date!, end_date:date?, owner:text!, status:select![Draft|Active|Superseded|Expired], document_ref:text?, approved_date:date?, archived:boolean?; obligations: name:text!, study_id:text!, agreement_id:text!, agreement_version:number!, jurisdiction:text!, frequency:select![One-time|Monthly|Quarterly|Annual|As agreed], owner:text!, status:select![Draft|Active|Superseded], source_ref:text!, source_date:date!, archived:boolean?; activities: name:text!, study_id:text!, obligation_id:text!, period_label:text!, original_due_date:date!, due_date:date!, owner:text!, status:select![Open|In progress|Ready for review|Completed|Cancelled], actual_completion_date:date?, reviewer:text?, reviewed_at:date?, evidence_ref:text?, change_reason:text?, archived:boolean?; snapshots: name:text!, study_id:text!, period_start:date!, period_end:date!, cutoff:date!, monitoring_summary:text!, pv_summary:text!, reviewer:text?, reviewed_at:date?, status:select![Draft|Reviewed], source_snapshot:text?, archived:boolean?. Study/site/monitoring relation: findings.visit_id refers to a same-study monitoring event. PV hierarchy: agreement -> obligation definition (agreement_id and pinned agreement_version) -> activity occurrence (obligation_id, period_label, original_due_date and due_date). Each distinct cycle is an independent reviewed activity, never a rewritten master definition. Only approved agreement versions may have Active obligations; dated activities require an Active version-matched definition. Required dates, evidence and independent review are validated before final completion; source refs are not computed legal deadlines. Original visit/activity dates immutable. Business state and full evidence provenance use actual record IDs, optimistic original version and host review. Archived parent with active linked child cannot be removed; reviewed snapshots preserve historical evidence. When all required source rows are complete, monitoring rate is conducted/scheduled by cutoff excluding cancelled; PV on-time rate is evidence-reviewed on-time completed dated activities / activities due by cutoff excluding cancelled. Missing or denied pages make such metrics UNKNOWN, not zero. No patient, individual event, ICSR, or clinical safety case fields.",
+    "interactionContract": "Five-screen interface. Top bar has authorized study scope; Overview has compact Monitoring and PV action lanes; Monitoring events has Events/Follow-ups tabs plus event detail with linked actions and Add; PV agreements has Agreement/Defined obligations tabs plus linked obligation detail; PV activity calendar is a month agenda with the dated activity register and approved write actions; Briefings holds optional draft prompt and saved reports. Every transient input/select/textarea has name, data-ui-state, stable data-action and actual input.event.kind/action/value/form. Edit/duplicate/archive, pagination, table filters, details, close/ignore and native tracker:layout are operative. All business writes are reviewed records.propose calls, never implied saved. Only local fake preview accepts mock approvals. Full detail fields remain editable even when hidden in table layout.",
+    "lifecycle": "Exact catalog version/digest and stable requestKey prepare unsaved app, user reviews and saves, and subsequent revisions reuse app identity. Missing save receipt reconciles before retry, never creates duplicate. Each record edit and archive uses opened record version; stale or revoked writes fail with retained drafts. Copies clear protected completion and review evidence. Parent archives check all authorized child roles. Native layout changes persist only through host versioned review, not by the standalone demo. Task and email failure cannot block app loading or erase unsaved business forms. Evidence changes include an atomic version-checked study name update. Original study versions are captured when editors open. Briefing fingerprints include all scoped source rows without truncation; same-value study guard writes alone do not alter evidence. Legacy fingerprints show historical/unverified until a new briefing is reviewed.",
+    "limitations": [
+      "Strictly non-patient operational oversight. No AE/SAE/ICSR case processing, patient visit records, clinical safety conclusions, coding, signal detection or statutory PV report generation.",
+      "Activity schedules and agreed obligations must be entered from approved current partner agreements by accountable users. Frequency is descriptive, not an automatic scheduler or legal calculator.",
+      "Agreement signatures, evidence documents and monitoring trip reports are linked metadata, not managed or electronically signed by this template.",
+      "Aggregate computations need complete authorization and at most 600 rows per source and 100,000 JSON characters per source page. Larger/partial datasets show unknown metrics and accessible paged registers, with page-local search semantics.",
+      "Optional internal ChatGPT briefings and owner emails need separate approved platform automation configuration; metadata never activates them.",
+      "Only the live MCP catalog, QuickJS sanitized frame with manifest, reviewed DB mutation, saved layout and approved automation engine can establish production acceptance; standalone HTML is a fictional simulation."
+    ],
+    "examples": [
+      {
+        "prompt": "Create a minimal sponsor monitoring and PV obligations oversight app for our Phase 2 study.",
+        "expectedBehavior": "Reuse or create eight authorized scalar tables and five screens, with separate monitoring event/follow-up and agreement/obligation/activity relationships. No patient information or app accounts."
+      },
+      {
+        "prompt": "Log a monitoring event, review its report and assign an operational follow-up.",
+        "expectedBehavior": "Create site monitoring visit with original planned date, current date, monitor and report status; link a dated operational follow-up to that event. Closure requires evidence and independent verification."
+      },
+      {
+        "prompt": "Track our partner PVA monthly reconciliation and the due handoff for November.",
+        "expectedBehavior": "Create approved agreement source, one obligation definition pinned to agreement version, then separate manually dated November activity. No automatic future cycles or inferred legal deadline."
+      },
+      {
+        "prompt": "Prepare an internal operational briefing without starting any schedule or email.",
+        "expectedBehavior": "Draft from permitted complete records with source citations, separate monitoring versus PV activity figures, and leave automations unconfigured."
+      }
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "Only when a sponsor requests regular operational summary of visits, open follow-ups, approved PV obligations and dated activity handoffs. Zero automation remains valid. After save and explicit opt-in, read read_app_automation_guide/read_automation_setup and reuse existing list_app_automations/read_app_automation identities; no per-app Task.",
+      "readRequirements": "Complete authorized, study-scoped studies/sites/visits/findings/agreements/obligations/activities/snapshots, exact versioned sources and cutoff; never patient cases. Use inheritAppAccess:true, current app version and actual schema/record IDs. Preserve authoringKey co06_operational_briefing_v1, existing IDs, disabled state, grants and hidden settings; owner-confirmed timezone/anchor/expiry/lookback and coalesced shared-runner catch-up. Respect paused/disconnected setup. Prefer supported Work chat, high reasoning and latest capable model; report actual settings, never invent parameters.",
+      "outputContract": "Draft monitoring and PV operations briefing, source IDs/periods, separate rates and unresolved obligations. Flag incomplete data and never declare regulatory compliance. No automatic sends/writes. Separate approved email completion action only when requested. One-time drafts remain in the authorized chat; recurring drafts default to private permission-checked monitoring history. Any approved destination must be the real snapshots type, scoped expiring grants and Draft status. Never overwrite Reviewed history. Deduplicate study/agreement/version/obligation/period/source version. Complete zero findings is completed; no_update only with full coverage and approved quiet policy; partial/denied/expired runs do not advance coverage. Preserve checkpoints/receipts. Separate optional single-step fixed-content database email on activities.status becoming Ready for review, archived not true, owner plus explicitly selected registered currently authorized teammates only; no external business contacts, second schedule or research-completion send. Delivery failure never reruns research; manual app remains usable. Inspect Logs and actual receipts; metadata enables nothing.",
+      "promptExample": "Prepare an optional INTERNAL sponsor operations briefing from authorized TrialAgents records, for an explicitly selected study and cutoff. Use monitoring events, operational follow-ups, PV agreement versions, obligation definitions and the separately dated activity occurrences. Cite source IDs and note missing permissions, unknown totals, unverified closures and rescheduled deadlines. Report monitoring completion separately from PV activity on-time evidence. Never process patients, AE/SAE/ICSR cases, case narratives, MedDRA or safety signals. Do not infer legal requirements or regulatory compliance. Output a DRAFT for owner review only; do not automatically send, write, or schedule. If a separately authorized shared runner is configured, deduplicate by study+agreement+definition+cycle+source version and flag partial coverage rather than claim no_update."
+    }
+  },
+  "examples": []
+}

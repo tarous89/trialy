@@ -1,0 +1,182 @@
+{
+  "screens": [
+    {
+      "id": "overview",
+      "label": "Overview"
+    },
+    {
+      "id": "visits",
+      "label": "Monitoring events"
+    },
+    {
+      "id": "agreements",
+      "label": "PV agreements"
+    },
+    {
+      "id": "calendar",
+      "label": "PV activity calendar"
+    },
+    {
+      "id": "summary",
+      "label": "Briefings"
+    }
+  ],
+  "groups": {
+    "studies": [
+      {
+        "id": "name",
+        "label": "Study / program"
+      },
+      {
+        "id": "protocol_code",
+        "label": "Study code"
+      },
+      {
+        "id": "status",
+        "label": "Study status"
+      }
+    ],
+    "sites": [
+      {
+        "id": "name",
+        "label": "Institution"
+      },
+      {
+        "id": "site_code",
+        "label": "Site code"
+      },
+      {
+        "id": "country",
+        "label": "Country"
+      }
+    ],
+    "visits": [
+      {
+        "id": "name",
+        "label": "Monitoring event ID"
+      },
+      {
+        "id": "site_id",
+        "label": "Institution"
+      },
+      {
+        "id": "planned_date",
+        "label": "Current planned date"
+      },
+      {
+        "id": "status",
+        "label": "Event status"
+      },
+      {
+        "id": "report_status",
+        "label": "Report"
+      }
+    ],
+    "findings": [
+      {
+        "id": "name",
+        "label": "Operational follow-up"
+      },
+      {
+        "id": "visit_id",
+        "label": "Monitoring event"
+      },
+      {
+        "id": "owner",
+        "label": "Action owner"
+      },
+      {
+        "id": "due_date",
+        "label": "Due date"
+      },
+      {
+        "id": "status",
+        "label": "Status"
+      }
+    ],
+    "agreements": [
+      {
+        "id": "name",
+        "label": "PV agreement"
+      },
+      {
+        "id": "partner",
+        "label": "Partner"
+      },
+      {
+        "id": "version",
+        "label": "Agreement version"
+      },
+      {
+        "id": "review_date",
+        "label": "Next review date"
+      },
+      {
+        "id": "status",
+        "label": "Agreement status"
+      }
+    ],
+    "obligations": [
+      {
+        "id": "name",
+        "label": "Defined partner obligation"
+      },
+      {
+        "id": "agreement_id",
+        "label": "PV agreement"
+      },
+      {
+        "id": "frequency",
+        "label": "Frequency"
+      },
+      {
+        "id": "owner",
+        "label": "Accountable owner"
+      },
+      {
+        "id": "status",
+        "label": "Definition status"
+      }
+    ],
+    "activities": [
+      {
+        "id": "name",
+        "label": "Dated PV activity"
+      },
+      {
+        "id": "obligation_id",
+        "label": "Defined obligation"
+      },
+      {
+        "id": "period_label",
+        "label": "Period / cycle label"
+      },
+      {
+        "id": "due_date",
+        "label": "Current due date"
+      },
+      {
+        "id": "status",
+        "label": "Activity status"
+      }
+    ],
+    "snapshots": [
+      {
+        "id": "name",
+        "label": "Operational briefing"
+      },
+      {
+        "id": "period_end",
+        "label": "Period end"
+      },
+      {
+        "id": "cutoff",
+        "label": "Cutoff"
+      },
+      {
+        "id": "status",
+        "label": "Briefing status"
+      }
+    ]
+  }
+}

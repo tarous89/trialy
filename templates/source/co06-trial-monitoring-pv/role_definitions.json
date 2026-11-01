@@ -1,0 +1,788 @@
+{
+  "studies": [
+    {
+      "key": "name",
+      "label": "Study / program",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "protocol_code",
+      "label": "Study code",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "phase",
+      "label": "Phase",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Phase 1",
+        "Phase 2",
+        "Phase 3",
+        "Phase 4",
+        "Other"
+      ]
+    },
+    {
+      "key": "sponsor_owner",
+      "label": "Oversight owner",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "status",
+      "label": "Study status",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Planning",
+        "Active",
+        "On hold",
+        "Closed"
+      ]
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ],
+  "sites": [
+    {
+      "key": "name",
+      "label": "Institution",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "study_id",
+      "label": "Study",
+      "kind": "relation-studies",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "country",
+      "label": "Country",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "site_code",
+      "label": "Site code",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ],
+  "visits": [
+    {
+      "key": "name",
+      "label": "Monitoring event ID",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "study_id",
+      "label": "Study",
+      "kind": "relation-studies",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "site_id",
+      "label": "Institution",
+      "kind": "relation-sites",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "visit_type",
+      "label": "Type",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Initiation",
+        "Routine",
+        "Remote",
+        "Close-out"
+      ]
+    },
+    {
+      "key": "monitor",
+      "label": "Monitor / CRO",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "baseline_date",
+      "label": "Original planned date",
+      "kind": "date",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "planned_date",
+      "label": "Current planned date",
+      "kind": "date",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "actual_date",
+      "label": "Date conducted",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "report_status",
+      "label": "Report",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Not started",
+        "In review",
+        "Final"
+      ]
+    },
+    {
+      "key": "report_date",
+      "label": "Report finalized date",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "status",
+      "label": "Event status",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Planned",
+        "Confirmed",
+        "Completed",
+        "Cancelled"
+      ]
+    },
+    {
+      "key": "reschedule_reason",
+      "label": "Reschedule / cancellation rationale",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "source_ref",
+      "label": "Visit report / source link",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ],
+  "findings": [
+    {
+      "key": "name",
+      "label": "Operational follow-up",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "study_id",
+      "label": "Study",
+      "kind": "relation-studies",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "visit_id",
+      "label": "Monitoring event",
+      "kind": "relation-visits",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "priority",
+      "label": "Priority",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Low",
+        "Medium",
+        "High"
+      ]
+    },
+    {
+      "key": "owner",
+      "label": "Action owner",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "due_date",
+      "label": "Due date",
+      "kind": "date",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Open",
+        "In progress",
+        "Closure proposed",
+        "Verified closed"
+      ]
+    },
+    {
+      "key": "corrective_action",
+      "label": "Action / remediation",
+      "kind": "longtext",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "source_ref",
+      "label": "Observation source",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "closure_evidence",
+      "label": "Closure evidence link",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "closure_proposed_at",
+      "label": "Closure proposed on",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "closure_verified_at",
+      "label": "Verified on",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "verified_by",
+      "label": "Verifier",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ],
+  "agreements": [
+    {
+      "key": "name",
+      "label": "PV agreement",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "study_id",
+      "label": "Study",
+      "kind": "relation-studies",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "partner",
+      "label": "Partner",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "scope",
+      "label": "Covered scope",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "version",
+      "label": "Agreement version",
+      "kind": "number",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "effective_date",
+      "label": "Effective date",
+      "kind": "date",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "review_date",
+      "label": "Next review date",
+      "kind": "date",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "end_date",
+      "label": "Expiry date",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "owner",
+      "label": "Sponsor owner",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "status",
+      "label": "Agreement status",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Draft",
+        "Active",
+        "Superseded",
+        "Expired"
+      ]
+    },
+    {
+      "key": "document_ref",
+      "label": "Approved agreement reference",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "approved_date",
+      "label": "Approved date",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ],
+  "obligations": [
+    {
+      "key": "name",
+      "label": "Defined partner obligation",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "study_id",
+      "label": "Study",
+      "kind": "relation-studies",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "agreement_id",
+      "label": "PV agreement",
+      "kind": "relation-agreements",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "agreement_version",
+      "label": "Linked agreement version",
+      "kind": "number",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "jurisdiction",
+      "label": "Jurisdiction / market",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "frequency",
+      "label": "Frequency",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "One-time",
+        "Monthly",
+        "Quarterly",
+        "Annual",
+        "As agreed"
+      ]
+    },
+    {
+      "key": "owner",
+      "label": "Accountable owner",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "status",
+      "label": "Definition status",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Draft",
+        "Active",
+        "Superseded"
+      ]
+    },
+    {
+      "key": "source_ref",
+      "label": "Approved clause / responsibility reference",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "source_date",
+      "label": "Source agreed / verified date",
+      "kind": "date",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ],
+  "activities": [
+    {
+      "key": "name",
+      "label": "Dated PV activity",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "study_id",
+      "label": "Study",
+      "kind": "relation-studies",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "obligation_id",
+      "label": "Defined obligation",
+      "kind": "relation-obligations",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "period_label",
+      "label": "Period / cycle label",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "original_due_date",
+      "label": "Original due date",
+      "kind": "date",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "due_date",
+      "label": "Current due date",
+      "kind": "date",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "owner",
+      "label": "Activity owner",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "status",
+      "label": "Activity status",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Open",
+        "In progress",
+        "Ready for review",
+        "Completed",
+        "Cancelled"
+      ]
+    },
+    {
+      "key": "actual_completion_date",
+      "label": "Work completed on",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "reviewer",
+      "label": "Independent reviewer",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "reviewed_at",
+      "label": "Reviewed on",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "evidence_ref",
+      "label": "Handoff evidence reference",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "change_reason",
+      "label": "Deadline change / cancellation reason",
+      "kind": "longtext",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ],
+  "snapshots": [
+    {
+      "key": "name",
+      "label": "Operational briefing",
+      "kind": "text",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "study_id",
+      "label": "Study",
+      "kind": "relation-studies",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "period_start",
+      "label": "Period start",
+      "kind": "date",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "period_end",
+      "label": "Period end",
+      "kind": "date",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "cutoff",
+      "label": "Cutoff",
+      "kind": "date",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "monitoring_summary",
+      "label": "Monitoring summary",
+      "kind": "longtext",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "pv_summary",
+      "label": "PV activity summary",
+      "kind": "longtext",
+      "required": true,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "reviewer",
+      "label": "Reviewer",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "reviewed_at",
+      "label": "Reviewed on",
+      "kind": "date",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "status",
+      "label": "Briefing status",
+      "kind": "select",
+      "required": true,
+      "multiple": false,
+      "options": [
+        "Draft",
+        "Reviewed"
+      ]
+    },
+    {
+      "key": "source_snapshot",
+      "label": "Evidence version signature",
+      "kind": "text",
+      "required": false,
+      "multiple": false,
+      "options": null
+    },
+    {
+      "key": "archived",
+      "label": "Archived",
+      "kind": "boolean",
+      "required": false,
+      "multiple": false,
+      "options": null
+    }
+  ]
+}

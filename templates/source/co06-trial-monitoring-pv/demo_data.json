@@ -1,0 +1,1294 @@
+{
+  "fictional": true,
+  "records": [
+    {
+      "role": "studies",
+      "id": "demo-studies-1",
+      "version": 1,
+      "data": {
+        "name": "Cedar Bio Phase II (fictional)",
+        "protocol_code": "CB-26-041",
+        "phase": "Phase 2",
+        "sponsor_owner": "Sponsor operations",
+        "status": "Active",
+        "archived": false
+      }
+    },
+    {
+      "role": "studies",
+      "id": "demo-studies-2",
+      "version": 1,
+      "data": {
+        "name": "Northstar Study (fictional)",
+        "protocol_code": "NS-26-018",
+        "phase": "Phase 1",
+        "sponsor_owner": "Research operations",
+        "status": "Planning",
+        "archived": false
+      }
+    },
+    {
+      "role": "sites",
+      "id": "demo-sites-1",
+      "version": 1,
+      "data": {
+        "name": "North Quay Research (fictional)",
+        "study_id": "demo-studies-1",
+        "country": "Germany",
+        "site_code": "S001",
+        "archived": false
+      }
+    },
+    {
+      "role": "sites",
+      "id": "demo-sites-2",
+      "version": 1,
+      "data": {
+        "name": "Westhaven Hospital (fictional)",
+        "study_id": "demo-studies-1",
+        "country": "France",
+        "site_code": "S002",
+        "archived": false
+      }
+    },
+    {
+      "role": "sites",
+      "id": "demo-sites-3",
+      "version": 1,
+      "data": {
+        "name": "Larkspur Institute (fictional)",
+        "study_id": "demo-studies-1",
+        "country": "Netherlands",
+        "site_code": "S003",
+        "archived": false
+      }
+    },
+    {
+      "role": "sites",
+      "id": "demo-sites-4",
+      "version": 1,
+      "data": {
+        "name": "Hillside Clinical (fictional)",
+        "study_id": "demo-studies-1",
+        "country": "UK",
+        "site_code": "S004",
+        "archived": false
+      }
+    },
+    {
+      "role": "sites",
+      "id": "demo-sites-5",
+      "version": 1,
+      "data": {
+        "name": "Lakeview Research (fictional)",
+        "study_id": "demo-studies-2",
+        "country": "Belgium",
+        "site_code": "S005",
+        "archived": false
+      }
+    },
+    {
+      "role": "sites",
+      "id": "demo-sites-6",
+      "version": 1,
+      "data": {
+        "name": "Amberg University (fictional)",
+        "study_id": "demo-studies-2",
+        "country": "Italy",
+        "site_code": "S006",
+        "archived": false
+      }
+    },
+    {
+      "role": "visits",
+      "id": "demo-visits-1",
+      "version": 1,
+      "data": {
+        "name": "ME-001 / Remote review",
+        "study_id": "demo-studies-1",
+        "site_id": "demo-sites-1",
+        "visit_type": "Remote",
+        "monitor": "L. Bauer (CRO)",
+        "baseline_date": "2026-10-09",
+        "planned_date": "2026-10-09",
+        "actual_date": "2026-10-10",
+        "report_status": "Final",
+        "report_date": "2026-10-13",
+        "status": "Completed",
+        "reschedule_reason": null,
+        "source_ref": "Trip report pointer ME-001",
+        "archived": false
+      }
+    },
+    {
+      "role": "visits",
+      "id": "demo-visits-2",
+      "version": 1,
+      "data": {
+        "name": "ME-002 / Initiation review",
+        "study_id": "demo-studies-1",
+        "site_id": "demo-sites-2",
+        "visit_type": "Initiation",
+        "monitor": "A. Stein (CRO)",
+        "baseline_date": "2026-10-13",
+        "planned_date": "2026-10-13",
+        "actual_date": null,
+        "report_status": "Not started",
+        "report_date": null,
+        "status": "Confirmed",
+        "reschedule_reason": null,
+        "source_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "visits",
+      "id": "demo-visits-3",
+      "version": 1,
+      "data": {
+        "name": "ME-003 / Close-out review",
+        "study_id": "demo-studies-1",
+        "site_id": "demo-sites-3",
+        "visit_type": "Close-out",
+        "monitor": "M. Turner (CRO)",
+        "baseline_date": "2026-10-17",
+        "planned_date": "2026-10-17",
+        "actual_date": null,
+        "report_status": "Not started",
+        "report_date": null,
+        "status": "Planned",
+        "reschedule_reason": null,
+        "source_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "visits",
+      "id": "demo-visits-4",
+      "version": 1,
+      "data": {
+        "name": "ME-004 / Routine review",
+        "study_id": "demo-studies-1",
+        "site_id": "demo-sites-4",
+        "visit_type": "Routine",
+        "monitor": "L. Bauer (CRO)",
+        "baseline_date": "2026-10-21",
+        "planned_date": "2026-10-21",
+        "actual_date": null,
+        "report_status": "Not started",
+        "report_date": null,
+        "status": "Planned",
+        "reschedule_reason": null,
+        "source_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "visits",
+      "id": "demo-visits-5",
+      "version": 1,
+      "data": {
+        "name": "ME-005 / Remote review",
+        "study_id": "demo-studies-1",
+        "site_id": "demo-sites-1",
+        "visit_type": "Remote",
+        "monitor": "A. Stein (CRO)",
+        "baseline_date": "2026-10-25",
+        "planned_date": "2026-10-25",
+        "actual_date": "2026-10-26",
+        "report_status": "Final",
+        "report_date": "2026-10-29",
+        "status": "Completed",
+        "reschedule_reason": null,
+        "source_ref": "Trip report pointer ME-005",
+        "archived": false
+      }
+    },
+    {
+      "role": "visits",
+      "id": "demo-visits-6",
+      "version": 1,
+      "data": {
+        "name": "ME-006 / Initiation review",
+        "study_id": "demo-studies-1",
+        "site_id": "demo-sites-2",
+        "visit_type": "Initiation",
+        "monitor": "M. Turner (CRO)",
+        "baseline_date": "2026-10-29",
+        "planned_date": "2026-10-29",
+        "actual_date": null,
+        "report_status": "Not started",
+        "report_date": null,
+        "status": "Cancelled",
+        "reschedule_reason": "Documented cancellation",
+        "source_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "visits",
+      "id": "demo-visits-7",
+      "version": 1,
+      "data": {
+        "name": "ME-007 / Close-out review",
+        "study_id": "demo-studies-1",
+        "site_id": "demo-sites-3",
+        "visit_type": "Close-out",
+        "monitor": "L. Bauer (CRO)",
+        "baseline_date": "2026-11-02",
+        "planned_date": "2026-11-02",
+        "actual_date": null,
+        "report_status": "Not started",
+        "report_date": null,
+        "status": "Planned",
+        "reschedule_reason": null,
+        "source_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "visits",
+      "id": "demo-visits-8",
+      "version": 1,
+      "data": {
+        "name": "ME-008 / Routine review",
+        "study_id": "demo-studies-1",
+        "site_id": "demo-sites-4",
+        "visit_type": "Routine",
+        "monitor": "A. Stein (CRO)",
+        "baseline_date": "2026-11-06",
+        "planned_date": "2026-11-06",
+        "actual_date": null,
+        "report_status": "Not started",
+        "report_date": null,
+        "status": "Planned",
+        "reschedule_reason": null,
+        "source_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "visits",
+      "id": "demo-visits-9",
+      "version": 1,
+      "data": {
+        "name": "ME-009 / Remote review",
+        "study_id": "demo-studies-1",
+        "site_id": "demo-sites-1",
+        "visit_type": "Remote",
+        "monitor": "M. Turner (CRO)",
+        "baseline_date": "2026-11-10",
+        "planned_date": "2026-11-10",
+        "actual_date": null,
+        "report_status": "Not started",
+        "report_date": null,
+        "status": "Confirmed",
+        "reschedule_reason": null,
+        "source_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "visits",
+      "id": "demo-visits-10",
+      "version": 1,
+      "data": {
+        "name": "ME-010 / Initiation review",
+        "study_id": "demo-studies-1",
+        "site_id": "demo-sites-2",
+        "visit_type": "Initiation",
+        "monitor": "L. Bauer (CRO)",
+        "baseline_date": "2026-11-14",
+        "planned_date": "2026-11-14",
+        "actual_date": null,
+        "report_status": "Not started",
+        "report_date": null,
+        "status": "Planned",
+        "reschedule_reason": null,
+        "source_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "visits",
+      "id": "demo-visits-11",
+      "version": 1,
+      "data": {
+        "name": "ME-011 / Close-out review",
+        "study_id": "demo-studies-2",
+        "site_id": "demo-sites-5",
+        "visit_type": "Close-out",
+        "monitor": "A. Stein (CRO)",
+        "baseline_date": "2026-11-18",
+        "planned_date": "2026-11-18",
+        "actual_date": null,
+        "report_status": "Not started",
+        "report_date": null,
+        "status": "Planned",
+        "reschedule_reason": null,
+        "source_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "visits",
+      "id": "demo-visits-12",
+      "version": 1,
+      "data": {
+        "name": "ME-012 / Routine review",
+        "study_id": "demo-studies-2",
+        "site_id": "demo-sites-6",
+        "visit_type": "Routine",
+        "monitor": "M. Turner (CRO)",
+        "baseline_date": "2026-11-22",
+        "planned_date": "2026-11-22",
+        "actual_date": null,
+        "report_status": "Not started",
+        "report_date": null,
+        "status": "Planned",
+        "reschedule_reason": null,
+        "source_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "visits",
+      "id": "demo-visits-13",
+      "version": 1,
+      "data": {
+        "name": "ME-013 / Remote review",
+        "study_id": "demo-studies-2",
+        "site_id": "demo-sites-5",
+        "visit_type": "Remote",
+        "monitor": "L. Bauer (CRO)",
+        "baseline_date": "2026-11-26",
+        "planned_date": "2026-11-26",
+        "actual_date": null,
+        "report_status": "Not started",
+        "report_date": null,
+        "status": "Cancelled",
+        "reschedule_reason": "Documented cancellation",
+        "source_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "visits",
+      "id": "demo-visits-14",
+      "version": 1,
+      "data": {
+        "name": "ME-014 / Initiation review",
+        "study_id": "demo-studies-2",
+        "site_id": "demo-sites-6",
+        "visit_type": "Initiation",
+        "monitor": "A. Stein (CRO)",
+        "baseline_date": "2026-11-30",
+        "planned_date": "2026-11-30",
+        "actual_date": null,
+        "report_status": "Not started",
+        "report_date": null,
+        "status": "Planned",
+        "reschedule_reason": null,
+        "source_ref": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "findings",
+      "id": "demo-findings-1",
+      "version": 1,
+      "data": {
+        "name": "Late monitoring report #1",
+        "study_id": "demo-studies-1",
+        "visit_id": "demo-visits-1",
+        "priority": "Medium",
+        "owner": "L. Bauer",
+        "due_date": "2026-10-15",
+        "status": "In progress",
+        "corrective_action": "Retrieve operational evidence and document closure, no participant data.",
+        "source_ref": "Monitoring action source 001",
+        "closure_evidence": null,
+        "closure_proposed_at": null,
+        "closure_verified_at": null,
+        "verified_by": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "findings",
+      "id": "demo-findings-2",
+      "version": 1,
+      "data": {
+        "name": "Vendor query unresolved #2",
+        "study_id": "demo-studies-1",
+        "visit_id": "demo-visits-2",
+        "priority": "High",
+        "owner": "A. Stein",
+        "due_date": "2026-10-20",
+        "status": "Closure proposed",
+        "corrective_action": "Retrieve operational evidence and document closure, no participant data.",
+        "source_ref": "Monitoring action source 002",
+        "closure_evidence": "QMS reference 002",
+        "closure_proposed_at": "2026-10-23",
+        "closure_verified_at": null,
+        "verified_by": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "findings",
+      "id": "demo-findings-3",
+      "version": 1,
+      "data": {
+        "name": "Follow-up evidence pending #3",
+        "study_id": "demo-studies-1",
+        "visit_id": "demo-visits-3",
+        "priority": "Low",
+        "owner": "M. Turner",
+        "due_date": "2026-10-25",
+        "status": "Verified closed",
+        "corrective_action": "Retrieve operational evidence and document closure, no participant data.",
+        "source_ref": "Monitoring action source 003",
+        "closure_evidence": "QMS reference 003",
+        "closure_proposed_at": "2026-10-23",
+        "closure_verified_at": "2026-10-28",
+        "verified_by": "Independent QA review",
+        "archived": false
+      }
+    },
+    {
+      "role": "findings",
+      "id": "demo-findings-4",
+      "version": 1,
+      "data": {
+        "name": "Missing site document #4",
+        "study_id": "demo-studies-1",
+        "visit_id": "demo-visits-4",
+        "priority": "Medium",
+        "owner": "L. Bauer",
+        "due_date": "2026-10-30",
+        "status": "Open",
+        "corrective_action": "Retrieve operational evidence and document closure, no participant data.",
+        "source_ref": "Monitoring action source 004",
+        "closure_evidence": null,
+        "closure_proposed_at": null,
+        "closure_verified_at": null,
+        "verified_by": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "findings",
+      "id": "demo-findings-5",
+      "version": 1,
+      "data": {
+        "name": "Late monitoring report #5",
+        "study_id": "demo-studies-1",
+        "visit_id": "demo-visits-5",
+        "priority": "High",
+        "owner": "A. Stein",
+        "due_date": "2026-11-04",
+        "status": "In progress",
+        "corrective_action": "Retrieve operational evidence and document closure, no participant data.",
+        "source_ref": "Monitoring action source 005",
+        "closure_evidence": null,
+        "closure_proposed_at": null,
+        "closure_verified_at": null,
+        "verified_by": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "findings",
+      "id": "demo-findings-6",
+      "version": 1,
+      "data": {
+        "name": "Vendor query unresolved #6",
+        "study_id": "demo-studies-1",
+        "visit_id": "demo-visits-6",
+        "priority": "Low",
+        "owner": "M. Turner",
+        "due_date": "2026-11-09",
+        "status": "Closure proposed",
+        "corrective_action": "Retrieve operational evidence and document closure, no participant data.",
+        "source_ref": "Monitoring action source 006",
+        "closure_evidence": "QMS reference 006",
+        "closure_proposed_at": "2026-10-23",
+        "closure_verified_at": null,
+        "verified_by": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "findings",
+      "id": "demo-findings-7",
+      "version": 1,
+      "data": {
+        "name": "Follow-up evidence pending #7",
+        "study_id": "demo-studies-1",
+        "visit_id": "demo-visits-7",
+        "priority": "Medium",
+        "owner": "L. Bauer",
+        "due_date": "2026-11-14",
+        "status": "Verified closed",
+        "corrective_action": "Retrieve operational evidence and document closure, no participant data.",
+        "source_ref": "Monitoring action source 007",
+        "closure_evidence": "QMS reference 007",
+        "closure_proposed_at": "2026-10-23",
+        "closure_verified_at": "2026-10-28",
+        "verified_by": "Independent QA review",
+        "archived": false
+      }
+    },
+    {
+      "role": "findings",
+      "id": "demo-findings-8",
+      "version": 1,
+      "data": {
+        "name": "Missing site document #8",
+        "study_id": "demo-studies-1",
+        "visit_id": "demo-visits-8",
+        "priority": "High",
+        "owner": "A. Stein",
+        "due_date": "2026-11-19",
+        "status": "Open",
+        "corrective_action": "Retrieve operational evidence and document closure, no participant data.",
+        "source_ref": "Monitoring action source 008",
+        "closure_evidence": null,
+        "closure_proposed_at": null,
+        "closure_verified_at": null,
+        "verified_by": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "findings",
+      "id": "demo-findings-9",
+      "version": 1,
+      "data": {
+        "name": "Late monitoring report #9",
+        "study_id": "demo-studies-1",
+        "visit_id": "demo-visits-9",
+        "priority": "Low",
+        "owner": "M. Turner",
+        "due_date": "2026-11-24",
+        "status": "In progress",
+        "corrective_action": "Retrieve operational evidence and document closure, no participant data.",
+        "source_ref": "Monitoring action source 009",
+        "closure_evidence": null,
+        "closure_proposed_at": null,
+        "closure_verified_at": null,
+        "verified_by": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "findings",
+      "id": "demo-findings-10",
+      "version": 1,
+      "data": {
+        "name": "Vendor query unresolved #10",
+        "study_id": "demo-studies-1",
+        "visit_id": "demo-visits-10",
+        "priority": "Medium",
+        "owner": "L. Bauer",
+        "due_date": "2026-11-29",
+        "status": "Closure proposed",
+        "corrective_action": "Retrieve operational evidence and document closure, no participant data.",
+        "source_ref": "Monitoring action source 010",
+        "closure_evidence": "QMS reference 010",
+        "closure_proposed_at": "2026-10-23",
+        "closure_verified_at": null,
+        "verified_by": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "agreements",
+      "id": "demo-agreements-1",
+      "version": 1,
+      "data": {
+        "name": "Meridian PV coordination",
+        "study_id": "demo-studies-1",
+        "partner": "Meridian CRO",
+        "scope": "Periodic partner delivery and reconciliation metadata only",
+        "version": 2,
+        "effective_date": "2026-01-15",
+        "review_date": "2026-11-12",
+        "end_date": "2027-04-30",
+        "owner": "Sponsor PV coordinator",
+        "status": "Active",
+        "document_ref": "Approved PVA document v2 - Meridian CRO",
+        "approved_date": "2026-08-15",
+        "archived": false
+      }
+    },
+    {
+      "role": "agreements",
+      "id": "demo-agreements-2",
+      "version": 1,
+      "data": {
+        "name": "Regional reporting responsibility",
+        "study_id": "demo-studies-1",
+        "partner": "Eastfield PV Partner",
+        "scope": "Periodic partner delivery and reconciliation metadata only",
+        "version": 1,
+        "effective_date": "2026-01-15",
+        "review_date": "2026-12-05",
+        "end_date": "2027-04-30",
+        "owner": "Sponsor PV coordinator",
+        "status": "Active",
+        "document_ref": "Approved PVA document v1 - Eastfield PV Partner",
+        "approved_date": "2026-08-15",
+        "archived": false
+      }
+    },
+    {
+      "role": "agreements",
+      "id": "demo-agreements-3",
+      "version": 1,
+      "data": {
+        "name": "Northstar PV planning",
+        "study_id": "demo-studies-2",
+        "partner": "Cobalt Operations",
+        "scope": "Periodic partner delivery and reconciliation metadata only",
+        "version": 1,
+        "effective_date": "2026-01-15",
+        "review_date": "2026-12-15",
+        "end_date": "2027-04-30",
+        "owner": "Sponsor PV coordinator",
+        "status": "Draft",
+        "document_ref": null,
+        "approved_date": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "obligations",
+      "id": "demo-obligations-1",
+      "version": 1,
+      "data": {
+        "name": "Monthly reconciliation",
+        "study_id": "demo-studies-1",
+        "agreement_id": "demo-agreements-1",
+        "agreement_version": 2,
+        "jurisdiction": "Germany",
+        "frequency": "Quarterly",
+        "owner": "PV operations coordinator",
+        "status": "Active",
+        "source_ref": "PVA A1 clause 1 / approved source",
+        "source_date": "2026-08-15",
+        "archived": false
+      }
+    },
+    {
+      "role": "obligations",
+      "id": "demo-obligations-2",
+      "version": 1,
+      "data": {
+        "name": "Aggregate report coordination",
+        "study_id": "demo-studies-1",
+        "agreement_id": "demo-agreements-1",
+        "agreement_version": 2,
+        "jurisdiction": "UK",
+        "frequency": "Annual",
+        "owner": "PV operations coordinator",
+        "status": "Active",
+        "source_ref": "PVA A1 clause 2 / approved source",
+        "source_date": "2026-08-15",
+        "archived": false
+      }
+    },
+    {
+      "role": "obligations",
+      "id": "demo-obligations-3",
+      "version": 1,
+      "data": {
+        "name": "Responsibility review",
+        "study_id": "demo-studies-1",
+        "agreement_id": "demo-agreements-1",
+        "agreement_version": 2,
+        "jurisdiction": "EU",
+        "frequency": "Monthly",
+        "owner": "PV operations coordinator",
+        "status": "Active",
+        "source_ref": "PVA A1 clause 3 / approved source",
+        "source_date": "2026-08-15",
+        "archived": false
+      }
+    },
+    {
+      "role": "obligations",
+      "id": "demo-obligations-4",
+      "version": 1,
+      "data": {
+        "name": "Partner receipt confirmation",
+        "study_id": "demo-studies-1",
+        "agreement_id": "demo-agreements-2",
+        "agreement_version": 1,
+        "jurisdiction": "Germany",
+        "frequency": "Quarterly",
+        "owner": "PV operations coordinator",
+        "status": "Active",
+        "source_ref": "PVA A2 clause 4 / approved source",
+        "source_date": "2026-08-15",
+        "archived": false
+      }
+    },
+    {
+      "role": "obligations",
+      "id": "demo-obligations-5",
+      "version": 1,
+      "data": {
+        "name": "PVA source review",
+        "study_id": "demo-studies-1",
+        "agreement_id": "demo-agreements-2",
+        "agreement_version": 1,
+        "jurisdiction": "UK",
+        "frequency": "Annual",
+        "owner": "PV operations coordinator",
+        "status": "Active",
+        "source_ref": "PVA A2 clause 5 / approved source",
+        "source_date": "2026-08-15",
+        "archived": false
+      }
+    },
+    {
+      "role": "obligations",
+      "id": "demo-obligations-6",
+      "version": 1,
+      "data": {
+        "name": "Quarterly status handoff",
+        "study_id": "demo-studies-1",
+        "agreement_id": "demo-agreements-2",
+        "agreement_version": 1,
+        "jurisdiction": "EU",
+        "frequency": "Monthly",
+        "owner": "PV operations coordinator",
+        "status": "Active",
+        "source_ref": "PVA A2 clause 6 / approved source",
+        "source_date": "2026-08-15",
+        "archived": false
+      }
+    },
+    {
+      "role": "activities",
+      "id": "demo-activities-1",
+      "version": 1,
+      "data": {
+        "name": "Status receipt / cycle 01",
+        "study_id": "demo-studies-1",
+        "obligation_id": "demo-obligations-1",
+        "period_label": "Cycle-01",
+        "original_due_date": "2026-09-24",
+        "due_date": "2026-09-24",
+        "owner": "CRO liaison",
+        "status": "Completed",
+        "actual_completion_date": "2026-09-23",
+        "reviewer": "Independent PV reviewer",
+        "reviewed_at": "2026-09-24",
+        "evidence_ref": "Reconciled handoff 001",
+        "change_reason": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "activities",
+      "id": "demo-activities-2",
+      "version": 1,
+      "data": {
+        "name": "Periodic review / cycle 02",
+        "study_id": "demo-studies-1",
+        "obligation_id": "demo-obligations-2",
+        "period_label": "Cycle-02",
+        "original_due_date": "2026-09-28",
+        "due_date": "2026-09-28",
+        "owner": "Regulatory coordinator",
+        "status": "Open",
+        "actual_completion_date": null,
+        "reviewer": null,
+        "reviewed_at": null,
+        "evidence_ref": null,
+        "change_reason": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "activities",
+      "id": "demo-activities-3",
+      "version": 1,
+      "data": {
+        "name": "Partner reconciliation / cycle 03",
+        "study_id": "demo-studies-1",
+        "obligation_id": "demo-obligations-3",
+        "period_label": "Cycle-03",
+        "original_due_date": "2026-10-02",
+        "due_date": "2026-10-02",
+        "owner": "PV operations",
+        "status": "In progress",
+        "actual_completion_date": null,
+        "reviewer": null,
+        "reviewed_at": null,
+        "evidence_ref": null,
+        "change_reason": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "activities",
+      "id": "demo-activities-4",
+      "version": 1,
+      "data": {
+        "name": "Status receipt / cycle 04",
+        "study_id": "demo-studies-1",
+        "obligation_id": "demo-obligations-4",
+        "period_label": "Cycle-04",
+        "original_due_date": "2026-10-06",
+        "due_date": "2026-10-06",
+        "owner": "CRO liaison",
+        "status": "Ready for review",
+        "actual_completion_date": "2026-10-04",
+        "reviewer": null,
+        "reviewed_at": null,
+        "evidence_ref": "Reconciled handoff 004",
+        "change_reason": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "activities",
+      "id": "demo-activities-5",
+      "version": 1,
+      "data": {
+        "name": "Periodic review / cycle 05",
+        "study_id": "demo-studies-1",
+        "obligation_id": "demo-obligations-5",
+        "period_label": "Cycle-05",
+        "original_due_date": "2026-10-10",
+        "due_date": "2026-10-10",
+        "owner": "Regulatory coordinator",
+        "status": "Open",
+        "actual_completion_date": null,
+        "reviewer": null,
+        "reviewed_at": null,
+        "evidence_ref": null,
+        "change_reason": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "activities",
+      "id": "demo-activities-6",
+      "version": 1,
+      "data": {
+        "name": "Partner reconciliation / cycle 06",
+        "study_id": "demo-studies-1",
+        "obligation_id": "demo-obligations-6",
+        "period_label": "Cycle-06",
+        "original_due_date": "2026-10-14",
+        "due_date": "2026-10-14",
+        "owner": "PV operations",
+        "status": "Completed",
+        "actual_completion_date": "2026-10-13",
+        "reviewer": "Independent PV reviewer",
+        "reviewed_at": "2026-10-14",
+        "evidence_ref": "Reconciled handoff 006",
+        "change_reason": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "activities",
+      "id": "demo-activities-7",
+      "version": 1,
+      "data": {
+        "name": "Status receipt / cycle 07",
+        "study_id": "demo-studies-1",
+        "obligation_id": "demo-obligations-1",
+        "period_label": "Cycle-07",
+        "original_due_date": "2026-10-18",
+        "due_date": "2026-10-18",
+        "owner": "CRO liaison",
+        "status": "Completed",
+        "actual_completion_date": "2026-10-17",
+        "reviewer": "Independent PV reviewer",
+        "reviewed_at": "2026-10-18",
+        "evidence_ref": "Reconciled handoff 007",
+        "change_reason": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "activities",
+      "id": "demo-activities-8",
+      "version": 1,
+      "data": {
+        "name": "Periodic review / cycle 08",
+        "study_id": "demo-studies-1",
+        "obligation_id": "demo-obligations-2",
+        "period_label": "Cycle-08",
+        "original_due_date": "2026-10-22",
+        "due_date": "2026-10-22",
+        "owner": "Regulatory coordinator",
+        "status": "Open",
+        "actual_completion_date": null,
+        "reviewer": null,
+        "reviewed_at": null,
+        "evidence_ref": null,
+        "change_reason": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "activities",
+      "id": "demo-activities-9",
+      "version": 1,
+      "data": {
+        "name": "Partner reconciliation / cycle 09",
+        "study_id": "demo-studies-1",
+        "obligation_id": "demo-obligations-3",
+        "period_label": "Cycle-09",
+        "original_due_date": "2026-10-26",
+        "due_date": "2026-10-26",
+        "owner": "PV operations",
+        "status": "In progress",
+        "actual_completion_date": null,
+        "reviewer": null,
+        "reviewed_at": null,
+        "evidence_ref": null,
+        "change_reason": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "activities",
+      "id": "demo-activities-10",
+      "version": 1,
+      "data": {
+        "name": "Status receipt / cycle 10",
+        "study_id": "demo-studies-1",
+        "obligation_id": "demo-obligations-4",
+        "period_label": "Cycle-10",
+        "original_due_date": "2026-10-30",
+        "due_date": "2026-10-30",
+        "owner": "CRO liaison",
+        "status": "Ready for review",
+        "actual_completion_date": "2026-10-28",
+        "reviewer": null,
+        "reviewed_at": null,
+        "evidence_ref": "Reconciled handoff 010",
+        "change_reason": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "activities",
+      "id": "demo-activities-11",
+      "version": 1,
+      "data": {
+        "name": "Periodic review / cycle 11",
+        "study_id": "demo-studies-1",
+        "obligation_id": "demo-obligations-5",
+        "period_label": "Cycle-11",
+        "original_due_date": "2026-11-03",
+        "due_date": "2026-11-03",
+        "owner": "Regulatory coordinator",
+        "status": "Open",
+        "actual_completion_date": null,
+        "reviewer": null,
+        "reviewed_at": null,
+        "evidence_ref": null,
+        "change_reason": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "activities",
+      "id": "demo-activities-12",
+      "version": 1,
+      "data": {
+        "name": "Partner reconciliation / cycle 12",
+        "study_id": "demo-studies-1",
+        "obligation_id": "demo-obligations-6",
+        "period_label": "Cycle-12",
+        "original_due_date": "2026-11-07",
+        "due_date": "2026-11-07",
+        "owner": "PV operations",
+        "status": "Open",
+        "actual_completion_date": null,
+        "reviewer": null,
+        "reviewed_at": null,
+        "evidence_ref": null,
+        "change_reason": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "activities",
+      "id": "demo-activities-13",
+      "version": 1,
+      "data": {
+        "name": "Status receipt / cycle 13",
+        "study_id": "demo-studies-1",
+        "obligation_id": "demo-obligations-1",
+        "period_label": "Cycle-13",
+        "original_due_date": "2026-11-11",
+        "due_date": "2026-11-11",
+        "owner": "CRO liaison",
+        "status": "Open",
+        "actual_completion_date": null,
+        "reviewer": null,
+        "reviewed_at": null,
+        "evidence_ref": null,
+        "change_reason": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "activities",
+      "id": "demo-activities-14",
+      "version": 1,
+      "data": {
+        "name": "Periodic review / cycle 14",
+        "study_id": "demo-studies-1",
+        "obligation_id": "demo-obligations-2",
+        "period_label": "Cycle-14",
+        "original_due_date": "2026-11-15",
+        "due_date": "2026-11-15",
+        "owner": "Regulatory coordinator",
+        "status": "Open",
+        "actual_completion_date": null,
+        "reviewer": null,
+        "reviewed_at": null,
+        "evidence_ref": null,
+        "change_reason": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "activities",
+      "id": "demo-activities-15",
+      "version": 1,
+      "data": {
+        "name": "Partner reconciliation / cycle 15",
+        "study_id": "demo-studies-1",
+        "obligation_id": "demo-obligations-3",
+        "period_label": "Cycle-15",
+        "original_due_date": "2026-11-19",
+        "due_date": "2026-11-19",
+        "owner": "PV operations",
+        "status": "In progress",
+        "actual_completion_date": null,
+        "reviewer": null,
+        "reviewed_at": null,
+        "evidence_ref": null,
+        "change_reason": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "activities",
+      "id": "demo-activities-16",
+      "version": 1,
+      "data": {
+        "name": "Status receipt / cycle 16",
+        "study_id": "demo-studies-1",
+        "obligation_id": "demo-obligations-4",
+        "period_label": "Cycle-16",
+        "original_due_date": "2026-11-23",
+        "due_date": "2026-11-23",
+        "owner": "CRO liaison",
+        "status": "Open",
+        "actual_completion_date": null,
+        "reviewer": null,
+        "reviewed_at": null,
+        "evidence_ref": null,
+        "change_reason": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "activities",
+      "id": "demo-activities-17",
+      "version": 1,
+      "data": {
+        "name": "Periodic review / cycle 17",
+        "study_id": "demo-studies-1",
+        "obligation_id": "demo-obligations-5",
+        "period_label": "Cycle-17",
+        "original_due_date": "2026-11-27",
+        "due_date": "2026-11-27",
+        "owner": "Regulatory coordinator",
+        "status": "Open",
+        "actual_completion_date": null,
+        "reviewer": null,
+        "reviewed_at": null,
+        "evidence_ref": null,
+        "change_reason": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "activities",
+      "id": "demo-activities-18",
+      "version": 1,
+      "data": {
+        "name": "Partner reconciliation / cycle 18",
+        "study_id": "demo-studies-1",
+        "obligation_id": "demo-obligations-6",
+        "period_label": "Cycle-18",
+        "original_due_date": "2026-12-01",
+        "due_date": "2026-12-01",
+        "owner": "PV operations",
+        "status": "Open",
+        "actual_completion_date": null,
+        "reviewer": null,
+        "reviewed_at": null,
+        "evidence_ref": null,
+        "change_reason": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "activities",
+      "id": "demo-activities-19",
+      "version": 1,
+      "data": {
+        "name": "Status receipt / cycle 19",
+        "study_id": "demo-studies-1",
+        "obligation_id": "demo-obligations-1",
+        "period_label": "Cycle-19",
+        "original_due_date": "2026-12-05",
+        "due_date": "2026-12-05",
+        "owner": "CRO liaison",
+        "status": "Open",
+        "actual_completion_date": null,
+        "reviewer": null,
+        "reviewed_at": null,
+        "evidence_ref": null,
+        "change_reason": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "activities",
+      "id": "demo-activities-20",
+      "version": 1,
+      "data": {
+        "name": "Periodic review / cycle 20",
+        "study_id": "demo-studies-1",
+        "obligation_id": "demo-obligations-2",
+        "period_label": "Cycle-20",
+        "original_due_date": "2026-12-09",
+        "due_date": "2026-12-09",
+        "owner": "Regulatory coordinator",
+        "status": "Open",
+        "actual_completion_date": null,
+        "reviewer": null,
+        "reviewed_at": null,
+        "evidence_ref": null,
+        "change_reason": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "activities",
+      "id": "demo-activities-21",
+      "version": 1,
+      "data": {
+        "name": "Partner reconciliation / cycle 21",
+        "study_id": "demo-studies-1",
+        "obligation_id": "demo-obligations-3",
+        "period_label": "Cycle-21",
+        "original_due_date": "2026-12-13",
+        "due_date": "2026-12-13",
+        "owner": "PV operations",
+        "status": "In progress",
+        "actual_completion_date": null,
+        "reviewer": null,
+        "reviewed_at": null,
+        "evidence_ref": null,
+        "change_reason": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "activities",
+      "id": "demo-activities-22",
+      "version": 1,
+      "data": {
+        "name": "Status receipt / cycle 22",
+        "study_id": "demo-studies-1",
+        "obligation_id": "demo-obligations-4",
+        "period_label": "Cycle-22",
+        "original_due_date": "2026-12-17",
+        "due_date": "2026-12-17",
+        "owner": "CRO liaison",
+        "status": "Open",
+        "actual_completion_date": null,
+        "reviewer": null,
+        "reviewed_at": null,
+        "evidence_ref": null,
+        "change_reason": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "snapshots",
+      "id": "demo-snapshots-1",
+      "version": 1,
+      "data": {
+        "name": "Oversight management briefing #1",
+        "study_id": "demo-studies-1",
+        "period_start": "2026-10-01",
+        "period_end": "2026-10-31",
+        "cutoff": "2026-10-31",
+        "monitoring_summary": "Operational visit progress and unresolved process follow-ups.",
+        "pv_summary": "Partner periodic obligations, dated activity completion, and evidence gaps.",
+        "reviewer": null,
+        "reviewed_at": null,
+        "status": "Draft",
+        "source_snapshot": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "snapshots",
+      "id": "demo-snapshots-2",
+      "version": 1,
+      "data": {
+        "name": "Oversight management briefing #2",
+        "study_id": "demo-studies-1",
+        "period_start": "2026-10-01",
+        "period_end": "2026-10-31",
+        "cutoff": "2026-10-31",
+        "monitoring_summary": "Operational visit progress and unresolved process follow-ups.",
+        "pv_summary": "Partner periodic obligations, dated activity completion, and evidence gaps.",
+        "reviewer": "Sponsor governance",
+        "reviewed_at": "2026-10-31",
+        "status": "Reviewed",
+        "source_snapshot": "fictional demo evidence signature",
+        "archived": false
+      }
+    },
+    {
+      "role": "snapshots",
+      "id": "demo-snapshots-3",
+      "version": 1,
+      "data": {
+        "name": "Oversight management briefing #3",
+        "study_id": "demo-studies-1",
+        "period_start": "2026-10-01",
+        "period_end": "2026-10-31",
+        "cutoff": "2026-10-31",
+        "monitoring_summary": "Operational visit progress and unresolved process follow-ups.",
+        "pv_summary": "Partner periodic obligations, dated activity completion, and evidence gaps.",
+        "reviewer": null,
+        "reviewed_at": null,
+        "status": "Draft",
+        "source_snapshot": null,
+        "archived": false
+      }
+    }
+  ]
+}

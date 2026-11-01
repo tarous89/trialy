@@ -1,0 +1,48 @@
+{
+  "name": "PV activity ready for review",
+  "authoringKey": "co06_activity_email_v1",
+  "appId": "REPLACE_WITH_SAVED_APP_UUID",
+  "appVersion": 0,
+  "recordTypeId": "REPLACE_WITH_ACTIVITIES_TABLE_UUID",
+  "trigger": {
+    "kind": "database",
+    "typeId": "REPLACE_WITH_ACTIVITIES_TABLE_UUID",
+    "events": [
+      "created",
+      "updated"
+    ],
+    "fields": [
+      "status"
+    ],
+    "becomes": {
+      "field": "status",
+      "operator": "equals",
+      "value": "Ready for review"
+    }
+  },
+  "fields": [
+    "status",
+    "archived"
+  ],
+  "conditions": [
+    {
+      "field": "archived",
+      "operator": "not_equals",
+      "value": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "notify_owner",
+      "kind": "email",
+      "to": [
+        "REPLACE_WITH_REGISTERED_AUTHORIZED_OWNER_EMAIL"
+      ],
+      "subject": "PV activity ready for review",
+      "text": "Open https://platform.trialagents.com to review the recorded operational activity and its evidence."
+    }
+  ],
+  "users": [],
+  "expiresAt": "REPLACE_WITH_APPROVED_ISO_EXPIRY",
+  "maxRunsPerDay": 10
+}
