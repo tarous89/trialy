@@ -65,7 +65,7 @@ test('current templates expose useful documentation and optional task contracts 
  const catalog=await appTemplates.list();assert.equal(catalog.guidance.tool,'read_app_template_guidance');
  for(const summary of catalog.templates){
   const t=await appTemplates.read({templateId:summary.id});assert.ok(t.documentation?.quickStart.length);assert.ok(t.documentation?.examples.length);assert.ok(t.documentation?.dataContract);assert.ok(t.documentation?.lifecycle);
-  assert.equal(t.documentation?.tasks.mode,t.engine==='tracker'?'optional':'none');assert.equal(t.guidance.tool,catalog.guidance.tool);
+  assert.ok(['optional','none'].includes(t.documentation!.tasks.mode));assert.equal(t.guidance.tool,catalog.guidance.tool);
  }
  assert.equal((await appTemplates.read({templateId:'vivid.tracker',version:'1.1.0'})).version,'1.1.0');
  for(const resource of ['usage','authoring']){

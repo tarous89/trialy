@@ -1,3 +1,5 @@
+import {readCustomLayout} from './custom-layout.js';
+import {CustomToolLayout} from './CustomToolLayout.js';
 import {Icon} from './ui/Icon.js';
 import {toolThemeSchema, type ToolTheme} from './tool-theme.js';
 import {Vivid,VividSection,VividField,VividLayoutRow} from './Vivid.js';
@@ -7,7 +9,7 @@ import {readStandardConfig} from './standard-tool.js';
 import React,{useEffect,useState} from 'react';
 import {loadSourceTables} from './tool-templates.js';
 import {continueCreationInChat} from './creation.js';
-export function ToolLayout({component,call,onBack,onSaved,onAccess,onCustom}:{component:any;call:(name:string,args:any)=>Promise<any>;onBack:()=>void;onSaved:(c:any,output?:any)=>void;onAccess:()=>void;onCustom?:()=>void}){
+function StandardToolLayout({component,call,onBack,onSaved,onAccess,onCustom}:{component:any;call:(name:string,args:any)=>Promise<any>;onBack:()=>void;onSaved:(c:any,output?:any)=>void;onAccess:()=>void;onCustom?:()=>void}){
  const embedded=useEmbeddedNavigation();
  const [selectedTab,setSelectedTab]=useState(0),[section,setSection]=useState<'Layout'|'Style'>('Layout');
  const config=readStandardConfig(component.source);
@@ -73,3 +75,5 @@ export function ToolLayout({component,call,onBack,onSaved,onAccess,onCustom}:{co
 
  {confirmLeave&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="alertdialog" aria-label="Unsaved layout"><h2>Keep your layout edits?</h2><div className="settings-actions"><button onClick={()=>setConfirmLeave(false)}>Keep editing</button><button onClick={onBack}>Ignore changes</button></div></section></div>}</ToolSettingsShell>;
 }
+
+export function ToolLayout(props:Parameters<typeof StandardToolLayout>[0]){return readCustomLayout(props.component.source)?<CustomToolLayout {...props}/>:<StandardToolLayout {...props}/>;}

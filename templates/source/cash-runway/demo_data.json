@@ -1,0 +1,3565 @@
+{
+  "status": "Fictional preview only; do not seed into production",
+  "records": [
+    {
+      "id": "demo-ledger-0001",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Opening cash · financing baseline",
+        "kind": "opening",
+        "period": "2026-02-01",
+        "amount": 6800000,
+        "currency": "EUR",
+        "program": "Company",
+        "category": "Cash baseline",
+        "commitment": "Committed",
+        "vendor": "Board finance",
+        "source": "https://example.org/fictional-opening",
+        "notes": "Fictional starting cash amount for template review.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0002",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · actual Mar 2026",
+        "kind": "actual_out",
+        "period": "2026-03-15",
+        "amount": 140562.0,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0003",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · actual Mar 2026",
+        "kind": "actual_out",
+        "period": "2026-03-15",
+        "amount": 61016.0,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0004",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · actual Mar 2026",
+        "kind": "actual_out",
+        "period": "2026-03-15",
+        "amount": 109968.0,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0005",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · actual Mar 2026",
+        "kind": "actual_out",
+        "period": "2026-03-15",
+        "amount": 37986.0,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0006",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · actual Apr 2026",
+        "kind": "actual_out",
+        "period": "2026-04-15",
+        "amount": 144124.0,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0007",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · actual Apr 2026",
+        "kind": "actual_out",
+        "period": "2026-04-15",
+        "amount": 54984.0,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0008",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · actual Apr 2026",
+        "kind": "actual_out",
+        "period": "2026-04-15",
+        "amount": 112984.0,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0009",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · actual Apr 2026",
+        "kind": "actual_out",
+        "period": "2026-04-15",
+        "amount": 39000.0,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0010",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · actual May 2026",
+        "kind": "actual_out",
+        "period": "2026-05-15",
+        "amount": 129876.0,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0011",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · actual May 2026",
+        "kind": "actual_out",
+        "period": "2026-05-15",
+        "amount": 56492.0,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0012",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · actual May 2026",
+        "kind": "actual_out",
+        "period": "2026-05-15",
+        "amount": 116000.0,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0013",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · actual May 2026",
+        "kind": "actual_out",
+        "period": "2026-05-15",
+        "amount": 40014.0,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0014",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · actual Jun 2026",
+        "kind": "actual_out",
+        "period": "2026-06-15",
+        "amount": 133438.0,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0015",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · actual Jun 2026",
+        "kind": "actual_out",
+        "period": "2026-06-15",
+        "amount": 58000.0,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0016",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · actual Jun 2026",
+        "kind": "actual_out",
+        "period": "2026-06-15",
+        "amount": 119016.0,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0017",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · actual Jun 2026",
+        "kind": "actual_out",
+        "period": "2026-06-15",
+        "amount": 41028.0,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0018",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · actual Jul 2026",
+        "kind": "actual_out",
+        "period": "2026-07-15",
+        "amount": 137000.0,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0019",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · actual Jul 2026",
+        "kind": "actual_out",
+        "period": "2026-07-15",
+        "amount": 59508.0,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0020",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · actual Jul 2026",
+        "kind": "actual_out",
+        "period": "2026-07-15",
+        "amount": 122032.0,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0021",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · actual Jul 2026",
+        "kind": "actual_out",
+        "period": "2026-07-15",
+        "amount": 36972.0,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0022",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · actual Aug 2026",
+        "kind": "actual_out",
+        "period": "2026-08-15",
+        "amount": 140562.0,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0023",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · actual Aug 2026",
+        "kind": "actual_out",
+        "period": "2026-08-15",
+        "amount": 61016.0,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0024",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · actual Aug 2026",
+        "kind": "actual_out",
+        "period": "2026-08-15",
+        "amount": 109968.0,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0025",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · actual Aug 2026",
+        "kind": "actual_out",
+        "period": "2026-08-15",
+        "amount": 37986.0,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0026",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · actual Sep 2026",
+        "kind": "actual_out",
+        "period": "2026-09-15",
+        "amount": 144124.0,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0027",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · actual Sep 2026",
+        "kind": "actual_out",
+        "period": "2026-09-15",
+        "amount": 54984.0,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0028",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · actual Sep 2026",
+        "kind": "actual_out",
+        "period": "2026-09-15",
+        "amount": 112984.0,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0029",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · actual Sep 2026",
+        "kind": "actual_out",
+        "period": "2026-09-15",
+        "amount": 39000.0,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Committed",
+        "vendor": "Fictional vendor",
+        "source": "https://example.org/fictional-actuals",
+        "notes": "Fictional posted actual.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0030",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Non-dilutive research grant received",
+        "kind": "actual_in",
+        "period": "2026-06-10",
+        "amount": 350000,
+        "currency": "EUR",
+        "program": "Company",
+        "category": "Funding",
+        "commitment": "Committed",
+        "vendor": "Grant program",
+        "source": "https://example.org/fictional-grant",
+        "notes": "Fictional posted inflow.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0031",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · budget Aug 2026",
+        "kind": "budget_out",
+        "period": "2026-08-01",
+        "amount": 142480,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional comparison budget; actuals supersede at cutoff.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0032",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · budget Aug 2026",
+        "kind": "budget_out",
+        "period": "2026-08-01",
+        "amount": 60320,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional comparison budget; actuals supersede at cutoff.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0033",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · budget Aug 2026",
+        "kind": "budget_out",
+        "period": "2026-08-01",
+        "amount": 120640,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional comparison budget; actuals supersede at cutoff.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0034",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · budget Aug 2026",
+        "kind": "budget_out",
+        "period": "2026-08-01",
+        "amount": 40560,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional comparison budget; actuals supersede at cutoff.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0035",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · budget Sep 2026",
+        "kind": "budget_out",
+        "period": "2026-09-01",
+        "amount": 142480,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional comparison budget; actuals supersede at cutoff.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0036",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · budget Sep 2026",
+        "kind": "budget_out",
+        "period": "2026-09-01",
+        "amount": 60320,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional comparison budget; actuals supersede at cutoff.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0037",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · budget Sep 2026",
+        "kind": "budget_out",
+        "period": "2026-09-01",
+        "amount": 120640,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional comparison budget; actuals supersede at cutoff.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0038",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · budget Sep 2026",
+        "kind": "budget_out",
+        "period": "2026-09-01",
+        "amount": 40560,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional comparison budget; actuals supersede at cutoff.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0039",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Oct 2026",
+        "kind": "budget_out",
+        "period": "2026-10-01",
+        "amount": 137000,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0040",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Oct 2026",
+        "kind": "budget_out",
+        "period": "2026-10-01",
+        "amount": 58000,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0041",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Oct 2026",
+        "kind": "budget_out",
+        "period": "2026-10-01",
+        "amount": 116000,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0042",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Oct 2026",
+        "kind": "budget_out",
+        "period": "2026-10-01",
+        "amount": 39000,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0043",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Nov 2026",
+        "kind": "budget_out",
+        "period": "2026-11-01",
+        "amount": 137685,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0044",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Nov 2026",
+        "kind": "budget_out",
+        "period": "2026-11-01",
+        "amount": 58290,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0045",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Nov 2026",
+        "kind": "budget_out",
+        "period": "2026-11-01",
+        "amount": 116580,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0046",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Nov 2026",
+        "kind": "budget_out",
+        "period": "2026-11-01",
+        "amount": 39195,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0047",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Dec 2026",
+        "kind": "budget_out",
+        "period": "2026-12-01",
+        "amount": 138370,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0048",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Dec 2026",
+        "kind": "budget_out",
+        "period": "2026-12-01",
+        "amount": 58580,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0049",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Dec 2026",
+        "kind": "budget_out",
+        "period": "2026-12-01",
+        "amount": 117160,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0050",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Dec 2026",
+        "kind": "budget_out",
+        "period": "2026-12-01",
+        "amount": 39390,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0051",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Jan 2027",
+        "kind": "budget_out",
+        "period": "2027-01-01",
+        "amount": 139055,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0052",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Jan 2027",
+        "kind": "budget_out",
+        "period": "2027-01-01",
+        "amount": 58870,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0053",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Jan 2027",
+        "kind": "budget_out",
+        "period": "2027-01-01",
+        "amount": 117740,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0054",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Jan 2027",
+        "kind": "budget_out",
+        "period": "2027-01-01",
+        "amount": 39585,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0055",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Feb 2027",
+        "kind": "budget_out",
+        "period": "2027-02-01",
+        "amount": 139740,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0056",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Feb 2027",
+        "kind": "budget_out",
+        "period": "2027-02-01",
+        "amount": 59160,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0057",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Feb 2027",
+        "kind": "budget_out",
+        "period": "2027-02-01",
+        "amount": 118320,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0058",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Feb 2027",
+        "kind": "budget_out",
+        "period": "2027-02-01",
+        "amount": 39780,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0059",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Mar 2027",
+        "kind": "budget_out",
+        "period": "2027-03-01",
+        "amount": 140425,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0060",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Mar 2027",
+        "kind": "budget_out",
+        "period": "2027-03-01",
+        "amount": 59450,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0061",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Mar 2027",
+        "kind": "budget_out",
+        "period": "2027-03-01",
+        "amount": 118900,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0062",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Mar 2027",
+        "kind": "budget_out",
+        "period": "2027-03-01",
+        "amount": 39975,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0063",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Apr 2027",
+        "kind": "budget_out",
+        "period": "2027-04-01",
+        "amount": 141110,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0064",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Apr 2027",
+        "kind": "budget_out",
+        "period": "2027-04-01",
+        "amount": 59740,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0065",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Apr 2027",
+        "kind": "budget_out",
+        "period": "2027-04-01",
+        "amount": 119480,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0066",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Apr 2027",
+        "kind": "budget_out",
+        "period": "2027-04-01",
+        "amount": 40170,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0067",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan May 2027",
+        "kind": "budget_out",
+        "period": "2027-05-01",
+        "amount": 141795,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0068",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan May 2027",
+        "kind": "budget_out",
+        "period": "2027-05-01",
+        "amount": 60030,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0069",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan May 2027",
+        "kind": "budget_out",
+        "period": "2027-05-01",
+        "amount": 120060,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0070",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan May 2027",
+        "kind": "budget_out",
+        "period": "2027-05-01",
+        "amount": 40365,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0071",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Jun 2027",
+        "kind": "budget_out",
+        "period": "2027-06-01",
+        "amount": 185224,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0072",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Jun 2027",
+        "kind": "budget_out",
+        "period": "2027-06-01",
+        "amount": 60320,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0073",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Jun 2027",
+        "kind": "budget_out",
+        "period": "2027-06-01",
+        "amount": 120640,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0074",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Jun 2027",
+        "kind": "budget_out",
+        "period": "2027-06-01",
+        "amount": 40560,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0075",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Jul 2027",
+        "kind": "budget_out",
+        "period": "2027-07-01",
+        "amount": 186114,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0076",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Jul 2027",
+        "kind": "budget_out",
+        "period": "2027-07-01",
+        "amount": 60610,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0077",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Jul 2027",
+        "kind": "budget_out",
+        "period": "2027-07-01",
+        "amount": 121220,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0078",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Jul 2027",
+        "kind": "budget_out",
+        "period": "2027-07-01",
+        "amount": 40755,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0079",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Aug 2027",
+        "kind": "budget_out",
+        "period": "2027-08-01",
+        "amount": 187005,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0080",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Aug 2027",
+        "kind": "budget_out",
+        "period": "2027-08-01",
+        "amount": 60900,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0081",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Aug 2027",
+        "kind": "budget_out",
+        "period": "2027-08-01",
+        "amount": 121800,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0082",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Aug 2027",
+        "kind": "budget_out",
+        "period": "2027-08-01",
+        "amount": 40950,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0083",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Sep 2027",
+        "kind": "budget_out",
+        "period": "2027-09-01",
+        "amount": 187896,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0084",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Sep 2027",
+        "kind": "budget_out",
+        "period": "2027-09-01",
+        "amount": 61190,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0085",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Sep 2027",
+        "kind": "budget_out",
+        "period": "2027-09-01",
+        "amount": 122380,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0086",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Sep 2027",
+        "kind": "budget_out",
+        "period": "2027-09-01",
+        "amount": 41145,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0087",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Oct 2027",
+        "kind": "budget_out",
+        "period": "2027-10-01",
+        "amount": 188786,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0088",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Oct 2027",
+        "kind": "budget_out",
+        "period": "2027-10-01",
+        "amount": 61480,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0089",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Oct 2027",
+        "kind": "budget_out",
+        "period": "2027-10-01",
+        "amount": 122960,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0090",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Oct 2027",
+        "kind": "budget_out",
+        "period": "2027-10-01",
+        "amount": 41340,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0091",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Nov 2027",
+        "kind": "budget_out",
+        "period": "2027-11-01",
+        "amount": 189676,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0092",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Nov 2027",
+        "kind": "budget_out",
+        "period": "2027-11-01",
+        "amount": 61770,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0093",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Nov 2027",
+        "kind": "budget_out",
+        "period": "2027-11-01",
+        "amount": 123540,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0094",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Nov 2027",
+        "kind": "budget_out",
+        "period": "2027-11-01",
+        "amount": 41535,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0095",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Dec 2027",
+        "kind": "budget_out",
+        "period": "2027-12-01",
+        "amount": 190567,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0096",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Dec 2027",
+        "kind": "budget_out",
+        "period": "2027-12-01",
+        "amount": 62060,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0097",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Dec 2027",
+        "kind": "budget_out",
+        "period": "2027-12-01",
+        "amount": 124120,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0098",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Dec 2027",
+        "kind": "budget_out",
+        "period": "2027-12-01",
+        "amount": 41730,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0099",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Jan 2028",
+        "kind": "budget_out",
+        "period": "2028-01-01",
+        "amount": 191458,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0100",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Jan 2028",
+        "kind": "budget_out",
+        "period": "2028-01-01",
+        "amount": 62350,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0101",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Jan 2028",
+        "kind": "budget_out",
+        "period": "2028-01-01",
+        "amount": 124700,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0102",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Jan 2028",
+        "kind": "budget_out",
+        "period": "2028-01-01",
+        "amount": 41925,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0103",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Feb 2028",
+        "kind": "budget_out",
+        "period": "2028-02-01",
+        "amount": 147960,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0104",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Feb 2028",
+        "kind": "budget_out",
+        "period": "2028-02-01",
+        "amount": 62640,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0105",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Feb 2028",
+        "kind": "budget_out",
+        "period": "2028-02-01",
+        "amount": 125280,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0106",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Feb 2028",
+        "kind": "budget_out",
+        "period": "2028-02-01",
+        "amount": 42120,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0107",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Mar 2028",
+        "kind": "budget_out",
+        "period": "2028-03-01",
+        "amount": 148645,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0108",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Mar 2028",
+        "kind": "budget_out",
+        "period": "2028-03-01",
+        "amount": 62930,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0109",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Mar 2028",
+        "kind": "budget_out",
+        "period": "2028-03-01",
+        "amount": 125860,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0110",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Mar 2028",
+        "kind": "budget_out",
+        "period": "2028-03-01",
+        "amount": 42315,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0111",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Apr 2028",
+        "kind": "budget_out",
+        "period": "2028-04-01",
+        "amount": 149330,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0112",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Apr 2028",
+        "kind": "budget_out",
+        "period": "2028-04-01",
+        "amount": 63220,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0113",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Apr 2028",
+        "kind": "budget_out",
+        "period": "2028-04-01",
+        "amount": 126440,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0114",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Apr 2028",
+        "kind": "budget_out",
+        "period": "2028-04-01",
+        "amount": 42510,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0115",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan May 2028",
+        "kind": "budget_out",
+        "period": "2028-05-01",
+        "amount": 150015,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0116",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan May 2028",
+        "kind": "budget_out",
+        "period": "2028-05-01",
+        "amount": 63510,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0117",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan May 2028",
+        "kind": "budget_out",
+        "period": "2028-05-01",
+        "amount": 127020,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0118",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan May 2028",
+        "kind": "budget_out",
+        "period": "2028-05-01",
+        "amount": 42705,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0119",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Jun 2028",
+        "kind": "budget_out",
+        "period": "2028-06-01",
+        "amount": 150700,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0120",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Jun 2028",
+        "kind": "budget_out",
+        "period": "2028-06-01",
+        "amount": 63800,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0121",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Jun 2028",
+        "kind": "budget_out",
+        "period": "2028-06-01",
+        "amount": 127600,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0122",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Jun 2028",
+        "kind": "budget_out",
+        "period": "2028-06-01",
+        "amount": 42900,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0123",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Jul 2028",
+        "kind": "budget_out",
+        "period": "2028-07-01",
+        "amount": 151385,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0124",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Jul 2028",
+        "kind": "budget_out",
+        "period": "2028-07-01",
+        "amount": 64090,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0125",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Jul 2028",
+        "kind": "budget_out",
+        "period": "2028-07-01",
+        "amount": 128180,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0126",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Jul 2028",
+        "kind": "budget_out",
+        "period": "2028-07-01",
+        "amount": 43095,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0127",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Aug 2028",
+        "kind": "budget_out",
+        "period": "2028-08-01",
+        "amount": 152070,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0128",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Aug 2028",
+        "kind": "budget_out",
+        "period": "2028-08-01",
+        "amount": 64380,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0129",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Aug 2028",
+        "kind": "budget_out",
+        "period": "2028-08-01",
+        "amount": 128760,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0130",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Aug 2028",
+        "kind": "budget_out",
+        "period": "2028-08-01",
+        "amount": 43290,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0131",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Sep 2028",
+        "kind": "budget_out",
+        "period": "2028-09-01",
+        "amount": 152755,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0132",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Sep 2028",
+        "kind": "budget_out",
+        "period": "2028-09-01",
+        "amount": 64670,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0133",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Sep 2028",
+        "kind": "budget_out",
+        "period": "2028-09-01",
+        "amount": 129340,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0134",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Sep 2028",
+        "kind": "budget_out",
+        "period": "2028-09-01",
+        "amount": 43485,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0135",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Oct 2028",
+        "kind": "budget_out",
+        "period": "2028-10-01",
+        "amount": 153440,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0136",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Oct 2028",
+        "kind": "budget_out",
+        "period": "2028-10-01",
+        "amount": 64960,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0137",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Oct 2028",
+        "kind": "budget_out",
+        "period": "2028-10-01",
+        "amount": 129920,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0138",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Oct 2028",
+        "kind": "budget_out",
+        "period": "2028-10-01",
+        "amount": 43680,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0139",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Nov 2028",
+        "kind": "budget_out",
+        "period": "2028-11-01",
+        "amount": 154125,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0140",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Nov 2028",
+        "kind": "budget_out",
+        "period": "2028-11-01",
+        "amount": 65250,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0141",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Nov 2028",
+        "kind": "budget_out",
+        "period": "2028-11-01",
+        "amount": 130500,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0142",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Nov 2028",
+        "kind": "budget_out",
+        "period": "2028-11-01",
+        "amount": 43875,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0143",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Dec 2028",
+        "kind": "budget_out",
+        "period": "2028-12-01",
+        "amount": 154810,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0144",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Dec 2028",
+        "kind": "budget_out",
+        "period": "2028-12-01",
+        "amount": 65540,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0145",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Dec 2028",
+        "kind": "budget_out",
+        "period": "2028-12-01",
+        "amount": 131080,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0146",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Dec 2028",
+        "kind": "budget_out",
+        "period": "2028-12-01",
+        "amount": 44070,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0147",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Jan 2029",
+        "kind": "budget_out",
+        "period": "2029-01-01",
+        "amount": 155495,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0148",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Jan 2029",
+        "kind": "budget_out",
+        "period": "2029-01-01",
+        "amount": 65830,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0149",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Jan 2029",
+        "kind": "budget_out",
+        "period": "2029-01-01",
+        "amount": 131660,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0150",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Jan 2029",
+        "kind": "budget_out",
+        "period": "2029-01-01",
+        "amount": 44265,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0151",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Feb 2029",
+        "kind": "budget_out",
+        "period": "2029-02-01",
+        "amount": 156180,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0152",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Feb 2029",
+        "kind": "budget_out",
+        "period": "2029-02-01",
+        "amount": 66120,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0153",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Feb 2029",
+        "kind": "budget_out",
+        "period": "2029-02-01",
+        "amount": 132240,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0154",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Feb 2029",
+        "kind": "budget_out",
+        "period": "2029-02-01",
+        "amount": 44460,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0155",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Mar 2029",
+        "kind": "budget_out",
+        "period": "2029-03-01",
+        "amount": 156865,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0156",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Mar 2029",
+        "kind": "budget_out",
+        "period": "2029-03-01",
+        "amount": 66410,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0157",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Mar 2029",
+        "kind": "budget_out",
+        "period": "2029-03-01",
+        "amount": 132820,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0158",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Mar 2029",
+        "kind": "budget_out",
+        "period": "2029-03-01",
+        "amount": 44655,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0159",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Apr 2029",
+        "kind": "budget_out",
+        "period": "2029-04-01",
+        "amount": 157550,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0160",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Apr 2029",
+        "kind": "budget_out",
+        "period": "2029-04-01",
+        "amount": 66700,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0161",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Apr 2029",
+        "kind": "budget_out",
+        "period": "2029-04-01",
+        "amount": 133400,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0162",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Apr 2029",
+        "kind": "budget_out",
+        "period": "2029-04-01",
+        "amount": 44850,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0163",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan May 2029",
+        "kind": "budget_out",
+        "period": "2029-05-01",
+        "amount": 158235,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0164",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan May 2029",
+        "kind": "budget_out",
+        "period": "2029-05-01",
+        "amount": 66990,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0165",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan May 2029",
+        "kind": "budget_out",
+        "period": "2029-05-01",
+        "amount": 133980,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0166",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan May 2029",
+        "kind": "budget_out",
+        "period": "2029-05-01",
+        "amount": 45045,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0167",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Jun 2029",
+        "kind": "budget_out",
+        "period": "2029-06-01",
+        "amount": 158920,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0168",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Jun 2029",
+        "kind": "budget_out",
+        "period": "2029-06-01",
+        "amount": 67280,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0169",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Jun 2029",
+        "kind": "budget_out",
+        "period": "2029-06-01",
+        "amount": 134560,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0170",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Jun 2029",
+        "kind": "budget_out",
+        "period": "2029-06-01",
+        "amount": 45240,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0171",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Jul 2029",
+        "kind": "budget_out",
+        "period": "2029-07-01",
+        "amount": 159605,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0172",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Jul 2029",
+        "kind": "budget_out",
+        "period": "2029-07-01",
+        "amount": 67570,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0173",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Jul 2029",
+        "kind": "budget_out",
+        "period": "2029-07-01",
+        "amount": 135140,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0174",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Jul 2029",
+        "kind": "budget_out",
+        "period": "2029-07-01",
+        "amount": 45435,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0175",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Aug 2029",
+        "kind": "budget_out",
+        "period": "2029-08-01",
+        "amount": 160290,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0176",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Aug 2029",
+        "kind": "budget_out",
+        "period": "2029-08-01",
+        "amount": 67860,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0177",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Aug 2029",
+        "kind": "budget_out",
+        "period": "2029-08-01",
+        "amount": 135720,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0178",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Aug 2029",
+        "kind": "budget_out",
+        "period": "2029-08-01",
+        "amount": 45630,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0179",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Clinical site operations · plan Sep 2029",
+        "kind": "budget_out",
+        "period": "2029-09-01",
+        "amount": 160975,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Clinical & CRO",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0180",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Translational studies · plan Sep 2029",
+        "kind": "budget_out",
+        "period": "2029-09-01",
+        "amount": 68150,
+        "currency": "EUR",
+        "program": "TA-101",
+        "category": "Laboratory",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0181",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Team and benefits · plan Sep 2029",
+        "kind": "budget_out",
+        "period": "2029-09-01",
+        "amount": 136300,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Personnel",
+        "commitment": "Committed",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0182",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Scientific advisors · plan Sep 2029",
+        "kind": "budget_out",
+        "period": "2029-09-01",
+        "amount": 45825,
+        "currency": "EUR",
+        "program": "Core team",
+        "category": "Contractors",
+        "commitment": "Discretionary",
+        "vendor": "Internal planning",
+        "source": "https://example.org/fictional-budget",
+        "notes": "Fictional monthly cash-outflow plan.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0183",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Series A financing · signed tranche",
+        "kind": "funding_in",
+        "period": "2027-06-01",
+        "amount": 2400000,
+        "currency": "EUR",
+        "program": "Company",
+        "category": "Financing",
+        "commitment": "Committed",
+        "vendor": "Fictional investors",
+        "source": "https://example.org/fictional-funding",
+        "notes": "Fictional committed funding for demo. Not a representation of a real financing.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-ledger-0184",
+      "version": 1,
+      "role": "ledger",
+      "data": {
+        "name": "Potential strategic investment",
+        "kind": "funding_in",
+        "period": "2028-04-01",
+        "amount": 3500000,
+        "currency": "EUR",
+        "program": "Company",
+        "category": "Financing",
+        "commitment": "Contingent",
+        "vendor": "Prospective partner",
+        "source": "https://example.org/fictional-funding",
+        "notes": "Fictional contingent, excluded from baseline.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-scenarios-0185",
+      "version": 1,
+      "role": "scenarios",
+      "data": {
+        "name": "Hiring pause",
+        "clinicalMultiplier": 1,
+        "peopleDelta": -30000,
+        "contractorDelta": -15000,
+        "fundingDelay": 0,
+        "trialShift": 0,
+        "reserve": 600000,
+        "cutoff": "2026-09-30",
+        "notes": "Illustrative staffing cost pause; cannot represent a payroll forecast without approval.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-scenarios-0186",
+      "version": 1,
+      "role": "scenarios",
+      "data": {
+        "name": "Accelerated clinical start",
+        "clinicalMultiplier": 1.2,
+        "peopleDelta": 15000,
+        "contractorDelta": 10000,
+        "fundingDelay": 2,
+        "trialShift": -2,
+        "reserve": 600000,
+        "cutoff": "2026-09-30",
+        "notes": "Illustrative accelerated study, 20% clinical premium and a two-month funding delay.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-briefings-0187",
+      "version": 1,
+      "role": "briefings",
+      "data": {
+        "name": "September 2026 finance review",
+        "period": "2026-09-30",
+        "cutoff": "2026-09-30",
+        "status": "Approved",
+        "author": "Fictional finance team",
+        "body": "Executive summary (fictional example): Recorded costs are concentrated in clinical delivery and personnel. A working capital buffer is important before the next development milestone. Review the committed funding assumptions and missing reference data before board use.\n\nDecision requests: (1) Confirm clinical site cash milestones. (2) Review hiring commitments. (3) Reconcile approved finance references to source systems.",
+        "sources": "Demo ledger and scenario records; fictional finance example only.",
+        "archived": false
+      }
+    },
+    {
+      "id": "demo-briefings-0188",
+      "version": 1,
+      "role": "briefings",
+      "data": {
+        "name": "August 2026 finance review",
+        "period": "2026-08-31",
+        "cutoff": "2026-08-31",
+        "status": "Approved",
+        "author": "Fictional finance team",
+        "body": "Previous month (fictional example): The original capital plan remains under discussion. Current and planned expenses are shown separately, and forecast scenario drivers need explicit review.",
+        "sources": "Demo financial register records only.",
+        "archived": false
+      }
+    }
+  ]
+}

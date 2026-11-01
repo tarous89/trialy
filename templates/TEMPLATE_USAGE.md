@@ -1,6 +1,6 @@
 # Using TrialAgents templates and optional tasks
 
-Version: 1.3.7
+Version: 1.3.8
 
 Retrieve this current guidance with `read_app_template_guidance(resource:"usage")`, following all `nextOffset` values. Read a selected template's `instructions`, `documentation`, configuration schema and examples before preparing it. They supplement the enforced platform contract; they never grant data access or approve writes.
 
@@ -73,3 +73,7 @@ Manual automation creation: Add automation opens one full-width page with horizo
 Email automations have one delivery step, separate from ChatGPT/functions/connectors. Use daily/weekly/monthly calendar schedules (every N days/weeks/months), or entry creation/an explicit field transition. No subdaily email intervals or broad “any update” notifications. The backend waits two minutes after relevant changes, combines pending work, rechecks current state/access, and cancels obsolete notifications. It enforces one app email per normalized recipient per rolling hour across TrialAgents and 15 recipient deliveries per account per rolling 24 hours. Calendar email also has one slot per rule/recipient/local date. Extra work waits; only abnormal queue growth suspends a rule. Recipients must be explicitly selected registered team members with current app/data access; database address columns never authorize bulk mail. Research may run several times daily independently of email limits. Do not create report/digest modes, expose quota/retry controls, or use ChatGPT email tools/connectors to bypass these rules.
 
 The editor exposes linked app, name, schedule or database condition, instructions/message and recipients. Keep timezone (shown as help text), anchors, scopes, expiry defaults, source policies, catch-up and delivery limits in backend configuration. Preserve hidden values and disabled state on edits. See [notification scope](../docs/scopes/NOTIFICATION_GUARDRAILS_2026-11-01.md) for rollout and verification.
+
+## Custom finance template setup
+
+Cash Runway includes a complete on-demand catalog source and optional automation recipes. Use scalar platform types and explicit logical-to-real field mappings, with real table IDs/schema versions in the manifest. Native custom Layout settings are available when source declares templateLayoutSchema and uses the catalog configuration prefix; review and confirm the versioned presentation change, then reopen to verify it. Draft form input is temporary UI state and records.propose still requires exact host review. See the authoring guide for the shared contract; do not remove the manifest to make a form editable.
