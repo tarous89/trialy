@@ -7,7 +7,7 @@ import {AppMonitoring} from '../app-services/monitoring.js';
 import {AppActions} from '../app-services/service.js';
 import {WorkspaceFoundation} from '../workspace/service.js';
 import {appUrl} from '../shared/app-route.js';
-import {adapter,AutomationService} from './service.js';
+import {adapter} from './service.js';
 export const automationKind=z.enum(['research','action']);
 export const automationList=z.object({appId:id.optional(),query:z.string().max(100).default(''),executor:z.enum(['all','chatgpt','trialagents']).default('all'),state:z.enum(['all','enabled','disabled']).default('all'),offset:z.number().int().min(0).max(100000).default(0)}).strict();
 /** Management adapter over the existing stores. Never called by the app runtime. */
@@ -16,20 +16,22 @@ export class AutomationManagement{
  async owner(a:Actor,w:string){const p=await access(this.db,a,w);if(p.role!=='owner')fail(403,'owner_required','Only the owner can manage app automations');}
  async list(a:Actor,w:string,input:unknown){await this.owner(a,w);const v=automationList.parse(input);
   const rows=(await this.db.query(`SELECT d.*,c.name AS app_name,c.archived AS app_archived FROM (
-   SELECT m.id,m.app_id,m.workspace_id,m.user_id,m.version,'research' AS kind,'chatgpt' AS executor,m.config->>'name' AS name,m.enabled,m.config->>'expiresAt' AS expires_at,coalesce(m.config->'automation'->'trigger',m.config->'schedule') AS trigger,d.next_at,d.last_success_at,d.diagnostic,m.created_at,
-    (SELECT status FROM app_monitor_runs r WHERE r.monitor_id=m.id ORDER BY started_at DESC,id DESC LIMIT 1) AS last_status,m.config->'automation'->>'runnerId' AS runner_id
-   FROM app_monitors m LEFT JOIN automation_dispatch d ON d.monitor_id=m.id
+   SELECT m.id,m.app_id,m.workspace_id,m.user_id,m.version,'research' AS kind,'chatgpt' AS executor,m.config->>'name' AS name,m.enabled,m.config->>'expiresAt' AS expires_at,coalesce(m.config->'automation'->'trigger',m.config->'schedule') AS trigger,m.created_at,
+    concat_ws(E'\\n\\n',m.config->>'objective',m.config->>'instructions') AS prompt,NULL::jsonb AS steps,(m.config->'automation' IS NULL AND m.task IS NOT NULL) AS external_schedule
+   FROM app_monitors m
    UNION ALL
-   SELECT a.id,a.app_id,a.workspace_id,a.user_id,a.version,'action','trialagents',a.config->>'name',NOT a.paused,a.config->>'expiresAt',a.config->'trigger',a.next_at,NULL,a.last_error,a.created_at,
-    (SELECT status FROM app_action_runs r WHERE r.action_id=a.id ORDER BY created_at DESC,id DESC LIMIT 1),NULL
+   SELECT a.id,a.app_id,a.workspace_id,a.user_id,a.version,'action','trialagents',a.config->>'name',NOT a.paused,a.config->>'expiresAt',a.config->'trigger',a.created_at,NULL,a.config->'steps',false
    FROM app_actions a
   ) d JOIN workspace_components c ON c.id=d.app_id AND c.workspace_id=d.workspace_id
   WHERE d.workspace_id=$1 AND d.user_id=$2 AND ($3::uuid IS NULL OR d.app_id=$3)
    AND ($4='' OR position(lower($4) in lower(d.name||' '||c.name))>0)
    AND ($5='all' OR d.executor=$5) AND ($6='all' OR d.enabled=($6='enabled'))
   ORDER BY d.created_at,d.id LIMIT 21 OFFSET $7`,[w,a.userId,v.appId??null,v.query,v.executor,v.state,v.offset])).rows;
-  let connection:any=null;if(rows.some(r=>r.runner_id)){try{connection=await new AutomationService(this.db).setup(a,w);}catch{connection={state:'unavailable'};}}
-  const visible=[];for(const row of rows.slice(0,20)){try{const c=await new WorkspaceFoundation(this.db).component(this.db,a,w,row.app_id,false);visible.push({...row,app_archived:c.archived||c.project_archived,connectionState:row.kind==='research'?(row.runner_id?connection?.state??'unavailable':'legacy_unverified'):null});}catch(e){if(![403,404].includes((e as any).status))throw e;}}
+  const visible=[];for(const row of rows.slice(0,20)){try{const c=await new WorkspaceFoundation(this.db).component(this.db,a,w,row.app_id,false);
+   const {steps,external_schedule,...definition}=row;
+   const prompt=row.kind==='research'?row.prompt:(steps??[]).map((s:any)=>s.kind==='email'?`Email: ${s.subject}\n${s.text}`:s.kind==='connector'?`Run connector operation: ${s.operation}`:`Run app action: ${s.binding}`).join('\n\n');
+   visible.push({...definition,prompt,externalSchedule:external_schedule,app_url:appUrl({workspaceId:w,appId:c.id}),app_archived:c.archived||c.project_archived});
+  }catch(e){if(![403,404].includes((e as any).status))throw e;}}
   return {rows:visible,nextOffset:rows.length>20?v.offset+20:null};
  }
  async read(a:Actor,w:string,kind:'research'|'action',automationId:string){await this.owner(a,w);

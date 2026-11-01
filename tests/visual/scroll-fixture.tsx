@@ -5,12 +5,13 @@ import {LogsPanel} from '../../src/shared/LogsPanel.js';import {HomePanel} from 
 import '../../src/shared/shell.css';import '../../src/web/style.css';import '../../src/shared/views.css';
 const params=new URLSearchParams(location.search),view=params.get('view')??'tools';
 const fields=[{key:'name',name:'Name',kind:'text',readable:true}],table={id:'t',name:'Companies',workspaceId:'w',fields};
+const pageArgs:any[]=[];(window as any).pageArgs=pageArgs;
 const pageCalls:string[]=[];(window as any).pageCalls=pageCalls;
-const call=async(name:string,args:any)=>{pageCalls.push(name);
+const call=async(name:string,args:any)=>{pageCalls.push(name);pageArgs.push({name,args});
  if(name==='read_access_grid')return{workspaceId:'w',subject:args.subject??'owner',version:0,canManage:true,people:[{id:'owner',name:'Owner',role:'owner'},{id:'member',name:'Member',role:'editor'}],rows:view==='access-sections'?[{kind:'project',resourceId:'p',name:'Research project'},{kind:'tool',resourceId:'app',parentId:'p',name:'Research tracker'},{kind:'app_section',resourceId:'app',field:'records',parentId:'app',name:'Records tab'}].map(r=>({...r,key:[r.kind,r.resourceId,(r as any).field??''].join(':'),read:true,write:true,canChange:true,canChangeWrite:true})):[],tools:[],restrictions:[],connections:[]};
  if(name==='read_account_schema')return{tables:Array.from({length:25},(_,i)=>({...table,id:i?'t'+i:'t',name:'Table '+i})),nextOffset:null};
  if(name==='read_database_table')return{table,canEdit:false,total:26,rows:Array.from({length:25},(_,i)=>({id:String(i),data:{name:'Record '+i+' · '+ 'Description '.repeat(12)}})),nextOffset:25};
- if(name==='read_workspace_activity')return{total:26,projects:[],nextOffset:25,rows:Array.from({length:25},(_,i)=>({id:String(i),created_at:'2026-10-28T12:00:00Z',action:'record.created',resource_name:'Company',category:'data',outcome:'succeeded',actor_name:'Alex',actor_id:'a'}))};
+ if(name==='read_workspace_activity')return{total:26,apps:[{id:'signals-app',name:'Signals tracker'}],projects:[],nextOffset:25,rows:Array.from({length:25},(_,i)=>({id:String(i),created_at:'2026-10-28T12:00:00Z',action:'record.created',resource_name:'Company',category:'data',outcome:'succeeded',actor_name:'Alex',actor_id:'a'}))};
  if(name==='read_account_home')return{total:21,projects:[],nextOffset:20,resources:Array.from({length:20},(_,i)=>({id:String(i),name:'Tool '+i,description:'',projectIds:[],kind:'tracker',updatedAt:'2026-10-28'}))};return{};
 };
 const long=Array.from({length:140},(_,i)=>'Line '+i+' · read-only details').join('\n');

@@ -14,7 +14,9 @@ for(const width of [1440,390])test(`Individual app covers in platform and extens
   const root=embedded?page.frameLocator('#app'):page;
   await expect(root.locator('.ty-app-cover')).toHaveCount(6);
   const mark=root.locator(embedded?'.ty-mobile-brand .ty-brand-mark':'.ty-brand .ty-brand-mark');
+  if(!embedded&&width<760)await root.getByRole('button',{name:'Open navigation',exact:true}).click();
   await expect(mark).toBeVisible();await expect.poll(()=>mark.evaluate(img=>img.naturalWidth)).toBeGreaterThan(0);
+  if(!embedded&&width<760)await root.getByRole('button',{name:'Open navigation',exact:true}).click();
   for(const cover of await root.locator('.ty-app-cover').all()){await expect(cover).not.toHaveCSS('background-image','none');expect((await cover.boundingBox()).height).toBeGreaterThan(100);}
   const styles=await root.locator('.ty-resource--app').evaluateAll(els=>els.map(el=>el.getAttribute('style')));expect(new Set(styles).size).toBe(6);
   await expect(root.getByText(descriptions[0],{exact:true})).toBeVisible();

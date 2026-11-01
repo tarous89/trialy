@@ -1,6 +1,7 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';import {PGlite} from '@electric-sql/pglite';import {readFile,readdir} from 'node:fs/promises';import {randomUUID} from 'node:crypto';
 import type {Database,Connection} from '../src/db/database.js';import type {Actor} from '../src/shared/schema.js';
 import {Service} from '../src/domain/service.js';import {WorkspaceFoundation} from '../src/workspace/service.js';import {trackerOperation} from '../src/workspace/tracker-template.js';import {readStandardConfig,standardSource} from '../src/shared/standard-tool.js';import {AccessGrid} from '../src/domain/access-grid.js';import {AccessManagement} from '../src/domain/access-management.js';
+import {activityPage} from '../src/workspace/activity.js';
 import {AutomationManagement} from '../src/automations/management.js';import {AutomationService} from '../src/automations/service.js';import {AppMonitoring} from '../src/app-services/monitoring.js';import {AppActions,nextAction} from '../src/app-services/service.js';import {actionConfig} from '../src/app-services/schema.js';
 async function fixture(t:any){const pg=new PGlite();t.after(()=>pg.close());for(const n of (await readdir('migrations')).filter(n=>n.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+n,'utf8'));const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};const a:Actor={userId:randomUUID(),origin:'human'},b:Actor={userId:randomUUID(),origin:'human'};for(const user of [a,b])await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[user.userId,user.userId,user.userId+'@example.invalid','Fixture']);const s=new Service(db),f=new WorkspaceFoundation(db),w=await s.createWorkspace(a,'App configuration');await s.setAi(a,w.id,true);const save=async(op:any)=>{const p=await s.preview(a,w.id,op);return s.commit(a,p.id,p.digest);},change=async(op:any)=>{const p=await f.preview(a,w.id,op);return f.confirm(a,w.id,p.id,p.digest);};return {pg,db,a,b,s,f,w:w.id,save,change};}
 test('optional sections inherit app access and protect source, data, writes, revisions and cache identity',async t=>{
@@ -29,7 +30,7 @@ test('unified management preserves disabled definitions, isolates owners, and ar
  const prep=await runners.prepare(a,w,{preferences:{timeZone:'UTC'}}),runner=await runners.confirm(a,w,prep.id,prep.digest);assert.equal((await runners.setup(a,w)).executionPreference.reasoning,'high');assert.equal((await runners.setup(a,w)).hostExecutionSettings,'unverified');
  const config={name:'Research',appId:app.id,objective:'Review public updates',instructions:'Collect sources and summarize material updates.',sourcePolicy:'Primary public sources.',schedule:{description:'Daily',timeZone:'UTC'},expiresAt:expiry,automation:{runnerId:runner.id,trigger:{kind:'calendar',frequency:'daily',time:'06:00',timeZone:'UTC',anchor:'2026-01-01'}}};
  const mp=await research.prepare(a,w,{config}),monitor=await research.confirm(a,w,mp.id,mp.digest);const ac={name:'Email',authoringKey:'email_summary',appId:app.id,appVersion:0,expiresAt:expiry,trigger:{kind:'manual'},steps:[{id:'notify',kind:'email',to:['fixture@example.invalid'],subject:'Update',text:'Saved update'}]};const ap=await actions.prepare(a,w,{config:ac}),action=await actions.confirm(a,w,ap.id,ap.digest);
- const list=await manage.list(a,w,{});assert.equal(list.rows.length,2);assert.ok(list.rows.every(r=>!('config'in r)));assert.equal((await manage.list(a,w,{executor:'trialagents'})).rows.length,1);assert.equal((await manage.list(a,w,{query:'absent'})).rows.length,0);
+ const list=await manage.list(a,w,{});assert.equal(list.rows.length,2);assert.ok(list.rows.every(r=>!('config'in r)&&!('connectionState'in r)&&!('last_status'in r)));assert.match(list.rows.find(r=>r.kind==='research').prompt,/Collect sources/);assert.match(list.rows.find(r=>r.kind==='action').prompt,/Email: Update\nSaved update/);assert.ok(list.rows.every(r=>r.app_url.includes(app.id)));assert.equal((await manage.list(a,w,{executor:'trialagents'})).rows.length,1);assert.equal((await manage.list(a,w,{query:'absent'})).rows.length,0);
  await s.share(a,w,b.userId,'editor',[],null,true);await assert.rejects(manage.list(b,w,{}),/owner/);await assert.rejects(manage.control({...a,origin:'ai'},w,'research',monitor.id,0,false),/signed-in|approve/);
  await manage.control(a,w,'research',monitor.id,0,false);await manage.control(a,w,'action',action.id,0,false);
  const edited=await research.prepare(a,w,{monitorId:monitor.id,expectedVersion:0,config:{...config,objective:'Revised research'}});await research.confirm(a,w,edited.id,edited.digest);const editedAction=await actions.prepare(a,w,{actionId:action.id,expectedVersion:0,config:{...ac,name:'Revised email'}});await actions.confirm(a,w,editedAction.id,editedAction.digest);
@@ -37,4 +38,34 @@ test('unified management preserves disabled definitions, isolates owners, and ar
  await manage.control(a,w,'research',monitor.id,1,true);await manage.control(a,w,'action',action.id,1,true);await change({kind:'archive_component',componentId:app.id,expectedVersion:0,archived:true});await change({kind:'archive_component',componentId:app.id,expectedVersion:1,archived:false});assert.equal((await manage.read(a,w,'research',monitor.id)).enabled,false);assert.equal((await manage.read(a,w,'action',action.id)).enabled,false);assert.match((await f.readComponent(a,w,app.id)).component.source,/Stable app/);
  const monthly=actionConfig.parse({...ac,trigger:{kind:'calendar',frequency:'monthly',anchor:'2026-01-01',time:'06:00',timeZone:'UTC',monthDay:31}});assert.equal(nextAction(monthly,new Date('2026-02-01T00:00Z'))?.toISOString(),'2026-02-28T06:00:00.000Z');assert.equal((await manage.history(a,w,'research',monitor.id)).rows.length,0);
  await runners.control(a,w,runner.id,false,0);const rp=await runners.prepare(a,w,{expectedVersion:1,preferences:{time:'07:00',timeZone:'UTC'}});await runners.confirm(a,w,rp.id,rp.digest);assert.equal((await runners.setup(a,w)).state,'paused');
+});
+
+test('Logs attribute app writes and automation runs, filter before pagination, and enforce current app access',async t=>{
+ const {db,a,b,s,f,w,save,change}=await fixture(t);
+ const type=(await save({kind:'create_type',name:'Signals',fields:[{key:'name',name:'Name',kind:'text',ai:true}]})).objects[0].id;
+ const project=await change({kind:'create_node',nodeKind:'project',name:'Research'});
+ const op=await trackerOperation(f,a,w,{name:'Signals tracker',description:'Signal collection',tabs:[{name:'Signals',typeId:type,columns:[{field:'name'}]}]});
+ const app=await change({...op,projectId:project.id});
+ const another=await change({...op,content:{...op.content,name:'Other tracker'}});
+ await change({kind:'apply_component_records',componentId:app.id,expectedVersion:0,changes:[{kind:'create_record',typeId:type,data:{name:'Private record sentinel'}}]});
+ const monitor=randomUUID(),action=randomUUID(),monitorRun=randomUUID(),actionRun=randomUUID();
+ await db.query('INSERT INTO app_monitors(id,workspace_id,user_id,app_id,config,scope_stamp) VALUES($1,$2,$3,$4,$5,$6)',[monitor,w,a.userId,app.id,JSON.stringify({name:'Research signals'}),'fixture']);
+ await db.query("INSERT INTO app_monitor_runs(id,workspace_id,user_id,monitor_id,monitor_version,occurrence_key,status,config_snapshot,result) VALUES($1,$2,$3,$4,0,'daily','no_update',$5,$6)",[monitorRun,w,a.userId,monitor,JSON.stringify({instructions:'Private prompt sentinel'}),JSON.stringify({summary:'Private result sentinel'})]);
+ await db.query('INSERT INTO app_actions(id,workspace_id,user_id,app_id,config,approved_by) VALUES($1,$2,$3,$4,$5,$3)',[action,w,a.userId,app.id,JSON.stringify({name:'Notify team'})]);
+ await db.query("INSERT INTO app_action_runs(id,workspace_id,user_id,action_id,action_version,occurrence,status,results,diagnostic) VALUES($1,$2,$3,$4,0,'daily','failed',$5,$6)",[actionRun,w,a.userId,action,JSON.stringify({message:'Private email sentinel'}),'Private error sentinel']);
+ const activity=await activityPage(db,a,w,{appId:app.id,limit:200});
+ assert.ok(activity.rows.some(r=>r.action==='record.created'&&r.app_id===app.id));
+ assert.ok(activity.rows.some(r=>r.id==='monitor:'+monitorRun&&r.outcome==='no_update'));
+ assert.ok(activity.rows.some(r=>r.id==='action:'+actionRun&&r.outcome==='failed'));
+ assert.ok(activity.rows.every(r=>r.app_id===app.id&&r.app_name==='Signals tracker'));
+ assert.doesNotMatch(JSON.stringify(activity),/Private .* sentinel/);
+ assert.deepEqual(activity.apps.map(c=>c.id).sort(),[app.id,another.id].sort());
+ const first=await activityPage(db,a,w,{appId:app.id,category:'automation',limit:1});assert.equal(first.total,2);assert.equal(first.nextOffset,1);
+ const second=await activityPage(db,a,w,{appId:app.id,category:'automation',limit:1,offset:1,before:first.before});assert.notEqual(first.rows[0].id,second.rows[0].id);assert.equal(second.nextOffset,null);
+ assert.equal((await activityPage(db,a,w,{appId:app.id,outcome:'no_update'})).rows.length,1);
+ assert.equal((await activityPage(db,a,w,{appId:another.id,category:'automation'})).rows.length,0);
+ await s.share(a,w,b.userId,'editor',[],null,true);assert.equal((await activityPage(db,b,w,{appId:app.id,category:'automation'})).rows.length,0);
+ await change({kind:'set_project_access',nodeId:project.id,expectedVersion:0,allowedUsers:[a.userId],ai:false});
+ const denied=await activityPage(db,{...a,origin:'ai'},w,{appId:app.id});assert.equal(denied.rows.length,0);assert.ok(!denied.apps.some(c=>c.id===app.id));
+ const otherSpace=await s.createWorkspace(a,'Other account');assert.equal((await activityPage(db,a,otherSpace.id,{appId:app.id})).rows.length,0);
 });

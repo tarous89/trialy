@@ -177,3 +177,6 @@
  .ty-workspace--embedded .ty-topbar>.ty-button{font-size:12px;padding:8px}
  .ty-workspace--embedded .ty-topbar>.ty-button svg{display:none}
 }
+
+/* A closed mobile drawer must not retain its padding or intercept content. */
+@media(max-width:760px){.ty-workspace:not(.ty-workspace--embedded):not(.ty-navigation-open) .ty-sidebar--desktop{display:none!important}}

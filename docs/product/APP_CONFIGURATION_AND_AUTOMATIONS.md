@@ -52,18 +52,11 @@ Access revocation remains effective immediately for subsequent reads and effects
 
 ## Automations destination
 
-Show one paginated list of definitions, including disabled and setup-pending entries, with search and optional filters by app, executor and status. Each row includes name, linked app, executor, schedule/trigger summary, enabled state, operational status, next due time and last outcome. Keep enabled intent separate from readiness: an enabled definition can be blocked by missing authority or connection. Show due work separately from upcoming work; do not use a daily check timestamp as proof of a successful job.
+Show one full-width, paginated list of app-linked definitions, including database-triggered actions and disabled entries. Each row shows linked app, Trigger or Scheduled with readable frequency/timezone, prompt or typed action instructions, and Disable/Enable plus Edit. A concise empty state has no search/filter controls, pagination, setup panel or history. Shared daily ChatGPT setup is backend infrastructure independent of this list; do not display it as an app automation.
 
-Rows expand on demand. Keep the normal list compact and retain the existing responsive toolbar rule: search and primary action stay on one line; secondary filters go into a disclosure when needed. Load configuration/history only when expanded and paginate history. Do not fetch all prompts, records or histories to render the list.
+Load full versioned configuration only when Edit is selected. Preserve typed schedule, prompt, source, scope, limits, expiry and action editors, validation and exact review. Do not manufacture an LLM prompt for a deterministic action. The enabled flag expresses intent, not verified readiness; readiness is checked separately through private setup tools.
 
-Expanded configuration uses the same versioned definition, validation and review path as ChatGPT:
-
-- Purpose and parent app; **Runs with ChatGPT** or **Runs in TrialAgents**.
-- Enabled/disabled control; schedule or trigger editor, timezone, start/end conditions and a preview of the next eligible run.
-- For ChatGPT: editable task prompt, sources, eligibility, coverage, evidence requirements, deduplication, output/destination and completion/no-result criteria.
-- For TrialAgents: typed action configuration, approved input/output mappings and relevant email template/recipient policy. Do not manufacture a ChatGPT prompt for a deterministic action.
-- Expandable approved read/write scopes, limits, approval expiry, execution identity and optional completion dependency. Secrets and signing material are never displayed.
-- Last attempt, last successful completion, pending work, result/save receipts and bounded retry/history controls.
+Previous research and platform action runs appear in Logs with status, timestamp, linked app and existing resource metadata. Logs supports app/project/category/outcome/date filters and the same scope in CSV exports. Private result details remain in authorized history tools. Logs never exposes historical record payloads, prompts, email bodies or raw diagnostics. App attribution uses explicit saved app context; do not infer attribution to an app from shared database membership. Additional filter fields stay in normal flow, using available horizontal space and wrapping naturally rather than overlaying content.
 
 Daily, weekly, monthly, one-time, after-success interval, record-date and database-change schedules must be inspectable and editable here. Expose every user-editable configuration field available through MCP, including database filters and output/source rules; do not require ChatGPT merely to inspect or change an existing configuration. Internal IDs, secret material, immutable receipts and dispatcher instructions are not editable automation settings. UI and MCP use one canonical schema rather than independently maintained copies or a raw JSON-only editor.
 
@@ -73,7 +66,7 @@ In this version, only the app/workspace owner can inspect private prompts/histor
 
 ## Lifecycle and data preservation
 
-An automation is durable app configuration. Offer **Disable**, **Enable**, **Edit** and **History**; no standalone Delete operation in the new UI or MCP contract. Disabled definitions stay listed and editable. Require an explicit eligible-state check on re-enable; never silently resume after a failed save, reconnect or app restore. Existing unrelated legacy APIs need compatibility review before changing their behavior.
+An automation is durable app configuration. Offer **Disable**, **Enable** and **Edit**; run statuses are in Logs; no standalone Delete operation in the new UI or MCP contract. Disabled definitions stay listed and editable. Require an explicit eligible-state check on re-enable; never silently resume after a failed save, reconnect or app restore. Existing unrelated legacy APIs need compatibility review before changing their behavior.
 
 | Operation | Required result |
 | --- | --- |
@@ -93,7 +86,7 @@ The shared connection is infrastructure for many definitions, not an automation 
 
 Check setup quietly at first supported plugin use, on every app-creation conversation, when adding an automation, and after reconnection or an explicit repair request. Complete already-authorized missing setup where the host supports it, otherwise offer a resumable suggestion. Repeat opportunities, not duplicate subscriptions. Do not reactivate a deliberately paused/disconnected runner or repeatedly pressure a user who declined. Plugin installation or OAuth alone cannot establish a host subscription or background-work authorization. When the host offers no install-time execution hook, first tool use is the actionable point. Reuse already-recorded consent and an existing runner; do not repeat permissions unnecessarily or create duplicate subscriptions.
 
-Keep connection setup separate from approving each automation. The user's reviewed onboarding choice may cover later definitions within an explicit scope; it does not authorize every future suggested objective, recipient or write. Apps save and run even if setup is declined, unavailable or incomplete. Do not block first app creation to force automation setup. Show pending setup in Automations, and offer a resumable handoff; never imply that accepting OAuth proves unattended execution.
+Keep connection setup separate from approving each automation. The user's reviewed onboarding choice may cover later definitions within an explicit scope; it does not authorize every future suggested objective, recipient or write. Apps save and run even if setup is declined, unavailable or incomplete. Do not block first app creation to force automation setup. Keep pending setup in the private connection/setup flow and offer a resumable handoff; never imply that accepting OAuth proves unattended execution.
 
 Requested execution is a supported **Work chat**, **high reasoning**, and the **latest highest-capability model available in the user’s subscription**. Current task tools do not expose model/reasoning parameters; save the preference and include it in setup guidance, but report host execution settings as unverified unless actually observed. Never invent host parameters, hardcode a model ID, or promise automatic upgrades. Model preference is independent of connection readiness.
 
@@ -112,13 +105,13 @@ Apply this workflow to every template and custom app. Automation remains optiona
 7. Check shared connection setup on every app creation; complete or resume missing setup if authorized and supported, respecting deliberate pauses and declined setup. Reuse the runner for every later app. Platform-only actions do not depend on ChatGPT readiness.
 8. Verify app save, permission configuration, automation definition, enabled/readiness state and next occurrence separately. Link the user to the app and its filtered Automations view; report partial setup honestly.
 
-App/tool descriptions, dynamic authoring/usage guidance (1.3.1), bundled workspace/design instructions and new immutable template versions are updated together. Required authoring documentation covers app purpose, stable sections and inheritance, optional data/connector bindings, access expectations, automation mode and executor, timing/timezone, complete prompt/action, sources/output contract, failure/no-result behavior, permissions, lifecycle and no-automation examples. All examples remain template-independent. Instructions describe the supported standard-tracker section boundary; arbitrary custom sections remain a future extension.
+App/tool descriptions, dynamic authoring/usage guidance (1.3.2), bundled workspace/design instructions and new immutable template versions are updated together. Required authoring documentation covers app purpose, stable sections and inheritance, optional data/connector bindings, access expectations, automation mode and executor, timing/timezone, complete prompt/action, sources/output contract, failure/no-result behavior, permissions, lifecycle and no-automation examples. All examples remain template-independent. Instructions describe the supported standard-tracker section boundary; arbitrary custom sections remain a future extension.
 
 ## Failure isolation and compatibility
 
 Automation listing, scheduling, callback delivery, task execution and history are optional management paths. None is a dependency of app resolution, rendering, navigation, ordinary data reads/writes, publication or web health. Retain bounded worker pools, independent queue work, statement deadlines, leases, idempotency and UI boundaries; also bound scheduler/database load so a background backlog cannot exhaust app request capacity.
 
-A failed background job leaves the latest authorized published app and local unsaved input usable. It must not replace content, force refresh, show an error overlay/save footer or corrupt state in standalone or embedded apps. Diagnostics and retry controls belong only in Automations. Within that management page, failed reads keep the last valid list/detail state when available and allow localized recovery. Pending editor input is preserved on save failure; never show an unsuccessful save as committed.
+A failed background job leaves the latest authorized published app and local unsaved input usable. It must not replace content, force refresh, show an error overlay/save footer or corrupt state in standalone or embedded apps. Run statuses belong in Logs; private setup/history tools retain operational diagnostics and authorized recovery. Within the definition management page, failed reads keep the last valid list/editor state when available and allow localized recovery. Pending editor input is preserved on save failure; never show an unsuccessful save as committed.
 
 Research writes use reviewed scoped transactions and receipts. Retry/reconnect never clears tables, reapplies completed effects, erases user edits or substitutes a stale snapshot for the live database. Permission/schema changes can block a job safely; unrelated app operation continues. Actual permission revocation still restricts the app as required by the access contract.
 
@@ -128,7 +121,7 @@ Existing apps retain app-level permissions and all current data, links and publi
 
 The management and supported section-access implementation is included in this release. Validate the feature independently of real-host subscription activation; the app must remain available while that activation is pending.
 
-1. **Unified management:** add the Automations destination and paginated app-linked listing over existing executors; owner-only expanded editors, disable/enable, history and honest connection state. No queue rewrite.
+1. **Unified management:** add the Automations destination and paginated app-linked listing over existing executors; owner-only on-demand editors and disable/enable; run history in Logs and honest connection state in private setup tools. No queue rewrite.
 2. **App access hierarchy:** expose every app as a parent; add registered section identity and effective-policy enforcement before displaying tab permission controls. Ship custom-section support only with a demonstrated data/source boundary.
 3. **Creation and connection:** align general creation, dynamic templates, MCP descriptions and onboarding. Preserve first-app success when connection/automation configuration fails.
 4. **Compatibility and release:** migrate only required metadata additively; validate legacy apps/monitors, app lifecycle, permissions and optional-service outages; verify real host activation separately.

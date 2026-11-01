@@ -45,3 +45,16 @@ test('Projects show apps by default and apps expand into optional parts',async({
  await page.getByRole('button',{name:'Collapse Research project',exact:true}).click();
  await expect(page.getByText('Research tracker',{exact:true})).toHaveCount(0);
 });
+
+for(const embedded of [false,true])for(const width of [1440,390])test(`Logs app filter and inline wrapping filters ${embedded?'plugin':'app'} ${width}`,async({page})=>{
+ await page.setViewportSize({width,height:1000});await page.goto(`http://127.0.0.1:4180/tests/visual/scroll-fixture.html?view=logs${embedded?'&embedded':''}`);
+ await page.getByRole('combobox',{name:'App',exact:true}).selectOption('signals-app');
+ await expect.poll(()=>page.evaluate(()=>window.pageArgs.filter(r=>r.name==='read_workspace_activity').at(-1)?.args.appId)).toBe('signals-app');
+ await page.getByRole('button',{name:'More filters',exact:true}).click();await expect(page.getByLabel('Actor ID',{exact:true})).toBeVisible();await expect(page.getByLabel('Resource ID',{exact:true})).toBeVisible();
+ const boxes=await page.locator('#ty-log-extra-filters>label').evaluateAll(labels=>labels.map(e=>{const r=e.getBoundingClientRect();return{x:r.x,y:r.y,w:r.width,h:r.height,position:getComputedStyle(e).position};}));
+ for(let i=0;i<boxes.length;i++){const a=boxes[i];expect(a.position).toBe('static');expect(a.x).toBeGreaterThanOrEqual(0);expect(a.x+a.w).toBeLessThanOrEqual(width);for(const b of boxes.slice(i+1))expect(a.x+a.w<=b.x||b.x+b.w<=a.x||a.y+a.h<=b.y||b.y+b.h<=a.y).toBe(true);}
+ if(width===1440)expect(new Set(boxes.map(b=>Math.round(b.y))).size).toBeLessThanOrEqual(2);
+ for(const label of await page.locator('.ty-log-text-filter').all()){const field=await label.boundingBox(),input=await label.locator('input').boundingBox();expect(input.y).toBeGreaterThanOrEqual(field.y);expect(input.y+input.height).toBeLessThanOrEqual(field.y+field.height);}const list=await page.locator('.ty-log-list').boundingBox();expect(list.y).toBeGreaterThan(Math.max(...boxes.map(b=>b.y+b.h)));
+ await page.getByLabel('From',{exact:true}).fill('2026-10-01');await page.getByRole('button',{name:'Fewer filters',exact:true}).click();await expect(page.getByLabel('Actor ID',{exact:true})).toBeHidden();await page.getByRole('button',{name:'More filters',exact:true}).click();await expect(page.getByLabel('From',{exact:true})).toHaveValue('2026-10-01');
+ await expect(page.locator('body')).toHaveJSProperty('scrollWidth',width);await page.screenshot({path:`/tmp/trialy-logs-${embedded?'plugin':'app'}-${width}.png`,fullPage:true});
+});

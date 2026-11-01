@@ -5,7 +5,7 @@
 Read [CONTEXT.md](CONTEXT.md) first. The six-step simple-app roadmap is implemented; release **0.2.39** adds unified app automation management and optional standard-tracker section permissions. [Current app configuration contract](docs/product/APP_CONFIGURATION_AND_AUTOMATIONS.md) · [Template authoring](templates/TEMPLATE_AUTHORING.md) · [Template usage](templates/TEMPLATE_USAGE.md).
 
 - Access keeps Projects → apps visible by default → optional expandable tabs. Missing section metadata is valid; app-level authorization always applies. No existing-app retrofit.
-- Automations lists existing research monitors and platform actions across apps, with reviewed editing, enable/disable and history. Editing preserves disabled state; archive suspends work without silently resuming on restore.
+- Automations lists existing research monitors and platform actions across apps, with direct reviewed editing and enable/disable. Release 0.2.40 keeps the list definition-only and full width; the shared daily runner remains backend infrastructure, and research/action run statuses are in app-filterable Logs. Editing preserves disabled state; archive suspends work without silently resuming on restore.
 - Shared ChatGPT setup is checked opportunistically without blocking apps. Instructions/timing live in TrialAgents, one owner/workspace subscription dispatches research, and TrialAgents sends approved email.
 - App continuity, exact writes, receipts, schema/access checks and user input preservation remain mandatory. High-reasoning/latest-model preferences are requested, not host-enforced settings.
 

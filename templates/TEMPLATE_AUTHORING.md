@@ -1,6 +1,6 @@
 # TrialAgents template authoring standard
 
-Version: 1.3.1
+Version: 1.3.2
 
 This is the living engineering contract for templates served by TrialAgents. Update it when a verified renderer, lifecycle or host-integration lesson changes. Retrieve the current copy with `read_app_template_guidance(resource:"authoring")`; follow `nextOffset` to the end. The response includes a version and content hash. Packaged plugin examples are not the catalog.
 
@@ -12,8 +12,16 @@ Every app keeps its backend app-level access boundary. Optional configuration mu
 - **Automation:** consider useful ongoing work, but zero automations is valid. Save the app first, then configure accepted research through `prepare_app_monitoring` or deterministic/email work through `prepare_app_action`. Reuse existing IDs and a stable app-specific authoringKey on retries. Consult `list_app_automations`, `read_app_automation`, and `read_app_automation_guide`. Research uses the shared ChatGPT runner; email always runs through TrialAgents. Do not create a ChatGPT task per app or send emails from ChatGPT. A configuration failure leaves the saved app intact.
 - **Setup:** quietly check `read_automation_setup` at first supported use, every app creation, adding an automation and reconnection/explicit repair. Complete missing already-authorized setup where supported; otherwise suggest the resumable handoff. Respect declined setup and deliberate pauses. Reuse a verified subscription; never fabricate host IDs or callbacks. Prefer a supported Work chat, high reasoning, and the latest highest-capability model available in the user's subscription. Current task tools have no model/reasoning parameters: report the requested preference separately from observed host settings, and never claim an automatic model upgrade.
 - **Documentation:** each new template documents purpose, stable sections/inheritance or app-only access, optional data/connector bindings, automation mode (`none` is legitimate), executor, timing/timezone, exact prompt or action, sources, destinations, expiry/limits, write permissions, no-result/failure behavior and disable/edit/history. Include both an automation example when useful and a no-automation example. User management and ChatGPT use the same versioned definitions and review path.
-- **Continuity:** definitions stay listed and editable when disabled. Saving does not re-enable them. No standalone automation Delete action. No automation reads on app loading, navigation or ordinary saves; no scheduler failure banners inside generated apps. Never erase records or local input on task failure. Diagnostics belong in platform Automations.
+- **Continuity:** definitions stay listed and editable when disabled. Saving does not re-enable them. No standalone automation Delete action. No automation reads on app loading, navigation or ordinary saves; no scheduler failure banners inside generated apps. Never erase records or local input on task failure. Run outcomes belong in platform Logs; setup diagnostics stay in the private connection/setup flow.
 
+
+## Automation management and Logs presentation
+
+Keep the platform Automations page full width and limited to app-linked definitions (including database-triggered actions). Each item shows its linked app, Trigger or Scheduled with readable frequency/timezone, and the research prompt or typed action instructions, with Disable/Enable and Edit. Load full configuration only on Edit. Preserve validation, exact review and disabled state. A genuinely empty list has only a concise empty message, without filters, pagination, setup controls or run history.
+
+The shared daily ChatGPT check is backend infrastructure independent of per-app definitions. Do not duplicate it as an automation row or embed its settings under the list. Use the existing private setup review and connection tools. Direct users to Automations for instructions and to Logs for run statuses. Logs filters by app, project, outcome and category; CSV uses the same filters. New writes carry verified app context; older unattributed events are not guessed from shared database membership. Private prompts, payloads and diagnostics are not released by log metadata.
+
+Additional filters belong in normal document flow, alongside the main row when space allows or wrapping into a second row. Avoid overlapping popovers or vertically stacked dropdown panels. On narrow screens allow fields to wrap, keep labels/inputs inside their controls, and preserve a single page scroll owner. Apply these rules to both standalone and embedded surfaces.
 
 ## Required configuration handoff for every future template
 
@@ -121,7 +129,7 @@ Recurring research, analysis and reporting can benefit any app. Declare task opp
 
 Use platform background actions for deterministic recurring, dated or database-triggered operations. Use the shared ChatGPT runner for research/reasoning when the host supports events. Instructions and executable timing live in TrialAgents; never create a task per template. Use durable connector jobs for LLM/API calls that outlast interactive request limits. Notifications use the platform email service with reviewed recipients and purpose. Never embed provider keys or send emails directly from a template.
 
-A template must work fully without a task. Never wait for automation status before showing or saving the app; failures belong only in owner settings/history. Test callback, scheduling and research failure while the app retains its current frame and unsaved input. Task creation, reads, writes, delivery and paid/external actions each need their own applicable authorization. Do not imply that a task was activated merely because template metadata includes a schedule suggestion.
+A template must work fully without a task. Never wait for automation status before showing or saving the app; failures belong only in owner-authorized Logs or private setup diagnostics. Test callback, scheduling and research failure while the app retains its current frame and unsaved input. Task creation, reads, writes, delivery and paid/external actions each need their own applicable authorization. Do not imply that a task was activated merely because template metadata includes a schedule suggestion.
 
 ## Acceptance and maintenance
 
