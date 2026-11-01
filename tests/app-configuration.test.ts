@@ -69,3 +69,13 @@ test('Logs attribute app writes and automation runs, filter before pagination, a
  const denied=await activityPage(db,{...a,origin:'ai'},w,{appId:app.id});assert.equal(denied.rows.length,0);assert.ok(!denied.apps.some(c=>c.id===app.id));
  const otherSpace=await s.createWorkspace(a,'Other account');assert.equal((await activityPage(db,a,otherSpace.id,{appId:app.id})).rows.length,0);
 });
+
+test('automation options inherit app bindings and only expose authorized team members',async t=>{
+ const {db,a,b,s,w,save,change}=await fixture(t),manage=new AutomationManagement(db);
+ const type=(await save({kind:'create_type',name:'Signals',fields:[{key:'name',name:'Name',kind:'text',ai:true},{key:'secret',name:'Secret',kind:'text',ai:true}]})).objects[0].id;
+ const app=await change({kind:'save_component',content:{name:'Signals app',format:'frontend-js',sourceAccess:'bindings',bindings:[{typeId:type,fields:['name']}],source:'return {html:"<p>Signals</p>"};'}});
+ const before=await manage.options(a,w,app.id);assert.equal(before.owner.id,a.userId);assert.deepEqual(before.tables[0].fields.map((f:any)=>f.key),['name']);assert.equal(before.members.length,0);assert.deepEqual(before.writeScopes,[]);
+ await s.share(a,w,b.userId,'editor',[],null,true);assert.equal((await manage.options(a,w,app.id)).members[0].id,b.userId);await assert.rejects(manage.options(b,w,app.id),/owner/);
+ const research=new AppMonitoring(db),config={name:'Bound research',appId:app.id,inheritAppAccess:true,objective:'Review signals',instructions:'Review signals',sourcePolicy:'Primary sources',schedule:{description:'Daily',timeZone:'UTC'},expiresAt:new Date(Date.now()+86400000).toISOString(),readBindings:[{typeId:type,fields:['secret']}]};
+ await assert.rejects(research.prepare(a,w,{config}),/linked app access/);await research.prepare(a,w,{config:{...config,readBindings:[{typeId:type,fields:['name']}]}});
+});
