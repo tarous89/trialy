@@ -1,0 +1,815 @@
+{
+  "notice": "All records, publication titles, DOIs and research findings in this file are fictional illustrations. DOIs are invalid demonstrations; never resolve or publish these as real science. These examples are never seeded to TrialAgents.",
+  "records": [
+    {
+      "id": "topic-rna",
+      "role": "topics",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "RNA delivery analytics",
+        "question": "Which nonclinical formulation and characterization methods improve interpretability of lipid RNA delivery results?",
+        "keywords": "lipid nanoparticles, RNA delivery, formulation analytics",
+        "excludeTerms": "patient outcomes, clinical adverse events",
+        "sourceScope": "Public PubMed metadata, journal publisher record, DOI resolver",
+        "startYear": 2022,
+        "owner": "Translational research lead",
+        "rubric": "High: analytical methods with recorded assay and validation scope; Medium: relevant mechanistic studies; Low: background context.",
+        "scopeVersion": 2,
+        "lastChecked": "2026-10-31",
+        "active": true
+      }
+    },
+    {
+      "id": "topic-protein",
+      "role": "topics",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Protein stability methods",
+        "question": "How do nonclinical stability assay designs handle controls and repeatability?",
+        "keywords": "protein stability, thermal shift, assay robustness",
+        "excludeTerms": "individual patient data",
+        "sourceScope": "Public journal pages and DOI records",
+        "startYear": 2021,
+        "owner": "Biochemistry lead",
+        "rubric": "Include methods with explicit controls and temperature/time conditions.",
+        "scopeVersion": 1,
+        "lastChecked": "2026-10-27",
+        "active": true
+      }
+    },
+    {
+      "id": "topic-organoid",
+      "role": "topics",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Organoid model reproducibility",
+        "question": "Which nonclinical culture and readout designs best document inter-lab organoid reproducibility?",
+        "keywords": "organoid reproducibility, standardization, assay methods",
+        "excludeTerms": "identifiable human specimens",
+        "sourceScope": "PubMed bibliographic records and public preprint metadata",
+        "startYear": 2023,
+        "owner": "Discovery scientist",
+        "rubric": "Prioritize methodological transparency and evidence strength.",
+        "scopeVersion": 1,
+        "lastChecked": "2026-10-12",
+        "active": true
+      }
+    },
+    {
+      "id": "topic-sensors",
+      "role": "topics",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Biosensor quality assessment",
+        "question": "What bench quality controls are reported for fluorescence biosensors?",
+        "keywords": "fluorescence biosensor, analytical validation",
+        "excludeTerms": "clinical diagnostic patient records",
+        "sourceScope": "Public journal metadata",
+        "startYear": 2023,
+        "owner": "Analytical scientist",
+        "rubric": "Prefer recorded controls and reproducibility data.",
+        "scopeVersion": 1,
+        "lastChecked": "",
+        "active": false
+      }
+    },
+    {
+      "id": "p1",
+      "role": "publications",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Comparing particle-size characterization strategies in model RNA formulations",
+        "authors": "A. Ellis; M. Rowe",
+        "journal": "Journal of Fictional Methods",
+        "publishedAt": "2026-09-18",
+        "doi": "10.0000/fictional-rna-01",
+        "pmid": "",
+        "url": "https://example.org/fictional-publication/p1",
+        "verifiedAt": "2026-10-31",
+        "firstSeenAt": "2026-10-31",
+        "sourceLabel": "FICTIONAL DEMO bibliographic record",
+        "abstract": "Fictional metadata written for interface testing only; no scientific claim or source text is real."
+      }
+    },
+    {
+      "id": "p2",
+      "role": "publications",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Batch variability in preclinical RNA delivery assays",
+        "authors": "N. Grant; D. Lee",
+        "journal": "Nonclinical Analytical Review",
+        "publishedAt": "2026-07-03",
+        "doi": "10.0000/fictional-rna-02",
+        "pmid": "",
+        "url": "https://example.org/fictional-publication/p2",
+        "verifiedAt": "2026-10-30",
+        "firstSeenAt": "2026-10-30",
+        "sourceLabel": "FICTIONAL DEMO bibliographic record",
+        "abstract": "Fictional metadata written for interface testing only; no scientific claim or source text is real."
+      }
+    },
+    {
+      "id": "p3",
+      "role": "publications",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "In vitro carrier release: analytical readout comparison",
+        "authors": "R. Imani; P. Holt",
+        "journal": "Methods in Demonstration Science",
+        "publishedAt": "2026-10-17",
+        "doi": "10.0000/fictional-rna-03",
+        "pmid": "",
+        "url": "https://example.org/fictional-publication/p3",
+        "verifiedAt": "2026-11-01",
+        "firstSeenAt": "2026-11-01",
+        "sourceLabel": "FICTIONAL DEMO bibliographic record",
+        "abstract": "Fictional metadata written for interface testing only; no scientific claim or source text is real."
+      }
+    },
+    {
+      "id": "p4",
+      "role": "publications",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Nonclinical uptake assays across fluorescent probe conditions",
+        "authors": "C. Mason; T. Wells",
+        "journal": "Fictional Bioanalytics",
+        "publishedAt": "2026-08-12",
+        "doi": "10.0000/fictional-rna-04",
+        "pmid": "",
+        "url": "https://example.org/fictional-publication/p4",
+        "verifiedAt": "2026-10-29",
+        "firstSeenAt": "2026-10-29",
+        "sourceLabel": "FICTIONAL DEMO bibliographic record",
+        "abstract": "Fictional metadata written for interface testing only; no scientific claim or source text is real."
+      }
+    },
+    {
+      "id": "p5",
+      "role": "publications",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Normalization approaches for particle concentration measures",
+        "authors": "E. Ferris; K. Zhou",
+        "journal": "Demonstration Lab Studies",
+        "publishedAt": "2025-12-08",
+        "doi": "10.0000/fictional-rna-05",
+        "pmid": "",
+        "url": "https://example.org/fictional-publication/p5",
+        "verifiedAt": "2026-10-14",
+        "firstSeenAt": "2026-10-14",
+        "sourceLabel": "FICTIONAL DEMO bibliographic record",
+        "abstract": "Fictional metadata written for interface testing only; no scientific claim or source text is real."
+      }
+    },
+    {
+      "id": "p6",
+      "role": "publications",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Study design for analytical assay cross-platform comparability",
+        "authors": "J. Osborne; M. Singh",
+        "journal": "Fictional Methods Quarterly",
+        "publishedAt": "2026-06-21",
+        "doi": "10.0000/fictional-rna-06",
+        "pmid": "",
+        "url": "https://example.org/fictional-publication/p6",
+        "verifiedAt": "2026-10-09",
+        "firstSeenAt": "2026-10-09",
+        "sourceLabel": "FICTIONAL DEMO bibliographic record",
+        "abstract": "Fictional metadata written for interface testing only; no scientific claim or source text is real."
+      }
+    },
+    {
+      "id": "p7",
+      "role": "publications",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Repeatability assessments in thermal shift assays",
+        "authors": "H. Nolan; P. West",
+        "journal": "Demonstration Protein Methods",
+        "publishedAt": "2026-04-09",
+        "doi": "10.0000/fictional-prot-01",
+        "pmid": "",
+        "url": "https://example.org/fictional-publication/p7",
+        "verifiedAt": "2026-10-27",
+        "firstSeenAt": "2026-10-27",
+        "sourceLabel": "FICTIONAL DEMO bibliographic record",
+        "abstract": "Fictional metadata written for interface testing only; no scientific claim or source text is real."
+      }
+    },
+    {
+      "id": "p8",
+      "role": "publications",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Reference controls for enzyme stability experiments",
+        "authors": "S. Clarke; A. Beck",
+        "journal": "Fictional Biochemistry Reports",
+        "publishedAt": "2025-11-10",
+        "doi": "10.0000/fictional-prot-02",
+        "pmid": "",
+        "url": "https://example.org/fictional-publication/p8",
+        "verifiedAt": "2026-10-21",
+        "firstSeenAt": "2026-10-21",
+        "sourceLabel": "FICTIONAL DEMO bibliographic record",
+        "abstract": "Fictional metadata written for interface testing only; no scientific claim or source text is real."
+      }
+    },
+    {
+      "id": "p9",
+      "role": "publications",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Batch tracking methods for model protein lots",
+        "authors": "P. Lee; J. Ku",
+        "journal": "Journal of Example Experiments",
+        "publishedAt": "2026-02-13",
+        "doi": "10.0000/fictional-prot-03",
+        "pmid": "",
+        "url": "https://example.org/fictional-publication/p9",
+        "verifiedAt": "2026-10-20",
+        "firstSeenAt": "2026-10-20",
+        "sourceLabel": "FICTIONAL DEMO bibliographic record",
+        "abstract": "Fictional metadata written for interface testing only; no scientific claim or source text is real."
+      }
+    },
+    {
+      "id": "p10",
+      "role": "publications",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Qualitative scoring frameworks for organoid assay validation",
+        "authors": "K. Ahn; P. Ford",
+        "journal": "Example Organoid Journal",
+        "publishedAt": "2026-05-15",
+        "doi": "10.0000/fictional-org-01",
+        "pmid": "",
+        "url": "https://example.org/fictional-publication/p10",
+        "verifiedAt": "2026-10-10",
+        "firstSeenAt": "2026-10-10",
+        "sourceLabel": "FICTIONAL DEMO bibliographic record",
+        "abstract": "Fictional metadata written for interface testing only; no scientific claim or source text is real."
+      }
+    },
+    {
+      "id": "p11",
+      "role": "publications",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Cross-laboratory documentation patterns for organoid assays",
+        "authors": "R. Brooks; L. Chen",
+        "journal": "Fictional Tissue Methods",
+        "publishedAt": "2026-09-21",
+        "doi": "10.0000/fictional-org-02",
+        "pmid": "",
+        "url": "https://example.org/fictional-publication/p11",
+        "verifiedAt": "2026-10-12",
+        "firstSeenAt": "2026-10-12",
+        "sourceLabel": "FICTIONAL DEMO bibliographic record",
+        "abstract": "Fictional metadata written for interface testing only; no scientific claim or source text is real."
+      }
+    },
+    {
+      "id": "p12",
+      "role": "publications",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Instrument acceptance tests for optical biosensors",
+        "authors": "G. Patel; C. Vale",
+        "journal": "Example Sensors Methods",
+        "publishedAt": "2026-03-11",
+        "doi": "10.0000/fictional-sens-01",
+        "pmid": "",
+        "url": "https://example.org/fictional-publication/p12",
+        "verifiedAt": "2026-09-23",
+        "firstSeenAt": "2026-09-23",
+        "sourceLabel": "FICTIONAL DEMO bibliographic record",
+        "abstract": "Fictional metadata written for interface testing only; no scientific claim or source text is real."
+      }
+    },
+    {
+      "id": "match-1",
+      "role": "matches",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Matched: p1",
+        "topicId": "topic-rna",
+        "publicationId": "p1",
+        "relevance": "High",
+        "rationale": "Fictional demonstration relevance classification; no automated claim.",
+        "discoveredAt": "2026-10-11",
+        "scopeVersion": 2
+      }
+    },
+    {
+      "id": "match-2",
+      "role": "matches",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Matched: p2",
+        "topicId": "topic-rna",
+        "publicationId": "p2",
+        "relevance": "High",
+        "rationale": "Fictional demonstration relevance classification; no automated claim.",
+        "discoveredAt": "2026-10-12",
+        "scopeVersion": 2
+      }
+    },
+    {
+      "id": "match-3",
+      "role": "matches",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Matched: p3",
+        "topicId": "topic-rna",
+        "publicationId": "p3",
+        "relevance": "High",
+        "rationale": "Fictional demonstration relevance classification; no automated claim.",
+        "discoveredAt": "2026-11-01",
+        "scopeVersion": 2
+      }
+    },
+    {
+      "id": "match-4",
+      "role": "matches",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Matched: p4",
+        "topicId": "topic-rna",
+        "publicationId": "p4",
+        "relevance": "Medium",
+        "rationale": "Fictional demonstration relevance classification; no automated claim.",
+        "discoveredAt": "2026-10-14",
+        "scopeVersion": 2
+      }
+    },
+    {
+      "id": "match-5",
+      "role": "matches",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Matched: p5",
+        "topicId": "topic-rna",
+        "publicationId": "p5",
+        "relevance": "Medium",
+        "rationale": "Fictional demonstration relevance classification; no automated claim.",
+        "discoveredAt": "2026-10-15",
+        "scopeVersion": 2
+      }
+    },
+    {
+      "id": "match-6",
+      "role": "matches",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Matched: p6",
+        "topicId": "topic-rna",
+        "publicationId": "p6",
+        "relevance": "Low",
+        "rationale": "Fictional demonstration relevance classification; no automated claim.",
+        "discoveredAt": "2026-10-16",
+        "scopeVersion": 2
+      }
+    },
+    {
+      "id": "match-7",
+      "role": "matches",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Matched: p7",
+        "topicId": "topic-protein",
+        "publicationId": "p7",
+        "relevance": "High",
+        "rationale": "Fictional demonstration relevance classification; no automated claim.",
+        "discoveredAt": "2026-10-17",
+        "scopeVersion": 1
+      }
+    },
+    {
+      "id": "match-8",
+      "role": "matches",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Matched: p8",
+        "topicId": "topic-protein",
+        "publicationId": "p8",
+        "relevance": "High",
+        "rationale": "Fictional demonstration relevance classification; no automated claim.",
+        "discoveredAt": "2026-10-18",
+        "scopeVersion": 1
+      }
+    },
+    {
+      "id": "match-9",
+      "role": "matches",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Matched: p9",
+        "topicId": "topic-protein",
+        "publicationId": "p9",
+        "relevance": "Medium",
+        "rationale": "Fictional demonstration relevance classification; no automated claim.",
+        "discoveredAt": "2026-10-19",
+        "scopeVersion": 1
+      }
+    },
+    {
+      "id": "match-10",
+      "role": "matches",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Matched: p10",
+        "topicId": "topic-organoid",
+        "publicationId": "p10",
+        "relevance": "Medium",
+        "rationale": "Fictional demonstration relevance classification; no automated claim.",
+        "discoveredAt": "2026-10-20",
+        "scopeVersion": 1
+      }
+    },
+    {
+      "id": "match-11",
+      "role": "matches",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Matched: p11",
+        "topicId": "topic-organoid",
+        "publicationId": "p11",
+        "relevance": "High",
+        "rationale": "Fictional demonstration relevance classification; no automated claim.",
+        "discoveredAt": "2026-10-21",
+        "scopeVersion": 1
+      }
+    },
+    {
+      "id": "match-12",
+      "role": "matches",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Matched: p12",
+        "topicId": "topic-sensors",
+        "publicationId": "p12",
+        "relevance": "High",
+        "rationale": "Fictional demonstration relevance classification; no automated claim.",
+        "discoveredAt": "2026-10-22",
+        "scopeVersion": 1
+      }
+    },
+    {
+      "id": "screen-p1",
+      "role": "screenings",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Screen p1",
+        "topicId": "topic-rna",
+        "publicationId": "p1",
+        "stage": "Included",
+        "decision": "Include",
+        "reviewer": "Research scientist A",
+        "due": "2026-10-31",
+        "reviewedAt": "2026-10-31",
+        "priority": "High",
+        "rationale": "Relevant to nonclinical formulation analytics; simulated review.",
+        "notes": "Fictional screening workspace evidence."
+      }
+    },
+    {
+      "id": "screen-p2",
+      "role": "screenings",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Screen p2",
+        "topicId": "topic-rna",
+        "publicationId": "p2",
+        "stage": "Included",
+        "decision": "Include",
+        "reviewer": "Research scientist B",
+        "due": "2026-10-31",
+        "reviewedAt": "2026-10-31",
+        "priority": "High",
+        "rationale": "Includes instrument variability; fictional demonstration.",
+        "notes": "Fictional screening workspace evidence."
+      }
+    },
+    {
+      "id": "screen-p3",
+      "role": "screenings",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Screen p3",
+        "topicId": "topic-rna",
+        "publicationId": "p3",
+        "stage": "New",
+        "decision": "Uncertain",
+        "reviewer": "",
+        "due": "2026-11-04",
+        "reviewedAt": "",
+        "priority": "High",
+        "rationale": "",
+        "notes": "Fictional screening workspace evidence."
+      }
+    },
+    {
+      "id": "screen-p4",
+      "role": "screenings",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Screen p4",
+        "topicId": "topic-rna",
+        "publicationId": "p4",
+        "stage": "Reading",
+        "decision": "Uncertain",
+        "reviewer": "Research scientist A",
+        "due": "2026-11-04",
+        "reviewedAt": "",
+        "priority": "Medium",
+        "rationale": "",
+        "notes": "Fictional screening workspace evidence."
+      }
+    },
+    {
+      "id": "screen-p5",
+      "role": "screenings",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Screen p5",
+        "topicId": "topic-rna",
+        "publicationId": "p5",
+        "stage": "Excluded",
+        "decision": "Exclude",
+        "reviewer": "Research scientist B",
+        "due": "2026-10-31",
+        "reviewedAt": "2026-10-19",
+        "priority": "Medium",
+        "rationale": "Excluded as overly generic for this topic; fictional review.",
+        "notes": "Fictional screening workspace evidence."
+      }
+    },
+    {
+      "id": "screen-p6",
+      "role": "screenings",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Screen p6",
+        "topicId": "topic-rna",
+        "publicationId": "p6",
+        "stage": "Reviewed",
+        "decision": "Uncertain",
+        "reviewer": "Research scientist A",
+        "due": "2026-10-31",
+        "reviewedAt": "2026-10-20",
+        "priority": "Low",
+        "rationale": "Needs full methods examination; no inclusion decision.",
+        "notes": "Fictional screening workspace evidence."
+      }
+    },
+    {
+      "id": "screen-p7",
+      "role": "screenings",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Screen p7",
+        "topicId": "topic-protein",
+        "publicationId": "p7",
+        "stage": "Included",
+        "decision": "Include",
+        "reviewer": "Biochemistry lead",
+        "due": "2026-10-31",
+        "reviewedAt": "2026-10-28",
+        "priority": "High",
+        "rationale": "Controls are relevant to the test question.",
+        "notes": "Fictional screening workspace evidence."
+      }
+    },
+    {
+      "id": "screen-p8",
+      "role": "screenings",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Screen p8",
+        "topicId": "topic-protein",
+        "publicationId": "p8",
+        "stage": "Reading",
+        "decision": "Uncertain",
+        "reviewer": "Biochemistry lead",
+        "due": "2026-11-04",
+        "reviewedAt": "",
+        "priority": "Medium",
+        "rationale": "",
+        "notes": "Fictional screening workspace evidence."
+      }
+    },
+    {
+      "id": "screen-p10",
+      "role": "screenings",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Screen p10",
+        "topicId": "topic-organoid",
+        "publicationId": "p10",
+        "stage": "New",
+        "decision": "Uncertain",
+        "reviewer": "",
+        "due": "2026-11-04",
+        "reviewedAt": "",
+        "priority": "Medium",
+        "rationale": "",
+        "notes": "Fictional screening workspace evidence."
+      }
+    },
+    {
+      "id": "screen-p11",
+      "role": "screenings",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Screen p11",
+        "topicId": "topic-organoid",
+        "publicationId": "p11",
+        "stage": "Included",
+        "decision": "Include",
+        "reviewer": "Discovery scientist",
+        "due": "2026-10-31",
+        "reviewedAt": "2026-10-13",
+        "priority": "High",
+        "rationale": "Reproducibility methods relevant to the topic.",
+        "notes": "Fictional screening workspace evidence."
+      }
+    },
+    {
+      "id": "finding-1",
+      "role": "findings",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Instrument comparability requires defined controls",
+        "topicId": "topic-rna",
+        "publicationId": "p1",
+        "claim": "Example finding: in test data, instrument settings should be explicitly documented.",
+        "limitations": "Fictional finding; no real published support; validation required before reuse.",
+        "source": "DEMO Source p1, section Methods",
+        "reviewer": "Research scientist A",
+        "reviewedAt": "2026-10-31",
+        "status": "Reviewed"
+      }
+    },
+    {
+      "id": "finding-2",
+      "role": "findings",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Batch variability remains a key uncertainty",
+        "topicId": "topic-rna",
+        "publicationId": "p2",
+        "claim": "Example finding: batch variability should be considered when selecting assay methods.",
+        "limitations": "Illustrative review only. No true scientific results.",
+        "source": "DEMO Source p2, section Results",
+        "reviewer": "Research scientist B",
+        "reviewedAt": "2026-10-31",
+        "status": "Reviewed"
+      }
+    },
+    {
+      "id": "finding-3",
+      "role": "findings",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Organoid methods overview awaiting review",
+        "topicId": "topic-organoid",
+        "publicationId": "p11",
+        "claim": "Potential study design considerations pending human review.",
+        "limitations": "Needs reviewer confirmation.",
+        "source": "",
+        "reviewer": "",
+        "reviewedAt": "",
+        "status": "Draft"
+      }
+    },
+    {
+      "id": "rep-rna",
+      "role": "reports",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "RNA delivery analytical landscape · October",
+        "topicId": "topic-rna",
+        "cutoff": "2026-10-31",
+        "status": "Reviewed",
+        "author": "Translational research lead",
+        "reviewedAt": "2026-10-31",
+        "references": "p1, p2",
+        "body": "Fictional demonstration synthesis based on included, source-linked example records p1 and p2. A robust analytics discussion would compare the characterization method, assay controls and variability with exact source citations. No claims here represent actual literature.",
+        "limitations": "All examples are fictional. Metadata and review decisions require verification. Full text not assumed accessible; no scientific efficacy or statistical inference."
+      }
+    },
+    {
+      "id": "rep-protein",
+      "role": "reports",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Protein stability methods · draft",
+        "topicId": "topic-protein",
+        "cutoff": "2026-10-28",
+        "status": "Draft",
+        "author": "Biochemistry lead",
+        "reviewedAt": "",
+        "references": "p7",
+        "body": "Draft for source review: compare controls and replicate reporting in assay papers.",
+        "limitations": "Unreviewed draft; no findings validated."
+      }
+    },
+    {
+      "id": "run-1",
+      "role": "runs",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "RNA delivery manual check",
+        "topicId": "topic-rna",
+        "status": "completed",
+        "startedAt": "2026-10-31",
+        "completedAt": "2026-10-31",
+        "foundCount": 5,
+        "savedCount": 2,
+        "summary": "Fictional manually recorded demonstration run; two example bibliographic entries. No automation was activated or externally verified.",
+        "source": "Fictional public search simulation"
+      }
+    },
+    {
+      "id": "run-2",
+      "role": "runs",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Protein stability review",
+        "topicId": "topic-protein",
+        "status": "no_update",
+        "startedAt": "2026-10-27",
+        "completedAt": "2026-10-27",
+        "foundCount": 3,
+        "savedCount": 0,
+        "summary": "Fictional check with no newly saved records.",
+        "source": "Fictional public search simulation"
+      }
+    },
+    {
+      "id": "run-3",
+      "role": "runs",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Organoid methods first scan",
+        "topicId": "topic-organoid",
+        "status": "completed",
+        "startedAt": "2026-10-12",
+        "completedAt": "2026-10-12",
+        "foundCount": 3,
+        "savedCount": 2,
+        "summary": "Fictional initial research; two new saved entries after human review.",
+        "source": "Fictional public search simulation"
+      }
+    }
+  ]
+}

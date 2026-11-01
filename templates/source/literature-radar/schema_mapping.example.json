@@ -1,0 +1,754 @@
+{
+  "topics": {
+    "name": "topics",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "question",
+        "name": "question",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "keywords",
+        "name": "keywords",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "exclude_terms",
+        "name": "exclude_terms",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source_scope",
+        "name": "source_scope",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "start_year",
+        "name": "start_year",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "rubric",
+        "name": "rubric",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "scope_version",
+        "name": "scope_version",
+        "kind": "number",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "last_checked",
+        "name": "last_checked",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "active",
+        "name": "active",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "question": "question",
+      "keywords": "keywords",
+      "excludeTerms": "exclude_terms",
+      "sourceScope": "source_scope",
+      "startYear": "start_year",
+      "owner": "owner",
+      "rubric": "rubric",
+      "scopeVersion": "scope_version",
+      "lastChecked": "last_checked",
+      "active": "active",
+      "archived": "archived"
+    }
+  },
+  "publications": {
+    "name": "publications",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "authors",
+        "name": "authors",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "journal",
+        "name": "journal",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "published_at",
+        "name": "published_at",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "doi",
+        "name": "doi",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "pmid",
+        "name": "pmid",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "url",
+        "name": "url",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "verified_at",
+        "name": "verified_at",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "first_seen_at",
+        "name": "first_seen_at",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source_label",
+        "name": "source_label",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "abstract",
+        "name": "abstract",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "authors": "authors",
+      "journal": "journal",
+      "publishedAt": "published_at",
+      "doi": "doi",
+      "pmid": "pmid",
+      "url": "url",
+      "verifiedAt": "verified_at",
+      "firstSeenAt": "first_seen_at",
+      "sourceLabel": "source_label",
+      "abstract": "abstract",
+      "archived": "archived"
+    }
+  },
+  "matches": {
+    "name": "matches",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "topic_id",
+        "name": "topic_id",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "publication_id",
+        "name": "publication_id",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "relevance",
+        "name": "relevance",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Unassessed",
+          "High",
+          "Medium",
+          "Low"
+        ]
+      },
+      {
+        "key": "rationale",
+        "name": "rationale",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "discovered_at",
+        "name": "discovered_at",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "scope_version",
+        "name": "scope_version",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "topicId": "topic_id",
+      "publicationId": "publication_id",
+      "relevance": "relevance",
+      "rationale": "rationale",
+      "discoveredAt": "discovered_at",
+      "scopeVersion": "scope_version",
+      "archived": "archived"
+    }
+  },
+  "screenings": {
+    "name": "screenings",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "topic_id",
+        "name": "topic_id",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "publication_id",
+        "name": "publication_id",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "stage",
+        "name": "stage",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "New",
+          "Reading",
+          "Reviewed",
+          "Included",
+          "Excluded"
+        ]
+      },
+      {
+        "key": "decision",
+        "name": "decision",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Uncertain",
+          "Include",
+          "Exclude"
+        ]
+      },
+      {
+        "key": "reviewer",
+        "name": "reviewer",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "due",
+        "name": "due",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "reviewed_at",
+        "name": "reviewed_at",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "priority",
+        "name": "priority",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "High",
+          "Medium",
+          "Low"
+        ]
+      },
+      {
+        "key": "rationale",
+        "name": "rationale",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "topicId": "topic_id",
+      "publicationId": "publication_id",
+      "stage": "stage",
+      "decision": "decision",
+      "reviewer": "reviewer",
+      "due": "due",
+      "reviewedAt": "reviewed_at",
+      "priority": "priority",
+      "rationale": "rationale",
+      "notes": "notes",
+      "archived": "archived"
+    }
+  },
+  "findings": {
+    "name": "findings",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "topic_id",
+        "name": "topic_id",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "publication_id",
+        "name": "publication_id",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "claim",
+        "name": "claim",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "limitations",
+        "name": "limitations",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source",
+        "name": "source",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "reviewer",
+        "name": "reviewer",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "reviewed_at",
+        "name": "reviewed_at",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Draft",
+          "Reviewed"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "topicId": "topic_id",
+      "publicationId": "publication_id",
+      "claim": "claim",
+      "limitations": "limitations",
+      "source": "source",
+      "reviewer": "reviewer",
+      "reviewedAt": "reviewed_at",
+      "status": "status",
+      "archived": "archived"
+    }
+  },
+  "reports": {
+    "name": "reports",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "topic_id",
+        "name": "topic_id",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "cutoff",
+        "name": "cutoff",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Draft",
+          "Reviewed"
+        ]
+      },
+      {
+        "key": "author",
+        "name": "author",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "reviewed_at",
+        "name": "reviewed_at",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "references",
+        "name": "references",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "body",
+        "name": "body",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "limitations",
+        "name": "limitations",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "topicId": "topic_id",
+      "cutoff": "cutoff",
+      "status": "status",
+      "author": "author",
+      "reviewedAt": "reviewed_at",
+      "references": "references",
+      "body": "body",
+      "limitations": "limitations",
+      "archived": "archived"
+    }
+  },
+  "runs": {
+    "name": "runs",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "topic_id",
+        "name": "topic_id",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "completed",
+          "no_update",
+          "partial",
+          "failed"
+        ]
+      },
+      {
+        "key": "started_at",
+        "name": "started_at",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "completed_at",
+        "name": "completed_at",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "found_count",
+        "name": "found_count",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "saved_count",
+        "name": "saved_count",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "summary",
+        "name": "summary",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source",
+        "name": "source",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "topicId": "topic_id",
+      "status": "status",
+      "startedAt": "started_at",
+      "completedAt": "completed_at",
+      "foundCount": "found_count",
+      "savedCount": "saved_count",
+      "summary": "summary",
+      "source": "source",
+      "archived": "archived"
+    }
+  }
+}
