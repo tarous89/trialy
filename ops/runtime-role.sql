@@ -73,3 +73,12 @@ GRANT UPDATE(read_access) ON app_runtime_views TO trialy_runtime;
 
 GRANT SELECT,INSERT,UPDATE ON automation_runners,automation_subscriptions,automation_dispatch,automation_occurrences,automation_outbox TO trialy_runtime;
 GRANT SELECT,INSERT ON automation_attempts TO trialy_runtime;
+
+-- App email batches are account scoped; global sending budgets are worker-only.
+GRANT SELECT,INSERT,UPDATE ON app_notification_batches,app_notification_items,app_notification_occurrences,app_notification_recipients TO trialy_runtime;
+GRANT DELETE ON app_notification_items TO trialy_runtime;
+GRANT SELECT ON app_notification_guard,app_notification_allowances,app_notification_reservations TO trialy_worker;
+GRANT UPDATE(id) ON app_notification_guard TO trialy_worker;
+GRANT INSERT,UPDATE ON app_notification_reservations TO trialy_worker;
+
+GRANT SELECT,INSERT,UPDATE ON app_notification_account_locks TO trialy_runtime;

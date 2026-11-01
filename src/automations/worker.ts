@@ -76,9 +76,9 @@ export async function dispatchCompletions(db:Database){
    const db=adapter(tx),a={userId:o.user_id,origin:'ai' as const},monitor=await new AppMonitoring(db).row(a,o.workspace_id,o.monitor_id),r=(await tx.query('SELECT enabled FROM automation_runners WHERE id=$1',[o.runner_id])).rows[0];
    if(!r?.enabled||!monitor.enabled||monitor.version!==o.monitor_version)throw Error('paused_or_changed');
    const actions=new AppActions(db),action=await actions.row(a,o.workspace_id,o.completion_action_id);if(action.version!==o.completion_action_version)throw Error('action_changed');
-   const run=await actions.enqueue(a,o.workspace_id,action.id,'automation:'+o.id);await tx.query('UPDATE app_action_runs SET results=$2 WHERE id=$1 AND step=0 AND status=$3',[run.id,J({research:{summary:o.result.summary,sources:o.result.sources??[],receiptIds:o.result.receiptIds??[]}}),'queued']);
+   const research={research:{summary:o.result.summary,sources:o.result.sources??[],receiptIds:o.result.receiptIds??[]}};const run=await actions.enqueue(a,o.workspace_id,action.id,'automation:'+o.id,undefined,[],research);if(!run.notification)await tx.query('UPDATE app_action_runs SET results=$2 WHERE id=$1 AND step=0 AND status=$3',[run.id,J(research),'queued']);
    await tx.query('UPDATE automation_occurrences SET completion_dispatched_at=now() WHERE id=$1',[o.id]);await tx.query('RELEASE SAVEPOINT completion_dispatch');
-  }catch{await tx.query('ROLLBACK TO SAVEPOINT completion_dispatch');await tx.query("UPDATE automation_occurrences SET completion_dispatched_at=now(),result=result||$2::jsonb WHERE id=$1",[o.id,J({deliveryStatus:'blocked',deliveryNote:'Follow-up action needs owner review; research and saved data are retained.'})]);}
+  }catch(e:any){await tx.query('ROLLBACK TO SAVEPOINT completion_dispatch');if(e.status===429)return true;await tx.query("UPDATE automation_occurrences SET completion_dispatched_at=now(),result=result||$2::jsonb WHERE id=$1",[o.id,J({deliveryStatus:'blocked',deliveryNote:'Follow-up action needs owner review; research and saved data are retained.'})]);}
   return true;
  }));
 }

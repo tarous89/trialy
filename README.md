@@ -2,6 +2,8 @@
 
 ## Current implementation — 1 November 2026
 
+Release **0.2.41** implements [simple automations and notification guardrails](docs/scopes/NOTIFICATION_GUARDRAILS_2026-11-01.md): daily-or-slower scheduled email, explicit database conditions, two-minute settling, current access/state checks, one email per person/hour and 15 recipient deliveries/account/day. ChatGPT processing remains independent. The minimal editor hides backend controls. Rollout preserves data and pauses incompatible legacy email definitions.
+
 Start with [current project context](CONTEXT.md). Release **0.2.39** is deployed ([PR #86](https://github.com/tarous89/trialy/pull/86)). [Apps, access and automations](docs/product/APP_CONFIGURATION_AND_AUTOMATIONS.md) defines the implemented app configuration contract: every app has its own access boundary, optional registered-tab restrictions, and optional app-linked automations managed in a new platform **Automations** destination. The shared ChatGPT connection is configured separately and reused across apps. App loading, use and saving remain independent of automation availability. The implementation adds the Automations management destination and optional standard-tracker tab controls. Existing apps retain their boundaries; real unattended ChatGPT activation remains separately unverified.
 
 ## Active simple-app scope — 29 October 2026

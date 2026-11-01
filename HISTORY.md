@@ -5,6 +5,12 @@ This file records meaningful decisions and completed development work. It is not
 - [Scope and decisions](README.md)
 - [Current development plan](DEVELOPMENT.md)
 
+## Simple automations and guarded email — 1 November 2026
+
+Release 0.2.41 implements the approved notification scope with daily-or-slower email schedules, explicit database transitions, two-minute settling and current-state/access checks. Pending items coalesce, recipient deliveries are serialized globally (one/hour) and per account (15/rolling day), and ordinary limits defer delivery without disabling the rule. Bounded queue growth suspends abnormal rules. Research and its receipts remain independent of email failures. Migration 051 cancels unsent legacy app emails and fences old workers; unsafe legacy definitions pause for review.
+
+Desktop/mobile authoring retains app/name, schedule/condition, instructions or message and approved team recipients. Backend controls are hidden. Dynamic template guidance 1.3.5, automation guide 1.2.0 and app-services guide 0.7.0 describe the same contract. Local verification includes synthetic bulk, revocation, idempotency, concurrency/budget and emergency-stop scenarios; no real emails are used in tests. Deployment verification is recorded separately after rollout.
+
 ## Definition-only automations and app-filtered Logs — 1 November 2026
 
 Release 0.2.40 simplifies Automations to full-width app-linked instructions with trigger/frequency and direct Disable/Enable and Edit. Empty lists no longer display search, pagination, history or shared daily-runner settings. Sidebar order is Home, Database, Access, Automations, Connectors, Logs.
