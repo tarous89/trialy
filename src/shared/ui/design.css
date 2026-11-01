@@ -370,6 +370,8 @@
 .ty-automation-cells strong{font-weight:600}
 .ty-automation-cells small{display:block;line-height:1.5;margin-top:6px;color:var(--ty-muted)}
 .ty-automation-app a{font-weight:600;color:var(--ty-green);text-underline-offset:3px}
+.ty-automation-state{display:table;margin-top:8px;padding:3px 9px;border-radius:999px;background:#eef1ef;color:var(--ty-muted);font-size:12px;font-weight:600;line-height:1.5}
+.ty-automation-state[data-enabled=true]{background:#e5f3eb;color:#176443}
 .ty-automation-prompt p{white-space:pre-wrap;margin-top:6px;color:var(--ty-muted);line-height:1.6}
 .ty-automation-cells .ty-actions{display:flex;gap:6px;flex-wrap:wrap}
 .ty-automation-mobile-label{display:none}

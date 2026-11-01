@@ -4,7 +4,7 @@ Updated 1 November 2026 (Europe/Berlin). Start here before changing the platform
 
 ## Release 0.2.41 changes
 
-Simple ChatGPT/Email forms and guarded app notifications. Migration 051 adds pending batches, current-state revalidation, global recipient/account allowances and a mixed-version worker fence. Incompatible legacy email rules pause for review; unsent legacy app email jobs are cancelled while source records/research/history remain. Template guidance is 1.3.5; automation guide 1.2.0. The shared daily runner remains independent backend infrastructure.
+Simple ChatGPT/Email forms and guarded app notifications. Migration 051 adds pending batches, current-state revalidation, global recipient/account allowances and a mixed-version worker fence. Incompatible legacy email rules pause for review; unsent legacy app email jobs are cancelled while source records/research/history remain. Template guidance is 1.3.6; automation guide 1.2.0. Every automation row explicitly shows Enabled or Disabled. Template guidance covers standalone scheduled/database email and processing-to-email handoffs, with minimal forms and platform-enforced guardrails. The shared daily runner remains independent backend infrastructure.
 
 ## Previously verified baseline
 
