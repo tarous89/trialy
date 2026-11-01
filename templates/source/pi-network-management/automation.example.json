@@ -1,0 +1,48 @@
+{
+  "name": "PI network follow-up recorded",
+  "authoringKey": "cr03_followup_email_v1",
+  "appId": "REPLACE_WITH_SAVED_APP_UUID",
+  "appVersion": 0,
+  "recordTypeId": "REPLACE_WITH_ACTIONS_TABLE_UUID",
+  "trigger": {
+    "kind": "database",
+    "typeId": "REPLACE_WITH_ACTIONS_TABLE_UUID",
+    "events": [
+      "created",
+      "updated"
+    ],
+    "fields": [
+      "status"
+    ],
+    "becomes": {
+      "field": "status",
+      "operator": "equals",
+      "value": "Open"
+    }
+  },
+  "fields": [
+    "status",
+    "archived"
+  ],
+  "conditions": [
+    {
+      "field": "archived",
+      "operator": "not_equals",
+      "value": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "notify_owner",
+      "kind": "email",
+      "to": [
+        "REPLACE_WITH_REGISTERED_AUTHORIZED_OWNER_EMAIL"
+      ],
+      "subject": "PI network follow-up recorded",
+      "text": "Open https://platform.trialagents.com to review your authorized PI network follow-up queue and recorded contact preferences."
+    }
+  ],
+  "users": [],
+  "expiresAt": "REPLACE_WITH_APPROVED_ISO_EXPIRY",
+  "maxRunsPerDay": 10
+}
