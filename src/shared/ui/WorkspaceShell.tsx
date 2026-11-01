@@ -12,7 +12,7 @@ export type Destination='home'|'database'|'logs'|'access-control'|'settings'|'co
 const entries:{id:Destination;label:string;icon:IconName}[]=[{id:'home',label:'Apps',icon:'grid'},{id:'database',label:'Database',icon:'database'},{id:'access-control',label:'Access',icon:'lock'},{id:'logs',label:'Logs',icon:'logs'}];
 export function WorkspaceShell({children,selected,onNavigate,accountName,accountEmail,embedded=false,onOpenApp,onNew}:{children:React.ReactNode;selected:Destination;onNavigate:(d:Destination)=>void;accountName:string;accountEmail?:string;embedded?:boolean;onOpenApp?:()=>void;onNew?:(kind:string)=>void}){
  const platform=React.useContext(AppPlatform);
- const destinations=platform.enabled?[{id:'home' as const,label:'Home',icon:'grid' as const},...entries.slice(1),{id:'connectors' as const,label:'Connectors',icon:'chain' as const},{id:'automations' as const,label:'Automations',icon:'automation' as const}]:entries;
+ const destinations=platform.enabled?[{id:'home' as const,label:'Home',icon:'grid' as const},...entries.slice(1,3),{id:'automations' as const,label:'Automations',icon:'automation' as const},{id:'connectors' as const,label:'Connectors',icon:'chain' as const},entries[3]]:entries;
  const [newMenu,setNewMenu]=useState(false);
  const [open,setOpen]=useState(false),toggle=useRef<HTMLButtonElement>(null);
  function close(){setOpen(false);toggle.current?.focus({preventScroll:true});}

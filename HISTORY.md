@@ -5,6 +5,12 @@ This file records meaningful decisions and completed development work. It is not
 - [Scope and decisions](README.md)
 - [Current development plan](DEVELOPMENT.md)
 
+## Definition-only automations and app-filtered Logs — 1 November 2026
+
+Release 0.2.40 simplifies Automations to full-width app-linked instructions with trigger/frequency and direct Disable/Enable and Edit. Empty lists no longer display search, pagination, history or shared daily-runner settings. Sidebar order is Home, Database, Access, Automations, Connectors, Logs.
+
+Logs now includes research and platform action run metadata, app filtering and CSV attribution, while preserving owner/current-app access checks and withholding private payloads. New app writes carry verified app context; existing unattributed database events are not guessed. Additional filters wrap in normal flow on both surfaces. Template guidance 1.3.2 and current context reflect these boundaries. No scheduler, app publication or database migration is required by these management changes. Validation covers 178 backend tests and 80 browser scenarios, including current-access filtering, run metadata privacy, empty states, draft preservation and inline filter geometry at desktop/mobile widths.
+
 ## App configuration and shared automation management — 1 November 2026
 
 Release 0.2.39 shipped in [PR #86](https://github.com/tarous89/trialy/pull/86), commit `345eb6bb55ccd23110ac73d5690dd75bdea5ac27`. Both Render services were verified live; migrations and public MCP smoke checks passed. CI: 177 backend tests, 75 browser tests, build and production browser verification.

@@ -1,6 +1,20 @@
 import React from 'react';
 const weekdays=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-export function scheduleLabel(t:any){if(!t)return 'Not configured';if(t.kind==='calendar')return `${t.frequency??'Weekly'} · ${t.time} · ${t.timeZone}`;if(t.kind==='once')return `Once · ${t.at}`;if(t.kind==='interval')return `Every ${t.minutes} minutes`;if(t.kind==='after_success')return `${t.minutes} minutes after completion`;if(t.kind==='database')return 'Database change';if(t.kind==='record_date')return 'Record date';return t.description??'Manual';}
+export function scheduleLabel(t:any){
+ if(!t)return 'Not configured';
+ if(t.kind==='calendar'){
+  const frequency=t.frequency??(t.weekdays?.length===7?'daily':'weekly'),interval=t.interval??1;
+  const cadence=interval===1?({daily:'Daily',weekly:'Weekly',monthly:'Monthly'} as Record<string,string>)[frequency]:`Every ${interval} ${{daily:'days',weekly:'weeks',monthly:'months'}[frequency as 'daily'|'weekly'|'monthly']}`;
+  const detail=frequency==='weekly'?(t.weekdays??[]).map((n:number)=>weekdays[n].slice(0,3)).join(', '):frequency==='monthly'?`Day ${t.monthDay??1}`:'';
+  return [cadence,detail,t.time,t.timeZone].filter(Boolean).join(' · ');
+ }
+ if(t.kind==='once')return `Once · ${new Date(t.at).toLocaleString()}`;
+ if(t.kind==='interval')return `Every ${t.minutes} minutes`;
+ if(t.kind==='after_success')return `${t.minutes} minutes after completion`;
+ if(t.kind==='database')return 'Database change';
+ if(t.kind==='record_date')return 'Date in a record';
+ return t.description??'Manual';
+}
 export function AutomationScheduleEditor({value:t,onChange,executor,bindings=[]}:{value:any;onChange:(v:any)=>void;executor:string;bindings:any[]}){
  const set=(k:string,v:any)=>onChange({...t,[k]:v}),zone=t?.timeZone??Intl.DateTimeFormat().resolvedOptions().timeZone,day=new Date().toISOString().slice(0,10);
  const changeKind=(kind:string)=>onChange(kind==='calendar'?{kind,frequency:'daily',time:'06:00',timeZone:zone,anchor:day,interval:1,weekdays:[1],monthDay:1,monthEnd:'last_day'}:kind==='once'?{kind,at:new Date(Date.now()+86400000).toISOString()}:kind==='database'?{kind,typeId:bindings[0]?.typeId??'',events:['created','updated'],fields:[]}:kind==='record_date'?{kind,typeId:bindings[0]?.typeId??'',field:bindings[0]?.fields[0]??'',offsetMinutes:0,time:'09:00',timeZone:zone}:kind==='manual'?{kind}:{kind,minutes:60});
