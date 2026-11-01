@@ -1,0 +1,742 @@
+{
+  "records": [
+    {
+      "role": "projects",
+      "id": "pA",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "RNA platform · global CRO search",
+        "study": "RNA-201 | First-in-human",
+        "scope": "End-to-end clinical operations support for a phase 1 study with EU/US sites.",
+        "region": "EU + US",
+        "owner": "Clinical operations lead",
+        "status": "Evaluating",
+        "issuedAt": "2026-10-15",
+        "responseDue": "2026-11-18",
+        "decisionDue": "2026-12-02",
+        "budgetRange": "EUR 2–4m (indicative only)",
+        "notes": "Phase 1 clinical outsourcing. All organizations and values are invented for demonstration."
+      }
+    },
+    {
+      "role": "projects",
+      "id": "pB",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Rare disease biomarker lab",
+        "study": "RD-102 | Translational biomarkers",
+        "scope": "Central biomarker testing and cross-site sample analysis, non-patient metadata in this app.",
+        "region": "Europe",
+        "owner": "Translational program manager",
+        "status": "Awarded",
+        "issuedAt": "2026-09-10",
+        "responseDue": "2026-10-07",
+        "decisionDue": "2026-10-31",
+        "budgetRange": "EUR 0.3–0.5m (indicative)",
+        "notes": "Completed fictional sourcing example."
+      }
+    },
+    {
+      "role": "projects",
+      "id": "pC",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Neuro study monitoring services",
+        "study": "NEURO-14 | Phase 2",
+        "scope": "Clinical monitoring and site activation vendor search.",
+        "region": "Germany and France",
+        "owner": "Study manager",
+        "status": "Draft",
+        "issuedAt": "",
+        "responseDue": "2026-12-08",
+        "decisionDue": "2026-12-18",
+        "budgetRange": "Not set",
+        "notes": "Future project, no bids received."
+      }
+    },
+    {
+      "role": "providers",
+      "id": "v1",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Cedarbridge Clinical",
+        "region": "Europe",
+        "services": "Full-service operations; EU delivery",
+        "website": "https://example.org/v1",
+        "verifiedAt": "2026-10-20",
+        "notes": "Invented provider for interface testing; not a real vendor recommendation."
+      }
+    },
+    {
+      "role": "providers",
+      "id": "v2",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "NeuraPath Research",
+        "region": "North America",
+        "services": "Global site operations; data management",
+        "website": "https://example.org/v2",
+        "verifiedAt": "2026-10-20",
+        "notes": "Invented provider for interface testing; not a real vendor recommendation."
+      }
+    },
+    {
+      "role": "providers",
+      "id": "v3",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Evernorth Trials",
+        "region": "Europe",
+        "services": "Clinical monitoring and trial startup",
+        "website": "https://example.org/v3",
+        "verifiedAt": "2026-10-20",
+        "notes": "Invented provider for interface testing; not a real vendor recommendation."
+      }
+    },
+    {
+      "role": "providers",
+      "id": "v4",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "BlueGrove Laboratories",
+        "region": "Europe",
+        "services": "Biomarker assay and central laboratory",
+        "website": "https://example.org/v4",
+        "verifiedAt": "2026-10-20",
+        "notes": "Invented provider for interface testing; not a real vendor recommendation."
+      }
+    },
+    {
+      "role": "providers",
+      "id": "v5",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Tidepoint Bioanalytics",
+        "region": "Global",
+        "services": "Bioanalytical testing",
+        "website": "https://example.org/v5",
+        "verifiedAt": "2026-10-20",
+        "notes": "Invented provider for interface testing; not a real vendor recommendation."
+      }
+    },
+    {
+      "role": "invitations",
+      "id": "i1",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "RFP pA · v1",
+        "projectId": "pA",
+        "providerId": "v1",
+        "status": "Received",
+        "invitedAt": "2026-10-16",
+        "receivedAt": "2026-11-01",
+        "contact": "BD manager (professional contact)",
+        "notes": "Manual proposal log; no external email sent."
+      }
+    },
+    {
+      "role": "invitations",
+      "id": "i2",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "RFP pA · v2",
+        "projectId": "pA",
+        "providerId": "v2",
+        "status": "Received",
+        "invitedAt": "2026-10-16",
+        "receivedAt": "2026-10-30",
+        "contact": "BD manager (professional contact)",
+        "notes": "Manual proposal log; no external email sent."
+      }
+    },
+    {
+      "role": "invitations",
+      "id": "i3",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "RFP pA · v3",
+        "projectId": "pA",
+        "providerId": "v3",
+        "status": "Accepted",
+        "invitedAt": "2026-10-17",
+        "receivedAt": "",
+        "contact": "BD manager (professional contact)",
+        "notes": "Manual proposal log; no external email sent."
+      }
+    },
+    {
+      "role": "invitations",
+      "id": "i4",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "RFP pB · v4",
+        "projectId": "pB",
+        "providerId": "v4",
+        "status": "Received",
+        "invitedAt": "2026-09-12",
+        "receivedAt": "2026-10-05",
+        "contact": "BD manager (professional contact)",
+        "notes": "Manual proposal log; no external email sent."
+      }
+    },
+    {
+      "role": "invitations",
+      "id": "i5",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "RFP pB · v5",
+        "projectId": "pB",
+        "providerId": "v5",
+        "status": "Declined",
+        "invitedAt": "2026-09-13",
+        "receivedAt": "",
+        "contact": "BD manager (professional contact)",
+        "notes": "Manual proposal log; no external email sent."
+      }
+    },
+    {
+      "role": "requirements",
+      "id": "q1",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Site activation approach",
+        "projectId": "pA",
+        "section": "Clinical delivery",
+        "answerType": "Narrative",
+        "mandatory": true,
+        "weight": 30,
+        "version": 1,
+        "evidence": "Country-by-country startup plan and milestones"
+      }
+    },
+    {
+      "role": "requirements",
+      "id": "q2",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Quality management oversight",
+        "projectId": "pA",
+        "section": "Quality",
+        "answerType": "Narrative",
+        "mandatory": true,
+        "weight": 25,
+        "version": 1,
+        "evidence": "Applicable QMS processes, roles and escalation"
+      }
+    },
+    {
+      "role": "requirements",
+      "id": "q3",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Delivery timeline",
+        "projectId": "pA",
+        "section": "Timeline",
+        "answerType": "Narrative",
+        "mandatory": true,
+        "weight": 20,
+        "version": 1,
+        "evidence": "Proposed first-patient readiness and assumptions"
+      }
+    },
+    {
+      "role": "requirements",
+      "id": "q4",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Country coverage",
+        "projectId": "pA",
+        "section": "Geography",
+        "answerType": "Narrative",
+        "mandatory": true,
+        "weight": 15,
+        "version": 1,
+        "evidence": "Site network in priority countries with source dates"
+      }
+    },
+    {
+      "role": "requirements",
+      "id": "q5",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Commercial transparency",
+        "projectId": "pA",
+        "section": "Commercial",
+        "answerType": "Narrative",
+        "mandatory": false,
+        "weight": 10,
+        "version": 1,
+        "evidence": "Budget inclusions, exclusions and currency assumptions"
+      }
+    },
+    {
+      "role": "requirements",
+      "id": "q6",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Validated assay plan",
+        "projectId": "pB",
+        "section": "Quality",
+        "answerType": "Narrative",
+        "mandatory": true,
+        "weight": 60,
+        "version": 1,
+        "evidence": "Method transfer assumptions and laboratory control scope"
+      }
+    },
+    {
+      "role": "requirements",
+      "id": "q7",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Lab turnaround timeline",
+        "projectId": "pB",
+        "section": "Timeline",
+        "answerType": "Narrative",
+        "mandatory": true,
+        "weight": 40,
+        "version": 1,
+        "evidence": "Proposed turnaround with assumptions"
+      }
+    },
+    {
+      "role": "responses",
+      "id": "rs-i1-q1",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Answer i1 / q1",
+        "invitationId": "i1",
+        "requirementId": "q1",
+        "status": "Provided",
+        "answer": "Manually captured fictional CRO proposal text for q1; detailed response evidence held in the approved source package.",
+        "sourceUrl": "https://example.org/proposal/i1/q1",
+        "submittedAt": "2026-11-01",
+        "reviewNote": "Internal-only reference; no public bid portal."
+      }
+    },
+    {
+      "role": "responses",
+      "id": "rs-i1-q2",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Answer i1 / q2",
+        "invitationId": "i1",
+        "requirementId": "q2",
+        "status": "Provided",
+        "answer": "Manually captured fictional CRO proposal text for q2; detailed response evidence held in the approved source package.",
+        "sourceUrl": "https://example.org/proposal/i1/q2",
+        "submittedAt": "2026-11-01",
+        "reviewNote": "Internal-only reference; no public bid portal."
+      }
+    },
+    {
+      "role": "responses",
+      "id": "rs-i1-q3",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Answer i1 / q3",
+        "invitationId": "i1",
+        "requirementId": "q3",
+        "status": "Provided",
+        "answer": "Manually captured fictional CRO proposal text for q3; detailed response evidence held in the approved source package.",
+        "sourceUrl": "https://example.org/proposal/i1/q3",
+        "submittedAt": "2026-11-01",
+        "reviewNote": "Internal-only reference; no public bid portal."
+      }
+    },
+    {
+      "role": "responses",
+      "id": "rs-i1-q4",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Answer i1 / q4",
+        "invitationId": "i1",
+        "requirementId": "q4",
+        "status": "Provided",
+        "answer": "Manually captured fictional CRO proposal text for q4; detailed response evidence held in the approved source package.",
+        "sourceUrl": "https://example.org/proposal/i1/q4",
+        "submittedAt": "2026-11-01",
+        "reviewNote": "Internal-only reference; no public bid portal."
+      }
+    },
+    {
+      "role": "responses",
+      "id": "rs-i1-q5",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Answer i1 / q5",
+        "invitationId": "i1",
+        "requirementId": "q5",
+        "status": "Provided",
+        "answer": "Manually captured fictional CRO proposal text for q5; detailed response evidence held in the approved source package.",
+        "sourceUrl": "https://example.org/proposal/i1/q5",
+        "submittedAt": "2026-11-01",
+        "reviewNote": "Internal-only reference; no public bid portal."
+      }
+    },
+    {
+      "role": "responses",
+      "id": "rs-i2-q1",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Answer i2 / q1",
+        "invitationId": "i2",
+        "requirementId": "q1",
+        "status": "Provided",
+        "answer": "Manually captured fictional CRO proposal text for q1; detailed response evidence held in the approved source package.",
+        "sourceUrl": "https://example.org/proposal/i2/q1",
+        "submittedAt": "2026-10-30",
+        "reviewNote": "Internal-only reference; no public bid portal."
+      }
+    },
+    {
+      "role": "responses",
+      "id": "rs-i2-q2",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Answer i2 / q2",
+        "invitationId": "i2",
+        "requirementId": "q2",
+        "status": "Provided",
+        "answer": "Manually captured fictional CRO proposal text for q2; detailed response evidence held in the approved source package.",
+        "sourceUrl": "https://example.org/proposal/i2/q2",
+        "submittedAt": "2026-10-30",
+        "reviewNote": "Internal-only reference; no public bid portal."
+      }
+    },
+    {
+      "role": "responses",
+      "id": "rs-i2-q4",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Answer i2 / q4",
+        "invitationId": "i2",
+        "requirementId": "q4",
+        "status": "Provided",
+        "answer": "Manually captured fictional CRO proposal text for q4; detailed response evidence held in the approved source package.",
+        "sourceUrl": "https://example.org/proposal/i2/q4",
+        "submittedAt": "2026-10-30",
+        "reviewNote": "Internal-only reference; no public bid portal."
+      }
+    },
+    {
+      "role": "responses",
+      "id": "rs-i4-q6",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Answer i4 / q6",
+        "invitationId": "i4",
+        "requirementId": "q6",
+        "status": "Provided",
+        "answer": "Manually captured fictional CRO proposal text for q6; detailed response evidence held in the approved source package.",
+        "sourceUrl": "https://example.org/proposal/i4/q6",
+        "submittedAt": "2026-11-01",
+        "reviewNote": "Internal-only reference; no public bid portal."
+      }
+    },
+    {
+      "role": "responses",
+      "id": "rs-i4-q7",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Answer i4 / q7",
+        "invitationId": "i4",
+        "requirementId": "q7",
+        "status": "Provided",
+        "answer": "Manually captured fictional CRO proposal text for q7; detailed response evidence held in the approved source package.",
+        "sourceUrl": "https://example.org/proposal/i4/q7",
+        "submittedAt": "2026-11-01",
+        "reviewNote": "Internal-only reference; no public bid portal."
+      }
+    },
+    {
+      "role": "responses",
+      "id": "rs-i2-q3",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Missing answer i2 / q3",
+        "invitationId": "i2",
+        "requirementId": "q3",
+        "status": "Missing",
+        "answer": "",
+        "sourceUrl": "",
+        "submittedAt": "",
+        "reviewNote": "Awaiting provider follow-up"
+      }
+    },
+    {
+      "role": "responses",
+      "id": "rs-i2-q5",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Missing answer i2 / q5",
+        "invitationId": "i2",
+        "requirementId": "q5",
+        "status": "Missing",
+        "answer": "",
+        "sourceUrl": "",
+        "submittedAt": "",
+        "reviewNote": "Awaiting provider follow-up"
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "rv-i1-q1",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Clinical evaluation i1 / q1",
+        "invitationId": "i1",
+        "requirementId": "q1",
+        "reviewer": "Sponsor evaluation lead",
+        "score": 4,
+        "rationale": "Demonstration rating supported by fictional recorded proposal and criterion.",
+        "reviewedAt": "2026-11-01",
+        "status": "Reviewed"
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "rv-i1-q2",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Clinical evaluation i1 / q2",
+        "invitationId": "i1",
+        "requirementId": "q2",
+        "reviewer": "Sponsor evaluation lead",
+        "score": 5,
+        "rationale": "Demonstration rating supported by fictional recorded proposal and criterion.",
+        "reviewedAt": "2026-11-01",
+        "status": "Reviewed"
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "rv-i1-q3",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Clinical evaluation i1 / q3",
+        "invitationId": "i1",
+        "requirementId": "q3",
+        "reviewer": "Sponsor evaluation lead",
+        "score": 4,
+        "rationale": "Demonstration rating supported by fictional recorded proposal and criterion.",
+        "reviewedAt": "2026-11-01",
+        "status": "Reviewed"
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "rv-i1-q4",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Clinical evaluation i1 / q4",
+        "invitationId": "i1",
+        "requirementId": "q4",
+        "reviewer": "Sponsor evaluation lead",
+        "score": 4,
+        "rationale": "Demonstration rating supported by fictional recorded proposal and criterion.",
+        "reviewedAt": "2026-11-01",
+        "status": "Reviewed"
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "rv-i1-q5",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Clinical evaluation i1 / q5",
+        "invitationId": "i1",
+        "requirementId": "q5",
+        "reviewer": "Sponsor evaluation lead",
+        "score": 3,
+        "rationale": "Demonstration rating supported by fictional recorded proposal and criterion.",
+        "reviewedAt": "2026-11-01",
+        "status": "Reviewed"
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "rv-i2-q1",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Clinical evaluation i2 / q1",
+        "invitationId": "i2",
+        "requirementId": "q1",
+        "reviewer": "Sponsor evaluation lead",
+        "score": 4,
+        "rationale": "Demonstration rating supported by fictional recorded proposal and criterion.",
+        "reviewedAt": "2026-11-01",
+        "status": "Reviewed"
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "rv-i2-q2",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Clinical evaluation i2 / q2",
+        "invitationId": "i2",
+        "requirementId": "q2",
+        "reviewer": "Sponsor evaluation lead",
+        "score": 3,
+        "rationale": "Demonstration rating supported by fictional recorded proposal and criterion.",
+        "reviewedAt": "2026-11-01",
+        "status": "Reviewed"
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "rv-i4-q6",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Clinical evaluation i4 / q6",
+        "invitationId": "i4",
+        "requirementId": "q6",
+        "reviewer": "Sponsor evaluation lead",
+        "score": 5,
+        "rationale": "Demonstration rating supported by fictional recorded proposal and criterion.",
+        "reviewedAt": "2026-11-01",
+        "status": "Reviewed"
+      }
+    },
+    {
+      "role": "reviews",
+      "id": "rv-i4-q7",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Clinical evaluation i4 / q7",
+        "invitationId": "i4",
+        "requirementId": "q7",
+        "reviewer": "Sponsor evaluation lead",
+        "score": 4,
+        "rationale": "Demonstration rating supported by fictional recorded proposal and criterion.",
+        "reviewedAt": "2026-11-01",
+        "status": "Reviewed"
+      }
+    },
+    {
+      "role": "clarifications",
+      "id": "c1",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Confirm first-patient timeline assumptions",
+        "invitationId": "i1",
+        "requirementId": "q3",
+        "owner": "Clinical operations lead",
+        "due": "2026-10-31",
+        "status": "Closed",
+        "replySource": "Fictional clarification meeting record dated 2026-10-30",
+        "resolvedAt": "2026-10-30"
+      }
+    },
+    {
+      "role": "clarifications",
+      "id": "c2",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Explain commercial exclusions",
+        "invitationId": "i2",
+        "requirementId": "q5",
+        "owner": "Outsourcing manager",
+        "due": "2026-11-04",
+        "status": "Open",
+        "replySource": "",
+        "resolvedAt": ""
+      }
+    },
+    {
+      "role": "clarifications",
+      "id": "c3",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Country coverage qualification",
+        "invitationId": "i3",
+        "requirementId": "q4",
+        "owner": "Study lead",
+        "due": "2026-11-06",
+        "status": "Open",
+        "replySource": "",
+        "resolvedAt": ""
+      }
+    },
+    {
+      "role": "awards",
+      "id": "aw1",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "RNA platform CRO selection (draft)",
+        "projectId": "pA",
+        "invitationId": "i1",
+        "status": "Draft",
+        "author": "",
+        "approvedAt": "",
+        "rationale": "Provisional preferred provider pending final sourcing committee approval.",
+        "caveats": "Cross-functional decision meeting pending",
+        "handoffRef": ""
+      }
+    },
+    {
+      "role": "awards",
+      "id": "aw2",
+      "version": 1,
+      "data": {
+        "archived": false,
+        "name": "Biomarker lab selection approved",
+        "projectId": "pB",
+        "invitationId": "i4",
+        "status": "Approved",
+        "author": "Sponsor program director",
+        "approvedAt": "2026-10-30",
+        "rationale": "Selected based on documented quality requirements and reviewed assay/timeline scores; fictional reference.",
+        "caveats": "Signed agreement remains outside this app.",
+        "handoffRef": "Internal lab oversight tracker reference; not an automated link"
+      }
+    }
+  ],
+  "note": "All included names, bids, dates and ratings are invented, and previews never write to production."
+}

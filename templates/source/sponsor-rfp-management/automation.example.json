@@ -1,0 +1,48 @@
+{
+  "name": "Sponsor RFP decision recorded",
+  "authoringKey": "sponsor_rfp_decision_email_v1",
+  "appId": "REPLACE_WITH_SAVED_APP_UUID",
+  "appVersion": 0,
+  "recordTypeId": "REPLACE_WITH_AWARDS_TABLE_UUID",
+  "trigger": {
+    "kind": "database",
+    "typeId": "REPLACE_WITH_AWARDS_TABLE_UUID",
+    "events": [
+      "created",
+      "updated"
+    ],
+    "fields": [
+      "status"
+    ],
+    "becomes": {
+      "field": "status",
+      "operator": "equals",
+      "value": "Approved"
+    }
+  },
+  "fields": [
+    "status",
+    "archived"
+  ],
+  "conditions": [
+    {
+      "field": "archived",
+      "operator": "not_equals",
+      "value": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "notify_owner",
+      "kind": "email",
+      "to": [
+        "REPLACE_WITH_REGISTERED_AUTHORIZED_OWNER_EMAIL"
+      ],
+      "subject": "Sponsor RFP decision recorded",
+      "text": "Open https://platform.trialagents.com to review your authorized sourcing decision."
+    }
+  ],
+  "users": [],
+  "expiresAt": "REPLACE_WITH_APPROVED_ISO_EXPIRY",
+  "maxRunsPerDay": 10
+}

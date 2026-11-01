@@ -1,0 +1,807 @@
+{
+  "projects": {
+    "name": "projects",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "study",
+        "name": "study",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "scope",
+        "name": "scope",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "region",
+        "name": "region",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Draft",
+          "Issued",
+          "Collecting",
+          "Evaluating",
+          "Awarded",
+          "Cancelled"
+        ]
+      },
+      {
+        "key": "issued_at",
+        "name": "issued_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "response_due",
+        "name": "response_due",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "decision_due",
+        "name": "decision_due",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "budget_range",
+        "name": "budget_range",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "notes",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "study": "study",
+      "scope": "scope",
+      "region": "region",
+      "owner": "owner",
+      "status": "status",
+      "issuedAt": "issued_at",
+      "responseDue": "response_due",
+      "decisionDue": "decision_due",
+      "budgetRange": "budget_range",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "parentReferences": {}
+  },
+  "providers": {
+    "name": "providers",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "region",
+        "name": "region",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "services",
+        "name": "services",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "website",
+        "name": "website",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "verified_at",
+        "name": "verified_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "notes",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "region": "region",
+      "services": "services",
+      "website": "website",
+      "verifiedAt": "verified_at",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "parentReferences": {}
+  },
+  "invitations": {
+    "name": "invitations",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "project_id",
+        "name": "project_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "provider_id",
+        "name": "provider_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Invited",
+          "Accepted",
+          "Declined",
+          "Received",
+          "Withdrawn"
+        ]
+      },
+      {
+        "key": "invited_at",
+        "name": "invited_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "received_at",
+        "name": "received_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "contact",
+        "name": "contact",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "notes",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "projectId": "project_id",
+      "providerId": "provider_id",
+      "status": "status",
+      "invitedAt": "invited_at",
+      "receivedAt": "received_at",
+      "contact": "contact",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "projectId": "projects",
+      "providerId": "providers"
+    }
+  },
+  "requirements": {
+    "name": "requirements",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "project_id",
+        "name": "project_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "section",
+        "name": "section",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Clinical delivery",
+          "Quality",
+          "Geography",
+          "Timeline",
+          "Commercial"
+        ]
+      },
+      {
+        "key": "answer_type",
+        "name": "answer_type",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Narrative",
+          "Yes/No",
+          "Number",
+          "Document"
+        ]
+      },
+      {
+        "key": "mandatory",
+        "name": "mandatory",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "weight",
+        "name": "weight",
+        "kind": "number",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "version",
+        "name": "version",
+        "kind": "number",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "evidence",
+        "name": "evidence",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "projectId": "project_id",
+      "section": "section",
+      "answerType": "answer_type",
+      "mandatory": "mandatory",
+      "weight": "weight",
+      "version": "version",
+      "evidence": "evidence",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "projectId": "projects"
+    }
+  },
+  "responses": {
+    "name": "responses",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "invitation_id",
+        "name": "invitation_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "requirement_id",
+        "name": "requirement_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Provided",
+          "Missing",
+          "Declined",
+          "N/A"
+        ]
+      },
+      {
+        "key": "answer",
+        "name": "answer",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "source_url",
+        "name": "source_url",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "submitted_at",
+        "name": "submitted_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "review_note",
+        "name": "review_note",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "invitationId": "invitation_id",
+      "requirementId": "requirement_id",
+      "status": "status",
+      "answer": "answer",
+      "sourceUrl": "source_url",
+      "submittedAt": "submitted_at",
+      "reviewNote": "review_note",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "invitationId": "invitations",
+      "requirementId": "requirements"
+    }
+  },
+  "clarifications": {
+    "name": "clarifications",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "invitation_id",
+        "name": "invitation_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "requirement_id",
+        "name": "requirement_id",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "due",
+        "name": "due",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Open",
+          "Answered",
+          "Closed"
+        ]
+      },
+      {
+        "key": "reply_source",
+        "name": "reply_source",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "resolved_at",
+        "name": "resolved_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "invitationId": "invitation_id",
+      "requirementId": "requirement_id",
+      "owner": "owner",
+      "due": "due",
+      "status": "status",
+      "replySource": "reply_source",
+      "resolvedAt": "resolved_at",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "invitationId": "invitations",
+      "requirementId": "requirements"
+    }
+  },
+  "reviews": {
+    "name": "reviews",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "invitation_id",
+        "name": "invitation_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "requirement_id",
+        "name": "requirement_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "reviewer",
+        "name": "reviewer",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "score",
+        "name": "score",
+        "kind": "number",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "rationale",
+        "name": "rationale",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "reviewed_at",
+        "name": "reviewed_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Draft",
+          "Reviewed"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "invitationId": "invitation_id",
+      "requirementId": "requirement_id",
+      "reviewer": "reviewer",
+      "score": "score",
+      "rationale": "rationale",
+      "reviewedAt": "reviewed_at",
+      "status": "status",
+      "archived": "archived"
+    },
+    "parentReferences": {
+      "invitationId": "invitations",
+      "requirementId": "requirements"
+    }
+  },
+  "awards": {
+    "name": "awards",
+    "fields": [
+      {
+        "key": "name",
+        "name": "name",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "project_id",
+        "name": "project_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "invitation_id",
+        "name": "invitation_id",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "ai": true,
+        "options": [
+          "Draft",
+          "Approved",
+          "Declined",
+          "Superseded"
+        ]
+      },
+      {
+        "key": "author",
+        "name": "author",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "approved_at",
+        "name": "approved_at",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "rationale",
+        "name": "rationale",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "caveats",
+        "name": "caveats",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "handoff_ref",
+        "name": "handoff_ref",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "supersedes_id",
+        "name": "Supersedes decision",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "projectId": "project_id",
+      "invitationId": "invitation_id",
+      "status": "status",
+      "author": "author",
+      "approvedAt": "approved_at",
+      "rationale": "rationale",
+      "caveats": "caveats",
+      "handoffRef": "handoff_ref",
+      "archived": "archived",
+      "supersedesId": "supersedes_id"
+    },
+    "parentReferences": {
+      "projectId": "projects",
+      "invitationId": "invitations"
+    }
+  }
+}
