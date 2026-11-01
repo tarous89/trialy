@@ -1,0 +1,148 @@
+{
+  "screens": [
+    {
+      "id": "overview",
+      "label": "Overview"
+    },
+    {
+      "id": "items",
+      "label": "Inventory"
+    },
+    {
+      "id": "movements",
+      "label": "Stock movements"
+    },
+    {
+      "id": "locations",
+      "label": "Storage locations"
+    },
+    {
+      "id": "requests",
+      "label": "Purchase requests"
+    },
+    {
+      "id": "forecast",
+      "label": "Stock forecast"
+    }
+  ],
+  "groups": {
+    "items": [
+      {
+        "id": "name",
+        "label": "Item"
+      },
+      {
+        "id": "sku",
+        "label": "Catalog number"
+      },
+      {
+        "id": "category",
+        "label": "Category"
+      },
+      {
+        "id": "unit",
+        "label": "Stock unit"
+      },
+      {
+        "id": "usable",
+        "label": "Usable quantity"
+      },
+      {
+        "id": "reorder_point",
+        "label": "Reorder minimum"
+      },
+      {
+        "id": "availability",
+        "label": "Stock status"
+      },
+      {
+        "id": "supplier",
+        "label": "Supplier"
+      },
+      {
+        "id": "owner",
+        "label": "Owner"
+      },
+      {
+        "id": "lead_days",
+        "label": "Lead time"
+      }
+    ],
+    "movements": [
+      {
+        "id": "date",
+        "label": "Date"
+      },
+      {
+        "id": "name",
+        "label": "Movement reference"
+      },
+      {
+        "id": "kind",
+        "label": "Movement type"
+      },
+      {
+        "id": "item_id",
+        "label": "Item"
+      },
+      {
+        "id": "lot_id",
+        "label": "Lot"
+      },
+      {
+        "id": "quantity",
+        "label": "Quantity"
+      },
+      {
+        "id": "unit",
+        "label": "Unit"
+      },
+      {
+        "id": "from_location_id",
+        "label": "From"
+      },
+      {
+        "id": "to_location_id",
+        "label": "To"
+      },
+      {
+        "id": "reason",
+        "label": "Reason"
+      }
+    ],
+    "requests": [
+      {
+        "id": "name",
+        "label": "Request"
+      },
+      {
+        "id": "item_id",
+        "label": "Item"
+      },
+      {
+        "id": "quantity",
+        "label": "Quantity"
+      },
+      {
+        "id": "unit",
+        "label": "Unit"
+      },
+      {
+        "id": "status",
+        "label": "Status"
+      },
+      {
+        "id": "needed_by",
+        "label": "Needed by"
+      },
+      {
+        "id": "owner",
+        "label": "Owner"
+      },
+      {
+        "id": "estimated_cost",
+        "label": "Est. cost"
+      }
+    ]
+  }
+}

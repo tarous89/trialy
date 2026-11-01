@@ -1,0 +1,125 @@
+{
+  "id": "life.inventory-management",
+  "version": "1.0.2",
+  "name": "Inventory Management",
+  "description": "Quartzy-inspired inventory and replenishment operations for small biotech and nonclinical research labs, with auditable lot-level stock, simple requests and per-item forecasting.",
+  "tags": [
+    "biotech",
+    "research",
+    "laboratory",
+    "inventory",
+    "reagents",
+    "consumables",
+    "stock-movement",
+    "lab-operations",
+    "replenishment"
+  ],
+  "whenToUse": "Small biotech or research team needs nonhuman lab supplies and lots, stock/location history, replenishment requests and simple usage forecasting inside TrialAgents.",
+  "whenNotToUse": "Human sample LIMS, GMP drug accountability, advanced barcode/order execution, audited safety compliance, full enterprise ERP or >800 movement/role exact stock analysis without server aggregates.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "Lab inventory",
+    "tableMap": "{}",
+    "layoutProfile": "{}",
+    "asOfDate": "",
+    "pageSize": 25,
+    "readOnly": false
+  },
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "App title for overview",
+      "default": "Lab inventory"
+    },
+    "tableMap": {
+      "type": "string",
+      "description": "JSON mapping of authorized item/lot/location/movement/request tables, physical fields and logical writable names",
+      "default": "{}"
+    },
+    "layoutProfile": {
+      "type": "string",
+      "description": "Host-reviewed layoutProfile JSON (heading,tabs,cols,visible); never an access policy",
+      "default": "{}"
+    },
+    "asOfDate": {
+      "type": "string",
+      "description": "YYYY-MM-DD reporting date; leave blank for current date",
+      "default": ""
+    },
+    "pageSize": {
+      "type": "number",
+      "description": "Bounded table page size 10–50",
+      "default": 25
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "Disable new/updated record proposals",
+      "default": false
+    }
+  },
+  "instructions": "Read current read_app_template_guidance authoring and usage to completion (v1.3.9 or later), read_app_design, list_app_templates, read_app_template and saved workspace field/access contracts. Pin exact catalog version/digest. Internal TrialAgents account only; no app login/SSO/billing/user directory; official TrialAgents logo/wordmark and https://platform.trialagents.com are supplied by host watermark, never fake them in code. Build only the six evidence-backed inventory screens from the RS-02 blueprint; avoid a generic CRM. Create or bind five scalar role tables using the required field definitions and mapping in the MCP catalog dataContract, then optionally consult schema.example.json as maintainer evidence in tableMap; complete authorized manifests and verify read/write scopes. Item/lot/location IDs are relationships; do not create stock on items or lots; receipts and movements are the only quantity ledger. Prevent invalid units/locations, expired lot use, negative historical balance, premature Received status and unsafe deletion. Movement corrections are reviewed new events, and Delete means reviewed reversal rather than hard delete. Prepare one preview and ensure every menu/action is useful. The leading templateLayoutSchema declaration enables gear tracker:layout and native reviewed customLayout; do not write second app settings or replace saved source on drag. Exact app review/save receipts and version preservation. Then optionally offer one weekly ChatGPT stock-risk monitor with a separately approved after-success TrialAgents email, using existing shared runner; no standalone Task, no email by ChatGPT, no required automations. See documentation/tasks for exact prompts, scopes, dedupe and failure policy. Never save fictional demo rows, never claim a supplier/host integration, and never claim a connected test without verifying it. Posting requires scalar lots.stock_revision (number, multiple:false, required, initial 0) mapped and writable in the manifest. The counter is managed by the app. Each movement atomically batches a version-checked lot counter increment and one immutable create. A stale confirmation must be discarded and re-prepared after rereading; never remove the counter update or retry only the create. Reconfirm the same preview ID/digest after an ambiguous response; reconcile receipts before re-preparing. Direct Database edits are independent and do not enforce inventory invariants; reserve movement writes to this app workflow. Date-only stock is an end-of-day balance: sum all same-day effects before checking nonnegative daily closing balances; intraday sequence is not represented.",
+  "documentation": {
+    "quickStart": [
+      "Read current TrialAgents authoring/usage/design guidance (v1.3.9 as of 2026-11-01), the exact catalog version/digest, app permissions and authorized database schemas. No separate login or app account.",
+      "Create or reuse five reviewed scalar tables (items,lots,locations,movements,requests). Use real lowercase physical keys and authorized UUID IDs; map logical keys through tableMap; bind read/write fields with correct schema versions and a reviewed manifest. Do not create person/sample/patient tables.",
+      "Configure item names, catalog IDs, one non-convertible stock unit per item, min/target and lead days; create storage locations and nonhuman lots. Opening balances are created ONLY with approved Receipt movements; do not write quantity directly to a master item or lot.",
+      "Review movements in the date-ordered ledger; test an incoming receipt, a use that reduces stock, a transfer conserving total across locations, insufficient-stock rejection and correction with reason. Do not seed fictional records.",
+      "Preview and review all six screens at 320,390,768,1100,1440 CSS widths. Check mobile toolbar, long item names, layout gear and the host-supplied clickable TrialAgents watermark, with appropriate allowed bindings and sanitized frame.",
+      "Save the app through the same requestKey and verify the saved component/version. Use the native `tracker:layout` gear and templateLayoutSchema for drag/touch/keyboard reorder; `prepare_tool_layout` customLayout saves only approved presentation configuration and keeps data/access unchanged.",
+      "Optionally review the weekly ChatGPT stock-risk analysis and a separately approved dependent TrialAgents email after successful committed work. No automation remains the default and does not block app use."
+    ],
+    "dataContract": "Required on creation: items(name,sku,unit); lots(name,item_id,lot_code,location_id); movements(name,item_id,lot_id,kind,quantity,unit,date); locations(name); requests(name,item_id,quantity,unit,status,needed_by). All other listed fields are optional; null and blank are not allowed for required values. items.category values Reagent/Consumable/Equipment/Chemical/Other; locations.kind values Room/Cabinet/Freezer/Shelf/Other; movement kind values Receipt/Use/Transfer/Disposal/Correction In/Correction Out; request status values Requested/Reviewed/Approved/Ordered/Received/Declined, and new requests start Requested. Archived defaults false; movements have no archive field and are corrected by new events, not erased. All fields use real lowercase snake_case database keys, multiple:false and exact platform kinds; required identifiers and references are scalar text containing authorized existing record UUIDs. Create parent items and locations and review save receipts BEFORE using their IDs for lots, then create approved lot receipts before usage. Source name and display name are not relationship IDs. Select values must match the declared options exactly; empty optional fields use null, required fields reject empty; dates are valid YYYY-MM-DD with real calendar days. Minimum positive move qty is enforced. Document tableMap = {role:{typeId:authorizedUUID,fields:{logical:physical,...},writableFields:[authorized logical names]}} and include bindings and the manifest with exact actual kinds/schema versions/read/write permissions. Five scalar internal roles: items [name:text,sku:text,category:select,unit:text,reorder_point:number,target_level:number,supplier:text,lead_days:number,owner:text,notes:text,archived:boolean]; lots [name:text,item_id:text (existing item record ID),lot_code:text,expiry:date,location_id:text (existing location record ID),received_date:date,storage_note:text,stock_revision:number,archived:boolean]; movements [name:text,item_id:text,lot_id:text,kind:select Receipt/Use/Transfer/Disposal/Correction In/Correction Out,quantity:number positive,unit:text,from_location_id:text,to_location_id:text,date:date,reason:text,request_id:text (optional linked request),reversal_of:text]; locations [name:text,parent_id:text,kind:select,temperature:text,owner:text,access_note:text,archived:boolean]; requests [name:text,item_id:text,quantity:number,unit:text,status:select Requested/Reviewed/Approved/Ordered/Received/Declined,needed_by:date,estimated_cost:number,currency:text,owner:text,notes:text,archived:boolean]. Every field multiple:false and physical kind must match; use typed selects only for status/category/kind. No app account/auth tables, human specimens, patient fields or supplier APIs. All relationships are stable authorized record IDs; display labels are not identities. Opening stock is 0, updated ONLY by posted approved receipts and immutable movements; no separate opening/received lot quantity is added. Transfer debits one lot/location and credits another with zero net change; posted movement correction/deletion is a new reviewed reversal with source record ID. Historical negative balances, expired-use attempts, incompatible units and absent destinations block new moves. Lot expiry excludes expired quantity from USABLE stock. The app reads up to 800 rows per role; if unbound/truncated/invalid it withholds exact stock totals or writes rather than silently assuming zero. The lot default location is metadata, not the source of stock truth after transfers. Received purchase status requires linked approved Receipt movements; approval itself never creates inventory. Archived items, lots, locations and requests are reviewed soft deletes with explicit safety restrictions; movement history cannot be hard deleted. No demo seed is saved. At scale, use a verified server aggregate read instead of relying on bounded client aggregation. Posting requires scalar lots.stock_revision (number, multiple:false, required, initial 0) mapped and writable in the manifest. The counter is managed by the app. Each movement atomically batches a version-checked lot counter increment and one immutable create. A stale confirmation must be discarded and re-prepared after rereading; never remove the counter update or retry only the create. Reconfirm the same preview ID/digest after an ambiguous response; reconcile receipts before re-preparing. Direct Database edits are independent and do not enforce inventory invariants; reserve movement writes to this app workflow. Date-only stock is an end-of-day balance: sum all same-day effects before checking nonnegative daily closing balances; intraday sequence is not represented.",
+    "interactionContract": "Custom transient editor select, input, date, number and textarea all carry data-ui-state, stable editor:<field> actions and name; each change updates returned draft before submit. The original record version is captured when opening edit/archive, and conflicts preserve the draft. Source incompleteness blocks exact totals, dependency-sensitive archive, approval and movement. Stock watchlist and location registries have reachable Prev/Next. Six unique screens: Overview dark risk KPI + priority queue / storage coverage / event-count trend; Inventory master with computed usable stock, search, category/low/expiry filter, detail lot drawer and row menu; Stock movements with validated date, type, item/lot, source/destination, quantity, draft before/after stock preview and immutable history table; Storage locations two-level explorer and current lot balances with transfers only via movement; Purchase requests stage strip and reviewed status workflow; Stock forecast item-specific usage trend, days-of-cover and assumption-aware reorder watchlist with inline ChatGPT briefing instructions. Each mutable table record has a three-dot Edit/Duplicate/Delete menu (lot menus in linked item details). For immutable movements Delete means reviewed reversal, not erasure; corrections keep original IDs. Forms are local, submit a records.propose exact change, and remain uncommitted until trusted outer confirmation. Search and primary Add stay inline, secondary filters in disclosure. All table reads bound and pages capped 25 by default. Gear data-action tracker:layout delegates to native TrialAgents host; leading templateLayoutSchema declares native screens/field groups and layoutProfile in templateConfiguration preserves reviewed reorder. No app-local layout editor, login, external navigation or automation manager. Official TrialAgents logo is supplied by the trusted host and its clickable destination must be https://platform.trialagents.com.",
+    "lifecycle": "Catalog ID life.inventory-management, semantic version 1.0.2. Pin digest/version and use one requestKey to prepare then confirm. Revisions preserve existing app ID and expectedVersion; reconcile lost responses from server receipts before another attempt. Layout updates persist only approved `customLayout` from prepare_tool_layout and the same component version, preserving source logic, bindings, manifest, permission and record histories. App-state drafts are transient, never a saved record. A denied write or stale expected version is not retried with a new ID; preserve inputs for correction. Archive prevents unsafe editing and suspends automations; restore/copy does not silently re-enable. The platform supplies all authentication, sharing, trusted watermark and auditing. No ChatGPT/email job is automatically configured or activated by template installation. Missing background setup never affects inventory screens.",
+    "limitations": [
+      "Internal, nonhuman laboratory materials only; not GMP/GxP certification, validated LIMS, hazardous chemical compliance, human biospecimen storage or clinical-trial investigational medicinal product accountability.",
+      "No supplier catalog, purchase execution, barcode scanner, shipping, SDS automation, login, or bank/ERP integration is claimed. Quartzy is a workflow benchmark, not copied code or feature parity.",
+      "Stock metrics require complete authorized movements, lots, items, locations and requests within a maximum of 800 rows per role. Larger/split datasets need host aggregate backend; a single page does not represent all stock.",
+      "Expiry uses date granularity; exclude expired lots from usable stock, but disposal remains a separate reviewed movement. No automatic waste disposal.",
+      "Current frontend-js has app-level access only; screen visibility via native layout is presentation, not field/section security. Use host app/database access.",
+      "Standalone HTML demonstrates fictional local review; native drag layout is available only inside the TrialAgents host. It is not a real saved app. Real host acceptance of layouts, write receipts, touch/keyboard, active permissions, and background execution must be tested before production approval.",
+      "Automation setup/model and host runtime readiness are not demonstrated by this ZIP; no automation is active.",
+      "Movement and lot counter commit in one reviewed transaction. Independent direct Database edits are outside this inventory workflow; they can invalidate its ledger. Stock is date-granular, not intraday custody tracking. Above 800 rows per role exact stock and postings are withheld; use an authorized aggregate before exceeding this documented scope."
+    ],
+    "examples": [
+      {
+        "prompt": "Build a lab inventory for our six-person biotech, with three storage areas, lot-based receipts and weekly reagent replenishment needs.",
+        "expectedBehavior": "Create six-screen internal app under existing TrialAgents account; five approved role tables, record bindings and one unit per item. No patient samples or supplier integration; no automation without later consent."
+      },
+      {
+        "prompt": "Move three boxes of tips from stock shelf B3 to Biology lab, then check available quantity.",
+        "expectedBehavior": "Create one reviewed Transfer movement with same lot and unit, debit/credit locations, conserved global item stock; no direct location edit."
+      },
+      {
+        "prompt": "Duplicate the RNA extraction kit item, then correct and delete an erroneous usage movement.",
+        "expectedBehavior": "Duplicate opens a prefilled draft requiring unique catalog/supplier identity. Deleting posted Use starts a checked new Correction In movement referencing the old movement with reason, without erasing original."
+      },
+      {
+        "prompt": "Notify me weekly about newly low-stock reagents and expiring lots after they are saved.",
+        "expectedBehavior": "After app save, separately approve a scoped weekly shared ChatGPT monitor and TrialAgents completion email to authorized existing team members; no independent email schedule and no email on no_update/blocked/partial."
+      },
+      {
+        "prompt": "We just want to record our storage and purchasing needs, no background monitoring.",
+        "expectedBehavior": "App works normally with no ChatGPT/email automation created."
+      }
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "A weekly stock-risk memo from bounded authorized lab inventory; optional after-success TrialAgents email notification. No automation is valid.",
+      "readRequirements": "Owner-approved weekly Europe/Berlin window, complete bound tables, permission and last verified scan; no human samples, no external supplier orders, stable dedupe IDs, scoped optional report table (if present), owner approval for write and recipients, never infer emailing rights.",
+      "outputContract": "Read and reconcile all source rows; if source incomplete/blocked or no new material issue, return incomplete or no_update without fake success. If a report is approved and committed, save verified report ID, count, UTC completion timestamp and server receipt. The optional separately approved TrialAgents email manual-trigger action fires only after the reviewed success criterion and to current authorized members. Distinguish saved app, enabled definition, runner readiness, completed research and actual email delivery. Keep history in platform Logs, not in app.",
+      "promptExample": "Analyze the saved TrialAgents Inventory Management app for internal nonhuman laboratory inventory only. At the approved weekly review time (Europe/Berlin), read authorized items, nonhuman lots, locations, posted movements and purchase requests, with complete pagination and versioned source IDs. Skip if any relation, data scope or movement coverage is incomplete. Verify ledger balance per item/lot/location from receipts, usage, transfers and corrections; do not mix stock units, human specimens or expiry dates. Identify newly low-stock items, lots expiring within 30 days and outstanding purchase needs compared with the previous successful coverage. Explain any consumption and lead-time assumptions and link every finding to specific saved records. Generate one concise owner-reviewable stock-risk memo into an existing authorized reports destination only if that table exists and its write scope is separately approved; otherwise return the draft for human review without writing. Never create purchase orders or change posted movements, lot balances, approvals, or access rights. Deduplicate by app ID + item ID + status/expiry date + review window. Finish as completed only after separately authorized writes have verified receipts and return committed changes count, UTC timestamp and report ID. If nothing materially changed, use no_update with a verified check timestamp. Denied scope, incomplete data or errors are blocked/partial, not success; never trigger an email on those statuses.\n\nDependent email: Configure only after separately approved weekly ChatGPT analysis and any confirmed saved memo. TrialAgents executes email (not ChatGPT) using a dependent after-success manual trigger with no second schedule. To: app owner by default, plus specifically authorized existing TrialAgents team members selected through platform controls. Subject: Lab inventory review ready. Message: A reviewed inventory risk memo is available in your TrialAgents workspace. Open TrialAgents at https://platform.trialagents.com to review it. Use these fixed words; do not interpolate unverified dynamic fields or pretend the email executor supports placeholders. Verified record IDs, counts and finish timestamps remain in the saved report and platform Logs. Send only after completed with a verified saved report or committed changes under the approved notification policy. Do not send for no_update, blocked, pending review, partial/failed jobs or missing receipts; delivery failure does not rerun the analysis. Do not infer recipient permission from request owner/supplier fields.\n\nNo automation: Create Inventory Management with five internal data tables and the six-screen UI, no ChatGPT automation and no email action. Staff manually record inventory, lots, receipts, usage, transfers, requests and forecasts. Normal stock calculations and record review are fully functional without background services or supplier integrations."
+    }
+  },
+  "examples": [
+    {
+      "heading": "Lab inventory",
+      "tableMap": "{}",
+      "layoutProfile": "{}",
+      "asOfDate": "",
+      "pageSize": 25,
+      "readOnly": false
+    }
+  ],
+  "deprecated": false
+}
