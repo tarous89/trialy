@@ -1,0 +1,519 @@
+{
+  "opportunities": {
+    "name": "grant_opportunities",
+    "fields": [
+      {
+        "key": "title",
+        "name": "Opportunity",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "funder",
+        "name": "Funder",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "call_id",
+        "name": "Official call ID",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "focus",
+        "name": "Research area",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "Discovery R&D",
+          "Preclinical",
+          "CMC",
+          "Clinical development",
+          "Digital lab",
+          "Platform technology",
+          "Other"
+        ]
+      },
+      {
+        "key": "region",
+        "name": "Geography",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "EU",
+          "UK",
+          "US",
+          "Global",
+          "Other"
+        ]
+      },
+      {
+        "key": "applicant_type",
+        "name": "Applicant type / restrictions",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "deadline",
+        "name": "Official deadline",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "deadline_version",
+        "name": "Deadline notice version",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "verified_at",
+        "name": "Verified date",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "source_url",
+        "name": "Official source URL",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "amount_max",
+        "name": "Maximum grant amount",
+        "kind": "number",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "currency",
+        "name": "Funding currency",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "EUR",
+          "USD",
+          "GBP",
+          "CHF"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "Internal owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Call status",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "Open",
+          "Watchlist",
+          "Closed"
+        ]
+      },
+      {
+        "key": "notes",
+        "name": "Eligibility / collaboration notes",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "title": "title",
+      "funder": "funder",
+      "callId": "call_id",
+      "focus": "focus",
+      "region": "region",
+      "applicantType": "applicant_type",
+      "deadline": "deadline",
+      "deadlineVersion": "deadline_version",
+      "verifiedAt": "verified_at",
+      "sourceUrl": "source_url",
+      "amountMax": "amount_max",
+      "currency": "currency",
+      "owner": "owner",
+      "status": "status",
+      "notes": "notes",
+      "archived": "archived"
+    }
+  },
+  "criteria": {
+    "name": "grant_criteria",
+    "fields": [
+      {
+        "key": "opportunity_id",
+        "name": "Opportunity",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "name",
+        "name": "Eligibility check",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "mandatory",
+        "name": "Mandatory",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Evidence decision",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "Unknown",
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "key": "evidence_url",
+        "name": "Evidence URL",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "reason",
+        "name": "Assessment rationale",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "reviewer",
+        "name": "Reviewed by",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "assessed_at",
+        "name": "Assessment date",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "opportunityId": "opportunity_id",
+      "name": "name",
+      "mandatory": "mandatory",
+      "status": "status",
+      "evidenceUrl": "evidence_url",
+      "reason": "reason",
+      "reviewer": "reviewer",
+      "assessedAt": "assessed_at",
+      "archived": "archived"
+    }
+  },
+  "applications": {
+    "name": "grant_applications",
+    "fields": [
+      {
+        "key": "opportunity_id",
+        "name": "Funding call",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "project",
+        "name": "Biotech initiative",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "lead",
+        "name": "Application lead",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "stage",
+        "name": "Stage",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "Researching",
+          "Screening",
+          "Drafting",
+          "Submitted",
+          "Awarded",
+          "Declined"
+        ]
+      },
+      {
+        "key": "requested_amount",
+        "name": "Requested amount",
+        "kind": "number",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "currency",
+        "name": "Currency",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "EUR",
+          "USD",
+          "GBP",
+          "CHF"
+        ]
+      },
+      {
+        "key": "eligibility_decision",
+        "name": "Human eligibility decision",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "Pending",
+          "Eligible",
+          "Ineligible"
+        ]
+      },
+      {
+        "key": "submitted_at",
+        "name": "Date submitted",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "awarded_amount",
+        "name": "Verified award amount",
+        "kind": "number",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "award_date",
+        "name": "Award notification date",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "award_notice_url",
+        "name": "Official award evidence URL",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "next_step",
+        "name": "Next action",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "reviewer",
+        "name": "Internal reviewer",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "Notes / limitations",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "opportunityId": "opportunity_id",
+      "project": "project",
+      "lead": "lead",
+      "stage": "stage",
+      "requestedAmount": "requested_amount",
+      "currency": "currency",
+      "eligibilityDecision": "eligibility_decision",
+      "submittedAt": "submitted_at",
+      "awardedAmount": "awarded_amount",
+      "awardDate": "award_date",
+      "awardNoticeUrl": "award_notice_url",
+      "nextStep": "next_step",
+      "reviewer": "reviewer",
+      "notes": "notes",
+      "archived": "archived"
+    }
+  },
+  "milestones": {
+    "name": "grant_milestones",
+    "fields": [
+      {
+        "key": "application_id",
+        "name": "Linked application",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "title",
+        "name": "Milestone / deliverable",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "due",
+        "name": "Due date",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "To do",
+          "In progress",
+          "Blocked",
+          "Done"
+        ]
+      },
+      {
+        "key": "completed_at",
+        "name": "Completion date",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "evidence",
+        "name": "Completion evidence",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "applicationId": "application_id",
+      "title": "title",
+      "owner": "owner",
+      "due": "due",
+      "status": "status",
+      "completedAt": "completed_at",
+      "evidence": "evidence",
+      "archived": "archived"
+    }
+  }
+}

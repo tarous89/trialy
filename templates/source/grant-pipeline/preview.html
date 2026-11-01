@@ -1,0 +1,1451 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Grant Pipeline fictional preview</title><style>/* Grant Pipeline — editorial funding tracker for small biotech R&D teams.
+   Interface contains no fake logo, authentication or external assets. */
+.gp-app{--gp-ink:#203b36;--gp-muted:#445e53;--gp-line:#e5ebe6;--gp-green:#124338;--gp-lime:#dcf874;--gp-purple:#7456e9;--gp-rose:#f17c70;--gp-cream:#f7f8f4;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;color:var(--gp-ink);background:var(--gp-cream);font-size:15px;line-height:1.48;display:grid;grid-template-columns:218px minmax(0,1fr);min-height:820px;width:100%}.gp-app *{box-sizing:border-box}.gp-app button,.gp-app select,.gp-app input,.gp-app textarea{font:inherit}.gp-app button{cursor:pointer}.gp-app button:disabled{cursor:not-allowed;opacity:.48}.gp-sidebar{min-width:0;background:#123e35;color:#40574d;display:flex;flex-direction:column;padding:30px 14px 20px}.gp-name{font-size:19.0px;line-height:1.25;font-weight:790;letter-spacing:-.8px;margin:3px 14px 31px;color:#fff}.gp-nav{display:flex;flex-direction:column;gap:4px}.gp-navbtn{width:100%;border:0;background:transparent;color:#40574d;text-align:left;padding:11px 14px;border-radius:10px;font-size:12px;font-weight:620;min-height:40px;display:flex;align-items:center;white-space:normal}.gp-navbtn:hover{background:#fff1;color:#fff}.gp-navbtn[aria-current=page]{background:#d9f57a;color:#173b30;font-weight:790}.gp-sidebarfoot{font-size:12px;color:#40574d;padding:13px 14px 0;border-top:1px solid #ffffff22;margin-top:auto}.gp-main{min-width:0;padding:29px 36px 44px;width:100%;max-width:1580px;margin:0 auto}.gp-header{display:flex;gap:12px;justify-content:space-between;align-items:center;margin-bottom:22px;min-height:42px}.gp-header h1{font-size:28.0px;line-height:1.24;letter-spacing:-1px;color:#223d35;margin:0;font-weight:790}.gp-headtools{display:flex;gap:9px;align-items:center;justify-content:flex-end;min-width:0}.gp-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid #dce5df;background:#fff;color:#2f4e45;border-radius:9px;min-height:37px;white-space:nowrap;padding:8px 14px;font-size:12px;font-weight:720;line-height:1.2}.gp-btn:hover{border-color:#b4c9ba;background:#f2f9eb}.gp-btn.primary{background:#2d6c55;border-color:#2d6c55;color:#fff}.gp-btn.primary:hover{background:#245641}.gp-btn.lime{background:#d9f579;border-color:#d9f579;color:#254b3a}.gp-btn.small{min-height:29px;padding:5px 10px;font-size:12px}.gp-btn.ghost{background:transparent;border-color:transparent}.gp-btn.danger{color:#40574d}.gp-btn.square{width:37px;min-width:37px;padding:0;font-size:17.0px}.gp-select,.gp-input,.gp-form input,.gp-form select,.gp-form textarea{border:1px solid #dce6df;border-radius:9px;background:#fff;color:#274239;outline:none}.gp-select{height:37px;max-width:245px;padding:0 11px;font-size:12px}.gp-input{height:38px;padding:0 12px;min-width:0;font-size:12px}.gp-select:focus,.gp-input:focus,.gp-form input:focus,.gp-form select:focus,.gp-form textarea:focus{border-color:#8aaf87;box-shadow:0 0 0 3px #85b66b24}.gp-card{background:#fff;border:1px solid var(--gp-line);border-radius:14px;box-shadow:0 4px 26px #0c38250a;min-width:0}.gp-cardpad{padding:21px}.gp-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}.gp-metric{min-height:133px;padding:20px;display:flex;flex-direction:column;gap:13px;justify-content:space-between;position:relative;overflow:hidden}.gp-metric::after{content:'';width:58px;height:58px;border-radius:50%;position:absolute;right:-26px;top:-26px;background:var(--tile,#f4f7e8)}.gp-metric .gp-eyebrow{font-size:12px;font-weight:680;color:#40574d}.gp-metric strong{font-size:32.0px;line-height:1;letter-spacing:-1.4px;font-weight:780;display:block}.gp-metric small{font-size:12px;color:#40574d}.gp-metric.olive{--tile:#d8f37a}.gp-metric.violet{--tile:#e2dcff}.gp-metric.coral{--tile:#ffe2da}.gp-metric.blue{--tile:#d5ebf2}.gp-split{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(275px,1fr);gap:14px;margin-top:15px}.gp-split.even{grid-template-columns:1fr 1fr}.gp-section{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.gp-section h2{font-size:15.0px;font-weight:760;letter-spacing:-.35px;margin:0}.gp-section small{font-size:12px;color:#40574d;white-space:nowrap}.gp-caption{font-size:12px;color:#40574d}.gp-rule{border:0;border-top:1px solid #ebefe9;margin:14px 0}.gp-chip{display:inline-flex;align-items:center;border-radius:18px;padding:4px 9px;font-size:12px;font-weight:700;line-height:1.2;white-space:nowrap;background:#edf0ed;color:#40574d}.gp-chip.green{background:#e7f5e4;color:#40574d}.gp-chip.purple{background:#ece8fd;color:#40574d}.gp-chip.orange{background:#fff0df;color:#40574d}.gp-chip.red{background:#ffe9e6;color:#40574d}.gp-chip.blue{background:#e9f2f7;color:#40574d}.gp-chip.neutral{background:#f1f2ef;color:#40574d}.gp-dot{display:inline-block;vertical-align:middle;width:7px;height:7px;border-radius:50%;background:#bcc6b9;margin-right:7px}.gp-dot.green{background:#54b581}.gp-dot.red{background:#f18379}.gp-dot.orange{background:#e7ae5a}.gp-dot.purple{background:#927df4}.gp-soft{color:#40574d}.gp-strong{font-weight:760;color:#274439}.gp-muted{font-size:12px;color:#40574d}.gp-tiny{font-size:12px;color:#40574d}.gp-notice{padding:11px 14px;border-radius:10px;background:#fff7e8;border:1px solid #ecdabb;color:#40574d;margin-bottom:13px;font-size:12px}.gp-notice.info{background:#eaf5ee;color:#40574d;border-color:#cde9d4}.gp-notice.bad{background:#fff0ee;color:#40574d;border-color:#f3d5d0}.gp-alert{display:flex;align-items:flex-start;gap:11px;padding:11px 0;border-bottom:1px solid #eef2ed;min-width:0}.gp-alert:last-child{border-bottom:0}.gp-alert a{color:#40574d;text-decoration:underline}.gp-alert b{font-size:12px}.gp-alert p{margin:4px 0 0;color:#40574d;font-size:12px}.gp-alert .gp-when{min-width:56px;font-weight:730;color:#40574d;font-size:12px}.gp-funder{display:block;color:#40574d;font-size:12px;margin-top:2px}.gp-bars{display:grid;gap:14px}.gp-barrow{display:grid;grid-template-columns:102px 1fr 38px;align-items:center;gap:10px;font-size:12px;min-width:0}.gp-barrow>span{color:#40574d;font-weight:660}.gp-barrow>b{text-align:right;font-size:12px}.gp-track{border-radius:20px;height:9px;min-width:0;background:#edf2e9;overflow:hidden}.gp-track>i{height:100%;display:block;background:var(--fill,#a8cc77);border-radius:20px}.gp-barrow:nth-child(2) .gp-track>i{background:#8c79e7}.gp-barrow:nth-child(3) .gp-track>i{background:#4ab4a5}.gp-barrow:nth-child(4) .gp-track>i{background:#ed9b71}.gp-barrow:nth-child(5) .gp-track>i{background:#7e9fdc}.gp-toolbar{display:flex;gap:8px;align-items:center;min-width:0;margin-bottom:14px;flex-wrap:nowrap}.gp-toolbar>.gp-input{flex:1;width:100%}.gp-toolbar>.gp-select{flex:0 1 180px;min-width:100px}.gp-toolbar>.gp-btn{flex:none}.gp-tablewrap{width:100%;overflow-x:auto;overflow-y:visible;max-width:100%}.gp-table{border-collapse:collapse;width:100%;min-width:680px;text-align:left;font-size:12px}.gp-table th{padding:13px 16px;font-weight:720;color:#40574d;font-size:12px;background:#fafbf8;border-bottom:1px solid #e6ebe5}.gp-table td{padding:14px 16px;border-bottom:1px solid #eff2ed;vertical-align:middle}.gp-table tr:last-child td{border-bottom:0}.gp-table td strong{font-weight:770;color:#26453a}.gp-table td small{color:#40574d;font-size:12px;display:block;margin-top:3px}.gp-table th:last-child,.gp-table td:last-child{text-align:right}.gp-table tbody tr:hover{background:#fbfdf7}.gp-right{text-align:right;white-space:nowrap}.gp-actions{width:45px;max-width:45px}.gp-morewrap{position:relative;display:inline-block}.gp-more{border:0;background:transparent;color:#40574d;font-size:20.0px;line-height:1;border-radius:8px;width:29px;height:28px}.gp-more:hover{background:#eef5e6}.gp-menu{position:absolute;right:0;top:29px;z-index:12;width:136px;box-shadow:0 11px 28px #24453226;border:1px solid #dce6dd;background:#fff;border-radius:10px;display:grid;gap:2px;padding:5px}.gp-menu button{width:100%;text-align:left;padding:8px;border:0;border-radius:7px;background:transparent;font-size:12px;color:#355548;font-weight:610}.gp-menu button:hover{background:#eef4e8}.gp-menu button.warning{color:#40574d}.gp-sortline{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:14px;color:#40574d;font-size:12px}.gp-sortline .gp-btn{min-height:30px}.gp-opportunitytitle{font-weight:740;display:block;color:#2e4a40}.gp-stage{padding:2px 7px;background:#f0f3ef;border-radius:6px;font-size:12px;font-weight:690}.gp-link{color:#40574d;font-size:12px;overflow-wrap:anywhere;text-decoration:underline}.gp-elighead{display:flex;justify-content:space-between;align-items:center;gap:13px;flex-wrap:wrap;padding:17px 20px;background:#fff;border:1px solid #e3e9e2;border-radius:13px;margin-bottom:14px}.gp-elighead .gp-select{max-width:440px;width:100%}.gp-eligstats{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.gp-eligstats span{font-size:12px;color:#40574d}.gp-eligstats strong{font-weight:790;color:#385644}.gp-critcard{display:grid;grid-template-columns:minmax(0,1.3fr) 120px minmax(120px,.8fr) 110px;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid #eff2eb;min-width:0}.gp-critcard:last-child{border-bottom:0}.gp-critcard h3{font-size:12px;font-weight:740;margin:0}.gp-critcard p{margin:4px 0 0;color:#40574d;font-size:12px}.gp-critcard .gp-right{font-size:12px}.gp-kanban{display:grid;grid-template-columns:repeat(4,minmax(170px,1fr));gap:13px;align-items:start;min-width:0}.gp-kanbancol{background:#f0f3ee;border:1px solid #e6eae3;border-radius:12px;min-height:295px;padding:13px}.gp-kanbanhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;font-weight:770;font-size:12px}.gp-kanbanhead b{border-radius:20px;background:#e0e7df;font-size:12px;padding:3px 8px}.gp-kanbancard{background:#fff;border-radius:10px;padding:14px 13px 12px;margin-bottom:10px;box-shadow:0 1px 8px #1b39240c;border:1px solid #e1e9df}.gp-kanbancard strong{font-size:12px;line-height:1.4;display:block}.gp-kanbancard .gp-details{color:#40574d;font-size:12px;margin:6px 0 12px}.gp-kanbancard footer{border-top:1px solid #edf0ec;padding-top:9px;display:flex;justify-content:space-between;gap:6px;align-items:center;font-size:12px;color:#40574d}.gp-taskbar{height:10px;background:#eff3e9;border-radius:9px;overflow:hidden;position:relative}.gp-taskbar i{display:block;height:100%;background:#a5d084}.gp-taskbar .gp-line{position:absolute;top:0;bottom:0;width:3px;background:#7456e9}.gp-gantthead{display:grid;grid-template-columns:minmax(150px,1fr) repeat(8,minmax(35px,1fr));gap:7px;align-items:center;color:#40574d;font-size:12px;margin-bottom:14px}.gp-gantthead span{text-align:center}.gp-ganttrow{display:grid;grid-template-columns:minmax(150px,1fr) repeat(8,minmax(35px,1fr));gap:7px;align-items:center;border-top:1px solid #edf0ea;padding:11px 0;font-size:12px;min-width:0}.gp-ganttrow b{font-size:12px}.gp-ganttcell{height:13px;border-radius:6px;background:#f0f4eb;display:flex;align-items:center;justify-content:center}.gp-ganttcell.due{background:#c7ea78}.gp-ganttcell.late{background:#f5b4a8}.gp-ganttcell.done{background:#b5e3cb}.gp-fundview{display:grid;grid-template-columns:1fr 1fr;gap:14px}.gp-moneyrow{display:flex;justify-content:space-between;align-items:center;gap:13px;padding:13px 0;border-bottom:1px solid #f0f2ec}.gp-moneyrow:last-child{border-bottom:0}.gp-moneyrow strong{color:#2c4e40;font-size:15.0px}.gp-moneyrow small{font-size:12px;color:#40574d;display:block}.gp-reviewnote{border-left:3px solid #abcf75;padding:9px 12px 9px 13px;font-size:12px;color:#40574d;background:#fafcf8;border-radius:0 8px 8px 0;margin-top:11px}.gp-prompt{background:#f7f8f4;border-radius:11px;border:1px solid #e1e9e0;padding:15px;margin-top:12px;font-size:12px;color:#40574d;line-height:1.6;user-select:text;white-space:pre-wrap}.gp-selectors{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.gp-empty{padding:26px 20px;color:#40574d;font-size:12px}.gp-overlay{position:fixed;inset:0;z-index:50;background:#0b241c75;display:flex;justify-content:flex-end;align-items:stretch}.gp-drawer{width:min(505px,100%);background:#fff;box-shadow:-12px 0 36px #071a0f26;height:100%;overflow-y:auto;min-height:0;padding:24px 26px}.gp-drawerheader{display:flex;justify-content:space-between;gap:14px;align-items:start;margin-bottom:19px}.gp-drawerheader h2{font-size:21.0px;margin:0;letter-spacing:-.6px}.gp-drawerheader p{font-size:12px;color:#40574d;margin:5px 0 0}.gp-form{display:grid;grid-template-columns:1fr 1fr;gap:12px}.gp-form label{display:flex;flex-direction:column;gap:5px;font-weight:650;font-size:12px;color:#40574d;min-width:0}.gp-form label.wide{grid-column:span 2}.gp-form input,.gp-form select{width:100%;min-width:0;height:37px;padding:7px 10px;font-size:12px}.gp-form textarea{width:100%;resize:vertical;min-height:75px;padding:9px;font-size:12px}.gp-formfooter{grid-column:span 2;border-top:1px solid #e9eeea;padding-top:15px;display:flex;justify-content:flex-end;gap:9px}.gp-dialog{background:#fff;border-radius:14px;padding:25px 27px;width:min(415px,calc(100vw - 20px));margin:auto;box-shadow:0 14px 45px #122b1c24}.gp-dialog h2{font-size:20.0px;margin:0 0 10px}.gp-dialog p{font-size:12px;line-height:1.65;color:#40574d}.gp-dialog footer{display:flex;gap:8px;justify-content:flex-end;margin-top:22px}.gp-app .gp-overlay *{box-sizing:border-box}.gp-locked{opacity:.72}.gp-warntext{color:#40574d}.gp-fakebadge{font-weight:650;font-size:12px;color:#40574d;margin-bottom:10px;display:block}
+@media(max-width:1170px){.gp-app{grid-template-columns:190px 1fr}.gp-main{padding:23px 23px 36px}.gp-kanban{grid-template-columns:repeat(2,minmax(170px,1fr))}.gp-critcard{grid-template-columns:minmax(0,1fr) 105px 100px;}.gp-critcard .gp-assessor{display:none}}
+@media(max-width:850px){.gp-app{display:block;min-height:auto}.gp-sidebar{display:block;padding:13px 15px 10px}.gp-name{margin:0 4px 11px;font-size:18.0px}.gp-nav{display:flex;overflow-x:auto;gap:6px;scrollbar-width:thin}.gp-navbtn{white-space:nowrap;min-height:34px;padding:7px 10px;flex:0 0 auto}.gp-sidebarfoot{display:none}.gp-main{padding:19px 18px 30px}.gp-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.gp-split,.gp-split.even,.gp-fundview{grid-template-columns:1fr}.gp-header h1{font-size:24.0px}.gp-critcard{grid-template-columns:minmax(0,1.5fr) 96px 94px}.gp-critcard .gp-assessor{display:none}.gp-gantthead,.gp-ganttrow{grid-template-columns:minmax(150px,1fr) repeat(8,minmax(34px,1fr));min-width:570px}.gp-ganttscroll{overflow-x:auto}}
+@media(max-width:520px){.gp-main{padding:16px 12px 26px}.gp-header{gap:8px}.gp-header h1{font-size:23.0px}.gp-headtools{gap:5px}.gp-headtools .gp-select{max-width:116px;font-size:12px;padding:0 7px}.gp-btn{padding:7px 10px;font-size:12px}.gp-metric{min-height:110px;padding:15px}.gp-metric strong{font-size:26.0px}.gp-metric .gp-eyebrow{font-size:12px}.gp-cardpad{padding:15px}.gp-toolbar{gap:6px}.gp-toolbar .gp-select{max-width:100px;flex-basis:100px;font-size:12px}.gp-toolbar .gp-btn{padding:7px 9px}.gp-kanban{grid-template-columns:1fr}.gp-critcard{grid-template-columns:1fr auto;gap:7px 10px}.gp-critcard .gp-assessor{display:none}.gp-critcard .gp-when{grid-column:2}.gp-form{grid-template-columns:1fr}.gp-form label.wide{grid-column:span 1}.gp-formfooter{grid-column:span 1}.gp-fundview{grid-template-columns:1fr}.gp-elighead{padding:14px}.gp-header h1{max-width:53vw}.gp-railfoot{display:none}}
+@media(max-width:350px){.gp-main{padding:15px 10px 24px}.gp-header h1{font-size:21.0px}.gp-headtools>.gp-btn{padding:7px}.gp-name{font-size:17.0px}.gp-metric strong{font-size:23.0px}}
+
+.gp-sidebar,.gp-sidebarfoot,.gp-navbtn{color:#e5f2e9}.gp-navbtn[aria-current=page]{color:#173b30}.gp-name{color:#fff}
+.gp-chip.green{color:#21573c}.gp-chip.red{color:#852e2a}.gp-chip.orange{color:#73401b}.gp-chip.purple{color:#513698}.gp-chip.blue{color:#225877}.gp-chip.neutral{color:#40574d}
+.gp-form>.gp-btn{grid-column:1/-1}.gp-sortline{flex-wrap:wrap;gap:10px}.gp-sortline>div{display:flex;flex-wrap:wrap;gap:8px}.gp-sortline span{white-space:nowrap}
+.gp-card,.gp-kanbancard,.gp-alert>div,.gp-critcard>div{min-width:0;overflow-wrap:anywhere}.gp-menu{z-index:20}.gp-elighead select{max-width:100%!important}
+</style><body><div id="surface"></div><script>
+const source="const GRANT_CSS=\"/* Grant Pipeline — editorial funding tracker for small biotech R&D teams.\\n   Interface contains no fake logo, authentication or external assets. */\\n.gp-app{--gp-ink:#203b36;--gp-muted:#445e53;--gp-line:#e5ebe6;--gp-green:#124338;--gp-lime:#dcf874;--gp-purple:#7456e9;--gp-rose:#f17c70;--gp-cream:#f7f8f4;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;color:var(--gp-ink);background:var(--gp-cream);font-size:15px;line-height:1.48;display:grid;grid-template-columns:218px minmax(0,1fr);min-height:820px;width:100%}.gp-app *{box-sizing:border-box}.gp-app button,.gp-app select,.gp-app input,.gp-app textarea{font:inherit}.gp-app button{cursor:pointer}.gp-app button:disabled{cursor:not-allowed;opacity:.48}.gp-sidebar{min-width:0;background:#123e35;color:#40574d;display:flex;flex-direction:column;padding:30px 14px 20px}.gp-name{font-size:19.0px;line-height:1.25;font-weight:790;letter-spacing:-.8px;margin:3px 14px 31px;color:#fff}.gp-nav{display:flex;flex-direction:column;gap:4px}.gp-navbtn{width:100%;border:0;background:transparent;color:#40574d;text-align:left;padding:11px 14px;border-radius:10px;font-size:12px;font-weight:620;min-height:40px;display:flex;align-items:center;white-space:normal}.gp-navbtn:hover{background:#fff1;color:#fff}.gp-navbtn[aria-current=page]{background:#d9f57a;color:#173b30;font-weight:790}.gp-sidebarfoot{font-size:12px;color:#40574d;padding:13px 14px 0;border-top:1px solid #ffffff22;margin-top:auto}.gp-main{min-width:0;padding:29px 36px 44px;width:100%;max-width:1580px;margin:0 auto}.gp-header{display:flex;gap:12px;justify-content:space-between;align-items:center;margin-bottom:22px;min-height:42px}.gp-header h1{font-size:28.0px;line-height:1.24;letter-spacing:-1px;color:#223d35;margin:0;font-weight:790}.gp-headtools{display:flex;gap:9px;align-items:center;justify-content:flex-end;min-width:0}.gp-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid #dce5df;background:#fff;color:#2f4e45;border-radius:9px;min-height:37px;white-space:nowrap;padding:8px 14px;font-size:12px;font-weight:720;line-height:1.2}.gp-btn:hover{border-color:#b4c9ba;background:#f2f9eb}.gp-btn.primary{background:#2d6c55;border-color:#2d6c55;color:#fff}.gp-btn.primary:hover{background:#245641}.gp-btn.lime{background:#d9f579;border-color:#d9f579;color:#254b3a}.gp-btn.small{min-height:29px;padding:5px 10px;font-size:12px}.gp-btn.ghost{background:transparent;border-color:transparent}.gp-btn.danger{color:#40574d}.gp-btn.square{width:37px;min-width:37px;padding:0;font-size:17.0px}.gp-select,.gp-input,.gp-form input,.gp-form select,.gp-form textarea{border:1px solid #dce6df;border-radius:9px;background:#fff;color:#274239;outline:none}.gp-select{height:37px;max-width:245px;padding:0 11px;font-size:12px}.gp-input{height:38px;padding:0 12px;min-width:0;font-size:12px}.gp-select:focus,.gp-input:focus,.gp-form input:focus,.gp-form select:focus,.gp-form textarea:focus{border-color:#8aaf87;box-shadow:0 0 0 3px #85b66b24}.gp-card{background:#fff;border:1px solid var(--gp-line);border-radius:14px;box-shadow:0 4px 26px #0c38250a;min-width:0}.gp-cardpad{padding:21px}.gp-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}.gp-metric{min-height:133px;padding:20px;display:flex;flex-direction:column;gap:13px;justify-content:space-between;position:relative;overflow:hidden}.gp-metric::after{content:'';width:58px;height:58px;border-radius:50%;position:absolute;right:-26px;top:-26px;background:var(--tile,#f4f7e8)}.gp-metric .gp-eyebrow{font-size:12px;font-weight:680;color:#40574d}.gp-metric strong{font-size:32.0px;line-height:1;letter-spacing:-1.4px;font-weight:780;display:block}.gp-metric small{font-size:12px;color:#40574d}.gp-metric.olive{--tile:#d8f37a}.gp-metric.violet{--tile:#e2dcff}.gp-metric.coral{--tile:#ffe2da}.gp-metric.blue{--tile:#d5ebf2}.gp-split{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(275px,1fr);gap:14px;margin-top:15px}.gp-split.even{grid-template-columns:1fr 1fr}.gp-section{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.gp-section h2{font-size:15.0px;font-weight:760;letter-spacing:-.35px;margin:0}.gp-section small{font-size:12px;color:#40574d;white-space:nowrap}.gp-caption{font-size:12px;color:#40574d}.gp-rule{border:0;border-top:1px solid #ebefe9;margin:14px 0}.gp-chip{display:inline-flex;align-items:center;border-radius:18px;padding:4px 9px;font-size:12px;font-weight:700;line-height:1.2;white-space:nowrap;background:#edf0ed;color:#40574d}.gp-chip.green{background:#e7f5e4;color:#40574d}.gp-chip.purple{background:#ece8fd;color:#40574d}.gp-chip.orange{background:#fff0df;color:#40574d}.gp-chip.red{background:#ffe9e6;color:#40574d}.gp-chip.blue{background:#e9f2f7;color:#40574d}.gp-chip.neutral{background:#f1f2ef;color:#40574d}.gp-dot{display:inline-block;vertical-align:middle;width:7px;height:7px;border-radius:50%;background:#bcc6b9;margin-right:7px}.gp-dot.green{background:#54b581}.gp-dot.red{background:#f18379}.gp-dot.orange{background:#e7ae5a}.gp-dot.purple{background:#927df4}.gp-soft{color:#40574d}.gp-strong{font-weight:760;color:#274439}.gp-muted{font-size:12px;color:#40574d}.gp-tiny{font-size:12px;color:#40574d}.gp-notice{padding:11px 14px;border-radius:10px;background:#fff7e8;border:1px solid #ecdabb;color:#40574d;margin-bottom:13px;font-size:12px}.gp-notice.info{background:#eaf5ee;color:#40574d;border-color:#cde9d4}.gp-notice.bad{background:#fff0ee;color:#40574d;border-color:#f3d5d0}.gp-alert{display:flex;align-items:flex-start;gap:11px;padding:11px 0;border-bottom:1px solid #eef2ed;min-width:0}.gp-alert:last-child{border-bottom:0}.gp-alert a{color:#40574d;text-decoration:underline}.gp-alert b{font-size:12px}.gp-alert p{margin:4px 0 0;color:#40574d;font-size:12px}.gp-alert .gp-when{min-width:56px;font-weight:730;color:#40574d;font-size:12px}.gp-funder{display:block;color:#40574d;font-size:12px;margin-top:2px}.gp-bars{display:grid;gap:14px}.gp-barrow{display:grid;grid-template-columns:102px 1fr 38px;align-items:center;gap:10px;font-size:12px;min-width:0}.gp-barrow>span{color:#40574d;font-weight:660}.gp-barrow>b{text-align:right;font-size:12px}.gp-track{border-radius:20px;height:9px;min-width:0;background:#edf2e9;overflow:hidden}.gp-track>i{height:100%;display:block;background:var(--fill,#a8cc77);border-radius:20px}.gp-barrow:nth-child(2) .gp-track>i{background:#8c79e7}.gp-barrow:nth-child(3) .gp-track>i{background:#4ab4a5}.gp-barrow:nth-child(4) .gp-track>i{background:#ed9b71}.gp-barrow:nth-child(5) .gp-track>i{background:#7e9fdc}.gp-toolbar{display:flex;gap:8px;align-items:center;min-width:0;margin-bottom:14px;flex-wrap:nowrap}.gp-toolbar>.gp-input{flex:1;width:100%}.gp-toolbar>.gp-select{flex:0 1 180px;min-width:100px}.gp-toolbar>.gp-btn{flex:none}.gp-tablewrap{width:100%;overflow-x:auto;overflow-y:visible;max-width:100%}.gp-table{border-collapse:collapse;width:100%;min-width:680px;text-align:left;font-size:12px}.gp-table th{padding:13px 16px;font-weight:720;color:#40574d;font-size:12px;background:#fafbf8;border-bottom:1px solid #e6ebe5}.gp-table td{padding:14px 16px;border-bottom:1px solid #eff2ed;vertical-align:middle}.gp-table tr:last-child td{border-bottom:0}.gp-table td strong{font-weight:770;color:#26453a}.gp-table td small{color:#40574d;font-size:12px;display:block;margin-top:3px}.gp-table th:last-child,.gp-table td:last-child{text-align:right}.gp-table tbody tr:hover{background:#fbfdf7}.gp-right{text-align:right;white-space:nowrap}.gp-actions{width:45px;max-width:45px}.gp-morewrap{position:relative;display:inline-block}.gp-more{border:0;background:transparent;color:#40574d;font-size:20.0px;line-height:1;border-radius:8px;width:29px;height:28px}.gp-more:hover{background:#eef5e6}.gp-menu{position:absolute;right:0;top:29px;z-index:12;width:136px;box-shadow:0 11px 28px #24453226;border:1px solid #dce6dd;background:#fff;border-radius:10px;display:grid;gap:2px;padding:5px}.gp-menu button{width:100%;text-align:left;padding:8px;border:0;border-radius:7px;background:transparent;font-size:12px;color:#355548;font-weight:610}.gp-menu button:hover{background:#eef4e8}.gp-menu button.warning{color:#40574d}.gp-sortline{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:14px;color:#40574d;font-size:12px}.gp-sortline .gp-btn{min-height:30px}.gp-opportunitytitle{font-weight:740;display:block;color:#2e4a40}.gp-stage{padding:2px 7px;background:#f0f3ef;border-radius:6px;font-size:12px;font-weight:690}.gp-link{color:#40574d;font-size:12px;overflow-wrap:anywhere;text-decoration:underline}.gp-elighead{display:flex;justify-content:space-between;align-items:center;gap:13px;flex-wrap:wrap;padding:17px 20px;background:#fff;border:1px solid #e3e9e2;border-radius:13px;margin-bottom:14px}.gp-elighead .gp-select{max-width:440px;width:100%}.gp-eligstats{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.gp-eligstats span{font-size:12px;color:#40574d}.gp-eligstats strong{font-weight:790;color:#385644}.gp-critcard{display:grid;grid-template-columns:minmax(0,1.3fr) 120px minmax(120px,.8fr) 110px;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid #eff2eb;min-width:0}.gp-critcard:last-child{border-bottom:0}.gp-critcard h3{font-size:12px;font-weight:740;margin:0}.gp-critcard p{margin:4px 0 0;color:#40574d;font-size:12px}.gp-critcard .gp-right{font-size:12px}.gp-kanban{display:grid;grid-template-columns:repeat(4,minmax(170px,1fr));gap:13px;align-items:start;min-width:0}.gp-kanbancol{background:#f0f3ee;border:1px solid #e6eae3;border-radius:12px;min-height:295px;padding:13px}.gp-kanbanhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;font-weight:770;font-size:12px}.gp-kanbanhead b{border-radius:20px;background:#e0e7df;font-size:12px;padding:3px 8px}.gp-kanbancard{background:#fff;border-radius:10px;padding:14px 13px 12px;margin-bottom:10px;box-shadow:0 1px 8px #1b39240c;border:1px solid #e1e9df}.gp-kanbancard strong{font-size:12px;line-height:1.4;display:block}.gp-kanbancard .gp-details{color:#40574d;font-size:12px;margin:6px 0 12px}.gp-kanbancard footer{border-top:1px solid #edf0ec;padding-top:9px;display:flex;justify-content:space-between;gap:6px;align-items:center;font-size:12px;color:#40574d}.gp-taskbar{height:10px;background:#eff3e9;border-radius:9px;overflow:hidden;position:relative}.gp-taskbar i{display:block;height:100%;background:#a5d084}.gp-taskbar .gp-line{position:absolute;top:0;bottom:0;width:3px;background:#7456e9}.gp-gantthead{display:grid;grid-template-columns:minmax(150px,1fr) repeat(8,minmax(35px,1fr));gap:7px;align-items:center;color:#40574d;font-size:12px;margin-bottom:14px}.gp-gantthead span{text-align:center}.gp-ganttrow{display:grid;grid-template-columns:minmax(150px,1fr) repeat(8,minmax(35px,1fr));gap:7px;align-items:center;border-top:1px solid #edf0ea;padding:11px 0;font-size:12px;min-width:0}.gp-ganttrow b{font-size:12px}.gp-ganttcell{height:13px;border-radius:6px;background:#f0f4eb;display:flex;align-items:center;justify-content:center}.gp-ganttcell.due{background:#c7ea78}.gp-ganttcell.late{background:#f5b4a8}.gp-ganttcell.done{background:#b5e3cb}.gp-fundview{display:grid;grid-template-columns:1fr 1fr;gap:14px}.gp-moneyrow{display:flex;justify-content:space-between;align-items:center;gap:13px;padding:13px 0;border-bottom:1px solid #f0f2ec}.gp-moneyrow:last-child{border-bottom:0}.gp-moneyrow strong{color:#2c4e40;font-size:15.0px}.gp-moneyrow small{font-size:12px;color:#40574d;display:block}.gp-reviewnote{border-left:3px solid #abcf75;padding:9px 12px 9px 13px;font-size:12px;color:#40574d;background:#fafcf8;border-radius:0 8px 8px 0;margin-top:11px}.gp-prompt{background:#f7f8f4;border-radius:11px;border:1px solid #e1e9e0;padding:15px;margin-top:12px;font-size:12px;color:#40574d;line-height:1.6;user-select:text;white-space:pre-wrap}.gp-selectors{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.gp-empty{padding:26px 20px;color:#40574d;font-size:12px}.gp-overlay{position:fixed;inset:0;z-index:50;background:#0b241c75;display:flex;justify-content:flex-end;align-items:stretch}.gp-drawer{width:min(505px,100%);background:#fff;box-shadow:-12px 0 36px #071a0f26;height:100%;overflow-y:auto;min-height:0;padding:24px 26px}.gp-drawerheader{display:flex;justify-content:space-between;gap:14px;align-items:start;margin-bottom:19px}.gp-drawerheader h2{font-size:21.0px;margin:0;letter-spacing:-.6px}.gp-drawerheader p{font-size:12px;color:#40574d;margin:5px 0 0}.gp-form{display:grid;grid-template-columns:1fr 1fr;gap:12px}.gp-form label{display:flex;flex-direction:column;gap:5px;font-weight:650;font-size:12px;color:#40574d;min-width:0}.gp-form label.wide{grid-column:span 2}.gp-form input,.gp-form select{width:100%;min-width:0;height:37px;padding:7px 10px;font-size:12px}.gp-form textarea{width:100%;resize:vertical;min-height:75px;padding:9px;font-size:12px}.gp-formfooter{grid-column:span 2;border-top:1px solid #e9eeea;padding-top:15px;display:flex;justify-content:flex-end;gap:9px}.gp-dialog{background:#fff;border-radius:14px;padding:25px 27px;width:min(415px,calc(100vw - 20px));margin:auto;box-shadow:0 14px 45px #122b1c24}.gp-dialog h2{font-size:20.0px;margin:0 0 10px}.gp-dialog p{font-size:12px;line-height:1.65;color:#40574d}.gp-dialog footer{display:flex;gap:8px;justify-content:flex-end;margin-top:22px}.gp-app .gp-overlay *{box-sizing:border-box}.gp-locked{opacity:.72}.gp-warntext{color:#40574d}.gp-fakebadge{font-weight:650;font-size:12px;color:#40574d;margin-bottom:10px;display:block}\\n@media(max-width:1170px){.gp-app{grid-template-columns:190px 1fr}.gp-main{padding:23px 23px 36px}.gp-kanban{grid-template-columns:repeat(2,minmax(170px,1fr))}.gp-critcard{grid-template-columns:minmax(0,1fr) 105px 100px;}.gp-critcard .gp-assessor{display:none}}\\n@media(max-width:850px){.gp-app{display:block;min-height:auto}.gp-sidebar{display:block;padding:13px 15px 10px}.gp-name{margin:0 4px 11px;font-size:18.0px}.gp-nav{display:flex;overflow-x:auto;gap:6px;scrollbar-width:thin}.gp-navbtn{white-space:nowrap;min-height:34px;padding:7px 10px;flex:0 0 auto}.gp-sidebarfoot{display:none}.gp-main{padding:19px 18px 30px}.gp-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.gp-split,.gp-split.even,.gp-fundview{grid-template-columns:1fr}.gp-header h1{font-size:24.0px}.gp-critcard{grid-template-columns:minmax(0,1.5fr) 96px 94px}.gp-critcard .gp-assessor{display:none}.gp-gantthead,.gp-ganttrow{grid-template-columns:minmax(150px,1fr) repeat(8,minmax(34px,1fr));min-width:570px}.gp-ganttscroll{overflow-x:auto}}\\n@media(max-width:520px){.gp-main{padding:16px 12px 26px}.gp-header{gap:8px}.gp-header h1{font-size:23.0px}.gp-headtools{gap:5px}.gp-headtools .gp-select{max-width:116px;font-size:12px;padding:0 7px}.gp-btn{padding:7px 10px;font-size:12px}.gp-metric{min-height:110px;padding:15px}.gp-metric strong{font-size:26.0px}.gp-metric .gp-eyebrow{font-size:12px}.gp-cardpad{padding:15px}.gp-toolbar{gap:6px}.gp-toolbar .gp-select{max-width:100px;flex-basis:100px;font-size:12px}.gp-toolbar .gp-btn{padding:7px 9px}.gp-kanban{grid-template-columns:1fr}.gp-critcard{grid-template-columns:1fr auto;gap:7px 10px}.gp-critcard .gp-assessor{display:none}.gp-critcard .gp-when{grid-column:2}.gp-form{grid-template-columns:1fr}.gp-form label.wide{grid-column:span 1}.gp-formfooter{grid-column:span 1}.gp-fundview{grid-template-columns:1fr}.gp-elighead{padding:14px}.gp-header h1{max-width:53vw}.gp-railfoot{display:none}}\\n@media(max-width:350px){.gp-main{padding:15px 10px 24px}.gp-header h1{font-size:21.0px}.gp-headtools>.gp-btn{padding:7px}.gp-name{font-size:17.0px}.gp-metric strong{font-size:23.0px}}\\n\\n.gp-sidebar,.gp-sidebarfoot,.gp-navbtn{color:#e5f2e9}.gp-navbtn[aria-current=page]{color:#173b30}.gp-name{color:#fff}\\n.gp-chip.green{color:#21573c}.gp-chip.red{color:#852e2a}.gp-chip.orange{color:#73401b}.gp-chip.purple{color:#513698}.gp-chip.blue{color:#225877}.gp-chip.neutral{color:#40574d}\\n.gp-form>.gp-btn{grid-column:1/-1}.gp-sortline{flex-wrap:wrap;gap:10px}.gp-sortline>div{display:flex;flex-wrap:wrap;gap:8px}.gp-sortline span{white-space:nowrap}\\n.gp-card,.gp-kanbancard,.gp-alert>div,.gp-critcard>div{min-width:0;overflow-wrap:anywhere}.gp-menu{z-index:20}.gp-elighead select{max-width:100%!important}\\n\";\nconst templateLayoutSchema={\"screens\":[{\"id\":\"pulse\",\"label\":\"Funding pulse\"},{\"id\":\"opportunities\",\"label\":\"Opportunities\"},{\"id\":\"eligibility\",\"label\":\"Eligibility\"},{\"id\":\"applications\",\"label\":\"Applications\"},{\"id\":\"deadlines\",\"label\":\"Deadlines\"},{\"id\":\"review\",\"label\":\"Funding review\"}],\"groups\":{\"opportunities\":[{\"id\":\"title\",\"label\":\"Opportunity\"},{\"id\":\"funder\",\"label\":\"Funder\"},{\"id\":\"focus\",\"label\":\"Research area\"},{\"id\":\"deadline\",\"label\":\"Deadline\"},{\"id\":\"amountMax\",\"label\":\"Maximum funding\"},{\"id\":\"currency\",\"label\":\"Currency\"},{\"id\":\"status\",\"label\":\"Status\"},{\"id\":\"owner\",\"label\":\"Owner\"},{\"id\":\"sourceUrl\",\"label\":\"Official source\"}],\"criteria\":[{\"id\":\"name\",\"label\":\"Requirement\"},{\"id\":\"mandatory\",\"label\":\"Mandatory\"},{\"id\":\"status\",\"label\":\"Assessment\"},{\"id\":\"reviewer\",\"label\":\"Assessor\"},{\"id\":\"evidenceUrl\",\"label\":\"Evidence URL\"}],\"applications\":[{\"id\":\"project\",\"label\":\"Project\"},{\"id\":\"lead\",\"label\":\"Owner\"},{\"id\":\"stage\",\"label\":\"Stage\"},{\"id\":\"requestedAmount\",\"label\":\"Requested\"},{\"id\":\"eligibilityDecision\",\"label\":\"Eligibility\"}],\"milestones\":[{\"id\":\"title\",\"label\":\"Task\"},{\"id\":\"owner\",\"label\":\"Owner\"},{\"id\":\"due\",\"label\":\"Due date\"},{\"id\":\"status\",\"label\":\"Status\"},{\"id\":\"applicationId\",\"label\":\"Application\"}]}};\n/* TrialAgents Grant Pipeline v1.0.1 — trusted frontend-js render/event body.\n   The host injects configuration/bindings; the builder prepends only layout schema and CSS.\n   No authentication, external data fetch, direct mutations, hidden jobs or imported UI libraries.\n   Only the TrialAgents host controls access, record review, history and automations. */\nconst config=(typeof templateConfiguration==='object'&&templateConfiguration)||{};\nconst bindings=Array.isArray(templateBindings)?templateBindings:[];\nconst event=input.event||{kind:'open',action:'',value:null,form:{}};\nconst action=String(event.action||'');\nconst esc=x=>String(x===null||x===undefined?'':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#39;');\nconst num=(x,d=0)=>typeof x!=='object'&&typeof x!=='boolean'&&x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x))?Number(x):d;\nconst yes=x=>x===true||x==='true'||x==='on'||x===1;\nconst dateOk=x=>{if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(String(x||'')))return false;const d=new Date(x+'T12:00:00Z');return Number.isFinite(d.getTime())&&d.toISOString().slice(0,10)===x;};\nconst day=x=>dateOk(x)?Math.round(Date.parse(String(x)+'T12:00:00Z')/86400000):NaN;\nconst currentDate=dateOk(config.asOf)?config.asOf:(new Date()).toISOString().slice(0,10);\nconst today=day(currentDate);\nconst until=x=>Number.isFinite(day(x))?day(x)-today:null;\nconst when=x=>dateOk(x)?Number(x.slice(8))+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][Number(x.slice(5,7))-1]+' '+x.slice(0,4):'Not recorded';\nconst amount=(x,c)=>x===null||x===undefined||x===''?'Not recorded':String(c||'?')+' '+Math.round(num(x)).toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g,',');\nconst str=x=>String(x===null||x===undefined?'':x);\nconst safeURL=x=>/^https:\\/\\/[a-z0-9][^\\s<>'\"]*$/i.test(str(x))?str(x):'';\nconst fieldDefs={\n opportunities:[['title','Opportunity','text'],['funder','Funder','text'],['callId','Official call ID','text'],['focus','Research area','select','Discovery R&D|Preclinical|CMC|Clinical development|Digital lab|Platform technology|Other'],['region','Geography','select','EU|UK|US|Global|Other'],['applicantType','Applicant type / restrictions','text'],['deadline','Official deadline','date'],['deadlineVersion','Deadline notice version','text'],['verifiedAt','Verified date','date'],['sourceUrl','Official source URL','url'],['amountMax','Maximum grant amount','number'],['currency','Funding currency','select','EUR|USD|GBP|CHF'],['owner','Internal owner','text'],['status','Call status','select','Open|Watchlist|Closed'],['notes','Eligibility / collaboration notes','textarea'],['archived','Archived','boolean']],\n criteria:[['opportunityId','Opportunity','rel:opportunities'],['name','Eligibility check','text'],['mandatory','Mandatory','boolean'],['status','Evidence decision','select','Unknown|Yes|No'],['evidenceUrl','Evidence URL','url'],['reason','Assessment rationale','textarea'],['reviewer','Reviewed by','text'],['assessedAt','Assessment date','date'],['archived','Archived','boolean']],\n applications:[['opportunityId','Funding call','rel:opportunities'],['project','Biotech initiative','text'],['lead','Application lead','text'],['stage','Stage','select','Researching|Screening|Drafting|Submitted|Awarded|Declined'],['requestedAmount','Requested amount','number'],['currency','Currency','select','EUR|USD|GBP|CHF'],['eligibilityDecision','Human eligibility decision','select','Pending|Eligible|Ineligible'],['submittedAt','Date submitted','date'],['awardedAmount','Verified award amount','number'],['awardDate','Award notification date','date'],['awardNoticeUrl','Official award evidence URL','url'],['nextStep','Next action','text'],['reviewer','Internal reviewer','text'],['notes','Notes / limitations','textarea'],['archived','Archived','boolean']],\n milestones:[['applicationId','Linked application','rel:applications'],['title','Milestone / deliverable','text'],['owner','Owner','text'],['due','Due date','date'],['status','Status','select','To do|In progress|Blocked|Done'],['completedAt','Completion date','date'],['evidence','Completion evidence','text'],['archived','Archived','boolean']]\n};\nconst necessary={opportunities:'title',criteria:'name',applications:'project',milestones:'title'};\nlet map={};try{map=JSON.parse(str(config.tableMap||'{}'))}catch(e){}\nconst available={};for(const role of Object.keys(fieldDefs)){const m=map[role];if(!m||!m.typeId)continue;const b=bindings.find(x=>x&&x.typeId===m.typeId);if(!b||!Array.isArray(b.fields))continue;const fields={};for(const f of fieldDefs[role]){const physical=(m.fields||{})[f[0]];if(b.fields.includes(physical))fields[f[0]]=physical;}if(!fieldDefs[role].every(f=>fields[f[0]]))continue;available[role]={typeId:m.typeId,fields,writable:Array.isArray(m.writableFields)?Object.keys(fields).filter(k=>m.writableFields.includes(fields[k])||m.writableFields.includes(k)):[]};}\nfunction fetchRecords(role){const meta=available[role];if(!meta)return {records:[],total:0,complete:false,unbound:true};try{const all=[];let offset=0,total=0,complete=false;for(let page=0;page<2;page++){const response=tools.call('records.read',{typeId:meta.typeId,limit:100,offset,filters:{}})||{};if(response.unavailable||!Array.isArray(response.rows))return {records:[],total:null,complete:false};const records=response.rows;total=Number.isInteger(response.total)&&response.total>=0?response.total:null;for(const row of records){const d={};for(const [key,physical] of Object.entries(meta.fields))if(Object.prototype.hasOwnProperty.call(row.data||{},physical))d[key]=row.data[physical];if(Object.values(d).some(v=>v!==null&&typeof v==='object'))return {records:[],total:null,complete:false};if(!yes(d.archived))all.push({id:row.id,version:row.version,data:d});}offset+=records.length;if(total!==null&&offset>=total){complete=true;break;}if(records.length<100)break;}return {records:all,total,complete,unbound:false};}catch(e){return {records:[],total:0,complete:false,error:str(e.message||e)}}}\nconst fetched={};for(const role of Object.keys(fieldDefs))fetched[role]=fetchRecords(role);\nconst rows=role=>fetched[role]?.records||[];\nconst find=(role,id)=>rows(role).find(r=>r.id===id);\nconst label=(role,id)=>find(role,id)?.data?.[role==='opportunities'?'title':'project']||'Not linked';\nconst complete=Object.values(fetched).every(r=>r.complete);\nconst canWrite=role=>!!input.saved&&!!input.writable&&config.readOnly!==true&&complete&&available[role]&&available[role].writable.length>0;\nconst s=JSON.parse(JSON.stringify(input.state||{}));\nlet layout={};try{layout=JSON.parse(str(config.layoutProfile||'{}'))}catch(e){}\nconst allScreens=templateLayoutSchema.screens.map(x=>x.id);\nconst screenOrder=[...new Set((Array.isArray(layout.tabs)?layout.tabs:allScreens).filter(x=>allScreens.includes(x)).concat(allScreens))];\nconst visibility=layout.visible&&typeof layout.visible==='object'?layout.visible:{};\nconst visibleScreens=screenOrder.filter(x=>visibility[x]!==false);\nconst displayCols={};for(const [role,def] of Object.entries(templateLayoutSchema.groups)){const keys=def.map(x=>x.id);displayCols[role]=[...new Set((Array.isArray(layout.cols?.[role])?layout.cols[role]:keys).filter(x=>keys.includes(x)).concat(keys))].filter(x=>visibility[role+':'+x]!==false);if(displayCols[role].length===0)displayCols[role]=[keys[0]];}\ns.screen=visibleScreens.includes(s.screen)?s.screen:visibleScreens[0]||'pulse';s.opportunityId=str(s.opportunityId||'');s.query=str(s.query||'').slice(0,140);s.statusFilter=str(s.statusFilter||'All');s.page=Math.max(0,Math.floor(num(s.page)));s.menu=str(s.menu||'');s.notice=str(s.notice||'');\nif(!find('opportunities',s.opportunityId))s.opportunityId=rows('opportunities')[0]?.id||'';\nif(action==='selectCall'&&find('opportunities',str(event.value))){s.opportunityId=str(event.value);s.page=0;}else if(action.startsWith('selectcall:')&&find('opportunities',action.slice(11))){s.opportunityId=action.slice(11);s.page=0;}\nconst op=find('opportunities',s.opportunityId);const opData=op?.data||{};\nconst byCall=role=>rows(role).filter(r=>r.data.opportunityId===s.opportunityId);\nconst criteria=byCall('criteria');\nconst appl=rows('applications');\nconst tasks=rows('milestones');\nconst activeCalls=rows('opportunities').filter(r=>r.data.status==='Open'&&safeURL(r.data.sourceUrl)&&dateOk(r.data.verifiedAt)&&day(r.data.verifiedAt)<=today&&until(r.data.deadline)!==null&&until(r.data.deadline)>=0);\nconst dueSoon=activeCalls.filter(r=>until(r.data.deadline)<=30);\nconst confirmedAwards=appl.filter(r=>r.data.stage==='Awarded'&&num(r.data.awardedAmount,0)>0&&dateOk(r.data.awardDate)&&day(r.data.awardDate)<=today&&safeURL(r.data.awardNoticeUrl));\nconst openTasks=tasks.filter(t=>t.data.status!=='Done');\nconst lateTasks=openTasks.filter(t=>until(t.data.due)!==null&&until(t.data.due)<0);\nfunction elig(opId){const checks=rows('criteria').filter(r=>r.data.opportunityId===opId&&yes(r.data.mandatory));const assessed=r=>safeURL(r.data.evidenceUrl)&&dateOk(r.data.assessedAt)&&day(r.data.assessedAt)<=today&&str(r.data.reviewer).trim()&&str(r.data.reason).trim();const fail=checks.filter(r=>r.data.status==='No'&&assessed(r));const passes=checks.filter(r=>r.data.status==='Yes'&&assessed(r));const unknown=checks.filter(r=>!assessed(r)||!['Yes','No'].includes(r.data.status));return {total:checks.length,fail:fail.length,unknown:unknown.length,yes:passes.length,ready:complete&&checks.length>0&&!fail.length&&!unknown.length};}\nconst scopeMissing=()=>Object.entries(fetched).filter(([_,v])=>!v.complete).map(([k,v])=>v.unbound?k+' not bound':k+' incomplete').join(', ');\nconst statusClass=x=>({'Yes':'green','Eligible':'green','Open':'green','Awarded':'green','Done':'green','No':'red','Ineligible':'red','Declined':'red','Blocked':'red','Closed':'neutral','Drafting':'purple','Submitted':'blue','Researching':'orange','Screening':'orange','Watchlist':'orange','Unknown':'orange','Pending':'orange','To do':'neutral','In progress':'purple'}[str(x)]||'neutral');\nconst chip=(text,cls)=>'<span class=\"gp-chip '+esc(cls||statusClass(text))+'\">'+esc(text)+'</span>';\nconst button=(text,act,cls='gp-btn',disabled=false,aria='')=>'<button type=\"button\" data-action=\"'+esc(act)+'\" class=\"'+esc(cls)+'\"'+(disabled?' disabled':'')+(aria?' aria-label=\"'+esc(aria)+'\"':'')+'>'+esc(text)+'</button>';\nconst section=(name,extra='')=>'<div class=\"gp-section\"><h2>'+esc(name)+'</h2>'+extra+'</div>';\nconst notice=()=>s.notice?'<div class=\"gp-notice '+(/saved|prepared|review/i.test(s.notice)?'info':'')+'\" role=\"status\">'+esc(s.notice)+'</div>':'';\nconst smallEmpty=x=>'<p class=\"gp-empty\">'+esc(x)+'</p>';\nconst sourceLink=href=>{const safe=safeURL(href);return safe?'<a class=\"gp-link\" href=\"'+esc(safe)+'\" target=\"_blank\" rel=\"noopener noreferrer\">Official source</a>':'<span class=\"gp-muted\">Source missing</span>';};\nfunction more(role,id){const token=role+':'+id;return '<div class=\"gp-morewrap\">'+button('⋯','menu:'+token,'gp-more',false,'Record actions')+(s.menu===token?'<div class=\"gp-menu\" role=\"menu\">'+button('Edit','edit:'+token,'',!canWrite(role)).replace('class=\"\"','class=\"gp-menuaction\" role=\"menuitem\"')+button('Duplicate','duplicate:'+token,'',!canWrite(role)).replace('class=\"\"','class=\"gp-menuaction\" role=\"menuitem\"')+button('Archive','archive:'+token,'warning',!canWrite(role)).replace('class=\"warning\"','class=\"warning\" role=\"menuitem\"')+'</div>':'')+'</div>';}\nfunction pageRecords(list){const pageSize=Math.min(25,Math.max(10,Math.floor(num(config.pageSize,20))));const pages=Math.max(1,Math.ceil(list.length/pageSize));s.page=Math.min(s.page,pages-1);return {rows:list.slice(s.page*pageSize,(s.page+1)*pageSize),pages,total:list.length};}\nfunction pager(p){return '<div class=\"gp-sortline\"><span>'+esc(p.total)+' records · page '+(s.page+1)+' of '+p.pages+'</span><div>'+button('Previous','page:prev','gp-btn small',s.page===0)+' '+button('Next','page:next','gp-btn small',s.page+1>=p.pages)+'</div></div>';}\nfunction metric(title,value,sub,accent){return '<div class=\"gp-card gp-metric '+accent+'\"><span class=\"gp-eyebrow\">'+esc(title)+'</span><strong>'+esc(value)+'</strong><small>'+esc(sub)+'</small></div>';}\nfunction pulse(){const nextItems=[...activeCalls].sort((a,b)=>str(a.data.deadline).localeCompare(str(b.data.deadline))).slice(0,5);const stageGroups=[['Researching',appl.filter(x=>x.data.stage==='Researching'||x.data.stage==='Screening').length],['Drafting',appl.filter(x=>x.data.stage==='Drafting').length],['Submitted',appl.filter(x=>x.data.stage==='Submitted').length],['Awarded',confirmedAwards.length],['Declined',appl.filter(x=>x.data.stage==='Declined').length]];const max=Math.max(1,...stageGroups.map(x=>x[1]));const pending=appl.filter(a=>a.data.eligibilityDecision==='Pending').length;return '<div class=\"gp-metrics\">'+metric('Open funding calls',activeCalls.length,'Verified deadline recorded','olive')+metric('Due within 30 days',dueSoon.length,'Prioritise the closest cutoff','coral')+metric('Applications in progress',appl.filter(x=>['Screening','Drafting'].includes(x.data.stage)).length,'Not yet submitted','violet')+metric('Verified awards',confirmedAwards.length,'Documented outcome only','blue')+'</div><div class=\"gp-split\"><section class=\"gp-card gp-cardpad\">'+section('Next funding deadlines','<small>Official call dates</small>')+(nextItems.length?nextItems.map(r=>'<div class=\"gp-alert\"><span class=\"gp-when\">'+esc((until(r.data.deadline)||0)+'d')+'</span><div style=\"flex:1;min-width:0\"><b>'+esc(r.data.title)+'</b><p>'+esc(r.data.funder)+' · '+esc(when(r.data.deadline))+'</p></div>'+button('Review','selectcall:'+r.id,'gp-btn small')+'</div>').join(''):smallEmpty('No confirmed upcoming deadlines. Add and verify a call.'))+'</section><section class=\"gp-card gp-cardpad\">'+section('Application stages','<small>Current recorded status</small>')+'<div class=\"gp-bars\">'+stageGroups.map(([name,value])=>'<div class=\"gp-barrow\"><span>'+esc(name)+'</span><div class=\"gp-track\"><i style=\"width:'+Math.round(value/max*100)+'%\"></i></div><b>'+value+'</b></div>').join('')+'</div><div class=\"gp-reviewnote\">'+pending+' application'+(pending===1?'':'s')+' still need a human eligibility decision. Awards are not counted as cash received.</div></section></div><div class=\"gp-split even\"><section class=\"gp-card gp-cardpad\">'+section('Work needing attention')+'<div class=\"gp-alert\"><span class=\"gp-dot orange\"></span><div><b>'+lateTasks.length+' overdue deliverable'+(lateTasks.length===1?'':'s')+'</b><p>Linked internal tasks; manage optional reminders in platform Automations.</p></div></div><div class=\"gp-alert\"><span class=\"gp-dot purple\"></span><div><b>'+pending+' unconfirmed eligibility decision'+(pending===1?'':'s')+'</b><p>Unknown and unmet mandatory criteria remain visible.</p></div></div><div class=\"gp-alert\"><span class=\"gp-dot green\"></span><div><b>'+rows('opportunities').filter(x=>!safeURL(x.data.sourceUrl)||!dateOk(x.data.verifiedAt)).length+' calls missing source verification</b><p>Recheck deadlines on official funder pages.</p></div></div></section><section class=\"gp-card gp-cardpad\">'+section('Priority submissions')+appl.filter(a=>['Drafting','Screening'].includes(a.data.stage)).slice(0,3).map(a=>{const d=a.data;return '<div class=\"gp-alert\"><span class=\"gp-dot '+(d.stage==='Drafting'?'purple':'orange')+'\"></span><div style=\"min-width:0\"><b>'+esc(d.project)+'</b><p>'+esc(label('opportunities',d.opportunityId))+' · '+esc(d.lead||'No lead')+'</p></div></div>';}).join('')+'</section></div>';}\nfunction toolbar(role,buttonText){return '<div class=\"gp-toolbar\"><input data-ui-state name=\"search\" type=\"text\" class=\"gp-input\" aria-label=\"Search records\" placeholder=\"Search loaded '+esc(role)+'\" data-action=\"search\" value=\"'+esc(s.query)+'\"><select data-ui-state name=\"selection\" class=\"gp-select\" aria-label=\"Filter records\" data-action=\"statusFilter\"><option value=\"All\">All statuses</option>'+(['Open','Watchlist','Closed','Researching','Screening','Drafting','Submitted','Awarded','Declined','To do','In progress','Blocked','Done'].filter(x=>role==='opportunities'?['Open','Watchlist','Closed'].includes(x):role==='applications'?['Researching','Screening','Drafting','Submitted','Awarded','Declined'].includes(x):['To do','In progress','Blocked','Done'].includes(x)).map(x=>'<option value=\"'+esc(x)+'\"'+(s.statusFilter===x?' selected':'')+'>'+esc(x)+'</option>').join(''))+'</select>'+button(buttonText,'add:'+role,'gp-btn primary',!canWrite(role))+'</div>';}\nfunction td(x,cls=''){return '<td'+(cls?' class=\"'+cls+'\"':'')+'>'+x+'</td>';}\nfunction dynamicTable(role,list,columns,renderCell,emptyMsg){const cols=displayCols[role].filter(x=>columns.includes(x));const p=pageRecords(list);return '<div class=\"gp-card\"><div class=\"gp-tablewrap\" role=\"region\" aria-label=\"'+esc(role)+' table\" tabindex=\"0\"><table class=\"gp-table\"><thead><tr>'+cols.map(c=>'<th>'+esc((templateLayoutSchema.groups[role].find(x=>x.id===c)||{}).label||c)+'</th>').join('')+'<th>Actions</th></tr></thead><tbody>'+(p.rows.length?p.rows.map(r=>'<tr>'+cols.map(col=>td(renderCell(col,r))).join('')+td(more(role,r.id),'gp-actions')+'</tr>').join(''):'<tr><td colspan=\"'+(cols.length+1)+'\">'+esc(emptyMsg)+'</td></tr>')+'</tbody></table></div></div>'+pager(p);}\nfunction opportunities(){let list=rows('opportunities').filter(r=>(s.statusFilter==='All'||r.data.status===s.statusFilter)&&(r.data.title+' '+r.data.funder+' '+r.data.focus+' '+r.data.region+' '+r.data.owner).toLowerCase().includes(s.query.toLowerCase())).sort((a,b)=>str(a.data.deadline).localeCompare(str(b.data.deadline)));const cols=['title','funder','focus','deadline','amountMax','currency','status','owner','sourceUrl'];function cell(k,r){const d=r.data;switch(k){case'title':return '<strong>'+esc(d.title)+'</strong><small>'+esc(d.callId||'No call ID')+'</small>';case'funder':return '<b>'+esc(d.funder)+'</b><small>'+esc(d.region)+'</small>';case'deadline':return '<b>'+esc(when(d.deadline))+'</b><small>'+(!dateOk(d.verifiedAt)?'Unverified':esc('Checked '+when(d.verifiedAt)))+'</small>';case'amountMax':return '<b>'+esc(amount(d.amountMax,d.currency))+'</b>';case'status':return chip(d.status);case'sourceUrl':return sourceLink(d.sourceUrl);default:return esc(d[k]);}}return toolbar('opportunities','+ New call')+dynamicTable('opportunities',list,cols,cell,'No matching funding calls.');}\nfunction eligibility(){const stats=elig(s.opportunityId);if(!complete)return smallEmpty('Eligibility assessment withheld: complete authorized sources are required.');const selected=rows('opportunities');const cp=pageRecords(criteria);const rowList=cp.rows;const decision=appl.filter(r=>r.data.opportunityId===s.opportunityId);return '<div class=\"gp-elighead\"><select data-ui-state name=\"selection\" class=\"gp-select\" style=\"max-width:420px\" data-action=\"selectCall\" aria-label=\"Select grant call\">'+selected.map(r=>'<option value=\"'+esc(r.id)+'\"'+(r.id===s.opportunityId?' selected':'')+'>'+esc(r.data.title)+'</option>').join('')+'</select><div class=\"gp-eligstats\"><span><strong>'+stats.yes+'/'+stats.total+'</strong> mandatory met</span><span><strong>'+stats.unknown+'</strong> unresolved</span><span><strong>'+stats.fail+'</strong> blocked</span>'+chip(stats.fail?'Not eligible under checks':stats.ready?'Ready for human review':'Assessment incomplete',stats.fail?'red':stats.ready?'green':'orange')+'</div></div><div class=\"gp-card\">'+section('Eligibility checklist','<small>Evidence and reviewer required</small>').replace('gp-section','gp-section gp-cardpad')+(!rowList.length?smallEmpty('Choose a call with recorded criteria, or add the first check.'):rowList.map(r=>{const d=r.data;return '<div class=\"gp-critcard\"><div><h3>'+esc(d.name)+' '+(yes(d.mandatory)?'<span class=\"gp-muted\">· Mandatory</span>':'')+'</h3><p>'+esc(d.reason||'No assessment rationale')+'</p></div><div>'+chip(d.status||'Unknown')+'</div><div class=\"gp-assessor\"><span class=\"gp-muted\">'+esc(d.reviewer||'Not reviewed')+'</span><br><span class=\"gp-tiny\">'+esc(when(d.assessedAt))+'</span></div><div class=\"gp-right\">'+more('criteria',r.id)+'</div></div>';}).join(''))+'</div>'+pager(cp)+'<div class=\"gp-split even\"><div class=\"gp-card gp-cardpad\">'+section('Decision control')+'<div class=\"gp-reviewnote\">A full checklist can be ready for review, but only an authorized person can record an “Eligible” decision on an application. No eligibility guarantee is made by this template.</div><div style=\"margin-top:16px\">'+button('+ Add check','add:criteria','gp-btn',!canWrite('criteria'))+'</div></div><div class=\"gp-card gp-cardpad\">'+section('Linked applications')+(decision.length?decision.map(a=>'<div class=\"gp-alert\"><div><b>'+esc(a.data.project)+'</b><p>'+esc(a.data.lead||'No lead')+'</p></div><div style=\"margin-left:auto\">'+chip(a.data.eligibilityDecision||'Pending')+'</div></div>').join(''):smallEmpty('No application linked to this call yet.'))+'</div></div>';}\nfunction applications(){let list=appl.filter(x=>(s.statusFilter==='All'||x.data.stage===s.statusFilter)&&(x.data.project+' '+x.data.lead+' '+label('opportunities',x.data.opportunityId)).toLowerCase().includes(s.query.toLowerCase()));const p=pageRecords(list);list=p.rows;const stages=[['Researching',list.filter(x=>['Researching','Screening'].includes(x.data.stage))],['Drafting',list.filter(x=>x.data.stage==='Drafting')],['Submitted',list.filter(x=>x.data.stage==='Submitted')],['Outcome',list.filter(x=>['Awarded','Declined'].includes(x.data.stage))]];return toolbar('applications','+ Application')+'<div class=\"gp-kanban\">'+stages.map(([stage,items])=>'<section class=\"gp-kanbancol\"><div class=\"gp-kanbanhead\"><span>'+esc(stage)+'</span><b>'+items.length+'</b></div>'+items.map(r=>{const d=r.data;return '<article class=\"gp-kanbancard\"><div style=\"display:flex;justify-content:space-between;gap:5px\"><strong>'+esc(d.project)+'</strong>'+more('applications',r.id)+'</div><p class=\"gp-details\">'+esc(label('opportunities',d.opportunityId))+'</p><div>'+chip(d.stage)+'</div><footer><span>'+esc(d.lead||'Unassigned')+'</span><span>'+esc(d.requestedAmount===null?'No amount':amount(d.requestedAmount,d.currency))+'</span></footer></article>';}).join('')+(items.length?'':smallEmpty('No applications'))+'</section>').join('')+'</div>'+pager(p)+'<div class=\"gp-reviewnote\">Moving an application to “Submitted” requires a submission date. “Awarded” requires an official award notice, award date and confirmed amount. Both changes are reviewed and logged by TrialAgents.</div>';}\nfunction deadlines(){let list=tasks.filter(r=>(s.statusFilter==='All'||r.data.status===s.statusFilter)&&(r.data.title+' '+r.data.owner+' '+label('applications',r.data.applicationId)).toLowerCase().includes(s.query.toLowerCase())).sort((a,b)=>str(a.data.due).localeCompare(str(b.data.due)));let start=today;let weeks=Array.from({length:8},(_,i)=>when(new Date((start+7*i)*86400000).toISOString().slice(0,10)));const gantt=pageRecords(list).rows.filter(r=>r.data.due&&until(r.data.due)<56);return toolbar('milestones','+ Task')+'<section class=\"gp-card gp-cardpad\" style=\"margin-bottom:14px\">'+section('Eight-week deadline view','<small>Current register page</small>')+'<div class=\"gp-ganttscroll\"><div class=\"gp-gantthead\"><b>Work item</b>'+weeks.map(t=>'<span>'+esc(t)+'</span>').join('')+'</div>'+gantt.map(r=>{const d=r.data,diff=until(d.due),block=diff===null?-1:Math.max(0,Math.min(7,Math.floor(diff/7)));return '<div class=\"gp-ganttrow\"><div><b>'+esc(d.title)+'</b><br><span class=\"gp-muted\">'+esc(d.owner||'Unassigned')+'</span></div>'+weeks.map((_,i)=>'<div class=\"gp-ganttcell '+(i===block?(d.status==='Done'?'done':diff<0?'late':'due'):'')+'\">'+(i===block?'●':'')+'</div>').join('')+'</div>';}).join('')+'</div></section>'+dynamicTable('milestones',list,['title','owner','due','status','applicationId'],(k,r)=>{const d=r.data;if(k==='title')return '<strong>'+esc(d.title)+'</strong><small>'+esc(d.evidence||'No completion evidence yet')+'</small>';if(k==='applicationId')return esc(label('applications',d.applicationId));if(k==='due')return '<b class=\"'+(until(d.due)<0&&d.status!=='Done'?'gp-warntext':'')+'\">'+esc(when(d.due))+'</b>';if(k==='status')return chip(d.status);return esc(d[k]);},'No matching milestones.');}\nfunction review(){const incompleteAmounts=appl.some(a=>['Submitted','Awarded','Declined'].includes(a.data.stage)&&(!a.data.currency||!Number.isFinite(num(a.data.requestedAmount,NaN))));const requested={},awards={};for(const a of appl){const d=a.data;if(['Submitted','Awarded','Declined'].includes(d.stage)&&d.requestedAmount!==null&&d.requestedAmount!==undefined&&d.requestedAmount!=='')requested[d.currency]=(requested[d.currency]||0)+num(d.requestedAmount);if(confirmedAwards.some(x=>x.id===a.id))awards[d.currency]=(awards[d.currency]||0)+num(d.awardedAmount);}\nconst currencies=[...new Set([...Object.keys(requested),...Object.keys(awards)])].sort();const stages=[['Researching',appl.filter(a=>['Researching','Screening'].includes(a.data.stage)).length],['Drafting',appl.filter(a=>a.data.stage==='Drafting').length],['Submitted',appl.filter(a=>a.data.stage==='Submitted').length],['Awarded',confirmedAwards.length],['Declined',appl.filter(a=>a.data.stage==='Declined').length]];const mx=Math.max(1,...stages.map(x=>x[1]));const prompt='Research current, open grants relevant to a small commercial biotech in '+(config.searchRegions||'EU, UK and US')+' working in '+(config.searchFocus||'translational science, CMC and platform technology')+'. Verify eligibility for for-profit applicants, official call IDs, original source URLs, funding instrument, funding caps, exact deadlines and evidence check date. Only suggest new opportunities for human review; do not mark eligible, submit applications or invent funding.';\nreturn '<div class=\"gp-fundview\"><section class=\"gp-card gp-cardpad\">'+section('Funding by currency','<small>Not cash receipts</small>')+(incompleteAmounts?smallEmpty('Funding totals are withheld: submitted or decided applications need a recorded amount and currency.'):(currencies.length?currencies.map(c=>'<div class=\"gp-moneyrow\"><div><b>'+esc(c)+'</b><small>Submitted or decided funding</small></div><div style=\"text-align:right\"><strong>'+esc(amount(requested[c]||0,c))+'</strong><small>Verified awarded: '+esc(amount(awards[c]||0,c))+'</small></div></div>').join(''):smallEmpty('No approved funding outcomes or submitted requests.')))+'<div class=\"gp-reviewnote\">Do not add different currencies. Awarded figures require source evidence and never imply funds have been received.</div></section><section class=\"gp-card gp-cardpad\">'+section('Application outcomes','<small>Count of applications</small>')+'<div class=\"gp-bars\">'+stages.map(([name,value])=>'<div class=\"gp-barrow\"><span>'+esc(name)+'</span><div class=\"gp-track\"><i style=\"width:'+Math.round(value/mx*100)+'%\"></i></div><b>'+value+'</b></div>').join('')+'</div><div class=\"gp-reviewnote\">Reference date: '+esc(when(currentDate))+'. Every chart is calculated from authorized, recorded entries.</div></section></div><div class=\"gp-split even\"><section class=\"gp-card gp-cardpad\">'+section('Decision integrity')+'<div class=\"gp-alert\"><span class=\"gp-dot orange\"></span><div><b>'+appl.filter(a=>a.data.eligibilityDecision==='Pending').length+' applications awaiting eligibility review</b><p>Mandatory checks must be answered before marking eligible.</p></div></div><div class=\"gp-alert\"><span class=\"gp-dot red\"></span><div><b>'+rows('opportunities').filter(o=>!dateOk(o.data.verifiedAt)||!safeURL(o.data.sourceUrl)).length+' opportunities lack source verification</b><p>Recheck official deadlines before planning a submission.</p></div></div><div class=\"gp-alert\"><span class=\"gp-dot purple\"></span><div><b>'+lateTasks.length+' overdue tasks</b><p>Assign owners and document completions.</p></div></div></section><section class=\"gp-card gp-cardpad\">'+section('Optional ChatGPT discovery','<small>Manual research prompt</small>')+'<div class=\"gp-muted\">After saving this app, use the following prompt with TrialAgents-connected ChatGPT. An ongoing monitor requires separate approval in platform Automations.</div><div class=\"gp-prompt\">'+esc(prompt)+'</div></section></div>';}\n// Record archive safety: never orphan linked application, check or pending task.\nfunction archiveBlock(role,id){if(!complete)return 'Complete authorized data is required to check dependencies.';const frozen=evidenceBlock(role,find(role,id)?.data||{},id);if(frozen)return frozen;if(role==='opportunities'){if(appl.some(a=>a.data.opportunityId===id)||rows('criteria').some(c=>c.data.opportunityId===id))return 'This grant call still has linked applications or eligibility checks. Resolve or archive the related records first.';}if(role==='applications'&&tasks.some(t=>t.data.applicationId===id))return 'This application has linked milestones. Reassign or archive them first.';if(role==='criteria'&&appl.some(a=>a.data.opportunityId===find('criteria',id)?.data.opportunityId&&a.data.eligibilityDecision==='Eligible'))return 'This check supports an already approved eligibility decision. Review and revise that decision before archiving.';return '';}\nfunction openEdit(role,id,duplicate){if(!canWrite(role)){s.notice='Complete authorized data and write permission are required.';return;}const record=id?find(role,id):null;const data=JSON.parse(JSON.stringify(record?.data||{}));if(duplicate){if(role==='opportunities'){data.title=str(data.title)+' (copy)';data.deadline=null;data.verifiedAt=null;data.sourceUrl='';data.status='Watchlist';data.callId='';data.deadlineVersion='';}if(role==='applications'){data.project=str(data.project)+' (copy)';data.stage='Researching';data.eligibilityDecision='Pending';data.submittedAt=null;data.awardedAmount=null;data.awardNoticeUrl='';data.awardDate=null;}if(role==='criteria'){data.status='Unknown';data.assessedAt=null;data.reviewer='';data.evidenceUrl='';}if(role==='milestones'){data.title=str(data.title)+' (copy)';data.status='To do';data.completedAt=null;data.evidence='';}}\n if(!record){if(role==='opportunities')Object.assign(data,{status:'Watchlist',currency:'EUR',owner:''});if(role==='criteria')Object.assign(data,{opportunityId:s.opportunityId,status:'Unknown',mandatory:true});if(role==='applications')Object.assign(data,{opportunityId:s.opportunityId,stage:'Researching',eligibilityDecision:'Pending',currency:find('opportunities',s.opportunityId)?.data.currency||''});if(role==='milestones')Object.assign(data,{status:'To do'});}\n s.drawer={type:'edit',role,id:duplicate?null:id,expectedVersion:duplicate?null:record?.version??null};s.draft=data;s.menu='';}\nfunction formInput(role,f,d){const [id,label,type,opts]=f;const value=d[id]===undefined||d[id]===null?'':d[id];if(id==='archived')return '';let html='';if(type==='select'||type.startsWith('rel:')){let options=[];if(type==='select')options=[['','Not recorded'],...(opts||'').split('|').map(x=>[x,x])];else{const linked=type.slice(4);options=[['','Select…'],...rows(linked).map(r=>[r.id,linked==='applications'?r.data.project:r.data.title])];}html='<select name=\"'+esc(id)+'\">'+options.map(([v,l])=>'<option value=\"'+esc(v)+'\"'+(str(v)===str(value)?' selected':'')+'>'+esc(l)+'</option>').join('')+'</select>';}\n else if(type==='textarea')html='<textarea name=\"'+esc(id)+'\">'+esc(value)+'</textarea>';\n else if(type==='boolean')html='<select name=\"'+esc(id)+'\"><option value=\"false\"'+(!yes(value)?' selected':'')+'>No</option><option value=\"true\"'+(yes(value)?' selected':'')+'>Yes</option></select>';\n else html='<input type=\"'+(type==='date'?'date':type==='number'?'number':type==='url'?'url':'text')+'\"'+(type==='number'?' step=\"any\" min=\"0\"':'')+' name=\"'+esc(id)+'\" value=\"'+esc(value)+'\">';html=html.replace(/<(input|select|textarea) /,'<$1 data-ui-state data-action=\"draft:'+id+'\" '+(!available[role].writable.includes(id)?'disabled ':''));return '<label class=\"'+(type==='textarea'||id==='sourceUrl'||id==='awardNoticeUrl'||id==='reason'||id==='evidenceUrl'?'wide':'')+'\">'+esc(label)+html+'</label>';}\nfunction drawer(){if(!s.drawer)return '';const d=s.drawer;if(d.type==='archive'){const blocked=archiveBlock(d.role,d.id);return '<div class=\"gp-overlay\"><section class=\"gp-dialog\" role=\"alertdialog\" aria-modal=\"true\"><h2>'+(blocked?'Cannot archive linked record':'Archive this record?')+'</h2><p>'+esc(blocked||'Archive prepares a reviewed soft update. The record history and audit log are retained. No linked records are deleted.')+'</p>'+notice()+'<footer>'+button('Cancel','close','gp-btn')+(blocked?'':button('Prepare archive','confirm-archive','gp-btn primary'))+'</footer></section></div>';}\nconst title=s.drawer.id?'Edit '+d.role.replace(/s$/,''):'New '+d.role.replace(/s$/,'');return '<div class=\"gp-overlay\"><aside class=\"gp-drawer\" role=\"dialog\" aria-modal=\"true\" aria-label=\"'+esc(title)+'\"><div class=\"gp-drawerheader\"><div><h2>'+esc(title)+'</h2><p>Changes require confirmation through TrialAgents.</p></div>'+button('×','close','gp-btn square',false,'Close form')+'</div>'+notice()+'<form class=\"gp-form\" data-action=\"submit\">'+displayCols[d.role].map(k=>fieldDefs[d.role].find(f=>f[0]===k)).filter(Boolean).map(f=>formInput(d.role,f,s.draft||{})).join('')+button(s.extra?'Hide additional fields':'Show additional fields','draft-extra','gp-btn')+(s.extra?fieldDefs[d.role].filter(f=>f[0]!=='archived'&&!displayCols[d.role].includes(f[0])).map(f=>formInput(d.role,f,s.draft||{})).join(''):'')+'<div class=\"gp-formfooter\">'+button('Cancel','close','gp-btn')+'<button class=\"gp-btn primary\" type=\"submit\">Prepare review</button></div></form></aside></div>';}\n\nfunction evidenceBlock(role,d,id){\n if(!complete)return 'Complete authorized data is required before changes.';\n const call=role==='opportunities'?id:d.opportunityId;\n if(['opportunities','criteria'].includes(role)&&appl.some(a=>a.data.opportunityId===call&&a.data.eligibilityDecision==='Eligible'))return 'Return linked eligibility decisions to Pending before changing their supporting evidence.';\n return '';\n}\n\nfunction validate(role,d,prior){for(const [key,,type,options]of fieldDefs[role]){if(type==='date'&&d[key]&&!dateOk(d[key]))return 'Enter a valid calendar date for '+key;if(type==='select'&&d[key]&&!(options||'').split('|').includes(d[key]))return 'Choose a valid option for '+key;}for(const key of ['verifiedAt','assessedAt','submittedAt','awardDate','completedAt'])if(d[key]&&day(d[key])>today)return 'Completed events cannot have a future date: '+key;if(['opportunities','applications'].includes(role)&&['amountMax','requestedAmount','awardedAmount'].some(k=>d[k]!==null&&d[k]!==undefined&&d[k]!==''&&!Number.isNaN(num(d[k],NaN)))&&!d.currency)return 'Record the currency for every amount.';if(role==='applications'&&prior&&d.currency!==prior.currency&&(num(prior.requestedAmount)>0||num(prior.awardedAmount)>0))return 'Currency cannot relabel existing application amounts.';if(prior&&['criteria','applications','milestones'].includes(role)){const k=role==='milestones'?'applicationId':'opportunityId';if(d[k]!==prior[k])return 'Existing record links cannot be changed. Create a new record.';}if(role==='criteria'&&!find('opportunities',d.opportunityId))return 'Select an existing authorized funding call.';if(role==='milestones'&&!find('applications',d.applicationId))return 'Select an existing authorized application.';if(role==='criteria'&&rows('criteria').some(r=>r.id!==s.drawer?.id&&r.data.opportunityId===d.opportunityId&&str(r.data.name).trim().toLowerCase()===str(d.name).trim().toLowerCase()))return 'A matching criterion already exists.';if(role==='opportunities'&&prior&&d.currency!==prior.currency&&(num(prior.amountMax,0)>0||appl.some(a=>a.data.opportunityId===s.drawer?.id)))return 'Currency cannot relabel existing amounts or linked applications.';if(role==='opportunities'){\n if(!str(d.title).trim()||!str(d.funder).trim())return 'Provide an opportunity name and funder.';\n if(d.sourceUrl&&!safeURL(d.sourceUrl))return 'Enter a valid HTTPS official source URL.';\n if(d.amountMax!==null&&d.amountMax!==undefined&&d.amountMax!==''&&num(d.amountMax,-1)<0)return 'Maximum grant amount cannot be negative.';\n if(d.status==='Open'&&(!dateOk(d.deadline)||!dateOk(d.verifiedAt)||day(d.verifiedAt)>today||!safeURL(d.sourceUrl)))return 'An open call needs an official HTTPS source, a nonfuture verification date and valid deadline.';\n if(prior&&dateOk(prior.deadline)&&str(prior.deadline)!==str(d.deadline)&&(!str(d.deadlineVersion).trim()||str(prior.deadlineVersion)===str(d.deadlineVersion)||!dateOk(d.verifiedAt)))return 'For a changed deadline, record a new official notice version and verification date.';\n }if(role==='criteria'){\n if(!str(d.name).trim()||!str(d.opportunityId).trim())return 'Select a call and enter a criterion.';\n if(d.status==='Yes'||d.status==='No'){if(!str(d.reviewer).trim()||!dateOk(d.assessedAt)||!safeURL(d.evidenceUrl)||!str(d.reason).trim())return 'A Yes/No assessment needs reviewer, date, HTTPS evidence and rationale.';}\n }if(role==='applications'){\n if(!str(d.project).trim()||!str(d.opportunityId).trim())return 'Enter the project and select a funding call.';\n const selected=find('opportunities',d.opportunityId);if(!selected)return 'The funding call is missing or inaccessible.';\n if(d.currency&&selected.data.currency&&d.currency!==selected.data.currency)return 'Application currency must match the linked call. Do not silently convert currencies.';\n if(d.requestedAmount!==null&&d.requestedAmount!==undefined&&d.requestedAmount!==''&&num(d.requestedAmount,-1)<0)return 'Requested amount must not be negative.';\n if(d.eligibilityDecision==='Eligible'){\n if(!complete)return 'Cannot approve eligibility from incomplete or inaccessible records.';\n const e=elig(d.opportunityId);if(!e.ready)return 'Mandatory eligibility checks must all be assessed Yes before human eligibility approval.';\n if(!str(d.reviewer).trim())return 'Record a named internal reviewer for the eligibility decision.';\n }\n if(['Submitted','Awarded','Declined'].includes(d.stage)&&(!dateOk(d.submittedAt)||day(d.submittedAt)>today))return 'Record a valid, already-completed submission date before setting Submitted or an outcome.';\n if(d.stage==='Awarded'&&(!complete||num(d.awardedAmount,0)<=0||!dateOk(d.awardDate)||!safeURL(d.awardNoticeUrl)))return 'Awarded requires complete authorized records, a positive verified amount, notification date, and official HTTPS award evidence.';\n }if(role==='milestones'){\n if(!str(d.title).trim()||!str(d.applicationId).trim()||!dateOk(d.due))return 'Provide task, linked application and due date.';\n if(d.status==='Done'&&(!dateOk(d.completedAt)||!str(d.evidence).trim()))return 'A completed task needs completion date and evidence.';\n }\n return '';}\nfunction submit(){const d=s.drawer;if(!d||d.type!=='edit'||!canWrite(d.role)){s.notice='No authorized write mapping is available.';return;}const meta=available[d.role],spec=fieldDefs[d.role];const initial=s.draft||{};const form=event.form&&typeof event.form==='object'?event.form:{};const data={...initial};for(const [id,,type] of spec){if(id==='archived'||!meta.writable.includes(id))continue;if(Object.prototype.hasOwnProperty.call(form,id))data[id]=form[id];if(!Object.prototype.hasOwnProperty.call(data,id))continue;const v=data[id];if(v!==null&&typeof v==='object'){s.notice='Use a scalar value for '+id;return;}if(type==='number'&&str(v)!==''&&!Number.isFinite(num(v,NaN))){s.notice='Enter a valid number for '+id;return;}data[id]=type==='number'?(str(v)===''?null:num(v)):type==='boolean'?yes(v):type==='date'?(str(v)||null):str(v);}\n s.draft=data;const prior=d.id?find(d.role,d.id):null;if(d.id&&(!prior||prior.version!==d.expectedVersion)){s.notice='Record version changed. Reopen it before saving; your draft is retained.';return;}\n const error=evidenceBlock(d.role,data,d.id)||validate(d.role,data,prior?.data||null);if(error){s.notice=error;s.draft=data;return;}\n const mapped={};for(const [id,physical] of Object.entries(meta.fields)){if(id==='archived')continue;if(!meta.writable.includes(id))continue;if(Object.prototype.hasOwnProperty.call(data,id))mapped[physical]=data[id];}\n if(!Object.keys(mapped).length){s.notice='None of the displayed fields are writable in the current binding.';return;}\n const change=prior?{kind:'update_record',typeId:meta.typeId,recordId:prior.id,expectedVersion:d.expectedVersion,data:mapped}:{kind:'create_record',typeId:meta.typeId,data:mapped};\n try{tools.call('records.propose',[change]);s.notice='Record change prepared for review — not yet saved.';}catch(e){s.notice='Review preparation failed. Your inputs were not saved: '+str(e.message||e).slice(0,160);s.draft=data;}\n}\nfunction archive(){const d=s.drawer;if(!d||d.type!=='archive'||!canWrite(d.role))return;const record=find(d.role,d.id);const m=available[d.role];if(record&&record.version!==d.expectedVersion){s.notice='Record version changed. Reopen archive.';return;}if(!record||archiveBlock(d.role,d.id)||!m.fields.archived||!m.writable.includes('archived')){s.notice='Archive is unavailable or there are linked records.';return;}\n try{tools.call('records.propose',[{kind:'update_record',typeId:m.typeId,recordId:record.id,expectedVersion:d.expectedVersion,data:{[m.fields.archived]:true}}]);s.drawer=null;s.notice='Archive prepared for review — nothing was deleted.';}catch(e){s.notice='Archive could not be prepared: '+str(e.message||e);}}\n// Resolve all local navigation and form actions; no unreviewed writes.\nif(action.startsWith('nav:')){const route=action.slice(4);if(visibleScreens.includes(route))s.screen=route;s.page=0;s.query='';s.statusFilter='All';s.menu='';s.drawer=null;s.notice='';}\nelse if(action==='search'){s.query=str(event.value).slice(0,140);s.page=0;}\nelse if(action==='statusFilter'){s.statusFilter=str(event.value||'All');s.page=0;}\nelse if(action==='selectCall'&&find('opportunities',str(event.value))){s.opportunityId=str(event.value);}\nelse if(action.startsWith('selectcall:')){s.opportunityId=action.slice(11);s.screen='eligibility';}\nelse if(action.startsWith('page:'))s.page=Math.max(0,s.page+(action==='page:next'?1:-1));\nelse if(action.startsWith('menu:')){const x=action.slice(5);s.menu=s.menu===x?'':x;}\nelse if(action.startsWith('add:')){const role=action.slice(4);if(fieldDefs[role])openEdit(role,null,false);}\nelse if(action.startsWith('edit:')||action.startsWith('duplicate:')||action.startsWith('archive:')){const [operation,role,id]=action.split(':');if(fieldDefs[role]&&find(role,id)){if(operation==='archive')s.drawer={type:'archive',role,id,expectedVersion:find(role,id).version};else openEdit(role,id,operation==='duplicate');}s.menu='';}\nelse if(action==='draft-extra')s.extra=!s.extra;\nelse if(action==='close'){s.drawer=null;s.draft=null;s.menu='';s.notice='';}\nelse if(action.startsWith('draft:')&&s.drawer?.type==='edit'){s.draft[action.slice(6)]=event.value;}\nelse if(action==='submit'&&event.kind==='submit')submit();\nelse if(action==='confirm-archive')archive();\nconst headline=templateLayoutSchema.screens.find(x=>x.id===s.screen)?.label||'Grant Pipeline';\nconst nav='<aside class=\"gp-sidebar\"><div class=\"gp-name\">Grant Pipeline</div><nav class=\"gp-nav\" aria-label=\"App screens\">'+screenOrder.filter(x=>visibleScreens.includes(x)).map(k=>'<button type=\"button\" data-action=\"nav:'+esc(k)+'\" class=\"gp-navbtn\"'+(s.screen===k?' aria-current=\"page\"':'')+'>'+esc(templateLayoutSchema.screens.find(x=>x.id===k).label)+'</button>').join('')+'</nav><div class=\"gp-sidebarfoot\">Internal TrialAgents app</div></aside>';\nconst controls='<div class=\"gp-headtools\">'+(s.screen==='pulse'?'<span class=\"gp-caption\">As of '+esc(when(currentDate))+'</span>':'')+button('⚙','tracker:layout','gp-btn square',!input.saved,'Configure layout')+'</div>';\nlet content='';if(!complete&&['pulse','review'].includes(s.screen))content=smallEmpty('Totals and funding outcomes are withheld until authorized sources are complete. Open a register to inspect the loaded records.');else if(s.screen==='pulse')content=pulse();else if(s.screen==='opportunities')content=opportunities();else if(s.screen==='eligibility')content=eligibility();else if(s.screen==='applications')content=applications();else if(s.screen==='deadlines')content=deadlines();else if(s.screen==='review')content=review();\nconst note=!complete?'<div class=\"gp-notice bad\">Incomplete authorized data: '+esc(scopeMissing())+'. Totals, eligibility and funding outcomes are withheld. Register search covers the loaded window, at most 200 records per role; narrow authorized scope for larger datasets.</div>':'';\nconst fake=config.demoLabel?'<span class=\"gp-fakebadge\">Fictional sample records · Preview only</span>':'';\nconst html='<div class=\"gp-app\">'+nav+'<main class=\"gp-main\">'+fake+'<div class=\"gp-header\"><h1>'+esc(layout.heading&&s.screen==='pulse'?layout.heading:headline)+'</h1>'+controls+'</div>'+note+(s.drawer?'':notice())+content+'</main>'+drawer()+'</div>';\nreturn {html,css:typeof GRANT_CSS==='string'?GRANT_CSS:'',state:s};\n";
+const demo=Object.entries({
+  "opportunities": [
+    {
+      "id": "opp001",
+      "version": 1,
+      "data": {
+        "title": "Translational Immunology Accelerator",
+        "funder": "Northline Science Fund (fictional)",
+        "callId": "DEMO-TR-26-041",
+        "focus": "Preclinical",
+        "region": "EU",
+        "applicantType": "Small commercial biotech; consortium optional",
+        "deadline": "2026-11-18",
+        "deadlineVersion": "demo-corrigendum-2",
+        "verifiedAt": "2026-10-29",
+        "sourceUrl": "https://example.org/funding/DEMO-TR-26-041",
+        "amountMax": 450000,
+        "currency": "EUR",
+        "owner": "M. Rossi",
+        "status": "Open",
+        "notes": "Early target validation and in-vivo proof of concept. Applicant type requires official recheck.",
+        "archived": false
+      }
+    },
+    {
+      "id": "opp002",
+      "version": 1,
+      "data": {
+        "title": "Bioprocess Manufacturing Innovation",
+        "funder": "Arbor Industrial Research Council (fictional)",
+        "callId": "DEMO-CMC-26-015",
+        "focus": "CMC",
+        "region": "EU",
+        "applicantType": "SME with an EU manufacturing partner",
+        "deadline": "2026-12-04",
+        "deadlineVersion": "demo-original",
+        "verifiedAt": "2026-10-30",
+        "sourceUrl": "https://example.org/funding/DEMO-CMC-26-015",
+        "amountMax": 320000,
+        "currency": "EUR",
+        "owner": "J. Patel",
+        "status": "Open",
+        "notes": "Process analytics, scaled cell-line development, critical quality attributes.",
+        "archived": false
+      }
+    },
+    {
+      "id": "opp003",
+      "version": 1,
+      "data": {
+        "title": "Biomarker Translational Proof of Concept",
+        "funder": "Fictional Biomedical Catalyst",
+        "callId": "DEMO-BM-26-007",
+        "focus": "Platform technology",
+        "region": "UK",
+        "applicantType": "UK-established SME with academic collaborator",
+        "deadline": "2026-11-12",
+        "deadlineVersion": "demo-original",
+        "verifiedAt": "2026-10-27",
+        "sourceUrl": "https://example.org/funding/DEMO-BM-26-007",
+        "amountMax": 180000,
+        "currency": "GBP",
+        "owner": "A. Chen",
+        "status": "Open",
+        "notes": "Cross-border eligibility not yet confirmed; avoid assuming a foreign SME is eligible.",
+        "archived": false
+      }
+    },
+    {
+      "id": "opp004",
+      "version": 1,
+      "data": {
+        "title": "Connected Lab Software Seed Call",
+        "funder": "Meridian Digital Innovation Hub (fictional)",
+        "callId": "DEMO-LAB-27-010",
+        "focus": "Digital lab",
+        "region": "EU",
+        "applicantType": "EU research SME; proof-of-concept only",
+        "deadline": "2027-01-24",
+        "deadlineVersion": "demo-preview",
+        "verifiedAt": "2026-10-28",
+        "sourceUrl": "https://example.org/funding/DEMO-LAB-27-010",
+        "amountMax": 120000,
+        "currency": "EUR",
+        "owner": "E. Moreno",
+        "status": "Watchlist",
+        "notes": "Funder conditions may change; call is not confirmed open.",
+        "archived": false
+      }
+    },
+    {
+      "id": "opp005",
+      "version": 1,
+      "data": {
+        "title": "High-throughput Assay Automation Pilot",
+        "funder": "Ridgeway Life Sciences Trust (fictional)",
+        "callId": "DEMO-LAB-26-002",
+        "focus": "Discovery R&D",
+        "region": "EU",
+        "applicantType": "Small research SME",
+        "deadline": "2026-09-25",
+        "deadlineVersion": "demo-final",
+        "verifiedAt": "2026-09-16",
+        "sourceUrl": "https://example.org/funding/DEMO-LAB-26-002",
+        "amountMax": 210000,
+        "currency": "EUR",
+        "owner": "M. Rossi",
+        "status": "Closed",
+        "notes": "Fictional completed application used to illustrate verified award recording.",
+        "archived": false
+      }
+    },
+    {
+      "id": "opp006",
+      "version": 1,
+      "data": {
+        "title": "Microfluidics Scale-up Research",
+        "funder": "Oakshore Applied Science Foundation (fictional)",
+        "callId": "DEMO-US-27-003",
+        "focus": "Platform technology",
+        "region": "US",
+        "applicantType": "U.S.-registered small business; local requirements",
+        "deadline": "2027-02-14",
+        "deadlineVersion": "demo-original",
+        "verifiedAt": "2026-10-31",
+        "sourceUrl": "https://example.org/funding/DEMO-US-27-003",
+        "amountMax": 550000,
+        "currency": "USD",
+        "owner": "D. Kim",
+        "status": "Open",
+        "notes": "Commercialization and IP documentation required.",
+        "archived": false
+      }
+    }
+  ],
+  "criteria": [
+    {
+      "id": "check-001-1",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp001",
+        "name": "Commercial applicant accepted",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp001",
+        "reason": "Published applicant category indicates SMEs",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-001-2",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp001",
+        "name": "Geographic establishment",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp001",
+        "reason": "Registered EU entity recorded",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-001-3",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp001",
+        "name": "Technology readiness fit",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp001",
+        "reason": "Program stage aligned to guidance",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-001-4",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp001",
+        "name": "Consortium commitment",
+        "mandatory": true,
+        "status": "Unknown",
+        "evidenceUrl": "",
+        "reason": "Partner letter pending verification",
+        "reviewer": "",
+        "assessedAt": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-002-1",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp002",
+        "name": "Commercial applicant accepted",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp002",
+        "reason": "SME category stated in fictional call",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-002-2",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp002",
+        "name": "Geographic establishment",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp002",
+        "reason": "Entity matches stated region",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-002-3",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp002",
+        "name": "Scientific scope and phase",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp002",
+        "reason": "R&D stage matches call focus",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-002-4",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp002",
+        "name": "Budget and cofunding rule",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp002",
+        "reason": "Illustrative cofunding plan in place",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-003-1",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp003",
+        "name": "UK legal entity",
+        "mandatory": true,
+        "status": "No",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp003",
+        "reason": "No confirmed UK entity recorded",
+        "reviewer": "A. Chen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-003-2",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp003",
+        "name": "Academic partner letter",
+        "mandatory": true,
+        "status": "Unknown",
+        "evidenceUrl": "",
+        "reason": "Partner search ongoing",
+        "reviewer": "",
+        "assessedAt": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-003-3",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp003",
+        "name": "Translational fit",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp003",
+        "reason": "Assay validation is in scope",
+        "reviewer": "A. Chen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-004-1",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp004",
+        "name": "Call open to for-profit SMEs",
+        "mandatory": true,
+        "status": "Unknown",
+        "evidenceUrl": "",
+        "reason": "Funder eligibility terms to be checked",
+        "reviewer": "",
+        "assessedAt": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-004-2",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp004",
+        "name": "Research fit",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp004",
+        "reason": "Scope appears relevant",
+        "reviewer": "E. Moreno",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-004-3",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp004",
+        "name": "Grant instrument terms",
+        "mandatory": true,
+        "status": "Unknown",
+        "evidenceUrl": "",
+        "reason": "Verify final published guidance",
+        "reviewer": "",
+        "assessedAt": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-005-1",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp005",
+        "name": "Commercial applicant accepted",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp005",
+        "reason": "SME category stated in fictional call",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-005-2",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp005",
+        "name": "Geographic establishment",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp005",
+        "reason": "Entity matches stated region",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-005-3",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp005",
+        "name": "Scientific scope and phase",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp005",
+        "reason": "R&D stage matches call focus",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-005-4",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp005",
+        "name": "Budget and cofunding rule",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp005",
+        "reason": "Illustrative cofunding plan in place",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-006-1",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp006",
+        "name": "Commercial applicant accepted",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp006",
+        "reason": "SME category stated in fictional call",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-006-2",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp006",
+        "name": "Geographic establishment",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp006",
+        "reason": "Entity matches stated region",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-006-3",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp006",
+        "name": "Scientific scope and phase",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp006",
+        "reason": "R&D stage matches call focus",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-006-4",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp006",
+        "name": "Budget and cofunding rule",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp006",
+        "reason": "Illustrative cofunding plan in place",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    }
+  ],
+  "applications": [
+    {
+      "id": "app001",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp001",
+        "project": "Inflammation target validation",
+        "lead": "M. Rossi",
+        "stage": "Drafting",
+        "requestedAmount": 340000,
+        "currency": "EUR",
+        "eligibilityDecision": "Pending",
+        "submittedAt": "",
+        "awardedAmount": null,
+        "awardDate": "",
+        "awardNoticeUrl": "",
+        "nextStep": "Complete consortium evidence",
+        "reviewer": "L. Jensen",
+        "notes": "Grant writing in progress",
+        "archived": false
+      }
+    },
+    {
+      "id": "app002",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp002",
+        "project": "CMC process analytics",
+        "lead": "J. Patel",
+        "stage": "Screening",
+        "requestedAmount": 260000,
+        "currency": "EUR",
+        "eligibilityDecision": "Eligible",
+        "submittedAt": "",
+        "awardedAmount": null,
+        "awardDate": "",
+        "awardNoticeUrl": "",
+        "nextStep": "Confirm partner scope",
+        "reviewer": "L. Jensen",
+        "notes": "Eligibility decision recorded by fictitious reviewer",
+        "archived": false
+      }
+    },
+    {
+      "id": "app003",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp003",
+        "project": "Plasma biomarker platform",
+        "lead": "A. Chen",
+        "stage": "Researching",
+        "requestedAmount": 140000,
+        "currency": "GBP",
+        "eligibilityDecision": "Pending",
+        "submittedAt": "",
+        "awardedAmount": null,
+        "awardDate": "",
+        "awardNoticeUrl": "",
+        "nextStep": "Confirm UK applicant entity",
+        "reviewer": "",
+        "notes": "One mandatory criterion is not met",
+        "archived": false
+      }
+    },
+    {
+      "id": "app004",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp005",
+        "project": "Automated assay mini-line",
+        "lead": "M. Rossi",
+        "stage": "Awarded",
+        "requestedAmount": 190000,
+        "currency": "EUR",
+        "eligibilityDecision": "Eligible",
+        "submittedAt": "2026-09-22",
+        "awardedAmount": 165000,
+        "awardDate": "2026-10-19",
+        "awardNoticeUrl": "https://example.org/fictional-award/DEMO-LAB-26-002",
+        "nextStep": "Schedule first report",
+        "reviewer": "L. Jensen",
+        "notes": "Fictional award; not actual cash received",
+        "archived": false
+      }
+    },
+    {
+      "id": "app005",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp006",
+        "project": "Microfluidics materials platform",
+        "lead": "D. Kim",
+        "stage": "Submitted",
+        "requestedAmount": 430000,
+        "currency": "USD",
+        "eligibilityDecision": "Eligible",
+        "submittedAt": "2026-10-28",
+        "awardedAmount": null,
+        "awardDate": "",
+        "awardNoticeUrl": "",
+        "nextStep": "Await funder response",
+        "reviewer": "D. Kim",
+        "notes": "Fictional early filing before the published deadline",
+        "archived": false
+      }
+    },
+    {
+      "id": "app006",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp004",
+        "project": "Electronic bench notebook bridge",
+        "lead": "E. Moreno",
+        "stage": "Drafting",
+        "requestedAmount": 100000,
+        "currency": "EUR",
+        "eligibilityDecision": "Pending",
+        "submittedAt": "",
+        "awardedAmount": null,
+        "awardDate": "",
+        "awardNoticeUrl": "",
+        "nextStep": "Confirm final call opening",
+        "reviewer": "",
+        "notes": "Watchlist; do not imply application acceptance",
+        "archived": false
+      }
+    }
+  ],
+  "milestones": [
+    {
+      "id": "task001",
+      "version": 1,
+      "data": {
+        "applicationId": "app001",
+        "title": "Consortium letter of support",
+        "owner": "M. Rossi",
+        "due": "2026-11-06",
+        "status": "In progress",
+        "completedAt": "",
+        "evidence": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "task002",
+      "version": 1,
+      "data": {
+        "applicationId": "app001",
+        "title": "Internal science review",
+        "owner": "L. Jensen",
+        "due": "2026-11-10",
+        "status": "To do",
+        "completedAt": "",
+        "evidence": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "task003",
+      "version": 1,
+      "data": {
+        "applicationId": "app001",
+        "title": "Budget and co-funding check",
+        "owner": "N. Meyer",
+        "due": "2026-11-14",
+        "status": "To do",
+        "completedAt": "",
+        "evidence": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "task004",
+      "version": 1,
+      "data": {
+        "applicationId": "app002",
+        "title": "CMC partner commitment",
+        "owner": "J. Patel",
+        "due": "2026-11-25",
+        "status": "In progress",
+        "completedAt": "",
+        "evidence": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "task005",
+      "version": 1,
+      "data": {
+        "applicationId": "app002",
+        "title": "Final budget validation",
+        "owner": "N. Meyer",
+        "due": "2026-12-01",
+        "status": "To do",
+        "completedAt": "",
+        "evidence": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "task006",
+      "version": 1,
+      "data": {
+        "applicationId": "app003",
+        "title": "Confirm UK entity eligibility",
+        "owner": "A. Chen",
+        "due": "2026-10-30",
+        "status": "Blocked",
+        "completedAt": "",
+        "evidence": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "task007",
+      "version": 1,
+      "data": {
+        "applicationId": "app003",
+        "title": "Academic collaborator letter",
+        "owner": "A. Chen",
+        "due": "2026-11-05",
+        "status": "To do",
+        "completedAt": "",
+        "evidence": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "task008",
+      "version": 1,
+      "data": {
+        "applicationId": "app004",
+        "title": "Capture award notice",
+        "owner": "M. Rossi",
+        "due": "2026-10-20",
+        "status": "Done",
+        "completedAt": "2026-10-19",
+        "evidence": "Fictional public notice link recorded in award",
+        "archived": false
+      }
+    },
+    {
+      "id": "task009",
+      "version": 1,
+      "data": {
+        "applicationId": "app004",
+        "title": "First technical progress report",
+        "owner": "L. Jensen",
+        "due": "2027-01-15",
+        "status": "To do",
+        "completedAt": "",
+        "evidence": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "task010",
+      "version": 1,
+      "data": {
+        "applicationId": "app005",
+        "title": "Validate submission receipt",
+        "owner": "D. Kim",
+        "due": "2026-10-29",
+        "status": "Done",
+        "completedAt": "2026-10-28",
+        "evidence": "Fictional filing acknowledgement",
+        "archived": false
+      }
+    },
+    {
+      "id": "task011",
+      "version": 1,
+      "data": {
+        "applicationId": "app006",
+        "title": "Confirm call opening and deadline",
+        "owner": "E. Moreno",
+        "due": "2026-12-04",
+        "status": "To do",
+        "completedAt": "",
+        "evidence": "",
+        "archived": false
+      }
+    }
+  ]
+}
+).flatMap(([role,records])=>records.map(r=>({...r,role}))); const metadata={
+  "id": "life.grant-pipeline",
+  "version": "1.0.1",
+  "name": "Grant Pipeline",
+  "description": "Lean grant opportunity qualification, application tracking, eligibility evidence and funding deadlines for biotech research teams under 50 FTE.",
+  "tags": [
+    "biotech",
+    "research",
+    "grant funding",
+    "non-dilutive capital",
+    "funding calls",
+    "R&D",
+    "eligibility",
+    "pipeline",
+    "deadlines",
+    "grant reports"
+  ],
+  "whenToUse": "Use for a small for-profit biotech or research team assessing public or private research funding calls, recording applicant eligibility, tracking 3\u201320 applications and managing deadlines with verifiable funding outcomes.",
+  "whenNotToUse": "Not for applicant portals, automatic grant applications, nonprofit fundraising CRM, institutional ERP/procurement, funder operations, legal grant contracts, or automated claim that a commercial biotech qualifies.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "Funding pulse",
+    "layoutProfile": "{\"heading\":\"Funding pulse\",\"tabs\":[\"pulse\",\"opportunities\",\"eligibility\",\"applications\",\"deadlines\",\"review\"],\"cols\":{\"opportunities\":[\"title\",\"funder\",\"focus\",\"deadline\",\"amountMax\",\"currency\",\"status\",\"owner\",\"sourceUrl\"],\"criteria\":[\"name\",\"mandatory\",\"status\",\"reviewer\",\"evidenceUrl\"],\"applications\":[\"project\",\"lead\",\"stage\",\"requestedAmount\",\"eligibilityDecision\"],\"milestones\":[\"title\",\"owner\",\"due\",\"status\",\"applicationId\"]},\"visible\":{}}",
+    "tableMap": "{}",
+    "pageSize": 20,
+    "readOnly": false,
+    "asOf": "",
+    "searchRegions": "EU, UK and US",
+    "searchFocus": "translational science, CMC and platform technology",
+    "demoLabel": false
+  },
+  "options": {
+    "tableMap": {
+      "type": "string",
+      "required": true,
+      "default": "{}",
+      "description": "Reviewed JSON mapping of logical roles and fields to authorized TrialAgents tables/columns; no fictional demo rows."
+    },
+    "layoutProfile": {
+      "type": "string",
+      "required": false,
+      "default": "{\"heading\":\"Funding pulse\",\"tabs\":[\"pulse\",\"opportunities\",\"eligibility\",\"applications\",\"deadlines\",\"review\"],\"cols\":{\"opportunities\":[\"title\",\"funder\",\"focus\",\"deadline\",\"amountMax\",\"currency\",\"status\",\"owner\",\"sourceUrl\"],\"criteria\":[\"name\",\"mandatory\",\"status\",\"reviewer\",\"evidenceUrl\"],\"applications\":[\"project\",\"lead\",\"stage\",\"requestedAmount\",\"eligibilityDecision\"],\"milestones\":[\"title\",\"owner\",\"due\",\"status\",\"applicationId\"]},\"visible\":{}}",
+      "description": "Host-owned JSON presentation profile; the gear can reorder screens and columns without changing business records."
+    },
+    "heading": {
+      "type": "string",
+      "required": false,
+      "default": "Funding pulse",
+      "description": "Single primary title displayed on the overview screen."
+    },
+    "pageSize": {
+      "type": "number",
+      "required": false,
+      "default": 20,
+      "description": "Visible record rows per page; capped at 25."
+    },
+    "readOnly": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Disable review write controls while displaying authorized records."
+    },
+    "asOf": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Optional YYYY-MM-DD reference date for deadline comparisons; empty uses runtime date. This does not reconstruct a historical snapshot."
+    },
+    "searchRegions": {
+      "type": "string",
+      "required": false,
+      "default": "EU, UK and US",
+      "description": "Biotech jurisdictions for the optional ChatGPT discovery prompt; not a live search."
+    },
+    "searchFocus": {
+      "type": "string",
+      "required": false,
+      "default": "translational science, CMC and platform technology",
+      "description": "Research focus for optional ChatGPT discovery prompt; not a live search."
+    },
+    "demoLabel": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Show an explicit fictional-data label in local preview only."
+    }
+  },
+  "instructions": "Read the newest read_app_template_guidance(resource:\"authoring\") and resource:\"usage\" fully (follow nextOffset), then read_app_design and this exact Grant Pipeline template by digest. Confirm the user wants applicant-side small biotech research funding, not grantmaker administration. Make one saved TrialAgents internal app using the standard approval flow and existing account/permissions; do not add sign-in, subscriptions, passwords, users, email services or hidden jobs. Keep the official TrialAgents linked watermark in the host, without drawing a fake logo or sidebar icon. Prepare/reuse authorized opportunities, criteria, applications, milestones tables with actual scalar field names and reviewed tableMap; do not use fictional demo records or pretend call IDs are real. Configure a real source and date verification before calling an opportunity Open. Require assessed mandatory criteria and a named reviewer before recording Eligible. Require submittedAt for Submitted, and confirmed amount/date/official award notice for Awarded. Aggregate only by recorded currency and never count awarded as paid cash. Keep the compact six-screen interface and native custom-layout declaration; adapt only on user request. Validate five screens plus report, CRUD review, drag layout integration, 320/390/768/1100/1440 responsive and denied mappings. Saved app and real records operate without automation. After app creation only if requested, inspect list_app_automations/read_app_automation and read_app_automation_guide, then use prepare_app_monitoring for a ChatGPT weekly official-call research or prepare_app_action for a TrialAgents email reminder, with stable authoringKey and separate review; never create a per-app ChatGPT task or send an email directly from frontend. Manual research remains valid. See AUTOMATION_RECIPES.md and HOST_INTEGRATION.md. Version 1.0.1 targets guidance 1.3.9. The catalog source never declares templateConfiguration/templateBindings; AppTemplates.operation injects these once. Create parent records first, use saved receipt UUIDs in child references, and never seed fictional examples. Keep input drafts after proposals; only the trusted receipt means saved. Reconcile an ambiguous response rather than submitting a duplicate create. Return all linked Eligible applications to Pending before changing opportunity/criterion evidence. Record links are immutable on edit. All required sources must be complete before writes. Do not relabel currency on an amount-bearing opportunity or one with linked applications.",
+  "documentation": {
+    "quickStart": [
+      "Create a private TrialAgents app named Grant Pipeline for a small biotech funding team. Do not add app-specific accounts, authentication, billing or organization management.",
+      "Reuse or create authorized scalar TrialAgents tables for grant opportunities, eligibility checks, applications and milestones, preserving real record IDs and app-wide permission enforcement.",
+      "Map actual table IDs and lowercase column keys in tableMap; grant access only to existing permitted tables/fields and keep archived as a scalar boolean.",
+      "Review one funder call with official HTTPS source, identification, exact deadline, deadline version, verification date, applicant restrictions and explicit currency.",
+      "Enter mandatory eligibility checks and assign human review; add an application and 1\u20135 key writing tasks. Save only after user confirmation.",
+      "Preview all six screens and the native layout gear, test missing fields and mobile width, then confirm the saved app. Optional ChatGPT/emails are configured separately only after approval.",
+      "Exact schema opportunities: {\"name\":\"grant_opportunities\",\"fields\":[{\"key\":\"title\",\"name\":\"Opportunity\",\"kind\":\"text\",\"multiple\":false,\"required\":true,\"ai\":true},{\"key\":\"funder\",\"name\":\"Funder\",\"kind\":\"text\",\"multiple\":false,\"required\":true,\"ai\":true},{\"key\":\"call_id\",\"name\":\"Official call ID\",\"kind\":\"text\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"focus\",\"name\":\"Research area\",\"kind\":\"select\",\"multiple\":false,\"required\":false,\"ai\":true,\"options\":[\"Discovery R&D\",\"Preclinical\",\"CMC\",\"Clinical development\",\"Digital lab\",\"Platform technology\",\"Other\"]},{\"key\":\"region\",\"name\":\"Geography\",\"kind\":\"select\",\"multiple\":false,\"required\":false,\"ai\":true,\"options\":[\"EU\",\"UK\",\"US\",\"Global\",\"Other\"]},{\"key\":\"applicant_type\",\"name\":\"Applicant type / restrictions\",\"kind\":\"text\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"deadline\",\"name\":\"Official deadline\",\"kind\":\"date\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"deadline_version\",\"name\":\"Deadline notice version\",\"kind\":\"text\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"verified_at\",\"name\":\"Verified date\",\"kind\":\"date\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"source_url\",\"name\":\"Official source URL\",\"kind\":\"text\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"amount_max\",\"name\":\"Maximum grant amount\",\"kind\":\"number\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"currency\",\"name\":\"Funding currency\",\"kind\":\"select\",\"multiple\":false,\"required\":false,\"ai\":true,\"options\":[\"EUR\",\"USD\",\"GBP\",\"CHF\"]},{\"key\":\"owner\",\"name\":\"Internal owner\",\"kind\":\"text\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"status\",\"name\":\"Call status\",\"kind\":\"select\",\"multiple\":false,\"required\":false,\"ai\":true,\"options\":[\"Open\",\"Watchlist\",\"Closed\"]},{\"key\":\"notes\",\"name\":\"Eligibility / collaboration notes\",\"kind\":\"text\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"archived\",\"name\":\"Archived\",\"kind\":\"boolean\",\"multiple\":false,\"required\":false,\"ai\":true}],\"logicalFields\":{\"title\":\"title\",\"funder\":\"funder\",\"callId\":\"call_id\",\"focus\":\"focus\",\"region\":\"region\",\"applicantType\":\"applicant_type\",\"deadline\":\"deadline\",\"deadlineVersion\":\"deadline_version\",\"verifiedAt\":\"verified_at\",\"sourceUrl\":\"source_url\",\"amountMax\":\"amount_max\",\"currency\":\"currency\",\"owner\":\"owner\",\"status\":\"status\",\"notes\":\"notes\",\"archived\":\"archived\"}}",
+      "Exact schema criteria: {\"name\":\"grant_criteria\",\"fields\":[{\"key\":\"opportunity_id\",\"name\":\"Opportunity\",\"kind\":\"text\",\"multiple\":false,\"required\":true,\"ai\":true},{\"key\":\"name\",\"name\":\"Eligibility check\",\"kind\":\"text\",\"multiple\":false,\"required\":true,\"ai\":true},{\"key\":\"mandatory\",\"name\":\"Mandatory\",\"kind\":\"boolean\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"status\",\"name\":\"Evidence decision\",\"kind\":\"select\",\"multiple\":false,\"required\":false,\"ai\":true,\"options\":[\"Unknown\",\"Yes\",\"No\"]},{\"key\":\"evidence_url\",\"name\":\"Evidence URL\",\"kind\":\"text\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"reason\",\"name\":\"Assessment rationale\",\"kind\":\"text\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"reviewer\",\"name\":\"Reviewed by\",\"kind\":\"text\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"assessed_at\",\"name\":\"Assessment date\",\"kind\":\"date\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"archived\",\"name\":\"Archived\",\"kind\":\"boolean\",\"multiple\":false,\"required\":false,\"ai\":true}],\"logicalFields\":{\"opportunityId\":\"opportunity_id\",\"name\":\"name\",\"mandatory\":\"mandatory\",\"status\":\"status\",\"evidenceUrl\":\"evidence_url\",\"reason\":\"reason\",\"reviewer\":\"reviewer\",\"assessedAt\":\"assessed_at\",\"archived\":\"archived\"}}",
+      "Exact schema applications: {\"name\":\"grant_applications\",\"fields\":[{\"key\":\"opportunity_id\",\"name\":\"Funding call\",\"kind\":\"text\",\"multiple\":false,\"required\":true,\"ai\":true},{\"key\":\"project\",\"name\":\"Biotech initiative\",\"kind\":\"text\",\"multiple\":false,\"required\":true,\"ai\":true},{\"key\":\"lead\",\"name\":\"Application lead\",\"kind\":\"text\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"stage\",\"name\":\"Stage\",\"kind\":\"select\",\"multiple\":false,\"required\":false,\"ai\":true,\"options\":[\"Researching\",\"Screening\",\"Drafting\",\"Submitted\",\"Awarded\",\"Declined\"]},{\"key\":\"requested_amount\",\"name\":\"Requested amount\",\"kind\":\"number\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"currency\",\"name\":\"Currency\",\"kind\":\"select\",\"multiple\":false,\"required\":false,\"ai\":true,\"options\":[\"EUR\",\"USD\",\"GBP\",\"CHF\"]},{\"key\":\"eligibility_decision\",\"name\":\"Human eligibility decision\",\"kind\":\"select\",\"multiple\":false,\"required\":false,\"ai\":true,\"options\":[\"Pending\",\"Eligible\",\"Ineligible\"]},{\"key\":\"submitted_at\",\"name\":\"Date submitted\",\"kind\":\"date\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"awarded_amount\",\"name\":\"Verified award amount\",\"kind\":\"number\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"award_date\",\"name\":\"Award notification date\",\"kind\":\"date\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"award_notice_url\",\"name\":\"Official award evidence URL\",\"kind\":\"text\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"next_step\",\"name\":\"Next action\",\"kind\":\"text\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"reviewer\",\"name\":\"Internal reviewer\",\"kind\":\"text\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"notes\",\"name\":\"Notes / limitations\",\"kind\":\"text\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"archived\",\"name\":\"Archived\",\"kind\":\"boolean\",\"multiple\":false,\"required\":false,\"ai\":true}],\"logicalFields\":{\"opportunityId\":\"opportunity_id\",\"project\":\"project\",\"lead\":\"lead\",\"stage\":\"stage\",\"requestedAmount\":\"requested_amount\",\"currency\":\"currency\",\"eligibilityDecision\":\"eligibility_decision\",\"submittedAt\":\"submitted_at\",\"awardedAmount\":\"awarded_amount\",\"awardDate\":\"award_date\",\"awardNoticeUrl\":\"award_notice_url\",\"nextStep\":\"next_step\",\"reviewer\":\"reviewer\",\"notes\":\"notes\",\"archived\":\"archived\"}}",
+      "Exact schema milestones: {\"name\":\"grant_milestones\",\"fields\":[{\"key\":\"application_id\",\"name\":\"Linked application\",\"kind\":\"text\",\"multiple\":false,\"required\":true,\"ai\":true},{\"key\":\"title\",\"name\":\"Milestone / deliverable\",\"kind\":\"text\",\"multiple\":false,\"required\":true,\"ai\":true},{\"key\":\"owner\",\"name\":\"Owner\",\"kind\":\"text\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"due\",\"name\":\"Due date\",\"kind\":\"date\",\"multiple\":false,\"required\":true,\"ai\":true},{\"key\":\"status\",\"name\":\"Status\",\"kind\":\"select\",\"multiple\":false,\"required\":false,\"ai\":true,\"options\":[\"To do\",\"In progress\",\"Blocked\",\"Done\"]},{\"key\":\"completed_at\",\"name\":\"Completion date\",\"kind\":\"date\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"evidence\",\"name\":\"Completion evidence\",\"kind\":\"text\",\"multiple\":false,\"required\":false,\"ai\":true},{\"key\":\"archived\",\"name\":\"Archived\",\"kind\":\"boolean\",\"multiple\":false,\"required\":false,\"ai\":true}],\"logicalFields\":{\"applicationId\":\"application_id\",\"title\":\"title\",\"owner\":\"owner\",\"due\":\"due\",\"status\":\"status\",\"completedAt\":\"completed_at\",\"evidence\":\"evidence\",\"archived\":\"archived\"}}",
+      "Optional prepare_app_action config example, never execute literal placeholders: replace APP_UUID/appVersion, OPPORTUNITIES_UUID, physical field names, SELECTED_REGISTERED_OWNER_EMAIL and APPROVED_EXPIRY_ISO with reviewed current values; users is the approved execution-user scope per the current guide. This is one separate email action, not a research completion email: {\"name\":\"Verified funding call available\",\"authoringKey\":\"grant_verified_call_email_v1\",\"appId\":\"APP_UUID\",\"appVersion\":0,\"recordTypeId\":\"OPPORTUNITIES_UUID\",\"fields\":[\"status\",\"verified_at\",\"source_url\",\"archived\"],\"trigger\":{\"kind\":\"database\",\"typeId\":\"OPPORTUNITIES_UUID\",\"events\":[\"created\",\"updated\"],\"fields\":[\"status\"],\"becomes\":{\"field\":\"status\",\"operator\":\"equals\",\"value\":\"Open\"}},\"conditions\":[{\"field\":\"verified_at\",\"operator\":\"not_empty\"},{\"field\":\"source_url\",\"operator\":\"not_empty\"},{\"field\":\"archived\",\"operator\":\"not_equals\",\"value\":true}],\"steps\":[{\"id\":\"notify_owner\",\"kind\":\"email\",\"to\":[\"SELECTED_REGISTERED_OWNER_EMAIL\"],\"subject\":\"Grant pipeline update available\",\"text\":\"Open https://platform.trialagents.com to review your authorized grant pipeline.\"}],\"users\":[],\"expiresAt\":\"APPROVED_EXPIRY_ISO\",\"maxRunsPerDay\":10}"
+    ],
+    "dataContract": "Four independent authorized scalar record types: opportunities(title, funder, callId, focus, region, applicantType, deadline ISO date, deadlineVersion, verifiedAt, sourceUrl HTTPS, amountMax, currency, owner, status, notes, archived); criteria(opportunityId foreign key, name, mandatory boolean, status Unknown/Yes/No, evidenceUrl, reason, reviewer, assessedAt, archived); applications(opportunityId, project, lead, stage, requestedAmount, currency, eligibilityDecision Pending/Eligible/Ineligible, submittedAt, awardedAmount, awardDate, awardNoticeUrl, nextStep, reviewer, notes, archived); milestones(applicationId, title, owner, due, status, completedAt, evidence, archived). IDs are platform record IDs, never display names. Every catalog binding is a reviewed logical-to-physical field mapping in tableMap and an authorized templateBindings declaration. No grants data ships as real records: demo_data.json is entirely fictional and used only in standalone preview. Never assume a for-profit biotech is eligible. Stage amounts are never receipts; do not sum currencies. Funding outcomes require recorded official evidence. All reads bounded to two 100-row pages per role, and incomplete access invalidates any authoritative aggregate. All fields use multiple:false. Optional empty dates and numbers are null, not empty strings. URLs/narratives/references use text; relationship text holds actual saved UUIDs, not arrays or labels. Physical keys are snake_case. For each role configure tableMap as a JSON string: {role:{typeId:actual UUID,fields:{logicalKey:physical_key},writableFields:[authorized logical keys]}}. Bind physical fields with a current schemaVersion, supported kind and permitted manifest mode. Complete schemas follow in quickStart; no external repo file is required. Reads capped at 200 per role: unknown totals, denied/short pages, missing mappings and arrays are incomplete, never zero. Search and pagination cover the loaded window only; narrow authorized scope for larger datasets. Dependency/provenance guards are app checks, not database foreign-key or cross-app integrity constraints. In Funding review, submitted or decided requests need an amount and currency; if either is missing the funding totals are withheld. Recorded awards require a positive amount, nonfuture notification date and official evidence; awards are never receipts. Future dates are allowed for deadlines/due dates, not verification, assessment, submission, award notification or completion.",
+    "interactionContract": "Six single-title screens: Funding pulse (deadlines and stage signals), Opportunities (search, filters, paging, official source, edit/duplicate/archive), Eligibility (mandatory checklist, evidence, reviewer, human eligibility decision), Applications (lean Kanban and reviewed status changes), Deadlines (eight-week view, assigned tasks with completion evidence), Funding review (per-currency submitted/awarded totals, dated facts and optional research prompt). Row 3-dot menus support Edit, Duplicate, Archive (soft delete). Archive is blocked when live linked records exist. Forms validate mandatory fields and prepare records.propose; nothing is saved until the trusted host confirmation. The settings gear uses native tracker:layout, custom templateLayoutSchema and versioned customLayout profile to reorder screens and visible columns; no extra in-app settings tab. Keyboard focus and explicit Close/Cancel, responsive 320\u20131440 widths, and one primary page scroll. No native networking, calendar sync, portal submission or active assistant inside rendered JS. Native field layout controls table columns and draft form order/visibility; Additional fields exposes hidden/required values. Criteria action menus include duplicate/archive. Application board and criteria register have paging. Deadline timeline covers the current register page. Incomplete sources suppress totals and eligibility, and disallow edits. Preserved drafts are not committed records.",
+    "lifecycle": "Discover and read this exact catalog ID/version/digest; preview with the user then save via reviewed app creation. Revisions use new immutable versions and retain existing app identity, database bindings, archived history, authorization and real source records. Source controls only prepare records.propose, with expectedVersion on edits and no blind overwrite. Host confirmation owns commit/receipt. Duplicate creates a distinct draft record and clears unsafe award/call evidence. Failure retains unsaved draft and the last published app. Layout-only changes must pass host validation and preserve stable schema IDs. Research/email task definitions are independent and must not block app open or writes. The standalone preview uses fictional in-memory data and a local confirmation dialog only. Pin the exact version and digest. Use one requestKey for initial app preparation/save and reconcile its receipt on ambiguity. Revisions target the same saved component ID with expectedVersion; never create a replacement to recover. Ignore cancels only the pending review, and Close/Cancel discards the local form. Reopen saved output to verify. App archive suspends attached work; restore/copy does not activate it. The asOf option is a deadline comparison reference date, not a reconstructed historical snapshot.",
+    "limitations": [
+      "No direct grant application submissions, funder portal credentials, funder data API, disbursement accounting, grant payments or applicant login system.",
+      "Automatic grant discovery or deadline monitoring is NOT implemented in frontend-js. ChatGPT can research official calls only in an authorized chat/approved automation; missing evidence remains unverified.",
+      "Only four compact tables; no consortium CRM, institutional ERP, multi-level legal signoff or grantmaker administration. Recommended scope: 1\u20133 grant owners and 5\u201330 opportunities per active cycle.",
+      "Custom HTML sections inherit app-level TrialAgents access. Sensitive grant/private proposal documents need an appropriately protected separate app or supported standard sections; hiding a screen is not an access boundary.",
+      "Stage counts and currency-specific amounts are calculated only from complete authorized reads, which are bounded at 200 records per role. Missing bindings or overflow are visibly flagged.",
+      "Real host operation, native settings persistence and optional task delivery require an end-to-end post-install test. The standalone preview simulates reviewed proposals but never writes to TrialAgents."
+    ],
+    "examples": [
+      {
+        "prompt": "Set up a grant tracker for our 18-person biotech working on biomarker assay development and CMC scale-up.",
+        "expectedBehavior": "Create one private app with four compact linked tables, selected grant sources, eligible entity restrictions, named owners, stages and a five-action deadline list; request approval before saving."
+      },
+      {
+        "prompt": "Check whether our EU registered biotech can apply to these two official funding calls.",
+        "expectedBehavior": "Read source URLs and explicit criteria, record Unknown until verified, allow only an authorized human-reviewed eligibility decision; never assume commercial SMEs are eligible."
+      },
+      {
+        "prompt": "Show the upcoming 30-day grant deadlines and all submitted or awarded values for management.",
+        "expectedBehavior": "Display date verified entries, list blocker tasks, report submitted and officially awarded amounts separately per currency, distinguish awards from cash and flag incomplete authorization."
+      },
+      {
+        "prompt": "Research biotech funding opportunities every week and notify us when a good match has been verified.",
+        "expectedBehavior": "After app save and separate user approval, prepare a source-backed ChatGPT monitoring recipe via TrialAgents Automations. No jobs are created inside the app and no applicant messages are sent automatically."
+      }
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "A small biotech searching regularly for new calls may use a weekly ChatGPT research monitor; one-off projects can simply request manual discovery. Internal deadline email alerts are optional and separate.",
+      "readRequirements": "Authorized work themes, applicant legal entity type and locations, known funding calls, recorded official URLs, call IDs, checked-at date, grant history and allowed proposal destinations. Deduplicate by official funder/call ID/version. Do not read private HR, patient or clinical subject data. Check read_automation_setup at app creation/first use/reconnect. Use the current guide and actual host-supported subscription; do not fabricate runner activation. Define owner-approved expiry, source/write scopes and run limits. Without ongoing write authority keep results in private monitoring history for manual review. Read only one authorized scope and checkpoint verified complete coverage; expired/revoked grants stop writes. Use stable authoringKey grant_official_call_discovery_v1 for the monitor, grant_verified_call_email_v1 for the optional email. Reuse existing IDs and expected versions when updating; do not duplicate definitions on retries. Check setup without making app serving depend on it. No automation: manually add an official call, assess criteria, record an application and milestones, then prepare/confirm each change.",
+      "outputContract": "Propose new official grants and date/source evidence as unverified opportunity drafts, with human eligibility review; list changed deadlines and next action. No automatic eligibility grant, portal submission, notification to applicants or funders, or accounting claims. For optional email use fixed subject \"Grant pipeline update available\" and fixed body \"Open https://platform.trialagents.com to review your authorized grant pipeline.\" Do not invent interpolation placeholders. Registered owner and explicitly selected app-authorized team only; no external/address-column recipients. Respect platform throttling, cancellation and state rechecks. No email digest modes or subdaily email schedules. Never repeat successful research because delivery failed. Disabled definitions remain disabled on edit; outcomes belong in Logs. Suggested email trigger: the opportunities status field transitions into Open, with verified_at and source_url not empty and archived not true. Set recordTypeId to the actual opportunities table, use mapped physical fields for trigger/conditions/scope, inherit existing app access, and review the single-step action separately. Do not also send a completion email for this handoff. Email and research have independent authorization and expiry. Archive suspends definitions; restore/copy never enables them.",
+      "promptExample": "For the saved Grant Pipeline app, once weekly examine official EU/UK/US sources for OPEN competitive R&D grants explicitly allowing a commercial biotech in our jurisdiction, focused on translational/preclinical/CMC/platform technologies. Record call ID, funder, primary official URL, deadline, date verified, funding instrument and entity requirements. Deduplicate saved call IDs and create ONLY reviewed opportunity drafts. Keep uncertain matches and changed dates flagged for an authorized owner. Never apply or email funders. Deduplicate using official funder, call ID and notice version plus source URL. Do not advance coverage on partial or unavailable sources. Return no_update only with complete coverage and an approved quiet policy. Never mark Eligible, Submitted or Awarded. Use one reviewed weekly calendar monitor in the owner timezone (default manual/no automation), initial lookback 7 days and coalesced catch-up; store expiry and bounded write limits in the reviewed platform configuration. No per-app ChatGPT task. Suggested owner-approved weekly slot: Monday 09:00 in their confirmed IANA timezone, anchored to the first agreed local date, with authorization expiry explicitly recorded. Use inheritAppAccess:true and only current approved app-bound fields/write scopes; no grant is created implicitly."
+    }
+  },
+  "examples": [
+    {
+      "heading": "Funding pulse",
+      "pageSize": 20,
+      "readOnly": false
+    }
+  ],
+  "deprecated": false
+}
+;
+const roles=['opportunities','criteria','applications','milestones'];
+const map=Object.fromEntries(roles.map(role=>{const fields=Object.keys(({
+  "opportunities": {
+    "name": "grant_opportunities",
+    "fields": [
+      {
+        "key": "title",
+        "name": "Opportunity",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "funder",
+        "name": "Funder",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "call_id",
+        "name": "Official call ID",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "focus",
+        "name": "Research area",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "Discovery R&D",
+          "Preclinical",
+          "CMC",
+          "Clinical development",
+          "Digital lab",
+          "Platform technology",
+          "Other"
+        ]
+      },
+      {
+        "key": "region",
+        "name": "Geography",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "EU",
+          "UK",
+          "US",
+          "Global",
+          "Other"
+        ]
+      },
+      {
+        "key": "applicant_type",
+        "name": "Applicant type / restrictions",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "deadline",
+        "name": "Official deadline",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "deadline_version",
+        "name": "Deadline notice version",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "verified_at",
+        "name": "Verified date",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "source_url",
+        "name": "Official source URL",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "amount_max",
+        "name": "Maximum grant amount",
+        "kind": "number",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "currency",
+        "name": "Funding currency",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "EUR",
+          "USD",
+          "GBP",
+          "CHF"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "Internal owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Call status",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "Open",
+          "Watchlist",
+          "Closed"
+        ]
+      },
+      {
+        "key": "notes",
+        "name": "Eligibility / collaboration notes",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "title": "title",
+      "funder": "funder",
+      "callId": "call_id",
+      "focus": "focus",
+      "region": "region",
+      "applicantType": "applicant_type",
+      "deadline": "deadline",
+      "deadlineVersion": "deadline_version",
+      "verifiedAt": "verified_at",
+      "sourceUrl": "source_url",
+      "amountMax": "amount_max",
+      "currency": "currency",
+      "owner": "owner",
+      "status": "status",
+      "notes": "notes",
+      "archived": "archived"
+    }
+  },
+  "criteria": {
+    "name": "grant_criteria",
+    "fields": [
+      {
+        "key": "opportunity_id",
+        "name": "Opportunity",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "name",
+        "name": "Eligibility check",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "mandatory",
+        "name": "Mandatory",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Evidence decision",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "Unknown",
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "key": "evidence_url",
+        "name": "Evidence URL",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "reason",
+        "name": "Assessment rationale",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "reviewer",
+        "name": "Reviewed by",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "assessed_at",
+        "name": "Assessment date",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "opportunityId": "opportunity_id",
+      "name": "name",
+      "mandatory": "mandatory",
+      "status": "status",
+      "evidenceUrl": "evidence_url",
+      "reason": "reason",
+      "reviewer": "reviewer",
+      "assessedAt": "assessed_at",
+      "archived": "archived"
+    }
+  },
+  "applications": {
+    "name": "grant_applications",
+    "fields": [
+      {
+        "key": "opportunity_id",
+        "name": "Funding call",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "project",
+        "name": "Biotech initiative",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "lead",
+        "name": "Application lead",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "stage",
+        "name": "Stage",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "Researching",
+          "Screening",
+          "Drafting",
+          "Submitted",
+          "Awarded",
+          "Declined"
+        ]
+      },
+      {
+        "key": "requested_amount",
+        "name": "Requested amount",
+        "kind": "number",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "currency",
+        "name": "Currency",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "EUR",
+          "USD",
+          "GBP",
+          "CHF"
+        ]
+      },
+      {
+        "key": "eligibility_decision",
+        "name": "Human eligibility decision",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "Pending",
+          "Eligible",
+          "Ineligible"
+        ]
+      },
+      {
+        "key": "submitted_at",
+        "name": "Date submitted",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "awarded_amount",
+        "name": "Verified award amount",
+        "kind": "number",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "award_date",
+        "name": "Award notification date",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "award_notice_url",
+        "name": "Official award evidence URL",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "next_step",
+        "name": "Next action",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "reviewer",
+        "name": "Internal reviewer",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "Notes / limitations",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "opportunityId": "opportunity_id",
+      "project": "project",
+      "lead": "lead",
+      "stage": "stage",
+      "requestedAmount": "requested_amount",
+      "currency": "currency",
+      "eligibilityDecision": "eligibility_decision",
+      "submittedAt": "submitted_at",
+      "awardedAmount": "awarded_amount",
+      "awardDate": "award_date",
+      "awardNoticeUrl": "award_notice_url",
+      "nextStep": "next_step",
+      "reviewer": "reviewer",
+      "notes": "notes",
+      "archived": "archived"
+    }
+  },
+  "milestones": {
+    "name": "grant_milestones",
+    "fields": [
+      {
+        "key": "application_id",
+        "name": "Linked application",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "title",
+        "name": "Milestone / deliverable",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "due",
+        "name": "Due date",
+        "kind": "date",
+        "multiple": false,
+        "required": true,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "ai": true,
+        "options": [
+          "To do",
+          "In progress",
+          "Blocked",
+          "Done"
+        ]
+      },
+      {
+        "key": "completed_at",
+        "name": "Completion date",
+        "kind": "date",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "evidence",
+        "name": "Completion evidence",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "applicationId": "application_id",
+      "title": "title",
+      "owner": "owner",
+      "due": "due",
+      "status": "status",
+      "completedAt": "completed_at",
+      "evidence": "evidence",
+      "archived": "archived"
+    }
+  }
+}
+)[role].logicalFields);return [role,{typeId:role,fields:Object.fromEntries(fields.map(k=>[k,k])),writableFields:fields}]}));
+const bindings=roles.map(role=>({typeId:role,fields:Object.keys(map[role].fields)}));
+const config={...metadata.defaults,demoLabel:true,tableMap:JSON.stringify(map)};
+const render=new Function('input','tools','templateConfiguration','templateBindings',source);
+let state={},rows=demo,proposal=null;
+function dispatch(event){if(event.action==='tracker:layout'){alert('Layout is managed in native TrialAgents App Settings. This file demonstrates the grant pipeline screens only.');return;}
+ const out=render({saved:true,writable:true,state,event},{call:(name,v)=>{if(name==='records.read'){const all=rows.filter(r=>r.role===v.typeId);return {rows:all.slice(v.offset,v.offset+v.limit),total:all.length};}if(name==='records.propose'){proposal=v;return {status:'proposed'};}throw Error('Unsupported preview capability');}},config,bindings);
+ state=out.state;document.getElementById('surface').innerHTML=out.html;
+ if(proposal){const changes=proposal;proposal=null;if(confirm('FICTIONAL LOCAL REVIEW ONLY\n'+JSON.stringify(changes,null,2))){for(const c of changes){if(c.kind==='create_record')rows.push({role:c.typeId,id:crypto.randomUUID(),version:0,data:c.data});else{const r=rows.find(r=>r.id===c.recordId);if(r&&r.version===c.expectedVersion){r.data={...r.data,...c.data};r.version++;}}}state={...state,drawer:null,draft:null,notice:'Fictional change applied in this preview only.'};dispatch({kind:'open',action:''});}}
+}
+function eventFor(kind,target){const trigger=target.closest('[data-action]');if(!trigger)return;const form=trigger.closest('form');dispatch({kind,action:trigger.dataset.action,value:target.type==='checkbox'?target.checked:target.value??null,form:form?Object.fromEntries(new FormData(form)):{}});}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&!b.disabled&&b.type!=='submit')eventFor('click',b);});
+document.addEventListener('submit',e=>{e.preventDefault();eventFor('submit',e.target);});
+document.addEventListener('change',e=>eventFor('change',e.target));
+dispatch({kind:'open',action:''});
+</script></body></html>

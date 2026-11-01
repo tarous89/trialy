@@ -1,0 +1,752 @@
+{
+  "opportunities": [
+    {
+      "id": "opp001",
+      "version": 1,
+      "data": {
+        "title": "Translational Immunology Accelerator",
+        "funder": "Northline Science Fund (fictional)",
+        "callId": "DEMO-TR-26-041",
+        "focus": "Preclinical",
+        "region": "EU",
+        "applicantType": "Small commercial biotech; consortium optional",
+        "deadline": "2026-11-18",
+        "deadlineVersion": "demo-corrigendum-2",
+        "verifiedAt": "2026-10-29",
+        "sourceUrl": "https://example.org/funding/DEMO-TR-26-041",
+        "amountMax": 450000,
+        "currency": "EUR",
+        "owner": "M. Rossi",
+        "status": "Open",
+        "notes": "Early target validation and in-vivo proof of concept. Applicant type requires official recheck.",
+        "archived": false
+      }
+    },
+    {
+      "id": "opp002",
+      "version": 1,
+      "data": {
+        "title": "Bioprocess Manufacturing Innovation",
+        "funder": "Arbor Industrial Research Council (fictional)",
+        "callId": "DEMO-CMC-26-015",
+        "focus": "CMC",
+        "region": "EU",
+        "applicantType": "SME with an EU manufacturing partner",
+        "deadline": "2026-12-04",
+        "deadlineVersion": "demo-original",
+        "verifiedAt": "2026-10-30",
+        "sourceUrl": "https://example.org/funding/DEMO-CMC-26-015",
+        "amountMax": 320000,
+        "currency": "EUR",
+        "owner": "J. Patel",
+        "status": "Open",
+        "notes": "Process analytics, scaled cell-line development, critical quality attributes.",
+        "archived": false
+      }
+    },
+    {
+      "id": "opp003",
+      "version": 1,
+      "data": {
+        "title": "Biomarker Translational Proof of Concept",
+        "funder": "Fictional Biomedical Catalyst",
+        "callId": "DEMO-BM-26-007",
+        "focus": "Platform technology",
+        "region": "UK",
+        "applicantType": "UK-established SME with academic collaborator",
+        "deadline": "2026-11-12",
+        "deadlineVersion": "demo-original",
+        "verifiedAt": "2026-10-27",
+        "sourceUrl": "https://example.org/funding/DEMO-BM-26-007",
+        "amountMax": 180000,
+        "currency": "GBP",
+        "owner": "A. Chen",
+        "status": "Open",
+        "notes": "Cross-border eligibility not yet confirmed; avoid assuming a foreign SME is eligible.",
+        "archived": false
+      }
+    },
+    {
+      "id": "opp004",
+      "version": 1,
+      "data": {
+        "title": "Connected Lab Software Seed Call",
+        "funder": "Meridian Digital Innovation Hub (fictional)",
+        "callId": "DEMO-LAB-27-010",
+        "focus": "Digital lab",
+        "region": "EU",
+        "applicantType": "EU research SME; proof-of-concept only",
+        "deadline": "2027-01-24",
+        "deadlineVersion": "demo-preview",
+        "verifiedAt": "2026-10-28",
+        "sourceUrl": "https://example.org/funding/DEMO-LAB-27-010",
+        "amountMax": 120000,
+        "currency": "EUR",
+        "owner": "E. Moreno",
+        "status": "Watchlist",
+        "notes": "Funder conditions may change; call is not confirmed open.",
+        "archived": false
+      }
+    },
+    {
+      "id": "opp005",
+      "version": 1,
+      "data": {
+        "title": "High-throughput Assay Automation Pilot",
+        "funder": "Ridgeway Life Sciences Trust (fictional)",
+        "callId": "DEMO-LAB-26-002",
+        "focus": "Discovery R&D",
+        "region": "EU",
+        "applicantType": "Small research SME",
+        "deadline": "2026-09-25",
+        "deadlineVersion": "demo-final",
+        "verifiedAt": "2026-09-16",
+        "sourceUrl": "https://example.org/funding/DEMO-LAB-26-002",
+        "amountMax": 210000,
+        "currency": "EUR",
+        "owner": "M. Rossi",
+        "status": "Closed",
+        "notes": "Fictional completed application used to illustrate verified award recording.",
+        "archived": false
+      }
+    },
+    {
+      "id": "opp006",
+      "version": 1,
+      "data": {
+        "title": "Microfluidics Scale-up Research",
+        "funder": "Oakshore Applied Science Foundation (fictional)",
+        "callId": "DEMO-US-27-003",
+        "focus": "Platform technology",
+        "region": "US",
+        "applicantType": "U.S.-registered small business; local requirements",
+        "deadline": "2027-02-14",
+        "deadlineVersion": "demo-original",
+        "verifiedAt": "2026-10-31",
+        "sourceUrl": "https://example.org/funding/DEMO-US-27-003",
+        "amountMax": 550000,
+        "currency": "USD",
+        "owner": "D. Kim",
+        "status": "Open",
+        "notes": "Commercialization and IP documentation required.",
+        "archived": false
+      }
+    }
+  ],
+  "criteria": [
+    {
+      "id": "check-001-1",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp001",
+        "name": "Commercial applicant accepted",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp001",
+        "reason": "Published applicant category indicates SMEs",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-001-2",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp001",
+        "name": "Geographic establishment",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp001",
+        "reason": "Registered EU entity recorded",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-001-3",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp001",
+        "name": "Technology readiness fit",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp001",
+        "reason": "Program stage aligned to guidance",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-001-4",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp001",
+        "name": "Consortium commitment",
+        "mandatory": true,
+        "status": "Unknown",
+        "evidenceUrl": "",
+        "reason": "Partner letter pending verification",
+        "reviewer": "",
+        "assessedAt": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-002-1",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp002",
+        "name": "Commercial applicant accepted",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp002",
+        "reason": "SME category stated in fictional call",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-002-2",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp002",
+        "name": "Geographic establishment",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp002",
+        "reason": "Entity matches stated region",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-002-3",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp002",
+        "name": "Scientific scope and phase",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp002",
+        "reason": "R&D stage matches call focus",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-002-4",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp002",
+        "name": "Budget and cofunding rule",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp002",
+        "reason": "Illustrative cofunding plan in place",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-003-1",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp003",
+        "name": "UK legal entity",
+        "mandatory": true,
+        "status": "No",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp003",
+        "reason": "No confirmed UK entity recorded",
+        "reviewer": "A. Chen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-003-2",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp003",
+        "name": "Academic partner letter",
+        "mandatory": true,
+        "status": "Unknown",
+        "evidenceUrl": "",
+        "reason": "Partner search ongoing",
+        "reviewer": "",
+        "assessedAt": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-003-3",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp003",
+        "name": "Translational fit",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp003",
+        "reason": "Assay validation is in scope",
+        "reviewer": "A. Chen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-004-1",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp004",
+        "name": "Call open to for-profit SMEs",
+        "mandatory": true,
+        "status": "Unknown",
+        "evidenceUrl": "",
+        "reason": "Funder eligibility terms to be checked",
+        "reviewer": "",
+        "assessedAt": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-004-2",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp004",
+        "name": "Research fit",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp004",
+        "reason": "Scope appears relevant",
+        "reviewer": "E. Moreno",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-004-3",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp004",
+        "name": "Grant instrument terms",
+        "mandatory": true,
+        "status": "Unknown",
+        "evidenceUrl": "",
+        "reason": "Verify final published guidance",
+        "reviewer": "",
+        "assessedAt": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-005-1",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp005",
+        "name": "Commercial applicant accepted",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp005",
+        "reason": "SME category stated in fictional call",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-005-2",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp005",
+        "name": "Geographic establishment",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp005",
+        "reason": "Entity matches stated region",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-005-3",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp005",
+        "name": "Scientific scope and phase",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp005",
+        "reason": "R&D stage matches call focus",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-005-4",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp005",
+        "name": "Budget and cofunding rule",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp005",
+        "reason": "Illustrative cofunding plan in place",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-006-1",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp006",
+        "name": "Commercial applicant accepted",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp006",
+        "reason": "SME category stated in fictional call",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-006-2",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp006",
+        "name": "Geographic establishment",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp006",
+        "reason": "Entity matches stated region",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-006-3",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp006",
+        "name": "Scientific scope and phase",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp006",
+        "reason": "R&D stage matches call focus",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    },
+    {
+      "id": "check-006-4",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp006",
+        "name": "Budget and cofunding rule",
+        "mandatory": true,
+        "status": "Yes",
+        "evidenceUrl": "https://example.org/fictional-assessment/opp006",
+        "reason": "Illustrative cofunding plan in place",
+        "reviewer": "L. Jensen",
+        "assessedAt": "2026-10-29",
+        "archived": false
+      }
+    }
+  ],
+  "applications": [
+    {
+      "id": "app001",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp001",
+        "project": "Inflammation target validation",
+        "lead": "M. Rossi",
+        "stage": "Drafting",
+        "requestedAmount": 340000,
+        "currency": "EUR",
+        "eligibilityDecision": "Pending",
+        "submittedAt": "",
+        "awardedAmount": null,
+        "awardDate": "",
+        "awardNoticeUrl": "",
+        "nextStep": "Complete consortium evidence",
+        "reviewer": "L. Jensen",
+        "notes": "Grant writing in progress",
+        "archived": false
+      }
+    },
+    {
+      "id": "app002",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp002",
+        "project": "CMC process analytics",
+        "lead": "J. Patel",
+        "stage": "Screening",
+        "requestedAmount": 260000,
+        "currency": "EUR",
+        "eligibilityDecision": "Eligible",
+        "submittedAt": "",
+        "awardedAmount": null,
+        "awardDate": "",
+        "awardNoticeUrl": "",
+        "nextStep": "Confirm partner scope",
+        "reviewer": "L. Jensen",
+        "notes": "Eligibility decision recorded by fictitious reviewer",
+        "archived": false
+      }
+    },
+    {
+      "id": "app003",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp003",
+        "project": "Plasma biomarker platform",
+        "lead": "A. Chen",
+        "stage": "Researching",
+        "requestedAmount": 140000,
+        "currency": "GBP",
+        "eligibilityDecision": "Pending",
+        "submittedAt": "",
+        "awardedAmount": null,
+        "awardDate": "",
+        "awardNoticeUrl": "",
+        "nextStep": "Confirm UK applicant entity",
+        "reviewer": "",
+        "notes": "One mandatory criterion is not met",
+        "archived": false
+      }
+    },
+    {
+      "id": "app004",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp005",
+        "project": "Automated assay mini-line",
+        "lead": "M. Rossi",
+        "stage": "Awarded",
+        "requestedAmount": 190000,
+        "currency": "EUR",
+        "eligibilityDecision": "Eligible",
+        "submittedAt": "2026-09-22",
+        "awardedAmount": 165000,
+        "awardDate": "2026-10-19",
+        "awardNoticeUrl": "https://example.org/fictional-award/DEMO-LAB-26-002",
+        "nextStep": "Schedule first report",
+        "reviewer": "L. Jensen",
+        "notes": "Fictional award; not actual cash received",
+        "archived": false
+      }
+    },
+    {
+      "id": "app005",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp006",
+        "project": "Microfluidics materials platform",
+        "lead": "D. Kim",
+        "stage": "Submitted",
+        "requestedAmount": 430000,
+        "currency": "USD",
+        "eligibilityDecision": "Eligible",
+        "submittedAt": "2026-10-28",
+        "awardedAmount": null,
+        "awardDate": "",
+        "awardNoticeUrl": "",
+        "nextStep": "Await funder response",
+        "reviewer": "D. Kim",
+        "notes": "Fictional early filing before the published deadline",
+        "archived": false
+      }
+    },
+    {
+      "id": "app006",
+      "version": 1,
+      "data": {
+        "opportunityId": "opp004",
+        "project": "Electronic bench notebook bridge",
+        "lead": "E. Moreno",
+        "stage": "Drafting",
+        "requestedAmount": 100000,
+        "currency": "EUR",
+        "eligibilityDecision": "Pending",
+        "submittedAt": "",
+        "awardedAmount": null,
+        "awardDate": "",
+        "awardNoticeUrl": "",
+        "nextStep": "Confirm final call opening",
+        "reviewer": "",
+        "notes": "Watchlist; do not imply application acceptance",
+        "archived": false
+      }
+    }
+  ],
+  "milestones": [
+    {
+      "id": "task001",
+      "version": 1,
+      "data": {
+        "applicationId": "app001",
+        "title": "Consortium letter of support",
+        "owner": "M. Rossi",
+        "due": "2026-11-06",
+        "status": "In progress",
+        "completedAt": "",
+        "evidence": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "task002",
+      "version": 1,
+      "data": {
+        "applicationId": "app001",
+        "title": "Internal science review",
+        "owner": "L. Jensen",
+        "due": "2026-11-10",
+        "status": "To do",
+        "completedAt": "",
+        "evidence": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "task003",
+      "version": 1,
+      "data": {
+        "applicationId": "app001",
+        "title": "Budget and co-funding check",
+        "owner": "N. Meyer",
+        "due": "2026-11-14",
+        "status": "To do",
+        "completedAt": "",
+        "evidence": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "task004",
+      "version": 1,
+      "data": {
+        "applicationId": "app002",
+        "title": "CMC partner commitment",
+        "owner": "J. Patel",
+        "due": "2026-11-25",
+        "status": "In progress",
+        "completedAt": "",
+        "evidence": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "task005",
+      "version": 1,
+      "data": {
+        "applicationId": "app002",
+        "title": "Final budget validation",
+        "owner": "N. Meyer",
+        "due": "2026-12-01",
+        "status": "To do",
+        "completedAt": "",
+        "evidence": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "task006",
+      "version": 1,
+      "data": {
+        "applicationId": "app003",
+        "title": "Confirm UK entity eligibility",
+        "owner": "A. Chen",
+        "due": "2026-10-30",
+        "status": "Blocked",
+        "completedAt": "",
+        "evidence": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "task007",
+      "version": 1,
+      "data": {
+        "applicationId": "app003",
+        "title": "Academic collaborator letter",
+        "owner": "A. Chen",
+        "due": "2026-11-05",
+        "status": "To do",
+        "completedAt": "",
+        "evidence": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "task008",
+      "version": 1,
+      "data": {
+        "applicationId": "app004",
+        "title": "Capture award notice",
+        "owner": "M. Rossi",
+        "due": "2026-10-20",
+        "status": "Done",
+        "completedAt": "2026-10-19",
+        "evidence": "Fictional public notice link recorded in award",
+        "archived": false
+      }
+    },
+    {
+      "id": "task009",
+      "version": 1,
+      "data": {
+        "applicationId": "app004",
+        "title": "First technical progress report",
+        "owner": "L. Jensen",
+        "due": "2027-01-15",
+        "status": "To do",
+        "completedAt": "",
+        "evidence": "",
+        "archived": false
+      }
+    },
+    {
+      "id": "task010",
+      "version": 1,
+      "data": {
+        "applicationId": "app005",
+        "title": "Validate submission receipt",
+        "owner": "D. Kim",
+        "due": "2026-10-29",
+        "status": "Done",
+        "completedAt": "2026-10-28",
+        "evidence": "Fictional filing acknowledgement",
+        "archived": false
+      }
+    },
+    {
+      "id": "task011",
+      "version": 1,
+      "data": {
+        "applicationId": "app006",
+        "title": "Confirm call opening and deadline",
+        "owner": "E. Moreno",
+        "due": "2026-12-04",
+        "status": "To do",
+        "completedAt": "",
+        "evidence": "",
+        "archived": false
+      }
+    }
+  ]
+}

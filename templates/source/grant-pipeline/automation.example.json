@@ -1,0 +1,58 @@
+{
+  "name": "Verified funding call available",
+  "authoringKey": "grant_verified_call_email_v1",
+  "appId": "APP_UUID",
+  "appVersion": 0,
+  "recordTypeId": "OPPORTUNITIES_UUID",
+  "fields": [
+    "status",
+    "verified_at",
+    "source_url",
+    "archived"
+  ],
+  "trigger": {
+    "kind": "database",
+    "typeId": "OPPORTUNITIES_UUID",
+    "events": [
+      "created",
+      "updated"
+    ],
+    "fields": [
+      "status"
+    ],
+    "becomes": {
+      "field": "status",
+      "operator": "equals",
+      "value": "Open"
+    }
+  },
+  "conditions": [
+    {
+      "field": "verified_at",
+      "operator": "not_empty"
+    },
+    {
+      "field": "source_url",
+      "operator": "not_empty"
+    },
+    {
+      "field": "archived",
+      "operator": "not_equals",
+      "value": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "notify_owner",
+      "kind": "email",
+      "to": [
+        "SELECTED_REGISTERED_OWNER_EMAIL"
+      ],
+      "subject": "Grant pipeline update available",
+      "text": "Open https://platform.trialagents.com to review your authorized grant pipeline."
+    }
+  ],
+  "users": [],
+  "expiresAt": "APPROVED_EXPIRY_ISO",
+  "maxRunsPerDay": 10
+}

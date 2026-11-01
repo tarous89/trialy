@@ -1,0 +1,27 @@
+# Optional automation recipes
+
+Default: no automation. The catalog includes this complete contract so ChatGPT does not need repository access.
+
+## whenUseful
+
+A small biotech searching regularly for new calls may use a weekly ChatGPT research monitor; one-off projects can simply request manual discovery. Internal deadline email alerts are optional and separate.
+
+## readRequirements
+
+Authorized work themes, applicant legal entity type and locations, known funding calls, recorded official URLs, call IDs, checked-at date, grant history and allowed proposal destinations. Deduplicate by official funder/call ID/version. Do not read private HR, patient or clinical subject data. Check read_automation_setup at app creation/first use/reconnect. Use the current guide and actual host-supported subscription; do not fabricate runner activation. Define owner-approved expiry, source/write scopes and run limits. Without ongoing write authority keep results in private monitoring history for manual review. Read only one authorized scope and checkpoint verified complete coverage; expired/revoked grants stop writes. Use stable authoringKey grant_official_call_discovery_v1 for the monitor, grant_verified_call_email_v1 for the optional email. Reuse existing IDs and expected versions when updating; do not duplicate definitions on retries. Check setup without making app serving depend on it. No automation: manually add an official call, assess criteria, record an application and milestones, then prepare/confirm each change.
+
+## outputContract
+
+Propose new official grants and date/source evidence as unverified opportunity drafts, with human eligibility review; list changed deadlines and next action. No automatic eligibility grant, portal submission, notification to applicants or funders, or accounting claims. For optional email use fixed subject "Grant pipeline update available" and fixed body "Open https://platform.trialagents.com to review your authorized grant pipeline." Do not invent interpolation placeholders. Registered owner and explicitly selected app-authorized team only; no external/address-column recipients. Respect platform throttling, cancellation and state rechecks. No email digest modes or subdaily email schedules. Never repeat successful research because delivery failed. Disabled definitions remain disabled on edit; outcomes belong in Logs. Suggested email trigger: the opportunities status field transitions into Open, with verified_at and source_url not empty and archived not true. Set recordTypeId to the actual opportunities table, use mapped physical fields for trigger/conditions/scope, inherit existing app access, and review the single-step action separately. Do not also send a completion email for this handoff. Email and research have independent authorization and expiry. Archive suspends definitions; restore/copy never enables them.
+
+## promptExample
+
+For the saved Grant Pipeline app, once weekly examine official EU/UK/US sources for OPEN competitive R&D grants explicitly allowing a commercial biotech in our jurisdiction, focused on translational/preclinical/CMC/platform technologies. Record call ID, funder, primary official URL, deadline, date verified, funding instrument and entity requirements. Deduplicate saved call IDs and create ONLY reviewed opportunity drafts. Keep uncertain matches and changed dates flagged for an authorized owner. Never apply or email funders. Deduplicate using official funder, call ID and notice version plus source URL. Do not advance coverage on partial or unavailable sources. Return no_update only with complete coverage and an approved quiet policy. Never mark Eligible, Submitted or Awarded. Use one reviewed weekly calendar monitor in the owner timezone (default manual/no automation), initial lookback 7 days and coalesced catch-up; store expiry and bounded write limits in the reviewed platform configuration. No per-app ChatGPT task. Suggested owner-approved weekly slot: Monday 09:00 in their confirmed IANA timezone, anchored to the first agreed local date, with authorization expiry explicitly recorded. Use inheritAppAccess:true and only current approved app-bound fields/write scopes; no grant is created implicitly.
+
+## Typed email example
+
+`automation.example.json` is an illustrative `prepare_app_action` config. Substitute the current saved app ID/version, authorized opportunity table and mapped field keys, registered owner/explicitly selected authorized recipients, execution-user scope and owner-approved ISO expiry. Never run placeholders. The test substitutes synthetic identities and validates the current action schema; it sends no email.
+
+It triggers when a created/updated call enters Open, and rechecks verification/source presence and non-archived state. The platform performs coalescing, deduplication, access/state rechecks, throttling and cancellation. No broad any-update notification, digest mode, external recipient inference or duplicate completion email. It is independent of research execution and does not establish source truth.
+
+Show definitions/Enabled or Disabled in platform Automations; use Logs for outcomes. Preserve hidden configuration and disabled state on edits. A saved definition is not evidence of runner readiness or delivered email. Setup absent or unsupported means pending; preserve the usable app. Live scheduling and email delivery require separate authorized verification.
