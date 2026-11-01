@@ -1,0 +1,11 @@
+# CRO Resource Planning 1.0.2 validation
+
+Release checks use the repository host and disposable fixtures, not production accounts or data.
+
+- `npm run build`: TypeScript, production web and embedded builds, and deterministic catalog/preview drift checks for this and existing templates.
+- `APP_DESIGN_CHECKS=off node --import tsx --test --test-concurrency=1 tests/resource-template.test.ts tests/resource-integration.test.ts tests/app-templates.test.ts`: actual catalog discovery and source execution with host declarations; five scalar schemas and optional brief schema; all five QuickJS screens; 407/240/43-hour fictional baseline; distinct tentative demand and coverage allocated once across duplicate requirements. Drafts survive named form events. Read-only and stale operations do not write. Denied, partial, unknown-total, truncated and invalid inputs withhold totals; a complete empty dataset remains distinct. Parent archive requires complete child data and no links. Pagination exposes 49 specialists and 15 projects. Real database tests cover reviewed creation/duplication/archive, actual snake_case mappings, native layout persistence, Ignore and stale layout rejection.
+- `APP_DESIGN_CHECKS=off node --import tsx scripts/test-resource-browser.ts`: actual production sanitized/CSP iframe and native layout component with manifest-bound database records. Tests five screens, specialty filtering, text/number/reference/select drafts, trusted confirmation and database receipt, project management menus, search, desktop layout drag/field reorder/save/reload, mobile keyboard/Ignore and 390/768/1440 widths.
+
+UI draft markers do not grant write permission. Database writes retain trusted review and current manifest/access/version checks. Native layout modifies presentation only. The optional brief table and automation definitions are documentation contracts; no runner or email was activated by validation. No production records were created.
+
+Catalog storage is ready for the existing MCP loader on deployment. A commit does not prove production deployment or acceptance in a connected ChatGPT session. Live automation setup/readiness, actual scheduled runs and email delivery remain separate owner-configured checks. Scalar reference checks do not create database foreign-key constraints.

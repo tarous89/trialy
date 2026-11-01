@@ -1,0 +1,403 @@
+{
+  "people": {
+    "name": "CRO specialists",
+    "logicalFields": {
+      "name": "name",
+      "role": "role",
+      "region": "region",
+      "hoursPerWeek": "hours_per_week",
+      "skills": "skills",
+      "engagement": "engagement",
+      "status": "status",
+      "availableFrom": "available_from",
+      "archived": "archived"
+    },
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "role",
+        "name": "Specialty",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "options": [
+          "CRA",
+          "CTM",
+          "Project Manager",
+          "Clinical Data",
+          "Biostatistician",
+          "Regulatory",
+          "Medical Monitor",
+          "Quality"
+        ]
+      },
+      {
+        "key": "region",
+        "name": "Region",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "hours_per_week",
+        "name": "Available h / week",
+        "kind": "number",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "skills",
+        "name": "Key skills",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "engagement",
+        "name": "Contract",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Employee",
+          "Contractor"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "options": [
+          "Active",
+          "Upcoming",
+          "Inactive"
+        ]
+      },
+      {
+        "key": "available_from",
+        "name": "Available from",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "description": "Real Monday date as YYYY-MM-DD text."
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ]
+  },
+  "projects": {
+    "name": "CRO client projects",
+    "logicalFields": {
+      "name": "name",
+      "sponsor": "sponsor",
+      "service": "service",
+      "lead": "lead",
+      "status": "status",
+      "startWeek": "start_week",
+      "archived": "archived"
+    },
+    "fields": [
+      {
+        "key": "name",
+        "name": "Project",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "sponsor",
+        "name": "Sponsor / client",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "service",
+        "name": "Service line",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Full-service",
+          "Clinical operations",
+          "Clinical data",
+          "Statistics",
+          "Regulatory",
+          "Quality"
+        ]
+      },
+      {
+        "key": "lead",
+        "name": "Delivery lead",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "options": [
+          "Active",
+          "Tentative",
+          "On hold",
+          "Completed"
+        ]
+      },
+      {
+        "key": "start_week",
+        "name": "Start week",
+        "kind": "text",
+        "multiple": false,
+        "required": false,
+        "description": "Real Monday date as YYYY-MM-DD text."
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ]
+  },
+  "needs": {
+    "name": "CRO role needs",
+    "logicalFields": {
+      "name": "name",
+      "projectId": "project_id",
+      "role": "role",
+      "week": "week",
+      "requiredHours": "required_hours",
+      "priority": "priority",
+      "status": "status",
+      "archived": "archived"
+    },
+    "fields": [
+      {
+        "key": "name",
+        "name": "Requirement",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "project_id",
+        "name": "Project",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "description": "Scalar saved projects record UUID, not a relationship array or label."
+      },
+      {
+        "key": "role",
+        "name": "Required specialty",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "options": [
+          "CRA",
+          "CTM",
+          "Project Manager",
+          "Clinical Data",
+          "Biostatistician",
+          "Regulatory",
+          "Medical Monitor",
+          "Quality"
+        ]
+      },
+      {
+        "key": "week",
+        "name": "Week",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "description": "Real Monday date as YYYY-MM-DD text."
+      },
+      {
+        "key": "required_hours",
+        "name": "Required hours",
+        "kind": "number",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "priority",
+        "name": "Priority",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Critical",
+          "Normal"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "options": [
+          "Approved",
+          "Draft",
+          "Closed"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ]
+  },
+  "bookings": {
+    "name": "CRO bookings",
+    "logicalFields": {
+      "name": "name",
+      "personId": "person_id",
+      "projectId": "project_id",
+      "week": "week",
+      "hours": "hours",
+      "status": "status",
+      "archived": "archived"
+    },
+    "fields": [
+      {
+        "key": "name",
+        "name": "Booking",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "person_id",
+        "name": "Assigned specialist",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "description": "Scalar saved people record UUID, not a relationship array or label."
+      },
+      {
+        "key": "project_id",
+        "name": "Project",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "description": "Scalar saved projects record UUID, not a relationship array or label."
+      },
+      {
+        "key": "week",
+        "name": "Week",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "description": "Real Monday date as YYYY-MM-DD text."
+      },
+      {
+        "key": "hours",
+        "name": "Booked hours",
+        "kind": "number",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "options": [
+          "Confirmed",
+          "Tentative",
+          "Cancelled"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ]
+  },
+  "availability": {
+    "name": "CRO unavailable hours",
+    "logicalFields": {
+      "name": "name",
+      "personId": "person_id",
+      "week": "week",
+      "unavailableHours": "unavailable_hours",
+      "status": "status",
+      "archived": "archived"
+    },
+    "fields": [
+      {
+        "key": "name",
+        "name": "Unavailability",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "person_id",
+        "name": "Team member",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "description": "Scalar saved people record UUID, not a relationship array or label."
+      },
+      {
+        "key": "week",
+        "name": "Week",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "description": "Real Monday date as YYYY-MM-DD text."
+      },
+      {
+        "key": "unavailable_hours",
+        "name": "Unavailable hours",
+        "kind": "number",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "multiple": false,
+        "required": true,
+        "options": [
+          "Approved",
+          "Draft"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ]
+  }
+}

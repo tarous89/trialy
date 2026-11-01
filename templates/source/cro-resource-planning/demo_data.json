@@ -1,0 +1,4569 @@
+{
+  "people": [
+    {
+      "id": "p01",
+      "version": 1,
+      "data": {
+        "name": "Alex Morgan",
+        "role": "CRA",
+        "region": "Germany",
+        "skills": "Oncology monitoring",
+        "hoursPerWeek": 40,
+        "engagement": "Employee",
+        "status": "Active",
+        "availableFrom": "2026-11-02",
+        "archived": false
+      }
+    },
+    {
+      "id": "p02",
+      "version": 1,
+      "data": {
+        "name": "Priya Shah",
+        "role": "CRA",
+        "region": "UK",
+        "skills": "Oncology; site management",
+        "hoursPerWeek": 36,
+        "engagement": "Employee",
+        "status": "Active",
+        "availableFrom": "2026-11-02",
+        "archived": false
+      }
+    },
+    {
+      "id": "p03",
+      "version": 1,
+      "data": {
+        "name": "Leo Fischer",
+        "role": "CRA",
+        "region": "Germany",
+        "skills": "Phase II; GCP",
+        "hoursPerWeek": 32,
+        "engagement": "Contractor",
+        "status": "Active",
+        "availableFrom": "2026-11-02",
+        "archived": false
+      }
+    },
+    {
+      "id": "p04",
+      "version": 1,
+      "data": {
+        "name": "Nina Keller",
+        "role": "CTM",
+        "region": "Germany",
+        "skills": "Trial operations; oncology",
+        "hoursPerWeek": 40,
+        "engagement": "Employee",
+        "status": "Active",
+        "availableFrom": "2026-11-02",
+        "archived": false
+      }
+    },
+    {
+      "id": "p05",
+      "version": 1,
+      "data": {
+        "name": "Sofia Patel",
+        "role": "CTM",
+        "region": "UK",
+        "skills": "Study startup; complex protocols",
+        "hoursPerWeek": 32,
+        "engagement": "Employee",
+        "status": "Active",
+        "availableFrom": "2026-11-02",
+        "archived": false
+      }
+    },
+    {
+      "id": "p06",
+      "version": 1,
+      "data": {
+        "name": "Emilia Novak",
+        "role": "Project Manager",
+        "region": "EU",
+        "skills": "Sponsor delivery; budgets",
+        "hoursPerWeek": 40,
+        "engagement": "Employee",
+        "status": "Active",
+        "availableFrom": "2026-11-02",
+        "archived": false
+      }
+    },
+    {
+      "id": "p07",
+      "version": 1,
+      "data": {
+        "name": "Daniel Kim",
+        "role": "Project Manager",
+        "region": "UK",
+        "skills": "Clinical operations",
+        "hoursPerWeek": 40,
+        "engagement": "Employee",
+        "status": "Active",
+        "availableFrom": "2026-11-02",
+        "archived": false
+      }
+    },
+    {
+      "id": "p08",
+      "version": 1,
+      "data": {
+        "name": "Maya Brooks",
+        "role": "Clinical Data",
+        "region": "UK",
+        "skills": "EDC; data cleaning",
+        "hoursPerWeek": 35,
+        "engagement": "Employee",
+        "status": "Active",
+        "availableFrom": "2026-11-02",
+        "archived": false
+      }
+    },
+    {
+      "id": "p09",
+      "version": 1,
+      "data": {
+        "name": "Oliver Chen",
+        "role": "Clinical Data",
+        "region": "Germany",
+        "skills": "Database build; metrics",
+        "hoursPerWeek": 40,
+        "engagement": "Contractor",
+        "status": "Active",
+        "availableFrom": "2026-11-02",
+        "archived": false
+      }
+    },
+    {
+      "id": "p10",
+      "version": 1,
+      "data": {
+        "name": "Isabel Costa",
+        "role": "Biostatistician",
+        "region": "EU",
+        "skills": "Statistical programming",
+        "hoursPerWeek": 30,
+        "engagement": "Employee",
+        "status": "Active",
+        "availableFrom": "2026-11-02",
+        "archived": false
+      }
+    },
+    {
+      "id": "p11",
+      "version": 1,
+      "data": {
+        "name": "Theo Martin",
+        "role": "Regulatory",
+        "region": "France",
+        "skills": "CTIS; regulatory",
+        "hoursPerWeek": 30,
+        "engagement": "Employee",
+        "status": "Active",
+        "availableFrom": "2026-11-02",
+        "archived": false
+      }
+    },
+    {
+      "id": "p12",
+      "version": 1,
+      "data": {
+        "name": "Zara Bell",
+        "role": "Medical Monitor",
+        "region": "UK",
+        "skills": "Safety oversight",
+        "hoursPerWeek": 20,
+        "engagement": "Contractor",
+        "status": "Active",
+        "availableFrom": "2026-11-02",
+        "archived": false
+      }
+    }
+  ],
+  "projects": [
+    {
+      "id": "pr01",
+      "version": 1,
+      "data": {
+        "name": "Northstar Oncology II",
+        "sponsor": "Sponsor A",
+        "service": "Clinical operations",
+        "status": "Active",
+        "startWeek": "2026-11-02",
+        "lead": "Emilia Novak",
+        "archived": false
+      }
+    },
+    {
+      "id": "pr02",
+      "version": 1,
+      "data": {
+        "name": "Orchid Neurology",
+        "sponsor": "Sponsor B",
+        "service": "Full-service",
+        "status": "Active",
+        "startWeek": "2026-11-02",
+        "lead": "Daniel Kim",
+        "archived": false
+      }
+    },
+    {
+      "id": "pr03",
+      "version": 1,
+      "data": {
+        "name": "Beacon Rare Disease",
+        "sponsor": "Sponsor C",
+        "service": "Clinical data",
+        "status": "Active",
+        "startWeek": "2026-11-02",
+        "lead": "Emilia Novak",
+        "archived": false
+      }
+    },
+    {
+      "id": "pr04",
+      "version": 1,
+      "data": {
+        "name": "Harbor Immunology",
+        "sponsor": "Sponsor D",
+        "service": "Clinical operations",
+        "status": "Tentative",
+        "startWeek": "2026-11-16",
+        "lead": "Nina Keller",
+        "archived": false
+      }
+    },
+    {
+      "id": "pr05",
+      "version": 1,
+      "data": {
+        "name": "Summit Dermatology",
+        "sponsor": "Sponsor E",
+        "service": "Regulatory",
+        "status": "Active",
+        "startWeek": "2026-11-09",
+        "lead": "Daniel Kim",
+        "archived": false
+      }
+    }
+  ],
+  "needs": [
+    {
+      "id": "n001",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr01",
+        "projectId": "pr01",
+        "role": "CRA",
+        "week": "2026-11-02",
+        "requiredHours": 38,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n002",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr02",
+        "projectId": "pr02",
+        "role": "CRA",
+        "week": "2026-11-02",
+        "requiredHours": 30,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n003",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr01",
+        "projectId": "pr01",
+        "role": "CTM",
+        "week": "2026-11-02",
+        "requiredHours": 22,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n004",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr02",
+        "projectId": "pr02",
+        "role": "CTM",
+        "week": "2026-11-02",
+        "requiredHours": 24,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n005",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr01",
+        "projectId": "pr01",
+        "role": "Project Manager",
+        "week": "2026-11-02",
+        "requiredHours": 18,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n006",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr02",
+        "projectId": "pr02",
+        "role": "Project Manager",
+        "week": "2026-11-02",
+        "requiredHours": 22,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n007",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr03",
+        "projectId": "pr03",
+        "role": "Project Manager",
+        "week": "2026-11-02",
+        "requiredHours": 12,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n008",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data coverage · pr02",
+        "projectId": "pr02",
+        "role": "Clinical Data",
+        "week": "2026-11-02",
+        "requiredHours": 16,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n009",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data coverage · pr03",
+        "projectId": "pr03",
+        "role": "Clinical Data",
+        "week": "2026-11-02",
+        "requiredHours": 34,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n010",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician coverage · pr03",
+        "projectId": "pr03",
+        "role": "Biostatistician",
+        "week": "2026-11-02",
+        "requiredHours": 20,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n011",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician coverage · pr02",
+        "projectId": "pr02",
+        "role": "Biostatistician",
+        "week": "2026-11-02",
+        "requiredHours": 12,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n012",
+      "version": 1,
+      "data": {
+        "name": "Medical Monitor coverage · pr01",
+        "projectId": "pr01",
+        "role": "Medical Monitor",
+        "week": "2026-11-02",
+        "requiredHours": 18,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n013",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr01",
+        "projectId": "pr01",
+        "role": "CRA",
+        "week": "2026-11-09",
+        "requiredHours": 42,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n014",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr02",
+        "projectId": "pr02",
+        "role": "CRA",
+        "week": "2026-11-09",
+        "requiredHours": 30,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n015",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr01",
+        "projectId": "pr01",
+        "role": "CTM",
+        "week": "2026-11-09",
+        "requiredHours": 22,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n016",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr02",
+        "projectId": "pr02",
+        "role": "CTM",
+        "week": "2026-11-09",
+        "requiredHours": 24,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n017",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr01",
+        "projectId": "pr01",
+        "role": "Project Manager",
+        "week": "2026-11-09",
+        "requiredHours": 18,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n018",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr02",
+        "projectId": "pr02",
+        "role": "Project Manager",
+        "week": "2026-11-09",
+        "requiredHours": 22,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n019",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr03",
+        "projectId": "pr03",
+        "role": "Project Manager",
+        "week": "2026-11-09",
+        "requiredHours": 12,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n020",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data coverage · pr02",
+        "projectId": "pr02",
+        "role": "Clinical Data",
+        "week": "2026-11-09",
+        "requiredHours": 16,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n021",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data coverage · pr03",
+        "projectId": "pr03",
+        "role": "Clinical Data",
+        "week": "2026-11-09",
+        "requiredHours": 34,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n022",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician coverage · pr03",
+        "projectId": "pr03",
+        "role": "Biostatistician",
+        "week": "2026-11-09",
+        "requiredHours": 20,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n023",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician coverage · pr02",
+        "projectId": "pr02",
+        "role": "Biostatistician",
+        "week": "2026-11-09",
+        "requiredHours": 12,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n024",
+      "version": 1,
+      "data": {
+        "name": "Regulatory coverage · pr05",
+        "projectId": "pr05",
+        "role": "Regulatory",
+        "week": "2026-11-09",
+        "requiredHours": 20,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n025",
+      "version": 1,
+      "data": {
+        "name": "Medical Monitor coverage · pr01",
+        "projectId": "pr01",
+        "role": "Medical Monitor",
+        "week": "2026-11-09",
+        "requiredHours": 18,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n026",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr01",
+        "projectId": "pr01",
+        "role": "CRA",
+        "week": "2026-11-16",
+        "requiredHours": 46,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n027",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr02",
+        "projectId": "pr02",
+        "role": "CRA",
+        "week": "2026-11-16",
+        "requiredHours": 30,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n028",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr04",
+        "projectId": "pr04",
+        "role": "CRA",
+        "week": "2026-11-16",
+        "requiredHours": 20,
+        "priority": "Critical",
+        "status": "Draft",
+        "archived": false
+      }
+    },
+    {
+      "id": "n029",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr01",
+        "projectId": "pr01",
+        "role": "CTM",
+        "week": "2026-11-16",
+        "requiredHours": 22,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n030",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr02",
+        "projectId": "pr02",
+        "role": "CTM",
+        "week": "2026-11-16",
+        "requiredHours": 24,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n031",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr04",
+        "projectId": "pr04",
+        "role": "CTM",
+        "week": "2026-11-16",
+        "requiredHours": 15,
+        "priority": "Critical",
+        "status": "Draft",
+        "archived": false
+      }
+    },
+    {
+      "id": "n032",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr01",
+        "projectId": "pr01",
+        "role": "Project Manager",
+        "week": "2026-11-16",
+        "requiredHours": 18,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n033",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr02",
+        "projectId": "pr02",
+        "role": "Project Manager",
+        "week": "2026-11-16",
+        "requiredHours": 22,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n034",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr03",
+        "projectId": "pr03",
+        "role": "Project Manager",
+        "week": "2026-11-16",
+        "requiredHours": 12,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n035",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data coverage · pr02",
+        "projectId": "pr02",
+        "role": "Clinical Data",
+        "week": "2026-11-16",
+        "requiredHours": 16,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n036",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data coverage · pr03",
+        "projectId": "pr03",
+        "role": "Clinical Data",
+        "week": "2026-11-16",
+        "requiredHours": 34,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n037",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician coverage · pr03",
+        "projectId": "pr03",
+        "role": "Biostatistician",
+        "week": "2026-11-16",
+        "requiredHours": 20,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n038",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician coverage · pr02",
+        "projectId": "pr02",
+        "role": "Biostatistician",
+        "week": "2026-11-16",
+        "requiredHours": 12,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n039",
+      "version": 1,
+      "data": {
+        "name": "Regulatory coverage · pr05",
+        "projectId": "pr05",
+        "role": "Regulatory",
+        "week": "2026-11-16",
+        "requiredHours": 20,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n040",
+      "version": 1,
+      "data": {
+        "name": "Medical Monitor coverage · pr01",
+        "projectId": "pr01",
+        "role": "Medical Monitor",
+        "week": "2026-11-16",
+        "requiredHours": 18,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n041",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr01",
+        "projectId": "pr01",
+        "role": "CRA",
+        "week": "2026-11-23",
+        "requiredHours": 38,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n042",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr02",
+        "projectId": "pr02",
+        "role": "CRA",
+        "week": "2026-11-23",
+        "requiredHours": 30,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n043",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr04",
+        "projectId": "pr04",
+        "role": "CRA",
+        "week": "2026-11-23",
+        "requiredHours": 24,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n044",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr01",
+        "projectId": "pr01",
+        "role": "CTM",
+        "week": "2026-11-23",
+        "requiredHours": 22,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n045",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr02",
+        "projectId": "pr02",
+        "role": "CTM",
+        "week": "2026-11-23",
+        "requiredHours": 24,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n046",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr04",
+        "projectId": "pr04",
+        "role": "CTM",
+        "week": "2026-11-23",
+        "requiredHours": 19,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n047",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr01",
+        "projectId": "pr01",
+        "role": "Project Manager",
+        "week": "2026-11-23",
+        "requiredHours": 18,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n048",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr02",
+        "projectId": "pr02",
+        "role": "Project Manager",
+        "week": "2026-11-23",
+        "requiredHours": 22,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n049",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr03",
+        "projectId": "pr03",
+        "role": "Project Manager",
+        "week": "2026-11-23",
+        "requiredHours": 12,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n050",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data coverage · pr02",
+        "projectId": "pr02",
+        "role": "Clinical Data",
+        "week": "2026-11-23",
+        "requiredHours": 16,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n051",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data coverage · pr03",
+        "projectId": "pr03",
+        "role": "Clinical Data",
+        "week": "2026-11-23",
+        "requiredHours": 34,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n052",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician coverage · pr03",
+        "projectId": "pr03",
+        "role": "Biostatistician",
+        "week": "2026-11-23",
+        "requiredHours": 20,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n053",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician coverage · pr02",
+        "projectId": "pr02",
+        "role": "Biostatistician",
+        "week": "2026-11-23",
+        "requiredHours": 12,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n054",
+      "version": 1,
+      "data": {
+        "name": "Regulatory coverage · pr05",
+        "projectId": "pr05",
+        "role": "Regulatory",
+        "week": "2026-11-23",
+        "requiredHours": 20,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n055",
+      "version": 1,
+      "data": {
+        "name": "Medical Monitor coverage · pr01",
+        "projectId": "pr01",
+        "role": "Medical Monitor",
+        "week": "2026-11-23",
+        "requiredHours": 18,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n056",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr01",
+        "projectId": "pr01",
+        "role": "CRA",
+        "week": "2026-11-30",
+        "requiredHours": 42,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n057",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr02",
+        "projectId": "pr02",
+        "role": "CRA",
+        "week": "2026-11-30",
+        "requiredHours": 30,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n058",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr04",
+        "projectId": "pr04",
+        "role": "CRA",
+        "week": "2026-11-30",
+        "requiredHours": 20,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n059",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr01",
+        "projectId": "pr01",
+        "role": "CTM",
+        "week": "2026-11-30",
+        "requiredHours": 22,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n060",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr02",
+        "projectId": "pr02",
+        "role": "CTM",
+        "week": "2026-11-30",
+        "requiredHours": 24,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n061",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr04",
+        "projectId": "pr04",
+        "role": "CTM",
+        "week": "2026-11-30",
+        "requiredHours": 15,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n062",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr01",
+        "projectId": "pr01",
+        "role": "Project Manager",
+        "week": "2026-11-30",
+        "requiredHours": 18,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n063",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr02",
+        "projectId": "pr02",
+        "role": "Project Manager",
+        "week": "2026-11-30",
+        "requiredHours": 22,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n064",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr03",
+        "projectId": "pr03",
+        "role": "Project Manager",
+        "week": "2026-11-30",
+        "requiredHours": 12,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n065",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data coverage · pr02",
+        "projectId": "pr02",
+        "role": "Clinical Data",
+        "week": "2026-11-30",
+        "requiredHours": 16,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n066",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data coverage · pr03",
+        "projectId": "pr03",
+        "role": "Clinical Data",
+        "week": "2026-11-30",
+        "requiredHours": 34,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n067",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician coverage · pr03",
+        "projectId": "pr03",
+        "role": "Biostatistician",
+        "week": "2026-11-30",
+        "requiredHours": 20,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n068",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician coverage · pr02",
+        "projectId": "pr02",
+        "role": "Biostatistician",
+        "week": "2026-11-30",
+        "requiredHours": 12,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n069",
+      "version": 1,
+      "data": {
+        "name": "Regulatory coverage · pr05",
+        "projectId": "pr05",
+        "role": "Regulatory",
+        "week": "2026-11-30",
+        "requiredHours": 20,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n070",
+      "version": 1,
+      "data": {
+        "name": "Medical Monitor coverage · pr01",
+        "projectId": "pr01",
+        "role": "Medical Monitor",
+        "week": "2026-11-30",
+        "requiredHours": 18,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n071",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr01",
+        "projectId": "pr01",
+        "role": "CRA",
+        "week": "2026-12-07",
+        "requiredHours": 46,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n072",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr02",
+        "projectId": "pr02",
+        "role": "CRA",
+        "week": "2026-12-07",
+        "requiredHours": 30,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n073",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr04",
+        "projectId": "pr04",
+        "role": "CRA",
+        "week": "2026-12-07",
+        "requiredHours": 24,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n074",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr01",
+        "projectId": "pr01",
+        "role": "CTM",
+        "week": "2026-12-07",
+        "requiredHours": 22,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n075",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr02",
+        "projectId": "pr02",
+        "role": "CTM",
+        "week": "2026-12-07",
+        "requiredHours": 24,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n076",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr04",
+        "projectId": "pr04",
+        "role": "CTM",
+        "week": "2026-12-07",
+        "requiredHours": 19,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n077",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr01",
+        "projectId": "pr01",
+        "role": "Project Manager",
+        "week": "2026-12-07",
+        "requiredHours": 18,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n078",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr02",
+        "projectId": "pr02",
+        "role": "Project Manager",
+        "week": "2026-12-07",
+        "requiredHours": 22,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n079",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr03",
+        "projectId": "pr03",
+        "role": "Project Manager",
+        "week": "2026-12-07",
+        "requiredHours": 12,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n080",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data coverage · pr02",
+        "projectId": "pr02",
+        "role": "Clinical Data",
+        "week": "2026-12-07",
+        "requiredHours": 16,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n081",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data coverage · pr03",
+        "projectId": "pr03",
+        "role": "Clinical Data",
+        "week": "2026-12-07",
+        "requiredHours": 34,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n082",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician coverage · pr03",
+        "projectId": "pr03",
+        "role": "Biostatistician",
+        "week": "2026-12-07",
+        "requiredHours": 20,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n083",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician coverage · pr02",
+        "projectId": "pr02",
+        "role": "Biostatistician",
+        "week": "2026-12-07",
+        "requiredHours": 12,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n084",
+      "version": 1,
+      "data": {
+        "name": "Regulatory coverage · pr05",
+        "projectId": "pr05",
+        "role": "Regulatory",
+        "week": "2026-12-07",
+        "requiredHours": 20,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n085",
+      "version": 1,
+      "data": {
+        "name": "Medical Monitor coverage · pr01",
+        "projectId": "pr01",
+        "role": "Medical Monitor",
+        "week": "2026-12-07",
+        "requiredHours": 18,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n086",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr01",
+        "projectId": "pr01",
+        "role": "CRA",
+        "week": "2026-12-14",
+        "requiredHours": 38,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n087",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr02",
+        "projectId": "pr02",
+        "role": "CRA",
+        "week": "2026-12-14",
+        "requiredHours": 30,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n088",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr04",
+        "projectId": "pr04",
+        "role": "CRA",
+        "week": "2026-12-14",
+        "requiredHours": 20,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n089",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr01",
+        "projectId": "pr01",
+        "role": "CTM",
+        "week": "2026-12-14",
+        "requiredHours": 22,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n090",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr02",
+        "projectId": "pr02",
+        "role": "CTM",
+        "week": "2026-12-14",
+        "requiredHours": 24,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n091",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr04",
+        "projectId": "pr04",
+        "role": "CTM",
+        "week": "2026-12-14",
+        "requiredHours": 15,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n092",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr01",
+        "projectId": "pr01",
+        "role": "Project Manager",
+        "week": "2026-12-14",
+        "requiredHours": 18,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n093",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr02",
+        "projectId": "pr02",
+        "role": "Project Manager",
+        "week": "2026-12-14",
+        "requiredHours": 22,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n094",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr03",
+        "projectId": "pr03",
+        "role": "Project Manager",
+        "week": "2026-12-14",
+        "requiredHours": 12,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n095",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data coverage · pr02",
+        "projectId": "pr02",
+        "role": "Clinical Data",
+        "week": "2026-12-14",
+        "requiredHours": 16,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n096",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data coverage · pr03",
+        "projectId": "pr03",
+        "role": "Clinical Data",
+        "week": "2026-12-14",
+        "requiredHours": 34,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n097",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician coverage · pr03",
+        "projectId": "pr03",
+        "role": "Biostatistician",
+        "week": "2026-12-14",
+        "requiredHours": 20,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n098",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician coverage · pr02",
+        "projectId": "pr02",
+        "role": "Biostatistician",
+        "week": "2026-12-14",
+        "requiredHours": 12,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n099",
+      "version": 1,
+      "data": {
+        "name": "Regulatory coverage · pr05",
+        "projectId": "pr05",
+        "role": "Regulatory",
+        "week": "2026-12-14",
+        "requiredHours": 20,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n100",
+      "version": 1,
+      "data": {
+        "name": "Medical Monitor coverage · pr01",
+        "projectId": "pr01",
+        "role": "Medical Monitor",
+        "week": "2026-12-14",
+        "requiredHours": 18,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n101",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr01",
+        "projectId": "pr01",
+        "role": "CRA",
+        "week": "2026-12-21",
+        "requiredHours": 42,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n102",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr02",
+        "projectId": "pr02",
+        "role": "CRA",
+        "week": "2026-12-21",
+        "requiredHours": 30,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n103",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr04",
+        "projectId": "pr04",
+        "role": "CRA",
+        "week": "2026-12-21",
+        "requiredHours": 24,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n104",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr01",
+        "projectId": "pr01",
+        "role": "CTM",
+        "week": "2026-12-21",
+        "requiredHours": 22,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n105",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr02",
+        "projectId": "pr02",
+        "role": "CTM",
+        "week": "2026-12-21",
+        "requiredHours": 24,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n106",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr04",
+        "projectId": "pr04",
+        "role": "CTM",
+        "week": "2026-12-21",
+        "requiredHours": 19,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n107",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr01",
+        "projectId": "pr01",
+        "role": "Project Manager",
+        "week": "2026-12-21",
+        "requiredHours": 18,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n108",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr02",
+        "projectId": "pr02",
+        "role": "Project Manager",
+        "week": "2026-12-21",
+        "requiredHours": 22,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n109",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr03",
+        "projectId": "pr03",
+        "role": "Project Manager",
+        "week": "2026-12-21",
+        "requiredHours": 12,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n110",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data coverage · pr02",
+        "projectId": "pr02",
+        "role": "Clinical Data",
+        "week": "2026-12-21",
+        "requiredHours": 16,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n111",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data coverage · pr03",
+        "projectId": "pr03",
+        "role": "Clinical Data",
+        "week": "2026-12-21",
+        "requiredHours": 34,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n112",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician coverage · pr03",
+        "projectId": "pr03",
+        "role": "Biostatistician",
+        "week": "2026-12-21",
+        "requiredHours": 20,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n113",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician coverage · pr02",
+        "projectId": "pr02",
+        "role": "Biostatistician",
+        "week": "2026-12-21",
+        "requiredHours": 12,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n114",
+      "version": 1,
+      "data": {
+        "name": "Regulatory coverage · pr05",
+        "projectId": "pr05",
+        "role": "Regulatory",
+        "week": "2026-12-21",
+        "requiredHours": 20,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n115",
+      "version": 1,
+      "data": {
+        "name": "Medical Monitor coverage · pr01",
+        "projectId": "pr01",
+        "role": "Medical Monitor",
+        "week": "2026-12-21",
+        "requiredHours": 18,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n116",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr01",
+        "projectId": "pr01",
+        "role": "CRA",
+        "week": "2026-12-28",
+        "requiredHours": 46,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n117",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr04",
+        "projectId": "pr04",
+        "role": "CRA",
+        "week": "2026-12-28",
+        "requiredHours": 20,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n118",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr01",
+        "projectId": "pr01",
+        "role": "CTM",
+        "week": "2026-12-28",
+        "requiredHours": 22,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n119",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr04",
+        "projectId": "pr04",
+        "role": "CTM",
+        "week": "2026-12-28",
+        "requiredHours": 15,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n120",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr01",
+        "projectId": "pr01",
+        "role": "Project Manager",
+        "week": "2026-12-28",
+        "requiredHours": 18,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n121",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr03",
+        "projectId": "pr03",
+        "role": "Project Manager",
+        "week": "2026-12-28",
+        "requiredHours": 12,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n122",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data coverage · pr02",
+        "projectId": "pr02",
+        "role": "Clinical Data",
+        "week": "2026-12-28",
+        "requiredHours": 16,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n123",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician coverage · pr03",
+        "projectId": "pr03",
+        "role": "Biostatistician",
+        "week": "2026-12-28",
+        "requiredHours": 20,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n124",
+      "version": 1,
+      "data": {
+        "name": "Regulatory coverage · pr05",
+        "projectId": "pr05",
+        "role": "Regulatory",
+        "week": "2026-12-28",
+        "requiredHours": 20,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n125",
+      "version": 1,
+      "data": {
+        "name": "Medical Monitor coverage · pr01",
+        "projectId": "pr01",
+        "role": "Medical Monitor",
+        "week": "2026-12-28",
+        "requiredHours": 18,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n126",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr02",
+        "projectId": "pr02",
+        "role": "CRA",
+        "week": "2027-01-04",
+        "requiredHours": 30,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n127",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr04",
+        "projectId": "pr04",
+        "role": "CRA",
+        "week": "2027-01-04",
+        "requiredHours": 24,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n128",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr02",
+        "projectId": "pr02",
+        "role": "CTM",
+        "week": "2027-01-04",
+        "requiredHours": 24,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n129",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr04",
+        "projectId": "pr04",
+        "role": "CTM",
+        "week": "2027-01-04",
+        "requiredHours": 19,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n130",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr02",
+        "projectId": "pr02",
+        "role": "Project Manager",
+        "week": "2027-01-04",
+        "requiredHours": 22,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n131",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr03",
+        "projectId": "pr03",
+        "role": "Project Manager",
+        "week": "2027-01-04",
+        "requiredHours": 12,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n132",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data coverage · pr03",
+        "projectId": "pr03",
+        "role": "Clinical Data",
+        "week": "2027-01-04",
+        "requiredHours": 34,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n133",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician coverage · pr02",
+        "projectId": "pr02",
+        "role": "Biostatistician",
+        "week": "2027-01-04",
+        "requiredHours": 12,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n134",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr01",
+        "projectId": "pr01",
+        "role": "CRA",
+        "week": "2027-01-11",
+        "requiredHours": 42,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n135",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr02",
+        "projectId": "pr02",
+        "role": "CRA",
+        "week": "2027-01-11",
+        "requiredHours": 30,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n136",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr01",
+        "projectId": "pr01",
+        "role": "CTM",
+        "week": "2027-01-11",
+        "requiredHours": 22,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n137",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr02",
+        "projectId": "pr02",
+        "role": "CTM",
+        "week": "2027-01-11",
+        "requiredHours": 24,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n138",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr01",
+        "projectId": "pr01",
+        "role": "Project Manager",
+        "week": "2027-01-11",
+        "requiredHours": 18,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n139",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr02",
+        "projectId": "pr02",
+        "role": "Project Manager",
+        "week": "2027-01-11",
+        "requiredHours": 22,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n140",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data coverage · pr02",
+        "projectId": "pr02",
+        "role": "Clinical Data",
+        "week": "2027-01-11",
+        "requiredHours": 16,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n141",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data coverage · pr03",
+        "projectId": "pr03",
+        "role": "Clinical Data",
+        "week": "2027-01-11",
+        "requiredHours": 34,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n142",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician coverage · pr03",
+        "projectId": "pr03",
+        "role": "Biostatistician",
+        "week": "2027-01-11",
+        "requiredHours": 20,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n143",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician coverage · pr02",
+        "projectId": "pr02",
+        "role": "Biostatistician",
+        "week": "2027-01-11",
+        "requiredHours": 12,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n144",
+      "version": 1,
+      "data": {
+        "name": "Regulatory coverage · pr05",
+        "projectId": "pr05",
+        "role": "Regulatory",
+        "week": "2027-01-11",
+        "requiredHours": 20,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n145",
+      "version": 1,
+      "data": {
+        "name": "Medical Monitor coverage · pr01",
+        "projectId": "pr01",
+        "role": "Medical Monitor",
+        "week": "2027-01-11",
+        "requiredHours": 18,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n146",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr01",
+        "projectId": "pr01",
+        "role": "CRA",
+        "week": "2027-01-18",
+        "requiredHours": 46,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n147",
+      "version": 1,
+      "data": {
+        "name": "CRA coverage · pr04",
+        "projectId": "pr04",
+        "role": "CRA",
+        "week": "2027-01-18",
+        "requiredHours": 24,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n148",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr01",
+        "projectId": "pr01",
+        "role": "CTM",
+        "week": "2027-01-18",
+        "requiredHours": 22,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n149",
+      "version": 1,
+      "data": {
+        "name": "CTM coverage · pr04",
+        "projectId": "pr04",
+        "role": "CTM",
+        "week": "2027-01-18",
+        "requiredHours": 19,
+        "priority": "Critical",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n150",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr01",
+        "projectId": "pr01",
+        "role": "Project Manager",
+        "week": "2027-01-18",
+        "requiredHours": 18,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n151",
+      "version": 1,
+      "data": {
+        "name": "Project Manager coverage · pr03",
+        "projectId": "pr03",
+        "role": "Project Manager",
+        "week": "2027-01-18",
+        "requiredHours": 12,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n152",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data coverage · pr02",
+        "projectId": "pr02",
+        "role": "Clinical Data",
+        "week": "2027-01-18",
+        "requiredHours": 16,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n153",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician coverage · pr03",
+        "projectId": "pr03",
+        "role": "Biostatistician",
+        "week": "2027-01-18",
+        "requiredHours": 20,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n154",
+      "version": 1,
+      "data": {
+        "name": "Regulatory coverage · pr05",
+        "projectId": "pr05",
+        "role": "Regulatory",
+        "week": "2027-01-18",
+        "requiredHours": 20,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "n155",
+      "version": 1,
+      "data": {
+        "name": "Medical Monitor coverage · pr01",
+        "projectId": "pr01",
+        "role": "Medical Monitor",
+        "week": "2027-01-18",
+        "requiredHours": 18,
+        "priority": "Normal",
+        "status": "Approved",
+        "archived": false
+      }
+    }
+  ],
+  "bookings": [
+    {
+      "id": "b001",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr01 · 2026-11-02",
+        "personId": "p01",
+        "projectId": "pr01",
+        "week": "2026-11-02",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b002",
+      "version": 1,
+      "data": {
+        "name": "CRA support · pr01 · 2026-11-02",
+        "personId": "p02",
+        "projectId": "pr01",
+        "week": "2026-11-02",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b003",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr02 · 2026-11-02",
+        "personId": "p02",
+        "projectId": "pr02",
+        "week": "2026-11-02",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b004",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr01 · 2026-11-02",
+        "personId": "p04",
+        "projectId": "pr01",
+        "week": "2026-11-02",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b005",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr02 · 2026-11-02",
+        "personId": "p05",
+        "projectId": "pr02",
+        "week": "2026-11-02",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b006",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr01 · 2026-11-02",
+        "personId": "p06",
+        "projectId": "pr01",
+        "week": "2026-11-02",
+        "hours": 18,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b007",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr02 · 2026-11-02",
+        "personId": "p07",
+        "projectId": "pr02",
+        "week": "2026-11-02",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b008",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr03 · 2026-11-02",
+        "personId": "p06",
+        "projectId": "pr03",
+        "week": "2026-11-02",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b009",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data on pr02 · 2026-11-02",
+        "personId": "p08",
+        "projectId": "pr02",
+        "week": "2026-11-02",
+        "hours": 16,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b010",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data on pr03 · 2026-11-02",
+        "personId": "p09",
+        "projectId": "pr03",
+        "week": "2026-11-02",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b011",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician on pr03 · 2026-11-02",
+        "personId": "p10",
+        "projectId": "pr03",
+        "week": "2026-11-02",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b012",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician on pr02 · 2026-11-02",
+        "personId": "p10",
+        "projectId": "pr02",
+        "week": "2026-11-02",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b013",
+      "version": 1,
+      "data": {
+        "name": "Medical Monitor on pr01 · 2026-11-02",
+        "personId": "p12",
+        "projectId": "pr01",
+        "week": "2026-11-02",
+        "hours": 18,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b014",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr01 · 2026-11-09",
+        "personId": "p02",
+        "projectId": "pr01",
+        "week": "2026-11-09",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b015",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr02 · 2026-11-09",
+        "personId": "p03",
+        "projectId": "pr02",
+        "week": "2026-11-09",
+        "hours": 25,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b016",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr01 · 2026-11-09",
+        "personId": "p05",
+        "projectId": "pr01",
+        "week": "2026-11-09",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b017",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr02 · 2026-11-09",
+        "personId": "p04",
+        "projectId": "pr02",
+        "week": "2026-11-09",
+        "hours": 24,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b018",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr01 · 2026-11-09",
+        "personId": "p07",
+        "projectId": "pr01",
+        "week": "2026-11-09",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b019",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr02 · 2026-11-09",
+        "personId": "p06",
+        "projectId": "pr02",
+        "week": "2026-11-09",
+        "hours": 22,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b020",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr03 · 2026-11-09",
+        "personId": "p07",
+        "projectId": "pr03",
+        "week": "2026-11-09",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b021",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data on pr02 · 2026-11-09",
+        "personId": "p09",
+        "projectId": "pr02",
+        "week": "2026-11-09",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b022",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data on pr03 · 2026-11-09",
+        "personId": "p08",
+        "projectId": "pr03",
+        "week": "2026-11-09",
+        "hours": 25,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b023",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician on pr03 · 2026-11-09",
+        "personId": "p10",
+        "projectId": "pr03",
+        "week": "2026-11-09",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b024",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician on pr02 · 2026-11-09",
+        "personId": "p10",
+        "projectId": "pr02",
+        "week": "2026-11-09",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b025",
+      "version": 1,
+      "data": {
+        "name": "Regulatory on pr05 · 2026-11-09",
+        "personId": "p11",
+        "projectId": "pr05",
+        "week": "2026-11-09",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b026",
+      "version": 1,
+      "data": {
+        "name": "Medical Monitor on pr01 · 2026-11-09",
+        "personId": "p12",
+        "projectId": "pr01",
+        "week": "2026-11-09",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b027",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr01 · 2026-11-16",
+        "personId": "p03",
+        "projectId": "pr01",
+        "week": "2026-11-16",
+        "hours": 25,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b028",
+      "version": 1,
+      "data": {
+        "name": "CRA support · pr01 · 2026-11-16",
+        "personId": "p01",
+        "projectId": "pr01",
+        "week": "2026-11-16",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b029",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr02 · 2026-11-16",
+        "personId": "p01",
+        "projectId": "pr02",
+        "week": "2026-11-16",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b030",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr04 · 2026-11-16",
+        "personId": "p01",
+        "projectId": "pr04",
+        "week": "2026-11-16",
+        "hours": 11,
+        "status": "Tentative",
+        "archived": false
+      }
+    },
+    {
+      "id": "b031",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr01 · 2026-11-16",
+        "personId": "p04",
+        "projectId": "pr01",
+        "week": "2026-11-16",
+        "hours": 22,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b032",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr02 · 2026-11-16",
+        "personId": "p05",
+        "projectId": "pr02",
+        "week": "2026-11-16",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b033",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr04 · 2026-11-16",
+        "personId": "p04",
+        "projectId": "pr04",
+        "week": "2026-11-16",
+        "hours": 11,
+        "status": "Tentative",
+        "archived": false
+      }
+    },
+    {
+      "id": "b034",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr01 · 2026-11-16",
+        "personId": "p06",
+        "projectId": "pr01",
+        "week": "2026-11-16",
+        "hours": 18,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b035",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr02 · 2026-11-16",
+        "personId": "p07",
+        "projectId": "pr02",
+        "week": "2026-11-16",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b036",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr03 · 2026-11-16",
+        "personId": "p06",
+        "projectId": "pr03",
+        "week": "2026-11-16",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b037",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data on pr02 · 2026-11-16",
+        "personId": "p08",
+        "projectId": "pr02",
+        "week": "2026-11-16",
+        "hours": 16,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b038",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data on pr03 · 2026-11-16",
+        "personId": "p09",
+        "projectId": "pr03",
+        "week": "2026-11-16",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b039",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician on pr03 · 2026-11-16",
+        "personId": "p10",
+        "projectId": "pr03",
+        "week": "2026-11-16",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b040",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician on pr02 · 2026-11-16",
+        "personId": "p10",
+        "projectId": "pr02",
+        "week": "2026-11-16",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b041",
+      "version": 1,
+      "data": {
+        "name": "Regulatory on pr05 · 2026-11-16",
+        "personId": "p11",
+        "projectId": "pr05",
+        "week": "2026-11-16",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b042",
+      "version": 1,
+      "data": {
+        "name": "Medical Monitor on pr01 · 2026-11-16",
+        "personId": "p12",
+        "projectId": "pr01",
+        "week": "2026-11-16",
+        "hours": 18,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b043",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr01 · 2026-11-23",
+        "personId": "p01",
+        "projectId": "pr01",
+        "week": "2026-11-23",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b044",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr02 · 2026-11-23",
+        "personId": "p02",
+        "projectId": "pr02",
+        "week": "2026-11-23",
+        "hours": 26,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b045",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr04 · 2026-11-23",
+        "personId": "p01",
+        "projectId": "pr04",
+        "week": "2026-11-23",
+        "hours": 11,
+        "status": "Tentative",
+        "archived": false
+      }
+    },
+    {
+      "id": "b046",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr01 · 2026-11-23",
+        "personId": "p05",
+        "projectId": "pr01",
+        "week": "2026-11-23",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b047",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr02 · 2026-11-23",
+        "personId": "p04",
+        "projectId": "pr02",
+        "week": "2026-11-23",
+        "hours": 24,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b048",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr04 · 2026-11-23",
+        "personId": "p04",
+        "projectId": "pr04",
+        "week": "2026-11-23",
+        "hours": 11,
+        "status": "Tentative",
+        "archived": false
+      }
+    },
+    {
+      "id": "b049",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr01 · 2026-11-23",
+        "personId": "p07",
+        "projectId": "pr01",
+        "week": "2026-11-23",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b050",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr02 · 2026-11-23",
+        "personId": "p06",
+        "projectId": "pr02",
+        "week": "2026-11-23",
+        "hours": 22,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b051",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr03 · 2026-11-23",
+        "personId": "p07",
+        "projectId": "pr03",
+        "week": "2026-11-23",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b052",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data on pr02 · 2026-11-23",
+        "personId": "p09",
+        "projectId": "pr02",
+        "week": "2026-11-23",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b053",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data on pr03 · 2026-11-23",
+        "personId": "p08",
+        "projectId": "pr03",
+        "week": "2026-11-23",
+        "hours": 26,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b054",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician on pr03 · 2026-11-23",
+        "personId": "p10",
+        "projectId": "pr03",
+        "week": "2026-11-23",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b055",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician on pr02 · 2026-11-23",
+        "personId": "p10",
+        "projectId": "pr02",
+        "week": "2026-11-23",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b056",
+      "version": 1,
+      "data": {
+        "name": "Regulatory on pr05 · 2026-11-23",
+        "personId": "p11",
+        "projectId": "pr05",
+        "week": "2026-11-23",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b057",
+      "version": 1,
+      "data": {
+        "name": "Medical Monitor on pr01 · 2026-11-23",
+        "personId": "p12",
+        "projectId": "pr01",
+        "week": "2026-11-23",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b058",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr01 · 2026-11-30",
+        "personId": "p02",
+        "projectId": "pr01",
+        "week": "2026-11-30",
+        "hours": 26,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b059",
+      "version": 1,
+      "data": {
+        "name": "CRA support · pr01 · 2026-11-30",
+        "personId": "p03",
+        "projectId": "pr01",
+        "week": "2026-11-30",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b060",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr02 · 2026-11-30",
+        "personId": "p03",
+        "projectId": "pr02",
+        "week": "2026-11-30",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b061",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr04 · 2026-11-30",
+        "personId": "p01",
+        "projectId": "pr04",
+        "week": "2026-11-30",
+        "hours": 11,
+        "status": "Tentative",
+        "archived": false
+      }
+    },
+    {
+      "id": "b062",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr01 · 2026-11-30",
+        "personId": "p04",
+        "projectId": "pr01",
+        "week": "2026-11-30",
+        "hours": 22,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b063",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr02 · 2026-11-30",
+        "personId": "p05",
+        "projectId": "pr02",
+        "week": "2026-11-30",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b064",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr04 · 2026-11-30",
+        "personId": "p04",
+        "projectId": "pr04",
+        "week": "2026-11-30",
+        "hours": 11,
+        "status": "Tentative",
+        "archived": false
+      }
+    },
+    {
+      "id": "b065",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr01 · 2026-11-30",
+        "personId": "p06",
+        "projectId": "pr01",
+        "week": "2026-11-30",
+        "hours": 18,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b066",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr02 · 2026-11-30",
+        "personId": "p07",
+        "projectId": "pr02",
+        "week": "2026-11-30",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b067",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr03 · 2026-11-30",
+        "personId": "p06",
+        "projectId": "pr03",
+        "week": "2026-11-30",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b068",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data on pr02 · 2026-11-30",
+        "personId": "p08",
+        "projectId": "pr02",
+        "week": "2026-11-30",
+        "hours": 16,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b069",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data on pr03 · 2026-11-30",
+        "personId": "p09",
+        "projectId": "pr03",
+        "week": "2026-11-30",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b070",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician on pr03 · 2026-11-30",
+        "personId": "p10",
+        "projectId": "pr03",
+        "week": "2026-11-30",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b071",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician on pr02 · 2026-11-30",
+        "personId": "p10",
+        "projectId": "pr02",
+        "week": "2026-11-30",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b072",
+      "version": 1,
+      "data": {
+        "name": "Regulatory on pr05 · 2026-11-30",
+        "personId": "p11",
+        "projectId": "pr05",
+        "week": "2026-11-30",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b073",
+      "version": 1,
+      "data": {
+        "name": "Medical Monitor on pr01 · 2026-11-30",
+        "personId": "p12",
+        "projectId": "pr01",
+        "week": "2026-11-30",
+        "hours": 18,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b074",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr01 · 2026-12-07",
+        "personId": "p03",
+        "projectId": "pr01",
+        "week": "2026-12-07",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b075",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr02 · 2026-12-07",
+        "personId": "p01",
+        "projectId": "pr02",
+        "week": "2026-12-07",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b076",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr04 · 2026-12-07",
+        "personId": "p01",
+        "projectId": "pr04",
+        "week": "2026-12-07",
+        "hours": 11,
+        "status": "Tentative",
+        "archived": false
+      }
+    },
+    {
+      "id": "b077",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr01 · 2026-12-07",
+        "personId": "p05",
+        "projectId": "pr01",
+        "week": "2026-12-07",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b078",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr02 · 2026-12-07",
+        "personId": "p04",
+        "projectId": "pr02",
+        "week": "2026-12-07",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b079",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr04 · 2026-12-07",
+        "personId": "p04",
+        "projectId": "pr04",
+        "week": "2026-12-07",
+        "hours": 11,
+        "status": "Tentative",
+        "archived": false
+      }
+    },
+    {
+      "id": "b080",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr01 · 2026-12-07",
+        "personId": "p07",
+        "projectId": "pr01",
+        "week": "2026-12-07",
+        "hours": 18,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b081",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr02 · 2026-12-07",
+        "personId": "p06",
+        "projectId": "pr02",
+        "week": "2026-12-07",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b082",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr03 · 2026-12-07",
+        "personId": "p07",
+        "projectId": "pr03",
+        "week": "2026-12-07",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b083",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data on pr02 · 2026-12-07",
+        "personId": "p09",
+        "projectId": "pr02",
+        "week": "2026-12-07",
+        "hours": 16,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b084",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data on pr03 · 2026-12-07",
+        "personId": "p08",
+        "projectId": "pr03",
+        "week": "2026-12-07",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b085",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician on pr03 · 2026-12-07",
+        "personId": "p10",
+        "projectId": "pr03",
+        "week": "2026-12-07",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b086",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician on pr02 · 2026-12-07",
+        "personId": "p10",
+        "projectId": "pr02",
+        "week": "2026-12-07",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b087",
+      "version": 1,
+      "data": {
+        "name": "Regulatory on pr05 · 2026-12-07",
+        "personId": "p11",
+        "projectId": "pr05",
+        "week": "2026-12-07",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b088",
+      "version": 1,
+      "data": {
+        "name": "Medical Monitor on pr01 · 2026-12-07",
+        "personId": "p12",
+        "projectId": "pr01",
+        "week": "2026-12-07",
+        "hours": 18,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b089",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr01 · 2026-12-14",
+        "personId": "p01",
+        "projectId": "pr01",
+        "week": "2026-12-14",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b090",
+      "version": 1,
+      "data": {
+        "name": "CRA support · pr01 · 2026-12-14",
+        "personId": "p02",
+        "projectId": "pr01",
+        "week": "2026-12-14",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b091",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr02 · 2026-12-14",
+        "personId": "p02",
+        "projectId": "pr02",
+        "week": "2026-12-14",
+        "hours": 25,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b092",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr04 · 2026-12-14",
+        "personId": "p01",
+        "projectId": "pr04",
+        "week": "2026-12-14",
+        "hours": 11,
+        "status": "Tentative",
+        "archived": false
+      }
+    },
+    {
+      "id": "b093",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr01 · 2026-12-14",
+        "personId": "p04",
+        "projectId": "pr01",
+        "week": "2026-12-14",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b094",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr02 · 2026-12-14",
+        "personId": "p05",
+        "projectId": "pr02",
+        "week": "2026-12-14",
+        "hours": 24,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b095",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr04 · 2026-12-14",
+        "personId": "p04",
+        "projectId": "pr04",
+        "week": "2026-12-14",
+        "hours": 11,
+        "status": "Tentative",
+        "archived": false
+      }
+    },
+    {
+      "id": "b096",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr01 · 2026-12-14",
+        "personId": "p06",
+        "projectId": "pr01",
+        "week": "2026-12-14",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b097",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr02 · 2026-12-14",
+        "personId": "p07",
+        "projectId": "pr02",
+        "week": "2026-12-14",
+        "hours": 22,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b098",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr03 · 2026-12-14",
+        "personId": "p06",
+        "projectId": "pr03",
+        "week": "2026-12-14",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b099",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data on pr02 · 2026-12-14",
+        "personId": "p08",
+        "projectId": "pr02",
+        "week": "2026-12-14",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b100",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data on pr03 · 2026-12-14",
+        "personId": "p09",
+        "projectId": "pr03",
+        "week": "2026-12-14",
+        "hours": 25,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b101",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician on pr03 · 2026-12-14",
+        "personId": "p10",
+        "projectId": "pr03",
+        "week": "2026-12-14",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b102",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician on pr02 · 2026-12-14",
+        "personId": "p10",
+        "projectId": "pr02",
+        "week": "2026-12-14",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b103",
+      "version": 1,
+      "data": {
+        "name": "Regulatory on pr05 · 2026-12-14",
+        "personId": "p11",
+        "projectId": "pr05",
+        "week": "2026-12-14",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b104",
+      "version": 1,
+      "data": {
+        "name": "Medical Monitor on pr01 · 2026-12-14",
+        "personId": "p12",
+        "projectId": "pr01",
+        "week": "2026-12-14",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b105",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr01 · 2026-12-21",
+        "personId": "p02",
+        "projectId": "pr01",
+        "week": "2026-12-21",
+        "hours": 25,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b106",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr02 · 2026-12-21",
+        "personId": "p03",
+        "projectId": "pr02",
+        "week": "2026-12-21",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b107",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr04 · 2026-12-21",
+        "personId": "p01",
+        "projectId": "pr04",
+        "week": "2026-12-21",
+        "hours": 11,
+        "status": "Tentative",
+        "archived": false
+      }
+    },
+    {
+      "id": "b108",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr01 · 2026-12-21",
+        "personId": "p05",
+        "projectId": "pr01",
+        "week": "2026-12-21",
+        "hours": 22,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b109",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr02 · 2026-12-21",
+        "personId": "p04",
+        "projectId": "pr02",
+        "week": "2026-12-21",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b110",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr04 · 2026-12-21",
+        "personId": "p04",
+        "projectId": "pr04",
+        "week": "2026-12-21",
+        "hours": 11,
+        "status": "Tentative",
+        "archived": false
+      }
+    },
+    {
+      "id": "b111",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr01 · 2026-12-21",
+        "personId": "p07",
+        "projectId": "pr01",
+        "week": "2026-12-21",
+        "hours": 18,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b112",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr02 · 2026-12-21",
+        "personId": "p06",
+        "projectId": "pr02",
+        "week": "2026-12-21",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b113",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr03 · 2026-12-21",
+        "personId": "p07",
+        "projectId": "pr03",
+        "week": "2026-12-21",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b114",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data on pr02 · 2026-12-21",
+        "personId": "p09",
+        "projectId": "pr02",
+        "week": "2026-12-21",
+        "hours": 16,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b115",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data on pr03 · 2026-12-21",
+        "personId": "p08",
+        "projectId": "pr03",
+        "week": "2026-12-21",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b116",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician on pr03 · 2026-12-21",
+        "personId": "p10",
+        "projectId": "pr03",
+        "week": "2026-12-21",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b117",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician on pr02 · 2026-12-21",
+        "personId": "p10",
+        "projectId": "pr02",
+        "week": "2026-12-21",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b118",
+      "version": 1,
+      "data": {
+        "name": "Regulatory on pr05 · 2026-12-21",
+        "personId": "p11",
+        "projectId": "pr05",
+        "week": "2026-12-21",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b119",
+      "version": 1,
+      "data": {
+        "name": "Medical Monitor on pr01 · 2026-12-21",
+        "personId": "p12",
+        "projectId": "pr01",
+        "week": "2026-12-21",
+        "hours": 18,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b120",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr01 · 2026-12-28",
+        "personId": "p03",
+        "projectId": "pr01",
+        "week": "2026-12-28",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b121",
+      "version": 1,
+      "data": {
+        "name": "CRA support · pr01 · 2026-12-28",
+        "personId": "p01",
+        "projectId": "pr01",
+        "week": "2026-12-28",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b122",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr04 · 2026-12-28",
+        "personId": "p01",
+        "projectId": "pr04",
+        "week": "2026-12-28",
+        "hours": 11,
+        "status": "Tentative",
+        "archived": false
+      }
+    },
+    {
+      "id": "b123",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr01 · 2026-12-28",
+        "personId": "p04",
+        "projectId": "pr01",
+        "week": "2026-12-28",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b124",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr04 · 2026-12-28",
+        "personId": "p04",
+        "projectId": "pr04",
+        "week": "2026-12-28",
+        "hours": 11,
+        "status": "Tentative",
+        "archived": false
+      }
+    },
+    {
+      "id": "b125",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr01 · 2026-12-28",
+        "personId": "p06",
+        "projectId": "pr01",
+        "week": "2026-12-28",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b126",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr03 · 2026-12-28",
+        "personId": "p06",
+        "projectId": "pr03",
+        "week": "2026-12-28",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b127",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data on pr02 · 2026-12-28",
+        "personId": "p08",
+        "projectId": "pr02",
+        "week": "2026-12-28",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b128",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician on pr03 · 2026-12-28",
+        "personId": "p10",
+        "projectId": "pr03",
+        "week": "2026-12-28",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b129",
+      "version": 1,
+      "data": {
+        "name": "Regulatory on pr05 · 2026-12-28",
+        "personId": "p11",
+        "projectId": "pr05",
+        "week": "2026-12-28",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b130",
+      "version": 1,
+      "data": {
+        "name": "Medical Monitor on pr01 · 2026-12-28",
+        "personId": "p12",
+        "projectId": "pr01",
+        "week": "2026-12-28",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b131",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr02 · 2027-01-04",
+        "personId": "p02",
+        "projectId": "pr02",
+        "week": "2027-01-04",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b132",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr04 · 2027-01-04",
+        "personId": "p01",
+        "projectId": "pr04",
+        "week": "2027-01-04",
+        "hours": 11,
+        "status": "Tentative",
+        "archived": false
+      }
+    },
+    {
+      "id": "b133",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr02 · 2027-01-04",
+        "personId": "p04",
+        "projectId": "pr02",
+        "week": "2027-01-04",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b134",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr04 · 2027-01-04",
+        "personId": "p04",
+        "projectId": "pr04",
+        "week": "2027-01-04",
+        "hours": 11,
+        "status": "Tentative",
+        "archived": false
+      }
+    },
+    {
+      "id": "b135",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr02 · 2027-01-04",
+        "personId": "p06",
+        "projectId": "pr02",
+        "week": "2027-01-04",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b136",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr03 · 2027-01-04",
+        "personId": "p07",
+        "projectId": "pr03",
+        "week": "2027-01-04",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b137",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data on pr03 · 2027-01-04",
+        "personId": "p08",
+        "projectId": "pr03",
+        "week": "2027-01-04",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b138",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician on pr02 · 2027-01-04",
+        "personId": "p10",
+        "projectId": "pr02",
+        "week": "2027-01-04",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b139",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr01 · 2027-01-11",
+        "personId": "p02",
+        "projectId": "pr01",
+        "week": "2027-01-11",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b140",
+      "version": 1,
+      "data": {
+        "name": "CRA support · pr01 · 2027-01-11",
+        "personId": "p03",
+        "projectId": "pr01",
+        "week": "2027-01-11",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b141",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr02 · 2027-01-11",
+        "personId": "p03",
+        "projectId": "pr02",
+        "week": "2027-01-11",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b142",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr01 · 2027-01-11",
+        "personId": "p04",
+        "projectId": "pr01",
+        "week": "2027-01-11",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b143",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr02 · 2027-01-11",
+        "personId": "p05",
+        "projectId": "pr02",
+        "week": "2027-01-11",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b144",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr01 · 2027-01-11",
+        "personId": "p06",
+        "projectId": "pr01",
+        "week": "2027-01-11",
+        "hours": 18,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b145",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr02 · 2027-01-11",
+        "personId": "p07",
+        "projectId": "pr02",
+        "week": "2027-01-11",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b146",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data on pr02 · 2027-01-11",
+        "personId": "p08",
+        "projectId": "pr02",
+        "week": "2027-01-11",
+        "hours": 16,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b147",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data on pr03 · 2027-01-11",
+        "personId": "p09",
+        "projectId": "pr03",
+        "week": "2027-01-11",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b148",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician on pr03 · 2027-01-11",
+        "personId": "p10",
+        "projectId": "pr03",
+        "week": "2027-01-11",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b149",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician on pr02 · 2027-01-11",
+        "personId": "p10",
+        "projectId": "pr02",
+        "week": "2027-01-11",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b150",
+      "version": 1,
+      "data": {
+        "name": "Regulatory on pr05 · 2027-01-11",
+        "personId": "p11",
+        "projectId": "pr05",
+        "week": "2027-01-11",
+        "hours": 20,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b151",
+      "version": 1,
+      "data": {
+        "name": "Medical Monitor on pr01 · 2027-01-11",
+        "personId": "p12",
+        "projectId": "pr01",
+        "week": "2027-01-11",
+        "hours": 18,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b152",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr01 · 2027-01-18",
+        "personId": "p03",
+        "projectId": "pr01",
+        "week": "2027-01-18",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b153",
+      "version": 1,
+      "data": {
+        "name": "CRA on pr04 · 2027-01-18",
+        "personId": "p01",
+        "projectId": "pr04",
+        "week": "2027-01-18",
+        "hours": 11,
+        "status": "Tentative",
+        "archived": false
+      }
+    },
+    {
+      "id": "b154",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr01 · 2027-01-18",
+        "personId": "p05",
+        "projectId": "pr01",
+        "week": "2027-01-18",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b155",
+      "version": 1,
+      "data": {
+        "name": "CTM on pr04 · 2027-01-18",
+        "personId": "p04",
+        "projectId": "pr04",
+        "week": "2027-01-18",
+        "hours": 11,
+        "status": "Tentative",
+        "archived": false
+      }
+    },
+    {
+      "id": "b156",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr01 · 2027-01-18",
+        "personId": "p07",
+        "projectId": "pr01",
+        "week": "2027-01-18",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b157",
+      "version": 1,
+      "data": {
+        "name": "Project Manager on pr03 · 2027-01-18",
+        "personId": "p07",
+        "projectId": "pr03",
+        "week": "2027-01-18",
+        "hours": 12,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b158",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data on pr02 · 2027-01-18",
+        "personId": "p09",
+        "projectId": "pr02",
+        "week": "2027-01-18",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b159",
+      "version": 1,
+      "data": {
+        "name": "Biostatistician on pr03 · 2027-01-18",
+        "personId": "p10",
+        "projectId": "pr03",
+        "week": "2027-01-18",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b160",
+      "version": 1,
+      "data": {
+        "name": "Regulatory on pr05 · 2027-01-18",
+        "personId": "p11",
+        "projectId": "pr05",
+        "week": "2027-01-18",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b161",
+      "version": 1,
+      "data": {
+        "name": "Medical Monitor on pr01 · 2027-01-18",
+        "personId": "p12",
+        "projectId": "pr01",
+        "week": "2027-01-18",
+        "hours": 15,
+        "status": "Confirmed",
+        "archived": false
+      }
+    },
+    {
+      "id": "b900",
+      "version": 1,
+      "data": {
+        "name": "CRA urgent monitoring",
+        "personId": "p01",
+        "projectId": "pr02",
+        "week": "2026-11-02",
+        "hours": 32,
+        "status": "Confirmed",
+        "archived": false
+      }
+    }
+  ],
+  "availability": [
+    {
+      "id": "a01",
+      "version": 1,
+      "data": {
+        "name": "Unavailable time",
+        "personId": "p01",
+        "week": "2026-11-02",
+        "unavailableHours": 8,
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "a02",
+      "version": 1,
+      "data": {
+        "name": "Unavailable time",
+        "personId": "p09",
+        "week": "2026-11-09",
+        "unavailableHours": 12,
+        "status": "Approved",
+        "archived": false
+      }
+    },
+    {
+      "id": "a03",
+      "version": 1,
+      "data": {
+        "name": "Unavailable time",
+        "personId": "p03",
+        "week": "2026-11-02",
+        "unavailableHours": 5,
+        "status": "Draft",
+        "archived": false
+      }
+    }
+  ]
+}

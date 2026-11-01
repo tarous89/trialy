@@ -1,0 +1,121 @@
+{
+  "id": "life.cro-resource-planning",
+  "version": "1.0.2",
+  "name": "CRO Resource Planning",
+  "description": "Five-screen, Float-inspired resource scheduling for CRO sponsor delivery teams under 50 FTE: confirmed bookings, staff availability, role demand and future shortfalls.",
+  "tags": [
+    "cro",
+    "small-team",
+    "resource-planning",
+    "staffing",
+    "clinical-operations",
+    "sponsor-projects",
+    "capacity",
+    "float-inspired"
+  ],
+  "whenToUse": "A CRO team with fewer than 50 people must schedule specialists across sponsor client projects, distinguish tentative work and avoid staff overbooking while tracking role coverage.",
+  "whenNotToUse": "Not suitable for a biotech-wide hiring system, patient tracking, payroll, talent evaluation, a full CTMS, multi-country HR leave systems or enterprise PSA finance/contract workflows.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "CRO Resource Planning",
+    "tableMap": "{}",
+    "layoutProfile": "{}",
+    "startWeek": "",
+    "pageSize": 20,
+    "readOnly": false,
+    "demoLabel": false
+  },
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "Display name of small CRO resource planning app.",
+      "default": "CRO Resource Planning"
+    },
+    "tableMap": {
+      "type": "string",
+      "description": "Reviewed JSON mapping of logical roles to actual type IDs and authorized field keys.",
+      "default": "{}"
+    },
+    "layoutProfile": {
+      "type": "string",
+      "description": "Host-reviewed presentation-only tabs, columns, visibility and heading JSON.",
+      "default": "{}"
+    },
+    "startWeek": {
+      "type": "string",
+      "description": "Planning Monday YYYY-MM-DD; empty uses the current UTC week.",
+      "default": ""
+    },
+    "pageSize": {
+      "type": "number",
+      "description": "Compact record pagination, clamped to 10-25.",
+      "default": 20
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "Disable write proposals without changing record permissions.",
+      "default": false
+    },
+    "demoLabel": {
+      "type": "boolean",
+      "description": "Show fictional example status only in standalone review.",
+      "default": false
+    }
+  },
+  "instructions": "Read current `read_app_template_guidance(resource:\"authoring\")` and `read_app_design` before preparing. Discover version/digest using `list_app_templates` and `read_app_template`. Respect the shared TrialAgents account and backend permissions; never add app login, account, billing or credential storage. Read this entry\u2019s `documentation` and `templateLayoutSchema`. Prepare five actual normalized types and map only authorized type IDs and fields into configuration.tableMap. The `layoutProfile` is reviewed presentation-only configuration (heading/tabs/cols/visible). Use the native gear / `prepare_tool_layout(customLayout)` for persistent drag-reorder rather than assuming a local HTML settings change is saved. Show one title followed directly by actionable content. Set initial Monday week; do not save examples. Preview/QA all five screens, duplicate/archive confirmation and workload calculations. Prepare with expected digest and user permission; confirm once; verify receipt and same saved app ID. All data changes are `records.propose`, with exact versions and platform review. Saving an app must never require ChatGPT/email automations. If requested after app save, read `read_app_automation_guide` and configure the optional app-linked ChatGPT staffing monitor through `prepare_app_monitoring`; use TrialAgents `prepare_app_action` for any separately approved email, never chat email or scripts. Keep automation management in platform Automations and outcomes in Logs. Preserve source and existing IDs on revision. No embedded TrialAgents logo is drawn: rely on official platform watermark linked to https://platform.trialagents.com. Do not claim a task has run, data are complete, or layout persistence worked until verified. All required database fields must be multiple:false. Use the exact scalar contract in dataContract; person_id/project_id are text UUIDs, week fields are Monday YYYY-MM-DD text, choices are select. Bind every mapped field at its real schemaVersion and approved mode. writableFields uses logical names. Do not prepend templateConfiguration/templateBindings to catalog source: AppTemplates.operation owns those declarations. Incomplete/denied/invalid sources withhold calculations; retain correction tables. Project/specialist archive requires complete child reads and no non-archived linked records. Read usage guidance as well as authoring. Preserve drafts and original record versions. Read read_automation_setup and list_app_automations before optional setup; no automation is the default.",
+  "documentation": {
+    "quickStart": [
+      "Read current `read_app_template_guidance(resource:\"authoring\")` and `read_app_design` before using this version; fetch the selected catalog version/digest.",
+      "Confirm a saved internal TrialAgents workspace and existing app access; never build app sign-in or a second identity system.",
+      "Create/reuse the five authorized record types (People, Sponsor Projects, Role Needs, Bookings, Unavailable Hours) with stable IDs; map logical fields to actual database field keys.",
+      "Set the planning week and bind the exact authorized tables/fields; do not treat demonstration names/records as live.",
+      "Preview all five screens, including shortage trace, tentative load and overbooked warnings; obtain owner approval and save using reviewed app preparation.",
+      "Native host Layout editor uses declared templateLayoutSchema and reviewed layoutProfile; optional automations require separate post-save approval."
+    ],
+    "dataContract": "Five normalized record types with stable IDs. people: name(required), role(enum CRA|CTM|Project Manager|Clinical Data|Biostatistician|Regulatory|Medical Monitor|Quality), region, hoursPerWeek(nonnegative number), skills, engagement(Employee|Contractor), status(Active|Upcoming|Inactive), availableFrom(Monday YYYY-MM-DD), archived(boolean). projects: name(required), sponsor(alias, not sensitive protocol), service, lead, status(Active|Tentative|On hold|Completed), startWeek, archived. needs: name(required), projectId(project record ID), role(same enum), week(Monday), requiredHours>0, priority(Critical|Normal), status(Approved|Draft|Closed), archived. bookings: name(required), personId(record ID), projectId(record ID), week(Monday), hours>0, status(Confirmed|Tentative|Cancelled), archived. availability: name(required), personId(record ID), week(Monday), unavailableHours>0, status(Approved|Draft), archived. Source field names in `tableMap` may differ; only actual authorized UUIDs and keys qualify. Confirmed bookings consume hard capacity; tentative bookings show as potential demand only; cancelled do not count. Approved unavailable hours reduce personal capacity, with zero floor; no personal medical/leave reason field. Person capacity for a week = max(0, contractual hours/week minus approved unavailable hours). Overbooked if confirmed hours exceed capacity; potential conflict when confirmed + tentative exceed capacity. Project role gap = max(0, approved required hours minus confirmed bookings by project/week/role), allocations counted once across duplicate requirements. Incomplete reads never produce authoritative complete totals. Records are never persisted by loading this template. Example staff, sponsors and projects are wholly fictional. Platform schema: every mapped field is multiple:false. Names/regions/skills/engagement references are text; role/engagement/status/service/priority are select with the choices declared in source defs; hours are number; archived is boolean. personId/projectId MUST map to scalar text UUID fields, never native relationship arrays. availableFrom/startWeek/week are text containing real Monday YYYY-MM-DD dates, not week types. Logical mappings: hoursPerWeek\u2192hours_per_week, availableFrom\u2192available_from, startWeek\u2192start_week, projectId\u2192project_id, personId\u2192person_id, requiredHours\u2192required_hours, unavailableHours\u2192unavailable_hours; all others map directly. Required: people name/role/hoursPerWeek/status; projects name/status; needs name/projectId/role/week/requiredHours/status; bookings name/personId/projectId/week/hours/status; availability name/personId/week/unavailableHours/status. tableMap is a JSON string {role:{typeId:<saved UUID>,fields:{<logical>:<real key>},writableFields:[<logical names>]}}. Bind every mapped field in bindings and manifest with actual schemaVersion and permitted mode. Existing array-based schemas need an explicit adapter. All five roles are bounded to 800 records; denied, unknown-total and short reads stay incomplete. Invalid values and unresolved references withhold totals. Archived parent references never silently erase demand: archive parents only after child records are reassigned/archived. Empty startWeek uses the current UTC Monday.",
+    "interactionContract": "Five routes: Delivery pulse (KPIs, role demand/supply, staffing decisions, upcoming client starts); Team schedule (five-week lanes by specialist, booked-hour chips, tentative vs confirmed, filters and booking register); Project demand (project cards with role coverage and editable approved demands); People & skills (roster, skill mix, weekly availability changes); Capacity outlook (4/8/12 week chart, role gaps, overload risks). One page title followed directly by content; no decorative banners or multiple intros. Responsive search/Add toolbar one row, horizontal-scroll schedule only, bounded tables 20 rows/page and a single primary vertical scroll. Row action menu offers Edit, Duplicate and Delete/archive; confirm archives and maintain record history. Changes are `records.propose` reviewed create/update with expectedVersion. Duplicate booking becomes Tentative; duplicate role need Draft; duplicate person Inactive; duplicate project Tentative. The native host gear uses templateLayoutSchema (stable screen and group IDs) and `layoutProfile` tabs/cols/visible; changes persisted by reviewed `prepare_tool_layout(customLayout)` without changes to source/data/access. Never use hiding as an access rule. Filters and screen navigation do not grant new permissions; sidebar has no auth controls. Schedule lanes paginate 20 specialists independently of record tables. Client coverage cards paginate 12 projects; Manage projects opens all project statuses with search and Edit/Duplicate/Archive. Every table has its own page state. Data-quality failures retain correction registers. Forms use unique draft actions and named form values; do not rebuild an open draft from freshly fetched data. A saved layout overrides stale UI state.",
+    "lifecycle": "Catalog version and digest are immutable after release; only the authorized owner may save a preview. Reuse existing app ID on revisions, perform expected-version checks, and reconcile successful receipts before retry. Save updated layoutProfile under the same app through native reviewed customLayout; source retains stable keys. The app remains usable when scheduled tasks are disabled, paused, missing or unavailable. Optional automation setup comes only after successful save, with distinct approval; do not send ChatGPT email directly. TrialAgents permission and audit checks remain mandatory. Preview-only data is in-memory and cannot be mistaken for a live TrialAgents save. Stable automation keys are cro-resource-weekly-review-v1 and cro-resource-brief-approved-email-v1. Reuse saved IDs on retries, keep disabled definitions editable, suspend on archive and do not reactivate on restore/copy. Explicit reports-only write scopes must have owner-approved expiry; enabled does not prove runner readiness or delivery.",
+    "limitations": [
+      "Published source package requires the current native custom-layout host. Repository storage does not prove live deployment or connected-account acceptance.",
+      "Not a CRO CTMS, patient data system, HRIS, full time-tracking/timesheet product, leave system, payroll or project profitability ledger.",
+      "Historical approved effort and financial margin are intentionally omitted; this is allocation and capacity planning for small CRO teams.",
+      "Approved time away records reduce weekly capacity, but no entitlement/workflow or HR reasons are collected.",
+      "Accurate staffing percentages require complete authorized source reads. Source reads are capped; incomplete data blocks claims of complete totals.",
+      "Custom frontend-js content remains app-level authorized; hiding a screen never implements protected sub-screen access.",
+      "Native customLayout declaration is supplied for host integration; browser demo drag reordering does not independently persist the host-reviewed layout."
+    ],
+    "examples": [
+      {
+        "prompt": "Build a CRO resource planner for our 18-person clinical operations team serving six sponsor programs.",
+        "expectedBehavior": "Prepare five-screen Float-inspired CRO scheduling UI, map existing people/project/role-demand/bookings/availability records and preserve TrialAgents app access; no separate authentication or HR module."
+      },
+      {
+        "prompt": "Show next eight weeks of CRA, CTM and data management coverage and find overbookings.",
+        "expectedBehavior": "Use only complete approved demand, confirmed bookings, available hours and approved unavailable hours from authorized records; highlight gaps and overbooked specialists."
+      },
+      {
+        "prompt": "What if Sponsor D work starts in three weeks?",
+        "expectedBehavior": "Keep Sponsor D bookings tentative and distinguish potential future load from current confirmed assignments; any proposed rebooking requires review."
+      }
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "Weekly evidence-linked staffing review; none is the default. Optional internal email only when the owner approves a saved brief. No automatic booking changes.",
+      "readRequirements": "Read current read_app_template_guidance usage/authoring, read_app_automation_guide, read_automation_setup and list_app_automations. Reuse cro-resource-weekly-review-v1 and cro-resource-brief-approved-email-v1. Read every authorized page of people/projects/needs/bookings/availability for eight weeks, respecting the 800-row ceiling and current manifest. Incomplete/invalid/denied sources produce partial or blocked, never a no-risk conclusion. Monday schedule uses an owner-selected IANA timezone; no per-app ChatGPT Task.",
+      "outputContract": "Default output is a management draft returned to the owner with no writes or email. If persistence is requested, separately review an optional CRO resource briefs table: all multiple:false; required name:text, authoring_key:text unique, cutoff:date, week_start:text Monday, week_end:text Monday, summary:text, evidence:text, status:select [Draft,Approved]. Add its real table ID/fields/schemaVersion to this same app bindings/manifest before automation setup; no sixth UI screen is required. Ongoing write scope is separately approved, expiring and limited to brief creation/update in Draft; otherwise use exact human review. Stable authoring_key is appId + planning week + source-version fingerprint. Verify brief ID/version/receipt. ChatGPT never marks a brief Approved or edits bookings. Optional TrialAgents email is one explicit Draft\u2192Approved status transition, after human approval, to owner and selected current app-authorized members; no independent calendar schedule or duplicate completion email. Use current supported trigger/placeholder schema. Safe static subject: CRO resource brief approved. Safe static message: A resource brief was approved. Open the linked TrialAgents app to review. Use a supported trusted app link; do not assume arbitrary record substitutions. No email on draft/partial/failed/no_update/revocation. Disabling/editing is in Automations, outcomes in Logs; delivery failure does not rerun research.",
+      "promptExample": "Each Monday, review the coming eight weeks of authorized CRO resource records only when source versions have changed since the prior completed scan. Calculate confirmed vs tentative bookings, approved unavailable time, project/role/week gaps and specialist overbooking. Cite source record IDs, versions and cutoff; propose at most five human staffing decisions. Return a management draft to the owner. Only if an explicit expiring brief-write scope exists, save an idempotent Draft in the approved CRO resource briefs destination and verify its receipt. Never approve a brief, change bookings or contact sponsors. Incomplete reads are partial/blocked; unchanged complete scans may be no_update only under the approved quiet policy. No automation example: open and manage the five screens manually, with no runner or email."
+    }
+  },
+  "examples": [
+    {
+      "heading": "CRO Resource Planning",
+      "tableMap": "{}",
+      "layoutProfile": "{\"heading\":\"CRO Resource Planning\",\"tabs\":[\"pulse\",\"schedule\",\"projects\",\"people\",\"outlook\"],\"cols\":{\"people\":[\"name\",\"role\",\"region\",\"hoursPerWeek\",\"skills\",\"engagement\",\"status\"],\"projects\":[\"name\",\"sponsor\",\"service\",\"lead\",\"status\",\"startWeek\"],\"needs\":[\"name\",\"projectId\",\"role\",\"week\",\"requiredHours\",\"priority\",\"status\"],\"bookings\":[\"name\",\"personId\",\"projectId\",\"week\",\"hours\",\"status\"],\"availability\":[\"name\",\"personId\",\"week\",\"unavailableHours\",\"status\"]},\"visible\":{\"people:skills\":false,\"projects:lead\":false,\"needs:priority\":false}}",
+      "startWeek": "2026-11-02",
+      "pageSize": 20,
+      "readOnly": false,
+      "demoLabel": false
+    }
+  ],
+  "deprecated": false
+}

@@ -1,0 +1,66 @@
+{
+  "name": "CRO resource briefs",
+  "fields": [
+    {
+      "key": "name",
+      "name": "Brief title",
+      "kind": "text",
+      "multiple": false,
+      "required": true
+    },
+    {
+      "key": "authoring_key",
+      "name": "Stable brief identity",
+      "kind": "text",
+      "multiple": false,
+      "required": true,
+      "unique": true
+    },
+    {
+      "key": "cutoff",
+      "name": "Evidence cutoff",
+      "kind": "date",
+      "multiple": false,
+      "required": true
+    },
+    {
+      "key": "week_start",
+      "name": "First planning Monday",
+      "kind": "text",
+      "multiple": false,
+      "required": true
+    },
+    {
+      "key": "week_end",
+      "name": "Last planning Monday",
+      "kind": "text",
+      "multiple": false,
+      "required": true
+    },
+    {
+      "key": "summary",
+      "name": "Management review",
+      "kind": "text",
+      "multiple": false,
+      "required": true
+    },
+    {
+      "key": "evidence",
+      "name": "Saved source record IDs and versions",
+      "kind": "text",
+      "multiple": false,
+      "required": true
+    },
+    {
+      "key": "status",
+      "name": "Review status",
+      "kind": "select",
+      "multiple": false,
+      "required": true,
+      "options": [
+        "Draft",
+        "Approved"
+      ]
+    }
+  ]
+}
