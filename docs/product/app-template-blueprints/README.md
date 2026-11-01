@@ -49,6 +49,10 @@ The original, separate [11-function showcase plan](../TEMPLATE_SHOWCASE_PLAN.md)
 3. **Remaining 17:** configure their 4–8 screens using the same primitives, refine their fields/charts and validate their business-specific workflows without installing hardcoded modules.
 4. **Release gate:** develop each template as a new immutable version; test one end-to-end save/open/edit/review/reopen flow and mobile, keyboard, empty/error states before marking “ready”.
 
+## Discovery automation refinement (draft, not active)
+
+For the **11 data-collection-oriented templates**, the draft [new-entry discovery and completed-update rule](DISCOVERY_UPDATE_COMPLETION_CONTRACT.md) explicitly prioritizes new source-backed records, deduplicated and committed under approved write scopes, followed by a verified server `Update completed at` UTC timestamp and a separately authorized **TrialAgents completion email only when saved changes exist**. No email is sent on a no-update or failed run, and no ChatGPT email tool or per-app consumer schedule is used. The remaining applications keep reporting/internal-analysis recipes. This is part of draft review, not a published template guarantee.
+
 ## Landing-page demonstration contract
 
 Marketing previews should tell a true four-frame story: (1) attractive summary with 1–3 dark KPI cards and simple outline icons; (2) real domain tracker with filters; (3) meaningful form/selection/assignment action; (4) source-backed chart or ChatGPT-prepared report. **Use fictional, explicitly labeled sample data**. A static storyboard may illustrate a proposed workflow, but must not masquerade as a fully functioning deployed app or a ChatGPT task that has never run.

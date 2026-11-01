@@ -6,6 +6,8 @@ import {AppActions,recordDue} from '../app-services/service.js';
 import {matches} from '../app-services/schema.js';
 import {monitoringConfig} from '../app-services/monitoring-schema.js';
 import {localDay} from '../shared/schedules.js';
+import {appPublicUrl} from '../shared/public-url.js';
+import {appUrl} from '../shared/app-route.js';
 import {adapter,signalWork,automationsEnabled,activeSubscription} from './service.js';
 import {dailyDue,nextCalendar} from './schedules.js';
 const J=JSON.stringify;
@@ -76,7 +78,20 @@ export async function dispatchCompletions(db:Database){
    const db=adapter(tx),a={userId:o.user_id,origin:'ai' as const},monitor=await new AppMonitoring(db).row(a,o.workspace_id,o.monitor_id),r=(await tx.query('SELECT enabled FROM automation_runners WHERE id=$1',[o.runner_id])).rows[0];
    if(!r?.enabled||!monitor.enabled||monitor.version!==o.monitor_version)throw Error('paused_or_changed');
    const actions=new AppActions(db),action=await actions.row(a,o.workspace_id,o.completion_action_id);if(action.version!==o.completion_action_version)throw Error('action_changed');
-   const research={research:{summary:o.result.summary,sources:o.result.sources??[],receiptIds:o.result.receiptIds??[]}};const run=await actions.enqueue(a,o.workspace_id,action.id,'automation:'+o.id,undefined,[],research);if(!run.notification)await tx.query('UPDATE app_action_runs SET results=$2 WHERE id=$1 AND step=0 AND status=$3',[run.id,J(research),'queued']);
+   const savedChanges=Number(o.result?.savedChanges??0);
+   // Collection automations must never claim a new-data email without a verified DB save receipt.
+   if(monitor.config.automation?.completionRequiresSavedChanges&&!(savedChanges>0)){
+    await tx.query("UPDATE automation_occurrences SET completion_dispatched_at=now(),result=result||$2::jsonb WHERE id=$1",[o.id,J({deliveryStatus:'skipped',deliveryNote:'Completed check saved no new changes; no email was queued.'})]);
+    await tx.query('RELEASE SAVEPOINT completion_dispatch');return true;
+   }
+   // The timestamp is server-authored when the durable occurrence finishes, never supplied by ChatGPT.
+   const research={research:{
+    summary:o.result.summary,sources:o.result.sources??[],receiptIds:o.result.receiptIds??[],
+    savedChanges,completedAt:new Date(o.finished_at).toISOString(),runId:o.id,
+    appUrl:appPublicUrl()+appUrl({workspaceId:o.workspace_id,appId:monitor.app_id})
+   }};
+   const run=await actions.enqueue(a,o.workspace_id,action.id,'automation:'+o.id,undefined,[],research);
+   if(!run.notification)await tx.query('UPDATE app_action_runs SET results=$2 WHERE id=$1 AND step=0 AND status=$3',[run.id,J(research),'queued']);
    await tx.query('UPDATE automation_occurrences SET completion_dispatched_at=now() WHERE id=$1',[o.id]);await tx.query('RELEASE SAVEPOINT completion_dispatch');
   }catch(e:any){await tx.query('ROLLBACK TO SAVEPOINT completion_dispatch');if(e.status===429)return true;await tx.query("UPDATE automation_occurrences SET completion_dispatched_at=now(),result=result||$2::jsonb WHERE id=$1",[o.id,J({deliveryStatus:'blocked',deliveryNote:'Follow-up action needs owner review; research and saved data are retained.'})]);}
   return true;
