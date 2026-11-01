@@ -1,0 +1,181 @@
+{
+  "DO_NOT_USE_FOR_LIVE_SAVES": "Replace all example type IDs after authorized workspace/table discovery.",
+  "tableMap": {
+    "projects": {
+      "typeId": "REPLACE_WITH_AUTHORIZED_PROJECTS_UUID",
+      "fields": {
+        "name": "name",
+        "provider": "provider",
+        "study": "study",
+        "phase": "phase",
+        "owner": "owner",
+        "status": "status",
+        "start": "start",
+        "contractEnd": "contract_end",
+        "scope": "scope",
+        "source": "source",
+        "notes": "notes",
+        "archived": "archived"
+      },
+      "writableFields": [
+        "name",
+        "provider",
+        "study",
+        "phase",
+        "owner",
+        "status",
+        "start",
+        "contractEnd",
+        "scope",
+        "source",
+        "notes",
+        "archived"
+      ]
+    },
+    "tasks": {
+      "typeId": "REPLACE_WITH_AUTHORIZED_TASKS_UUID",
+      "fields": {
+        "name": "name",
+        "projectId": "project_id",
+        "stream": "stream",
+        "owner": "owner",
+        "baseline": "baseline",
+        "due": "due",
+        "actual": "actual",
+        "status": "status",
+        "source": "source",
+        "notes": "notes",
+        "archived": "archived"
+      },
+      "writableFields": [
+        "name",
+        "projectId",
+        "stream",
+        "owner",
+        "baseline",
+        "due",
+        "actual",
+        "status",
+        "source",
+        "notes",
+        "archived"
+      ]
+    },
+    "assessments": {
+      "typeId": "REPLACE_WITH_AUTHORIZED_ASSESSMENTS_UUID",
+      "fields": {
+        "name": "name",
+        "projectId": "project_id",
+        "stream": "stream",
+        "targetValue": "target_value",
+        "actualValue": "actual_value",
+        "unit": "unit",
+        "direction": "direction",
+        "cutoff": "cutoff",
+        "origin": "origin",
+        "source": "source",
+        "notes": "notes",
+        "archived": "archived"
+      },
+      "writableFields": [
+        "name",
+        "projectId",
+        "stream",
+        "targetValue",
+        "actualValue",
+        "unit",
+        "direction",
+        "cutoff",
+        "origin",
+        "source",
+        "notes",
+        "archived"
+      ]
+    },
+    "requirements": {
+      "typeId": "REPLACE_WITH_AUTHORIZED_REQUIREMENTS_UUID",
+      "fields": {
+        "name": "name",
+        "projectId": "project_id",
+        "severity": "severity",
+        "status": "status",
+        "opened": "opened",
+        "due": "due",
+        "closed": "closed",
+        "owner": "owner",
+        "action": "action",
+        "source": "source",
+        "notes": "notes",
+        "archived": "archived"
+      },
+      "writableFields": [
+        "name",
+        "projectId",
+        "severity",
+        "status",
+        "opened",
+        "due",
+        "closed",
+        "owner",
+        "action",
+        "source",
+        "notes",
+        "archived"
+      ]
+    },
+    "activities": {
+      "typeId": "REPLACE_WITH_AUTHORIZED_ACTIVITIES_UUID",
+      "fields": {
+        "name": "name",
+        "projectId": "project_id",
+        "meetingDate": "meeting_date",
+        "owner": "owner",
+        "status": "status",
+        "decision": "decision",
+        "actionOwner": "action_owner",
+        "due": "due",
+        "source": "source",
+        "notes": "notes",
+        "archived": "archived"
+      },
+      "writableFields": [
+        "name",
+        "projectId",
+        "meetingDate",
+        "owner",
+        "status",
+        "decision",
+        "actionOwner",
+        "due",
+        "source",
+        "notes",
+        "archived"
+      ]
+    },
+    "reports": {
+      "typeId": "REPLACE_WITH_AUTHORIZED_REPORTS_UUID",
+      "fields": {
+        "name": "name",
+        "projectId": "project_id",
+        "period": "period",
+        "cutoff": "cutoff",
+        "status": "status",
+        "owner": "owner",
+        "summary": "summary",
+        "evidence": "evidence",
+        "archived": "archived"
+      },
+      "writableFields": [
+        "name",
+        "projectId",
+        "period",
+        "cutoff",
+        "status",
+        "owner",
+        "summary",
+        "evidence",
+        "archived"
+      ]
+    }
+  }
+}

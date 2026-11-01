@@ -1,0 +1,11 @@
+# CRO Oversight 1.2.1 release validation
+
+Validation targets the repository's current host and disposable database fixtures. No production account, live automation or email delivery is exercised.
+
+- `npm run build`: production TypeScript and web/embedded builds; deterministic catalog and preview drift checks, including the existing templates.
+- `APP_DESIGN_CHECKS=off node --import tsx --test --test-concurrency=1 tests/cro-template.test.ts tests/cro-integration.test.ts tests/app-templates.test.ts`: actual catalog discovery/schema validation; six QuickJS screens; all six scalar database schemas; source calculations, empty/read-only sources, named form draft events, 49-row pagination, immediate engagement selection and valid calendar dates. Linked, denied, short, unknown-total and truncated child reads block engagement archive. Incomplete summaries are withheld. Real database tests verify reviewed create/duplicate/archive, stale edits and stale archives, preserved manifest, native layout save/reopen, Ignore and stale-layout rejection.
+- `APP_DESIGN_CHECKS=off node --import tsx scripts/test-cro-browser.ts`: the production sanitized/CSP frame with manifest-bound records and the real native layout component. Checks all six screens, enabled engagement/filter/search controls, drafts retained across text/select/date/textarea changes, exact reviewed database save, record menu/edit, desktop screen/field rearrangement, reload persistence, narrow-screen keyboard/Ignore and 390/768/1440 widths.
+
+The upload's offline test suite missed incompatible draft events and catalog metadata. The release tests above use the actual repository runtime, catalog parser, schema validation and host frame. No sandbox, permission, review or optimistic-version check is bypassed. The scalar reference contract is explicit; application checks do not create a database foreign-key constraint.
+
+Repository publication makes the version available to the existing catalog loader on deployment. It does not establish that production has deployed this commit or that a connected ChatGPT session, optional runner or email action is active. Live account and automation setup remain separate acceptance steps under the owner's configuration. Do not claim delivery from metadata or preview results.

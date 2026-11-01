@@ -1,0 +1,817 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CRO Oversight fictional preview</title><style>:root{--ink:#243748;--muted:#738498;--blue:#176ca0;--navy:#183a51;--teal:#087f86;--mint:#e5f5f3;--gold:#de9d44;--red:#ba5960;--paper:#fff;--line:#dfe8ed;--bg:#f3f7f8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;font-size:13px;line-height:1.45}button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}button:disabled{opacity:.48;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #6cbbd1;outline-offset:2px}
+.co-app{min-height:800px;display:grid;grid-template-columns:223px minmax(0,1fr);background:var(--bg)}.co-side{background:#163a50;color:#d9e7ed;padding:27px 15px 23px;display:flex;flex-direction:column;gap:15px;position:relative}.co-side-top{padding:0 11px 19px;border-bottom:1px solid #38576a}.co-side-top strong{display:block;color:#fff;font-size:17px;letter-spacing:-.45px}.co-side-top small{font-size:11px;color:#9fbac8}.co-nav{display:grid;gap:4px}.co-nav button{width:100%;border:0;color:#b7d0dd;background:transparent;border-radius:9px;padding:11px;text-align:left;display:flex;align-items:center;gap:11px;font-size:12px;font-weight:610}.co-nav button:hover{background:#24536b;color:#fff}.co-nav button[aria-current=page]{background:#337397;color:#fff}.co-nav .co-glyph{width:18px;height:18px;text-align:center;font-size:16px;flex:none}.co-side-footer{margin-top:auto;padding:17px 10px 0;border-top:1px solid #3b5769;color:#9ab5c3;font-size:11px;line-height:1.7}.co-side-footer b{color:#d9e8ed}.co-main{padding:28px clamp(18px,3vw,43px) 52px;min-width:0;width:100%;max-width:1700px;margin:0 auto}.co-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:24px}.co-breadcrumb{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#16828f;font-weight:800;margin:0 0 5px}.co-head h1{margin:0;font-size:28px;letter-spacing:-1px;font-weight:770}.co-head p{margin:5px 0 0;color:#788a9a;font-size:12px}.co-headtools{display:flex;gap:9px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.co-select,.co-input,.co-textarea{border:1px solid #d7e0e6;border-radius:8px;background:#fff;padding:9px 11px;min-width:0;max-width:100%}.co-select{min-width:130px}.co-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid #d8e3e9;border-radius:8px;background:white;padding:9px 13px;color:#38536a;font-weight:670;white-space:nowrap}.co-btn:hover{background:#f5fbfc;border-color:#9bcbd7}.co-btn.main{background:#137996;color:white;border-color:#137996}.co-btn.main:hover{background:#116e89}.co-btn.tiny{padding:6px 9px;font-size:11px}.co-btn.icon{width:37px;height:37px;padding:0;font-size:18px}.co-btn.danger{color:#af4d58;border-color:#e9c8cd}.co-pill{display:inline-flex;align-items:center;border-radius:30px;padding:4px 9px;background:#edf2f6;color:#637889;font-size:10px;font-weight:780;white-space:nowrap}.co-pill.good{background:#e3f4ec;color:#207d61}.co-pill.warn{background:#fff2da;color:#9c6d23}.co-pill.bad{background:#fee9eb;color:#ac4e5b}.co-pill.blue{background:#e8f4f8;color:#176c91}.co-pill.dark{background:#3d6373;color:#f1fbff}
+.co-grid{display:grid;gap:17px}.co-grid.two{grid-template-columns:minmax(0,1.65fr) minmax(290px,.9fr)}.co-grid.equal{grid-template-columns:repeat(2,minmax(0,1fr))}.co-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.co-panel{background:#fff;border:1px solid #e0e9ed;border-radius:13px;min-width:0;overflow:hidden;box-shadow:0 2px 12px rgba(19,56,75,.027)}.co-pad{padding:21px}.co-panelhead{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;margin-bottom:17px}.co-panelhead h2{font-size:14px;margin:0;font-weight:760;letter-spacing:-.15px}.co-panelhead p{margin:4px 0 0;font-size:11px;color:#8a99a7}.co-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin-bottom:17px}.co-kpi{background:white;border-radius:12px;border:1px solid #e1e8ee;padding:18px 21px}.co-kpi small{display:block;color:#7f90a0;font-size:11px}.co-kpi strong{display:block;font-size:26px;letter-spacing:-.8px;margin:7px 0 2px;font-variant-numeric:tabular-nums}.co-kpi .sub{color:#9ba8b4;font-size:10px}
+.co-hero{background:linear-gradient(125deg,#18374b,#164e68 66%,#176f84);color:white;padding:25px 27px;min-height:212px;position:relative}.co-hero:after{content:"";position:absolute;right:-50px;top:-20px;width:290px;height:290px;border:1px solid #ffffff20;border-radius:50%;box-shadow:0 0 0 36px #ffffff06,0 0 0 73px #ffffff05;pointer-events:none}.co-hero .eyebrow{color:#a6d1d9;font-size:10px;letter-spacing:1.4px;text-transform:uppercase;font-weight:800}.co-hero h2{font-size:26px;margin:12px 0 6px;letter-spacing:-.6px;color:#fff}.co-hero .hero-sub{max-width:480px;color:#d3e5ea;font-size:12px}.co-hero-footer{display:flex;gap:23px;flex-wrap:wrap;margin-top:21px;color:#a9c9d2;font-size:11px}.co-hero-footer b{display:block;color:white;font-size:15px;margin:2px 0}.co-alert{padding:11px 14px;border-radius:9px;border:1px solid #e7d7b9;background:#fff8e9;color:#866b3d;margin-bottom:17px;font-size:12px}.co-alert.info{border-color:#d9eaf2;background:#f0f9fc;color:#477289}.co-alert.error{background:#fff1f2;border-color:#f0d6da;color:#9a4552}
+.co-list{list-style:none;padding:0;margin:0}.co-list li{border-bottom:1px solid #edf0f3;padding:11px 0;display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.co-list li:last-child{border-bottom:0}.co-list b{font-size:12px;color:#2b4051}.co-list small{display:block;color:#93a0ac;margin-top:3px;font-size:10px}.co-statrow{display:flex;gap:12px;align-items:center}.co-progress{height:8px;background:#edf3f5;border-radius:30px;overflow:hidden;flex:1}.co-progress>i{display:block;height:100%;background:#2d9baf;border-radius:30px;max-width:100%}.co-summary{display:grid;gap:12px}
+.co-toolbar{display:flex;gap:8px;align-items:center;margin-bottom:14px;min-width:0}.co-toolbar .co-search{flex:1;min-width:70px;border:1px solid #dbe5ea;padding:9px 11px;border-radius:8px}.co-toolbar .co-btn{flex:none}.co-filterline{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 15px}.co-filterline label{color:#768997;font-size:11px}.co-filterline select{margin-left:5px;padding:6px 9px;border:1px solid #d7e1e8;border-radius:7px;background:white}.co-tablewrap{max-width:100%;overflow-x:auto}.co-table{width:100%;border-collapse:collapse;min-width:690px}.co-table th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:#899aa8;background:#f7fafb;padding:13px 15px;border-bottom:1px solid #e4ecf0}.co-table td{padding:13px 15px;border-bottom:1px solid #edf1f3;color:#586e7d;font-size:12px;vertical-align:middle;overflow-wrap:anywhere}.co-table tbody tr:last-child td{border-bottom:none}.co-table tbody tr:hover{background:#f8fbfc}.co-table strong{color:#2c4052}.co-table .act{text-align:right;min-width:70px}.co-footer{padding:12px 15px;border-top:1px solid #e5edf1;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#8a9ba8;font-size:11px}.co-footer .co-btn{padding:5px 9px}
+.co-context{font-size:11px;color:#8b9cab}.co-empty{padding:30px;text-align:center;color:#8a9ba8;font-size:12px}.co-empty strong{display:block;color:#415c70;font-size:14px;margin-bottom:5px}.co-board{display:grid;grid-template-columns:repeat(3,minmax(240px,1fr));gap:12px}.co-lane{background:#f7fafb;border:1px solid #e4edf1;border-radius:12px;padding:13px;min-height:225px}.co-lane h3{display:flex;justify-content:space-between;font-size:12px;margin:0 0 12px;color:#4b6675}.co-ticket{background:white;border:1px solid #e1e9ee;border-radius:10px;padding:13px;margin-bottom:10px;box-shadow:0 2px 7px #294d6008}.co-ticket b{display:block;font-size:12px}.co-ticket p{margin:6px 0;color:#8395a4;font-size:11px}.co-ticket .co-ticket-foot{display:flex;justify-content:space-between;align-items:center;gap:7px;margin-top:9px}.co-ticket .co-btn{padding:4px 8px}
+.co-score-rows{display:grid;gap:14px}.co-score{border:1px solid #e5edf1;border-radius:10px;padding:15px;display:grid;grid-template-columns:minmax(150px,1fr) minmax(160px,1.4fr) 72px;align-items:center;gap:15px}.co-score-name b{font-size:12px;display:block}.co-score-name small{display:block;color:#91a0af;font-size:10px;margin-top:3px}.co-score-bars{display:grid;gap:6px}.co-bar{display:flex;gap:8px;align-items:center;color:#8091a0;font-size:10px}.co-bar i{display:block;height:8px;border-radius:5px;background:#c6d8df;min-width:2px}.co-bar .actual{background:#168a9c}.co-score-right{text-align:right}.co-score-right b{display:block;font-size:18px}.co-meet{display:grid;grid-template-columns:120px 1fr;gap:14px;margin-bottom:13px}.co-datebox{border-radius:10px;background:#eaf5f6;padding:13px;text-align:center;color:#23778b}.co-datebox b{display:block;font-size:18px}.co-datebox small{font-size:10px}.co-meet-card{border-left:2px solid #86c1cc;padding:8px 0 16px 17px}.co-meet-card h3{margin:0 0 4px;font-size:13px}.co-meet-card p{margin:3px 0;color:#6e8392;font-size:11px}.co-report{display:grid;grid-template-columns:235px minmax(0,1fr);gap:16px}.co-reportmenu{border:1px solid #e1e9ee;border-radius:11px;padding:8px;background:#fff;display:grid;gap:5px;align-content:start}.co-reportmenu button{text-align:left;background:white;border:1px solid transparent;border-radius:8px;padding:11px}.co-reportmenu button[aria-current=true]{background:#eaf6fa;border-color:#d4e7ef}.co-reportmenu button b{display:block;font-size:12px}.co-reportmenu button small{color:#8496a4;font-size:10px}.co-reportbody{background:white;border:1px solid #e2e9ef;border-radius:12px;padding:25px;min-height:280px}.co-reportbody .label{text-transform:uppercase;letter-spacing:1px;color:#13869a;font-weight:800;font-size:10px}.co-reportbody h2{margin:10px 0;font-size:20px}.co-reportbody p{line-height:1.7;white-space:pre-wrap;color:#546e7f}.co-reportbody .divider{margin:19px 0;border-top:1px solid #e6edf1}
+.co-pop{position:relative;display:inline-block}.co-more{background:transparent;border:1px solid transparent;border-radius:6px;padding:4px 8px;font-weight:800;color:#718998}.co-more:hover{background:#e9f1f5}.co-menu{position:absolute;right:0;top:27px;width:145px;background:white;border:1px solid #d8e4e9;z-index:6;box-shadow:0 13px 26px #12334b29;border-radius:9px;padding:5px}.co-menu button{display:block;width:100%;text-align:left;padding:8px;border:0;border-radius:6px;background:transparent;font-size:11px}.co-menu button:hover{background:#eff8fa}.co-menu button.danger{color:#b54e5b}.co-screen-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0,0,0,0)}
+.co-overlay{position:fixed;inset:0;background:#102a3c88;display:flex;align-items:stretch;justify-content:flex-end;z-index:30}.co-drawer{background:white;width:min(530px,100%);height:100%;display:flex;flex-direction:column;box-shadow:-12px 0 36px #051b312a}.co-drawer-head{padding:21px 22px;border-bottom:1px solid #e3eaf0;display:flex;justify-content:space-between;align-items:center}.co-drawer-head h2{margin:0;font-size:19px}.co-drawer-body{padding:20px 22px;flex:1;overflow-y:auto;display:grid;gap:13px;align-content:start}.co-drawerfoot{border-top:1px solid #e2eaf0;display:flex;justify-content:flex-end;gap:9px;padding:14px 22px}.co-field{font-size:11px;font-weight:680;color:#617887;display:block}.co-field .co-input,.co-field .co-select,.co-field .co-textarea{display:block;width:100%;margin-top:6px}.co-field .co-textarea{min-height:100px;resize:vertical}.co-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.co-confirm{margin:auto;width:min(440px,calc(100% - 30px));border-radius:13px;background:white;padding:24px}.co-confirm h2{margin:0 0 12px}.co-confirm p{font-size:12px;color:#667f8f;line-height:1.7}
+.co-footnote{font-size:10px;color:#9aabb6;margin-top:25px}.co-selectbtn{border:0;background:none;color:var(--blue);font-weight:760;padding:0;font-size:12px}.co-selectbtn:hover{text-decoration:underline}.co-timeline{border-left:2px solid #d7e7ea;margin:9px 0 6px 9px;padding-left:18px;display:grid;gap:12px}.co-timeline-item{position:relative}.co-timeline-item:before{content:"";position:absolute;left:-24px;top:3px;width:9px;height:9px;background:#3496a4;border:3px solid white;box-shadow:0 0 0 1px #c5dce2;border-radius:50%}.co-timeline-item b{display:block;font-size:12px}.co-timeline-item small{display:block;color:#92a2af}
+@media(max-width:1080px){.co-app{grid-template-columns:66px minmax(0,1fr)}.co-side{padding:23px 9px}.co-side-top{padding:0 0 15px;text-align:center}.co-side-top strong{font-size:0}.co-side-top strong:after{content:'CO';font-size:15px}.co-side-top small,.co-nav .nav-label,.co-side-footer{display:none}.co-nav button{justify-content:center}.co-grid.two{grid-template-columns:1fr}.co-grid.equal{grid-template-columns:1fr}}
+@media(max-width:680px){.co-app{display:block}.co-side{padding:8px 11px;display:flex;flex-direction:row;align-items:center}.co-side-top{display:none}.co-nav{display:flex;overflow-x:auto;max-width:100%;gap:3px}.co-nav button{padding:9px 12px;flex:none}.co-main{padding:20px 14px 40px}.co-head{display:block}.co-headtools{justify-content:flex-start;margin-top:13px}.co-head h1{font-size:24px}.co-kpis{grid-template-columns:1fr 1fr}.co-grid.three{grid-template-columns:1fr}.co-board{overflow-x:auto;max-width:100%}.co-lane{min-width:250px}.co-report{grid-template-columns:1fr}.co-reportmenu{display:flex;overflow-x:auto}.co-reportmenu button{flex:0 0 190px}.co-score{grid-template-columns:1fr}.co-score-right{text-align:left}.co-fields{grid-template-columns:1fr}}
+@media(max-width:390px){.co-kpis{grid-template-columns:1fr}.co-toolbar .co-btn{padding:8px}.co-headtools{gap:6px}}
+
+@media(min-width:681px) and (max-width:1080px){.co-board{grid-template-columns:repeat(2,minmax(0,1fr));}.co-lane{min-width:0;}}
+@media(max-width:680px){.co-board{grid-template-columns:1fr;overflow-x:visible;}.co-lane{min-width:0;}.co-main{width:100%;max-width:100vw;}.co-kpis{min-width:0;}.co-side{max-width:100vw;}}
+/* Keep all section controls reachable in the compact navigation row. */
+@media(max-width:680px){.co-nav button{width:auto;min-width:42px;}}
+</style><body><div id="surface"></div><script>
+const source="const templateLayoutSchema={\"screens\":[{\"id\":\"overview\",\"label\":\"Overview\"},{\"id\":\"work\",\"label\":\"Work packages\"},{\"id\":\"scorecard\",\"label\":\"Scorecard\"},{\"id\":\"issues\",\"label\":\"Issue management\"},{\"id\":\"meetings\",\"label\":\"Meetings & actions\"},{\"id\":\"reports\",\"label\":\"Reports\"}],\"groups\":{\"projects\":[{\"id\":\"name\",\"label\":\"Engagement\"},{\"id\":\"provider\",\"label\":\"CRO\"},{\"id\":\"study\",\"label\":\"Program\"},{\"id\":\"phase\",\"label\":\"Phase\"},{\"id\":\"owner\",\"label\":\"Sponsor lead\"},{\"id\":\"status\",\"label\":\"Status\"}],\"tasks\":[{\"id\":\"name\",\"label\":\"Deliverable\"},{\"id\":\"stream\",\"label\":\"Workstream\"},{\"id\":\"owner\",\"label\":\"Owner\"},{\"id\":\"due\",\"label\":\"Agreed due\"},{\"id\":\"baseline\",\"label\":\"Baseline due\"},{\"id\":\"status\",\"label\":\"Review state\"}],\"assessments\":[{\"id\":\"name\",\"label\":\"KPI\"},{\"id\":\"stream\",\"label\":\"Function\"},{\"id\":\"targetValue\",\"label\":\"Target\"},{\"id\":\"actualValue\",\"label\":\"Actual\"},{\"id\":\"cutoff\",\"label\":\"Cutoff\"},{\"id\":\"origin\",\"label\":\"Evidence\"}],\"requirements\":[{\"id\":\"name\",\"label\":\"Issue\"},{\"id\":\"severity\",\"label\":\"Severity\"},{\"id\":\"status\",\"label\":\"State\"},{\"id\":\"owner\",\"label\":\"Owner\"},{\"id\":\"due\",\"label\":\"Next due\"},{\"id\":\"opened\",\"label\":\"Opened\"}],\"activities\":[{\"id\":\"name\",\"label\":\"Meeting / decision\"},{\"id\":\"meetingDate\",\"label\":\"Date\"},{\"id\":\"owner\",\"label\":\"Sponsor lead\"},{\"id\":\"actionOwner\",\"label\":\"Action owner\"},{\"id\":\"due\",\"label\":\"Due\"},{\"id\":\"status\",\"label\":\"Status\"}],\"reports\":[{\"id\":\"name\",\"label\":\"Report\"},{\"id\":\"period\",\"label\":\"Period\"},{\"id\":\"status\",\"label\":\"Approval\"},{\"id\":\"owner\",\"label\":\"Reviewer\"}]}};\nconst CRO_OVERSIGHT_CSS=\":root{--ink:#243748;--muted:#738498;--blue:#176ca0;--navy:#183a51;--teal:#087f86;--mint:#e5f5f3;--gold:#de9d44;--red:#ba5960;--paper:#fff;--line:#dfe8ed;--bg:#f3f7f8}\\n*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;font-size:13px;line-height:1.45}button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}button:disabled{opacity:.48;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #6cbbd1;outline-offset:2px}\\n.co-app{min-height:800px;display:grid;grid-template-columns:223px minmax(0,1fr);background:var(--bg)}.co-side{background:#163a50;color:#d9e7ed;padding:27px 15px 23px;display:flex;flex-direction:column;gap:15px;position:relative}.co-side-top{padding:0 11px 19px;border-bottom:1px solid #38576a}.co-side-top strong{display:block;color:#fff;font-size:17px;letter-spacing:-.45px}.co-side-top small{font-size:11px;color:#9fbac8}.co-nav{display:grid;gap:4px}.co-nav button{width:100%;border:0;color:#b7d0dd;background:transparent;border-radius:9px;padding:11px;text-align:left;display:flex;align-items:center;gap:11px;font-size:12px;font-weight:610}.co-nav button:hover{background:#24536b;color:#fff}.co-nav button[aria-current=page]{background:#337397;color:#fff}.co-nav .co-glyph{width:18px;height:18px;text-align:center;font-size:16px;flex:none}.co-side-footer{margin-top:auto;padding:17px 10px 0;border-top:1px solid #3b5769;color:#9ab5c3;font-size:11px;line-height:1.7}.co-side-footer b{color:#d9e8ed}.co-main{padding:28px clamp(18px,3vw,43px) 52px;min-width:0;width:100%;max-width:1700px;margin:0 auto}.co-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:24px}.co-breadcrumb{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#16828f;font-weight:800;margin:0 0 5px}.co-head h1{margin:0;font-size:28px;letter-spacing:-1px;font-weight:770}.co-head p{margin:5px 0 0;color:#788a9a;font-size:12px}.co-headtools{display:flex;gap:9px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.co-select,.co-input,.co-textarea{border:1px solid #d7e0e6;border-radius:8px;background:#fff;padding:9px 11px;min-width:0;max-width:100%}.co-select{min-width:130px}.co-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid #d8e3e9;border-radius:8px;background:white;padding:9px 13px;color:#38536a;font-weight:670;white-space:nowrap}.co-btn:hover{background:#f5fbfc;border-color:#9bcbd7}.co-btn.main{background:#137996;color:white;border-color:#137996}.co-btn.main:hover{background:#116e89}.co-btn.tiny{padding:6px 9px;font-size:11px}.co-btn.icon{width:37px;height:37px;padding:0;font-size:18px}.co-btn.danger{color:#af4d58;border-color:#e9c8cd}.co-pill{display:inline-flex;align-items:center;border-radius:30px;padding:4px 9px;background:#edf2f6;color:#637889;font-size:10px;font-weight:780;white-space:nowrap}.co-pill.good{background:#e3f4ec;color:#207d61}.co-pill.warn{background:#fff2da;color:#9c6d23}.co-pill.bad{background:#fee9eb;color:#ac4e5b}.co-pill.blue{background:#e8f4f8;color:#176c91}.co-pill.dark{background:#3d6373;color:#f1fbff}\\n.co-grid{display:grid;gap:17px}.co-grid.two{grid-template-columns:minmax(0,1.65fr) minmax(290px,.9fr)}.co-grid.equal{grid-template-columns:repeat(2,minmax(0,1fr))}.co-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.co-panel{background:#fff;border:1px solid #e0e9ed;border-radius:13px;min-width:0;overflow:hidden;box-shadow:0 2px 12px rgba(19,56,75,.027)}.co-pad{padding:21px}.co-panelhead{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;margin-bottom:17px}.co-panelhead h2{font-size:14px;margin:0;font-weight:760;letter-spacing:-.15px}.co-panelhead p{margin:4px 0 0;font-size:11px;color:#8a99a7}.co-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin-bottom:17px}.co-kpi{background:white;border-radius:12px;border:1px solid #e1e8ee;padding:18px 21px}.co-kpi small{display:block;color:#7f90a0;font-size:11px}.co-kpi strong{display:block;font-size:26px;letter-spacing:-.8px;margin:7px 0 2px;font-variant-numeric:tabular-nums}.co-kpi .sub{color:#9ba8b4;font-size:10px}\\n.co-hero{background:linear-gradient(125deg,#18374b,#164e68 66%,#176f84);color:white;padding:25px 27px;min-height:212px;position:relative}.co-hero:after{content:\\\"\\\";position:absolute;right:-50px;top:-20px;width:290px;height:290px;border:1px solid #ffffff20;border-radius:50%;box-shadow:0 0 0 36px #ffffff06,0 0 0 73px #ffffff05;pointer-events:none}.co-hero .eyebrow{color:#a6d1d9;font-size:10px;letter-spacing:1.4px;text-transform:uppercase;font-weight:800}.co-hero h2{font-size:26px;margin:12px 0 6px;letter-spacing:-.6px;color:#fff}.co-hero .hero-sub{max-width:480px;color:#d3e5ea;font-size:12px}.co-hero-footer{display:flex;gap:23px;flex-wrap:wrap;margin-top:21px;color:#a9c9d2;font-size:11px}.co-hero-footer b{display:block;color:white;font-size:15px;margin:2px 0}.co-alert{padding:11px 14px;border-radius:9px;border:1px solid #e7d7b9;background:#fff8e9;color:#866b3d;margin-bottom:17px;font-size:12px}.co-alert.info{border-color:#d9eaf2;background:#f0f9fc;color:#477289}.co-alert.error{background:#fff1f2;border-color:#f0d6da;color:#9a4552}\\n.co-list{list-style:none;padding:0;margin:0}.co-list li{border-bottom:1px solid #edf0f3;padding:11px 0;display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.co-list li:last-child{border-bottom:0}.co-list b{font-size:12px;color:#2b4051}.co-list small{display:block;color:#93a0ac;margin-top:3px;font-size:10px}.co-statrow{display:flex;gap:12px;align-items:center}.co-progress{height:8px;background:#edf3f5;border-radius:30px;overflow:hidden;flex:1}.co-progress>i{display:block;height:100%;background:#2d9baf;border-radius:30px;max-width:100%}.co-summary{display:grid;gap:12px}\\n.co-toolbar{display:flex;gap:8px;align-items:center;margin-bottom:14px;min-width:0}.co-toolbar .co-search{flex:1;min-width:70px;border:1px solid #dbe5ea;padding:9px 11px;border-radius:8px}.co-toolbar .co-btn{flex:none}.co-filterline{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 15px}.co-filterline label{color:#768997;font-size:11px}.co-filterline select{margin-left:5px;padding:6px 9px;border:1px solid #d7e1e8;border-radius:7px;background:white}.co-tablewrap{max-width:100%;overflow-x:auto}.co-table{width:100%;border-collapse:collapse;min-width:690px}.co-table th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:#899aa8;background:#f7fafb;padding:13px 15px;border-bottom:1px solid #e4ecf0}.co-table td{padding:13px 15px;border-bottom:1px solid #edf1f3;color:#586e7d;font-size:12px;vertical-align:middle;overflow-wrap:anywhere}.co-table tbody tr:last-child td{border-bottom:none}.co-table tbody tr:hover{background:#f8fbfc}.co-table strong{color:#2c4052}.co-table .act{text-align:right;min-width:70px}.co-footer{padding:12px 15px;border-top:1px solid #e5edf1;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#8a9ba8;font-size:11px}.co-footer .co-btn{padding:5px 9px}\\n.co-context{font-size:11px;color:#8b9cab}.co-empty{padding:30px;text-align:center;color:#8a9ba8;font-size:12px}.co-empty strong{display:block;color:#415c70;font-size:14px;margin-bottom:5px}.co-board{display:grid;grid-template-columns:repeat(3,minmax(240px,1fr));gap:12px}.co-lane{background:#f7fafb;border:1px solid #e4edf1;border-radius:12px;padding:13px;min-height:225px}.co-lane h3{display:flex;justify-content:space-between;font-size:12px;margin:0 0 12px;color:#4b6675}.co-ticket{background:white;border:1px solid #e1e9ee;border-radius:10px;padding:13px;margin-bottom:10px;box-shadow:0 2px 7px #294d6008}.co-ticket b{display:block;font-size:12px}.co-ticket p{margin:6px 0;color:#8395a4;font-size:11px}.co-ticket .co-ticket-foot{display:flex;justify-content:space-between;align-items:center;gap:7px;margin-top:9px}.co-ticket .co-btn{padding:4px 8px}\\n.co-score-rows{display:grid;gap:14px}.co-score{border:1px solid #e5edf1;border-radius:10px;padding:15px;display:grid;grid-template-columns:minmax(150px,1fr) minmax(160px,1.4fr) 72px;align-items:center;gap:15px}.co-score-name b{font-size:12px;display:block}.co-score-name small{display:block;color:#91a0af;font-size:10px;margin-top:3px}.co-score-bars{display:grid;gap:6px}.co-bar{display:flex;gap:8px;align-items:center;color:#8091a0;font-size:10px}.co-bar i{display:block;height:8px;border-radius:5px;background:#c6d8df;min-width:2px}.co-bar .actual{background:#168a9c}.co-score-right{text-align:right}.co-score-right b{display:block;font-size:18px}.co-meet{display:grid;grid-template-columns:120px 1fr;gap:14px;margin-bottom:13px}.co-datebox{border-radius:10px;background:#eaf5f6;padding:13px;text-align:center;color:#23778b}.co-datebox b{display:block;font-size:18px}.co-datebox small{font-size:10px}.co-meet-card{border-left:2px solid #86c1cc;padding:8px 0 16px 17px}.co-meet-card h3{margin:0 0 4px;font-size:13px}.co-meet-card p{margin:3px 0;color:#6e8392;font-size:11px}.co-report{display:grid;grid-template-columns:235px minmax(0,1fr);gap:16px}.co-reportmenu{border:1px solid #e1e9ee;border-radius:11px;padding:8px;background:#fff;display:grid;gap:5px;align-content:start}.co-reportmenu button{text-align:left;background:white;border:1px solid transparent;border-radius:8px;padding:11px}.co-reportmenu button[aria-current=true]{background:#eaf6fa;border-color:#d4e7ef}.co-reportmenu button b{display:block;font-size:12px}.co-reportmenu button small{color:#8496a4;font-size:10px}.co-reportbody{background:white;border:1px solid #e2e9ef;border-radius:12px;padding:25px;min-height:280px}.co-reportbody .label{text-transform:uppercase;letter-spacing:1px;color:#13869a;font-weight:800;font-size:10px}.co-reportbody h2{margin:10px 0;font-size:20px}.co-reportbody p{line-height:1.7;white-space:pre-wrap;color:#546e7f}.co-reportbody .divider{margin:19px 0;border-top:1px solid #e6edf1}\\n.co-pop{position:relative;display:inline-block}.co-more{background:transparent;border:1px solid transparent;border-radius:6px;padding:4px 8px;font-weight:800;color:#718998}.co-more:hover{background:#e9f1f5}.co-menu{position:absolute;right:0;top:27px;width:145px;background:white;border:1px solid #d8e4e9;z-index:6;box-shadow:0 13px 26px #12334b29;border-radius:9px;padding:5px}.co-menu button{display:block;width:100%;text-align:left;padding:8px;border:0;border-radius:6px;background:transparent;font-size:11px}.co-menu button:hover{background:#eff8fa}.co-menu button.danger{color:#b54e5b}.co-screen-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0,0,0,0)}\\n.co-overlay{position:fixed;inset:0;background:#102a3c88;display:flex;align-items:stretch;justify-content:flex-end;z-index:30}.co-drawer{background:white;width:min(530px,100%);height:100%;display:flex;flex-direction:column;box-shadow:-12px 0 36px #051b312a}.co-drawer-head{padding:21px 22px;border-bottom:1px solid #e3eaf0;display:flex;justify-content:space-between;align-items:center}.co-drawer-head h2{margin:0;font-size:19px}.co-drawer-body{padding:20px 22px;flex:1;overflow-y:auto;display:grid;gap:13px;align-content:start}.co-drawerfoot{border-top:1px solid #e2eaf0;display:flex;justify-content:flex-end;gap:9px;padding:14px 22px}.co-field{font-size:11px;font-weight:680;color:#617887;display:block}.co-field .co-input,.co-field .co-select,.co-field .co-textarea{display:block;width:100%;margin-top:6px}.co-field .co-textarea{min-height:100px;resize:vertical}.co-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.co-confirm{margin:auto;width:min(440px,calc(100% - 30px));border-radius:13px;background:white;padding:24px}.co-confirm h2{margin:0 0 12px}.co-confirm p{font-size:12px;color:#667f8f;line-height:1.7}\\n.co-footnote{font-size:10px;color:#9aabb6;margin-top:25px}.co-selectbtn{border:0;background:none;color:var(--blue);font-weight:760;padding:0;font-size:12px}.co-selectbtn:hover{text-decoration:underline}.co-timeline{border-left:2px solid #d7e7ea;margin:9px 0 6px 9px;padding-left:18px;display:grid;gap:12px}.co-timeline-item{position:relative}.co-timeline-item:before{content:\\\"\\\";position:absolute;left:-24px;top:3px;width:9px;height:9px;background:#3496a4;border:3px solid white;box-shadow:0 0 0 1px #c5dce2;border-radius:50%}.co-timeline-item b{display:block;font-size:12px}.co-timeline-item small{display:block;color:#92a2af}\\n@media(max-width:1080px){.co-app{grid-template-columns:66px minmax(0,1fr)}.co-side{padding:23px 9px}.co-side-top{padding:0 0 15px;text-align:center}.co-side-top strong{font-size:0}.co-side-top strong:after{content:'CO';font-size:15px}.co-side-top small,.co-nav .nav-label,.co-side-footer{display:none}.co-nav button{justify-content:center}.co-grid.two{grid-template-columns:1fr}.co-grid.equal{grid-template-columns:1fr}}\\n@media(max-width:680px){.co-app{display:block}.co-side{padding:8px 11px;display:flex;flex-direction:row;align-items:center}.co-side-top{display:none}.co-nav{display:flex;overflow-x:auto;max-width:100%;gap:3px}.co-nav button{padding:9px 12px;flex:none}.co-main{padding:20px 14px 40px}.co-head{display:block}.co-headtools{justify-content:flex-start;margin-top:13px}.co-head h1{font-size:24px}.co-kpis{grid-template-columns:1fr 1fr}.co-grid.three{grid-template-columns:1fr}.co-board{overflow-x:auto;max-width:100%}.co-lane{min-width:250px}.co-report{grid-template-columns:1fr}.co-reportmenu{display:flex;overflow-x:auto}.co-reportmenu button{flex:0 0 190px}.co-score{grid-template-columns:1fr}.co-score-right{text-align:left}.co-fields{grid-template-columns:1fr}}\\n@media(max-width:390px){.co-kpis{grid-template-columns:1fr}.co-toolbar .co-btn{padding:8px}.co-headtools{gap:6px}}\\n\\n@media(min-width:681px) and (max-width:1080px){.co-board{grid-template-columns:repeat(2,minmax(0,1fr));}.co-lane{min-width:0;}}\\n@media(max-width:680px){.co-board{grid-template-columns:1fr;overflow-x:visible;}.co-lane{min-width:0;}.co-main{width:100%;max-width:100vw;}.co-kpis{min-width:0;}.co-side{max-width:100vw;}}\\n/* Keep all section controls reachable in the compact navigation row. */\\n@media(max-width:680px){.co-nav button{width:auto;min-width:42px;}}\\n\";\n/* CRO Oversight 1.2.1: standalone frontend-js source for the TrialAgents custom-app host.\n   Internal only; no per-app login, network or patient data. The platform supplies its official linked watermark.\n   Native host settings reads templateLayoutSchema and persists version-checked customLayout. */\nconst cfg=typeof templateConfiguration==='object'&&templateConfiguration?templateConfiguration:{};\nconst inp=input||{};const ev=inp.event||{kind:'open',action:'',value:null,form:{}};const act=String(ev.action||'');\nconst esc=(v)=>String(v===undefined||v===null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#39;');\nconst num=(v)=>v===undefined||v===null||v===''?null:Number.isFinite(Number(v))?Number(v):null;\nconst bool=(v)=>v===true||v==='true'||v==='1'||v==='on';\nconst pct=(v)=>v===null?'—':Math.round(v*100)+'%';\nconst date=(v)=>{const d=String(v||'').slice(0,10);if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(d))return '';const t=Date.parse(d+'T00:00:00Z');return Number.isFinite(t)&&new Date(t).toISOString().slice(0,10)===d?d:'';};\nconst today=date(cfg.asOf)||new Date().toISOString().slice(0,10);\nconst age=(d)=>{const n=Date.parse(date(d)+'T12:00:00Z');const t=Date.parse(today+'T12:00:00Z');return !Number.isFinite(n)||!Number.isFinite(t)?null:Math.floor((t-n)/86400000);};\nconst day=(v)=>{const d=date(v);return d?d.slice(8)+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][Number(d.slice(5,7))-1]: '—';};\nconst pill=(s,cls='')=>'<span class=\"co-pill '+esc(cls)+'\">'+esc(s||'—')+'</span>';\nconst btn=(label,a,cls='co-btn',disabled=false,extra='')=>'<button type=\"button\" data-action=\"'+esc(a)+'\" class=\"'+cls+'\" '+(disabled?'disabled ':'')+extra+'>'+label+'</button>';\nconst screens=templateLayoutSchema.screens;\nconst schema={\n projects:[{k:'name',label:'Engagement',required:true},{k:'provider',label:'CRO name',required:true},{k:'study',label:'Program / study',required:true},{k:'phase',label:'Phase'},{k:'owner',label:'Sponsor owner'},{k:'status',label:'Status',opt:['Active','On hold','Completed']},{k:'start',label:'Start',type:'date'},{k:'contractEnd',label:'Contract end',type:'date'},{k:'scope',label:'Contracted scope',type:'long'},{k:'source',label:'Agreement reference URL'},{k:'notes',label:'Governance notes',type:'long'},{k:'archived',label:'Archived',type:'boolean'}],\n tasks:[{k:'name',label:'Deliverable',required:true},{k:'projectId',label:'CRO engagement',required:true,type:'relation'},{k:'stream',label:'Service stream',opt:['Clinical operations','Monitoring','Data management','Biostatistics','Medical writing','Safety operations','Other']},{k:'owner',label:'CRO owner'},{k:'baseline',label:'Original baseline due',type:'date'},{k:'due',label:'Current agreed due',type:'date'},{k:'actual',label:'Accepted date',type:'date'},{k:'status',label:'Review state',opt:['Planned','Submitted','Sponsor review','Rework','Accepted']},{k:'source',label:'Deliverable evidence URL'},{k:'notes',label:'Sponsor review notes',type:'long'},{k:'archived',label:'Archived',type:'boolean'}],\n assessments:[{k:'name',label:'KPI name',required:true},{k:'projectId',label:'CRO engagement',required:true,type:'relation'},{k:'stream',label:'Service stream'},{k:'targetValue',label:'KPI target',type:'number'},{k:'actualValue',label:'Observed value',type:'number'},{k:'unit',label:'Unit',opt:['%','days','count','hours']},{k:'direction',label:'Favorable direction',opt:['higher','lower']},{k:'cutoff',label:'Evidence cutoff',type:'date'},{k:'origin',label:'Evidence provenance',opt:['Verified sponsor data','CRO-reported','Manual assessment']},{k:'source',label:'Evidence URL'},{k:'notes',label:'Numerator / denominator / rationale',type:'long'},{k:'archived',label:'Archived',type:'boolean'}],\n requirements:[{k:'name',label:'Issue title',required:true},{k:'projectId',label:'CRO engagement',required:true,type:'relation'},{k:'severity',label:'Severity',opt:['Critical','Major','Minor']},{k:'status',label:'State',opt:['Open','Mitigating','Verification','Closed']},{k:'opened',label:'First identified',type:'date'},{k:'due',label:'Action due',type:'date'},{k:'closed',label:'Sponsor-verified closure date',type:'date'},{k:'owner',label:'Owner'},{k:'action',label:'Corrective action',type:'long'},{k:'source',label:'Issue evidence URL'},{k:'notes',label:'Sponsor verification notes',type:'long'},{k:'archived',label:'Archived',type:'boolean'}],\n activities:[{k:'name',label:'Meeting / decision',required:true},{k:'projectId',label:'CRO engagement',required:true,type:'relation'},{k:'meetingDate',label:'Meeting date',type:'date'},{k:'owner',label:'Sponsor meeting lead'},{k:'status',label:'Action state',opt:['Open','In progress','Done']},{k:'decision',label:'Decision / minutes',type:'long'},{k:'actionOwner',label:'Action owner'},{k:'due',label:'Follow-up due',type:'date'},{k:'source',label:'Minutes reference URL'},{k:'notes',label:'Outcome notes',type:'long'},{k:'archived',label:'Archived',type:'boolean'}],\n reports:[{k:'name',label:'Report title',required:true},{k:'projectId',label:'CRO engagement',required:true,type:'relation'},{k:'period',label:'Reporting period'},{k:'cutoff',label:'Evidence cutoff',type:'date'},{k:'status',label:'Review status',opt:['Draft','In review','Approved']},{k:'owner',label:'Sponsor reviewer'},{k:'summary',label:'Narrative',type:'long'},{k:'evidence',label:'Evidence IDs and source URLs',type:'long'},{k:'archived',label:'Archived',type:'boolean'}]\n};\nlet configMap={};try{configMap=JSON.parse(cfg.tableMap||'{}')||{}}catch(e){}\nconst bindings=Array.isArray(templateBindings)?templateBindings:[];\nlet roles={};for(const role of Object.keys(schema)){\n const m=configMap[role],b=m&&bindings.find(x=>x.typeId===m.typeId);if(!b)continue;\n const fields={},available=new Set(b.fields||[]);\n for(const f of schema[role]){const actual=(m.fields||{})[f.k]||f.k;if(available.has(actual))fields[f.k]=actual;}\n if(fields.name)roles[role]={typeId:m.typeId,fields,writable:new Set((m.writableFields||[]).filter(k=>fields[k]))};\n}\nconst access=(role)=>!!inp.saved&&!!inp.writable&&cfg.readOnly!==true&&!!roles[role]?.writable.has('name')&&!datasets[role]?.denied&&(role==='projects'||(!!roles[role]?.fields.projectId&&!!roles[role]?.writable.has('projectId')&&!!datasets.projects?.complete&&all('projects').length>0));\nconst cache={};function read(role){if(cache[role])return cache[role];const m=roles[role];if(!m)return cache[role]={items:[],complete:false,unmapped:true};\n let offset=0,total=0,complete=false,items=[];\n for(let k=0;k<8;k++){let r;try{r=tools.call('records.read',{typeId:m.typeId,offset,limit:100,filters:{}});}catch(e){return cache[role]={items:[],complete:false,denied:true,total:0};}if(!r||r.unavailable)return cache[role]={items:[],complete:false,denied:true,total:0};\n  if(!Number.isInteger(r.total)||r.total<0)return cache[role]={items,complete:false,total:null};const chunk=r.rows||[];total=r.total;for(const z of chunk){const d={};for(const [key,real] of Object.entries(m.fields))if(Object.prototype.hasOwnProperty.call(z.data||{},real))d[key]=z.data[real];if(!bool(d.archived))items.push({id:z.id,version:z.version,data:d});}\n  offset+=chunk.length;if(offset>=total){complete=true;break;}if(chunk.length<100||offset>=800)break;\n }return cache[role]={items,complete,total};\n}\nconst datasets={};for(const role of Object.keys(schema))datasets[role]=read(role);\nconst all=(role)=>datasets[role].items;\nconst projectLabel=(id)=>all('projects').find(x=>x.id===id)?.data.provider||'Unlinked engagement';\nconst projectName=(id)=>all('projects').find(x=>x.id===id)?.data.study||'No program';\nconst st=JSON.parse(JSON.stringify(inp.state||{}));let savedProfile={};try{savedProfile=JSON.parse(cfg.layoutProfile||'{}')||{}}catch(e){}\nconst defaults={tabs:screens.map(x=>x.id),cols:Object.fromEntries(Object.entries(templateLayoutSchema.groups).map(([k,arr])=>[k,arr.map(x=>x.id)])),visible:{},heading:String(cfg.heading||'CRO Oversight')};\nconst savedOrder=Array.isArray(savedProfile.tabs)?savedProfile.tabs:defaults.tabs;\nconst layout={tabs:[...new Set(savedOrder.filter(id=>defaults.tabs.includes(id)).concat(defaults.tabs))],cols:{},visible:savedProfile.visible||{},heading:String(savedProfile.heading||cfg.heading||'CRO Oversight')};\nfor(const group of Object.keys(defaults.cols)){const order=Array.isArray(savedProfile.cols?.[group])?savedProfile.cols[group]:defaults.cols[group];layout.cols[group]=[...new Set(order.filter(id=>defaults.cols[group].includes(id)).concat(defaults.cols[group]))];}\nconst visibleScreens=layout.tabs.filter(id=>layout.visible[id]!==false);\nif(act==='scope'&&ev.kind==='change')st.project=String(ev.value||'all');\nst.view=visibleScreens.includes(st.view)?st.view:visibleScreens[0]||'overview';st.project=String(st.project||cfg.defaultProjectId||'all');\nif(st.project!=='all'&&!all('projects').some(x=>x.id===st.project))st.project='all';\nst.query=String(st.query||'').slice(0,100);st.filter=String(st.filter||'all');st.page=Math.max(0,Number(st.page)||0);\nconst within=(role)=>all(role).filter(x=>st.project==='all'||role==='projects'?role==='projects'?(st.project==='all'||x.id===st.project):st.project==='all':x.data.projectId===st.project);\n// Above conditional resolves by role; project filter is a presentation selector, not an access policy.\nconst withinRole=(role)=>all(role).filter(x=>st.project==='all'||(role==='projects'?x.id===st.project:x.data.projectId===st.project));\nconst work=withinRole('tasks'),kpis=withinRole('assessments'),issues=withinRole('requirements'),actions=withinRole('activities'),reports=withinRole('reports');\nconst overdue=(d,status)=>!!date(d)&&date(d)<today&&!['Accepted','Done','Closed','Approved','Completed'].includes(String(status||''));\nconst verifiedClosed=(r)=>r.data.status==='Closed'&&!!date(r.data.closed)&&date(r.data.closed)<=today;\nconst openIssues=issues.filter(r=>!verifiedClosed(r));const dueTasks=work.filter(r=>overdue(r.data.due,r.data.status));const dueActions=actions.filter(r=>overdue(r.data.due,r.data.status));\nconst accepted=work.filter(r=>r.data.status==='Accepted'&&date(r.data.actual)&&date(r.data.due));const acceptedOnTime=accepted.filter(r=>date(r.data.actual)<=date(r.data.due)).length;\nconst completeSources=Object.values(datasets).every(x=>x.complete);\nconst visibleCount=(role,n)=>datasets[role]?.complete?String(n):'—';\nconst score=(x)=>{const a=num(x.data.actualValue),t=num(x.data.targetValue),dir=x.data.direction;if(a===null||t===null)return {label:'Not measured',kind:'',gap:null};if(dir!=='higher'&&dir!=='lower')return {label:'Direction needed',kind:'warn',gap:null};const gap=dir==='lower'?a-t:t-a;return {label:gap<=0?'On target':'Below target',kind:gap<=0?'good':'bad',gap};};\nconst breaches=kpis.filter(x=>score(x).gap!==null&&score(x).gap>0);\nconst countPriority=openIssues.filter(x=>x.data.severity==='Critical').length;\nconst lookup=(role,id)=>all(role).find(x=>x.id===id);\nconst linkedRecords=(id)=>['tasks','assessments','requirements','activities','reports'].some(role=>all(role).some(r=>r.data.projectId===id));\nfunction resetView(view){st.view=view;st.query='';st.filter='all';st.page=0;st.menu='';st.dialog=null;st.confirm=null;st.notice='';}\nfunction note(v){st.notice=String(v||'').slice(0,320);}\nfunction propose(changes){tools.call('records.propose',changes);note('Prepared for TrialAgents review; the database changes only after confirmation.');}\nfunction startEditor(role,mode,id){const row=id?lookup(role,id):null;if(id&&!row)throw Error('Record no longer visible; refresh.');let draft=row?{...row.data}:{};\n if(mode==='duplicate'){draft.name='Copy of '+(draft.name||'record');if(role==='reports')draft.status='Draft';if(role==='requirements'){draft.status='Open';draft.closed='';}if(role==='tasks'){draft.status='Planned';draft.actual='';}}\n if(mode==='create'&&st.project!=='all'&&role!=='projects')draft.projectId=st.project;\n st.dialog={role,mode,id:mode==='edit'?id:null,version:mode==='edit'?row.version:null,draft};st.menu='';}\nfunction formChanges(role,data,mode){const m=roles[role];const v={};for(const f of schema[role]){\n if(f.k==='archived')continue;if(!m?.fields[f.k]||!m.writable.has(f.k))continue;if(!Object.prototype.hasOwnProperty.call(data,f.k))continue;\n let val=data[f.k];if(val===''){v[m.fields[f.k]]=null;continue;}if(f.type==='number'){const n=num(val);if(n===null)throw Error('Invalid numeric '+f.label);val=n;}\n if(f.type==='date'&&val&&!date(val))throw Error('Invalid date for '+f.label);\n if(typeof val==='string')val=val.slice(0,f.type==='long'?5000:500);\n v[m.fields[f.k]]=val;\n }\n for(const f of schema[role].filter(z=>z.required&&m?.fields[z.k]&&m.writable.has(z.k)))if(!data[f.k])throw Error('Required: '+f.label);\n if(role!=='projects'&&m?.fields.projectId&&m.writable.has('projectId')&&data.projectId&&!all('projects').some(r=>r.id===data.projectId))throw Error('Select an existing authorized CRO engagement.');\n if(role==='requirements'&&data.status==='Closed'&&!date(data.closed))throw Error('Sponsor-verified closure date is required for a closed issue.');\n if(role==='requirements'&&data.status==='Closed'&&date(data.closed)>today)throw Error('A closure date cannot be in the future.');\n if(role==='requirements'&&data.status==='Closed'&&date(data.opened)&&date(data.closed)<date(data.opened))throw Error('Closure must not precede the date identified.');\n if(role==='tasks'&&data.status==='Accepted'&&!date(data.actual))throw Error('Acceptance date is required before marking a deliverable Accepted.');\n if(role==='tasks'&&data.status==='Accepted'&&date(data.actual)>today)throw Error('Acceptance date cannot be in the future.');\n if(mode!=='edit'&&m.fields.archived&&m.writable.has('archived'))v[m.fields.archived]=false;\n return v;\n}\ntry{\n if(act.startsWith('go:'))resetView(act.slice(3));\n else if(act==='tracker:layout'){/* intercepted by trusted host; standalone preview provides a guided handoff only */note('Open TrialAgents Settings → Layout to drag screens and fields and save the reviewed layout.');}\n else if(act==='scope'&&ev.kind==='change'){st.project=String(ev.value||'all');st.page=0;st.filter='all';}\n else if(act==='search'&&ev.kind==='change'){st.query=String(ev.value||'').slice(0,100);st.page=0;}\n else if(act==='filter'&&ev.kind==='change'){st.filter=String(ev.value||'all');st.page=0;}\n else if(act==='filters-open')st.filtersOpen=!st.filtersOpen;\n else if(act==='page-next')st.page++;\n else if(act==='page-prev')st.page=Math.max(0,st.page-1);\n else if(act.startsWith('menu:'))st.menu=st.menu===act.slice(5)?'':act.slice(5);\n else if(act.startsWith('create:'))startEditor(act.slice(7),'create',null);\n else if(act.startsWith('edit:')){const [role,id]=act.slice(5).split(':');startEditor(role,'edit',id);}\n else if(act.startsWith('duplicate:')){const [role,id]=act.slice(10).split(':');startEditor(role,'duplicate',id);}\n else if(act.startsWith('delete:')){const [role,id]=act.slice(7).split(':');st.confirm={role,id,version:lookup(role,id)?.version};st.dialog=null;st.menu='';}\n else if(act==='dialog-cancel'){st.dialog=null;st.confirm=null;}\n else if(act.startsWith('draft:')&&ev.kind==='change'&&st.dialog){st.dialog.draft={...st.dialog.draft,...ev.form};}\n else if(act==='record-save'&&ev.kind==='submit'){\n  const d=st.dialog;if(!d)throw Error('Nothing to save');if(!access(d.role))throw Error('This action is not authorized');const data={...d.draft,...(ev.form||{})};\n  const values=formChanges(d.role,data,d.mode);const m=roles[d.role];\n  if(d.mode==='edit')propose([{kind:'update_record',recordId:d.id,expectedVersion:d.version,data:values}]);\n  else propose([{kind:'create_record',typeId:m.typeId,data:values}]);st.dialog=null;\n }\n else if(act==='delete-confirm'){\n  const x=st.confirm,row=x&&lookup(x.role,x.id),m=x&&roles[x.role];\n  if(!row||!m?.fields.archived||!m.writable.has('archived')||!access(x.role))throw Error('Deletion/archive is not authorized.');\n  if(x.role==='projects'&&!['tasks','assessments','requirements','activities','reports'].every(role=>datasets[role].complete&&roles[role]?.fields.projectId&&roles[role]?.fields.archived))throw Error('Cannot verify linked records: all child tables and reference/archive fields must be readable and complete.');\n  if(x.role==='projects'&&linkedRecords(x.id))throw Error('This CRO engagement still has linked records. Reassign or archive those records before archiving the engagement.');\n  propose([{kind:'update_record',recordId:row.id,expectedVersion:x.version,data:{[m.fields.archived]:true}}]);st.confirm=null;\n }\n else if(act.startsWith('choose-report:'))st.report=act.slice(14);\n else if(act==='report-prompt')st.prompt=!st.prompt;\n else if(act==='notice-clear')st.notice='';\n}catch(e){note('Action not completed: '+String(e?.message||e));}\nconst screen=screens.find(x=>x.id===st.view)||screens[0];\nconst siteName=(st.project==='all'?'All engagements':projectLabel(st.project));\nconst statusType=(s)=>/Accepted|Done|Closed|Approved|On target|Completed/.test(s)?'good':/Critical|Major|Overdue|Below target/.test(s)?'bad':/Submitted|Sponsor review|Verification|In progress/.test(s)?'blue':'warn';\nconst rowMenu=(role,r)=>{const key=role+':'+r.id;return '<div class=\"co-pop\">'+btn('···','menu:'+key,'co-more',false,'aria-label=\"Actions for '+esc(r.data.name||'record')+'\" aria-expanded=\"'+(st.menu===key?'true':'false')+'\"')+(st.menu===key?'<div class=\"co-menu\">'+btn('Edit','edit:'+key,'',!access(role))+btn('Duplicate','duplicate:'+key,'',!access(role))+btn('Delete','delete:'+key,'danger',!access(role)||!roles[role]?.fields.archived)+'</div>':'')+'</div>';};\nfunction top(sub){return '<div class=\"co-head\"><div><h1>'+esc(layout.heading||'CRO Oversight')+'</h1></div><div class=\"co-headtools\">'+btn('+ Engagement','create:projects','co-btn',!access('projects'))+(all('projects').length?'<label class=\"co-screen-only\" for=\"scope\">Choose engagement</label><select id=\"scope\" data-ui-state=\"true\" data-action=\"scope\" class=\"co-select\"><option value=\"all\">All engagements</option>'+all('projects').map(x=>'<option value=\"'+esc(x.id)+'\"'+(st.project===x.id?' selected':'')+'>'+esc(x.data.provider||x.data.name)+'</option>').join('')+'</select>':'')+btn('⚙','tracker:layout','co-btn icon',!inp.saved,'aria-label=\"Layout settings\" title=\"Layout settings\"')+'</div></div>';}\nfunction panel(title,sub,content,extra=''){return '<section class=\"co-panel\"><div class=\"co-pad\"><div class=\"co-panelhead\"><div><h2>'+esc(title)+'</h2>'+(sub?'<p>'+esc(sub)+'</p>':'')+'</div>'+extra+'</div>'+content+'</div></section>';}\nfunction kpi(title,value,sub){return '<div class=\"co-kpi\"><small>'+esc(title)+'</small><strong>'+esc(value)+'</strong><div class=\"sub\">'+esc(sub)+'</div></div>';}\nfunction quality(){const errs=[];for(const [role,data] of Object.entries(datasets)){if(data.unmapped)errs.push(role+' not connected');else if(data.denied)errs.push(role+' unavailable under current access');else if(!data.complete)errs.push(role+' has incomplete coverage (800-row maximum)');}return errs.length?'<div class=\"co-alert\">Coverage: '+esc(errs.join(' · '))+'. Summaries are indicative only where inputs are complete.</div>':'';}\nfunction overview(){const next=[...dueTasks.map(r=>({r,role:'tasks',due:r.data.due})),...dueActions.map(r=>({r,role:'activities',due:r.data.due})),...openIssues.filter(r=>r.data.severity==='Critical').map(r=>({r,role:'requirements',due:r.data.due||r.data.opened}))].sort((a,b)=>String(a.due||'').localeCompare(String(b.due||''))).slice(0,5);\n const rate=accepted.length?acceptedOnTime/accepted.length:null;\n return top('Essential CRO delivery, quality and governance signals in one sponsor view.')+quality()+'<div class=\"co-grid two\" style=\"margin-bottom:17px\"><section class=\"co-panel co-hero\"><div class=\"eyebrow\">Operational oversight · '+esc(siteName)+'</div><h2>'+esc(!datasets.requirements.complete?'Review issue source coverage':countPriority?countPriority+' critical issue'+(countPriority===1?'':'s')+' require attention':dueTasks.length+dueActions.length?'Upcoming decisions need owners':'Governance under review')+'</h2><div class=\"hero-sub\">'+esc('Source-aware status from authorized work packages, KPI observations and issue records. CRO self-reporting is kept separate from sponsor verification.')+'</div><div class=\"co-hero-footer\"><span>Open issues<b>'+visibleCount('requirements',openIssues.length)+'</b></span><span>Overdue deliverables<b>'+visibleCount('tasks',dueTasks.length)+'</b></span><span>Tracked KPI exceptions<b>'+visibleCount('assessments',breaches.length)+'</b></span></div></section>'+panel('Next sponsor decisions','Ordered by actionable due date','<ul class=\"co-list\">'+(next.length?next.map(x=>'<li><div><b>'+esc(x.r.data.name)+'</b><small>'+esc(projectLabel(x.r.data.projectId))+' · due '+esc(day(x.due))+'</small></div>'+btn('Open','go:'+(x.role==='tasks'?'work':x.role==='requirements'?'issues':'meetings'),'co-selectbtn')+'</li>').join(''):'<li><b>No urgent recorded decisions</b><small>Check the completeness of your connected tables</small></li>')+'</ul>')+'</div><div class=\"co-kpis\">'+kpi('On-time accepted deliverables',(datasets.tasks.complete?pct(rate):'—'),accepted.length+' accepted with dates')+kpi('Due / overdue CRO work',visibleCount('tasks',dueTasks.length),work.length+' work packages in view')+kpi('Unresolved oversight issues',visibleCount('requirements',openIssues.length),countPriority+' critical')+'</div><div class=\"co-grid two\">'+panel('Deliverables by review stage','Based on current approved status','<div class=\"co-summary\">'+['Planned','Submitted','Sponsor review','Rework','Accepted'].map(status=>{const n=work.filter(x=>x.data.status===status).length;return '<div><div class=\"co-statrow\"><span style=\"width:100px\">'+esc(status)+'</span><div class=\"co-progress\"><i style=\"width:'+Math.round(n/Math.max(1,work.length)*100)+'%\"></i></div><b style=\"width:30px;text-align:right\">'+n+'</b></div></div>';}).join('')+'</div>'+btn('Review work packages','go:work','co-btn tiny'))+panel('Current risk watchlist','Real exceptions only','<ul class=\"co-list\">'+([...openIssues.filter(x=>x.data.severity==='Critical'),...breaches].slice(0,5).map(x=>'<li><div><b>'+esc(x.data.name)+'</b><small>'+esc(x.data.severity||x.data.stream||'Measured KPI')+'</small></div>'+pill(x.data.severity||score(x).label,'bad')+'</li>').join('')||'<li>No confirmed exceptions in selected records.</li>')+'</ul>')+'<div class=\"co-panel\" style=\"margin-top:17px\"><div class=\"co-pad\"><div class=\"co-panelhead\"><div><h2>CRO engagements</h2><p>Provider, scope and sponsor ownership</p></div>'+btn('+ Engagement','create:projects','co-btn main',!access('projects'))+'</div></div>'+table('projects',withinRole('projects'))+'</div>';\n}\nfunction visibleCols(role){const allowed=new Set(templateLayoutSchema.groups[role].map(x=>x.id));return layout.cols[role].filter(k=>allowed.has(k)&&layout.visible[role+':'+k]!==false);}\nfunction cell(role,key,r){const v=r.data[key];if(key==='name')return '<strong>'+esc(v||'—')+'</strong>';if(key==='status'&&role==='requirements'&&v==='Closed'&&!verifiedClosed(r))return pill('Closure unverified','warn');if(['status','severity','origin'].includes(key))return pill(v,statusType(v||''));if(key==='projectId')return esc(projectLabel(v));if(key==='due'||key==='baseline'||key==='cutoff'||key==='meetingDate'||key==='opened')return esc(day(v));if(['targetValue','actualValue'].includes(key))return esc(v===null||v===undefined?'—':String(v));return esc(v||'—');}\nfunction filterRows(rows,role){const q=st.query.trim().toLowerCase();let arr=rows.filter(r=>(!q||Object.values(r.data).some(v=>String(v??'').toLowerCase().includes(q)))&&(st.filter==='all'||(role==='tasks'?r.data.status===st.filter:role==='requirements'?r.data.severity===st.filter:role==='activities'?r.data.status===st.filter:true)));\n const sort=role==='tasks'?'due':role==='requirements'?'opened':'meetingDate';return arr.sort((a,b)=>String(a.data[sort]||'').localeCompare(String(b.data[sort]||'')));}\nfunction toolbar(role,filters){return '<div class=\"co-toolbar\"><input class=\"co-search\" type=\"search\" data-action=\"search\" data-ui-state=\"true\" value=\"'+esc(st.query)+'\" placeholder=\"Search records\" aria-label=\"Search records\">'+btn('Filters','filters-open','co-btn tiny')+btn('+ New','create:'+role,'co-btn main',!access(role))+'</div>'+(st.filtersOpen?'<div class=\"co-filterline\"><label>Filter <select data-ui-state=\"true\" data-action=\"filter\"><option value=\"all\"'+(st.filter==='all'?' selected':'')+'>All</option>'+filters.map(k=>'<option value=\"'+esc(k)+'\"'+(st.filter===k?' selected':'')+'>'+esc(k)+'</option>').join('')+'</select></label></div>':'');}\nfunction paged(role,items){const max=Math.min(25,Math.max(5,num(cfg.pageSize)||25));const pages=Math.max(1,Math.ceil(items.length/max));st.page=Math.min(st.page,pages-1);return {rows:items.slice(st.page*max,(st.page+1)*max),total:items.length,max,pages};}\nfunction table(role,items){const p=paged(role,items),cols=visibleCols(role).length?visibleCols(role):['name'];return '<div class=\"co-tablewrap\"><table class=\"co-table\"><thead><tr>'+cols.map(k=>'<th>'+esc(schema[role].find(f=>f.k===k)?.label||k)+'</th>').join('')+'<th class=\"act\">Actions</th></tr></thead><tbody>'+p.rows.map(r=>'<tr>'+cols.map(k=>'<td>'+cell(role,k,r)+'</td>').join('')+'<td class=\"act\">'+rowMenu(role,r)+'</td></tr>').join('')+'</tbody></table></div>'+(p.total?'':'<div class=\"co-empty\"><strong>No matching records</strong>Add a record or adjust your search.</div>')+'<div class=\"co-footer\"><span>'+p.total+' records · page '+(st.page+1)+' of '+p.pages+'</span><span>'+btn('Previous','page-prev','co-btn tiny',st.page===0)+' '+btn('Next','page-next','co-btn tiny',st.page===p.pages-1)+'</span></div>';}\nfunction workScreen(){const r=filterRows(work,'tasks');let upcoming=work.filter(x=>date(x.data.due)&&x.data.status!=='Accepted').sort((a,b)=>xDate(a).localeCompare(xDate(b))).slice(0,5);function xDate(x){return String(x.data.due||'9999');}\n return top('Manage contracted CRO deliverables and keep original commitments visible.')+quality()+'<div class=\"co-grid two\" style=\"margin-bottom:17px\">'+panel('Contracted workstreams','Sponsor review happens before acceptance','<div class=\"co-summary\">'+['Clinical operations','Monitoring','Data management','Biostatistics'].map(k=>{const a=work.filter(x=>x.data.stream===k),b=a.filter(x=>x.data.status==='Accepted');return '<div class=\"co-statrow\"><span style=\"width:130px\">'+esc(k)+'</span><div class=\"co-progress\"><i style=\"width:'+Math.round(b.length/Math.max(1,a.length)*100)+'%\"></i></div><b style=\"min-width:43px\">'+b.length+'/'+a.length+'</b></div>';}).join('')+'</div>')+panel('Upcoming commitments','Agreed due dates versus original baseline','<div class=\"co-timeline\">'+(upcoming.length?upcoming.map(x=>'<div class=\"co-timeline-item\"><b>'+esc(x.data.name)+'</b><small>'+esc(day(x.data.due))+' due · baseline '+esc(day(x.data.baseline))+'</small></div>').join(''):'<div class=\"co-empty\">No upcoming commitments</div>')+'</div>')+'</div><div class=\"co-panel\"><div class=\"co-pad\">'+toolbar('tasks',['Planned','Submitted','Sponsor review','Rework','Accepted'])+'<div class=\"co-context\">Acceptance requires an accepted date. Baseline due is separately retained; changing agreed due never overwrites the original baseline.</div></div>'+table('tasks',r)+'</div>';\n}\nfunction scorecard(){const rows=kpis.sort((a,b)=>String(a.data.stream||'').localeCompare(String(b.data.stream||'')));const bar=(value,max,cls)=>'<span style=\"width:96px;display:inline-block;background:#edf3f5;height:8px;border-radius:6px;overflow:hidden\"><i class=\"'+cls+'\" style=\"width:'+Math.max(0,Math.min(100,Math.abs(value)/Math.max(1,max)*100))+'%;height:8px;display:block\"></i></span>';\n return top('Operational KPIs with target, direction, evidence and cutoff.')+quality()+'<div class=\"co-kpis\">'+kpi('Measured KPIs',visibleCount('assessments',kpis.filter(x=>score(x).gap!==null).length),'Missing observations excluded')+kpi('Confirmed target gaps',visibleCount('assessments',breaches.length),'Target orientation applied')+kpi('CRO-reported observations',visibleCount('assessments',kpis.filter(x=>x.data.origin==='CRO-reported').length),'Await sponsor validation')+'</div>'+panel('Performance by service stream','Operational metrics, never unqualified composite scores','<div class=\"co-score-rows\">'+(rows.length?rows.map(x=>{const s=score(x),a=num(x.data.actualValue),t=num(x.data.targetValue),top=Math.max(Math.abs(a||0),Math.abs(t||0),1);return '<div class=\"co-score\"><div class=\"co-score-name\"><b>'+esc(x.data.name)+'</b><small>'+esc(x.data.stream||'General')+' · '+esc(day(x.data.cutoff))+'</small><small>'+esc(x.data.origin||'Unverified')+'</small></div><div class=\"co-score-bars\"><div class=\"co-bar\">Target '+bar(t||0,top,'')+' '+esc(t===null?'—':t+' '+(x.data.unit||''))+'</div><div class=\"co-bar\">Actual '+bar(a||0,top,'actual')+' '+esc(a===null?'—':a+' '+(x.data.unit||''))+'</div></div><div class=\"co-score-right\"><b>'+esc(a===null?'—':a+(x.data.unit==='%'?'%':''))+'</b>'+pill(s.label,s.kind)+'</div></div>';}).join(''):'<div class=\"co-empty\">No KPI observations. Define a measure, target, direction, cutoff and evidence before comparing.</div>')+'</div>','')+'<div class=\"co-panel\" style=\"margin-top:16px\"><div class=\"co-pad\"><div class=\"co-panelhead\"><div><h2>Evidence register</h2><p>Each observation remains traceable and editable after review</p></div>'+btn('+ KPI observation','create:assessments','co-btn main',!access('assessments'))+'</div></div>'+table('assessments',kpis)+'</div>';\n}\nfunction issueScreen(){const groups=[['Critical','Urgent sponsor escalation'],['Major','Action plan required'],['Minor','Monitor and verify']];return top('Track service problems from detection through verified sponsor closure.')+quality()+'<div class=\"co-kpis\">'+kpi('Open critical',visibleCount('requirements',countPriority),'Action owner and next due')+kpi('Overdue issue actions',visibleCount('requirements',openIssues.filter(x=>date(x.data.due)&&date(x.data.due)<today).length),'Excludes verified closed issues')+kpi('Awaiting verification',visibleCount('requirements',openIssues.filter(x=>x.data.status==='Verification'||x.data.status==='Closed').length),'Closure requires sponsor date')+'</div><div class=\"co-board\" style=\"margin-bottom:17px\">'+groups.map(([severity,sub])=>{const arr=openIssues.filter(x=>x.data.severity===severity);return '<div class=\"co-lane\"><h3>'+esc(severity)+' '+pill(arr.length,severity==='Critical'?'bad':severity==='Major'?'warn':'blue')+'</h3><div class=\"co-context\" style=\"margin-bottom:9px\">'+esc(sub)+'</div>'+(arr.length?arr.slice(0,5).map(x=>'<div class=\"co-ticket\"><b>'+esc(x.data.name)+'</b><p>'+esc(x.data.action||'No action documented')+'</p><div class=\"co-ticket-foot\">'+pill(x.data.status==='Closed'&&!verifiedClosed(x)?'Closure unverified':x.data.status||'Open',x.data.status==='Closed'&&!verifiedClosed(x)?'warn':statusType(x.data.status||''))+btn('Review','edit:requirements:'+x.id,'co-btn tiny',!access('requirements'))+'</div></div>').join(''):'<div class=\"co-empty\">No issues in this tier</div>')+'</div>';}).join('')+'</div><div class=\"co-panel\"><div class=\"co-pad\">'+toolbar('requirements',['Critical','Major','Minor'])+'</div>'+table('requirements',filterRows(issues,'requirements'))+'</div>';\n}\nfunction meetingScreen(){const sorted=actions.slice().sort((a,b)=>String(b.data.meetingDate||'').localeCompare(String(a.data.meetingDate||'')));return top('Turn CRO governance discussions into accountable decisions.')+quality()+'<div class=\"co-grid two\" style=\"margin-bottom:17px\">'+panel('Governance record','Recent meetings and decision chronology','<div>'+sorted.slice(0,5).map(x=>'<div class=\"co-meet\"><div class=\"co-datebox\"><b>'+esc(day(x.data.meetingDate))+'</b><small>'+esc(String(x.data.meetingDate||'').slice(0,4))+'</small></div><div class=\"co-meet-card\"><h3>'+esc(x.data.name)+'</h3><p>'+esc(x.data.decision||'No decision summary entered')+'</p><p>'+pill(x.data.status==='Closed'&&!verifiedClosed(x)?'Closure unverified':x.data.status||'Open',x.data.status==='Closed'&&!verifiedClosed(x)?'warn':statusType(x.data.status||''))+' &nbsp; '+esc(x.data.actionOwner||'Unassigned')+'</p></div></div>').join('')+'</div>')+panel('Pending follow-up','Due dates and action ownership','<ul class=\"co-list\">'+(actions.filter(x=>x.data.status!=='Done').sort((a,b)=>String(a.data.due||'').localeCompare(String(b.data.due||''))).slice(0,7).map(x=>'<li><div><b>'+esc(x.data.name)+'</b><small>'+esc(x.data.actionOwner||'No owner')+' · '+esc(day(x.data.due))+'</small></div>'+pill(overdue(x.data.due,x.data.status)?'Overdue':'Open',overdue(x.data.due,x.data.status)?'bad':'blue')+'</li>').join('')||'<li>No open meeting actions.</li>')+'</ul>')+'</div><div class=\"co-panel\"><div class=\"co-pad\">'+toolbar('activities',['Open','In progress','Done'])+'</div>'+table('activities',filterRows(actions,'activities'))+'</div>';\n}\nfunction reportScreen(){const sorted=reports.slice().sort((a,b)=>String(b.data.cutoff||'').localeCompare(String(a.data.cutoff||'')));const selected=sorted.find(x=>x.id===st.report)||sorted[0];if(selected&&!st.report)st.report=selected.id;\nconst prompt='Summarize CRO Oversight for the selected authorized engagement and reporting cutoff. Read complete authorized work package, KPI observation, operational issue, governance meeting and earlier report records, with exact source IDs/versions and evidence dates. Calculate accepted/on-time deliverables with agreed due dates, original baseline deviations, open issue aging, sponsor-verified closures, target-versus-actual KPI variance with units/direction, and overdue governance actions. Separate sponsor-verified measurements from CRO self-reported observations; explain coverage gaps and changes since prior report. Exclude patients, safety event case details, speculative clinical conclusions and fabricated facts. Draft one concise sponsor governance report with source references, proposed decisions and outstanding owners. Save as Draft only through valid reviewed write/approved ongoing grant, reconcile receipt and avoid duplicate report for the same engagement+cutoff. Do not send any email.';\nreturn top('Evidence-linked sponsor oversight reports, without manual slide assembly.')+quality()+'<div class=\"co-toolbar\">'+btn('+ New report','create:reports','co-btn main',!access('reports'))+btn('ChatGPT drafting instructions','report-prompt','co-btn')+'</div>'+(st.prompt?'<div class=\"co-alert info\"><b>Drafting instructions · not an active automation</b><p>'+esc(prompt)+'</p><p>Configure optional scheduled preparation or completion email later in TrialAgents Automations, after saving the app.</p></div>':'')+'<div class=\"co-report\"><div class=\"co-reportmenu\">'+(sorted.length?sorted.map(x=>'<div>'+btn('<b>'+esc(x.data.name)+'</b><small>'+esc(day(x.data.cutoff))+' · '+esc(x.data.status||'Draft')+'</small>','choose-report:'+x.id,'',false,'aria-current=\"'+(x.id===st.report?'true':'false')+'\"')+rowMenu('reports',x)+'</div>').join(''):'<div class=\"co-empty\">No reports saved yet</div>')+'</div><div class=\"co-reportbody\">'+(selected?'<div class=\"label\">'+esc(selected.data.status||'Draft')+' · cutoff '+esc(day(selected.data.cutoff))+'</div><h2>'+esc(selected.data.name)+'</h2><div class=\"co-context\">'+esc(projectLabel(selected.data.projectId))+' · sponsor reviewer '+esc(selected.data.owner||'not assigned')+'</div><div class=\"divider\"></div><p>'+esc(selected.data.summary||'No narrative entered yet.')+'</p><div class=\"divider\"></div><h3>Source record IDs and references</h3><p class=\"co-context\">'+esc(selected.data.evidence||'No cited references stored.')+'</p>':'<div class=\"co-empty\"><strong>Prepare a sponsor oversight report</strong><p>Keep the report linked to source records and save it for approval.</p></div>')+'</div></div>';\n}\nfunction editor(){const d=st.dialog;if(!d)return '';const role=d.role,fields=schema[role].filter(x=>x.k!=='archived'&&roles[role]?.fields[x.k]&&roles[role]?.writable.has(x.k));\nfunction field(f){const v=d.draft[f.k]??'';let inpHtml='';const attr='name=\"'+esc(f.k)+'\" data-ui-state=\"true\" '+(f.required?'required ':'')+' data-action=\"draft:'+esc(f.k)+'\"';\n if(f.type==='long')inpHtml='<textarea class=\"co-textarea\" '+attr+'>'+esc(v)+'</textarea>';\n else if(f.type==='relation'){inpHtml='<select class=\"co-select\" '+attr+'><option value=\"\">Select engagement</option>'+all('projects').map(x=>'<option value=\"'+esc(x.id)+'\"'+(v===x.id?' selected':'')+'>'+esc(x.data.provider)+' — '+esc(x.data.study)+'</option>').join('')+'</select>';}\n else if(f.opt)inpHtml='<select class=\"co-select\" '+attr+'><option value=\"\">Choose</option>'+f.opt.map(x=>'<option value=\"'+esc(x)+'\"'+(v===x?' selected':'')+'>'+esc(x)+'</option>').join('')+'</select>';\n else inpHtml='<input class=\"co-input\" '+attr+' type=\"'+(f.type==='date'?'date':f.type==='number'?'number':'text')+'\" '+(f.type==='number'?'step=\"any\" ':'')+'value=\"'+esc(v)+'\">';\n return '<label class=\"co-field\">'+esc(f.label)+(f.required?' *':'')+inpHtml+'</label>';}\nreturn '<div class=\"co-overlay\"><section class=\"co-drawer\" role=\"dialog\" aria-modal=\"true\" aria-label=\"Record editor\"><div class=\"co-drawer-head\"><h2>'+esc(d.mode==='edit'?'Edit':d.mode==='duplicate'?'Duplicate':'New')+' '+esc(role==='tasks'?'work package':role==='assessments'?'KPI observation':role==='requirements'?'issue':role==='activities'?'meeting action':role==='projects'?'engagement':'report')+'</h2>'+btn('×','dialog-cancel','co-btn icon',false,'aria-label=\"Close editor\"')+'</div><form data-action=\"record-save\" style=\"display:contents\"><div class=\"co-drawer-body\"><div class=\"co-alert info\">TrialAgents reviews this change before saving. Do not include patient identifiers or safety case details.</div><div class=\"co-fields\">'+fields.map(field).join('')+'</div></div><div class=\"co-drawerfoot\">'+btn('Cancel','dialog-cancel','co-btn')+'<button type=\"submit\" class=\"co-btn main\">Prepare reviewed save</button></div></form></section></div>';}\nfunction confirmDelete(){const x=st.confirm;if(!x)return '';const r=lookup(x.role,x.id);return '<div class=\"co-overlay\"><div class=\"co-confirm\" role=\"alertdialog\" aria-modal=\"true\" aria-label=\"Delete record\"><h2>Delete this record?</h2><p><b>'+esc(r?.data.name||'Selected record')+'</b> will be archived and hidden from this app after the approved TrialAgents review. This is a reversible soft delete; record history is retained.</p><div style=\"display:flex;justify-content:flex-end;gap:8px\">'+btn('Cancel','dialog-cancel','co-btn')+btn('Review deletion','delete-confirm','co-btn danger')+'</div></div></div>';}\nconst nav='<aside class=\"co-side\"><div class=\"co-side-top\"><strong>CRO Oversight</strong><small>Sponsor operations workspace</small></div><nav class=\"co-nav\" aria-label=\"App sections\">'+visibleScreens.map((id,i)=>{const item=screens.find(x=>x.id===id);return btn('<span class=\"co-glyph\">'+['◫','☷','▤','⚑','◷','▧'][screens.findIndex(x=>x.id===id)]+'</span><span class=\"nav-label\">'+esc(item.label)+'</span>','go:'+id,'',false,'aria-current=\"'+(st.view===id?'page':'false')+'\" aria-label=\"'+esc(item.label)+'\"');}).join('')+'</nav><div class=\"co-side-footer\"><b>Internal sponsor view</b><br>Roles and record access are enforced by TrialAgents.<br>Approvals remain subject to platform review.</div></aside>';\nconst viewRoles={overview:['projects','tasks','assessments','requirements','activities'],work:['projects','tasks'],scorecard:['projects','assessments'],issues:['projects','requirements'],meetings:['projects','activities'],reports:['projects','reports']};\nconst viewRole={overview:'projects',work:'tasks',scorecard:'assessments',issues:'requirements',meetings:'activities',reports:'reports'};\nlet body='';try{body=!(viewRoles[st.view]||[]).every(role=>datasets[role].complete)?top('')+quality()+'<p class=\"co-alert\">Summary withheld until the required sources are complete. Available records remain below for review.</p>'+toolbar(viewRole[st.view],[])+table(viewRole[st.view],filterRows(withinRole(viewRole[st.view]),viewRole[st.view])):st.view==='overview'?overview():st.view==='work'?workScreen():st.view==='scorecard'?scorecard():st.view==='issues'?issueScreen():st.view==='meetings'?meetingScreen():reportScreen();}catch(e){body=top('Oversight view')+'<div class=\"co-alert error\">Unable to render this view: '+esc(String(e?.message||e))+'</div>';}\nconst notice=st.notice?'<div class=\"co-alert info\" role=\"status\">'+esc(st.notice)+' '+btn('Dismiss','notice-clear','co-btn tiny')+'</div>':'';\nconst html='<div class=\"co-app\">'+nav+'<main class=\"co-main\">'+notice+body+'<p class=\"co-footnote\">'+esc(cfg.demoLabel?'Fictional demonstration; no real records or automation are saved.':'Internal CRO oversight; no patient/subject data. Reports and edits require authorized review.')+'</p></main></div>'+editor()+confirmDelete();\nreturn {html,css:typeof CRO_OVERSIGHT_CSS==='string'?CRO_OVERSIGHT_CSS:'',state:st};\n";
+const demo=({
+  "notice": "FICTIONAL REVIEW DATA ONLY. Never seed automatically to a real TrialAgents workspace.",
+  "records": [
+    {
+      "id": "demo-projects-001",
+      "role": "projects",
+      "version": 1,
+      "data": {
+        "name": "Aster Oncology CRO Agreement",
+        "archived": false,
+        "provider": "Northbridge Clinical",
+        "study": "AST-201",
+        "phase": "Phase II",
+        "owner": "Sponsor Clinical Lead",
+        "status": "Active",
+        "start": "2026-01-15",
+        "contractEnd": "2027-08-31",
+        "scope": "Monitoring, clinical operations, data management and safety operations",
+        "source": "https://example.org/fictional-contract",
+        "notes": "Fictional engagement for user interface demonstration."
+      }
+    },
+    {
+      "id": "demo-projects-002",
+      "role": "projects",
+      "version": 1,
+      "data": {
+        "name": "Fjord Neuroscience Outsourcing",
+        "archived": false,
+        "provider": "Sable Research",
+        "study": "FJR-102",
+        "phase": "Phase I",
+        "owner": "Study Director",
+        "status": "Active",
+        "start": "2026-05-10",
+        "contractEnd": "2027-12-31",
+        "scope": "Monitoring, medical writing and biostatistics",
+        "source": "https://example.org/fictional-contract",
+        "notes": "Fictional engagement."
+      }
+    },
+    {
+      "id": "demo-tasks-001",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Site activation checklist",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Clinical operations",
+        "baseline": "2026-08-25",
+        "due": "2026-08-27",
+        "actual": "2026-08-26",
+        "status": "Accepted",
+        "owner": "CRO Workstream Lead",
+        "source": "https://example.org/fictional-evidence",
+        "notes": "Fictional sponsor review notes, no patient data."
+      }
+    },
+    {
+      "id": "demo-tasks-002",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "October monitoring report",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Monitoring",
+        "baseline": "2026-10-20",
+        "due": "2026-10-24",
+        "actual": "",
+        "status": "Sponsor review",
+        "owner": "CRO Workstream Lead",
+        "source": "https://example.org/fictional-evidence",
+        "notes": "Fictional sponsor review notes, no patient data."
+      }
+    },
+    {
+      "id": "demo-tasks-003",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Q3 clean-data milestone",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Data management",
+        "baseline": "2026-09-27",
+        "due": "2026-09-30",
+        "actual": "2026-10-01",
+        "status": "Accepted",
+        "owner": "CRO Workstream Lead",
+        "source": "https://example.org/fictional-evidence",
+        "notes": "Fictional sponsor review notes, no patient data."
+      }
+    },
+    {
+      "id": "demo-tasks-004",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Clinical operations update",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Clinical operations",
+        "baseline": "2026-10-28",
+        "due": "2026-10-31",
+        "actual": "",
+        "status": "Rework",
+        "owner": "CRO Workstream Lead",
+        "source": "https://example.org/fictional-evidence",
+        "notes": "Fictional sponsor review notes, no patient data."
+      }
+    },
+    {
+      "id": "demo-tasks-005",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Database reconciliation",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Data management",
+        "baseline": "2026-10-15",
+        "due": "2026-10-17",
+        "actual": "2026-10-16",
+        "status": "Accepted",
+        "owner": "CRO Workstream Lead",
+        "source": "https://example.org/fictional-evidence",
+        "notes": "Fictional sponsor review notes, no patient data."
+      }
+    },
+    {
+      "id": "demo-tasks-006",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Monitoring deviation summary",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Monitoring",
+        "baseline": "2026-10-26",
+        "due": "2026-10-30",
+        "actual": "",
+        "status": "Submitted",
+        "owner": "CRO Workstream Lead",
+        "source": "https://example.org/fictional-evidence",
+        "notes": "Fictional sponsor review notes, no patient data."
+      }
+    },
+    {
+      "id": "demo-tasks-007",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Interim data cut readiness",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Biostatistics",
+        "baseline": "2026-11-10",
+        "due": "2026-11-10",
+        "actual": "",
+        "status": "Planned",
+        "owner": "CRO Workstream Lead",
+        "source": "https://example.org/fictional-evidence",
+        "notes": "Fictional sponsor review notes, no patient data."
+      }
+    },
+    {
+      "id": "demo-tasks-008",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Medical coding review",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Data management",
+        "baseline": "2026-11-06",
+        "due": "2026-11-06",
+        "actual": "",
+        "status": "Planned",
+        "owner": "CRO Workstream Lead",
+        "source": "https://example.org/fictional-evidence",
+        "notes": "Fictional sponsor review notes, no patient data."
+      }
+    },
+    {
+      "id": "demo-tasks-009",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "TMF oversight reconciliation",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Clinical operations",
+        "baseline": "2026-10-08",
+        "due": "2026-10-08",
+        "actual": "2026-10-07",
+        "status": "Accepted",
+        "owner": "CRO Workstream Lead",
+        "source": "https://example.org/fictional-evidence",
+        "notes": "Fictional sponsor review notes, no patient data."
+      }
+    },
+    {
+      "id": "demo-tasks-010",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "First site monitoring visit",
+        "archived": false,
+        "projectId": "demo-projects-002",
+        "stream": "Monitoring",
+        "baseline": "2026-10-05",
+        "due": "2026-10-08",
+        "actual": "2026-10-07",
+        "status": "Accepted",
+        "owner": "CRO Team Lead",
+        "source": "https://example.org/fictional-evidence"
+      }
+    },
+    {
+      "id": "demo-tasks-011",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "TMF index delivery",
+        "archived": false,
+        "projectId": "demo-projects-002",
+        "stream": "Medical writing",
+        "baseline": "2026-10-29",
+        "due": "2026-11-02",
+        "actual": "",
+        "status": "Planned",
+        "owner": "CRO Team Lead",
+        "source": "https://example.org/fictional-evidence"
+      }
+    },
+    {
+      "id": "demo-tasks-012",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Monthly biostatistics alignment",
+        "archived": false,
+        "projectId": "demo-projects-002",
+        "stream": "Biostatistics",
+        "baseline": "2026-10-18",
+        "due": "2026-10-20",
+        "actual": "2026-10-20",
+        "status": "Accepted",
+        "owner": "CRO Team Lead",
+        "source": "https://example.org/fictional-evidence"
+      }
+    },
+    {
+      "id": "demo-assessments-001",
+      "role": "assessments",
+      "version": 1,
+      "data": {
+        "name": "Monitoring report timeliness",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Monitoring",
+        "targetValue": 90,
+        "actualValue": 83,
+        "unit": "%",
+        "direction": "higher",
+        "cutoff": "2026-10-31",
+        "origin": "Verified sponsor data",
+        "source": "https://example.org/fictional-kpi",
+        "notes": "Fictional KPI. % figures are source-calculated; do not infer unprovided numerator or denominator."
+      }
+    },
+    {
+      "id": "demo-assessments-002",
+      "role": "assessments",
+      "version": 1,
+      "data": {
+        "name": "Action closure in 30 days",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Clinical operations",
+        "targetValue": 85,
+        "actualValue": 91,
+        "unit": "%",
+        "direction": "higher",
+        "cutoff": "2026-10-31",
+        "origin": "CRO-reported",
+        "source": "https://example.org/fictional-kpi",
+        "notes": "Fictional KPI. % figures are source-calculated; do not infer unprovided numerator or denominator."
+      }
+    },
+    {
+      "id": "demo-assessments-003",
+      "role": "assessments",
+      "version": 1,
+      "data": {
+        "name": "Open data queries",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Data management",
+        "targetValue": 25,
+        "actualValue": 39,
+        "unit": "count",
+        "direction": "lower",
+        "cutoff": "2026-10-30",
+        "origin": "Verified sponsor data",
+        "source": "https://example.org/fictional-kpi",
+        "notes": "Fictional KPI. % figures are source-calculated; do not infer unprovided numerator or denominator."
+      }
+    },
+    {
+      "id": "demo-assessments-004",
+      "role": "assessments",
+      "version": 1,
+      "data": {
+        "name": "Median monitoring follow-up",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Monitoring",
+        "targetValue": 10,
+        "actualValue": 12,
+        "unit": "days",
+        "direction": "lower",
+        "cutoff": "2026-10-31",
+        "origin": "Manual assessment",
+        "source": "https://example.org/fictional-kpi",
+        "notes": "Fictional KPI. % figures are source-calculated; do not infer unprovided numerator or denominator."
+      }
+    },
+    {
+      "id": "demo-assessments-005",
+      "role": "assessments",
+      "version": 1,
+      "data": {
+        "name": "On-time document delivery",
+        "archived": false,
+        "projectId": "demo-projects-002",
+        "stream": "Medical writing",
+        "targetValue": 95,
+        "actualValue": 96,
+        "unit": "%",
+        "direction": "higher",
+        "cutoff": "2026-10-15",
+        "origin": "CRO-reported",
+        "source": "https://example.org/fictional-kpi",
+        "notes": "Fictional KPI. % figures are source-calculated; do not infer unprovided numerator or denominator."
+      }
+    },
+    {
+      "id": "demo-assessments-006",
+      "role": "assessments",
+      "version": 1,
+      "data": {
+        "name": "Query turnaround",
+        "archived": false,
+        "projectId": "demo-projects-002",
+        "stream": "Biostatistics",
+        "targetValue": 7,
+        "actualValue": null,
+        "unit": "days",
+        "direction": "lower",
+        "cutoff": "2026-09-30",
+        "origin": "CRO-reported",
+        "source": "https://example.org/fictional-kpi",
+        "notes": "Fictional KPI. % figures are source-calculated; do not infer unprovided numerator or denominator."
+      }
+    },
+    {
+      "id": "demo-requirements-001",
+      "role": "requirements",
+      "version": 1,
+      "data": {
+        "name": "Outstanding monitoring findings",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "severity": "Critical",
+        "status": "Mitigating",
+        "opened": "2026-10-02",
+        "due": "2026-10-28",
+        "closed": "",
+        "owner": "Sponsor Clinical Lead",
+        "action": "Request dated verification for all overdue findings.",
+        "source": "https://example.org/fictional-issue",
+        "notes": "Fictional operational issue, not clinical safety or patient data."
+      }
+    },
+    {
+      "id": "demo-requirements-002",
+      "role": "requirements",
+      "version": 1,
+      "data": {
+        "name": "Missing source confirmation",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "severity": "Major",
+        "status": "Verification",
+        "opened": "2026-10-09",
+        "due": "2026-11-04",
+        "closed": "",
+        "owner": "Data Manager",
+        "action": "Sponsor to verify reconciliation evidence.",
+        "source": "https://example.org/fictional-issue",
+        "notes": "Fictional operational issue, not clinical safety or patient data."
+      }
+    },
+    {
+      "id": "demo-requirements-003",
+      "role": "requirements",
+      "version": 1,
+      "data": {
+        "name": "Delayed governance minutes",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "severity": "Minor",
+        "status": "Open",
+        "opened": "2026-10-21",
+        "due": "2026-11-06",
+        "closed": "",
+        "owner": "CRO Study Lead",
+        "action": "Circulate decision record and sign-off.",
+        "source": "https://example.org/fictional-issue",
+        "notes": "Fictional operational issue, not clinical safety or patient data."
+      }
+    },
+    {
+      "id": "demo-requirements-004",
+      "role": "requirements",
+      "version": 1,
+      "data": {
+        "name": "Persistent document QC errors",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "severity": "Major",
+        "status": "Mitigating",
+        "opened": "2026-09-25",
+        "due": "2026-10-30",
+        "closed": "",
+        "owner": "TMF Lead",
+        "action": "Repeat targeted QC and confirm corrections.",
+        "source": "https://example.org/fictional-issue",
+        "notes": "Fictional operational issue, not clinical safety or patient data."
+      }
+    },
+    {
+      "id": "demo-requirements-005",
+      "role": "requirements",
+      "version": 1,
+      "data": {
+        "name": "Incomplete analysis assumptions",
+        "archived": false,
+        "projectId": "demo-projects-002",
+        "severity": "Minor",
+        "status": "Open",
+        "opened": "2026-10-19",
+        "due": "2026-11-07",
+        "closed": "",
+        "owner": "Statistics Lead",
+        "action": "Provide source methodology and version.",
+        "source": "https://example.org/fictional-issue",
+        "notes": "Fictional operational issue, not clinical safety or patient data."
+      }
+    },
+    {
+      "id": "demo-requirements-006",
+      "role": "requirements",
+      "version": 1,
+      "data": {
+        "name": "Investigational shipment reconciliation",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "severity": "Major",
+        "status": "Closed",
+        "opened": "2026-09-03",
+        "due": "2026-09-15",
+        "closed": "2026-09-14",
+        "owner": "Sponsor Operations",
+        "action": "Sponsor verified documented closure.",
+        "source": "https://example.org/fictional-issue",
+        "notes": "Fictional operational issue, not clinical safety or patient data."
+      }
+    },
+    {
+      "id": "demo-activities-001",
+      "role": "activities",
+      "version": 1,
+      "data": {
+        "name": "Monthly CRO governance",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "meetingDate": "2026-10-30",
+        "owner": "Sponsor Clinical Lead",
+        "status": "In progress",
+        "decision": "Agree mitigation evidence and confirm monitoring plan.",
+        "actionOwner": "CRO Study Lead",
+        "due": "2026-11-06",
+        "source": "https://example.org/fictional-minutes",
+        "notes": "Fictional committee minutes."
+      }
+    },
+    {
+      "id": "demo-activities-002",
+      "role": "activities",
+      "version": 1,
+      "data": {
+        "name": "Study handover review",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "meetingDate": "2026-10-18",
+        "owner": "Study Director",
+        "status": "Open",
+        "decision": "Complete pending acceptance checklist.",
+        "actionOwner": "Clinical Lead",
+        "due": "2026-10-25",
+        "source": "https://example.org/fictional-minutes",
+        "notes": "Fictional committee minutes."
+      }
+    },
+    {
+      "id": "demo-activities-003",
+      "role": "activities",
+      "version": 1,
+      "data": {
+        "name": "KPI exception triage",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "meetingDate": "2026-10-22",
+        "owner": "Sponsor Clinical Lead",
+        "status": "Open",
+        "decision": "Provide signed KPI source extract.",
+        "actionOwner": "Data Manager",
+        "due": "2026-10-29",
+        "source": "https://example.org/fictional-minutes",
+        "notes": "Fictional committee minutes."
+      }
+    },
+    {
+      "id": "demo-activities-004",
+      "role": "activities",
+      "version": 1,
+      "data": {
+        "name": "Operational risk committee",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "meetingDate": "2026-10-11",
+        "owner": "Study Director",
+        "status": "Done",
+        "decision": "Sponsor reviewed actions and evidence.",
+        "actionOwner": "CRO Study Lead",
+        "due": "2026-10-16",
+        "source": "https://example.org/fictional-minutes",
+        "notes": "Fictional committee minutes."
+      }
+    },
+    {
+      "id": "demo-activities-005",
+      "role": "activities",
+      "version": 1,
+      "data": {
+        "name": "Resource coordination",
+        "archived": false,
+        "projectId": "demo-projects-002",
+        "meetingDate": "2026-10-28",
+        "owner": "Study Director",
+        "status": "In progress",
+        "decision": "Confirm next month deliverable ownership.",
+        "actionOwner": "CRO PM",
+        "due": "2026-11-05",
+        "source": "https://example.org/fictional-minutes",
+        "notes": "Fictional committee minutes."
+      }
+    },
+    {
+      "id": "demo-activities-006",
+      "role": "activities",
+      "version": 1,
+      "data": {
+        "name": "Protocol operational alignment",
+        "archived": false,
+        "projectId": "demo-projects-002",
+        "meetingDate": "2026-10-02",
+        "owner": "Study Director",
+        "status": "Done",
+        "decision": "Assumptions recorded with meeting source.",
+        "actionOwner": "Medical Writer",
+        "due": "2026-10-07",
+        "source": "https://example.org/fictional-minutes",
+        "notes": "Fictional committee minutes."
+      }
+    },
+    {
+      "id": "demo-reports-001",
+      "role": "reports",
+      "version": 1,
+      "data": {
+        "name": "October sponsor CRO review",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "period": "2026-10",
+        "cutoff": "2026-10-31",
+        "status": "Approved",
+        "owner": "Sponsor Clinical Lead",
+        "summary": "Fictional sponsor review. Monitoring report timeliness was below its stated target and open data queries exceeded their maximum. An overdue critical monitoring finding requires sponsor verification before closure. Work package status distinguishes submitted work from accepted work.\n\nDecision requests: request an evidence-backed remediation plan, agree acceptance dates for rework and verify the next monitoring cycle at the next governance call.",
+        "evidence": "Fictional rows demo-assessments-001, demo-assessments-003, demo-requirements-001, demo-tasks-004. Sources: example.org, not real evidence."
+      }
+    },
+    {
+      "id": "demo-reports-002",
+      "role": "reports",
+      "version": 1,
+      "data": {
+        "name": "September sponsor CRO review",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "period": "2026-09",
+        "cutoff": "2026-09-30",
+        "status": "Approved",
+        "owner": "Study Director",
+        "summary": "Fictional earlier report: sponsor accepted the initial clinical monitoring scope and requested explicit data-quality evidence.",
+        "evidence": "Fictional records only."
+      }
+    },
+    {
+      "id": "demo-reports-003",
+      "role": "reports",
+      "version": 1,
+      "data": {
+        "name": "November review draft",
+        "archived": false,
+        "projectId": "demo-projects-002",
+        "period": "2026-11",
+        "cutoff": "2026-11-01",
+        "status": "Draft",
+        "owner": "Study Director",
+        "summary": "Draft pending complete KPI data; no conclusions should be drawn from missing turnaround values.",
+        "evidence": "Fictional KPI observation and milestone records."
+      }
+    }
+  ]
+}
+).records;const metadata={
+  "id": "life.cro-oversight",
+  "version": "1.2.1",
+  "name": "CRO Oversight",
+  "description": "A sponsor-side oversight cockpit for small biotechs: contracted CRO work, performance against targets, operational issues, governance actions and evidence-linked reports. Focused adaptation of Veeva CTMS patterns without a full CTMS or patient data.",
+  "tags": [
+    "clinical-operations",
+    "CRO",
+    "outsourcing",
+    "vendor-oversight",
+    "biotech",
+    "quality",
+    "sponsor-governance"
+  ],
+  "whenToUse": "For biotech and clinical operations teams overseeing one or a few CRO engagements with deliverables, time-bound KPIs, corrective actions and sponsor governance.",
+  "whenNotToUse": "Not for participant records, EDC, GCP validated trial monitoring, SAE case processing, vendor portals or regulated eTMF.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "CRO Oversight",
+    "tableMap": "{}",
+    "layoutProfile": "{}",
+    "pageSize": 25,
+    "asOf": "",
+    "readOnly": false,
+    "demoLabel": false,
+    "defaultProjectId": ""
+  },
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "User-facing app title; no second TrialAgents branded logo",
+      "default": "CRO Oversight"
+    },
+    "tableMap": {
+      "type": "string",
+      "description": "JSON role map to live authorized table type IDs, fields and writableFields",
+      "default": "{}"
+    },
+    "layoutProfile": {
+      "type": "string",
+      "description": "Native reviewed custom layout configuration: heading, tabs, cols, visible",
+      "default": "{}"
+    },
+    "pageSize": {
+      "type": "number",
+      "description": "Bounded table page size (5-25 records)",
+      "default": 25
+    },
+    "asOf": {
+      "type": "string",
+      "description": "ISO as-of date for reproducible oversight aging; empty uses render date",
+      "default": ""
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "Suppress reviewed editing actions",
+      "default": false
+    },
+    "demoLabel": {
+      "type": "boolean",
+      "description": "Fictional preview warning; never true on real installation",
+      "default": false
+    },
+    "defaultProjectId": {
+      "type": "string",
+      "description": "Optional saved CRO engagement record ID, not a company label",
+      "default": ""
+    }
+  },
+  "instructions": "Guidance 1.3.8. Internal TrialAgents app only: do not add login/signup/accounts/OAuth, second user list or branding substitutions. The trusted host displays the official linked TrialAgents logo to https://platform.trialagents.com; this app displays only its title, never a fabricated brand mark. Preserve source as a specialized Veeva CTMS-inspired sponsor CRO oversight console, not a general tracker. Review read_app_design and current authoring/usage guidance, then read the exact catalog ID/version/digest. Create or reuse six authorized business tables (projects=engagements, tasks=deliverables, assessments=KPI observations, requirements=operational issues, activities=governance actions, reports=oversight reports); map every logical key to real saved lower_snake_case field keys in tableMap; stable relationship IDs not company names. Explicitly allow only fields present in the bound manifest and current app permission. Exclude patient/subject/safety case details. No direct Veeva/CTMS integration. Custom frontend-js returns HTML/CSS/state, and the source starts with the exact single-line templateLayoutSchema declaration. Its native gear sends tracker:layout; the host handles drag/drop and reviewed customLayout saving (no homegrown reorder script in production). Never use CSS hiding as access control. Never seed demo records. Test all six screens, empty/long/denied/missing fields, responsive views and native settings at 390/768/1440. Review record duplicates as new create proposals; delete is reviewed archived=true preserving audit trail; do not imply irreversible deletion. Save app once using stable requestKey, expectedVersion and review; reconcile saved ID and current render. Read optional automation guidance and setup after save. Only offer owner-approved weekly ChatGPT synthesis and independently reviewed dependent TrialAgents email or no automation; no per-app scheduled ChatGPT Task and no ChatGPT email. Verify runner readiness/access and commit receipts; never announce an active task from template metadata. Source fails gracefully and remains usable without automations. Revisions update the same saved app ID and preserve bindings, IDs, access and disabled automation state. All mapped database fields MUST be multiple:false. project_id is scalar text containing a saved engagement record UUID; native relationship arrays are incompatible without an explicit adapter. Status choices use select; narrative/source fields use text. Retain original record versions for edits and archives. Engagement archive requires complete readable child tables plus project_id/archived fields. The form handler consumes named form fields and distinct draft actions. Read all catalog documentation pages; repository-only documents are supplemental.",
+  "documentation": {
+    "quickStart": [
+      "Read TrialAgents authoring+usage guidance 1.3.8 from read_app_template_guidance (follow nextOffset to end); read current app design and versioned CRO Oversight catalog before creating.",
+      "Open as internal app using existing TrialAgents account and official host watermark; no extra app login or team/account table.",
+      "Map projects/tasks/assessments/requirements/activities/reports into authorized saved tables with actual table UUIDs, correct scalar types, lower_snake_case keys and reviewable source dates. Keep business relations as record IDs.",
+      "Preview with zero data, a typical <50-FTE biotech engagement, long names, denied field access and >800 rows; verify computations, audit evidence and six distinct screens.",
+      "Select one saved CRO engagement or all permitted engagements. Save app only after exact reviewed confirmation; reconcile saved app ID and version, never create duplicates to recover.",
+      "Use native gear \u2192 Layout: drag screens and table fields, review and persist only `templateConfiguration.layoutProfile`/heading with the existing host customLayout workflow. No arrows or custom per-app layout persistence.",
+      "Use reviewed record proposals with valid expected versions for edit, duplicate-as-create and Delete-as-archive. Test permission denials.",
+      "Optionally prepare platform ChatGPT oversight report and dependent TrialAgents email only after owner review and runner/recipient verification; no automation is fully valid."
+    ],
+    "dataContract": "Six required saved role types, source field identity by actual UUID and explicit map: projects=CRO engagements (name, provider, study, phase, owner, status, start, contract_end, scope, source, notes, archived); tasks=work packages (name, project_id scalar text UUID, stream, owner, baseline original due, due approved current due, actual sponsor-accepted date, status, source, notes, archived); assessments=KPI observations (name, project_id, stream, target_value, actual_value, unit, direction, cutoff, origin, source, notes, archived); requirements=operational issues (name, project_id, severity, status, opened, due, closed sponsor-verified date, owner, action, source, notes, archived); activities=governance actions (name, project_id, meeting_date, owner, status, decision, action_owner, due, source, notes, archived); reports=reviewed summaries (name, project_id, period, cutoff, status, owner, summary, evidence, archived). Actual Table type names and field names must be read live; never invent UUIDs. `source`, `notes`, `scope`, `summary`, `evidence`, `action`, `decision` are text fields; dates scalar; statuses scalar; archived boolean. All mapped fields MUST be multiple:false. project_id MUST be kind:text containing a saved engagement record UUID. Do not use relationship/person arrays; adapting existing non-scalar fields requires a source adapter. Status, direction, unit, severity, origin and stream choices use kind:select, narrative/source fields use kind:text, numeric observations use kind:number, date fields use kind:date. Every role requires name; projects also requires provider/study; each child role requires project_id. archived is kind:boolean on every role. Bind every mapped field with its actual schemaVersion and approved manifest mode; writableFields are logical names, not database keys. Data is saved in TrialAgents DB, not app state; the only local state is navigation/search/drafts. All 800-row limits, missing datasets and partial coverage flagged; never misrepresent a partial KPI. Strict empty means empty, unknown not zero. Demo samples are never seeded to production. No patient identifiers, adverse-event records, safety case details or personnel authentication tables. tableMap is a JSON string {role:{typeId:<saved table UUID>,fields:{<logical key>:<real key>},writableFields:[<logical keys>]}}. projectId maps to project_id, contractEnd to contract_end, targetValue to target_value, actualValue to actual_value, meetingDate to meeting_date and actionOwner to action_owner; other keys map directly. The engagement record UUID is distinct from the workspace project ID.",
+    "interactionContract": "Six distinct screens: 1 Overview = dark sponsor mission control, priority decision queue, stage progression; 2 Work Packages = grouped workstream progress + baseline vs agreed due and a searchable record table; 3 Scorecard = target/actual bars with verified vs CRO-reported provenance and missing-value handling; 4 Issue Management = severity triage board, aging and sponsor closure; 5 Meetings & Actions = dated governance chronology plus action queue; 6 Reports = two-pane report library with evidence and optional ChatGPT drafting prompt. Every record-bearing screen has accessible three-dot Edit/Duplicate/Delete; the duplicate is an editable reviewed CREATE and Delete is a reviewed soft archive with confirmation. Forms use `data-ui-state`, `data-action`, stable relation keys and exact record versions; no write before trusted review. Search+Add in the same toolbar, secondary filters via one disclosure, 25 records/page maximum and footer pager. Settings gear uses `tracker:layout`; a leading one-line `templateLayoutSchema` enables native host screen/column drag/drop, including touch and keyboard selection. Host customLayout must save `layoutProfile` and preserve business source/bindings/permissions; app reads configuration each render and never writes local persisted layouts. All custom HTML sections inherit app-level access, never use visibility as security. No in-app automations/settings/auth pages. The official TrialAgents watermark is supplied by host, not replaced. External navigation only through trusted host. Incomplete required sources withhold summaries while keeping the available records accessible for correction; a short page is not proof of complete coverage.",
+    "lifecycle": "Catalog `life.cro-oversight@1.2.1` immutable after publication. Create by exact digest, one requestKey, reviewed bindings and manifest. User changes require expectedVersion updates to SAME saved app. Native layout edit is reviewed customLayout that touches heading/layoutProfile only and preserves stable screen/column IDs, source, manifest, identity, app/project/access. A duplicate record starts a new create proposal with new identity only after commit. Archive uses existing archived boolean and preserves history, no hard delete. Saved app remains accessible if email/research/network service fails. No scheduled automation on install; optional shared runner/email definitions are created only after saved app and separate exact approval with stable authoringKey, disabled states preserved, archive suspends automation, restore/copy never auto-resume. `no_update` never asserts saved records and email is never sent for zero committed changes. Receipts/idempotency preserved across transient results.",
+    "limitations": [
+      "Not a replacement for Veeva CTMS, GCP monitoring system, certified issue/CAPA platform, external CRO portal, eTMF or clinical safety case management. No real CTMS connector, patient info or automatic partner email.",
+      "Custom frontend-js sections have app-level backend access; per-screen/column hiding is presentation only. True section restrictions require supported backend scope, not HTML.",
+      "Bounded 800 records per business role in the current runtime; truncation flags partial completeness. No derived KPI is valid if necessary data are missing.",
+      "Native layout requires the current host 1.3.8 customLayout support; standalone HTML preview illustrates layout directions but cannot prove versioned platform persistence.",
+      "Source figures are entered authorized observations; no automated clinical data validation, regulation certification, case/SAE handling or audit-signed CRO approvals.",
+      "Automation guidance is not an activated schedule. ChatGPT model/reasoning preferences are requests, not runtime-configurable model settings; owner must verify host task readiness separately.",
+      "No app-level login, account, secrets, or external identity system. Official linked watermark resides in trusted TrialAgents host."
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "Weekly sponsor governance synthesis using shared ChatGPT runner, with optional separately approved after-success TrialAgents email to current owner and authorized existing team. Alternative deterministic Critical-issue transition email, or fully manual no-automation mode.",
+      "readRequirements": "Read all authorized bound roles and source record versions with 800-row cap, evidence cutoff and missing data checks; no patient data. Keep access and restricted columns enforced server-side. Stable authoringKeys in AUTOMATION_RECIPES.md. Require complete source coverage, no fabricated reports, new approved write scope for Draft reports and idempotent app+engagement+cutoff key. Exact output must include provenance and reported-vs-verified status. Read read_app_automation_guide, read_automation_setup and list_app_automations. Stable authoringKeys: life.cro-oversight.sponsor-weekly-review.v1 and life.cro-oversight.email.after-review.v1. Reuse IDs on edits/retries. Approve any write grant with an explicit expiry and reports-only scope; otherwise return a draft for human review.",
+      "outputContract": "Only a verified completed run with one committed new Draft report and savedChanges>0 can trigger the separately reviewed TrialAgents Email action. Use server-authoritative UTC completedAt, run ID, saved report ID and trusted app URL; no email on no_update/partial/blocked/failed/denied. Do not rerun research on email delivery failure. TrialAgents email limits, recipient revocation and pending coalescing apply. No standalone parallel email schedule. Inspect current email placeholder/condition schemas. Conceptual placeholders are not executable: if substitutions are unsupported use static text with the supported trusted app link. Enable no independent email schedule. Disable/edit definitions in platform Automations; outcomes in Logs. Preserve disabled state; archive suspends and restore/copy never reactivates.",
+      "promptExample": "Weekly: Analyze all authorized CRO Oversight work packages, KPI observations, issue and governance records for the selected engagement, compare previous approved report, create one evidence-linked Draft report using an approved write grant and stable dedup key. After verified save receipt, separately authorized TrialAgents email informs the owner and approved team. No data or no report -> no_update and no email. No automation: open app normally and manage manually. Missing, denied or incomplete sources produce partial/blocked, never no_update. Use no_update only for a complete verified scan under an approved quiet policy. Per-engagement identity and cutoff must match a saved report receipt before any completion email."
+    },
+    "examples": [
+      {
+        "prompt": "Create a CRO Oversight app for our two outsourced programs using the six sponsor governance screens. No email or ChatGPT automations yet.",
+        "expectedBehavior": "One saved app with six bound tables and native layout schema, no fabricated data, no extra user accounts and no scheduling."
+      },
+      {
+        "prompt": "Duplicate the clinical deliverable, preserve its planned original date but assign a new due date and mark it Planned.",
+        "expectedBehavior": "Open an editable new Work Package draft, do not duplicate acceptance, propose one reviewed create with a new record ID after confirmation."
+      },
+      {
+        "prompt": "Delete the erroneous operational issue and tell me whether this removes audit history.",
+        "expectedBehavior": "Explicit confirmation and reviewed archived=true update, never permanent loss of existing record ID/audit history."
+      },
+      {
+        "prompt": "Move KPI cutoff before target and hide Evidence column in Settings.",
+        "expectedBehavior": "Trusted native layout gear reads layout schema; drag columns with keyboard/touch/mouse and save versioned layoutProfile only; source and access unchanged."
+      },
+      {
+        "prompt": "Schedule a weekly sponsor governance briefing and notify me when a newly saved report is available.",
+        "expectedBehavior": "Only after saving app and separate reviewed authorization: shared ChatGPT runner generates a cited Draft report, dependent TrialAgents email after verified committed save; no email on no_update/partial."
+      }
+    ]
+  },
+  "examples": [
+    {
+      "heading": "CRO Oversight",
+      "tableMap": "{}",
+      "layoutProfile": "{}",
+      "pageSize": 25,
+      "asOf": "",
+      "readOnly": false,
+      "demoLabel": false,
+      "defaultProjectId": ""
+    }
+  ],
+  "deprecated": false
+}
+;
+const roles=['projects','tasks','assessments','requirements','activities','reports'];
+const map=Object.fromEntries(roles.map(role=>{const fields=[...new Set(demo.filter(r=>r.role===role).flatMap(r=>Object.keys(r.data)))];return [role,{typeId:role,fields:Object.fromEntries(fields.map(k=>[k,k])),writableFields:fields}]}));
+const bindings=roles.map(role=>({typeId:role,fields:Object.keys(map[role].fields)}));
+const config={...metadata.defaults,asOf:'2026-11-01',demoLabel:true,tableMap:JSON.stringify(map)};
+const render=new Function('input','tools','templateConfiguration','templateBindings',source);
+let state={},rows=demo,proposal=null;
+function dispatch(event){if(event.action==='tracker:layout'){alert('Layout is managed in native TrialAgents App Settings. This file demonstrates the CRO oversight screens only.');return;}
+ const out=render({saved:true,writable:true,state,event},{call:(name,v)=>{if(name==='records.read'){const all=rows.filter(r=>r.role===v.typeId);return {rows:all.slice(v.offset,v.offset+v.limit),total:all.length};}if(name==='records.propose'){proposal=v;return {status:'proposed'};}throw Error('Unsupported preview capability');}},config,bindings);
+ state=out.state;document.getElementById('surface').innerHTML=out.html;
+ if(proposal){const changes=proposal;proposal=null;if(confirm('FICTIONAL LOCAL REVIEW ONLY\n'+JSON.stringify(changes,null,2))){for(const c of changes){if(c.kind==='create_record')rows.push({role:c.typeId,id:crypto.randomUUID(),version:0,data:c.data});else{const r=rows.find(r=>r.id===c.recordId);if(r&&r.version===c.expectedVersion){r.data={...r.data,...c.data};r.version++;}}}dispatch({kind:'open',action:''});}}
+}
+function eventFor(kind,target){const trigger=target.closest('[data-action]');if(!trigger)return;const form=trigger.closest('form');dispatch({kind,action:trigger.dataset.action,value:target.type==='checkbox'?target.checked:target.value??null,form:form?Object.fromEntries(new FormData(form)):{}});}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&!b.disabled&&b.type!=='submit')eventFor('click',b);});
+document.addEventListener('submit',e=>{e.preventDefault();eventFor('submit',e.target);});
+document.addEventListener('change',e=>eventFor('change',e.target));
+dispatch({kind:'open',action:''});
+</script></body></html>

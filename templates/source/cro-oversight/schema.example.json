@@ -1,0 +1,642 @@
+{
+  "projects": {
+    "name": "CRO engagements",
+    "logicalFields": {
+      "name": "name",
+      "provider": "provider",
+      "study": "study",
+      "phase": "phase",
+      "owner": "owner",
+      "status": "status",
+      "start": "start",
+      "contractEnd": "contract_end",
+      "scope": "scope",
+      "source": "source",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "fields": [
+      {
+        "key": "name",
+        "name": "Engagement",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "provider",
+        "name": "CRO name",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "study",
+        "name": "Program / study",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "phase",
+        "name": "Phase",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "owner",
+        "name": "Sponsor owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Active",
+          "On hold",
+          "Completed"
+        ]
+      },
+      {
+        "key": "start",
+        "name": "Start",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "contract_end",
+        "name": "Contract end",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "scope",
+        "name": "Contracted scope",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "source",
+        "name": "Agreement reference URL",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "notes",
+        "name": "Governance notes",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ]
+  },
+  "tasks": {
+    "name": "CRO work packages",
+    "logicalFields": {
+      "name": "name",
+      "projectId": "project_id",
+      "stream": "stream",
+      "owner": "owner",
+      "baseline": "baseline",
+      "due": "due",
+      "actual": "actual",
+      "status": "status",
+      "source": "source",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "fields": [
+      {
+        "key": "name",
+        "name": "Deliverable",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "project_id",
+        "name": "CRO engagement",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "description": "Scalar saved CRO engagement record UUID; resolved only through authorized engagement reads."
+      },
+      {
+        "key": "stream",
+        "name": "Service stream",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Clinical operations",
+          "Monitoring",
+          "Data management",
+          "Biostatistics",
+          "Medical writing",
+          "Safety operations",
+          "Other"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "CRO owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "baseline",
+        "name": "Original baseline due",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "due",
+        "name": "Current agreed due",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "actual",
+        "name": "Accepted date",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "status",
+        "name": "Review state",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Planned",
+          "Submitted",
+          "Sponsor review",
+          "Rework",
+          "Accepted"
+        ]
+      },
+      {
+        "key": "source",
+        "name": "Deliverable evidence URL",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "notes",
+        "name": "Sponsor review notes",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ]
+  },
+  "assessments": {
+    "name": "CRO KPI observations",
+    "logicalFields": {
+      "name": "name",
+      "projectId": "project_id",
+      "stream": "stream",
+      "targetValue": "target_value",
+      "actualValue": "actual_value",
+      "unit": "unit",
+      "direction": "direction",
+      "cutoff": "cutoff",
+      "origin": "origin",
+      "source": "source",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "fields": [
+      {
+        "key": "name",
+        "name": "KPI name",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "project_id",
+        "name": "CRO engagement",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "description": "Scalar saved CRO engagement record UUID; resolved only through authorized engagement reads."
+      },
+      {
+        "key": "stream",
+        "name": "Service stream",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "target_value",
+        "name": "KPI target",
+        "kind": "number",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "actual_value",
+        "name": "Observed value",
+        "kind": "number",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "unit",
+        "name": "Unit",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "%",
+          "days",
+          "count",
+          "hours"
+        ]
+      },
+      {
+        "key": "direction",
+        "name": "Favorable direction",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "higher",
+          "lower"
+        ]
+      },
+      {
+        "key": "cutoff",
+        "name": "Evidence cutoff",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "origin",
+        "name": "Evidence provenance",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Verified sponsor data",
+          "CRO-reported",
+          "Manual assessment"
+        ]
+      },
+      {
+        "key": "source",
+        "name": "Evidence URL",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "notes",
+        "name": "Numerator / denominator / rationale",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ]
+  },
+  "requirements": {
+    "name": "CRO issues",
+    "logicalFields": {
+      "name": "name",
+      "projectId": "project_id",
+      "severity": "severity",
+      "status": "status",
+      "opened": "opened",
+      "due": "due",
+      "closed": "closed",
+      "owner": "owner",
+      "action": "action",
+      "source": "source",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "fields": [
+      {
+        "key": "name",
+        "name": "Issue title",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "project_id",
+        "name": "CRO engagement",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "description": "Scalar saved CRO engagement record UUID; resolved only through authorized engagement reads."
+      },
+      {
+        "key": "severity",
+        "name": "Severity",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Critical",
+          "Major",
+          "Minor"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "State",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Open",
+          "Mitigating",
+          "Verification",
+          "Closed"
+        ]
+      },
+      {
+        "key": "opened",
+        "name": "First identified",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "due",
+        "name": "Action due",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "closed",
+        "name": "Sponsor-verified closure date",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "action",
+        "name": "Corrective action",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "source",
+        "name": "Issue evidence URL",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "notes",
+        "name": "Sponsor verification notes",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ]
+  },
+  "activities": {
+    "name": "CRO governance actions",
+    "logicalFields": {
+      "name": "name",
+      "projectId": "project_id",
+      "meetingDate": "meeting_date",
+      "owner": "owner",
+      "status": "status",
+      "decision": "decision",
+      "actionOwner": "action_owner",
+      "due": "due",
+      "source": "source",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "fields": [
+      {
+        "key": "name",
+        "name": "Meeting / decision",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "project_id",
+        "name": "CRO engagement",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "description": "Scalar saved CRO engagement record UUID; resolved only through authorized engagement reads."
+      },
+      {
+        "key": "meeting_date",
+        "name": "Meeting date",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "owner",
+        "name": "Sponsor meeting lead",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "status",
+        "name": "Action state",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Open",
+          "In progress",
+          "Done"
+        ]
+      },
+      {
+        "key": "decision",
+        "name": "Decision / minutes",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "action_owner",
+        "name": "Action owner",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "due",
+        "name": "Follow-up due",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "source",
+        "name": "Minutes reference URL",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "notes",
+        "name": "Outcome notes",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ]
+  },
+  "reports": {
+    "name": "CRO reports",
+    "logicalFields": {
+      "name": "name",
+      "projectId": "project_id",
+      "period": "period",
+      "cutoff": "cutoff",
+      "status": "status",
+      "owner": "owner",
+      "summary": "summary",
+      "evidence": "evidence",
+      "archived": "archived"
+    },
+    "fields": [
+      {
+        "key": "name",
+        "name": "Report title",
+        "kind": "text",
+        "multiple": false,
+        "required": true
+      },
+      {
+        "key": "project_id",
+        "name": "CRO engagement",
+        "kind": "text",
+        "multiple": false,
+        "required": true,
+        "description": "Scalar saved CRO engagement record UUID; resolved only through authorized engagement reads."
+      },
+      {
+        "key": "period",
+        "name": "Reporting period",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "cutoff",
+        "name": "Evidence cutoff",
+        "kind": "date",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "status",
+        "name": "Review status",
+        "kind": "select",
+        "multiple": false,
+        "required": false,
+        "options": [
+          "Draft",
+          "In review",
+          "Approved"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "Sponsor reviewer",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "summary",
+        "name": "Narrative",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "evidence",
+        "name": "Evidence IDs and source URLs",
+        "kind": "text",
+        "multiple": false,
+        "required": false
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "multiple": false,
+        "required": false
+      }
+    ]
+  }
+}

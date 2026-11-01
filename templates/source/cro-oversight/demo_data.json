@@ -1,0 +1,640 @@
+{
+  "notice": "FICTIONAL REVIEW DATA ONLY. Never seed automatically to a real TrialAgents workspace.",
+  "records": [
+    {
+      "id": "demo-projects-001",
+      "role": "projects",
+      "version": 1,
+      "data": {
+        "name": "Aster Oncology CRO Agreement",
+        "archived": false,
+        "provider": "Northbridge Clinical",
+        "study": "AST-201",
+        "phase": "Phase II",
+        "owner": "Sponsor Clinical Lead",
+        "status": "Active",
+        "start": "2026-01-15",
+        "contractEnd": "2027-08-31",
+        "scope": "Monitoring, clinical operations, data management and safety operations",
+        "source": "https://example.org/fictional-contract",
+        "notes": "Fictional engagement for user interface demonstration."
+      }
+    },
+    {
+      "id": "demo-projects-002",
+      "role": "projects",
+      "version": 1,
+      "data": {
+        "name": "Fjord Neuroscience Outsourcing",
+        "archived": false,
+        "provider": "Sable Research",
+        "study": "FJR-102",
+        "phase": "Phase I",
+        "owner": "Study Director",
+        "status": "Active",
+        "start": "2026-05-10",
+        "contractEnd": "2027-12-31",
+        "scope": "Monitoring, medical writing and biostatistics",
+        "source": "https://example.org/fictional-contract",
+        "notes": "Fictional engagement."
+      }
+    },
+    {
+      "id": "demo-tasks-001",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Site activation checklist",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Clinical operations",
+        "baseline": "2026-08-25",
+        "due": "2026-08-27",
+        "actual": "2026-08-26",
+        "status": "Accepted",
+        "owner": "CRO Workstream Lead",
+        "source": "https://example.org/fictional-evidence",
+        "notes": "Fictional sponsor review notes, no patient data."
+      }
+    },
+    {
+      "id": "demo-tasks-002",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "October monitoring report",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Monitoring",
+        "baseline": "2026-10-20",
+        "due": "2026-10-24",
+        "actual": "",
+        "status": "Sponsor review",
+        "owner": "CRO Workstream Lead",
+        "source": "https://example.org/fictional-evidence",
+        "notes": "Fictional sponsor review notes, no patient data."
+      }
+    },
+    {
+      "id": "demo-tasks-003",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Q3 clean-data milestone",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Data management",
+        "baseline": "2026-09-27",
+        "due": "2026-09-30",
+        "actual": "2026-10-01",
+        "status": "Accepted",
+        "owner": "CRO Workstream Lead",
+        "source": "https://example.org/fictional-evidence",
+        "notes": "Fictional sponsor review notes, no patient data."
+      }
+    },
+    {
+      "id": "demo-tasks-004",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Clinical operations update",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Clinical operations",
+        "baseline": "2026-10-28",
+        "due": "2026-10-31",
+        "actual": "",
+        "status": "Rework",
+        "owner": "CRO Workstream Lead",
+        "source": "https://example.org/fictional-evidence",
+        "notes": "Fictional sponsor review notes, no patient data."
+      }
+    },
+    {
+      "id": "demo-tasks-005",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Database reconciliation",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Data management",
+        "baseline": "2026-10-15",
+        "due": "2026-10-17",
+        "actual": "2026-10-16",
+        "status": "Accepted",
+        "owner": "CRO Workstream Lead",
+        "source": "https://example.org/fictional-evidence",
+        "notes": "Fictional sponsor review notes, no patient data."
+      }
+    },
+    {
+      "id": "demo-tasks-006",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Monitoring deviation summary",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Monitoring",
+        "baseline": "2026-10-26",
+        "due": "2026-10-30",
+        "actual": "",
+        "status": "Submitted",
+        "owner": "CRO Workstream Lead",
+        "source": "https://example.org/fictional-evidence",
+        "notes": "Fictional sponsor review notes, no patient data."
+      }
+    },
+    {
+      "id": "demo-tasks-007",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Interim data cut readiness",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Biostatistics",
+        "baseline": "2026-11-10",
+        "due": "2026-11-10",
+        "actual": "",
+        "status": "Planned",
+        "owner": "CRO Workstream Lead",
+        "source": "https://example.org/fictional-evidence",
+        "notes": "Fictional sponsor review notes, no patient data."
+      }
+    },
+    {
+      "id": "demo-tasks-008",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Medical coding review",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Data management",
+        "baseline": "2026-11-06",
+        "due": "2026-11-06",
+        "actual": "",
+        "status": "Planned",
+        "owner": "CRO Workstream Lead",
+        "source": "https://example.org/fictional-evidence",
+        "notes": "Fictional sponsor review notes, no patient data."
+      }
+    },
+    {
+      "id": "demo-tasks-009",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "TMF oversight reconciliation",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Clinical operations",
+        "baseline": "2026-10-08",
+        "due": "2026-10-08",
+        "actual": "2026-10-07",
+        "status": "Accepted",
+        "owner": "CRO Workstream Lead",
+        "source": "https://example.org/fictional-evidence",
+        "notes": "Fictional sponsor review notes, no patient data."
+      }
+    },
+    {
+      "id": "demo-tasks-010",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "First site monitoring visit",
+        "archived": false,
+        "projectId": "demo-projects-002",
+        "stream": "Monitoring",
+        "baseline": "2026-10-05",
+        "due": "2026-10-08",
+        "actual": "2026-10-07",
+        "status": "Accepted",
+        "owner": "CRO Team Lead",
+        "source": "https://example.org/fictional-evidence"
+      }
+    },
+    {
+      "id": "demo-tasks-011",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "TMF index delivery",
+        "archived": false,
+        "projectId": "demo-projects-002",
+        "stream": "Medical writing",
+        "baseline": "2026-10-29",
+        "due": "2026-11-02",
+        "actual": "",
+        "status": "Planned",
+        "owner": "CRO Team Lead",
+        "source": "https://example.org/fictional-evidence"
+      }
+    },
+    {
+      "id": "demo-tasks-012",
+      "role": "tasks",
+      "version": 1,
+      "data": {
+        "name": "Monthly biostatistics alignment",
+        "archived": false,
+        "projectId": "demo-projects-002",
+        "stream": "Biostatistics",
+        "baseline": "2026-10-18",
+        "due": "2026-10-20",
+        "actual": "2026-10-20",
+        "status": "Accepted",
+        "owner": "CRO Team Lead",
+        "source": "https://example.org/fictional-evidence"
+      }
+    },
+    {
+      "id": "demo-assessments-001",
+      "role": "assessments",
+      "version": 1,
+      "data": {
+        "name": "Monitoring report timeliness",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Monitoring",
+        "targetValue": 90,
+        "actualValue": 83,
+        "unit": "%",
+        "direction": "higher",
+        "cutoff": "2026-10-31",
+        "origin": "Verified sponsor data",
+        "source": "https://example.org/fictional-kpi",
+        "notes": "Fictional KPI. % figures are source-calculated; do not infer unprovided numerator or denominator."
+      }
+    },
+    {
+      "id": "demo-assessments-002",
+      "role": "assessments",
+      "version": 1,
+      "data": {
+        "name": "Action closure in 30 days",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Clinical operations",
+        "targetValue": 85,
+        "actualValue": 91,
+        "unit": "%",
+        "direction": "higher",
+        "cutoff": "2026-10-31",
+        "origin": "CRO-reported",
+        "source": "https://example.org/fictional-kpi",
+        "notes": "Fictional KPI. % figures are source-calculated; do not infer unprovided numerator or denominator."
+      }
+    },
+    {
+      "id": "demo-assessments-003",
+      "role": "assessments",
+      "version": 1,
+      "data": {
+        "name": "Open data queries",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Data management",
+        "targetValue": 25,
+        "actualValue": 39,
+        "unit": "count",
+        "direction": "lower",
+        "cutoff": "2026-10-30",
+        "origin": "Verified sponsor data",
+        "source": "https://example.org/fictional-kpi",
+        "notes": "Fictional KPI. % figures are source-calculated; do not infer unprovided numerator or denominator."
+      }
+    },
+    {
+      "id": "demo-assessments-004",
+      "role": "assessments",
+      "version": 1,
+      "data": {
+        "name": "Median monitoring follow-up",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "stream": "Monitoring",
+        "targetValue": 10,
+        "actualValue": 12,
+        "unit": "days",
+        "direction": "lower",
+        "cutoff": "2026-10-31",
+        "origin": "Manual assessment",
+        "source": "https://example.org/fictional-kpi",
+        "notes": "Fictional KPI. % figures are source-calculated; do not infer unprovided numerator or denominator."
+      }
+    },
+    {
+      "id": "demo-assessments-005",
+      "role": "assessments",
+      "version": 1,
+      "data": {
+        "name": "On-time document delivery",
+        "archived": false,
+        "projectId": "demo-projects-002",
+        "stream": "Medical writing",
+        "targetValue": 95,
+        "actualValue": 96,
+        "unit": "%",
+        "direction": "higher",
+        "cutoff": "2026-10-15",
+        "origin": "CRO-reported",
+        "source": "https://example.org/fictional-kpi",
+        "notes": "Fictional KPI. % figures are source-calculated; do not infer unprovided numerator or denominator."
+      }
+    },
+    {
+      "id": "demo-assessments-006",
+      "role": "assessments",
+      "version": 1,
+      "data": {
+        "name": "Query turnaround",
+        "archived": false,
+        "projectId": "demo-projects-002",
+        "stream": "Biostatistics",
+        "targetValue": 7,
+        "actualValue": null,
+        "unit": "days",
+        "direction": "lower",
+        "cutoff": "2026-09-30",
+        "origin": "CRO-reported",
+        "source": "https://example.org/fictional-kpi",
+        "notes": "Fictional KPI. % figures are source-calculated; do not infer unprovided numerator or denominator."
+      }
+    },
+    {
+      "id": "demo-requirements-001",
+      "role": "requirements",
+      "version": 1,
+      "data": {
+        "name": "Outstanding monitoring findings",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "severity": "Critical",
+        "status": "Mitigating",
+        "opened": "2026-10-02",
+        "due": "2026-10-28",
+        "closed": "",
+        "owner": "Sponsor Clinical Lead",
+        "action": "Request dated verification for all overdue findings.",
+        "source": "https://example.org/fictional-issue",
+        "notes": "Fictional operational issue, not clinical safety or patient data."
+      }
+    },
+    {
+      "id": "demo-requirements-002",
+      "role": "requirements",
+      "version": 1,
+      "data": {
+        "name": "Missing source confirmation",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "severity": "Major",
+        "status": "Verification",
+        "opened": "2026-10-09",
+        "due": "2026-11-04",
+        "closed": "",
+        "owner": "Data Manager",
+        "action": "Sponsor to verify reconciliation evidence.",
+        "source": "https://example.org/fictional-issue",
+        "notes": "Fictional operational issue, not clinical safety or patient data."
+      }
+    },
+    {
+      "id": "demo-requirements-003",
+      "role": "requirements",
+      "version": 1,
+      "data": {
+        "name": "Delayed governance minutes",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "severity": "Minor",
+        "status": "Open",
+        "opened": "2026-10-21",
+        "due": "2026-11-06",
+        "closed": "",
+        "owner": "CRO Study Lead",
+        "action": "Circulate decision record and sign-off.",
+        "source": "https://example.org/fictional-issue",
+        "notes": "Fictional operational issue, not clinical safety or patient data."
+      }
+    },
+    {
+      "id": "demo-requirements-004",
+      "role": "requirements",
+      "version": 1,
+      "data": {
+        "name": "Persistent document QC errors",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "severity": "Major",
+        "status": "Mitigating",
+        "opened": "2026-09-25",
+        "due": "2026-10-30",
+        "closed": "",
+        "owner": "TMF Lead",
+        "action": "Repeat targeted QC and confirm corrections.",
+        "source": "https://example.org/fictional-issue",
+        "notes": "Fictional operational issue, not clinical safety or patient data."
+      }
+    },
+    {
+      "id": "demo-requirements-005",
+      "role": "requirements",
+      "version": 1,
+      "data": {
+        "name": "Incomplete analysis assumptions",
+        "archived": false,
+        "projectId": "demo-projects-002",
+        "severity": "Minor",
+        "status": "Open",
+        "opened": "2026-10-19",
+        "due": "2026-11-07",
+        "closed": "",
+        "owner": "Statistics Lead",
+        "action": "Provide source methodology and version.",
+        "source": "https://example.org/fictional-issue",
+        "notes": "Fictional operational issue, not clinical safety or patient data."
+      }
+    },
+    {
+      "id": "demo-requirements-006",
+      "role": "requirements",
+      "version": 1,
+      "data": {
+        "name": "Investigational shipment reconciliation",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "severity": "Major",
+        "status": "Closed",
+        "opened": "2026-09-03",
+        "due": "2026-09-15",
+        "closed": "2026-09-14",
+        "owner": "Sponsor Operations",
+        "action": "Sponsor verified documented closure.",
+        "source": "https://example.org/fictional-issue",
+        "notes": "Fictional operational issue, not clinical safety or patient data."
+      }
+    },
+    {
+      "id": "demo-activities-001",
+      "role": "activities",
+      "version": 1,
+      "data": {
+        "name": "Monthly CRO governance",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "meetingDate": "2026-10-30",
+        "owner": "Sponsor Clinical Lead",
+        "status": "In progress",
+        "decision": "Agree mitigation evidence and confirm monitoring plan.",
+        "actionOwner": "CRO Study Lead",
+        "due": "2026-11-06",
+        "source": "https://example.org/fictional-minutes",
+        "notes": "Fictional committee minutes."
+      }
+    },
+    {
+      "id": "demo-activities-002",
+      "role": "activities",
+      "version": 1,
+      "data": {
+        "name": "Study handover review",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "meetingDate": "2026-10-18",
+        "owner": "Study Director",
+        "status": "Open",
+        "decision": "Complete pending acceptance checklist.",
+        "actionOwner": "Clinical Lead",
+        "due": "2026-10-25",
+        "source": "https://example.org/fictional-minutes",
+        "notes": "Fictional committee minutes."
+      }
+    },
+    {
+      "id": "demo-activities-003",
+      "role": "activities",
+      "version": 1,
+      "data": {
+        "name": "KPI exception triage",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "meetingDate": "2026-10-22",
+        "owner": "Sponsor Clinical Lead",
+        "status": "Open",
+        "decision": "Provide signed KPI source extract.",
+        "actionOwner": "Data Manager",
+        "due": "2026-10-29",
+        "source": "https://example.org/fictional-minutes",
+        "notes": "Fictional committee minutes."
+      }
+    },
+    {
+      "id": "demo-activities-004",
+      "role": "activities",
+      "version": 1,
+      "data": {
+        "name": "Operational risk committee",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "meetingDate": "2026-10-11",
+        "owner": "Study Director",
+        "status": "Done",
+        "decision": "Sponsor reviewed actions and evidence.",
+        "actionOwner": "CRO Study Lead",
+        "due": "2026-10-16",
+        "source": "https://example.org/fictional-minutes",
+        "notes": "Fictional committee minutes."
+      }
+    },
+    {
+      "id": "demo-activities-005",
+      "role": "activities",
+      "version": 1,
+      "data": {
+        "name": "Resource coordination",
+        "archived": false,
+        "projectId": "demo-projects-002",
+        "meetingDate": "2026-10-28",
+        "owner": "Study Director",
+        "status": "In progress",
+        "decision": "Confirm next month deliverable ownership.",
+        "actionOwner": "CRO PM",
+        "due": "2026-11-05",
+        "source": "https://example.org/fictional-minutes",
+        "notes": "Fictional committee minutes."
+      }
+    },
+    {
+      "id": "demo-activities-006",
+      "role": "activities",
+      "version": 1,
+      "data": {
+        "name": "Protocol operational alignment",
+        "archived": false,
+        "projectId": "demo-projects-002",
+        "meetingDate": "2026-10-02",
+        "owner": "Study Director",
+        "status": "Done",
+        "decision": "Assumptions recorded with meeting source.",
+        "actionOwner": "Medical Writer",
+        "due": "2026-10-07",
+        "source": "https://example.org/fictional-minutes",
+        "notes": "Fictional committee minutes."
+      }
+    },
+    {
+      "id": "demo-reports-001",
+      "role": "reports",
+      "version": 1,
+      "data": {
+        "name": "October sponsor CRO review",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "period": "2026-10",
+        "cutoff": "2026-10-31",
+        "status": "Approved",
+        "owner": "Sponsor Clinical Lead",
+        "summary": "Fictional sponsor review. Monitoring report timeliness was below its stated target and open data queries exceeded their maximum. An overdue critical monitoring finding requires sponsor verification before closure. Work package status distinguishes submitted work from accepted work.\n\nDecision requests: request an evidence-backed remediation plan, agree acceptance dates for rework and verify the next monitoring cycle at the next governance call.",
+        "evidence": "Fictional rows demo-assessments-001, demo-assessments-003, demo-requirements-001, demo-tasks-004. Sources: example.org, not real evidence."
+      }
+    },
+    {
+      "id": "demo-reports-002",
+      "role": "reports",
+      "version": 1,
+      "data": {
+        "name": "September sponsor CRO review",
+        "archived": false,
+        "projectId": "demo-projects-001",
+        "period": "2026-09",
+        "cutoff": "2026-09-30",
+        "status": "Approved",
+        "owner": "Study Director",
+        "summary": "Fictional earlier report: sponsor accepted the initial clinical monitoring scope and requested explicit data-quality evidence.",
+        "evidence": "Fictional records only."
+      }
+    },
+    {
+      "id": "demo-reports-003",
+      "role": "reports",
+      "version": 1,
+      "data": {
+        "name": "November review draft",
+        "archived": false,
+        "projectId": "demo-projects-002",
+        "period": "2026-11",
+        "cutoff": "2026-11-01",
+        "status": "Draft",
+        "owner": "Study Director",
+        "summary": "Draft pending complete KPI data; no conclusions should be drawn from missing turnaround values.",
+        "evidence": "Fictional KPI observation and milestone records."
+      }
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "id": "life.cro-oversight",
+  "version": "1.2.1",
+  "name": "CRO Oversight",
+  "description": "A sponsor-side oversight cockpit for small biotechs: contracted CRO work, performance against targets, operational issues, governance actions and evidence-linked reports. Focused adaptation of Veeva CTMS patterns without a full CTMS or patient data.",
+  "tags": [
+    "clinical-operations",
+    "CRO",
+    "outsourcing",
+    "vendor-oversight",
+    "biotech",
+    "quality",
+    "sponsor-governance"
+  ],
+  "whenToUse": "For biotech and clinical operations teams overseeing one or a few CRO engagements with deliverables, time-bound KPIs, corrective actions and sponsor governance.",
+  "whenNotToUse": "Not for participant records, EDC, GCP validated trial monitoring, SAE case processing, vendor portals or regulated eTMF.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "CRO Oversight",
+    "tableMap": "{}",
+    "layoutProfile": "{}",
+    "pageSize": 25,
+    "asOf": "",
+    "readOnly": false,
+    "demoLabel": false,
+    "defaultProjectId": ""
+  },
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "User-facing app title; no second TrialAgents branded logo",
+      "default": "CRO Oversight"
+    },
+    "tableMap": {
+      "type": "string",
+      "description": "JSON role map to live authorized table type IDs, fields and writableFields",
+      "default": "{}"
+    },
+    "layoutProfile": {
+      "type": "string",
+      "description": "Native reviewed custom layout configuration: heading, tabs, cols, visible",
+      "default": "{}"
+    },
+    "pageSize": {
+      "type": "number",
+      "description": "Bounded table page size (5-25 records)",
+      "default": 25
+    },
+    "asOf": {
+      "type": "string",
+      "description": "ISO as-of date for reproducible oversight aging; empty uses render date",
+      "default": ""
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "Suppress reviewed editing actions",
+      "default": false
+    },
+    "demoLabel": {
+      "type": "boolean",
+      "description": "Fictional preview warning; never true on real installation",
+      "default": false
+    },
+    "defaultProjectId": {
+      "type": "string",
+      "description": "Optional saved CRO engagement record ID, not a company label",
+      "default": ""
+    }
+  },
+  "instructions": "Guidance 1.3.8. Internal TrialAgents app only: do not add login/signup/accounts/OAuth, second user list or branding substitutions. The trusted host displays the official linked TrialAgents logo to https://platform.trialagents.com; this app displays only its title, never a fabricated brand mark. Preserve source as a specialized Veeva CTMS-inspired sponsor CRO oversight console, not a general tracker. Review read_app_design and current authoring/usage guidance, then read the exact catalog ID/version/digest. Create or reuse six authorized business tables (projects=engagements, tasks=deliverables, assessments=KPI observations, requirements=operational issues, activities=governance actions, reports=oversight reports); map every logical key to real saved lower_snake_case field keys in tableMap; stable relationship IDs not company names. Explicitly allow only fields present in the bound manifest and current app permission. Exclude patient/subject/safety case details. No direct Veeva/CTMS integration. Custom frontend-js returns HTML/CSS/state, and the source starts with the exact single-line templateLayoutSchema declaration. Its native gear sends tracker:layout; the host handles drag/drop and reviewed customLayout saving (no homegrown reorder script in production). Never use CSS hiding as access control. Never seed demo records. Test all six screens, empty/long/denied/missing fields, responsive views and native settings at 390/768/1440. Review record duplicates as new create proposals; delete is reviewed archived=true preserving audit trail; do not imply irreversible deletion. Save app once using stable requestKey, expectedVersion and review; reconcile saved ID and current render. Read optional automation guidance and setup after save. Only offer owner-approved weekly ChatGPT synthesis and independently reviewed dependent TrialAgents email or no automation; no per-app scheduled ChatGPT Task and no ChatGPT email. Verify runner readiness/access and commit receipts; never announce an active task from template metadata. Source fails gracefully and remains usable without automations. Revisions update the same saved app ID and preserve bindings, IDs, access and disabled automation state. All mapped database fields MUST be multiple:false. project_id is scalar text containing a saved engagement record UUID; native relationship arrays are incompatible without an explicit adapter. Status choices use select; narrative/source fields use text. Retain original record versions for edits and archives. Engagement archive requires complete readable child tables plus project_id/archived fields. The form handler consumes named form fields and distinct draft actions. Read all catalog documentation pages; repository-only documents are supplemental.",
+  "documentation": {
+    "quickStart": [
+      "Read TrialAgents authoring+usage guidance 1.3.8 from read_app_template_guidance (follow nextOffset to end); read current app design and versioned CRO Oversight catalog before creating.",
+      "Open as internal app using existing TrialAgents account and official host watermark; no extra app login or team/account table.",
+      "Map projects/tasks/assessments/requirements/activities/reports into authorized saved tables with actual table UUIDs, correct scalar types, lower_snake_case keys and reviewable source dates. Keep business relations as record IDs.",
+      "Preview with zero data, a typical <50-FTE biotech engagement, long names, denied field access and >800 rows; verify computations, audit evidence and six distinct screens.",
+      "Select one saved CRO engagement or all permitted engagements. Save app only after exact reviewed confirmation; reconcile saved app ID and version, never create duplicates to recover.",
+      "Use native gear \u2192 Layout: drag screens and table fields, review and persist only `templateConfiguration.layoutProfile`/heading with the existing host customLayout workflow. No arrows or custom per-app layout persistence.",
+      "Use reviewed record proposals with valid expected versions for edit, duplicate-as-create and Delete-as-archive. Test permission denials.",
+      "Optionally prepare platform ChatGPT oversight report and dependent TrialAgents email only after owner review and runner/recipient verification; no automation is fully valid."
+    ],
+    "dataContract": "Six required saved role types, source field identity by actual UUID and explicit map: projects=CRO engagements (name, provider, study, phase, owner, status, start, contract_end, scope, source, notes, archived); tasks=work packages (name, project_id scalar text UUID, stream, owner, baseline original due, due approved current due, actual sponsor-accepted date, status, source, notes, archived); assessments=KPI observations (name, project_id, stream, target_value, actual_value, unit, direction, cutoff, origin, source, notes, archived); requirements=operational issues (name, project_id, severity, status, opened, due, closed sponsor-verified date, owner, action, source, notes, archived); activities=governance actions (name, project_id, meeting_date, owner, status, decision, action_owner, due, source, notes, archived); reports=reviewed summaries (name, project_id, period, cutoff, status, owner, summary, evidence, archived). Actual Table type names and field names must be read live; never invent UUIDs. `source`, `notes`, `scope`, `summary`, `evidence`, `action`, `decision` are text fields; dates scalar; statuses scalar; archived boolean. All mapped fields MUST be multiple:false. project_id MUST be kind:text containing a saved engagement record UUID. Do not use relationship/person arrays; adapting existing non-scalar fields requires a source adapter. Status, direction, unit, severity, origin and stream choices use kind:select, narrative/source fields use kind:text, numeric observations use kind:number, date fields use kind:date. Every role requires name; projects also requires provider/study; each child role requires project_id. archived is kind:boolean on every role. Bind every mapped field with its actual schemaVersion and approved manifest mode; writableFields are logical names, not database keys. Data is saved in TrialAgents DB, not app state; the only local state is navigation/search/drafts. All 800-row limits, missing datasets and partial coverage flagged; never misrepresent a partial KPI. Strict empty means empty, unknown not zero. Demo samples are never seeded to production. No patient identifiers, adverse-event records, safety case details or personnel authentication tables. tableMap is a JSON string {role:{typeId:<saved table UUID>,fields:{<logical key>:<real key>},writableFields:[<logical keys>]}}. projectId maps to project_id, contractEnd to contract_end, targetValue to target_value, actualValue to actual_value, meetingDate to meeting_date and actionOwner to action_owner; other keys map directly. The engagement record UUID is distinct from the workspace project ID.",
+    "interactionContract": "Six distinct screens: 1 Overview = dark sponsor mission control, priority decision queue, stage progression; 2 Work Packages = grouped workstream progress + baseline vs agreed due and a searchable record table; 3 Scorecard = target/actual bars with verified vs CRO-reported provenance and missing-value handling; 4 Issue Management = severity triage board, aging and sponsor closure; 5 Meetings & Actions = dated governance chronology plus action queue; 6 Reports = two-pane report library with evidence and optional ChatGPT drafting prompt. Every record-bearing screen has accessible three-dot Edit/Duplicate/Delete; the duplicate is an editable reviewed CREATE and Delete is a reviewed soft archive with confirmation. Forms use `data-ui-state`, `data-action`, stable relation keys and exact record versions; no write before trusted review. Search+Add in the same toolbar, secondary filters via one disclosure, 25 records/page maximum and footer pager. Settings gear uses `tracker:layout`; a leading one-line `templateLayoutSchema` enables native host screen/column drag/drop, including touch and keyboard selection. Host customLayout must save `layoutProfile` and preserve business source/bindings/permissions; app reads configuration each render and never writes local persisted layouts. All custom HTML sections inherit app-level access, never use visibility as security. No in-app automations/settings/auth pages. The official TrialAgents watermark is supplied by host, not replaced. External navigation only through trusted host. Incomplete required sources withhold summaries while keeping the available records accessible for correction; a short page is not proof of complete coverage.",
+    "lifecycle": "Catalog `life.cro-oversight@1.2.1` immutable after publication. Create by exact digest, one requestKey, reviewed bindings and manifest. User changes require expectedVersion updates to SAME saved app. Native layout edit is reviewed customLayout that touches heading/layoutProfile only and preserves stable screen/column IDs, source, manifest, identity, app/project/access. A duplicate record starts a new create proposal with new identity only after commit. Archive uses existing archived boolean and preserves history, no hard delete. Saved app remains accessible if email/research/network service fails. No scheduled automation on install; optional shared runner/email definitions are created only after saved app and separate exact approval with stable authoringKey, disabled states preserved, archive suspends automation, restore/copy never auto-resume. `no_update` never asserts saved records and email is never sent for zero committed changes. Receipts/idempotency preserved across transient results.",
+    "limitations": [
+      "Not a replacement for Veeva CTMS, GCP monitoring system, certified issue/CAPA platform, external CRO portal, eTMF or clinical safety case management. No real CTMS connector, patient info or automatic partner email.",
+      "Custom frontend-js sections have app-level backend access; per-screen/column hiding is presentation only. True section restrictions require supported backend scope, not HTML.",
+      "Bounded 800 records per business role in the current runtime; truncation flags partial completeness. No derived KPI is valid if necessary data are missing.",
+      "Native layout requires the current host 1.3.8 customLayout support; standalone HTML preview illustrates layout directions but cannot prove versioned platform persistence.",
+      "Source figures are entered authorized observations; no automated clinical data validation, regulation certification, case/SAE handling or audit-signed CRO approvals.",
+      "Automation guidance is not an activated schedule. ChatGPT model/reasoning preferences are requests, not runtime-configurable model settings; owner must verify host task readiness separately.",
+      "No app-level login, account, secrets, or external identity system. Official linked watermark resides in trusted TrialAgents host."
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "Weekly sponsor governance synthesis using shared ChatGPT runner, with optional separately approved after-success TrialAgents email to current owner and authorized existing team. Alternative deterministic Critical-issue transition email, or fully manual no-automation mode.",
+      "readRequirements": "Read all authorized bound roles and source record versions with 800-row cap, evidence cutoff and missing data checks; no patient data. Keep access and restricted columns enforced server-side. Stable authoringKeys in AUTOMATION_RECIPES.md. Require complete source coverage, no fabricated reports, new approved write scope for Draft reports and idempotent app+engagement+cutoff key. Exact output must include provenance and reported-vs-verified status. Read read_app_automation_guide, read_automation_setup and list_app_automations. Stable authoringKeys: life.cro-oversight.sponsor-weekly-review.v1 and life.cro-oversight.email.after-review.v1. Reuse IDs on edits/retries. Approve any write grant with an explicit expiry and reports-only scope; otherwise return a draft for human review.",
+      "outputContract": "Only a verified completed run with one committed new Draft report and savedChanges>0 can trigger the separately reviewed TrialAgents Email action. Use server-authoritative UTC completedAt, run ID, saved report ID and trusted app URL; no email on no_update/partial/blocked/failed/denied. Do not rerun research on email delivery failure. TrialAgents email limits, recipient revocation and pending coalescing apply. No standalone parallel email schedule. Inspect current email placeholder/condition schemas. Conceptual placeholders are not executable: if substitutions are unsupported use static text with the supported trusted app link. Enable no independent email schedule. Disable/edit definitions in platform Automations; outcomes in Logs. Preserve disabled state; archive suspends and restore/copy never reactivates.",
+      "promptExample": "Weekly: Analyze all authorized CRO Oversight work packages, KPI observations, issue and governance records for the selected engagement, compare previous approved report, create one evidence-linked Draft report using an approved write grant and stable dedup key. After verified save receipt, separately authorized TrialAgents email informs the owner and approved team. No data or no report -> no_update and no email. No automation: open app normally and manage manually. Missing, denied or incomplete sources produce partial/blocked, never no_update. Use no_update only for a complete verified scan under an approved quiet policy. Per-engagement identity and cutoff must match a saved report receipt before any completion email."
+    },
+    "examples": [
+      {
+        "prompt": "Create a CRO Oversight app for our two outsourced programs using the six sponsor governance screens. No email or ChatGPT automations yet.",
+        "expectedBehavior": "One saved app with six bound tables and native layout schema, no fabricated data, no extra user accounts and no scheduling."
+      },
+      {
+        "prompt": "Duplicate the clinical deliverable, preserve its planned original date but assign a new due date and mark it Planned.",
+        "expectedBehavior": "Open an editable new Work Package draft, do not duplicate acceptance, propose one reviewed create with a new record ID after confirmation."
+      },
+      {
+        "prompt": "Delete the erroneous operational issue and tell me whether this removes audit history.",
+        "expectedBehavior": "Explicit confirmation and reviewed archived=true update, never permanent loss of existing record ID/audit history."
+      },
+      {
+        "prompt": "Move KPI cutoff before target and hide Evidence column in Settings.",
+        "expectedBehavior": "Trusted native layout gear reads layout schema; drag columns with keyboard/touch/mouse and save versioned layoutProfile only; source and access unchanged."
+      },
+      {
+        "prompt": "Schedule a weekly sponsor governance briefing and notify me when a newly saved report is available.",
+        "expectedBehavior": "Only after saving app and separate reviewed authorization: shared ChatGPT runner generates a cited Draft report, dependent TrialAgents email after verified committed save; no email on no_update/partial."
+      }
+    ]
+  },
+  "examples": [
+    {
+      "heading": "CRO Oversight",
+      "tableMap": "{}",
+      "layoutProfile": "{}",
+      "pageSize": 25,
+      "asOf": "",
+      "readOnly": false,
+      "demoLabel": false,
+      "defaultProjectId": ""
+    }
+  ],
+  "deprecated": false
+}
