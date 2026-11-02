@@ -65,7 +65,7 @@ for(const fromHome of [false,true])test(`Failed extension replacement keeps the 
  await expect(root.getByText('Failed to load sentinel')).toHaveCount(0);await expect(root.getByRole('button',{name:/retry|open saved apps|create new preview|return to home/i})).toHaveCount(0);await call(page,'discard_workspace_preview',{previewId:draft.preview.id});if(homeApp)await archive(page,homeApp.id);
 });
 
-for(const embedded of [false,true])test(`No usable app offers only local Home after loading failure in ${embedded?'extension':'standalone'}`,async({page})=>{
+for(const embedded of [false,true])test(`Loading failures keep local Home navigation in ${embedded?'extension':'standalone'}`,async({page})=>{
  const f=await (await page.request.get(base+'/fixture/apps')).json();
  if(embedded){
   await page.goto(base+'/?apps=1');await page.waitForFunction(()=>window.hostReady);
@@ -77,7 +77,7 @@ for(const embedded of [false,true])test(`No usable app offers only local Home af
   await page.goto(base+f.url);
  }
  const root=embedded?page.frameLocator('#app'):page;
- await expect(root.getByRole('heading',{name:'No app is available',exact:true})).toBeVisible();await expect(root.getByRole('alert')).toHaveCount(0);await expect(root.getByText('Failed to load sentinel')).toHaveCount(0);
+ await expect(root.getByRole('heading',{name:'App could not load',exact:true})).toBeVisible();await expect(root.getByRole('alert')).toHaveCount(0);await expect(root.getByText('Failed to load sentinel')).toHaveCount(0);
  if(!embedded)await page.route(base+'/?tab=home',route=>route.fulfill({contentType:'text/html',body:'<h1>Home</h1>'}));
  await root.getByRole('button',{name:'Return to Home',exact:true}).click();
  if(embedded){await expect(root.getByRole('heading',{name:'Home',exact:true})).toBeVisible();expect(await page.evaluate(()=>window.lastOpenedUrl)).toBeUndefined();}
@@ -106,4 +106,29 @@ test('AI revisions keep saved app usable and expose Save only after finalization
  await expect(root.getByRole('heading',{name:'Home',exact:true})).toBeVisible();
  expect((await call(page,'read_project_component',{componentId:saved.id})).component.version).toBe(1);
  await archive(page,saved.id);
+});
+
+for(const embedded of [false,true])test(`Slow app frames stay mounted and recover in ${embedded?'extension':'standalone'}`,async({page})=>{
+ const f=await (await page.request.get(base+'/fixture/apps')).json();let release;const gate=new Promise(resolve=>release=resolve);
+ await page.route('**/frontend/frame',async route=>{await gate;await route.continue();});
+ await page.goto(base+(embedded?'/?apps=1':f.url),{waitUntil:'domcontentloaded'});
+ if(embedded){await page.waitForFunction(()=>window.hostReady);await page.evaluate(r=>window.deliver(r),await (await page.request.get(base+'/fixture/app-display?appId='+f.appId)).json());}
+ const root=embedded?page.frameLocator('#app'):page;
+ await expect(root.getByText('The app is taking longer to load.',{exact:false})).toBeVisible({timeout:15000});
+ await expect(root.locator('iframe[title="Saved frontend code"]')).toHaveCount(1);
+ await expect(root.getByRole('heading',{name:'No app is available'})).toHaveCount(0);
+ release();await expect(root.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Overview',exact:true})).toBeVisible();
+});
+
+for(const embedded of [false,true])test(`Schema review errors identify the saved app and permit retry in ${embedded?'extension':'standalone'}`,async({page})=>{
+ const f=await (await page.request.post(base+'/fixture/publication',{data:{standard:true}})).json();
+ await page.request.post(base+'/fixture/publication/'+f.appId+'/schema');
+ await page.goto(base+(embedded?'/?apps=1':`/apps/${f.appId}?workspaceId=${f.workspaceId}&source=component&utm_source=chatgpt.com`));
+ if(embedded){await page.waitForFunction(()=>window.hostReady);await page.evaluate(r=>window.deliver(r),{screen:'app-link',workspaceId:f.workspaceId,appId:f.appId,source:'component'});}
+ const root=embedded?page.frameLocator('#app'):page;
+ await expect(root.getByRole('heading',{name:'App needs a connection review'})).toBeVisible();
+ await expect(root.getByText('The saved app is still here.',{exact:false})).toBeVisible();
+ await expect(root.getByRole('button',{name:'Retry loading'})).toBeVisible();
+ await expect(root.getByRole('heading',{name:'No app is available'})).toHaveCount(0);
+ await archive(page,f.appId);
 });

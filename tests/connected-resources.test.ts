@@ -54,9 +54,17 @@ test('connected resources enforce schema/value separation, shared edits, project
  const visual=await change({kind:'save_component',projectId:project.id,content:{...content,resourceKind:'visualization',manifest:readManifest}});
  await assert.rejects(change({kind:'apply_component_records',componentId:visual.id,expectedVersion:0,changes:[{kind:'update_record',recordId:row,expectedVersion:1,data:{name:'Denied'}}]}),/read-only|manifest/);
  const copy=await change({kind:'copy_component',sourceComponentId:c.id,expectedVersion:0,projectId:project.id,name:'Copy'});assert.equal((await f.readComponent(ai,w.id,copy.id)).component.resource_kind,'tracker');
- await save({kind:'update_type',typeId:table,expectedVersion:0,name:'Vendors renamed',fields});
- await assert.rejects(f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:0}),/Schema changed/);
- await change({kind:'save_component',componentId:c.id,expectedVersion:0,projectId:project.id,content:{...content,manifest:{...manifest,fields:manifest.fields.map(x=>({...x,schemaVersion:1}))}}});
+ const extended=[...fields,{key:'trigger_categories',name:'Trigger categories',kind:'select',multiple:true,options:['Funding','Pipeline','Key hire'],ai:true},{key:'geographic_priority',name:'Geographic priority',kind:'text',ai:true}];
+ await save({kind:'update_type',typeId:table,expectedVersion:0,name:'Vendors',fields:extended});
+ const stillOpen=await f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:0});assert.equal(stillOpen.controls?.[0].value,'Updated vendor');
+ assert.equal((await f.readComponent(ai,w.id,c.id)).component.version,0);
+ const afterExtension=await f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:0,event:{kind:'change',action:`bound:vendor_name:${row}:1`,value:'Works after adding columns'}});
+ await f.confirm(owner,w.id,afterExtension.proposal!.id,afterExtension.proposal!.digest);
+ assert.equal((await f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:0})).controls?.[0].value,'Works after adding columns');
+ await assert.rejects(f.runFrontend(member,w.id,{componentId:c.id,expectedVersion:0}));
+ await save({kind:'update_type',typeId:table,expectedVersion:1,name:'Vendors renamed',fields:extended.map(field=>({...field,name:field.name+' changed'}))});
+ await assert.rejects(f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:0}),/Connected fields changed/);
+ await change({kind:'save_component',componentId:c.id,expectedVersion:0,projectId:project.id,content:{...content,manifest:{...manifest,fields:manifest.fields.map(x=>({...x,schemaVersion:2}))}}});
  assert.ok(await f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:1}));
  }finally{await db.close();}
 });
