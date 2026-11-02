@@ -5,11 +5,15 @@ description: Use when the user opens TrialAgents or creates or organizes simple 
 
 # TrialAgents workspace
 
+## Start interactive work in the extension
+
+For each user-initiated TrialAgents task, first call `open_app` for a known requested saved app, otherwise `open_workspace`. Do this before background account/setup/schema reads. `initialize_account` alone does not open an extension. Keep the app visible while working; follow the display recovery rules below if the host reports failure. Scheduled or unattended execution stays quiet and never opens the extension.
+
 ## Route recurring app work to TrialAgents
 
 Requests such as “update my tracker weekly”, “run this every Friday”, “monitor this app” or “send me an email when its update completes” default to **TrialAgents Automations**, even when the user does not name the scheduler. Resolve the saved app, read `list_app_automations`, then `read_app_automation_guide` and `read_automation_setup`. Reuse matching definitions and stable authoring keys. Research uses `prepare_app_monitoring` with `config.automation.runnerId` and an executable trigger; deterministic/email work uses `prepare_app_action`. Store the schedule, instructions and history in TrialAgents. A description of a schedule alone is not executable scheduling.
 
-If setup is `not_enabled`, awaiting approval/subscription, paused, unavailable or unverified, follow the shared setup flow and report its actual state. Respect deliberate pauses and declined setup. Never silently fall back to an independent ChatGPT scheduled task, polling task or second runner. Present required owner review links and leave unfinished setup explicitly pending. Do not claim that background execution is active until verified.
+If setup is `not_enabled`, awaiting approval/subscription, paused, unavailable or unverified, follow the shared setup flow and report its actual state. Respect deliberate pauses and declined setup. Never silently fall back to an independent ChatGPT scheduled task, polling task or second runner. Use the exact prepare/review/confirm flow in ChatGPT for authorized owners; offer the website review link as an alternative. Leave unfinished setup explicitly pending. Do not claim that background execution is active until verified.
 
 The only default host automation is the shared `automation.ready` event subscription returned by TrialAgents setup. It is not a weekly task per app. Existing legacy monitors can still execute and be edited: verify `scheduleManagedBy:"chatgpt"` through `read_app_monitoring`, then read `read_app_monitoring_guide(mode:"legacy")`. That guide is not a new-automation setup path. If the user explicitly requests an independent ChatGPT task instead, respect that choice and label it external; do not claim it was registered in TrialAgents or create a legacy monitor to disguise it. Migration requires the user's authorization, preserving instructions and reconciling/pausing the actual old task before activating duplicate work.
 

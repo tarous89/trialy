@@ -1,9 +1,10 @@
+import {chatServiceReview,checkServiceReview} from './review.js';
 import {randomUUID} from 'node:crypto';
 import type {Database,Connection} from '../db/database.js';
 import {withActor} from '../db/context.js';
 import {access,typeAccess,visibleFields} from '../domain/permissions.js';
 import {audit,checksum} from '../domain/evidence.js';
-import {requireHuman} from '../domain/write-authorization.js';
+import {requireHuman,requireCurrentAction} from '../domain/write-authorization.js';
 import {Service} from '../domain/service.js';
 import {WorkspaceFoundation} from '../workspace/service.js';
 import {maintenanceSchema} from '../workspace/schema.js';
@@ -41,11 +42,11 @@ export class AppMonitoring {
   if(!body.monitorId&&body.config.authoringKey){const existing=(await this.db.query("SELECT id FROM app_monitors WHERE workspace_id=$1 AND user_id=$2 AND app_id=$3 AND config->>'authoringKey'=$4",[w,a.userId,body.config.appId,body.config.authoringKey])).rows[0];if(existing)fail(409,'automation_exists','Read and revise the existing automation: '+existing.id);}
   if(body.monitorId){const old=await this.row(a,w,body.monitorId);if(old.version!==body.expectedVersion||old.app_id!==body.config.appId)fail(409,'monitoring_changed','Read the current monitoring configuration');if(!old.config.automation&&body.config.automation&&old.task)fail(409,'legacy_task_linked','Pause the existing ChatGPT task and detach its association before migrating');}
   const reviewBody={change:body,scopeStamp:checked.stamp,schemas:checked.schemas,writeScopes:checked.scopes},reviewId=randomUUID(),digest=checksum(J(reviewBody));await this.db.query("INSERT INTO app_service_previews(id,workspace_id,user_id,kind,body,digest) VALUES($1,$2,$3,'monitoring',$4,$5)",[reviewId,w,a.userId,J(reviewBody),digest]);
-  return {id:reviewId,kind:'monitoring',digest,body:reviewBody,status:'review_required',reviewUrl:appPublicUrl()+'/?tab=apps&workspaceId='+w+'&serviceReview='+reviewId};
+  return {id:reviewId,kind:'monitoring',digest,body:reviewBody,...chatServiceReview(w,reviewId,'monitoring',digest,reviewBody),status:'review_required',reviewUrl:appPublicUrl()+'/?tab=apps&workspaceId='+w+'&serviceReview='+reviewId};
  }
- async confirm(a:Actor,w:string,reviewId:string,digest:string){requireHuman(a);return this.db.transaction(async tx=>{
+ async confirm(a:Actor,w:string,reviewId:string,digest:string,review?:string){requireCurrentAction(a);return this.db.transaction(async tx=>{
   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const s=new AppMonitoring(adapter(tx)),p=await s.owner(a,w),r=(await tx.query("SELECT * FROM app_service_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND kind='monitoring' AND expires_at>now() FOR UPDATE",[reviewId,w,a.userId])).rows[0];
-  if(!r||r.digest!==digest)fail(409,'review_changed','Monitoring review unavailable or changed');if(r.consumed_at)return r.result;
+  if(!r||r.digest!==digest)fail(409,'review_changed','Monitoring review unavailable or changed');checkServiceReview(a,w,r,review);if(r.consumed_at)return r.result;
   const v=monitoringChange.parse(r.body.change),checked=await withActor({...a,origin:'ai'},()=>s.validate({...a,origin:'ai'},w,v.config,true)),monitorId=v.monitorId??randomUUID();let version=0;let previous:any;
   if(checked.stamp!==r.body.scopeStamp)fail(409,'scope_changed','Monitoring fields or permissions changed after preparation');
   if(v.monitorId){const old=await s.row(a,w,v.monitorId);previous=old;if(!old.config.automation&&v.config.automation&&old.task)fail(409,'legacy_task_linked','Detach the paused legacy task before migrating');if(old.version!==v.expectedVersion||old.app_id!==v.config.appId)fail(409,'monitoring_changed','Monitoring changed');version=old.version+1;await tx.query("UPDATE app_monitor_runs SET status='cancelled',finished_at=now() WHERE monitor_id=$1 AND status='running'",[monitorId]);await tx.query('UPDATE app_monitors SET version=$2,config=$3,scope_stamp=$4,coverage_through=CASE WHEN $5 THEN coverage_through ELSE NULL END,updated_at=now() WHERE id=$1',[monitorId,version,J(v.config),checked.stamp,!!v.config.automation&&['objective','instructions','sourcePolicy','readBindings','writeScopes'].every(k=>J(old.config[k])===J((v.config as any)[k]))]);}

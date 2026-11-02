@@ -37,7 +37,7 @@ Without a previously approved app action, writes, unknown effects and free-form 
 
 ## Approved app actions
 
-Use `prepare_app_action({workspaceId,actionId?,expectedVersion?,config})`. Its trusted review authorizes repeat execution within an explicit scope, not unlimited future requests. Existing actions require their current version. No effects run until approved. An app or connector revision, authorization expiry, revoked permission, changed data scope, or changed input record can stop execution.
+Use `prepare_app_action({workspaceId,actionId?,expectedVersion?,config})`. Its exact review authorizes repeat execution within an explicit scope, not unlimited future requests. Present the schedule, steps, recipients, data access, limits and expiry for owner agreement in ChatGPT, then call `confirm_app_service_review` using its returned confirmation arguments, unchanged review and `confirmed:true`. Use `read_app_service_review` to recover the same review after interruption. The website review link remains an alternative; sharing and connector credentials retain their separate website requirements. Existing actions require their current version. No effects run until approved. An app or connector revision, authorization expiry, revoked permission, changed data scope, or changed input record can stop execution.
 
 `config` fields:
 

@@ -10,7 +10,7 @@ export async function readTrackerDesign(input:unknown){
  if(resource==='skeleton')source=await readFile(new URL('../../plugin/trialy/skills/trialy-tracker-design/assets/vivid-template/runtime.js',import.meta.url),'utf8')+source;
  if(offset>source.length)throw new Error('Offset exceeds resource length');
  const text=source.slice(offset,offset+12000),end=offset+text.length;
- return {resource,version:'0.7.2',resources:Object.keys(paths),sha256:createHash('sha256').update(source).digest('hex'),offset,totalCharacters:source.length,nextOffset:end<source.length?end:null,text};
+ return {resource,version:'0.7.3',resources:Object.keys(paths),sha256:createHash('sha256').update(source).digest('hex'),offset,totalCharacters:source.length,nextOffset:end<source.length?end:null,text};
 }
 export function addTrackerDesignMcp(server:McpServer){
  server.registerTool('read_app_monitoring_guide',{description:'Read current TrialAgents Automations instructions for recurring app work. Defaults to shared scheduling, including for older clients. Use mode legacy only to maintain or execute an existing legacy monitor identified by read_app_monitoring; never to create a new per-app ChatGPT task. Page through nextOffset; contains no account data.',inputSchema:{offset:z.number().int().min(0).default(0),mode:z.enum(['current','legacy']).default('current')},annotations:{readOnlyHint:true,openWorldHint:false},_meta:{securitySchemes:[{type:'noauth'}]}},async({offset,mode})=>{const result=await readTrackerDesign({resource:mode==='legacy'?'legacy-monitoring':'monitoring',offset});return {content:[{type:'text' as const,text:JSON.stringify(result)}],structuredContent:{result}};});
