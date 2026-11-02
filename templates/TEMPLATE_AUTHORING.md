@@ -226,3 +226,7 @@ Before editing an existing app, call `begin_app_update` with its current compone
 For data saves through `commit_change`, include the exact `review` string returned by `prepare_change`. It contains the reviewed change details and is digest-checked by the server; never substitute a model-written summary. User authorization, current access checks and version checks remain required.
 
 Tracker sorting, search and filters must apply to the entire authorized table before pagination. Use `records.read` with `sort: {field, direction: 'asc'|'desc'}`, `q`, filters, limit and offset. Reset offset after changing sort/search/filter. Select fields sort in schema option order; numeric fields sort numerically, missing values last. Calculated-field sorting is explicitly rejected rather than silently sorting a single page. Cache identity includes sort, query and filters. Never sort or search only the loaded page.
+
+### Hosted app attribution clearance
+
+The platform places “Built with TrialAgents” at the bottom right, outside the app viewport. Reserve the bottom 62 px plus the device bottom safe-area inset for attribution. No app CTA, Delete action, pagination, sticky footer, dialog action or floating control may enter this area. Use the available app viewport height, never the outer browser height. Keep app actions inside the content viewport; do not duplicate or reposition the platform badge as an app logo. Verify desktop and mobile layouts, long records, detail panels, dialogs and unsaved-change footers for overlap and clickability.
