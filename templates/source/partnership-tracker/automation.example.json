@@ -4,7 +4,22 @@
   "appId": "REPLACE_WITH_SAVED_APP_UUID",
   "appVersion": 0,
   "trigger": {
-    "kind": "manual"
+    "kind": "database",
+    "source": "automation_runs",
+    "automationId": "REPLACE_WITH_SAVED_RESEARCH_UUID",
+    "automationVersion": 0,
+    "events": [
+      "updated"
+    ],
+    "fields": [
+      "status"
+    ],
+    "becomes": {
+      "field": "status",
+      "operator": "equals",
+      "value": "completed"
+    },
+    "includeEmpty": true
   },
   "fields": [],
   "conditions": [],

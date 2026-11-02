@@ -15,7 +15,7 @@ App 14 was reviewed against template authoring/usage guidance 1.3.9 and the actu
 
 ## Validation
 
-`node --import tsx --test tests/partnership-template.test.ts tests/partnership-integration.test.ts`: 11 tests pass. Includes all six QuickJS screens, complete/missing/denied/array/short/unknown/over-budget reads, score 93.0% from independently specified 5/5/4/4 dimensions, stale/revoked edits, version-zero updates, empty creation, archive identity/conflicts, partner-change dependency coverage, copied approvals, criteria revision, filtered company selection, hidden fields, comparison paging and typed manual completion-email validation.
+`node --import tsx --test tests/partnership-template.test.ts tests/partnership-integration.test.ts`: 11 tests pass. Includes all six QuickJS screens, complete/missing/denied/array/short/unknown/over-budget reads, score 93.0% from independently specified 5/5/4/4 dimensions, stale/revoked edits, version-zero updates, empty creation, archive identity/conflicts, partner-change dependency coverage, copied approvals, criteria revision, filtered company selection, hidden fields, comparison paging and typed database-triggered completion-email validation.
 
 The integration fixture creates all eight documented schemas and records through normal reviewed database operations after applying real migrations to PGlite. Child references use committed parent receipt UUIDs. It saves/reopens the actual catalog app, inspects six screens with the production design gate, confirms real creates/updates/archives, blocks evidence-changing partner reassignment, saves copied evaluations as Draft, and persists native layout without modifying the manifest. Stale layout updates fail.
 

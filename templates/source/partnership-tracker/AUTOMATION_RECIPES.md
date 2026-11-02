@@ -12,7 +12,7 @@ Return searched sources, duplicates, new committed count, exact record IDs, cove
 
 ## Optional dependent email
 
-Stable authoringKey: partnership_discovery_email_v1. Use the inactive automation.example.json shape only after substituting the saved app UUID/current version, approved expiry and registered owner plus explicitly selected teammates with current app/data access. Confirm a separate single-step TrialAgents email action with a manual trigger; attach its saved ID/version as completionActionId/completionActionVersion on the approved research definition. Do not add a second timer, database notification or ChatGPT email action.
+Stable authoringKey: partnership_discovery_email_v1. Use the inactive automation.example.json shape only after substituting the saved app UUID/current version, approved expiry and registered owner plus explicitly selected teammates with current app/data access. Confirm a separate single-step TrialAgents email action with a database trigger on the saved research automation ID/version and run status becoming completed. Do not add a second timer, database notification or ChatGPT email action.
 
 Subject: Partner discovery ready
 

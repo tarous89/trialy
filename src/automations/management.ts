@@ -23,7 +23,8 @@ export class AutomationManagement{
   const members=[];for(const member of candidates){try{await notificationRecipients(this.db,a,w,{appId,steps:[{kind:'email',to:[member.email]}]} as any);members.push(member);}catch(e){if(![403,404,409].includes((e as any).status))throw e;}}
   const owner=members.find(m=>m.id===a.userId);if(!owner)fail(403,'owner_required','Owner unavailable');
   const scopes=(await f.scopes(a,w)).filter((s:any)=>!s.revoked_at&&!s.schemaChanged&&s.body.autoWrite&&Date.parse(s.body.expiresAt)>Date.now()&&s.body.projectId===app.project_id&&s.body.bindings.length===1&&s.body.bindings.every((b:any)=>b.fields.every((key:string)=>tables.some((t:any)=>t.id===b.typeId&&t.fields.some((field:any)=>field.key===key&&field.writable))))).map((s:any)=>({scopeId:s.id,version:s.version}));
-  return {owner,members:members.filter(m=>m.id!==owner.id),tables,writeScopes:scopes};
+  const researchAutomations=[];for(const row of (await this.db.query("SELECT * FROM app_monitors WHERE workspace_id=$1 AND user_id=$2 AND app_id=$3 ORDER BY created_at,id",[w,a.userId,appId])).rows){try{const service=new AppMonitoring(this.db);if(await service.historyVisible(a,w,row))researchAutomations.push({id:row.id,version:row.version,name:row.config.name,enabled:row.enabled});}catch(e){if(![403,404,409].includes((e as any).status))throw e;}}
+  return {owner,researchAutomations,members:members.filter(m=>m.id!==owner.id),tables,writeScopes:scopes};
  }
  async list(a:Actor,w:string,input:unknown){await this.owner(a,w);const v=automationList.parse(input);
   const rows=(await this.db.query(`SELECT d.*,c.name AS app_name,c.archived AS app_archived FROM (

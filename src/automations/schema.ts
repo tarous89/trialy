@@ -9,7 +9,7 @@ export const schedule=z.discriminatedUnion('kind',[
   monthDay:z.number().int().min(1).max(31).default(1),monthEnd:z.enum(['skip','last_day']).default('last_day')}).strict(),
  z.object({kind:z.literal('after_success'),minutes:z.number().int().min(60).max(525600)}).strict(),
  z.object({kind:z.literal('once'),at:z.iso.datetime({offset:true})}).strict(),
- actionTrigger.options[4],actionTrigger.options[5]
+ actionTrigger.options[4],actionTrigger.options[5].refine(t=>!t.source,'Research triggers use app records; completed run data is for downstream actions')
 ]);
 export type AutomationSchedule=z.infer<typeof schedule>;
 export const executionPreference={mode:'chat',model:'latest_most_capable_available',reasoning:'high'} as const;

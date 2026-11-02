@@ -24,7 +24,7 @@
 
 ## Optional team-only email via TrialAgents
 
-If the owner separately requests notification after research, configure a reviewed TrialAgents `prepare_app_action` with a **manual completion trigger**, invoked only after successful research. Do not add an independent email schedule or assume an email action scans source records. A delivery failure must not rerun successful research. Use current typed host capabilities, fixed text, approved expiry and approved registered recipients with app access. No external prospect outreach or ChatGPT email.
+If the owner separately requests notification after research, configure a reviewed TrialAgents `prepare_app_action` with a **database trigger on research-run status becoming completed**, invoked only after successful research. Do not add an independent email schedule or assume an email action scans source records. A delivery failure must not rerun successful research. Use current typed host capabilities, fixed text, approved expiry and approved registered recipients with app access. No external prospect outreach or ChatGPT email.
 
 **Fixed subject:** `Client Signals & CRM — findings available for review`
 

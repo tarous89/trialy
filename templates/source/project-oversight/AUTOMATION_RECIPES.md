@@ -20,7 +20,7 @@
 
 ## Recipe C — Optional separate internal TrialAgents email
 
-**Not recommended by default.** Only if the accountable owner explicitly requests notifications, use `prepare_app_action` for **one separately reviewed** TrialAgents email rule. This backend action never asks ChatGPT to send mail. Recipients: current app owner, optionally already authorized TrialAgents members explicitly selected during review; addresses stored in project/contact records are not recipient permission. Avoid external investor/vendor outreach. **Trigger example:** supported database transition for a report from `In review` to `Approved` *after* a separate owner approval. This is a backend field transition, not any update. Alternatively, attach a manually triggered completion action following successful ChatGPT processing, but do not create both paths or give a second schedule to a completion-linked email.
+**Not recommended by default.** Only if the accountable owner explicitly requests notifications, use `prepare_app_action` for **one separately reviewed** TrialAgents email rule. This backend action never asks ChatGPT to send mail. Recipients: current app owner, optionally already authorized TrialAgents members explicitly selected during review; addresses stored in project/contact records are not recipient permission. Avoid external investor/vendor outreach. **Trigger example:** supported database transition for a report from `In review` to `Approved` *after* a separate owner approval. This is a backend field transition, not any update. Alternatively, attach a database-triggered action watching the research run become completed, but do not create both paths or give a second schedule to a completion-linked email.
 
 **Fixed text, no unsupported placeholders:**
 

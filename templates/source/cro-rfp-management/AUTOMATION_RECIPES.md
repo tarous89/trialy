@@ -12,7 +12,7 @@ Denied, stale or partial data is incomplete, not a successful no_update. No_upda
 
 ## Dependent internal notification
 
-Only after a report destination exists, separately approve a TrialAgents email action with authoringKey life.cro-rfp-management.email.after-verified-report.v1, using the supported manual completion trigger linked to successful research. Select owner by default and only explicitly approved registered team members with current access. Never use sponsor contact fields as recipients.
+Only after a report destination exists, separately approve a TrialAgents email action with authoringKey life.cro-rfp-management.email.after-verified-report.v1, using the database research-run status transition to completed. Select owner by default and only explicitly approved registered team members with current access. Never use sponsor contact fields as recipients.
 
 Use the current typed email action and supported placeholders from read_app_automation_guide. Suggested fixed message: “The reviewed CRO bid coverage report is available. Open the linked app to review it.” The platform supplies supported app links; never invent dynamic sponsor, period or summary placeholders. No email for chat-only output, pending review, no_update, zero committed changes, incomplete coverage, denied permissions or absent report receipt. Delivery retries must not rerun research. Inspect Logs for actual outcomes.
 

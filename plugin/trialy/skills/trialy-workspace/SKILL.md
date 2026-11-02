@@ -199,6 +199,8 @@ Do not retry unknown outcomes automatically. Use receipt/activity status and che
 
 ## App services
 
+For “research/update this app, then email me”, save two separate automations: research, then a database-triggered email watching that research run’s status become completed. Read SHARED_AUTOMATIONS.md for the exact typed contract. Do not create a manual “After processing” action or report activation before verifying the runner and both definitions.
+
 For app sharing, built-in transactional email, long LLM/API requests, or manual/scheduled/database-triggered actions, read [APP_SERVICES.md](references/APP_SERVICES.md) or call `read_app_services`. Reuse TrialAgents authentication. Prepare exact sharing/action scopes for trusted owner review; never put provider credentials in app source. External app calls return durable job handles and status is read separately.
 
 

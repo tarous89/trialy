@@ -9,6 +9,7 @@ import {appPublicUrl} from '../shared/public-url.js';
 import {appUrl} from '../shared/app-route.js';
 import {WorkspaceFoundation} from '../workspace/service.js';
 import {actionConfig,expand,matches,type ActionConfig} from './schema.js';
+import {runTrigger,readRunData} from '../automations/run-data.js';
 import {enqueueServiceJob} from './jobs.js';
 const J=JSON.stringify;
 const adapter=(tx:Connection):Database=>({query:tx.query.bind(tx),transaction:fn=>fn(tx),close:async()=>{}});
@@ -46,6 +47,7 @@ function relevantFields(c:ActionConfig){
  return [...fields].sort();
 }
 async function itemState(db:Database,a:Actor,w:string,c:ActionConfig,recordId:string|null,occurrence:string){
+ if(runTrigger(c)){const run=await readRunData(db,a,w,c,occurrence);return {signature:checksum(J(run)),data:{},run};}
  if(!recordId)return {signature:'no-record',data:{}};
  const actor={...a,accessToolId:c.appId};
  return withActor(actor,async()=>{
@@ -65,8 +67,9 @@ export async function enqueueNotification(db:Database,a:Actor,w:string,row:any,c
  if(old)return {id:old.id,status:old.status==='collecting'?'queued':old.status,replayed:true,notification:true};
  const p=await access(db,a,w);await db.query('INSERT INTO app_notification_account_locks(tenant_id) VALUES($1) ON CONFLICT DO NOTHING',[p.tenant_id]);await db.query('SELECT tenant_id FROM app_notification_account_locks WHERE tenant_id=$1 FOR UPDATE',[p.tenant_id]);
  const state=await itemState(db,a,w,c,recordId??null,occurrence);if(!state)return {id:null,status:'cancelled',diagnostic:'condition_no_longer_met'};
- let batch=(await db.query("SELECT * FROM app_notification_batches WHERE action_id=$1 AND action_version=$2 AND status='collecting' FOR UPDATE",[row.id,row.version])).rows[0];
- const key=recordId??(occurrence.startsWith('automation:')?'research':'scheduled');
+ const sourceRun=runTrigger(c)?occurrence.slice(4):null;
+ let batch=(await db.query("SELECT * FROM app_notification_batches WHERE action_id=$1 AND action_version=$2 AND source_run_id IS NOT DISTINCT FROM $3::uuid AND status='collecting' FOR UPDATE",[row.id,row.version,sourceRun])).rows[0];
+ const key=recordId??(occurrence.startsWith('run:')?occurrence:occurrence.startsWith('automation:')?'research':'scheduled');
  const capacity=(await db.query('SELECT trialy_security.notification_capacity($1) AS available',[p.tenant_id])).rows[0].available;
  const items=batch?Number((await db.query('SELECT count(*) AS n FROM app_notification_items WHERE batch_id=$1 AND item_key<>$2',[batch.id,key])).rows[0].n):0;
  if(items>=notificationPolicy.maxItems||!batch&&!capacity){
@@ -74,7 +77,7 @@ export async function enqueueNotification(db:Database,a:Actor,w:string,row:any,c
   if(batch)await db.query("UPDATE app_notification_batches SET status='blocked',diagnostic='notification_backlog_review' WHERE id=$1",[batch.id]);
   return {id:batch?.id??null,status:'blocked',diagnostic:'notification_backlog_review'};
  }
- if(!batch){const recipients=await notificationRecipients(db,a,w,c);batch={id:randomUUID()};await db.query('INSERT INTO app_notification_batches(id,workspace_id,tenant_id,user_id,app_id,action_id,action_version,not_before,origin) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',[batch.id,w,p.tenant_id,a.userId,c.appId,row.id,row.version,later(notificationPolicy.settleSeconds),a.origin]);
+ if(!batch){const recipients=await notificationRecipients(db,a,w,c);batch={id:randomUUID()};await db.query('INSERT INTO app_notification_batches(id,workspace_id,tenant_id,user_id,app_id,action_id,action_version,not_before,origin,source_run_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)',[batch.id,w,p.tenant_id,a.userId,c.appId,row.id,row.version,later(notificationPolicy.settleSeconds),a.origin,sourceRun]);
   for(const r of recipients)await db.query('INSERT INTO app_notification_recipients(batch_id,user_id,email) VALUES($1,$2,$3)',[batch.id,r.id,r.email]);
  }
  const previous=(await db.query('SELECT signature,context FROM app_notification_items WHERE batch_id=$1 AND item_key=$2',[batch.id,key])).rows[0];
@@ -156,7 +159,7 @@ export async function dispatchNotificationBatch(db:Database){
    try{const current=await notificationRecipients(d,a,b.workspace_id,c,r.email);if(current[0].id!==r.user_id)throw Object.assign(Error('changed'),{status:403});}catch(e:any){if(![403,404,409].includes(e.status))throw e;await tx.query("UPDATE app_notification_recipients SET status='cancelled',diagnostic='recipient_access_changed' WHERE batch_id=$1 AND user_id=$2",[b.id,r.user_id]);continue;}
    const jobId=randomUUID(),budget=await reserveNotification(d,b.tenant_id,r.email,jobId,false,{actionId:b.action_id,trigger:c.trigger});
    if(!budget.allowed){pending=true;next=new Date(Math.min(next.getTime(),budget.nextAt.getTime()));await tx.query('UPDATE app_notification_recipients SET diagnostic=$3 WHERE batch_id=$1 AND user_id=$2',[b.id,r.user_id,budget.reason]);continue;}
-   const step=c.steps[0],context={record:valid[0].data,recordId:valid[0].record_id,steps:valid[0].context},multiple=valid.length>1;
+   const step=c.steps[0],context={record:valid[0].data,recordId:valid[0].record_id,steps:valid[0].context,run:valid[0].run},multiple=valid.length>1;
    let expanded;try{expanded=multiple?{}:expand(step,context);}catch{await tx.query("UPDATE app_notification_recipients SET status='failed',diagnostic='notification_template' WHERE batch_id=$1 AND user_id=$2",[b.id,r.user_id]);await tx.query('UPDATE app_notification_reservations SET released=true WHERE job_id=$1 AND attempted_at IS NULL',[jobId]);continue;}
    const message={to:[r.email],appName:component.name,subject:multiple?`Pending items in ${component.name}`.slice(0,200):expanded.subject,text:multiple?`You have ${valid.length} items awaiting attention in ${component.name}.\n\nOpen the app to review the current items:\n${appPublicUrl()}${appUrl({workspaceId:b.workspace_id,appId:b.app_id})}`:expanded.text};
    const payload={origin:b.origin,action:{runId:b.id,version:b.action_version},notification:{batchId:b.id,recipientId:r.user_id,digest:checksum(J(valid.map(i=>[i.item_key,i.signature,i.context])))},message};

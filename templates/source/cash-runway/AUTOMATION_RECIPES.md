@@ -14,7 +14,7 @@ These are publisher-owned **recommendations**, never active jobs. Save the app f
 
 ## B. Dependent TrialAgents email, not a ChatGPT email
 
-**Mode:** TrialAgents Email action. **Authoring key:** `life.cash-runway.email.after-briefing.v1`. **Trigger:** manually linked to the verified successful new briefing completion, no independent schedule. **Recipients:** app owner by default, plus separately selected registered teammates with current app/data permission. Never use the finance vendor/contact email fields. **Send policy:** at most as often as the backend permits; the reviewed rule must not bypass one-app-recipient-per-hour and 15-account-recipient-deliveries-per-24h budgets. No digest/report settings in app.
+**Mode:** TrialAgents Email action. **Authoring key:** `life.cash-runway.email.after-briefing.v1`. **Trigger:** database trigger on research-run status becoming completed after verified briefing saves, no independent schedule. **Recipients:** app owner by default, plus separately selected registered teammates with current app/data permission. Never use the finance vendor/contact email fields. **Send policy:** at most as often as the backend permits; the reviewed rule must not bypass one-app-recipient-per-hour and 15-account-recipient-deliveries-per-24h budgets. No digest/report settings in app.
 
 **Exact action guidance:**
 

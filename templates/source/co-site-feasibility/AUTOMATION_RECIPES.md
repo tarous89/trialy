@@ -23,7 +23,7 @@ The sponsor creates/reuses institutions, study-site candidates, questionnaire cr
 ## C. Optional internal email after a successful reviewed briefing
 
 - Configure a separate, reviewed **TrialAgents `prepare_app_action` email** rule only if approved; never send through ChatGPT or the generated app.
-- For a ChatGPT research-to-email chain, use a **manual-triggered completion action** invoked after verified successful research. Do **not** also schedule the email independently.
+- For a ChatGPT research-to-email chain, use a **database-triggered action watching research-run status become completed**. Do **not** also schedule the email independently.
 - Default recipient: registered app owner; optional recipients must be explicitly selected registered teammates with current app and data permissions. Database `contact_channel` or an institutional address does not authorize emails to sites or candidates.
 - **Fixed subject:** `Site feasibility briefing is ready for review`
 - **Fixed message:** `An internal sponsor feasibility briefing has completed. Please open the Site Feasibility app in TrialAgents, check source coverage, and review the findings before taking action.`

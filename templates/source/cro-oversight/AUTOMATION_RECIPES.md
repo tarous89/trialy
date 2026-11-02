@@ -16,7 +16,7 @@
 
 - **Authoring key:** `life.cro-oversight.email.after-review.v1`
 - **Type:** TrialAgents Email action, not ChatGPT email.
-- **Trigger:** trusted after-success/manual dependency of A only. **NO independent schedule.** Trigger iff `status=completed`, report write successfully committed, `savedChanges > 0`, and saved report ID/UTC completion timestamp/allowed recipients verified.
+- **Trigger:** database transition of A’s research-run status to completed. **NO independent schedule.** Trigger iff `status=completed`, report write successfully committed, `savedChanges > 0`, and saved report ID/UTC completion timestamp/allowed recipients verified.
 - **Recipient:** current app owner by default and only separately approved existing TrialAgents team members with current permission. Never CRO emails or contact-field addresses.
 - **Subject:** `CRO Oversight — new sponsor review ready ({cutoff})`
 - **Message:** `A new sponsor oversight report has been saved for {engagement_label} and cutoff {verified_cutoff}.

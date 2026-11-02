@@ -19,7 +19,7 @@ import {AutomationEvents,deliverAutomationEvent,signedHeaders} from '../src/auto
 import {dispatchDue,dispatchDaily,recoverWork,isolatedAutomationStep,dispatchCompletions} from '../src/automations/worker.js';
 import {localInstant,nextCalendar} from '../src/automations/schedules.js';
 import {schedule} from '../src/automations/schema.js';
-import {AppActions,processAppAction} from '../src/app-services/service.js';
+import {AppActions,processAppAction,dispatchAppActions} from '../src/app-services/service.js';
 import type {Actor} from '../src/shared/schema.js';
 
 test('calendar schedules resolve DST, weekly anchors and month end without completion drift',()=>{
@@ -117,17 +117,63 @@ test('shared automations isolate failures, preserve saved apps and enforce revie
    await pg.query('UPDATE automation_dispatch SET next_at=now() WHERE monitor_id=$1',[mon.id]);await withDatabaseContext({service:'worker'},()=>dispatchDue(db));assert.equal((await pg.query<any>('SELECT id FROM automation_occurrences WHERE monitor_id=$1',[mon.id])).rows.length,1);
    await m.control(human,w.id,mon.id,0,false);assert.equal((await s.agenda(ai,w.id,runner.id)).rows.find((r:any)=>r.monitor_id===mon.id).status,'paused');
   });
-  await t.test('follow-up dispatch is once only; pausing stops effects while research remains completed',async()=>{
+  await t.test('run database triggers fan out once, preserve reports and stop delivery after access changes',async()=>{
    await pg.query("UPDATE automation_occurrences SET status='blocked' WHERE status='queued'");
-   const actions=new AppActions(db),draft=await actions.prepare(human,w.id,{config:{name:'Research email',appId:app.id,appVersion:0,trigger:{kind:'manual'},steps:[{id:'notify',kind:'email',to:[human.userId+'@example.invalid'],subject:'Research report',text:'{{steps.research.summary}}'}],expiresAt:expiry}}),action=await actions.confirm(human,w.id,draft.id,draft.digest);
-   const p=await m.prepare(ai,w.id,{config:{...config,name:'Report and notify',automation:{...config.automation,completionActionId:action.id,completionActionVersion:0}}}),mon=await m.confirm(human,w.id,p.id,p.digest);await withDatabaseContext({service:'worker'},()=>dispatchDue(db));const o=(await s.agenda(ai,w.id,runner.id)).rows.find((r:any)=>r.monitor_id===mon.id),c:any=await s.claim(ai,w.id,{runnerId:runner.id,occurrenceId:o.id,requestKey:randomUUID()});
-   await s.finish(ai,w.id,{occurrenceId:o.id,claimToken:c.claimToken,result:{status:'completed',summary:'Confirmed final report'}});await withDatabaseContext({service:'worker'},()=>dispatchCompletions(db));await withDatabaseContext({service:'worker'},()=>dispatchCompletions(db));const runs=(await pg.query<any>('SELECT * FROM app_notification_batches WHERE action_id=$1',[action.id])).rows;assert.equal(runs.length,1);assert.equal((await pg.query<any>('SELECT context FROM app_notification_items WHERE batch_id=$1',[runs[0].id])).rows[0].context.research.summary,'Confirmed final report');
-   await m.control(human,w.id,mon.id,0,false);const {dispatchNotificationBatch}=await import('../src/app-services/notifications.js');await pg.query('UPDATE app_notification_batches SET not_before=now() WHERE id=$1',[runs[0].id]);await withDatabaseContext({service:'worker'},()=>dispatchNotificationBatch(db));assert.equal((await actions.status(human,w.id,runs[0].id)).status,'cancelled');await withDatabaseContext({service:'worker'},()=>processAppAction(db));assert.equal((await pg.query<any>('SELECT count(*)::int AS n FROM app_service_jobs')).rows[0].n,0);assert.equal((await pg.query<any>('SELECT status FROM automation_occurrences WHERE id=$1',[o.id])).rows[0].status,'completed');
+   const actions=new AppActions(db),p=await m.prepare(ai,w.id,{config:{...config,name:'Report producer'}}),mon=await m.confirm(human,w.id,p.id,p.digest);
+   const actionConfig={name:'Research email',appId:app.id,appVersion:0,trigger:{kind:'database',source:'automation_runs',automationId:mon.id,automationVersion:0,events:['updated'],fields:['status'],becomes:{field:'status',operator:'equals',value:'completed'}},steps:[{id:'notify',kind:'email',to:[human.userId+'@example.invalid'],subject:'Research report',text:'{{run.summary}} / {{run.savedChanges}}'}],expiresAt:expiry};
+   const create=async(config:any)=>{const draft=await actions.prepare(human,w.id,{config});return actions.confirm(human,w.id,draft.id,draft.digest);};
+   await assert.rejects(create({...actionConfig,trigger:{kind:'manual'}}),/Run fields/);
+   await assert.rejects(create({...actionConfig,steps:[{...actionConfig.steps[0],text:'{{steps.research.summary}}'}],trigger:{kind:'manual'}}),/database trigger/);
+   await assert.rejects(create({...actionConfig,trigger:{...actionConfig.trigger,automationVersion:1}}),/current research/);
+   const action=await create(actionConfig),second=await create({...actionConfig,name:'Independent consumer'}),quiet=await create({...actionConfig,name:'Only changed data',trigger:{...actionConfig.trigger,includeEmpty:false}});
+   await assert.rejects(m.prepare(ai,w.id,{config:{...config,automation:{...config.automation,completionActionId:action.id,completionActionVersion:0}}}),/database-triggered/);
+   const tick=async(id:string)=>{await pg.query("UPDATE app_actions SET next_at=now()-interval '1 day' WHERE id=$1",[id]);await withDatabaseContext({service:'worker'},()=>dispatchAppActions(db));};
+   await tick(action.id);assert.equal((await pg.query<any>('SELECT id FROM app_notification_batches WHERE action_id=$1',[action.id])).rows.length,0);
+   await withDatabaseContext({service:'worker'},()=>dispatchDue(db));const o=(await s.agenda(ai,w.id,runner.id)).rows.find((r:any)=>r.monitor_id===mon.id),c:any=await s.claim(ai,w.id,{runnerId:runner.id,occurrenceId:o.id,requestKey:randomUUID()});
+   await assert.rejects(actions.runNow(human,w.id,action.id,randomUUID()),/committed research run/);
+   await assert.rejects(actions.enqueue(human,w.id,action.id,'run:'+c.runId,undefined,[],{run:{summary:'Forged report'}}),/eligible completed/);
+   const finish={occurrenceId:o.id,claimToken:c.claimToken,result:{status:'completed',summary:'Confirmed final report'}};
+   await s.finish(ai,w.id,finish);await s.finish(ai,w.id,finish);await tick(action.id);await tick(action.id);await tick(second.id);await tick(quiet.id);
+   const runs=(await pg.query<any>('SELECT * FROM app_notification_batches WHERE action_id=$1',[action.id])).rows;
+   assert.equal(runs.length,1);assert.equal(runs[0].source_run_id,c.runId);
+   assert.equal((await pg.query<any>('SELECT id FROM app_notification_batches WHERE action_id=$1',[second.id])).rows.length,1);
+   assert.equal((await pg.query<any>('SELECT id FROM app_notification_batches WHERE action_id=$1',[quiet.id])).rows.length,0);
+   assert.equal((await pg.query<any>('SELECT context FROM app_notification_items WHERE batch_id=$1',[runs[0].id])).rows[0].context.run.summary,'Confirmed final report');
+   // A second logical run must retain its own report even while the first waits.
+   const again={id:randomUUID()};await pg.query("INSERT INTO automation_occurrences(id,workspace_id,user_id,runner_id,monitor_id,monitor_version,occurrence_key,due_at,reason) VALUES($1,$2,$3,$4,$5,0,$6,now(),'scheduled_due')",[again.id,w.id,human.userId,runner.id,mon.id,randomUUID()]);const next:any=await s.claim(ai,w.id,{runnerId:runner.id,occurrenceId:again.id,requestKey:randomUUID()});
+   await s.finish(ai,w.id,{occurrenceId:again.id,claimToken:next.claimToken,result:{status:'completed',summary:'Second completed report'}});await tick(action.id);
+   assert.equal((await pg.query<any>('SELECT id FROM app_notification_batches WHERE action_id=$1',[action.id])).rows.length,2);
+   await pg.query('UPDATE app_actions SET event_cursor=0 WHERE id=$1',[action.id]);await tick(action.id);
+   assert.equal((await pg.query<any>('SELECT id FROM app_notification_batches WHERE action_id=$1',[action.id])).rows.length,2,'Replay must not duplicate reports');
+   for(const status of ['failed','no_update']){
+    const id=randomUUID();await pg.query("INSERT INTO automation_occurrences(id,workspace_id,user_id,runner_id,monitor_id,monitor_version,occurrence_key,due_at,reason) VALUES($1,$2,$3,$4,$5,0,$6,now(),'scheduled_due')",[id,w.id,human.userId,runner.id,mon.id,randomUUID()]);
+    const claimed:any=await s.claim(ai,w.id,{runnerId:runner.id,occurrenceId:id,requestKey:randomUUID()});await s.finish(ai,w.id,{occurrenceId:id,claimToken:claimed.claimToken,result:{status,summary:'No completion report'}});await tick(action.id);
+    assert.equal((await pg.query<any>('SELECT id FROM app_notification_batches WHERE action_id=$1',[action.id])).rows.length,2,status+' must not notify');
+   }
+   // Rendering uses server-sourced run fields and current permissions.
+   await actions.control(human,w.id,second.id,true);const {dispatchNotificationBatch}=await import('../src/app-services/notifications.js');
+   await pg.query("UPDATE app_notification_batches SET not_before=now()-interval '1 day' WHERE id=$1",[runs[0].id]);await withDatabaseContext({service:'worker'},()=>dispatchNotificationBatch(db));
+   const jobs=(await pg.query<any>("SELECT * FROM app_service_jobs WHERE payload->'notification'->>'batchId'=$1",[runs[0].id])).rows;assert.equal(jobs.length,1);assert.equal(jobs[0].payload.message.text,'Confirmed final report / 0');
+   await m.control(human,w.id,mon.id,0,false);
+   const {processServiceJob}=await import('../src/app-services/jobs.js');let delivered=0;
+   await withDatabaseContext({service:'worker'},()=>processServiceJob(db,{email:async()=>{delivered++;return {id:'must-not-send'};}}));assert.equal(delivered,0);
+   assert.equal((await pg.query<any>('SELECT status FROM automation_occurrences WHERE id=$1',[o.id])).rows[0].status,'completed');
    assert.deepEqual((await pg.query<any>('SELECT source,version,bindings FROM workspace_components WHERE id=$1',[app.id])).rows[0],original);
+   // A compatible app publication can invalidate the consumer without rerunning research.
    const revision=await f.preview(human,w.id,{kind:'save_component',componentId:app.id,expectedVersion:0,content:{name:'Always available',format:'frontend-js',sourceAccess:'bindings',source:'return {html:"<h1>Updated saved app</h1>"};',bindings:[]}});await f.confirm(human,w.id,revision.id,revision.digest);await m.control(human,w.id,mon.id,0,true);
-   assert.equal((await m.read(ai,w.id,mon.id)).availability,'ready','A layout publication must not pause research when its email action needs separate review');
-   await pg.query('UPDATE automation_occurrences SET completion_dispatched_at=NULL WHERE id=$1',[o.id]);await withDatabaseContext({service:'worker'},()=>dispatchCompletions(db));const kept=(await pg.query<any>('SELECT status,result FROM automation_occurrences WHERE id=$1',[o.id])).rows[0];assert.equal(kept.status,'completed');assert.equal(kept.result.deliveryStatus,'blocked');assert.equal(kept.result.summary,'Confirmed final report');
+   assert.equal((await m.read(ai,w.id,mon.id)).availability,'ready');await tick(action.id);
+   assert.equal((await pg.query<any>('SELECT status FROM automation_occurrences WHERE id=$1',[o.id])).rows[0].status,'completed');
    original=(await pg.query<any>('SELECT source,version,bindings FROM workspace_components WHERE id=$1',[app.id])).rows[0];
+  });
+  await t.test('previously approved manual completion chains remain compatible',async()=>{
+   const actions=new AppActions(db),d=await actions.prepare(human,w.id,{config:{name:'Legacy action',appId:app.id,appVersion:original.version,trigger:{kind:'manual'},steps:[{id:'notify',kind:'email',to:[human.userId+'@example.invalid'],subject:'Legacy report',text:'Saved report'}],expiresAt:expiry}}),action=await actions.confirm(human,w.id,d.id,d.digest);
+   const p=await m.prepare(ai,w.id,{config:{...config,name:'Legacy producer'}}),mon=await m.confirm(human,w.id,p.id,p.digest);
+   // Seed the pre-upgrade linkage without exposing its creation through new APIs.
+   await pg.query("UPDATE app_monitors SET config=jsonb_set(config,'{automation,completionActionId}',to_jsonb($2::text)) WHERE id=$1",[mon.id,action.id]);await pg.query("UPDATE app_monitors SET config=jsonb_set(config,'{automation,completionActionVersion}','0'::jsonb) WHERE id=$1",[mon.id]);
+   await pg.query("UPDATE app_actions SET config=jsonb_set(config,'{steps,0,text}',to_jsonb($2::text)) WHERE id=$1",[action.id,'{{steps.research.summary}}']);
+   const id=randomUUID();await pg.query("INSERT INTO automation_occurrences(id,workspace_id,user_id,runner_id,monitor_id,monitor_version,occurrence_key,due_at,reason,completion_action_id,completion_action_version) VALUES($1,$2,$3,$4,$5,0,$6,now(),'scheduled_due',$7,0)",[id,w.id,human.userId,runner.id,mon.id,randomUUID(),action.id]);
+   const claimed:any=await s.claim(ai,w.id,{runnerId:runner.id,occurrenceId:id,requestKey:randomUUID()});await s.finish(ai,w.id,{occurrenceId:id,claimToken:claimed.claimToken,result:{status:'completed',summary:'Legacy report preserved'}});
+   await withDatabaseContext({service:'worker'},()=>dispatchCompletions(db));await withDatabaseContext({service:'worker'},()=>dispatchCompletions(db));assert.equal((await pg.query<any>('SELECT id FROM app_notification_batches WHERE action_id=$1',[action.id])).rows.length,1);
   });
   await t.test('subscription refresh, rotation, expiry, unsubscribe and delivery signatures',async()=>{
    const events=new AutomationEvents(db,transport),existing=await events.subscribe(ai,v),newKey='whsec_'+randomBytes(32).toString('base64');assert.equal((await events.subscribe(ai,{...v,delivery:{...v.delivery,secret:newKey}})).id,existing.id);

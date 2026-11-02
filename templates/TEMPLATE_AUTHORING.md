@@ -76,18 +76,18 @@ Use the existing catalog documentation fields; the following is an authoring che
 | `tasks` and `examples` | Concrete trigger, timezone, source eligibility, exact research instructions/action, output destination, deduplication, coverage, scope/expiry/limits and no-result/completion criteria. Provide a no-automation path. |
 | `limitations` | Unsupported custom-section controls, pending host activation, requested versus verified model settings, external delivery dependencies and any manual fallback. |
 
-Choose the smallest useful automation arrangement; templates may offer these choices without requiring any of them:
+Compose independent automations from typed triggers and operations; these examples are not fixed modes. Add only the work the user requests:
 
 - **No automation:** a static checklist or calculator opens and works with app-level access, no runner, connector or database if not needed. Never add a token recurring task just to satisfy an example.
 - **Research:** save the app, reuse the owner/workspace runner, prepare one app-linked monitor with an explicit daily/weekly/monthly, one-time, after-success, record-date or database-change trigger supported by its schema. Define authoritative sources, inclusion/exclusion, evidence dates/links, deduplication, authorized destination and completion conditions. A schedule's due time is not a promised completion time.
 - **Standalone email:** prepare one separately approved email action on a daily-or-slower calendar schedule, on entry creation, or on an explicit database field transition. The backend dispatches it without a ChatGPT send decision. Select the owner by default and add only explicitly approved registered team members with current app/data access. An address stored in a record is not recipient permission.
-- **Research plus email:** prepare the monitor and a separately approved TrialAgents completion action with a manual trigger. The engine invokes it after the required successful research result. A report with no new findings may still be `completed`; `no_update` permits silence only when the reviewed notification policy allows it. Do not give email a second independent schedule, rerun successful research after delivery failure, or send through ChatGPT email tools.
+- **Research plus email:** save the research monitor, then a separately approved action with `trigger.kind:"database"`, `source:"automation_runs"`, the saved producer ID/version, and status becoming completed (see the shared automation guide for the exact schema). The platform emits this committed run transition after research saves; company row updates are not batch completion. A report with no new findings may still be `completed`; `no_update` permits silence only when the reviewed notification policy allows it. Do not give email a second independent schedule, rerun successful research after delivery failure, or send through ChatGPT email tools.
 
 Use these examples when they fit the requested app:
 
 | User intent | Template authoring expectation |
 | --- | --- |
-| New lead signals, email at most daily | Schedule ChatGPT research daily, save authorized findings with stable signal identities, and use `no_update` when the approved policy permits silence. Attach a separately approved completion email with a manual trigger. Do not give that email an independent schedule. |
+| New lead signals, email at most daily | Schedule ChatGPT research daily, save authorized findings with stable signal identities, and use `no_update` when the approved policy permits silence. Create a separately approved database-triggered email on that research run becoming completed. Do not give that email an independent schedule. |
 | An existing app update every two days | Use one email action with a calendar schedule every two days and fixed approved recipients. Email templates do not implicitly scan a table or perform research; add separately approved processing if current analysis is needed. |
 | A new entry needs processing, then another person must review it | Trigger ChatGPT processing from the entry and save its authorized result plus an explicit status transition such as `review_status: pending → ready`. Configure the separate email rule to fire on that transition. Processing can run multiple times daily; delivery limits apply independently. Do not also attach a completion email for the same handoff. |
 | No ongoing work is needed | Save a fully usable app with no automation. Do not invent a schedule or recipient list to satisfy the template. |
@@ -232,3 +232,5 @@ Show the active sort direction visibly beside the column label (↑ ascending / 
 ### Hosted app attribution clearance
 
 The platform places “Built with TrialAgents” at the bottom left, outside the app viewport. Reserve the bottom 62 px plus the device bottom safe-area inset for attribution. No app CTA, Delete action, pagination, sticky footer, dialog action or floating control may enter this area. Use the available app viewport height, never the outer browser height. Keep app actions inside the content viewport; do not duplicate or reposition the platform badge as an app logo. Verify desktop and mobile layouts, long records, detail panels, dialogs and unsaved-change footers for overlap and clickability.
+
+Automation lists must remain compact: clamp long instructions to a short preview and keep actions visible. Editing opens a dedicated page, following the Add automation layout; never expand the full editor inside a list row. Do not label manual or unknown triggers “After processing”.
