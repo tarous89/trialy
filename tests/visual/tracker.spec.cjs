@@ -31,9 +31,9 @@ for (const width of [1440, 1100, 390]) test(`Vivid connected tracker at ${width}
   await expect(tracker.locator("tbody tr")).toHaveCount(25);
   if(await tracker.getByRole("button",{name:"Filter options",exact:true}).isVisible())await tracker.getByRole("combobox", {name:"Filter by Status",exact:true}).press("Escape");
   await tracker.getByRole("button", { name: "Company", exact: true }).click();
-  await expect(tracker.getByRole("button", { name: "Company", exact: true })).toHaveAttribute("aria-sort", "ascending");
+  await expect(tracker.locator("th").filter({has:tracker.getByRole("button", { name: "Company", exact: true })})).toHaveAttribute("aria-sort", "ascending");
   await tracker.getByRole("button", { name: "Company", exact: true }).click();
-  await expect(tracker.getByRole("button", { name: "Company", exact: true })).toHaveAttribute("aria-sort", "descending");
+  await expect(tracker.locator("th").filter({has:tracker.getByRole("button", { name: "Company", exact: true })})).toHaveAttribute("aria-sort", "descending");
   await tracker.getByRole("button", { name: "Open record details", exact: true }).first().click();
   await expect(tracker.getByRole("dialog", { name: "Record details" })).toBeVisible();
   const drawer = await tracker.getByRole("dialog", { name: "Record details" }).evaluate((el) => ({ top: el.getBoundingClientRect().top, height: el.getBoundingClientRect().height, viewport: innerHeight }));

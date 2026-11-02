@@ -12,7 +12,7 @@ Template tools store configuration and optional theme overrides and the approved
 
 ## Browser behavior
 
-The same iframe stays mounted for navigation and successful saves. Authorized pages are held in component-instance memory for 120 seconds, at most 16 pages. Cache keys include table, page, page size and filters. Permission-version or configuration changes invalidate snapshots; successful saves discard old pages. Nothing is stored in localStorage, service workers or a shared browser data cache.
+The same iframe stays mounted for navigation and successful saves. Authorized pages are held in component-instance memory for 120 seconds, at most 16 pages. Cache keys include table, page, page size, query, sort field/direction and filters. Permission-version or configuration changes invalidate snapshots; successful saves discard old pages. Nothing is stored in localStorage, service workers or a shared browser data cache.
 
 Optional background requests prefetch up to two neighboring tabs and the next page of the active table. It never changes the visible view. Generation checks discard results arriving after navigation/save/unmount. Cached navigation cannot bypass pending-edit review. Existing focus/periodic access rechecks clear the view if access changes.
 
@@ -22,7 +22,7 @@ The public, user-data-free frame shell supports HTTP revalidation. Authenticated
 
 The populated integration fixture measures 25 rows with 6 fields, including computed values. Its query budget rejects a return to per-cell authorization queries. Other tests cover scope, stale writes, drafts, typed controls, cache expiry/invalidation and bounded memory.
 
-Local embedded-database timings are diagnostic, not a production latency SLA. Browser host/network latency, unusually expensive computations, and custom-code runtime costs remain separate factors. Counts are current SQL aggregates, not asynchronously materialized values; only expensive aggregates demonstrated by profiling should gain a dependency-aware materialization system. Existing page-local search/sort semantics remain unchanged.
+Local embedded-database timings are diagnostic, not a production latency SLA. Browser host/network latency, unusually expensive computations, and custom-code runtime costs remain separate factors. Counts are current SQL aggregates, not asynchronously materialized values; only expensive aggregates demonstrated by profiling should gain a dependency-aware materialization system. Search and sorting apply to the authorized table before pagination.
 
 Neighboring tabs and the next data page are prefetched sequentially with bounded memory, including the signed controls needed for local rendering. Both previews and saved tools can use the cache. Successful writes clear snapshots; access/version rechecks still clear unavailable views. Repeated pending tab navigation is coalesced to the most recent target.
 
@@ -145,3 +145,9 @@ the full driver result. The four-tab fixture now includes these non-cloneable
 internals, and `tests/read-metadata.test.ts` checks clone isolation and the final
 freshness check with this result shape. A live authorized component/output read
 is required in release verification, in addition to health checks and PGlite tests.
+
+## Cached sorting and inline filters
+
+Sorting and search are data navigation: cached results must pass the same freshness and pending-edit guards as page/tab changes, and controls must be rebound by record/field ID before painting. Reusing the old slot bindings after changing row order displayed the previous order on the third sort click. Missing cached controls fall back to an authorized server read. Ignoring edits preserves the selected sort and direction. Browser regressions cover repeated mixed-country sorting, cached search, record/detail/edit identity, pagination, expiry and pending edits/new rows in both surfaces.
+
+Overflow filters expand in a full-width grid below the one-line search/action row, with 16px gaps and responsive wrapping. They push the table down without an overlay or nested vertical scroll. Active column headers show a direction arrow and expose `aria-sort` on the header.

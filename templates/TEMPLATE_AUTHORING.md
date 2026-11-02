@@ -1,6 +1,6 @@
 # TrialAgents template authoring standard
 
-Version: 1.3.9
+Version: 1.3.10
 
 This is the living engineering contract for templates served by TrialAgents. Update it when a verified renderer, lifecycle or host-integration lesson changes. Retrieve the current copy with `read_app_template_guidance(resource:"authoring")`; follow `nextOffset` to the end. The response includes a version and content hash. Packaged plugin examples are not the catalog.
 
@@ -161,7 +161,7 @@ Use host/platform navigation adapters for links and Home; do not open a new brow
 
 Keep the primary data toolbar on **one line**: a shrinkable search input and the main action (for example, Add record). When the remaining controls do not fit, move secondary filters and sorting into a labelled **Filters** disclosure. Measure available container width and actual control widths; do not rely only on device breakpoints. The action must not fall onto a second row. Shorten its visible label at very narrow widths while retaining its accessible name. Show the active-filter count on the disclosure.
 
-The disclosure is local UI: opening it must not fetch data. Keep it within the viewport, allow its contents to scroll, preserve selections and search when resizing, expose `aria-expanded` and `aria-controls`, and support keyboard navigation, Escape with focus return, and outside-click dismissal. Keep an overflow-safe, usable fallback for older frame code and static design inspection; enable collapsible controls only when their frame handler is present. Do not hide controls permanently to make a screenshot fit.
+The disclosure is local UI: opening it must not fetch data. Expand it in normal document flow below the search/action row, with horizontally arranged controls that wrap and at least 16px horizontal and vertical gaps. Opening it pushes the table down; never position it over records or give it a separate vertical scrollbar. Keep it within the viewport, preserve selections and search when resizing, expose `aria-expanded` and `aria-controls`, and support keyboard navigation, Escape with focus return, and outside-click dismissal. Keep an overflow-safe, usable fallback for older frame code and static design inspection; enable collapsible controls only when their frame handler is present. Do not hide controls permanently to make a screenshot fit.
 
 Use one main vertical scroll. Wide data tables may scroll horizontally inside their own labelled region; the page and action toolbar must not overflow horizontally. Keep tab navigation reachable, wrap long titles and values, stack overview cards as needed, and let details/settings fit the viewport without covering their close/save actions. Test 320, 390, 768, 1100 and 1440 CSS pixels, long labels, several active filters, narrow host containers and zoom/reflow. Fewer controls should remain inline when there is room. Preserve selection, inputs, scroll and business state across responsive changes.
 
@@ -226,6 +226,8 @@ Before editing an existing app, call `begin_app_update` with its current compone
 For data saves through `commit_change`, include the exact `review` string returned by `prepare_change`. It contains the reviewed change details and is digest-checked by the server; never substitute a model-written summary. User authorization, current access checks and version checks remain required.
 
 Tracker sorting, search and filters must apply to the entire authorized table before pagination. Use `records.read` with `sort: {field, direction: 'asc'|'desc'}`, `q`, filters, limit and offset. Reset offset after changing sort/search/filter. Select fields sort in schema option order; numeric fields sort numerically, missing values last. Calculated-field sorting is explicitly rejected rather than silently sorting a single page. Cache identity includes sort, query and filters. Never sort or search only the loaded page.
+
+Show the active sort direction visibly beside the column label (↑ ascending / ↓ descending), with `aria-sort` on the column header. Every cached sort or search must rebind controls by record and field ID, enforce snapshot freshness, and respect pending edits/new rows, just like pagination. Test at least six alternating sort clicks after warming both directions, cached searches, page boundaries, expired snapshots and pending edits on standalone and embedded surfaces. Assert that displayed values, Details actions and edit bindings refer to the same record.
 
 ### Hosted app attribution clearance
 

@@ -33,8 +33,17 @@ for(const surface of ['plugin','app']){
    const toggle=tracker.getByRole('button',{name:'Filter options',exact:true}),collapsed=await toggle.isVisible();
    if(collapsed){await toggle.click();await expect(toggle).toHaveAttribute('aria-expanded','true');}
    const panel=tracker.getByRole('group',{name:'Filters and sorting'});await expect(panel).toBeVisible();
+   if(width===1440)await page.screenshot({path:`test-results/responsive-desktop-${surface}.png`});
    const box=await panel.boundingBox();expect(box.x).toBeGreaterThanOrEqual(0);expect(box.x+box.width).toBeLessThanOrEqual(width);
-   expect(await panel.evaluate(el=>Array.from(el.querySelectorAll('select')).every(select=>{const r=select.getBoundingClientRect();return el.contains(document.elementFromPoint(r.right-12,r.top+r.height/2));}))).toBe(true);
+   if(collapsed){
+    const searchBox=await search.boundingBox(),tableBox=await tracker.locator('#trackerTable').boundingBox();
+    expect(box.y-searchBox.y-searchBox.height).toBeGreaterThanOrEqual(15);
+    expect(tableBox.y).toBeGreaterThanOrEqual(box.y+box.height);
+    expect(await panel.evaluate(el=>({position:getComputedStyle(el).position,gap:getComputedStyle(el).gap,overflow:getComputedStyle(el).overflowY}))).toEqual({position:'static',gap:'16px',overflow:'visible'});
+   }
+   for(const select of await panel.locator('select').all()){
+    await select.scrollIntoViewIfNeeded();expect(await select.evaluate(el=>{const r=el.getBoundingClientRect();return el===document.elementFromPoint(r.right-12,r.top+r.height/2);})).toBe(true);
+   }
    await tracker.getByRole('combobox',{name:'Filter by Qualification 1',exact:true}).selectOption('Active');
    await expect(tracker.locator('tbody tr')).toHaveCount(13);
    await tracker.getByRole('combobox',{name:'Filter by Qualification 1',exact:true}).press('Escape');

@@ -129,9 +129,11 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   footer();
  }
  function local(event){
-  const navigation=/^(tab:|filter:|next$|previous$|overview-next$|overview-previous$|overview-panel$)/.test(event.action||'');
+  // Sorting/searching change the records assigned to slots just like paging.
+  // Rebind signed controls, check freshness and guard pending edits on every such read.
+  const navigation=/^(tab:|filter:|sort-field:|sort$|query$|next$|previous$|overview-next$|overview-previous$|overview-panel$)/.test(event.action||'');
   if(navigation&&(Object.keys(pending).length||uiState?.newRow))return false;
-  if(!model||!/^((draft|resize-column|resize-row|example|tab|filter|sort-field|details|tab-name|tab-visible|column-label|visibility|move-tab|move-column|reorder-tab|reorder-column):|tracker:add$|discard-new$|query$|sort$|next$|previous$|overview-next$|overview-previous$|overview-panel$|settings$|discard-layout$|column-tab$|layout-name$|layout-description$|close-details$)/.test(event.action||''))return false;
+  if(!model||!/^((draft|resize-column|resize-row|example|tab|filter|sort-field|details|tab-name|tab-visible|column-label|visibility|move-tab|move-column|reorder-tab|reorder-column):|tracker:add$|discard-new$|discard-edits$|query$|sort$|next$|previous$|overview-next$|overview-previous$|overview-panel$|settings$|discard-layout$|column-tab$|layout-name$|layout-description$|close-details$)/.test(event.action||''))return false;
   const old=uiState,next=structuredClone(uiState);
   try{
    const output=renderTracker(model.config,model.theme,{state:next,event,saved:model.saved,writable:model.writable},{call:(name,value)=>{
@@ -155,7 +157,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  }
  function footerAction(action){
   if(action==='save-edits')dispatch({kind:'submit',action:'bound-batch',value:null,form:{...pending}});
-  else if(action==='discard-edits'){pending=Object.create(null);if(!local({kind:'change',action:'sort',value:uiState?.sorts?.[uiState.tab]||''})){for(const el of root.querySelectorAll('[data-action]')){const k=el.getAttribute('data-action');if(k in original){if(el.type==='checkbox')el.checked=original[k];else el.value=original[k];el.style.background='';}}footer();}}
+  else if(action==='discard-edits'){pending=Object.create(null);if(!local({kind:'change',action:'discard-edits'})){for(const el of root.querySelectorAll('[data-action]')){const k=el.getAttribute('data-action');if(k in original){if(el.type==='checkbox')el.checked=original[k];else el.value=original[k];el.style.background='';}}footer();}}
   else if(action==='save-layout'||action==='discard-layout')dispatch({kind:'click',action,value:null,form:{}});
  }
  window.addEventListener('message',event=>{
@@ -195,7 +197,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   if(e.key==='Escape'&&optionsOpen){e.preventDefault();setOptionsOpen(false,true);return;}
   const editor=e.target.closest('.cell-input,.example-input');
   if(editor&&e.key==='Enter'&&e.target.matches('input,select')){e.preventDefault();e.target.blur();return;}
-  if(editor&&e.key==='Escape'){e.preventDefault();if(editor._before){pending=Object.assign(Object.create(null),editor._before.pending);uiState.examples=editor._before.examples;}e.target.blur();local({kind:'change',action:'sort',value:uiState?.sorts?.[uiState.tab]||''});return;}
+  if(editor&&e.key==='Escape'){e.preventDefault();if(editor._before){pending=Object.assign(Object.create(null),editor._before.pending);uiState.examples=editor._before.examples;}e.target.blur();local({kind:'change',action:'discard-edits'});return;}
   const resize=e.target.closest('[data-resize-column],[data-resize-row]');
   if(resize&&['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){e.preventDefault();const column=resize.hasAttribute('data-resize-column'),delta=['ArrowLeft','ArrowUp'].includes(e.key)?-10:10;dispatch({kind:'change',action:(column?'resize-column:':'resize-row:')+(column?resize.dataset.resizeColumn:resize.dataset.resizeRow),value:Number(resize.getAttribute('aria-valuenow'))+delta});const next=Array.from(root.querySelectorAll(column?'[data-resize-column]':'[data-resize-row]')).find(x=>(column?x.dataset.resizeColumn:x.dataset.resizeRow)===(column?resize.dataset.resizeColumn:resize.dataset.resizeRow));next?.focus({preventScroll:true});return;}
   const handle=e.target.closest('[data-reorder]');

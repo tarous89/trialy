@@ -11,9 +11,9 @@ export function addWideTrackerFixture(app:Express,f:WorkspaceFoundation,s:Servic
   const save=async(op:any)=>{const p=await s.preview(actor,workspaceId,op);return s.commit(actor,p.id,p.digest);};
   const tabs=[];
   for(const [index,size] of [28,21,12,18].entries()){
-   const fields=Array.from({length:size},(_,i)=>({key:'field_'+i,name:i===0?'Name':'Qualification '+i,kind:i>0&&i<=5?'select':'text',ai:true,...(i>0&&i<=5?{options:['Active','Pending']}:{})}));
+   const fields=Array.from({length:size},(_,i)=>({key:'field_'+i,name:i===0?'Name':i===2?'Country':'Qualification '+i,kind:i>0&&i<=5?'select':'text',ai:true,...(i>0&&i<=5?{options:i===2?['DE','GB','US']:['Active','Pending']}:{})}));
    const typeId=(await save({kind:'create_type',name:'Responsive table '+index,fields})).objects[0].id;
-   await save({kind:'bulk_records',changes:Array.from({length:25},(_,r)=>({kind:'create_record',typeId,data:Object.fromEntries(fields.map((field,i)=>[field.key,i>0&&i<=5?(r%2?'Pending':'Active'):'Tab '+index+' value '+r]))}))});
+   await save({kind:'bulk_records',changes:Array.from({length:25},(_,r)=>({kind:'create_record',typeId,data:Object.fromEntries(fields.map((field,i)=>[field.key,i===2?['DE','GB','US'][r%3]:i>0&&i<=5?(r%2?'Pending':'Active'):'Tab '+index+' value '+r]))}))});
    tabs.push({name:'Tab '+index,typeId,filters:fields.slice(1,6).map(f=>f.key),columns:fields.map((field,i)=>({field:field.key,visible:i<9}))});
   }
   const op=await trackerOperation(f,actor,workspaceId,{name:'Responsive tracker',description:'Four tabs and long filters',showExample:false,omitSource:true,tabs});

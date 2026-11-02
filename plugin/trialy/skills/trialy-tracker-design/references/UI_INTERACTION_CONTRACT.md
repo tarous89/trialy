@@ -171,3 +171,9 @@ Do not introduce new permission colors. Color remains secondary to explicit word
 ### Current host refinement
 
 Keep the host header and dark action footer fixed. The tracker document is the only vertical scroller; tables may scroll horizontally but must not have an independent vertical height/scrollbar. The row-details surface fills at least the full available viewport, even for a one-row table. Its content uses that same document scroller. Local tabs/search/sort/details/layout interactions must not wait for the server. Each empty data tab gets one clearly labeled, locally editable fictional example with typed values and meaningful tint pills. User instructions override these defaults.
+
+## Shared tracker sorting and expanded filters
+
+Keep Search, Filters and Add record on one primary row. Expanded filters belong in normal page flow immediately below it, arranged horizontally with 16px horizontal/vertical gaps and responsive wrapping. Opening them pushes the table down; do not float them over records or add a nested vertical scrollbar. Preserve filter values and the existing keyboard disclosure behavior.
+
+Show ↑ or ↓ beside the active sort column and put `aria-sort` on its column header. Sorting/search must apply before pagination. Cached sort/search results must rebind controls by record and field ID and honor freshness and pending-edit guards. Verify repeated toggles, mixed values across page boundaries, cached searches, Details/edit identity, expired pages and unsaved edits/new rows in both standalone and embedded views. Ignoring edits preserves the chosen sort direction.
