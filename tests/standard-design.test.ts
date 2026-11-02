@@ -23,7 +23,7 @@ test('standard defaults preserve existing multi-value data, filter before pagina
   const config=standardTracker(op.content.source)!.config;
   assert.deepEqual(config.tabs[0].filters,['status']);assert.equal(config.tabs[0].columns[1].multiple,true);
   assert.equal(config.tabs[0].columns[1].display.valueTones.Engaged,'green');assert.equal(config.tabs[0].columns[1].display.valueTones.Declined,'red');
-  const p=await f.preview(ai,w.id,op),receipt=await f.confirm(human,w.id,p.id,p.digest);
+  const p=await f.preview(ai,w.id,op),ready=await f.finalizeAppPreview(ai,w.id,p.id,p.digest),receipt=await f.confirm(human,w.id,ready.preview.id,ready.preview.digest);
   const output:any=await f.runFrontend(ai,w.id,{componentId:receipt.id,expectedVersion:0,state:{tab:0},event:{kind:'change',action:'filter:status',value:'Engaged'}});
   assert.equal(output.tracker.pages[0].result.total,1);assert.equal(output.tracker.pages[0].result.rows[0].data.name,'Company 26');
   const noMatch:any=await f.runFrontend(ai,w.id,{componentId:receipt.id,expectedVersion:0,state:{tab:0},event:{kind:'change',action:'filter:status',value:'Declined'}});assert.equal(noMatch.tracker.pages[0].result.total,0);
@@ -31,7 +31,7 @@ test('standard defaults preserve existing multi-value data, filter before pagina
   const custom={...op,content:{...op.content,source:'return {html:"<main>Timeline</main>",state:{}};'}};
   const allowed=await f.preview(ai,w.id,custom);assert.equal(allowed.body.content.source,custom.content.source);
   const revision=await f.preview(ai,w.id,{...custom,componentId:receipt.id,expectedVersion:0});
-  await f.confirm(human,w.id,revision.id,revision.digest);
+  const revised=await f.finalizeAppPreview(ai,w.id,revision.id,revision.digest);await f.confirm(human,w.id,revised.preview.id,revised.preview.digest);
   assert.deepEqual((await f.readComponent(human,w.id,receipt.id)).component.bindings,op.content.bindings);
   assert.equal((await s.records(human,w.id,typeId,{limit:50,offset:0})).total,27);
   await assert.rejects(f.preview(ai,w.id,{...custom,content:{...custom.content,manifest:null}}),/manifest/);

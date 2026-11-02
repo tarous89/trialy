@@ -188,3 +188,12 @@ Do not retry unknown outcomes automatically. Use receipt/activity status and che
 ## App services
 
 For app sharing, built-in transactional email, long LLM/API requests, or manual/scheduled/database-triggered actions, read [APP_SERVICES.md](references/APP_SERVICES.md) or call `read_app_services`. Reuse TrialAgents authentication. Prepare exact sharing/action scopes for trusted owner review; never put provider credentials in app source. External app calls return durable job handles and status is read separately.
+
+
+## Completed revisions and full-table queries
+
+Before editing an existing app, call `begin_app_update` with its current component version. It invalidates older review candidates while keeping the saved app usable. Prepare and revise quietly using the same requestKey, replacesPreviewId and current expectedDigest. Preparation is not completion: AI app previews are drafts, with no Save/Ignore controls. Finish all requested schema, data and layout work and validation before calling `finalize_app_preview` once as the last app mutation. This returns the current review digest and displays the completed preview. Only then present the revision for approval. If more work is required, begin an update again before editing; never finalize intermediate work. On failure, reopen the saved app and report the unfinished changes; do not finalize a partial result.
+
+For data saves through `commit_change`, include the exact `review` string returned by `prepare_change`. It contains the reviewed change details and is digest-checked by the server; never substitute a model-written summary. User authorization, current access checks and version checks remain required.
+
+Tracker sorting, search and filters must apply to the entire authorized table before pagination. Use `records.read` with `sort: {field, direction: 'asc'|'desc'}`, `q`, filters, limit and offset. Reset offset after changing sort/search/filter. Select fields sort in schema option order; numeric fields sort numerically, missing values last. Calculated-field sorting is explicitly rejected rather than silently sorting a single page. Cache identity includes sort, query and filters. Never sort or search only the loaded page.

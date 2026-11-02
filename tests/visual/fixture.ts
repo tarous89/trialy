@@ -28,6 +28,9 @@ export async function fixture(){
   if(name==='open_workspace')return {screen:'home',uiBuild:'acceptance',viewerId:actor.userId,workspaces:[w],workspaceId:w.id,types:await s.types(actor,w.id)};
   if(name==='read_connected_account')return {connected:true};
   if(name==='read_account_home'){const home=await workspaceHome(db,{...actor,origin:'ai'},w.id,v);return {...home,resources:[{id:preview.id,workspaceId:w.id,name:'Saved preview card',kind:'tracker',source:'preview',projectIds:[],status:'Preview',updatedAt:new Date().toISOString()},...home.resources],total:home.total+1};}
+  if(name==='prepare_ai_revision')return f.prepareRenderedTracker({...actor,origin:'ai'},w.id,v.operation);
+  if(name==='begin_app_update')return f.beginAppUpdate({...actor,origin:'ai'},w.id,v.componentId,v.expectedVersion);
+  if(name==='finalize_app_preview')return f.finalizeAppPreview({...actor,origin:'ai'},w.id,v.previewId,v.digest);
   if(name==='resolve_tracker_preview')return f.resolveTrackerPreview(actor,w.id,v.previewId);
   if(name==='initialize_account')return {viewerId:actor.userId,workspaceId:w.id,workspaces:[w],types:await s.types(actor,w.id)};
   if(name==='list_project_sharing_members')return [];

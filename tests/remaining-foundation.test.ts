@@ -16,7 +16,7 @@ test('Task setup, project relationships, exact alias correction, collection cons
   for(const actor of [a,editor])await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,actor.userId+'@example.invalid','Tester']);
   const s=new Service(db),f=new WorkspaceFoundation(db),w=await s.createWorkspace(a,'Foundation flow');await s.setAi(a,w.id,true);
   const save=async(op:any)=>{const p=await s.preview(a,w.id,op);return s.commit(a,p.id,p.digest);};
-  const approve=async(op:any)=>{const p=await f.preview(ai,w.id,op);return f.confirm(a,w.id,p.id,p.digest);};
+  const approve=async(op:any)=>{let p=await f.preview(ai,w.id,op);if(p.reviewState==='draft')p=(await f.finalizeAppPreview(ai,w.id,p.id,p.digest)).preview;return f.confirm(a,w.id,p.id,p.digest);};
   const project=await approve({kind:'create_node',nodeKind:'project',name:'Engagement'});
   const setup={kind:'setup_tracking',projectId:project.id,expectedProjectVersion:0,purpose:'Keep track of companies',inclusionCriteria:'Companies selected for engagement',sourcePolicy:'Information supplied for this task',basis:'tracking',table:{kind:'new',concept:'organization',name:'Companies',fields:[{key:'name',name:'Name',kind:'text',unique:true}]},initialRows:[{name:'Original'},{name:'Alternative'}]};
   const draft=await f.preview(ai,w.id,setup);assert.equal((await s.types(a,w.id)).length,0);await assert.rejects(f.confirm(ai,w.id,draft.id,draft.digest),/cannot approve/);

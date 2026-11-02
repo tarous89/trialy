@@ -222,7 +222,7 @@ export class Service extends DataService {
   const types=(await this.db.query('SELECT fields FROM entity_types WHERE workspace_id=$1',[w])).rows;
   if(policy.permission_rules?.some((r:any)=>(r.subject===a.userId||(a.origin==='ai'&&r.subject==='chatgpt'))&&r.read==='deny'))return [];
   if(a.origin==='ai'&&types.some(t=>t.fields.some((f:Field)=>!f.ai)))return [];
-  const result=[];for(const r of rows){if(!r.summary)continue;if(r.schema_fingerprint&&r.schema_fingerprint!==checksum(json((await this.db.query('SELECT id,version FROM entity_types WHERE workspace_id=$1 ORDER BY id',[w])).rows)))continue;try{await this.validate(this.db,a,w,r.body.kind==='save_document'?{...r.body,bytes:Buffer.alloc(1)}:r.body);result.push({id:r.id,digest:r.digest,summary:r.summary,workspaceId:w,status:'preview',expiresAt:r.expires_at});}catch{}}
+  const result=[];for(const r of rows){if(!r.summary)continue;if(r.schema_fingerprint&&r.schema_fingerprint!==checksum(json((await this.db.query('SELECT id,version FROM entity_types WHERE workspace_id=$1 ORDER BY id',[w])).rows)))continue;try{await this.validate(this.db,a,w,r.body.kind==='save_document'?{...r.body,bytes:Buffer.alloc(1)}:r.body);result.push({id:r.id,digest:r.digest,summary:r.summary,review:json(r.summary),workspaceId:w,status:'preview',expiresAt:r.expires_at});}catch{}}
   return result;
  }
  private async creationArchive(tx:Connection,a:Actor,w:string,op:Extract<Operation,{kind:'archive_created_record'|'restore_archived_creation'}>){
@@ -325,11 +325,11 @@ export class Service extends DataService {
    if(Number(usage.n)>=1000||Number(usage.bytes)+size>100*1024*1024)fail(503,'preview_capacity','Workspace preview capacity reached; discard old previews and retry');
    await tx.query('INSERT INTO data_previews(id,workspace_id,actor_id,body,file_bytes,digest,schema_fingerprint,migration_fingerprint,expires_at,byte_size,summary) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',[p.id,w,a.userId,json(body),bytes,p.digest,p.schemaFingerprint??null,p.migrationFingerprint??null,new Date(p.expires),size,json(summary)]);
   });
-  return {id:p.id,digest:p.digest,workspaceId:w,expiresAt:new Date(p.expires).toISOString(),status:'preview',summary};
+  return {id:p.id,digest:p.digest,workspaceId:w,expiresAt:new Date(p.expires).toISOString(),status:'preview',summary,review:json(summary)};
  }
  async discard(a:Actor,id:string) {const r=await this.db.query('DELETE FROM data_previews WHERE id=$1 AND actor_id=$2 RETURNING id',[id,a.userId]);if(!r.rows.length)fail(404,'not_found','Preview not found');return {status:'discarded'};}
  async receipt(a:Actor,id:string) {const r=(await this.db.query('SELECT * FROM commit_receipts WHERE preview_id=$1 AND actor_id=$2',[id,a.userId])).rows[0];if(!r)fail(404,'not_found','Save receipt not found');await access(this.db,a,r.workspace_id);return r.result;}
- async commit(a:Actor,id:string,digest:string,authorization?:WriteAuthorization) {
+ async commit(a:Actor,id:string,digest:string,authorization?:WriteAuthorization,review?:string) {
   if(!authorization)requireCurrentAction(a);
   const result=await this.db.transaction(async tx=>{
    // Serialise retries of the same logical save, including concurrent requests.
@@ -340,6 +340,7 @@ export class Service extends DataService {
    if(!row)fail(410,'preview_expired','Preview expired; prepare it again');
    const p:Preview={id:row.id,actorId:row.actor_id,workspaceId:row.workspace_id,operation:row.body.kind==='save_document'?{...row.body,bytes:Buffer.from(row.file_bytes)}:row.body,digest:row.digest,expires:new Date(row.expires_at).getTime(),schemaFingerprint:row.schema_fingerprint,migrationFingerprint:row.migration_fingerprint};
    if(p.digest!==digest)fail(409,'preview_mismatch','Preview changed; review it again');
+   if(review!==undefined){let details;try{details=JSON.parse(review);}catch{fail(400,'invalid_review','Review must contain valid JSON');}if(!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[json(details),json(row.summary)])).rows[0].same)fail(409,'review_mismatch','Approval details do not match the stored preview');}
    // Workspace lock serialises permissions/configuration changes with commits.
    await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[p.workspaceId]);
    if(p.schemaFingerprint&&p.schemaFingerprint!==checksum(json((await tx.query('SELECT id,version FROM entity_types WHERE workspace_id=$1 ORDER BY id',[p.workspaceId])).rows)))fail(409,'stale_version','Table configuration changed. Prepare the preview again.');

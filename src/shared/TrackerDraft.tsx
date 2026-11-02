@@ -15,9 +15,10 @@ export function TrackerDraft({preview,call,onSaved,onDiscard,onProposal,initialO
  const embedded=React.useContext(EmbeddedNavigation);
  const label=platform.enabled?'app':preview.body.content?.resourceKind==='visualization'?'dashboard':preview.body.content?.resourceKind==='form'?'form':'tracker';
  const activePreview=useRef(preview),savedReceipt=useRef<any>(null);
+ const reviewReady=preview.reviewState==='ready';
  const revision=!!preview.body.componentId;
- async function discard(){setBusy(true);try{await invoke('discard_workspace_preview',{previewId:activePreview.current.id});if(activePreview.current.id!==preview.id)await invoke('discard_workspace_preview',{previewId:preview.id});onDiscard();}catch(e){setError((e as Error).message);setBusy(false);}}
- async function save(){setBusy(true);setError('');try{
+ async function discard(){if(!reviewReady)return;setBusy(true);try{await invoke('discard_workspace_preview',{previewId:activePreview.current.id,digest:activePreview.current.digest});if(activePreview.current.id!==preview.id)await invoke('discard_workspace_preview',{previewId:preview.id});onDiscard();}catch(e){setError((e as Error).message);setBusy(false);}}
+ async function save(){if(!reviewReady)return;setBusy(true);setError('');try{
   const p=activePreview.current;
   const receipt=savedReceipt.current??await invoke('confirm_workspace_change',{previewId:p.id,digest:p.digest,confirmed:true});savedReceipt.current=receipt;setRendered(false);
   const result=await invoke('read_project_component',{componentId:receipt.id});
@@ -25,6 +26,6 @@ export function TrackerDraft({preview,call,onSaved,onDiscard,onProposal,initialO
   const output=embedded?undefined:await invoke('run_component_frontend',{request:{componentId:result.component.id,expectedVersion:result.component.version,...(navigation?{route:navigation.route}:{}),event:{kind:'open'}}});
   onSaved(result.component,output,navigation?.route);
  }catch(e){if(!savedReceipt.current)setError((e as Error).message);}finally{setBusy(false);}}
- return <section className="ty-tracker-preview">{error&&<p role="alert">{error}</p>}{revision&&rendered&&!savedReceipt.current&&<div className="ty-app-revision-actions" aria-label="App update review"><Button disabled={busy} onClick={()=>void discard()}>Ignore changes</Button><Button variant="primary" disabled={rendering||busy} onClick={()=>void save()}>Save changes</Button></div>}<FrontendCodeRuntime initialOutput={initialOutput} previewId={preview.id} call={invoke} onProposal={onProposal} onHome={onDiscard} onBusyChange={setRendering} onRendered={()=>setRendered(true)}/>{!revision&&rendered&&!savedReceipt.current&&<ActionFooter showDismissLabel variant="primary" action={'Save '+label} disabled={rendering} busy={busy} onAction={()=>void save()} dismissLabel={"Discard "+label} onDismiss={()=>void discard()}>This {label} is a preview. Save it to keep it.</ActionFooter>}</section>;
+ return <section className="ty-tracker-preview">{!reviewReady&&<div role="status" className="ty-tracker-notice">Preparing app… Save will be available when the changes are ready.</div>}{error&&<p role="alert">{error}</p>}{revision&&reviewReady&&rendered&&!savedReceipt.current&&<div className="ty-app-revision-actions" aria-label="App update review"><Button disabled={busy} onClick={()=>void discard()}>Ignore changes</Button><Button variant="primary" disabled={rendering||busy} onClick={()=>void save()}>Save changes</Button></div>}<FrontendCodeRuntime initialOutput={initialOutput} previewId={preview.id} call={invoke} onProposal={onProposal} onHome={onDiscard} onBusyChange={setRendering} onRendered={()=>setRendered(true)}/>{!revision&&reviewReady&&rendered&&!savedReceipt.current&&<ActionFooter showDismissLabel variant="primary" action={'Save '+label} disabled={rendering} busy={busy} onAction={()=>void save()} dismissLabel={"Discard "+label} onDismiss={()=>void discard()}>This {label} is a preview. Save it to keep it.</ActionFooter>}</section>;
 }
 

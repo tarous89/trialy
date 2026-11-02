@@ -24,6 +24,7 @@ test('reproduce draft lifecycle error and verify an authorized recovery path',as
    const out=await f.runFrontend(a,w.id,{previewId:fresh.preview.id});assert.ok(out.tracker);assert.equal(out.tracker.config.pageSize,25);
    const row=(await db.query('SELECT expires_at-now() AS remaining FROM workspace_previews WHERE id=$1',[fresh.preview.id])).rows[0];console.log('fresh draft remaining lifetime',row.remaining);
   });
+  const finalized=await f.finalizeAppPreview(a,w.id,fresh.preview.id,fresh.preview.digest);fresh.preview=finalized.preview;
   const saved=await f.confirm({...a,origin:"human"},w.id,fresh.preview.id,fresh.preview.digest);
   const unavailable=async(previewId:string,actor=a,workspace=w.id)=>assert.rejects(f.runFrontend(actor,workspace,{previewId}),{message:'Code preview unavailable'});
   await t.test('replaying a saved draft reproduces the exact screenshot error',()=>unavailable(fresh.preview.id));

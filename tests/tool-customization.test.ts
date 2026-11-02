@@ -24,7 +24,7 @@ test('rebrand, extend Settings and remove a view column without losing shared re
   const typeId=(await save({kind:'create_type',name:'Companies',fields:[{key:'name',name:'Company',kind:'text',ai:true,multiple:true}]})).objects[0].id;
   const recordId=(await save({kind:'create_record',typeId,data:{name:['Alpha','Beta']}})).objects[0].id;
   const op=await trackerOperation(f,ai,w.id,{name:'Outreach',description:'Fixture',omitSource:true,showExample:false,tabs:[{name:'Companies',typeId,columns:[{field:'name'}]}]});
-  const p=await f.preview(ai,w.id,op),receipt=await f.confirm(a,w.id,p.id,p.digest);
+  const p=await f.preview(ai,w.id,op),ready=await f.finalizeAppPreview(ai,w.id,p.id,p.digest),receipt=await f.confirm(a,w.id,ready.preview.id,ready.preview.digest);
   const config=standardTracker(op.content.source)!.config,theme={primary:'#003B71',accent:'#00A3E0',success:'#65B32E',surface:'#FFFFFF',background:'#F3F6F8'};
   const layout={componentId:receipt.id,expectedVersion:0,name:'Outreach',description:'Fixture',theme,tabs:config.tabs.map((t:any,i:number)=>({originalIndex:i,typeId:t.typeId,name:t.name,visible:true,columns:t.columns.map((c:any)=>({fieldId:c.fieldId,field:c.field,label:c.label,visible:true}))}))};
   const themed=await prepareToolLayout(f,ai,w.id,layout);await f.confirm(a,w.id,themed.id,themed.digest);

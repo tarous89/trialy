@@ -84,3 +84,26 @@ for(const embedded of [false,true])test(`No usable app offers only local Home af
  else{await expect(page).toHaveURL(base+'/?tab=home');await expect(page.getByRole('heading',{name:'Home',exact:true})).toBeVisible();}
 });
 
+
+test('AI revisions keep saved app usable and expose Save only after finalization',async({page})=>{
+ const f=await (await page.request.get(base+'/fixture/apps')).json();
+ const content={name:'Readiness test',format:'frontend-js',source:'return {html:"<h1>Saved readiness app</h1>"};'};
+ const p=await call(page,'prepare_workspace_change',{operation:{kind:'save_component',content}});
+ const saved=await call(page,'confirm_workspace_change',{previewId:p.id,digest:p.digest});
+ await page.goto(base+'/?apps=1');await page.waitForFunction(()=>window.hostReady);
+ const draft=await call(page,'prepare_ai_revision',{operation:{kind:'save_component',componentId:saved.id,expectedVersion:0,content:{...content,source:'return {html:"<h1>Completed revision</h1>"};'}}});
+ await page.evaluate(r=>window.deliver(r),draft);
+ const root=page.frameLocator('#app');
+ await expect(root.getByRole('status')).toContainText('Updating app');
+ await expect(root.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Saved readiness app',exact:true})).toBeVisible();
+ await expect(root.getByRole('button',{name:'Save changes',exact:true})).toHaveCount(0);
+ await expect(root.getByRole('button',{name:'Ignore changes',exact:true})).toHaveCount(0);
+ const ready=await call(page,'finalize_app_preview',{previewId:draft.preview.id,digest:draft.preview.digest});
+ await page.evaluate(r=>window.deliver(r),ready);
+ await expect(root.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Completed revision',exact:true})).toBeVisible();
+ await expect(root.getByRole('button',{name:'Save changes',exact:true})).toBeEnabled();
+ await root.getByRole('button',{name:'Save changes',exact:true}).click();
+ await expect(root.getByRole('heading',{name:'Home',exact:true})).toBeVisible();
+ expect((await call(page,'read_project_component',{componentId:saved.id})).component.version).toBe(1);
+ await archive(page,saved.id);
+});

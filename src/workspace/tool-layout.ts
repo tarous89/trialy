@@ -11,7 +11,7 @@ export const toolLayoutRequest=z.object({componentId:id,expectedVersion:z.number
 export async function prepareToolLayout(f:WorkspaceFoundation,a:Actor,w:string,input:unknown){
  // Preparation writes only a private proposal. Reuse its read metadata in one
  // session and recheck it before releasing the proposal; confirmation stays separate.
- return f.db.transaction(tx=>withReadMetadata({query:tx.query.bind(tx),transaction:fn=>fn(tx),close:async()=>{}},db=>prepareLayout(new WorkspaceFoundation(db),a,w,input)));
+ return f.db.transaction(tx=>withReadMetadata({query:tx.query.bind(tx),transaction:fn=>fn(tx),close:async()=>{}},async db=>{const service=new WorkspaceFoundation(db),preview=await prepareLayout(service,a,w,input);return preview.reviewState==='draft'?(await service.finalizeAppPreview(a,w,preview.id,preview.digest)).preview:preview;}));
 }
 async function prepareLayout(f:WorkspaceFoundation,a:Actor,w:string,input:unknown){
  const v=toolLayoutRequest.parse(input),{component:c}=await f.readComponent(a,w,v.componentId),standard=standardTracker(c.source);

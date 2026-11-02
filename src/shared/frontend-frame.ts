@@ -136,7 +136,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   try{
    const output=renderTracker(model.config,model.theme,{state:next,event,saved:model.saved,writable:model.writable},{call:(name,value)=>{
     if(name!=='records.read')throw Error('Server action');
-    const p=model.pages.find(p=>p.request.typeId===value.typeId&&(value.limit===0||p.request.limit===value.limit&&p.request.offset===value.offset)&&JSON.stringify(Object.entries(p.request.filters||{}).sort())===JSON.stringify(Object.entries(value.filters||{}).sort())&&(!navigation||Date.now()-p.receivedAt<${SNAPSHOT_TTL}));if(!p)throw Error('Page needed');return value.limit===0?{...p.result,rows:[],limit:0,offset:value.offset}:p.result;
+    const p=model.pages.find(p=>p.request.typeId===value.typeId&&(p.request.q||'')===(value.q||'')&&JSON.stringify(p.request.sort||null)===JSON.stringify(value.sort||null)&&(value.limit===0||p.request.limit===value.limit&&p.request.offset===value.offset)&&JSON.stringify(Object.entries(p.request.filters||{}).sort())===JSON.stringify(Object.entries(value.filters||{}).sort())&&(!navigation||Date.now()-p.receivedAt<${SNAPSHOT_TTL}));if(!p)throw Error('Page needed');return value.limit===0?{...p.result,rows:[],limit:0,offset:value.offset}:p.result;
    }});
    if(navigation){const nextControls=(output.controls||[]).map(c=>{const cached=model.cachedControls?.[c.fieldId+':'+c.recordId];if(!cached)throw Error('Controls needed');return {...cached,slot:c.slot};});controls=nextControls;}
    uiState=output.state;paint(output.html,output.css);
