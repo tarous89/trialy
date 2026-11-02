@@ -26,7 +26,7 @@ for(const surface of ['plugin','app']){
   const {tracker}=await open(page,surface);await tracker.getByRole('button',{name:'Tab 0',exact:true}).click();
   for(const width of [320,390,768,1100,1440]){
    await page.setViewportSize({width,height:1000});
-   const search=tracker.getByRole('textbox',{name:'Search this page'}),add=tracker.getByRole('button',{name:'Add record',exact:true});
+   const search=tracker.getByRole('textbox',{name:'Search table'}),add=tracker.getByRole('button',{name:'Add record',exact:true});
    await expect(add).toBeVisible();
    await expect.poll(async()=>{const a=await add.boundingBox(),b=await search.boundingBox();return Math.abs(a.y+a.height/2-b.y-b.height/2);}).toBeLessThan(2);
    expect(await tracker.locator('body').evaluate(el=>el.scrollWidth<=innerWidth)).toBe(true);
