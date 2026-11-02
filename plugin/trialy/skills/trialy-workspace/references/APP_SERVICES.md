@@ -60,4 +60,4 @@ The worker persists jobs and trigger cursors, deduplicates occurrences, checks c
 
 ## Recurring ChatGPT work for any app
 
-Use `read_app_monitoring_guide` for optional recurring research, monitoring, analysis and reporting attached to any saved app. This works independently of templates and existing app actions. TrialAgents owns scheduling; ChatGPT executes approved research through the shared runner. TrialAgents owns the approved configuration, task association, scoped read/write checks, receipts and run history. It does not rewrite apps or provision new data permissions.
+Use `read_app_automation_guide` and `read_automation_setup` for optional recurring research, monitoring, analysis and reporting attached to any saved app. This works independently of templates and existing app actions. TrialAgents owns scheduling; ChatGPT executes approved research through the shared runner. TrialAgents owns the approved configuration, task association, scoped read/write checks, receipts and run history. It does not rewrite apps or provision new data permissions.

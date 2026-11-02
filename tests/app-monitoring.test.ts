@@ -99,7 +99,7 @@ test('monitoring is optional, independent of templates and guarded by production
    const draft=await m.prepare(owner,w.id,{config:config({readBindings:[{typeId:table,fields:['name']}]})});
    await save({kind:'update_type',typeId:table,expectedVersion:0,name:'Evidence',fields:[{key:'name',name:'Reinterpreted field',kind:'text'},{key:'url',name:'Source',kind:'text'},{key:'notes',name:'Notes',kind:'text'},{key:'secret',name:'Private',kind:'text',ai:false}]});
    await assert.rejects(m.confirm(owner,w.id,draft.id,draft.digest),/changed/);
-   const guide=await readTrackerDesign({resource:'monitoring'});assert.match(guide.text,/ANY saved app/);assert.match(guide.text,/read_app_monitor_records/);
+   const guide=await readTrackerDesign({resource:'legacy-monitoring'});assert.match(guide.text,/ANY saved app/);assert.match(guide.text,/read_app_monitor_records/);
   });
  });}finally{await pg.close();}
 });

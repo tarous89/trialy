@@ -2,6 +2,14 @@
 
 Use this contract for optional research, monitoring, signal collection, analysis and reporting on ANY saved app. TrialAgents stores the instructions, due times, queue and receipts. One shared ChatGPT event subscription per owner/workspace wakes the runner; it does not contain each app's instructions. Templates are optional. App loading, editing and ordinary saves never depend on this service.
 
+## Route recurring app work to TrialAgents
+
+Requests such as “update my tracker weekly”, “run this every Friday”, “monitor this app” or “send me an email when its update completes” default to **TrialAgents Automations**, even when the user does not name the scheduler. Resolve the saved app, read `list_app_automations`, then `read_app_automation_guide` and `read_automation_setup`. Reuse matching definitions and stable authoring keys. Research uses `prepare_app_monitoring` with `config.automation.runnerId` and an executable trigger; deterministic/email work uses `prepare_app_action`. Store the schedule, instructions and history in TrialAgents. A description of a schedule alone is not executable scheduling.
+
+If setup is `not_enabled`, awaiting approval/subscription, paused, unavailable or unverified, follow the shared setup flow and report its actual state. Respect deliberate pauses and declined setup. Never silently fall back to an independent ChatGPT scheduled task, polling task or second runner. Present required owner review links and leave unfinished setup explicitly pending. Do not claim that background execution is active until verified.
+
+The only default host automation is the shared `automation.ready` event subscription returned by TrialAgents setup. It is not a weekly task per app. Existing legacy monitors can still execute and be edited: verify `scheduleManagedBy:"chatgpt"` through `read_app_monitoring`, then read `read_app_monitoring_guide(mode:"legacy")`. That guide is not a new-automation setup path. If the user explicitly requests an independent ChatGPT task instead, respect that choice and label it external; do not claim it was registered in TrialAgents or create a legacy monitor to disguise it. Migration requires the user's authorization, preserving instructions and reconciling/pausing the actual old task before activating duplicate work.
+
 ## First connection
 
 1. Call `initialize_account`, then quietly check `read_automation_setup` at first supported use, every app creation, when background work is requested, and after reconnection or an explicit repair request. Respect a deliberately paused/disconnected runner or declined setup; do not reactivate it or repeatedly prompt. Missing setup never blocks an app. Reuse the returned runner. Account OAuth, runner approval, event subscription and per-app data permissions are separate states. Never imply that login alone enables background work.
