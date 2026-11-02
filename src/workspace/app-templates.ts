@@ -14,7 +14,7 @@ const entry=z.object({id:key,version,name:z.string().min(1).max(100),description
 export const templateQuery=z.object({query:z.string().max(200).default(''),offset:z.number().int().min(0).default(0),limit:z.number().int().min(1).max(50).default(20)}).strict();
 export const templateRead=z.object({templateId:key,version:version.optional()}).strict();
 export const templateGuidanceRequest=z.object({resource:z.enum(['authoring','usage']).default('usage'),offset:z.number().int().min(0).default(0)}).strict();
-export const templateGuidance={tool:'read_app_template_guidance',version:'1.3.9',resources:['usage','authoring'],usage:'Read usage guidance and the template documentation before preparation; read authoring guidance when building or extending templates.'};
+export const templateGuidance={tool:'read_app_template_guidance',version:'1.3.9',resources:['usage','authoring'],hostedAttribution:'Keep the bottom-left corner free of every app CTA, including Delete, Save, pagination and floating controls. The host reserves the bottom 62 px plus device safe-area inset for Built with TrialAgents. Keep all controls inside the available app viewport. This rule applies to every existing and new template.',usage:'Read usage guidance and the template documentation before preparation; read authoring guidance when building or extending templates.'};
 export async function readTemplateGuidance(input:unknown={}){
  const {resource,offset}=templateGuidanceRequest.parse(input),file=resource==='authoring'?'TEMPLATE_AUTHORING.md':'TEMPLATE_USAGE.md';
  const source=await readFile(new URL('../../templates/'+file,import.meta.url),'utf8');

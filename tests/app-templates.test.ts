@@ -18,7 +18,7 @@ test('catalog discovers added versions dynamically, bounds results, and rejects 
  try{
   const original=await readFile('templates/apps/simple.calculator-1.0.0.json','utf8');await writeFile(join(dir,'one.json'),original);
   const catalog=new AppTemplates(dir);assert.equal((await catalog.list()).total,1);
-  const t=await catalog.read({templateId:'simple.calculator'});assert.ok(t.configurationSchema);assert.equal((await catalog.list()).templates[0].id,t.id);assert.equal('source' in (await catalog.list()).templates[0],false);
+  const t=await catalog.read({templateId:'simple.calculator'});assert.ok(t.configurationSchema);assert.match(t.guidance.hostedAttribution,/bottom-left corner free of every app CTA/);assert.equal((await catalog.list()).templates[0].id,t.id);assert.equal('source' in (await catalog.list()).templates[0],false);
   await writeFile(join(dir,'two.json'),JSON.stringify({...JSON.parse(original),id:'another.calculator',name:'Another calculator'}));assert.equal((await catalog.list()).total,2);assert.equal((await catalog.list({limit:1})).nextOffset,1);
   await writeFile(join(dir,'v2.json'),JSON.stringify({...JSON.parse(original),version:'2.0.0',defaults:{heading:'New default',currency:'USD'}}));assert.equal((await catalog.read({templateId:t.id})).version,'2.0.0');assert.equal((await catalog.read({templateId:t.id,version:t.version})).digest,t.digest);
   const input={templateId:t.id,version:t.version,digest:t.digest,name:'Estimate'};const op=await catalog.operation({} as any,{} as any,'unused',input);assert.ok(op.content.source.includes('Budget estimate'));

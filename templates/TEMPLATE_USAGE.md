@@ -87,3 +87,7 @@ The editor exposes linked app, name, schedule or database condition, instruction
 ## Custom finance template setup
 
 Cash Runway includes a complete on-demand catalog source and optional automation recipes. Use scalar platform types and explicit logical-to-real field mappings, with real table IDs/schema versions in the manifest. Native custom Layout settings are available when source declares templateLayoutSchema and uses the catalog configuration prefix; review and confirm the versioned presentation change, then reopen to verify it. Draft form input is temporary UI state and records.propose still requires exact host review. See the authoring guide for the shared contract; do not remove the manifest to make a form editable.
+
+## Hosted app corner
+
+For every existing and new template, leave the bottom-left corner free of app CTAs, including Delete, Save, pagination and floating controls. The host reserves the bottom 62 px plus device safe-area inset for “Built with TrialAgents”. Keep all controls inside the available app viewport.
