@@ -12,6 +12,7 @@ import {fail,type Actor} from '../shared/schema.js';
 import {appPublicUrl} from '../shared/public-url.js';
 import {monitoringChange,monitoringConfig,monitoringTask,monitoringStart,monitoringFinish,type MonitoringConfig} from './monitoring-schema.js';
 import {monitoringRun,monitoringReceiptRuns} from './monitoring-guard.js';
+import {automationPreflight} from '../automations/setup-contract.js';
 import {AutomationService,validateShared,syncDispatch} from '../automations/service.js';
 import {completionScope} from '../automations/completion-scope.js';
 
@@ -45,7 +46,7 @@ export class AppMonitoring {
   if(!body.monitorId&&body.config.authoringKey){const existing=(await this.db.query("SELECT id FROM app_monitors WHERE workspace_id=$1 AND user_id=$2 AND app_id=$3 AND config->>'authoringKey'=$4",[w,a.userId,body.config.appId,body.config.authoringKey])).rows[0];if(existing)fail(409,'automation_exists','Read and revise the existing automation: '+existing.id);}
   if(body.monitorId){const old=await this.row(a,w,body.monitorId);if(old.version!==body.expectedVersion||old.app_id!==body.config.appId)fail(409,'monitoring_changed','Read the current monitoring configuration');if(!old.config.automation&&body.config.automation&&old.task)fail(409,'legacy_task_linked','Pause the existing ChatGPT task and detach its association before migrating');}
   const reviewBody={change:body,scopeStamp:checked.stamp,schemas:checked.schemas,writeScopes:checked.scopes},reviewId=randomUUID(),digest=checksum(J(reviewBody));await this.db.query("INSERT INTO app_service_previews(id,workspace_id,user_id,kind,body,digest) VALUES($1,$2,$3,'monitoring',$4,$5)",[reviewId,w,a.userId,J(reviewBody),digest]);
-  return {id:reviewId,kind:'monitoring',digest,body:reviewBody,completionSource:checked.completionSource,...chatServiceReview(w,reviewId,'monitoring',digest,reviewBody),status:'review_required',reviewUrl:appPublicUrl()+'/?tab=apps&workspaceId='+w+'&serviceReview='+reviewId};
+  return {id:reviewId,kind:'monitoring',digest,body:reviewBody,preflight:automationPreflight(w,checked,body.config.automation?await new AutomationService(this.db).setup(a,w):null),completionSource:checked.completionSource,...chatServiceReview(w,reviewId,'monitoring',digest,reviewBody),status:'review_required',reviewUrl:appPublicUrl()+'/?tab=apps&workspaceId='+w+'&serviceReview='+reviewId};
  }
  async confirm(a:Actor,w:string,reviewId:string,digest:string,review?:string){requireCurrentAction(a);return this.db.transaction(async tx=>{
   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const s=new AppMonitoring(adapter(tx)),p=await s.owner(a,w),r=(await tx.query("SELECT * FROM app_service_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND kind='monitoring' AND expires_at>now() FOR UPDATE",[reviewId,w,a.userId])).rows[0];

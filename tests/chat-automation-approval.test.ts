@@ -72,11 +72,12 @@ test('ChatGPT confirms exact automation reviews under the real AI identity and r
   config.automation.runnerId=runner.id;
   const p=await withActor(ai,()=>monitors.prepare(ai,w.id,{config}));
   await withActor(ai,()=>assert.rejects(monitors.confirm(ai,w.id,p.id,p.digest,p.review),/approve/));
-  assert.equal(saved(await call('read_app_service_review',{reviewId:p.id})).review,p.review);
+  const beforeConnection=saved(await call('read_app_service_review',{reviewId:p.id}));assert.equal(beforeConnection.review,p.review);assert.equal(beforeConnection.preflight.researchReady,false);assert.equal(beforeConnection.preflight.runner.state,'awaiting_subscription');assert.equal(beforeConnection.preflight.nextSteps[0].kind,'connect_runner');
   assert.equal((await confirm(p)).structuredContent.code,'runner_not_ready');assert.equal((await pg.query<any>('SELECT count(*) AS n FROM app_monitors')).rows[0].n,0);
   await withActor(ai,()=>new AutomationEvents(db,async req=>{const body=JSON.stringify({challenge:JSON.parse(req.body!).challenge});return {status:200,body,bytes:body.length,durationMs:1};}).subscribe(ai,{name:'automation.ready',arguments:{workspaceId:w.id,runnerId:runner.id},delivery:{mode:'webhook',url:'https://callbacks.example.org/events',secret:'whsec_'+randomBytes(32).toString('base64')}}));
   assert.equal((await confirm(p)).structuredContent.code,'runner_not_ready');
   const work=saved(await call('read_automation_agenda',{runnerId:runner.id})).rows[0],claim=saved(await call('claim_automation_work',{runnerId:runner.id,occurrenceId:work.id,requestKey:randomUUID()}));saved(await call('finish_automation_work',{occurrenceId:work.id,claimToken:claim.claimToken}));
+  const afterConnection=saved(await call('read_app_service_review',{reviewId:p.id}));assert.equal(afterConnection.preflight.researchReady,true);assert.equal(afterConnection.digest,p.digest);assert.equal(afterConnection.review,p.review);
   monitor=saved(await confirm(p));assert.equal(monitor.scheduleManagedBy,'trialagents');assert.equal(monitor.taskCreated,false);assert.deepEqual(saved(await confirm(p)),monitor);
   const row=(await pg.query<any>('SELECT config FROM app_monitors WHERE id=$1',[monitor.id])).rows[0];assert.deepEqual(row.config.writeScopes,[]);
   assert.equal((await pg.query<any>('SELECT count(*) AS n FROM maintenance_scopes')).rows[0].n,0);

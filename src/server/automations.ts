@@ -15,6 +15,7 @@ import {backgroundMetadata} from './ui-resource.js';
 import {AutomationManagement,automationList,automationKind} from '../automations/management.js';
 import {AppActions} from '../app-services/service.js';
 import {AppMonitoring} from '../app-services/monitoring.js';
+import {automationPreflight} from '../automations/setup-contract.js';
 import {chatServiceReview} from '../app-services/review.js';
 export function addAutomationApi(app:Express,db:Database){
  const s=new AutomationService(db),base='/api/workspaces/:workspaceId/app-services/automations';
@@ -41,17 +42,18 @@ export function addAutomationMcp(server:McpServer,db:Database,a:Actor|undefined,
  register('read_automation_setup','Check the shared runner before configuring recurring app work in TrialAgents. If not enabled, pending or unavailable, follow read_app_automation_guide to resolve setup; do not fall back to a per-app ChatGPT scheduled task. Account connection alone does not activate work. Follow nextStep; waitSeconds (max 20) waits only for an already connected runner. New research activation is blocked until canActivate=true. Never finish verification in the foreground.',{waitSeconds:z.number().int().min(0).max(20).default(0)},true,v=>s.setup(a!,v.workspaceId,v.waitSeconds));
  register('prepare_automation_setup','Prepare owner review for the shared background runner, daily time and IANA timezone. Returns an exact review for confirm_app_service_review in ChatGPT and a website review link. No task or subscription is created by this operation.',runnerChange.shape,false,({workspaceId,...v})=>s.prepare(a!,workspaceId,v));
  const reviewKind=z.enum(['automation_setup','monitoring','action']);
- register('read_app_service_review','Read an exact pending or saved automation review owned by the connected user. Returns the configuration and review string for confirmation in ChatGPT. Does not authorize or execute anything. Sharing reviews remain in TrialAgents.',{reviewId:id},true,async v=>{
+ register('read_app_service_review','Read an exact pending or saved automation review owned by the connected user. Returns the configuration, current preflight with exact app-binding repair steps, and review string for confirmation in ChatGPT. Resolve requested follow-up access before activation; do not stop at reporting a fixable mismatch. Does not authorize or execute anything. Sharing reviews remain in TrialAgents.',{reviewId:id},true,async v=>{
   await s.owner(a!,v.workspaceId);
   const r=await new AppActions(db).preview(a!,v.workspaceId,v.reviewId),parsed=reviewKind.safeParse(r.kind);
   if(!parsed.success)fail(403,'review_kind','This review requires the authenticated TrialAgents app');
-  const kind=parsed.data;
+  const kind=parsed.data;let preflight:any;
   if(kind==='monitoring'){
-   const checked=await new AppMonitoring(db).validate(a!,v.workspaceId,monitoringChange.parse(r.body.change).config,true);
+   const config=monitoringChange.parse(r.body.change).config,checked=await new AppMonitoring(db).validate(a!,v.workspaceId,config,true);
+   preflight=automationPreflight(v.workspaceId,checked,config.automation?await s.setup(a!,v.workspaceId):null);
    if(checked.stamp!==r.body.scopeStamp)fail(409,'scope_changed','Monitoring fields or permissions changed after preparation');
   }
   if(kind==='action')await new AppActions(db).validate(a!,v.workspaceId,actionChange.parse(r.body).config);
-  return {id:r.id,kind,digest:r.digest,body:r.body,expiresAt:r.expires_at,status:r.consumed_at?'saved':'review_required',result:r.result,...chatServiceReview(v.workspaceId,r.id,kind,r.digest,r.body)};
+  return {id:r.id,kind,digest:r.digest,body:r.body,...(preflight?{preflight}:{}),expiresAt:r.expires_at,status:r.consumed_at?'saved':'review_required',result:r.result,...chatServiceReview(v.workspaceId,r.id,kind,r.digest,r.body)};
  });
  server.registerTool('confirm_app_service_review',{description:'Save and authorize the exact prepared TrialAgents automation after agreement with the user in the current conversation. Supports shared runner setup, recurring research and app actions, including approved email recipients. Pass the unchanged review string and digest returned by preparation or read_app_service_review. Authorization permits repeated future execution only within that configuration. Current owner, connection, scope, expiry and version checks still apply. Does not create a host subscription or execute the action immediately.',inputSchema:{workspaceId:id,reviewId:id,kind:reviewKind,digest:z.string().length(64),review:z.string().min(2).max(1000000),confirmed:z.literal(true)},annotations:{readOnlyHint:false,destructiveHint:true,idempotentHint:true,openWorldHint:true},_meta:backgroundMetadata(metadata)},safe(async(v:any)=>{
   const actor={...a!,actionConfirmed:true};
@@ -59,14 +61,14 @@ export function addAutomationMcp(server:McpServer,db:Database,a:Actor|undefined,
   if(v.kind==='monitoring')return new AppMonitoring(db).confirm(actor,v.workspaceId,v.reviewId,v.digest,v.review);
   return new AppActions(db).confirm(actor,v.workspaceId,v.reviewId,v.digest,v.review);
  }));
- register('read_app_automation_guide','Default guide for all new recurring work on a TrialAgents app, including weekly tracker updates. Store schedules and instructions in TrialAgents Automations; use one shared ChatGPT event runner, not a task per app. Pending setup is not permission to use a different scheduler. Apps remain independent of automation availability.',{},true,async()=>({version:'1.4.0',guide:await readFile('plugin/trialy/skills/trialy-workspace/references/SHARED_AUTOMATIONS.md','utf8')}));
+ register('read_app_automation_guide','Default guide for all new recurring work on a TrialAgents app, including weekly tracker updates. Store schedules and instructions in TrialAgents Automations; use one shared ChatGPT event runner, not a task per app. Pending setup is not permission to use a different scheduler. Apps remain independent of automation availability.',{},true,async()=>({version:'1.4.1',guide:await readFile('plugin/trialy/skills/trialy-workspace/references/SHARED_AUTOMATIONS.md','utf8')}));
  register('read_automation_agenda','Read bounded due and unfinished work from the shared queue. Server determines eligibility; do not infer due work from chat history or record timestamps.',{runnerId:id,offset:z.number().int().min(0).default(0)},true,v=>s.agenda(a!,v.workspaceId,v.runnerId,v.offset));
  register('claim_automation_work','Claim one due authorized job. Use a stable UUID requestKey for retries. A finished occurrence must not be executed again. Returns current instructions and prior run IDs for receipt reconciliation.',claimInput.shape,false,({workspaceId,...v})=>s.claim(a!,workspaceId,v));
  register('checkpoint_automation_work','Persist bounded research progress and stable request keys under the active claim. Does not mark the research completed or alter app content.',checkpointInput.shape,false,({workspaceId,...v})=>s.checkpoint(a!,workspaceId,v));
  register('finish_automation_work','Record the outcome of a claimed shared job. Only complete/no-update work may advance coverage. TrialAgents dispatches any separately approved email action. Never send emails through ChatGPT.',{occurrenceId:id,claimToken:id,result:z.object(monitoringFinish.shape).omit({runId:true}).optional()},false,({workspaceId,...v})=>s.finish(a!,workspaceId,v));
  if(automationsEnabled()){
   server.server.registerCapabilities({events:{}} as any);
-  const handle=(fn:(p:any)=>Promise<any>)=>async(request:any)=>{if(!a)throw new McpError(-32001,'Connect TrialAgents first');try{return await fn(request.params??{});}catch(e:any){throw new McpError(e.code==='callback_verification'?-32015:-32602,e.status?e.message:'Automation setup could not complete',e.code==='callback_verification'?{reason:'challenge_failed'}:undefined);}};
+  const handle=(fn:(p:any)=>Promise<any>)=>async(request:any)=>{if(!a)throw new McpError(-32001,'Connect TrialAgents first');try{const result=await fn(request.params??{});if(process.env.NODE_ENV!=='test')console.info(JSON.stringify({event:'mcp_event_operation',method:request.method,outcome:'succeeded'}));return result;}catch(e:any){if(process.env.NODE_ENV!=='test')console.warn(JSON.stringify({event:'mcp_event_operation',method:request.method,outcome:'failed',code:e.status?e.code:'unexpected'}));throw new McpError(e.code==='callback_verification'?-32015:-32602,e.status?e.message:'Automation setup could not complete',e.code==='callback_verification'?{reason:'challenge_failed'}:undefined);}};
   server.server.setRequestHandler(z.object({method:z.literal('events/list'),params:z.object({cursor:z.string().optional()}).optional()}) as any,handle(async()=>({events:[eventDefinition]})));
   server.server.setRequestHandler(z.object({method:z.literal('events/subscribe'),params:subscribeParams}) as any,handle(p=>new AutomationEvents(db).subscribe(a!,p)));
   server.server.setRequestHandler(z.object({method:z.literal('events/unsubscribe'),params:unsubscribeParams}) as any,handle(p=>new AutomationEvents(db).unsubscribe(a!,p)));
