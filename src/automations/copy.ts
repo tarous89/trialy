@@ -11,9 +11,9 @@ import {actionConfig} from '../app-services/schema.js';
 /** Snapshot definitions only. Runs, external tasks, deliveries and approvals are never copied. */
 export async function appAutomationCopies(tx:Connection,a:Actor,w:string,appId:string){
  if((await access(tx,a,w,true)).role!=='owner')fail(403,'owner_required','Only the owner can include automations when duplicating an app');
- const research=(await tx.query('SELECT id,version,config,scope_stamp,enabled FROM app_monitors WHERE workspace_id=$1 AND user_id=$2 AND app_id=$3 ORDER BY id',[w,a.userId,appId])).rows;
- const actions=(await tx.query('SELECT id,version,config,scope_stamp,paused FROM app_actions WHERE workspace_id=$1 AND user_id=$2 AND app_id=$3 ORDER BY id',[w,a.userId,appId])).rows;
- const total=Number((await tx.query('SELECT count(*) AS n FROM app_monitors WHERE workspace_id=$1 AND user_id=$2',[w,a.userId])).rows[0].n);
+ const research=(await tx.query('SELECT id,version,config,scope_stamp,enabled FROM app_monitors WHERE deleted_at IS NULL AND workspace_id=$1 AND user_id=$2 AND app_id=$3 ORDER BY id',[w,a.userId,appId])).rows;
+ const actions=(await tx.query('SELECT id,version,config,scope_stamp,paused FROM app_actions WHERE deleted_at IS NULL AND workspace_id=$1 AND user_id=$2 AND app_id=$3 ORDER BY id',[w,a.userId,appId])).rows;
+ const total=Number((await tx.query('SELECT count(*) AS n FROM app_monitors WHERE deleted_at IS NULL AND workspace_id=$1 AND user_id=$2',[w,a.userId])).rows[0].n);
  if(total+research.length>100)fail(409,'monitoring_limit','Copying these automations would exceed the 100 research automation limit. Duplicate without automations or reduce the existing definitions.');
  return {research,actions};
 }

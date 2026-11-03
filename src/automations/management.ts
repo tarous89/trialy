@@ -28,17 +28,17 @@ export class AutomationManagement{
   const members=[];for(const member of candidates){try{await notificationRecipients(this.db,a,w,{appId,steps:[{kind:'email',to:[member.email]}]} as any);members.push(member);}catch(e){if(![403,404,409].includes((e as any).status))throw e;}}
   const owner=members.find(m=>m.id===a.userId);if(!owner)fail(403,'owner_required','Owner unavailable');
   const scopes=(await f.scopes(a,w)).filter((s:any)=>!s.revoked_at&&!s.schemaChanged&&s.body.autoWrite&&Date.parse(s.body.expiresAt)>Date.now()&&s.body.projectId===app.project_id&&s.body.bindings.length===1&&s.body.bindings.every((b:any)=>b.fields.every((key:string)=>tables.some((t:any)=>t.id===b.typeId&&t.fields.some((field:any)=>field.key===key&&field.writable))))).map((s:any)=>({scopeId:s.id,version:s.version}));
-  const researchAutomations=[];for(const row of (await this.db.query("SELECT * FROM app_monitors WHERE workspace_id=$1 AND user_id=$2 AND app_id=$3 ORDER BY created_at,id",[w,a.userId,appId])).rows){try{const service=new AppMonitoring(this.db);if(await service.historyVisible(a,w,row))researchAutomations.push({id:row.id,version:row.version,name:row.config.name,enabled:row.enabled});}catch(e){if(![403,404,409].includes((e as any).status))throw e;}}
+  const researchAutomations=[];for(const row of (await this.db.query("SELECT * FROM app_monitors WHERE deleted_at IS NULL AND workspace_id=$1 AND user_id=$2 AND app_id=$3 ORDER BY created_at,id",[w,a.userId,appId])).rows){try{const service=new AppMonitoring(this.db);if(await service.historyVisible(a,w,row))researchAutomations.push({id:row.id,version:row.version,name:row.config.name,enabled:row.enabled});}catch(e){if(![403,404,409].includes((e as any).status))throw e;}}
   return {owner,researchAutomations,members:members.filter(m=>m.id!==owner.id),tables,writeScopes:scopes};
  }
  async list(a:Actor,w:string,input:unknown){await this.owner(a,w);const v=automationList.parse(input);
   const rows=(await this.db.query(`SELECT d.*,c.name AS app_name,c.archived AS app_archived FROM (
    SELECT m.id,m.app_id,m.workspace_id,m.user_id,m.version,'research' AS kind,'chatgpt' AS executor,m.config->>'name' AS name,m.enabled,m.config->>'expiresAt' AS expires_at,coalesce(m.config->'automation'->'trigger',m.config->'schedule') AS trigger,m.created_at,
     concat_ws(E'\\n\\n',m.config->>'objective',m.config->>'instructions') AS prompt,NULL::jsonb AS steps,(m.config->'automation' IS NULL AND m.task IS NOT NULL) AS external_schedule,m.config->'automation'->>'runnerId' AS runner_id
-   FROM app_monitors m
+   FROM app_monitors m WHERE m.deleted_at IS NULL
    UNION ALL
    SELECT a.id,a.app_id,a.workspace_id,a.user_id,a.version,'action','trialagents',a.config->>'name',NOT a.paused,a.config->>'expiresAt',a.config->'trigger',a.created_at,NULL,a.config->'steps',false,NULL
-   FROM app_actions a
+   FROM app_actions a WHERE a.deleted_at IS NULL
   ) d JOIN workspace_components c ON c.id=d.app_id AND c.workspace_id=d.workspace_id
   WHERE d.workspace_id=$1 AND d.user_id=$2 AND ($3::uuid IS NULL OR d.app_id=$3)
    AND ($4='' OR position(lower($4) in lower(d.name||' '||c.name))>0)
@@ -93,7 +93,7 @@ export class AutomationManagement{
  }
  async read(a:Actor,w:string,kind:'research'|'action',automationId:string){await this.owner(a,w);
   const table=kind==='research'?'app_monitors':'app_actions';
-  const r=(await this.db.query(`SELECT * FROM ${table} WHERE id=$1 AND workspace_id=$2 AND user_id=$3`,[automationId,w,a.userId])).rows[0];if(!r)fail(404,'not_found','Automation unavailable');
+  const r=(await this.db.query(`SELECT * FROM ${table} WHERE deleted_at IS NULL AND id=$1 AND workspace_id=$2 AND user_id=$3`,[automationId,w,a.userId])).rows[0];if(!r)fail(404,'not_found','Automation unavailable');
   const c=await new WorkspaceFoundation(this.db).component(this.db,a,w,r.app_id,false);
   const controlRevision=(await this.db.query("SELECT coalesce(max(event_sequence),0)::text revision FROM audit_events WHERE workspace_id=$1 AND object_id=$2 AND action IN ('monitoring.controlled','app_action.paused')",[w,r.id])).rows[0].revision;
   return {id:r.id,version:r.version,kind,executor:kind==='research'?'chatgpt':'trialagents',enabled:kind==='research'?r.enabled:!r.paused,controlRevision,config:r.config,app:{id:c.id,name:c.name,url:appUrl({workspaceId:w,appId:c.id}),archived:c.archived||c.project_archived},managementOnly:true,task:r.task??null};
