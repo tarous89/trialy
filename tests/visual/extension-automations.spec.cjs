@@ -1,0 +1,26 @@
+const {test,expect}=require('./test.cjs');
+const base='http://127.0.0.1:4179';
+test('Extension opens disabled automations locally and saves the exact MCP review',async({page})=>{
+ const f=await(await page.request.get(base+'/fixture/apps')).json();
+ const id='31000000-0000-4000-8000-000000000009',reviewId='31000000-0000-4000-8000-000000000008',digest='a'.repeat(64),review='Exact reviewed email configuration';
+ const config={name:'Completion email',appId:f.appId,appVersion:0,trigger:{kind:'manual'},steps:[{id:'notify',kind:'email',to:['owner@example.invalid'],subject:'Completed',text:'Saved summary'}],expiresAt:'2027-12-31T00:00:00Z',fields:[],conditions:[],users:[]};
+ let saved,reads=0;
+ await page.route('**/fixture/tool',route=>{
+  const {name,arguments:args}=route.request().postDataJSON();let result;
+  if(name==='list_app_automations'){reads++;expect(args.workspaceId).toBe(f.workspaceId);result={rows:[{id,kind:'action',name:config.name,app_name:'Tracker',app_url:f.url,prompt:'Saved summary',version:0,enabled:false,trigger:config.trigger}],nextOffset:null};}
+  else if(name==='read_app_automation')result={id,kind:'action',version:0,enabled:false,config,app:{name:'Tracker'}};
+  else if(name==='read_automation_setup')result={state:'ready'};
+  else if(name==='read_app_automation_options')result={owner:{name:'Owner',email:'owner@example.invalid'},members:[],tables:[],writeScopes:[]};
+  else if(name==='prepare_app_action')result={id:reviewId,digest,review,confirmation:{operation:'confirm_app_service_review',workspaceId:f.workspaceId,reviewId,kind:'action',digest,review}};
+  else if(name==='confirm_app_service_review'){saved=args;result={saved:true};}
+  else return route.continue();
+  return route.fulfill({json:{structuredContent:{result}}});
+ });
+ await page.goto(base+'/?apps=1');await page.waitForFunction(()=>window.hostReady);
+ await page.evaluate(workspaceId=>window.deliver({screen:'home',workspaceId,viewerId:'fixture',workspaces:[],types:[]}),f.workspaceId);
+ const root=page.frameLocator('#app');await expect(root.getByRole('heading',{name:'Home',exact:true})).toBeVisible();expect(reads).toBe(0);
+ await root.getByRole('button',{name:'Open navigation',exact:true}).click();await root.getByRole('button',{name:'Automations',exact:true}).click();
+ await expect(root.getByRole('heading',{name:'Automations',exact:true})).toBeVisible();await expect(root.getByLabel('Automation status: Disabled',{exact:true})).toBeVisible();expect(await page.evaluate(()=>window.lastOpenedUrl)).toBeUndefined();
+ await root.getByRole('button',{name:'Edit',exact:true}).click();await root.getByLabel('Message',{exact:true}).fill('Updated summary');await root.getByRole('button',{name:'Review changes',exact:true}).click();await root.getByRole('button',{name:'Save automation changes',exact:true}).click();
+ await expect(root.getByRole('heading',{name:'Automations',exact:true})).toBeVisible();expect(saved).toEqual({workspaceId:f.workspaceId,reviewId,kind:'action',digest,review,confirmed:true});
+});

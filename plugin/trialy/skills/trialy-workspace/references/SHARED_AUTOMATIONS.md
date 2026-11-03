@@ -2,6 +2,12 @@
 
 Use this contract for optional research, monitoring, signal collection, analysis and reporting on ANY saved app. TrialAgents stores the instructions, due times, queue and receipts. One shared ChatGPT event subscription per owner/workspace wakes the runner; it does not contain each app's instructions. Templates are optional. App loading, editing and ordinary saves never depend on this service.
 
+## Explain interactive work in chat
+
+For user-initiated work, start with a short statement of what will be checked or changed. Give meaningful progress updates during setup and finish with a plain-language result; an opened extension, task card or link is not an answer. Keep quiet/background instructions limited to unattended execution and routine internal repairs.
+
+For automation requests, distinguish the shared connection from the app workflow. State whether research and each requested email follow-up are saved, enabled and ready; explain what runs, its cadence/timezone, where results are saved and who receives the completion email. Use the final readiness result, not a runner/task creation receipt, to claim activation. If blocked, say what is complete, the exact remaining blocker and the next step. Do not describe disabled definitions as absent or an enabled shared runner as a completed app automation. Links supplement this explanation.
+
 ## Route recurring app work to TrialAgents
 
 Requests such as “update my tracker weekly”, “run this every Friday”, “monitor this app” or “send me an email when its update completes” default to **TrialAgents Automations**, even when the user does not name the scheduler. Resolve the saved app, read `list_app_automations`, then `read_app_automation_guide` and `read_automation_setup`. Reuse matching definitions and stable authoring keys. Research uses `prepare_app_monitoring` with `config.automation.runnerId` and an executable trigger; deterministic/email work uses `prepare_app_action`. Store the schedule, instructions and history in TrialAgents. A description of a schedule alone is not executable scheduling.
