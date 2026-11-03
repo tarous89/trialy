@@ -1,0 +1,7 @@
+import React,{useEffect,useState} from 'react';
+export function Subscription({api}:{api:(p:string,m?:string,b?:unknown)=>Promise<any>}){
+ const [data,setData]=useState<any>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
+ useEffect(()=>{void api('/api/account/subscription').then(setData).catch(e=>setError(e.message));},[]);
+ const go=async(path:string)=>{setBusy(true);setError('');try{const r=await api('/api/account/subscription/'+path,'POST',{});location.assign(r.url);}catch(e){setError((e as Error).message);setBusy(false);}};
+ return <section className="ty-settings-card"><h2>Subscription</h2>{data&&<p>Current plan: <strong>{data.plan==='team'?'Team':'Personal'}</strong></p>}<div className="ty-subscription-offer"><div><h3>Team</h3><p>For teams building together.</p><p className="ty-subscription-price">€490 <span>/ month</span></p></div><ul><li>Unlimited apps</li><li>10 team members</li><li>100 GB storage</li><li>All supported advanced connectors</li><li>Granular permissions, approvals and audit trails</li><li>Guided onboarding and specialized chat & phone support</li></ul></div><div className="ty-actions"><button className="ty-button ty-button--primary" disabled={busy||!data} onClick={()=>void go(data?.status?'portal':'checkout')}>{busy?'Opening…':data?.status?'Manage subscription':'Upgrade to Team'}</button></div>{error&&<p role="alert">{error}</p>}</section>;
+}

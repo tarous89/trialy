@@ -1,3 +1,4 @@
+import {deliverSupport} from '../src/worker/support.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,readdir} from 'node:fs/promises';
@@ -15,11 +16,14 @@ test('support accepts authenticated validated requests and preserves CSRF protec
  const app=baseApp();app.use(session({secret:'synthetic-session-for-support-testing',resave:false,saveUninitialized:false,rolling:true}));const auth=addLocalAuth(app,db,'https://trialy.example');addApi(app,new Service(db),auth.human);app.use(errors);
  assert.equal((await request(app).post('/api/support').send({subject:'Help',message:'Details'})).status,401);
  const browser=request.agent(app),signup=await browser.get('/auth/login?mode=signup');assert.ok(!signup.text.includes('minlength="12"'));assert.ok(!signup.text.includes('name="otp"'));
- await browser.post('/auth/signup').type('form').send({email:'help@example.invalid',password:'short',intendedUse:'accepted',csrf:signup.text.match(/name="csrf" value="([^"]+)"/)![1]});
+ await browser.post('/auth/signup').type('form').send({firstName:'Test',lastName:'User',email:'help@example.invalid',password:'short',intendedUse:'accepted',csrf:signup.text.match(/name="csrf" value="([^"]+)"/)![1]});
  const me=await browser.get('/api/me');const csrf=me.body.csrf;assert.equal(me.status,200);const expires=/Expires=([^;]+)/.exec(me.headers['set-cookie'][0])![1];assert.ok(new Date(expires).getTime()-Date.now()>29*24*3600000);
  assert.equal((await browser.post('/api/support').send({subject:'Help',message:'Details'})).status,403);
  assert.equal((await browser.post('/api/support').set('x-csrf-token',csrf).send({subject:' ',message:'Details'})).status,400);
  const saved=await browser.post('/api/support').set('x-csrf-token',csrf).send({subject:'Help',message:'Details'});assert.equal(saved.status,201,saved.text);
  const row=(await db.query('SELECT * FROM support_requests WHERE id=$1',[saved.body.id])).rows[0];assert.equal(row.user_id,me.body.user.id);assert.equal(row.message,'Details');
+ assert.equal((await browser.post('/api/account/profile').set('x-csrf-token',csrf).send({firstName:'Ada',lastName:'Lovelace'})).status,200);assert.equal((await browser.get('/api/me')).body.user.name,'Ada Lovelace');
+ let sent:any;await deliverSupport(db,async()=>{throw Error('Temporary failure');});assert.equal((await db.query('SELECT delivery_status FROM support_requests WHERE id=$1',[row.id])).rows[0].delivery_status,'pending');await db.query('UPDATE support_requests SET available_at=now() WHERE id=$1',[row.id]);await deliverSupport(db,async(payload,key)=>{sent={payload,key};return {id:'synthetic-receipt'};});assert.deepEqual(sent.payload.to,['support@trialagents.com']);assert.match(sent.payload.text,/help@example.invalid/);assert.equal(sent.key,'support-'+row.id);assert.equal(await deliverSupport(db,async()=>{throw Error('Must not resend');}),false);
+
  }finally{await pg.close();}
 });

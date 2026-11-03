@@ -2,7 +2,7 @@ const {test,expect}=require('./test.cjs');
 const base='http://127.0.0.1:4179';
 async function call(page,name,args){const r=await (await page.request.post(base+'/fixture/tool',{data:{name,arguments:args}})).json();expect(r.isError,JSON.stringify(r)).not.toBe(true);return r.structuredContent.result;}
 async function archive(page,id){const r=await call(page,'read_project_component',{componentId:id});const p=await call(page,'prepare_workspace_change',{operation:{kind:'archive_component',componentId:id,expectedVersion:r.component.version,archived:true}});await call(page,'confirm_workspace_change',{previewId:p.id,digest:p.digest});}
-for(const embedded of [false,true])test(`Move an app between projects and Home in ${embedded?'extension':'platform'}`,async({page})=>{
+for(const embedded of [false,true])test(`Move an app between projects in ${embedded?'extension':'platform'}`,async({page})=>{
  const f=await (await page.request.get(base+'/fixture/apps')).json();
  const save=async operation=>{const p=await call(page,'prepare_workspace_change',{operation});return call(page,'confirm_workspace_change',{previewId:p.id,digest:p.digest});};
  const first=await save({kind:'create_node',nodeKind:'project',name:'Move destination A '+embedded}),second=await save({kind:'create_node',nodeKind:'project',name:'Move destination B '+embedded});
@@ -11,9 +11,9 @@ for(const embedded of [false,true])test(`Move an app between projects and Home i
  if(embedded){await page.waitForFunction(()=>window.hostReady);await page.evaluate(r=>window.deliver(r),{screen:'home',workspaceId:f.workspaceId,viewerId:'fixture',workspaces:[],types:[]});}
  const root=embedded?page.frameLocator('#app'):page;
  const card=root.locator('.ty-resource').filter({has:root.getByRole('heading',{name:'Movable app '+embedded,exact:true})});
- for(const [id,label] of [[first.id,'Move destination A '+embedded],[second.id,'Move destination B '+embedded],[null,'Apps (outside projects)']]){
+ for(const [id,label] of [[first.id,'Move destination A '+embedded],[second.id,'Move destination B '+embedded]]){
   await card.getByRole('button',{name:'Actions for Movable app '+embedded,exact:true}).click();
-  await root.getByRole('menuitem',{name:'Move to',exact:true}).click();
+  await root.getByRole('menuitem',{name:'Move to',exact:true}).click();await expect(root.getByRole('menuitem',{name:'Apps (outside projects)',exact:true})).toHaveCount(0);
   await root.getByRole('menuitem',{name:label,exact:true}).click();
   await expect(card.locator('.ty-tool-project')).toHaveText(id?label:'No project');
   const home=await call(page,'read_account_home',{});expect(home.resources.find(r=>r.id===app.id).projectIds).toEqual(id?[id]:[]);

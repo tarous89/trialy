@@ -1,3 +1,4 @@
+import {addSubscription} from './subscription.js';
 import {addPublicAppServices} from './app-services.js';
 import {bundledAppFont} from '../workspace/design-quality.js';
 import {appPublicUrl,oauthPublicUrl} from '../shared/public-url.js';
@@ -39,8 +40,10 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  addInvitations(app,s,human);
  app.get('/api/config',(_req,res)=>res.json({simpleApps:process.env.SIMPLE_APPS_ENABLED==='true',brand:process.env.BRAND_NAME??'TrialAgents',demo:process.env.LOCAL_DEMO==='true'&&process.env.NODE_ENV!=='production'}));
  app.use('/api',human);app.use('/api',(_req,res,next)=>{res.set('Cache-Control','no-store');next();});
+ addSubscription(app,s);
  addReviews(app,s);
  addFoundationApi(app,s);
+ app.post('/api/account/profile',async(req,res)=>{const v=z.object({firstName:z.string().trim().min(1).max(100),lastName:z.string().trim().min(1).max(100)}).strict().parse(req.body);const u=(await s.db.query("UPDATE users SET first_name=$2,last_name=$3,name=$2||' '||$3 WHERE id=$1 RETURNING id,name,email,first_name,last_name",[req.actor!.userId,v.firstName,v.lastName])).rows[0];res.json(u);});
  app.post('/api/account/initialize',async(req,res)=>res.json({workspaces:await s.ensureAccount(req.actor!)}));
  app.post('/api/account/schema',async(req,res)=>res.json(await accountCatalog(s.db,req.actor!,req.body)));
  app.get('/api/account/access',async(req,res)=>res.json(await new AccessGrid(s.db).directory(req.actor!)));
@@ -49,7 +52,7 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  app.post('/api/workspaces/:workspaceId/access-grid',async(req,res)=>res.json(await new AccessGrid(s.db).save(req.actor!,id.parse(req.params.workspaceId),req.body)));
  app.post('/api/account/home',async(req,res)=>res.json(await accountHome(s.db,req.actor!,req.body)));
  app.post('/api/support',rateLimit({windowMs:3600000,limit:10}),async(req,res)=>{const input=z.object({subject:z.string().trim().min(1).max(160),message:z.string().trim().min(1).max(5000)}).strict().parse(req.body);const requestId=randomUUID();await s.db.query('INSERT INTO support_requests(id,user_id,subject,message) VALUES($1,$2,$3,$4)',[requestId,req.actor!.userId,input.subject,input.message]);res.status(201).json({id:requestId});});
- app.get('/api/me',async(req,res)=>{const u=(await s.db.query('SELECT id,name,email FROM users WHERE id=$1',[req.actor!.userId])).rows[0];res.json({user:u,csrf:req.session?.csrf,workspaces:await s.workspaces(req.actor!)});});
+ app.get('/api/me',async(req,res)=>{const u=(await s.db.query('SELECT id,name,email,first_name,last_name FROM users WHERE id=$1',[req.actor!.userId])).rows[0];res.json({user:u,csrf:req.session?.csrf,workspaces:await s.workspaces(req.actor!)});});
  app.post('/api/workspaces',async(req,res)=>res.status(201).json(await s.createWorkspace(req.actor!,z.string().trim().min(1).max(100).parse(req.body.name))));
  app.get('/api/workspaces/:workspaceId/effective-access',async(req,res)=>res.json(await new AccessManagement(s.db).overview(req.actor!,id.parse(req.params.workspaceId))));
  app.get('/api/workspaces/:workspaceId/effective-access/:subject',async(req,res)=>res.json(await new AccessManagement(s.db).explain(req.actor!,id.parse(req.params.workspaceId),String(req.params.subject))));
