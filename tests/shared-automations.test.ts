@@ -201,6 +201,16 @@ test('shared automations isolate failures, preserve saved apps and enforce revie
    assert.equal((await pg.query<any>('SELECT status FROM automation_occurrences WHERE id=$1',[o.id])).rows[0].status,'completed');
    original=(await pg.query<any>('SELECT source,version,bindings FROM workspace_components WHERE id=$1',[app.id])).rows[0];
   });
+  await t.test('email starts enabled and explains its pause when the linked research changes',async()=>{
+   const actions=new AppActions(db),manage=new AutomationManagement(db),draft=await m.prepare(ai,w.id,{config:{...config,name:'Versioned email producer'}}),mon=await m.confirm(human,w.id,draft.id,draft.digest);
+   const actionDraft=await actions.prepare(human,w.id,{config:{name:'Versioned report email',appId:app.id,appVersion:original.version,trigger:{kind:'database',source:'automation_runs',automationId:mon.id,automationVersion:0,events:['updated'],fields:['status'],becomes:{field:'status',operator:'equals',value:'completed'}},steps:[{id:'notify',kind:'email',to:[human.userId+'@example.invalid'],subject:'Research report',text:'{{run.summary}}'}],expiresAt:expiry}}),email=await actions.confirm(human,w.id,actionDraft.id,actionDraft.digest);
+   const listed=async()=>(await manage.list(human,w.id,{appId:app.id,query:'Versioned report email'})).rows[0];
+   assert.equal((await listed()).enabled,true);assert.equal((await listed()).blockedReason,null);
+   const edit=await m.prepare(human,w.id,{monitorId:mon.id,expectedVersion:0,config:{...config,name:'Versioned email producer',instructions:'Use the updated research criteria.'}});await m.confirm(human,w.id,edit.id,edit.digest);
+   await pg.query("UPDATE app_actions SET next_at=now()-interval '10 days' WHERE id=$1",[email.id]);await withDatabaseContext({service:'worker'},()=>dispatchAppActions(db));
+   const paused=await listed();assert.equal(paused.enabled,false);assert.match(paused.blockedReason!,/Research changed/);assert.equal((await pg.query<any>('SELECT last_error FROM app_actions WHERE id=$1',[email.id])).rows[0].last_error,'run_source_changed');
+   await assert.rejects(actions.control(human,w.id,email.id,false),(e:any)=>e.code==='run_source_changed');assert.equal((await pg.query<any>('SELECT id FROM app_notification_batches WHERE action_id=$1',[email.id])).rows.length,0);
+  });
   await t.test('previously approved manual completion chains remain compatible',async()=>{
    const actions=new AppActions(db),d=await actions.prepare(human,w.id,{config:{name:'Legacy action',appId:app.id,appVersion:original.version,trigger:{kind:'manual'},steps:[{id:'notify',kind:'email',to:[human.userId+'@example.invalid'],subject:'Legacy report',text:'Saved report'}],expiresAt:expiry}}),action=await actions.confirm(human,w.id,d.id,d.digest);
    const p=await m.prepare(ai,w.id,{config:{...config,name:'Legacy producer'}}),mon=await m.confirm(human,w.id,p.id,p.digest);

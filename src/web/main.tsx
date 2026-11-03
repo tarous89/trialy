@@ -135,7 +135,7 @@ function App(){
  {tab==='access-control'&&<AccessPage call={foundationCall} initialWorkspaceId={workspace} initialReviewId={reviewParams.get('accessReview')??undefined} initialDraft={(()=>{try{return JSON.parse(reviewParams.get('accessGridDraft')??'null');}catch{return null;}})()}/>}
  {tab==='access'&&<><div className="ty-page-heading"><h1>Settings</h1></div><nav className="ty-settings-tabs" role="tablist" aria-label="Settings">{['account','team','subscription','support'].map(section=><button key={section} role="tab" aria-selected={settingsTab===section} onClick={()=>setSettingsTab(section)}>{section[0].toUpperCase()+section.slice(1)}</button>)}</nav>{settingsTab==='subscription'&&<Subscription api={api}/>}{settingsTab==='support'&&<SupportForm api={api}/>}</>}
  {tab==='access'&&settingsTab==='account'&&<><AccountProfile user={me} api={api} onSaved={setMe}/><AccountSecurity api={api}/><MfaSettings api={api}/></>}
- {workspace&&tab==='access'&&settingsTab==='team'&&<><Invitations key={workspace} api={api} base={base} types={types}/><h2>Team members</h2>{members.map(m=><div className="settings-card" key={m.user_id}><div><strong>{m.name}</strong><p>{m.role}</p></div><button onClick={()=>setTab('access-control')}>Manage access</button></div>)}</>}
+ {workspace&&tab==='access'&&settingsTab==='team'&&<Invitations key={workspace} api={api} base={base} onManageAccess={()=>setTab('access-control')}/>}
  {tab==='access'&&settingsTab==='account'&&<div className="settings-card"><div><h2>{me.name}</h2><p>{me.email}</p></div><button onClick={()=>run(async()=>{await api('/auth/logout','POST',{});location.href='/auth/login';})}>Sign out</button></div>}
 
  </section>

@@ -48,8 +48,9 @@ export class AutomationManagement{
   const dependencies=await automationDependencies(this.db,w,a.userId);
   const visible=[];for(const row of rows.slice(0,20)){try{const c=await new WorkspaceFoundation(this.db).component(this.db,a,w,row.app_id,false);
    const {steps,external_schedule,runner_id,...definition}=row;
+   let blockedReason:string|null=null;if(row.kind==='action'&&row.trigger?.source==='automation_runs'){const source=(await this.db.query('SELECT version FROM app_monitors WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND deleted_at IS NULL',[row.trigger.automationId,w,a.userId])).rows[0];if(!source||source.version!==row.trigger.automationVersion)blockedReason='Research changed. Edit this email automation to select the updated research, save, then enable it.';}
    const prompt=row.kind==='research'?row.prompt:(steps??[]).map((s:any)=>s.kind==='email'?`Email: ${s.subject}\n${s.text}`:s.kind==='connector'?`Run connector operation: ${s.operation}`:`Run app action: ${s.binding}`).join('\n\n');
-   visible.push({...definition,prompt,services:dependencies.find(d=>d.id===row.id&&d.kind===row.kind)?.services??[],connectionState:runner_id?connection?.state:null,externalSchedule:external_schedule,app_url:appUrl({workspaceId:w,appId:c.id}),app_archived:c.archived||c.project_archived});
+   visible.push({...definition,prompt,blockedReason,services:dependencies.find(d=>d.id===row.id&&d.kind===row.kind)?.services??[],connectionState:runner_id?connection?.state:null,externalSchedule:external_schedule,app_url:appUrl({workspaceId:w,appId:c.id}),app_archived:c.archived||c.project_archived});
   }catch(e){if(![403,404].includes((e as any).status))throw e;}}
   return {rows:visible,nextOffset:rows.length>20?v.offset+20:null};
  }

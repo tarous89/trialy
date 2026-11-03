@@ -113,7 +113,7 @@ export async function dispatchAppActions(db:Database,now=new Date()){
     scan=records.length===100?records.at(-1)!.id:null;next=new Date(now.getTime()+(scan?1000:30000));
    }else{await service.enqueue(a,row.workspace_id,row.id,'time:'+new Date(row.next_at).toISOString());next=trigger.kind==='once'?null:nextAction(config,now);}
    await tx.query('UPDATE app_actions SET next_at=$2,event_cursor=$3,scan_cursor=$4 WHERE id=$1',[row.id,next,cursor,scan]);});await tx.query('RELEASE SAVEPOINT action_dispatch');
-  }catch(e:any){await tx.query('ROLLBACK TO SAVEPOINT action_dispatch');if(e.status===429)await tx.query("UPDATE app_actions SET next_at=now()+interval '1 hour',last_error='waiting_for_allowance' WHERE id=$1",[row.id]);else await tx.query("UPDATE app_actions SET paused=true,last_error='authorization_or_dispatch_failed' WHERE id=$1",[row.id]);}return true;
+  }catch(e:any){await tx.query('ROLLBACK TO SAVEPOINT action_dispatch');if(e.status===429)await tx.query("UPDATE app_actions SET next_at=now()+interval '1 hour',last_error='waiting_for_allowance' WHERE id=$1",[row.id]);else await tx.query("UPDATE app_actions SET paused=true,last_error=$2 WHERE id=$1",[row.id,e.code==='run_source_changed'?'run_source_changed':'authorization_or_dispatch_failed']);}return true;
  });
 }
 export async function processAppAction(db:Database){
