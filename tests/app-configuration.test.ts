@@ -91,3 +91,27 @@ test('automation options inherit app bindings and only expose authorized team me
  const research=new AppMonitoring(db),config={name:'Bound research',appId:app.id,inheritAppAccess:true,objective:'Review signals',instructions:'Review signals',sourcePolicy:'Primary sources',schedule:{description:'Daily',timeZone:'UTC'},expiresAt:new Date(Date.now()+86400000).toISOString(),readBindings:[{typeId:type,fields:['secret']}]};
  await assert.rejects(research.prepare(a,w,{config}),/linked app access/);await research.prepare(a,w,{config:{...config,readBindings:[{typeId:type,fields:['name']}]}});
 });
+
+
+test('connector impact includes all research and follow-ups, requires fresh confirmation and lists actual services',async t=>{
+ const {db,a,b,s,w,change}=await fixture(t),manage=new AutomationManagement(db),runners=new AutomationService(db);
+ const app=await change({kind:'save_component',content:{name:'Dependency tracker',format:'frontend-js',sourceAccess:'bindings',bindings:[],source:'return {html:"<p>Tracker</p>"};'}});
+ const prep=await runners.prepare(a,w,{preferences:{timeZone:'UTC'}}),runner=await runners.confirm(a,w,prep.id,prep.digest),monitor=randomUUID(),followup=randomUUID(),standalone=randomUUID(),connection=randomUUID();
+ await db.query("INSERT INTO connectors(id,workspace_id,tenant_id,config) SELECT $1,id,tenant_id,$3 FROM workspaces WHERE id=$2",[connection,w,JSON.stringify({name:'CRM',secret:'never disclose'})]);
+ const monitorConfig={name:'Weekly research',automation:{runnerId:runner.id},instructions:'PRIVATE PROMPT'};
+ await db.query('INSERT INTO app_monitors(id,workspace_id,user_id,app_id,config,scope_stamp) VALUES($1,$2,$3,$4,$5,$6)',[monitor,w,a.userId,app.id,JSON.stringify(monitorConfig),'fixture']);
+ const steps=[{kind:'email',to:['PRIVATE RECIPIENT'],subject:'Summary',text:'PRIVATE BODY'},{kind:'connector',connectionId:connection,operation:'update'},{kind:'email'}];
+ for(const [id,name,trigger] of [[followup,'Research email',{kind:'database',source:'automation_runs',automationId:monitor}],[standalone,'Independent email',{kind:'manual'}]] as const)await db.query('INSERT INTO app_actions(id,workspace_id,user_id,app_id,config,approved_by) VALUES($1,$2,$3,$4,$5,$3)',[id,w,a.userId,app.id,JSON.stringify({name,trigger,steps})]);
+ const initial=await manage.connector(a,w);assert.equal(initial.automations.length,2);assert.deepEqual(initial.automations.find(d=>d.id===followup)?.services.map(x=>x.name),['ChatGPT Work','Email','CRM']);assert.doesNotMatch(JSON.stringify(initial.automations),/PRIVATE|secret|instructions|runnerIds/);
+ const list=await manage.list(a,w,{});assert.deepEqual(list.rows.find(d=>d.id===standalone).services.map((x:any)=>x.name),['Email','CRM']);assert.deepEqual(list.rows.find(d=>d.id===monitor).services.map((x:any)=>x.name),['ChatGPT Work']);
+ await assert.rejects(manage.controlConnector(a,w,runner.id,false,0),(e:any)=>e.code==='connector_impact_changed');
+ await assert.rejects(manage.controlConnector({...a,origin:'ai'},w,runner.id,false,0,{confirmed:true,impactDigest:initial.impactDigest}),/authenticated TrialAgents app/);
+ // Dependencies are not truncated to the 20-row Automations page, and an added one invalidates an open warning.
+ for(let i=0;i<21;i++)await db.query('INSERT INTO app_monitors(id,workspace_id,user_id,app_id,config,scope_stamp) VALUES($1,$2,$3,$4,$5,$6)',[randomUUID(),w,a.userId,app.id,JSON.stringify({...monitorConfig,name:'Additional '+i}),'fixture']);
+ await assert.rejects(manage.controlConnector(a,w,runner.id,false,0,{confirmed:true,impactDigest:initial.impactDigest}),(e:any)=>e.code==='connector_impact_changed');assert.equal((await runners.setup(a,w)).enabled,true);
+ const current=await manage.connector(a,w);assert.equal(current.automations.length,23);
+ await db.query('UPDATE app_actions SET paused=true WHERE id=$1',[followup]);await assert.rejects(manage.controlConnector(a,w,runner.id,false,0,{confirmed:true,impactDigest:current.impactDigest}),(e:any)=>e.code==='connector_impact_changed');
+ const updated=await manage.connector(a,w);await manage.controlConnector(a,w,runner.id,false,0,{confirmed:true,impactDigest:updated.impactDigest});assert.equal((await runners.setup(a,w)).enabled,false);assert.equal((await manage.read(a,w,'research',monitor)).enabled,true);assert.equal((await manage.read(a,w,'action',standalone)).enabled,true);
+ await manage.controlConnector(a,w,runner.id,true,1);assert.equal((await runners.setup(a,w)).enabled,true);assert.equal((await manage.read(a,w,'action',followup)).enabled,false);
+ await s.share(a,w,b.userId,'editor',[],null,true);await assert.rejects(manage.connector(b,w),/owner/);const other=await s.createWorkspace(a,'Other');assert.equal((await manage.connector(a,other.id)).automations.length,0);
+});

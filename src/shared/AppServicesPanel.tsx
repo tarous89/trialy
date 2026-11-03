@@ -1,7 +1,7 @@
 import React,{useEffect,useState} from 'react';
 import {scheduleLabel} from './AutomationScheduleEditor.js';
 import {Button} from './ui/Controls.js';
-import {AutomationBoundary,AutomationSettings,AutomationSetupReview} from './AutomationSettings.js';
+import {AutomationBoundary,AutomationSetupReview} from './AutomationSettings.js';
 import {AppMonitoringPanel,AppMonitoringReview} from './AppMonitoringPanel.js';
 type Call=(name:string,args:any)=>Promise<any>;
 export const triggerLabel=(t:any)=>t.kind==='manual'?'On request':t.kind==='interval'?`Every ${t.minutes} minutes`:t.kind==='calendar'&&t.frequency?scheduleLabel(t):t.kind==='calendar'?`${t.time} · ${t.timeZone} · days ${t.weekdays.map((d:number)=>['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d]).join(', ')}`:t.kind==='once'?new Date(t.at).toLocaleString():t.kind==='record_date'?`${t.field} · ${t.offsetMinutes} minute offset · ${t.timeZone}`:`When a record is ${t.events.join(' or ')}${t.fields.length?' · '+t.fields.join(', '):''}`;
@@ -13,7 +13,7 @@ export function AppServicesPanel({call,reviewId,appId,onAutomations}:{call:Call;
  useEffect(()=>{void run(load);},[reviewId,appId,offset,runOffset]);
  const body=review?.body,c=body?.config;
  if(review?.kind==='automation_setup')return <AutomationBoundary><AutomationSetupReview call={call} review={review}/></AutomationBoundary>;
- if(!reviewId&&!appId)return <AutomationBoundary><AutomationSettings call={call}/></AutomationBoundary>;
+ if(!reviewId&&!appId)return <p>Manage the ChatGPT connection from Connectors.</p>;
  if(review?.kind==='monitoring')return <AppMonitoringReview call={call} review={review}/>;
  return <section aria-label="App sharing and actions"><div className="ty-page-heading"><h1>{review?'Review '+(review.kind==='sharing'?'sharing':c?.name??'action'):app?.name??'App settings'}</h1>{!review&&<Button disabled={busy} onClick={()=>void run(load)}>Refresh</Button>}</div>{error&&<p role="alert">{error}</p>}
  {result?<div role="status"><h2>{result.url?'Public link ready':result.kind==='email'?'Invitation queued':'Action enabled'}</h2>{result.url&&<p><a href={result.url} target="_blank" rel="noopener noreferrer">{result.url}</a></p>}{result.email&&<p>Queued through TrialAgents for {result.email}. Delivery status is recorded separately.</p>}<Button onClick={()=>{setResult(null);setReview(null);void run(load);}}>Done</Button></div>:review?<>
