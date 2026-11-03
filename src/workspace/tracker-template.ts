@@ -12,7 +12,7 @@ import type {WorkspaceFoundation} from './service.js';
 const key=z.string().regex(/^[a-z][a-z0-9_]{0,63}$/);
 export const trackerSetup=z.object({
  includeDetailFields:z.boolean().default(false),theme:toolThemeSchema.optional(),allowEdits:z.boolean().optional(),overview:overviewSchema.optional(),templateId:z.literal('trialy.standard.v1').default('trialy.standard.v1'),pageSize:z.number().int().min(1).max(25).default(25),
- resourceKind:z.enum(['tracker','form','visualization']).default('tracker'),name:z.string().trim().min(1).max(100),description:z.string().max(500),projectId:id.nullable().default(null),
+ resourceKind:z.enum(['generic','tracker','form','visualization']).default('tracker'),name:z.string().trim().min(1).max(100),description:z.string().max(500),projectId:id.nullable().default(null),
  extendTables:z.array(z.object({typeId:id,expectedVersion:z.number().int().min(0),newFields:newFieldsSchema}).strict()).max(8).default([]),
  newTables:z.array(z.object({id,name:z.string().trim().min(1).max(100),fields:newFieldsSchema}).strict()).max(8).default([]),
  scope:z.enum(['workspace','project']).default('workspace'),

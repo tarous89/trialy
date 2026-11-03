@@ -1,3 +1,4 @@
+import {appAutomationCopies,copyAppAutomations} from '../automations/copy.js';
 import {monitoringReceiptRuns} from '../app-services/monitoring-guard.js';
 import {appSections,sectionGrant,projectAppSections,validateSectionRevision} from '../domain/app-sections.js';
 import {openRuntimeView,assertRuntimeReadAccess,assertRuntimeScope,assertRuntimeWriteSchema,incompatible} from './runtime-view.js';
@@ -504,7 +505,7 @@ export class WorkspaceFoundation {
   if(source.format==='trialy-ui')fail(400,'legacy_format','Create frontend-js code instead of copying the legacy renderer');
   if(op.projectId){const project=(await this.activeNode(tx,a,w,op.projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');}else if(source.manifest?.scope==='project')fail(400,'project_required','Keep a project-scoped app in a project');
   const keep=await this.moveRestrictions(tx,a,w,source.project_id,source);
-  return {name:op.name,format:source.format,source:source.source,resource_kind:source.resource_kind,manifest:source.manifest,bindings:source.bindings,assets:source.assets??[],source_access:source.source_access,execution:[],allowed_users:[a.userId],ai_enabled:keep.ai,archived:false,copiedFrom:{componentId:source.id,version:source.version}};
+  return {name:op.name,format:source.format,source:source.source,resource_kind:source.resource_kind,manifest:source.manifest,bindings:source.bindings,assets:source.assets??[],source_access:source.source_access,execution:[],allowed_users:[a.userId],ai_enabled:keep.ai,archived:false,copiedFrom:{componentId:source.id,version:source.version},...(op.copyAutomations?{automations:await appAutomationCopies(tx,a,w,source.id)}:{})};
  }
  async projectRelationships(a:Actor,w:string,projectId:string,offset=0,typeIds?:string[]){
   await this.nodeAccess(this.db,a,w,projectId);
@@ -847,6 +848,7 @@ export class WorkspaceFoundation {
    const content=await this.componentCopy(tx,a,w,op);after={...content,id:objectId,workspace_id:w,project_id:op.projectId,version};
    await tx.query('INSERT INTO workspace_components(id,workspace_id,project_id,name,format,source,bindings,created_by,execution,allowed_users,ai_enabled,assets,source_access) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)',[objectId,w,op.projectId,content.name,content.format,content.source,J(content.bindings),a.userId,J([]),content.allowed_users===null?null:J(content.allowed_users),content.ai_enabled,J(content.assets),content.source_access]);
    await tx.query('UPDATE workspace_components SET resource_kind=$1,manifest=$2 WHERE id=$3',[content.resource_kind??'generic',content.manifest?J(content.manifest):null,objectId]);
+   if(content.automations){after={...after,automations:await copyAppAutomations(tx,a,w,objectId,content.automations)};}
   }
   else if(op.kind==='set_project_access'||op.kind==='set_component_access'){
    const table=op.kind==='set_project_access'?'workspace_nodes':'workspace_components';objectId=op.kind==='set_project_access'?op.nodeId:op.componentId;

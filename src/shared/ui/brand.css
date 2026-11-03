@@ -180,3 +180,5 @@
 
 /* A closed mobile drawer must not retain its padding or intercept content. */
 @media(max-width:760px){.ty-workspace:not(.ty-workspace--embedded):not(.ty-navigation-open) .ty-sidebar--desktop{display:none!important}}
+
+.ty-workspace .ty-menu-popover>[role=menuitem]{display:flex;align-items:center;gap:8px;width:100%;padding:10px;font-family:inherit;font-size:12px;font-weight:400;line-height:normal;text-align:left}

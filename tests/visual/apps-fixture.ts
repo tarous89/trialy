@@ -36,6 +36,7 @@ export async function addAppsFixture(app:Express,db:Database,actor:Actor,w:any){
  app.get('/api/me',(_req,res)=>res.json({user:{id:actor.userId,name:'Fixture',email:'fixture@example.invalid'},csrf:'fixture',workspaces:[w]}));
  process.env.SIMPLE_APPS_ENABLED='false';addApi(app,s,(req,_res,next)=>{req.actor=actor;next();});process.env.SIMPLE_APPS_ENABLED='true';
  addAppServicesApi(app,f);addAppApi(app,f);addConnectorApi(app,f,{service:connector});
+ app.post('/fixture/generic-layout',async(_req,res)=>{const op=await trackerOperation(f,actor,w.id,{name:'Generic layout fixture',description:'Layout regression',tabs:[{name:'Companies',typeId:companyTable,columns:[{field:'name'}]}]});const p=await f.preview(actor,w.id,{...op,content:{...op.content,resourceKind:'generic'}}),saved=await f.confirm(actor,w.id,p.id,p.digest);res.json({id:saved.id,workspaceId:w.id,url:appUrl({appId:saved.id,workspaceId:w.id})});});
  app.get('/fixture/apps',(_req,res)=>res.json({workspaceId:w.id,appId:saved.id,recordId:record.id,connectionId:connection.id,url:appUrl({appId:saved.id,workspaceId:w.id}),sends}));
  app.post('/fixture/publication',async(req,res)=>{
   const p=await s.preview(actor,w.id,{kind:'create_type',name:'Continuity items '+crypto.randomUUID().slice(0,8),fields:[{key:'name',name:'Name',kind:'text',ai:true}]}),typeId=(await s.commit(actor,p.id,p.digest)).objects[0].id;
