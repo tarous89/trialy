@@ -8,7 +8,7 @@ import {AppActions} from '../app-services/service.js';
 import {notificationRecipients} from '../app-services/notifications.js';
 import {WorkspaceFoundation} from '../workspace/service.js';
 import {appUrl} from '../shared/app-route.js';
-import {adapter} from './service.js';
+import {adapter,AutomationService} from './service.js';
 export const automationKind=z.enum(['research','action']);
 export const automationList=z.object({appId:id.optional(),query:z.string().max(100).default(''),executor:z.enum(['all','chatgpt','trialagents']).default('all'),state:z.enum(['all','enabled','disabled']).default('all'),offset:z.number().int().min(0).max(100000).default(0)}).strict();
 /** Management adapter over the existing stores. Never called by the app runtime. */
@@ -29,22 +29,43 @@ export class AutomationManagement{
  async list(a:Actor,w:string,input:unknown){await this.owner(a,w);const v=automationList.parse(input);
   const rows=(await this.db.query(`SELECT d.*,c.name AS app_name,c.archived AS app_archived FROM (
    SELECT m.id,m.app_id,m.workspace_id,m.user_id,m.version,'research' AS kind,'chatgpt' AS executor,m.config->>'name' AS name,m.enabled,m.config->>'expiresAt' AS expires_at,coalesce(m.config->'automation'->'trigger',m.config->'schedule') AS trigger,m.created_at,
-    concat_ws(E'\\n\\n',m.config->>'objective',m.config->>'instructions') AS prompt,NULL::jsonb AS steps,(m.config->'automation' IS NULL AND m.task IS NOT NULL) AS external_schedule
+    concat_ws(E'\\n\\n',m.config->>'objective',m.config->>'instructions') AS prompt,NULL::jsonb AS steps,(m.config->'automation' IS NULL AND m.task IS NOT NULL) AS external_schedule,m.config->'automation'->>'runnerId' AS runner_id
    FROM app_monitors m
    UNION ALL
-   SELECT a.id,a.app_id,a.workspace_id,a.user_id,a.version,'action','trialagents',a.config->>'name',NOT a.paused,a.config->>'expiresAt',a.config->'trigger',a.created_at,NULL,a.config->'steps',false
+   SELECT a.id,a.app_id,a.workspace_id,a.user_id,a.version,'action','trialagents',a.config->>'name',NOT a.paused,a.config->>'expiresAt',a.config->'trigger',a.created_at,NULL,a.config->'steps',false,NULL
    FROM app_actions a
   ) d JOIN workspace_components c ON c.id=d.app_id AND c.workspace_id=d.workspace_id
   WHERE d.workspace_id=$1 AND d.user_id=$2 AND ($3::uuid IS NULL OR d.app_id=$3)
    AND ($4='' OR position(lower($4) in lower(d.name||' '||c.name))>0)
    AND ($5='all' OR d.executor=$5) AND ($6='all' OR d.enabled=($6='enabled'))
   ORDER BY d.created_at,d.id LIMIT 21 OFFSET $7`,[w,a.userId,v.appId??null,v.query,v.executor,v.state,v.offset])).rows;
+  const connection=rows.some(r=>r.runner_id)?await new AutomationService(this.db).setup(a,w):null;
   const visible=[];for(const row of rows.slice(0,20)){try{const c=await new WorkspaceFoundation(this.db).component(this.db,a,w,row.app_id,false);
-   const {steps,external_schedule,...definition}=row;
+   const {steps,external_schedule,runner_id,...definition}=row;
    const prompt=row.kind==='research'?row.prompt:(steps??[]).map((s:any)=>s.kind==='email'?`Email: ${s.subject}\n${s.text}`:s.kind==='connector'?`Run connector operation: ${s.operation}`:`Run app action: ${s.binding}`).join('\n\n');
-   visible.push({...definition,prompt,externalSchedule:external_schedule,app_url:appUrl({workspaceId:w,appId:c.id}),app_archived:c.archived||c.project_archived});
+   visible.push({...definition,prompt,connectionState:runner_id?connection?.state:null,externalSchedule:external_schedule,app_url:appUrl({workspaceId:w,appId:c.id}),app_archived:c.archived||c.project_archived});
   }catch(e){if(![403,404].includes((e as any).status))throw e;}}
   return {rows:visible,nextOffset:rows.length>20?v.offset+20:null};
+ }
+ async readiness(a:Actor,w:string,automationId:string,requiredActionIds:string[]=[]){
+  await this.owner(a,w);const research=await new AppMonitoring(this.db).read(a,w,automationId),setup=await new AutomationService(this.db).setup(a,w);
+  const blockers:{code:string;actionId?:string}[]=[];
+  if(!research.enabled)blockers.push({code:'research_disabled'});
+  if(research.availability!=='ready')blockers.push({code:research.availability});
+  if(research.scheduleManagedBy!=='trialagents')blockers.push({code:'external_schedule'});
+  if(setup.state!=='ready')blockers.push({code:'runner_'+setup.state});
+  if(requiredActionIds.length&&research.completionSource?.status!=='ready')blockers.push({code:'completion_source_blocked'});
+  const actions=[];for(const actionId of [...new Set(requiredActionIds)]){
+   let state='ready';try{
+    const service=new AppActions(this.db),action=await service.row(a,w,actionId),trigger=action.config.trigger;
+    if(action.user_id!==a.userId||action.app_id!==research.app_id)state='action_unavailable';
+    else if(action.paused)state='action_disabled';
+    else if(trigger.kind!=='database'||trigger.source!=='automation_runs'||trigger.automationId!==automationId||trigger.automationVersion!==research.version)state='completion_link_changed';
+    else await service.validate(a,w,action.config);
+   }catch(e){if(![400,403,404,409].includes((e as any).status))throw e;state=(e as any).code??'action_unavailable';}
+   if(state!=='ready')blockers.push({code:state,actionId});actions.push({id:actionId,state});
+  }
+  return {state:blockers.length?'blocked':'ready',ready:!blockers.length,automationId,version:research.version,runner:{state:setup.state,verifiedAt:setup.verifiedAt??null},actions,blockers,nextDueAt:research.dispatch?.next_at??null,checkedAt:new Date().toISOString(),executed:false};
  }
  async read(a:Actor,w:string,kind:'research'|'action',automationId:string){await this.owner(a,w);
   const table=kind==='research'?'app_monitors':'app_actions';

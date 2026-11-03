@@ -66,3 +66,16 @@ for(const width of [1440,390])test(`Long email stays compact and edits on a sepa
  await expect(page.locator('body')).toHaveJSProperty('scrollWidth',width);await page.getByRole('heading',{name:'Edit automation',exact:true}).scrollIntoViewIfNeeded();await page.screenshot({path:`/tmp/trialy-automation-edit-${width}.png`,fullPage:true});
  await page.goBack();await expect(page.getByRole('heading',{name:'Automations',exact:true})).toBeVisible();await expect(row).toBeVisible();
 });
+
+for(const width of [1440,390])test(`Research waits for connection and preserves its draft at ${width}px`,async({page})=>{
+ await page.setViewportSize({width,height:1000});const f=await(await page.request.get(base+'/fixture/apps')).json(),id='31000000-0000-4000-8000-000000000012';let state='awaiting_subscription',prepared=0;
+ await page.route('**/app-services/automations',route=>route.fulfill({json:{id,state,enabled:true,canActivate:state==='ready'}}));
+ await page.route('**/app-services/automations/definitions?*',route=>route.fulfill({json:{rows:[{id,kind:'research',executor:'chatgpt',name:'Existing pending research',app_name:'Market tracker',app_url:f.url,prompt:'Check sources',version:0,enabled:true,connectionState:state,trigger:{kind:'calendar'}}],nextOffset:null}}));
+ await page.route('**/app-services/automations/options?*',route=>route.fulfill({json:{owner:{id:'owner',name:'Owner',email:'owner@example.invalid'},members:[],tables:[],writeScopes:[]}}));
+ await page.route('**/app-services/monitoring/prepare',route=>{prepared++;return route.fulfill({json:{id:'review',digest:'digest',body:{change:route.request().postDataJSON()}}});});
+ await page.goto(base+`/app-home?tab=automations&workspaceId=${f.workspaceId}`);await expect(page.getByLabel('Automation status: Awaiting ChatGPT connection')).toBeVisible();await expect(page.getByLabel('Automation status: Enabled',{exact:true})).toHaveCount(0);
+ await page.getByRole('button',{name:'Add automation'}).click();await page.getByLabel('Linked app',{exact:true}).selectOption(f.appId);await page.getByLabel('Name',{exact:true}).fill('Friday research');await page.getByLabel('Prompt / instructions').fill('Preserve this research request while connecting.');
+ await page.getByRole('button',{name:'Review changes',exact:true}).click();await expect(page.getByRole('status')).toContainText('draft is retained');expect(prepared).toBe(0);
+ state='connected_unverified';await page.getByRole('button',{name:'Refresh connection'}).click();await expect(page.getByText('Verifying ChatGPT connection',{exact:true})).toBeVisible();state='ready';await expect(page.getByText('ChatGPT connection verified',{exact:true})).toBeVisible();await expect(page.getByLabel('Prompt / instructions')).toHaveValue('Preserve this research request while connecting.');
+ await page.getByRole('button',{name:'Review changes',exact:true}).click();await expect(page.getByRole('region',{name:'Review automation changes'})).toBeVisible();expect(prepared).toBe(1);await expect(page.getByRole('button',{name:'Save automation changes'})).toBeEnabled();await expect(page.locator('body')).toHaveJSProperty('scrollWidth',width);
+});

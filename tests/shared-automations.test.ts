@@ -14,6 +14,7 @@ import {withActor,withDatabaseContext,setDatabaseContext,databaseContext} from '
 import {Service} from '../src/domain/service.js';
 import {WorkspaceFoundation} from '../src/workspace/service.js';
 import {AppMonitoring} from '../src/app-services/monitoring.js';
+import {AutomationManagement} from '../src/automations/management.js';
 import {AutomationService} from '../src/automations/service.js';
 import {AutomationEvents,deliverAutomationEvent,signedHeaders} from '../src/automations/events.js';
 import {dispatchDue,dispatchDaily,recoverWork,isolatedAutomationStep,dispatchCompletions} from '../src/automations/worker.js';
@@ -47,8 +48,13 @@ test('shared automations isolate failures, preserve saved apps and enforce revie
   const p=await s.prepare(ai,w.id,{preferences:{time:'06:00',timeZone:'Europe/Berlin'}});await assert.rejects(s.confirm(ai,w.id,p.id,p.digest),/approve/);const runner=await s.confirm(human,w.id,p.id,p.digest);
   const v={name:'automation.ready',arguments:{workspaceId:w.id,runnerId:runner.id},delivery:{mode:'webhook',url:'https://callbacks.example.org/events',secret:'whsec_'+randomBytes(32).toString('base64')}};
   await t.test('OAuth alone does not claim readiness; verified subscription round trip does',async()=>{
-   const pending=await s.setup(human,w.id);assert.equal(pending.state,'awaiting_subscription');assert.ok('nextStep' in pending);assert.equal(pending.nextStep?.kind,'activate_host_event_subscription');assert.equal(pending.nextStep?.hostAutomationCount,1);const events=new AutomationEvents(db,transport);const sub=await events.subscribe(ai,v);assert.equal((await s.setup(human,w.id)).state,'connected_unverified');assert.equal((await events.subscribe(ai,v)).id,sub.id);
-   const work=(await s.agenda(ai,w.id,runner.id)).rows[0];const claim:any=await s.claim(ai,w.id,{runnerId:runner.id,occurrenceId:work.id,requestKey:randomUUID()});assert.equal(claim.verification,true);await s.finish(ai,w.id,{occurrenceId:work.id,claimToken:claim.claimToken});assert.equal((await s.setup(human,w.id)).state,'ready');
+   const draft=await m.prepare(ai,w.id,{config:{name:'Connection gate test',appId:app.id,objective:'Check sources',instructions:'Research public sources',sourcePolicy:'Primary sources',schedule:{description:'Tomorrow',timeZone:'UTC'},expiresAt:new Date(Date.now()+86400000*7).toISOString(),automation:{runnerId:runner.id,trigger:{kind:'once',at:new Date(Date.now()+86400000).toISOString()}}}});
+   await assert.rejects(m.confirm(human,w.id,draft.id,draft.digest),(e:any)=>e.code==='runner_not_ready'&&e.message.includes('awaiting_subscription'));
+   const pending=await s.setup(human,w.id);assert.equal(pending.state,'awaiting_subscription');assert.ok('nextStep' in pending);assert.equal(pending.nextStep?.kind,'activate_host_event_subscription');assert.equal(pending.nextStep?.hostAutomationCount,1);const events=new AutomationEvents(db,transport);const sub=await events.subscribe(ai,v);const checking=await s.setup(human,w.id);assert.equal(checking.state,'connected_unverified');assert.equal(checking.canActivate,false);assert.equal(checking.nextStep.kind,'wait_for_background_verification');assert.equal(checking.verification.status,'queued');await assert.rejects(m.confirm(human,w.id,draft.id,draft.digest),(e:any)=>e.code==='runner_not_ready');assert.equal((await events.subscribe(ai,v)).id,sub.id);
+   const work=(await s.agenda(ai,w.id,runner.id)).rows[0];const claim:any=await s.claim(ai,w.id,{runnerId:runner.id,occurrenceId:work.id,requestKey:randomUUID()});assert.equal(claim.verification,true);const [verified]=await Promise.all([s.setup(human,w.id,1),new Promise<void>((resolve,reject)=>setTimeout(()=>{void s.finish(ai,w.id,{occurrenceId:work.id,claimToken:claim.claimToken}).then(()=>resolve(),reject);},25))]);assert.equal(verified.state,'ready');
+   const saved=await m.confirm(human,w.id,draft.id,draft.digest),manage=new AutomationManagement(db);assert.equal((await manage.readiness(human,w.id,saved.id)).ready,true);
+   await m.control(human,w.id,saved.id,0,false);await s.control(human,w.id,runner.id,false,0);await assert.rejects(m.control(human,w.id,saved.id,0,true),(e:any)=>e.code==='runner_not_ready');await s.control(human,w.id,runner.id,true,1);await pg.query('UPDATE automation_runners SET version=0 WHERE id=$1',[runner.id]);
+   assert.equal((await manage.readiness(human,w.id,saved.id)).ready,false);
    await withActor(other,()=>assert.rejects(s.setup(other,w.id)));await withActor(other,async()=>assert.equal((await db.query('SELECT id FROM automation_runners')).rows.length,0));
   });
   const expiry=new Date(Date.now()+7*86400000).toISOString();
@@ -142,6 +148,8 @@ test('shared automations isolate failures, preserve saved apps and enforce revie
    await m.control(human,w.id,mon.id,0,false);
   });
   await t.test('run database triggers fan out once, preserve reports and stop delivery after access changes',async()=>{
+   // Scope-only fixtures above share the same due time; isolate this producer from their queue order.
+   await pg.query('UPDATE automation_dispatch SET next_at=NULL');
    await pg.query("UPDATE automation_occurrences SET status='blocked' WHERE status='queued'");
    const actions=new AppActions(db),p=await m.prepare(ai,w.id,{config:{...config,name:'Report producer'}}),mon=await m.confirm(human,w.id,p.id,p.digest);
    const actionConfig={name:'Research email',appId:app.id,appVersion:0,trigger:{kind:'database',source:'automation_runs',automationId:mon.id,automationVersion:0,events:['updated'],fields:['status'],becomes:{field:'status',operator:'equals',value:'completed'}},steps:[{id:'notify',kind:'email',to:[human.userId+'@example.invalid'],subject:'Research report',text:'{{run.summary}} / {{run.savedChanges}}'}],expiresAt:expiry};
@@ -150,6 +158,9 @@ test('shared automations isolate failures, preserve saved apps and enforce revie
    await assert.rejects(create({...actionConfig,steps:[{...actionConfig.steps[0],text:'{{steps.research.summary}}'}],trigger:{kind:'manual'}}),/database trigger/);
    await assert.rejects(create({...actionConfig,trigger:{...actionConfig.trigger,automationVersion:1}}),/current research/);
    const action=await create(actionConfig),second=await create({...actionConfig,name:'Independent consumer'}),quiet=await create({...actionConfig,name:'Only changed data',trigger:{...actionConfig.trigger,includeEmpty:false}});
+   const manage=new AutomationManagement(db);assert.equal((await manage.readiness(human,w.id,mon.id,[action.id,second.id])).ready,true);
+   await actions.control(human,w.id,second.id,true);const blocked=await manage.readiness(human,w.id,mon.id,[action.id,second.id]);assert.equal(blocked.ready,false);assert.ok(blocked.blockers.some(b=>b.actionId===second.id&&b.code==='action_disabled'));await actions.control(human,w.id,second.id,false);
+   await pg.query('UPDATE automation_runners SET verified_at=NULL WHERE id=$1',[runner.id]);assert.equal((await m.read(human,w.id,mon.id)).execution.canRun,false);assert.ok((await s.agenda(ai,w.id,runner.id)).rows.every(r=>r.reason==='verification'));assert.equal((await manage.list(human,w.id,{})).rows.find(r=>r.id===mon.id)?.connectionState,'connected_unverified');assert.equal((await manage.readiness(human,w.id,mon.id,[action.id])).ready,false);await pg.query('UPDATE automation_runners SET verified_at=now() WHERE id=$1',[runner.id]);
    await assert.rejects(m.prepare(ai,w.id,{config:{...config,automation:{...config.automation,completionActionId:action.id,completionActionVersion:0}}}),/database-triggered/);
    const tick=async(id:string)=>{await pg.query("UPDATE app_actions SET next_at=now()-interval '1 day' WHERE id=$1",[id]);await withDatabaseContext({service:'worker'},()=>dispatchAppActions(db));};
    await tick(action.id);assert.equal((await pg.query<any>('SELECT id FROM app_notification_batches WHERE action_id=$1',[action.id])).rows.length,0);
@@ -207,6 +218,7 @@ test('shared automations isolate failures, preserve saved apps and enforce revie
    assert.equal((await events.subscribe(ai,v)).id,existing.id);
    await pg.query('UPDATE automation_subscriptions SET expires_at=now()-interval \'1 second\' WHERE id=$1',[existing.id]);assert.equal((await s.setup(human,w.id)).state,'awaiting_subscription');
    assert.equal((await events.subscribe(ai,v)).id,existing.id);
+   const checks=(await s.agenda(ai,w.id,runner.id)).rows;assert.equal(checks.length,1);assert.equal(checks[0].reason,'verification');const verification:any=await s.claim(ai,w.id,{runnerId:runner.id,occurrenceId:checks[0].id,requestKey:randomUUID()});await s.finish(ai,w.id,{occurrenceId:checks[0].id,claimToken:verification.claimToken});assert.equal((await s.setup(human,w.id)).canActivate,true);
    await assert.rejects(events.subscribe(ai,{...v,delivery:{...v.delivery,url:'http://127.0.0.1'}}));
    await assert.rejects(new AutomationEvents(db,async()=>response('wrong')).subscribe(ai,{...v,delivery:{...v.delivery,url:'https://callbacks.example.org/invalid'}}),/verified/);
   });
