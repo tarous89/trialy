@@ -47,5 +47,5 @@ for(const embedded of [true,false])test(`Move feedback floats without layout shi
  expect((await heading.boundingBox()).y).toBe(before.y);
  const app=root.locator('.ty-resource--app');await app.hover();
  await expect(app).toHaveScreenshot(`hover-border-${embedded?'extension':'platform'}.png`);
- await app.getByRole('button',{name:'Actions for Feedback test app'}).click();await expect(root.getByRole('menuitem',{name:'Manage',exact:true})).toBeVisible();
+ await app.getByRole('button',{name:'Actions for Feedback test app'}).click();await expect(root.getByRole('menuitem',{name:'Open',exact:true})).toBeVisible();await expect(root.getByRole('menuitem',{name:'Manage',exact:true})).toHaveCount(0);
 });

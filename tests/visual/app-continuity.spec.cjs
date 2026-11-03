@@ -45,14 +45,14 @@ for(const embedded of [false,true])test(`Saved app revisions have no first-save 
  await expect(root.getByRole('alert')).toHaveCount(0);await archive(page,saved.id);
 });
 
-for(const fromHome of [false,true])test(`Failed extension replacement keeps the app opened ${fromHome?'from Home':'by ChatGPT'} without recovery messages`,async({page})=>{
+for(const fromHome of [false,true])test(`Failed extension replacement keeps the app opened ${fromHome?'from legacy Home':'by ChatGPT'} without recovery messages`,async({page})=>{
  const f=await (await page.request.get(base+'/fixture/apps')).json();
- await page.goto(base+'/?apps=1');await page.waitForFunction(()=>window.hostReady);
+ await page.goto(base+(fromHome?'/':'/?apps=1'));await page.waitForFunction(()=>window.hostReady);
  const root=page.frameLocator('#app'),frame=root.frameLocator('iframe[title="Saved frontend code"]');let homeApp;
  if(fromHome){
   const p=await call(page,'prepare_workspace_change',{operation:{kind:'save_component',content:{name:'Home continuity fixture',format:'frontend-js',source:`return {html:'<h1>Calculator</h1><label>Draft note<input aria-label="Draft note"></label>'};`}}});homeApp=await call(page,'confirm_workspace_change',{previewId:p.id,digest:p.digest});
   await page.evaluate(r=>window.deliver(r),{screen:'home',workspaceId:f.workspaceId,viewerId:'fixture',workspaces:[],types:[]});
-  await root.getByRole('button',{name:'Actions for Home continuity fixture',exact:true}).click();await root.getByRole('menuitem',{name:'Manage',exact:true}).click();
+  await root.getByRole('button',{name:'Actions for Home continuity fixture',exact:true}).click();await root.getByRole('menuitem',{name:'Open',exact:true}).click();
  }else await page.evaluate(r=>window.deliver(r),await (await page.request.get(base+'/fixture/app-display?appId='+f.appId+'&path=/calculator')).json());
  await expect(frame.getByRole('heading',{name:'Calculator',exact:true})).toBeVisible();await frame.getByLabel('Draft note').fill('Keep this input');
  const draft=await (await page.request.get(base+'/fixture/app-draft')).json();

@@ -115,3 +115,44 @@ test('connector impact includes all research and follow-ups, requires fresh conf
  await manage.controlConnector(a,w,runner.id,true,1);assert.equal((await runners.setup(a,w)).enabled,true);assert.equal((await manage.read(a,w,'action',followup)).enabled,false);
  await s.share(a,w,b.userId,'editor',[],null,true);await assert.rejects(manage.connector(b,w),/owner/);const other=await s.createWorkspace(a,'Other');assert.equal((await manage.connector(a,other.id)).automations.length,0);
 });
+
+test('app duplication optionally copies disabled definitions, remaps follow-ups, and never copies execution state',async t=>{
+ const {db,a,b,s,w,change}=await fixture(t),runners=new AutomationService(db),actions=new AppActions(db);
+ const app=await change({kind:'save_component',content:{name:'Copy source',format:'frontend-js',sourceAccess:'bindings',bindings:[],source:'return {html:"<p>Source</p>"};'}});
+ const setup=await runners.prepare(a,w,{preferences:{timeZone:'UTC'}}),runner=await runners.confirm(a,w,setup.id,setup.digest),monitor=randomUUID(),completion=randomUUID(),followup=randomUUID(),expiry=new Date(Date.now()+86400000*30).toISOString();
+ const {monitoringConfig}=await import('../src/app-services/monitoring-schema.js');
+ const research=monitoringConfig.parse({name:'Weekly research',authoringKey:'weekly',appId:app.id,objective:'Review updates',instructions:'Review public sources',sourcePolicy:'Primary sources',schedule:{description:'Weekly',timeZone:'UTC'},expiresAt:expiry,automation:{runnerId:runner.id,trigger:{kind:'calendar',frequency:'weekly',time:'06:00',timeZone:'UTC',anchor:'2026-01-01'},completionActionId:completion,completionActionVersion:4}});
+ await db.query('INSERT INTO app_monitors(id,workspace_id,user_id,app_id,version,config,scope_stamp,task,coverage_through) VALUES($1,$2,$3,$4,3,$5,$6,$7,now())',[monitor,w,a.userId,app.id,JSON.stringify(research),'fixture',JSON.stringify({id:'external-task-do-not-copy'})]);
+ const email={name:'Email report',authoringKey:'email',appId:app.id,appVersion:app.version,expiresAt:expiry,trigger:{kind:'manual'},steps:[{id:'notify',kind:'email',to:[a.userId+'@example.invalid'],subject:'Update',text:'Saved update'}]};
+ const p=await actions.prepare(a,w,{config:email}),manual=await actions.confirm(a,w,p.id,p.digest);
+ for(const [id,trigger] of [[completion,{kind:'manual'}],[followup,{kind:'database',source:'automation_runs',automationId:monitor,automationVersion:3,events:['updated'],fields:['status'],becomes:{field:'status',operator:'equals',value:'completed'}}]] as const){const config=actionConfig.parse({...email,authoringKey:id===completion?'completion':'followup',trigger});await db.query('INSERT INTO app_actions(id,workspace_id,user_id,app_id,version,config,scope_stamp,approved_by) VALUES($1,$2,$3,$4,4,$5,$6,$3)',[id,w,a.userId,app.id,JSON.stringify(config),'fixture']);}
+ const op={kind:'copy_component',sourceComponentId:app.id,expectedVersion:app.version,projectId:null,name:'Plain copy'};
+ const plain=await change(op);assert.equal((await db.query('SELECT id FROM app_monitors WHERE app_id=$1',[plain.id])).rows.length,0);assert.equal((await db.query('SELECT id FROM app_actions WHERE app_id=$1',[plain.id])).rows.length,0);
+ const f=new WorkspaceFoundation(db),draft=await f.preview(a,w,{...op,copyAutomations:true,name:'Workflow copy'});
+ await db.query('UPDATE app_actions SET paused=true WHERE id=$1',[completion]);await assert.rejects(f.confirm(a,w,draft.id,draft.digest),/Copy contents changed/);
+ const refreshed=await f.preview(a,w,{...op,copyAutomations:true,name:'Workflow copy'}),copied=await f.confirm(a,w,refreshed.id,refreshed.digest);assert.deepEqual(await f.confirm(a,w,refreshed.id,refreshed.digest),copied);
+ const copies=(await db.query('SELECT * FROM app_monitors WHERE app_id=$1',[copied.id])).rows,actionCopies=(await db.query('SELECT * FROM app_actions WHERE app_id=$1',[copied.id])).rows;assert.equal(copies.length,1);assert.equal(actionCopies.length,3);
+ const m=copies[0];assert.notEqual(m.id,monitor);assert.equal(m.version,0);assert.equal(m.enabled,false);assert.equal(m.task,null);assert.equal(m.coverage_through,null);assert.equal(m.config.appId,copied.id);assert.equal(m.config.automation.runnerId,runner.id);
+ assert.ok(actionCopies.every(r=>r.paused&&r.version===0&&r.config.appId===copied.id&&r.config.appVersion===0));
+ assert.equal(m.config.automation.completionActionId,actionCopies.find(r=>r.config.authoringKey==='completion').id);assert.equal(m.config.automation.completionActionVersion,0);
+ const linked=actionCopies.find(r=>r.config.authoringKey==='followup');assert.equal(linked.config.trigger.automationId,m.id);assert.equal(linked.config.trigger.automationVersion,0);
+ assert.equal((await db.query('SELECT monitor_id FROM automation_dispatch WHERE monitor_id=$1',[m.id])).rows.length,1);
+ assert.equal((await db.query('SELECT id FROM automation_occurrences WHERE monitor_id=$1',[m.id])).rows.length,0);
+ assert.equal((await db.query('SELECT enabled FROM app_monitors WHERE id=$1',[monitor])).rows[0].enabled,true);
+ // Enabling a valid copied email still runs the existing permission and recipient checks.
+ const emailCopy=actionCopies.find(r=>r.config.authoringKey==='email');await actions.control(a,w,emailCopy.id,false);assert.equal((await actions.row(a,w,manual.id)).paused,false);
+ await s.share(a,w,b.userId,'editor',[],null,true);await assert.rejects(f.preview(b,w,{...op,copyAutomations:true}),/Only the owner/);
+});
+
+test('generic apps save layout changes without requiring a legacy type or changing data permissions',async t=>{
+ const {db,a,w,save,change}=await fixture(t),f=new WorkspaceFoundation(db);
+ const type=(await save({kind:'create_type',name:'Generic app records',fields:[{key:'name',name:'Name',kind:'text',ai:true}]})).objects[0].id;
+ const row=(await save({kind:'create_record',typeId:type,data:{name:'Retained record'}})).objects[0].id;
+ const operation=await trackerOperation(f,a,w,{name:'Generic app',description:'App layout',tabs:[{name:'Records',typeId:type,columns:[{field:'name'}]}]});
+ const app=await change({...operation,content:{...operation.content,resourceKind:'generic'}}),before=(await f.readComponent(a,w,app.id)).component,config=readStandardConfig(before.source);
+ const {prepareToolLayout}=await import('../src/workspace/tool-layout.js');
+ const preview=await prepareToolLayout(f,a,w,{componentId:app.id,expectedVersion:0,name:'Revised generic app',description:'Updated description',tabs:config.tabs.map((tab:any,i:number)=>({originalIndex:i,typeId:tab.typeId,name:'Renamed records',visible:true,columns:tab.columns.map((c:any)=>({fieldId:c.fieldId,field:c.field,label:'Updated label',visible:true}))}))});
+ await f.confirm(a,w,preview.id,preview.digest);const after=(await f.readComponent(a,w,app.id)).component;
+ assert.equal(after.resource_kind,'generic');assert.equal(readStandardConfig(after.source).resourceKind,'generic');assert.equal(after.name,'Revised generic app');assert.deepEqual(after.bindings,before.bindings);assert.equal(after.manifest.fields[0].mode,before.manifest.fields[0].mode);assert.equal((await f.record(db,a,w,row)).data.name,'Retained record');
+ const output=await f.runFrontend(a,w,{componentId:app.id,expectedVersion:1});assert.ok(output.tracker);assert.match(output.html,/Revised generic app/);
+});

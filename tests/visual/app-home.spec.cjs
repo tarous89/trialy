@@ -40,12 +40,11 @@ for(const width of [1440,390])test(`Preview footer keeps both labeled actions in
   await discard.click();if(embedded){await expect(footer).toHaveCount(0);await expect(root.getByRole('heading',{name:'Home',exact:true})).toBeVisible();}else await expect(page).toHaveURL(base+'/?tab=home');
  }
 });
-test('Saving a preview opened from extension Home returns to the refreshed Home',async({page})=>{
+test('A preview opened from extension Home uses the single Open link',async({page})=>{
  const draft=await (await page.request.get(base+'/fixture/app-draft')).json();await page.goto(base+'/?apps=1');await page.waitForFunction(()=>window.hostReady);
  await page.evaluate(r=>window.deliver(r),{screen:'home',workspaceId:draft.workspaceId,viewerId:'fixture',workspaces:[],types:[]});
  const root=page.frameLocator('#app'),card=root.locator('article').filter({has:root.locator(`a[href*="${draft.preview.id}"]`)});
- await card.getByRole('button',{name:'Actions for Embedded draft'}).click();await root.getByRole('menuitem',{name:'Manage',exact:true}).click();
- await expect(root.getByRole('button',{name:'Save app',exact:true})).toBeEnabled();await root.getByRole('button',{name:'Save app',exact:true}).click();await expect(root.getByRole('heading',{name:'Home',exact:true})).toBeVisible();await expect(root.locator('.ty-tracker-preview')).toHaveCount(0);
- const call=async(name,args)=>(await (await page.request.post(base+'/fixture/tool',{data:{name,arguments:args}})).json()).structuredContent.result;
- const resolved=await call('resolve_tracker_preview',{previewId:draft.preview.id});const archive=await call('prepare_workspace_change',{operation:{kind:'archive_component',componentId:resolved.component.id,expectedVersion:resolved.component.version,archived:true}});await call('confirm_workspace_change',{previewId:archive.id,digest:archive.digest});
+ await card.getByRole('button',{name:'Actions for Embedded draft'}).click();await expect(root.getByRole('menuitem',{name:'Manage',exact:true})).toHaveCount(0);
+ const open=root.getByRole('menuitem',{name:'Open',exact:true});await expect(open).toHaveCount(1);const url=await open.getAttribute('href');await open.click();await expect.poll(()=>page.evaluate(()=>window.lastOpenedUrl)).toBe(url);expect(url).toContain(draft.preview.id);
+ await page.request.post(base+'/fixture/tool',{data:{name:'discard_workspace_preview',arguments:{previewId:draft.preview.id}}});
 });
