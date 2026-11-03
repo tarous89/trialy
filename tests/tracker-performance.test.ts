@@ -34,7 +34,8 @@ test('four-tab tracker budgets cover publication checks, wide schemas and layout
   assert.equal(next.tracker.pages[0].result.total,25);assert.equal(next.controls.length,462);
   const {component}=await f.readComponent(actor,w.id,receipt.id),config=standardTracker(component.source)!.config;
   const layout=await measure('prepare layout',()=>prepareToolLayout(f,actor,w.id,{componentId:receipt.id,expectedVersion:0,name:'Renamed tracker',description:'',tabs:config.tabs.map((t:any,i:number)=>({originalIndex:i,typeId:t.typeId,name:t.name,visible:true,columns:t.columns.map((c:any)=>({fieldId:c.fieldId,field:c.field,label:c.label,visible:c.visible}))}))}),30);
-  await measure('confirm layout',()=>f.confirm(actor,w.id,layout.id,layout.digest),70);
+  // Mandatory project placement adds project authorization checks to layout confirmation.
+  await measure('confirm layout',()=>f.confirm(actor,w.id,layout.id,layout.digest),75);
   const saved=await measure('read saved layout with output',()=>f.readComponent(actor,w.id,receipt.id,true),48);assert.equal(saved.component.version,1);assert.ok(saved.initialOutput.tracker);
   changeAccess=true;await assert.rejects(f.runFrontend(actor,w.id,{componentId:receipt.id,expectedVersion:1,event:{kind:'click',action:'tab:0'}}),/Access or schema changed|Permissions changed/);
  }finally{await pg.close();}
