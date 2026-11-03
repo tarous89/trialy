@@ -1,3 +1,4 @@
+import {AutomationManagement} from '../automations/management.js';
 import express,{type Express,type RequestHandler} from 'express';
 import {rateLimit} from 'express-rate-limit';
 import type {McpServer} from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -5,7 +6,7 @@ import {z} from 'zod';
 import {id,fail,type Actor} from '../shared/schema.js';
 import {AppActions} from '../app-services/service.js';
 import {AppSharing,sharingConfig} from '../app-services/sharing.js';
-import {actionChange} from '../app-services/schema.js';
+import {actionPreparation} from '../app-services/schema.js';
 import {serviceJob,receiveDeliveryEvent} from '../app-services/jobs.js';
 import {withActor} from '../db/context.js';
 import {WorkspaceFoundation} from '../workspace/service.js';
@@ -46,7 +47,7 @@ export function addAppServicesApi(app:Express,f:WorkspaceFoundation){
  app.get(`${b}/sharing/:appId`,async(req,res)=>{const {a,w}=context(req);res.json(await sharing.list(a,w,id.parse(req.params.appId)));});
  app.post(`${b}/sharing/:shareId/revoke`,async(req,res)=>{const {a,w}=context(req);res.json(await sharing.revoke(a,w,id.parse(req.params.shareId)));});
  app.get(`${b}/reviews/:reviewId`,async(req,res)=>{const {a,w}=context(req);res.json(await actions.preview(a,w,id.parse(req.params.reviewId)));});
- app.post(`${b}/reviews/:reviewId/confirm`,async(req,res)=>{const {a,w}=context(req),v=z.object({digest:z.string().length(64),confirmed:z.literal(true)}).strict().parse(req.body),r=await actions.preview(a,w,id.parse(req.params.reviewId));res.json(r.kind==='automation_setup'?await new AutomationService(f.db).confirm(a,w,r.id,v.digest):r.kind==='monitoring'?await new AppMonitoring(f.db).confirm(a,w,r.id,v.digest):r.kind==='sharing'?await sharing.confirm(a,w,r.id,v.digest):await actions.confirm(a,w,r.id,v.digest));});
+ app.post(`${b}/reviews/:reviewId/confirm`,async(req,res)=>{const {a,w}=context(req),v=z.object({digest:z.string().length(64),confirmed:z.literal(true)}).strict().parse(req.body),r=await actions.preview(a,w,id.parse(req.params.reviewId));res.json(r.kind==='automation_control'?await new AutomationManagement(f.db).confirmControl(a,w,r.id,v.digest):r.kind==='automation_setup'?await new AutomationService(f.db).confirm(a,w,r.id,v.digest):r.kind==='monitoring'?await new AppMonitoring(f.db).confirm(a,w,r.id,v.digest):r.kind==='sharing'?await sharing.confirm(a,w,r.id,v.digest):await actions.confirm(a,w,r.id,v.digest));});
  app.post(`${b}/actions/:actionId/run`,async(req,res)=>{const {a,w}=context(req),v=z.object({requestKey:id,recordId:id.optional()}).strict().parse(req.body);res.json(await actions.runNow(a,w,id.parse(req.params.actionId),v.requestKey,v.recordId));});
  app.post(`${b}/actions/:actionId/pause`,async(req,res)=>{const {a,w}=context(req);res.json(await actions.control(a,w,id.parse(req.params.actionId),z.boolean().parse(req.body.paused)));});
  app.get(`${b}/runs`,async(req,res)=>{const {a,w}=context(req);res.json(await actions.runs(a,w,req.query.appId?id.parse(req.query.appId):undefined,z.coerce.number().int().min(0).default(0).parse(req.query.offset)));});
@@ -57,7 +58,7 @@ export function addAppServicesApi(app:Express,f:WorkspaceFoundation){
 export function addAppServicesMcp(server:McpServer,f:WorkspaceFoundation,a:Actor,safe:any,metadata:any){
  addAppMonitoringMcp(server,f,a,safe,metadata);
  const actions=new AppActions(f.db),sharing=new AppSharing(f.db),register=(name:string,description:string,schema:any,read:boolean,fn:(v:any)=>Promise<any>)=>server.registerTool(name,{description,inputSchema:{workspaceId:id,...schema},annotations:{readOnlyHint:read,openWorldHint:!read,destructiveHint:false},_meta:metadata},safe(fn));
- register('prepare_app_action','Prepare a scoped app action with manual, recurring, one-time date, record date or committed database-change triggers. Research completion reports must use a separate database trigger with source automation_runs and the saved research automation ID/version, status becoming completed; never a manual completion placeholder. Steps can send TrialAgents email notifications, call configured APIs including LLMs, and invoke bound functions. Returns the exact review and confirm_app_service_review arguments for approval in ChatGPT, plus a website review link. Approval authorizes repeated execution only within the named app/data/recipient/expiry scope. No effects run during preparation.',actionChange.shape,false,({workspaceId,...v})=>actions.prepare(a,workspaceId,v));
+ register('prepare_app_action','Prepare a scoped app action with manual, recurring, one-time date, record date or committed database-change triggers. Research completion reports must use a separate database trigger with source automation_runs and the saved research automation ID/version, status becoming completed; never a manual completion placeholder. When the user requests email to themselves, use email step to: "account"; TrialAgents resolves their authenticated account address without asking them to repeat or reconfirm it. Authentication identifies the recipient; the user request authorizes this email workflow. Steps can send TrialAgents email notifications, call configured APIs including LLMs, and invoke bound functions. Returns the exact review and confirm_app_service_review arguments for approval in ChatGPT, plus a website review link. Approval authorizes repeated execution only within the named app/data/recipient/expiry scope. No effects run during preparation.',actionPreparation.shape,false,({workspaceId,...v})=>actions.prepare(a,workspaceId,v));
  register('list_app_actions','Read authorized saved app actions, their triggers and status. Does not execute them.',{appId:id.optional(),offset:z.number().int().min(0).default(0)},true,v=>actions.list(a,v.workspaceId,v.appId,v.offset));
  register('run_app_action','Run a previously human-authorized app action within its current approved scope. Use only when the user requests execution. Stable requestKey prevents duplicate runs.',{actionId:id,requestKey:id,recordId:id.optional()},false,v=>actions.runNow(a,v.workspaceId,v.actionId,v.requestKey,v.recordId));
  register('read_app_action_run','Read current status and permitted results of your app action run.',{runId:id},true,v=>actions.status(a,v.workspaceId,v.runId));

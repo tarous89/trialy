@@ -1,5 +1,5 @@
 import {requestMetrics} from './metrics.js';
-import {setDatabaseContext} from './context.js';
+import {databaseContext,databaseContextValues,setDatabaseContext} from './context.js';
 import pg from 'pg';
 import { readFile, readdir } from 'node:fs/promises';
 export interface Connection { query<T = any>(sql: string, values?: any[]): Promise<{ rows: T[]; rowCount?: number | null }> }
@@ -11,9 +11,20 @@ export class Postgres implements Database {
   async transaction<T>(fn: (tx: Connection) => Promise<T>): Promise<T> {
     const metrics=requestMetrics(),waiting=performance.now();
     const c = await this.pool.connect();if(metrics)metrics.poolWaitMs+=performance.now()-waiting;
-    const measured:Connection={query:async<T=any>(sql:string,values?:any[])=>{const started=performance.now();if(metrics)metrics.queryCount++;try{return await c.query(sql,values) as unknown as {rows:T[];rowCount:number|null};}finally{if(metrics)metrics.databaseMs+=performance.now()-started;}}};
-    try { await c.query('BEGIN'); await setDatabaseContext(c); const result = await fn(measured); await c.query('COMMIT'); return result; }
-    catch (e) { await c.query('ROLLBACK'); throw e; } finally { c.release(); }
+    // Capture each caller's scope before queueing. Context switches and their query must
+    // stay together even when different actor scopes share a transaction concurrently.
+    let tail:Promise<unknown>=Promise.resolve(),contextKey:string|undefined;
+    const measured:Connection={query:<T=any>(sql:string,values?:any[])=>{
+      const context=databaseContextValues(databaseContext()),key=JSON.stringify(context),rollback=/^\s*ROLLBACK\b/i.test(sql);
+      const result=tail.then(async()=>{const started=performance.now();if(metrics)metrics.queryCount++;try{
+        // An aborted transaction accepts only rollback, which also restores SET LOCAL values.
+        if(!rollback&&key!==contextKey){await setDatabaseContext(c,context);contextKey=key;}
+        const r=await c.query(sql,values);if(rollback)contextKey=undefined;return r as unknown as {rows:T[];rowCount:number|null};
+      }catch(e){contextKey=undefined;throw e;}finally{if(metrics)metrics.databaseMs+=performance.now()-started;}});
+      tail=result.catch(()=>{});return result;
+    }};
+    try { await c.query('BEGIN'); const result = await fn(measured); await tail; await c.query('COMMIT'); return result; }
+    catch (e) { await tail; await c.query('ROLLBACK'); throw e; } finally { c.release(); }
   }
   async close() { await this.pool.end(); }
 }

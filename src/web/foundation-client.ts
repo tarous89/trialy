@@ -10,6 +10,7 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown)=
  list_app_automations:[`${automation}/definitions?${new URLSearchParams(Object.fromEntries(Object.entries(clean).filter(([,v])=>v!==undefined).map(([k,v])=>[k,String(v)])))}`],
  read_app_automation:[`${automation}/definitions/${v.kind}/${v.automationId}`],
  read_app_automation_history:[`${automation}/definitions/${v.kind}/${v.automationId}/history?offset=${v.offset??0}`],
+ prepare_app_automation_control:[`${automation}/definitions/prepare-control`,'POST',clean],
  control_app_automation:[`${automation}/definitions/${v.kind}/${v.automationId}/control`,'POST',{expectedVersion:v.expectedVersion,enabled:v.enabled}],
  prepare_app_action:[`${services}/actions/prepare`,'POST',clean],
  read_automation_setup:[automation],

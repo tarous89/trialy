@@ -1,6 +1,6 @@
 # TrialAgents template authoring standard
 
-Version: 1.3.12
+Version: 1.3.13
 
 This is the living engineering contract for templates served by TrialAgents. Update it when a verified renderer, lifecycle or host-integration lesson changes. Retrieve the current copy with `read_app_template_guidance(resource:"authoring")`; follow `nextOffset` to the end. The response includes a version and content hash. Packaged plugin examples are not the catalog.
 
@@ -235,3 +235,5 @@ Show the active sort direction visibly beside the column label (↑ ascending / 
 The platform places “Built with TrialAgents” at the bottom left, outside the app viewport. Reserve the bottom 62 px plus the device bottom safe-area inset for attribution. No app CTA, Delete action, pagination, sticky footer, dialog action or floating control may enter this area. Use the available app viewport height, never the outer browser height. Keep app actions inside the content viewport; do not duplicate or reposition the platform badge as an app logo. Verify desktop and mobile layouts, long records, detail panels, dialogs and unsaved-change footers for overlap and clickability.
 
 Automation lists must remain compact: clamp long instructions to a short preview and keep actions visible. Editing opens a dedicated page, following the Add automation layout; never expand the full editor inside a list row. Do not label manual or unknown triggers “After processing”.
+
+For requested self-email, use `prepare_app_action` with email step `to:"account"`; TrialAgents resolves the authenticated recipient, so do not ask for separate address confirmation. Activate a saved disabled definition with `prepare_app_automation_control` and its exact `confirm_app_service_review` confirmation when the user requested activation. The shared connection is managed under Connectors → ChatGPT; generated apps must not duplicate it in Settings.
