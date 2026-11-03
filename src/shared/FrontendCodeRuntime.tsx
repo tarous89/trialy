@@ -1,3 +1,4 @@
+import {SystemNotice} from './SystemNotice.js';
 import {parseAppUrl} from './app-route.js';
 import {AppPlatform,AppNavigation} from './AppPlatform.js';
 import {ConnectorReview} from './ConnectorsPanel.js';
@@ -162,7 +163,7 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
  if(loadFailed&&!ready&&!frameUrl)return <AppUnavailable onHome={onHome} onRetry={retryLoad} reason={schemaChanged?'schema':'load'}/>;
  return <section className={`ty-tracker-surface ${standard?'ty-tracker--standard':''} ${detailsOpen?'ty-tracker--details':''}`} aria-label={platform.enabled?"App":"Tracker"}>
  {schemaChanged&&ready&&<div role="status">The saved app is still here. Its connected fields changed and need review.</div>}
- {error&&<div className="ty-runtime-error" role="alert"><div><strong>Action couldn’t complete</strong><p>{error}</p></div><button className="ty-notice-dismiss" aria-label="Dismiss error" onClick={()=>setError('')}>×</button>{saveReceipt.current&&<button onClick={async()=>{setBusy(true);try{await finishSave();setError('');}catch(e){actionError(e);}finally{setBusy(false);}}}>{saveReceipt.current?.saved?'Reload saved data':'Retry save'}</button>}</div>}
+ {error&&<SystemNotice error message={error} onDismiss={()=>setError('')}/>}{saveReceipt.current&&!busy&&<div className="ty-runtime-recovery"><button onClick={async()=>{setBusy(true);try{await finishSave();setError('');}catch(e){actionError(e);}finally{setBusy(false);}}}>{saveReceipt.current?.saved?'Reload saved data':'Retry save'}</button></div>}
  {publishedUpdate&&<div ref={updateBanner} className="ty-app-update" role="status"><span>This app has been updated. Refresh when you’re ready.</span><button disabled={busy} onClick={()=>localEditsRef.current?setConfirmUpdate(true):void loadPublished()}>Refresh to latest version</button></div>}
  {confirmUpdate&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="alertdialog" aria-modal="true" aria-label="Load published update"><h2>Discard your unsaved edits?</h2><p>Your local edits will be discarded when the published update loads.</p><button onClick={()=>setConfirmUpdate(false)}>Keep editing</button><button disabled={busy} onClick={()=>void loadPublished()}>Discard edits and load update</button></section></div>}
  {!standard&&ready&&<div className="ty-actions"><button disabled={busy||!!proposal} onClick={()=>current.current?(localEditsRef.current?setConfirmUpdate(true):void loadPublished()):void run()}>Refresh</button></div>}

@@ -21,3 +21,7 @@
 @media(max-width:480px){.ty-workspace .ty-resource-grid:has(.ty-resource--app){grid-template-columns:1fr}.ty-workspace .ty-resource-grid .ty-resource--app .ty-tool-snapshot{height:170px}}
 .ty-workspace #ty-main .ty-resource-grid .ty-resource--app>.ty-menu>.ty-icon-button{background:transparent;border:0;box-shadow:none;color:var(--app-ink)}
 .ty-workspace #ty-main .ty-resource-grid .ty-resource--app>.ty-menu>.ty-icon-button:is(:hover,:focus-visible){background:#ffffff80}
+
+/* The cover must follow the card's inner radius instead of painting over its border. */
+.ty-workspace .ty-resource-grid .ty-resource--app .ty-resource-open{border-radius:12px;overflow:hidden}
+.ty-workspace .ty-resource-grid .ty-resource--app .ty-tool-snapshot{border-radius:12px 12px 0 0}

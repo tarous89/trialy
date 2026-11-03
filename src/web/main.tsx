@@ -1,3 +1,4 @@
+import {SystemNotice} from '../shared/SystemNotice.js';
 import {AppServicesPanel} from '../shared/AppServicesPanel.js';
 import {PublicApp,JoinApp} from './PublicApp.js';
 import {AccountEntry} from './AccountEntry.js';
@@ -60,7 +61,7 @@ function App(){
  const [creationKind,setCreationKind]=useState('tracker'),[homeRevision,setHomeRevision]=useState(0);
  const [settingsTab,setSettingsTab]=useState('account'),[databaseAccess,setDatabaseAccess]=useState(reviewParams.get('access')==='1');
  const [projectId,setProjectId]=useState(''),[visited,setVisited]=useState<string[]>([]);
- const [me,setMe]=useState<any>(null),[boot,setBoot]=useState(true),[config,setConfig]=useState({brand:'TrialAgents',demo:false,simpleApps:false});
+ const [me,setMe]=useState<any>(null),[boot,setBoot]=useState(true),[config,setConfig]=useState({brand:'TrialAgents',demo:false,simpleApps:true});
  const [accountMismatch,setAccountMismatch]=useState(false),[workspaces,setWorkspaces]=useState<any[]>([]),[workspace,setWorkspace]=useState(''),[types,setTypes]=useState<any[]>([]),[typeId,setTypeId]=useState('');
  const [tab,setTab]=useState(['home','logs','access','access-control','database','automations','connectors','apps'].includes(reviewParams.get('tab')??'')?reviewParams.get('tab')!:'home'),[rows,setRows]=useState<any[]>([]),[total,setTotal]=useState(0),[offset,setOffset]=useState(0),[query,setQuery]=useState(''),[auditAction,setAuditAction]=useState(''),[auditOffset,setAuditOffset]=useState(0),[mode,setMode]=useState('table');
  const [documents,setDocuments]=useState<any[]>([]),[history,setHistory]=useState<any[]>([]),[templates,setTemplates]=useState<any[]>([]),[preview,setPreview]=useState<any>(null),[form,setForm]=useState<any>(null),[draft,setDraft]=useState<Record<string,any>>({});
@@ -107,7 +108,7 @@ function App(){
  {workspace&&tab==='create'&&<CreationCenter key={creationKind} kind={creationKind} call={(name,args)=>foundationCall(name,{workspaceId:workspace,...args})} onClose={()=>setTab('home')} onCreated={()=>{setHomeRevision(r=>r+1);setTab('home');void refresh();}}/>}
  {workspace&&visited.includes('home')&&<div hidden={tab!=='home'}><HomePanel active={tab==='home'} loadHome={args=>api('/api/account/home','POST',args)} onLegacyAutomations={()=>setTab('automations')} viewerId={me.id} key={workspace+':'+homeRevision} workspaceId={workspace} types={types} call={foundationCall} onDocuments={()=>setTab('documents')}/></div>}
  {workspace&&tab==='logs'&&<LogsPanel key={workspace} workspaceId={workspace} call={foundationCall}/>}
- {error&&<div className="error" role="alert">{error}<button onClick={()=>setError('')}>×</button></div>}{notice&&<div className="notice" role="status">{notice}</div>}
+ {error&&<SystemNotice error message={error} onDismiss={()=>setError('')}/>}{notice&&<SystemNotice message={notice} onDismiss={()=>setNotice('')}/>}
  {workspace&&['trackers','forms','visuals'].includes(tab)&&<ProjectFilter workspaceId={workspace} value={projectId} onChange={setProjectId} call={foundationCall}/>}
  {!workspace&&<div className="empty"><h2>No account data available</h2><p>Check your account access in Settings.</p></div>}
  {workspace&&tab==='data'&&<><div className="toolbar"><div className="segmented">{['table','list','comparison','dashboard','timeline','calendar'].map(m=><button key={m} className={(activeView?.kind??mode)===m?'selected':''} onClick={()=>{setViewId('');setMode(m);setOffset(0);}}>{m[0].toUpperCase()+m.slice(1)}</button>)}</div><div className="toolbar-right"><button onClick={()=>{setForm({kind:'type'});setDraft({name:'',fields:[{key:'name',name:'Name',kind:'text',required:true,ai:true,multiple:true}]});}}>＋ New table</button>{selected&&<button onClick={()=>{setForm({kind:'type',type:selected});setDraft({name:selected.name,fields:selected.fields});}}>Edit fields</button>}{selected&&<button disabled={busy} onClick={()=>setMigrating(true)}>Migrate fields</button>}{selected&&<button disabled={busy} onClick={()=>setImporting(true)}>Import CSV</button>}{selected&&<button className="primary" onClick={()=>{setForm({kind:'record'});setDraft({});}}>＋ Add record</button>}</div></div>

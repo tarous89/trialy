@@ -47,7 +47,7 @@ test('shared automations isolate failures, preserve saved apps and enforce revie
   const p=await s.prepare(ai,w.id,{preferences:{time:'06:00',timeZone:'Europe/Berlin'}});await assert.rejects(s.confirm(ai,w.id,p.id,p.digest),/approve/);const runner=await s.confirm(human,w.id,p.id,p.digest);
   const v={name:'automation.ready',arguments:{workspaceId:w.id,runnerId:runner.id},delivery:{mode:'webhook',url:'https://callbacks.example.org/events',secret:'whsec_'+randomBytes(32).toString('base64')}};
   await t.test('OAuth alone does not claim readiness; verified subscription round trip does',async()=>{
-   assert.equal((await s.setup(human,w.id)).state,'awaiting_subscription');const events=new AutomationEvents(db,transport);const sub=await events.subscribe(ai,v);assert.equal((await s.setup(human,w.id)).state,'connected_unverified');assert.equal((await events.subscribe(ai,v)).id,sub.id);
+   const pending=await s.setup(human,w.id);assert.equal(pending.state,'awaiting_subscription');assert.ok('nextStep' in pending);assert.equal(pending.nextStep?.kind,'activate_host_event_subscription');assert.equal(pending.nextStep?.hostAutomationCount,1);const events=new AutomationEvents(db,transport);const sub=await events.subscribe(ai,v);assert.equal((await s.setup(human,w.id)).state,'connected_unverified');assert.equal((await events.subscribe(ai,v)).id,sub.id);
    const work=(await s.agenda(ai,w.id,runner.id)).rows[0];const claim:any=await s.claim(ai,w.id,{runnerId:runner.id,occurrenceId:work.id,requestKey:randomUUID()});assert.equal(claim.verification,true);await s.finish(ai,w.id,{occurrenceId:work.id,claimToken:claim.claimToken});assert.equal((await s.setup(human,w.id)).state,'ready');
    await withActor(other,()=>assert.rejects(s.setup(other,w.id)));await withActor(other,async()=>assert.equal((await db.query('SELECT id FROM automation_runners')).rows.length,0));
   });
@@ -116,6 +116,30 @@ test('shared automations isolate failures, preserve saved apps and enforce revie
    await pg.query("INSERT INTO audit_events(id,workspace_id,tenant_id,actor_id,action,object_id,origin,source_run_id,after_value) VALUES($1,$2,$3,$4,'record.updated',$5,'ai',$6,$7)",[randomUUID(),w.id,(await pg.query<any>('SELECT tenant_id FROM workspaces WHERE id=$1',[w.id])).rows[0].tenant_id,human.userId,record,randomUUID(),JSON.stringify({data:{name:'Automatic update'}})]);
    await pg.query('UPDATE automation_dispatch SET next_at=now() WHERE monitor_id=$1',[mon.id]);await withDatabaseContext({service:'worker'},()=>dispatchDue(db));assert.equal((await pg.query<any>('SELECT id FROM automation_occurrences WHERE monitor_id=$1',[mon.id])).rows.length,1);
    await m.control(human,w.id,mon.id,0,false);assert.equal((await s.agenda(ai,w.id,runner.id)).rows.find((r:any)=>r.monitor_id===mon.id).status,'paused');
+  });
+  await t.test('completion preflight identifies app field gaps without widening research or notification access',async()=>{
+   const tableDraft=await domain.preview(human,w.id,{kind:'create_type',name:'Scope signals',fields:[{key:'name',name:'Name',kind:'text'},{key:'signal',name:'Signal',kind:'text'}]}),tid=(await domain.commit(human,tableDraft.id,tableDraft.digest)).objects[0].id;
+   const content={name:'Scope test app',format:'frontend-js',sourceAccess:'bindings',source:'return {html:"<h1>Scope test</h1>"};',bindings:[{typeId:tid,fields:['name']}]};
+   const appDraft=await f.preview(human,w.id,{kind:'save_component',content}),linked=await f.confirm(human,w.id,appDraft.id,appDraft.digest);
+   const draft=await m.prepare(ai,w.id,{config:{...config,appId:linked.id,readBindings:[{typeId:tid,fields:['name','signal']}]}});
+   assert.equal(draft.completionSource.status,'blocked');assert.deepEqual(draft.completionSource.missingBindings,[{typeId:tid,fields:['signal']}]);
+   const mon=await m.confirm(human,w.id,draft.id,draft.digest),read=await m.read(ai,w.id,mon.id);
+   assert.equal(read.availability,'ready');assert.equal(read.completionSource.status,'blocked');
+   const actions=new AppActions(db),email={name:'Signal email',appId:linked.id,appVersion:0,trigger:{kind:'database',source:'automation_runs',automationId:mon.id,automationVersion:0,events:['updated'],fields:['status'],becomes:{field:'status',operator:'equals',value:'completed'}},steps:[{id:'notify',kind:'email',to:[human.userId+'@example.invalid'],subject:'Research report',text:'{{run.summary}}'}],expiresAt:expiry};
+   await assert.rejects(actions.prepare(human,w.id,{config:email}),(e:any)=>e.code==='run_source_scope'&&e.message.includes('read_app_monitoring.completionSource'));
+   assert.deepEqual((await f.component(db,human,w.id,linked.id)).bindings,content.bindings);
+   assert.equal((await pg.query<any>('SELECT id FROM app_actions WHERE app_id=$1',[linked.id])).rows.length,0);
+   const projectDraft=await f.preview(human,w.id,{kind:'create_node',nodeKind:'project',name:'Completion scope test'}),project=await f.confirm(human,w.id,projectDraft.id,projectDraft.digest);
+   const scopeDraft=await f.preview(human,w.id,{kind:'save_scope',scope:{projectId:project.id,autoWrite:true,expiresAt:expiry,purpose:'Evidence updates',inclusionCriteria:'Relevant signals',sourcePolicy:'Primary sources',basis:'tracking',bindings:[{typeId:tid,fields:['name','signal']}],allowCreate:true,allowUpdate:true,maxChanges:5}}),scope=await f.confirm(human,w.id,scopeDraft.id,scopeDraft.digest);
+   const writeDraft=await m.prepare(ai,w.id,{config:{...config,appId:linked.id,readBindings:[{typeId:tid,fields:['name']}],writeScopes:[{scopeId:scope.id,version:0}]}}),writer=await m.confirm(human,w.id,writeDraft.id,writeDraft.digest);
+   assert.deepEqual(writeDraft.completionSource.missingBindings,[{typeId:tid,fields:['signal']}]);
+   await assert.rejects(actions.prepare(human,w.id,{config:{...email,trigger:{...email.trigger,automationId:writer.id}}}),(e:any)=>e.code==='run_source_scope');
+   await m.control(human,w.id,writer.id,0,false);
+   // Explicitly reviewed app access alignment unblocks the same research source.
+   const update=await f.preview(human,w.id,{kind:'save_component',componentId:linked.id,expectedVersion:0,content:{...content,bindings:[{typeId:tid,fields:['name','signal']}]}});await f.confirm(human,w.id,update.id,update.digest);
+   assert.equal((await m.read(ai,w.id,mon.id)).completionSource.status,'ready');
+   assert.equal((await actions.prepare(human,w.id,{config:{...email,appVersion:1}})).status,'review_required');
+   await m.control(human,w.id,mon.id,0,false);
   });
   await t.test('run database triggers fan out once, preserve reports and stop delivery after access changes',async()=>{
    await pg.query("UPDATE automation_occurrences SET status='blocked' WHERE status='queued'");

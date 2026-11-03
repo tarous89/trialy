@@ -3,6 +3,7 @@ import {fail,type Actor} from '../shared/schema.js';
 import type {ActionConfig} from '../app-services/schema.js';
 import {AppMonitoring} from '../app-services/monitoring.js';
 import {monitoringConfig} from '../app-services/monitoring-schema.js';
+import {completionScope,completionScopeResolution} from './completion-scope.js';
 
 export const runFields=['id','automationId','automationVersion','status','completedAt','summary','sources','savedChanges','receiptIds','recordIds','coverage'] as const;
 export function runTrigger(c:ActionConfig){return c.trigger.kind==='database'&&c.trigger.source==='automation_runs'?c.trigger:null;}
@@ -13,9 +14,10 @@ export async function validateRunSource(db:Database,a:Actor,w:string,c:ActionCon
  const t=runTrigger(c);if(!t)return null;
  const service=new AppMonitoring(db),row=await service.row(a,w,t.automationId!);
  if(row.app_id!==c.appId||row.version!==t.automationVersion)fail(409,'run_source_changed','Select the current research automation for this app');
- const config=monitoringConfig.parse(row.config),checked=await service.validate(a,w,config),app=await service.app(a,w,c.appId);
- const within=(b:any)=>app.bindings.some((bound:any)=>bound.typeId===b.typeId&&b.fields.every((f:string)=>bound.fields.includes(f)));
- if(checked.stamp!==row.scope_stamp||!config.readBindings.every(within)||!checked.scopes.every((s:any)=>s.body.bindings.every(within)))fail(403,'run_source_scope','Research run access changed or exceeds this app');
+ const config=monitoringConfig.parse(row.config),app=await service.app(a,w,c.appId);
+ if(completionScope(app.bindings,config.readBindings,[]).status==='blocked')fail(403,'run_source_scope','Research reads fields outside the linked app. Read read_app_monitoring.completionSource for the missing bindings. '+completionScopeResolution);
+ let checked;try{checked=await service.validate(a,w,config);}catch(e){if(['monitoring_fields','monitoring_write_scope','field_scope','schema_changed'].includes((e as any)?.code))fail(403,'run_source_scope','Research data access no longer matches the linked app. '+completionScopeResolution);throw e;}
+ if(checked.stamp!==row.scope_stamp||checked.completionSource.status!=='ready')fail(403,'run_source_scope','Research run access changed or exceeds this app. '+completionScopeResolution);
  return row;
 }
 

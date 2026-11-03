@@ -1,3 +1,4 @@
+import {SystemNotice} from '../shared/SystemNotice.js';
 import React,{useCallback,useRef,useState} from 'react';
 import {AppNavigation} from '../shared/AppPlatform.js';
 import {parseAppUrl,type AppRoute} from '../shared/app-route.js';
@@ -14,5 +15,5 @@ export function EmbeddedAppNavigation({appId,workspaceId,source,route:initialRou
   const next=parseAppUrl(target.href)!.route;setError('');
   if(dirty.current)setPending(next);else setRoute(next);
  };
- return <AppNavigation.Provider value={{route,reset,location:{appId,workspaceId,source},navigate,setDirty}}>{error&&<p role="alert">{error}</p>}{children}{pending&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="alertdialog" aria-modal="true" aria-label="Unsaved changes"><h3>Keep your edits?</h3><p>Your changes have not been saved.</p><button autoFocus onClick={()=>setPending(null)}>Keep editing</button><button onClick={()=>{setRoute(pending);setPending(null);setDirty(false);setReset(n=>n+1);}}>Discard edits and continue</button></section></div>}</AppNavigation.Provider>;
+ return <AppNavigation.Provider value={{route,reset,location:{appId,workspaceId,source},navigate,setDirty}}>{error&&<SystemNotice error message={error} onDismiss={()=>setError('')}/>}{children}{pending&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="alertdialog" aria-modal="true" aria-label="Unsaved changes"><h3>Keep your edits?</h3><p>Your changes have not been saved.</p><button autoFocus onClick={()=>setPending(null)}>Keep editing</button><button onClick={()=>{setRoute(pending);setPending(null);setDirty(false);setReset(n=>n+1);}}>Discard edits and continue</button></section></div>}</AppNavigation.Provider>;
 }

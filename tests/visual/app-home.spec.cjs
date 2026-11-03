@@ -34,7 +34,8 @@ for(const width of [1440,390])test(`Preview footer keeps both labeled actions in
   const root=embedded?page.frameLocator('#app'):page,footer=root.locator('.ty-tracker-preview>.ty-action-footer');
   const save=footer.getByRole('button',{name:'Save app',exact:true}),discard=footer.getByRole('button',{name:'Discard app',exact:true});
   await expect(save).toBeEnabled();await expect(discard).toHaveText('Discard app');await expect(footer).toHaveCSS('background-color','rgb(13, 19, 17)');if(embedded)await expect(root.locator('.ty-topbar')).toHaveCSS('background-color','rgb(13, 19, 17)');
-  const box=await footer.boundingBox();expect(box.x).toBe(0);expect(box.width).toBe(width);expect(box.y+box.height).toBe(1000);
+  const box=await footer.boundingBox();expect(box.x).toBe(0);expect(box.width).toBe(width);expect(box.y+box.height).toBe(embedded?1000:938); // Standalone reserves 62px for attribution.
+  if(!embedded)expect((await root.locator('.ty-app-watermark').boundingBox()).y).toBeGreaterThanOrEqual(box.y+box.height);
   for(const button of [save,discard]){const b=await button.boundingBox();expect(b.x).toBeGreaterThanOrEqual(0);expect(b.x+b.width).toBeLessThanOrEqual(width);expect(b.y+b.height).toBeLessThanOrEqual(1000);}
   await discard.click();if(embedded){await expect(footer).toHaveCount(0);await expect(root.getByRole('heading',{name:'Home',exact:true})).toBeVisible();}else await expect(page).toHaveURL(base+'/?tab=home');
  }

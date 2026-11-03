@@ -1,3 +1,4 @@
+import {SystemNotice} from './SystemNotice.js';
 import {AppUnavailable} from './AppUnavailable.js';
 import React,{useCallback,useEffect,useMemo,useRef,useState} from 'react';
 import {AppPlatform,AppNavigation,APP_BRAND} from './AppPlatform.js';
@@ -26,7 +27,7 @@ export function StandaloneApp({signedIn,loading=false,call,api}:{signedIn:boolea
  const watermark=<a className="ty-app-watermark" href={APP_BRAND.website} onClick={e=>{if(dirty.current||proposal){e.preventDefault();setPending(APP_BRAND.website);}}}><img src="/trialagents-mark-white.png" width="18" height="18" alt="" aria-hidden="true"/>{APP_BRAND.watermark}</a>;
  return <AppPlatform.Provider value={{enabled:true,origin:location.origin}}><div className="ty-workspace ty-standalone"><div className="ty-main-column"><main id="ty-main"><AppNavigation.Provider value={current?{route:current.route,reset,navigate,setDirty}:null}>
  {!current?<AppUnavailable onHome={goHome}/>:loading?<div aria-busy="true" aria-label="Loading app"/>:!signedIn?<section className="ty-empty"><h1>Sign in to open this app</h1><a className="ty-button ty-button--primary" href={'/auth/login?returnTo='+encodeURIComponent(appUrl(current))}>Sign in</a></section>:<>
- {error&&<div role="alert"><p>{error}</p></div>}{!loaded&&(loadFailed?<AppUnavailable onHome={goHome} reason={[401,403,404].includes(loadStatus)?'missing':'load'} onRetry={()=>setReload(n=>n+1)}/>:<div aria-busy="true" aria-label="Loading app"/>)}
+ {error&&<SystemNotice error message={error} onDismiss={()=>setError('')}/>}{!loaded&&(loadFailed?<AppUnavailable onHome={goHome} reason={[401,403,404].includes(loadStatus)?'missing':'load'} onRetry={()=>setReload(n=>n+1)}/>:<div aria-busy="true" aria-label="Loading app"/>)}
  {component&&<ComponentEditor key={component.id+':'+loaded.loadedRevision} component={component} projects={[]} call={invoke} onBack={goHome} onPreview={setProposal}/>}
  {!component&&loaded?.preview?.preview&&<TrackerDraft preview={loaded.preview.preview} call={invoke} onSaved={c=>{setDirty(false);assign(appUrl({...current,appId:c.id,source:'component'}),true);}} onDiscard={goHome} onProposal={setProposal}/>}
  {loaded?.source==='function'&&<FoundationPanel workspaceId={current.workspaceId} types={[]} call={call} initialRevisionId={loaded.resource.revisionId}/>}

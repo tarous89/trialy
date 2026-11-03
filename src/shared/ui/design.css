@@ -21,7 +21,7 @@
 .ty-kind-generic{--kind:#66756c;--kind-soft:#eef2ef;--kind-border:#c8d2cb}.ty-log-details{font-size:11px;color:var(--ty-muted);margin-top:10px}.ty-log-details summary{cursor:pointer}.ty-log-details[open]{padding-top:8px;border-top:1px solid var(--ty-border)}
 .ty-fixed aside{position:static;width:auto;height:auto;display:block;padding:16px;margin:16px 0;background:#edf6ef;border:1px solid var(--ty-border);border-radius:10px}
 
-.ty-resource[draggable=true]{cursor:grab}.ty-project:focus-visible{outline:3px solid var(--ty-brand,#24775d);outline-offset:3px}.ty-move-notice{padding:12px 24px;color:#18583f}.ty-move-overlay{position:fixed;inset:0;background:#102d2640;z-index:100;display:grid;place-items:center;padding:24px}.ty-move-dialog{background:white;border:1px solid #dce5e1;border-radius:16px;padding:28px;width:min(460px,100%);box-shadow:0 20px 70px #102d2630}.ty-move-dialog p{color:#52665e;line-height:1.5}.ty-move-dialog .ty-actions{margin-top:24px}
+.ty-resource[draggable=true]{cursor:grab}.ty-project:focus-visible{outline:3px solid var(--ty-brand,#24775d);outline-offset:3px}.ty-move-overlay{position:fixed;inset:0;background:#102d2640;z-index:100;display:grid;place-items:center;padding:24px}.ty-move-dialog{background:white;border:1px solid #dce5e1;border-radius:16px;padding:28px;width:min(460px,100%);box-shadow:0 20px 70px #102d2630}.ty-move-dialog p{color:#52665e;line-height:1.5}.ty-move-dialog .ty-actions{margin-top:24px}
 
 .ty-move-dialog::backdrop{background:#102d2640}.ty-move-dialog{color:#183d31;max-width:calc(100vw - 32px)}
 
@@ -419,3 +419,5 @@
 @media(max-width:700px){.ty-automation-form-grid{grid-template-columns:minmax(0,1fr)}.ty-automation-composer .ty-automation-fields,.ty-automation-recipients,.ty-automation-review{padding:16px}.ty-automation-composer{padding-block:16px}}
 
 .ty-automation-review{display:grid;gap:12px}.ty-automation-review p,.ty-automation-review h3{margin:0}.ty-automation-review>button{justify-self:start}
+
+.ty-workspace .ty-runtime-recovery{position:fixed;bottom:24px;right:24px;z-index:60;background:white;padding:10px;border:1px solid var(--ty-border);border-radius:10px}
