@@ -2,7 +2,7 @@ import {z} from 'zod';
 import {randomUUID} from 'node:crypto';
 import type {Database} from '../db/database.js';
 import {id,fail,type Actor} from '../shared/schema.js';
-import {requireCurrentAction} from '../domain/write-authorization.js';
+import {requireCurrentAction,requireHuman} from '../domain/write-authorization.js';
 import {checksum} from '../domain/evidence.js';
 import {chatServiceReview,checkServiceReview} from '../app-services/review.js';
 import {access} from '../domain/permissions.js';
@@ -12,6 +12,7 @@ import {notificationRecipients} from '../app-services/notifications.js';
 import {WorkspaceFoundation} from '../workspace/service.js';
 import {appUrl} from '../shared/app-route.js';
 import {adapter,AutomationService} from './service.js';
+import {automationDependencies} from './dependencies.js';
 export const automationKind=z.enum(['research','action']);
 export const automationControl=z.object({kind:automationKind,automationId:id,expectedVersion:z.number().int().min(0),enabled:z.boolean()}).strict();
 export const automationList=z.object({appId:id.optional(),query:z.string().max(100).default(''),executor:z.enum(['all','chatgpt','trialagents']).default('all'),state:z.enum(['all','enabled','disabled']).default('all'),offset:z.number().int().min(0).max(100000).default(0)}).strict();
@@ -44,12 +45,31 @@ export class AutomationManagement{
    AND ($5='all' OR d.executor=$5) AND ($6='all' OR d.enabled=($6='enabled'))
   ORDER BY d.created_at,d.id LIMIT 21 OFFSET $7`,[w,a.userId,v.appId??null,v.query,v.executor,v.state,v.offset])).rows;
   const connection=rows.some(r=>r.runner_id)?await new AutomationService(this.db).setup(a,w):null;
+  const dependencies=await automationDependencies(this.db,w,a.userId);
   const visible=[];for(const row of rows.slice(0,20)){try{const c=await new WorkspaceFoundation(this.db).component(this.db,a,w,row.app_id,false);
    const {steps,external_schedule,runner_id,...definition}=row;
    const prompt=row.kind==='research'?row.prompt:(steps??[]).map((s:any)=>s.kind==='email'?`Email: ${s.subject}\n${s.text}`:s.kind==='connector'?`Run connector operation: ${s.operation}`:`Run app action: ${s.binding}`).join('\n\n');
-   visible.push({...definition,prompt,connectionState:runner_id?connection?.state:null,externalSchedule:external_schedule,app_url:appUrl({workspaceId:w,appId:c.id}),app_archived:c.archived||c.project_archived});
+   visible.push({...definition,prompt,services:dependencies.find(d=>d.id===row.id&&d.kind===row.kind)?.services??[],connectionState:runner_id?connection?.state:null,externalSchedule:external_schedule,app_url:appUrl({workspaceId:w,appId:c.id}),app_archived:c.archived||c.project_archived});
   }catch(e){if(![403,404].includes((e as any).status))throw e;}}
   return {rows:visible,nextOffset:rows.length>20?v.offset+20:null};
+ }
+ async connector(a:Actor,w:string){
+  await this.owner(a,w);const setup=await new AutomationService(this.db).setup(a,w),automations=[];
+  for(const d of await automationDependencies(this.db,w,a.userId)){
+   if(!setup.id||!d.runnerIds.includes(setup.id))continue;
+   try{const app=await new WorkspaceFoundation(this.db).component(this.db,a,w,d.appId,false);
+    const {runnerIds,...row}=d;automations.push({...row,appName:app.name,appArchived:app.archived||app.project_archived});
+   }catch(e){if(![403,404].includes((e as any).status))throw e;}
+  }
+  return {...setup,automations,impactDigest:checksum(JSON.stringify({runnerId:setup.id,version:setup.version,automations}))};
+ }
+ async controlConnector(a:Actor,w:string,runnerId:string,enabled:boolean,version:number,confirmation?:{confirmed?:boolean;impactDigest?:string}){
+  requireHuman(a);return this.db.transaction(async tx=>{
+   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const db=adapter(tx),manage=new AutomationManagement(db),current=await manage.connector(a,w);
+   if(current.id!==runnerId||current.version!==version)fail(409,'runner_changed','The connector changed. Review its current status and try again.');
+   if(!enabled&&(!confirmation?.confirmed||confirmation.impactDigest!==current.impactDigest))fail(409,'connector_impact_changed','Review the current list of affected automations before disabling ChatGPT.');
+   return new AutomationService(db).control(a,w,runnerId,enabled,version);
+  });
  }
  async readiness(a:Actor,w:string,automationId:string,requiredActionIds:string[]=[]){
   await this.owner(a,w);const research=await new AppMonitoring(this.db).read(a,w,automationId),setup=await new AutomationService(this.db).setup(a,w);

@@ -15,7 +15,21 @@
 .ty-workspace .ty-connector-heading h1{min-width:0;overflow-wrap:anywhere}
 .ty-workspace .ty-connector-heading .ty-actions{margin:0 0 0 auto;justify-content:flex-end;flex-wrap:wrap}
 .ty-workspace .ty-connectors .ty-connector-input{display:block}
+.ty-connectors .ty-layout-scroll{position:relative}
 .ty-connectors .ty-layout-scroll table{width:100%;border-collapse:collapse}
 .ty-connectors .ty-layout-scroll :is(th,td){text-align:left;padding:12px 8px;border-bottom:1px solid var(--ty-border)}
 
 .ty-connectors .ty-confirm-dialog,.ty-standalone .ty-confirm-dialog{max-height:100%;overflow:auto;overflow-wrap:anywhere}
+
+.ty-connector-card{margin:20px 0;padding:20px;border:1px solid var(--ty-border);border-radius:12px;background:#fff;min-width:0}
+.ty-connector-card-heading{display:flex;justify-content:space-between;align-items:center;gap:16px}
+.ty-connector-card-heading h2{margin:0;font-size:20px}
+.ty-connector-dependencies{margin-top:20px;font-size:14px}
+.ty-connector-dependencies summary{cursor:pointer;color:var(--ty-muted)}
+.ty-connector-dependencies ul{list-style:none;padding:0;margin:12px 0 0;max-height:320px;overflow:auto}
+.ty-connector-dependencies li{display:flex;justify-content:space-between;align-items:start;gap:16px;padding:10px 0;border-top:1px solid var(--ty-border);overflow-wrap:anywhere}
+.ty-connector-dependencies li>span:first-child{min-width:0}
+.ty-connector-dependencies .ty-automation-state{flex-shrink:0;margin-top:0}
+.ty-connector-dependencies small,.ty-connector-impact small{display:block;color:var(--ty-muted);margin-top:4px}
+.ty-connector-impact{padding-left:20px;max-height:40vh;overflow:auto}
+.ty-connector-impact li{margin-block:12px}
