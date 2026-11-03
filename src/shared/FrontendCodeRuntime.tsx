@@ -12,6 +12,7 @@ import React,{useEffect,useRef,useState} from 'react';
 import {useAccessRecheck} from './useAccessRecheck.js';
 import {AppUnavailable} from './AppUnavailable.js';
 type Call=(name:string,args:Record<string,unknown>)=>Promise<any>;
+const navigationRead=(event:any)=>event.kind==='open'||/^(tab:|next$|prev$|previous$|filter:|sort:|sort-field:|sort$|search$|query$|overview-next$|overview-previous$|overview-panel$)/.test(event.action??'');
 export function FrontendCodeRuntime({component,previewId,initialOutput,call,onProposal,onUnavailable,onHome,onAccess,onLayout,onBusyChange,onRendered,onUpdated}:{component?:any;previewId?:string;initialOutput?:any;call:Call;onProposal:(p:any)=>void;onUnavailable?:(message:string)=>void;onHome?:()=>void;onAccess?:()=>void;onLayout?:()=>void;onBusyChange?:(busy:boolean)=>void;onRendered?:()=>void;onUpdated?:(component:any)=>void}){
  const platform=React.useContext(AppPlatform),navigation=React.useContext(AppNavigation),navigationRef=useRef(navigation);navigationRef.current=navigation;
  const platformRef=useRef(platform);platformRef.current=platform;
@@ -109,7 +110,7 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
    let result;
    try{result=await readFrontend(request);}catch(e){
     // Renew only navigation reads. Never replay a write or discard a local draft.
-    if(!['app_view_expired','app_view_incompatible'].includes((e as any)?.code)||localEditsRef.current||!c||!(event.kind==='open'||/^(tab:|next$|prev$|previous$|filter:|sort:|search$)/.test(event.action??'')))throw e;
+    if(!['app_view_expired','app_view_incompatible'].includes((e as any)?.code)||localEditsRef.current||!c||!(navigationRead(event)))throw e;
     const {viewId,...renewed}=request;result=await readFrontend(renewed);
    }
    setRetryEvent(null);
@@ -124,7 +125,7 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
    if(result.proposal){setProposal(result.proposal);blocked.current=true;eventQueue.current=[];return;}
    result=mergeTrackerSnapshot(output.current,result);output.current=result;state.current=result.state;setStandard(!!result.tracker);setFrameUrl(result.frameUrl);setProposal(result.proposal);setConnectorReviews(result.connectorReviews??[]);setCustomDirty(false);setLoadFailed(false);setSchemaChanged(false);
    if(result.proposal){blocked.current=true;eventQueue.current=[];}send();prefetch(result);
-  }catch(e){if(live.current){setSchemaChanged((e as any)?.code==='manifest_stale');if(event.kind==='open'||/^(tab:|next$|prev$|previous$|filter:|sort:|search$)/.test(event.action??'')){
+  }catch(e){if(live.current){setSchemaChanged((e as any)?.code==='manifest_stale');if(navigationRead(event)){
    if(unavailable(e)){clearOutput();setLoadFailed(true);onUnavailable?.('No app is available');}
    else if(!output.current&&current.current)await loadPublished();
    else {setLoadFailed(!output.current);if(['app_view_expired','component_changed','app_view_incompatible'].includes((e as any)?.code))setPublishedUpdate(true);else {actionError(e);setRetryEvent(event);}}
