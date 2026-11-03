@@ -34,7 +34,7 @@ for(const embedded of [false,true])test(`Saved app revisions have no first-save 
  await expect(root.locator('.ty-tracker-preview>.ty-action-footer')).toHaveCount(0);
  if(embedded){await page.setViewportSize({width:390,height:900});await page.screenshot({path:'/tmp/trialy-revision-review-mobile.png'});}
  await expect(root.getByText('Save it to keep it.',{exact:false})).toHaveCount(0);
- await root.getByRole('button',{name:'Save changes',exact:true}).click();
+ await expect(root.getByLabel('App update review')).toContainText('Update the app interface and behavior.');await expect(root.getByLabel('App update review')).toContainText('Automation setup is saved separately.');await root.getByRole('button',{name:'Save changes',exact:true}).click();
  if(embedded){
   await expect(root.getByRole('heading',{name:'Home',exact:true})).toBeVisible();
   // Replayed host output still resolves the receipt even when the bundle is fresh.
@@ -55,6 +55,7 @@ for(const fromHome of [false,true])test(`Failed extension replacement keeps the 
   await root.getByRole('button',{name:'Actions for Home continuity fixture',exact:true}).click();await root.getByRole('menuitem',{name:'Open',exact:true}).click();
  }else await page.evaluate(r=>window.deliver(r),await (await page.request.get(base+'/fixture/app-display?appId='+f.appId+'&path=/calculator')).json());
  await expect(frame.getByRole('heading',{name:'Calculator',exact:true})).toBeVisible();await frame.getByLabel('Draft note').fill('Keep this input');
+ await page.evaluate(r=>window.deliver(r),{displayIntent:'background',screen:'platform',workspaceId:f.workspaceId});await expect(frame.getByLabel('Draft note')).toHaveValue('Keep this input');
  const draft=await (await page.request.get(base+'/fixture/app-draft')).json();
  await page.route('**/fixture/tool',route=>route.request().postDataJSON().name==='resolve_tracker_preview'?route.fulfill({json:{isError:true,structuredContent:{error:{status:503,code:'temporary'}},content:[{type:'text',text:'Failed to load sentinel'}]}}):route.continue());
  await page.evaluate(r=>window.deliver(r),draft);

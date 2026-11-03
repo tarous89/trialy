@@ -47,8 +47,20 @@ test('unified management preserves disabled definitions, isolates owners, and ar
  await manage.control(a,w,'research',monitor.id,0,false);await manage.control(a,w,'action',action.id,0,false);
  const edited=await research.prepare(a,w,{monitorId:monitor.id,expectedVersion:0,config:{...config,objective:'Revised research'}});await research.confirm(a,w,edited.id,edited.digest);const editedAction=await actions.prepare(a,w,{actionId:action.id,expectedVersion:0,config:{...ac,name:'Revised email'}});await actions.confirm(a,w,editedAction.id,editedAction.digest);
  assert.equal((await manage.read({...a,origin:'ai'},w,'research',monitor.id)).enabled,false);assert.equal((await manage.read(a,w,'action',action.id)).enabled,false);await assert.rejects(manage.control(a,w,'action',action.id,0,true),/current/);await assert.rejects(actions.prepare(a,w,{config:ac}),/authoring key/);
- await manage.control(a,w,'research',monitor.id,1,true);await manage.control(a,w,'action',action.id,1,true);await change({kind:'archive_component',componentId:app.id,expectedVersion:0,archived:true});await change({kind:'archive_component',componentId:app.id,expectedVersion:1,archived:false});assert.equal((await manage.read(a,w,'research',monitor.id)).enabled,false);assert.equal((await manage.read(a,w,'action',action.id)).enabled,false);assert.match((await f.readComponent(a,w,app.id)).component.source,/Stable app/);
- const monthly=actionConfig.parse({...ac,trigger:{kind:'calendar',frequency:'monthly',anchor:'2026-01-01',time:'06:00',timeZone:'UTC',monthDay:31}});assert.equal(nextAction(monthly,new Date('2026-02-01T00:00Z'))?.toISOString(),'2026-02-28T06:00:00.000Z');assert.equal((await manage.history(a,w,'research',monitor.id)).rows.length,0);
+ await manage.control(a,w,'research',monitor.id,1,true);await manage.control(a,w,'action',action.id,1,true);
+ const queued=randomUUID(),job=randomUUID(),run=randomUUID();
+ await db.query("INSERT INTO automation_occurrences(id,workspace_id,user_id,runner_id,monitor_id,monitor_version,occurrence_key,due_at,reason) VALUES($1,$2,$3,$4,$5,1,'delete-pending',now(),'calendar')",[queued,w,a.userId,runner.id,monitor.id]);
+ await db.query("INSERT INTO app_action_runs(id,workspace_id,user_id,action_id,action_version,occurrence) VALUES($1,$2,$3,$4,1,'delete-pending')",[run,w,a.userId,action.id]);
+ await db.query("INSERT INTO app_service_jobs(id,workspace_id,user_id,app_id,kind,request_key,digest,payload,deadline_at) VALUES($1,$2,$3,$4,'connector','delete-pending','test','{}',now()+interval '1 hour')",[job,w,a.userId,app.id]);
+ await change({kind:'archive_component',componentId:app.id,expectedVersion:0,archived:true});await change({kind:'archive_component',componentId:app.id,expectedVersion:1,archived:false});await assert.rejects(manage.read(a,w,'research',monitor.id),/unavailable/);await assert.rejects(manage.read(a,w,'action',action.id),/unavailable/);assert.equal((await manage.list(a,w,{})).rows.length,0);assert.equal((await manage.connector(a,w)).automations.length,0);assert.match((await f.readComponent(a,w,app.id)).component.source,/Stable app/);
+ assert.equal((await db.query('SELECT status FROM automation_occurrences WHERE id=$1',[queued])).rows[0].status,'cancelled');
+ assert.equal((await db.query('SELECT status FROM app_action_runs WHERE id=$1',[run])).rows[0].status,'cancelled');
+ assert.equal((await db.query('SELECT status FROM app_service_jobs WHERE id=$1',[job])).rows[0].status,'cancelled');
+ assert.equal((await db.query('SELECT * FROM automation_dispatch WHERE monitor_id=$1',[monitor.id])).rows.length,0);
+ await assert.rejects(research.control(a,w,monitor.id,1,true),/unavailable/);
+ await assert.rejects(actions.row(a,w,action.id),/unavailable/);
+ assert.equal((await runners.setup(a,w)).state,'ready');
+ const monthly=actionConfig.parse({...ac,trigger:{kind:'calendar',frequency:'monthly',anchor:'2026-01-01',time:'06:00',timeZone:'UTC',monthDay:31}});assert.equal(nextAction(monthly,new Date('2026-02-01T00:00Z'))?.toISOString(),'2026-02-28T06:00:00.000Z');await assert.rejects(manage.history(a,w,'research',monitor.id),/unavailable/);
  await runners.control(a,w,runner.id,false,0);const rp=await runners.prepare(a,w,{expectedVersion:1,preferences:{time:'07:00',timeZone:'UTC'}});await runners.confirm(a,w,rp.id,rp.digest);assert.equal((await runners.setup(a,w)).state,'paused');
 });
 
@@ -112,7 +124,7 @@ test('connector impact includes all research and follow-ups, requires fresh conf
  const current=await manage.connector(a,w);assert.equal(current.automations.length,23);
  await db.query('UPDATE app_actions SET paused=true WHERE id=$1',[followup]);await assert.rejects(manage.controlConnector(a,w,runner.id,false,0,{confirmed:true,impactDigest:current.impactDigest}),(e:any)=>e.code==='connector_impact_changed');
  const updated=await manage.connector(a,w);await manage.controlConnector(a,w,runner.id,false,0,{confirmed:true,impactDigest:updated.impactDigest});assert.equal((await runners.setup(a,w)).enabled,false);assert.equal((await manage.read(a,w,'research',monitor)).enabled,true);assert.equal((await manage.read(a,w,'action',standalone)).enabled,true);
- await manage.controlConnector(a,w,runner.id,true,1);assert.equal((await runners.setup(a,w)).enabled,true);assert.equal((await manage.read(a,w,'action',followup)).enabled,false);
+ await manage.controlConnector({...a,origin:'ai',actionConfirmed:true},w,runner.id,true,1);assert.equal((await runners.setup(a,w)).enabled,true);assert.equal((await manage.read(a,w,'action',followup)).enabled,false);
  await s.share(a,w,b.userId,'editor',[],null,true);await assert.rejects(manage.connector(b,w),/owner/);const other=await s.createWorkspace(a,'Other');assert.equal((await manage.connector(a,other.id)).automations.length,0);
 });
 
