@@ -1,7 +1,10 @@
 import {z} from 'zod';
+import {randomUUID} from 'node:crypto';
 import type {Database} from '../db/database.js';
 import {id,fail,type Actor} from '../shared/schema.js';
-import {requireHuman} from '../domain/write-authorization.js';
+import {requireCurrentAction} from '../domain/write-authorization.js';
+import {checksum} from '../domain/evidence.js';
+import {chatServiceReview,checkServiceReview} from '../app-services/review.js';
 import {access} from '../domain/permissions.js';
 import {AppMonitoring} from '../app-services/monitoring.js';
 import {AppActions} from '../app-services/service.js';
@@ -10,6 +13,7 @@ import {WorkspaceFoundation} from '../workspace/service.js';
 import {appUrl} from '../shared/app-route.js';
 import {adapter,AutomationService} from './service.js';
 export const automationKind=z.enum(['research','action']);
+export const automationControl=z.object({kind:automationKind,automationId:id,expectedVersion:z.number().int().min(0),enabled:z.boolean()}).strict();
 export const automationList=z.object({appId:id.optional(),query:z.string().max(100).default(''),executor:z.enum(['all','chatgpt','trialagents']).default('all'),state:z.enum(['all','enabled','disabled']).default('all'),offset:z.number().int().min(0).max(100000).default(0)}).strict();
 /** Management adapter over the existing stores. Never called by the app runtime. */
 export class AutomationManagement{
@@ -71,9 +75,27 @@ export class AutomationManagement{
   const table=kind==='research'?'app_monitors':'app_actions';
   const r=(await this.db.query(`SELECT * FROM ${table} WHERE id=$1 AND workspace_id=$2 AND user_id=$3`,[automationId,w,a.userId])).rows[0];if(!r)fail(404,'not_found','Automation unavailable');
   const c=await new WorkspaceFoundation(this.db).component(this.db,a,w,r.app_id,false);
-  return {id:r.id,version:r.version,kind,executor:kind==='research'?'chatgpt':'trialagents',enabled:kind==='research'?r.enabled:!r.paused,config:r.config,app:{id:c.id,name:c.name,url:appUrl({workspaceId:w,appId:c.id}),archived:c.archived||c.project_archived},managementOnly:true,task:r.task??null};
+  const controlRevision=(await this.db.query("SELECT coalesce(max(event_sequence),0)::text revision FROM audit_events WHERE workspace_id=$1 AND object_id=$2 AND action IN ('monitoring.controlled','app_action.paused')",[w,r.id])).rows[0].revision;
+  return {id:r.id,version:r.version,kind,executor:kind==='research'?'chatgpt':'trialagents',enabled:kind==='research'?r.enabled:!r.paused,controlRevision,config:r.config,app:{id:c.id,name:c.name,url:appUrl({workspaceId:w,appId:c.id}),archived:c.archived||c.project_archived},managementOnly:true,task:r.task??null};
  }
- async control(a:Actor,w:string,kind:'research'|'action',automationId:string,version:number,enabled:boolean){requireHuman(a);return this.db.transaction(async tx=>{
+ async prepareControl(a:Actor,w:string,input:unknown){
+  const change=automationControl.parse(input),automation=await this.read(a,w,change.kind,change.automationId);
+  if(automation.version!==change.expectedVersion)fail(409,'automation_changed','Reopen the current automation before changing it');
+  const body={change,automation},reviewId=randomUUID(),digest=checksum(JSON.stringify(body));
+  await this.db.query("INSERT INTO app_service_previews(id,workspace_id,user_id,kind,body,digest) VALUES($1,$2,$3,'automation_control',$4,$5)",[reviewId,w,a.userId,JSON.stringify(body),digest]);
+  return {id:reviewId,kind:'automation_control',digest,body,status:'review_required',...chatServiceReview(w,reviewId,'automation_control',digest,body)};
+ }
+ async confirmControl(a:Actor,w:string,reviewId:string,digest:string,review?:string){requireCurrentAction(a);return this.db.transaction(async tx=>{
+  await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const db=adapter(tx),s=new AutomationManagement(db);
+  await s.owner(a,w);await access(tx,a,w,true);
+  await tx.query('SELECT id FROM app_service_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 FOR UPDATE',[reviewId,w,a.userId]);
+  const p=await new AppActions(db).preview(a,w,reviewId);if(p.kind!=='automation_control'||p.digest!==digest)fail(409,'review_changed','Review changed');checkServiceReview(a,w,p,review);if(p.consumed_at)return p.result;
+  const v=automationControl.parse(p.body.change),current=await s.read(a,w,v.kind,v.automationId),before=p.body.automation;
+  if(current.version!==v.expectedVersion||current.enabled!==before.enabled||current.controlRevision!==before.controlRevision)fail(409,'automation_changed','The automation changed after preparation. Read it and prepare the requested change again.');
+  const result=await s.control(a,w,v.kind,v.automationId,v.expectedVersion,v.enabled);
+  await tx.query('UPDATE app_service_previews SET consumed_at=now(),result=$2 WHERE id=$1',[p.id,JSON.stringify(result)]);return result;
+ });}
+ async control(a:Actor,w:string,kind:'research'|'action',automationId:string,version:number,enabled:boolean){requireCurrentAction(a);return this.db.transaction(async tx=>{
   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const db=adapter(tx),s=new AutomationManagement(db),r=await s.read(a,w,kind,automationId);if(r.version!==version)fail(409,'automation_changed','Reopen the current automation before changing it');
   if(kind==='research')return new AppMonitoring(db).control(a,w,automationId,version,enabled);
   return new AppActions(db).control(a,w,automationId,!enabled);

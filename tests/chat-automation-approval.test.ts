@@ -20,6 +20,8 @@ import {AutomationService} from '../src/automations/service.js';
 import {serviceReview} from '../src/app-services/review.js';
 import {AccessGrid} from '../src/domain/access-grid.js';
 import {addAutomationMcp} from '../src/server/automations.js';
+import {addAppServicesMcp} from '../src/server/app-services.js';
+import {AutomationManagement} from '../src/automations/management.js';
 import type {Actor} from '../src/shared/schema.js';
 
 test('ChatGPT confirms exact automation reviews under the real AI identity and runtime database role',async t=>{
@@ -47,6 +49,7 @@ test('ChatGPT confirms exact automation reviews under the real AI identity and r
   const server=new McpServer({name:'approval-test',version:'1'}),actor=current;
   const safe=(fn:any)=>async(v:any)=>withActor(actor,async()=>{try{const result=await fn(v);return {content:[{type:'text',text:JSON.stringify(result)}],structuredContent:{result}};}catch(e:any){return {isError:true,content:[{type:'text',text:e.message}],structuredContent:{code:e.code}};}});
   addAutomationMcp(server,db,actor,safe,{ui:{resourceUri:'ui://test'},'openai/outputTemplate':'ui://test'});
+  addAppServicesMcp(server,f,actor,safe,{ui:{resourceUri:'ui://test'},'openai/outputTemplate':'ui://test'});
   const transport=new StreamableHTTPServerTransport({sessionIdGenerator:undefined,enableJsonResponse:true});res.on('close',()=>{void transport.close();void server.close();});await server.connect(transport);await transport.handleRequest(req,res,req.body);
  });
  const rpc=async(method:string,params:any={})=>(await request(http).post('/mcp').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:1,method,params})).body;
@@ -83,7 +86,10 @@ test('ChatGPT confirms exact automation reviews under the real AI identity and r
   assert.equal((await pg.query<any>('SELECT count(*) AS n FROM maintenance_scopes')).rows[0].n,0);
  });
  await t.test('email action approval preserves recipients and never sends during confirmation',async()=>{
-  const p=await withActor(ai,()=>actions.prepare(ai,w.id,{config:{appId:app.id,appVersion:0,name:'Approved follow-up',trigger:{kind:'manual'},expiresAt:'2099-01-01T00:00:00Z',steps:[{id:'email',kind:'email',to:[owner.userId+'@example.invalid'],subject:'Reviewed subject',text:'Reviewed message'}]}}));
+  const p=saved(await call('prepare_app_action',{config:{appId:app.id,appVersion:0,name:'Approved follow-up',trigger:{kind:'manual'},expiresAt:'2099-01-01T00:00:00Z',steps:[{id:'email',kind:'email',to:'account',subject:'Reviewed subject',text:'Reviewed message'}]}}));
+  assert.deepEqual(p.body.config.steps[0].to,[owner.userId+'@example.invalid']);assert.deepEqual(p.recipientResolution,[{stepId:'email',source:'authenticated_account',userId:owner.userId,email:owner.userId+'@example.invalid'}]);
+  const spoof=saved(await call('prepare_app_action',{config:{...p.body.config,steps:[{...p.body.config.steps[0],to:'account'}]},recipientResolution:[{userId:other.userId}]}));assert.equal(spoof.recipientResolution[0].userId,owner.userId,'caller-supplied identity cannot override authentication');
+  assert.equal((await call('prepare_app_action',{config:{...p.body.config,steps:[{...p.body.config.steps[0],to:['stranger@example.invalid']}]}})).isError,true);
   await withActor(ai,()=>assert.rejects(actions.confirm(ai,w.id,p.id,p.digest,p.review),/approve/));
   assert.equal((await confirm(p,{review:p.review.replace('Reviewed subject','Changed subject')})).structuredContent.code,'review_changed');
   action=saved(await confirm(p));assert.deepEqual(saved(await confirm(p)),action);
@@ -93,6 +99,30 @@ test('ChatGPT confirms exact automation reviews under the real AI identity and r
  await t.test('audit retains AI origin; no human impersonation',async()=>{
   const rows=(await pg.query<any>("SELECT action,origin FROM audit_events WHERE action IN ('automation.setup_approved','monitoring.authorized','app_action.authorized') ORDER BY action")).rows;
   assert.equal(rows.length,3);assert.ok(rows.every(r=>r.origin==='ai'));
+ });
+ await t.test('ChatGPT can activate saved definitions with exact, current authorization; replay cannot undo a later pause',async()=>{
+  const manage=new AutomationManagement(db);
+  for(const [kind,id] of [['research',monitor.id],['action',action.id]] as const){
+   await withActor(owner,()=>manage.control(owner,w.id,kind,id,0,false));
+   const input={kind,automationId:id,expectedVersion:0,enabled:true},p=saved(await call('prepare_app_automation_control',input));
+   assert.equal(saved(await call('read_app_service_review',{reviewId:p.id})).review,p.review);
+   await withActor(ai,()=>assert.rejects(manage.confirmControl(ai,w.id,p.id,p.digest,p.review),/approve/));
+   assert.equal((await confirm(p,{confirmed:false})).isError,true);
+   assert.equal((await confirm(p,{review:p.review+' '})).structuredContent.code,'review_changed');
+   current=other;assert.equal((await confirm(p)).isError,true);current=ai;
+   const grid=new AccessGrid(db);await withActor(owner,async()=>{const v=await grid.read(owner,w.id,'chatgpt');await grid.save(owner,w.id,{expectedVersion:v.version,changes:[{subject:'chatgpt',kind:'connection',resourceId:w.id,read:true,write:false}]});});
+   assert.equal((await confirm(p)).structuredContent.code,'connection_read_only');
+   await withActor(owner,async()=>{const v=await grid.read(owner,w.id,'chatgpt');await grid.save(owner,w.id,{expectedVersion:v.version,changes:[{subject:'chatgpt',kind:'connection',resourceId:w.id,read:true,write:true}]});});
+   await pg.query('UPDATE workspace_components SET ai_enabled=false WHERE id=$1',[app.id]);assert.equal((await confirm(p)).isError,true);await pg.query('UPDATE workspace_components SET ai_enabled=true WHERE id=$1',[app.id]);
+   if(kind==='research'){await pg.query('UPDATE automation_runners SET verified_at=NULL WHERE id=$1',[runner.id]);assert.equal((await confirm(p)).structuredContent.code,'runner_not_ready');await pg.query('UPDATE automation_runners SET verified_at=now() WHERE id=$1',[runner.id]);}
+   const result=saved(await confirm(p));assert.equal(saved(await call('read_app_automation',{kind,automationId:id})).enabled,true);
+   await withActor(owner,()=>manage.control(owner,w.id,kind,id,0,false));assert.deepEqual(saved(await confirm(p)),result);assert.equal(saved(await call('read_app_automation',{kind,automationId:id})).enabled,false);
+   const stale=saved(await call('prepare_app_automation_control',input));await withActor(owner,async()=>{await manage.control(owner,w.id,kind,id,0,true);await manage.control(owner,w.id,kind,id,0,false);});
+   assert.equal((await confirm(stale)).structuredContent.code,'automation_changed');
+   saved(await confirm(saved(await call('prepare_app_automation_control',input))));
+  }
+  assert.equal((await pg.query("SELECT id FROM audit_events WHERE action IN ('monitoring.controlled','app_action.paused') AND origin='ai'")).rows.length,4);
+  assert.equal((await pg.query('SELECT id FROM app_service_jobs')).rows.length,0);
  });
  await t.test('wrong owners, disabled AI access, expired reviews and stale versions cannot confirm',async()=>{
   const p=await withActor(ai,()=>setup.prepare(ai,w.id,{expectedVersion:0,preferences:{time:'07:00',timeZone:'Europe/Berlin'}}));

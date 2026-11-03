@@ -1,6 +1,6 @@
 import {fail,type Actor} from '../shared/schema.js';
 
-export type ServiceReviewKind='automation_setup'|'monitoring'|'action';
+export type ServiceReviewKind='automation_setup'|'monitoring'|'action'|'automation_control';
 const canonical=(value:any):any=>Array.isArray(value)?value.map(canonical):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(k=>[k,canonical(value[k])])):value;
 
 // Stable across JSONB's key ordering; includes the exact scope and destination.
