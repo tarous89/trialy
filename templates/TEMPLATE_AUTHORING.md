@@ -1,6 +1,6 @@
 # TrialAgents template authoring standard
 
-Version: 1.3.11
+Version: 1.3.12
 
 This is the living engineering contract for templates served by TrialAgents. Update it when a verified renderer, lifecycle or host-integration lesson changes. Retrieve the current copy with `read_app_template_guidance(resource:"authoring")`; follow `nextOffset` to the end. The response includes a version and content hash. Packaged plugin examples are not the catalog.
 
