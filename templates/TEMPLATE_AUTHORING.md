@@ -237,3 +237,6 @@ The platform places “Built with TrialAgents” at the bottom left, outside the
 Automation lists must remain compact: clamp long instructions to a short preview and keep actions visible. Editing opens a dedicated page, following the Add automation layout; never expand the full editor inside a list row. Do not label manual or unknown triggers “After processing”.
 
 For requested self-email, use `prepare_app_action` with email step `to:"account"`; TrialAgents resolves the authenticated recipient, so do not ask for separate address confirmation. Activate a saved disabled definition with `prepare_app_automation_control` and its exact `confirm_app_service_review` confirmation when the user requested activation. The shared connection is managed under Connectors → ChatGPT; generated apps must not duplicate it in Settings.
+
+### Explain prerequisite app changes
+When automation setup needs an app revision (such as missing field bindings), explain the exact fields and reason in chat before presenting the finalized review. Say that Save changes updates the existing app, not the project or automation. Preparation and begin_app_update run quietly; display only the finalized review once. After saving, continue automation setup and report its separately verified result. Never leave an unexplained save prompt as the only response.

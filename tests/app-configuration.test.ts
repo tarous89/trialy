@@ -124,7 +124,7 @@ test('connector impact includes all research and follow-ups, requires fresh conf
  const current=await manage.connector(a,w);assert.equal(current.automations.length,23);
  await db.query('UPDATE app_actions SET paused=true WHERE id=$1',[followup]);await assert.rejects(manage.controlConnector(a,w,runner.id,false,0,{confirmed:true,impactDigest:current.impactDigest}),(e:any)=>e.code==='connector_impact_changed');
  const updated=await manage.connector(a,w);await manage.controlConnector(a,w,runner.id,false,0,{confirmed:true,impactDigest:updated.impactDigest});assert.equal((await runners.setup(a,w)).enabled,false);assert.equal((await manage.read(a,w,'research',monitor)).enabled,true);assert.equal((await manage.read(a,w,'action',standalone)).enabled,true);
- await manage.controlConnector(a,w,runner.id,true,1);assert.equal((await runners.setup(a,w)).enabled,true);assert.equal((await manage.read(a,w,'action',followup)).enabled,false);
+ await manage.controlConnector({...a,origin:'ai',actionConfirmed:true},w,runner.id,true,1);assert.equal((await runners.setup(a,w)).enabled,true);assert.equal((await manage.read(a,w,'action',followup)).enabled,false);
  await s.share(a,w,b.userId,'editor',[],null,true);await assert.rejects(manage.connector(b,w),/owner/);const other=await s.createWorkspace(a,'Other');assert.equal((await manage.connector(a,other.id)).automations.length,0);
 });
 

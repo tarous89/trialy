@@ -25,9 +25,9 @@ for(const surface of ['plugin','app']){
  test(`${surface}: repeated cached sorting keeps rows, details and edit bindings together`,async({page})=>{
   const {tracker}=await open(page,surface),sort=tracker.getByRole('button',{name:'Country',exact:true});
   await sort.click();await expect(tracker.locator('tbody tr:first-child td:nth-child(3) .cell-display')).toHaveText('DE');
-  const ascending=await rows(tracker);
+  await expect(tracker.locator('th[aria-sort="ascending"] .sort-indicator')).toHaveText('↑');const ascending=await rows(tracker);
   await sort.click();await expect(tracker.locator('tbody tr:first-child td:nth-child(3) .cell-display')).toHaveText('US');
-  const descending=await rows(tracker);
+  await expect(tracker.locator('th[aria-sort="descending"] .sort-indicator')).toHaveText('↓');const descending=await rows(tracker);
   for(const row of [...ascending,...descending]){expect(row.nameEdit.split(':')[2]).toBe(row.details.split(':')[1]);expect(row.countryEdit.split(':')[2]).toBe(row.details.split(':')[1]);}
   await expect(tracker.locator('th[aria-sort="descending"] .sort-indicator')).toHaveText('↓');
   let reads=0;await page.route('**/*',async route=>{if(requestBody(route.request())?.event?.action==='sort-field:field_2')reads++;await route.continue();});

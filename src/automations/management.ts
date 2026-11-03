@@ -64,7 +64,7 @@ export class AutomationManagement{
   return {...setup,automations,impactDigest:checksum(JSON.stringify({runnerId:setup.id,version:setup.version,automations}))};
  }
  async controlConnector(a:Actor,w:string,runnerId:string,enabled:boolean,version:number,confirmation?:{confirmed?:boolean;impactDigest?:string}){
-  requireHuman(a);return this.db.transaction(async tx=>{
+  requireCurrentAction(a);return this.db.transaction(async tx=>{
    await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const db=adapter(tx),manage=new AutomationManagement(db),current=await manage.connector(a,w);
    if(current.id!==runnerId||current.version!==version)fail(409,'runner_changed','The connector changed. Review its current status and try again.');
    if(!enabled&&(!confirmation?.confirmed||confirmation.impactDigest!==current.impactDigest))fail(409,'connector_impact_changed','Review the current list of affected automations before disabling ChatGPT.');
