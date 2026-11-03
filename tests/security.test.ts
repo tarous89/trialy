@@ -13,7 +13,7 @@ test('MFA enrollment, mandatory login challenge, single-use recovery and disable
  const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
  const app=baseApp();app.use(session({secret:'synthetic-test-session-secret-only',resave:false,saveUninitialized:false}));const auth=addLocalAuth(app,db,'https://trialy.example','synthetic-test-mfa-encryption-key-only');app.get('/test-csrf',auth.human,(req,res)=>res.json({csrf:req.session.csrf}));app.use(errors);
  const browser=request.agent(app);const login=await browser.get('/auth/login');const csrf=login.text.match(/name="csrf" value="([^"]+)"/)![1];
- await browser.post('/auth/signup').type('form').send({email:'mfa@example.invalid',password:'synthetic-password-mfa',intendedUse:'accepted',csrf});
+ await browser.post('/auth/signup').type('form').send({firstName:'Test',lastName:'User',email:'mfa@example.invalid',password:'synthetic-password-mfa',intendedUse:'accepted',csrf});
  const sessionCsrf=(await browser.get('/test-csrf')).body.csrf;
  const setup=await browser.post('/auth/mfa').set('x-csrf-token',sessionCsrf).send({action:'begin',password:'synthetic-password-mfa'});assert.equal(setup.status,200,setup.text);
  const code=await generate({secret:setup.body.secret});

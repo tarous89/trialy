@@ -28,7 +28,7 @@ test('Access grid: ownership, scoped visibility, atomic batches, database cascad
  await update({rule:{kind:'connection',resourceId:w.id,read:'inherit',write:'inherit'}});
  const engine=new Foundation(db),workflowDraft=await engine.prepareFunction(member,w.id,{name:'Member workflow',source:'return {ok:true};',scope:{typeIds:[],documents:false,capabilities:[]},inputContract:{type:'object'},outputContract:{type:'object'}});
  const workflow=await engine.saveFunction(member,w.id,workflowDraft.id,workflowDraft.digest);
- const workflowRow=(await grid.read(owner,w.id,member.userId)).rows.find(r=>r.kind==='workflow'&&r.resourceId===workflow.functionId);assert.equal(workflowRow?.read,true);
+ const workflowRow=(await grid.read(owner,w.id,member.userId)).rows.find(r=>r.kind==='workflow'&&r.resourceId===workflow.functionId);assert.equal(workflowRow,undefined);
  await update({rule:{kind:'workflow',resourceId:workflow.functionId,read:'allow',write:'deny'}});
  await assert.rejects(engine.invoke(member,w.id,{revisionId:workflow.revisionId,input:{}},randomUUID()),/restricted/);
  await update({rule:{kind:'workflow',resourceId:workflow.functionId,read:'deny',write:'deny'}});assert.equal((await engine.functions(member,w.id)).length,0);await assert.rejects(engine.revision(member,w.id,workflow.revisionId));

@@ -20,8 +20,8 @@ test('signup returns to OAuth; PKCE, replay, refresh and revocation are enforced
  const browser=request.agent(app);const start=await browser.get('/authorize').query({response_type:'code',client_id:client.body.client_id,redirect_uri:redirect,scope:'trialy',resource:'https://trialy.example/mcp',state:'original-chatgpt-state',code_challenge:challenge,code_challenge_method:'S256'});assert.equal(start.status,302,start.text);
  const login=await browser.get(new URL(start.headers.location).pathname+new URL(start.headers.location).search);assert.equal(login.status,200);
  const csrf=login.text.match(/name="csrf" value="([^"]+)"/)![1];
- assert.equal((await browser.post('/auth/signup').type('form').send({email:'test@example.invalid',password:'shortpw',intendedUse:'accepted',csrf:'wrong'})).status,403);
- const signup=await browser.post('/auth/signup').type('form').send({email:'test@example.invalid',password:'shortpw',intendedUse:'accepted',csrf});assert.equal(signup.headers.location,'/auth/consent');
+ assert.equal((await browser.post('/auth/signup').type('form').send({firstName:'Test',lastName:'User',email:'test@example.invalid',password:'shortpw',intendedUse:'accepted',csrf:'wrong'})).status,403);
+ const signup=await browser.post('/auth/signup').type('form').send({firstName:'Test',lastName:'User',email:'test@example.invalid',password:'shortpw',intendedUse:'accepted',csrf});assert.equal(signup.headers.location,'/auth/consent');
  const consent=await browser.get('/auth/consent');assert.equal(consent.status,200,consent.text);assert.ok(consent.headers['content-security-policy'].includes('https://chatgpt.com'));
  const approval=await browser.post('/auth/consent').type('form').send({decision:'approve',csrf:consent.text.match(/name="csrf" value="([^"]+)"/)![1]});assert.equal(approval.status,303);const callback=new URL(approval.headers.location);assert.equal(callback.origin,'https://chatgpt.com');assert.equal(callback.searchParams.get('state'),'original-chatgpt-state');
  const exchange={grant_type:'authorization_code',client_id:client.body.client_id,code:callback.searchParams.get('code'),redirect_uri:redirect,resource:'https://trialy.example/mcp',code_verifier:verifier};
@@ -78,7 +78,7 @@ test('canonical domain advertises platform URLs and preserves only the explicit 
   const browser=request.agent(before.app),verifier='a'.repeat(43),authorize={response_type:'code',client_id:client.body.client_id,redirect_uri:redirect,scope:'trialy',resource:old+'/mcp',state:'domain-migration-state',code_challenge:createHash('sha256').update(verifier).digest('base64url'),code_challenge_method:'S256'};
   const started=await browser.get('/authorize').query(authorize),target=new URL(started.headers.location);
   const login=await browser.get(target.pathname+target.search),csrf=login.text.match(/name="csrf" value="([^"]+)"/)![1];
-  await browser.post('/auth/signup').type('form').send({email:'domain-migration@example.invalid',password:'synthetic-password',intendedUse:'accepted',csrf});
+  await browser.post('/auth/signup').type('form').send({firstName:'Test',lastName:'User',email:'domain-migration@example.invalid',password:'synthetic-password',intendedUse:'accepted',csrf});
   const consent=await browser.get('/auth/consent'),approved=await browser.post('/auth/consent').type('form').send({decision:'approve',csrf:consent.text.match(/name="csrf" value="([^"]+)"/)![1]});
   const exchanged=await request(before.app).post('/token').type('form').send({grant_type:'authorization_code',client_id:client.body.client_id,code:new URL(approved.headers.location).searchParams.get('code'),code_verifier:verifier,redirect_uri:redirect,resource:old+'/mcp'});assert.equal(exchanged.status,200);
   process.env.PUBLIC_URL=canonical;process.env.APP_PUBLIC_URL=canonical;

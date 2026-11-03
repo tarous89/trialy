@@ -57,7 +57,7 @@ test('Create account preserves app return and strips attribution after switching
  await page.getByLabel('Email',{exact:true}).fill('auth-app-return@example.invalid');
  await page.getByLabel('Password',{exact:true}).fill('synthetic-test-password');
  await page.getByRole('checkbox').check();
- await page.getByRole('button',{name:'Create account',exact:true}).click();
+ await page.getByLabel('First name',{exact:true}).fill('Test');await page.getByLabel('Last name',{exact:true}).fill('User');await page.getByRole('button',{name:'Create account',exact:true}).click();
  await expect(page).toHaveURL(base+destination);
  await expect(page.locator('.ty-app-watermark')).toBeVisible();
 });
@@ -73,7 +73,7 @@ test('ChatGPT consent uses shared branding without weakening script or frame pol
  await page.getByLabel('Password',{exact:true}).fill('synthetic-consent-password');
  await page.getByRole('checkbox').check();
  const consent=page.waitForResponse(r=>r.url()===base+'/auth/consent'&&r.request().method()==='GET');
- await page.getByRole('button',{name:'Create account',exact:true}).click();
+ await page.getByLabel('First name',{exact:true}).fill('Test');await page.getByLabel('Last name',{exact:true}).fill('User');await page.getByRole('button',{name:'Create account',exact:true}).click();
  const policy=(await consent).headers()['content-security-policy'];
  expect(policy).toContain("default-src 'none'");expect(policy).toContain("frame-ancestors 'none'");expect(policy).toContain("img-src 'self'");expect(policy).toContain("font-src 'self'");expect(policy).not.toContain('script-src');
  await expect(page.getByRole('heading',{name:'Connect TrialAgents'})).toBeVisible();

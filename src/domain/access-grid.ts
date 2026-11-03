@@ -1,12 +1,11 @@
 import {appSections,sectionGrant} from './app-sections.js';
 import {withReadMetadata} from '../db/read-metadata.js';
-import {Foundation} from '../foundation/service.js';
 import {randomUUID,createHash} from 'node:crypto';
 import {z} from 'zod';
 import type {Database} from '../db/database.js';
 import {id,fail,type Actor} from '../shared/schema.js';
 import {access,visibleFields} from './permissions.js';
-import {rulesFor,resourceGrant,toolPolicy,workflowGrant} from './effective-access.js';
+import {rulesFor,resourceGrant,toolPolicy} from './effective-access.js';
 import {AccessManagement} from './access-management.js';
 import {Service} from './service.js';
 import {WorkspaceFoundation} from '../workspace/service.js';
@@ -30,7 +29,7 @@ export class AccessGrid{
   const trees=await f.nodes(a,w),components=await f.components(a,w);
   const projects=trees.nodes.filter(n=>!n.effective_archived),tools=components.filter(c=>!c.archived&&!c.project_archived);
   const sectionApps=(await this.db.query('SELECT id,source FROM workspace_components WHERE workspace_id=$1 AND archived=false',[w])).rows;
-  const workflows=(await this.db.query("SELECT id,name,user_id AS creator,'function' AS source FROM foundation_functions WHERE workspace_id=$1 UNION ALL SELECT id,name,owner_id,'legacy' FROM automations WHERE workspace_id=$1 ORDER BY name",[w])).rows;
+  const automations=(await this.db.query("SELECT id,config->>'name' AS name,app_id,user_id FROM app_monitors WHERE workspace_id=$1 AND deleted_at IS NULL UNION ALL SELECT id,config->>'name' AS name,app_id,user_id FROM app_actions WHERE workspace_id=$1 AND deleted_at IS NULL",[w])).rows;
   const subjects:any[]=[];
   for(const s of selected){
    const actor:Actor={userId:s==='chatgpt'?a.userId:s,origin:s==='chatgpt'||!manage&&a.origin==='ai'?'ai':'human'};
@@ -42,7 +41,7 @@ export class AccessGrid{
    for(const project of projects){const parents:string[]=[];let n=projects.find(x=>x.id===project.parent_id);while(n&&!parents.includes(n.id)){parents.push(n.id);n=projects.find(x=>x.id===n.parent_id);}const grant=resourceGrant(policy,actor,'project',project.id,parents);const children=rows.filter(r=>r.kind==='tool'&&r.parentId===project.id);add('project',project.id,project.name,children.length?combine(children.map(r=>r.read)):grant.read,children.length?combine(children.map(r=>r.write)):grant.write,{parentId:project.parent_id});}
    for(const table of explanation.tables){for(const field of table.fields)add('column',table.id,field.name,field.read,field.write,{field:field.key,parentId:table.id,sources:field.sources});add('table',table.id,table.name,combine(table.fields.map((x:any)=>x.read)),combine(table.fields.map((x:any)=>x.write)),{parentId:w});}
    const tables=rows.filter(r=>r.kind==='table');add('database',w,'Database',tables.length?combine(tables.map(r=>r.read)):policy.direct_data!==false,tables.length?combine(tables.map(r=>r.write)):policy.direct_data!==false&&!['viewer','inspector'].includes(policy.role));
-   for(const workflow of workflows){const workflowActor={...actor,origin:'ai' as const},grant=workflowGrant(policy,workflowActor,workflow);if(grant.read){try{if(workflow.source==='function'){const revision=(await this.db.query('SELECT id FROM foundation_revisions WHERE function_id=$1 ORDER BY version DESC LIMIT 1',[workflow.id])).rows[0];if(!revision)throw Error('No revision');await new Foundation(this.db).revision(workflowActor,w,revision.id);}else if(!(await new Service(this.db).automations(actor,w)).some(r=>r.id===workflow.id))throw Error('Unavailable');}catch{grant.read=false;grant.write=false;}}add('workflow',workflow.id,workflow.name,grant.read,grant.write,{source:workflow.source,canChange:manage&&(s==='chatgpt'||policy.role!=='owner')&&(workflow.creator===actor.userId),hint:workflow.creator===actor.userId?'Workflow data restrictions still apply.':'Private to its creator'});}
+   for(const automation of automations){const parent=rows.find(r=>r.kind==='tool'&&r.resourceId===automation.app_id);if(parent)add('automation',automation.id,automation.name,parent.read,automation.user_id===actor.userId&&parent.write,{parentId:automation.app_id,canChange:false,hint:'Inherits app access. Only its owner can manage this automation.'});}
    if(manage)add('connection',w,'ChatGPT',s==='chatgpt'?policy.ai_enabled:policy.ai_enabled&&(policy.role==='owner'||policy.user_ai),(s==='chatgpt'?policy.ai_enabled:policy.ai_enabled&&(policy.role==='owner'||policy.user_ai))&&!rulesFor(policy,{...actor,origin:'ai'}).some(r=>r.kind==='connection'&&r.write==='deny'),{canChange:s==='chatgpt'||!['owner','inspector'].includes(policy.role)});
    subjects.push({id:s,rows,restrictions:rulesFor(policy,actor).filter(r=>r.read==='deny'||r.write==='deny').map(r=>({key:rowKey(r.kind,r.resourceId,r.field),read:r.read==='deny',write:r.read==='deny'||r.write==='deny'}))});
   }

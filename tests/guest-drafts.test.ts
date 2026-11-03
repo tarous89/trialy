@@ -42,7 +42,7 @@ test('anonymous creation blocked; previously issued previews retain atomic recov
  const browser=request.agent(app);await browser.get('/save-preview');
  const inspected=await browser.post('/guest/inspect').set('Origin','https://trialy.example').send({handle:draft.handle});assert.equal(inspected.body.account,null);
  const login=await browser.get('/auth/login?mode=signup'),csrf=login.text.match(/name="csrf" value="([^"]+)"/)![1];
- const signed=await browser.post('/auth/signup').type('form').send({csrf,email:'guest@example.invalid',password:'temporary-tracker-test-password',intendedUse:'accepted'});assert.equal(signed.headers.location,'/save-preview');
+ const signed=await browser.post('/auth/signup').type('form').send({firstName:'Test',lastName:'User',csrf,email:'guest@example.invalid',password:'temporary-tracker-test-password',intendedUse:'accepted'});assert.equal(signed.headers.location,'/save-preview');
  const review=(await browser.post('/guest/inspect').set('Origin','https://platform.trialagents.com').send({handle:draft.handle})).body;
  assert.equal(review.account.email,'guest@example.invalid');assert.equal((await db.query('SELECT count(*) AS n FROM workspaces')).rows[0].n,0,'Login alone is not save approval');
  const body={handle:draft.handle,digest:draft.digest,accountId:review.account.userId,confirmed:true,allowAi:true};

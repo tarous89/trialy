@@ -9,7 +9,7 @@ import {workspaceHome} from './home.js';
 export const moveToolInput=z.object({toolId:id,source:z.enum(['component','function','collection','legacy']),projectId:id.nullable(),expectedVersion:z.number().int().min(0),confirmed:z.literal(true)}).strict();
 /** Placement is organization only. It never rewrites record scope, sharing or execution grants. */
 export async function moveTool(db:Database,a:Actor,w:string,input:unknown){
- requireCurrentAction(a);const v=moveToolInput.parse(input);
+ requireCurrentAction(a);const v=moveToolInput.parse(input);if(v.source==='component'&&!v.projectId)fail(400,'project_required','Choose a project for this app');
  return db.transaction(async tx=>{
   const policy=await access(tx,a,w,true);
   await tx.query('SELECT pg_advisory_xact_lock(hashtext($1))',[w]);

@@ -82,3 +82,6 @@ GRANT UPDATE(id) ON app_notification_guard TO trialy_worker;
 GRANT INSERT,UPDATE ON app_notification_reservations TO trialy_worker;
 
 GRANT SELECT,INSERT,UPDATE ON app_notification_account_locks TO trialy_runtime;
+
+GRANT SELECT,UPDATE ON support_requests TO trialy_worker;
+GRANT EXECUTE ON FUNCTION ensure_default_project(uuid) TO trialy_runtime;
