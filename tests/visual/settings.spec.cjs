@@ -4,6 +4,8 @@ for(const width of [1440,390])test(`Overview and actual tool settings at ${width
  const initial=await(await page.request.get('http://127.0.0.1:4179/fixture/initial')).json();await page.evaluate(r=>window.deliver(r),initial);
  const embed=page.frameLocator('#app'),tracker=embed.frameLocator('iframe[title="Saved frontend code"]');
  await expect(tracker.locator('.stat-head svg')).toHaveCount(2);
+ await expect(embed.getByRole('button',{name:'Save edits',exact:true})).toBeVisible();
+ await expect(embed.getByRole('button',{name:'Save edits',exact:true})).toBeDisabled();
  const reference=await page.context().newPage();await reference.setViewportSize({width,height:1000});await reference.goto('http://127.0.0.1:4179/reference');
  for(const selector of ['.stat','.stat svg','.stat .number']){
  const props=['color','backgroundColor','fontSize','paddingTop','borderRadius'];const read=(el,ps)=>Object.fromEntries(ps.map(p=>[p,getComputedStyle(el)[p]]));
@@ -12,6 +14,8 @@ for(const width of [1440,390])test(`Overview and actual tool settings at ${width
  await tracker.getByRole('button',{name:'App settings',exact:true}).click();
  await expect(embed.getByRole('heading',{name:'App settings'})).toBeVisible();
  await expect(embed.getByRole('heading',{name:'Tabs',exact:true})).toBeVisible();
+ await expect(embed.getByRole('button',{name:'Save layout',exact:true})).toBeVisible();
+ await expect(embed.getByRole('button',{name:'Save layout',exact:true})).toBeDisabled();
  await expect(embed.getByRole('heading',{name:'Columns',exact:true})).toBeVisible();
  await expect(embed.getByRole('combobox',{name:'Source table',exact:true})).toHaveCount(0);
  await reference.getByRole('button',{name:'Tracker settings',exact:true}).click();
@@ -24,6 +28,8 @@ for(const width of [1440,390])test(`Overview and actual tool settings at ${width
  const beforeAccess=await accessCalls();
  await embed.getByRole('tab',{name:'Access control',exact:true}).click();
  await expect(embed.getByRole('heading',{name:'Owner & team access'})).toBeVisible();
+ await expect(embed.getByRole('button',{name:'Save changes',exact:true})).toBeVisible();
+ await expect(embed.getByRole('button',{name:'Save changes',exact:true})).toBeDisabled();
  await expect(embed.getByRole('heading',{name:'Tab permissions',exact:true})).toBeVisible();
  await expect(embed.getByRole('combobox',{name:'Company permission',exact:true})).toBeVisible();
  await expect.poll(accessCalls).toBe(beforeAccess+1);

@@ -146,3 +146,5 @@ For requested HTML builds, **deliver the working HTML**, not just the plan. Pres
 - [ ] A one-row tracker opens a viewport-height details surface; only the document scrolls vertically.
 - [ ] Fixed dark footer, mobile layout, settings sections, keyboard/drag order and pending edits survive tab navigation.
 - [ ] Only exact known template code gets the browser path; user-customized source remains isolated.
+
+- Save actions are visible from the first render on every editable tracker view, including records, details/forms, Layout, Style and Access. Keep their position stable; disable while unchanged, loading/saving, invalid or unauthorized; enable for valid unsaved edits. Never reveal Save only after editing. The host owns the general tracker's persistent Save edits footer and Settings actions; do not duplicate it. Keep Ignore/Discard disabled without changes. Preserve the separate first-publication flow and all confirmation/access checks.

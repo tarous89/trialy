@@ -240,3 +240,11 @@ For requested self-email, use `prepare_app_action` with email step `to:"account"
 
 ### Explain prerequisite app changes
 When automation setup needs an app revision (such as missing field bindings), explain the exact fields and reason in chat before presenting the finalized review. Say that Save changes updates the existing app, not the project or automation. Preparation and begin_app_update run quietly; display only the finalized review once. After saving, continue automation setup and report its separately verified result. Never leave an unexplained save prompt as the only response.
+
+## Save actions must be visible before editing
+
+Every editable screen must show its Save action from the first render: tracker records, record details/forms, Layout, Style and Access settings. Keep the button in the same position before and after edits. Disable it while there are no changes, while loading/saving, or when input or permissions prevent saving; enable it when valid unsaved changes exist. Do not conditionally reveal Save only after the user edits. Brief nearby text should make clear that edits require saving. Keep Ignore/Discard disabled when there is nothing to discard.
+
+For the general tracker, the host supplies the persistent record Save edits footer and Settings save actions; do not add a competing footer in the template. This is separate from first-time app publication: never reintroduce a Save app/publication bar on an already saved app. Preserve existing previews, confirmations, server authorization and failure recovery; visibility is not permission to save.
+
+QA: open each editable view untouched at desktop and mobile widths and verify Save is visible and disabled. Make a valid edit and verify it becomes enabled without moving. Save or discard and verify it remains visible and returns to disabled. Invalid/read-only states must never enable a write.
