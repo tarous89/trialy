@@ -1,0 +1,41 @@
+const {test,expect}=require('./test.cjs');
+const base='http://127.0.0.1:4179';
+for(const width of [1920,390])test(`Standard triggers, full width and bottom actions preserve recurrence at ${width}px`,async({page})=>{
+ await page.setViewportSize({width,height:1000});const f=await(await page.request.get(base+'/fixture/apps')).json(),id='31000000-0000-4000-8000-000000000021';
+ const config={name:'Hourly research',appId:f.appId,objective:'Find evidence',instructions:'Preserve verified records and collect sources.',sourcePolicy:'Official publications',notificationPolicy:'Send a complete report',schedule:{description:'Hourly after completion',timeZone:'Europe/Berlin'},expiresAt:'2027-12-31T00:00:00Z',readBindings:[],automation:{runnerId:id,trigger:{kind:'after_success',minutes:60},initialLookbackDays:7,catchUp:'coalesce'}};let submitted;
+ await page.route('**/app-services/automations',route=>route.fulfill({json:{id,state:'ready',enabled:true}}));
+ await page.route(/\/app-services\/automations\/definitions(?:[/?].*)?$/,route=>new URL(route.request().url()).pathname.endsWith(id)?route.fulfill({json:{id,kind:'research',version:0,enabled:true,config,app:{id:f.appId,name:'Tracker'}}}):route.fulfill({json:{rows:[{id,kind:'research',name:config.name,app_name:'Tracker',app_url:f.url,prompt:config.instructions,version:0,enabled:true,effectiveEnabled:true,connectionState:'ready',trigger:config.automation.trigger}],nextOffset:null}}));
+ await page.route('**/app-services/automations/options?*',route=>route.fulfill({json:{owner:{name:'Owner',email:'owner@example.invalid'},members:[],tables:[],writeScopes:[]}}));
+ await page.route('**/app-services/monitoring/prepare',route=>{submitted=route.request().postDataJSON();return route.fulfill({status:503,json:{message:'Retain draft'}});});
+ await page.goto(base+`/app-home?tab=automations&workspaceId=${f.workspaceId}`);
+ expect((await page.getByRole('article',{name:config.name}).boundingBox()).height).toBeLessThan(width>800?190:310);
+ await page.getByRole('button',{name:'Edit',exact:true}).click();await expect(page.getByLabel('Trigger',{exact:true})).toHaveValue('recurrent');await expect(page.getByLabel('Trigger',{exact:true}).locator('option')).toHaveText(['Database trigger','Schedule','Recurrent']);await expect(page.getByLabel('Recurrence',{exact:true})).toHaveValue('after_success');await expect(page.getByLabel('Repeat every (minutes)')).toHaveValue('60');
+ const save=page.getByRole('button',{name:'Save changes',exact:true}),footer=page.locator('footer.ty-action-footer');await expect(save).toBeDisabled();await expect(save).toBeInViewport();await expect(footer.getByRole('button',{name:'Ignore changes'})).toBeInViewport();expect((await footer.boundingBox()).y).toBeGreaterThan(850);
+ const heading=await page.getByRole('heading',{name:'Edit automation',exact:true}).boundingBox(),composer=await page.getByRole('region',{name:'Edit automation',exact:true}).boundingBox(),panel=await page.locator('.ty-automation-panel').first().boundingBox();expect(Math.abs(composer.x-heading.x)).toBeLessThan(2);expect(Math.abs(panel.width-composer.width)).toBeLessThan(2);expect(composer.width).toBeGreaterThan(width>800?1500:300);
+ await expect(page.getByText('ChatGPT connection verified',{exact:true})).toHaveCount(0);await page.getByLabel('Name',{exact:true}).fill('Updated name');await save.click();await expect(page.getByRole('status')).toContainText('Retain draft');expect(submitted.config.automation).toEqual(config.automation);expect(submitted.config.notificationPolicy).toBe(config.notificationPolicy);
+ await page.getByLabel('Repeat every (minutes)').fill('120');await save.click();await expect.poll(()=>submitted.config.automation.trigger.minutes).toBe(120);expect(submitted.config.automation.trigger.kind).toBe('after_success');
+ await page.getByRole('heading',{name:'Edit automation',exact:true}).scrollIntoViewIfNeeded();await page.screenshot({path:`/tmp/trialy-standard-edit-${width}.png`,fullPage:true});
+ const navigate=async name=>{if(width<800)await page.getByRole('button',{name:'Open navigation',exact:true}).click();await page.getByRole('navigation',{name:'Main navigation',exact:true}).getByRole('button',{name,exact:true}).click();};
+ await navigate('Automations');await expect(page.getByRole('heading',{name:'Automations',exact:true})).toBeVisible();await expect(page).not.toHaveURL(/automationId/);
+ await page.getByRole('button',{name:'Edit',exact:true}).click();await navigate('Home');await navigate('Automations');await expect(page.getByRole('heading',{name:'Automations',exact:true})).toBeVisible();await expect(page).not.toHaveURL(/automationId/);
+ await expect(page.locator('body')).toHaveJSProperty('scrollWidth',width);
+});
+
+test('Multiple calendar days and timezone are editable without losing existing choices',async({page})=>{
+ const f=await(await page.request.get(base+'/fixture/apps')).json(),id='31000000-0000-4000-8000-000000000022';let submitted;
+ const trigger={kind:'calendar',frequency:'weekly',time:'09:00',timeZone:'Europe/Berlin',anchor:'2026-11-02',interval:2,weekdays:[1,3,5],monthDay:31,monthEnd:'skip'};
+ const config={name:'Research',appId:f.appId,instructions:'Collect evidence',sourcePolicy:'Primary sources',objective:'Review',schedule:{description:'Weekdays',timeZone:'Europe/Berlin'},automation:{runnerId:id,trigger},readBindings:[]};
+ await page.route('**/app-services/automations',route=>route.fulfill({json:{id,state:'ready'}}));
+ await page.route(`**/app-services/automations/definitions/${id}?kind=research`,route=>route.fulfill({json:{id,kind:'research',enabled:true,config,version:0,app:{name:'Tracker'}}}));
+ await page.route('**/app-services/automations/options?*',route=>route.fulfill({json:{owner:{email:'owner@example.invalid'},members:[],tables:[],writeScopes:[]}}));
+ await page.route('**/app-services/monitoring/prepare',route=>{submitted=route.request().postDataJSON();return route.fulfill({status:503,json:{message:'Draft kept'}});});
+ await page.goto(base+`/app-home?tab=automations&workspaceId=${f.workspaceId}&automationId=${id}&automationKind=research`);
+ await expect(page.getByLabel('Monday',{exact:true})).toBeChecked();await expect(page.getByLabel('Wednesday',{exact:true})).toBeChecked();await expect(page.getByLabel('Friday',{exact:true})).toBeChecked();await page.getByLabel('Name',{exact:true}).fill('Changed name');await page.getByRole('button',{name:'Save changes',exact:true}).click();await expect.poll(()=>submitted?.config.automation.trigger).toEqual(trigger);
+ await page.getByLabel('Wednesday',{exact:true}).uncheck();await page.getByLabel('Timezone',{exact:true}).fill('America/New_York');await page.getByRole('button',{name:'Save changes',exact:true}).click();await expect.poll(()=>submitted.config.schedule.timeZone).toBe('America/New_York');expect(submitted.config.automation.trigger).toEqual({...trigger,weekdays:[1,5],timeZone:'America/New_York'});
+});
+
+test('Settings cards use the same shell alignment as Home and Access',async({page})=>{
+ await page.setViewportSize({width:1920,height:1000});const f=await(await page.request.get(base+'/fixture/apps')).json();
+ await page.goto(base+`/app-home?tab=home&workspaceId=${f.workspaceId}`);const main=await page.locator('#ty-main').boundingBox();
+ await page.getByRole('button',{name:'Settings',exact:true}).click();await expect(page.getByLabel('First name',{exact:true})).toBeVisible();const settings=await page.locator('.ty-settings-page').boundingBox();expect(settings.x-main.x).toBeLessThan(40);expect(main.width-settings.width).toBeLessThan(80);const card=await page.locator('.ty-settings-card').first().boundingBox();expect(Math.abs(card.x-settings.x)).toBeLessThan(2);expect(Math.abs(card.width-settings.width)).toBeLessThan(2);await page.screenshot({path:'/tmp/trialy-settings-aligned-1920.png',fullPage:true});
+});

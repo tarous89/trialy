@@ -143,3 +143,19 @@ After a user-requested automation is confirmed, `confirm_app_service_review` ope
 Use `test_app_automation` only when the user requests a test, or the Test run card action. Supply the current kind, ID and version with one stable requestKey; retry uncertain requests with the same key. The server resolves the recipient from the authenticated account. Never substitute a production run to test an email, change its recipients, enable a paused definition, or create a second schedule.
 
 Email tests render the saved message from accessible saved data and send only to the account user with a [Test] subject. A research-completion email requires a qualifying saved production result. Research tests require an enabled research definition and verified shared runner. Their execution packet is explicitly read-only: preview findings with sources, omit coverage and do not save records or call connectors. Finish through the shared runner; TrialAgents queues the private test report. Test results never trigger normal completion emails or advance regular schedules/coverage. Unsupported multi-step connector/function actions fail closed instead of performing real effects. Existing email suppression and delivery limits apply, so queued is not delivered. Tests are limited to five starts per account/workspace per hour; report current status accurately.
+
+## Standard editable triggers and connection status
+
+Use the same three trigger categories in manual editing and MCP authoring:
+
+| Editor category | Stored trigger | Editable behavior |
+| --- | --- | --- |
+| Database trigger | `database` | App table/events/field condition, or a selected research run becoming completed |
+| Schedule | `once`, `record_date` | Specific date/time, or an app date field with time, timezone and offset |
+| Recurrent | `calendar`, `after_success`, supported non-email `interval` | Calendar cadence and timezone, or elapsed minutes after successful research completion |
+
+Categories are presentation labels over the existing schemas, not new trigger kinds. Use the supported schema for the requested behavior. Preserve all weekdays, calendar anchor, month-end handling, timezone, source identity/version, field conditions, scope and enabled intent on unrelated edits. Never convert elapsed time after success into fixed calendar time without the user's request. Legacy manual actions remain manual until explicitly changed; do not create new manual placeholders for requested automations.
+
+A completion email is **Database trigger → Research runs → Status becomes completed**. The server commits status, completion timestamp and saved result together and deduplicates by run identity. Do not create an editable ordinary app flag to spoof successful research. Users can edit the producer, empty-result policy, recipients and message. A changed producer version must be explicitly selected and reviewed. Prompts, objectives, sources, eligible fields, conditions and supported recurrence remain flexible inside current access and delivery constraints.
+
+Connection setup/status belongs in Connectors → ChatGPT, not the automation editor. Until subscription and background verification are ready, the connector and its dependent research/email cards display Disabled. Management returns `effectiveEnabled` for this operational status, separately from the saved `enabled` intent; a temporary connection failure must not silently rewrite approved definitions or re-enable an intentionally paused rule. Verify the full workflow with readiness, not either flag alone.

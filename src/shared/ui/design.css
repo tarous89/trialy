@@ -454,7 +454,7 @@
 .ty-workspace .ty-automation-prompt p{font-size:14px;color:#53665b}
 .ty-automation-blocked,.ty-automation-test-panel{background:#f3f7f4;border:1px solid #dbe8df;border-radius:10px;padding:16px;margin-top:16px;font-size:14px;line-height:1.6}
 .ty-automation-test-panel p{margin:5px 0 14px}.ty-workspace .ty-automation-notice{padding:14px 0 0;margin:0;color:#245b43}
-.ty-workspace .ty-automation-composer{padding-top:8px;max-width:1120px;margin-inline:auto}
+.ty-workspace .ty-automation-composer{padding-top:8px;padding-bottom:110px;max-width:none;width:100%;margin:0}
 .ty-workspace .ty-automation-composer form{gap:20px}
 .ty-workspace .ty-automation-panel,.ty-workspace .ty-automation-composer .ty-automation-fields,.ty-workspace .ty-automation-recipients{background:#fff;border:1px solid var(--manage-border);border-radius:var(--manage-radius);padding:24px;margin:0;min-width:0;box-shadow:0 2px 8px #16352804}
 .ty-workspace .ty-automation-panel{display:grid;gap:20px}
@@ -471,8 +471,7 @@
 .ty-email-inserts{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:12px;color:#61736a}
 .ty-email-inserts small{flex-basis:100%;font-size:12px;line-height:1.6}
 .ty-workspace .ty-email-inserts .ty-button{font-size:12px;min-height:30px;padding:5px 10px;border-radius:7px;background:#f1f6f2}
-.ty-workspace .ty-automation-save{position:sticky;top:0;z-index:2;display:flex;padding:16px 20px;margin:0;background:#fff;border:1px solid var(--manage-border);border-radius:12px;box-shadow:0 -4px 16px #17332306}
-.ty-workspace .ty-settings-page{max-width:1184px;margin-inline:auto}
+.ty-workspace .ty-settings-page{max-width:none;width:100%;margin:0}
 .ty-workspace .ty-settings-tabs{border-bottom:1px solid #dce5df;padding:0;gap:24px;margin:8px 0 28px}
 .ty-workspace .ty-settings-tabs button{border:0;border-bottom:3px solid transparent;border-radius:0;background:transparent;box-shadow:none;color:#61736a;padding:14px 4px;font-size:14px;font-weight:500;min-height:48px}
 .ty-workspace .ty-settings-tabs button[aria-selected=true]{color:#176a47;border-bottom-color:#21875c;background:transparent}
@@ -496,7 +495,7 @@
  .ty-automation-card-footer{align-items:flex-start;flex-direction:column}.ty-automation-card-top{gap:10px}.ty-workspace .ty-automation-card-top h2{font-size:16px}
  .ty-workspace .ty-automation-panel,.ty-workspace .ty-automation-composer .ty-automation-fields,.ty-workspace .ty-automation-recipients{padding:18px;border-radius:12px}
  .ty-workspace .ty-settings-page :is(.ty-settings-card,.settings-card){padding:20px;border-radius:12px}.ty-workspace .ty-settings-tabs{gap:18px;flex-wrap:wrap}
- .ty-workspace .ty-settings-page .ty-subscription-details{grid-template-columns:1fr}.ty-workspace .ty-automation-save{padding:12px;flex-wrap:wrap}
+ .ty-workspace .ty-settings-page .ty-subscription-details{grid-template-columns:1fr}
 }
 
 .ty-workspace .ty-automations-page .ty-button--primary{color:#fff;background:#087b50;border-color:#087b50}
@@ -505,3 +504,16 @@
 .ty-workspace .ty-settings-page .ty-settings-form{gap:20px}
 .ty-workspace .ty-settings-page .ty-settings-fields{gap:20px}
 @media(max-width:640px){.ty-workspace .ty-settings-tabs{gap:12px;flex-wrap:nowrap}.ty-workspace .ty-settings-tabs button{padding:12px 2px;font-size:13px;letter-spacing:0}.ty-workspace .ty-settings-page .ty-settings-form label{margin:0}}
+
+/* Dense automation cards share the page shell, control scale and bottom action footer. */
+.ty-workspace .ty-automation-row{display:grid;grid-template-columns:minmax(200px,1fr) minmax(260px,1.25fr) auto;gap:8px 24px;padding:16px 20px;border-radius:12px;align-items:center}
+.ty-automation-card-top{grid-column:1;grid-row:1;gap:10px;align-items:center}.ty-workspace .ty-automation-card-top h2{font-size:15px;margin:3px 0 0;line-height:1.4}.ty-automation-kind{font-size:10px;letter-spacing:.7px}
+.ty-automation-card-top .ty-automation-state{font-size:11px;padding:3px 8px}
+.ty-automation-card-body{grid-column:2;grid-row:1;grid-template-columns:minmax(90px,.7fr) minmax(160px,1.3fr);gap:8px 18px;margin:0;font-size:13px}.ty-automation-card-body .ty-automation-services{grid-column:1/-1;justify-content:flex-start;gap:5px}.ty-automation-meta-label{font-size:11px;margin-bottom:2px}
+.ty-workspace .ty-automation-row>.ty-automation-prompt{grid-column:1/3;grid-row:2;min-width:0}.ty-workspace .ty-automation-row>.ty-automation-prompt p{font-size:13px;line-height:1.5;-webkit-line-clamp:2;max-height:3em;margin:0}
+.ty-automation-card-footer{grid-column:3;grid-row:1/3;display:flex;flex-direction:column-reverse;align-items:flex-end;justify-content:center;border:0;padding:0;margin:0;gap:8px}.ty-automation-card-footer>.ty-automation-help{font-size:11px;max-width:210px;text-align:right}.ty-workspace .ty-automation-card-footer .ty-actions{gap:6px;justify-content:flex-end}.ty-workspace .ty-automation-card-footer .ty-button{padding:7px 10px;min-height:34px;font-size:12px}
+.ty-automation-row :is(.ty-automation-blocked,.ty-automation-test-panel,.ty-automation-notice){grid-column:1/-1;margin:4px 0 0}
+.ty-workspace .ty-automation-composer .ty-automation-weekdays{grid-column:1/-1;display:flex;gap:10px 18px;flex-wrap:wrap;padding:0;margin:0}.ty-workspace .ty-automation-composer .ty-automation-weekdays legend{font-size:13px;font-weight:500;margin-bottom:8px}.ty-workspace .ty-automation-composer .ty-automation-weekdays label{display:flex;flex-direction:row;gap:7px;align-items:center;margin:0}.ty-automation-weekdays input[type=checkbox]{margin:0;align-self:auto;accent-color:#087b50}
+.ty-automation-guidance{font-size:13px}.ty-automation-guidance summary{cursor:pointer;color:#426251}.ty-workspace .ty-automation-guidance label{margin-top:16px}
+@media(max-width:1100px){.ty-workspace .ty-automation-row{grid-template-columns:minmax(180px,1fr) minmax(220px,1fr);gap:10px 20px}.ty-automation-card-footer{grid-row:3;grid-column:1/-1;flex-direction:row;justify-content:flex-end}.ty-automation-card-footer>.ty-automation-help{margin-right:auto;text-align:left}.ty-workspace .ty-automation-row>.ty-automation-prompt{grid-column:1/-1}}
+@media(max-width:600px){.ty-workspace .ty-automation-row{grid-template-columns:minmax(0,1fr);padding:14px;gap:10px}.ty-automation-card-top{grid-column:1;grid-row:auto}.ty-automation-card-body{grid-column:1;grid-row:auto;grid-template-columns:1fr 1.3fr;gap:8px}.ty-workspace .ty-automation-row>.ty-automation-prompt{grid-row:auto;grid-column:1}.ty-automation-card-footer{grid-column:1;grid-row:auto;gap:6px;flex-wrap:wrap}.ty-automation-card-footer>.ty-automation-help{display:none}.ty-workspace .ty-automation-composer{padding-bottom:120px}}

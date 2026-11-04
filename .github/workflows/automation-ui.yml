@@ -1,0 +1,40 @@
+name: Automation and settings UI
+on:
+  pull_request:
+    paths:
+      - 'src/shared/**'
+      - 'src/web/**'
+      - 'src/embed/**'
+      - 'src/automations/**'
+      - 'tests/visual/**'
+      - '.github/workflows/automation-ui.yml'
+jobs:
+  automation-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium --only-shell
+      - run: sudo apt-get install -y fonts-dejavu-core
+      - name: Check automation and settings screens
+        run: npx playwright test tests/visual/account-settings.spec.cjs tests/visual/automation-management.spec.cjs tests/visual/automation-standards.spec.cjs tests/visual/extension-automations.spec.cjs tests/visual/chatgpt-connector.spec.cjs tests/visual/settings.spec.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: automation-settings-ui
+          path: |
+            test-results/
+            /tmp/trialy-standard-edit-*.png
+            /tmp/trialy-settings-aligned-*.png
+            /tmp/trialy-automation-compact-*.png
+            /tmp/trialy-automation-edit-*.png
+            /tmp/trialy-chatgpt-connector-*.png
+          retention-days: 7
