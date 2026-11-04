@@ -1,4 +1,6 @@
 import {customLayoutProfile,updateCustomLayout} from '../shared/custom-layout.js';
+import {isDeepStrictEqual} from 'node:util';
+import {standardSource} from '../shared/standard-tool.js';
 import {columnDisplay} from '../shared/standard-tool.js';
 import {toolThemeSchema} from '../shared/tool-theme.js';
 import {z} from 'zod';
@@ -23,7 +25,16 @@ async function prepareLayout(f:WorkspaceFoundation,a:Actor,w:string,input:unknow
  }
  if(!standard)fail(400,'custom_layout','Update this custom layout in ChatGPT, keeping its authorized data bindings.');
  if(!v.tabs.length)fail(400,'layout_scope','Keep at least one tab.');
- const old=standard.config,indices=v.tabs.flatMap(t=>t.originalIndex===undefined?[]:[t.originalIndex]);
+ const old=standard.config;
+ // A heading/description edit in the trusted standard renderer changes no layout,
+ // code, bindings or schema. Do not launch browser QA and read every tab's data
+ // again. Server validation, the private preview, fresh confirmation, and audit
+ // still run. All other edits retain the full design preparation path.
+ const textOnly=!v.newTables.length&&!v.extendTables.length
+  &&isDeepStrictEqual(v.theme??old.theme??{},old.theme??{})
+  &&isDeepStrictEqual(v.tabs,old.tabs.map((t:any,i:number)=>({originalIndex:i,typeId:t.typeId,name:t.name,visible:t.visible!==false,columns:t.columns.map((c:any)=>({fieldId:c.fieldId,field:c.field,label:c.label,visible:c.visible!==false,...(c.display?{display:c.display}:{})}))})));
+ if(textOnly)return f.preview(a,w,{kind:'save_component',componentId:c.id,expectedVersion:c.version,projectId:c.project_id,content:{name:v.name,source:standardSource({...old,name:v.name,description:v.description}),format:c.format,sourceAccess:c.source_access,resourceKind:c.resource_kind,manifest:c.manifest,bindings:c.bindings,assets:c.assets??[],execution:c.execution??[]}},true);
+ const indices=v.tabs.flatMap(t=>t.originalIndex===undefined?[]:[t.originalIndex]);
  if(new Set(indices).size!==indices.length||indices.some(i=>!old.tabs[i])||!v.tabs.some(t=>t.visible))fail(400,'layout_scope','Use distinct existing tabs and keep at least one visible tab.');
  const remapped=v.tabs.length!==old.tabs.length||v.tabs.some(t=>{const prev=old.tabs[t.originalIndex??-1];return !prev||prev.typeId!==t.typeId||prev.columns.length!==t.columns.length||t.columns.some(col=>!prev.columns.some((x:any)=>x.fieldId===col.fieldId&&x.field===col.field));});
  if((remapped||v.newTables.length||v.extendTables.length)&&c.execution?.length)fail(400,'execution_mapping','Update custom actions and their bindings together in ChatGPT before changing sources.');

@@ -33,14 +33,24 @@ test('four-tab tracker budgets cover publication checks, wide schemas and layout
   const next=await measure('next tab with publication token',()=>f.runFrontend(actor,w.id,{componentId:receipt.id,expectedVersion:0,viewId:first.viewId,state:first.state,event:{kind:'click',action:'tab:1'}}),38);
   assert.equal(next.tracker.pages[0].result.total,25);assert.equal(next.controls.length,462);
   const {component}=await f.readComponent(actor,w.id,receipt.id),config=standardTracker(component.source)!.config;
-  const layout=await measure('prepare layout',()=>prepareToolLayout(f,actor,w.id,{componentId:receipt.id,expectedVersion:0,name:'Renamed tracker',description:'',tabs:config.tabs.map((t:any,i:number)=>({originalIndex:i,typeId:t.typeId,name:t.name,visible:true,columns:t.columns.map((c:any)=>({fieldId:c.fieldId,field:c.field,label:c.label,visible:c.visible}))}))}),30);
+  const designSetting=process.env.APP_DESIGN_CHECKS;
+  process.env.APP_DESIGN_CHECKS='on';
+  const originalPrepare=WorkspaceFoundation.prototype.prepareRenderedTracker;
+  let layout:any;
+  try{layout=await measure('prepare rename with production design checks',()=>prepareToolLayout(f,actor,w.id,{componentId:receipt.id,expectedVersion:0,name:'Renamed tracker',description:'',tabs:config.tabs.map((t:any,i:number)=>({originalIndex:i,typeId:t.typeId,name:t.name,visible:true,columns:t.columns.map((c:any)=>({fieldId:c.fieldId,field:c.field,label:c.label,visible:c.visible,...(c.display?{display:c.display}:{})}))}))}),30);
+  assert.ok(!queries.some(q=>q.includes('octet_length(selected::text)')),'renaming must not load tab records');
+  // A real layout edit must still take the browser design-check path.
+  WorkspaceFoundation.prototype.prepareRenderedTracker=async()=>{throw Error('Full design preparation invoked');};
+  await assert.rejects(prepareToolLayout(f,actor,w.id,{componentId:receipt.id,expectedVersion:0,name:'Renamed tracker',description:'',tabs:config.tabs.map((t:any,i:number)=>({originalIndex:i,typeId:t.typeId,name:i===0?'Changed tab':t.name,visible:true,columns:t.columns.map((c:any)=>({fieldId:c.fieldId,field:c.field,label:c.label,visible:c.visible,...(c.display?{display:c.display}:{})}))}))}),/Full design preparation invoked/);
+  }finally{WorkspaceFoundation.prototype.prepareRenderedTracker=originalPrepare;if(designSetting===undefined)delete process.env.APP_DESIGN_CHECKS;else process.env.APP_DESIGN_CHECKS=designSetting;}
+  assert.deepEqual(layout.body.content.bindings,component.bindings);assert.deepEqual(layout.body.content.manifest,component.manifest);
   // Reused validation metadata must be checked again before any app write.
   validationReads=1;await assert.rejects(f.confirm(actor,w.id,layout.id,layout.digest),/Access or schema changed/);validationReads=0;
   assert.equal((await f.readComponent(actor,w.id,receipt.id)).component.version,0);
   assert.equal((await db.query('SELECT id FROM workspace_receipts WHERE id=$1',[layout.id])).rows.length,0);
   await measure('confirm layout',()=>f.confirm(actor,w.id,layout.id,layout.digest),45);
   const replay=await f.confirm(actor,w.id,layout.id,layout.digest);assert.equal(replay.id,receipt.id);assert.equal(replay.version,1);
-  const saved=await measure('read saved layout with output',()=>f.readComponent(actor,w.id,receipt.id,true),48);assert.equal(saved.component.version,1);assert.ok(saved.initialOutput.tracker);
+  const saved=await measure('read saved layout with output',()=>f.readComponent(actor,w.id,receipt.id,true),48);assert.equal(saved.component.version,1);assert.ok(saved.initialOutput.tracker);assert.equal(saved.component.name,'Renamed tracker');assert.equal(saved.initialOutput.tracker.config.name,'Renamed tracker');assert.equal(saved.initialOutput.tracker.pages[0].result.total,25);
   changeAccess=true;await assert.rejects(f.runFrontend(actor,w.id,{componentId:receipt.id,expectedVersion:1,event:{kind:'click',action:'tab:0'}}),/Access or schema changed|Permissions changed/);
  }finally{await pg.close();}
 });
