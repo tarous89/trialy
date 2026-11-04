@@ -11,8 +11,8 @@ import {standardTracker} from '../src/workspace/standard-tracker.js';
 import type {Database,Connection} from '../src/db/database.js';
 
 test('four-tab tracker budgets cover publication checks, wide schemas and layout saves',async()=>{
- const pg=new PGlite();let queries:string[]=[],changeAccess=false;
- const query=(tx:Connection)=>async(sql:string,args?:any[])=>{queries.push(sql);if(changeAccess&&sql.includes('octet_length(selected::text)')){changeAccess=false;await tx.query('UPDATE workspaces SET access_version=access_version+1 WHERE id=$1',[args![0]]);}return {...await tx.query(sql,args),_parsers:[(value:unknown)=>value]};};
+ const pg=new PGlite();let queries:string[]=[],changeAccess=false,validationReads=0;
+ const query=(tx:Connection)=>async(sql:string,args?:any[])=>{queries.push(sql);if(validationReads&&sql==='SELECT * FROM workspace_components WHERE id=$1 AND workspace_id=$2'&&++validationReads===3)await tx.query('UPDATE workspace_components SET version=version+1 WHERE id=$1',[args![0]]);if(changeAccess&&sql.includes('octet_length(selected::text)')){changeAccess=false;await tx.query('UPDATE workspaces SET access_version=access_version+1 WHERE id=$1',[args![0]]);}return {...await tx.query(sql,args),_parsers:[(value:unknown)=>value]};};
  const db:Database={query:query(pg as any),transaction:fn=>pg.transaction(tx=>fn({query:query(tx as any)})),close:()=>pg.close()};
  try{
   for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
@@ -34,8 +34,12 @@ test('four-tab tracker budgets cover publication checks, wide schemas and layout
   assert.equal(next.tracker.pages[0].result.total,25);assert.equal(next.controls.length,462);
   const {component}=await f.readComponent(actor,w.id,receipt.id),config=standardTracker(component.source)!.config;
   const layout=await measure('prepare layout',()=>prepareToolLayout(f,actor,w.id,{componentId:receipt.id,expectedVersion:0,name:'Renamed tracker',description:'',tabs:config.tabs.map((t:any,i:number)=>({originalIndex:i,typeId:t.typeId,name:t.name,visible:true,columns:t.columns.map((c:any)=>({fieldId:c.fieldId,field:c.field,label:c.label,visible:c.visible}))}))}),30);
-  // Mandatory project placement adds project authorization checks to layout confirmation.
-  await measure('confirm layout',()=>f.confirm(actor,w.id,layout.id,layout.digest),75);
+  // Reused validation metadata must be checked again before any app write.
+  validationReads=1;await assert.rejects(f.confirm(actor,w.id,layout.id,layout.digest),/Access or schema changed/);validationReads=0;
+  assert.equal((await f.readComponent(actor,w.id,receipt.id)).component.version,0);
+  assert.equal((await db.query('SELECT id FROM workspace_receipts WHERE id=$1',[layout.id])).rows.length,0);
+  await measure('confirm layout',()=>f.confirm(actor,w.id,layout.id,layout.digest),45);
+  const replay=await f.confirm(actor,w.id,layout.id,layout.digest);assert.equal(replay.id,receipt.id);assert.equal(replay.version,1);
   const saved=await measure('read saved layout with output',()=>f.readComponent(actor,w.id,receipt.id,true),48);assert.equal(saved.component.version,1);assert.ok(saved.initialOutput.tracker);
   changeAccess=true;await assert.rejects(f.runFrontend(actor,w.id,{componentId:receipt.id,expectedVersion:1,event:{kind:'click',action:'tab:0'}}),/Access or schema changed|Permissions changed/);
  }finally{await pg.close();}

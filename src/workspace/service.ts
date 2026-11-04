@@ -737,7 +737,12 @@ export class WorkspaceFoundation {
  async confirm(a:Actor,w:string,id:string,digest:string){requireCurrentAction(a);return this.db.transaction(async tx=>{
   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await access(tx,a,w);const prior=await this.replay(tx,a,w,id,digest);if(prior)return prior;
   const draft=(await tx.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[id,w,a.userId])).rows[0];if(!draft||draft.digest!==digest)fail(409,'preview_expired','Preview unavailable');
-  const op=workspaceOperation.parse(draft.body.operation);if(['create_tracker','save_component'].includes(op.kind)&&(op as any).content?.format==='frontend-js'&&draft.body.reviewState!=='ready')fail(409,'preview_not_ready','This app is still being prepared. Save is available after finalization.');if(op.kind==='apply_component_records'||op.kind==='edit_component_record'){a={...a,accessToolId:op.componentId};await withActor(a,()=>setDatabaseContext(tx));}await this.validate(tx,a,w,op);
+  const op=workspaceOperation.parse(draft.body.operation);if(['create_tracker','save_component'].includes(op.kind)&&(op as any).content?.format==='frontend-js'&&draft.body.reviewState!=='ready')fail(409,'preview_not_ready','This app is still being prepared. Save is available after finalization.');if(op.kind==='apply_component_records'||op.kind==='edit_component_record'){a={...a,accessToolId:op.componentId};await withActor(a,()=>setDatabaseContext(tx));}
+  // App saves repeatedly inspect the same component, project and table metadata.
+  // Reuse only within validation, then re-read every reused value before writing.
+  // Never carry cached metadata into apply(), which can change those very rows.
+  if(op.kind==='save_component')await withReadMetadata(adapter(tx),db=>new WorkspaceFoundation(db).validate(db,a,w,op));
+  else await this.validate(tx,a,w,op);
   if(draft.body.accessStamp!==await this.accessStamp(tx,w))fail(409,'access_changed','Project access or organization changed; prepare a new preview');
   if((op.kind==='link_cross_table_identity'||op.kind==='unlink_cross_table_identity')&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.crossTableReview),J(await this.crossTableReview(tx,a,w,op))])).rows[0].same)fail(409,'stale_version','Cross-table mapping or values changed; prepare again');
   if((op.kind==='save_table_mapping'||op.kind==='revoke_table_mapping')&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.tableMappingReview),J(await new TableMappings(tx).review(a,w,op))])).rows[0].same)fail(409,'mapping_schema_changed','Table mapping review changed; prepare again');
