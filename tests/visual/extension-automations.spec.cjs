@@ -26,3 +26,13 @@ test('Extension opens disabled automations locally and saves the exact MCP revie
  await root.getByRole('button',{name:'Edit',exact:true}).click();await root.getByLabel('Message',{exact:true}).fill('Updated summary');await expect(root.getByRole('button',{name:'Review changes',exact:true})).toHaveCount(0);await root.getByRole('button',{name:'Save changes',exact:true}).click();
  await expect(root.getByRole('heading',{name:'Automations',exact:true})).toBeVisible();expect(saved).toEqual({workspaceId:f.workspaceId,reviewId,kind:'action',digest,review,confirmed:true});
 });
+
+ test('Automation confirmation opens and refreshes Automations without external navigation',async({page})=>{
+ const f=await(await page.request.get(base+'/fixture/apps')).json();let reads=0;
+ await page.route('**/fixture/tool',route=>{const {name}=route.request().postDataJSON();if(name!=='list_app_automations')return route.continue();reads++;return route.fulfill({json:{structuredContent:{result:{rows:[],nextOffset:null}}}});});
+ await page.goto(base+'/?apps=1');await page.waitForFunction(()=>window.hostReady);
+ await page.evaluate(workspaceId=>window.deliver({screen:'automations',workspaceId,saved:true,displayIntent:'navigate'}),f.workspaceId);
+ const root=page.frameLocator('#app');await expect(root.getByRole('heading',{name:'Automations',exact:true})).toBeVisible();await expect.poll(()=>reads).toBeGreaterThan(0);
+ const before=reads;await page.evaluate(workspaceId=>window.deliver({screen:'automations',workspaceId,saved:true,displayIntent:'navigate'}),f.workspaceId);await expect.poll(()=>reads).toBeGreaterThan(before);
+ await page.evaluate(()=>window.deliver({displayIntent:'background',screen:'home'}));await expect(root.getByRole('heading',{name:'Automations',exact:true})).toBeVisible();expect(await page.evaluate(()=>window.lastOpenedUrl)).toBeUndefined();
+ });

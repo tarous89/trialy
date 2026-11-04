@@ -113,5 +113,22 @@ test('durable app services run with the restricted production roles',async t=>{
    const first=await actions.runNow(owner,w.id,action.id,randomUUID(),recordId);await worker(()=>processAppAction(db));await worker(()=>runFoundation(db));await worker(()=>runFoundation(db));await ready();await worker(()=>processAppAction(db));assert.equal((await actions.status(owner,w.id,first.id)).status,'succeeded');assert.equal((await f.record(db,owner,w.id,recordId)).data.status,'Processed');
    const next=await actions.runNow(owner,w.id,action.id,randomUUID(),recordId);await worker(()=>processAppAction(db));await worker(()=>runFoundation(db));await actions.control(owner,w.id,action.id,true);await worker(()=>runFoundation(db));await ready();await worker(()=>processAppAction(db));assert.equal((await actions.status(owner,w.id,next.id)).status,'failed');
   });
+  await t.test('email approval survives presentation revisions but not changed data scope',async()=>{
+   const content={name:'Email revision fixture',format:'frontend-js',sourceAccess:'bindings',source:'return {html:"<h1>Fixture</h1>"};',bindings:[]};
+   const draft=await f.preview(owner,w.id,{kind:'save_component',content}),saved=await f.confirm(owner,w.id,draft.id,draft.digest);
+   const email=await create({appId:saved.id,trigger:{kind:'once',at:new Date(Date.now()+60000).toISOString()}});
+   const approval=await actions.row(owner,w.id,email.id);assert.equal(approval.paused,false);
+   const revision=await f.preview(owner,w.id,{kind:'save_component',componentId:saved.id,expectedVersion:0,content:{...content,name:'Renamed fixture'}});await f.confirm(owner,w.id,revision.id,revision.digest);
+   await actions.validate(owner,w.id,approval.config,approval.scope_stamp);
+   await assert.rejects(actions.prepare(owner,w.id,{config:approval.config}),/current app revision/,'new approvals must select the current app revision');
+   await pg.query('UPDATE app_actions SET next_at=NULL WHERE id<>$1',[email.id]);await pg.query('UPDATE app_actions SET next_at=now() WHERE id=$1',[email.id]);
+   await worker(()=>dispatchAppActions(db));assert.equal((await actions.row(owner,w.id,email.id)).paused,false);
+   assert.equal((await pg.query<any>('SELECT id FROM app_notification_batches WHERE action_id=$1',[email.id])).rows.length,1);
+   await actions.control(owner,w.id,email.id,true);await assert.rejects(actions.runNow(owner,w.id,email.id,randomUUID()),/paused/);
+   await actions.control(owner,w.id,email.id,false);
+   const changed=await f.preview(owner,w.id,{kind:'save_component',componentId:saved.id,expectedVersion:1,content:{...content,bindings:[{typeId,fields:['name']}]}});await f.confirm(owner,w.id,changed.id,changed.digest);
+   await assert.rejects(actions.validate(owner,w.id,approval.config,approval.scope_stamp),/current app revision/);
+   await pg.query('UPDATE app_actions SET next_at=now() WHERE id=$1',[email.id]);await worker(()=>dispatchAppActions(db));const stopped=await actions.row(owner,w.id,email.id);assert.equal(stopped.paused,true);assert.equal(stopped.last_error,'app_changed');
+  });
  });}finally{await pg.close();}
 });

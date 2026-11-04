@@ -85,7 +85,7 @@ export class AutomationManagement{
     if(action.user_id!==a.userId||action.app_id!==research.app_id)state='action_unavailable';
     else if(action.paused)state='action_disabled';
     else if(trigger.kind!=='database'||trigger.source!=='automation_runs'||trigger.automationId!==automationId||trigger.automationVersion!==research.version)state='completion_link_changed';
-    else await service.validate(a,w,action.config);
+    else await service.validate(a,w,action.config,action.scope_stamp);
    }catch(e){if(![400,403,404,409].includes((e as any).status))throw e;state=(e as any).code??'action_unavailable';}
    if(state!=='ready')blockers.push({code:state,actionId});actions.push({id:actionId,state});
   }
@@ -96,7 +96,7 @@ export class AutomationManagement{
   const r=(await this.db.query(`SELECT * FROM ${table} WHERE deleted_at IS NULL AND id=$1 AND workspace_id=$2 AND user_id=$3`,[automationId,w,a.userId])).rows[0];if(!r)fail(404,'not_found','Automation unavailable');
   const c=await new WorkspaceFoundation(this.db).component(this.db,a,w,r.app_id,false);
   const controlRevision=(await this.db.query("SELECT coalesce(max(event_sequence),0)::text revision FROM audit_events WHERE workspace_id=$1 AND object_id=$2 AND action IN ('monitoring.controlled','app_action.paused')",[w,r.id])).rows[0].revision;
-  return {id:r.id,version:r.version,kind,executor:kind==='research'?'chatgpt':'trialagents',enabled:kind==='research'?r.enabled:!r.paused,controlRevision,config:r.config,app:{id:c.id,name:c.name,url:appUrl({workspaceId:w,appId:c.id}),archived:c.archived||c.project_archived},managementOnly:true,task:r.task??null};
+  return {id:r.id,version:r.version,kind,executor:kind==='research'?'chatgpt':'trialagents',enabled:kind==='research'?r.enabled:!r.paused,controlRevision,lastError:kind==='action'?r.last_error??null:null,config:r.config,app:{id:c.id,name:c.name,url:appUrl({workspaceId:w,appId:c.id}),archived:c.archived||c.project_archived},managementOnly:true,task:r.task??null};
  }
  async prepareControl(a:Actor,w:string,input:unknown){
   const change=automationControl.parse(input),automation=await this.read(a,w,change.kind,change.automationId);

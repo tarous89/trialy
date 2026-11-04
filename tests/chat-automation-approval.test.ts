@@ -59,14 +59,14 @@ test('ChatGPT confirms exact automation reviews under the real AI identity and r
  let runner:any,monitor:any,action:any;
  await t.test('new tools are quiet and require explicit confirmed exact review; setup replay is idempotent',async()=>{
   const tools=(await rpc('tools/list')).result.tools,tool=tools.find((v:any)=>v.name==='confirm_app_service_review');
-  assert.equal(tool.annotations.readOnlyHint,false);assert.equal(tool.annotations.idempotentHint,true);assert.equal(tool._meta['openai/outputTemplate'],undefined);assert.ok(tool.inputSchema.required.includes('review'));assert.ok(tool.inputSchema.required.includes('confirmed'));
+  assert.equal(tool.annotations.readOnlyHint,false);assert.equal(tool.annotations.idempotentHint,true);assert.equal(tool._meta['openai/outputTemplate'],'ui://test');assert.ok(tool.inputSchema.required.includes('review'));assert.ok(tool.inputSchema.required.includes('confirmed'));
   const p=saved(await call('prepare_automation_setup',{preferences:{time:'06:00',timeZone:'Europe/Berlin'}}));
   await withActor(ai,()=>assert.rejects(setup.confirm(ai,w.id,p.id,p.digest,p.review),/approve/));
   assert.equal((await confirm(p,{confirmed:false})).isError,true);
   assert.equal((await confirm(p,{review:p.review.replace('06:00','07:00')})).structuredContent.code,'review_changed');
   assert.equal((await confirm(p,{kind:'action'})).structuredContent.code,'review_changed');
   const read=saved(await call('read_app_service_review',{reviewId:p.id}));assert.equal(read.review,p.review,'JSONB key order must not change the exact review');
-  runner=saved(await confirm(p));assert.equal(runner.subscriptionCreated,false);assert.deepEqual(saved(await confirm(p)),runner);
+  runner=saved(await confirm(p));assert.equal(runner.displayIntent,'background');assert.equal(runner.subscriptionCreated,false);assert.deepEqual(saved(await confirm(p)),runner);
   assert.equal(saved(await call('read_automation_setup',{})).state,'awaiting_subscription');
   assert.equal((await pg.query<any>('SELECT count(*) AS n FROM automation_runners')).rows[0].n,1);
  });
@@ -92,7 +92,7 @@ test('ChatGPT confirms exact automation reviews under the real AI identity and r
   assert.equal((await call('prepare_app_action',{config:{...p.body.config,steps:[{...p.body.config.steps[0],to:['stranger@example.invalid']}]}})).isError,true);
   await withActor(ai,()=>assert.rejects(actions.confirm(ai,w.id,p.id,p.digest,p.review),/approve/));
   assert.equal((await confirm(p,{review:p.review.replace('Reviewed subject','Changed subject')})).structuredContent.code,'review_changed');
-  action=saved(await confirm(p));assert.deepEqual(saved(await confirm(p)),action);
+  action=saved(await confirm(p));assert.equal(action.screen,'automations');assert.equal(action.workspaceId,w.id);assert.equal((await pg.query<any>('SELECT paused FROM app_actions WHERE id=$1',[action.id])).rows[0].paused,false);assert.deepEqual(saved(await confirm(p)),action);
   assert.equal((await pg.query<any>('SELECT count(*) AS n FROM app_service_jobs')).rows[0].n,0);
   assert.equal((await pg.query<any>('SELECT count(*) AS n FROM app_action_runs')).rows[0].n,0);
  });

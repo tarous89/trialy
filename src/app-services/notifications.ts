@@ -89,7 +89,7 @@ export async function enqueueNotification(db:Database,a:Actor,w:string,row:any,c
 async function currentBatch(db:Database,b:any){
  const {AppActions}=await import('./service.js'),a:Actor={userId:b.user_id,origin:b.origin},s=new AppActions(db),row=await s.row(a,b.workspace_id,b.action_id),c=actionConfig.parse(row.config);
  if(row.paused||row.version!==b.action_version||!notificationEmail(c)||!['collecting','sending'].includes(b.status))fail(409,'notification_stopped','Notification is no longer active');
- const checked=await s.validate(a,b.workspace_id,c);if(checked.stamp!==row.scope_stamp)fail(409,'notification_scope','Notification access changed');
+ const checked=await s.validate(a,b.workspace_id,c,row.scope_stamp);if(checked.stamp!==row.scope_stamp)fail(409,'notification_scope','Notification access changed');
  const items=(await db.query('SELECT * FROM app_notification_items WHERE batch_id=$1 ORDER BY item_key',[b.id])).rows;
  const valid=[];let changed=false;
  for(const i of items){

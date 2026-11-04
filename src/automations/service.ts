@@ -27,7 +27,7 @@ export async function validateShared(db:Database,a:Actor,w:string,config:Monitor
   const binding=config.readBindings.find(b=>b.typeId===trigger.typeId),fields=trigger.kind==='database'?[...trigger.fields,...(trigger.becomes?[trigger.becomes.field]:[])]:[trigger.field];
   if(!binding||fields.some(f=>!binding.fields.includes(f)))fail(403,'trigger_scope','Trigger fields must be in approved read bindings');
  }
- if(review&&c.completionActionId){const action=await new AppActions(db).row(a,w,c.completionActionId);if(action.user_id!==a.userId||action.app_id!==config.appId||action.version!==c.completionActionVersion||action.paused||action.config.trigger.kind!=='manual'||action.config.recordTypeId)fail(403,'completion_scope','Select a current approved manual action for this app without per-record input');await new AppActions(db).validate(a,w,action.config);}
+ if(review&&c.completionActionId){const action=await new AppActions(db).row(a,w,c.completionActionId);if(action.user_id!==a.userId||action.app_id!==config.appId||action.version!==c.completionActionVersion||action.paused||action.config.trigger.kind!=='manual'||action.config.recordTypeId)fail(403,'completion_scope','Select a current approved manual action for this app without per-record input');await new AppActions(db).validate(a,w,action.config,action.scope_stamp);}
 }
 export async function syncDispatch(tx:Connection,a:Actor,w:string,monitorId:string,version:number,config:MonitoringConfig,old?:any){
  const c=config.automation;if(!c){if(old?.config.automation)await tx.query('UPDATE automation_dispatch SET next_at=NULL,diagnostic=$2 WHERE monitor_id=$1',[monitorId,'legacy_schedule']);return;}
