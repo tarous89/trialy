@@ -173,7 +173,7 @@ test('shared automations isolate failures, preserve saved apps and enforce revie
    await assert.rejects(actions.enqueue(human,w.id,action.id,'run:'+c.runId,undefined,[],{run:{summary:'Forged report'}}),/eligible completed/);
    const finish={occurrenceId:o.id,claimToken:c.claimToken,result:{status:'completed',summary:'Confirmed final report'}};
    await s.finish(ai,w.id,finish);await s.finish(ai,w.id,finish);
-   await pg.query('UPDATE automation_runners SET verified_at=NULL WHERE id=$1',[runner.id]);await assert.rejects(actions.enqueue(human,w.id,action.id,'run:'+c.runId),(e:any)=>e.code==='run_source_paused');await pg.query('UPDATE automation_runners SET verified_at=now() WHERE id=$1',[runner.id]);assert.equal((await manage.list(human,w.id,{})).rows.find(r=>r.id===action.id)?.effectiveEnabled,true);
+   await pg.query('UPDATE automation_runners SET verified_at=NULL WHERE id=$1',[runner.id]);await assert.rejects(actions.enqueue(human,w.id,action.id,'run:'+c.runId),(e:any)=>e.code==='run_source_connection');await tick(action.id);const waiting=(await pg.query<any>('SELECT paused,last_error FROM app_actions WHERE id=$1',[action.id])).rows[0];assert.equal(waiting.paused,false);assert.equal(waiting.last_error,'awaiting_chatgpt_connection');await pg.query('UPDATE automation_runners SET verified_at=now() WHERE id=$1',[runner.id]);assert.equal((await manage.list(human,w.id,{})).rows.find(r=>r.id===action.id)?.effectiveEnabled,true);
    await tick(action.id);await tick(action.id);await tick(second.id);await tick(quiet.id);
    const runs=(await pg.query<any>('SELECT * FROM app_notification_batches WHERE action_id=$1',[action.id])).rows;
    assert.equal(runs.length,1);assert.equal(runs[0].source_run_id,c.runId);
@@ -193,10 +193,12 @@ test('shared automations isolate failures, preserve saved apps and enforce revie
    }
    // Rendering uses server-sourced run fields and current permissions.
    await actions.control(human,w.id,second.id,true);const {dispatchNotificationBatch}=await import('../src/app-services/notifications.js');
-   await pg.query("UPDATE app_notification_batches SET not_before=now()-interval '1 day' WHERE id=$1",[runs[0].id]);await withDatabaseContext({service:'worker'},()=>dispatchNotificationBatch(db));
+   await pg.query('UPDATE automation_runners SET verified_at=NULL WHERE id=$1',[runner.id]);await pg.query("UPDATE app_notification_batches SET not_before=now()-interval '1 day' WHERE id=$1",[runs[0].id]);await withDatabaseContext({service:'worker'},()=>dispatchNotificationBatch(db));const waitingBatch=(await pg.query<any>('SELECT status,diagnostic FROM app_notification_batches WHERE id=$1',[runs[0].id])).rows[0];assert.equal(waitingBatch.status,'collecting');assert.equal(waitingBatch.diagnostic,'awaiting_chatgpt_connection');
+   await pg.query('UPDATE automation_runners SET verified_at=now() WHERE id=$1',[runner.id]);await pg.query("UPDATE app_notification_batches SET not_before=now()-interval '1 day' WHERE id=$1",[runs[0].id]);await withDatabaseContext({service:'worker'},()=>dispatchNotificationBatch(db));
    const jobs=(await pg.query<any>("SELECT * FROM app_service_jobs WHERE payload->'notification'->>'batchId'=$1",[runs[0].id])).rows;assert.equal(jobs.length,1);assert.equal(jobs[0].payload.message.text,'Confirmed final report / 0');
-   await m.control(human,w.id,mon.id,0,false);
    const {processServiceJob}=await import('../src/app-services/jobs.js');let delivered=0;
+   await pg.query('UPDATE automation_runners SET verified_at=NULL WHERE id=$1',[runner.id]);await withDatabaseContext({service:'worker'},()=>processServiceJob(db,{email:async()=>{delivered++;return {id:'must-not-send'};}}));const waitingJob=(await pg.query<any>('SELECT status,diagnostic,attempts FROM app_service_jobs WHERE id=$1',[jobs[0].id])).rows[0];assert.equal(delivered,0);assert.equal(waitingJob.status,'queued');assert.equal(waitingJob.diagnostic,'awaiting_chatgpt_connection');assert.equal(waitingJob.attempts,0);
+   await pg.query('UPDATE automation_runners SET verified_at=now() WHERE id=$1',[runner.id]);await pg.query("UPDATE app_service_jobs SET available_at=now()-interval '1 minute' WHERE id=$1",[jobs[0].id]);await m.control(human,w.id,mon.id,0,false);
    await withDatabaseContext({service:'worker'},()=>processServiceJob(db,{email:async()=>{delivered++;return {id:'must-not-send'};}}));assert.equal(delivered,0);
    assert.equal((await pg.query<any>('SELECT status FROM automation_occurrences WHERE id=$1',[o.id])).rows[0].status,'completed');
    assert.deepEqual((await pg.query<any>('SELECT source,version,bindings FROM workspace_components WHERE id=$1',[app.id])).rows[0],original);

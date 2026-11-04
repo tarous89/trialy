@@ -142,7 +142,7 @@ export async function dispatchNotificationBatch(db:Database){
   await tx.query('SELECT id FROM app_actions WHERE id=$1 FOR UPDATE',[candidate.action_id]);
   const b=(await tx.query("SELECT * FROM app_notification_batches WHERE id=$1 AND status IN ('collecting','sending') AND not_before<=now() FOR UPDATE",[candidate.id])).rows[0];if(!b)return false;
   const d=adapter(tx);let state;
-  try{state=await currentBatch(d,b);}catch(e:any){if(![403,404,409].includes(e.status))throw e;await tx.query("UPDATE app_notification_batches SET status='cancelled',diagnostic='authorization_changed',finished_at=now() WHERE id=$1",[b.id]);return true;}
+  try{state=await currentBatch(d,b);}catch(e:any){if(e.code==='run_source_connection'){await tx.query("UPDATE app_notification_batches SET not_before=now()+interval '1 minute',diagnostic='awaiting_chatgpt_connection' WHERE id=$1",[b.id]);return true;}if(![403,404,409].includes(e.status))throw e;await tx.query("UPDATE app_notification_batches SET status='cancelled',diagnostic='authorization_changed',finished_at=now() WHERE id=$1",[b.id]);return true;}
   const {a,c,component,valid,changed}=state;
   if(!valid.length){await tx.query("UPDATE app_notification_batches SET status='cancelled',diagnostic='condition_no_longer_met',finished_at=now() WHERE id=$1",[b.id]);return true;}
   if(changed){for(const i of valid)await tx.query('UPDATE app_notification_items SET signature=$3 WHERE batch_id=$1 AND item_key=$2',[b.id,i.item_key,i.signature]);await tx.query('UPDATE app_notification_batches SET not_before=$2 WHERE id=$1',[b.id,later(notificationPolicy.settleSeconds)]);return true;}

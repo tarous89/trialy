@@ -44,10 +44,10 @@ test('MCP exposes app displays, quiet schema reads and cached widget compatibili
  const app=baseApp();addMcp(app,new Service({} as Database),(_q,_r,next)=>next());
  const response=await request(app).post('/mcp').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:1,method:'tools/list'});assert.equal(response.status,200);const tools=response.body.result.tools;
  for(const name of ['initialize_account','read_workspace_schema','find_field_candidates','prepare_change','begin_app_update','prepare_app','prepare_app_from_template','prepare_app_from_existing','prepare_tracker','prepare_tracker_revision']){const t=tools.find((t:any)=>t.name===name);assert.ok(t);assert.equal(t._meta['openai/outputTemplate'],undefined);}
- for(const name of ['open_workspace','open_app','open_tracker','open_tracker_draft','finalize_app_preview'])assert.match(tools.find((t:any)=>t.name===name)._meta['openai/outputTemplate'],/workspace-[a-f0-9]{16}\.html$/);
+ for(const name of ['open_workspace','open_app','open_tracker','open_tracker_draft','finalize_app_preview','confirm_app_service_review'])assert.match(tools.find((t:any)=>t.name===name)._meta['openai/outputTemplate'],/workspace-[a-f0-9]{16}\.html$/);
  assert.match(tools.find((t:any)=>t.name==='initialize_account').description,/start with open_app.*open_workspace/);
  assert.match(tools.find((t:any)=>t.name==='open_workspace').description,/Start user-initiated/);
- for(const name of ['read_app_service_review','confirm_app_service_review','read_automation_setup','read_automation_agenda'])assert.equal(tools.find((t:any)=>t.name===name)._meta['openai/outputTemplate'],undefined);
+ for(const name of ['read_app_service_review','read_automation_setup','read_automation_agenda'])assert.equal(tools.find((t:any)=>t.name===name)._meta['openai/outputTemplate'],undefined);
  assert.equal(tools.filter((t:any)=>t.name==='open_tracker_preview').length,1,'Preserve legacy preview recovery');
  const cachedUri='ui://trialy/workspace-0000000000000000.html';
  const cached=await request(app).post('/mcp').set('Accept','application/json, text/event-stream').send({jsonrpc:'2.0',id:2,method:'resources/read',params:{uri:cachedUri}});

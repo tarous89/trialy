@@ -73,6 +73,12 @@ export async function processServiceJob(db:Database,options:{email?:EmailTranspo
   }
   await db.query("UPDATE app_service_jobs SET status='succeeded',result=$2,provider_id=$3,delivery_status=$4,finished_at=now(),lease_until=NULL WHERE id=$1 AND status='running' AND lease_token=$5",[j.id,J(result),providerId,j.kind==='email'?'accepted':null,j.lease_token]);
  }catch(e:any){
+  // A configured connection that needs verification is temporarily unavailable,
+  // not revoked email consent. Keep the immutable job and its delivery identity.
+  if(e.code==='run_source_connection'&&j.kind==='email'&&(j.payload.notification||j.payload.test)&&Date.now()+60000<new Date(j.deadline_at).getTime()){
+   await db.query("UPDATE app_service_jobs SET status='queued',attempts=attempts-1,available_at=now()+interval '1 minute',lease_until=NULL,diagnostic='awaiting_chatgpt_connection' WHERE id=$1 AND status='running' AND lease_token=$2",[j.id,j.lease_token]);
+   await db.query('UPDATE app_notification_reservations SET released=true WHERE job_id=$1 AND attempted_at IS NULL',[j.id]);return true;
+  }
   const retry=j.kind==='email'&&!e.permanent&&![403,404,409].includes(e.status)&&j.attempts<6&&Date.now()+300000<new Date(j.deadline_at).getTime();
   await db.query("UPDATE app_service_jobs SET status=$2,diagnostic=$3,available_at=$4,finished_at=CASE WHEN $2='queued' THEN NULL ELSE now() END,lease_until=NULL WHERE id=$1 AND status='running' AND lease_token=$5",[j.id,retry?'queued':e.unknown||j.kind==='connector'&&!e.permanent?'unknown':'failed',e.code==='notification_changed'?'notification_changed':e.status?'authorization_unavailable':e.permanent?'provider_rejected':'request_failed',new Date(Date.now()+Math.min(300000,1000*2**j.attempts)),j.lease_token]);
   if(j.payload.notification||j.payload.test)await db.query('UPDATE app_notification_reservations SET released=true WHERE job_id=$1 AND attempted_at IS NULL',[j.id]);
