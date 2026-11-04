@@ -899,6 +899,7 @@ export class WorkspaceFoundation {
    await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await this.policy(tx,actor,w,true);
    const monitoring=monitorRunId?await new AppMonitoring(adapter(tx)).active(actor,w,monitorRunId):null;
    if(monitoring&&!monitoring.config.writeScopes.some(s=>s.scopeId===v.scopeId&&s.version===v.expectedScopeVersion))fail(403,'monitoring_write_scope','Write permission is outside this monitoring configuration');
+   if(monitorRunId&&(await tx.query("SELECT id FROM automation_occurrences WHERE run_id=$1 AND reason='test_run'",[monitorRunId])).rows.length)fail(403,'test_read_only','Test runs preview findings without saving records');
    const receiptRuns=monitoring?await monitoringReceiptRuns(tx,monitorRunId!,!!monitoring.config.automation):[];
    if(monitoring){const existing=(await tx.query('SELECT run_id FROM app_monitor_receipts WHERE request_key=$1',[v.requestKey])).rows[0];if(existing&&!receiptRuns.includes(existing.run_id))fail(409,'monitoring_receipt','This request belongs to another monitoring occurrence');const n=Number((await tx.query('SELECT coalesce(sum(change_count),0) AS n FROM app_monitor_receipts WHERE run_id=ANY($1::uuid[])',[receiptRuns])).rows[0].n);if(!existing&&n+v.changes.length+v.links.length>monitoring.config.maxChangesPerRun)fail(429,'monitoring_change_limit','Approved change limit for this occurrence reached');}
    const s=await this.scope(tx,actor,w,v.scopeId);const body=maintenanceSchema.parse(s.body);

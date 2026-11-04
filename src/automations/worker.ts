@@ -1,3 +1,4 @@
+import {dispatchTestReports} from './testing.js';
 import {randomUUID} from 'node:crypto';
 import type {Database,Connection} from '../db/database.js';
 import {withActor} from '../db/context.js';
@@ -83,4 +84,4 @@ export async function dispatchCompletions(db:Database){
  }));
 }
 export async function isolatedAutomationStep(fn:()=>Promise<unknown>,report:(code:string)=>void=()=>{}){try{return await fn();}catch{report('automation_background_unavailable');return false;}}
-export async function automationTick(db:Database,report?:(code:string)=>void){if(!automationsEnabled())return;for(const task of [dispatchDue,dispatchDaily,recoverWork,dispatchCompletions])await isolatedAutomationStep(()=>task(db),report);}
+export async function automationTick(db:Database,report?:(code:string)=>void){if(!automationsEnabled())return;for(const task of [dispatchDue,dispatchDaily,recoverWork,dispatchCompletions,dispatchTestReports])await isolatedAutomationStep(()=>task(db),report);}

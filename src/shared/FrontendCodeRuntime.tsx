@@ -12,6 +12,7 @@ import React,{useEffect,useRef,useState} from 'react';
 import {useAccessRecheck} from './useAccessRecheck.js';
 import {AppUnavailable} from './AppUnavailable.js';
 type Call=(name:string,args:Record<string,unknown>)=>Promise<any>;
+const navigationRead=(event:any)=>event.kind==='open'||/^(tab:|next$|prev$|previous$|filter:|sort:|sort-field:|sort$|search$|query$|overview-next$|overview-previous$|overview-panel$)/.test(event.action??'');
 export function FrontendCodeRuntime({component,previewId,initialOutput,call,onProposal,onUnavailable,onHome,onAccess,onLayout,onBusyChange,onRendered,onUpdated}:{component?:any;previewId?:string;initialOutput?:any;call:Call;onProposal:(p:any)=>void;onUnavailable?:(message:string)=>void;onHome?:()=>void;onAccess?:()=>void;onLayout?:()=>void;onBusyChange?:(busy:boolean)=>void;onRendered?:()=>void;onUpdated?:(component:any)=>void}){
  const platform=React.useContext(AppPlatform),navigation=React.useContext(AppNavigation),navigationRef=useRef(navigation);navigationRef.current=navigation;
  const platformRef=useRef(platform);platformRef.current=platform;
@@ -23,6 +24,7 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
  const [frameUrl,setFrameUrl]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false),[proposal,setProposal]=useState<any>(null);
  const [reviewProposal,setReviewProposal]=useState(false);
  const [loadFailed,setLoadFailed]=useState(false);
+ const [retryEvent,setRetryEvent]=useState<any>(null);
  const [schemaChanged,setSchemaChanged]=useState(false);
  const updateBanner=useRef<HTMLDivElement>(null);
  const [publishedUpdate,setPublishedUpdate]=useState(false),[confirmUpdate,setConfirmUpdate]=useState(false);
@@ -42,8 +44,8 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
    const read=await call('read_project_component',{componentId:current.current.id}),next=read.component;
    const result=await call('run_component_frontend',{request:{componentId:next.id,expectedVersion:next.version,event:{kind:'open'},...(navigationRef.current?{route:navigationRef.current.route}:{})}});
    if(!live.current)return;
-   current.current=next;output.current=mergeTrackerSnapshot(null,result);state.current=result.state;setStandard(!!result.tracker);setFrameUrl(result.frameUrl);setProposal(result.proposal);setConnectorReviews(result.connectorReviews??[]);setFooter(null);setRecordReview(null);setCustomDirty(false);saveReceipt.current=null;blocked.current=!!result.proposal;eventQueue.current=[];setPublishedUpdate(false);setConfirmUpdate(false);setReviewProposal(false);setError('');setLoadFailed(false);setSchemaChanged(false);send();prefetch(result);onUpdated?.(next);
-  }catch(e){if(live.current){setConfirmUpdate(false);setSchemaChanged((e as any)?.code==='manifest_stale');if(unavailable(e)){clearOutput();setLoadFailed(true);onUnavailable?.('No app is available');}else setLoadFailed(!output.current);}}
+   current.current=next;output.current=mergeTrackerSnapshot(null,result);state.current=result.state;setStandard(!!result.tracker);setFrameUrl(result.frameUrl);setProposal(result.proposal);setConnectorReviews(result.connectorReviews??[]);setFooter(null);setRecordReview(null);setCustomDirty(false);saveReceipt.current=null;blocked.current=!!result.proposal;eventQueue.current=[];setPublishedUpdate(false);setConfirmUpdate(false);setReviewProposal(false);setError('');setRetryEvent(null);setLoadFailed(false);setSchemaChanged(false);send();prefetch(result);onUpdated?.(next);
+  }catch(e){if(live.current){setConfirmUpdate(false);setSchemaChanged((e as any)?.code==='manifest_stale');if(unavailable(e)){clearOutput();setLoadFailed(true);onUnavailable?.('No app is available');}else {setLoadFailed(!output.current);setError((e as Error).message||'The latest version could not load. Your work is still here.');}}}
   finally{busyRef.current=false;if(live.current){setBusy(false);if(eventQueue.current.length&&!blocked.current)void run(eventQueue.current.shift());}}
  }
  useAccessRecheck(()=>{if(!current.current||checking.current||busyRef.current)return;checking.current=true;const c=current.current;void call('check_component_access',{componentId:c.id,...(output.current?.viewId?{viewId:output.current.viewId}:{})}).then(r=>{
@@ -104,7 +106,14 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
     else setRecordReview({proposal:p,deletion:event.action.startsWith('tracker:delete:')});
     return;
    }
-   let result=await readFrontend({...(previewId?{previewId}:viewRequest(c)),state:state.current,event,...(navigationRef.current?{route:navigationRef.current.route}:{})});
+   const request:any={...(previewId?{previewId}:viewRequest(c)),state:state.current,event,...(navigationRef.current?{route:navigationRef.current.route}:{})};
+   let result;
+   try{result=await readFrontend(request);}catch(e){
+    // Renew only navigation reads. Never replay a write or discard a local draft.
+    if(!['app_view_expired','app_view_incompatible'].includes((e as any)?.code)||localEditsRef.current||!c||!(navigationRead(event)))throw e;
+    const {viewId,...renewed}=request;result=await readFrontend(renewed);
+   }
+   setRetryEvent(null);
    if(!live.current)return;
    // The footer click approves the visible edits. The server still validates a precise proposal and its digest before committing.
    if(result.proposal&&explicitApproval&&(event.action==='bound-batch'||event.action==='save-layout'&&output.current?.tracker)){
@@ -116,10 +125,10 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
    if(result.proposal){setProposal(result.proposal);blocked.current=true;eventQueue.current=[];return;}
    result=mergeTrackerSnapshot(output.current,result);output.current=result;state.current=result.state;setStandard(!!result.tracker);setFrameUrl(result.frameUrl);setProposal(result.proposal);setConnectorReviews(result.connectorReviews??[]);setCustomDirty(false);setLoadFailed(false);setSchemaChanged(false);
    if(result.proposal){blocked.current=true;eventQueue.current=[];}send();prefetch(result);
-  }catch(e){if(live.current){setSchemaChanged((e as any)?.code==='manifest_stale');if(event.kind==='open'||/^(tab:|next$|prev$|filter:|sort:|search$)/.test(event.action??'')){
+  }catch(e){if(live.current){setSchemaChanged((e as any)?.code==='manifest_stale');if(navigationRead(event)){
    if(unavailable(e)){clearOutput();setLoadFailed(true);onUnavailable?.('No app is available');}
    else if(!output.current&&current.current)await loadPublished();
-   else setLoadFailed(!output.current);
+   else {setLoadFailed(!output.current);if(['app_view_expired','component_changed','app_view_incompatible'].includes((e as any)?.code))setPublishedUpdate(true);else {actionError(e);setRetryEvent(event);}}
   }else actionError(e);}}finally{busyRef.current=false;onBusyChange?.(false);if(live.current){setBusy(false);if(eventQueue.current.length&&!blocked.current)void run(eventQueue.current.shift());}}
  }
  async function finishSave(){
@@ -163,7 +172,7 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
  if(loadFailed&&!ready&&!frameUrl)return <AppUnavailable onHome={onHome} onRetry={retryLoad} reason={schemaChanged?'schema':'load'}/>;
  return <section className={`ty-tracker-surface ${standard?'ty-tracker--standard':''} ${detailsOpen?'ty-tracker--details':''}`} aria-label={platform.enabled?"App":"Tracker"}>
  {schemaChanged&&ready&&<div role="status">The saved app is still here. Its connected fields changed and need review.</div>}
- {error&&<SystemNotice error message={error} onDismiss={()=>setError('')}/>}{saveReceipt.current&&!busy&&<div className="ty-runtime-recovery"><button onClick={async()=>{setBusy(true);try{await finishSave();setError('');}catch(e){actionError(e);}finally{setBusy(false);}}}>{saveReceipt.current?.saved?'Reload saved data':'Retry save'}</button></div>}
+ {error&&<SystemNotice error message={error} onDismiss={()=>setError('')}/>}{retryEvent&&<div className="ty-actions"><button className="ty-button" disabled={busy} onClick={()=>void run(retryEvent)}>Retry loading</button></div>}{saveReceipt.current&&!busy&&<div className="ty-runtime-recovery"><button onClick={async()=>{setBusy(true);try{await finishSave();setError('');}catch(e){actionError(e);}finally{setBusy(false);}}}>{saveReceipt.current?.saved?'Reload saved data':'Retry save'}</button></div>}
  {publishedUpdate&&<div ref={updateBanner} className="ty-app-update" role="status"><span>This app has been updated. Refresh when you’re ready.</span><button disabled={busy} onClick={()=>localEditsRef.current?setConfirmUpdate(true):void loadPublished()}>Refresh to latest version</button></div>}
  {confirmUpdate&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="alertdialog" aria-modal="true" aria-label="Load published update"><h2>Discard your unsaved edits?</h2><p>Your local edits will be discarded when the published update loads.</p><button onClick={()=>setConfirmUpdate(false)}>Keep editing</button><button disabled={busy} onClick={()=>void loadPublished()}>Discard edits and load update</button></section></div>}
  {!standard&&ready&&<div className="ty-actions"><button disabled={busy||!!proposal} onClick={()=>current.current?(localEditsRef.current?setConfirmUpdate(true):void loadPublished()):void run()}>Refresh</button></div>}

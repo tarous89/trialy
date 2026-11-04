@@ -28,6 +28,6 @@ export async function readRunData(db:Database,a:Actor,w:string,c:ActionConfig,oc
  if(source.config.automation){const r=(await db.query('SELECT enabled FROM automation_runners WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[source.config.automation.runnerId,w,a.userId])).rows[0];if(!r?.enabled)fail(403,'run_source_paused','The research runner is paused');}
  const id=occurrence.slice(4);if(!/^[0-9a-f-]{36}$/i.test(id))fail(400,'run_required','Invalid research run');
  const run=(await db.query("SELECT * FROM app_monitor_runs WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND monitor_id=$4 AND monitor_version=$5 AND status='completed'",[id,w,a.userId,source.id,source.version])).rows[0];
- if(!run||!run.finished_at||t.includeEmpty===false&&!run.result?.savedChanges)fail(409,'run_unavailable','No eligible completed research run');
+ if(!run||run.result?.testRun||!run.finished_at||t.includeEmpty===false&&!run.result?.savedChanges)fail(409,'run_unavailable','No eligible completed research run');
  return {id:run.id,automationId:source.id,automationVersion:source.version,status:'completed',completedAt:new Date(run.finished_at).toISOString(),summary:run.result.summary,sources:run.result.sources??[],savedChanges:run.result.savedChanges??0,receiptIds:run.result.receiptIds??[],recordIds:run.result.recordIds??[],coverage:run.result.coverage??null};
 }

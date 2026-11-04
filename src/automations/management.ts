@@ -48,8 +48,10 @@ export class AutomationManagement{
   const dependencies=await automationDependencies(this.db,w,a.userId);
   const visible=[];for(const row of rows.slice(0,20)){try{const c=await new WorkspaceFoundation(this.db).component(this.db,a,w,row.app_id,false);
    const {steps,external_schedule,runner_id,...definition}=row;
+   let blockedReason:string|null=null;if(row.kind==='action'&&row.trigger?.source==='automation_runs'){const source=(await this.db.query('SELECT version FROM app_monitors WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND deleted_at IS NULL',[row.trigger.automationId,w,a.userId])).rows[0];if(!source||source.version!==row.trigger.automationVersion)blockedReason='Research changed. Edit this email automation to select the updated research, save, then enable it.';}
    const prompt=row.kind==='research'?row.prompt:(steps??[]).map((s:any)=>s.kind==='email'?`Email: ${s.subject}\n${s.text}`:s.kind==='connector'?`Run connector operation: ${s.operation}`:`Run app action: ${s.binding}`).join('\n\n');
-   visible.push({...definition,prompt,services:dependencies.find(d=>d.id===row.id&&d.kind===row.kind)?.services??[],connectionState:runner_id?connection?.state:null,externalSchedule:external_schedule,app_url:appUrl({workspaceId:w,appId:c.id}),app_archived:c.archived||c.project_archived});
+   const lastTest=(await this.db.query("SELECT id,status,delivery_status,created_at FROM (SELECT id,status,NULL::text AS delivery_status,created_at FROM automation_occurrences WHERE monitor_id=$1 AND user_id=$2 AND reason='test_run' UNION ALL SELECT id,status,delivery_status,created_at FROM app_service_jobs WHERE user_id=$2 AND payload->'test'->>'automationId'=$1::text) t ORDER BY created_at DESC LIMIT 1",[row.id,a.userId])).rows[0]??null;
+   visible.push({...definition,lastTest,prompt,blockedReason,services:dependencies.find(d=>d.id===row.id&&d.kind===row.kind)?.services??[],connectionState:runner_id?connection?.state:null,externalSchedule:external_schedule,app_url:appUrl({workspaceId:w,appId:c.id}),app_archived:c.archived||c.project_archived});
   }catch(e){if(![403,404].includes((e as any).status))throw e;}}
   return {rows:visible,nextOffset:rows.length>20?v.offset+20:null};
  }
@@ -123,7 +125,7 @@ export class AutomationManagement{
  async history(a:Actor,w:string,kind:'research'|'action',automationId:string,offset=0){await this.read(a,w,kind,automationId);
   if(kind==='research')return new AppMonitoring(this.db).runs(a,w,automationId,offset);
   // Summaries do not release historical record payloads or old execution prompts.
-  const sql=`SELECT id,status,started_at,finished_at FROM (SELECT id,status,created_at AS started_at,finished_at FROM app_action_runs WHERE action_id=$1 AND user_id=$2 UNION ALL SELECT id,CASE status WHEN 'collecting' THEN 'queued' WHEN 'sending' THEN 'waiting' ELSE status END,created_at,finished_at FROM app_notification_batches WHERE action_id=$1 AND user_id=$2) h ORDER BY started_at DESC,id DESC LIMIT 21 OFFSET $3`;
+  const sql=`SELECT id,status,started_at,finished_at FROM (SELECT id,status,created_at AS started_at,finished_at FROM app_action_runs WHERE action_id=$1 AND user_id=$2 UNION ALL SELECT id,CASE status WHEN 'collecting' THEN 'queued' WHEN 'sending' THEN 'waiting' ELSE status END,created_at,finished_at FROM app_notification_batches WHERE action_id=$1 AND user_id=$2 UNION ALL SELECT id,status,created_at,finished_at FROM app_service_jobs WHERE user_id=$2 AND payload->'test'->>'automationId'=$1::text) h ORDER BY started_at DESC,id DESC LIMIT 21 OFFSET $3`;
   const rows=(await this.db.query(sql,[automationId,a.userId,offset])).rows;return {rows:rows.slice(0,20),nextOffset:rows.length>20?offset+20:null};
  }
 }

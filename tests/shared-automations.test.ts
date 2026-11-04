@@ -1,3 +1,5 @@
+import {testAutomation,authorizeTestEmail,dispatchTestReports} from '../src/automations/testing.js';
+import {processServiceJob} from '../src/app-services/jobs.js';
 import express from 'express';
 import request from 'supertest';
 import {McpServer} from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -201,6 +203,16 @@ test('shared automations isolate failures, preserve saved apps and enforce revie
    assert.equal((await pg.query<any>('SELECT status FROM automation_occurrences WHERE id=$1',[o.id])).rows[0].status,'completed');
    original=(await pg.query<any>('SELECT source,version,bindings FROM workspace_components WHERE id=$1',[app.id])).rows[0];
   });
+  await t.test('email starts enabled and explains its pause when the linked research changes',async()=>{
+   const actions=new AppActions(db),manage=new AutomationManagement(db),draft=await m.prepare(ai,w.id,{config:{...config,name:'Versioned email producer'}}),mon=await m.confirm(human,w.id,draft.id,draft.digest);
+   const actionDraft=await actions.prepare(human,w.id,{config:{name:'Versioned report email',appId:app.id,appVersion:original.version,trigger:{kind:'database',source:'automation_runs',automationId:mon.id,automationVersion:0,events:['updated'],fields:['status'],becomes:{field:'status',operator:'equals',value:'completed'}},steps:[{id:'notify',kind:'email',to:[human.userId+'@example.invalid'],subject:'Research report',text:'{{run.summary}}'}],expiresAt:expiry}}),email=await actions.confirm(human,w.id,actionDraft.id,actionDraft.digest);
+   const listed=async()=>(await manage.list(human,w.id,{appId:app.id,query:'Versioned report email'})).rows[0];
+   assert.equal((await listed()).enabled,true);assert.equal((await listed()).blockedReason,null);
+   const edit=await m.prepare(human,w.id,{monitorId:mon.id,expectedVersion:0,config:{...config,name:'Versioned email producer',instructions:'Use the updated research criteria.'}});await m.confirm(human,w.id,edit.id,edit.digest);
+   await pg.query("UPDATE app_actions SET next_at=now()-interval '10 days' WHERE id=$1",[email.id]);await withDatabaseContext({service:'worker'},()=>dispatchAppActions(db));
+   const paused=await listed();assert.equal(paused.enabled,false);assert.match(paused.blockedReason!,/Research changed/);assert.equal((await pg.query<any>('SELECT last_error FROM app_actions WHERE id=$1',[email.id])).rows[0].last_error,'run_source_changed');
+   await assert.rejects(actions.control(human,w.id,email.id,false),(e:any)=>e.code==='run_source_changed');assert.equal((await pg.query<any>('SELECT id FROM app_notification_batches WHERE action_id=$1',[email.id])).rows.length,0);
+  });
   await t.test('previously approved manual completion chains remain compatible',async()=>{
    const actions=new AppActions(db),d=await actions.prepare(human,w.id,{config:{name:'Legacy action',appId:app.id,appVersion:original.version,trigger:{kind:'manual'},steps:[{id:'notify',kind:'email',to:[human.userId+'@example.invalid'],subject:'Legacy report',text:'Saved report'}],expiresAt:expiry}}),action=await actions.confirm(human,w.id,d.id,d.digest);
    const p=await m.prepare(ai,w.id,{config:{...config,name:'Legacy producer'}}),mon=await m.confirm(human,w.id,p.id,p.digest);
@@ -229,6 +241,36 @@ test('shared automations isolate failures, preserve saved apps and enforce revie
    const c:any=await s.claim(ai,w.id,{runnerId:runner.id,occurrenceId:ids[0],requestKey:randomUUID()});await s.finish(ai,w.id,{occurrenceId:ids[0],claimToken:c.claimToken});
    const event=(await pg.query<any>("SELECT * FROM automation_outbox WHERE runner_id=$1 AND event_key LIKE 'drain:%' ORDER BY created_at DESC LIMIT 1",[runner.id])).rows[0];assert.ok(event);assert.ok(new Date(event.available_at).getTime()>Date.now());assert.equal((await pg.query<any>('SELECT status FROM automation_occurrences WHERE id=$1',[ids[1]])).rows[0].status,'queued');
    const replay=await s.claim(ai,w.id,{runnerId:runner.id,occurrenceId:ids[0],requestKey:randomUUID()});assert.equal(replay.status,'completed');
+  });
+  await t.test('isolated tests pin recipients, deduplicate, preserve schedules and prevent research writes',async()=>{
+   await pg.query("UPDATE automation_occurrences SET status='blocked' WHERE status IN ('queued','running')");
+   const actions=new AppActions(db),prep=await actions.prepare(human,w.id,{config:{name:'Test email',appId:app.id,appVersion:(await f.component(db,human,w.id,app.id)).version,trigger:{kind:'manual'},steps:[{id:'notify',kind:'email',to:[human.userId+'@example.invalid'],subject:'Saved subject',text:'Saved message'}],expiresAt:expiry}}),action=await actions.confirm(human,w.id,prep.id,prep.digest);
+   // Stored production recipients must never become test recipients.
+   await pg.query("UPDATE app_actions SET config=jsonb_set(config,'{steps,0,to}',$2::jsonb),paused=true WHERE id=$1",[action.id,JSON.stringify(['teammate@example.invalid'])]);
+   const input={kind:'action',automationId:action.id,expectedVersion:0,requestKey:randomUUID()};
+   await assert.rejects(testAutomation(db,human,w.id,{...input,to:['attacker@example.invalid']}));
+   await withActor(other,()=>assert.rejects(testAutomation(db,other,w.id,input)));
+   const job=await testAutomation(db,human,w.id,input);assert.equal((await testAutomation(db,human,w.id,input)).id,job.id);
+   const payload=(await pg.query<any>('SELECT * FROM app_service_jobs WHERE id=$1',[job.id])).rows[0];assert.deepEqual(payload.payload.message.to,[human.userId+'@example.invalid']);assert.match(payload.payload.message.subject,/^\[Test\]/);
+   await assert.rejects(authorizeTestEmail(db,{...payload,payload:{...payload.payload,message:{...payload.payload.message,to:['attacker@example.invalid']}}}),(e:any)=>e.code==='test_recipient');
+   let sent:any;await withDatabaseContext({service:'worker'},()=>processServiceJob(db,{email:async message=>{sent=message;return {id:'synthetic-test'};}}));assert.deepEqual(sent.to,[human.userId+'@example.invalid']);
+   assert.equal((await pg.query<any>('SELECT paused FROM app_actions WHERE id=$1',[action.id])).rows[0].paused,true);
+   const save=async(op:any)=>{const p=await domain.preview(human,w.id,op);return domain.commit(human,p.id,p.digest);};
+   const tid=(await save({kind:'create_type',name:'Test preview records',fields:[{key:'name',name:'Name',kind:'text'}]})).objects[0].id;
+   const projectDraft=await f.preview(human,w.id,{kind:'create_node',nodeKind:'project',name:'Test preview'}),project=await f.confirm(human,w.id,projectDraft.id,projectDraft.digest);
+   const scopeDraft=await f.preview(human,w.id,{kind:'save_scope',scope:{projectId:project.id,autoWrite:true,expiresAt:expiry,purpose:'Test preview',inclusionCriteria:'Eligible',sourcePolicy:'Primary sources',basis:'tracking',bindings:[{typeId:tid,fields:['name']}],allowCreate:true,allowUpdate:true,maxChanges:5}}),scope=await f.confirm(human,w.id,scopeDraft.id,scopeDraft.digest);
+   const p=await m.prepare(human,w.id,{config:{...config,name:'Isolated research',readBindings:[{typeId:tid,fields:['name']}],writeScopes:[{scopeId:scope.id,version:0}],automation:{runnerId:runner.id,trigger:{kind:'after_success',minutes:60}}}}),mon=await m.confirm(human,w.id,p.id,p.digest);
+   const before=(await pg.query<any>('SELECT * FROM automation_dispatch WHERE monitor_id=$1',[mon.id])).rows[0];
+   const test=await testAutomation(db,human,w.id,{kind:'research',automationId:mon.id,expectedVersion:0,requestKey:randomUUID()}),packet:any=await s.claim(ai,w.id,{runnerId:runner.id,occurrenceId:test.id,requestKey:randomUUID()});assert.equal(packet.reason,'test_run');assert.match(packet.testInstructions,/Read-only/);
+   await withActor(ai,()=>assert.rejects(f.maintain(ai,w.id,{scopeId:scope.id,expectedScopeVersion:0,requestKey:randomUUID(),sourceLabel:'https://example.org/source',interpretation:'Test',changes:[{kind:'create_record',typeId:tid,data:{name:'Must not save'}}]},undefined,false,packet.runId),(e:any)=>e.code==='test_read_only'));
+   await s.finish(ai,w.id,{occurrenceId:test.id,claimToken:packet.claimToken,result:{status:'completed',summary:'Test research preview',sources:[],coverage:{through:new Date().toISOString(),notes:'Must not advance coverage'}}});
+   assert.deepEqual((await pg.query<any>('SELECT * FROM automation_dispatch WHERE monitor_id=$1',[mon.id])).rows[0],before);assert.equal((await m.row(human,w.id,mon.id)).coverage_through,null);
+   assert.equal((await pg.query<any>("SELECT id FROM audit_events WHERE object_id=$1 AND action='monitoring.finished'",[packet.runId])).rows.length,0);
+   await withDatabaseContext({service:'worker'},()=>dispatchTestReports(db));await withDatabaseContext({service:'worker'},()=>dispatchTestReports(db));
+   const reports=(await pg.query<any>("SELECT * FROM app_service_jobs WHERE request_key=$1",['test-report:'+test.id])).rows;assert.equal(reports.length,1);assert.deepEqual(reports[0].payload.message.to,[human.userId+'@example.invalid']);
+   await authorizeTestEmail(db,reports[0]);
+   // A test shares production suppression/delivery budgets rather than bypassing them.
+   let additional=0;await withDatabaseContext({service:'worker'},()=>processServiceJob(db,{email:async()=>{additional++;return {id:'must-wait'};}}));assert.equal(additional,0);
   });
   await t.test('connection revocation blocks claims without hiding saved apps',async()=>{
    await pg.query<any>('DELETE FROM oauth_tokens WHERE family=$1',[ai.connectionFamily]);assert.equal((await s.setup(human,w.id)).state,'awaiting_subscription');await pg.query<any>('UPDATE automation_occurrences SET available_at=now() WHERE id=$1',[work.id]);await assert.rejects(s.claim(ai,w.id,{runnerId:runner.id,occurrenceId:work.id,requestKey:randomUUID()}),/inactive/);assert.deepEqual((await pg.query<any>('SELECT source,version,bindings FROM workspace_components WHERE id=$1',[app.id])).rows[0],original);

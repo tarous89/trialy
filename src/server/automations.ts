@@ -1,3 +1,4 @@
+import {testAutomation,testInput} from '../automations/testing.js';
 import {readFile} from 'node:fs/promises';
 import {z} from 'zod';
 import {McpError} from '@modelcontextprotocol/sdk/types.js';
@@ -20,6 +21,7 @@ import {chatServiceReview} from '../app-services/review.js';
 export function addAutomationApi(app:Express,db:Database){
  const s=new AutomationService(db),base='/api/workspaces/:workspaceId/app-services/automations';
  const manage=new AutomationManagement(db),page=z.coerce.number().int().min(0).max(100000).default(0);
+ app.post(base+'/test',async(req,res)=>res.json(await testAutomation(db,req.actor!,id.parse(req.params.workspaceId),req.body)));
  app.get(base+'/options',async(req,res)=>res.json(await manage.options(req.actor!,id.parse(req.params.workspaceId),id.parse(req.query.appId))));
  app.get(base+'/definitions',async(req,res)=>res.json(await manage.list(req.actor!,id.parse(req.params.workspaceId),{...req.query,offset:page.parse(req.query.offset)})));
  app.get(base+'/definitions/:kind/:automationId',async(req,res)=>res.json(await manage.read(req.actor!,id.parse(req.params.workspaceId),automationKind.parse(req.params.kind),id.parse(req.params.automationId))));
@@ -37,6 +39,7 @@ export function addAutomationApi(app:Express,db:Database){
 export function addAutomationMcp(server:McpServer,db:Database,a:Actor|undefined,safe:any,metadata:any){
  const s=new AutomationService(db),register=(name:string,description:string,schema:any,read:boolean,fn:(v:any)=>Promise<any>)=>server.registerTool(name,{description,inputSchema:{workspaceId:id,...schema},annotations:{readOnlyHint:read,destructiveHint:false,openWorldHint:false},_meta:backgroundMetadata(metadata)},safe(fn));
  const manage=new AutomationManagement(db);
+ register('test_app_automation','Run an explicitly requested isolated test. Research is read-only; email is sent only to the authenticated account. Does not change regular schedules, recipients or enabled status. Never call automatically after saving.',testInput.shape,false,({workspaceId,...v})=>testAutomation(db,{...a!,actionConfirmed:true},workspaceId,v));
  register('read_automation_connector','Read the shared connector and its dependent automations without displaying or refreshing the extension.',{},true,v=>manage.connector(a!,v.workspaceId));
  server.registerTool('control_automation_runner',{description:'Apply the connected owner’s explicit Enable or Disable action in the connector card. Disabling requires the current affected-automation digest and confirmation. Does not execute work.',inputSchema:{workspaceId:id,runnerId:id,expectedVersion:z.number().int().min(0),enabled:z.boolean(),confirmed:z.literal(true),impactDigest:z.string().max(100).optional()},annotations:{readOnlyHint:false,destructiveHint:true,openWorldHint:false},_meta:{...backgroundMetadata(metadata),ui:{visibility:['app']}}},safe((v:any)=>manage.controlConnector({...a!,actionConfirmed:true},v.workspaceId,v.runnerId,v.enabled,v.expectedVersion,v)));
  register('list_app_automations','Start here for requests such as update my tracker every Friday: list owner-managed TrialAgents automations, including ChatGPT research and TrialAgents actions. Use read_app_automation_guide for new recurring app work, not a separate ChatGPT scheduled task. Optional, paginated management; no app loading dependency. Reuse existing IDs and authoring keys. Explain saved/enabled/readiness status in chat; an extension or link alone is not a response. The shared runner is separate from app automations.',automationList.shape,true,({workspaceId,...v})=>manage.list(a!,workspaceId,v));

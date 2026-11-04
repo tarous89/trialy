@@ -430,3 +430,78 @@
 .ty-settings-page .ty-settings-card,.ty-settings-page .settings-card{padding:24px;margin:24px 0;border:1px solid var(--ty-border);border-radius:12px;background:#fff;min-width:0}
 .ty-settings-page h2:first-child,.ty-settings-card h2{margin-top:0}.ty-settings-form{display:grid;gap:20px;max-width:800px}.ty-settings-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}.ty-settings-page .ty-settings-form label{margin:0;gap:8px;font-size:14px}.ty-settings-page input,.ty-settings-page select,.ty-settings-page textarea{font-size:14px}.ty-settings-page .ty-actions{margin-top:20px;gap:12px}.ty-settings-page .ty-settings-form .ty-actions{margin-top:0}.ty-settings-page p{line-height:1.6}.ty-invite-access-tree{margin:24px 0;border:1px solid var(--ty-border);border-radius:10px;overflow:hidden}.ty-invite-access-tree>p{padding:0 16px}.ty-invite-access-row{display:flex;align-items:center;gap:10px;padding:12px;border-top:1px solid var(--ty-border);min-width:0}.ty-invite-access-row>span:not(.ty-access-expand-spacer){flex:1;min-width:0;overflow-wrap:anywhere}.ty-invite-access-row select{width:180px;flex-shrink:0}.ty-invite-access-row .ty-access-expand{flex-shrink:0}.ty-subscription-offer{display:grid;grid-template-columns:minmax(160px,1fr) 2fr;gap:32px;margin:24px 0}.ty-subscription-offer ul{margin:0;padding-left:20px;display:grid;gap:12px;line-height:1.6}.ty-settings-page .ty-subscription-price{font-size:32px;color:var(--ty-ink);font-weight:600}.ty-subscription-price span{font-size:14px;font-weight:400;color:var(--ty-muted)}
 @media(max-width:640px){.ty-settings-fields,.ty-subscription-offer{grid-template-columns:1fr;gap:20px}.ty-settings-page .ty-settings-card,.ty-settings-page .settings-card{padding:18px}.ty-invite-access-row{flex-wrap:wrap}.ty-invite-access-row select{margin-left:28px;flex:1 1 100%;width:100%}.ty-settings-tabs{gap:6px}.ty-settings-tabs button{padding:9px 10px}}
+
+.ty-team-list{list-style:none;padding:0;margin:16px 0;display:grid;gap:0}.ty-team-list li{display:flex;align-items:center;flex-wrap:wrap;gap:16px;padding:16px 0;border-bottom:1px solid var(--ty-border)}.ty-team-list li>span:first-child,.ty-team-list li>strong{flex:1;min-width:0;overflow-wrap:anywhere}.ty-subscription-details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin:24px 0}.ty-subscription-details dt{color:var(--ty-muted);margin-bottom:8px}.ty-subscription-details dd{margin:0;font-weight:500}.ty-access-inherit{font:inherit;font-size:12px;color:var(--ty-muted);background:none;border:0;padding:4px;margin-left:auto}.ty-invitation-link{display:grid;gap:8px;margin-top:24px}@media(max-width:640px){.ty-subscription-details{grid-template-columns:1fr}.ty-team-list li{gap:12px}}
+
+.ty-workspace .ty-settings-page button.ty-button--primary{color:#fff}
+
+/* Shared management surfaces: clear hierarchy, calm cards and visible actions. */
+.ty-workspace :is(.ty-settings-page,.ty-automations-page){--manage-border:#dfe7e2;--manage-muted:#61736a;--manage-radius:16px}
+.ty-workspace .ty-page-subtitle{margin:8px 0 0;color:#61736a;font-size:14px;line-height:1.6;font-weight:400;letter-spacing:0}
+.ty-workspace .ty-automation-list{display:grid;gap:16px;border:0;background:transparent;overflow:visible}
+.ty-workspace .ty-automation-row{border:1px solid var(--manage-border);border-radius:var(--manage-radius);background:#fff;padding:24px;box-shadow:0 2px 8px #16352804;min-width:0}
+.ty-automation-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
+.ty-workspace .ty-automation-card-top h2{font-size:18px;line-height:1.5;letter-spacing:-.25px;margin:5px 0 0;font-weight:650;overflow-wrap:anywhere}
+.ty-automation-kind{font-size:11px;font-weight:650;text-transform:uppercase;letter-spacing:1px;color:#547262}
+.ty-automation-card-top .ty-automation-state{margin:2px 0 0;flex:none;padding:5px 11px}
+.ty-automation-card-body{display:grid;grid-template-columns:minmax(150px,1fr) minmax(220px,2fr) auto;gap:24px;margin:22px 0 14px;font-size:14px;line-height:1.6}
+.ty-automation-card-body>div{min-width:0;overflow-wrap:anywhere}
+.ty-automation-meta-label{display:block;color:var(--manage-muted);font-size:12px;margin-bottom:5px}
+.ty-automation-card-body .ty-automation-app a{font-weight:500}
+.ty-automation-card-body .ty-automation-services{align-items:center;justify-content:flex-end}
+.ty-automation-card-footer{display:flex;align-items:center;justify-content:space-between;gap:16px;border-top:1px solid #edf1ee;margin-top:20px;padding-top:16px;font-size:13px}
+.ty-workspace .ty-automation-card-footer .ty-actions{margin:0;gap:8px;flex-wrap:wrap}
+.ty-workspace .ty-automation-prompt p{font-size:14px;color:#53665b}
+.ty-automation-blocked,.ty-automation-test-panel{background:#f3f7f4;border:1px solid #dbe8df;border-radius:10px;padding:16px;margin-top:16px;font-size:14px;line-height:1.6}
+.ty-automation-test-panel p{margin:5px 0 14px}.ty-workspace .ty-automation-notice{padding:14px 0 0;margin:0;color:#245b43}
+.ty-workspace .ty-automation-composer{padding-top:8px;max-width:1120px;margin-inline:auto}
+.ty-workspace .ty-automation-composer form{gap:20px}
+.ty-workspace .ty-automation-panel,.ty-workspace .ty-automation-composer .ty-automation-fields,.ty-workspace .ty-automation-recipients{background:#fff;border:1px solid var(--manage-border);border-radius:var(--manage-radius);padding:24px;margin:0;min-width:0;box-shadow:0 2px 8px #16352804}
+.ty-workspace .ty-automation-panel{display:grid;gap:20px}
+.ty-workspace .ty-automation-panel h2{font-size:16px;font-weight:650;margin:0;line-height:1.5;letter-spacing:-.15px}
+.ty-workspace .ty-automation-composer legend{float:left;width:100%;padding:0;margin:0 0 8px;font-size:16px;font-weight:650;grid-column:1/-1}
+.ty-automation-trigger-summary{grid-column:1/-1;margin:0 0 6px;padding:10px 12px;background:#edf5ef;border-radius:8px;color:#285f43;font-size:13px;line-height:1.6}
+.ty-workspace .ty-automation-composer label{font-size:13px;font-weight:500;line-height:1.5;color:#31483b}
+.ty-workspace .ty-automation-composer :is(input:not([type=checkbox]),select,textarea){font-size:14px;padding:11px 12px;border-color:#d8e2dc;border-radius:9px;line-height:1.5;background:#fcfdfc;transition:border-color .15s,box-shadow .15s}
+.ty-workspace :is(.ty-automation-composer,.ty-settings-page) :is(input,select,textarea):focus-visible{outline:2px solid #3b9870;outline-offset:2px}
+.ty-workspace .ty-automation-content{gap:20px}
+.ty-workspace .ty-automation-help{font-size:13px;line-height:1.7;color:#61736a}
+.ty-workspace .ty-automation-form-grid>div{display:flex;flex-direction:column;justify-content:center;gap:7px;font-size:13px;color:#61736a}
+.ty-workspace .ty-automation-form-grid>div p{margin:0;color:#285f43;font-size:15px;font-weight:500}
+.ty-email-inserts{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:12px;color:#61736a}
+.ty-email-inserts small{flex-basis:100%;font-size:12px;line-height:1.6}
+.ty-workspace .ty-email-inserts .ty-button{font-size:12px;min-height:30px;padding:5px 10px;border-radius:7px;background:#f1f6f2}
+.ty-workspace .ty-automation-save{position:sticky;top:0;z-index:2;display:flex;padding:16px 20px;margin:0;background:#fff;border:1px solid var(--manage-border);border-radius:12px;box-shadow:0 -4px 16px #17332306}
+.ty-workspace .ty-settings-page{max-width:1184px;margin-inline:auto}
+.ty-workspace .ty-settings-tabs{border-bottom:1px solid #dce5df;padding:0;gap:24px;margin:8px 0 28px}
+.ty-workspace .ty-settings-tabs button{border:0;border-bottom:3px solid transparent;border-radius:0;background:transparent;box-shadow:none;color:#61736a;padding:14px 4px;font-size:14px;font-weight:500;min-height:48px}
+.ty-workspace .ty-settings-tabs button[aria-selected=true]{color:#176a47;border-bottom-color:#21875c;background:transparent}
+.ty-workspace .ty-settings-page :is(.ty-settings-card,.settings-card){border-color:#dfe7e2;border-radius:16px;box-shadow:0 2px 8px #16352804;padding:28px;margin:20px 0;gap:24px}
+.ty-workspace .ty-settings-page :is(.ty-settings-card,.settings-card)>div{min-width:0;flex:1}
+.ty-workspace .ty-settings-page h2{font-size:18px;letter-spacing:-.25px;font-weight:650;line-height:1.5;margin-bottom:18px}
+.ty-workspace .ty-settings-page h3{font-size:15px;margin-block:18px 10px;font-weight:600}
+.ty-workspace .ty-settings-page p{color:#61736a;font-size:14px;max-width:76ch}
+.ty-workspace .ty-settings-page label:not(.ty-access-matrix label){font-size:13px;font-weight:500;color:#31483b;line-height:1.6}
+.ty-workspace .ty-settings-page :is(input:not([type=checkbox]),select,textarea){border:1px solid #d8e2dc;background:#fcfdfc;border-radius:9px;padding:11px 12px;min-height:44px;line-height:1.5;font-size:14px}
+.ty-workspace .ty-settings-page :is(input[type=password],input[autocomplete=one-time-code]){max-width:520px}
+.ty-workspace .ty-settings-page :is(.ty-settings-card,.settings-card) button:not(.ty-access-expand):not([role=tab]){border-radius:8px;min-height:38px;font-size:13px;padding:9px 14px}
+.ty-workspace .ty-settings-page .ty-subscription-details{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-block:18px 24px}
+.ty-workspace .ty-settings-page .ty-subscription-details>div{background:#f3f7f4;padding:18px;border:0;border-radius:10px}
+.ty-workspace .ty-settings-page .ty-subscription-details dt{font-size:12px;color:#61736a;margin-bottom:7px}
+.ty-workspace .ty-settings-page .ty-subscription-details dd{font-size:16px;line-height:1.5;margin:0;color:#244733;font-weight:500}
+.ty-workspace .ty-settings-page .ty-subscription-offer{padding:20px 0;margin:0;align-items:start}
+.ty-workspace .ty-settings-page .ty-subscription-price{font-size:36px;color:#176a47;letter-spacing:-1px}
+@media(max-width:760px){
+ .ty-workspace .ty-automation-row{padding:18px}.ty-automation-card-body{grid-template-columns:1fr;gap:12px;margin-block:16px}.ty-automation-card-body .ty-automation-services{justify-content:flex-start}
+ .ty-automation-card-footer{align-items:flex-start;flex-direction:column}.ty-automation-card-top{gap:10px}.ty-workspace .ty-automation-card-top h2{font-size:16px}
+ .ty-workspace .ty-automation-panel,.ty-workspace .ty-automation-composer .ty-automation-fields,.ty-workspace .ty-automation-recipients{padding:18px;border-radius:12px}
+ .ty-workspace .ty-settings-page :is(.ty-settings-card,.settings-card){padding:20px;border-radius:12px}.ty-workspace .ty-settings-tabs{gap:18px;flex-wrap:wrap}
+ .ty-workspace .ty-settings-page .ty-subscription-details{grid-template-columns:1fr}.ty-workspace .ty-automation-save{padding:12px;flex-wrap:wrap}
+}
+
+.ty-workspace .ty-automations-page .ty-button--primary{color:#fff;background:#087b50;border-color:#087b50}
+.ty-workspace .ty-settings-page .ty-settings-form label{margin:0;gap:8px}
+.ty-workspace .ty-settings-page .ty-settings-form p{margin:0}
+.ty-workspace .ty-settings-page .ty-settings-form{gap:20px}
+.ty-workspace .ty-settings-page .ty-settings-fields{gap:20px}
+@media(max-width:640px){.ty-workspace .ty-settings-tabs{gap:12px;flex-wrap:nowrap}.ty-workspace .ty-settings-tabs button{padding:12px 2px;font-size:13px;letter-spacing:0}.ty-workspace .ty-settings-page .ty-settings-form label{margin:0}}

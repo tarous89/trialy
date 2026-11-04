@@ -57,6 +57,7 @@ for(const surface of ['plugin','app']){
   await search.fill('value 2');await expect.poll(()=>rows(tracker)).toEqual(second);
   const sort=tracker.getByRole('button',{name:'Country',exact:true});
   await sort.click();await expect(tracker.locator('tbody tr:first-child td:nth-child(3) .cell-display')).toHaveText('DE');
+  await expect(tracker.locator('th[aria-sort="ascending"] .sort-indicator')).toHaveText('↑');
   await sort.click();await expect(tracker.locator('tbody tr:first-child td:nth-child(3) .cell-display')).toHaveText('US');
   const before=await rows(tracker);
   await tracker.getByRole('button',{name:'Edit Name',exact:true}).first().click();

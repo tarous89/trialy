@@ -248,3 +248,8 @@ Every editable screen must show its Save action from the first render: tracker r
 For the general tracker, the host supplies the persistent record Save edits footer and Settings save actions; do not add a competing footer in the template. This is separate from first-time app publication: never reintroduce a Save app/publication bar on an already saved app. Preserve existing previews, confirmations, server authorization and failure recovery; visibility is not permission to save.
 
 QA: open each editable view untouched at desktop and mobile widths and verify Save is visible and disabled. Make a valid edit and verify it becomes enabled without moving. Save or discard and verify it remains visible and returns to disabled. Invalid/read-only states must never enable a write.
+
+
+### Automation testing and management
+
+Use the platform Automations cards for setup, editing and explicit tests. Keep configuration grouped into Overview, When to run, Recipients and Email content (or research instructions), with persistent visible save controls and a plain-language trigger summary. Never create a separate testing scheduler in an app. The platform Test run path resolves email to the signed-in account, preserves production recipients and schedules, and marks tests visibly. Research tests preview findings without record writes; normal completion follow-ups do not run for tests. Do not report a queued test as delivered or run tests automatically after saving.

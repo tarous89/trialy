@@ -24,7 +24,8 @@ export async function serviceJob(db:Database,a:Actor,w:string,id:string,appId?:s
 export async function authorizeJob(db:Database,j:any,reading=false){
  const a:Actor={userId:j.user_id,origin:j.payload.origin??'ai',...(j.app_id?{accessToolId:j.app_id}:{})};
  return withActor(a,async()=>{
-  if(j.payload.notification){const {authorizeNotificationJob}=await import('./notifications.js');await authorizeNotificationJob(db,j,reading);}
+  if(j.payload.test){const {authorizeTestEmail}=await import('../automations/testing.js');await authorizeTestEmail(db,j);}
+  else if(j.payload.notification){const {authorizeNotificationJob}=await import('./notifications.js');await authorizeNotificationJob(db,j,reading);}
   else if(j.payload.action){if(j.kind==='email'&&!reading)fail(403,'notification_policy','Notification requires current safety checks');const {AppActions}=await import('./service.js');await new AppActions(db).authorizeRun(j.payload.action.runId,j.payload.action.version,reading);}
   else if(j.kind==='connector'){const f=new WorkspaceFoundation(db),c=new Connectors(db,(tx,a,w,id)=>f.component(tx,a,w,id)),b=await c.inspect(db,a,j.workspace_id,j.payload.call);if(b.digest!==j.payload.digest)fail(409,'connector_changed','Connector request changed');if(b.reviewRequired){const r=(await db.query("SELECT * FROM connector_reviews WHERE id=$1 AND user_id=$2 AND kind='invoke'",[j.payload.reviewId,j.user_id])).rows[0];if(!r||r.body.digest!==j.payload.digest)fail(403,'connector_review','Missing exact approval');}}
   else if(j.payload.invitation&&!reading){const {checkInvitationDelivery}=await import('./sharing.js');await checkInvitationDelivery(db,j);}
@@ -63,6 +64,7 @@ export async function processServiceJob(db:Database,options:{email?:EmailTranspo
    if(j.attempts>6||Date.now()-new Date(j.created_at).getTime()>23*3600000)throw Object.assign(Error('Retry window exceeded'),{permanent:true});
    await active();
    if(j.payload.notification){const {reserveNotification}=await import('./notifications.js');const b=(await db.query('SELECT b.tenant_id,b.action_id,a.config FROM app_notification_batches b JOIN app_actions a ON a.id=b.action_id WHERE b.id=$1',[j.payload.notification.batchId])).rows[0];const reservation=await reserveNotification(db,b.tenant_id,message.to[0].toLowerCase(),j.id,true,{actionId:b.action_id,trigger:b.config.trigger});if(!reservation.allowed){await db.query("UPDATE app_service_jobs SET status='queued',attempts=attempts-1,available_at=$2,lease_until=NULL,diagnostic=$3 WHERE id=$1 AND lease_token=$4",[j.id,reservation.nextAt,reservation.reason,j.lease_token]);return true;}}
+   if(j.payload.test){const {authorizeTestEmail}=await import('../automations/testing.js');const {reserveNotification}=await import('./notifications.js');const tenant=await authorizeTestEmail(db,j),reservation=await reserveNotification(db,tenant,message.to[0],j.id,true);if(!reservation.allowed){await db.query("UPDATE app_service_jobs SET status='queued',attempts=attempts-1,available_at=$2,lease_until=NULL,diagnostic=$3 WHERE id=$1 AND lease_token=$4",[j.id,reservation.nextAt,reservation.reason,j.lease_token]);return true;}}
    await active();
    const display=(message.appName??'TrialAgents').replace(/[<>\r\n"]/g,'').slice(0,80);
    result=await (options.email??resendEmail)({from:`${display}${display==='TrialAgents'?'':' via TrialAgents'} <notifications@trialagents.com>`,to:message.to,subject:message.subject,text:message.text},j.id,AbortSignal.any([controller.signal,AbortSignal.timeout(20000)]));providerId=result.id;
@@ -73,7 +75,7 @@ export async function processServiceJob(db:Database,options:{email?:EmailTranspo
  }catch(e:any){
   const retry=j.kind==='email'&&!e.permanent&&![403,404,409].includes(e.status)&&j.attempts<6&&Date.now()+300000<new Date(j.deadline_at).getTime();
   await db.query("UPDATE app_service_jobs SET status=$2,diagnostic=$3,available_at=$4,finished_at=CASE WHEN $2='queued' THEN NULL ELSE now() END,lease_until=NULL WHERE id=$1 AND status='running' AND lease_token=$5",[j.id,retry?'queued':e.unknown||j.kind==='connector'&&!e.permanent?'unknown':'failed',e.code==='notification_changed'?'notification_changed':e.status?'authorization_unavailable':e.permanent?'provider_rejected':'request_failed',new Date(Date.now()+Math.min(300000,1000*2**j.attempts)),j.lease_token]);
-  if(j.payload.notification)await db.query('UPDATE app_notification_reservations SET released=true WHERE job_id=$1 AND attempted_at IS NULL',[j.id]);
+  if(j.payload.notification||j.payload.test)await db.query('UPDATE app_notification_reservations SET released=true WHERE job_id=$1 AND attempted_at IS NULL',[j.id]);
  }finally{clearInterval(heartbeat);clearTimeout(timeout);options.signal?.removeEventListener('abort',stop);}return true;
 }
 export async function receiveDeliveryEvent(db:Database,raw:Buffer,headers:Record<string,any>,secret=process.env.RESEND_WEBHOOK_SECRET){
