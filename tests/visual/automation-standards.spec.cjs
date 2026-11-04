@@ -26,7 +26,7 @@ test('Multiple calendar days and timezone are editable without losing existing c
  const trigger={kind:'calendar',frequency:'weekly',time:'09:00',timeZone:'Europe/Berlin',anchor:'2026-11-02',interval:2,weekdays:[1,3,5],monthDay:31,monthEnd:'skip'};
  const config={name:'Research',appId:f.appId,instructions:'Collect evidence',sourcePolicy:'Primary sources',objective:'Review',schedule:{description:'Weekdays',timeZone:'Europe/Berlin'},automation:{runnerId:id,trigger},readBindings:[]};
  await page.route('**/app-services/automations',route=>route.fulfill({json:{id,state:'ready'}}));
- await page.route(`**/app-services/automations/definitions/${id}?kind=research`,route=>route.fulfill({json:{id,kind:'research',enabled:true,config,version:0,app:{name:'Tracker'}}}));
+ await page.route(`**/app-services/automations/definitions/research/${id}`,route=>route.fulfill({json:{id,kind:'research',enabled:true,config,version:0,app:{name:'Tracker'}}}));
  await page.route('**/app-services/automations/options?*',route=>route.fulfill({json:{owner:{email:'owner@example.invalid'},members:[],tables:[],writeScopes:[]}}));
  await page.route('**/app-services/monitoring/prepare',route=>{submitted=route.request().postDataJSON();return route.fulfill({status:503,json:{message:'Draft kept'}});});
  await page.goto(base+`/app-home?tab=automations&workspaceId=${f.workspaceId}&automationId=${id}&automationKind=research`);
