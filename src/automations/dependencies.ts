@@ -14,8 +14,10 @@ export async function automationDependencies(db:Database,workspaceId:string,user
  const stepServices=(d:any):AutomationServiceLabel[]=> (d?.steps??[]).map((s:any)=>s.kind==='email'?{id:'email',name:'Email'}:s.kind==='connector'?{id:s.connectionId,name:connectors.find(c=>c.id===s.connectionId)?.name??'Unavailable connector'}:{id:'trialagents',name:'TrialAgents'});
  return definitions.map(d=>{
   const parents=d.kind==='research'?[d]:definitions.filter(m=>m.kind==='research'&&(m.followup_id===d.id||d.trigger?.source==='automation_runs'&&d.trigger.automationId===m.id));
+  const source=d.trigger?.source==='automation_runs'?definitions.find(m=>m.kind==='research'&&m.id===d.trigger.automationId):null;
+  const blockedReason=d.trigger?.source==='automation_runs'?(!source||source.version!==d.trigger.automationVersion?'Research changed. Edit this email automation to select the updated research, save, then enable it.':!source.enabled?'The source research automation is disabled.':null):null;
   const services=d.kind==='research'?[chatgpt,...stepServices(definitions.find(a=>a.id===d.followup_id))]:[...parents.map(()=>chatgpt),...stepServices(d)];
-  return {id:d.id,appId:d.app_id,version:d.version,kind:d.kind,name:d.name,enabled:d.enabled,
+  return {id:d.id,appId:d.app_id,version:d.version,kind:d.kind,name:d.name,enabled:d.enabled,blockedReason,
    runnerIds:[...new Set(parents.map(m=>m.runner_id).filter(Boolean))],services:[...new Map(services.map(s=>[s.id,s])).values()]};
  });
 }

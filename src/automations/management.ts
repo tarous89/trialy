@@ -32,6 +32,9 @@ export class AutomationManagement{
   return {owner,researchAutomations,members:members.filter(m=>m.id!==owner.id),tables,writeScopes:scopes};
  }
  async list(a:Actor,w:string,input:unknown){await this.owner(a,w);const v=automationList.parse(input);
+  const dependencies=await automationDependencies(this.db,w,a.userId);
+  const connection=dependencies.some(d=>d.runnerIds.length)?await new AutomationService(this.db).setup(a,w):null;
+  const blockedIds=dependencies.filter(d=>d.blockedReason||d.runnerIds.length&&connection?.state!=='ready').map(d=>d.id);
   const rows=(await this.db.query(`SELECT d.*,c.name AS app_name,c.archived AS app_archived FROM (
    SELECT m.id,m.app_id,m.workspace_id,m.user_id,m.version,'research' AS kind,'chatgpt' AS executor,m.config->>'name' AS name,m.enabled,m.config->>'expiresAt' AS expires_at,coalesce(m.config->'automation'->'trigger',m.config->'schedule') AS trigger,m.created_at,
     concat_ws(E'\\n\\n',m.config->>'objective',m.config->>'instructions') AS prompt,NULL::jsonb AS steps,(m.config->'automation' IS NULL AND m.task IS NOT NULL) AS external_schedule,m.config->'automation'->>'runnerId' AS runner_id
@@ -42,16 +45,16 @@ export class AutomationManagement{
   ) d JOIN workspace_components c ON c.id=d.app_id AND c.workspace_id=d.workspace_id
   WHERE d.workspace_id=$1 AND d.user_id=$2 AND ($3::uuid IS NULL OR d.app_id=$3)
    AND ($4='' OR position(lower($4) in lower(d.name||' '||c.name))>0)
-   AND ($5='all' OR d.executor=$5) AND ($6='all' OR d.enabled=($6='enabled'))
-  ORDER BY d.created_at,d.id LIMIT 21 OFFSET $7`,[w,a.userId,v.appId??null,v.query,v.executor,v.state,v.offset])).rows;
-  const connection=rows.some(r=>r.runner_id)?await new AutomationService(this.db).setup(a,w):null;
-  const dependencies=await automationDependencies(this.db,w,a.userId);
+   AND ($5='all' OR d.executor=$5) AND ($6='all' OR (d.enabled AND NOT c.archived AND NOT d.id=ANY($8::uuid[]))=($6='enabled'))
+  ORDER BY d.created_at,d.id LIMIT 21 OFFSET $7`,[w,a.userId,v.appId??null,v.query,v.executor,v.state,v.offset,blockedIds])).rows;
   const visible=[];for(const row of rows.slice(0,20)){try{const c=await new WorkspaceFoundation(this.db).component(this.db,a,w,row.app_id,false);
    const {steps,external_schedule,runner_id,...definition}=row;
-   let blockedReason:string|null=null;if(row.kind==='action'&&row.trigger?.source==='automation_runs'){const source=(await this.db.query('SELECT version FROM app_monitors WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND deleted_at IS NULL',[row.trigger.automationId,w,a.userId])).rows[0];if(!source||source.version!==row.trigger.automationVersion)blockedReason='Research changed. Edit this email automation to select the updated research, save, then enable it.';}
+   const dependency=dependencies.find(d=>d.id===row.id&&d.kind===row.kind),connectionState=dependency?.runnerIds.length?connection?.state:null;
+   let blockedReason=dependency?.blockedReason??null;
+   if(connectionState&&connectionState!=='ready')blockedReason??='ChatGPT is disabled. Finish setup in Connectors to run this automation.';
    const prompt=row.kind==='research'?row.prompt:(steps??[]).map((s:any)=>s.kind==='email'?`Email: ${s.subject}\n${s.text}`:s.kind==='connector'?`Run connector operation: ${s.operation}`:`Run app action: ${s.binding}`).join('\n\n');
    const lastTest=(await this.db.query("SELECT id,status,delivery_status,created_at FROM (SELECT id,status,NULL::text AS delivery_status,created_at FROM automation_occurrences WHERE monitor_id=$1 AND user_id=$2 AND reason='test_run' UNION ALL SELECT id,status,delivery_status,created_at FROM app_service_jobs WHERE user_id=$2 AND payload->'test'->>'automationId'=$1::text) t ORDER BY created_at DESC LIMIT 1",[row.id,a.userId])).rows[0]??null;
-   visible.push({...definition,lastTest,prompt,blockedReason,services:dependencies.find(d=>d.id===row.id&&d.kind===row.kind)?.services??[],connectionState:runner_id?connection?.state:null,externalSchedule:external_schedule,app_url:appUrl({workspaceId:w,appId:c.id}),app_archived:c.archived||c.project_archived});
+   visible.push({...definition,lastTest,prompt,blockedReason,services:dependency?.services??[],effectiveEnabled:row.enabled&&!blockedReason&&!c.archived&&!c.project_archived,connectionState,externalSchedule:external_schedule,app_url:appUrl({workspaceId:w,appId:c.id}),app_archived:c.archived||c.project_archived});
   }catch(e){if(![403,404].includes((e as any).status))throw e;}}
   return {rows:visible,nextOffset:rows.length>20?v.offset+20:null};
  }
@@ -60,10 +63,10 @@ export class AutomationManagement{
   for(const d of await automationDependencies(this.db,w,a.userId)){
    if(!setup.id||!d.runnerIds.includes(setup.id))continue;
    try{const app=await new WorkspaceFoundation(this.db).component(this.db,a,w,d.appId,false);
-    const {runnerIds,...row}=d;automations.push({...row,appName:app.name,appArchived:app.archived||app.project_archived});
+    const {runnerIds,...row}=d;automations.push({...row,appName:app.name,appArchived:app.archived||app.project_archived,effectiveEnabled:d.enabled&&!d.blockedReason&&setup.state==='ready'&&!app.archived&&!app.project_archived});
    }catch(e){if(![403,404].includes((e as any).status))throw e;}
   }
-  return {...setup,automations,impactDigest:checksum(JSON.stringify({runnerId:setup.id,version:setup.version,automations}))};
+  return {...setup,effectiveEnabled:!!setup.enabled&&setup.state==='ready',automations,impactDigest:checksum(JSON.stringify({runnerId:setup.id,version:setup.version,automations}))};
  }
  async controlConnector(a:Actor,w:string,runnerId:string,enabled:boolean,version:number,confirmation?:{confirmed?:boolean;impactDigest?:string}){
   requireCurrentAction(a);return this.db.transaction(async tx=>{

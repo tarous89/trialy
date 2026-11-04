@@ -25,6 +25,7 @@ test('Extension opens disabled automations locally and saves the exact MCP revie
  await root.getByRole('button',{name:'Enable',exact:true}).click();await expect(root.getByLabel('Automation status: Enabled',{exact:true})).toBeVisible();expect(preparedState).toEqual({workspaceId:f.workspaceId,kind:'action',automationId:id,expectedVersion:0,enabled:true});expect(saved).toEqual({workspaceId:f.workspaceId,reviewId,kind:'automation_control',digest,review,confirmed:true});
  await root.getByRole('button',{name:'Edit',exact:true}).click();await root.getByLabel('Message',{exact:true}).fill('Updated summary');await expect(root.getByRole('button',{name:'Review changes',exact:true})).toHaveCount(0);await root.getByRole('button',{name:'Save changes',exact:true}).click();
  await expect(root.getByRole('heading',{name:'Automations',exact:true})).toBeVisible();expect(saved).toEqual({workspaceId:f.workspaceId,reviewId,kind:'action',digest,review,confirmed:true});
+ await root.getByRole('button',{name:'Edit',exact:true}).click();await root.getByRole('button',{name:'Open navigation',exact:true}).click();await root.getByRole('button',{name:'Automations',exact:true}).click();await expect(root.getByRole('heading',{name:'Automations',exact:true})).toBeVisible();
 });
 
  test('Automation confirmation opens and refreshes Automations without external navigation',async({page})=>{
