@@ -58,8 +58,8 @@ export async function fixture(){
  app.get('/fixture/app-draft',async(_req,res)=>res.json(await prepareRenderedApp(f,actor,w.id,{content:{name:'Embedded draft',source:"return {html:'<h1>'+(input.route?.path==='/details'?'Draft details':'Embedded draft')+'</h1><a href=\"/details\">Details</a><button data-action=\"inspect\">Inspect page</button>'};",bindings:[]}})));
  app.get('/fixture/calls',(_req,res)=>res.json(calls));
  app.get('/fixture/initial',async(_req,res)=>{const current=(await f.readComponent(actor,w.id,component.id)).component;res.json({screen:'tracker',workspaceId:w.id,component:current,initialOutput:await f.runFrontend(actor,w.id,{componentId:current.id,expectedVersion:current.version})});});
- app.get('/vivid-catalog',async(_req,res)=>{res.removeHeader('Content-Security-Policy');res.type('html').send(await readFile('plugin/trialy/skills/trialy-tracker-design/assets/vivid-template/catalog.html','utf8'));});
- app.get('/reference',async(_req,res)=>{res.removeHeader('Content-Security-Policy');res.type('html').send(await readFile('plugin/trialy/skills/trialy-tracker-design/assets/approved-theme2-reference.html','utf8'));});
+ app.get('/vivid-catalog',async(_req,res)=>{res.removeHeader('Content-Security-Policy');res.type('html').send(await readFile('resources/tracker-design/assets/vivid-template/catalog.html','utf8'));});
+ app.get('/reference',async(_req,res)=>{res.removeHeader('Content-Security-Policy');res.type('html').send(await readFile('resources/tracker-design/assets/approved-theme2-reference.html','utf8'));});
  app.use(session({secret:'synthetic-visual-auth-session-secret-only',resave:false,saveUninitialized:false}));
  addLocalAuth(app,db,base);
  addWideTrackerFixture(app,f,s,actor,w.id);

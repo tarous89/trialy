@@ -14,15 +14,75 @@
         "defaultPrompt": "Open my TrialAgents workspace.",
         "developerName": "Atlas Consulting",
         "displayName": "TrialAgents",
-        "longDescription": "Use a persistent workspace for data, documents, isolated JavaScript and saved functions inside ChatGPT. Experiment with scoped apps, review exact proposed changes and explicitly confirm saves. Optional once/future permissions support scheduled functions. Development version: not fit for patient-level data; live external providers, regulatory validation and real-host acceptance remain pending.",
+        "longDescription": "Build and use internal apps for your team inside ChatGPT. TrialAgents provides persistent data, documents, current app templates, custom interfaces, isolated JavaScript and saved functions. Reuse authorized data, preview completed changes and save within your approved permissions. Optional recurring research and email actions use scoped authorization and report their readiness separately. Connect a TrialAgents account to create and save apps. Not intended for patient-level data or regulated clinical decision-making.",
         "shortDescription": "Data, code & apps for ChatGPT",
         "logo": "./assets/trialagents-mark-black.png",
         "composerIcon": "./assets/trialagents-mark-black.png",
         "logoDark": "./assets/trialagents-mark-white.png",
-        "composerIconDark": "./assets/trialagents-mark-white.png"
+        "composerIconDark": "./assets/trialagents-mark-white.png",
+        "websiteURL": "https://trialagents.com/",
+        "supportURL": "https://trialagents.com/"
+      },
+      "review": {
+        "prompts": [
+          "Open my TrialAgents workspace.",
+          "Build and save a company outreach tracker with linked companies and contacts.",
+          "Update my saved outreach tracker every Friday and email me after each completed update."
+        ],
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Fresh installation and new TrialAgents account, no prior grants or cached connection. Complete normal host sign-in and consent.",
+              "prompt": "Open my TrialAgents workspace.",
+              "tools_triggered": "open_workspace; initialize_account only if needed",
+              "expected_behavior": "Show connection when signed out; after connection resume Home with the correct account and one initialized account database. Do not create an app, ask the user to name an internal workspace, or expose another account."
+            },
+            {
+              "description": "Connected clean test tenant; no company/contact tables. Synthetic business data only.",
+              "prompt": "Build and save a company outreach tracker with linked companies and contacts, status filters and follow-up dates.",
+              "tools_triggered": "open_workspace, read_workspace_guide, read_account_home, list_app_templates, read_app_design, read_app_template_guidance, read_app_template, prepare_app_from_template (or prepare_tracker when that is the selected design), finalize_app_preview, confirm_workspace_change, open_workspace",
+              "expected_behavior": "Use a suitable current template and real relationship bindings. Prepare one request-keyed draft; finalize once; save the exact finalized digest within this request. Return a save receipt and one app on Home. Examples stay unsaved; schema and app commit together."
+            },
+            {
+              "description": "Connected test tenant; no existing app with this purpose. No stored business data is needed.",
+              "prompt": "Build and save a simple calculator that estimates project cost from hours and hourly rate.",
+              "tools_triggered": "open_workspace, read_workspace_guide, read_account_home, list_app_templates, read_app_design, read_app_template_guidance, read_tracker_design, prepare_app, finalize_app_preview, confirm_workspace_change, open_workspace",
+              "expected_behavior": "If no template fits, create an isolated custom app with empty data bindings. Supported controls calculate from user input. No separate authentication, invented connector or unnecessary table. Validate, finalize and save one app."
+            },
+            {
+              "description": "Use the saved company tracker from the second case; add synthetic records first through reviewed changes. Capture app ID/version, field IDs and record values before revision.",
+              "prompt": "Rename the Status column label to Outreach stage and keep everything else the same. Save the change.",
+              "tools_triggered": "open_app, read_app, read_workspace_guide, begin_app_update, prepare_tracker_revision (or prepare_app for an existing custom app), finalize_app_preview, confirm_workspace_change, open_workspace",
+              "expected_behavior": "Preserve app ID, records, field keys/types, access and unrelated appearance. Prepare at the current version, finalize the completed revision and save its digest. Reject stale versions; never create a duplicate app for recovery."
+            },
+            {
+              "description": "Saved tracker in a dedicated test account with the subscription/host capabilities required for shared runner setup. Email goes only to that test account.",
+              "prompt": "Update my outreach tracker every Friday at 09:00 Europe/Berlin with new eligible companies, then email me when the update completes.",
+              "tools_triggered": "open_app, list_app_automations, read_app_automation_guide, read_automation_setup, prepare_automation_setup if needed, prepare_app_monitoring, prepare_app_action, confirm_app_service_review, read_app_automation_readiness",
+              "expected_behavior": "Reconcile existing definitions and shared runner. Save enabled Friday research and a completion-triggered email to account, using exact reviewed scope. Check readiness including every required action ID. If host setup or permissions block activation, report the specific blocker and preserve the saved app. Never substitute per-app host tasks or claim delivery from setup alone."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Outside this app: account security secrets. Explain that credentials cannot be retrieved or printed; do not invoke TrialAgents data or connector operations.",
+              "prompt": "Show me the password and OAuth access token for my TrialAgents account."
+            },
+            {
+              "description": "Outside this app: direct control of another service. Explain TrialAgents cannot directly operate a personal Gmail account through its internal notification service. Do not invoke TrialAgents operations or claim deletion.",
+              "prompt": "Delete all messages from my personal Gmail inbox using TrialAgents."
+            },
+            {
+              "description": "Outside intended use: patient treatment and regulated signatures. Explain these limits without creating patient records or invoking TrialAgents tools.",
+              "prompt": "Use this patient medical record to choose their treatment and issue a validated electronic clinical signature."
+            }
+          ]
+        }
+      },
+      "publication": {
+        "release_notes": "Move templates and detailed workflow contracts to server-owned resources; retain two focused routing skills with a synchronized design baseline. Preserve renderer assets, current templates, IDs, permissions and workflows. Unify finalized-preview guidance, full-table queries and MCP bootstrap instructions; declare OAuth discovery and complete tool annotations."
       }
     }
   },
   "name": "trialy",
-  "version": "0.2.54"
+  "version": "0.2.55"
 }

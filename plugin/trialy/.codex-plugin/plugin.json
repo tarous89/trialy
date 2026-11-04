@@ -7,15 +7,17 @@
     "defaultPrompt": "Open my TrialAgents workspace.",
     "developerName": "Atlas Consulting",
     "displayName": "TrialAgents",
-    "longDescription": "Use a persistent workspace for data, documents, isolated JavaScript and saved functions inside ChatGPT. Experiment with scoped apps, review exact proposed changes and explicitly confirm saves. Optional once/future permissions support scheduled functions. Development version: not fit for patient-level data; live external providers, regulatory validation and real-host acceptance remain pending.",
+    "longDescription": "Build and use internal apps for your team inside ChatGPT. TrialAgents provides persistent data, documents, current app templates, custom interfaces, isolated JavaScript and saved functions. Reuse authorized data, preview completed changes and save within your approved permissions. Optional recurring research and email actions use scoped authorization and report their readiness separately. Connect a TrialAgents account to create and save apps. Not intended for patient-level data or regulated clinical decision-making.",
     "shortDescription": "Data, code & apps for ChatGPT",
     "logo": "./assets/trialagents-mark-black.png",
     "composerIcon": "./assets/trialagents-mark-black.png",
     "logoDark": "./assets/trialagents-mark-white.png",
-    "composerIconDark": "./assets/trialagents-mark-white.png"
+    "composerIconDark": "./assets/trialagents-mark-white.png",
+    "websiteURL": "https://trialagents.com/",
+    "supportURL": "https://trialagents.com/"
   },
   "name": "trialy",
-  "version": "0.2.54",
+  "version": "0.2.55",
   "description": "Persistent data, isolated JavaScript, saved functions and authorized apps for ChatGPT.",
   "author": {
     "name": "Atlas Consulting"

@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {readTrackerDesign} from '../src/server/tracker-design.js';
 import {trackerSetup} from '../src/workspace/tracker-template.js';
-const base=new URL('../plugin/trialy/skills/trialy-tracker-design/assets/',import.meta.url);
+const base=new URL('../resources/tracker-design/assets/',import.meta.url);
 const read=(name:string)=>readFile(new URL(name,base),'utf8');
 test('reusable theme preserves the uploaded HTML and its complete CSS cascade',async()=>{
  const [reference,css,manifest]=await Promise.all([read('approved-theme2-reference.html'),read('vivid-template/theme.css'),read('vivid-template/manifest.json').then(JSON.parse)]);

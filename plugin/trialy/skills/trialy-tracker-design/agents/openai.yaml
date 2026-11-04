@@ -1,4 +1,4 @@
 interface:
-  display_name: "TrialAgents Tracker Designer"
-  short_description: "Design consistent, connected trackers for any workflow"
+  display_name: "TrialAgents App Builder"
+  short_description: "Build and revise apps using current MCP templates"
   brand_color: "#087B58"

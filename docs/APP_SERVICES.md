@@ -1,6 +1,6 @@
 # App services release
 
-The builder contract is [APP_SERVICES.md](../plugin/trialy/skills/trialy-workspace/references/APP_SERVICES.md), also available through `read_app_services` on MCP. This release adds no app-specific authentication system or seat purchasing flow.
+The builder contract is [APP_SERVICES.md](../resources/workspace/references/APP_SERVICES.md), also available through `read_app_services` on MCP. This release adds no app-specific authentication system or seat purchasing flow.
 
 ## Automation management
 

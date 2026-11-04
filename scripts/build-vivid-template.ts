@@ -1,7 +1,7 @@
 import {catalog} from './vivid-catalog.js';
 import {readFile,writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
-const root=new URL('../plugin/trialy/skills/trialy-tracker-design/assets/',import.meta.url);
+const root=new URL('../resources/tracker-design/assets/',import.meta.url);
 const read=(p:string)=>readFile(new URL(p,root),'utf8');
 const [reference,css,definitions,engine,manifestText]=await Promise.all(['approved-theme2-reference.html','vivid-template/theme.css','vivid-template/components.json','vivid-template/engine.js','vivid-template/manifest.json'].map(read));
 const manifest=JSON.parse(manifestText),hash=(s:string)=>createHash('sha256').update(s).digest('hex');

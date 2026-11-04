@@ -3,7 +3,23 @@
   "mcpServers": {
     "trialy": {
       "type": "streamable-http",
-      "url": "https://platform.trialagents.com/mcp"
+      "url": "https://platform.trialagents.com/mcp",
+      "extensions": {
+        "com.openai": {
+          "auth": {
+            "type": "mixed",
+            "client": {
+              "mode": "dcr"
+            },
+            "baseScopes": [
+              "trialy"
+            ],
+            "defaultScopes": [
+              "trialy"
+            ]
+          }
+        }
+      }
     }
   }
 }

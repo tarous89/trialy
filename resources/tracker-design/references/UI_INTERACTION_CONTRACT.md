@@ -170,7 +170,7 @@ Do not introduce new permission colors. Color remains secondary to explicit word
 
 ### Current host refinement
 
-Keep the host header and dark action footer fixed. The tracker document is the only vertical scroller; tables may scroll horizontally but must not have an independent vertical height/scrollbar. The row-details surface fills at least the full available viewport, even for a one-row table. Its content uses that same document scroller. Local tabs/search/sort/details/layout interactions must not wait for the server. Each empty data tab gets one clearly labeled, locally editable fictional example with typed values and meaningful tint pills. User instructions override these defaults.
+Keep the host header and dark action footer fixed. The tracker document is the only vertical scroller; tables may scroll horizontally but must not have an independent vertical height/scrollbar. The row-details surface fills at least the full available viewport, even for a one-row table. Its content uses that same document scroller. Keep tabs/details/layout controls responsive without a server render. Full-table search/sort/filter use bounded authorized data reads before pagination, with loading and stale-response handling; never silently use a page-only fallback. Each empty data tab gets one clearly labeled, locally editable fictional example with typed values and meaningful tint pills. User instructions override these defaults.
 
 ## Shared tracker sorting and expanded filters
 

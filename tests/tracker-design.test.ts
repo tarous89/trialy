@@ -5,7 +5,7 @@ import {readTrackerDesign} from '../src/server/tracker-design.js';
 test('design reader reconstructs full reference without truncation',async()=>{
  let offset=0,text='',sha='';
  for(;;){const page=await readTrackerDesign({resource:'html',offset});text+=page.text;sha ||= page.sha256;assert.equal(page.sha256,sha);if(page.nextOffset===null)break;assert.ok(page.nextOffset>offset);offset=page.nextOffset;}
- assert.equal(text,await readFile(new URL('../plugin/trialy/skills/trialy-tracker-design/assets/approved-theme2-reference.html',import.meta.url),'utf8'));
+ assert.equal(text,await readFile(new URL('../resources/tracker-design/assets/approved-theme2-reference.html',import.meta.url),'utf8'));
 });
 test('design reader rejects arbitrary paths and invalid offsets',async()=>{
  await assert.rejects(readTrackerDesign({resource:'../../.env'}));
