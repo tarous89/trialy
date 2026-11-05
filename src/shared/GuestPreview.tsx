@@ -12,13 +12,14 @@ export function GuestPreview({draft,call,openLink,onSaved}:{draft:any;call:(name
  const remaining=Math.max(1,Math.ceil((new Date(draft.expiresAt).getTime()-clock)/3600000));
  const url=draft.saveUrl;
  return <main><header><div><small style={{display:'flex',alignItems:'center',gap:8}}><BrandMark tone="dark" size={22}/>TrialAgents · {status==='saved'?'SAVED':'TEMPORARY PREVIEW'}</small><h1>{bundle?.name??'Your tracker'}</h1></div></header>
- {bundle&&<><nav aria-label="Pages">{bundle.components.map((c:any,i:number)=><button key={i} aria-pressed={component===i} onClick={()=>setComponent(i)}>{c.name}</button>)}</nav>
- {selected?.format==='frontend-js'?<FrontendCodeRuntime key={component} previewId={draft.handle.id} call={(_name,args)=>call('run_tracker_preview',{handle:draft.handle,component,request:args.request})} onProposal={()=>{}}/>:<section><pre>{selected?.source}</pre></section>}
- {bundle.tables.map((t:any)=><details key={t.id}><summary>{t.name} · {t.rows.length} records</summary><div className="scroll"><table><thead><tr>{t.fields.map((f:any)=><th key={f.key}>{f.name}</th>)}</tr></thead><tbody>{t.rows.map((r:any)=><tr key={r.id}>{t.fields.map((f:any)=><td key={f.key}>{String(r.data[f.key]??'')}</td>)}</tr>)}</tbody></table></div></details>)}</>}
- <footer className="guest-save-footer" style={{position:'sticky',bottom:0,background:'#f4f7f5',borderTop:'1px solid #baccc2',padding:'16px 0',marginTop:20}}>
+ <div className="guest-save-footer" style={{position:'sticky',top:0,background:'#f4f7f5',borderTop:'1px solid #baccc2',padding:'16px 0',marginTop:20}}>
  <span role="status">{status==='saved'?'Saved to TrialAgents.':expired?'This temporary preview has expired.':`Available for up to ${remaining} hour${remaining===1?'':'s'}. Save it to keep it.`}</span>
  {status==='saved'?<button onClick={()=>onSaved(receipt).catch(e=>setError(e.message))}>Open saved workspace</button>:<><button disabled={expired||connecting} onClick={async()=>{setError('');try{await openLink(url);if(live.current)setConnecting(true);}catch{setError('The connection page did not open. Use the link below to continue.');}}}>{connecting?'Waiting for your account…':'Save to your account'}</button><button onClick={()=>void check()}>Check save status</button></>}
  {connecting&&<small>Your current preview stays here while you connect and save.</small>}
  {error&&<p role="alert">{error} {url&&!expired&&<a href={url} target="_blank" rel="noreferrer">Open save page</a>}</p>}
- </footer></main>;
+ </div>
+ {bundle&&<><nav aria-label="Pages">{bundle.components.map((c:any,i:number)=><button key={i} aria-pressed={component===i} onClick={()=>setComponent(i)}>{c.name}</button>)}</nav>
+ {selected?.format==='frontend-js'?<FrontendCodeRuntime key={component} previewId={draft.handle.id} call={(_name,args)=>call('run_tracker_preview',{handle:draft.handle,component,request:args.request})} onProposal={()=>{}}/>:<section><pre>{selected?.source}</pre></section>}
+ {bundle.tables.map((t:any)=><details key={t.id}><summary>{t.name} · {t.rows.length} records</summary><div className="scroll"><table><thead><tr>{t.fields.map((f:any)=><th key={f.key}>{f.name}</th>)}</tr></thead><tbody>{t.rows.map((r:any)=><tr key={r.id}>{t.fields.map((f:any)=><td key={f.key}>{String(r.data[f.key]??'')}</td>)}</tr>)}</tbody></table></div></details>)}</>}
+</main>;
 }

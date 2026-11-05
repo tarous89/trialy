@@ -64,13 +64,14 @@ for (const width of [1440, 1100, 390]) test(`Vivid connected tracker at ${width}
       expect(actual, selector + " matches approved reference").toEqual(expected);
     }
     await reference.close();
+    const originalName=await tracker.getByRole("button", { name: "Edit Company", exact: true }).first().innerText();
     await tracker.getByRole("button", { name: "Edit Company", exact: true }).first().click();
     const editor = tracker.getByRole("textbox", { name: "Company", exact: true });
     await editor.fill("Pending company edit");
     await editor.press("Enter");
-    await expect(embed.getByRole("button", { name: "Ignore edits", exact: true })).toBeVisible();
-    await embed.getByRole("button", { name: "Ignore edits", exact: true }).click();
-    await expect(tracker.getByText("Pending company edit", { exact: true })).toHaveCount(0);
+    await expect(embed.getByRole("button", { name: "Save edits", exact: true })).toHaveCount(0);
+    await expect(tracker.getByText("Pending company edit", { exact: true })).toBeVisible();
+    await tracker.getByRole("button", { name: "Edit Company", exact: true }).first().click();await editor.fill(originalName);await editor.press("Enter");await expect(tracker.getByText(originalName,{exact:true})).toBeVisible();
   }
   expect(errors).toEqual([]);
 });

@@ -50,7 +50,7 @@ Read before declaring a tracker done. This is a *testing contract* and reusable 
 - [ ] Clicking a data cell edits; it does not open details. Clicking the right Details expand control opens drawer.
 - [ ] Drawer can be dragged wider and does **not** cast side shadow; it has a thin separator line.
 - [ ] Details supports editing of allowed fields; fields agree with table values and layout bindings.
-- [ ] Edited fields turn green immediately; Save edits appears in the **dark floating footer** with one action sentence and an accessible dismiss control.
+- [ ] Tracker cell edits persist on edit completion without a global Save button; failed writes retain the edit and allow retry. Layout/access have native explicit controls. Custom apps choose their own save UX.
 - [ ] Ignore restores *exact* last saved values. Save persists only authorized exact changes; success status appears only after receipt.
 - [ ] Failed saves (missing access, stale version, invalid data) do not discard pending edits or claim success.
 - [ ] Drawer supports Duplicate and Delete; new duplicate ID; unique keys/audit never cloned; confirmation and linked-record protection for Delete.

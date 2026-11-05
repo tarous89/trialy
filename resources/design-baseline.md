@@ -8,3 +8,9 @@ Use this baseline for general visual quality if optional design guidance is temp
 - Preserve record details, multi-value editing, Duplicate/Delete where supported, and settings-based drag reordering. Label unsaved fictional examples and exclude them from records and totals. Verify empty, populated, error, mobile and desktop states.
 - Apps use the existing TrialAgents account. Do not build a second login/account system. Optional TrialAgents branding uses the official icon linked to https://platform.trialagents.com; omit optional branding if the exact asset cannot be embedded. Preserve the host watermark and reserved bottom space.
 - Database integrity, access checks, code isolation, exact reviewed writes and audit logs remain enforced by the backend. Unavailable schema, selected-template source, runtime contracts or required validation blocks the dependent preparation/save; a design fallback cannot bypass them. Preserve the saved app and resume the same draft after recovery.
+
+## Saving controls
+
+Platform tabs use native page controls near the top, kept visible while scrolling where practical, following Database and Access. Never add a floating or fixed bottom Save footer.
+
+Apps own their save behavior. Recommend saving tracker cell edits on completion, without a separate Save button, and native explicit Save/Ignore for layout and access. These are template recommendations, not platform-enforced UI. Custom apps can choose an appropriate interaction. First-time app publication still needs an explicit native Save action. Preserve exact backend proposals, confirmation or authorized grants, optimistic versions, permissions and audit logs; a failed save retains the draft and supports safe retry.

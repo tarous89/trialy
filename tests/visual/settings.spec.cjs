@@ -4,8 +4,8 @@ for(const width of [1440,390])test(`Overview and actual tool settings at ${width
  const initial=await(await page.request.get('http://127.0.0.1:4179/fixture/initial')).json();await page.evaluate(r=>window.deliver(r),initial);
  const embed=page.frameLocator('#app'),tracker=embed.frameLocator('iframe[title="Saved frontend code"]');
  await expect(tracker.locator('.stat-head svg')).toHaveCount(2);
- await expect(embed.getByRole('button',{name:'Save edits',exact:true})).toBeVisible();
- await expect(embed.getByRole('button',{name:'Save edits',exact:true})).toBeDisabled();
+ await expect(embed.getByRole('button',{name:'Save edits',exact:true})).toHaveCount(0);
+
  const reference=await page.context().newPage();await reference.setViewportSize({width,height:1000});await reference.goto('http://127.0.0.1:4179/reference');
  for(const selector of ['.stat','.stat svg','.stat .number']){
  const props=['color','backgroundColor','fontSize','paddingTop','borderRadius'];const read=(el,ps)=>Object.fromEntries(ps.map(p=>[p,getComputedStyle(el)[p]]));

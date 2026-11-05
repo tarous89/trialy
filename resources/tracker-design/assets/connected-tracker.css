@@ -51,3 +51,5 @@ html.trialy-responsive-toolbar .tracker-toolbar.options-overflow.options-open .t
 html.trialy-responsive-toolbar .tracker-toolbar.options-overflow .tracker-options .filter,html.trialy-responsive-toolbar .tracker-toolbar.options-overflow .tracker-options .sort{min-width:0;max-width:none;width:100%;box-sizing:border-box}
 html.trialy-responsive-toolbar .tracker-toolbar.toolbar-compact>.primary,html.trialy-responsive-toolbar .tracker-toolbar.toolbar-compact>.tracker-options-toggle{padding-inline:10px}
 html.trialy-responsive-toolbar .tracker-toolbar.toolbar-compact .search{padding-inline:10px;gap:6px}
+
+.settings-top{position:sticky;top:0;z-index:25;background:var(--paper);padding-block:12px;display:flex;justify-content:space-between;gap:12px}.settings-actions{display:flex;gap:10px}

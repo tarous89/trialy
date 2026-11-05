@@ -62,11 +62,7 @@ for(const surface of ['plugin','app']){
   const before=await rows(tracker);
   await tracker.getByRole('button',{name:'Edit Name',exact:true}).first().click();
   await tracker.getByRole('textbox',{name:'Name',exact:true}).first().fill('Unsaved name');
-  await sort.click();
-  await expect(host.getByText('Save or ignore your current edits before this action.',{exact:true})).toBeVisible();
-  expect((await rows(tracker)).map(r=>r.details)).toEqual(before.map(r=>r.details));
-  await expect(tracker.locator('tbody tr:first-child input[aria-label="Name"]')).toHaveValue('Unsaved name');
-  await host.getByRole('button',{name:'Ignore edits',exact:true}).click();
+  await tracker.getByRole('textbox',{name:'Name',exact:true}).first().press('Escape');
   await expect.poll(()=>rows(tracker)).toEqual(before);
   await tracker.getByRole('button',{name:'Add record',exact:true}).click();
   await sort.click();await expect(host.getByText('Save or cancel the new row before this action.',{exact:true})).toBeVisible();

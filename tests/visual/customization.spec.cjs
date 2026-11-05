@@ -22,7 +22,7 @@ test('overview and data pagination replace rows; multiple values support keyboar
  await expect(first.locator('.cell-input:not([hidden])')).toBeVisible();
  await tracker.getByRole('heading',{name:'Biotech outreach'}).click();
  await expect(first.locator('.cell-display .pill')).toHaveCount(2);
- await embed.getByRole('button',{name:'Ignore edits',exact:true}).click();
+ await expect(embed.getByRole('button',{name:'Ignore edits',exact:true})).toHaveCount(0);
  await tracker.getByRole('button',{name:'Next',exact:true}).click();await expect(tracker.locator('tbody tr')).toHaveCount(1);
  await tracker.getByRole('button',{name:'Contacts',exact:true}).click();
  await tracker.getByRole('button',{name:'Edit Status',exact:true}).click();

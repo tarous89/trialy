@@ -1,7 +1,7 @@
 import React,{useEffect,useRef,useState} from 'react';
 import {AppPlatform} from './AppPlatform.js';
 import {Button,SearchField,Select} from './ui/Controls.js';
-import {ActionFooter} from './ActionFooter.js';
+import {PageActions} from './PageActions.js';
 import {AutomationBoundary} from './AutomationSettings.js';
 import {AutomationScheduleEditor,scheduleLabel,triggerCategory} from './AutomationScheduleEditor.js';
 type Call=(name:string,args:any)=>Promise<any>;
@@ -80,6 +80,7 @@ function AutomationForm({call,definition:d,appId,onClose,onSaved}:{call:Call;def
    const result=await call(research?'prepare_app_monitoring':'prepare_app_action',{...(d?{[research?'monitorId':'actionId']:d.id,expectedVersion:d.version}:{}),config:next});if(d){await call('confirm_app_service_review',{reviewId:result.id,digest:result.digest,...(result.confirmation?{kind:result.confirmation.kind}:{}),...(result.review?{review:result.review}:{}),confirmed:true});onSaved();}else setReview({result,config:next});
   }catch(e:any){setNotice((e.message?e.message+' ':'')+'Changes were not saved. Your draft is retained.');}finally{setBusy(false);}}
  return <section className="ty-automation-composer" aria-label={d?'Edit automation':'Create automation'}>
+ <PageActions action={review?'Save automation changes':d?'Save changes':'Review changes'} disabled={loading||!selected||!options||!!d&&JSON.stringify(config)===JSON.stringify(d.config)} busy={busy} onAction={()=>{if(review){void (async()=>{setBusy(true);setNotice('');try{await call('confirm_app_service_review',{reviewId:review.result.id,digest:review.result.digest,...(review.result.confirmation?{kind:review.result.confirmation.kind}:{}),...(review.result.review?{review:review.result.review}:{}),confirmed:true});onSaved();}catch(e:any){setNotice((e.message?e.message+' ':'')+'Changes were not saved. Your draft is retained.');}finally{setBusy(false);}})();}else form.current?.requestSubmit();}} onDismiss={onClose} dismissLabel="Ignore changes" showDismissLabel>{review?'Review the automation before saving.':null}</PageActions>
 
  {!d&&<div className="ty-automation-tabs" role="tablist" aria-label="Automation type">{[['research','ChatGPT'],['action','Email']].map(([value,label])=><button key={value} type="button" role="tab" aria-selected={kind===value} aria-controls={`automation-${value}`} id={`automation-tab-${value}`} onClick={()=>{setKind(value);setReview(null);setNotice('');}}>{label}</button>)}</div>}
  <form ref={form} id={`automation-${kind}`} role={d?undefined:'tabpanel'} aria-labelledby={d?undefined:`automation-tab-${kind}`} onSubmit={prepare}>
@@ -97,7 +98,7 @@ function AutomationForm({call,definition:d,appId,onClose,onSaved}:{call:Call;def
  </form>
  {review&&<section className="ty-automation-review" aria-label="Review automation changes"><h3>Review changes</h3><p><strong>{review.config.name}</strong> · {research?'ChatGPT':'Email'}</p><p>{scheduleLabel(research?review.config.automation?.trigger:review.config.trigger)}</p>{research?<p className="ty-automation-review-text">{review.config.instructions}</p>:review.config.steps.filter((s:any)=>s.kind==='email').map((s:any)=><div key={s.id}><p>To: {s.to.join(', ')}</p><strong>{s.subject}</strong><p className="ty-automation-review-text">{s.text}</p></div>)}{!research&&<p>Only selected team members with current app access can receive these emails. Sending limits apply automatically.</p>}<p>Authorization valid through {new Date(review.config.expiresAt).toLocaleDateString()}. Existing app and data permissions remain enforced.</p></section>}
 
- <ActionFooter action={review?'Save automation changes':d?'Save changes':'Review changes'} disabled={loading||!selected||!options||!!d&&JSON.stringify(config)===JSON.stringify(d.config)} busy={busy} onAction={()=>{if(review){void (async()=>{setBusy(true);setNotice('');try{await call('confirm_app_service_review',{reviewId:review.result.id,digest:review.result.digest,...(review.result.confirmation?{kind:review.result.confirmation.kind}:{}),...(review.result.review?{review:review.result.review}:{}),confirmed:true});onSaved();}catch(e:any){setNotice((e.message?e.message+' ':'')+'Changes were not saved. Your draft is retained.');}finally{setBusy(false);}})();}else form.current?.requestSubmit();}} onDismiss={onClose} dismissLabel="Ignore changes" showDismissLabel>{review?'Review the automation before saving.':'Your changes are saved when you choose Save.'}</ActionFooter>
+
  {notice&&<p role="status">{notice}</p>}
  </section>;
 }

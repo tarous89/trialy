@@ -153,7 +153,8 @@ test('standard inline row and details actions preserve data until an explicit sa
  assert.equal(out.state.newRow.data.name,'New company');assert.equal(row.data.name,'Existing');
  out=render(config,'',{saved:true,writable:true,state:out.state,event:{action:'discard-new'}},tools);assert.equal(out.state.newRow,null);assert.doesNotMatch(out.html,/class="draft-row"/);
  out=render(config,'',{saved:true,writable:true,state:out.state,event:{action:'details:record'}},tools);
- for(const action of ['save-edits','tracker:duplicate:record','tracker:delete:record'])assert.ok(out.html.includes('data-action="'+action+'"'));
+ for(const action of ['tracker:duplicate:record','tracker:delete:record'])assert.ok(out.html.includes('data-action="'+action+'"'));
+ assert.doesNotMatch(out.html,/data-action="save-edits"/);
  assert.match(out.html,/M4 7h16M4 12h16M4 17h16/); // actual reference settings icon
  assert.doesNotMatch(out.html,/↗/);assert.ok(calls.every(c=>c==='records.read'));
  out=render(config,'',{saved:true,writable:false,state:{tab:0},event:{action:'tracker:add'}},tools);assert.equal(out.state.newRow,undefined);

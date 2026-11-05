@@ -7,7 +7,6 @@ import {FrontendReads} from './frontend-reads.js';
 import {ChangeSummary} from './ChangeSummary.js';
 import {EmbeddedNavigation} from './ui/PageNavigation.js';
 import {TrackerRecordForm} from './TrackerRecordForm.js';
-import {ActionFooter} from './ActionFooter.js';
 import React,{useEffect,useRef,useState} from 'react';
 import {useAccessRecheck} from './useAccessRecheck.js';
 import {AppUnavailable} from './AppUnavailable.js';
@@ -73,10 +72,9 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
  }
  const send=()=>{if(output.current)frame.current?.contentWindow?.postMessage({kind:'trialy.render',channel:channel.current,html:output.current.html,css:output.current.css,controls:output.current.controls,connected:output.current.connected,state:output.current.state,tracker:output.current.tracker,navigationOnly:embedded,appLinks:platformRef.current.enabled,appOrigin:platformRef.current.origin,linkContext:navigationRef.current?.location??parseAppUrl(location.pathname+location.search)??(component?{appId:component.id,workspaceId:component.workspace_id,source:'component'}:null)},'*');};
  useEffect(()=>{if(ready)send();},[platform.enabled,platform.origin]);
- const frameAction=(action:string)=>{approvedAction.current=action==='save-edits'?'bound-batch':action==='save-layout'?'save-layout':null;frame.current?.contentWindow?.postMessage({kind:'trialy.action',channel:channel.current,action},'*');};
  async function run(event:any={kind:'open'}){
   if(event.action==='tracker:layout'){onLayout?.();return;}if(event.action==='tracker:access'){onAccess?.();return;}
-  if(blocked.current)return;if(busyRef.current){if(/^tab:/.test(event.action||''))eventQueue.current=eventQueue.current.filter(e=>!/^tab:/.test(e.action||''));if(eventQueue.current.length<50)eventQueue.current.push(event);return;}cancelPrefetch();busyRef.current=true;setBusy(true);onBusyChange?.(true);setError('');
+  if(blocked.current)return;if(busyRef.current){if(/^tab:/.test(event.action||''))eventQueue.current=eventQueue.current.filter(e=>!/^tab:/.test(e.action||''));if(eventQueue.current.length<50)eventQueue.current.push(event);return;}cancelPrefetch();busyRef.current=true;setBusy(true);onBusyChange?.(true);setError('');if(event.action==='bound-batch')frame.current?.contentWindow?.postMessage({kind:'trialy.save-start',channel:channel.current},'*');
   try{
    const c=current.current,explicitApproval=approvedAction.current===event.action;approvedAction.current=null;
    if(['tracker:create'].includes(event.action)||/^tracker:(duplicate|delete):/.test(event.action)){
@@ -115,21 +113,21 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
    }
    setRetryEvent(null);
    if(!live.current)return;
-   // The footer click approves the visible edits. The server still validates a precise proposal and its digest before committing.
+   // A completed tracker cell edit or explicit app action approves the visible edits. The server still validates a precise proposal and its digest before committing.
    if(result.proposal&&explicitApproval&&(event.action==='bound-batch'||event.action==='save-layout'&&output.current?.tracker)){
     const p=result.proposal;saveReceipt.current={proposal:p};
     await finishSave();return;
    }
    // A proposal has not changed persisted data yet. Keep the user's submitted
    // fields visible instead of rendering the pre-save database values over them.
-   if(result.proposal){setProposal(result.proposal);blocked.current=true;eventQueue.current=[];return;}
+   if(result.proposal){setProposal(result.proposal);setReviewProposal(true);blocked.current=true;eventQueue.current=[];return;}
    result=mergeTrackerSnapshot(output.current,result);output.current=result;state.current=result.state;setStandard(!!result.tracker);setFrameUrl(result.frameUrl);setProposal(result.proposal);setConnectorReviews(result.connectorReviews??[]);setCustomDirty(false);setLoadFailed(false);setSchemaChanged(false);
    if(result.proposal){blocked.current=true;eventQueue.current=[];}send();prefetch(result);
   }catch(e){if(live.current){setSchemaChanged((e as any)?.code==='manifest_stale');if(navigationRead(event)){
    if(unavailable(e)){clearOutput();setLoadFailed(true);onUnavailable?.('No app is available');}
    else if(!output.current&&current.current)await loadPublished();
    else {setLoadFailed(!output.current);if(['app_view_expired','component_changed','app_view_incompatible'].includes((e as any)?.code))setPublishedUpdate(true);else {actionError(e);setRetryEvent(event);}}
-  }else actionError(e);}}finally{busyRef.current=false;onBusyChange?.(false);if(live.current){setBusy(false);if(eventQueue.current.length&&!blocked.current)void run(eventQueue.current.shift());}}
+  }else {actionError(e);if(event.action==='bound-batch'&&!saveReceipt.current)setRetryEvent(event);}}}finally{busyRef.current=false;onBusyChange?.(false);if(live.current){setBusy(false);frame.current?.contentWindow?.postMessage({kind:'trialy.save-idle',channel:channel.current,blocked:!!saveReceipt.current||!!proposal},'*');if(eventQueue.current.length&&!blocked.current)void run(eventQueue.current.shift());}}
  }
  async function finishSave(){
   cancelPrefetch();
@@ -144,7 +142,7 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
    // failed save, replay the mutation, or replace the user's visible values.
    if(unavailable(e)){clearOutput();setLoadFailed(true);onUnavailable?.('No app is available');}
   }
-  setFooter(null);setRecordReview(null);setProposal(null);setReviewProposal(false);blocked.current=false;setCustomDirty(false);saveReceipt.current=null;setError('');
+  setFooter(null);setRecordReview(null);setProposal(null);setReviewProposal(false);blocked.current=false;setCustomDirty(false);saveReceipt.current=null;setError('');frame.current?.contentWindow?.postMessage({kind:'trialy.save-idle',channel:channel.current,blocked:false},'*');
  }
  useEffect(()=>{live.current=true;if(initialOutput){output.current=mergeTrackerSnapshot(null,initialOutput);state.current=initialOutput.state;setStandard(!!initialOutput.tracker);setFrameUrl(initialOutput.frameUrl);setProposal(initialOutput.proposal);onBusyChange?.(false);prefetch(output.current);}else void run();return()=>{live.current=false;cancelPrefetch();};},[]);
  const routeKey=JSON.stringify([navigation?.route,navigation?.reset]),lastRoute=useRef(routeKey),lastReset=useRef(navigation?.reset);
@@ -155,7 +153,7 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
   else if(e.data.channel===channel.current){
    if(e.data.kind==='trialy.link'&&typeof e.data.href==='string')navigationRef.current?.navigate(e.data.href);
    else if(e.data.kind==='trialy.dirty'){if(e.data.dirty)navigationRef.current?.setDirty(true);setCustomDirty(!!e.data.dirty);}
-   else if(e.data.kind==='trialy.approve'&&output.current?.tracker&&['bound-batch','tracker:create'].includes(e.data.action))approvedAction.current=e.data.action;
+   else if(e.data.kind==='trialy.approve'&&output.current?.tracker&&['bound-batch','tracker:create','save-layout'].includes(e.data.action))approvedAction.current=e.data.action;
    else if(e.data.kind==='trialy.notice')setError(e.data.message);
    else if(e.data.kind==='trialy.rendered')onRendered?.();
    else if(e.data.kind==='trialy.footer')setFooter(e.data.footer);
@@ -172,17 +170,14 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
  if(loadFailed&&!ready&&!frameUrl)return <AppUnavailable onHome={onHome} onRetry={retryLoad} reason={schemaChanged?'schema':'load'}/>;
  return <section className={`ty-tracker-surface ${standard?'ty-tracker--standard':''} ${detailsOpen?'ty-tracker--details':''}`} aria-label={platform.enabled?"App":"Tracker"}>
  {schemaChanged&&ready&&<div role="status">The saved app is still here. Its connected fields changed and need review.</div>}
- {error&&<SystemNotice error message={error} onDismiss={()=>setError('')}/>}{retryEvent&&<div className="ty-actions"><button className="ty-button" disabled={busy} onClick={()=>void run(retryEvent)}>Retry loading</button></div>}{saveReceipt.current&&!busy&&<div className="ty-runtime-recovery"><button onClick={async()=>{setBusy(true);try{await finishSave();setError('');}catch(e){actionError(e);}finally{setBusy(false);}}}>{saveReceipt.current?.saved?'Reload saved data':'Retry save'}</button></div>}
+ {error&&<SystemNotice error message={error} onDismiss={()=>setError('')}/>}{retryEvent&&<div className="ty-actions"><button className="ty-button" disabled={busy} onClick={()=>{if(retryEvent.action==='bound-batch')approvedAction.current='bound-batch';void run(retryEvent);}}>{retryEvent.action==='bound-batch'?'Retry save':'Retry loading'}</button></div>}{saveReceipt.current&&!busy&&<div className="ty-runtime-recovery"><button onClick={async()=>{setBusy(true);try{await finishSave();setError('');}catch(e){actionError(e);}finally{setBusy(false);}}}>{saveReceipt.current?.saved?'Reload saved data':'Retry save'}</button></div>}
  {publishedUpdate&&<div ref={updateBanner} className="ty-app-update" role="status"><span>This app has been updated. Refresh when you’re ready.</span><button disabled={busy} onClick={()=>localEditsRef.current?setConfirmUpdate(true):void loadPublished()}>Refresh to latest version</button></div>}
  {confirmUpdate&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="alertdialog" aria-modal="true" aria-label="Load published update"><h2>Discard your unsaved edits?</h2><p>Your local edits will be discarded when the published update loads.</p><button onClick={()=>setConfirmUpdate(false)}>Keep editing</button><button disabled={busy} onClick={()=>void loadPublished()}>Discard edits and load update</button></section></div>}
  {!standard&&ready&&<div className="ty-actions"><button disabled={busy||!!proposal} onClick={()=>current.current?(localEditsRef.current?setConfirmUpdate(true):void loadPublished()):void run()}>Refresh</button></div>}
  {adding&&<div className="ty-record-entry"><TrackerRecordForm initialTypeId={output.current?.tracker?.config.tabs[state.current?.tab]?.typeId} component={{...current.current,viewId:output.current?.viewId}} call={call} onPreview={async p=>{try{if(saveReceipt.current)await call('discard_workspace_preview',{previewId:p.id});else saveReceipt.current={proposal:p};await finishSave();setAdding(false);setError('');}catch(e){actionError(e);throw e;}}} onClose={()=>setAdding(false)}/></div>}
  {recordReview&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="dialog" aria-modal="true" aria-label="Review record change"><h2>{recordReview.deletion?'Delete record?':'Duplicate record?'}</h2><p>{recordReview.deletion?'Remove this record from active tables. Its history is retained.':'Create a new record with these values.'}</p><ChangeSummary value={recordReview.proposal.summary??recordReview.proposal.body}/><button className="ty-button" disabled={busy||!!saveReceipt.current?.saved} onClick={async()=>{setBusy(true);try{await call(recordReview.deletion?'discard_preview':'discard_workspace_preview',{previewId:recordReview.proposal.id});saveReceipt.current=null;setRecordReview(null);setError('');}catch(e){actionError(e);}finally{setBusy(false);}}}>Cancel</button><button className="ty-button ty-button--primary" disabled={busy} onClick={async()=>{setBusy(true);try{saveReceipt.current??={proposal:recordReview.proposal,deletion:recordReview.deletion};await finishSave();}catch(e){actionError(e);}finally{setBusy(false);}}}>{recordReview.deletion?'Delete record':'Duplicate record'}</button></section></div>}
- {proposal&&<ActionFooter action="Save changes" onAction={()=>setReviewProposal(true)} onDismiss={async()=>{try{await call('discard_workspace_preview',{previewId:proposal.id});setProposal(null);blocked.current=false;}catch(e){actionError(e);}}}>Your changes are ready to save.</ActionFooter>}
- {standard&&ready&&component&&!footer&&!proposal&&<ActionFooter action="Save edits" disabled onAction={()=>{}}>Edit fields, then select Save edits to save your changes.</ActionFooter>}
- {footer&&!proposal&&<ActionFooter action={footer.kind==='edits'?'Save edits':'Save layout'} busy={busy} disabled={!!saveReceipt.current} onAction={()=>frameAction(footer.kind==='edits'?'save-edits':'save-layout')} dismissLabel={footer.kind==='edits'?'Ignore edits':'Discard layout changes'} onDismiss={()=>frameAction(footer.kind==='edits'?'discard-edits':'discard-layout')}>{footer.kind==='edits'?`${footer.count} field ${footer.count===1?'edit is':'edits are'} ready to save.`:'Your layout changes are ready to save.'}</ActionFooter>}
  {connectorReviews[0]&&embedded?<div className="ty-actions"><a className="ty-button ty-button--primary" href={connectorReviews[0].reviewUrl} target="_blank" rel="noopener noreferrer">Review request in TrialAgents</a></div>:connectorReviews[0]&&<ConnectorReview reviewId={connectorReviews[0].reviewId} call={call} onClose={()=>setConnectorReviews(r=>r.slice(1))} onConfirmed={result=>{setConnectorReviews(r=>r.slice(1));void run({kind:'click',action:'connector:completed',form:{result:JSON.stringify(result)}});}}/>}
- {reviewProposal&&proposal&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="dialog" aria-modal="true" aria-label="Review app changes"><h2>Review changes</h2><ChangeSummary value={proposal.summary??proposal.body}/><button disabled={busy} onClick={()=>setReviewProposal(false)}>Keep editing</button><button disabled={busy} onClick={async()=>{setBusy(true);try{saveReceipt.current??={proposal};await finishSave();setError('');}catch(e){setReviewProposal(false);actionError(e);}finally{setBusy(false);}}}>Save changes</button></section></div>}
+ {reviewProposal&&proposal&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="dialog" aria-modal="true" aria-label="Review app changes"><h2>Review changes</h2><ChangeSummary value={proposal.summary??proposal.body}/><button disabled={busy} onClick={async()=>{try{await call('discard_workspace_preview',{previewId:proposal.id});setProposal(null);setReviewProposal(false);blocked.current=false;}catch(e){actionError(e);}}}>Keep editing</button><button disabled={busy} onClick={async()=>{setBusy(true);try{saveReceipt.current??={proposal};await finishSave();setError('');}catch(e){setReviewProposal(false);actionError(e);}finally{setBusy(false);}}}>Save changes</button></section></div>}
  {!ready&&(loadFailed?<div role="status">The app is taking longer to load. <button onClick={retryLoad}>Retry loading</button></div>:<div className="ty-runtime-loading" aria-busy="true" aria-label="Loading app"/>)}
  {frameUrl&&<iframe inert={adding||!!recordReview} ref={frame} title="Saved frontend code" sandbox={platform.enabled?"allow-scripts allow-popups allow-popups-to-escape-sandbox":"allow-scripts"} referrerPolicy="no-referrer" src={frameUrl} onLoad={send} style={{width:'100%',height:detailsOpen?'100%':height+'px',border:0,display:'block'}}/>}
  </section>;

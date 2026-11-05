@@ -109,14 +109,8 @@
 
 .ty-workspace .ty-sidebar .ty-new-menu [role=menu]{background:var(--ty-sidebar);border-color:#34483d;box-shadow:0 8px 24px #0006;color-scheme:dark}.ty-workspace .ty-sidebar .ty-new-menu [role=menu] button{background:transparent;color:#e7eee9;font-weight:400;opacity:1}.ty-workspace .ty-sidebar .ty-new-menu [role=menu] button:is(:hover,:focus-visible){background:#263c31;color:#fff}.ty-workspace .ty-sidebar .ty-new-menu [role=menu] button:focus-visible{outline:2px solid #8dd5b0;outline-offset:-2px}.ty-workspace .ty-project-access-toggle>svg{flex-shrink:0;color:var(--ty-ink)}.ty-workspace .ty-setup .ty-project-access-toggle{display:flex;flex-direction:row;align-items:center;gap:9px;margin:20px 0 14px}.ty-workspace .ty-setup .ty-project-access-toggle input{width:auto;margin:0}.ty-workspace .ty-setup .ty-access-check{width:25px;min-height:25px;padding:3px}.ty-workspace .ty-setup .ty-access-grid{margin-top:12px}
 .ty-workspace .ty-setup label.ty-project-access-toggle{flex-direction:row!important;justify-content:flex-start}.ty-workspace .ty-setup .ty-project-access-toggle input{flex:0 0 auto;align-self:center}.ty-workspace .ty-setup button.ty-access-check.is-denied{background:#f0f2f1!important;color:#8b948e!important;border-color:#d9dfdb}.ty-workspace .ty-setup button.ty-access-check.is-allowed{background:#27764e!important;color:white!important;border-color:#27764e}.ty-workspace .ty-setup button.ty-access-check:disabled{opacity:1}
-
-/* Embedded chrome shares the sidebar palette; tracker content stays light. */
-.ty-workspace--embedded .ty-topbar,.ty-workspace--embedded:has(.ty-tracker--standard) .ty-topbar,.ty-workspace--embedded .ty-action-footer{background:var(--ty-sidebar);color:#e7eee9;border-color:#34483d}
 .ty-workspace--embedded .ty-topbar :is(.ty-button,.ty-icon-button,.ty-mobile-brand,.ty-breadcrumb,.ty-breadcrumb strong){color:#e7eee9}
 .ty-workspace--embedded .ty-topbar :is(.ty-button,.ty-icon-button):hover{background:#263c31;color:#fff}
-.ty-workspace--embedded .ty-action-footer .ty-button--secondary{background:transparent;color:#e7eee9;border:1px solid #80988a}
-.ty-workspace--embedded .ty-action-footer .ty-button--secondary:hover{background:#263c31;color:white}
-.ty-workspace--embedded .ty-footer-dismiss{color:#e7eee9}
 
 /* Open TrialAgents remains a light CTA against the dark embedded header. */
 .ty-workspace--embedded .ty-topbar .ty-button.ty-button--quiet{background:#fff;color:#183d32;border-color:#dce5e1}
@@ -125,7 +119,6 @@
 
 /* Shared secondary action style for app and plugin pages. */
 .ty-workspace{--ty-secondary-bg:#fff;--ty-secondary-ink:#25352e;--ty-secondary-border:#d2dcd6;--ty-secondary-hover:#f0f4f1;--ty-secondary-hover-border:#a8b9ae}
-.ty-workspace .ty-action-footer{--ty-secondary-bg:transparent;--ty-secondary-ink:#e7eee9;--ty-secondary-border:#80988a;--ty-secondary-hover:#263c31;--ty-secondary-hover-border:#a1b4a8}
 .ty-workspace #ty-main :is(.ty-button:not(.ty-button--primary):not(.ty-button--quiet),.ty-icon-button,.ty-logs .ty-advanced>summary,.ty-settings-page button:not([class]):not([role=tab])){display:inline-flex;align-items:center;justify-content:center;gap:8px;box-sizing:border-box;min-height:40px;border:1px solid var(--ty-secondary-border);border-radius:8px;padding:9px 14px;margin:0;background:var(--ty-secondary-bg);color:var(--ty-secondary-ink);font-family:inherit;font-size:14px;font-weight:500;line-height:20px;text-decoration:none;white-space:nowrap;box-shadow:none;cursor:pointer;transition:background-color .12s,border-color .12s}
 .ty-workspace #ty-main :is(.ty-button:not(.ty-button--primary):not(.ty-button--quiet),.ty-icon-button,.ty-logs .ty-advanced>summary,.ty-settings-page button:not([class]):not([role=tab])):hover:not(:disabled){background:var(--ty-secondary-hover);border-color:var(--ty-secondary-hover-border)}
 .ty-workspace #ty-main :is(.ty-button:not(.ty-button--primary):not(.ty-button--quiet),.ty-icon-button,.ty-logs .ty-advanced>summary,.ty-settings-page button:not([class]):not([role=tab])):focus-visible{outline:2px solid var(--ty-focus,#287650);outline-offset:2px}
@@ -159,8 +152,6 @@
  .ty-workspace--embedded .ty-topbar>.ty-button{font-size:12px;padding:8px}
  .ty-workspace--embedded .ty-topbar>.ty-button svg{display:none}
 }
-.ty-workspace .ty-tracker-preview>.ty-action-footer .ty-button--primary{background:#fff!important;color:#123c2c;border-color:#fff}
-.ty-workspace .ty-tracker-preview>.ty-action-footer .ty-button--primary:hover{background:#edf6f0!important}
 /* Keep the platform action in the header row, including template app layouts. */
 .ty-workspace.ty-workspace--embedded .ty-main-column>.ty-topbar{flex-wrap:nowrap}
 @media(max-width:600px){.ty-workspace.ty-workspace--embedded .ty-main-column>.ty-topbar{padding:0 16px;gap:12px}}
@@ -182,3 +173,5 @@
 @media(max-width:760px){.ty-workspace:not(.ty-workspace--embedded):not(.ty-navigation-open) .ty-sidebar--desktop{display:none!important}}
 
 .ty-workspace .ty-menu-popover>[role=menuitem]{display:flex;align-items:center;gap:8px;width:100%;padding:10px;font-family:inherit;font-size:12px;font-weight:400;line-height:normal;text-align:left}
+
+.ty-workspace--embedded .ty-topbar,.ty-workspace--embedded:has(.ty-tracker--standard) .ty-topbar{background:var(--ty-sidebar);color:#e7eee9;border-color:#34483d}

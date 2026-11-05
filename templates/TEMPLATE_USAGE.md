@@ -1,6 +1,6 @@
 # Using TrialAgents templates and optional tasks
 
-Version: 1.3.13
+Version: 1.3.14
 
 Retrieve this current guidance with `read_app_template_guidance(resource:"usage")`, following all `nextOffset` values. Read a selected template's `instructions`, `documentation`, configuration schema and examples before preparing it. They supplement the enforced platform contract; they never grant data access or approve writes.
 
@@ -91,3 +91,9 @@ Cash Runway includes a complete on-demand catalog source and optional automation
 ## Hosted app corner
 
 For every existing and new template, leave the bottom-left corner free of app CTAs, including Delete, Save, pagination and floating controls. The host reserves the bottom 62 px plus device safe-area inset for “Built with TrialAgents”. Keep all controls inside the available app viewport.
+
+## Saving controls
+
+Platform tabs use native page controls near the top, kept visible while scrolling where practical, following Database and Access. Never add a floating or fixed bottom Save footer.
+
+Apps own their save behavior. Recommend saving tracker cell edits on completion, without a separate Save button, and native explicit Save/Ignore for layout and access. These are template recommendations, not platform-enforced UI. Custom apps can choose an appropriate interaction. First-time app publication still needs an explicit native Save action. Preserve exact backend proposals, confirmation or authorized grants, optimistic versions, permissions and audit logs; a failed save retains the draft and supports safe retry.

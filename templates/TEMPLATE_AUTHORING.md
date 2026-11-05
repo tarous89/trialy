@@ -1,6 +1,6 @@
 # TrialAgents template authoring standard
 
-Version: 1.3.13
+Version: 1.3.14
 
 This is the living engineering contract for templates served by TrialAgents. Update it when a verified renderer, lifecycle or host-integration lesson changes. Retrieve the current copy with `read_app_template_guidance(resource:"authoring")`; follow `nextOffset` to the end. The response includes a version and content hash. Packaged plugin examples are not the catalog.
 
@@ -152,7 +152,7 @@ Use the current design kit and canonical theme components. Preserve a coherent p
 
 Keep one primary vertical scroll; avoid nested page scrolls and horizontal overflow. Keep headers, sidebars and action areas aligned, responsive and clear of host safe areas. Test narrow, tablet and desktop layouts. All controls need accessible names, keyboard access and valid empty, populated and long-content states.
 
-The first-save footer belongs only to an app that has never been saved. Saved-app revisions use the existing review controls, without claiming the app is unsaved. Deliberate record/layout edits retain their own approval controls. Generated templates must not invent global save prompts, loading-error banners, retry buttons or platform navigation.
+The native first-save action belongs only to an app that has never been saved. Saved-app revisions use the existing review controls, without claiming the app is unsaved. Deliberate record/layout edits retain their own approval controls. Generated templates must not invent global save prompts, loading-error banners, retry buttons or platform navigation.
 
 Keep a loaded published app visible during ChatGPT edits and during failed loads. Publication may offer the platform's subtle optional refresh notice; it never forces a reload. If no authorized usable view exists, use the shared “No app is available” state and Return to Home in the same surface. Access revocation must still clear protected data. Failed writes preserve inputs and are never represented as successful.
 
@@ -259,3 +259,9 @@ Use the platform Automations cards for setup, editing and explicit tests. Keep c
 Use the workspace's full content width and padding for Settings and automation editing, aligned with Home, Database and Access. Keep automation cards compact with a short two-line prompt preview; show the full prompt only in the dedicated editor. Automation Save/Ignore use the shared bottom action footer, visible on entry, with Save disabled until changes exist. Reserve content clearance so the footer never covers the last field. Sidebar navigation clears automation edit/create routes; an explicit automation deep link may still open an editor.
 
 Use **Database trigger**, **Schedule**, and **Recurrent** as the trigger categories, mapping to the existing schema as specified in the shared automation guide. Expose applicable timing and condition fields, including elapsed minutes after successful completion. Completion email uses the immutable saved research-run database transition to completed, with completion time and results; it is not an ad-hoc trigger. Preserve existing settings on unrelated edits. Keep connection configuration in Connectors and show dependent automations Disabled until it is verified. Do not impose extra restrictions on research prompts or replace existing cadence merely to fit a template.
+
+## Saving controls
+
+Platform tabs use native page controls near the top, kept visible while scrolling where practical, following Database and Access. Never add a floating or fixed bottom Save footer.
+
+Apps own their save behavior. Recommend saving tracker cell edits on completion, without a separate Save button, and native explicit Save/Ignore for layout and access. These are template recommendations, not platform-enforced UI. Custom apps can choose an appropriate interaction. First-time app publication still needs an explicit native Save action. Preserve exact backend proposals, confirmation or authorized grants, optimistic versions, permissions and audit logs; a failed save retains the draft and supports safe retry.

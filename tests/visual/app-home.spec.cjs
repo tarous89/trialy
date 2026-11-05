@@ -25,16 +25,16 @@ for(const width of [1440,390])test(`Individual app covers in platform and extens
   await root.getByRole('button',{name:'Preview grid',exact:true}).click();expect(await root.locator('.ty-resource--app').evaluateAll(els=>els.map(el=>el.getAttribute('style')))).toEqual(styles);
  }
 });
-for(const width of [1440,390])test(`Preview footer keeps both labeled actions in view at ${width}px`,async({page})=>{
+for(const width of [1440,390])test(`Preview top actions keep both labeled actions in view at ${width}px`,async({page})=>{
  await page.setViewportSize({width,height:1000});
  for(const embedded of [false,true]){
   const draft=await (await page.request.get(base+'/fixture/app-draft')).json();
   await page.goto(base+(embedded?'/?apps=1':'/apps/'+draft.preview.id+'?workspaceId='+draft.workspaceId+'&source=preview'));
   if(embedded){await page.waitForFunction(()=>window.hostReady);await page.evaluate(r=>window.deliver(r),draft);}
-  const root=embedded?page.frameLocator('#app'):page,footer=root.locator('.ty-tracker-preview>.ty-action-footer');
+  const root=embedded?page.frameLocator('#app'):page,footer=root.locator('.ty-tracker-preview>.ty-page-actions');
   const save=footer.getByRole('button',{name:'Save app',exact:true}),discard=footer.getByRole('button',{name:'Discard app',exact:true});
-  await expect(save).toBeEnabled();await expect(discard).toHaveText('Discard app');await expect(footer).toHaveCSS('background-color','rgb(13, 19, 17)');if(embedded)await expect(root.locator('.ty-topbar')).toHaveCSS('background-color','rgb(13, 19, 17)');
-  const box=await footer.boundingBox();expect(box.x).toBe(0);expect(box.width).toBe(width);expect(box.y+box.height).toBe(embedded?1000:938); // Standalone reserves 62px for attribution.
+  await expect(save).toBeEnabled();await expect(discard).toHaveText('Discard app');if(embedded)await expect(root.locator('.ty-topbar')).toHaveCSS('background-color','rgb(13, 19, 17)');
+  const box=await footer.boundingBox();expect(box.x).toBeGreaterThanOrEqual(0);expect(box.width).toBeLessThanOrEqual(width);expect(box.y).toBeLessThan(250);await expect(footer).toHaveCSS('position','sticky');
   if(!embedded)expect((await root.locator('.ty-app-watermark').boundingBox()).y).toBeGreaterThanOrEqual(box.y+box.height);
   for(const button of [save,discard]){const b=await button.boundingBox();expect(b.x).toBeGreaterThanOrEqual(0);expect(b.x+b.width).toBeLessThanOrEqual(width);expect(b.y+b.height).toBeLessThanOrEqual(1000);}
   await discard.click();if(embedded){await expect(footer).toHaveCount(0);await expect(root.getByRole('heading',{name:'Home',exact:true})).toBeVisible();}else await expect(page).toHaveURL(base+'/?tab=home');
