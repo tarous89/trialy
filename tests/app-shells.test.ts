@@ -18,7 +18,7 @@ test('approved shells are optional distinct design recipes and not app templates
  assert.match(shellSelection.mandatory,/permissions/i);
 });
 test('the component vocabulary includes structured settings and interactive charts',()=>{
- const ids=sharedComponents.map(component=>component.id);
+ const ids:string[]=sharedComponents.map(component=>component.id);
  assert.equal(new Set(ids).size,ids.length);
  for(const required of ['chart-card','settings-page','filter-toolbar','data-table','record-details','status-pill','evidence-checklist']){
   assert.ok(ids.includes(required),required);
