@@ -1,0 +1,13 @@
+/* The trusted first-save review is the only platform-owned floating save footer. */
+.ty-workspace .ty-preview-approval{--ty-green:#a2edb5;--ty-secondary-bg:transparent;--ty-secondary-ink:#f4f8f5;--ty-secondary-border:#50675b;--ty-secondary-hover:#243b30;--ty-secondary-hover-border:#789783;position:fixed;left:0;right:0;bottom:0;z-index:2300;display:flex;align-items:center;gap:16px;margin:0;padding:16px max(24px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(24px,env(safe-area-inset-left,0px));background:var(--ty-sidebar,#0d1311);color:#f4f8f5;border:0;border-top:1px solid #34483d;box-shadow:0 -4px 18px #0d131118;border-radius:0}
+.ty-preview-approval-summary{flex:1;min-width:0;font-size:14px;line-height:1.5}
+.ty-preview-approval-actions{display:flex;flex:none;gap:12px;align-items:center}
+.ty-workspace #ty-main .ty-preview-approval .ty-button{border-color:#50675b;background:transparent;color:#f4f8f5;white-space:nowrap}
+.ty-workspace #ty-main .ty-preview-approval .ty-button--primary{background:#a2edb5;border-color:#a2edb5;color:#10251a}
+.ty-workspace:has(.ty-preview-approval:not([hidden] *)){--shell-footer:var(--preview-footer-height,80px)}
+.ty-workspace:has(.ty-preview-approval:not([hidden] *)) #ty-main{padding-bottom:calc(var(--preview-footer-height,80px) + 24px);scroll-padding-bottom:calc(var(--preview-footer-height,80px) + 24px)}
+.ty-workspace:has(.ty-preview-approval:not([hidden] *)) .ty-sidebar--desktop{bottom:var(--preview-footer-height,80px);height:calc(100dvh - var(--preview-footer-height,80px))}
+.ty-workspace.ty-standalone .ty-preview-approval{bottom:var(--app-watermark-clearance)}
+@media(max-width:600px){.ty-workspace .ty-preview-approval{flex-wrap:wrap;gap:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}.ty-preview-approval-summary{flex-basis:100%}.ty-preview-approval-actions{margin-left:auto}}
+
+.ty-workspace #ty-main .ty-preview-approval .ty-button--primary:hover{background:#baf4c8!important;border-color:#baf4c8;color:#10251a}

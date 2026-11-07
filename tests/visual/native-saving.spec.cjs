@@ -6,7 +6,7 @@ for(const width of [1440,390])test(`tracker commits cell edits without injected 
  await page.evaluate(result=>window.deliver(result),await(await page.request.get(base+'/fixture/initial')).json());
  const host=page.frameLocator('#app'),app=host.frameLocator('iframe[title="Saved frontend code"]');
  await app.getByRole('button',{name:'Companies',exact:true}).click();
- await expect(host.locator('.ty-action-footer')).toHaveCount(0);
+ await expect(host.locator('.ty-action-footer,.ty-preview-approval')).toHaveCount(0);
  await expect(host.getByRole('button',{name:'Save edits',exact:true})).toHaveCount(0);
  let confirms=0;page.on('request',r=>{if(r.url().endsWith('/fixture/tool')&&r.postDataJSON()?.name==='confirm_workspace_change')confirms++;});
  const originalName=await app.getByRole('button',{name:'Edit Company',exact:true}).first().innerText();

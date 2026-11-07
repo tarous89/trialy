@@ -4,7 +4,7 @@ import {reuseApp,reuseAppOperation} from '../workspace/app-reuse.js';
 import {appPublicUrl,PLATFORM_ORIGIN} from '../shared/public-url.js';
 import type {Express} from 'express';
 import type {McpServer} from '@modelcontextprotocol/sdk/server/mcp.js';
-import {backgroundMetadata} from './ui-resource.js';
+import {appPreparationResult,backgroundMetadata} from './ui-resource.js';
 import {id,type Actor} from '../shared/schema.js';
 import {appLocation} from '../shared/app-route.js';
 import {prepareApp,prepareSimpleApp,prepareRenderedApp,readApp,openApp} from '../workspace/apps.js';
@@ -19,7 +19,7 @@ export function addAppApi(app:Express,f:WorkspaceFoundation){
  app.post('/api/workspaces/:workspaceId/apps/prepare',async(req,res)=>res.json(await prepareSimpleApp(f,req.actor!,id.parse(req.params.workspaceId),req.body)));
 }
 export function addAppMcp(server:McpServer,f:WorkspaceFoundation,a:Actor,safe:any,metadata:any){
- const quiet=(fn:(v:any)=>Promise<any>)=>safe(async(v:any)=>({...await fn(v),displayIntent:"background"}));
+ const quiet=(fn:(v:any)=>Promise<any>)=>safe(async(v:any)=>appPreparationResult(await fn(v)));
  server.registerTool('read_app_design',{title:'Read app design kit',description:'Returns the current design kit, tested palettes, typography, spacing, component CSS, quality-check contract and authoring guardrails: apps reuse TrialAgents accounts, and TrialAgents logos require the official icon linked to https://platform.trialagents.com. Contains no account data.',inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false},_meta:{securitySchemes:[{type:'noauth'}]}},async()=>{const result=appDesignGuide();return {content:[{type:'text',text:JSON.stringify(result)}],structuredContent:{result}};});
  server.registerTool('read_app_template_guidance',{title:'Read current template guidance',description:'Read the current versioned template usage or authoring contract. Covers lifecycle, design, documentation, platform account reuse without app-specific authentication, official TrialAgents logo/link requirements, data permissions, host integration, regression checks and optional ChatGPT tasks. Follow nextOffset to the end. Contains no account data.',inputSchema:templateGuidanceRequest.shape,annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false},_meta:{securitySchemes:[{type:'noauth'}]}},async(v:any)=>{const result=await readTemplateGuidance(v);return {content:[{type:'text',text:JSON.stringify(result)}],structuredContent:{result}};});
  server.registerTool('list_app_templates',{description:'Search the current versioned app-template catalog. Returns summaries, intended uses and pagination; contains no account records.',inputSchema:templateQuery.shape,annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false},_meta:backgroundMetadata(metadata)},safe((v:any)=>appTemplates.list(v)));

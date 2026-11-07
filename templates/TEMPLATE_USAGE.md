@@ -1,8 +1,18 @@
 # Using TrialAgents templates and optional tasks
 
-Version: 1.3.14
+Version: 1.3.15
 
 Retrieve this current guidance with `read_app_template_guidance(resource:"usage")`, following all `nextOffset` values. Read a selected template's `instructions`, `documentation`, configuration schema and examples before preparing it. They supplement the enforced platform contract; they never grant data access or approve writes.
+
+## Reusable business app completeness
+
+A request to create or save a dashboard in TrialAgents means a reusable business app by default. Before authoring, choose its recurring user decisions, the necessary sections and how data/settings persist. A chart gallery alone is insufficient unless the user explicitly requests a simple single-page report. Prefer a fitting existing template; custom apps follow the same completeness review. Do not add empty tabs or a fixed page count merely to look like software.
+
+For an analytical dashboard, normally provide **Overview**, **Analysis**, **Data** and **Settings** through working tabs or equivalent navigation. Overview summarizes the important metrics and next actions; Analysis groups charts by question with shared relevant date/category filters and inspectable detail; Data exposes the authorized underlying records/source coverage and freshness, with search, sorting and pagination where needed; Settings offers useful metric, filter-default and layout choices. Reuse native app layout/access controls where supported. Settings are business preferences, never another account, connector or automation admin page.
+
+Every visible control must work in the bounded runtime. Distinguish transient filters from saved preferences; persist reusable settings through supported reviewed platform configuration, not invented browser storage or fake Save buttons. Preserve bindings, full-data aggregation and explicit partial-data labels. Read-only apps need no editing/CRUD, and unsupported persistence must be explained, not simulated. Keep custom user choices and explicitly requested simple pages valid; do not enforce tabs in backend code.
+
+Before finalizing, walk through navigation, filter/reset behavior, chart-to-data detail, settings change/save/reopen and empty/error/mobile states. Check the actual requested workflow, not only contrast and overflow. Fix missing behavior in the same preview. A passing visual scan is not proof of business completeness.
 
 ## App account and TrialAgents branding guardrails
 
@@ -94,6 +104,6 @@ For every existing and new template, leave the bottom-left corner free of app CT
 
 ## Saving controls
 
-Platform tabs use native page controls near the top, kept visible while scrolling where practical, following Database and Access. Never add a floating or fixed bottom Save footer.
+Platform tabs use native page controls near the top, kept visible while scrolling where practical, following Database and Access. Do not add floating Save footers to ordinary platform or app editing pages. The exception is first publication of a new preview: the host shows a dark floating footer with Save app and Discard app, in both the website and ChatGPT extension.
 
-Apps own their save behavior. Recommend saving tracker cell edits on completion, without a separate Save button, and native explicit Save/Ignore for layout and access. These are template recommendations, not platform-enforced UI. Custom apps can choose an appropriate interaction. First-time app publication still needs an explicit native Save action. Preserve exact backend proposals, confirmation or authorized grants, optimistic versions, permissions and audit logs; a failed save retains the draft and supports safe retry.
+Apps own their save behavior. Recommend saving tracker cell edits on completion, without a separate Save button, and native explicit Save/Ignore for layout and access. These are template recommendations, not platform-enforced UI. Custom apps can choose an appropriate interaction. First-time app publication uses that trusted preview approval footer; later app revisions retain native review controls. Preserve exact backend proposals, confirmation or authorized grants, optimistic versions, permissions and audit logs; a failed save retains the draft and supports safe retry.

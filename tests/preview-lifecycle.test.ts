@@ -20,11 +20,11 @@ test('reproduce draft lifecycle error and verify an authorized recovery path',as
   const create=()=>handlers.get('prepare_tracker')({workspaceId:w.id,name:'Biotech Design Partner Outreach',description:'Diagnostic fixture',tabs:[{name:'Companies',typeId,columns:[{field:'name'}]}],showExample:false,omitSource:true});
   const fresh=await create();
   await t.test('fresh preparation returns a rendered bundle and honest display status',async()=>{
-   assert.equal(fresh.saveStatus,'unsaved');assert.ok(fresh.initialOutput?.tracker);assert.equal(fresh.previewStatus,'prepared');assert.equal(fresh.displayStatus,'awaiting_client');
+   assert.equal(fresh.saveStatus,'unsaved');assert.equal(fresh.displayIntent,'background');assert.deepEqual(fresh.nextAction.arguments,{workspaceId:w.id,previewId:fresh.preview.id,digest:fresh.preview.digest});assert.equal(fresh.nextAction.operation,'finalize_app_preview');assert.ok(fresh.initialOutput?.tracker);assert.equal(fresh.previewStatus,'prepared');assert.equal(fresh.displayStatus,'awaiting_client');
    const out=await f.runFrontend(a,w.id,{previewId:fresh.preview.id});assert.ok(out.tracker);assert.equal(out.tracker.config.pageSize,25);
    const row=(await db.query('SELECT expires_at-now() AS remaining FROM workspace_previews WHERE id=$1',[fresh.preview.id])).rows[0];console.log('fresh draft remaining lifetime',row.remaining);
   });
-  const finalized=await f.finalizeAppPreview(a,w.id,fresh.preview.id,fresh.preview.digest);fresh.preview=finalized.preview;
+  const finalized=await handlers.get('finalize_app_preview')(fresh.nextAction.arguments);assert.equal(finalized.screen,'tracker-preview');assert.equal(finalized.preview.id,fresh.preview.id);assert.equal(finalized.preview.reviewState,'ready');assert.notEqual(finalized.displayIntent,'background');fresh.preview=finalized.preview;
   const saved=await f.confirm({...a,origin:"human"},w.id,fresh.preview.id,fresh.preview.digest);
   const unavailable=async(previewId:string,actor=a,workspace=w.id)=>assert.rejects(f.runFrontend(actor,workspace,{previewId}),{message:'Code preview unavailable'});
   await t.test('replaying a saved draft reproduces the exact screenshot error',()=>unavailable(fresh.preview.id));

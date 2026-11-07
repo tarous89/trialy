@@ -17,6 +17,13 @@ export function backgroundMetadata(metadata:any){
  delete rest['openai/outputTemplate'];
  return {...rest,...(ui?.visibility?{ui:{visibility:ui.visibility}}:{})};
 }
+/** Quiet preparation must give clients an exact, actionable display handoff. */
+export function appPreparationResult(data:any){
+ const preview=data?.preview??(data?.workspaceFoundation&&['create_tracker','save_component'].includes(data?.body?.kind)?data:null);
+ return {...data,displayIntent:'background',...(preview?.reviewState==='draft'?{
+  nextAction:{operation:'finalize_app_preview',arguments:{workspaceId:preview.workspaceId??data.workspaceId,previewId:preview.id,digest:preview.digest},when:'After completing the requested app and validation. This opens the exact app in the extension for approval; leave it visible until saved or discarded.'}
+ }:{})};
+}
 export function registerWorkspaceResources(server:McpServer,bundle:Awaited<ReturnType<typeof workspaceResource>>,frameDomains:string[]){
  const mimeType='text/html;profile=mcp-app';
  const _meta={ui:{prefersBorder:true,csp:{connectDomains:[],resourceDomains:[],frameDomains:[...new Set(frameDomains)]}},'openai/widgetDescription':'The TrialAgents workspace: data, code, functions and confirmed saves inside ChatGPT.','openai/ui':{availableDisplayModes:['inline','fullscreen'],preferredDisplayMode:'fullscreen'}};

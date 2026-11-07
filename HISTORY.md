@@ -5,6 +5,12 @@ This file records meaningful decisions and completed development work. It is not
 - [Scope and decisions](README.md)
 - [Current development plan](DEVELOPMENT.md)
 
+## New-app approval, uniform cards and dashboard guidance — 7 November 2026
+
+Release 0.2.56 restores the dark floating first-publication footer in the web and embedded bundles, reserves its measured height around tracker controls, and preserves native save behavior for ordinary platform/app editing. Extension Home cards and Open menu actions now stay inside the extension. Quiet app preparation returns the exact finalization handoff; guidance requires displaying that app for approval before returning Home. Home cards keep equal dimensions with bounded text and a Preview badge outside content flow.
+
+Template guidance 1.3.15, the live design kit, server instructions and packaged skill source define reusable dashboard completeness: meaningful navigation, filters, inspectable data and functioning settings/persistence, while respecting explicit simple-report requests. Existing app source, data, access and automations are unchanged. No migration. Verified build/type checks, preview lifecycle and template tests, desktop/mobile card geometry, preview save/discard and return to Home, in-extension navigation, tracker footer clearance, ordinary edits and save-failure recovery. Browser checks use isolated fixtures; actual ChatGPT host integration remains a user acceptance check.
+
 ## App account and branding standards — 1 November 2026
 
 Release 0.2.42 adds explicit no-app-auth/account rules and official-icon/canonical-link requirements to template guidance 1.3.7, plugin authoring skills, QA guardrails and the live design kit. Supplied PNGs match the existing assets exactly. Standalone and public-share watermarks consistently include the official icon and link to https://platform.trialagents.com, preserving the standalone unsaved-edit guard. Platform authentication/permissions and existing customer source remain intact.

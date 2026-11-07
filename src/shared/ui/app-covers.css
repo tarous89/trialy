@@ -25,3 +25,14 @@
 /* The cover must follow the card's inner radius instead of painting over its border. */
 .ty-workspace .ty-resource-grid .ty-resource--app .ty-resource-open{border-radius:12px;overflow:hidden}
 .ty-workspace .ty-resource-grid .ty-resource--app .ty-tool-snapshot{border-radius:12px 12px 0 0}
+
+/* Equal card geometry across rows, including long titles and unsaved previews. */
+.ty-workspace .ty-resource-grid .ty-resource{height:346px;min-height:0}
+.ty-workspace .ty-resource-grid .ty-resource-open{position:relative;min-height:0}
+.ty-workspace .ty-resource-grid .ty-resource-info{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column}
+.ty-workspace .ty-resource-grid .ty-resource-info h3{flex:none;height:41px;min-height:41px;max-height:41px;align-items:flex-start;overflow:hidden}
+.ty-workspace .ty-resource-grid .ty-resource-info h3 span{overflow-wrap:anywhere}
+.ty-workspace .ty-resource-grid .ty-resource-info .ty-app-description{flex:none;height:38px;min-height:38px;max-height:38px}
+.ty-workspace .ty-resource-grid .ty-resource-info time{margin-top:auto;padding-top:10px}
+.ty-workspace .ty-resource-grid .ty-preview-badge{position:absolute;top:22px;right:48px;left:auto;margin:0;max-width:calc(100% - 126px);box-shadow:0 2px 8px #17332612}
+@media(max-width:480px){.ty-workspace .ty-resource-grid .ty-resource{height:336px}}

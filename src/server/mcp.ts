@@ -21,7 +21,7 @@ import { operationSchema, recordQuerySchema, fieldChangeQuerySchema, id, AppErro
 export function addMcp(app:Express,s:Service,authenticate:RequestHandler) {
  const createLimit=rateLimit({windowMs:60000,limit:10,standardHeaders:'draft-8',legacyHeaders:false});
  app.post('/mcp',(req,res,next)=>req.body?.method==='tools/call'&&req.body?.params?.name==='preview_tracker'?createLimit(req,res,next):next(),(req,res,next)=>{if(req.get('authorization'))return authenticate(req,res,next);res.set('Cache-Control','no-store');next();},async(req,res)=>{
-  const actor=req.actor!;const server=new McpServer({name:'trialagents',title:'TrialAgents',version:'0.2.55'},{instructions:serverInstructions});
+  const actor=req.actor!;const server=new McpServer({name:'trialagents',title:'TrialAgents',version:'0.2.56'},{instructions:serverInstructions});
   addTrackerDesignMcp(server);
   addWorkspaceGuidanceMcp(server);
   const bundle=await workspaceResource(),resource=bundle.uri;
