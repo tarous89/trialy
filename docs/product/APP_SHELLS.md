@@ -29,7 +29,7 @@ The approved CSS reference uses card gaps of 20–24px desktop, 14–18px mobile
 
 ## Source of visual approval
 
-`docs/design-reference/TrialAgents_Shells_Interactive_Review.html` is the complete **browser-only approved gallery**, with four shell demos plus shared component examples. Its fictional data and in-memory interactions are *not* a deployable frontend-js app. The production implementation is the versioned shell selection/component design kit plus the existing platform data/runtime review paths.
+`public/design-reference/app-shells.html` (served at `https://platform.trialagents.com/design-reference/app-shells.html`) is the complete **browser-only approved gallery**, with four shell demos plus shared component examples. Its fictional data and in-memory interactions are *not* a deployable frontend-js app. The production implementation is the versioned shell selection/component design kit plus the existing platform data/runtime review paths.
 
 ## Release verification
 
