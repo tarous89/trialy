@@ -6,6 +6,8 @@ for(const width of [1440,390])test(`Platform shell and catalog at ${width}`,asyn
  await page.goto(base+'/app-home');
  await expect(page.getByRole('heading',{name:'Apps',exact:true})).toBeVisible();
  await expect(page.locator('.ty-sidebar')).toBeVisible();
+ await expect(page.getByRole('button',{name:'Templates',exact:true})).toHaveCount(0);
+ for(const name of ['ChatGPT','Claude'])await expect(page.locator('.ty-platform-header').getByRole('link',{name:'Open '+name})).toBeVisible();
  await page.getByRole('button',{name:'Collapse navigation',exact:true}).click();
  const launch=page.getByRole('link',{name:'Open Simple app fixture',exact:true});
  await expect(launch).not.toHaveAttribute('target','_blank');
@@ -53,7 +55,7 @@ for(const width of [1440,390])test(`template gallery, filters and fullscreen pre
  await expect(page).toHaveURL(/\/apps\//);expect(context.pages()).toHaveLength(1);
  await expect(page.locator('.ty-app-assistants')).toHaveCount(0);
  await expect(page.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Cash Runway',exact:true})).toBeVisible();
- for(const name of ['ChatGPT','Claude']){const link=page.locator('.ty-platform-header').getByRole('link',{name:'Customize in '+name});await expect(link).toBeVisible();expect(await link.locator('img').evaluate(img=>img.complete&&img.naturalWidth>0)).toBe(true);}
+ for(const name of ['ChatGPT','Claude']){const link=page.locator('.ty-platform-header').getByRole('link',{name:'Open '+name});await expect(link).toBeVisible();expect(await link.locator('img').evaluate(img=>img.complete&&img.naturalWidth>0)).toBe(true);}
  await page.screenshot({path:`/tmp/gallery-installed-${width}.png`});
 });
 test('every approved template renders an isolated interactive preview',async({page})=>{

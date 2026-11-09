@@ -51,3 +51,8 @@
 .ty-template-catalog .ty-gallery-card p{margin:0}.ty-template-catalog .ty-gallery-card .ty-gallery-assistants{margin-bottom:8px}
 .ty-workspace .ty-template-catalog .ty-gallery-filters label{margin:0}.ty-template-catalog .ty-gallery-filters .ty-search{flex-direction:row;align-items:center;max-width:none}
 .ty-template-catalog .ty-gallery-filters label:not(.ty-search){flex-direction:column;align-items:stretch}
+
+/* Keep labeled assistant actions visible across web platform and app screens. */
+.ty-platform-header .ty-assistant-icons a{display:inline-flex;align-items:center;gap:7px;width:auto;padding:8px 10px;color:#edf7f1;font-size:12px;white-space:nowrap;text-decoration:none}
+.ty-platform-header .ty-assistant-icons img{width:16px;height:16px}
+@media(max-width:600px){.ty-platform-header .ty-platform-brand strong{display:none}.ty-platform-header .ty-assistant-icons{gap:5px}.ty-platform-header .ty-assistant-icons a{padding:8px;font-size:11px}.ty-workspace .ty-platform-header{gap:8px}}
