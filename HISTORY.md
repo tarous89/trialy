@@ -1,3 +1,10 @@
+## 9 November 2026 — Platform apps and approved template catalog
+
+- Unified the web app shell with a fixed TrialAgents header, collapsible platform sidebar and same-tab app navigation. Home is now Apps.
+- Added direct installation of the 23 existing life-science apps with isolated empty tables, separate ChatGPT/Claude customization links, and a default catalog for new users.
+- Added migration 056, a database-backed draft/approved catalog, operator publishing workflow, immutable source/schema versions, runtime read-only catalog access, and atomic/idempotent installs.
+- Preserved existing app permissions, edits, history, sharing and optional ChatGPT research scheduling. Updated guidance to 1.3.16 for the host header and same-tab navigation.
+
 # Trialy — Project History
 
 This file records meaningful decisions and completed development work. It is not the application's customer-record audit trail.

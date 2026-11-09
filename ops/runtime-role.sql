@@ -85,3 +85,5 @@ GRANT SELECT,INSERT,UPDATE ON app_notification_account_locks TO trialy_runtime;
 
 GRANT SELECT,UPDATE ON support_requests TO trialy_worker;
 GRANT EXECUTE ON FUNCTION ensure_default_project(uuid) TO trialy_runtime;
+
+GRANT SELECT ON app_template_catalog TO trialy_runtime;

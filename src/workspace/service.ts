@@ -7,7 +7,7 @@ import {withReadMetadata} from '../db/read-metadata.js';
 import {AppActions} from '../app-services/service.js';
 import {AppMonitoring} from '../app-services/monitoring.js';
 import {serviceJob} from '../app-services/jobs.js';
-import {appDesignCss,DESIGN_VERSION} from '../shared/app-design.js';
+import {appDesignCss,appRuntimeCss,DESIGN_VERSION} from '../shared/app-design.js';
 import {inspectAppDesign,type DesignFrame} from './design-quality.js';
 import {preparationFingerprint} from './app-preparation.js';
 import {appPublicUrl} from '../shared/public-url.js';
@@ -270,7 +270,8 @@ export class WorkspaceFoundation {
    // Recheck after execution; a concurrent revoke/edit must not release its output.
    if(request.componentId){const runtime=await this.runtimeComponent(this.db,a,w,request.componentId,version,viewId);assertRuntimeScope(runtime.latest,content);if((await access(this.db,a,w)).access_version!==currentPolicy.access_version)fail(409,'access_changed','Permissions changed while this action was running. Try again.');}
    else {const draft=(await this.db.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[request.previewId,w,a.userId])).rows[0];if(!draft)fail(409,'preview_expired','Preview unavailable');await this.validate(this.db,a,w,draft.body.operation);}
-   if(!tracker&&appDesignCss.length+output.css.length>50000)fail(400,'css_limit','App styles exceed the frame size limit.');
+   const runtimeCss=tracker?'':appRuntimeCss(output.html);
+   if(runtimeCss.length+output.css.length>50000)fail(400,'css_limit','App styles exceed the frame size limit.');
    const controls=[];const recordCache=tracker?pageRecords:new Map<string,any>(),resolvedCache=tracker?resolvedPages:new Map<string,any>();
    const scopeChecked=new Set<string>();
    if(tracker&&content.manifest.scope==='project'&&(output.controls?.length??0)>0){
@@ -300,7 +301,7 @@ export class WorkspaceFoundation {
     if(layoutProposal&&proposal?.reviewState==='draft')proposal=(await f.finalizeAppPreview(a,w,proposal.id,proposal.digest)).preview;
     const queued=[];for(const v of invocations){const latest=await f.component(tx,a,w,request.componentId!);if(!isDeepStrictEqual(content.execution.find((b:any)=>b.name===v.binding),latest.execution.find((b:any)=>b.name===v.binding)))incompatible();queued.push(await f.invokeComponent(a,w,{...v,componentId:request.componentId,expectedVersion:latest.version}));}return {proposal,queued};
    });
-   return {queued,...(connectorReviews.length?{connectorReviews}:{}),viewId,runtime:'trialy-frontend-js-v1',frameUrl:new URL('/frontend/frame',appPublicUrl()).toString(),...output,css:(tracker?'':appDesignCss)+output.css,accessVersion:currentPolicy.access_version,accessStamp,controls,connected:!!content.manifest,proposal,temporary:!request.componentId,...(tracker?{tracker:{config:tracker.config,theme:tracker.theme,pages,saved:!!request.componentId,writable}}:{})};
+   return {queued,...(connectorReviews.length?{connectorReviews}:{}),viewId,runtime:'trialy-frontend-js-v1',frameUrl:new URL('/frontend/frame',appPublicUrl()).toString(),...output,css:runtimeCss+output.css,accessVersion:currentPolicy.access_version,accessStamp,controls,connected:!!content.manifest,proposal,temporary:!request.componentId,...(tracker?{tracker:{config:tracker.config,theme:tracker.theme,pages,saved:!!request.componentId,writable}}:{})};
   }finally{if(!knownTracker)pool.delete(key);}
  }
  private parseInterface(content:any){

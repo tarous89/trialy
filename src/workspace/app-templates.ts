@@ -1,3 +1,4 @@
+import type {Database} from '../db/database.js';
 import {readFile,readdir} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {z} from 'zod';
@@ -10,11 +11,11 @@ const key=z.string().regex(/^[a-z][a-z0-9.-]{0,79}$/),version=z.string().regex(/
 const option=z.object({type:z.enum(['string','number','boolean']),description:z.string().max(1000),required:z.boolean().default(false),default:z.union([z.string(),z.number(),z.boolean()]).optional(),enum:z.array(z.string()).max(50).optional()}).strict();
 const prose=z.string().min(1).max(6000),items=z.array(prose).min(1).max(20);
 const documentation=z.object({quickStart:items,dataContract:prose,interactionContract:prose,lifecycle:prose,limitations:items,examples:z.array(z.object({prompt:prose,expectedBehavior:prose}).strict()).min(1).max(5),tasks:z.object({mode:z.enum(['optional','none']),whenUseful:prose,readRequirements:prose,outputContract:prose,promptExample:prose}).strict()}).strict();
-const entry=z.object({id:key,version,name:z.string().min(1).max(100),description:z.string().min(1).max(1000),tags:z.array(z.string().max(50)).max(20),whenToUse:z.string().min(1).max(2000),whenNotToUse:z.string().min(1).max(2000),instructions:z.string().min(1).max(20000),documentation:documentation.optional(),engine:z.enum(['tracker','frontend-js']),defaults:z.record(z.string(),z.unknown()).default({}),options:z.record(z.string().regex(/^[a-z][a-zA-Z0-9_]{0,63}$/),option).default({}),source:z.string().max(180000).optional(),examples:z.array(z.record(z.string(),z.unknown())).max(5).default([]),deprecated:z.boolean().default(false)}).strict();
+export const appTemplateEntry=z.object({id:key,version,name:z.string().min(1).max(100),description:z.string().min(1).max(1000),tags:z.array(z.string().max(50)).max(20),whenToUse:z.string().min(1).max(2000),whenNotToUse:z.string().min(1).max(2000),instructions:z.string().min(1).max(20000),documentation:documentation.optional(),engine:z.enum(['tracker','frontend-js']),defaults:z.record(z.string(),z.unknown()).default({}),options:z.record(z.string().regex(/^[a-z][a-zA-Z0-9_]{0,63}$/),option).default({}),source:z.string().max(180000).optional(),examples:z.array(z.record(z.string(),z.unknown())).max(5).default([]),deprecated:z.boolean().default(false)}).strict();
 export const templateQuery=z.object({query:z.string().max(200).default(''),offset:z.number().int().min(0).default(0),limit:z.number().int().min(1).max(50).default(20)}).strict();
 export const templateRead=z.object({templateId:key,version:version.optional()}).strict();
 export const templateGuidanceRequest=z.object({resource:z.enum(['authoring','usage']).default('usage'),offset:z.number().int().min(0).default(0)}).strict();
-export const templateGuidance={tool:'read_app_template_guidance',version:'1.3.15',resources:['usage','authoring'],hostedAttribution:'Keep the bottom-left corner free of every app CTA, including Delete, Save, pagination and floating controls. The host reserves the bottom 62 px plus device safe-area inset for Built with TrialAgents. Keep all controls inside the available app viewport. This rule applies to every existing and new template.',usage:'Read usage guidance and the template documentation before preparation; read authoring guidance when building or extending templates.'};
+export const templateGuidance={tool:'read_app_template_guidance',version:'1.3.16',resources:['usage','authoring'],hostedAttribution:'Apps open inside TrialAgents under its fixed header. The platform sidebar is expanded on platform tabs and collapsed for individual apps. Keep every app control within the available content viewport below the header; do not add a duplicate platform header, sidebar or attribution badge. Use the host navigation adapter for same-tab app links and the Apps destination.',usage:'Read usage guidance and the template documentation before preparation; read authoring guidance when building or extending templates.'};
 export async function readTemplateGuidance(input:unknown={}){
  const {resource,offset}=templateGuidanceRequest.parse(input),file=resource==='authoring'?'TEMPLATE_AUTHORING.md':'TEMPLATE_USAGE.md';
  const source=await readFile(new URL('../../templates/'+file,import.meta.url),'utf8');
@@ -26,11 +27,12 @@ export const templatePrepare=z.object({...appPreparationFields,templateId:key,ve
 const directory=new URL('../../templates/apps/',import.meta.url);
 /** Publisher-controlled files only. Never load an arbitrary caller URL or filesystem path. */
 export class AppTemplates{
- constructor(private root:URL|string=directory){}
+ constructor(private root:URL|string=directory,private db?:Database){}
  private async entries(){
+  if(this.db){const rows=(await this.db.query("SELECT payload,digest FROM app_template_catalog WHERE status='approved' ORDER BY template_id,version")).rows;return rows.map(r=>({...appTemplateEntry.parse(r.payload),digest:r.digest}));}
   const names=(await readdir(this.root)).filter(n=>n.endsWith('.json')).sort();if(names.length>500)fail(500,'catalog_limit','Template catalog exceeds its bounded size');
   const entries=[];const seen=new Set<string>();
-  for(const name of names){const raw=await readFile(this.root instanceof URL?new URL(name,this.root):`${this.root}/${name}`,'utf8');if(Buffer.byteLength(raw)>300000)fail(500,'template_limit','Template too large');const value=entry.parse(JSON.parse(raw));const identity=value.id+'@'+value.version;if(seen.has(identity))fail(500,'template_duplicate','Duplicate template version');seen.add(identity);entries.push({...value,digest:createHash('sha256').update(raw).digest('hex')});}
+  for(const name of names){const raw=await readFile(this.root instanceof URL?new URL(name,this.root):`${this.root}/${name}`,'utf8');if(Buffer.byteLength(raw)>300000)fail(500,'template_limit','Template too large');const value=appTemplateEntry.parse(JSON.parse(raw));const identity=value.id+'@'+value.version;if(seen.has(identity))fail(500,'template_duplicate','Duplicate template version');seen.add(identity);entries.push({...value,digest:createHash('sha256').update(raw).digest('hex')});}
   return entries;
  }
  async list(input:unknown={}){

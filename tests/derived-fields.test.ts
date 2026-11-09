@@ -23,7 +23,7 @@ test('CRO comparison: reviewed references, current computed values, views and is
  const save=async(op:any)=>{const p=await s.preview(owner,w.id,op);return s.commit(owner,p.id,p.digest);};
  const field=(key:string,kind='text',extra:any={})=>({key,name:key,kind,...extra});
  const cro=(await save({kind:'create_type',name:'CROs',fields:[field('name'),field('budget','number'),field('private_budget','number',{ai:false})]})).objects[0].id;
- const c1=(await save({kind:'create_record',typeId:cro,data:{name:'CRO A',budget:100,private_budget:700}})).objects[0].id;
+ const c1=(await save({kind:'create_record',typeId:cro,data:{name:'CRO A',budget:100,private_budget:700.125}})).objects[0].id;
  const c2=(await save({kind:'create_record',typeId:cro,data:{name:'CRO B',budget:200}})).objects[0].id;
  const fields=[field('name'),field('cros','relationship',{targetTypeId:cro,multiple:true}),field('budget','number',{lookup:{reference:'cros',field:'budget',aggregate:'sum'}}),field('target','number'),field('variance','number',{computed:{source:'return input.budget === null ? null : input.budget-input.target;',fields:['budget','target']},renderer:{kind:'code',source:'return "EUR " + input.value;'}}),field('start','date'),field('end','date'),field('days','number',{computed:{fields:['start','end'],source:'return (Date.parse(input.end)-Date.parse(input.start))/86400000;'}})];
  const study=(await save({kind:'create_type',name:'Studies',fields})).objects[0].id;
@@ -54,7 +54,7 @@ test('CRO comparison: reviewed references, current computed values, views and is
   const next=[...fields,field('secret','number',{lookup:{reference:'cros',field:'private_budget',aggregate:'sum'}}),field('secret_echo','text',{computed:{source:'return String(input.secret);',fields:['secret']}})];
   await save({kind:'update_type',typeId:study,expectedVersion:0,name:'Studies',fields:next});
   const r=(await s.records(ai,w.id,study)).rows[0];assert.equal(r.data.secret,undefined);assert.equal(r.data.secret_echo,undefined);assert.equal(r.derived.secret.status,'error');
-  assert.equal((await s.records(ai,w.id,study,{q:'700'})).total,0);
+  assert.equal((await s.records(ai,w.id,study,{q:'700.125'})).total,0);
  });
  await t.test('saved views filter and aggregate underlying derived values',async()=>{
   const view=(await save({kind:'create_view',name:'Over budget',typeId:study,viewKind:'table',config:{filters:[{field:'variance',operator:'equals',value:100}],sort:{field:'variance',direction:'desc'},renderers:{variance:{kind:'progress'}}}})).objects[0].id;

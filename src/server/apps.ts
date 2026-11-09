@@ -1,5 +1,6 @@
+import {installCatalogApp} from '../workspace/template-catalog.js';
 import {appDesignGuide} from '../shared/app-design.js';
-import {appTemplates,templateQuery,templateRead,templatePrepare,readTemplateGuidance,templateGuidanceRequest} from '../workspace/app-templates.js';
+import {AppTemplates,templateQuery,templateRead,templatePrepare,readTemplateGuidance,templateGuidanceRequest} from '../workspace/app-templates.js';
 import {reuseApp,reuseAppOperation} from '../workspace/app-reuse.js';
 import {appPublicUrl,PLATFORM_ORIGIN} from '../shared/public-url.js';
 import type {Express} from 'express';
@@ -10,6 +11,8 @@ import {appLocation} from '../shared/app-route.js';
 import {prepareApp,prepareSimpleApp,prepareRenderedApp,readApp,openApp} from '../workspace/apps.js';
 import type {WorkspaceFoundation} from '../workspace/service.js';
 export function addAppApi(app:Express,f:WorkspaceFoundation){
+ const appTemplates=new AppTemplates(undefined,f.db);
+ app.post('/api/workspaces/:workspaceId/apps/install-template',async(req,res)=>res.json(await installCatalogApp(f,req.actor!,id.parse(req.params.workspaceId),req.body)));
  app.post('/api/app-templates/list',async(req,res)=>res.json(await appTemplates.list(req.body)));
  app.post('/api/app-templates/guidance',async(req,res)=>res.json(await readTemplateGuidance(req.body)));
  app.post('/api/app-templates/read',async(req,res)=>res.json(await appTemplates.read(req.body)));
@@ -19,6 +22,7 @@ export function addAppApi(app:Express,f:WorkspaceFoundation){
  app.post('/api/workspaces/:workspaceId/apps/prepare',async(req,res)=>res.json(await prepareSimpleApp(f,req.actor!,id.parse(req.params.workspaceId),req.body)));
 }
 export function addAppMcp(server:McpServer,f:WorkspaceFoundation,a:Actor,safe:any,metadata:any){
+ const appTemplates=new AppTemplates(undefined,f.db);
  const quiet=(fn:(v:any)=>Promise<any>)=>safe(async(v:any)=>appPreparationResult(await fn(v)));
  server.registerTool('read_app_design',{title:'Read app design kit',description:'Returns the current design kit, tested palettes, typography, spacing, component CSS, quality-check contract and authoring guardrails: apps reuse TrialAgents accounts, and TrialAgents logos require the official icon linked to https://platform.trialagents.com. Contains no account data.',inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false},_meta:{securitySchemes:[{type:'noauth'}]}},async()=>{const result=appDesignGuide();return {content:[{type:'text',text:JSON.stringify(result)}],structuredContent:{result}};});
  server.registerTool('read_app_template_guidance',{title:'Read current template guidance',description:'Read the current versioned template usage or authoring contract. Covers lifecycle, design, documentation, platform account reuse without app-specific authentication, official TrialAgents logo/link requirements, data permissions, host integration, regression checks and optional ChatGPT tasks. Follow nextOffset to the end. Contains no account data.',inputSchema:templateGuidanceRequest.shape,annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false},_meta:{securitySchemes:[{type:'noauth'}]}},async(v:any)=>{const result=await readTemplateGuidance(v);return {content:[{type:'text',text:JSON.stringify(result)}],structuredContent:{result}};});

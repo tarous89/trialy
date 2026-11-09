@@ -19,7 +19,7 @@ test('Extension opens disabled automations locally and saves the exact MCP revie
  });
  await page.goto(base+'/?apps=1');await page.waitForFunction(()=>window.hostReady);
  await page.evaluate(workspaceId=>window.deliver({screen:'home',workspaceId,viewerId:'fixture',workspaces:[],types:[]}),f.workspaceId);
- const root=page.frameLocator('#app');await expect(root.getByRole('heading',{name:'Home',exact:true})).toBeVisible();expect(reads).toBe(0);
+ const root=page.frameLocator('#app');await expect(root.getByRole('heading',{name:'Apps',exact:true})).toBeVisible();expect(reads).toBe(0);
  await root.getByRole('button',{name:'Open navigation',exact:true}).click();await root.getByRole('button',{name:'Automations',exact:true}).click();
  await expect(root.getByRole('heading',{name:'Automations',exact:true})).toBeVisible();await expect(root.getByLabel('Automation status: Disabled',{exact:true})).toBeVisible();expect(await page.evaluate(()=>window.lastOpenedUrl)).toBeUndefined();
  await root.getByRole('button',{name:'Enable',exact:true}).click();await expect(root.getByLabel('Automation status: Enabled',{exact:true})).toBeVisible();expect(preparedState).toEqual({workspaceId:f.workspaceId,kind:'action',automationId:id,expectedVersion:0,enabled:true});expect(saved).toEqual({workspaceId:f.workspaceId,reviewId,kind:'automation_control',digest,review,confirmed:true});

@@ -1,0 +1,24 @@
+.ty-workspace.ty-platform-shell{--shell-header:60px;--shell-nav:0px;display:flex;height:100dvh;padding-top:60px;overflow:hidden}
+.ty-workspace.ty-platform-shell.ty-navigation-open{--shell-nav:230px}
+.ty-workspace .ty-platform-header{justify-content:flex-start;position:fixed;inset:0 0 auto;height:60px;z-index:100;display:flex;align-items:center;gap:12px;padding:0 18px;background:var(--ty-sidebar,#17372b);color:#fff;border-bottom:1px solid #ffffff18}
+.ty-platform-header .ty-icon-button{color:#d9e9df}
+.ty-platform-brand{display:flex;align-items:center;gap:9px;text-decoration:none;color:inherit;font-size:19px}
+.ty-workspace.ty-platform-shell .ty-sidebar--desktop{display:flex!important;position:fixed;top:60px;left:0;width:230px;height:calc(100dvh - 60px);padding:22px 14px;z-index:90}
+.ty-workspace.ty-platform-shell .ty-sidebar nav button,.ty-workspace.ty-platform-shell .ty-settings-button{font-size:14px;justify-content:flex-start;white-space:normal}
+.ty-workspace.ty-platform-shell .ty-main-column{margin-left:var(--shell-nav);padding:0;height:calc(100dvh - 60px);width:calc(100% - var(--shell-nav));min-width:0}
+.ty-workspace.ty-platform-shell #ty-main{height:100%;max-height:100%;max-width:none;overflow:auto}
+.ty-workspace.ty-platform-shell.ty-platform-app #ty-main{padding:0}
+.ty-platform-app .ty-app-assistants{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:10px;padding:8px 20px;background:var(--ty-bg);font-size:12px;border-bottom:1px solid var(--ty-border)}
+.ty-assistant-links{display:inline-flex;gap:8px;flex-wrap:wrap}
+.ty-assistant-links a{color:#146b4c;text-decoration:none;font-weight:600;padding:5px 8px;border-radius:6px;border:1px solid #b6ccbe}
+.ty-template-catalog{padding:24px 0}
+.ty-template-catalog-heading{display:flex;align-items:center;gap:20px;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap}
+.ty-template-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px}
+.ty-template-card{border:1px solid var(--ty-border);background:#fff;border-radius:14px;padding:22px;display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.ty-template-card h3{margin:0;font-size:18px}.ty-template-card p{margin:0;color:var(--ty-muted);font-size:14px;line-height:1.55}.ty-template-card .ty-button{margin-top:auto}
+@media(max-width:760px){.ty-workspace.ty-platform-shell .ty-main-column{margin-left:0;width:100%}.ty-workspace.ty-platform-shell .ty-sidebar--desktop{box-shadow:12px 0 30px #0002}.ty-workspace .ty-platform-header{justify-content:flex-start;padding:0 12px}}
+
+.ty-workspace.ty-platform-app .ty-content-overlay{top:60px;bottom:0;left:var(--shell-nav);z-index:2301}
+.ty-workspace.ty-platform-app .ty-confirm-dialog{max-height:100%;overflow:auto}
+.ty-template-browser{padding:20px 0}.ty-template-browser>summary{cursor:pointer;font-weight:600}
+@media(max-width:760px){.ty-workspace.ty-platform-app .ty-content-overlay{left:0}}

@@ -1,6 +1,12 @@
 # TrialAgents OS — current project context
 
-Updated 7 November 2026 (Europe/Berlin). Start here before changing the platform or writing templates. Repository: `tarous89/trialy`. Public platform: https://platform.trialagents.com. MCP: https://platform.trialagents.com/mcp. This project is separate from TrialAgents Intel and CTIS.
+Updated 9 November 2026 (Europe/Berlin). Start here before changing the platform or writing templates. Repository: `tarous89/trialy`. Public platform: https://platform.trialagents.com. MCP: https://platform.trialagents.com/mcp. This project is separate from TrialAgents Intel and CTIS.
+
+## Platform shell and approved app catalog
+
+Apps now open in the same tab inside TrialAgents. The fixed header retains the official logo and navigation toggle. Platform tabs start with the sidebar expanded; individual apps start collapsed. Home is labeled Apps, while legacy route keys remain compatible. Users without apps see the approved template suite by default. Each template can install immediately with empty tables, then be customized through separate ChatGPT and Claude links. Scheduled research remains ChatGPT-specific.
+
+Migration 056 adds the publisher-controlled database catalog. The initial 23 life-science template versions are approved; future versions are drafts. Runtime roles can read approved payloads only. Installer schemas are versioned via `templates/catalog-installers.json`; operator approval and withdrawal are documented in [Template catalog](docs/TEMPLATE_CATALOG.md). Installation uses existing backend permissions, exact validation and audit in one transaction, with actor/workspace-scoped retry receipts. Existing app data and automation state are preserved. Guidance 1.3.16 describes the platform header instead of a corner watermark.
 
 ## Preview approval and reusable dashboards — 0.2.56
 
@@ -28,7 +34,7 @@ Release **0.2.39**, commit `345eb6bb55ccd23110ac73d5690dd75bdea5ac27`, shipped t
 
 Save the app before optional automation setup. App resolution, loading, navigation, ordinary reads/writes, publication and health must not depend on scheduling, callbacks or research. Failures retain the latest authorized usable published app and local input; run outcomes belong in Logs and private setup/history tools. Permission revocation still applies. Retries reconcile immutable receipts and expected record versions; never replace tables or overwrite newer user work to repair a task.
 
-First-save prompts apply only to never-saved apps. Published apps stay usable during ChatGPT edits and later publication; updates may offer a subtle optional refresh notice. Keep Search and Add record inline, disclose secondary filters when space is tight, use bounded active-page reads and avoid redundant rendering after layout saves. Extra log filters stay inline and wrap naturally into another row; they never float over events. Sidebar order: Home, Database, Access, Automations, Connectors, Logs. Templates are optional accelerators, not mandatory app types.
+First-save prompts apply only to never-saved apps. Published apps stay usable during ChatGPT edits and later publication; updates may offer a subtle optional refresh notice. Keep Search and Add record inline, disclose secondary filters when space is tight, use bounded active-page reads and avoid redundant rendering after layout saves. Extra log filters stay inline and wrap naturally into another row; they never float over events. Sidebar order: Apps, Database, Access, Automations, Connectors, Logs. Templates are optional accelerators, not mandatory app types.
 
 ## Activation is separate from deployment
 

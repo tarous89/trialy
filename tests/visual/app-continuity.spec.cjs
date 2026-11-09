@@ -1,4 +1,4 @@
-const {test,expect}=require('./test.cjs');
+const {test,expect,openPlatform}=require('./test.cjs');
 const base='http://127.0.0.1:4179';
 async function call(page,name,args){const r=await (await page.request.post(base+'/fixture/tool',{data:{name,arguments:args}})).json();expect(r.isError,JSON.stringify(r)).not.toBe(true);return r.structuredContent.result;}
 async function archive(page,id){const r=await call(page,'read_project_component',{componentId:id});const p=await call(page,'prepare_workspace_change',{operation:{kind:'archive_component',componentId:id,expectedVersion:r.component.version,archived:true}});await call(page,'confirm_workspace_change',{previewId:p.id,digest:p.digest});}
@@ -7,7 +7,7 @@ for(const embedded of [false,true])test(`Move an app between projects in ${embed
  const save=async operation=>{const p=await call(page,'prepare_workspace_change',{operation});return call(page,'confirm_workspace_change',{previewId:p.id,digest:p.digest});};
  const first=await save({kind:'create_node',nodeKind:'project',name:'Move destination A '+embedded}),second=await save({kind:'create_node',nodeKind:'project',name:'Move destination B '+embedded});
  const app=await save({kind:'save_component',content:{name:'Movable app '+embedded,format:'frontend-js',source:'return {html:"<h1>Movable app</h1>"};'}});
- await page.goto(base+(embedded?'/?apps=1':'/app-home'));
+ await openPlatform(page,base+(embedded?'/?apps=1':'/app-home'));
  if(embedded){await page.waitForFunction(()=>window.hostReady);await page.evaluate(r=>window.deliver(r),{screen:'home',workspaceId:f.workspaceId,viewerId:'fixture',workspaces:[],types:[]});}
  const root=embedded?page.frameLocator('#app'):page;
  const card=root.locator('.ty-resource').filter({has:root.getByRole('heading',{name:'Movable app '+embedded,exact:true})});
@@ -27,7 +27,7 @@ for(const embedded of [false,true])test(`Saved app revisions have no first-save 
  const content={name:'Revision review '+embedded,format:'frontend-js',source:source('Saved app')};
  const p=await call(page,'prepare_workspace_change',{operation:{kind:'save_component',content}}),saved=await call(page,'confirm_workspace_change',{previewId:p.id,digest:p.digest});
  const revision=await call(page,'prepare_workspace_change',{operation:{kind:'save_component',componentId:saved.id,expectedVersion:0,content:{...content,source:source('Reviewed revision')}}});
- await page.goto(base+(embedded?'/?apps=1':`/apps/${revision.id}?workspaceId=${f.workspaceId}&source=preview`));
+ await openPlatform(page,base+(embedded?'/?apps=1':`/apps/${revision.id}?workspaceId=${f.workspaceId}&source=preview`));
  if(embedded){await page.waitForFunction(()=>window.hostReady);await page.evaluate(r=>window.deliver(r),{screen:'tracker-preview',workspaceId:f.workspaceId,preview:revision});}
  const root=embedded?page.frameLocator('#app'):page;
  await expect(root.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Reviewed revision',exact:true})).toBeVisible();
@@ -36,7 +36,7 @@ for(const embedded of [false,true])test(`Saved app revisions have no first-save 
  await expect(root.getByText('Save it to keep it.',{exact:false})).toHaveCount(0);
  await expect(root.getByLabel('App update review')).toContainText('Update the app interface and behavior.');await expect(root.getByLabel('App update review')).toContainText('Automation setup is saved separately.');await root.getByRole('button',{name:'Save changes',exact:true}).click();
  if(embedded){
-  await expect(root.getByRole('heading',{name:'Home',exact:true})).toBeVisible();
+  await expect(root.getByRole('heading',{name:'Apps',exact:true})).toBeVisible();
   // Replayed host output still resolves the receipt even when the bundle is fresh.
   await page.evaluate(r=>window.deliver(r),{screen:'tracker-preview',workspaceId:f.workspaceId,preview:revision,preparedAt:new Date().toISOString(),initialOutput:{html:'stale draft'}});
  }
@@ -47,7 +47,7 @@ for(const embedded of [false,true])test(`Saved app revisions have no first-save 
 
 for(const fromHome of [false,true])test(`Failed extension replacement keeps the app opened ${fromHome?'from legacy Home':'by ChatGPT'} without recovery messages`,async({page})=>{
  const f=await (await page.request.get(base+'/fixture/apps')).json();
- await page.goto(base+(fromHome?'/':'/?apps=1'));await page.waitForFunction(()=>window.hostReady);
+ await openPlatform(page,base+(fromHome?'/':'/?apps=1'));await page.waitForFunction(()=>window.hostReady);
  const root=page.frameLocator('#app'),frame=root.frameLocator('iframe[title="Saved frontend code"]');let homeApp;
  if(fromHome){
   const p=await call(page,'prepare_workspace_change',{operation:{kind:'save_component',content:{name:'Home continuity fixture',format:'frontend-js',source:`return {html:'<h1>Calculator</h1><label>Draft note<input aria-label="Draft note"></label>'};`}}});homeApp=await call(page,'confirm_workspace_change',{previewId:p.id,digest:p.digest});
@@ -69,20 +69,20 @@ for(const fromHome of [false,true])test(`Failed extension replacement keeps the 
 for(const embedded of [false,true])test(`Loading failures keep local Home navigation in ${embedded?'extension':'standalone'}`,async({page})=>{
  const f=await (await page.request.get(base+'/fixture/apps')).json();
  if(embedded){
-  await page.goto(base+'/?apps=1');await page.waitForFunction(()=>window.hostReady);
-  await page.evaluate(r=>window.deliver(r),{screen:'home',workspaceId:f.workspaceId,viewerId:'fixture',workspaces:[],types:[]});await expect(page.frameLocator('#app').getByRole('heading',{name:'Home',exact:true})).toBeVisible();
+  await openPlatform(page,base+'/?apps=1');await page.waitForFunction(()=>window.hostReady);
+  await page.evaluate(r=>window.deliver(r),{screen:'home',workspaceId:f.workspaceId,viewerId:'fixture',workspaces:[],types:[]});await expect(page.frameLocator('#app').getByRole('heading',{name:'Apps',exact:true})).toBeVisible();
   await page.route('**/fixture/tool',route=>route.request().postDataJSON().name==='open_app'?route.fulfill({json:{isError:true,structuredContent:{error:{status:503,code:'temporary'}},content:[{type:'text',text:'Failed to load sentinel'}]}}):route.continue());
   await page.evaluate(r=>window.deliver(r),{screen:'app-link',workspaceId:f.workspaceId,appId:f.appId,source:'component'});
  }else{
   await page.route('**/api/apps/resolve',route=>route.fulfill({status:503,json:{error:'temporary',message:'Failed to load sentinel'}}));
-  await page.goto(base+f.url);
+  await openPlatform(page,base+f.url);
  }
  const root=embedded?page.frameLocator('#app'):page;
  await expect(root.getByRole('heading',{name:'App could not load',exact:true})).toBeVisible();await expect(root.getByRole('alert')).toHaveCount(0);await expect(root.getByText('Failed to load sentinel')).toHaveCount(0);
- if(!embedded)await page.route(base+'/?tab=home',route=>route.fulfill({contentType:'text/html',body:'<h1>Home</h1>'}));
- await root.getByRole('button',{name:'Return to Home',exact:true}).click();
- if(embedded){await expect(root.getByRole('heading',{name:'Home',exact:true})).toBeVisible();expect(await page.evaluate(()=>window.lastOpenedUrl)).toBeUndefined();}
- else{await expect(page).toHaveURL(base+'/?tab=home');await expect(page.getByRole('heading',{name:'Home',exact:true})).toBeVisible();}
+ if(!embedded)await page.route(base+'/?tab=home',route=>route.fulfill({contentType:'text/html',body:'<h1>Apps</h1>'}));
+ await root.getByRole('button',{name:'Return to Apps',exact:true}).click();
+ if(embedded){await expect(root.getByRole('heading',{name:'Apps',exact:true})).toBeVisible();expect(await page.evaluate(()=>window.lastOpenedUrl)).toBeUndefined();}
+ else{await expect(page).toHaveURL(base+'/?tab=home');await expect(page.getByRole('heading',{name:'Apps',exact:true})).toBeVisible();}
 });
 
 
@@ -91,7 +91,7 @@ test('AI revisions keep saved app usable and expose Save only after finalization
  const content={name:'Readiness test',format:'frontend-js',source:'return {html:"<h1>Saved readiness app</h1>"};'};
  const p=await call(page,'prepare_workspace_change',{operation:{kind:'save_component',content}});
  const saved=await call(page,'confirm_workspace_change',{previewId:p.id,digest:p.digest});
- await page.goto(base+'/?apps=1');await page.waitForFunction(()=>window.hostReady);
+ await openPlatform(page,base+'/?apps=1');await page.waitForFunction(()=>window.hostReady);
  const draft=await call(page,'prepare_ai_revision',{operation:{kind:'save_component',componentId:saved.id,expectedVersion:0,content:{...content,source:'return {html:"<h1>Completed revision</h1>"};'}}});
  await page.evaluate(r=>window.deliver(r),draft);
  const root=page.frameLocator('#app');
@@ -104,7 +104,7 @@ test('AI revisions keep saved app usable and expose Save only after finalization
  await expect(root.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Completed revision',exact:true})).toBeVisible();
  await expect(root.getByRole('button',{name:'Save changes',exact:true})).toBeEnabled();
  await root.getByRole('button',{name:'Save changes',exact:true}).click();
- await expect(root.getByRole('heading',{name:'Home',exact:true})).toBeVisible();
+ await expect(root.getByRole('heading',{name:'Apps',exact:true})).toBeVisible();
  expect((await call(page,'read_project_component',{componentId:saved.id})).component.version).toBe(1);
  await archive(page,saved.id);
 });
@@ -112,7 +112,7 @@ test('AI revisions keep saved app usable and expose Save only after finalization
 for(const embedded of [false,true])test(`Slow app frames stay mounted and recover in ${embedded?'extension':'standalone'}`,async({page})=>{
  const f=await (await page.request.get(base+'/fixture/apps')).json();let release;const gate=new Promise(resolve=>release=resolve);
  await page.route('**/frontend/frame',async route=>{await gate;await route.continue();});
- await page.goto(base+(embedded?'/?apps=1':f.url),{waitUntil:'domcontentloaded'});
+ await openPlatform(page,base+(embedded?'/?apps=1':f.url),{waitUntil:'domcontentloaded'});
  if(embedded){await page.waitForFunction(()=>window.hostReady);await page.evaluate(r=>window.deliver(r),await (await page.request.get(base+'/fixture/app-display?appId='+f.appId)).json());}
  const root=embedded?page.frameLocator('#app'):page;
  await expect(root.getByText('The app is taking longer to load.',{exact:false})).toBeVisible({timeout:15000});
@@ -124,7 +124,7 @@ for(const embedded of [false,true])test(`Slow app frames stay mounted and recove
 for(const embedded of [false,true])test(`Schema review errors identify the saved app and permit retry in ${embedded?'extension':'standalone'}`,async({page})=>{
  const f=await (await page.request.post(base+'/fixture/publication',{data:{standard:true}})).json();
  await page.request.post(base+'/fixture/publication/'+f.appId+'/schema');
- await page.goto(base+(embedded?'/?apps=1':`/apps/${f.appId}?workspaceId=${f.workspaceId}&source=component&utm_source=chatgpt.com`));
+ await openPlatform(page,base+(embedded?'/?apps=1':`/apps/${f.appId}?workspaceId=${f.workspaceId}&source=component&utm_source=chatgpt.com`));
  if(embedded){await page.waitForFunction(()=>window.hostReady);await page.evaluate(r=>window.deliver(r),{screen:'app-link',workspaceId:f.workspaceId,appId:f.appId,source:'component'});}
  const root=embedded?page.frameLocator('#app'):page;
  await expect(root.getByRole('heading',{name:'App needs a connection review'})).toBeVisible();

@@ -1,3 +1,4 @@
+import {syncTemplateCatalog} from '../../src/workspace/template-catalog.js';
 import {trackerOperation} from '../../src/workspace/tracker-template.js';
 import {AppSharing} from '../../src/app-services/sharing.js';
 import {addAppServicesApi} from '../../src/server/app-services.js';
@@ -17,6 +18,7 @@ import {appUrl} from '../../src/shared/app-route.js';
 import express from 'express';
 import path from 'node:path';
 export async function addAppsFixture(app:Express,db:Database,actor:Actor,w:any){
+ await syncTemplateCatalog(db);
  const f=new WorkspaceFoundation(db),s=new Service(db);const schema=await s.preview(actor,w.id,{kind:'create_type',name:'App companies',fields:[{key:'name',name:'Name',kind:'text',ai:true}]});const companyTable=(await s.commit(actor,schema.id,schema.digest)).objects[0].id;const row=await s.preview(actor,w.id,{kind:'create_record',typeId:companyTable,data:{name:'App company'}});const record={id:(await s.commit(actor,row.id,row.digest)).objects[0].id};
  const preview=await f.preview(actor,w.id,{kind:'save_component',content:{name:'Simple app fixture',format:'frontend-js',sourceAccess:'bindings',bindings:[{typeId:companyTable,fields:['name']}],source:"return {html:'<p>Preparing app</p>'};"}}),saved=await f.confirm(actor,w.id,preview.id,preview.digest);
  const otherPreview=await f.preview(actor,w.id,{kind:'save_component',content:{name:'Linked calculator',format:'frontend-js',bindings:[],source:"return {html:'<h1>Linked calculator</h1>'};"}}),other=await f.confirm(actor,w.id,otherPreview.id,otherPreview.digest);
@@ -37,6 +39,7 @@ export async function addAppsFixture(app:Express,db:Database,actor:Actor,w:any){
  process.env.SIMPLE_APPS_ENABLED='false';addApi(app,s,(req,_res,next)=>{req.actor=actor;next();});process.env.SIMPLE_APPS_ENABLED='true';
  addAppServicesApi(app,f);addAppApi(app,f);addConnectorApi(app,f,{service:connector});
  app.post('/fixture/generic-layout',async(_req,res)=>{const op=await trackerOperation(f,actor,w.id,{name:'Generic layout fixture',description:'Layout regression',tabs:[{name:'Companies',typeId:companyTable,columns:[{field:'name'}]}]});const p=await f.preview(actor,w.id,{...op,content:{...op.content,resourceKind:'generic'}}),saved=await f.confirm(actor,w.id,p.id,p.digest);res.json({id:saved.id,workspaceId:w.id,url:appUrl({appId:saved.id,workspaceId:w.id})});});
+ app.post('/fixture/approve-starters',async(_req,res)=>{await db.query("UPDATE app_template_catalog SET status='approved' WHERE template_id IN ('simple.calculator','simple.checklist')");res.json({ok:true});});
  app.get('/fixture/apps',(_req,res)=>res.json({workspaceId:w.id,appId:saved.id,recordId:record.id,connectionId:connection.id,url:appUrl({appId:saved.id,workspaceId:w.id}),sends}));
  app.post('/fixture/publication',async(req,res)=>{
   const p=await s.preview(actor,w.id,{kind:'create_type',name:'Continuity items '+crypto.randomUUID().slice(0,8),fields:[{key:'name',name:'Name',kind:'text',ai:true}]}),typeId=(await s.commit(actor,p.id,p.digest)).objects[0].id;

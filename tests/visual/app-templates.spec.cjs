@@ -1,6 +1,7 @@
 const {test,expect}=require('./test.cjs');
 const base='http://127.0.0.1:4179';
 test('Catalog starter apps render and respond inside the extension',async({page})=>{
+ await page.request.post(base+'/fixture/approve-starters');
  const fixture=await (await page.request.get(base+'/fixture/apps')).json();
  const post=async(path,data)=>{const response=await page.request.post(base+path,{data});expect(response.ok()).toBeTruthy();return response.json();};
  for(const templateId of ['simple.calculator','simple.checklist']){
@@ -14,6 +15,6 @@ test('Catalog starter apps render and respond inside the extension',async({page}
   }else{
    await app.getByLabel('Define the objective').check();await app.getByRole('button',{name:'Update progress',exact:true}).click();await expect(app.getByRole('heading',{name:'1 / 3',exact:true})).toBeVisible();await expect(app.getByLabel('Define the objective')).toBeChecked();
   }
-  await root.getByRole('button',{name:'Discard app',exact:true}).click();await expect(root.getByRole('heading',{name:'Home',exact:true})).toBeVisible();
+  await root.getByRole('button',{name:'Discard app',exact:true}).click();await expect(root.getByRole('heading',{name:'Apps',exact:true})).toBeVisible();
  }
 });

@@ -1,3 +1,4 @@
+import {syncTemplateCatalog} from '../src/workspace/template-catalog.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtemp,readFile,readdir,writeFile,rm} from 'node:fs/promises';
@@ -18,7 +19,7 @@ test('catalog discovers added versions dynamically, bounds results, and rejects 
  try{
   const original=await readFile('templates/apps/simple.calculator-1.0.0.json','utf8');await writeFile(join(dir,'one.json'),original);
   const catalog=new AppTemplates(dir);assert.equal((await catalog.list()).total,1);
-  const t=await catalog.read({templateId:'simple.calculator'});assert.ok(t.configurationSchema);assert.match(t.guidance.hostedAttribution,/bottom-left corner free of every app CTA/);assert.equal((await catalog.list()).templates[0].id,t.id);assert.equal('source' in (await catalog.list()).templates[0],false);
+  const t=await catalog.read({templateId:'simple.calculator'});assert.ok(t.configurationSchema);assert.match(t.guidance.hostedAttribution,/Apps open inside TrialAgents/);assert.equal((await catalog.list()).templates[0].id,t.id);assert.equal('source' in (await catalog.list()).templates[0],false);
   await writeFile(join(dir,'two.json'),JSON.stringify({...JSON.parse(original),id:'another.calculator',name:'Another calculator'}));assert.equal((await catalog.list()).total,2);assert.equal((await catalog.list({limit:1})).nextOffset,1);
   await writeFile(join(dir,'v2.json'),JSON.stringify({...JSON.parse(original),version:'2.0.0',defaults:{heading:'New default',currency:'USD'}}));assert.equal((await catalog.read({templateId:t.id})).version,'2.0.0');assert.equal((await catalog.read({templateId:t.id,version:t.version})).digest,t.digest);
   const input={templateId:t.id,version:t.version,digest:t.digest,name:'Estimate'};const op=await catalog.operation({} as any,{} as any,'unused',input);assert.ok(op.content.source.includes('Budget estimate'));
@@ -35,6 +36,7 @@ test('templates and app reuse preserve review, source access, isolated data and 
   const a:Actor={userId:randomUUID(),origin:'human'},other:Actor={userId:randomUUID(),origin:'human'};
   for(const u of [a,other])await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[u.userId,u.userId,'fixture@example.invalid','Fixture']);
   const f=new WorkspaceFoundation(db),s=new Service(db),w=await s.createWorkspace(a,'Template tests');
+  await syncTemplateCatalog(db);await db.query("UPDATE app_template_catalog SET status='approved' WHERE template_id IN ('simple.calculator','simple.checklist')");
   const registered=new Map<string,any>();addAppMcp({registerTool:(n:string,m:any,run:any)=>registered.set(n,{m,run})} as any,f,a,(fn:any)=>fn,{ui:{resourceUri:'ui://trialy/test'}});
   assert.equal(registered.get('list_app_templates').m._meta.ui?.resourceUri,undefined);assert.equal(registered.get('read_app_template').m._meta.ui?.resourceUri,undefined);assert.equal(registered.get('prepare_app_from_existing').m._meta.ui?.resourceUri,undefined);
   const guideTool=registered.get('read_app_template_guidance');assert.equal(guideTool.m._meta.ui?.resourceUri,undefined);assert.equal(guideTool.m.annotations.readOnlyHint,true);assert.equal((await guideTool.run({resource:'usage'})).structuredContent.result.sha256,(await readTemplateGuidance({resource:'usage'})).sha256);

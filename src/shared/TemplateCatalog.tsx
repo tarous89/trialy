@@ -1,0 +1,11 @@
+import React,{useEffect,useRef,useState} from 'react';
+import {AssistantLinks} from './AssistantLinks.js';
+import {Button,SearchField} from './ui/Controls.js';
+type Call=(name:string,args:any)=>Promise<any>;
+export function TemplateCatalog({call}:{call:Call}){
+ const [templates,setTemplates]=useState<any[]>([]),[loading,setLoading]=useState(true),[error,setError]=useState(''),[query,setQuery]=useState(''),[busy,setBusy]=useState('');
+ const requests=useRef(new Map<string,string>());
+ useEffect(()=>{let live=true;void call('list_app_templates',{limit:50}).then(r=>{if(live)setTemplates(r.templates);}).catch(e=>{if(live)setError(e.message);}).finally(()=>{if(live)setLoading(false);});return()=>{live=false;};},[]);
+ async function install(t:any){setError('');setBusy(t.id);const key=t.id+'@'+t.version;let requestKey=requests.current.get(key);if(!requestKey){requestKey=crypto.randomUUID();requests.current.set(key,requestKey);}try{const r=await call('install_app_template',{templateId:t.id,version:t.version,digest:t.digest,name:t.name,requestKey});location.assign(r.url);}catch(e){setError((e as Error).message);}finally{setBusy('');}}
+ return <section className="ty-template-catalog" aria-label="App templates"><div className="ty-template-catalog-heading"><div><h2>Start with an app</h2><p>Use it as it is, then customize it in ChatGPT or Claude.</p></div><SearchField label="Search templates" value={query} onChange={setQuery}/></div>{error&&<p role="alert">{error}</p>}{loading?<p role="status">Loading apps…</p>:<div className="ty-template-grid">{templates.filter(t=>(t.name+' '+t.description).toLowerCase().includes(query.toLowerCase())).map(t=><article key={t.id} className="ty-template-card"><h3>{t.name}</h3><p>{t.description}</p><Button variant="primary" disabled={!!busy} onClick={()=>void install(t)}>{busy===t.id?'Adding app…':'Use app'}</Button><AssistantLinks prompt={'Customize the TrialAgents template '+t.id+' for my team. Read the template and ask what I want to change.'}/></article>)}</div>}<p className="ty-context">Need a custom app? Start in <AssistantLinks prompt="Build a custom TrialAgents app for my team. Ask what workflow I need."/></p><p className="ty-context">Use app creates your own app with empty tables. No example records or automations are added.</p></section>;
+}
