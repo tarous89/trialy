@@ -1,3 +1,4 @@
+import {templateMedia} from '../src/workspace/template-media.js';
 import {withActor,setDatabaseContext} from '../src/db/context.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
@@ -19,6 +20,8 @@ test('catalog approval, complete suite installation, retry and tenant isolation'
   const actor={userId:randomUUID(),origin:'human' as const};await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,'catalog@example.invalid','Catalog tester']);
   const service=new Service(db),workspace=await service.createWorkspace(actor,'Catalog'),f=new WorkspaceFoundation(db);
   for(const t of list.templates){
+   assert.ok((await templateMedia(catalog,t.id,t.version,'preview')).toString().includes('<html'),t.id);
+   const image=await templateMedia(catalog,t.id,t.version,'screenshot');assert.ok(Buffer.isBuffer(image)&&image[0]===255&&image[1]===216,t.id);
    const request={templateId:t.id,version:t.version,digest:t.digest,name:t.name,requestKey:randomUUID()};
    const app=await installCatalogApp(f,actor,workspace.id,request);
    assert.ok(app.appId,t.id);assert.deepEqual(await installCatalogApp(f,actor,workspace.id,request),app);
@@ -39,7 +42,9 @@ test('catalog approval, complete suite installation, retry and tenant isolation'
   await withActor(actor,()=>installCatalogApp(new WorkspaceFoundation(runtime),actor,workspace.id,broken));
   const t=list.templates[0],request={templateId:t.id,version:t.version,digest:t.digest,name:t.name,requestKey:randomUUID()};
   await db.query("UPDATE app_template_catalog SET status='draft' WHERE template_id=$1",[t.id]);await syncTemplateCatalog(db);
-  await assert.rejects(()=>catalog.read({templateId:t.id}));await assert.rejects(()=>installCatalogApp(f,actor,workspace.id,request));
+  await assert.rejects(()=>catalog.read({templateId:t.id}));
+  await assert.rejects(()=>templateMedia(catalog,t.id,t.version,'preview'));
+  await assert.rejects(()=>templateMedia(catalog,'../../etc/passwd',t.version,'screenshot'));await assert.rejects(()=>installCatalogApp(f,actor,workspace.id,request));
   await assert.rejects(()=>installCatalogApp(f,{...actor,origin:'ai'},workspace.id,request));
   await assert.rejects(()=>installCatalogApp(f,{...actor,userId:randomUUID()},workspace.id,request));
   assert.equal((await catalog.list({limit:50})).total,22);

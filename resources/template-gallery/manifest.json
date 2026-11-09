@@ -1,0 +1,94 @@
+{
+  "life.cash-runway@1.2.2": {
+    "catalogDigest": "ff444d1827239400967e5fda7bf50d2c17dba44bec0b134ad2fa1a045f9269aa",
+    "previewSha256": "a34e7f43b263cd50bb9fa63b3c8e95f20e4a018db29066896768c3f2315ccfc3"
+  },
+  "life.inventory-management@1.0.2": {
+    "catalogDigest": "7d23d6ce768db25dccfac1fa1fe8e1d157f3ca47efac2aaafe7cf371ff7911dd",
+    "previewSha256": "103debb51a285ed4e002f8a81c1e9206316ecf9924d530d81e097f4846bf3b44"
+  },
+  "life.project-oversight@1.0.1": {
+    "catalogDigest": "4706b9a5b56383af6448075498c9c58ed5cddb23c87bb1990a27b11f536d5497",
+    "previewSha256": "bd337f2244de6053482eca32d2a83a9d9f86532e03f30739eb8666be6c52a02a"
+  },
+  "life.pi-network-management@1.0.1": {
+    "catalogDigest": "258afa4e233f2a434bc53b66c2572ab2681e2ffc83be4dc8b8958adec791dd57",
+    "previewSha256": "0c12cf242f4c91134cca1cba10be7bd5d9d0eca6f170962d5143396cc3984443"
+  },
+  "life.grant-pipeline@1.0.1": {
+    "catalogDigest": "6b82687743c71567794e9da251d202d6ef3f0de0d0ef94bbea0ba3e9848a7045",
+    "previewSha256": "24389f9baa4fdaebf9550cb6a2041296fd932d4f8d0a2b12240a230a79ff47e3"
+  },
+  "life.co-site-feasibility@1.1.1": {
+    "catalogDigest": "4bc914909b075ff10930485b29de3544363362a19899bf82faaf50162e8f149d",
+    "previewSha256": "729b0f29a0d74d36f451648a82fdb79a11b85a8673e5dcb7fd350b4df7fe1057"
+  },
+  "life.experiment-notebook@1.2.2": {
+    "catalogDigest": "294ad1eb5c01b11bdf2062ba1322d39671742de4403923f14af35ab015669df0",
+    "previewSha256": "5c33c8ecf1ad04292aec7ea5aa513278f9c36e5ca619d2f5e44c4196b6ac1a55"
+  },
+  "life.sponsor-rfp-management@1.0.1": {
+    "catalogDigest": "2b4ec7abd4963866fd4ac81e097f080c7ed967ed20014b578f45f8dcd2d4894a",
+    "previewSha256": "95e27b15a26b20a30d724282ae7b208908a0c1a791c299d907ef953447459b60"
+  },
+  "life.partnership-tracker@1.1.1": {
+    "catalogDigest": "a2c1c30a12f7f1f17ab939b145cef4e731cb9f2381aba355f5ae5866afd64477",
+    "previewSha256": "ada55519c7dd413a583e56432bd47ff3392cd894d9e536a48428143770e3f6ae"
+  },
+  "life.client-signals-crm@1.0.1": {
+    "catalogDigest": "8cb0e7b3d64277540e4bae9f919a3687353d5001d80fb981f89396f727164069",
+    "previewSha256": "31abbf4823bae161d0294996d67b9417d75b519d72648342aef3e712b526c8d9"
+  },
+  "life.trial-regulatory-submission@1.0.1": {
+    "catalogDigest": "8eb469c6fdcd28b0931319ecc5d3f9c80abe84ed676d25f3bb975292b803673e",
+    "previewSha256": "c095db94b68b0854aa4cca3666c76dd0a91d58ee000927cbaeb4bd057a17c544"
+  },
+  "life.literature-radar@1.2.2": {
+    "catalogDigest": "bdc8f31141baed2605c85b77e6ed79169132fe41e80e96a26e2bc038864a6e0d",
+    "previewSha256": "cff456617e2a8d15b5d8d2978254af9975d416e32175ae615ab8320010a04c09"
+  },
+  "life.cro-oversight@1.2.1": {
+    "catalogDigest": "a4782db75d5db9a6f95ae77853230c937ec83f87d46c4e26aa3f00ec90c1767f",
+    "previewSha256": "1f40561c548de92eed7b02490cf49b52ff667bde847133d5a9f825d74b4079ca"
+  },
+  "life.publication-management@1.0.1": {
+    "catalogDigest": "12d3d3d87e3bff98a6dddf89f74c03cc1b248d7706480441ecc194b054869136",
+    "previewSha256": "ff52b7635f0d29b053dde90670b9f8bcc69bf5ddcade898c29d6ca010b949256"
+  },
+  "life.hiring-resource-management@1.4.2": {
+    "catalogDigest": "0133d5ad20eeb761eeae5b5363c2dd5da53521ee04789f98ca01943e0f27122c",
+    "previewSha256": "7cfdca8b625656f1f6d8cc8c1361dd04212f5e49e191802e036556ecd19f3ef1"
+  },
+  "life.cro-resource-planning@1.0.2": {
+    "catalogDigest": "13a45009992b745e5986e6e72fb4936ca07c33e411951c7b81b9cbf2e7aa228f",
+    "previewSha256": "ec5f558f4779ab819a399573ee73330e93561f0339b4df01c6624a0972d1f23d"
+  },
+  "life.investor-crm@1.0.1": {
+    "catalogDigest": "61dc64c9d5516d353877ad58fd8d03dee1fffe9c7fb9c2ecec0136c5582d61bc",
+    "previewSha256": "e2e4ed82550eaf9510034749e0eb4dda6f0b02c322b4a17ca8523d7dda0b9240"
+  },
+  "life.cro-rfp-management@1.2.1": {
+    "catalogDigest": "1faafa7f8d6eab72cb98bce88e2f9d9971c2af3ae93b3f494270241e2cdc7caf",
+    "previewSha256": "19a18f1d04e315ee8041777ef8804f4949db820d4a19b37ce8f1162eff61090a"
+  },
+  "life.cro-site-feasibility@1.2.1": {
+    "catalogDigest": "c0378e404b035f20a9da4948cab3e6ab834917827e57629eb2d2430d9da5dfa0",
+    "previewSha256": "b2897f18c9541d025372c5810db809bc323671f0b759aa8b9fbdfa4b8277eff4"
+  },
+  "life.investigator-crm@1.0.1": {
+    "catalogDigest": "26dffbf9efe6dad49a2dd0e6ffe09072ee608038df4eb833d7ce2b9818c20530",
+    "previewSha256": "6630146d578fd4af9a0c3d32b1620c3d2aa10ffcc65a208fc31221310f63cb06"
+  },
+  "life.cro-selection@1.0.1": {
+    "catalogDigest": "8ebf046054dc61cbd423fccea0d0f1434faaa0e3ba7cab35b4a9f052a3bb2cbd",
+    "previewSha256": "7ffc9b98ada55937d92e48aa2762c6a16fa777898583f8168293bf1817c3b06f"
+  },
+  "life.cro-sponsor-updates@1.0.1": {
+    "catalogDigest": "eaa423fd577bf81e200043017ae0f27e23ceb9d19cb2dddba48fa5081e4b5ceb",
+    "previewSha256": "7107aa808a48d7edad101844acb51e983ddef0bb90c27dd41a648a2101b57a59"
+  },
+  "life.co-trial-monitoring-pv@1.1.1": {
+    "catalogDigest": "f7f82cf6e34d05f2cdbdd6b4051aa672131088c5c718e2093033257b1d3c7912",
+    "previewSha256": "96d71df0682151d274f77fc3920a7689a6a4f92e1fadb9be38f8610915b25797"
+  }
+}
