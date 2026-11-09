@@ -1,71 +1,31 @@
-# TrialAgents — Current development roadmap
+# TrialAgents development
 
-## Current implementation — 1 November 2026
+Current: 9 November 2026. Start with [CONTEXT.md](CONTEXT.md) and the [product direction](docs/product/PRODUCT_DIRECTION.md). Older release checklists and proposals are in the [archive](docs/archive/README.md).
 
-Release **0.2.41** implements the [notification scope](docs/scopes/NOTIFICATION_GUARDRAILS_2026-11-01.md). Delivery budgets, settling, current-state revalidation, immutable retries, queue bounds and the email emergency stop are backend policy; the UI retains only business configuration. Verified-email signup remains separate onboarding work.
+## Working model
 
-Read [CONTEXT.md](CONTEXT.md) first. The six-step simple-app roadmap is implemented; release **0.2.39** adds unified app automation management and optional standard-tracker section permissions. [Current app configuration contract](docs/product/APP_CONFIGURATION_AND_AUTOMATIONS.md) · [Template authoring](templates/TEMPLATE_AUTHORING.md) · [Template usage](templates/TEMPLATE_USAGE.md).
+Build one cross-platform app platform: ready-made apps, customization and assistant-built custom apps across ChatGPT, Claude and standalone web. Keep app/data/access contracts shared while detecting host-specific display, authentication and automation capabilities. Do not restore the old ChatGPT-only positioning, mandatory app categories, separate-tab default or Templates sidebar entry.
 
-- Access keeps Projects → apps visible by default → optional expandable tabs. Missing section metadata is valid; app-level authorization always applies. No existing-app retrofit.
-- Automations lists existing research monitors and platform actions across apps, with direct reviewed editing and enable/disable. Release 0.2.40 keeps the list definition-only and full width; the shared daily runner remains backend infrastructure, and research/action run statuses are in app-filterable Logs. Editing preserves disabled state; archive suspends work without silently resuming on restore.
-- Shared ChatGPT setup is checked opportunistically without blocking apps. Instructions/timing live in TrialAgents, one owner/workspace subscription dispatches research, and TrialAgents sends approved email.
-- App continuity, exact writes, receipts, schema/access checks and user input preservation remain mandatory. High-reasoning/latest-model preferences are requested, not host-enforced settings.
+Use the current shared UI, auth, database and bounded runtime. Keep saved data/source, identifiers and revisions compatible. User-facing name is TrialAgents; legacy technical `trialy` identifiers do not justify a global rename. Avoid unrelated rewrites or changing installed apps during documentation/template maintenance.
 
-**Remaining activation:** synchronize the existing web encryption key to the worker, refresh the host tool catalog, verify event discovery/subscription, and observe an unattended verification cycle. See [operator steps](docs/OPERATIONS.md#shared-automation-activation). The last release check did not establish activation; do not infer it from deployment or OAuth.
+## Workflow
 
-**Release evidence:** [PR #86](https://github.com/tarous89/trialy/pull/86), 177 backend tests, 75 browser tests, build/type checks and production browser verification; web/worker live and migration 050 applied. This does not close unrelated recovery/provider acceptance gates.
+1. Inspect current main, local changes and relevant contracts. Check current implementation instead of treating a dated plan as work remaining.
+2. Follow [platform scope](docs/product/APP_PLATFORM_SCOPE.md), [frontend runtime](docs/FRONTEND_CODE.md), [access](docs/ACCESS_CONTROL.md) and [write authorization](docs/WRITE_AUTHORIZATION.md). Preserve permission and atomic save boundaries.
+3. Template changes follow [authoring](templates/TEMPLATE_AUTHORING.md), [usage](templates/TEMPLATE_USAGE.md) and [catalog publishing](docs/TEMPLATE_CATALOG.md). Add new immutable versions as drafts; deployment is not approval. Do not modify bootstrap approval to publish future templates.
+4. Update current docs and hosted/bundled guidance together where affected; bump both guidance Markdown versions and `templateGuidance.version`. `node scripts/sync-plugin-guidance.mjs --check` checks the generated design baseline. Installed plugin publication is separate from source updates.
+5. Run appropriate checks. Node.js 24 recommended, minimum 22.16; `npm ci`, `npm run check`, `npm run build`; backend `npm test`; browser `npm run test:visual`. `npm run demo` provides synthetic loopback data. For documentation-only changes validate links, terminology, guidance parity and any served-guide tests; do not regenerate app assets without a reason.
+6. For runtime releases, follow [operations](docs/OPERATIONS.md), record commit/release and observed live evidence, and distinguish deployment, host metadata/package refresh and executor activation.
 
-The foundation and dated checklists below retain their historical status as of their headings. They are not the current feature backlog. Use the [prioritized backlog](docs/product/APP_PLATFORM_BACKLOG.md) and current context for new work.
+## Implemented foundation to preserve
 
-## Implemented foundation
+Connected customer-defined schemas/records, field capabilities, projects and app versions, isolated render/event execution, exact write proposals and grants, sharing/source restrictions, generic connectors, audit/history, app-linked automations, publication previews and the approved catalog. Current contracts are indexed in [docs](docs/README.md). Historical test totals are evidence for their release only.
 
-1. **Shared data contracts.** Fixed platform records; customer-designed types, fields and relationships; optional person/organization/project/location concept metadata. No mandatory clinical ontology. Schema changes are reviewed and versioned. Table correspondence becomes stale when relevant schema/concept changes.
-2. **Loss-preserving reconciliation.** Permission-filtered candidate search; preferred/original same-table identities; explicit cross-table links and reusable field correspondence; project-record links and relationship queries; dated/contextual alternative facts and withdrawal. Selected values can be propagated through current direct links after an exact review. Originals and past values remain; links do not retarget actions or recursively merge databases.
-3. **Task-driven capture.** One reviewed setup can create/reuse a table, establish its task scope, add initial rows and link them to a project atomically. Inspect existing structures first. Qualifying new information produces exact proposals; ongoing writes require approval or an explicit expiring permission for one data type. Backfill is reviewed and only fills approved empty fields. ChatGPT supplies source interpretation; TrialAgents does not monitor conversations or crawl sources independently.
-4. **Saved projects and code.** Projects/folders/components, revisions, search, moves, drag/drop, copies, archive and restore. Named assets reference exact committed document versions in PostgreSQL. Copies share references and data; restoring source clears execution authority. Moves preserve restrictions.
-5. **Generated interfaces and workers.** ChatGPT-written HTML/CSS and JavaScript render/event code; read-only draft execution; bound data queries/write proposals; project records/relationships; named file text and small raster-image reads; exact saved-function invocation/status/cancel and schedules. Generic tools/workers, no new template or workflow catalogue. See runtime limitations below.
-6. **Sharing and collection.** Inherited project/component human and AI restrictions. By default source requires full data access. Owners can explicitly review/release the entire source to a bound audience; required fields/files still need permission. Reviewed external form/view links expire and can be revoked. External responses remain separate immutable inputs until a human accepts an exact database addition. Links are bearer links, not verified-recipient identities.
-7. **Integrity and visible control.** Exact field diffs, human approval boundary, per-value history with approval/grant evidence, fixed Changes & permissions area, reviewed reversal and safe archival. Temporary data/file previews persist across process replacement. Source bytes survive quiet extraction failures. Audit/export/recovery coverage includes the new shared-data, assets and collection state.
-8. **Operational groundwork.** Existing Render web/worker/Postgres reused. Owner-only operational status includes worker heartbeat, job states and saved-original counts. Non-owner runtime-role SQL and recovery inventory are prepared. Synthetic backup/restore verifies retained original bytes and populated new state; it is not a managed Render recovery test.
+## Verification still needs explicit evidence
 
-These capabilities are implemented, not a claim of production acceptance. Runtime 4552f77 is live on the existing Render web/worker; private plugin 0.2.6 is published. Deployment evidence is in HISTORY.md. The previous detailed working checklist is retained in docs/archive/development-before-completion-2026-10-11.md.
+- Actual ChatGPT and Claude end-to-end display, connection, reopening and custom-app workflows must be checked on each host; synthetic browser tests and assistant links are not host acceptance.
+- Unattended ChatGPT research requires current runner readiness and an observed successful cycle. Recheck status; do not execute stale key/setup instructions from older notes. Claude scheduled research is not implemented.
+- Connector/provider consent, production recovery and security/operational readiness need their applicable operator checks; deployment alone does not establish them.
+- Richer runtimes, OAuth connectors, workflow infrastructure and new providers remain separately scoped enhancements. See [backlog](docs/product/APP_PLATFORM_BACKLOG.md).
 
-## Product demonstration plan (planning only)
-
-The newly agreed [11-function demo template showcase](docs/product/TEMPLATE_SHOWCASE_PLAN.md) is the product-facing discovery and demonstration plan. Each functional entry is a short, editable example, not a fixed application module or automatic template installation. One shared database supports trackers, forms, read-only visualizations and approved event/scheduled automations. The former 18 use cases remain research inputs. **No demos/gallery have been marked implemented** by this documentation decision, and this entry does not alter the remaining execution gates below.
-
-## Historical foundation execution gates — 11 October 2026
-
-| Step | Remaining work | Needed to proceed |
-| --- | --- | --- |
-| 9. Real-host acceptance | Test signup/connect return, workspace opening, generated forms, save approval, restricted sharing and recovery of a saved component in ChatGPT/web. The trusted standalone approval handoff is implemented; automatic opening and in-chat-only approval are not verified. | User's connected ChatGPT session when ready. Local browser automation was blocked by the execution environment. |
-| 10. First live external provider | Connect a selected email/calendar provider; implement its scoped server adapter, authorization, exact effect review and duplicate/unknown-outcome handling. Workers cannot inherit ChatGPT connections. Electronic signatures depend on provider requirements/cost. | Choose Google Workspace or Microsoft 365 (or another provider) and supply the required authorized account/developer setup. No real-recipient test messages without instruction. |
-| 11. Production recovery and credentials | Set retention, acceptable recovery point/time and region/budget; provision a separate runtime login, apply ops/runtime-role.sql, separate migration credentials; rehearse a managed backup restore into an isolated target. | Production policy/budget and database administration access. Current connected database tool is read-only. Synthetic recovery does not meet this gate. |
-| 12. Customer onboarding hardening | Complete sender-backed email verification/password recovery, production operational alert delivery, and relevant deployment/validation evidence for the intended use before customer reliance. | Sender/provider configuration and the production decisions above; subsequent implementation remains. |
-
-## Explicit boundaries, not silently completed work
-
-- The supported frontend is a bounded HTML/CSS/JavaScript render/event contract, not unrestricted browser DOM, React/npm, canvas or remote-code hosting. Supporting those would require a further runtime project; no such compatibility is promised.
-- Displaying human-only data privately inside the ChatGPT frame is not implemented. The embedded workspace uses AI-accessible content. Binding-scoped source release must be deliberate because literals in code are visible to its audience.
-- Live field edits use reviewed shared-record changes; presentation edits create component revisions. Arbitrary snapshot/local-override routing remains proposed in INTERFACE_RULES.md and is not automatically inferred from generated HTML.
-- Canonical identity is a set of explicit reversible claims, not automatic destructive/transitive merging. Ordinary table reads retain originals. Relationship queries follow stored customer-defined relationship fields between records linked to the same project.
-- No regulatory certification, validated electronic signatures, universal multi-instance readiness or zero-loss guarantee is claimed. No patient-content scanning is added.
-
-## Verification kept to basics
-
-Build/type-check; focused scenarios for new setup, linked corrections, source/binding permissions, saved assets, collection acceptance and worker status; existing nearby workspace/frontend/exchange/mapping scenarios; populated synthetic recovery rehearsal. Real browser/ChatGPT acceptance and managed recovery remain separate gates. Do not expand tests just to mirror implementation.
-
-
-## 20 October 2026 capability release
-
-- [x] Typed computed/lookup fields, cross-table dependency validation and read-only enforcement.
-- [x] Multiple record/user/document/table/field references with shared searchable selectors.
-- [x] Current derived reads, permission and execution-scope checks, filtering/sorting/aggregation before pagination.
-- [x] Field default and view-specific renderers; custom pure-code displays and graphical timeline bars.
-- [x] Reviewed bulk editing, multi-reference CSV values, versioned configuration and existing authorization/audit contracts.
-- [x] Synthetic CRO comparison and security regression tests.
-- [ ] Trusted in-chat human approval channel: retain authenticated portal until verified.
-- [ ] Real ChatGPT host acceptance of new schema/tool discovery; refresh the connector after deployment.
-
-Precise implementation limits are recorded in docs/FIELD_CAPABILITIES.md; these are not claims of unlimited table evaluation or retrospective computed snapshots.
-
+These verification boundaries do not block ordinary saved-app use and do not authorize unrelated infrastructure purchases or changes.

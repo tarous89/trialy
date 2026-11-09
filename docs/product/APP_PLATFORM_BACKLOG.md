@@ -1,41 +1,19 @@
-# App platform backlog
+# TrialAgents remaining work and enhancements
 
-Updated 29 October 2026. These items are explicitly outside the [simple-app P0 release](APP_PLATFORM_SCOPE.md). No task here is implicitly activated by implementing navigation or the generic connector.
+Current: 9 November 2026. This is not an authorization to start every item. [Context](../../CONTEXT.md) and [development](../../DEVELOPMENT.md) distinguish implemented behavior from verification gaps.
 
-The earlier broad proposal is preserved in [planning commit d7679e2](https://github.com/tarous89/trialy/tree/d7679e235a1bcc57ab702ee5e1d23f993732d42e/docs/product). It is design reference, not the active implementation order.
+## Verification priorities
 
-## Superseding work — 31 October 2026
+- Verify real ChatGPT and Claude app display, connection, customization, new custom-app creation and reopening against the shared contracts.
+- Verify actual unattended ChatGPT runner activation and a real no-write cycle before claiming background readiness. A Claude runner would be new work.
+- Complete applicable production recovery/provider checks using current operational evidence, not dated release blockers.
 
-Email/app services and the shared automation foundation were separately authorized and implemented after the historical priorities below; actual shared ChatGPT activation still has open gates. The [revised app configuration scope](APP_CONFIGURATION_AND_AUTOMATIONS.md) now defines a approved implementation iteration for the Automations destination, complete schedule/prompt editors, optional tab access and first-use connection guidance. These are not deferred by the old advanced-workflow/provider backlog. A workflow designer, delegated automation managers, new runtimes and app controls below tab granularity remain out of scope. Missing optional declarations or automation setup never block app service.
+## Demand-driven enhancements
 
-## P1 — Small improvements after first use
+- Measured app navigation/render/save performance improvements without data or input loss.
+- OAuth2 support, richer response pagination/files and additional operations in generic connectors when a selected service requires them.
+- New runtimes such as React/npm bundles, Node or Python only with a separately designed isolation, permission and deployment model.
+- More complex durable workflows, inbound webhooks, real-time collaboration and additional audience policies as separately scoped features.
+- Additional branded adapters and variable-cost billing controls where justified by a selected use case. Existing TrialAgents email/actions and shared automation services are already implemented, not blocked by an obsolete “providers last” plan.
 
-| Item | Trigger for taking it up |
-| --- | --- |
-| Local navigation/event optimization | Measured delays in a real simple app justify additional runtime work |
-| OAuth2 authorization/refresh in generic connectors | A selected service needs OAuth; the same Connectors UI is reused |
-| Generic response pagination, larger files and richer transformations | A real connector exceeds the initial bounded JSON/text contract |
-| Optional project appearance control | Users need to override the stable existing project palette |
-
-These do not postpone required P0 new-tab launch, working links, project color inheritance, data-access enforcement or footer consistency.
-
-## P2 — Advanced apps and operations
-
-- Real browser JavaScript bundles, React/npm dependencies, isolated builds, assets and additional runtime versions.
-- Isolated Node/TypeScript and Python functions, then container/language extensions; no arbitrary code inside trusted web/worker processes.
-- App-defined HTTP endpoints, inbound webhooks and additional protocols.
-- Cron expansion, durable multistep workflows, checkpoints, richer event chains, advanced retry/recovery and long-lived workers. Preserve current jobs/schedules in the meantime.
-- Build/release pipelines and immutable artifacts when packaged runtimes require them; current component revisions suffice for P0.
-- Invite-only external app audiences, public signup/federation, additional record-scope policies and real-time collaboration. Reuse existing auth before adding identity systems.
-- Monetary usage ledger, reservations, account/app spending caps, rate catalogues and provider invoice reconciliation. Required before TrialAgents-funded variable-cost services; initial connectors use customer credentials.
-- Additional execution-provider/storage/production recovery work specifically required by these larger runtimes. Existing production obligations are not waived by postponing them.
-
-Each needs a separately scoped change with measured demand, cost and acceptance criteria. No new runtime/infrastructure purchase follows automatically from this backlog.
-
-## P3 — Branded connectors last
-
-Email sending, Microsoft 365/Google document access, AI providers and other provider-specific services come after the generic connector and actual usage evidence. Build them as adapters to the same credential, scope, review, management and logging contracts.
-
-TrialAgents-funded services additionally need verified pricing and the P2 spending controls. Customer-connected services still need provider consent. Generating a local document is not the same as connecting to a cloud Word account, and building through ChatGPT does not automatically provide in-app AI execution.
-
-Do not build a connector marketplace or a large unused catalogue. Select the first branded adapter through a separate product decision after P0 is working.
+Do not reintroduce separate-tab app defaults, mandatory categories, a Templates sidebar, app-level accounts, or required automation setup. Preserve current same-tab routing, approved catalog, custom app support and shared access/data contracts. No infrastructure purchase follows from this backlog.

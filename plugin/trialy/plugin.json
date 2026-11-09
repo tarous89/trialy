@@ -3,7 +3,7 @@
   "author": {
     "name": "Atlas Consulting"
   },
-  "description": "Persistent data, isolated JavaScript, saved functions and authorized apps for ChatGPT.",
+  "description": "Connected, customizable apps for ChatGPT, Claude and standalone web.",
   "extensions": {
     "com.openai": {
       "interface": {
@@ -14,8 +14,8 @@
         "defaultPrompt": "Open my TrialAgents workspace.",
         "developerName": "Atlas Consulting",
         "displayName": "TrialAgents",
-        "longDescription": "Build and use internal apps for your team inside ChatGPT. TrialAgents provides persistent data, documents, current app templates, custom interfaces, isolated JavaScript and saved functions. Reuse authorized data, preview completed changes and save within your approved permissions. Optional recurring research and email actions use scoped authorization and report their readiness separately. Connect a TrialAgents account to create and save apps. Not intended for patient-level data or regulated clinical decision-making.",
-        "shortDescription": "Data, code & apps for ChatGPT",
+        "longDescription": "Use ready-made TrialAgents apps, customize them with AI assistants, or build custom apps for your team. TrialAgents is cross-platform software for ChatGPT, Claude and standalone web, sharing authorized data, access controls and saved app versions. Preview completed changes and save within approved permissions. Optional scheduled research currently uses ChatGPT; email actions use TrialAgents, with readiness verified separately. Connect a TrialAgents account to create and save apps. Not intended for patient-level data or regulated clinical decision-making.",
+        "shortDescription": "Connected, customizable apps",
         "logo": "./assets/trialagents-mark-black.png",
         "composerIcon": "./assets/trialagents-mark-black.png",
         "logoDark": "./assets/trialagents-mark-white.png",

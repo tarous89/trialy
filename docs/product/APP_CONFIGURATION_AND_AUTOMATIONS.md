@@ -1,14 +1,14 @@
 # Apps, access and automations: revised product scope
 
-31 October 2026. **Deployed in release 0.2.39, incorporating the owner’s final clarifications.** This is the authoritative scope for app configuration and automation management. It supersedes conflicting navigation, app-creation and automation-management descriptions in earlier scopes, not existing runtime behavior. The original product brief remains historical. See the [automation engine scope](../scopes/APP_AUTOMATION_ENGINE_2026-10-31.md) for scheduling and execution mechanics.
+31 October 2026. **Deployed in release 0.2.39, incorporating the owner’s final clarifications.** This remains the app access and automation contract. The November 9 [product direction](PRODUCT_DIRECTION.md) and [platform scope](APP_PLATFORM_SCOPE.md) supersede its older navigation/positioning descriptions. The original product brief remains historical. See the [automation engine scope](../scopes/APP_AUTOMATION_ENGINE_2026-10-31.md) for scheduling and execution mechanics.
 
 ## Product model
 
-An app is a saved interface with a stable identity and independently managed configuration: optional database bindings, access policy, optional connector bindings and zero or more automations. These are related resources, not separate kinds of app. ChatGPT considers all five during creation and updates only what the requested app needs.
+An app is a saved interface with a stable identity and independently managed configuration: optional database bindings, access policy, optional connector bindings and zero or more automations. These are related resources, not separate kinds of app. ChatGPT or Claude considers all five during creation and updates only what the requested app needs.
 
 | Platform destination | Responsibility |
 | --- | --- |
-| Home | Saved apps and projects; open the published app |
+| Apps | Saved apps and projects; open the published app |
 | Database | Tables, relationships, records and the app's authorized data bindings |
 | Access Control | Each app's effective permissions; expand an app to configure registered tabs when needed; retain existing database and connection controls |
 | Connectors | Named external connections, allowed apps, operations and data scopes |

@@ -4,7 +4,7 @@ Current setup updated 1 November 2026 (Europe/Berlin). Platform/MCP release 0.2.
 
 ## Current connection and automation setup
 
-Public platform: `https://platform.trialagents.com`. MCP: `https://platform.trialagents.com/mcp`. Reuse the existing TrialAgents/Trialy connection; do not create a second account, plugin or subscription to repair metadata.
+Public platform: `https://platform.trialagents.com`. MCP: `https://platform.trialagents.com/mcp`. Reuse the existing TrialAgents connection (older connections may retain the legacy Trialy label); do not create a second account, plugin or subscription to repair metadata.
 
 1. After a server/tool change, open the existing custom MCP connection in **ChatGPT Plugins**, select **Refresh**, and start a new **Work chat** with TrialAgents enabled. Verify that `read_automation_setup`, `read_app_automation_guide` and `list_app_automations` are available. A deployed tool is not necessarily present in an already-open conversation's tool catalog.
 2. Initialize/open the connected account and read setup. Existing app/database permissions remain authoritative. If already authorized, resume missing setup; otherwise prepare the exact shared-runner review and let the owner approve it. Confirm the user's IANA timezone; the default daily time is 06:00. Do not silently use the server's UTC timezone.

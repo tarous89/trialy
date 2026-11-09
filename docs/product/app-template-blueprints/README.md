@@ -1,10 +1,10 @@
 # TrialAgents — 23 candidate biotech application blueprints
 
-**Status:** Detailed product/design scope only. Nothing in this directory is an installed template, implemented app, production workflow, certification or permission grant. **Recorded:** 31 October 2026. **Source:** User-approved shortlist and screen proposals, adapted to the current TrialAgents/Vivid runtime; benchmark products are design/workflow references, never code/assets to copy.
+**Status:** Historical design briefs with current shared build rules. Corresponding versioned packages now exist in `templates/apps/`; the initial 23 life-science versions were approved for the platform launch. This directory is not the live catalog: approval status in the database determines visibility, and a blueprint does not prove every proposed feature shipped. **Recorded:** 31 October 2026. **Source:** User-approved shortlist and screen proposals, adapted to the current TrialAgents/Vivid runtime; benchmark products are design/workflow references, never code/assets to copy.
 
 ## Platform contract update — 1 November 2026
 
-All candidates use the deployed 0.2.39 app access/automation contract and [living authoring guidance](../../../templates/TEMPLATE_AUTHORING.md). Projects show apps by default with optional expandable supported sections. Automations are app-linked definitions managed in the platform, using one shared ChatGPT research connection and separate TrialAgents deterministic/email actions. Optional metadata/setup failures never block an app. The [shared build contract](DESIGN_AND_BUILD_CONTRACT.md) supersedes older per-app-task or worker-limitation wording in recipes; those recipes describe business intent, not host task architecture. The candidate apps themselves remain proposals, not deployed templates.
+All candidates use the deployed 0.2.39 app access/automation contract and [living authoring guidance](../../../templates/TEMPLATE_AUTHORING.md). Projects show apps by default with optional expandable supported sections. Automations are app-linked definitions managed in the platform, using one shared ChatGPT research connection and separate TrialAgents deterministic/email actions. Optional metadata/setup failures never block an app. The [shared build contract](DESIGN_AND_BUILD_CONTRACT.md) supersedes older per-app-task or worker-limitation wording in recipes; those recipes describe business intent, not host task architecture. Use the [catalog contract](../../TEMPLATE_CATALOG.md) and actual package/approval state for current availability.
 
 ## Contents and audience
 
@@ -20,7 +20,7 @@ All candidates use the deployed 0.2.39 app access/automation contract and [livin
 
 ## Why these exist
 
-These are scoped **4–8-screen starting applications** for small biotech, CRO, clinical operations and nonclinical research teams, not full SaaS replacements. Each specification defines users and job-to-be-done, an existing market benchmark, business records, screens with exactly four primary capabilities apiece, deliberate graphic and icon direction, workflow, ChatGPT responsibilities, safe automation, scope limits and testable completion criteria. Apps retain independent identity and can share authorized organization, person and project records.
+These are scoped **4–8-screen starting applications** for small biotech, CRO, clinical operations and nonclinical research teams, not full SaaS replacements. Each specification defines users and job-to-be-done, an existing market benchmark, business records, screens with exactly four primary capabilities apiece, deliberate graphic and icon direction, workflow, AI-assistant responsibilities (ChatGPT and Claude; scheduled research remains ChatGPT-specific), safe automation, scope limits and testable completion criteria. Apps retain independent identity and can share authorized organization, person and project records.
 
 The original, separate [11-function showcase plan](../TEMPLATE_SHOWCASE_PLAN.md) remains a historical general discovery document. These 23 user-selected candidate product demos provide more specific functional scope. They **do not replace** the TrialAgents platform foundation or require a fixed clinical schema.
 

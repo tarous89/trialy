@@ -1,164 +1,38 @@
-# TrialAgents OS — Shared Data and a Home for What ChatGPT Builds
+# TrialAgents
 
-## Current implementation — 1 November 2026
+**The operating system for AI-native biotechs.**
 
-Release **0.2.41** implements [simple automations and notification guardrails](docs/scopes/NOTIFICATION_GUARDRAILS_2026-11-01.md): daily-or-slower scheduled email, explicit database conditions, two-minute settling, current access/state checks, one email per person/hour and 15 recipient deliveries/account/day. ChatGPT processing remains independent. The minimal editor hides backend controls. Rollout preserves data and pauses incompatible legacy email definitions.
+TrialAgents is cross-platform software with connected, customizable apps that users can run inside **ChatGPT**, inside **Claude**, and as a **standalone web platform**. Start with a ready-made app, use it as it is, customize it with an AI assistant, or ask an assistant to build a custom app. The suite comes first; custom app creation extends it.
 
-Start with [current project context](CONTEXT.md). Release **0.2.39** is deployed ([PR #86](https://github.com/tarous89/trialy/pull/86)). [Apps, access and automations](docs/product/APP_CONFIGURATION_AND_AUTOMATIONS.md) defines the implemented app configuration contract: every app has its own access boundary, optional registered-tab restrictions, and optional app-linked automations managed in a new platform **Automations** destination. The shared ChatGPT connection is configured separately and reused across apps. App loading, use and saving remain independent of automation availability. The implementation adds the Automations management destination and optional standard-tracker tab controls. Existing apps retain their boundaries; real unattended ChatGPT activation remains separately unverified.
+- Website: https://trialagents.com
+- Platform: https://platform.trialagents.com
+- MCP: https://platform.trialagents.com/mcp
+- Product name: **TrialAgents**. `tarous89/trialy` and existing `trialy` protocol/package identifiers are compatibility names, not product branding.
 
-## Active simple-app scope — 29 October 2026
+## Start here
 
-The first release now focuses on simple apps with navigation, links and one generic connector type. Users describe their work; the builder chooses the interface without a tracker/form/dashboard/automation category. Home cards inherit their project's existing color pattern. Apps open on standalone pages in new tabs by default, with a persistent trusted “Built with TrialAgents” footer. Internal navigation stays in the app tab.
+1. [Current context](CONTEXT.md): shipped behavior, constraints and documentation precedence.
+2. [Product direction](docs/product/PRODUCT_DIRECTION.md): audience, three surfaces, suite, customization and landing-page hierarchy.
+3. [Platform contract](docs/product/APP_PLATFORM_SCOPE.md): navigation, headers, gallery and app lifecycle.
+4. [Development](DEVELOPMENT.md): engineering workflow, validation and remaining verification.
+5. [Documentation index](docs/README.md): current technical contracts and historical material.
 
-- [P0 scope and agreed behavior](docs/product/APP_PLATFORM_SCOPE.md)
-- [Six-step implementation roadmap and acceptance criteria](docs/product/APP_PLATFORM_ROADMAP.md)
-- [Generic connector management, data and access contract](docs/product/CONNECTORS_AND_USAGE.md)
-- [P1/P2 backlog and branded connectors last](docs/product/APP_PLATFORM_BACKLOG.md)
+## One platform, three surfaces
 
-The six-step simple-app implementation is deployed; [implementation and verification](docs/product/APP_PLATFORM_IMPLEMENTATION.md) and [release evidence in PR #62](https://github.com/tarous89/trialy/pull/62) distinguish shipped behavior from remaining live-host checks. These documents supersede the earlier broad first-release plan. Reuse the current runtime, authentication, database, access controls and audit history. The Connectors page and trusted app chrome must use the current shared UI components/styles. Advanced runtimes, new workflow infrastructure, monetary billing and branded integrations are backlog work, not prerequisites. The public product name is **TrialAgents**; **TrialAgents OS** is the internal name that distinguishes this foundation from Intel, CTIS and Custom. Existing infrastructure and protocol identifiers remain compatible.
+The product should work inside ChatGPT, inside Claude and in a browser without requiring users to build an app first. These surfaces use the same saved apps, authorized data, access controls and history. Assistant-specific connection, display and scheduling capabilities must be detected and tested; product direction is not evidence that every host capability is identical or verified. Current scheduled research uses the ChatGPT runner; a Claude runner is not implemented.
 
-Foundation baseline updated 11 October 2026, with later implementation notes below. Read the 29 October app platform documents above for the superseding direction and remaining work. The uploaded initial brief remains a historical source, subject to the user's subsequent decisions.
+On the website, apps open in the same TrialAgents tab beneath the fixed logo/header. The platform sidebar starts expanded on platform pages and collapsed on app pages. The header offers **Open ChatGPT** and **Open Claude**; the embedded plugin uses **Open TrialAgents**.
 
-Repository: `tarous89/trialy`. Public name: **TrialAgents**. Internal name: **TrialAgents OS**. The 29 October 2026 rename changes product copy and plugin presentation, not URLs, OAuth scopes, database roles, saved identifiers or other TrialAgents products. See [naming and compatibility](docs/BRANDING.md).
+The **Apps** page is the user's app home. **New → App** and **Browse app templates** open the dedicated searchable/filterable gallery; Templates is not a sidebar item. Approved templates have screenshots, short descriptions, fullscreen previews and **Preview / Use** actions. Installing a template creates an app and empty tables; optional automations and connectors are separately configured.
 
-- [Current development steps](DEVELOPMENT.md)
-- [User-selected 23 biotech/ClinOps/CRO/research app blueprints — detailed screen specs, Vivid styling, no implementation](docs/product/app-template-blueprints/README.md)
-- [Proposed 11-function demo template showcase](docs/product/TEMPLATE_SHOWCASE_PLAN.md)
-- [Interface behavior decisions and proposals](docs/INTERFACE_RULES.md)
-- [Foundation architecture and dependency map](docs/FOUNDATION_ARCHITECTURE.md)
-- [Decision and implementation history](HISTORY.md)
-- [Historical scope](docs/archive/scope-before-foundation-reset.md)
-- [Historical development checklist](docs/archive/development-before-foundation-reset.md)
+## Customize or build
 
-## Product boundary
+AI assistants can inspect authorized apps, discover approved templates, customize configuration and source, reuse an app with the intended shared/separate-data choice, or build custom apps with the supported runtime. Templates, shells and components are starting points, not mandatory app categories. Preserve user work, existing IDs, permissions and exact reviewed writes.
 
-TrialAgents is the persistent workspace behind the things ChatGPT builds. ChatGPT designs interfaces, application logic and data reconciliation. TrialAgents supplies a connected database, an organized home for saved components, authorized tools and background execution, with access control and traceable changes throughout.
+Read the [template authoring standard](templates/TEMPLATE_AUTHORING.md), [assistant usage guide](templates/TEMPLATE_USAGE.md), [catalog publishing contract](docs/TEMPLATE_CATALOG.md) and [app configuration contract](docs/product/APP_CONFIGURATION_AND_AUTOMATIONS.md). Apps use TrialAgents accounts; they do not add a second login/account system. Shared data means connected within authorized boundaries, never unrestricted access across customers.
 
-Users build their database while doing their work; database maintenance is not a separate routine they must perform. A study tracker and a conference tracker can reference the same investigator and organization, while retaining separate study participation and conference follow-up records. Shared means connected within the authorized workspace, never globally merged across customers or permissions.
+## Local development
 
-Projects and folders organize saved components: forms, trackers, visualizations, presentations/files, mixed interfaces and workflows with actions. These are examples of user-created content, not platform templates or a fixed component catalogue. Users can move projects between folders and components between projects without copying shared entities or breaking stable references. Moves must recheck access and must not silently expose data or expand execution grants.
+Use Node.js 24 (package minimum: 22.16) and npm. Run `npm ci`, then `npm run build`. `npm run demo` starts a loopback-only synthetic PGlite demo at http://127.0.0.1:4317; never use customer data in fixtures. `npm run check`, `npm test` and `npm run test:visual` provide type, backend and browser checks. See [operations](docs/OPERATIONS.md) for deployment, runtime roles and recovery.
 
-Creation and revisions remain conversational. Running apps default to authenticated standalone pages opened through trusted links from Home or ChatGPT. The platform remains their management home on the same backend. Existing embedded previews/readers stay compatible; full standalone operation is no longer conditional on embedded feature parity. Human and AI data access remain distinct.
-
-## Foundation responsibilities
-
-1. Connected, user-defined data with stable entity identities, relationships, originals and provenance across projects.
-2. AI-proposed normalization and reconciliation: preferred values, aliases, source observations, conflicts and reversible match/merge decisions.
-3. Projects, folders and saved components with stable IDs, versioned source/configuration, shared-data bindings and organization controls including drag and drop.
-4. Isolated hosting of ChatGPT-generated interfaces, plus bounded server-side code execution. Saved UI must not receive host credentials or bypass human/AI permissions.
-5. A trusted tool gateway for authorized services, including future email, calendar and conditional signature adapters.
-6. Saved functions, general jobs, schedules/events, cancellation and recovery so authorized components can run while ChatGPT is closed.
-7. Granular human and AI permissions, team/external sharing, once/future authorization and scoped access for collecting information from others.
-8. Preview before official saving, exact commits, audit/version history and recoverability of saved data, code, components and relationship decisions.
-
-## Database design decisions — agreed 11 October 2026
-
-Three layers define the flexibility boundary:
-
-| Layer | Content | Control |
-| --- | --- | --- |
-| Platform foundation | Customer/workspace, users/memberships, access, projects/folders, component code/revisions, sources, audit and jobs | TrialAgents enforces stable contracts |
-| Common concepts | Person, organization, project and location, with extensible relationships | Small starting vocabulary, not mandatory business fields or fixed templates |
-| Customer-specific model | Fields, additional types, classifications, activities, forms, calculations and workflows | ChatGPT designs against the existing authorized schema |
-
-Use **project**, not study, as the general work concept: investor outreach, regulator engagement, conferences and clinical studies can all be projects. Study-specific attributes/types are optional customer extensions. A project is the same stable platform project when it is both a work container and the subject of relationships; do not create a duplicate generic Project entity for the same thing. Its operational fields are extensible while its identity/access/organization contracts remain platform-controlled. Location remains optional; education is not a required common concept.
-
-A person is not duplicated for each role: investigator, consultant, speaker and expert are contextual roles/relationships. Organization locations and trial participation can be separate linked records. Keep shared facts, dated affiliations and project-specific facts distinct. Few business fields are mandatory; incomplete records are valid.
-
-Require stable IDs, workspace ownership, typed fields, revision/actor attribution, permission enforcement and stable relationship references. Preserve source provenance where available. ChatGPT must inspect permitted schema and candidates before adding types or importing entities; reconcile both records and schema meaning, never merge fields solely because their labels sound similar. Renames preserve field identity; type conversions preserve non-convertible originals and need a safe change proposal.
-
-Start with logical customer isolation in shared PostgreSQL, not a physical database/table set for every client. Shared information is within authorized customer boundaries. No implicit cross-customer reconciliation or data access.
-
-Interface preferences and the proposed edit-routing policy are tracked separately in [INTERFACE_RULES.md](docs/INTERFACE_RULES.md). These are development targets, not claims that generated interfaces already implement them.
-
-## Task-driven capture and approved maintenance — updated 11 October 2026
-
-**The task determines the structure; the approved structure and inclusion criteria determine what TrialAgents maintains.** Capture, structuring and reconciliation are distinct decisions, not permission to record everything mentioned.
-
-- Establish or extend a table when the requested work involves multiple entries, repeated actions, tracking, a workflow or expected future additions. A task can qualify with only one initial person/site if it will track repeated interactions or develop over time. A one-off draft or passing mention alone does not justify creating a structure.
-- Inspect and reuse existing authorized structures and entities first. Propose only the fields, relationships and additional types needed for the task. Show the purpose, inclusion criteria, initial records and ongoing maintenance scope in the setup preview; save the setup after review and approval.
-- Every database change requires a visible exact preview and approval by default, including additions and updates to existing tables. Task/schema approval does not itself authorize future writes. Only an explicitly granted, revocable longer-term permission for a named data type can waive repeated approval within its stated boundaries; no general database-write permission.
-- Extract relevant facts from information made available to TrialAgents through authorized work. Propose updates to existing entities and qualifying new entities, preserving shared identity across projects; save only after approval or under an applicable longer-term data-type permission. Do not imply access to all ChatGPT conversations or continuous background discovery without an enabled trigger/source.
-- Fit is both structural and semantic: a company having a name/email does not make it eligible for a project-specific CRO tracker. Maintain fields and relationships only where the information concerns an eligible entity and the approved purpose.
-- Do not create columns, tables or source archives simply because additional facts were mentioned. Do not save entire messages or communication histories by default; extract only relevant facts and retain proportionate provenance. Communication records are appropriate only when explicitly included in the reviewed tracking structure. Original files explicitly accepted for storage remain preserved under the existing original-file policy.
-- A request such as “add addresses to this tracker” initiates a reviewed schema expansion. After approval, populate from available permitted sources and maintain the new field like the existing fields. Missing values remain missing and uncertainty remains explicit; broader research requires an authorized source/task scope.
-- Distinguish a plan, an inference and an observed action. Drafting is not sending; a prospective invitee is not a confirmed attendee. Retain prior observations and reversible decisions when information conflicts or changes over time.
-- Always expose the proposed or completed changes, including writes under longer-term permission. Log every changed field value with before/after values and its exact approval or grant. Provide a fixed Changes and permissions area with review, revocation and safely previewed reversal. Permission revocation, schema revision and stale-data checks apply to every write. Uncertain inclusion remains provisional.
-
-See [Database write approval and change history](docs/WRITE_AUTHORIZATION.md) for the superseding authorization contract. Default human approval enforcement, per-field authorization history and the Changes & permissions area are now implemented. Existing task scopes default to preview-only, and old execution grants cannot write until renewed. Approval from the embedded view currently opens the authenticated standalone review, rather than trusting an AI-callable confirmation. Task-driven maintenance is currently exposed through scoped MCP writes, reviewed table/field permissions and preserved observations. ChatGPT evaluates semantic inclusion; the backend enforces tenant, field, schema-version and grant boundaries. General merged-entity views and scheduled maintenance integration remain to be built.
-
-## Reconciliation and saving decisions
-
-- ChatGPT may judge that two differently named entries represent the same entity; do not require hardcoded business matching rules or a confirmation for every spelling variation.
-- Preserve each original observation, source and competing value. Store a preferred interpretation plus reversible links/merge decisions and their rationale. Correction must be able to separate an incorrect match without losing source facts or project-specific context.
-- Do not branch the entire database for every possible interpretation. Keep uncertainty and alternatives at the relevant entity, fact or relationship. This is an implementation direction, not an already implemented capability.
-- Experiments remain provisional. Initial setup/imports/components require confirmation before becoming saved work. Subsequent additions and updates also require visible review and approval, unless covered by explicit longer-term permission for their data type; structure or inclusion-scope expansion always requires review. This is not unrestricted permission to rewrite data.
-- A likely identity match does not itself authorize contacting someone, changing recipients, sharing restricted information or granting access. Reconciliation operates only on data the acting identity and AI may access.
-
-User-created workflows are in scope as code and components on the shared foundation. Optional industry examples and templates can accelerate creation without prescribing review chains, database schemas, screens or app types. Biotech teams remain the intended audience.
-
-## Decisions retained
-
-- Keep the existing repo and Render services; make the correction on `foundation-reset` before merging runtime changes.
-- Use PostgreSQL for committed data and original file bytes. No vector database or separate file service is required now.
-- No Auth0 requirement. Existing self-hosted authentication, MFA and OAuth remain.
-- TrialAgents is not fit for patient-level data. Retain the intended-use notice; do not introduce patient-content screening or quarantine. Professional personal information is allowed.
-- Human and model permissions remain distinct. Generated code cannot expand either permission set. Human consent need not inherently mean leaving ChatGPT; a trusted confirmation path must be implemented and verified before claiming it works there.
-- Experiments and code drafts are not official records. Explicit saving starts persistent version history; a saved function is not automatically granted permission to execute side effects.
-- Preserve originals even when extraction/OCR fails. Derived-data failures remain quiet availability flags. Never claim a source or data change is saved before durable commit.
-- Allow one execution or future executions within a defined scope. A material code, tool or permission change must not inherit broader approval silently.
-- Preserve existing records, revisions and audit evidence during refactoring. No automatic migration of old business rules into new executable code.
-- Defer integrations requiring new developer accounts until provider/account selection is needed. ChatGPT testing has begun with user-driven connection/use; full host acceptance is still pending. Backend access to tools connected in ChatGPT is not automatic.
-- No real-recipient test messages. Electronic signatures remain conditional on provider requirements and cost; they are not implemented. Brand cutover remains separate.
-
-## Current implementation versus target
-
-The existing app has transactional records, originals, extraction, permissions, auth, audit/version history, MCP and deployed web/worker services. It also has legacy business-specific screens, templates and rules. Those are frozen pending separation, not newly endorsed product requirements.
-
-The code execution foundation is implemented: bounded QuickJS/WASM JavaScript, permission-filtered tools, exact proposals and atomic commit receipts, immutable saved functions, leased jobs, once/future grants, schedules, result-file saves and shared standalone/embedded controls. Template/business builders are absent from the default experience; existing management remains at `/?legacy=1`. No historical data is removed.
-
-See [the implemented execution contract](docs/EXECUTION.md) for APIs, limits, temporary retention and remaining boundaries. Projects/folders can now be created, renamed and moved, including drag and drop. Reviewed maintenance scopes support qualifying record additions/updates with provenance, and reversible same-table identity links preserve both records. Identity-group reads now expose preferred records, original alternatives, conflicts and incoming relationships. Frontend code hosting, component moves and exact function bindings are implemented; unrestricted browser/npm hosting and broader schema-semantic reconciliation remain open. See [workspace implementation boundaries](docs/WORKSPACE_FOUNDATION.md). External service adapters are not connected; complete real ChatGPT host acceptance is still pending. The existing Render services are reused, without a new sandbox account or infrastructure service.
-
-## Development and operation
-
-Node.js 24 and npm are required. `npm ci`, `npm run build`, and `npm run demo` start a loopback-only synthetic PGlite demo at http://127.0.0.1:4317. Do not use customer data in it. Docker includes Poppler, Tesseract and Python for extraction.
-
-For PostgreSQL, configure `.env` from `.env.example`, including DATABASE_URL, SESSION_SECRET and PUBLIC_URL; then run `npm run db:migrate`, `npm run build`, `npm start`, and `npm run worker` in a second terminal. `npm run check` and `npm test` are verification commands.
-
-Existing `/auth/login` provides sign-in/signup. OAuth uses PKCE; MFA/recovery codes exist, but email verification/password recovery are still absent. [ChatGPT setup](docs/CHATGPT_SETUP.md) and [operations](docs/OPERATIONS.md) describe existing behavior; their legacy feature instructions are operational history, not the future product backlog.
-
-Data/file previews and experiment/proposal/function-preview staging live in PostgreSQL with a 24-hour expiry, surviving web process replacement. Original upload bytes stay in temporary staging until confirmation atomically saves the original and receipt. Staging is not authoritative saved work or immutable history; database backups may retain staging until backup expiry. Data/file staging is limited to 1,000 previews and 100 MiB per workspace. This removes the in-memory preview barrier, but does not establish multi-instance readiness for all other services. Confirmed data is in PostgreSQL. Production recovery targets, actual managed backup restoration, restricted runtime credentials and production alerting remain unfinished; no zero-loss or blanket clinical-compliance claim is made.
-
-## Frontend scope correction — 11 October 2026
-
-ChatGPT writes frontend code; TrialAgents saves, versions, organizes and hosts that code with authorized data/tool access. TrialAgents is not a UI block catalogue or a template/workflow builder. The initial executable contract is `frontend-js` / `trialy-frontend-js-v1`: JavaScript renders arbitrary supported HTML/CSS and handles events inside a bounded runtime. The earlier `trialy-ui` schema is legacy compatibility only. See [FRONTEND_CODE.md](docs/FRONTEND_CODE.md) for the exact contract and remaining browser/host verification. Unmodified React/npm applications are not supported yet.
-
-### Archival behavior
-
-Unchanged new database entries can be archived after review while retaining every value and historical change. Referenced or later-edited entries require an explicit correction. A reviewed restore is available for these retained creations. Archived entries are excluded from active lists and summaries; their history remains accessible.
-
-Projects and folders can also be archived by their owner, with an exact preview of affected contents. This preserves source, shared data and history, revokes task scopes, clears attached function bindings and pauses attached schedules. Restoring organization does not silently reactivate execution or long-term write authority.
-
-### Shared data across projects
-
-Projects can reference the same records without copying them. Candidate field values retain their source labels, optional project/date context and exact approval; selecting a main value is a separate reviewed edit. Withdrawing a candidate preserves its evidence. ChatGPT can prepare missing-value backfill from permitted sources under an approved task scope; backfill always requires review and cannot replace existing non-empty values. See [shared-data behavior](docs/SHARED_DATA.md) for capabilities and limits.
-
-Cross-table reconciliation now supports reviewed direct identity claims with explicit field mappings between two differently structured records. Both originals remain intact; comparisons and withdrawal are available from project record details. Mapping approval does not authorize future writes or apply to every row in a table. See [shared data](docs/SHARED_DATA.md) for boundaries and remaining work.
-
-Reusable table mappings now let ChatGPT reuse approved column correspondence when proposing cross-table record links. Each record link still needs its own approval. Mapping history is preserved; revoked or schema-outdated mappings cannot be reused. Projects includes a mapping list and detail/revocation review.
-
-## Foundation completion checkpoint — 11 October 2026
-
-Optional common-concept tags now support person, organization, project and location without fixed domain tables. Task setup can atomically create/reuse a schema, save its reviewed scope and initial rows, and link those records to the project. This does not grant future write permission. Direct linked-value corrections, project relationship reads, named saved file assets and owner-reviewed source release for restricted audiences are implemented. External collection links and acceptance are integrated with the same review/history boundary. Owner operational status shows worker/job health. See DEVELOPMENT.md for precise remaining host, provider and production gates.
-
-
-## Field capabilities — 20 October 2026
-
-Typed JavaScript computations, cross-table lookups, multiple references, searchable linked selectors, reviewed bulk edits, field/view renderers and graphical timelines extend the shared data foundation. See [field capabilities and limits](docs/FIELD_CAPABILITIES.md). New derived values are read-time results, not silent database writes; all stored changes retain the approval and audit contract.
-
-## Account, projects and tools
-
-Connect an account before creating a project or tool (tracker, form, visualization or automation). Account storage initializes automatically; there is no workspace-creation step. Tools can be independent or organized into projects with drag-and-drop or Move to. Organization preserves data scope and permissions. Public forms remain usable without login; previously issued temporary previews remain recoverable until expiry. See [implementation and verification](docs/design/ACCOUNT_PROJECT_TOOLS.md).
-
-
-Template authors: [living template standard](templates/TEMPLATE_AUTHORING.md) and [ChatGPT usage and tasks](templates/TEMPLATE_USAGE.md). Both are served dynamically by `read_app_template_guidance`; each current catalog template includes its own usage documentation.
+Historical decisions, old release counts and superseded ChatGPT-first/new-tab-only plans live in [history](HISTORY.md) and the [archive](docs/archive/README.md). They do not override current context.

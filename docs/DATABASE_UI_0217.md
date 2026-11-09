@@ -1,11 +1,5 @@
-# Shared database and database browser — 0.2.17
+# Shared database and database browser — 0.2.17 — historical reference
 
-The web app and ChatGPT already read and write the same backend. Investigation found that the Open app link omitted its workspace context and web/AI default workspace selection could differ. The handoff now preserves workspaceId through sign-in; both clients prioritize an accessible AI-enabled workspace. An explicitly requested workspace that the web account cannot access produces an account-mismatch message instead of silently opening another database. The user's actual browser account was not inspected; no accounts or existing records were merged.
+This dated plan/release note has moved to the [archive](archive/2026-11-09-product-reset/docs/DATABASE_UI_0217.md). It is not current implementation guidance.
 
-Database now has a table/field sidebar, neutral central grid, search, sorting, column visibility and pagination. It is read-only by default. An owner with full field access can enable editing, stage typed cell edits and deletions, then save or discard. Pending cells are green; pending deletions have Undo. Writes require server-side owner authorization, full visibility, current versions and an exact approval receipt. The entire batch commits atomically. Deletions archive draft records and retain values, revisions and audit history; linked, controlled or retention-protected records cannot be deleted through this screen. Restricted tables remain schema-only.
-
-Shell text, buttons, borders and selected states have stronger contrast. Custom tracker styling is retained. Web reference pickers now use the existing reference-options endpoint.
-
-Validation: 72 backend tests passed, including shared preview/saved tracker visibility, owner permissions, stale writes, atomic rollback, deletion dependencies, retained history and revoked AI access. Production React browser checks cover context handoff, mismatch handling, read-only/edit mode, green staging, discard/save, deletion, neutral content, permission refresh and mobile layout. Existing Home/logs/database-redaction and embedded tracker/browser regressions passed. TypeScript and production builds passed. Browser tests use synthetic data and isolated databases; no production records were changed by tests.
-
-Deployment: existing web and worker auto-deploy from main. No new migration or environment variable is required. Refresh the web app and reopen the plugin after release to load its new content-addressed bundle.
+Use [current context](../CONTEXT.md), [product direction](product/PRODUCT_DIRECTION.md) and the [documentation index](README.md).
