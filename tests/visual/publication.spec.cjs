@@ -73,7 +73,7 @@ test('Standard tracker keeps inline edits and saves on the loaded version after 
  const p=await call('prepare_workspace_change',{operation:{kind:'save_component',componentId:f.appId,expectedVersion:0,content:{...f.content,name:'Published tracker update'}}});await call('confirm_workspace_change',{previewId:p.id,digest:p.digest});await root.locator('.ty-workspace').evaluate(()=>window.dispatchEvent(new Event('focus')));
  await expect(root.locator('.ty-app-update')).toBeVisible();const banner=await root.locator('.ty-app-update').boundingBox(),header=await root.locator('.ty-topbar').boundingBox();expect(banner.y+banner.height).toBeLessThanOrEqual(header.y);
  await expect(frame.getByRole('textbox',{name:'Name',exact:true})).toHaveValue('Inline value kept');await frame.getByRole('textbox',{name:'Name',exact:true}).press('Enter');await expect(root.locator('.ty-action-footer')).toHaveCount(0);await expect(frame.getByText('Inline value kept',{exact:true})).toBeVisible();await expect(root.locator('.ty-app-update')).toBeVisible();await expect(root.getByRole('alert')).toHaveCount(0);
- const rows=await (await page.request.get(base+`/api/workspaces/${f.workspaceId}/types/${f.typeId}/records`)).json();expect(rows.rows[0].data.name).toBe('Inline value kept');await page.screenshot({path:'/tmp/trialy-update-standard-mobile.png'});
+ await expect.poll(async()=>{const rows=await (await page.request.get(base+`/api/workspaces/${f.workspaceId}/types/${f.typeId}/records`)).json();return rows.rows[0].data.name;}).toBe('Inline value kept');await page.screenshot({path:'/tmp/trialy-update-standard-mobile.png'});
 });
 
 for(const embedded of [false,true])test(`Acknowledged save stays saved if reload fails in ${embedded?'extension':'standalone'}`,async({page})=>{
