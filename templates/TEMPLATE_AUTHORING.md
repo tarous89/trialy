@@ -1,6 +1,6 @@
 # TrialAgents template authoring standard
 
-Version: 1.3.15
+Version: 1.3.16
 
 This is the living engineering contract for templates served by TrialAgents. Update it when a verified renderer, lifecycle or host-integration lesson changes. Retrieve the current copy with `read_app_template_guidance(resource:"authoring")`; follow `nextOffset` to the end. The response includes a version and content hash. Packaged plugin examples are not the catalog.
 
@@ -48,9 +48,9 @@ Evidence for these rules comes from the corrected Cash Runway, Hiring, CRO Overs
 
 Apps are internal tools accessed through the existing TrialAgents account. Do not add app-specific sign-in, signup, logout, password reset, account/profile management, credential storage, OAuth, identity providers or a second user/seat system. Use the platform's account connection and existing app, table, field and record permissions. Business contacts and assignees are data, not new login accounts. “No app authentication” does not remove TrialAgents authentication or make an app public. Public/team sharing, when explicitly requested, uses the platform's existing reviewed sharing controls.
 
-TrialAgents branding inside app content is optional; the platform already supplies its watermark. Whenever a TrialAgents logo or branded wordmark is used, include the real TrialAgents icon and make the entire logo a link to **https://platform.trialagents.com**. Use the supplied black icon on light backgrounds and white icon on dark backgrounds, preserving its shape, colors and aspect ratio. Do not substitute text alone, initials, a generic symbol, a drawn/CSS/SVG approximation or another product's logo. The link must not point to an app route, an Intel site or an authentication page. Give the link an accessible name, such as “TrialAgents”.
+TrialAgents branding inside app content is optional; the platform already supplies its header and navigation. Whenever a TrialAgents logo or branded wordmark is used, include the real TrialAgents icon and make the entire logo a link to **https://platform.trialagents.com**. Use the supplied black icon on light backgrounds and white icon on dark backgrounds, preserving its shape, colors and aspect ratio. Do not substitute text alone, initials, a generic symbol, a drawn/CSS/SVG approximation or another product's logo. The link must not point to an app route, an Intel site or an authentication page. Give the link an accessible name, such as “TrialAgents”.
 
-Official assets: `https://platform.trialagents.com/trialagents-mark-black.png` and `https://platform.trialagents.com/trialagents-mark-white.png`; the same files are packaged under `plugin/trialy/assets/` and `public/` in the source repository. The current generated-HTML sandbox accepts embedded raster data images, not remote image URLs. Use the exact official PNG bytes as a data image when adding an in-app logo; never loosen the sandbox or invent replacement artwork. If an asset cannot be embedded within runtime limits, omit optional in-app branding and retain the platform watermark. Do not duplicate, cover or replace that watermark.
+Official assets: `https://platform.trialagents.com/trialagents-mark-black.png` and `https://platform.trialagents.com/trialagents-mark-white.png`; the same files are packaged under `plugin/trialy/assets/` and `public/` in the source repository. The current generated-HTML sandbox accepts embedded raster data images, not remote image URLs. Use the exact official PNG bytes as a data image when adding an in-app logo; never loosen the sandbox or invent replacement artwork. If an asset cannot be embedded within runtime limits, omit optional in-app branding and retain the platform header. Do not duplicate, cover or replace that header.
 
 Before preview/save, verify that there are no generated account/authentication controls or credential fields, that any TrialAgents logo includes the official visible icon, and that its actual clickable destination is exactly `https://platform.trialagents.com`. Check both light/dark contrast and narrow/desktop layouts. Preserve all backend permission checks.
 
@@ -164,9 +164,9 @@ Keep one primary vertical scroll; avoid nested page scrolls and horizontal overf
 
 The native first-save action belongs only to an app that has never been saved. Saved-app revisions use the existing review controls, without claiming the app is unsaved. Deliberate record/layout edits retain their own approval controls. Generated templates must not invent global save prompts, loading-error banners, retry buttons or platform navigation.
 
-Keep a loaded published app visible during ChatGPT edits and during failed loads. Publication may offer the platform's subtle optional refresh notice; it never forces a reload. If no authorized usable view exists, use the shared “No app is available” state and Return to Home in the same surface. Access revocation must still clear protected data. Failed writes preserve inputs and are never represented as successful.
+Keep a loaded published app visible during ChatGPT edits and during failed loads. Publication may offer the platform's subtle optional refresh notice; it never forces a reload. If no authorized usable view exists, use the shared “No app is available” state and Return to Apps in the same surface. Access revocation must still clear protected data. Failed writes preserve inputs and are never represented as successful.
 
-Use host/platform navigation adapters for links and Home; do not open a new browser tab for in-extension Home. Data calls must not replace the visible workspace through tool-result metadata. Present only complete previews; avoid repeated intermediate renders.
+Use host/platform navigation adapters for links and Apps; do not open a new browser tab for in-extension Apps. Data calls must not replace the visible workspace through tool-result metadata. Present only complete previews; avoid repeated intermediate renders.
 
 ## Responsive interaction contract
 
@@ -204,7 +204,7 @@ Before promoting a template version, verify:
 2. A fresh preview, save, reopen, correction of the same preview, lost-save-response recovery and revision of the same saved app. No duplicate apps or example records.
 3. Each advertised interaction against real backend fixtures, including next/previous pages, filters, relationships, edits, cancellation, write conflicts and permission revocation.
 4. Platform, standalone and host-bridge integration at 390, 768 and 1440 pixels; inspect screenshots for clipping, contrast, spacing, footer collisions and focus. Also run the real ChatGPT host when available and disclose when only the bridge harness was tested.
-5. Temporary load failures, outdated tool results and publications retain the current view. No available view shows only the shared empty state and in-surface Home action. Test a failed refresh with unsaved input.
+5. Temporary load failures, outdated tool results and publications retain the current view. No available view shows only the shared empty state and in-surface Apps action. Test a failed refresh with unsaved input.
 6. If task support is advertised, dry-run the suggested prompt with scoped synthetic data. Test duplicates, no findings, partial coverage, revoked/expired permission, source failures and missed occurrences. Verify a real scheduled run separately before claiming live execution.
 7. For advertised email workflows, verify a burst of changes coalesces, obsolete work and revoked recipients cancel, ordinary delivery limits defer without disabling the rule, and an email failure does not rerun processing. Reuse the platform guardrail suite; never send real bulk mail as a template test.
 8. Test omitted section metadata and no automation; deny/read-only section rules across rename/reorder; disabled-definition editing; archive/restore; duplicate setup attempts; and setup/task failure with a usable published app and retained local input. Existing apps require no retrofit.
@@ -242,7 +242,7 @@ Show the active sort direction visibly beside the column label (↑ ascending / 
 
 ### Hosted app attribution clearance
 
-The platform places “Built with TrialAgents” at the bottom left, outside the app viewport. Reserve the bottom 62 px plus the device bottom safe-area inset for attribution. No app CTA, Delete action, pagination, sticky footer, dialog action or floating control may enter this area. Use the available app viewport height, never the outer browser height. Keep app actions inside the content viewport; do not duplicate or reposition the platform badge as an app logo. Verify desktop and mobile layouts, long records, detail panels, dialogs and unsaved-change footers for overlap and clickability.
+Apps open inside TrialAgents under its fixed header. The platform sidebar is expanded on platform tabs and collapsed for individual apps. Keep every app control within the available content viewport below the header; do not add a duplicate platform header, sidebar or attribution badge. Use the host navigation adapter for same-tab app links and the Apps destination.
 
 Automation lists must remain compact: clamp long instructions to a short preview and keep actions visible. Editing opens a dedicated page, following the Add automation layout; never expand the full editor inside a list row. Do not label manual or unknown triggers “After processing”.
 
@@ -266,7 +266,7 @@ Use the platform Automations cards for setup, editing and explicit tests. Keep c
 
 ### Consistent automation forms and navigation
 
-Use the workspace's full content width and padding for Settings and automation editing, aligned with Home, Database and Access. Keep automation cards compact with a short two-line prompt preview; show the full prompt only in the dedicated editor. Automation Save/Ignore use the shared bottom action footer, visible on entry, with Save disabled until changes exist. Reserve content clearance so the footer never covers the last field. Sidebar navigation clears automation edit/create routes; an explicit automation deep link may still open an editor.
+Use the workspace's full content width and padding for Settings and automation editing, aligned with Apps, Database and Access. Keep automation cards compact with a short two-line prompt preview; show the full prompt only in the dedicated editor. Automation Save/Ignore use the shared bottom action footer, visible on entry, with Save disabled until changes exist. Reserve content clearance so the footer never covers the last field. Sidebar navigation clears automation edit/create routes; an explicit automation deep link may still open an editor.
 
 Use **Database trigger**, **Schedule**, and **Recurrent** as the trigger categories, mapping to the existing schema as specified in the shared automation guide. Expose applicable timing and condition fields, including elapsed minutes after successful completion. Completion email uses the immutable saved research-run database transition to completed, with completion time and results; it is not an ad-hoc trigger. Preserve existing settings on unrelated edits. Keep connection configuration in Connectors and show dependent automations Disabled until it is verified. Do not impose extra restrictions on research prompts or replace existing cadence merely to fit a template.
 

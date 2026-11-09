@@ -59,7 +59,7 @@ test('Create account preserves app return and strips attribution after switching
  await page.getByRole('checkbox').check();
  await page.getByLabel('First name',{exact:true}).fill('Test');await page.getByLabel('Last name',{exact:true}).fill('User');await page.getByRole('button',{name:'Create account',exact:true}).click();
  await expect(page).toHaveURL(base+destination);
- await expect(page.locator('.ty-app-watermark')).toBeVisible();
+ await expect(page.locator('.ty-platform-brand')).toBeVisible();
 });
 test('ChatGPT consent uses shared branding without weakening script or frame policy',async({page,request})=>{
  const {createHash}=require('node:crypto');
@@ -68,7 +68,7 @@ test('ChatGPT consent uses shared branding without weakening script or frame pol
  await page.setViewportSize({width:390,height:844});
  await page.goto(base+'/authorize?'+query);
  await page.getByRole('link',{name:'Create an account',exact:true}).click();
- await expect(page.getByText('After connecting, you will return to ChatGPT.')).toBeVisible();
+ await expect(page.getByText('After connecting, you will return to your AI assistant.')).toBeVisible();
  await page.getByLabel('Email',{exact:true}).fill('auth-consent@example.invalid');
  await page.getByLabel('Password',{exact:true}).fill('synthetic-consent-password');
  await page.getByRole('checkbox').check();

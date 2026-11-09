@@ -1,4 +1,4 @@
-const {test,expect}=require('./test.cjs');
+const {test,expect,openPlatform}=require('./test.cjs');
 const base='http://127.0.0.1:4179';
 for(const width of [1920,390])test(`Standard triggers, full width and native top actions preserve recurrence at ${width}px`,async({page})=>{
  await page.setViewportSize({width,height:1000});const f=await(await page.request.get(base+'/fixture/apps')).json(),id='31000000-0000-4000-8000-000000000021';
@@ -7,7 +7,7 @@ for(const width of [1920,390])test(`Standard triggers, full width and native top
  await page.route(/\/app-services\/automations\/definitions(?:[/?].*)?$/,route=>new URL(route.request().url()).pathname.endsWith(id)?route.fulfill({json:{id,kind:'research',version:0,enabled:true,config,app:{id:f.appId,name:'Tracker'}}}):route.fulfill({json:{rows:[{id,kind:'research',name:config.name,app_name:'Tracker',app_url:f.url,prompt:config.instructions,version:0,enabled:true,effectiveEnabled:true,connectionState:'ready',trigger:config.automation.trigger}],nextOffset:null}}));
  await page.route('**/app-services/automations/options?*',route=>route.fulfill({json:{owner:{name:'Owner',email:'owner@example.invalid'},members:[],tables:[],writeScopes:[]}}));
  await page.route('**/app-services/monitoring/prepare',route=>{submitted=route.request().postDataJSON();return route.fulfill({status:503,json:{message:'Retain draft'}});});
- await page.goto(base+`/app-home?tab=automations&workspaceId=${f.workspaceId}`);
+ await openPlatform(page,base+`/app-home?tab=automations&workspaceId=${f.workspaceId}`);
  expect((await page.getByRole('article',{name:config.name}).boundingBox()).height).toBeLessThan(width>800?190:310);
  await page.getByRole('button',{name:'Edit',exact:true}).click();await expect(page.getByLabel('Trigger',{exact:true})).toHaveValue('recurrent');await expect(page.getByLabel('Trigger',{exact:true}).locator('option')).toHaveText(['Database trigger','Schedule','Recurrent']);await expect(page.getByLabel('Recurrence',{exact:true})).toHaveValue('after_success');await expect(page.getByLabel('Recurrence',{exact:true}).locator('option')).toHaveText(['At a set time','After a successful run']);await expect(page.getByLabel('Repeat every (minutes)')).toHaveValue('60');
  const save=page.getByRole('button',{name:'Save changes',exact:true}),footer=page.locator('.ty-page-actions');await expect(save).toBeDisabled();await expect(save).toBeInViewport();await expect(footer.getByRole('button',{name:'Ignore changes'})).toBeInViewport();expect((await footer.boundingBox()).y).toBeLessThan(300);await page.locator('#ty-main').evaluate(el=>el.scrollTop=el.scrollHeight);await expect(save).toBeInViewport();await page.locator('#ty-main').evaluate(el=>el.scrollTop=0);
@@ -15,9 +15,9 @@ for(const width of [1920,390])test(`Standard triggers, full width and native top
  await expect(page.getByText('ChatGPT connection verified',{exact:true})).toHaveCount(0);await page.getByLabel('Name',{exact:true}).fill('Updated name');await save.click();await expect(page.getByRole('status')).toContainText('Retain draft');expect(submitted.config.automation).toEqual(config.automation);expect(submitted.config.notificationPolicy).toBe(config.notificationPolicy);
  await page.getByLabel('Repeat every (minutes)').fill('120');await save.click();await expect.poll(()=>submitted.config.automation.trigger.minutes).toBe(120);expect(submitted.config.automation.trigger.kind).toBe('after_success');
  await page.getByRole('heading',{name:'Edit automation',exact:true}).scrollIntoViewIfNeeded();await page.screenshot({path:`/tmp/trialy-standard-edit-${width}.png`,fullPage:true});
- const navigate=async name=>{if(width<800)await page.getByRole('button',{name:'Open navigation',exact:true}).click();await page.getByRole('navigation',{name:'Main navigation',exact:true}).getByRole('button',{name,exact:true}).click();};
+ const navigate=async name=>{if(width<800)await page.getByRole('button',{name:'Expand navigation',exact:true}).click();await page.getByRole('navigation',{name:'Main navigation',exact:true}).getByRole('button',{name,exact:true}).click();if(width<800)await page.getByRole('button',{name:'Collapse navigation',exact:true}).click();};
  await navigate('Automations');await expect(page.getByRole('heading',{name:'Automations',exact:true})).toBeVisible();await expect(page).not.toHaveURL(/automationId/);
- await page.getByRole('button',{name:'Edit',exact:true}).click();await navigate('Home');await navigate('Automations');await expect(page.getByRole('heading',{name:'Automations',exact:true})).toBeVisible();await expect(page).not.toHaveURL(/automationId/);
+ await page.getByRole('button',{name:'Edit',exact:true}).click();await navigate('Apps');await navigate('Automations');await expect(page.getByRole('heading',{name:'Automations',exact:true})).toBeVisible();await expect(page).not.toHaveURL(/automationId/);
  await expect(page.locator('body')).toHaveJSProperty('scrollWidth',width);
 });
 
@@ -29,14 +29,14 @@ test('Multiple calendar days and timezone are editable without losing existing c
  await page.route(`**/app-services/automations/definitions/research/${id}`,route=>route.fulfill({json:{id,kind:'research',enabled:true,config,version:0,app:{name:'Tracker'}}}));
  await page.route('**/app-services/automations/options?*',route=>route.fulfill({json:{owner:{email:'owner@example.invalid'},members:[],tables:[],writeScopes:[]}}));
  await page.route('**/app-services/monitoring/prepare',route=>{submitted=route.request().postDataJSON();return route.fulfill({status:503,json:{message:'Draft kept'}});});
- await page.goto(base+`/app-home?tab=automations&workspaceId=${f.workspaceId}&automationId=${id}&automationKind=research`);
+ await openPlatform(page,base+`/app-home?tab=automations&workspaceId=${f.workspaceId}&automationId=${id}&automationKind=research`);
  await expect(page.getByLabel('Monday',{exact:true})).toBeChecked();await expect(page.getByLabel('Wednesday',{exact:true})).toBeChecked();await expect(page.getByLabel('Friday',{exact:true})).toBeChecked();await page.getByLabel('Name',{exact:true}).fill('Changed name');await page.getByRole('button',{name:'Save changes',exact:true}).click();await expect.poll(()=>submitted?.config.automation.trigger).toEqual(trigger);
  await page.getByLabel('Wednesday',{exact:true}).uncheck();await page.getByLabel('Timezone',{exact:true}).fill('America/New_York');await page.getByRole('button',{name:'Save changes',exact:true}).click();await expect.poll(()=>submitted.config.schedule.timeZone).toBe('America/New_York');expect(submitted.config.automation.trigger).toEqual({...trigger,weekdays:[1,5],timeZone:'America/New_York'});
 });
 
 test('Settings cards use the same shell alignment as Home and Access',async({page})=>{
  await page.setViewportSize({width:1920,height:1000});const f=await(await page.request.get(base+'/fixture/apps')).json();
- await page.goto(base+`/app-home?tab=home&workspaceId=${f.workspaceId}`);const main=await page.locator('#ty-main').boundingBox();
+ await openPlatform(page,base+`/app-home?tab=home&workspaceId=${f.workspaceId}`);const main=await page.locator('#ty-main').boundingBox();
  await page.getByRole('button',{name:'Settings',exact:true}).click();await expect(page.getByLabel('First name',{exact:true})).toBeVisible();const settings=await page.locator('.ty-settings-page').boundingBox();expect(settings.x-main.x).toBeLessThan(40);expect(main.width-settings.width).toBeLessThan(80);const card=await page.locator('.ty-settings-card').first().boundingBox();expect(Math.abs(card.x-settings.x)).toBeLessThan(2);expect(Math.abs(card.width-settings.width)).toBeLessThan(2);await page.screenshot({path:'/tmp/trialy-settings-aligned-1920.png',fullPage:true});await page.getByRole('navigation',{name:'Main navigation',exact:true}).getByRole('button',{name:'Access',exact:true}).click();const accessHeading=await page.getByRole('heading',{name:'Access',exact:true}).boundingBox();expect(Math.abs(accessHeading.x-settings.x)).toBeLessThan(2);
 });
 
@@ -46,7 +46,7 @@ for(const trigger of [{kind:'once',at:'2027-01-15T10:30:00.000Z'},{kind:'record_
  await page.route(`**/app-services/automations/definitions/action/${id}`,route=>route.fulfill({json:{id,kind:'action',enabled:true,config,version:0,app:{name:'Tracker'}}}));
  await page.route('**/app-services/automations/options?*',route=>route.fulfill({json:{owner:{email:'owner@example.invalid',name:'Owner'},members:[],tables:[{id:'requests',name:'Requests',fields:[{key:'due',name:'Due date',kind:'date'}]}],writeScopes:[]}}));
  await page.route('**/app-services/actions/prepare',route=>{submitted=route.request().postDataJSON();return route.fulfill({status:503,json:{message:'Draft kept'}});});
- await page.goto(base+`/app-home?tab=automations&workspaceId=${f.workspaceId}&automationId=${id}&automationKind=action`);
+ await openPlatform(page,base+`/app-home?tab=automations&workspaceId=${f.workspaceId}&automationId=${id}&automationKind=action`);
  await expect(page.getByLabel('Trigger',{exact:true})).toHaveValue('schedule');await expect(page.getByLabel('Schedule from',{exact:true})).toHaveValue(trigger.kind);
  if(trigger.kind==='once')await expect(page.getByLabel('Run at',{exact:true})).toHaveValue('2027-01-15T10:30');else{await expect(page.getByLabel('Date field',{exact:true})).toHaveValue('due');await expect(page.getByLabel('Offset (minutes)',{exact:true})).toHaveValue('-1440');await expect(page.getByLabel('Timezone',{exact:true})).toHaveValue('Europe/Berlin');}
  await page.getByLabel('Subject',{exact:true}).fill('Updated reminder');await page.getByRole('button',{name:'Save changes',exact:true}).click();await expect.poll(()=>submitted?.config.trigger).toEqual(trigger);expect(submitted.config.steps[0].to).toEqual(config.steps[0].to);

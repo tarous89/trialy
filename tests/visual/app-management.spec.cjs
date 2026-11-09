@@ -1,10 +1,10 @@
-const {test,expect}=require('./test.cjs');
+const {test,expect,openPlatform}=require('./test.cjs');
 const base='http://127.0.0.1:4179';
 for(const width of [1440,390])test(`App menu and explicit automation-copy choice at ${width}px`,async({page})=>{
  await page.setViewportSize({width,height:1000});const f=await(await page.request.get(base+'/fixture/apps')).json();let prepared=[],confirmed=0,failOnce=false;
  await page.route('**/organization/previews',route=>{const body=route.request().postDataJSON();if(body.kind!=='copy_component')return route.continue();prepared.push(body);return route.fulfill({json:{id:'copy-review',digest:'copy-digest'}});});
  await page.route('**/organization/previews/copy-review/confirm',route=>{confirmed++;if(failOnce){failOnce=false;return route.fulfill({status:503,json:{message:'Temporary response failure'}});}return route.fulfill({json:{id:'copied-app'}});});
- await page.goto(base+'/app-home');const card=page.locator('article.ty-resource').filter({has:page.locator(`a.ty-resource-open[href*="${f.appId}"]`)});
+ await openPlatform(page,base+'/app-home');const card=page.locator('article.ty-resource').filter({has:page.locator(`a.ty-resource-open[href*="${f.appId}"]`)});
  const menu=page.getByRole('menu');await card.getByRole('button',{name:/Actions for/}).click();await expect(menu.getByRole('menuitem',{name:'Manage',exact:true})).toHaveCount(0);
  const open=menu.getByRole('menuitem',{name:'Open',exact:true}),duplicate=menu.getByRole('menuitem',{name:'Duplicate',exact:true});await expect(open).toHaveCount(1);await expect(open).toHaveAttribute('href',new RegExp(f.appId));
  const font=el=>{const s=getComputedStyle(el);return [s.fontFamily,s.fontSize,s.fontWeight,s.lineHeight];};expect(await open.evaluate(font)).toEqual(await duplicate.evaluate(font));await page.screenshot({path:`/tmp/trialy-app-menu-${width}.png`,fullPage:true});
@@ -17,7 +17,7 @@ for(const width of [1440,390])test(`App menu and explicit automation-copy choice
 });
 for(const width of [1440,390])test(`Generic app layout saves without a legacy type at ${width}px`,async({page})=>{
  await page.setViewportSize({width,height:1000});const f=await(await page.request.post(base+'/fixture/generic-layout')).json();
- await page.goto(base+f.url);const tracker=page.frameLocator('iframe[title="Saved frontend code"]');await tracker.getByRole('button',{name:'App settings',exact:true}).click();
+ await openPlatform(page,base+f.url);const tracker=page.frameLocator('iframe[title="Saved frontend code"]');await tracker.getByRole('button',{name:'App settings',exact:true}).click();
  await expect(page.getByRole('heading',{name:'App settings',exact:true})).toBeVisible();await expect(page.getByLabel('Resource type')).toHaveCount(0);await page.getByLabel('Name',{exact:true}).fill('Revised generic app');await page.getByRole('button',{name:'Save layout',exact:true}).click();
  await expect(tracker.getByRole('heading',{name:'Revised generic app',exact:true})).toBeVisible();await expect(page.getByText(/resourceKind: Invalid option/)).toHaveCount(0);await page.reload();await expect(tracker.getByRole('heading',{name:'Revised generic app',exact:true})).toBeVisible();await page.screenshot({path:`/tmp/trialy-generic-layout-${width}.png`,fullPage:true});
  const call=async(name,args)=>(await(await page.request.post(base+'/fixture/tool',{data:{name,arguments:args}})).json()).structuredContent.result;

@@ -17,7 +17,7 @@
     "supportURL": "https://trialagents.com/"
   },
   "name": "trialy",
-  "version": "0.2.55",
+  "version": "0.2.57",
   "description": "Persistent data, isolated JavaScript, saved functions and authorized apps for ChatGPT.",
   "author": {
     "name": "Atlas Consulting"

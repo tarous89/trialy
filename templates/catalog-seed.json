@@ -1,0 +1,94 @@
+{
+  "life.cash-runway": {
+    "schema": "templates/source/cash-runway/schema.example.json",
+    "version": "1.2.2"
+  },
+  "life.inventory-management": {
+    "schema": "templates/source/inventory-management/schema.example.json",
+    "version": "1.0.2"
+  },
+  "life.project-oversight": {
+    "schema": "templates/source/project-oversight/schema.example.json",
+    "version": "1.0.1"
+  },
+  "life.pi-network-management": {
+    "schema": "templates/source/pi-network-management/schema_mapping.example.json",
+    "version": "1.0.1"
+  },
+  "life.grant-pipeline": {
+    "schema": "templates/source/grant-pipeline/schema.example.json",
+    "version": "1.0.1"
+  },
+  "life.co-site-feasibility": {
+    "schema": "templates/source/co-site-feasibility/schema.example.json",
+    "version": "1.1.1"
+  },
+  "life.experiment-notebook": {
+    "schema": "templates/source/experiment-notebook/schema_mapping.example.json",
+    "version": "1.2.2"
+  },
+  "life.sponsor-rfp-management": {
+    "schema": "templates/source/sponsor-rfp-management/schema_mapping.example.json",
+    "version": "1.0.1"
+  },
+  "life.partnership-tracker": {
+    "schema": "templates/source/partnership-tracker/schema_mapping.example.json",
+    "version": "1.1.1"
+  },
+  "life.client-signals-crm": {
+    "schema": "templates/source/client-signals-crm/schema_mapping.example.json",
+    "version": "1.0.1"
+  },
+  "life.trial-regulatory-submission": {
+    "schema": "templates/source/trial-regulatory-submission/schema_mapping.example.json",
+    "version": "1.0.1"
+  },
+  "life.literature-radar": {
+    "schema": "templates/source/literature-radar/schema_mapping.example.json",
+    "version": "1.2.2"
+  },
+  "life.cro-oversight": {
+    "schema": "templates/source/cro-oversight/schema.example.json",
+    "version": "1.2.1"
+  },
+  "life.publication-management": {
+    "schema": "templates/source/publication-management/schema_mapping.example.json",
+    "version": "1.0.1"
+  },
+  "life.hiring-resource-management": {
+    "schema": "templates/source/biotech-hiring/schema.example.json",
+    "version": "1.4.2"
+  },
+  "life.cro-resource-planning": {
+    "schema": "templates/source/cro-resource-planning/schema.example.json",
+    "version": "1.0.2"
+  },
+  "life.investor-crm": {
+    "schema": "templates/source/investor-crm/schema.example.json",
+    "version": "1.0.1"
+  },
+  "life.cro-rfp-management": {
+    "schema": "templates/source/cro-rfp-management/schema.example.json",
+    "version": "1.2.1"
+  },
+  "life.cro-site-feasibility": {
+    "schema": "templates/source/cro-site-feasibility/schema.example.json",
+    "version": "1.2.1"
+  },
+  "life.investigator-crm": {
+    "schema": "templates/source/investigator-crm/schema_mapping.example.json",
+    "version": "1.0.1"
+  },
+  "life.cro-selection": {
+    "schema": "templates/source/cro-selection/schema.example.json",
+    "version": "1.0.1"
+  },
+  "life.cro-sponsor-updates": {
+    "schema": "templates/source/cro-sponsor-updates/schema.example.json",
+    "version": "1.0.1"
+  },
+  "life.co-trial-monitoring-pv": {
+    "schema": "templates/source/co06-trial-monitoring-pv/schema.example.json",
+    "version": "1.1.1"
+  }
+}

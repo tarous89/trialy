@@ -15,7 +15,7 @@ export function frameLinkTarget(href:string,origin:string,current:{appId?:string
    if(!match||!uuid.test(match[1])||!uuid.test(url.searchParams.get('workspaceId')||'')||url.hash||[...url.searchParams.keys()].some(k=>!['workspaceId','source','recordId','page'].includes(k)||url.searchParams.getAll(k).length!==1))return null;
    const source=url.searchParams.get('source')||'component';
    if(!['component','preview','function','collection','legacy'].includes(source)||url.searchParams.has('recordId')&&!uuid.test(url.searchParams.get('recordId')!)||url.searchParams.has('page')&&!/^(0|[1-9][0-9]{0,5}|1000000)$/.test(url.searchParams.get('page')!))return null;
-   return {href:url.href,external:match[1]!==current?.appId||url.searchParams.get('workspaceId')!==current?.workspaceId||source!==(current?.source||'component')};
+   return {href:url.href,external:false};
   }
   return {href,external:false};
  }catch{return null;}

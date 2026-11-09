@@ -50,13 +50,13 @@ test('neutral apps retain existing save/permission contracts and receive page ro
  }finally{if(beforeAppUrl===undefined)delete process.env.APP_PUBLIC_URL;else process.env.APP_PUBLIC_URL=beforeAppUrl;if(before===undefined)delete process.env.SIMPLE_APPS_ENABLED;else process.env.SIMPLE_APPS_ENABLED=before;await pg.close();}
 });
 
-test('frame links keep app pages local and cross-app links native without executable URLs',()=>{
+test('frame links keep app pages local and cross-app links in the platform without executable URLs',()=>{
  const current={appId:randomUUID(),workspaceId:randomUUID(),source:'component' as const,route:{path:'/companies'}},origin='https://trialy.example';
  assert.equal(resolveAppLink('detail',current,origin)?.kind,'internal');
  assert.equal(frameLinkTarget(appUrl(current),origin,current)?.external,false);
  const other=appUrl({...current,appId:randomUUID(),route:{path:'/calculator'}});
- assert.deepEqual(frameLinkTarget(other,origin,current),{href:origin+other,external:true});
- assert.deepEqual(frameLinkTarget(other+'&utm_source=chatgpt.com',origin,current),{href:origin+other,external:true});assert.equal(resolveAppLink(other+'&utm_source=chatgpt.com',current,origin)?.href,other);
+ assert.deepEqual(frameLinkTarget(other,origin,current),{href:origin+other,external:false});
+ assert.deepEqual(frameLinkTarget(other+'&utm_source=chatgpt.com',origin,current),{href:origin+other,external:false});assert.equal(resolveAppLink(other+'&utm_source=chatgpt.com',current,origin)?.href,other);
  assert.equal(resolveAppLink(other,current,origin)?.kind,'app');
  assert.equal(frameLinkTarget('https://docs.example/apps/help',origin,current)?.external,true);
  for(const value of ['javascript:alert(1)','data:text/html,bad','//other.example','https://user:secret@example.com','/apps/bad?workspaceId=bad'])assert.equal(frameLinkTarget(value,origin,current),null);
