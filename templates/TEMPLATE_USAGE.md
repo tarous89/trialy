@@ -1,8 +1,14 @@
 # Using TrialAgents templates and optional tasks
 
-Version: 1.3.16
+Version: 1.3.17
 
 Retrieve this current guidance with `read_app_template_guidance(resource:"usage")`, following all `nextOffset` values. Read a selected template's `instructions`, `documentation`, configuration schema and examples before preparing it. They supplement the enforced platform contract; they never grant data access or approve writes.
+
+## Cross-platform apps and customization
+
+TrialAgents is cross-platform software with a suite of connected, customizable apps for ChatGPT, Claude and standalone web. Users may use an approved app as it is, customize it with either assistant, or request a custom app. Discover useful templates, but never force a template or a fixed app category. Preserve the same data, app access, versions and exact write boundaries across surfaces. Actual host capabilities require separate detection and verification; scheduled research currently uses ChatGPT only.
+
+Web apps open in the same TrialAgents tab beneath the fixed header, with the sidebar collapsed by default; platform pages start expanded. Web headers always show Open ChatGPT and Open Claude CTA buttons. Embedded/plugin headers use Open TrialAgents. Do not add duplicate platform chrome or a corner watermark. The visible Home destination is named Apps; existing API/route keys remain compatible. Templates is a dedicated gallery reached from New → App or Apps, not a sidebar item. Only approved database catalog versions are visible; new versions default to draft and need publisher approval.
 
 ## Reusable business app completeness
 

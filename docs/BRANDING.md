@@ -1,36 +1,21 @@
-# TrialAgents OS naming
+# TrialAgents naming and branding
 
-Approved 29 October 2026.
+Current: 9 November 2026. The product is **TrialAgents**, not Trialy. “TrialAgents OS” is a historical project descriptor; use TrialAgents for current product identity. This platform is separate from TrialAgents Intel, CTIS and Custom.
 
-- **TrialAgents** is the public product name in the web app, ChatGPT plugin, account/consent screens, generated-app footer, help text and builder instructions.
-- **TrialAgents OS** is the internal product name for this app foundation, distinguishing it from TrialAgents Intel, CTIS and Custom.
-- The plugin listing remains the same plugin, with its existing audience and connection. Its display name and opening prompt use TrialAgents; the package slug stays `trialy`.
-- This is a wording change. Fonts, colors, spacing, icons and layouts keep their existing definitions. The standard template stylesheet is unchanged.
+Use **apps**, not tools, for user-facing software. MCP tool names are protocol operations, not product categories. Website: https://trialagents.com; platform and canonical logo destination: https://platform.trialagents.com. Position the suite as connected, customizable, AI-native apps across ChatGPT, Claude and standalone web; see [product direction](product/PRODUCT_DIRECTION.md).
 
-## Compatibility
+## Stable technical names
 
-Keep `tarous89/trialy`, existing Render service/database names and URLs, OAuth scope/resource URLs, cookies, HTTP headers, MCP tool/resource identifiers, skill paths, runtime formats, browser storage/event keys and database roles. These are compatibility identifiers, not public product copy. No migration, reconnection or replacement plugin is required by this rename.
+Keep `tarous89/trialy`, existing Render/database names, OAuth scopes/resource URLs, cookies, headers, MCP identifiers, skill/package paths, runtime formats, browser event/storage keys and roles until a separately scoped compatibility migration. Do not rewrite customer-authored names/source, records or audit history. Old identifiers are not permission to show Trialy as the product name.
 
-Do not rewrite customer-authored app/project names, saved source, records, audit history or historical source documents. Other TrialAgents products and domains are outside this rename. A later domain or service-name change needs its own routing/authentication migration.
+## Trusted shell and official assets
 
-## Verification
+The web platform supplies a fixed TrialAgents header, logo, sidebar toggle and Open ChatGPT/Open Claude buttons. Embedded/plugin headers use Open TrialAgents. Apps open inside this shell; do not add a second header, customization strip or required corner watermark. Earlier watermark-only instructions are archived.
 
-Build and the existing unit/integration/browser suites verify the renamed surfaces. Review changed screenshots for branding text only; preserve the existing CSS values and template stylesheet. Release evidence belongs in the branding PR, including the plugin version and actual live checks. A successful authenticated MCP read does not by itself prove a signed-in browser launch.
+The official black/white marks are packaged in `public/` and `plugin/trialy/assets/` and served at `https://platform.trialagents.com/trialagents-mark-{black,white}.png`. Use the actual icon, preserving shape, colors and aspect ratio. No text-only logo, initials, generic symbol or redrawn substitute. If optional branding appears inside an app, link the whole logo to https://platform.trialagents.com with an accessible name. Generated HTML uses official raster bytes as a supported data image; remote images are not permitted by that sandbox. Omit optional branding if it cannot fit runtime limits; do not weaken isolation.
 
-## App and plugin icons
+## Accounts
 
-Approved 29 October 2026: replace the sidebar's generic molecule with the existing TrialAgents favicon mark, and use a plug glyph for Connectors. Keep the same icon dimensions, stroke, typography and layout. The dark sidebar uses the established white mark; browser tabs and light plugin surfaces use the black mark. Both files are unchanged copies from the current TrialAgents assets at `https://intel.trialagents.com/trialagents-mark-{black,white}.png`. The plugin uses the corresponding light/dark assets for its logo and composer icon.
+Apps use the existing TrialAgents account and app/data permissions. Do not generate app-specific sign-in, signup, password resets, credential storage, OAuth or a second user/seat system. Contacts and assignees are business records. Explicit sharing uses reviewed platform controls; no-app-auth does not mean public access.
 
-The older blue-tile `favicon.svg` is not the current favicon. Keep these owned PNGs local to this app and plugin so rendering does not depend on another product's server.
-
-## App branding and account guardrails — 1 November 2026
-
-Apps are internal tools accessed through the existing TrialAgents account. Do not add app-specific sign-in, signup, logout, password reset, account/profile management, credential storage, OAuth, identity providers or a second user/seat system. Use the platform's account connection and existing app, table, field and record permissions. Business contacts and assignees are data, not new login accounts. “No app authentication” does not remove TrialAgents authentication or make an app public. Public/team sharing, when explicitly requested, uses the platform's existing reviewed sharing controls.
-
-TrialAgents branding inside app content is optional; the platform already supplies its watermark. Whenever a TrialAgents logo or branded wordmark is used, include the real TrialAgents icon and make the entire logo a link to **https://platform.trialagents.com**. Use the supplied black icon on light backgrounds and white icon on dark backgrounds, preserving its shape, colors and aspect ratio. Do not substitute text alone, initials, a generic symbol, a drawn/CSS/SVG approximation or another product's logo. The link must not point to an app route, an Intel site or an authentication page. Give the link an accessible name, such as “TrialAgents”.
-
-Official assets: `https://platform.trialagents.com/trialagents-mark-black.png` and `https://platform.trialagents.com/trialagents-mark-white.png`; the same files are packaged under `plugin/trialy/assets/` and `public/` in the source repository. The current generated-HTML sandbox accepts embedded raster data images, not remote image URLs. Use the exact official PNG bytes as a data image when adding an in-app logo; never loosen the sandbox or invent replacement artwork. If an asset cannot be embedded within runtime limits, omit optional in-app branding and retain the platform watermark. Do not duplicate, cover or replace that watermark.
-
-Before preview/save, verify that there are no generated account/authentication controls or credential fields, that any TrialAgents logo includes the official visible icon, and that its actual clickable destination is exactly `https://platform.trialagents.com`. Check both light/dark contrast and narrow/desktop layouts. Preserve all backend permission checks.
-
-The two supplied PNG attachments match the existing public/plugin assets byte-for-byte. Standalone and explicitly shared app watermarks use the official white icon and the canonical platform link. This change updates authoring instructions and trusted watermark rendering; it does not automatically rewrite saved customer source or claim to detect every custom logo/login screen.
+Check branding and navigation at narrow and desktop widths, keep hover/active contrast clear, and preserve existing permissions. Changes to docs/source do not automatically update installed assistant packages or saved user apps.

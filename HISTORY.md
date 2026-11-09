@@ -438,3 +438,10 @@ Added isolated 24-hour tracker/page previews, persistent workspace save footer, 
 - Batched the database catalog; shared identical thumbnail samples; streamlined authorized audit reads.
 - Removed duplicate Access loading and off-screen Tools polling; retained all UI and interaction contracts.
 - Added query/connection timing diagnostics and performance/security/browser regression coverage.
+
+
+## 9 November 2026 — apps-first cross-platform context consolidation
+
+The product name is TrialAgents. Current README, CONTEXT, development, product scope and documentation index now describe a suite of connected customizable apps for ChatGPT, Claude and standalone web, followed by assistant customization and custom app creation. They capture same-tab app hosting, sidebar defaults, persistent assistant CTAs, plugin Open TrialAgents, dedicated gallery entry points, screenshot previews and publisher-approved database templates. Landing-page direction records suite/platform sections before custom creation.
+
+Superseded context, new-tab/watermark-only plans, old showcase research and dated UI release notes moved to [archive snapshots](docs/archive/2026-11-09-product-reset/README.md); old paths retain pointers. Hosted and repository-bundled guidance reflect the same product identity and shell. Template guidance advances to 1.3.17; immutable released template JSON and saved user apps remain unchanged. This is a documentation/guidance change, not proof of real-host parity, plugin package publication or unattended activation. Legacy technical identifiers remain compatible.

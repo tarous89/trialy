@@ -1,76 +1,63 @@
-# TrialAgents OS — current project context
+# TrialAgents — current project context
 
-Updated 9 November 2026 (Europe/Berlin). Start here before changing the platform or writing templates. Repository: `tarous89/trialy`. Public platform: https://platform.trialagents.com. MCP: https://platform.trialagents.com/mcp. This project is separate from TrialAgents Intel and CTIS.
+Updated 9 November 2026 (Europe/Berlin). Read this before changing product behavior or authoring apps. Repository: `tarous89/trialy`; product: **TrialAgents**, not Trialy. Platform: https://platform.trialagents.com; MCP: https://platform.trialagents.com/mcp. Intel and CTIS are separate products.
 
-## Platform shell and approved app catalog
+## Direction and precedence
 
-Apps now open in the same tab inside TrialAgents. The fixed header retains the official logo and navigation toggle. Platform tabs start with the sidebar expanded; individual apps start collapsed. Home is labeled Apps, while legacy route keys remain compatible. Apps links to a dedicated Templates page with Team/Workflow filters, screenshot cards, concise descriptions and sandboxed fullscreen interactive previews. Each card has only Preview and Use actions. The fixed app header holds subtle ChatGPT and Claude icon links; there is no separate customization strip. Installation creates empty tables. Scheduled research remains ChatGPT-specific.
+TrialAgents is cross-platform software for AI-native biotechs: a suite of connected, customizable apps that should work inside **ChatGPT**, inside **Claude**, and **standalone in a browser**. Users can use ready-made apps immediately, customize them with either assistant, or have an assistant build custom apps. Lead with the suite, then platform capabilities, then custom creation. Templates and optional shells/components accelerate work; they do not constrain app types.
 
-Migration 056 adds the publisher-controlled database catalog. The initial 23 life-science template versions are approved; future versions are drafts. Runtime roles can read approved payloads only. Installer schemas are versioned via `templates/catalog-installers.json`; operator approval and withdrawal are documented in [Template catalog](docs/TEMPLATE_CATALOG.md). Installation uses existing backend permissions, exact validation and audit in one transaction, with actor/workspace-scoped retry receipts. Existing app data and automation state are preserved. Guidance 1.3.16 describes the platform header instead of a corner watermark.
+The [product direction](docs/product/PRODUCT_DIRECTION.md) and [platform scope](docs/product/APP_PLATFORM_SCOPE.md) are current. Technical access, runtime and write contracts continue to apply. Dated release notes, archived plans and template source-package snapshots do not override these documents or the living template guidance. Current source and verified checks establish implementation; a product requirement alone does not establish host parity.
 
-## Preview approval and reusable dashboards — 0.2.56
+## Current web shell and catalog
 
-New apps finish with their exact finalized preview inside the extension. Preparation remains quiet and returns an explicit finalization handoff. Extension Home cards and menus open apps in-surface; the website retains app URLs. First publication alone has a dark floating Save app / Discard app footer. Ordinary platform saves and later app revisions remain native; apps own record/layout saving. Home cards have equal geometry and an overlaid Preview badge. Dashboard defaults now cover useful navigation, analysis filters, source data and working settings, with a functional completeness review; explicit simple pages remain valid. Guidance 1.3.15 is served live. No migration or rewrite of existing saved apps.
+Apps open in the same tab inside TrialAgents. The fixed header retains the official logo and sidebar toggle. Platform pages start expanded; individual apps start collapsed. Sidebar: Apps, Database, Access, Automations, Connectors, Logs; Settings separately. Legacy `home` routes/API names stay compatible.
 
-## App account and branding guardrails — 0.2.42
+The web header always has labeled **Open ChatGPT** and **Open Claude** buttons, on platform pages and apps. Embedded/plugin headers instead use **Open TrialAgents**. No separate customization strip or duplicate app branding chrome.
 
-Apps are internal tools accessed through existing TrialAgents accounts and permissions. Generated apps never add authentication, accounts or credential storage. Any TrialAgents logo/wordmark must include the supplied official icon and link to https://platform.trialagents.com; no text-only or redrawn substitute. Template guidance 1.3.7, plugin skills and the live design kit state these authoring guardrails. Trusted app watermarks include the official icon and canonical link. Existing saved source is not rewritten.
+**New → App** and **Browse app templates** on Apps open a dedicated Templates page. Templates is not in the sidebar or an inline gallery on Apps. Search and Team/Workflow filters, screenshots, concise descriptions, full details in preview and sandboxed fullscreen previews support discovery. Cards have only **Preview** and **Use**, with an always-visible ChatGPT/Claude customization note.
 
-## Release 0.2.41 changes
+Migration 056 adds `app_template_catalog` with immutable payload/digest/install schemas and `draft`/`approved` status. Website and MCP expose approved versions only. The initial 23 life-science template versions were approved for launch; future versions default to draft. Deployments do not approve new versions or overwrite existing catalog state. Use creates empty tables and an app atomically with existing authorization, audit and retry receipts. No seeded records, automatic connectors or automation activation. See [catalog operations](docs/TEMPLATE_CATALOG.md).
 
-Simple ChatGPT/Email forms and guarded app notifications. Migration 051 adds pending batches, current-state revalidation, global recipient/account allowances and a mixed-version worker fence. Incompatible legacy email rules pause for review; unsent legacy app email jobs are cancelled while source records/research/history remain. Template guidance is 1.3.7; automation guide 1.2.0. Every automation row explicitly shows Enabled or Disabled. Template guidance covers standalone scheduled/database email and processing-to-email handoffs, with minimal forms and platform-enforced guardrails. The shared daily runner remains independent backend infrastructure.
+## Creation, customization and shared data
 
-## Previously verified baseline
+Assistants discover authorized apps and catalog templates first, then read selected source and the current design/authoring guidance. Use the selected template's exact ID/version/digest; preserve its styling unless asked to change it. When it does not fit, build custom supported source. Existing-app reuse explicitly chooses shared or separate data; do not silently copy records, credentials, access or schedules.
 
-Release **0.2.39**, commit `345eb6bb55ccd23110ac73d5690dd75bdea5ac27`, shipped through [PR #86](https://github.com/tarous89/trialy/pull/86). Web and worker were verified live, migrations applied, health healthy, and the public MCP exposed the new management tools. CI passed 177 backend tests, 75 browser tests, build/type checks and production browser verification. These are release checks, not proof of unattended ChatGPT execution.
+Preparation is quiet. Finish and validate one draft, then finalize its exact preview for review; never save intermediate work just to display it. Use existing user authorization and exact supported confirmations. After a verified assistant app save, return to Apps inside the extension. Maintain the published version during edits; recover a failed display by reopening the same preview once, then showing the platform. A save receipt and actual display are separate evidence.
 
-- **App configuration:** interface, optional database bindings, mandatory backend app access boundary, optional connectors and zero or more optional automations. Existing apps are not retrofitted. No generated app-specific authentication or new seat model.
-- **Access:** retain the existing Projects section. Projects show apps by default; apps expand into registered tabs/parts, following Database → tables → columns. Standard tracker `tabs[].accessId` is optional, stable and unique. Tabs inherit and can only restrict app access. Missing metadata preserves app-level access; configured denials must be enforced. Arbitrary custom source retains app-level protection until a supported source/data boundary exists. Independent Database permissions remain independent.
-- **Automations:** one platform destination lists app-linked research and deterministic/email definitions. Rows show linked app, Scheduled/Trigger with frequency, and prompt/action instructions, plus Disable/Enable and Edit. Full configuration loads only on Edit. The page is full width; an empty list has no filters, pagination or setup controls. Shared daily ChatGPT setup is independent backend infrastructure, not a list entry or panel. Previous research/action runs belong in Logs, which filters by app as well as project/outcome/category. Definitions stay editable when disabled; editing does not enable them. Archive suspends attached work; restore does not restart it. No independent Delete control or app/record deletion from disabling automation.
-- **Execution:** TrialAgents stores schedules, prompts, scopes, coverage, due occurrences and receipts. Research uses one shared ChatGPT event subscription per authorizing owner/workspace; no task per app. Email and deterministic effects use TrialAgents services. Support recurring/calendar, one-time, record-date and database-change triggers through their existing typed schemas; research also supports after-success timing.
-- **Setup:** check at first supported use, every app creation, automation addition and reconnect/repair. Reuse existing consent/subscriptions; respect deliberate pauses and declined setup. Requested execution is Work chat, latest highest-capability subscription model, high reasoning. Host tools do not currently expose model/reasoning controls; requested preferences are not verified execution settings.
+Apps use the existing TrialAgents account and enforced app/database/table/field/record permissions. Do not create app-specific authentication or another user/seat system. Optional registered-tab access narrows the app boundary; arbitrary custom HTML hiding is not security. Shared records stay within authorized tenant boundaries. Generated source cannot gain credentials or override permissions. Preserve stable IDs, source/data versions, audit evidence and exact reviewed writes.
 
-## Non-negotiable continuity and UX
+## Automation boundaries
+
+Automations is a full-width platform destination for app-linked research and deterministic/email definitions. Show linked app, trigger/schedule and frequency, instructions, Enabled/Disabled and edit/toggle actions; run history belongs in app-filterable Logs. Add automation uses ChatGPT and Email tabs with business fields, preserves drafts and hidden settings, and never grants database write authority implicitly. Editing does not enable disabled work; archive suspends it without automatic restart on restore.
+
+Current research uses a shared **ChatGPT** runner per owner/workspace. No Claude scheduler is implemented or implied by cross-platform positioning. Email/deterministic actions run through TrialAgents. Save apps before optional automation setup; respect deliberate pauses, reuse existing subscriptions and never invent activation receipts. Recheck actual readiness and a real unattended cycle before claiming background execution. Old operational blockers are dated history, not instructions to rotate keys or reconfigure services without current evidence.
+
+Email schedules are daily or slower, or explicit database conditions. Preserve two-minute settling, current state/access checks, one app email per normalized recipient per rolling hour across TrialAgents, 15 recipient deliveries/account/24 hours and calendar per-recipient/local-date limits. Recipients are authorized registered team members; database email fields do not authorize bulk mail. See [notification policy](docs/scopes/NOTIFICATION_GUARDRAILS_2026-11-01.md) and [operations](docs/OPERATIONS.md#shared-automation-activation).
+
+## Continuity and UI
+
 
 Save the app before optional automation setup. App resolution, loading, navigation, ordinary reads/writes, publication and health must not depend on scheduling, callbacks or research. Failures retain the latest authorized usable published app and local input; run outcomes belong in Logs and private setup/history tools. Permission revocation still applies. Retries reconcile immutable receipts and expected record versions; never replace tables or overwrite newer user work to repair a task.
 
 First-save prompts apply only to never-saved apps. Published apps stay usable during ChatGPT edits and later publication; updates may offer a subtle optional refresh notice. Keep Search and Add record inline, disclose secondary filters when space is tight, use bounded active-page reads and avoid redundant rendering after layout saves. Extra log filters stay inline and wrap naturally into another row; they never float over events. Sidebar order: Apps, Database, Access, Automations, Connectors, Logs. Templates are optional accelerators, not mandatory app types.
 
-## Activation is separate from deployment
-
-Last verified at the 0.2.39 rollout: worker signing storage was unconfigured; this ChatGPT session exposed GitHub only as an event source and still had an older TrialAgents tool catalog. Recheck these facts after any operator action; do not treat this dated observation as permanent host incompatibility.
-
-1. Copy the **existing** web `CONNECTOR_ENCRYPTION_KEY` to the worker, then deploy the worker. Never replace the web key or put it in source/chat.
-2. Refresh the custom MCP connection's metadata and start a new Work chat with TrialAgents enabled. Refresh is not proof that event subscriptions are available.
-3. Discover supported events, reuse/complete approved runner setup, establish the actual host subscription, and verify a real unattended no-write cycle before claiming activation. Never invent callback/task identifiers or silently substitute polling/API execution.
-
-See [operator steps](docs/OPERATIONS.md#shared-automation-activation) and [ChatGPT setup](docs/CHATGPT_SETUP.md#current-connection-and-automation-setup).
-
-## Documentation map and maintenance
-
-| Need | Authoritative document |
-| --- | --- |
-| App/access/automation behavior and limits | [App configuration](docs/product/APP_CONFIGURATION_AND_AUTOMATIONS.md) |
-| Scheduling, claims, receipts and isolation | [Automation engine](docs/scopes/APP_AUTOMATION_ENGINE_2026-10-31.md) |
-| Creating reusable templates | [Living authoring standard](templates/TEMPLATE_AUTHORING.md) |
-| ChatGPT using those templates | [Living usage guidance](templates/TEMPLATE_USAGE.md) |
-| Shared blueprint rules | [Design and build contract](docs/product/app-template-blueprints/DESIGN_AND_BUILD_CONTRACT.md) |
-| Server catalog and release behavior | [Dynamic templates](docs/product/DYNAMIC_APP_TEMPLATES.md) |
-| Remaining work and dated decisions | [Development](DEVELOPMENT.md), [history](HISTORY.md) |
-
-Read current guidance through `read_app_template_guidance` and follow every `nextOffset`. Update its declared version with both Markdown guides when changing the shared contract. Keep released template JSON immutable. Server-served guidance ships through repository deployment; imported skill/package publication is a separate step. Older roadmap/history dates are historical and do not override the current contracts above.
-
-Manual automation creation: Add automation opens one full-width page with horizontal ChatGPT and Email tabs and the form immediately visible. Preserve each tab's draft. Show linked app, name, schedule/trigger, research instructions, or email subject/message and recipients. Use app-bound named table choices; never expose raw record/table IDs, JSON scopes, allowed fields, execution limits or advanced configuration. New email automations include the owner by default and allow adding app-authorized team members. Existing recipients and hidden configuration must survive edits. New research configurations use inheritAppAccess:true, current app-bound read fields and only existing approved ongoing write scopes within the app; revalidate current app access at execution. This never creates write grants. Keep review human-readable (including authorization expiry), keep backend validation and exact confirmation, and preserve input on failure. Email creation remains available if shared ChatGPT setup is unavailable; research reuses the existing shared runner without claiming subscription activation. Apps never depend on this editor or scheduler availability.
-
-
-## Simple email notifications
-
-Email automations have one delivery step, separate from ChatGPT/functions/connectors. Use daily/weekly/monthly calendar schedules (every N days/weeks/months), or entry creation/an explicit field transition. No subdaily email intervals or broad “any update” notifications. The backend waits two minutes after relevant changes, combines pending work, rechecks current state/access, and cancels obsolete notifications. It enforces one app email per normalized recipient per rolling hour across TrialAgents and 15 recipient deliveries per account per rolling 24 hours. Calendar email also has one slot per rule/recipient/local date. Extra work waits; only abnormal queue growth suspends a rule. Recipients must be explicitly selected registered team members with current app/data access; database address columns never authorize bulk mail. Research may run several times daily independently of email limits. Do not create report/digest modes, expose quota/retry controls, or use ChatGPT email tools/connectors to bypass these rules.
-
-The editor exposes linked app, name, schedule or database condition, instructions/message and recipients. Keep timezone (shown as help text), anchors, scopes, expiry defaults, source policies, catch-up and delivery limits in backend configuration. Preserve hidden values and disabled state on edits. See [notification scope](docs/scopes/NOTIFICATION_GUARDRAILS_2026-11-01.md) for rollout and verification.
-
 ## Saving controls
+
 
 Platform tabs use native page controls near the top, kept visible while scrolling where practical, following Database and Access. Do not add floating Save footers to ordinary platform or app editing pages. The exception is first publication of a new preview: the host shows a dark floating footer with Save app and Discard app, in both the website and ChatGPT extension.
 
 Apps own their save behavior. Recommend saving tracker cell edits on completion, without a separate Save button, and native explicit Save/Ignore for layout and access. These are template recommendations, not platform-enforced UI. Custom apps can choose an appropriate interaction. First-time app publication uses that trusted preview approval footer; later app revisions retain native review controls. Preserve exact backend proposals, confirmation or authorized grants, optimistic versions, permissions and audit logs; a failed save retains the draft and supports safe retry.
+
+## Current release evidence and verification limits
+
+The November 9 web releases introduced in-platform routing/catalog, the gallery, and persistent assistant CTAs. [PR #107](https://github.com/tarous89/trialy/pull/107), commit `6f6e7ad44517e661d074a05d6576c79a50901da6`, was verified live: matching JS/CSS/icon assets and healthy `/health`; production build and 145 browser tests passed. This proves that release's checks, not universal live ChatGPT/Claude visual parity or unattended activation. Recheck live source before future changes.
+
+## Where to continue
+
+- [Development and outstanding verification](DEVELOPMENT.md)
+- [Documentation index](docs/README.md) and [product guide](docs/product/README.md)
+- [Template authoring](templates/TEMPLATE_AUTHORING.md), [assistant usage](templates/TEMPLATE_USAGE.md), [shells](docs/product/APP_SHELLS.md)
+- [App configuration/access/automations](docs/product/APP_CONFIGURATION_AND_AUTOMATIONS.md)
+- [History](HISTORY.md), [archived superseded context](docs/archive/README.md)
+
+Keep both template Markdown guidance versions and `templateGuidance.version` synchronized. Read hosted guides through every `nextOffset`. Keep released template JSON immutable. Repository deployment, installed plugin-package publication and real host activation are distinct operations.
