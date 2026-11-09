@@ -1,3 +1,7 @@
+## 9 November 2026 — Dedicated template gallery and compact app header
+
+Templates now have a dedicated page, team/workflow filters, versioned screenshots and sandboxed interactive sample previews with fullscreen mode. Approval and immutable digest checks gate both images and demos. Cards show short descriptions and only Preview/Use actions; expanded previews show the full description. Apps has a refined browse link. Persistent header actions use ChatGPT/Claude icons, and the simpler sidebar toggle retains contrast in every state.
+
 ## 9 November 2026 — Platform apps and approved template catalog
 
 - Unified the web app shell with a fixed TrialAgents header, collapsible platform sidebar and same-tab app navigation. Home is now Apps.

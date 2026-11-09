@@ -19,7 +19,7 @@ test('Empty automations contain no setup, filters, pagination or history',async(
  await openPlatform(page,base+`/app-home?tab=automations&workspaceId=${f.workspaceId}`);
  await expect(page.getByText('No automations configured.')).toBeVisible();expect(setupReads).toBe(0);
  const panel=page.getByRole('region',{name:'App automations'});await expect(panel.locator('input,select,details')).toHaveCount(0);await expect(panel.getByRole('button',{name:'Add automation'})).toBeVisible();
- const labels=await page.getByRole('navigation',{name:'Main navigation',exact:true}).getByRole('button').allTextContents();expect(labels.slice(1)).toEqual(['Apps','Database','Access','Automations','Connectors','Logs']);
+ const labels=await page.getByRole('navigation',{name:'Main navigation',exact:true}).getByRole('button').allTextContents();expect(labels.slice(1)).toEqual(['Apps','Templates','Database','Access','Automations','Connectors','Logs']);
 });
 
 test('Manual automation creation opens the typed configuration without changing the app',async({page})=>{

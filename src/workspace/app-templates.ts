@@ -41,6 +41,12 @@ export class AppTemplates{
   const matches=[...latest.values()].filter(t=>!t.deprecated&&q.query.toLowerCase().split(/\s+/).every(term=>`${t.name} ${t.description} ${t.tags.join(' ')} ${t.whenToUse}`.toLowerCase().includes(term))).sort((a,b)=>a.name.localeCompare(b.name));
   return {guidance:templateGuidance,templates:matches.slice(q.offset,q.offset+q.limit).map(({source,options,defaults,instructions,documentation,examples,...summary})=>summary),total:matches.length,nextOffset:q.offset+q.limit<matches.length?q.offset+q.limit:null};
  }
+ async identity(input:unknown){
+  const v=templateRead.parse(input);
+  if(!this.db||!v.version){const t=await this.read(v);return {id:t.id,version:t.version,digest:t.digest};}
+  const t=(await this.db.query("SELECT template_id,version,digest FROM app_template_catalog WHERE template_id=$1 AND version=$2 AND status='approved'",[v.templateId,v.version])).rows[0];
+  if(!t)fail(404,'not_found','Template unavailable');return {id:t.template_id,version:t.version,digest:t.digest};
+ }
  async read(input:unknown){const v=templateRead.parse(input);const matches=(await this.entries()).filter(t=>t.id===v.templateId&&(!v.version||t.version===v.version)).sort((a,b)=>compare(b.version,a.version));const t=matches[0];if(!t)fail(404,'not_found','Template unavailable');return {...t,guidance:templateGuidance,configurationSchema:t.engine==='tracker'?z.toJSONSchema(trackerSetup,{io:"input",unrepresentable:"any"}):{type:'object',additionalProperties:false,properties:Object.fromEntries(Object.entries(t.options).map(([k,o])=>[k,{type:o.type,description:o.description,...(o.enum?{enum:o.enum}:{}),...(o.default!==undefined?{default:o.default}:{})}])),required:Object.entries(t.options).filter(([,o])=>o.required&&o.default===undefined).map(([k])=>k)}};}
  async operation(f:WorkspaceFoundation,a:Actor,w:string,input:unknown){
   const v=templatePrepare.parse(input),t=await this.read(vPick(v));if(t.deprecated)fail(409,'template_retired','Choose an active template');if(t.digest!==v.digest)fail(409,'template_changed','Template changed; read it again before preparing');

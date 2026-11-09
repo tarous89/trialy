@@ -1,3 +1,4 @@
+import {templateMedia} from '../workspace/template-media.js';
 import {installCatalogApp} from '../workspace/template-catalog.js';
 import {appDesignGuide} from '../shared/app-design.js';
 import {AppTemplates,templateQuery,templateRead,templatePrepare,readTemplateGuidance,templateGuidanceRequest} from '../workspace/app-templates.js';
@@ -12,6 +13,8 @@ import {prepareApp,prepareSimpleApp,prepareRenderedApp,readApp,openApp} from '..
 import type {WorkspaceFoundation} from '../workspace/service.js';
 export function addAppApi(app:Express,f:WorkspaceFoundation){
  const appTemplates=new AppTemplates(undefined,f.db);
+ app.get('/api/app-templates/:templateId/:version/screenshot',async(req,res)=>{const bytes=await templateMedia(appTemplates,req.params.templateId,req.params.version,'screenshot');res.set('Cache-Control','private, no-cache').type('jpeg').send(bytes);});
+ app.get('/api/app-templates/:templateId/:version/preview',async(req,res)=>{const html=await templateMedia(appTemplates,req.params.templateId,req.params.version,'preview');res.set('Cache-Control','private, no-store').set('Content-Security-Policy',"default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval'; style-src 'unsafe-inline'; img-src data:; font-src data:; connect-src 'none'; form-action 'none'; base-uri 'none'; frame-ancestors 'self'; sandbox allow-scripts").type('html').send(html);});
  app.post('/api/workspaces/:workspaceId/apps/install-template',async(req,res)=>res.json(await installCatalogApp(f,req.actor!,id.parse(req.params.workspaceId),req.body)));
  app.post('/api/app-templates/list',async(req,res)=>res.json(await appTemplates.list(req.body)));
  app.post('/api/app-templates/guidance',async(req,res)=>res.json(await readTemplateGuidance(req.body)));
