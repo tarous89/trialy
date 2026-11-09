@@ -14,7 +14,8 @@
 .ty-template-catalog{padding:24px 0}
 .ty-template-catalog-heading{display:flex;align-items:center;gap:20px;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap}
 .ty-template-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px}
-.ty-template-card{border:1px solid var(--ty-border);background:#fff;border-radius:14px;padding:22px;display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.ty-template-card{min-width:0;overflow-wrap:anywhere;border:1px solid var(--ty-border);background:#fff;border-radius:14px;padding:22px;display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.ty-template-card>*{max-width:100%}
 .ty-template-card h3{margin:0;font-size:18px}.ty-template-card p{margin:0;color:var(--ty-muted);font-size:14px;line-height:1.55}.ty-template-card .ty-button{margin-top:auto}
 @media(max-width:760px){.ty-workspace.ty-platform-shell .ty-main-column{margin-left:0;width:100%}.ty-workspace.ty-platform-shell .ty-sidebar--desktop{box-shadow:12px 0 30px #0002}.ty-workspace .ty-platform-header{justify-content:flex-start;padding:0 12px}}
 
