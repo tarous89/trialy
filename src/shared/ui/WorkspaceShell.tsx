@@ -16,7 +16,7 @@ export function WorkspaceShell({children,selected,onNavigate,accountName,account
  const destinations=platform.enabled?[{id:'home' as const,label:'Apps',icon:'grid' as const},...entries.slice(1,3),{id:'automations' as const,label:'Automations',icon:'automation' as const},{id:'connectors' as const,label:'Connectors',icon:'chain' as const},entries[3]]:entries;
  const [newMenu,setNewMenu]=useState(false);
  const [open,setOpen]=useState(!appView),toggle=useRef<HTMLButtonElement>(null);
- useEffect(()=>{setOpen(!appView);},[appView,selected]);
+ useEffect(()=>{setOpen(!appView);},[appView,embedded?selected:undefined]);
  function close(){setOpen(false);toggle.current?.focus({preventScroll:true});}
  useEffect(()=>{if(!open)return;const key=(e:KeyboardEvent)=>{if(e.key==='Escape')close();};document.addEventListener('keydown',key);return()=>document.removeEventListener('keydown',key);},[open]);
  useEffect(()=>{if(!newMenu)return;const closeMenu=(e:MouseEvent)=>{if(!(e.target as Element)?.closest('.ty-new-menu'))setNewMenu(false);};const key=(e:KeyboardEvent)=>{if(e.key==='Escape')setNewMenu(false);};document.addEventListener('click',closeMenu);document.addEventListener('keydown',key);return()=>{document.removeEventListener('click',closeMenu);document.removeEventListener('keydown',key);};},[newMenu]);
