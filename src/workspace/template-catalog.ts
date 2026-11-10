@@ -1,3 +1,4 @@
+import {requireCurrentAction} from '../domain/write-authorization.js';
 import {randomUUID,createHash} from 'node:crypto';
 import {readFile,readdir} from 'node:fs/promises';
 import {z} from 'zod';
@@ -22,11 +23,11 @@ export async function syncTemplateCatalog(db:Database){
  }
 }
 
-const install=z.object({templateId:z.string().max(80),version:z.string().max(30),digest:z.string().regex(/^[a-f0-9]{64}$/),requestKey:z.string().uuid(),name:z.string().trim().min(1).max(100)}).strict();
+export const catalogInstallation=z.object({templateId:z.string().max(80),version:z.string().max(30),digest:z.string().regex(/^[a-f0-9]{64}$/),requestKey:z.string().uuid(),name:z.string().trim().min(1).max(100)}).strict();
 /** One transaction: empty tables + app + existing audit/permission paths, or nothing. */
 export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,input:unknown){
- if(a.origin!=='human')fail(403,'human_required','Install apps from the platform');
- const v=install.parse(input);
+ requireCurrentAction(a);
+ const v=catalogInstallation.parse(input);
  return f.db.transaction(async tx=>{
   await tx.query('SELECT pg_advisory_xact_lock(hashtext($1))',[a.userId+':'+w+':'+v.requestKey]);
   const db:Database={query:tx.query.bind(tx),transaction:fn=>fn(tx),close:async()=>{}};
@@ -56,7 +57,7 @@ export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,i
   if(template.options.planMonth)configuration.planMonth=today.slice(0,7);
   const operation=await catalog.operation(scoped,a,w,{...v,configuration,bindings,manifest:fields.length?{version:1,scope:'workspace',fields}:undefined});
   // Approved immutable publisher source has already been reviewed; normal validation still runs.
-  const preview=await scoped.preview(a,w,operation,true),saved=await scoped.confirm(a,w,preview.id,preview.digest);
+  const draft=await scoped.preview(a,w,operation,true),preview=draft.reviewState==='draft'?(await scoped.finalizeAppPreview(a,w,draft.id,draft.digest)).preview:draft,saved=await scoped.confirm(a,w,preview.id,preview.digest);
   const result={appId:saved.id,workspaceId:w,url:appUrl({appId:saved.id,workspaceId:w,source:'component'}),templateRequestKey:v.requestKey,templateId:v.templateId,templateVersion:v.version,templateDigest:v.digest,name:v.name};
   await tx.query('INSERT INTO workspace_receipts(id,workspace_id,user_id,digest,result) VALUES($1,$2,$3,$4,$5)',[randomUUID(),w,a.userId,v.digest,JSON.stringify(result)]);
   return result;

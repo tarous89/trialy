@@ -1,3 +1,7 @@
+## 10 November 2026 — In-plugin installation and unified automation setup
+
+Supersedes the temporary plugin-to-web installation handoff and the ChatGPT/Email category tabs. Approved templates now install and open inside the plugin through the existing atomic, permission-checked installer. All workspace surfaces share indeterminate progress feedback. Automation creation uses Trigger → Worker/connector → Setup with one Ignore changes action. App/part deletion cancels dependent workflows and removes only unshared empty fields, preserving records and schema/audit history.
+
 ## 9 November 2026 — Dedicated template gallery and compact app header
 
 Templates now have a dedicated page, team/workflow filters, versioned screenshots and sandboxed interactive sample previews with fullscreen mode. Approval and immutable digest checks gate both images and demos. Cards show short descriptions and only Preview/Use actions; expanded previews show the full description. Apps has a refined browse link. Persistent header actions use ChatGPT/Claude icons, and the simpler sidebar toggle retains contrast in every state.

@@ -34,6 +34,14 @@ test('catalog approval, complete suite installation, retry and tenant isolation'
    const saved=await f.readComponent(actor,workspace.id,app.appId);assert.equal(saved.component.name,t.name);
   }
   assert.equal((await db.query('SELECT count(*)::int AS n FROM records WHERE workspace_id=$1',[workspace.id])).rows[0].n,0);
+  await service.setAi(actor,workspace.id,true);
+  const ai={...actor,origin:'ai' as const},aiTools=new Map<string,any>();addAppMcp({registerTool:(name:string,config:any,handler:any)=>aiTools.set(name,{config,handler})} as any,f,ai,(fn:any)=>fn,{});
+  const installTool=aiTools.get('install_app_template');assert.deepEqual(installTool.config._meta.ui.visibility,['app']);assert.equal(installTool.config.annotations.readOnlyHint,false);
+  const approved=list.templates[1],aiRequest={templateId:approved.id,version:approved.version,digest:approved.digest,name:approved.name,requestKey:randomUUID()};
+  await assert.rejects(()=>installCatalogApp(f,ai,workspace.id,aiRequest),/human|confirm|authoriz|approv/i);
+  const installed=await installTool.handler({workspaceId:workspace.id,...aiRequest,confirmed:true});assert.ok(installed.appId);
+  assert.deepEqual(await installTool.handler({workspaceId:workspace.id,...aiRequest,confirmed:true}),installed);
+  const claudeInstalled=await installCatalogApp(f,{...ai,assistant:'claude',actionConfirmed:true},workspace.id,{...aiRequest,requestKey:randomUUID()});assert.ok(claudeInstalled.appId);
   const candidate=list.templates[1],broken={templateId:candidate.id,version:candidate.version,digest:candidate.digest,name:candidate.name,requestKey:randomUUID()};
   const before=(await db.query('SELECT count(*)::int n FROM entity_types')).rows[0].n;
   await db.query("UPDATE app_template_catalog SET install_schema=install_schema || $2::jsonb WHERE template_id=$1 AND version=$3",[candidate.id,JSON.stringify({zz_invalid:{name:'Invalid schema',fields:[{key:'!',name:'Invalid',kind:'text'}],logicalFields:{}}}),candidate.version]);
