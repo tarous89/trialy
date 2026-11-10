@@ -4,7 +4,7 @@ for(const width of [1440,390])test(`Automation failure and setup never replace a
  await page.setViewportSize({width,height:1000});const f=await(await page.request.get(base+'/fixture/apps')).json();
  const live=await context.newPage();await live.setViewportSize({width,height:1000});await live.goto(base+f.url);
  const frame=live.frameLocator('iframe[title="Saved frontend code"]');await frame.getByRole('link',{name:'Calculator',exact:true}).click();await frame.getByLabel('Draft note').fill('Keep my unsaved note');
- let setupRequests=0;await page.route('**/app-services/automations',route=>{setupRequests++;return route.fulfill({status:503,json:{message:'Synthetic scheduler failure'}});});
+ let setupRequests=0;await page.route(/\/app-services\/automations(?:\?.*)?$/,route=>{setupRequests++;return route.fulfill({status:503,json:{message:'Synthetic scheduler failure'}});});
  await page.route('**/app-services/automations/definitions?*',route=>route.fulfill({status:503,json:{message:'Definitions unavailable'}}));
  await openPlatform(page,base+`/app-home?tab=apps&workspaceId=${f.workspaceId}&serviceApp=${f.appId}`);
  await page.getByRole('button',{name:'Manage app automations'}).click();await expect(page.getByRole('status')).toContainText('Automations could not be loaded');
