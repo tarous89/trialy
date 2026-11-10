@@ -39,6 +39,9 @@ import {BulkImport} from '../shared/BulkImport.js';
 import {ViewPicker,RecordView} from '../shared/WorkspaceViews.js';
 import type {Field} from '../shared/schema.js';
 const bridge=new App({name:'TrialAgents workspace',version:'0.2.37'},{availableDisplayModes:['inline','fullscreen']},{autoResize:true});
+// Only hosts whose server asks for it (Claude) switch to full screen, once per display; others keep their default.
+let fullscreenRequested=false;
+function requestFullscreen(){if(fullscreenRequested)return;const ctx=bridge.getHostContext();if(!ctx?.availableDisplayModes?.includes('fullscreen')||ctx.displayMode==='fullscreen')return;fullscreenRequested=true;void bridge.requestDisplayMode({mode:'fullscreen'}).catch(()=>{fullscreenRequested=false;});}
 function unwrap(result:any){if(result.isError)throw Object.assign(new Error(result.content?.find((c:any)=>c.type==='text')?.text??'The action could not complete.'),result.structuredContent?.error??{});return result.structuredContent?.result;}
 async function call(name:string,args:Record<string,unknown>={}){return unwrap(await bridge.callServerTool({name,arguments:args}));}
 function Workspace(){
@@ -93,6 +96,7 @@ function Workspace(){
  const retainDisplay=(e?:any)=>{setUnavailableReason(e?.code==='manifest_stale'?'schema':e&&![401,403,404].includes(e.status)?'load':'missing');setError('');setNotice('');if(!visibleApp.current&&!(visibleSurface.current==='home'&&homeAppVisible.current)){setOpenedTracker(null);setTrackerPreview(null);setTrackerOutput(null);setView('unavailable');}};
  const receive=(result:any)=>{if(!active)return;try{
   const data=unwrap(result);if(data?.displayIntent==='background')return;
+  if(data?.preferredDisplayMode==='fullscreen')requestFullscreen();
   if(['app-link','tracker','tracker-preview'].includes(data?.screen))retryDisplay.current=()=>receive(result);
   if(data?.screen==='app-link'){const epoch=++navigationEpoch.current;void call('open_app',{appId:data.appId,workspaceId:data.workspaceId,source:data.source??'component',route:data.route??{path:'/'}}).then(display=>{if(active&&epoch===navigationEpoch.current)receive({structuredContent:{result:display}});}).catch(e=>{if(active&&epoch===navigationEpoch.current)retainDisplay(e);});return;}
   if(data?.screen==='automations'){showPlatform('',data.workspaceId,'automations');return;}
