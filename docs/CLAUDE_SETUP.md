@@ -25,6 +25,7 @@ No Cloudflare or Render configuration change is needed: the endpoint is served b
 ## Plugin behaviour
 
 - One skill, `trialagents` (`/trialagents` in Claude Code), covers using the workspace and building apps; building guidance lives in `references/app-building.md` and loads only when needed.
+- The workspace opens full screen. If the user closes full screen, the inline workspace shows an **Expand** button that returns it to full screen (Claude only: the Claude widget resource carries a `trialy-host` marker; ChatGPT's header is unchanged).
 - On the first TrialAgents request in a conversation, Claude opens the workspace (or the named app) before answering, and every TrialAgents reply ends with an **Open in TrialAgents** link. On the Claude endpoint, `open_workspace` returns `openUrl` for that link; ChatGPT responses are unchanged.
 
 ## Access control

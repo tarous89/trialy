@@ -26,7 +26,7 @@ const paths={
  grid:'M3 3h7v7H3Zm11 0h7v7h-7ZM3 14h7v7H3Zm11 0h7v7h-7Z',
  list:'M8 5h13M8 12h13M8 19h13M3 5h.1M3 12h.1M3 19h.1',
  menu:'M4 6h16M4 12h16M4 18h16',close:'m6 6 12 12M6 18 18 6',
- check:'m5 12 4 4L19 6',arrow:'M5 12h14m-6-6 6 6-6 6',external:'M14 3h7v7m0-7L10 14m0-10H4v16h16v-6',
+ check:'m5 12 4 4L19 6',arrow:'M5 12h14m-6-6 6 6-6 6',external:'M14 3h7v7m0-7L10 14m0-10H4v16h16v-6',expand:'M4 9V4h5m6 0h5v5m0 6v5h-5m-6 0H4v-5',
  clock:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 4v5l3 2',
  more:'M5 12h.1M12 12h.1M19 12h.1',folder:'M3 6V4h6l2 3h10v13H3Z',
 } as const;
