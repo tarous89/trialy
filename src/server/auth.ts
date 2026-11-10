@@ -12,9 +12,9 @@ import {rateLimit} from 'express-rate-limit';
 import {z} from 'zod';
 import {mcpAuthRouter} from '@modelcontextprotocol/sdk/server/auth/router.js';
 import type {Postgres,Database} from '../db/database.js';
-import type {Actor} from '../shared/schema.js';
+import type {Actor,Assistant} from '../shared/schema.js';
 import {fail} from '../shared/schema.js';
-import {localOAuth,token,hash} from './local-oauth.js';
+import {localOAuth,token,hash,CLAUDE_MCP_PATH} from './local-oauth.js';
 const scrypt=promisify(derive);
 const esc=(s:string)=>s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
 declare module 'express-session'{interface SessionData{userId:string;csrf:string;mfaLogin?:{userId:string;sessionVersion:number;expires:number};sessionVersion?:number;mfaSetup?:{sealed:string;expires:number};connect?:string;join?:boolean;appReturn?:string}}
@@ -99,7 +99,13 @@ export function addLocalAuth(app:Express,db:Database,base:string,mfaKey=process.
  app.post('/auth/logout',(req,res)=>{if(!req.session.csrf||(!req.session.csrf||req.get('x-csrf-token')!==req.session.csrf))fail(403,'csrf','Refresh and retry');req.session.destroy(()=>{res.clearCookie('trialy_session');res.json({ok:true});});});
  app.use(mcpAuthRouter({provider,issuerUrl:new URL(base),resourceServerUrl:new URL(base+'/mcp'),scopesSupported:['trialy'],resourceName:'TrialAgents'}));
  const human:RequestHandler=(req,_res,next)=>{if(!req.session.userId)fail(401,'unauthenticated','Sign in to TrialAgents');if(!['GET','HEAD','OPTIONS'].includes(req.method)&&(!req.session.csrf||req.get('x-csrf-token')!==req.session.csrf))fail(403,'csrf','Refresh and retry');req.actor={userId:req.session.userId,origin:'human'};withActor(req.actor,next);};
- const ai:RequestHandler=async(req,res,next)=>{res.set('Cache-Control','no-store');const value=req.get('authorization')?.match(/^Bearer (.+)$/i)?.[1];try{if(!value)throw Error();const info=await provider.verifyAccessToken(value);req.actor={userId:String(info.extra!.userId),origin:'ai',connectionFamily:String(info.extra!.connectionFamily),clientId:info.clientId};withActor(req.actor,next);}catch{res.set('WWW-Authenticate',`Bearer resource_metadata="${base}/.well-known/oauth-protected-resource/mcp"`);res.status(401).json({error:'unauthenticated',message:'Connect your TrialAgents account'});}};
- return {human,ai,provider};
+ // Each MCP endpoint only accepts tokens issued for it, so ChatGPT and Claude stay separate principals.
+ const bearer=(expected:Assistant,metadataPath:string):RequestHandler=>async(req,res,next)=>{res.set('Cache-Control','no-store');const value=req.get('authorization')?.match(/^Bearer (.+)$/i)?.[1];try{if(!value)throw Error();const info=await provider.verifyAccessToken(value);const assistant:Assistant=info.extra!.assistant==='claude'?'claude':'chatgpt';if(assistant!==expected)throw Error();req.actor={userId:String(info.extra!.userId),origin:'ai',connectionFamily:String(info.extra!.connectionFamily),clientId:info.clientId,...(assistant==='claude'?{assistant}:{})};withActor(req.actor,next);}catch{res.set('WWW-Authenticate',`Bearer resource_metadata="${base}${metadataPath}"`);res.status(401).json({error:'unauthenticated',message:'Connect your TrialAgents account'});}};
+ const ai=bearer('chatgpt','/.well-known/oauth-protected-resource/mcp');
+ const claudeMetadataPath='/.well-known/oauth-protected-resource'+CLAUDE_MCP_PATH;
+ // RFC 9728 metadata for the Claude endpoint. Its resource must equal the endpoint URL exactly.
+ app.get(claudeMetadataPath,(_req,res)=>{res.set('Cache-Control','no-store');res.json({resource:base+CLAUDE_MCP_PATH,authorization_servers:[base+'/'],scopes_supported:['trialy'],bearer_methods_supported:['header'],resource_name:'TrialAgents'});});
+ const claude=bearer('claude',claudeMetadataPath);
+ return {human,ai,claude,claudeMetadataPath,provider};
 }
 

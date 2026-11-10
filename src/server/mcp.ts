@@ -1,7 +1,7 @@
 import {appPublicUrl,oauthPublicUrl,PLATFORM_ORIGIN} from '../shared/public-url.js';
 import {workspaceResource,backgroundMetadata,registerWorkspaceResources} from './ui-resource.js';
 import {addAutomationMcp} from './automations.js';
-import {addWorkspaceGuidanceMcp,serverInstructions} from './workspace-guidance.js';
+import {addWorkspaceGuidanceMcp,serverInstructions,claudeServerInstructions} from './workspace-guidance.js';
 import {addTrackerDesignMcp} from './tracker-design.js';
 import {rateLimit} from 'express-rate-limit';
 import {addGuestMcp} from './guest-drafts.js';
@@ -17,11 +17,31 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { z } from 'zod';
 import type { Service } from '../domain/service.js';
-import { operationSchema, recordQuerySchema, fieldChangeQuerySchema, id, AppError } from '../shared/schema.js';
-export function addMcp(app:Express,s:Service,authenticate:RequestHandler) {
+import { operationSchema, recordQuerySchema, fieldChangeQuerySchema, id, AppError, ASSISTANT_NAMES, type Assistant } from '../shared/schema.js';
+/** ChatGPT keeps /mcp with optional sign-in. Claude uses its own endpoint that always requires sign-in. */
+export type McpOptions={path?:string;host?:Assistant};
+/** Research automations run on the shared ChatGPT runner. Until a Claude runner exists, Claude can read them but not create, run or change them. Email/app actions run in TrialAgents and stay available. */
+export const CLAUDE_BLOCKED_RESEARCH_TOOLS=new Set(['prepare_automation_setup','control_automation_runner','claim_automation_work','checkpoint_automation_work','finish_automation_work','prepare_app_monitoring','link_app_monitoring_task','start_app_monitor_run','finish_app_monitor_run','maintain_app_monitor_records','test_app_automation']);
+const claudeResearchMessage='Scheduled research runs on the ChatGPT runner. Claude can read these automations but cannot create, run or change them yet. Email and app actions are available.';
+function guardClaudeResearch(server:McpServer){
+ const register=server.registerTool.bind(server) as any;
+ (server as any).registerTool=(name:string,config:any,handler:any)=>register(name,config,async(args:any,extra:any)=>{
+  if(CLAUDE_BLOCKED_RESEARCH_TOOLS.has(name)||(name==='prepare_app_automation_control'&&args?.kind==='research')||(name==='confirm_app_service_review'&&['automation_setup','monitoring'].includes(args?.kind)))return {isError:true,structuredContent:{error:{status:403,code:'claude_runner_unavailable'}},content:[{type:'text' as const,text:claudeResearchMessage}]};
+  return handler(args,extra);
+ });
+}
+export function addMcp(app:Express,s:Service,authenticate:RequestHandler,options:McpOptions={}) {
+ const path=options.path??'/mcp',host=options.host??'chatgpt',claude=host==='claude';
  const createLimit=rateLimit({windowMs:60000,limit:10,standardHeaders:'draft-8',legacyHeaders:false});
- app.post('/mcp',(req,res,next)=>req.body?.method==='tools/call'&&req.body?.params?.name==='preview_tracker'?createLimit(req,res,next):next(),(req,res,next)=>{if(req.get('authorization'))return authenticate(req,res,next);res.set('Cache-Control','no-store');next();},async(req,res)=>{
-  const actor=req.actor!;const server=new McpServer({name:'trialagents',title:'TrialAgents',version:'0.2.56'},{instructions:serverInstructions});
+ // All Claude traffic reaches us from Anthropic's shared egress range, so Claude limits count per signed-in user.
+ const perUser=(limit:number)=>rateLimit({windowMs:60000,limit,standardHeaders:'draft-8',legacyHeaders:false,keyGenerator:req=>'user:'+String(req.actor?.userId)});
+ const claudeCreateLimit=perUser(10),claudeCallLimit=perUser(240);
+ // Coarse backstop for the shared egress range before tokens are checked; unauthenticated requests keep the global IP limit.
+ const claudeIpCeiling=rateLimit({windowMs:60000,limit:3000,standardHeaders:'draft-8',legacyHeaders:false});
+ const isCreate=(req:any)=>req.body?.method==='tools/call'&&req.body?.params?.name==='preview_tracker';
+ const handler=async(req:any,res:any)=>{
+  const actor=req.actor!;const server=new McpServer({name:'trialagents',title:'TrialAgents',version:'0.2.56'},{instructions:claude?claudeServerInstructions:serverInstructions});
+  if(claude)guardClaudeResearch(server);
   addTrackerDesignMcp(server);
   addWorkspaceGuidanceMcp(server);
   const bundle=await workspaceResource(),resource=bundle.uri;
@@ -29,20 +49,21 @@ export function addMcp(app:Express,s:Service,authenticate:RequestHandler) {
   const result=(data:unknown)=>({content:[{type:'text' as const,text:JSON.stringify(data)}],structuredContent:{result:data}});
   const safe=(fn:(v:any)=>Promise<any>)=>async(v:any)=>{try{if(!actor)return {isError:true,content:[{type:'text' as const,text:'Connect your TrialAgents account to access saved work.'}],_meta:{'mcp/www_authenticate':[`Bearer resource_metadata="${oauthPublicUrl(process.env,PLATFORM_ORIGIN)}/.well-known/oauth-protected-resource/mcp"`]}};return result(await fn(v));}catch(e){return {isError:true,structuredContent:{error:{status:e instanceof AppError?e.status:500,code:e instanceof AppError?e.code:'internal'}},content:[{type:'text' as const,text:e instanceof AppError?e.message:'The action could not complete. Check its status before retrying.'}]};}};
   addAutomationMcp(server,s.db,actor,safe,metadata);
-  addGuestMcp(server,new GuestDrafts(s.db),metadata,!!actor);
+  // Guest drafts rely on ChatGPT's optional sign-in; the Claude endpoint is always signed in.
+  if(!claude)addGuestMcp(server,new GuestDrafts(s.db),metadata,!!actor);
   server.registerTool('approval_portal',{description:'Legacy app link. Opens Home, not a deferred review queue. Complete agreed actions with the appropriate confirmation operation; opening this link saves nothing.',inputSchema:{workspaceId:id.optional()},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},safe(async v=>({url:new URL('/?tab=home'+(v.workspaceId?'&workspaceId='+encodeURIComponent(v.workspaceId):''),appPublicUrl(process.env,PLATFORM_ORIGIN)).href})));
   server.registerTool('list_pending_changes',{description:'List your visible pending data/file reviews; these are not saved records.',inputSchema:{workspaceId:id},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false},_meta:backgroundMetadata(metadata)},safe(v=>s.pendingChanges(actor,v.workspaceId)));
   server.registerTool('list_creation_archives',{description:'Read reviewed new-record archival and restoration history. Original values are retained. Current whole-record access applies.',inputSchema:{workspaceId:id,offset:z.number().int().min(0).default(0)},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false},_meta:backgroundMetadata(metadata)},safe(v=>s.creationArchives(actor,v.workspaceId,v.offset)));
   server.registerTool('list_field_changes',{description:'Read immutable field-level before/after changes with their authorization. Current field permissions apply.',inputSchema:{workspaceId:id,...fieldChangeQuerySchema.shape},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false},_meta:backgroundMetadata(metadata)},safe(v=>s.fieldChanges(actor,v.workspaceId,v)));
   addWorkspaceMcp(server,new WorkspaceFoundation(s.db),actor,safe,metadata);
   addFoundationMcp(server,new Foundation(s.db,s),actor,safe,metadata);
-  registerWorkspaceResources(server,bundle,[new URL(appPublicUrl()).origin,oauthPublicUrl()]);
+  registerWorkspaceResources(server,bundle,[new URL(appPublicUrl()).origin,oauthPublicUrl()],host);
   server.registerTool('read_connected_account',{title:'Connected account',description:'Display the authenticated TrialAgents account identity in the app sidebar. Identity is delivered only to the app.',inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false},_meta:{...backgroundMetadata(metadata),ui:{visibility:['app']}}},async()=>{
    const response=await safe(async()=>({connected:true,viewerId:actor.userId}))({});if('isError' in response&&response.isError)return response;
    const account=(await s.db.query('SELECT name,email FROM users WHERE id=$1',[actor.userId])).rows[0];
    return {...response,_meta:{accountIdentity:account??{},appPlatform:{enabled:process.env.SIMPLE_APPS_ENABLED==='true',origin:new URL(appPublicUrl(process.env,PLATFORM_ORIGIN)).origin}}};
   });
-  server.registerTool('initialize_account',{title:'Prepare TrialAgents account',description:'Background account initialization; does not display the extension. For a user-initiated TrialAgents task, start with open_app for a known requested app or open_workspace, which also initializes storage. Scheduled runs use this quiet operation only when needed. Returns authentication and data-access status separately. Existing restrictions remain enforced.',inputSchema:{},annotations:{readOnlyHint:false,destructiveHint:false,openWorldHint:false},_meta:backgroundMetadata(metadata)},safe(async()=>{const workspaces=await s.ensureAccount(actor);return {authenticated:true,interactiveDisplay:{operation:'open_workspace',knownAppOperation:'open_app',when:'user_initiated_task',backgroundRuns:'quiet'},automations:{optional:true,setupOperation:'read_automation_setup',guideOperation:'read_app_automation_guide',checkAt:['first_use','app_creation','automation_added','reconnection'],respectPaused:true,blocksApp:false,executionPreference:{mode:'chat',model:'latest_most_capable_available',reasoning:'high'},hostExecutionSettings:'unverified'},accessStatus:workspaces.length?'ready':'no_accessible_workspace',...(workspaces.length?{}:{message:'Your account is connected, but no account database is available to ChatGPT. The owner can review ChatGPT access under Access in TrialAgents. Reconnecting does not change these permissions.'}),viewerId:actor.userId,workspaceId:workspaces[0]?.id,workspaces};}));
+  server.registerTool('initialize_account',{title:'Prepare TrialAgents account',description:'Background account initialization; does not display the extension. For a user-initiated TrialAgents task, start with open_app for a known requested app or open_workspace, which also initializes storage. Scheduled runs use this quiet operation only when needed. Returns authentication and data-access status separately. Existing restrictions remain enforced.',inputSchema:{},annotations:{readOnlyHint:false,destructiveHint:false,openWorldHint:false},_meta:backgroundMetadata(metadata)},safe(async()=>{const workspaces=await s.ensureAccount(actor);return {authenticated:true,interactiveDisplay:{operation:'open_workspace',knownAppOperation:'open_app',when:'user_initiated_task',backgroundRuns:'quiet'},automations:{optional:true,setupOperation:'read_automation_setup',guideOperation:'read_app_automation_guide',checkAt:['first_use','app_creation','automation_added','reconnection'],respectPaused:true,blocksApp:false,executionPreference:{mode:'chat',model:'latest_most_capable_available',reasoning:'high'},hostExecutionSettings:'unverified'},accessStatus:workspaces.length?'ready':'no_accessible_workspace',...(workspaces.length?{}:{message:`Your account is connected, but no account database is available to ${ASSISTANT_NAMES[host]}. The owner can review ${ASSISTANT_NAMES[host]} access under Access in TrialAgents. Reconnecting does not change these permissions.`}),viewerId:actor.userId,workspaceId:workspaces[0]?.id,workspaces};}));
   server.registerTool('open_workspace',{title:'TrialAgents workspace',description:'Start user-initiated TrialAgents tasks here when no specific saved app was requested. Displays the platform in the extension; background runs stay quiet. Shows sign-in for disconnected accounts and authorized Home content for connected accounts. Initializes first-account storage if needed; existing access restrictions remain enforced. Does not create an app.',inputSchema:{workspaceId:id.optional()},annotations:{readOnlyHint:false,destructiveHint:false,openWorldHint:false},_meta:{...metadata,securitySchemes:[{type:'noauth'},{type:'oauth2',scopes:['trialy']}],'openai/ui':{entrypoints:[{type:'global'},{type:'thread'}]}}},async v=>{
    if(!actor)return result({guestWelcome:true,workspaces:[],types:[],templates:[],connectionRequired:true,message:'Connect your TrialAgents account to create and save projects and apps. Trackers, forms, dashboards and automations can stand alone or belong to a project.'});
    return safe(async v=>{
@@ -74,8 +95,10 @@ export function addMcp(app:Express,s:Service,authenticate:RequestHandler) {
    return send(message,options);
   };
   res.on('close',()=>{void transport.close();void server.close();});await server.connect(transport);await transport.handleRequest(req,res,req.body);
- });
- app.get('/mcp',(_req,res)=>res.status(405).set('Allow','POST').end());
+ };
+ if(claude)app.post(path,claudeIpCeiling,authenticate,claudeCallLimit,(req,res,next)=>isCreate(req)?claudeCreateLimit(req,res,next):next(),handler);
+ else app.post(path,(req,res,next)=>isCreate(req)?createLimit(req,res,next):next(),(req,res,next)=>{if(req.get('authorization'))return authenticate(req,res,next);res.set('Cache-Control','no-store');next();},handler);
+ app.get(path,(_req,res)=>res.status(405).set('Allow','POST').end());
 }
 
 

@@ -1,11 +1,15 @@
 import {sectionFields} from './app-sections.js';
 import {z} from 'zod';
 import type {Connection} from '../db/database.js';
-import {fail,id,type Actor,type Field} from '../shared/schema.js';
+import {fail,id,assistantOf,isAssistant,type Actor,type Field} from '../shared/schema.js';
 
-export const accessRuleSchema=z.object({shareId:id.optional(),subject:z.union([id,z.literal('chatgpt')]),kind:z.enum(['project','tool','table','column','database','workflow','connection','app_section']),resourceId:id,field:z.string().max(64).optional(),read:z.enum(['inherit','allow','deny']).default('inherit'),write:z.enum(['inherit','allow','deny']).default('inherit'),bindings:z.array(z.object({toolId:id.optional(),typeId:id,fields:z.array(z.string()),writable:z.array(z.string()),projectId:id.nullable()})).optional()}).strict();
+export const accessRuleSchema=z.object({shareId:id.optional(),subject:z.union([id,z.literal('chatgpt'),z.literal('claude')]),kind:z.enum(['project','tool','table','column','database','workflow','connection','app_section']),resourceId:id,field:z.string().max(64).optional(),read:z.enum(['inherit','allow','deny']).default('inherit'),write:z.enum(['inherit','allow','deny']).default('inherit'),bindings:z.array(z.object({toolId:id.optional(),typeId:id,fields:z.array(z.string()),writable:z.array(z.string()),projectId:id.nullable()})).optional()}).strict();
 export type AccessRule=z.infer<typeof accessRuleSchema>;
-export function rulesFor(p:any,a:Actor):AccessRule[]{return (p.permission_rules??[]).filter((r:AccessRule)=>(r.subject===a.userId||(a.origin==='ai'&&r.subject==='chatgpt'))&&(r.kind!=='connection'||a.origin==='ai'));}
+/** Which assistant a connection rule restricts: its assistant subject, else field "claude", else ChatGPT (all pre-Claude rules). */
+export function connectionAssistant(r:{subject:string;field?:string}){return isAssistant(r.subject)?r.subject:r.field==='claude'?'claude':'chatgpt';}
+export function rulesFor(p:any,a:Actor):AccessRule[]{return (p.permission_rules??[]).filter((r:AccessRule)=>(r.subject===a.userId||(a.origin==='ai'&&r.subject===assistantOf(a)))&&(r.kind!=='connection'||a.origin==='ai'&&connectionAssistant(r)===assistantOf(a)));}
+/** Account and per-person on/off switches for the actor's assistant. */
+export function assistantEnabled(p:any,a:Actor){return assistantOf(a)==='claude'?!!p.claude_enabled&&(p.role==='owner'||!!p.user_claude):!!p.ai_enabled&&(p.role==='owner'||!!p.user_ai);}
 export function dataRules(p:any,a:Actor,t:string,key?:string){return rulesFor(p,a).filter(r=>r.kind==='database'||r.kind==='connection'||r.resourceId===t&&(r.kind==='table'||(r.kind==='column'&&r.field===key)));}
 export function denied(rules:AccessRule[],action:'read'|'write'){return rules.some(r=>r.read==='deny'||(action==='write'&&r.write==='deny'));}
 export function resourceGrant(p:any,a:Actor,kind:'project'|'tool',resourceId:string,parents:string[]=[]) {
