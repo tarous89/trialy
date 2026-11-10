@@ -135,8 +135,8 @@ export async function authorizeNotificationJob(db:Database,j:any,reading=false){
 }
 export async function dispatchNotificationBatch(db:Database){
  if(!notificationEmailsEnabled())return false;
- const candidate=(await db.query("SELECT * FROM app_notification_batches WHERE status IN ('collecting','sending') AND not_before<=now() ORDER BY created_at,id LIMIT 1")).rows[0];if(!candidate)return false;
- return withActor({userId:candidate.user_id,origin:'ai'},()=>db.transaction(async tx=>{
+ const candidate=(await db.query("SELECT b.*,a.assistant FROM app_notification_batches b LEFT JOIN app_actions a ON a.id=b.action_id WHERE b.status IN ('collecting','sending') AND b.not_before<=now() ORDER BY b.created_at,b.id LIMIT 1")).rows[0];if(!candidate)return false;
+ return withActor({userId:candidate.user_id,origin:'ai',...(candidate.assistant==='claude'?{assistant:'claude' as const}:{})},()=>db.transaction(async tx=>{
   // Action first, matching enqueue/approval ordering. The batch cannot change
   // between eligibility checks, freezing the payload and reserving its allowance.
   await tx.query('SELECT id FROM app_actions WHERE id=$1 FOR UPDATE',[candidate.action_id]);

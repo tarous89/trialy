@@ -169,7 +169,7 @@ export class Connectors{
   const built=await this.inspect(this.db,a,w,call);if(built.digest!==digest)fail(409,'connector_changed','Request changed');
   if(built.reviewRequired&&!reviewId)fail(403,'connector_review','Review this request');
   if(reviewId){const r=await this.readReview({...a,origin:'human'},w,reviewId);if(r.body.digest!==digest)fail(409,'connector_changed','Request changed');}
-  return enqueueServiceJob(this.db,a,w,call.appId,'connector','connector:'+call.connectionId+':'+call.requestKey,{origin:a.origin,call,digest,reviewId:reviewId??null},built.operation.timeoutSeconds+60);
+  return enqueueServiceJob(this.db,a,w,call.appId,'connector','connector:'+call.connectionId+':'+call.requestKey,{origin:a.origin,...(a.assistant?{assistant:a.assistant}:{}),call,digest,reviewId:reviewId??null},built.operation.timeoutSeconds+60);
  }
  async executeAuthorized(a:Actor,w:string,input:unknown,authorize:()=>Promise<void>,signal?:AbortSignal){
   await authorize();const built=await this.inspect(this.db,a,w,input);return this.dispatch(a,w,built.call,built.digest,undefined,authorize,signal);

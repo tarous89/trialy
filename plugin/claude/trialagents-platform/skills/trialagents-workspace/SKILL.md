@@ -32,7 +32,13 @@ This skill routes work. The TrialAgents connector's operations and server guides
 
 ## Automations from Claude
 
-Email and other app actions run in TrialAgents and can be prepared and confirmed from Claude. Scheduled **research** currently runs on the user's ChatGPT runner: from Claude you can list and read those automations and their history, but operations that create, run or change research return `claude_runner_unavailable`. Say so plainly, keep the saved app usable, and offer to set up the research from ChatGPT or the TrialAgents website. Never imitate scheduled research with an unrelated Claude task, and never claim a research automation is active from Claude.
+Email and other app actions run in TrialAgents. Scheduled **research** runs on the user's own **Claude runner**, separate from ChatGPT's:
+
+1. If `read_automation_setup` reports `not_enabled`, prepare the runner with `prepare_automation_setup` and confirm it with the user.
+2. When `nextStep.kind` is `connect_claude_routine`, guide the user to create one Claude scheduled task at claude.ai/code/routines: the returned `dispatcherPrompt` as its prompt, only the TrialAgents connector, no schedule needed, plus an **API** trigger. Ask them for the Fire URL and the generated token, then call `connect_claude_runner`. The token only starts that task; they can regenerate it at any time.
+3. Recheck `read_automation_setup` with `waitSeconds` until the state is `ready`, then save and enable the research.
+
+Each assistant owns the automations it created. From Claude you can read and **pause** ChatGPT's automations, but never edit, resume, test, run or claim them (`other_assistant_automation`); tell the user to do that in ChatGPT or on the TrialAgents website. Never imitate scheduled research with an unrelated Claude task, and never claim research is active before `read_app_automation_readiness` says ready.
 
 ## Limits
 

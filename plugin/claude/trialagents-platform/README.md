@@ -8,7 +8,7 @@ TrialAgents is cross-platform software for AI-native biotechs: a suite of connec
 - Reads and searches the records, projects and documents your account is allowed to see.
 - Prepares changes to records and apps for your review, and saves only the exact change you approve.
 - Builds new apps from approved TrialAgents templates or as custom apps, and revises existing ones while keeping their data, IDs and permissions.
-- Prepares email and other app actions. Scheduled research automations run on the ChatGPT runner; Claude can read them but not create or change them yet.
+- Sets up recurring research on your own Claude runner (a Claude scheduled task that TrialAgents starts when work is due) and prepares email and other app actions. Automations you create in Claude belong to Claude; Claude can pause, but not edit, the ones you created in ChatGPT, and vice versa.
 
 ## Use it
 
@@ -22,7 +22,7 @@ Claude is a separate connection in TrialAgents. The account owner can switch Cla
 
 ## Data
 
-The plugin's connector sends your requests, and the record, app and document data needed to answer them, between Claude and your TrialAgents account at `https://platform.trialagents.com/claude/mcp`. Sign-in uses OAuth with PKCE; TrialAgents stores only hashed tokens. The plugin itself contains only instructions and stores no data. It runs no scripts, hooks or local programs. TrialAgents is not intended for patient-level data or regulated clinical decisions.
+The plugin's connector sends your requests, and the record, app and document data needed to answer them, between Claude and your TrialAgents account at `https://platform.trialagents.com/claude/mcp`. Sign-in uses OAuth with PKCE; TrialAgents stores only hashed tokens. If you connect a Claude runner, TrialAgents stores its scheduled-task API token encrypted and uses it only to start that task when your automations are due. See the [privacy policy](https://trialagents.com/privacy-policy). The plugin itself contains only instructions and stores no data. It runs no scripts, hooks or local programs. TrialAgents is not intended for patient-level data or regulated clinical decisions.
 
 ## Support
 

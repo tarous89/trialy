@@ -9,7 +9,7 @@ Added 10 November 2026 (Europe/Berlin). Claude connects to TrialAgents through i
 | Protected-resource metadata | `/.well-known/oauth-protected-resource/mcp` | `/.well-known/oauth-protected-resource/claude/mcp` |
 | Plugin package | `plugin/trialy/` | `plugin/claude/trialagents-platform/` |
 | Access principal | `chatgpt` | `claude` |
-| Scheduled research | ChatGPT runner | Read-only (no Claude runner yet) |
+| Scheduled research | ChatGPT runner (event webhook) | Claude runner (Claude scheduled task, API trigger) |
 
 ## How it works
 
@@ -35,7 +35,23 @@ Claude is a separate connection next to ChatGPT (migration `057_claude_connectio
 
 ## Automations
 
-Email and other app actions run in TrialAgents and work from Claude. Scheduled research runs on the shared ChatGPT runner. On `/claude/mcp`, research setup, runner control, run claiming and research creation or changes return `claude_runner_unavailable`; reading automations and history works. A Claude runner (Claude cloud scheduled tasks triggered through their API `/fire` endpoint) is the planned next phase.
+Each assistant has its own runner and owns the automations it created (migration `058_assistant_automations.sql`):
+
+- `automation_runners` is unique per owner, workspace and **assistant**. Web sessions default to the ChatGPT runner, as before.
+- `app_monitors.assistant` and `app_actions.assistant` record the owning assistant; all existing rows are ChatGPT's. Research belongs to its runner's assistant. NULL means created on the web without an assistant.
+- `app_service_previews.assistant` records who prepared a review. A review prepared in one assistant can be confirmed there or on the web, never in the other assistant (`other_assistant_review`).
+- **From an assistant**, the other assistant's automations and runner can be read and **paused**, but not edited, resumed, tested, run or claimed (`other_assistant_automation`, `runner_unavailable`). **On the web**, the owner can manage everything.
+- Validation and background execution use the owning assistant's Access rules (`runnerActor`, `asOwner`), so switching Claude off under Access stops Claude's runner and Claude-owned actions without affecting ChatGPT's.
+
+### Claude runner
+
+1. In Claude: "set up automations" → `prepare_automation_setup` → confirm. This creates the Claude runner.
+2. `read_automation_setup` returns `nextStep.kind = connect_claude_routine` and a `dispatcherPrompt`. The user creates one scheduled task at [claude.ai/code/routines](https://claude.ai/code/routines): that prompt, only the TrialAgents connector, no schedule needed, plus an **API** trigger. They copy its Fire URL and generate a token.
+3. Claude calls `connect_claude_runner` with both. The token is stored encrypted (connector vault) and never returned.
+4. TrialAgents fires the task once (`POST …/fire`, `anthropic-beta: experimental-cc-routine-2026-04-01`). The run claims and finishes the verification job; the runner becomes `ready`.
+5. Afterwards TrialAgents fires the task whenever Claude-owned work is due. The fire text carries no instructions (Claude treats it as untrusted); the saved prompt fetches work from TrialAgents.
+
+Limits and failure handling: Claude allows 30 API starts per task per hour, so wakes for one runner are spaced at least two minutes apart and coalesced. A rejected token (401/403/404) disconnects the trigger and `read_automation_setup` asks the user to reconnect with a new token. The runner stays live only while the Claude connection (OAuth family) is active, the same rule as ChatGPT. Runs count against the user's Claude plan usage. The `/fire` API is a research preview and may change; its beta header is in `CLAUDE_FIRE_BETA` (`src/automations/events.ts`).
 
 ## Personal testing
 
@@ -51,7 +67,7 @@ Email and other app actions run in TrialAgents and work from Claude. Scheduled r
 3. Build and save an app from a template; read it back from ChatGPT and the web.
 4. Owner switches Claude off under Access: Claude loses access while ChatGPT keeps it, and the reverse.
 5. A Claude-only table restriction hides that table in Claude but not in ChatGPT.
-6. Asking Claude to schedule research reports that it runs on ChatGPT; asking for an email action works.
+6. Set up the Claude runner, connect its scheduled task, and confirm it reaches `ready`; schedule research from Claude and see it run. From ChatGPT, the Claude research shows as Claude's: it can be paused there but not edited or resumed, and the reverse.
 7. Claude Code: connect through the loopback callback and read records in text.
 8. Reconnect after token expiry; cancel and retry sign-in.
 
@@ -59,8 +75,7 @@ Email and other app actions run in TrialAgents and work from Claude. Scheduled r
 
 Submit two listings from the developer portal (claude.ai/directory/manage): the MCP connector (`/claude/mcp`), and the plugin bundle with plugin path `plugin/claude/trialagents-platform`. `claude plugin validate` passes. Before submitting:
 
-- **License** (blocking): add a `LICENSE` file to the plugin folder or a `license` value in `plugin.json`.
-- **Privacy policy** (warning): set `privacyPolicyUrl` in `plugin.json`.
+- License: `plugin/claude/trialagents-platform/LICENSE` (proprietary, use with TrialAgents only). Privacy policy: `https://trialagents.com/privacy-policy`. `claude plugin validate` reports no findings.
 - The repository must be public before the listing goes live (it is). Raise `version` in `plugin.json` with every release.
 
 References: [Claude connector authentication](https://claude.com/docs/connectors/building/authentication), [plugin structure](https://claude.com/docs/plugins/build), [pre-submission checklist](https://claude.com/docs/plugins/pre-submission-checklist), [submit a plugin](https://claude.com/docs/plugins/submit).

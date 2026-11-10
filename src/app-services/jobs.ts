@@ -22,7 +22,7 @@ export async function serviceJob(db:Database,a:Actor,w:string,id:string,appId?:s
  await authorizeJob(db,j,true);return {id:j.id,status:j.status,result:j.result,diagnostic:j.diagnostic,deliveryStatus:j.delivery_status,createdAt:j.created_at,finishedAt:j.finished_at};
 }
 export async function authorizeJob(db:Database,j:any,reading=false){
- const a:Actor={userId:j.user_id,origin:j.payload.origin??'ai',...(j.app_id?{accessToolId:j.app_id}:{})};
+ const a:Actor={userId:j.user_id,origin:j.payload.origin??'ai',...(j.app_id?{accessToolId:j.app_id}:{}),...(j.payload.assistant==='claude'?{assistant:'claude' as const}:{})};
  return withActor(a,async()=>{
   if(j.payload.test){const {authorizeTestEmail}=await import('../automations/testing.js');await authorizeTestEmail(db,j);}
   else if(j.payload.notification){const {authorizeNotificationJob}=await import('./notifications.js');await authorizeNotificationJob(db,j,reading);}

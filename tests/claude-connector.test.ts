@@ -57,10 +57,9 @@ test('Claude connects through its own endpoint and stays a separate principal fr
  assert.equal(opened.status,200,opened.text);const workspaceId=opened.body.result.structuredContent.result.workspaceId;assert.ok(workspaceId,'First Claude connection initializes the account with Claude enabled');
  const listed=await request(app).post(CLAUDE_MCP_PATH).set('Authorization','Bearer '+claude.access_token).set('Accept',accept).send({jsonrpc:'2.0',id:2,method:'tools/list',params:{}});
  const names=listed.body.result.tools.map((t:any)=>t.name);assert.ok(names.includes('open_workspace'));assert.ok(!names.includes('preview_tracker'),'Guest-only tools are not offered to Claude');
- // Research runs on the ChatGPT runner; Claude can read automations but cannot run or change research.
- const blocked=await request(app).post(CLAUDE_MCP_PATH).set('Authorization','Bearer '+claude.access_token).set('Accept',accept).send(call('claim_automation_work',{workspaceId,runnerId:workspaceId,occurrenceId:workspaceId,requestKey:workspaceId}));
- assert.equal(blocked.body.result.isError,true);assert.equal(blocked.body.result.structuredContent.error.code,'claude_runner_unavailable');
- assert.ok(names.includes('list_app_automations'),'Automation reads stay available to Claude');
+ // Claude has its own runner tools; ChatGPT's event subscription tools are not involved.
+ for(const tool of ['list_app_automations','prepare_automation_setup','connect_claude_runner','claim_automation_work'])assert.ok(names.includes(tool),tool);
+ const chatgptTools=await request(app).post('/mcp').set('Accept',accept).send({jsonrpc:'2.0',id:3,method:'tools/list',params:{}});assert.ok(!chatgptTools.body.result.tools.some((t:any)=>t.name==='connect_claude_runner'),'ChatGPT tool list is unchanged');
  // Tokens only work on the endpoint they were issued for.
  assert.equal((await request(app).post('/mcp').set('Authorization','Bearer '+claude.access_token).set('Accept',accept).send(call('open_workspace'))).status,401);
  const chatgpt=await connect(app,browser,CHATGPT_CALLBACK,BASE+'/mcp',false);

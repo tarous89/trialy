@@ -1,12 +1,20 @@
 {
   "name": "trialagents-platform",
   "displayName": "TrialAgents",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Use, customize and build connected life-science apps in Claude: open your TrialAgents apps, read and update authorized data with reviewed saves, and create custom apps from templates.",
   "author": {
     "name": "Atlas Consulting",
     "url": "https://trialagents.com"
   },
   "homepage": "https://trialagents.com",
-  "keywords": ["life sciences", "biotech", "clinical operations", "apps", "trackers"]
+  "license": "SEE LICENSE IN LICENSE",
+  "privacyPolicyUrl": "https://trialagents.com/privacy-policy",
+  "keywords": [
+    "life sciences",
+    "biotech",
+    "clinical operations",
+    "apps",
+    "trackers"
+  ]
 }

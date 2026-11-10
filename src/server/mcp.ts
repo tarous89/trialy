@@ -20,16 +20,6 @@ import type { Service } from '../domain/service.js';
 import { operationSchema, recordQuerySchema, fieldChangeQuerySchema, id, AppError, ASSISTANT_NAMES, type Assistant } from '../shared/schema.js';
 /** ChatGPT keeps /mcp with optional sign-in. Claude uses its own endpoint that always requires sign-in. */
 export type McpOptions={path?:string;host?:Assistant};
-/** Research automations run on the shared ChatGPT runner. Until a Claude runner exists, Claude can read them but not create, run or change them. Email/app actions run in TrialAgents and stay available. */
-export const CLAUDE_BLOCKED_RESEARCH_TOOLS=new Set(['prepare_automation_setup','control_automation_runner','claim_automation_work','checkpoint_automation_work','finish_automation_work','prepare_app_monitoring','link_app_monitoring_task','start_app_monitor_run','finish_app_monitor_run','maintain_app_monitor_records','test_app_automation']);
-const claudeResearchMessage='Scheduled research runs on the ChatGPT runner. Claude can read these automations but cannot create, run or change them yet. Email and app actions are available.';
-function guardClaudeResearch(server:McpServer){
- const register=server.registerTool.bind(server) as any;
- (server as any).registerTool=(name:string,config:any,handler:any)=>register(name,config,async(args:any,extra:any)=>{
-  if(CLAUDE_BLOCKED_RESEARCH_TOOLS.has(name)||(name==='prepare_app_automation_control'&&args?.kind==='research')||(name==='confirm_app_service_review'&&['automation_setup','monitoring'].includes(args?.kind)))return {isError:true,structuredContent:{error:{status:403,code:'claude_runner_unavailable'}},content:[{type:'text' as const,text:claudeResearchMessage}]};
-  return handler(args,extra);
- });
-}
 export function addMcp(app:Express,s:Service,authenticate:RequestHandler,options:McpOptions={}) {
  const path=options.path??'/mcp',host=options.host??'chatgpt',claude=host==='claude';
  const createLimit=rateLimit({windowMs:60000,limit:10,standardHeaders:'draft-8',legacyHeaders:false});
@@ -41,7 +31,6 @@ export function addMcp(app:Express,s:Service,authenticate:RequestHandler,options
  const isCreate=(req:any)=>req.body?.method==='tools/call'&&req.body?.params?.name==='preview_tracker';
  const handler=async(req:any,res:any)=>{
   const actor=req.actor!;const server=new McpServer({name:'trialagents',title:'TrialAgents',version:'0.2.56'},{instructions:claude?claudeServerInstructions:serverInstructions});
-  if(claude)guardClaudeResearch(server);
   addTrackerDesignMcp(server);
   addWorkspaceGuidanceMcp(server);
   const bundle=await workspaceResource(),resource=bundle.uri;
