@@ -21,7 +21,7 @@ UPDATE app_actions SET assistant='chatgpt';
 
 -- 4. Reviews remember the assistant that prepared them, so the other assistant cannot confirm them.
 ALTER TABLE app_service_previews ADD COLUMN assistant text CHECK (assistant IN ('chatgpt','claude'));
-UPDATE app_service_previews SET assistant='chatgpt' WHERE consumed_at IS NULL;
+-- Existing reviews are immutable (service_review_immutable) and expire on their own; they stay untagged.
 CREATE FUNCTION trialy_security.default_preview_assistant() RETURNS trigger
 LANGUAGE plpgsql SET search_path TO 'pg_catalog','public' AS $$
 BEGIN
