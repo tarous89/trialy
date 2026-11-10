@@ -1,4 +1,6 @@
-# Biotech company apps — detailed candidate screen scope
+# Biotech company apps — detailed candidate screen scope (v1)
+
+> **Superseded by [BIOTECH_v2.md](BIOTECH_v2.md) (10 November 2026).** Kept for reference: the BT-01…BT-06 screen recipes below still describe the shipped v1 packages and remain useful when adapting them to the v2 use cases.
 
 **Current platform contract (1 November 2026):** follow the [shared build contract](DESIGN_AND_BUILD_CONTRACT.md#6-app-access-chatgpt-and-scheduling-contract) for optional section access, unified Automations, shared ChatGPT research setup, TrialAgents email, failure isolation and template documentation. References to a Task in these candidate recipes describe optional ongoing work, not a separate host task per app. The original briefs below describe proposed scope; corresponding catalog packages now exist. Current database approval status and package QA, not these historical specifications, establish availability and shipped capabilities.
 
