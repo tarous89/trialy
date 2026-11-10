@@ -21,6 +21,11 @@ Added 10 November 2026 (Europe/Berlin). Claude connects to TrialAgents through i
 
 No Cloudflare or Render configuration change is needed: the endpoint is served by the existing `trialy-web` service, as the Intel Claude connector already is.
 
+## Plugin behaviour
+
+- One skill, `trialagents` (`/trialagents` in Claude Code), covers using the workspace and building apps; building guidance lives in `references/app-building.md` and loads only when needed.
+- On the first TrialAgents request in a conversation, Claude opens the workspace (or the named app) before answering, and every TrialAgents reply ends with an **Open in TrialAgents** link. On the Claude endpoint, `open_workspace` returns `openUrl` for that link; ChatGPT responses are unchanged.
+
 ## Access control
 
 Claude is a separate connection next to ChatGPT (migration `057_claude_connection.sql`):

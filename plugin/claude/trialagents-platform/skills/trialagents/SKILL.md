@@ -1,13 +1,13 @@
 ---
-name: trialagents-workspace
-description: Open and use TrialAgents apps, projects, authorized data and documents in Claude; read records, prepare and save reviewed changes, and manage app automations. Use whenever the user mentions TrialAgents, their TrialAgents apps, trackers or workspace, or asks to update data stored there.
+name: trialagents
+description: Open, use and build TrialAgents apps in Claude. Opens the user's TrialAgents workspace or a saved app, reads and searches authorized records, projects and documents, prepares and saves reviewed changes, builds or redesigns apps, trackers and dashboards from templates, and sets up automations. Use whenever the user mentions TrialAgents, their TrialAgents workspace, apps, trackers or data, or asks to create or change one.
 ---
 
-# TrialAgents Workspace
+# TrialAgents
 
 TrialAgents is cross-platform software: ready-made connected apps that people use, customize, or ask Claude or ChatGPT to build. The same saved apps, data, access controls and history are shared across Claude, ChatGPT and the web platform at https://platform.trialagents.com. Use **TrialAgents** and **apps** in user-facing text; internal `trialy` names are compatibility identifiers only.
 
-This skill routes work. The TrialAgents connector's operations and server guides hold the detailed contracts. Backend permissions, validation and audit logs enforce safety independently of this skill.
+This skill covers using the workspace and building apps. It routes work: the TrialAgents connector's operations and server guides hold the detailed contracts. Backend permissions, validation and audit logs enforce safety independently of this skill.
 
 ## Claude connection
 
@@ -16,12 +16,17 @@ This skill routes work. The TrialAgents connector's operations and server guides
 - Where Claude shows interactive MCP Apps (web, desktop, mobile), `open_workspace`, `open_app` and `finalize_app_preview` display the app. Where it does not (for example Claude Code), describe the result and the exact finalized preview in text, and ask the user before confirming a save.
 - Server guides may mention ChatGPT-only steps such as refreshing the ChatGPT extension, Work chat or the ChatGPT runner. Ignore those in Claude.
 
+## Open first, always link
+
+- **First TrialAgents request in a conversation:** before anything else, display it. Call `open_app` when the user named a saved app, otherwise `open_workspace`. Then answer.
+- **Every reply about TrialAgents ends with a link** to open it in the browser, on its own line, for example `[Open in TrialAgents](https://platform.trialagents.com/?workspaceId=<workspaceId>)`. Use `openUrl` from `open_workspace` when present; for a specific app use `https://platform.trialagents.com/apps/<appId>?workspaceId=<workspaceId>`. Never invent IDs; if none is known yet, link https://platform.trialagents.com.
+
 ## Workflow
 
-1. For a user-initiated task, briefly say what you will do, then call `open_app` for a known saved app, otherwise `open_workspace`. Routine reads stay quiet. Account connection and data permission are separate states.
+1. Open first as above; later requests in the same conversation reopen only when the user asks or a different app is needed. Routine reads stay quiet. Account connection and data permission are separate states.
 2. Read the relevant `read_workspace_guide` topic and follow `nextOffset` to the end of that topic. Read only the guides and authorized records the task needs:
    - `start`: account, display, branding and recovery.
-   - `apps`: discovery, creation, reuse, revisions, finalization and full-table queries. Also use the **trialagents-app-builder** skill for creation and design changes.
+   - `apps`: discovery, creation, reuse, revisions, finalization and full-table queries. For creating an app or changing its design, first read [app building](references/app-building.md).
    - `data`: shared schemas, projects, sources, documents, assets and maintenance scopes.
    - `execution`: isolated code, saved functions, grants and saved interfaces.
    - `connectors`: internal navigation, API connectors and app services.
