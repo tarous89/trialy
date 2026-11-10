@@ -10,11 +10,14 @@ import { Service } from '../domain/service.js';
 import { baseApp, addApi, errors } from './app.js';
 import { configureAuth } from './auth.js';
 import { addMcp } from './mcp.js';
+import { CLAUDE_MCP_PATH } from './local-oauth.js';
 if(!process.env.DATABASE_URL)throw new Error('DATABASE_URL required');
 const db=new Postgres(runtimeConnection(process.env,'web'));const service=new Service(db,Number(process.env.MAX_FILE_BYTES??26214400));
 await enforceRuntimeRole(db);
 console.log(JSON.stringify({event:'simple_apps_configuration',enabled:process.env.SIMPLE_APPS_ENABLED==='true',connectorCredentialKey:process.env.CONNECTOR_ENCRYPTION_KEY?'present':'missing'}));
 const app=baseApp();app.get('/ready',async(_req,res)=>{try{await db.query('SELECT 1');res.json({status:'ready'});}catch{res.status(503).json({status:'unavailable'});}});const auth=configureAuth(app,db,process.env);addGuestRoutes(app,new GuestDrafts(db),oauthPublicUrl());addApi(app,service,auth.human);addMcp(app,service,auth.ai);
+// Claude's separate endpoint. CLAUDE_MCP_ENABLED=false removes it without affecting ChatGPT.
+if(process.env.CLAUDE_MCP_ENABLED!=='false')addMcp(app,service,auth.claude,{path:CLAUDE_MCP_PATH,host:'claude'});
 app.use(express.static('dist/web'));app.get('/{*path}',(req,res)=>{if(req.path.startsWith('/api/')||req.path.startsWith('/auth/')){res.status(404).json({error:'not_found'});return;}res.sendFile('index.html',{root:'dist/web'});});app.use(errors);
 const cleanup=setInterval(()=>{void withDatabaseContext({service:'maintenance'},()=>service.sweep()).catch(()=>console.error(JSON.stringify({event:"preview_cleanup_failed"})));},60000);cleanup.unref();
 const host=process.env.LOCAL_DEMO==='true'?'127.0.0.1':'0.0.0.0';

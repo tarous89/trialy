@@ -1,5 +1,5 @@
 import type {Actor} from '../shared/schema.js';
-import {fail} from '../shared/schema.js';
+import {fail,assistantOf} from '../shared/schema.js';
 import {standardTracker} from '../workspace/standard-tracker.js';
 import {standardSource} from '../shared/standard-tool.js';
 
@@ -8,7 +8,7 @@ export function appSections(c:any){
  const tracker=standardTracker(c.source??'');
  return tracker?tracker.config.tabs.filter((t:any)=>t.accessId).map((t:any)=>({id:t.accessId,name:t.name,typeId:t.typeId,fields:t.columns.map((f:any)=>f.field)})):[];
 }
-export function sectionRules(p:any,a:Actor,appId:string){return (p.permission_rules??[]).filter((r:any)=>r.kind==='app_section'&&r.resourceId===appId&&(r.subject===a.userId||a.origin==='ai'&&r.subject==='chatgpt'));}
+export function sectionRules(p:any,a:Actor,appId:string){return (p.permission_rules??[]).filter((r:any)=>r.kind==='app_section'&&r.resourceId===appId&&(r.subject===a.userId||a.origin==='ai'&&r.subject===assistantOf(a)));}
 export function sectionGrant(p:any,a:Actor,appId:string,sectionId?:string){
  const rules=sectionId?sectionRules(p,a,appId).filter((r:any)=>r.field===sectionId):[];
  const read=!rules.some((r:any)=>r.read==='deny');return {read,write:read&&!rules.some((r:any)=>r.write==='deny')};

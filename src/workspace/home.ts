@@ -6,6 +6,7 @@ import {z} from 'zod';
 import type {Actor} from '../shared/schema.js';
 import type {Database} from '../db/database.js';
 import {access,typeAccess,visibleFields} from '../domain/permissions.js';
+import {assistantEnabled} from '../domain/effective-access.js';
 import {WorkspaceFoundation} from './service.js';
 import {Foundation} from '../foundation/service.js';
 export const homeQuery=z.object({offset:z.number().int().min(0).default(0),limit:z.number().int().min(1).max(100).default(20),query:z.string().max(200).default(''),projectId:z.string().default(''),kind:z.enum(['all','tracker','form','visualization','automation']).default('all'),sort:z.enum(['updated','name']).default('updated')});
@@ -17,7 +18,7 @@ async function workspaceHomeRead(db:Database,a:Actor,w:string,input:unknown={}){
  const projects=tree.nodes.filter(n=>n.kind==='project'&&!n.effective_archived).map(n=>({id:n.id,name:n.name,createdAt:n.created_at}));
  const resources:any[]=components.filter(c=>!c.archived&&!c.project_archived).map(c=>({id:c.id,name:c.name,kind:['tracker','form','visualization'].includes(c.resource_kind)?c.resource_kind:'generic',source:'component',projectIds:c.project_id?[c.project_id]:[],updatedAt:c.updated_at??c.created_at,description:c.resource_kind==='generic'?'Saved custom interface':''}));
  // Automation source is never loaded or executed for Home thumbnails.
- if(p.ai_enabled&&(p.role==='owner'||p.user_ai)){
+ if(a.origin==='ai'?assistantEnabled(p,a):p.ai_enabled&&(p.role==='owner'||p.user_ai)){
   const functions=await engine.functions(a,w),schedules=await engine.schedules(a,w);
   for(const fn of functions){try{const revision=await engine.revision(a,w,fn.revision_id);const related=components.filter(c=>(c.execution??[]).some((b:any)=>b.revisionId===fn.revision_id));const attached=schedules.filter(s=>s.revision_id===fn.revision_id);resources.push({id:fn.id,revisionId:fn.revision_id,name:fn.name,kind:'automation',source:'function',projectIds:[...new Set(related.map(c=>c.project_id).filter(Boolean))],updatedAt:revision.created_at,description:attached.length?`${attached.filter(s=>!s.paused).length} active schedules · ${attached.length} total`:'Saved function · run on demand'});}catch(e){if(![403,404].includes((e as any).status))throw e;}}
  }

@@ -61,7 +61,13 @@ export const operationSchema = z.discriminatedUnion('kind', [
  z.object({kind:z.literal('reverse_field_changes'),changes:z.array(z.object({changeId:id,expectedVersion:z.number().int().min(0)})).min(1).max(200),reason:z.string().trim().min(1).max(1000)}),
 ]);
 export type Operation = z.infer<typeof operationSchema>;
-export type Actor = {userId:string; origin:'human'|'ai'|'worker'; actionConfirmed?:boolean; accessToolId?:string; connectionFamily?:string; clientId?:string};
+/** AI assistants are separate access principals. Absent means ChatGPT so existing tokens and tests keep their behaviour. */
+export type Assistant = 'chatgpt'|'claude';
+export const ASSISTANTS:readonly Assistant[] = ['chatgpt','claude'];
+export const ASSISTANT_NAMES:Record<Assistant,string> = {chatgpt:'ChatGPT',claude:'Claude'};
+export type Actor = {userId:string; origin:'human'|'ai'|'worker'; actionConfirmed?:boolean; accessToolId?:string; connectionFamily?:string; clientId?:string; assistant?:Assistant};
+export const assistantOf = (a:{assistant?:Assistant}):Assistant => a.assistant ?? 'chatgpt';
+export const isAssistant = (v:unknown):v is Assistant => v==='chatgpt'||v==='claude';
 export class AppError extends Error { constructor(public status:number, public code:string, message:string) {super(message);} }
 export function fail(status:number, code:string, message:string):never {throw new AppError(status,code,message);}
 

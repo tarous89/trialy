@@ -9,6 +9,7 @@ import {monitoringConfig} from '../app-services/monitoring-schema.js';
 import {localDay} from '../shared/schedules.js';
 import {adapter,signalWork,automationsEnabled,activeSubscription} from './service.js';
 import {dailyDue,nextCalendar} from './schedules.js';
+import {runnerActor} from './ownership.js';
 const J=JSON.stringify;
 async function occurrence(tx:Connection,d:any,key:string,reason:string,due:Date,input:any,config?:any){
  const id=randomUUID(),r=(await tx.query(`INSERT INTO automation_occurrences(id,workspace_id,user_id,runner_id,monitor_id,monitor_version,occurrence_key,reason,due_at,input,completion_action_id,completion_action_version)
@@ -16,8 +17,8 @@ async function occurrence(tx:Connection,d:any,key:string,reason:string,due:Date,
  if(r)await signalWork(tx,d,'due:'+Math.floor(Date.now()/30000),'work_due');return r?.id;
 }
 export async function dispatchDaily(db:Database,now=new Date()){
- const candidate=(await db.query('SELECT id,user_id,workspace_id FROM automation_runners WHERE enabled AND next_daily_at<=$1 ORDER BY next_daily_at,id LIMIT 1',[now])).rows[0];if(!candidate)return false;
- return withActor({userId:candidate.user_id,origin:'ai'},()=>db.transaction(async tx=>{
+ const candidate=(await db.query('SELECT id,user_id,workspace_id,assistant FROM automation_runners WHERE enabled AND next_daily_at<=$1 ORDER BY next_daily_at,id LIMIT 1',[now])).rows[0];if(!candidate)return false;
+ return withActor(runnerActor(candidate),()=>db.transaction(async tx=>{
   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[candidate.workspace_id]);const r=(await tx.query('SELECT * FROM automation_runners WHERE id=$1 AND enabled AND next_daily_at<=$2 FOR UPDATE',[candidate.id,now])).rows[0];if(!r)return false;
   const day=localDay(now,r.preferences.timeZone),hasWork=(await tx.query("SELECT id FROM automation_occurrences WHERE runner_id=$1 AND status IN ('queued','running') AND due_at<=$2 LIMIT 1",[r.id,now])).rows.length;
   if(r.preferences.emptyChecks||hasWork)await occurrence(tx,r,'daily:'+day,'daily_check',now,{localDate:day});
@@ -25,13 +26,13 @@ export async function dispatchDaily(db:Database,now=new Date()){
  }));
 }
 export async function dispatchDue(db:Database,now=new Date()){
- const candidate=(await db.query(`SELECT d.monitor_id,d.user_id,d.workspace_id FROM automation_dispatch d JOIN automation_runners r ON r.id=d.runner_id
+ const candidate=(await db.query(`SELECT d.monitor_id,d.user_id,d.workspace_id,r.assistant FROM automation_dispatch d JOIN automation_runners r ON r.id=d.runner_id
  WHERE r.enabled AND d.next_at<=$1 AND (d.retry_at IS NULL OR d.retry_at<=$1) ORDER BY d.next_at,d.monitor_id LIMIT 1`,[now])).rows[0];if(!candidate)return false;
- return withActor({userId:candidate.user_id,origin:'ai'},()=>db.transaction(async tx=>{
+ return withActor(runnerActor(candidate),()=>db.transaction(async tx=>{
   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[candidate.workspace_id]);const d=(await tx.query('SELECT * FROM automation_dispatch WHERE monitor_id=$1 AND next_at<=$2 FOR UPDATE',[candidate.monitor_id,now])).rows[0];if(!d)return false;
   await tx.query('SAVEPOINT optional_dispatch');
   try{
-   const a={userId:d.user_id,origin:'ai' as const},m=new AppMonitoring(adapter(tx)),row=await m.row(a,d.workspace_id,d.monitor_id),c=monitoringConfig.parse(row.config);
+   const a=runnerActor({user_id:d.user_id,assistant:candidate.assistant}),m=new AppMonitoring(adapter(tx)),row=await m.row(a,d.workspace_id,d.monitor_id),c=monitoringConfig.parse(row.config);
    if(!row.enabled||!c.automation||row.version!==d.monitor_version)throw Error('disabled_or_changed');
    const checked=await m.validate(a,d.workspace_id,c);if(checked.stamp!==row.scope_stamp)throw Error('scope_changed');
    const pending=Number((await tx.query("SELECT count(*) AS n FROM automation_occurrences WHERE monitor_id=$1 AND status IN ('queued','running','partial','blocked')",[d.monitor_id])).rows[0].n),capacity=Math.max(0,100-pending);if(!capacity){await tx.query("UPDATE automation_dispatch SET retry_at=$2,diagnostic='queue_capacity' WHERE monitor_id=$1",[d.monitor_id,new Date(now.getTime()+60000)]);await tx.query('RELEASE SAVEPOINT optional_dispatch');return true;}
@@ -56,8 +57,8 @@ export async function dispatchDue(db:Database,now=new Date()){
  }));
 }
 export async function recoverWork(db:Database,now=new Date()){
- const rows=(await db.query("SELECT id,user_id,workspace_id FROM automation_occurrences WHERE status='running' AND lease_until<=$1 ORDER BY lease_until LIMIT 10",[now])).rows;
- for(const row of rows)await withActor({userId:row.user_id,origin:'ai'},()=>db.transaction(async tx=>{
+ const rows=(await db.query("SELECT o.id,o.user_id,o.workspace_id,r.assistant FROM automation_occurrences o JOIN automation_runners r ON r.id=o.runner_id WHERE o.status='running' AND o.lease_until<=$1 ORDER BY o.lease_until LIMIT 10",[now])).rows;
+ for(const row of rows)await withActor(runnerActor(row),()=>db.transaction(async tx=>{
   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[row.workspace_id]);const o=(await tx.query("SELECT * FROM automation_occurrences WHERE id=$1 AND status='running' AND lease_until<=$2 FOR UPDATE",[row.id,now])).rows[0];if(!o)return;
   if(o.run_id)await tx.query("UPDATE app_monitor_runs SET status='failed',finished_at=now(),result=$2 WHERE id=$1 AND status='running'",[o.run_id,J({summary:'Execution deadline passed. Saved receipts are retained; coverage is unchanged.'})]);
   await tx.query("UPDATE automation_occurrences SET status=$2,available_at=$3,result=$4 WHERE id=$1",[o.id,o.attempts<o.retry_limit?'queued':'blocked',new Date(now.getTime()+15*60000),J({summary:'Execution interrupted; reconcile previous receipts before continuing.'})]);
@@ -70,11 +71,11 @@ export async function recoverWork(db:Database,now=new Date()){
  return rows.length>0;
 }
 export async function dispatchCompletions(db:Database){
- const o=(await db.query("SELECT * FROM automation_occurrences WHERE status='completed' AND completion_action_id IS NOT NULL AND completion_dispatched_at IS NULL ORDER BY finished_at LIMIT 1")).rows[0];if(!o)return false;
- return withActor({userId:o.user_id,origin:'ai'},()=>db.transaction(async tx=>{
+ const o=(await db.query("SELECT o.*,r.assistant FROM automation_occurrences o JOIN automation_runners r ON r.id=o.runner_id WHERE o.status='completed' AND o.completion_action_id IS NOT NULL AND o.completion_dispatched_at IS NULL ORDER BY o.finished_at LIMIT 1")).rows[0];if(!o)return false;
+ return withActor(runnerActor(o),()=>db.transaction(async tx=>{
   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[o.workspace_id]);const current=(await tx.query('SELECT * FROM automation_occurrences WHERE id=$1 FOR UPDATE',[o.id])).rows[0];if(current.completion_dispatched_at)return false;
   await tx.query('SAVEPOINT completion_dispatch');try{
-   const db=adapter(tx),a={userId:o.user_id,origin:'ai' as const},monitor=await new AppMonitoring(db).row(a,o.workspace_id,o.monitor_id),r=(await tx.query('SELECT enabled FROM automation_runners WHERE id=$1',[o.runner_id])).rows[0];
+   const db=adapter(tx),a=runnerActor(o),monitor=await new AppMonitoring(db).row(a,o.workspace_id,o.monitor_id),r=(await tx.query('SELECT enabled FROM automation_runners WHERE id=$1',[o.runner_id])).rows[0];
    if(!r?.enabled||!monitor.enabled||monitor.version!==o.monitor_version)throw Error('paused_or_changed');
    const actions=new AppActions(db),action=await actions.row(a,o.workspace_id,o.completion_action_id);if(action.version!==o.completion_action_version)throw Error('action_changed');
    const research={research:{summary:o.result.summary,sources:o.result.sources??[],receiptIds:o.result.receiptIds??[]}};const run=await actions.enqueue(a,o.workspace_id,action.id,'automation:'+o.id,undefined,[],research);if(!run.notification)await tx.query('UPDATE app_action_runs SET results=$2 WHERE id=$1 AND step=0 AND status=$3',[run.id,J(research),'queued']);

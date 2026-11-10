@@ -6,11 +6,15 @@ import {checksum} from '../domain/evidence.js';
 import {connectorVault} from '../connectors/secrets.js';
 import {httpsTransport,type ConnectorTransport} from '../connectors/transport.js';
 import {id,fail,type Actor} from '../shared/schema.js';
+import {ownedBy} from './ownership.js';
 import {AutomationService,activeSubscription,adapter,signalWork,connectionActive,automationsEnabled} from './service.js';
 const args=z.object({workspaceId:id,runnerId:id}).strict();
 const callback=z.url().max(2048).refine(v=>{const u=new URL(v);return u.protocol==='https:'&&!u.username&&!u.password&&!u.hash&&(!u.port||u.port==='443');},'Use a public HTTPS callback');
 const secret=z.string().max(120).regex(/^whsec_[A-Za-z0-9+/]+={0,2}$/).refine(v=>{const b=Buffer.from(v.slice(6),'base64');return b.length>=24&&b.length<=64&&b.toString('base64')===v.slice(6);},'Invalid signing key');
 export const subscribeParams=z.object({name:z.literal('automation.ready'),arguments:args,delivery:z.object({mode:z.literal('webhook'),url:callback,secret}).strict(),cursor:z.string().nullable().optional(),ttlMs:z.number().int().min(60000).max(30*86400000).nullable().optional()}).strict();
+export const CLAUDE_FIRE_BETA='experimental-cc-routine-2026-04-01',CLAUDE_FIRE_SPACING_MS=120000;
+const fireUrl=z.string().max(300).regex(/^https:\/\/api\.anthropic\.com\/v1\/claude_code\/routines\/trig_[A-Za-z0-9]{8,64}\/fire$/,'Use the Fire URL shown for the Claude scheduled task');
+export const claudeRoutineParams=z.object({workspaceId:id,runnerId:id,fireUrl,token:z.string().min(20).max(400).regex(/^sk-ant-[A-Za-z0-9_-]+$/,'Use the token generated for the Claude scheduled task')}).strict();
 export const unsubscribeParams=z.object({name:z.literal('automation.ready'),arguments:args,delivery:z.object({mode:z.literal('webhook'),url:callback}).strict()}).strict();
 export const eventDefinition={name:'automation.ready',description:'Approved TrialAgents app work is due. Includes the daily agenda and configured time/database triggers. Fetch current work with read_automation_agenda and execute only claimed, authorized jobs.',delivery:['webhook'],inputSchema:z.toJSONSchema(args),payloadSchema:{type:'object',properties:{runnerId:{type:'string'},workspaceId:{type:'string'},reason:{type:'string'}},required:['runnerId','workspaceId','reason'],additionalProperties:false}};
 export function signedHeaders(key:string,eventId:string,body:string,subscriptionId:string,stamp=Math.floor(Date.now()/1000)){
@@ -20,7 +24,7 @@ export class AutomationEvents{
  constructor(readonly db:Database,readonly transport:ConnectorTransport=httpsTransport){}
  async subscribe(a:Actor,input:unknown){
   if(!automationsEnabled())fail(503,'automation_unavailable','Background automation is unavailable');
-  const v=subscribeParams.parse(input),s=new AutomationService(this.db),r=await s.runner(a,v.arguments.workspaceId,v.arguments.runnerId);if(!r.enabled||!a.connectionFamily||!a.clientId)fail(403,'setup_required','Approve setup using the connected account first');
+  const v=subscribeParams.parse(input),s=new AutomationService(this.db),r=await s.runner(a,v.arguments.workspaceId,v.arguments.runnerId);if((ownedBy(r)??'chatgpt')!=='chatgpt')fail(409,'runner_kind','Connect this runner with connect_claude_runner');if(!r.enabled||!a.connectionFamily||!a.clientId)fail(403,'setup_required','Approve setup using the connected account first');
   const identity=checksum(JSON.stringify([a.userId,a.clientId,a.connectionFamily,r.id,v.delivery.url])),old=(await this.db.query('SELECT * FROM automation_subscriptions WHERE identity_hash=$1',[identity])).rows[0],subscriptionId=old?.id??`${identity.slice(0,8)}-${identity.slice(8,12)}-8${identity.slice(13,16)}-a${identity.slice(17,20)}-${identity.slice(20,32)}`;
   const vault=connectorVault(),sealed=vault.seal(v.delivery.secret,'automation:'+subscriptionId),challenge=randomUUID(),eventId=randomUUID(),body=JSON.stringify({type:'verification',challenge});
   const cached=old?.enabled&&Date.parse(old.callback_verified_at)>Date.now()-300000&&vault.open(old.secret,'automation:'+subscriptionId)===v.delivery.secret;
@@ -42,15 +46,48 @@ export class AutomationEvents{
    return {id:subscriptionId,refreshBefore:until.toISOString(),cursor:null,truncated:false};
   });
  }
+ /** Claude runner: store the scheduled task's API trigger and queue one verification run. */
+ async connectClaude(a:Actor,input:unknown){
+  if(!automationsEnabled())fail(503,'automation_unavailable','Background automation is unavailable');
+  const v=claudeRoutineParams.parse(input),s=new AutomationService(this.db),r=await s.runner(a,v.workspaceId,v.runnerId);
+  if(ownedBy(r)!=='claude')fail(409,'runner_kind','This runner is connected through ChatGPT events');
+  if(!r.enabled||!a.connectionFamily||!a.clientId)fail(403,'setup_required','Approve the Claude runner setup using the connected account first');
+  const identity=checksum(JSON.stringify(['claude_fire',a.userId,a.clientId,a.connectionFamily,r.id,v.fireUrl,checksum(v.token)])),subscriptionId=`${identity.slice(0,8)}-${identity.slice(8,12)}-8${identity.slice(13,16)}-a${identity.slice(17,20)}-${identity.slice(20,32)}`;
+  const sealed=connectorVault().seal(v.token,'automation:'+subscriptionId),until=new Date(Date.now()+365*86400000); // liveness comes from the Claude connection itself
+  return this.db.transaction(async tx=>{
+   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[r.workspace_id]);const current=await new AutomationService(adapter(tx)).runner(a,r.workspace_id,r.id);if(!current.enabled||!await connectionActive(tx,{user_id:a.userId,connection_family:a.connectionFamily,client_id:a.clientId}))fail(403,'connection_revoked','Connection is inactive');
+   // Reconnecting replaces the previous trigger, for example after the token was regenerated.
+   await tx.query('UPDATE automation_subscriptions SET enabled=false WHERE runner_id=$1 AND enabled AND identity_hash<>$2',[r.id,identity]);
+   await tx.query(`INSERT INTO automation_subscriptions(id,workspace_id,user_id,runner_id,identity_hash,connection_family,client_id,callback,secret,expires_at,callback_verified_at,kind)
+    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,NULL,'claude_fire') ON CONFLICT(identity_hash) DO UPDATE SET secret=EXCLUDED.secret,expires_at=EXCLUDED.expires_at,enabled=true`,[subscriptionId,r.workspace_id,a.userId,r.id,identity,a.connectionFamily,a.clientId,v.fireUrl,sealed,until]);
+   await tx.query("UPDATE automation_occurrences SET status='cancelled',finished_at=now() WHERE runner_id=$1 AND reason='verification' AND status IN ('queued','running','partial','blocked')",[r.id]);await tx.query('UPDATE automation_runners SET verified_at=NULL WHERE id=$1',[r.id]);
+   const oid=randomUUID(),eventId=randomUUID();await tx.query("INSERT INTO automation_occurrences(id,workspace_id,user_id,runner_id,occurrence_key,due_at,reason) VALUES($1,$2,$3,$4,$5,now(),'verification')",[oid,r.workspace_id,a.userId,r.id,'verification:'+subscriptionId+':'+eventId]);await signalWork(tx,r,'verification:'+eventId,'verification');
+   return {id:subscriptionId,connected:true,verification:'queued',refreshBefore:until.toISOString(),nextStep:'TrialAgents now starts the Claude task once to verify it. Check read_automation_setup with waitSeconds until state is ready.'};
+  });
+ }
  async unsubscribe(a:Actor,input:unknown){const v=unsubscribeParams.parse(input),r=await new AutomationService(this.db).runner(a,v.arguments.workspaceId,v.arguments.runnerId);if(!a.connectionFamily||!a.clientId)fail(403,'connection_required','Use the connected account');const identity=checksum(JSON.stringify([a.userId,a.clientId,a.connectionFamily,r.id,v.delivery.url]));await this.db.query('UPDATE automation_subscriptions SET enabled=false WHERE identity_hash=$1',[identity]);return {};}
 }
 export async function deliverAutomationEvent(db:Database,transport:ConnectorTransport=httpsTransport){
  if(!automationsEnabled())return false;
- const event=await db.transaction(async tx=>{await tx.query("UPDATE automation_outbox SET status='queued',lease_token=NULL WHERE status='sending' AND lease_until<now()");const e=(await tx.query("SELECT * FROM automation_outbox WHERE status='queued' AND available_at<=now() ORDER BY available_at,id FOR UPDATE SKIP LOCKED LIMIT 1")).rows[0];if(!e)return null;const token=randomUUID();await tx.query("UPDATE automation_outbox SET status='sending',attempts=attempts+1,lease_token=$2,lease_until=now()+interval '30 seconds' WHERE id=$1",[e.id,token]);return {...e,attempts:e.attempts+1,lease_token:token};});if(!event)return false;
- return withActor({userId:event.user_id,origin:'ai'},async()=>{
+ const event=await db.transaction(async tx=>{await tx.query("UPDATE automation_outbox SET status='queued',lease_token=NULL WHERE status='sending' AND lease_until<now()");const e=(await tx.query("SELECT o.*,r.assistant FROM automation_outbox o JOIN automation_runners r ON r.id=o.runner_id WHERE o.status='queued' AND o.available_at<=now() ORDER BY o.available_at,o.id FOR UPDATE OF o SKIP LOCKED LIMIT 1")).rows[0];if(!e)return null;const token=randomUUID();await tx.query("UPDATE automation_outbox SET status='sending',attempts=attempts+1,lease_token=$2,lease_until=now()+interval '30 seconds' WHERE id=$1",[e.id,token]);return {...e,attempts:e.attempts+1,lease_token:token};});if(!event)return false;
+ const assistant=event.assistant==='claude'?'claude' as const:'chatgpt' as const,actor:Actor={userId:event.user_id,origin:'ai',...(assistant==='claude'?{assistant}:{})};
+ return withActor(actor,async()=>{
   let status='failed',diagnostic='delivery_failed',retry=false,subscriptionId:string|null=null;
   try{
-   const runner=await new AutomationService(db).runner({userId:event.user_id,origin:'ai'},event.workspace_id,event.runner_id),subscription=await activeSubscription(db,event.runner_id);if(!runner.enabled||!subscription){status=runner.enabled?'queued':'cancelled';diagnostic='subscription_unavailable';retry=runner.enabled;}
+   const runner=await new AutomationService(db).runner(actor,event.workspace_id,event.runner_id),subscription=await activeSubscription(db,event.runner_id);if(!runner.enabled||!subscription){status=runner.enabled?'queued':'cancelled';diagnostic='subscription_unavailable';retry=runner.enabled;}
+   else if(subscription.kind==='claude_fire'){
+    subscriptionId=subscription.id;
+    const last=(await db.query("SELECT max(delivered_at) AS at FROM automation_outbox WHERE runner_id=$1 AND status='accepted' AND diagnostic='accepted'",[event.runner_id])).rows[0]?.at;
+    if(last&&Date.parse(last)>Date.now()-CLAUDE_FIRE_SPACING_MS){
+     // Claude allows 30 API starts per task per hour: coalesce wakes instead of starting overlapping runs.
+     await db.query("UPDATE automation_outbox SET status='queued',attempts=attempts-1,available_at=$2,lease_until=NULL WHERE id=$1 AND status='sending' AND lease_token=$3",[event.id,new Date(Date.parse(last)+CLAUDE_FIRE_SPACING_MS),event.lease_token]);return true;
+    }
+    const token=connectorVault().open(subscription.secret,'automation:'+subscription.id),body=JSON.stringify({text:`TrialAgents automation.ready (${event.reason}).`});
+    const response=await transport({url:subscription.callback,method:'POST',body,headers:{'content-type':'application/json',authorization:'Bearer '+token,'anthropic-beta':CLAUDE_FIRE_BETA,'anthropic-version':'2023-06-01'},timeoutMs:15000,signal:AbortSignal.timeout(15000),authorize:async()=>{const latest=await activeSubscription(db,event.runner_id),r=await new AutomationService(db).runner(actor,event.workspace_id,event.runner_id);if(!r.enabled||latest?.id!==subscription.id||latest.secret!==subscription.secret)throw Error('revoked');}});
+    if(response.status>=200&&response.status<300){status='accepted';diagnostic='accepted';await db.query("UPDATE automation_outbox SET status='accepted',diagnostic='coalesced',delivered_at=now() WHERE runner_id=$1 AND id<>$2 AND status='queued' AND available_at<=now()+interval '2 minutes'",[event.runner_id,event.id]);}
+    else if([401,403,404].includes(response.status)){await db.query('UPDATE automation_subscriptions SET enabled=false WHERE id=$1',[subscription.id]);diagnostic='token_rejected';}
+    else {diagnostic=response.status===429?'rate_limited':'delivery_rejected';retry=response.status===429||response.status>=500;}
+   }
    else{
     subscriptionId=subscription.id;const key=connectorVault().open(subscription.secret,'automation:'+subscription.id),body=JSON.stringify({eventId:event.id,name:'automation.ready',timestamp:new Date(event.created_at).toISOString(),data:{runnerId:event.runner_id,workspaceId:event.workspace_id,reason:event.reason},cursor:null});
     const headers=signedHeaders(key,event.id,body,subscription.id);if(subscription.previous_secret&&Date.parse(subscription.previous_secret_until)>Date.now())headers['webhook-signature']+=' '+signedHeaders(connectorVault().open(subscription.previous_secret,'automation:'+subscription.id),event.id,body,subscription.id,Number(headers['webhook-timestamp']))['webhook-signature'];

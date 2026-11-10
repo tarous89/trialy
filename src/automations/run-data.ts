@@ -26,7 +26,7 @@ export async function readRunData(db:Database,a:Actor,w:string,c:ActionConfig,oc
  const source=await validateRunSource(db,a,w,c),t=runTrigger(c);
  if(!source||!t||!occurrence.startsWith('run:'))fail(400,'run_required','This database trigger requires a committed research run');
  if(!source.enabled||process.env.APP_AUTOMATIONS_ENABLED==='false')fail(403,'run_source_paused','The source research automation is paused');
- if(source.config.automation){const setup=await new AutomationService(db).setup(a,w);if(setup.id!==source.config.automation.runnerId||!setup.enabled)fail(403,'run_source_paused','The research connection is disabled');if(setup.state!=='ready')fail(503,'run_source_connection','Waiting for the research connection to be verified');}
+ if(source.config.automation){const setup=await new AutomationService(db).setup(a,w,0,{runnerId:source.config.automation.runnerId});if(setup.id!==source.config.automation.runnerId||!setup.enabled)fail(403,'run_source_paused','The research connection is disabled');if(setup.state!=='ready')fail(503,'run_source_connection','Waiting for the research connection to be verified');}
  const id=occurrence.slice(4);if(!/^[0-9a-f-]{36}$/i.test(id))fail(400,'run_required','Invalid research run');
  const run=(await db.query("SELECT * FROM app_monitor_runs WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND monitor_id=$4 AND monitor_version=$5 AND status='completed'",[id,w,a.userId,source.id,source.version])).rows[0];
  if(!run||run.result?.testRun||!run.finished_at||t.includeEmpty===false&&!run.result?.savedChanges)fail(409,'run_unavailable','No eligible completed research run');

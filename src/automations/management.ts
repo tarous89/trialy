@@ -1,7 +1,8 @@
 import {z} from 'zod';
 import {randomUUID} from 'node:crypto';
 import type {Database} from '../db/database.js';
-import {id,fail,type Actor} from '../shared/schema.js';
+import {id,fail,ASSISTANT_NAMES,type Actor,type Assistant} from '../shared/schema.js';
+import {actorAssistant,canEdit,ownedBy,requireAutomationOwner} from './ownership.js';
 import {requireCurrentAction,requireHuman} from '../domain/write-authorization.js';
 import {checksum} from '../domain/evidence.js';
 import {chatServiceReview,checkServiceReview} from '../app-services/review.js';
@@ -15,7 +16,7 @@ import {adapter,AutomationService} from './service.js';
 import {automationDependencies} from './dependencies.js';
 export const automationKind=z.enum(['research','action']);
 export const automationControl=z.object({kind:automationKind,automationId:id,expectedVersion:z.number().int().min(0),enabled:z.boolean()}).strict();
-export const automationList=z.object({appId:id.optional(),query:z.string().max(100).default(''),executor:z.enum(['all','chatgpt','trialagents']).default('all'),state:z.enum(['all','enabled','disabled']).default('all'),offset:z.number().int().min(0).max(100000).default(0)}).strict();
+export const automationList=z.object({appId:id.optional(),query:z.string().max(100).default(''),executor:z.enum(['all','chatgpt','claude','trialagents']).default('all'),state:z.enum(['all','enabled','disabled']).default('all'),offset:z.number().int().min(0).max(100000).default(0)}).strict();
 /** Management adapter over the existing stores. Never called by the app runtime. */
 export class AutomationManagement{
  constructor(readonly db:Database){}
@@ -33,14 +34,18 @@ export class AutomationManagement{
  }
  async list(a:Actor,w:string,input:unknown){await this.owner(a,w);const v=automationList.parse(input);
   const dependencies=await automationDependencies(this.db,w,a.userId);
-  const connection=dependencies.some(d=>d.runnerIds.length)?await new AutomationService(this.db).setup(a,w):null;
-  const blockedIds=dependencies.filter(d=>d.blockedReason||d.runnerIds.length&&connection?.state!=='ready').map(d=>d.id);
+  // Each research automation depends on its own assistant's runner.
+  const runnerAssistants=new Map<string,Assistant>((await this.db.query('SELECT id,assistant FROM automation_runners WHERE workspace_id=$1 AND user_id=$2',[w,a.userId])).rows.map((r:any)=>[r.id,ownedBy(r)??'chatgpt']));
+  const runnerOf=(d:any):Assistant=>runnerAssistants.get(d.runnerIds[0])??'chatgpt',setups=new Map<Assistant,any>();
+  for(const assistant of new Set(dependencies.filter(d=>d.runnerIds.length).map(runnerOf)))setups.set(assistant,await new AutomationService(this.db).setup(a,w,0,{assistant}));
+  const stateOf=(d:any)=>d?.runnerIds.length?setups.get(runnerOf(d))?.state:null;
+  const blockedIds=dependencies.filter(d=>d.blockedReason||d.runnerIds.length&&stateOf(d)!=='ready').map(d=>d.id);
   const rows=(await this.db.query(`SELECT d.*,c.name AS app_name,c.archived AS app_archived FROM (
-   SELECT m.id,m.app_id,m.workspace_id,m.user_id,m.version,'research' AS kind,'chatgpt' AS executor,m.config->>'name' AS name,m.enabled,m.config->>'expiresAt' AS expires_at,coalesce(m.config->'automation'->'trigger',m.config->'schedule') AS trigger,m.created_at,
-    concat_ws(E'\\n\\n',m.config->>'objective',m.config->>'instructions') AS prompt,NULL::jsonb AS steps,(m.config->'automation' IS NULL AND m.task IS NOT NULL) AS external_schedule,m.config->'automation'->>'runnerId' AS runner_id
+   SELECT m.id,m.app_id,m.workspace_id,m.user_id,m.version,'research' AS kind,coalesce(m.assistant,'chatgpt') AS executor,m.config->>'name' AS name,m.enabled,m.config->>'expiresAt' AS expires_at,coalesce(m.config->'automation'->'trigger',m.config->'schedule') AS trigger,m.created_at,
+    concat_ws(E'\\n\\n',m.config->>'objective',m.config->>'instructions') AS prompt,NULL::jsonb AS steps,(m.config->'automation' IS NULL AND m.task IS NOT NULL) AS external_schedule,m.config->'automation'->>'runnerId' AS runner_id,m.assistant AS owner
    FROM app_monitors m WHERE m.deleted_at IS NULL
    UNION ALL
-   SELECT a.id,a.app_id,a.workspace_id,a.user_id,a.version,'action','trialagents',a.config->>'name',NOT a.paused,a.config->>'expiresAt',a.config->'trigger',a.created_at,NULL,a.config->'steps',false,NULL
+   SELECT a.id,a.app_id,a.workspace_id,a.user_id,a.version,'action','trialagents',a.config->>'name',NOT a.paused,a.config->>'expiresAt',a.config->'trigger',a.created_at,NULL,a.config->'steps',false,NULL,a.assistant
    FROM app_actions a WHERE a.deleted_at IS NULL
   ) d JOIN workspace_components c ON c.id=d.app_id AND c.workspace_id=d.workspace_id
   WHERE d.workspace_id=$1 AND d.user_id=$2 AND ($3::uuid IS NULL OR d.app_id=$3)
@@ -49,17 +54,17 @@ export class AutomationManagement{
   ORDER BY d.created_at,d.id LIMIT 21 OFFSET $7`,[w,a.userId,v.appId??null,v.query,v.executor,v.state,v.offset,blockedIds])).rows;
   const visible=[];for(const row of rows.slice(0,20)){try{const c=await new WorkspaceFoundation(this.db).component(this.db,a,w,row.app_id,false);
    const {steps,external_schedule,runner_id,...definition}=row;
-   const dependency=dependencies.find(d=>d.id===row.id&&d.kind===row.kind),connectionState=dependency?.runnerIds.length?connection?.state:null;
+   const dependency=dependencies.find(d=>d.id===row.id&&d.kind===row.kind),connectionState=stateOf(dependency)??null;
    let blockedReason=dependency?.blockedReason??null;
-   if(connectionState&&connectionState!=='ready')blockedReason??='ChatGPT is disabled. Finish setup in Connectors to run this automation.';
+   if(connectionState&&connectionState!=='ready')blockedReason??=runnerOf(dependency)==='claude'?'The Claude runner is paused or not connected. Finish setup in Claude to run this automation.':'ChatGPT is disabled. Finish setup in Connectors to run this automation.';
    const prompt=row.kind==='research'?row.prompt:(steps??[]).map((s:any)=>s.kind==='email'?`Email: ${s.subject}\n${s.text}`:s.kind==='connector'?`Run connector operation: ${s.operation}`:`Run app action: ${s.binding}`).join('\n\n');
    const lastTest=(await this.db.query("SELECT id,status,delivery_status,created_at FROM (SELECT id,status,NULL::text AS delivery_status,created_at FROM automation_occurrences WHERE monitor_id=$1 AND user_id=$2 AND reason='test_run' UNION ALL SELECT id,status,delivery_status,created_at FROM app_service_jobs WHERE user_id=$2 AND payload->'test'->>'automationId'=$1::text) t ORDER BY created_at DESC LIMIT 1",[row.id,a.userId])).rows[0]??null;
-   visible.push({...definition,lastTest,prompt,blockedReason,services:dependency?.services??[],effectiveEnabled:row.enabled&&!blockedReason&&!c.archived&&!c.project_archived,connectionState,externalSchedule:external_schedule,app_url:appUrl({workspaceId:w,appId:c.id}),app_archived:c.archived||c.project_archived});
+   visible.push({...definition,canEdit:canEdit(a,ownedBy({assistant:row.owner})),lastTest,prompt,blockedReason,services:dependency?.services??[],effectiveEnabled:row.enabled&&!blockedReason&&!c.archived&&!c.project_archived,connectionState,externalSchedule:external_schedule,app_url:appUrl({workspaceId:w,appId:c.id}),app_archived:c.archived||c.project_archived});
   }catch(e){if(![403,404].includes((e as any).status))throw e;}}
   return {rows:visible,nextOffset:rows.length>20?v.offset+20:null};
  }
- async connector(a:Actor,w:string){
-  await this.owner(a,w);const setup=await new AutomationService(this.db).setup(a,w),automations=[];
+ async connector(a:Actor,w:string,assistant?:Assistant){
+  await this.owner(a,w);const setup=await new AutomationService(this.db).setup(a,w,0,{assistant}),automations=[];
   for(const d of await automationDependencies(this.db,w,a.userId)){
    if(!setup.id||!d.runnerIds.includes(setup.id))continue;
    try{const app=await new WorkspaceFoundation(this.db).component(this.db,a,w,d.appId,false);
@@ -70,14 +75,14 @@ export class AutomationManagement{
  }
  async controlConnector(a:Actor,w:string,runnerId:string,enabled:boolean,version:number,confirmation?:{confirmed?:boolean;impactDigest?:string}){
   requireCurrentAction(a);return this.db.transaction(async tx=>{
-   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const db=adapter(tx),manage=new AutomationManagement(db),current=await manage.connector(a,w);
+   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const db=adapter(tx),manage=new AutomationManagement(db),target=await new AutomationService(db).runner(a,w,runnerId,{readOnly:true}),current=await manage.connector(a,w,ownedBy(target)??'chatgpt');
    if(current.id!==runnerId||current.version!==version)fail(409,'runner_changed','The connector changed. Review its current status and try again.');
-   if(!enabled&&(!confirmation?.confirmed||confirmation.impactDigest!==current.impactDigest))fail(409,'connector_impact_changed','Review the current list of affected automations before disabling ChatGPT.');
+   if(!enabled&&(!confirmation?.confirmed||confirmation.impactDigest!==current.impactDigest))fail(409,'connector_impact_changed',`Review the current list of affected automations before disabling ${ASSISTANT_NAMES[ownedBy(target)??'chatgpt']}.`);
    return new AutomationService(db).control(a,w,runnerId,enabled,version);
   });
  }
  async readiness(a:Actor,w:string,automationId:string,requiredActionIds:string[]=[]){
-  await this.owner(a,w);const research=await new AppMonitoring(this.db).read(a,w,automationId),setup=await new AutomationService(this.db).setup(a,w);
+  await this.owner(a,w);const research=await new AppMonitoring(this.db).read(a,w,automationId),runnerId=research.config?.automation?.runnerId,setup=await new AutomationService(this.db).setup(a,w,0,runnerId?{runnerId}:{});
   const blockers:{code:string;actionId?:string}[]=[];
   if(!research.enabled)blockers.push({code:'research_disabled'});
   if(research.availability!=='ready')blockers.push({code:research.availability});
@@ -101,13 +106,13 @@ export class AutomationManagement{
   const r=(await this.db.query(`SELECT * FROM ${table} WHERE deleted_at IS NULL AND id=$1 AND workspace_id=$2 AND user_id=$3`,[automationId,w,a.userId])).rows[0];if(!r)fail(404,'not_found','Automation unavailable');
   const c=await new WorkspaceFoundation(this.db).component(this.db,a,w,r.app_id,false);
   const controlRevision=(await this.db.query("SELECT coalesce(max(event_sequence),0)::text revision FROM audit_events WHERE workspace_id=$1 AND object_id=$2 AND action IN ('monitoring.controlled','app_action.paused')",[w,r.id])).rows[0].revision;
-  return {id:r.id,version:r.version,kind,executor:kind==='research'?'chatgpt':'trialagents',enabled:kind==='research'?r.enabled:!r.paused,controlRevision,lastError:kind==='action'?r.last_error??null:null,config:r.config,app:{id:c.id,name:c.name,url:appUrl({workspaceId:w,appId:c.id}),archived:c.archived||c.project_archived},managementOnly:true,task:r.task??null};
+  return {id:r.id,version:r.version,kind,executor:kind==='research'?ownedBy(r)??'chatgpt':'trialagents',owner:ownedBy(r),canEdit:canEdit(a,ownedBy(r)),enabled:kind==='research'?r.enabled:!r.paused,controlRevision,lastError:kind==='action'?r.last_error??null:null,config:r.config,app:{id:c.id,name:c.name,url:appUrl({workspaceId:w,appId:c.id}),archived:c.archived||c.project_archived},managementOnly:true,task:r.task??null};
  }
  async prepareControl(a:Actor,w:string,input:unknown){
-  const change=automationControl.parse(input),automation=await this.read(a,w,change.kind,change.automationId);
+  const change=automationControl.parse(input),automation=await this.read(a,w,change.kind,change.automationId);if(change.enabled)requireAutomationOwner(a,automation.owner);
   if(automation.version!==change.expectedVersion)fail(409,'automation_changed','Reopen the current automation before changing it');
   const body={change,automation},reviewId=randomUUID(),digest=checksum(JSON.stringify(body));
-  await this.db.query("INSERT INTO app_service_previews(id,workspace_id,user_id,kind,body,digest) VALUES($1,$2,$3,'automation_control',$4,$5)",[reviewId,w,a.userId,JSON.stringify(body),digest]);
+  await this.db.query("INSERT INTO app_service_previews(id,workspace_id,user_id,kind,body,digest,assistant) VALUES($1,$2,$3,'automation_control',$4,$5,$6)",[reviewId,w,a.userId,JSON.stringify(body),digest,actorAssistant(a)]);
   return {id:reviewId,kind:'automation_control',digest,body,status:'review_required',...chatServiceReview(w,reviewId,'automation_control',digest,body)};
  }
  async confirmControl(a:Actor,w:string,reviewId:string,digest:string,review?:string){requireCurrentAction(a);return this.db.transaction(async tx=>{

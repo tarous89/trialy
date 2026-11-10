@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "trialagents": {
+      "type": "http",
+      "url": "https://platform.trialagents.com/claude/mcp"
+    }
+  }
+}

@@ -24,9 +24,11 @@ export function appPreparationResult(data:any){
   nextAction:{operation:'finalize_app_preview',arguments:{workspaceId:preview.workspaceId??data.workspaceId,previewId:preview.id,digest:preview.digest},when:'After completing the requested app and validation. This opens the exact app in the extension for approval; leave it visible until saved or discarded.'}
  }:{})};
 }
-export function registerWorkspaceResources(server:McpServer,bundle:Awaited<ReturnType<typeof workspaceResource>>,frameDomains:string[]){
+export function registerWorkspaceResources(server:McpServer,bundle:Awaited<ReturnType<typeof workspaceResource>>,frameDomains:string[],host:'chatgpt'|'claude'='chatgpt'){
  const mimeType='text/html;profile=mcp-app';
- const _meta={ui:{prefersBorder:true,csp:{connectDomains:[],resourceDomains:[],frameDomains:[...new Set(frameDomains)]}},'openai/widgetDescription':'The TrialAgents workspace: data, code, functions and confirmed saves inside ChatGPT.','openai/ui':{availableDisplayModes:['inline','fullscreen'],preferredDisplayMode:'fullscreen'}};
+ const ui={prefersBorder:true,csp:{connectDomains:[],resourceDomains:[],frameDomains:[...new Set(frameDomains)]}};
+ // Claude reads the standard MCP Apps metadata only; ChatGPT keeps its original descriptor unchanged.
+ const _meta=host==='claude'?{ui}:{ui,'openai/widgetDescription':'The TrialAgents workspace: data, code, functions and confirmed saves inside ChatGPT.','openai/ui':{availableDisplayModes:['inline','fullscreen'],preferredDisplayMode:'fullscreen'}};
  const read=async(uri:URL)=>({contents:[{uri:uri.href,mimeType,text:bundle.html,_meta}]});
  server.registerResource('workspace',bundle.uri,{mimeType,_meta},read);
  server.registerResource('workspace-legacy','ui://trialy/workspace.html',{mimeType,_meta},read);
