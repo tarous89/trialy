@@ -15,7 +15,7 @@
 
 | Rank | ID | App | What it does | Main users | Reference app | Tier | v1 source |
 |---:|---|---|---|---|---|---|---|
-| 1 | BT2-01 | **Runway** | Cash, burn and runway by program, with what-if scenarios. | CEO, CFO, board | Jirav | Core | adapt `cash-runway` |
+| 1 | BT2-01 | **Runway** | Cash, burn and runway by program, with what-if scenarios. | CEO, CFO, board | Abacum Life Sciences (domain) + Jirav (mechanics) | Core | replaces `cash-runway` |
 | 2 | BT2-02 | **Programs** | Milestones, dependencies, risks and decisions across all programs. | CEO, PM, functional leads | Smartsheet | Core | adapt `project-oversight` |
 | 3 | BT2-03 | **Fundraise** | Investor pipeline for a round, from first contact to signed commitment. | CEO, CFO | Foundersuite | Core | adapt `investor-crm` |
 | 4 | BT2-04 | **Contracts** | Register of CDAs, MSAs, SOWs and other agreements with key dates and obligations. | CEO, BD, ClinOps, finance | Ironclad | Core | **new** |
@@ -64,11 +64,11 @@ Format per app: users and job · reference app · scope (in / out) · records ·
 *Cash, burn and runway by program, with what-if scenarios.*  
 *Long name: Cash Runway & Scenarios*
 - **Users / job:** CEO and CFO see cash, monthly burn and runway, and test what-if scenarios (delay a study, add hires, close a round) before board meetings.
-- **Reference app:** Jirav — driver-based plans, forecast assumptions and scenarios.
+- **Reference apps:** Abacum Life Sciences (domain: program spend, runway to milestones) and Jirav (mechanics: plan of record, forecasts, scenarios).
 - **In scope:** cash balance snapshots, burn by program and category, headcount plan lines, scenario assumptions, runway months per scenario. **Out:** general ledger, payroll, bank feeds, tax, cap table.
 - **Records:** Cash snapshot; Budget line (program, category, month, amount, currency); Headcount plan line; Scenario; Assumption. Shared: Program, Study.
 - **Screens:** Runway overview · Burn by program · Scenario builder · Headcount plan · Assumptions log.
-- **Assistant angle:** explain runway changes month over month; draft the runway section of investor updates (06); pull accrual estimates from 11 when present. One currency per scenario; no implicit FX.
+- **Assistant angle:** explain runway changes month over month; draft the runway section of investor updates (06); pull accrual estimates from 11 when present. Multi-currency with automatic rates (see detailed scope).
 - **Detailed scope:** see [First app in detail: Runway](#first-app-in-detail-runway-bt2-01) below.
 
 ### BT2-02 — Programs (rank 2, Core)
@@ -265,165 +265,199 @@ Format per app: users and job · reference app · scope (in / out) · records ·
 
 ## First app in detail: Runway (BT2-01)
 
-*Cash, burn and runway by program, with what-if scenarios.* Replaces v1 `cash-runway` 1.2.2 as the next major version.
+*Cash, burn and runway by program, with what-if scenarios.* Replaces v1 `cash-runway` 1.2.2 as the next major version. There are no existing users, so v2 does not need to stay compatible with v1 data.
 
-### 1. Reference app research: Jirav
+### 1. Evidence: what small biotechs need from a runway tool
 
-Sources: Jirav product pages (planning, scenario planning, cash flow forecasting, workforce planning), the Jirav help center (Plan, Plan management, Plan of Record, Rolling forecast, Direct cash flow, Minimum cash balance, Workforce planning, Dashboards, Reports) and user reviews on G2/Capterra, read 10 November 2026. Jirav's marketing screenshots carry no captions or descriptive alt text, so the UI notes below come from the help-center descriptions of screens, tables and controls rather than from image inspection.
+**How we know (and how sure we are).** The needs below are drawn from three kinds of source, read 10 November 2026: (a) biotech-specific finance software (Abacum Life Sciences, Condor, Exigyn) and what they choose to build; (b) advice from biotech CFOs, fractional-CFO firms and advisors; (c) the generic reference, Jirav, and its user reviews. The sources agree strongly, but most are vendors or advisors with something to sell, and none is a survey of small biotechs. **Treat this as a well-supported hypothesis to validate with 5–10 biotech CEOs/CFOs (design partners) before building.**
 
-**What Jirav is.** Driver-based FP&A for small and mid-sized companies and the accounting firms serving them. It connects to the accounting system, payroll and CRM, and models the income statement, balance sheet and cash flow together.
+What the sources consistently say:
 
-**Core concepts and workflows we observed:**
-
-| Jirav concept | How it works | Relevance for a small biotech |
+| Need | Signal | Confidence |
 |---|---|---|
-| **Plans** (Manage Plans screen) | Create a blank plan or clone an existing one; clones are independent copies. Plans are active or archived; the number of active plans is capped. | High: base forecast + a few scenarios is exactly the biotech need. |
-| **Plan of Record (PoR)** | A locked, read-only plan (e.g. the board-approved budget), marked with a lock icon. Locking cannot be undone; to change it you clone it. Dashboards can point at the current PoR. | High: the board-approved budget is the baseline every variance is measured against. |
-| **Actuals vs forecast period** | Each plan has read-only actual months (white headers) and editable forecast months (blue headers); an auto roll-forward adds a month of actuals. | High: maps to the monthly close. |
-| **Rolling forecast / budget vs actual** | Lock PoR → clone to a working plan → move the forecast start forward each month → variance report comparing working plan vs PoR. | High: the core monthly loop. |
-| **Drivers** | Standard drivers: annual target, fixed spread, growth on historicals, periodic growth, amount per headcount, % of another account, custom formula. | Medium: biotechs need a smaller, different set (see §3). |
-| **Workforce planning** | Staff roster plus planned hires; driver-based hires (e.g. one hire per N customers); term dates for leavers; fully loaded cost (payroll tax, benefits, bonus). | High for people cost; driver-based hires (revenue ratios) are rarely relevant pre-revenue. |
-| **Cash** | Direct cash flow table (inflows, outflows, other, beginning/ending cash, a zero-check line); zero-cash date; minimum cash balance assumption. | High: pre-revenue biotech is managed on cash, not P&L. |
-| **Runway metrics** | Three definitions: trailing operating runway (cash ÷ last 6 months' operating cash flow), predicted runway (cash ÷ forecast operating cash flow), standard runway (cash ÷ last period's change in cash). | High: we adopt two of them explicitly. |
-| **Scenarios** | Clone a plan, change assumptions (price, hires, location, best/worst case), see the effect across statements, compare via reports. No dedicated side-by-side comparison screen is documented. | High, and a gap we can fill with a real compare screen. |
-| **Dashboards & reports** | Tiles (number, bar, line, table, text, statement tiles), KPI library, report packages, variance analysis, Excel export, sharing. | Medium: we need one fixed overview plus a board-pack snapshot. |
-| **Tasks** | Month-end close and annual budget checklists. | Medium: a close checklist keeps the monthly loop honest. |
+| Cash, burn and runway are *the* metrics | Biotech CFO advice reduces decisions to cash, burn rate and runway; bankers call runway the single most important metric for clinical-stage biotechs. | High |
+| Runway must be measured **against the next milestone**, not just in months | Grant Thornton: what matters is time to the next scientific or commercial milestone; biotech FP&A vendors model burn against milestones, delays and readouts. | High |
+| **18–24 months** is the target; start raising before it falls below that | Repeatedly cited as the industry standard; advisors suggest starting bridge talks at the 18-month mark. | Medium–high |
+| **Spend by program/study** | Abacum, Exigyn and Condor all centre on program- or study-level spend. | High |
+| **Scenarios**: delay, slip, pause a program, move a financing | Abacum recalculates the cash-out date for protocol shifts, enrollment delays and milestone moves; advisors recommend a standing "base vs slip" pair every quarter. | High |
+| People are the largest cost line | Abacum cites personnel at 60–70% of biotech costs; Jirav notes up to 80% of company expenses. | Medium (vendor figures) |
+| Grants and CRO commitments sit in the same model | Abacum tracks grant drawdown and CRO commitments against restricted funding. | Medium |
+| Several currencies, user-set rates | Abacum rolls up EU subsidiaries and converts at user-set FX rates. | Medium |
+| A 13-week cash view and three-statement model | Recommended by Abacum's webinar for clinical-stage teams, but aimed at larger finance teams. | Low for <50 people → **not in MVP** |
 
-**What users say.** Praised: driver-based forecasting, scenario speed, workforce planning, onboarding support, and use by startups until they hire a full-time CFO. Criticised: learning curve for custom models, conditional assumptions (IF-style logic) are hard, slow report load, limits on reports and custom tables.
+### 2. Reference apps
 
-**What does not fit biotech.** Jirav is built around revenue (SaaS ARR, bookings, deferred revenue, AR). A pre-revenue biotech is driven by program spend, contracted CRO payments, financing tranches, grants and tax credits, and its key question is *"do we have enough cash to reach the next value-inflection milestone?"*. Jirav has no notion of programs, studies, milestones or catalysts.
+**Is there a better, more specialised reference than Jirav? Yes, for the domain.**
 
-### 2. Positioning
+| App | What it is | Use as reference for |
+|---|---|---|
+| **Abacum — Life Sciences** (primary, domain) | General FP&A with a life-sciences offering: spend by program, study and site; runway modelled against milestones, delays and readouts; scenarios that recalculate the cash-out date; grants and CRO commitments; user-set FX rates; AI that explains changes. Integrates NetSuite, Sage Intacct, Snowflake, BigQuery; typical go-live about 6 weeks. | What to model (programs, milestones, grants, CRO commitments, FX) and which questions the app must answer. |
+| **Jirav** (secondary, mechanics) | Driver-based FP&A for SMBs and accounting firms. | How plans work: locked plan of record, cloned forecasts and scenarios, actual vs forecast months, roll-forward, drivers, roster + hires, direct cash flow, zero-cash date. |
+| Condor | Biopharma R&D finance: clinical trial forecasting, accruals, close; raised a $24M Series A in 2026. | Already the reference for Trial Finance (11); too deep for Runway. |
+| Exigyn | Biotech FP&A modules: cash runway, headcount, trial budgets, board reporting; Series A–B and later. Little public product detail. | Confirms the module set; not enough detail to copy workflows. |
 
-> **Runway is a cash-first planning app for pre-revenue biotechs:** a board-approved budget, a monthly forecast, a few scenarios, and one answer always visible: *how long does the cash last, and does it get us past the next milestone?*
+**Our gap versus all of them:** they need an ERP integration, a finance team and weeks of setup. Runway should give a credible runway number **in one session from a bank balance and a few lines of spend**, which is what a 10–50 person biotech without a full-time CFO can actually use.
 
-**Take from Jirav:** locked plan of record + working forecast + cloned scenarios; actual vs forecast months with a monthly roll-forward; a small driver library; roster + planned hires with loaded cost; direct cash flow view; zero-cash date and minimum reserve; variance vs plan; close checklist.
+Jirav research notes (kept for build detail): plans are created blank or cloned and are active or archived; a plan of record is locked and read-only, cannot be unlocked, and is cloned to change; actual months are read-only and forecast months editable, with an auto roll-forward; the rolling-forecast loop is lock → clone → roll forward → variance report; standard drivers are annual target, fixed spread, growth, periodic growth, amount per headcount, % of another account and custom; workforce planning uses a roster plus planned and driver-based hires with fully loaded cost; cash is shown as a direct cash-flow table with a zero-check line, plus zero-cash date and a minimum cash balance; runway is offered in three definitions (trailing operating, predicted, standard). Reviews praise scenario speed and onboarding; complaints are the learning curve, hard conditional logic and slow reports. No dedicated side-by-side scenario screen is documented. Jirav's marketing screenshots have no captions or alt text, so UI notes come from help-center descriptions, not image inspection.
 
-**Leave out:** three-statement modelling, revenue models, AR/AP/deferred revenue, consolidations, line-of-credit draw logic, algorithmic auto-forecast, configurable dashboard builder, accounting/payroll integrations (later, optional, via connectors).
+### 3. Scope rule: only what is clearly used
 
-**Add for biotech (not in Jirav):**
-1. **Runway to milestone:** program milestones from Programs (02) overlaid on the cash curve, showing cash on hand at each milestone and months of cushion after it.
-2. **Spend by program and study:** every line carries a program (and optionally study), so burn can be shown per asset.
-3. **Committed vs contingent cash:** financing tranches, grants, partnership milestones and tax credits each carry a status; base runway counts committed cash only, with a separate "including contingent" line.
-4. **Contracted spend:** CRO/vendor payment schedules linked to Contracts (04), and monthly accrual estimates from Trial Finance (11) when that app is used.
-5. **A real scenario compare screen:** up to four plans side by side on zero-cash date, runway, cash at each milestone and cumulative burn.
-6. **Claude as the analyst:** importing spreadsheets, setting up scenarios from plain language, explaining variances and drafting commentary; all numbers are computed by the app's deterministic rules, never by the assistant.
+Every feature must pass one test: **would a CEO or part-time CFO of a 10–50 person biotech use it at least monthly, or need it for a board meeting or a raise?** If not, it is cut or deferred. Things the app does once (setup) must take minutes, not days.
 
-### 3. Features
+**MVP features (kept)**
 
-**MVP (v2.0)**
+| Area | Feature | Why it stays |
+|---|---|---|
+| Cash | Opening bank balance; month-end balance confirmation | Everything starts from cash. |
+| Plan | Spend lines with program, category, vendor and one of **4 drivers**: monthly amount, one-off, spread over a period, payment schedule (dated instalments, e.g. CRO milestones) | Covers how biotechs actually budget; payment schedules model CRO contracts. |
+| Plan | Commitment status per line: Committed / Discretionary | Shows what can be cut to extend runway. |
+| People | Roles (name optional), program, start/end month, salary, currency; one loaded-cost % | People are the largest cost; hires are the most common what-if. |
+| Cash in | Equity tranches, grants, partnership payments, tax credits; each Committed or Contingent, with expected month | Runway counts committed cash only; contingent shown separately. |
+| Milestones | A light milestone list (name, program, target month), linked to Programs (02) when that app exists | The core biotech question: does the cash reach the milestone? |
+| Plans | **Plan of record** (locked board budget) and one **Forecast** | Board budget vs current view is the standard governance pair. |
+| Scenarios | Unlimited, **preview by default**, saved only on purpose (see §5) | What-ifs are the main reason to open the app. |
+| Actuals | Monthly actuals by category (program optional); mark month closed; forecast rolls forward | Keeps the forecast honest without bookkeeping. |
+| Results | Runway months, cash-out date, cash at each milestone, monthly burn, cash curve, direct cash-flow table | The answers boards and investors ask for. |
+| Variance | Actual vs plan of record by month and category, one commentary per month | The second most common board question. |
+| Currencies | 12 currencies with automatic exchange rates (see §4) | International CROs and investors are normal even for small biotechs. |
+| Snapshot | Freeze the month's results and commentary for board/investor use | Feeds Investor Updates (06) and Board (14). |
+| Export | CSV/Excel of the cash-flow table; copy chart as image | Numbers end up in slides. |
 
-| Area | Features |
-|---|---|
-| Setup | Reporting currency; opening cash balance and date; programs (shared records); spend categories (people, external R&D by program, G&A, facilities, capex, other); minimum cash reserve; close day. |
-| Plans | Plan types *Plan of record* (locked), *Forecast* (one working plan) and *Scenario* (up to 4 active); clone, archive, lock as plan of record (irreversible, clone to edit); actuals-through month per plan. |
-| Plan lines & drivers | Lines with program, category, vendor, commitment status (Committed / Discretionary / Contingent) and one driver: **Fixed monthly**, **One-off** (date), **Spread over period** (total across start–end), **Payment schedule** (dated instalments, e.g. CRO milestones, linkable to an agreement in Contracts), **Per FTE** (amount × FTE count from People), **% of another line**. |
-| People | Roster of current staff (role, department, program allocation %, start, end, annual salary) and planned hires (role, target start, salary); loaded-cost % per plan; monthly FTE and people cost per program. Names optional: roles are enough. |
-| Cash in | Financing events: equity tranches, grants, partnership upfront/milestones, R&D tax credits, interest; each with expected date, amount, status (Committed / Contingent), conditions and evidence link. |
-| Actuals & close | Monthly actuals by category and program (manual entry or Claude-assisted import from an accounting export); month-end cash balance confirmation; close checklist; roll the forecast forward one month after close. |
-| Results | Monthly direct cash flow (inflows, outflows by category, net burn, beginning and ending cash); net and gross burn; trailing runway (cash ÷ average net burn over the last 3 closed months, configurable 3/6); forecast runway and zero-cash date; reserve-breach date; cash at each program milestone. |
-| Variance | Actual vs plan of record and forecast vs plan of record by month, category and program, with % and commentary per line. |
-| Scenarios | Scenario = cloned plan + listed adjustments: shift a program's or study's spend by N months, scale a program's spend by %, stop a program from a date, add/remove hires, move or resize a financing event, change the reserve. Side-by-side compare on key results. Promote a scenario to the forecast. |
-| Reporting | Monthly snapshot (frozen copy of key results + commentary) with review status Draft / In review / Approved, used by Investor Updates (06) and Board (14). |
+**Cut or deferred (and why)**
 
-**Later (v2.x)**
-Accounting import connectors (Xero, QuickBooks, DATEV export, NetSuite); departmental budget owners and sign-off; planning FX rates as explicit, versioned assumptions; 13-week cash view; R&D tax credit calculator per country; additional drivers (IF-style conditions); runway alerts as automations; dashboard tile customisation.
+| Feature | Decision | Reason |
+|---|---|---|
+| Accounting-file import / connectors | **Not in v2.0** | No single export format works across EU, UK, US and CA systems; actuals at category level are 10–20 numbers a month, and Claude can fill them from any report the user shares in chat. Revisit only if design partners ask. |
+| Drivers "% of another line", "per FTE", custom formulas | Cut | Rare in small biotechs; the loaded-cost % covers per-head costs. |
+| Close checklist, review workflow (draft / in review / approved) | Cut | Overhead for teams of this size; "mark month closed" and "save snapshot" are enough. |
+| Departments, budget owners, sign-off | Deferred | Needs a finance team; programs matter more than departments. |
+| Annual raise assumptions | Cut | One loaded-cost % and editing salaries covers it. |
+| 13-week cash view | Deferred | Useful near a cash crunch; most small biotechs plan monthly. |
+| Three-statement model, revenue, AR/AP, consolidation, debt | Cut | Pre-revenue, single-entity focus. |
+| R&D tax-credit calculator | Cut | Country-specific; enter the expected credit as a cash-in line instead. |
+| Line-level commentary | Cut | One commentary per month is what boards read. |
+| Multiple alert rules | Reduced to one optional alert (runway below target) | Avoids noisy automations. |
 
-### 4. Workflows
+### 4. Small features that make users happy
 
-1. **Set up (first session, with Claude).** Claude asks for reporting currency, latest bank balance and date, programs and the minimum reserve, then offers to import an existing budget spreadsheet: it maps columns to plan lines and drivers and proposes records for review. Result: a first *Forecast* plan and the Overview screen showing runway.
-2. **Approve the budget.** CFO reviews the forecast with the CEO/board, then locks a copy as the *Plan of record* (e.g. "FY2027 budget, board-approved 12 Dec"). Locking is irreversible; changes later happen in the forecast.
-3. **Monthly close and roll-forward.** After the month ends: enter or import actuals; confirm the month-end bank balance; tick the close checklist; Claude flags lines with variance above the chosen threshold and drafts commentary; the CFO edits and approves; the forecast rolls forward one month. Result: a variance view and an updated runway.
-4. **Reforecast.** When assumptions change (study delayed, new hire approved, round size changed), the CFO edits the forecast directly or via Claude ("move the Phase 1 start from March to June"). The plan of record stays unchanged for variance.
-5. **What-if scenarios.** Clone the forecast into a scenario and apply adjustments, typically by asking Claude ("what if the Series A closes 4 months later and we pause program B?"). Compare up to four plans on zero-cash date, runway, cash at each milestone. Promote the chosen scenario to become the forecast if adopted.
-6. **Board and investor reporting.** Freeze a monthly snapshot (key results, charts, commentary), mark it approved and use it in Investor Updates (06) and Board (14). Snapshots never change after approval.
-7. **Watch the runway (optional automation).** A monthly check after close compares runway against thresholds (e.g. under 12 months, reserve breach within 6 months, milestone cash cushion below 3 months) and sends a TrialAgents notification. Automations are optional and never block the app.
+Chosen because they remove a common annoyance or answer a board question in one glance; each is cheap to build on top of the MVP.
 
-### 5. Screens (7)
+1. **Automatic currency conversion.** Enter every line in its own currency (e.g. a USD CRO contract in a EUR company). Rates refresh daily from the European Central Bank's free reference rates. Actuals convert at that month's average rate; the forecast uses the rate saved with the plan, so numbers do not jump daily. Supported: **USD, EUR, GBP, CHF, CAD, AUD, JPY, CNY, SEK, DKK, NOK, INR** (12; any other ECB currency can be added).
+2. **Currency exposure line.** "38% of the next 12 months' spend is in USD; a 10% stronger dollar shortens runway by 0.7 months." One sentence, computed from the lines.
+3. **Runway in one sentence.** "Cash lasts until March 2028, 4 months after the Phase 1 readout." Shown at the top of the Overview and copyable into emails.
+4. **Milestone markers on the cash curve,** coloured by cushion: green ≥ 6 months after the milestone, amber 3–6, red < 3.
+5. **Start-raise date.** The month the forecast runway falls below the target (default 18 months), e.g. "To keep 18 months of runway, start raising by June 2027."
+6. **"Why did runway change?" bridge.** Compared with the last snapshot: "Runway fell from 22 to 19 months: Phase 1 start moved (−2.1), two hires added (−0.8), grant received earlier (+0.4)". This is the first question at every board meeting.
+7. **Instant what-if preview.** Ask Claude "what if the Series A closes 4 months later?" and see the new curve overlaid immediately, without saving anything.
+8. **Contingent cash toggle.** One switch shows runway with and without contingent grants or milestone payments.
+
+### 5. Scenarios: preview first, save on purpose
+
+- Any change made as a what-if creates a **preview**: shown as an overlay on the current forecast, labelled "Preview, not saved". Previews are kept only for the current session.
+- The user (or Claude, after confirmation) can **Save** a preview as a named scenario. Saved scenarios are unlimited, show their creation date and the forecast they were based on, and are marked **Outdated** when that forecast has changed since (e.g. a new month was closed).
+- Compare any 2–4 saved scenarios or previews side by side.
+- **Adopt** a scenario to make it the new forecast; **Archive** removes it from lists without deleting it.
+- Adjustment types (listed in plain words on each scenario): shift a program's spend by N months; scale a program's spend by %; stop a program from a month; add or remove a hire; move or resize a cash-in event; change an exchange rate by %.
+
+### 6. Workflows
+
+1. **First runway in one session (with Claude).** Claude asks for the bank balance and date, reporting currency, programs and upcoming milestones, then the main spend lines (team, CROs, rent, other) and expected financing. It proposes the records for review. Result: a forecast and a runway sentence on the Overview.
+2. **Approve the budget.** Lock a copy of the forecast as the plan of record (e.g. "2027 budget, board-approved 12 Dec"). Locking cannot be undone; changes happen in the forecast.
+3. **Monthly update (about 15 minutes).** Enter the month-end bank balance and actuals by category (or ask Claude to fill them from a P&L the user shares); mark the month closed; the forecast rolls forward; variance vs plan of record and the "why did runway change" bridge appear; add one commentary; save a snapshot.
+4. **What-if.** Ask Claude or use the Scenarios screen; review the preview; save it if it should be kept or discussed; adopt it if the plan changes.
+5. **Board or investor pack.** Use the latest snapshot (runway sentence, cash curve with milestones, variance, bridge) in Investor Updates (06) or Board (14), or export.
+6. **Optional alert.** After each close, notify the owner if runway falls below the target or the start-raise date is within 3 months. No other automations.
+
+### 7. Screens (6)
 
 Each screen keeps the v1 convention of four primary capabilities.
 
-1. **Overview** — (1) cash today, trailing and forecast runway, zero-cash date, with the plan shown; (2) cash curve by month for the forecast with the reserve line and program milestones marked; (3) net burn by month (actual then forecast) split by category; (4) alerts: reserve breach, lines over budget, missing close, unapproved snapshot.
-2. **Cash flow** — (1) monthly direct cash table: inflows, outflows by category and program, net burn, beginning/ending cash; (2) switch plan (forecast, plan of record, any scenario) and toggle "including contingent cash"; (3) drill from any cell to the underlying lines; (4) export to CSV/Excel.
-3. **Plan** — (1) plan lines table with driver, program, category, commitment status and monthly preview; (2) add/edit a line with a driver form; (3) filter by program, category, vendor, commitment; (4) manage plans: clone, archive, lock as plan of record.
-4. **People** — (1) roster and planned hires with role, program allocation, start/end and salary; (2) monthly FTE and people cost by program; (3) loaded-cost % and raise assumptions per plan; (4) add/move/remove a hire with immediate runway effect.
-5. **Cash in** — (1) financing events table with status, expected date and conditions; (2) committed vs contingent totals by month; (3) link evidence (term sheet, grant agreement) from Contracts or a document link; (4) mark an event as received to turn it into an actual.
-6. **Scenarios** — (1) list of scenarios with their adjustments in plain words; (2) side-by-side compare of up to four plans on zero-cash date, runway, cash at each milestone and cumulative burn; (3) cash-curve overlay chart; (4) promote a scenario to the forecast.
-7. **Close & variance** — (1) month list with close status and checklist; (2) actuals entry/import for the open month; (3) variance by category and program vs plan of record with commentary; (4) monthly snapshots with review status.
+1. **Overview** — (1) runway sentence, runway months, cash-out date, start-raise date; (2) cash curve with reserve line and milestone markers coloured by cushion; (3) monthly burn, actual then forecast, by category; (4) "why did runway change" bridge since the last snapshot.
+2. **Cash flow** — (1) monthly direct cash table: cash in, spend by category and program, net burn, opening/closing cash; (2) switch between forecast, plan of record and saved scenarios; toggle contingent cash; (3) drill into the lines behind any cell; (4) export CSV/Excel.
+3. **Plan** — (1) spend lines with driver, program, currency and commitment; (2) cash-in events with status; (3) milestones; (4) lock forecast as plan of record.
+4. **People** — (1) current roles and planned hires with program, dates, salary and currency; (2) monthly headcount and people cost by program; (3) loaded-cost %; (4) add, move or remove a hire with immediate runway effect.
+5. **Scenarios** — (1) previews and saved scenarios with adjustments in plain words and an Outdated flag; (2) side-by-side compare of 2–4 on runway, cash-out date and cash at each milestone; (3) overlay chart; (4) save, adopt or archive.
+6. **Actuals** — (1) months with closed/open status; (2) enter actuals and the month-end bank balance; (3) variance vs plan of record by category with the month's commentary; (4) snapshots list.
 
-### 6. Data model
+### 8. Data model
 
-All scalar fields, one reporting currency, lowercase snake_case keys, as in v1.
+All scalar fields, lowercase snake_case keys, as in v1.
 
 | Record | Key fields |
 |---|---|
-| **Plan** | name, plan_type (plan_of_record / forecast / scenario), status (active / archived), locked (boolean), base_plan_id, actuals_through (month), currency, description, locked_at |
-| **Plan line** | plan_id, name, category, program_id, study_id, vendor_org_id, agreement_id, commitment (Committed / Discretionary / Contingent), driver (fixed_monthly / one_off / spread / schedule / per_fte / pct_of_line), amount, start_month, end_month, ref_line_id, pct, notes |
-| **Payment instalment** | plan_line_id, due_month, amount, trigger (text), status (planned / invoiced / paid) |
-| **Position** | plan_id, role, department, program_id, allocation_pct, start_month, end_month, annual_salary, status (current / planned), person_id (optional) |
-| **Cash-in event** | plan_id, type (equity / grant / partnership / tax_credit / interest / other), counterparty_org_id, amount, expected_month, status (Committed / Contingent / Received), conditions, evidence_ref |
-| **Actual** | month, category, program_id, amount, direction (in / out), source (manual / import), source_ref |
-| **Cash balance** | as_of_date, amount, account_label, confirmed (boolean) |
-| **Scenario adjustment** | plan_id, kind (shift_program / scale_program / stop_program / add_hire / remove_hire / move_cash_in / resize_cash_in / set_reserve), target_id, months, pct, amount, from_month, note |
-| **Close period** | month, status (open / in_review / closed), checklist (text), closed_by, closed_at |
-| **Snapshot** | month, plan_id, metrics (JSON text, frozen), commentary, status (Draft / In review / Approved), approved_by |
-| **Settings** | reporting_currency, min_cash_reserve, loaded_cost_pct, trailing_window (3 / 6), variance_threshold_pct, alert thresholds |
+| **Plan** | name, plan_type (plan_of_record / forecast / scenario), saved (boolean; previews are not stored), status (active / archived), locked, base_plan_id, base_plan_version, actuals_through, reporting_currency, fx_rates (JSON text, rates saved with the plan), description |
+| **Spend line** | plan_id, name, category, program_id, vendor_org_id, agreement_id, commitment (committed / discretionary), driver (monthly / one_off / spread / schedule), amount, currency, start_month, end_month, notes |
+| **Instalment** | spend_line_id, due_month, amount, trigger |
+| **Role** | plan_id, title, program_id, start_month, end_month, annual_salary, currency, status (current / planned), person_id (optional) |
+| **Cash-in event** | plan_id, type (equity / grant / partnership / tax_credit / other), counterparty_org_id, amount, currency, expected_month, status (committed / contingent / received), conditions, evidence_ref |
+| **Milestone** | name, program_id, target_month, programs_milestone_id (link to Programs, 02, when present) |
+| **Actual** | month, category, program_id (optional), amount, currency, direction (in / out), note |
+| **Cash balance** | as_of_date, amount, currency, account_label |
+| **Month** | month, closed (boolean), commentary |
+| **Scenario adjustment** | plan_id, kind (shift_program / scale_program / stop_program / add_role / remove_role / move_cash_in / resize_cash_in / fx_shift), target_id, months, pct, amount, from_month |
+| **Snapshot** | month, plan_id, metrics (JSON text, frozen), commentary, created_at |
+| **Settings** | reporting_currency, enabled_currencies, runway_target_months (default 18), min_cash_reserve, loaded_cost_pct, trailing_window (3 / 6) |
 
-Shared records used: Program and milestones (Programs, 02), Study, Organization (vendors, investors, funders), Agreement (Contracts, 04), accrual estimates (Trial Finance, 11).
+Shared records used: Program and milestones (Programs, 02), Organization (vendors, investors, funders), Agreement (Contracts, 04), accrual estimates (Trial Finance, 11, optional).
 
-### 7. Calculation rules
+### 9. Calculation rules
 
-- **Opening cash and actuals** follow the v1 contract unchanged: latest confirmed start-of-day balance on or before the cutoff; only actuals from that date to the cutoff count; invalid dates, a missing opening or truncated reads block exact cash claims.
-- **Monthly outflow** of a plan line comes from its driver; payment schedules use their instalments; per-FTE lines use that month's FTE from People; % lines use the referenced line in the same month (no circular references).
-- **People cost** per month = Σ (annual salary ÷ 12 × allocation × (1 + loaded-cost %)) for positions active that month; a position counts from its start month through its end month.
-- **Net burn** = operating outflows − operating inflows (interest, other income). Financing inflows (equity, grants, partnership payments, tax credits) are shown separately and do not reduce burn.
-- **Trailing runway** = cash at last close ÷ average net burn of the last 3 (or 6) closed months.
-- **Forecast runway / zero-cash date** = first forecast month where ending cash < 0, counting committed cash-in only; a second value includes contingent cash-in. **Reserve-breach date** = first month where ending cash < minimum reserve.
-- **Cash at milestone** = forecast ending cash in the milestone's target month; **cushion** = months between the milestone and the reserve-breach date.
-- **Variance** = actual (or forecast) − plan of record, by month, category and program, with % of plan; lines over the threshold are flagged.
-- **Currency:** one reporting currency per app; mixed-currency rows are excluded and flagged, never converted (v1 rule). Planning FX rates are a later, explicit feature.
-- **Limits:** v1 read caps (800 rows per role) apply; incomplete reads are shown, never treated as zero.
+- **Opening cash and actuals:** latest confirmed start-of-day bank balance on or before the cutoff; only actuals from that date to the cutoff count; invalid dates, a missing balance or truncated reads block exact cash claims (v1 rule).
+- **Monthly spend** of a line comes from its driver; schedules use their instalments.
+- **People cost** per month = annual salary ÷ 12 × (1 + loaded-cost %) for roles active that month, from the start month through the end month.
+- **Currency:** every amount keeps its own currency and is converted to the reporting currency. Actuals use the ECB monthly average for that month; forecasts and scenarios use the rates saved with the plan (refreshed only when the user updates the plan's rates or closes a month). Every converted figure can show its original amount and rate. Unsupported currency or missing rate → the row is flagged and excluded, never guessed.
+- **Net burn** = operating spend − operating income (interest, other). Financing (equity, grants, partnership payments, tax credits) is shown separately and does not reduce burn.
+- **Runway months** = months until forecast closing cash falls below zero, counting committed cash-in only; a second value includes contingent cash-in. **Trailing runway** (cash ÷ average net burn of the last 3 or 6 closed months) is shown as a secondary check.
+- **Cash at milestone** = forecast closing cash in the milestone month; **cushion** = months from the milestone to the cash-out date (or to the reserve, if set).
+- **Start-raise date** = first forecast month where remaining runway < runway target.
+- **Variance** = actual − plan of record by month and category, with % of plan.
+- **Runway bridge** = difference in runway months between the latest snapshot and now, attributed to changed lines, roles and cash-in events in order of impact.
+- **Limits:** read caps (800 rows per role) apply; incomplete reads are shown, never treated as zero.
 
-### 8. Claude's role
+### 10. Claude's role
 
-- Import: map a spreadsheet or accounting export to plan lines, positions or actuals and propose records for review.
-- Scenarios from plain language: translate "pause program B from Q3 and hire two chemists in January" into scenario adjustments, shown for confirmation.
-- Variance commentary: explain the largest variances using the lines and notes, as a draft for the CFO.
-- Board/investor text: draft the runway section for Investor Updates (06) and the Board (14) pack from an approved snapshot.
-- Never: compute or overwrite results outside the app's rules, give accounting/tax advice, or treat contingent cash as committed.
+- Set up the first forecast through conversation and propose records for review.
+- Fill monthly actuals from a P&L or bank statement the user shares in chat (any system, any country), proposed for review; no in-app file parser.
+- Turn plain-language what-ifs into scenario previews.
+- Draft the monthly commentary and explain the runway bridge.
+- Never: compute results outside the app's rules, give accounting or tax advice, or count contingent cash as committed.
 
-### 9. Changes from v1 `cash-runway` 1.2.2
+### 11. Compared with v1 `cash-runway` 1.2.2
 
 | v1 | v2 |
 |---|---|
-| One ledger table with entry kinds (opening, actual, budget, funding) | Separate plans, plan lines with drivers, positions, cash-in events, actuals and cash balances |
-| Budget = one line per month | Drivers generate months (fixed, one-off, spread, schedule, per FTE, % of line) |
-| Scenario = fixed parameters (clinical multiplier, people/contractor delta, funding delay, trial shift) | Scenario = cloned plan + any number of listed adjustments, compared side by side |
-| No locked baseline | Plan of record (locked) vs forecast, with variance |
-| No people model | Roster and planned hires with loaded cost and program allocation |
-| No milestones | Runway to milestone, cash at milestone, cushion |
-| Financial briefings | Monthly snapshots with review status, reused by Investor Updates and Board |
-| Six screens (overview, expense tracker, budget planner, cash forecast, scenario builder, briefings) | Seven screens (overview, cash flow, plan, people, cash in, scenarios, close & variance) |
+| One ledger table with entry kinds | Plans, spend lines with drivers, roles, cash-in events, milestones, actuals, bank balances |
+| One reporting currency; mixed currency excluded | 12 currencies with automatic ECB rates and exposure line |
+| Fixed scenario parameters | Unlimited scenarios, preview first, saved on purpose, compared side by side |
+| No locked baseline | Plan of record vs forecast, with variance |
+| No people model or milestones | Roles and hires; runway to milestone; start-raise date |
+| Briefings with review status | Frozen monthly snapshots with a runway bridge |
+| Six screens | Six screens (overview, cash flow, plan, people, scenarios, actuals) |
 
-Kept: identity/access model, governed writes, layout settings, one reporting currency, opening-cash and cutoff rules, read caps, optional automations.
+Kept: identity/access model, governed writes, layout settings, opening-cash and cutoff rules, read caps, optional automations. No migration is needed (no existing users).
 
-### 10. Open decisions
+### 12. Decisions
 
-1. **Planning FX rates:** stay strictly single-currency in v2.0, or allow explicit planning rates per plan for USD-denominated CRO contracts? (Recommended: single currency in v2.0, FX in v2.1.)
-2. **Milestones source:** require the Programs app (02), or let Runway hold a light milestone list of its own until Programs exists? (Recommended: own light list, linked to Programs when present.)
-3. **Accounting import:** spreadsheet import via Claude only in v2.0, or one connector (e.g. Xero) at launch?
-4. **Number of active scenarios:** four (matches the compare screen) or unlimited with four compared at a time?
-5. **Data migration:** offer a Claude-assisted migration from saved v1 apps (ledger → plan lines/actuals), or keep v1 apps as they are?
+| # | Question | Decision (10 Nov 2026) |
+|---|---|---|
+| 1 | Currencies | At least the 10 major currencies; set to 12 (USD, EUR, GBP, CHF, CAD, AUD, JPY, CNY, SEK, DKK, NOK, INR) with automatic ECB rates. |
+| 2 | Milestones | Runway keeps its own light milestone list, linked to Programs (02) when present. |
+| 3 | Import | No file upload unless a standard parser works across EU, UK, US and CA systems. None does today, so v2.0 has manual monthly actuals with Claude filling them from shared reports. |
+| 4 | Scenarios | Unlimited; preview by default; must be saved explicitly; saved scenarios flagged Outdated when their base forecast changes. |
+| 5 | Migration | Not needed; no existing users. |
 
-### 11. Acceptance criteria (beyond the shared contract)
+**Still open:** validate §1 and §3 with 5–10 design partners (biotech CEOs and part-time CFOs) before build; in particular whether program-level actuals are realistic (most small biotechs' books are not coded by program) and whether 18 months is the right default runway target.
 
-- From an empty workspace, a CFO reaches a first runway number within one session using only an imported budget spreadsheet and a bank balance.
-- Locking a plan of record makes it read-only; cloning it yields an editable forecast with identical results.
-- Closing a month moves it to actuals, rolls the forecast and shows variance vs plan of record for that month.
-- A scenario with "shift program X by 3 months" changes only that program's lines, and the compare screen shows the new zero-cash date and cash at each milestone.
-- Contingent cash never changes the base runway; toggling "including contingent cash" changes only the second value.
-- Mixed-currency rows, missing opening cash or truncated reads are visibly flagged and never produce an exact runway claim.
-- An approved snapshot never changes, even after later edits to the plan.
+### 13. Acceptance criteria (beyond the shared contract)
+
+- A new user reaches a runway sentence within one session from a bank balance, a few spend lines and one financing event.
+- A USD spend line in a EUR company converts at the plan's saved rate; changing the plan's rates changes the forecast, while closed-month actuals keep their monthly rate.
+- Locking a plan of record makes it read-only; the forecast keeps working; variance appears after the next closed month.
+- A what-if creates a preview only; nothing is stored until Save; saved scenarios show Outdated after the base forecast changes.
+- "Shift program X by 3 months" changes only that program's lines; compare shows the new cash-out date and cash at each milestone.
+- Contingent cash never changes the base runway; the toggle changes only the second value.
+- Missing exchange rates, a missing bank balance or truncated reads are flagged and never produce an exact runway claim.
+- A saved snapshot never changes; the runway bridge against it explains the full difference in months.
 
 ---
 
@@ -453,6 +487,10 @@ Related catalog apps (from the Clinical operations and Research teams lists) now
 
 Workflow references only; check current positioning before each build.
 
+- Abacum Life Sciences — https://www.abacum.ai/industry/life-sciences
+- Abacum, rolling runway for biotech — https://www.abacum.ai/blog/rolling-runway-biotech
+- Condor FP&A for biopharma — https://condorsoftware.com/platform/fpa
+- Grant Thornton, cash runway in life sciences — https://www.grantthornton.nl/en/insights-en/articles/cash-runway-in-life-sciences/
 - Jirav planning and forecasting — https://www.jirav.com/business-planning-budgeting-forecasting
 - Jirav scenario planning — https://jirav.com/scenario-planning
 - Jirav runway definitions — https://www.jirav.com/blog/how-to-calculate-cash-flow-runway
