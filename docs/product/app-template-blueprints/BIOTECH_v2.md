@@ -69,7 +69,7 @@ Format per app: users and job · reference app · scope (in / out) · records ·
 - **Records:** Cash snapshot; Budget line (program, category, month, amount, currency); Headcount plan line; Scenario; Assumption. Shared: Program, Study.
 - **Screens:** Runway overview · Burn by program · Scenario builder · Headcount plan · Assumptions log.
 - **Assistant angle:** explain runway changes month over month; draft the runway section of investor updates (06); pull accrual estimates from 11 when present. Multi-currency with automatic rates (see detailed scope).
-- **Detailed scope:** see [First app in detail: Runway](#first-app-in-detail-runway-bt2-01) below.
+- **Detailed scope:** research in [First app in detail: Runway](#first-app-in-detail-runway-bt2-01) below; final build scope in [apps/RUNWAY.md](apps/RUNWAY.md).
 
 ### BT2-02 — Programs (rank 2, Core)
 *Milestones, dependencies, risks and decisions across all programs.*  
@@ -265,6 +265,8 @@ Format per app: users and job · reference app · scope (in / out) · records ·
 
 ## First app in detail: Runway (BT2-01)
 
+> **Final scope:** [apps/RUNWAY.md](apps/RUNWAY.md). This section keeps the evidence and research.
+
 *Cash, burn and runway by program, with what-if scenarios.* Replaces v1 `cash-runway` 1.2.2 as the next major version. There are no existing users, so v2 does not need to stay compatible with v1 data.
 
 ### 1. Evidence: what small biotechs need from a runway tool
@@ -342,7 +344,7 @@ Every feature must pass one test: **would a CEO or part-time CFO of a 10–50 pe
 
 Chosen because they remove a common annoyance or answer a board question in one glance; each is cheap to build on top of the MVP.
 
-1. **Automatic currency conversion.** Enter every line in its own currency (e.g. a USD CRO contract in a EUR company). Rates refresh daily from the European Central Bank's free reference rates. Actuals convert at that month's average rate; the forecast uses the rate saved with the plan, so numbers do not jump daily. Supported: **USD, EUR, GBP, CHF, CAD, AUD, JPY, CNY, SEK, DKK, NOK, INR** (12; any other ECB currency can be added).
+1. **Automatic currency conversion.** Enter every line in its own currency (e.g. a USD CRO contract in a EUR company); the app converts with monthly ECB reference rates, loaded by an optional monthly automation or entered/proposed in chat (see [RUNWAY.md §6 and §8](apps/RUNWAY.md)). Supported: **USD, EUR, GBP, CHF, CAD, AUD, JPY, CNY, SEK, DKK, NOK, INR**.
 2. **Currency exposure line.** "38% of the next 12 months' spend is in USD; a 10% stronger dollar shortens runway by 0.7 months." One sentence, computed from the lines.
 3. **Runway in one sentence.** "Cash lasts until March 2028, 4 months after the Phase 1 readout." Shown at the top of the Overview and copyable into emails.
 4. **Milestone markers on the cash curve,** coloured by cushion: green ≥ 6 months after the milestone, amber 3–6, red < 3.
@@ -351,113 +353,9 @@ Chosen because they remove a common annoyance or answer a board question in one 
 7. **Instant what-if preview.** Ask Claude "what if the Series A closes 4 months later?" and see the new curve overlaid immediately, without saving anything.
 8. **Contingent cash toggle.** One switch shows runway with and without contingent grants or milestone payments.
 
-### 5. Scenarios: preview first, save on purpose
+### 5. Final build scope
 
-- Any change made as a what-if creates a **preview**: shown as an overlay on the current forecast, labelled "Preview, not saved". Previews are kept only for the current session.
-- The user (or Claude, after confirmation) can **Save** a preview as a named scenario. Saved scenarios are unlimited, show their creation date and the forecast they were based on, and are marked **Outdated** when that forecast has changed since (e.g. a new month was closed).
-- Compare any 2–4 saved scenarios or previews side by side.
-- **Adopt** a scenario to make it the new forecast; **Archive** removes it from lists without deleting it.
-- Adjustment types (listed in plain words on each scenario): shift a program's spend by N months; scale a program's spend by %; stop a program from a month; add or remove a hire; move or resize a cash-in event; change an exchange rate by %.
-
-### 6. Workflows
-
-1. **First runway in one session (with Claude).** Claude asks for the bank balance and date, reporting currency, programs and upcoming milestones, then the main spend lines (team, CROs, rent, other) and expected financing. It proposes the records for review. Result: a forecast and a runway sentence on the Overview.
-2. **Approve the budget.** Lock a copy of the forecast as the plan of record (e.g. "2027 budget, board-approved 12 Dec"). Locking cannot be undone; changes happen in the forecast.
-3. **Monthly update (about 15 minutes).** Enter the month-end bank balance and actuals by category (or ask Claude to fill them from a P&L the user shares); mark the month closed; the forecast rolls forward; variance vs plan of record and the "why did runway change" bridge appear; add one commentary; save a snapshot.
-4. **What-if.** Ask Claude or use the Scenarios screen; review the preview; save it if it should be kept or discussed; adopt it if the plan changes.
-5. **Board or investor pack.** Use the latest snapshot (runway sentence, cash curve with milestones, variance, bridge) in Investor Updates (06) or Board (14), or export.
-6. **Optional alert.** After each close, notify the owner if runway falls below the target or the start-raise date is within 3 months. No other automations.
-
-### 7. Screens (6)
-
-Each screen keeps the v1 convention of four primary capabilities.
-
-1. **Overview** — (1) runway sentence, runway months, cash-out date, start-raise date; (2) cash curve with reserve line and milestone markers coloured by cushion; (3) monthly burn, actual then forecast, by category; (4) "why did runway change" bridge since the last snapshot.
-2. **Cash flow** — (1) monthly direct cash table: cash in, spend by category and program, net burn, opening/closing cash; (2) switch between forecast, plan of record and saved scenarios; toggle contingent cash; (3) drill into the lines behind any cell; (4) export CSV/Excel.
-3. **Plan** — (1) spend lines with driver, program, currency and commitment; (2) cash-in events with status; (3) milestones; (4) lock forecast as plan of record.
-4. **People** — (1) current roles and planned hires with program, dates, salary and currency; (2) monthly headcount and people cost by program; (3) loaded-cost %; (4) add, move or remove a hire with immediate runway effect.
-5. **Scenarios** — (1) previews and saved scenarios with adjustments in plain words and an Outdated flag; (2) side-by-side compare of 2–4 on runway, cash-out date and cash at each milestone; (3) overlay chart; (4) save, adopt or archive.
-6. **Actuals** — (1) months with closed/open status; (2) enter actuals and the month-end bank balance; (3) variance vs plan of record by category with the month's commentary; (4) snapshots list.
-
-### 8. Data model
-
-All scalar fields, lowercase snake_case keys, as in v1.
-
-| Record | Key fields |
-|---|---|
-| **Plan** | name, plan_type (plan_of_record / forecast / scenario), saved (boolean; previews are not stored), status (active / archived), locked, base_plan_id, base_plan_version, actuals_through, reporting_currency, fx_rates (JSON text, rates saved with the plan), description |
-| **Spend line** | plan_id, name, category, program_id, vendor_org_id, agreement_id, commitment (committed / discretionary), driver (monthly / one_off / spread / schedule), amount, currency, start_month, end_month, notes |
-| **Instalment** | spend_line_id, due_month, amount, trigger |
-| **Role** | plan_id, title, program_id, start_month, end_month, annual_salary, currency, status (current / planned), person_id (optional) |
-| **Cash-in event** | plan_id, type (equity / grant / partnership / tax_credit / other), counterparty_org_id, amount, currency, expected_month, status (committed / contingent / received), conditions, evidence_ref |
-| **Milestone** | name, program_id, target_month, programs_milestone_id (link to Programs, 02, when present) |
-| **Actual** | month, category, program_id (optional), amount, currency, direction (in / out), note |
-| **Cash balance** | as_of_date, amount, currency, account_label |
-| **Month** | month, closed (boolean), commentary |
-| **Scenario adjustment** | plan_id, kind (shift_program / scale_program / stop_program / add_role / remove_role / move_cash_in / resize_cash_in / fx_shift), target_id, months, pct, amount, from_month |
-| **Snapshot** | month, plan_id, metrics (JSON text, frozen), commentary, created_at |
-| **Settings** | reporting_currency, enabled_currencies, runway_target_months (default 18), min_cash_reserve, loaded_cost_pct, trailing_window (3 / 6) |
-
-Shared records used: Program and milestones (Programs, 02), Organization (vendors, investors, funders), Agreement (Contracts, 04), accrual estimates (Trial Finance, 11, optional).
-
-### 9. Calculation rules
-
-- **Opening cash and actuals:** latest confirmed start-of-day bank balance on or before the cutoff; only actuals from that date to the cutoff count; invalid dates, a missing balance or truncated reads block exact cash claims (v1 rule).
-- **Monthly spend** of a line comes from its driver; schedules use their instalments.
-- **People cost** per month = annual salary ÷ 12 × (1 + loaded-cost %) for roles active that month, from the start month through the end month.
-- **Currency:** every amount keeps its own currency and is converted to the reporting currency. Actuals use the ECB monthly average for that month; forecasts and scenarios use the rates saved with the plan (refreshed only when the user updates the plan's rates or closes a month). Every converted figure can show its original amount and rate. Unsupported currency or missing rate → the row is flagged and excluded, never guessed.
-- **Net burn** = operating spend − operating income (interest, other). Financing (equity, grants, partnership payments, tax credits) is shown separately and does not reduce burn.
-- **Runway months** = months until forecast closing cash falls below zero, counting committed cash-in only; a second value includes contingent cash-in. **Trailing runway** (cash ÷ average net burn of the last 3 or 6 closed months) is shown as a secondary check.
-- **Cash at milestone** = forecast closing cash in the milestone month; **cushion** = months from the milestone to the cash-out date (or to the reserve, if set).
-- **Start-raise date** = first forecast month where remaining runway < runway target.
-- **Variance** = actual − plan of record by month and category, with % of plan.
-- **Runway bridge** = difference in runway months between the latest snapshot and now, attributed to changed lines, roles and cash-in events in order of impact.
-- **Limits:** read caps (800 rows per role) apply; incomplete reads are shown, never treated as zero.
-
-### 10. Claude's role
-
-- Set up the first forecast through conversation and propose records for review.
-- Fill monthly actuals from a P&L or bank statement the user shares in chat (any system, any country), proposed for review; no in-app file parser.
-- Turn plain-language what-ifs into scenario previews.
-- Draft the monthly commentary and explain the runway bridge.
-- Never: compute results outside the app's rules, give accounting or tax advice, or count contingent cash as committed.
-
-### 11. Compared with v1 `cash-runway` 1.2.2
-
-| v1 | v2 |
-|---|---|
-| One ledger table with entry kinds | Plans, spend lines with drivers, roles, cash-in events, milestones, actuals, bank balances |
-| One reporting currency; mixed currency excluded | 12 currencies with automatic ECB rates and exposure line |
-| Fixed scenario parameters | Unlimited scenarios, preview first, saved on purpose, compared side by side |
-| No locked baseline | Plan of record vs forecast, with variance |
-| No people model or milestones | Roles and hires; runway to milestone; start-raise date |
-| Briefings with review status | Frozen monthly snapshots with a runway bridge |
-| Six screens | Six screens (overview, cash flow, plan, people, scenarios, actuals) |
-
-Kept: identity/access model, governed writes, layout settings, opening-cash and cutoff rules, read caps, optional automations. No migration is needed (no existing users).
-
-### 12. Decisions
-
-| # | Question | Decision (10 Nov 2026) |
-|---|---|---|
-| 1 | Currencies | At least the 10 major currencies; set to 12 (USD, EUR, GBP, CHF, CAD, AUD, JPY, CNY, SEK, DKK, NOK, INR) with automatic ECB rates. |
-| 2 | Milestones | Runway keeps its own light milestone list, linked to Programs (02) when present. |
-| 3 | Import | No file upload unless a standard parser works across EU, UK, US and CA systems. None does today, so v2.0 has manual monthly actuals with Claude filling them from shared reports. |
-| 4 | Scenarios | Unlimited; preview by default; must be saved explicitly; saved scenarios flagged Outdated when their base forecast changes. |
-| 5 | Migration | Not needed; no existing users. |
-
-**Still open:** validate §1 and §3 with 5–10 design partners (biotech CEOs and part-time CFOs) before build; in particular whether program-level actuals are realistic (most small biotechs' books are not coded by program) and whether 18 months is the right default runway target.
-
-### 13. Acceptance criteria (beyond the shared contract)
-
-- A new user reaches a runway sentence within one session from a bank balance, a few spend lines and one financing event.
-- A USD spend line in a EUR company converts at the plan's saved rate; changing the plan's rates changes the forecast, while closed-month actuals keep their monthly rate.
-- Locking a plan of record makes it read-only; the forecast keeps working; variance appears after the next closed month.
-- A what-if creates a preview only; nothing is stored until Save; saved scenarios show Outdated after the base forecast changes.
-- "Shift program X by 3 months" changes only that program's lines; compare shows the new cash-out date and cash at each milestone.
-- Contingent cash never changes the base runway; the toggle changes only the second value.
-- Missing exchange rates, a missing bank balance or truncated reads are flagged and never produce an exact runway claim.
-- A saved snapshot never changes; the runway bridge against it explains the full difference in months.
+The final scope (screens, workflows, data model, calculation rules, access control, AI connections, customization, automations, fit with other apps, package checklist and acceptance criteria) is in **[apps/RUNWAY.md](apps/RUNWAY.md)**. Sections 1–4 above record the research and reasoning behind it; where they differ in detail, RUNWAY.md wins.
 
 ---
 
