@@ -59,6 +59,7 @@ test('Claude connects through its own endpoint and stays a separate principal fr
  const claude=await connect(app,browser,CLAUDE_CALLBACK,BASE+CLAUDE_MCP_PATH,true);
  const opened=await request(app).post(CLAUDE_MCP_PATH).set('Authorization','Bearer '+claude.access_token).set('Accept',accept).send(call('open_workspace'));
  assert.equal(opened.status,200,opened.text);const workspaceId=opened.body.result.structuredContent.result.workspaceId;assert.ok(workspaceId,'First Claude connection initializes the account with Claude enabled');
+ assert.ok(opened.body.result.structuredContent.result.openUrl.endsWith('/?workspaceId='+workspaceId),'Claude gets the exact browser link for its replies');
  const listed=await request(app).post(CLAUDE_MCP_PATH).set('Authorization','Bearer '+claude.access_token).set('Accept',accept).send({jsonrpc:'2.0',id:2,method:'tools/list',params:{}});
  const names=listed.body.result.tools.map((t:any)=>t.name);assert.ok(names.includes('open_workspace'));assert.ok(!names.includes('preview_tracker'),'Guest-only tools are not offered to Claude');
  // Claude has its own runner tools; ChatGPT's event subscription tools are not involved.
@@ -75,6 +76,7 @@ test('Claude connects through its own endpoint and stays a separate principal fr
  const overview=await am.overview(owner,workspaceId);assert.deepEqual(overview.connections.map((c:any)=>c.id),['chatgpt','claude']);
  await am.update(owner,workspaceId,{expectedVersion:overview.version,subject:'claude',claude:false});
  const claudeOff=await request(app).post(CLAUDE_MCP_PATH).set('Authorization','Bearer '+claude.access_token).set('Accept',accept).send(call('list_workspaces'));assert.deepEqual(claudeOff.body.result.structuredContent.result,[]);
+ assert.equal((await request(app).post('/mcp').set('Authorization','Bearer '+chatgpt.access_token).set('Accept',accept).send(call('open_workspace'))).body.result.structuredContent.result.openUrl,undefined,'ChatGPT open_workspace is unchanged');
  const chatgptOn=await request(app).post('/mcp').set('Authorization','Bearer '+chatgpt.access_token).set('Accept',accept).send(call('list_workspaces'));assert.equal(chatgptOn.body.result.structuredContent.result.length,1);
  const v2=(await am.overview(owner,workspaceId)).version;await am.update(owner,workspaceId,{expectedVersion:v2,subject:'claude',claude:true});
  const v3=(await am.overview(owner,workspaceId)).version;await am.update(owner,workspaceId,{expectedVersion:v3,subject:'chatgpt',chatgpt:false});
