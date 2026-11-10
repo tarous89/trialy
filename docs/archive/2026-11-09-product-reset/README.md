@@ -33,7 +33,7 @@ Historical only. Current guidance: [CONTEXT](../../../CONTEXT.md) and [product d
 - [docs/product/DYNAMIC_APP_TEMPLATES.md](docs/product/DYNAMIC_APP_TEMPLATES.md)
 - [docs/product/README.md](docs/product/README.md)
 - [docs/product/TEMPLATE_SHOWCASE_PLAN.md](docs/product/TEMPLATE_SHOWCASE_PLAN.md)
-- [docs/product/app-template-blueprints/BIOTECH.md](docs/product/app-template-blueprints/BIOTECH.md)
+- [docs/product/app-template-blueprints/BIOTECH_v1.md](docs/product/app-template-blueprints/BIOTECH_v1.md)
 - [docs/product/app-template-blueprints/CLINICAL_OPERATIONS.md](docs/product/app-template-blueprints/CLINICAL_OPERATIONS.md)
 - [docs/product/app-template-blueprints/CROS.md](docs/product/app-template-blueprints/CROS.md)
 - [docs/product/app-template-blueprints/README.md](docs/product/app-template-blueprints/README.md)

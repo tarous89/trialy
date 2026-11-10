@@ -12,7 +12,7 @@ All candidates use the deployed 0.2.39 app access/automation contract and [livin
 
 | Audience | Application specifications | Number |
 | --- | --- | ---: |
-| Biotech founders, executives, BD, finance, PMO | [Biotech](../../../../../product/app-template-blueprints/BIOTECH.md): Investor CRM; Partnership Tracker; Cash Runway; Hiring & Resource Management; CRO Selection; Project Oversight | 6 |
+| Biotech founders, executives, BD, finance, PMO | [Biotech](../../../../../product/app-template-blueprints/BIOTECH_v1.md): Investor CRM; Partnership Tracker; Cash Runway; Hiring & Resource Management; CRO Selection; Project Oversight | 6 |
 | Sponsor clinical operations and study management | [Clinical operations](../../../../../product/app-template-blueprints/CLINICAL_OPERATIONS.md): RFP Management; CRO Oversight; Site Feasibility Management; Investigator CRM; Trial Regulatory Submission; Trial Monitoring & Pharmacovigilance | 6 |
 | CRO sales, bids, delivery, feasibility and resourcing | [CROs](../../../../../product/app-template-blueprints/CROS.md): RFP Management; Resource Planning; PI Network Management; Site Feasibility Management; Sponsor Updates; Client Signals & CRM | 6 |
 | Nonclinical laboratories, academic science and research management | [Research teams](../../../../../product/app-template-blueprints/RESEARCH_TEAMS.md): Experiment Notebook; Inventory Management; **Literature Radar**; **Grant Pipeline**; Publication Management | 5 |
