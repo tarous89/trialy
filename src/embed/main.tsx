@@ -50,11 +50,13 @@ function requestFullscreen(ctx:any=bridge.getHostContext()){
  void bridge.requestDisplayMode({mode:'fullscreen'}).catch(()=>{/* Keep the inline view; do not keep changing the host display. */}).finally(()=>{fullscreenPending=false;});
 }
 bridge.onhostcontextchanged=ctx=>requestFullscreen({...bridge.getHostContext(),...ctx});
+// Present only in the Claude resource: Claude blocks nested frames from the platform origin, so apps render with srcdoc.
+function inlineFrameDocument(){try{const text=document.getElementById('trialy-frame-document')?.textContent;const value=text?JSON.parse(text):undefined;return typeof value==='string'?value:undefined;}catch{return undefined;}}
 function unwrap(result:any){if(result.isError)throw Object.assign(new Error(result.content?.find((c:any)=>c.type==='text')?.text??'The action could not complete.'),result.structuredContent?.error??{});return result.structuredContent?.result;}
 async function call(name:string,args:Record<string,unknown>={}){return unwrap(await bridge.callServerTool({name,arguments:args}));}
 function Workspace(){
  const [trackerRoute,setTrackerRoute]=useState<AppRoute>({path:'/'});
- const [platform,setPlatform]=useState({enabled:true,origin:__TRIALY_APP_URL__});
+ const [platform,setPlatform]=useState<{enabled:boolean;origin:string;frameDocument?:string}>(()=>({enabled:true,origin:__TRIALY_APP_URL__,frameDocument:inlineFrameDocument()}));
  const [identity,setIdentity]=useState<{name?:string;email?:string}>({});
  const [appUpdating,setAppUpdating]=useState(false);
  const [unavailableReason,setUnavailableReason]=useState<'missing'|'load'|'schema'>('missing'),retryDisplay=useRef<(()=>void)|null>(null);
@@ -67,7 +69,7 @@ function Workspace(){
  const [state,setState]=useState<any>({workspaces:[],types:[],templates:[]}),[typeId,setTypeId]=useState(''),[rows,setRows]=useState<any[]>([]),[total,setTotal]=useState(0),[offset,setOffset]=useState(0);
  const [form,setForm]=useState<any>(null),[draft,setDraft]=useState<Record<string,any>>({}),[preview,setPreview]=useState<any>(null),[query,setQuery]=useState('');
  const [view,setView]=useState('loading'),[documents,setDocuments]=useState<any[]>([]),[document,setDocument]=useState<any>(null),[search,setSearch]=useState<any>(null),[docQuery,setDocQuery]=useState(''),[versions,setVersions]=useState<any>(null);
- React.useEffect(()=>{setIdentity({});if(!ready||!state.viewerId)return;let active=true;void bridge.callServerTool({name:'read_connected_account',arguments:{}}).then(result=>{if(active&&!result.isError){setIdentity((result._meta as any)?.accountIdentity??{});setPlatform(current=>(result._meta as any)?.appPlatform??current);}}).catch(()=>{});return()=>{active=false;};},[ready,state.viewerId]);
+ React.useEffect(()=>{setIdentity({});if(!ready||!state.viewerId)return;let active=true;void bridge.callServerTool({name:'read_connected_account',arguments:{}}).then(result=>{if(active&&!result.isError){setIdentity((result._meta as any)?.accountIdentity??{});setPlatform(current=>{const next=(result._meta as any)?.appPlatform;return next?{...next,frameDocument:current.frameDocument}:current;});}}).catch(()=>{});return()=>{active=false;};},[ready,state.viewerId]);
 
  const [organizationIncoming,setOrganizationIncoming]=useState<any>(null);
  const [foundationIncoming,setFoundationIncoming]=useState<any>(null);

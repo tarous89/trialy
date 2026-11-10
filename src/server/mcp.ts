@@ -43,7 +43,7 @@ export function addMcp(app:Express,s:Service,authenticate:RequestHandler,options
   if(claude)preferFullscreen(server);
   addTrackerDesignMcp(server);
   addWorkspaceGuidanceMcp(server);
-  const bundle=await workspaceResource(),resource=bundle.uri;
+  const bundle=await workspaceResource(claude?'claude':'chatgpt'),resource=bundle.uri;
   const metadata={ui:{resourceUri:resource},'openai/widgetAccessible':true,securitySchemes:[{type:'oauth2',scopes:['trialy']}], 'openai/outputTemplate':resource};
   const result=(data:unknown)=>({content:[{type:'text' as const,text:JSON.stringify(data)}],structuredContent:{result:data}});
   const safe=(fn:(v:any)=>Promise<any>)=>async(v:any)=>{try{if(!actor)return {isError:true,content:[{type:'text' as const,text:'Connect your TrialAgents account to access saved work.'}],_meta:{'mcp/www_authenticate':[`Bearer resource_metadata="${oauthPublicUrl(process.env,PLATFORM_ORIGIN)}/.well-known/oauth-protected-resource/mcp"`]}};return result(await fn(v));}catch(e){return {isError:true,structuredContent:{error:{status:e instanceof AppError?e.status:500,code:e instanceof AppError?e.code:'internal'}},content:[{type:'text' as const,text:e instanceof AppError?e.message:'The action could not complete. Check its status before retrying.'}]};}};

@@ -13,6 +13,9 @@ import {CLAUDE_MCP_PATH} from '../src/server/local-oauth.js';
 import {Service} from '../src/domain/service.js';
 import {AccessManagement} from '../src/domain/access-management.js';
 import {AccessGrid} from '../src/domain/access-grid.js';
+import {workspaceResource} from '../src/server/ui-resource.js';
+import {frontendFrameDocument} from '../src/shared/frontend-frame.js';
+import {bundledAppFont} from '../src/workspace/design-quality.js';
 
 const BASE='https://trialy.example',CLAUDE_CALLBACK='https://claude.ai/api/mcp/auth_callback',CHATGPT_CALLBACK='https://chatgpt.com/connector/oauth/synthetic';
 const accept='application/json, text/event-stream';
@@ -66,6 +69,15 @@ test('Claude connects through its own endpoint and stays a separate principal fr
  // Claude has its own runner tools; ChatGPT's event subscription tools are not involved.
  for(const tool of ['list_app_automations','prepare_automation_setup','connect_claude_runner','claim_automation_work'])assert.ok(names.includes(tool),tool);
  const chatgptTools=await request(app).post('/mcp').set('Accept',accept).send({jsonrpc:'2.0',id:3,method:'tools/list',params:{}});assert.ok(!chatgptTools.body.result.tools.some((t:any)=>t.name==='connect_claude_runner'),'ChatGPT tool list is unchanged');
+ // Claude ignores frameDomains, so its widget carries the app frame document for srcdoc; ChatGPT's widget is byte-identical to the bundle.
+ const uriOf=(r:any,name:string)=>r.body.result.tools.find((t:any)=>t.name===name)._meta.ui.resourceUri;
+ const readResource=(path:string,uri:string,auth?:string)=>{const r=request(app).post(path).set('Accept',accept);if(auth)r.set('Authorization','Bearer '+auth);return r.send({jsonrpc:'2.0',id:4,method:'resources/read',params:{uri}});};
+ const claudeWidget=(await readResource(CLAUDE_MCP_PATH,uriOf(listed,'open_workspace'),claude.access_token)).body.result.contents[0].text;
+ const chatgptWidget=(await readResource('/mcp',uriOf(chatgptTools,'open_workspace'))).body.result.contents[0].text;
+ assert.notEqual(uriOf(listed,'open_workspace'),uriOf(chatgptTools,'open_workspace'),'Claude and ChatGPT widgets are cached separately');
+ assert.equal(chatgptWidget,(await workspaceResource()).html,'ChatGPT widget is unchanged');assert.ok(!chatgptWidget.includes('<script type="application/json" id="trialy-frame-document">'),'ChatGPT widget carries no inline frame');
+ const frameData=claudeWidget.match(/<script type="application\/json" id="trialy-frame-document">([^<]*)<\/script>/);assert.ok(frameData,'Claude widget carries the app frame document');
+ assert.ok(/^[\x00-\x7e]*$/.test(frameData[1]),'Frame document is ASCII-escaped');assert.equal(JSON.parse(frameData[1]),await frontendFrameDocument(bundledAppFont),'Claude frame document matches the served frame');
  // Tokens only work on the endpoint they were issued for.
  assert.equal((await request(app).post('/mcp').set('Authorization','Bearer '+claude.access_token).set('Accept',accept).send(call('open_workspace'))).status,401);
  const chatgpt=await connect(app,browser,CHATGPT_CALLBACK,BASE+'/mcp',false);
