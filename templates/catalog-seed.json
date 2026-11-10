@@ -1,6 +1,6 @@
 {
   "life.cash-runway": {
-    "schema": "templates/source/cash-runway/schema.example.json",
+    "schema": "templates/source/cash-runway/archive/1.2.2/schema.example.json",
     "version": "1.2.2"
   },
   "life.inventory-management": {

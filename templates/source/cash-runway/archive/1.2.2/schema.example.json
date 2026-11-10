@@ -1,0 +1,311 @@
+{
+  "ledger": {
+    "name": "ledger",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Line item",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "kind",
+        "name": "Entry type",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "opening",
+          "actual_out",
+          "actual_in",
+          "budget_out",
+          "budget_in",
+          "funding_in"
+        ]
+      },
+      {
+        "key": "period",
+        "name": "Period (YYYY-MM-DD)",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "amount",
+        "name": "Amount",
+        "kind": "money",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "currency",
+        "name": "Currency",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "program",
+        "name": "Program",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "category",
+        "name": "Category",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "commitment",
+        "name": "Commitment",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Committed",
+          "Discretionary",
+          "Contingent"
+        ]
+      },
+      {
+        "key": "vendor",
+        "name": "Vendor / source party",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source",
+        "name": "Finance reference URL",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "Assumptions / evidence",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "kind": "kind",
+      "period": "period",
+      "amount": "amount",
+      "currency": "currency",
+      "program": "program",
+      "category": "category",
+      "commitment": "commitment",
+      "vendor": "vendor",
+      "source": "source",
+      "notes": "notes",
+      "archived": "archived"
+    }
+  },
+  "scenarios": {
+    "name": "scenarios",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Scenario name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "clinical_multiplier",
+        "name": "Clinical spend multiplier",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "people_delta",
+        "name": "Added monthly personnel cost",
+        "kind": "money",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "contractor_delta",
+        "name": "Added monthly contractor cost",
+        "kind": "money",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "funding_delay",
+        "name": "Funding delay (months)",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "trial_shift",
+        "name": "Clinical spend shift (months)",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "reserve",
+        "name": "Minimum cash reserve",
+        "kind": "money",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "cutoff",
+        "name": "Actuals cutoff",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "Rationale and assumptions",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "clinicalMultiplier": "clinical_multiplier",
+      "peopleDelta": "people_delta",
+      "contractorDelta": "contractor_delta",
+      "fundingDelay": "funding_delay",
+      "trialShift": "trial_shift",
+      "reserve": "reserve",
+      "cutoff": "cutoff",
+      "notes": "notes",
+      "archived": "archived"
+    }
+  },
+  "briefings": {
+    "name": "briefings",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Report title",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "period",
+        "name": "Report period",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "cutoff",
+        "name": "Actuals cutoff",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Review status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Draft",
+          "In review",
+          "Approved"
+        ]
+      },
+      {
+        "key": "author",
+        "name": "Author / reviewer",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "body",
+        "name": "Narrative",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "sources",
+        "name": "Data and evidence IDs",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "period": "period",
+      "cutoff": "cutoff",
+      "status": "status",
+      "author": "author",
+      "body": "body",
+      "sources": "sources",
+      "archived": "archived"
+    }
+  }
+}
