@@ -1,3 +1,4 @@
+import {useWorkspaceView} from './WorkspaceView.js';
 import {AppPlatform} from './AppPlatform.js';
 import {Vivid,VividSection,VividField,VividLayoutRow} from './Vivid.js';
 import {ToolSettingsShell} from './ToolSettingsShell.js';
@@ -28,6 +29,7 @@ export function AccessPanel({call,scope,onClose,openLink,initialDraft,onDirty,tr
  const request=useRef(0),version=useRef<number|undefined>(initialDraft?.expectedVersion),embedded=useEmbeddedNavigation(),hostLink=React.useContext(AccessHost);
  const platform=React.useContext(AppPlatform);
  const dirty=changes.length>0;
+ useWorkspaceView({view:'access-control',workspaceId:data?.workspaceId,subjectId:subject||undefined,scope:scope?{kind:scope.kind,resourceId:scope.resourceId,field:scope.field}:undefined,expandedScopes:Object.keys(expanded).filter(key=>expanded[key]),editing,hasUnsavedChanges:dirty});
  const openServices=()=>{if(data&&scope){const url=new URL('/?tab=apps&workspaceId='+data.workspaceId+'&serviceApp='+scope.resourceId,platform.origin??location.origin).href;(openLink??hostLink??((url:string)=>window.open(url,'_blank','noopener,noreferrer')))(url);}};
  async function load(){const seq=++request.current;setLoading(true);try{const value=await call('read_access_grid',subject?{subject}:{});if(seq!==request.current)return;setData(value);if(!subject){resolvedDefaultSubject.current=value.subject;setSubject(value.subject);}if(!dirty)version.current=value.version;setError('');}catch(e){if(seq===request.current)setError((e as Error).message);}finally{if(seq===request.current)setLoading(false);}}
  useEffect(()=>{if(subject&&resolvedDefaultSubject.current===subject)resolvedDefaultSubject.current=null;else void load();return()=>{request.current++;};},[subject]);

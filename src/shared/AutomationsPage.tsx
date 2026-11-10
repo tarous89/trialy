@@ -1,3 +1,4 @@
+import {useWorkspaceView} from './WorkspaceView.js';
 import React,{useEffect,useRef,useState} from 'react';
 import {AppPlatform} from './AppPlatform.js';
 import {Button,SearchField,Select} from './ui/Controls.js';
@@ -8,6 +9,7 @@ type Call=(name:string,args:any)=>Promise<any>;
 export function AutomationsPage({call,appId}:{call:Call;appId?:string}){
  const readEditor=()=>{const q=new URLSearchParams(window.location.search);return q.has('automationId')?{id:q.get('automationId')!,kind:q.get('automationKind')==='research'?'research':'action'}:null;};
  const [editing,setEditing]=useState(readEditor),[creating,setCreating]=useState(()=>new URLSearchParams(window.location.search).get('automationMode')==='new'),[filterApp,setFilterApp]=useState(appId),[data,setData]=useState<any>(null),[query,setQuery]=useState(''),[state,setState]=useState('all'),[offset,setOffset]=useState(0),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false);const epoch=useRef(0);
+ useWorkspaceView({view:'automations',appId:filterApp,automationId:editing?.id,automationKind:editing?.kind,editing:!!editing||creating});
  const load=async(n=offset)=>{const token=++epoch.current;setBusy(true);setNotice('');try{const d=await call('list_app_automations',{appId:filterApp,query,state,offset:n});if(token===epoch.current){setData(d);setOffset(n);}}catch{if(token===epoch.current)setNotice('Automations could not be loaded. Your apps are still available.');}finally{if(token===epoch.current)setBusy(false);}};
  useEffect(()=>{void load(0);return()=>{epoch.current++;};},[filterApp,state]);
  const navigate=(edit:{id:string;kind:string}|null,create=false)=>{const url=new URL(window.location.href);url.searchParams.set('tab','automations');for(const key of ['automationId','automationKind','automationMode'])url.searchParams.delete(key);if(edit){url.searchParams.set('automationId',edit.id);url.searchParams.set('automationKind',edit.kind);}if(create)url.searchParams.set('automationMode','new');window.history.pushState({},'',url);setEditing(edit);setCreating(create);document.querySelector('#ty-main')?.scrollTo(0,0);};

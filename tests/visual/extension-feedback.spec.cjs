@@ -18,7 +18,7 @@ test('Extension never flashes legacy tabs while account metadata is slow or fail
  const root=page.frameLocator('#app');await expect(root.getByRole('heading',{name:'Apps',exact:true})).toBeVisible();
  await expect(root.locator('.ty-app-cover')).toHaveCount(1);expect(await frame.evaluate(()=>window.sawLegacyTabs)).toBe(false);
  release();await expect(root.getByRole('heading',{name:'Apps',exact:true})).toBeVisible();
- await root.getByRole('button',{name:'Open navigation',exact:true}).click();await root.getByRole('button',{name:'New',exact:true}).click();
+ if(await root.getByRole('button',{name:'Expand navigation',exact:true}).count())await root.getByRole('button',{name:'Expand navigation',exact:true}).click();await root.getByRole('button',{name:'New',exact:true}).click();
  await expect(root.getByRole('menuitem',{name:'App',exact:true})).toBeVisible();await expect(root.getByRole('menuitem',{name:'Dashboard',exact:true})).toHaveCount(0);
  expect(await frame.evaluate(()=>window.sawLegacyTabs)).toBe(false);
 });
