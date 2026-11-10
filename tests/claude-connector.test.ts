@@ -1,4 +1,4 @@
-import {test} from 'node:test';
+import {test,after} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,readdir} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
@@ -18,7 +18,11 @@ const BASE='https://trialy.example',CLAUDE_CALLBACK='https://claude.ai/api/mcp/a
 const accept='application/json, text/event-stream';
 const call=(name:string,args:Record<string,unknown>={})=>({jsonrpc:'2.0',id:1,method:'tools/call',params:{name,arguments:args}});
 
-async function setup(){
+let shared:Promise<any>|undefined;
+/** One in-memory database for the endpoint tests (several WASM instances per process can crash V8 on CI). Each test uses its own account. */
+function setup(){shared??=createSetup();return shared;}
+after(async()=>{if(shared)await (await shared).db.close();});
+async function createSetup(){
  const pg=new PGlite();for(const f of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+f,'utf8'));
  const db:Database={query:(sql,v)=>pg.query(sql,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
  const app=baseApp();app.use(session({secret:'synthetic-session-secret-for-testing-only',resave:false,saveUninitialized:false}));
@@ -27,13 +31,13 @@ async function setup(){
  return {db,app,auth};
 }
 /** Full browser OAuth: register, authorize, sign up or sign in, consent and exchange. */
-async function connect(app:any,browser:any,redirect:string,resource:string,signup:boolean){
+async function connect(app:any,browser:any,redirect:string,resource:string,signup:boolean,email='claude@example.invalid'){
  const client=await request(app).post('/register').send({client_name:redirect.includes('claude')?'Claude':'ChatGPT',redirect_uris:[redirect],token_endpoint_auth_method:'none',grant_types:['authorization_code','refresh_token'],response_types:['code']});assert.equal(client.status,201,client.text);
  const verifier='c'.repeat(43),challenge=createHash('sha256').update(verifier).digest('base64url');
  const start=await browser.get('/authorize').query({response_type:'code',client_id:client.body.client_id,redirect_uri:redirect,scope:'trialy',resource,state:'state-'+resource,code_challenge:challenge,code_challenge_method:'S256'});assert.equal(start.status,302,start.text);
  const target=new URL(start.headers.location);const login=await browser.get(target.pathname+target.search);
  if(login.status===200){const csrf=login.text.match(/name="csrf" value="([^"]+)"/)![1];
-  const step=signup?await browser.post('/auth/signup').type('form').send({firstName:'Test',lastName:'User',email:'claude@example.invalid',password:'synthetic-password-123',intendedUse:'accepted',csrf}):await browser.post('/auth/login').type('form').send({email:'claude@example.invalid',password:'synthetic-password-123',csrf});
+  const step=signup?await browser.post('/auth/signup').type('form').send({firstName:'Test',lastName:'User',email,password:'synthetic-password-123',intendedUse:'accepted',csrf}):await browser.post('/auth/login').type('form').send({email,password:'synthetic-password-123',csrf});
   assert.equal(step.headers.location,'/auth/consent');}
  const consent=await browser.get('/auth/consent');assert.equal(consent.status,200,consent.text);assert.ok(consent.text.includes(new URL(redirect).origin),'Consent shows the return hostname');
  const approval=await browser.post('/auth/consent').type('form').send({decision:'approve',csrf:consent.text.match(/name="csrf" value="([^"]+)"/)![1]});const callback=new URL(approval.headers.location);assert.equal(callback.origin,new URL(redirect).origin);
@@ -67,7 +71,7 @@ test('Claude connects through its own endpoint and stays a separate principal fr
  const token=(await db.query("SELECT assistant,resource FROM oauth_tokens WHERE kind='access' ORDER BY assistant")).rows;assert.deepEqual(token.map((r:any)=>r.assistant),['chatgpt','claude']);assert.equal(token[0].resource,null);
 
  // The owner switches Claude off; ChatGPT is unaffected, and the reverse.
- const user=(await db.query('SELECT user_id FROM local_accounts')).rows[0].user_id,owner={userId:user,origin:'human' as const},am=new AccessManagement(db);
+ const user=(await db.query("SELECT user_id FROM local_accounts a JOIN users u ON u.id=a.user_id WHERE u.email='claude@example.invalid'")).rows[0].user_id,owner={userId:user,origin:'human' as const},am=new AccessManagement(db);
  const overview=await am.overview(owner,workspaceId);assert.deepEqual(overview.connections.map((c:any)=>c.id),['chatgpt','claude']);
  await am.update(owner,workspaceId,{expectedVersion:overview.version,subject:'claude',claude:false});
  const claudeOff=await request(app).post(CLAUDE_MCP_PATH).set('Authorization','Bearer '+claude.access_token).set('Accept',accept).send(call('list_workspaces'));assert.deepEqual(claudeOff.body.result.structuredContent.result,[]);
@@ -84,21 +88,19 @@ test('Claude connects through its own endpoint and stays a separate principal fr
  await assert.rejects(am.update(owner,workspaceId,{expectedVersion:(await am.overview(owner,workspaceId)).version,subject:'claude',rule:{kind:'database',resourceId:workspaceId,read:'allow',write:'allow'}}),/only add restrictions/);
  // Permission changes from Claude are never saved directly.
  await assert.rejects(am.update({userId:user,origin:'ai',assistant:'claude'},workspaceId,{expectedVersion:0,subject:'claude',claude:true}),/signed-in owner session/);
- await db.close();
 });
 
 test('Claude refresh tolerates a parallel duplicate; ChatGPT keeps strict replay detection',async()=>{
  const {db,app}=await setup();const browser=request.agent(app);
- const claude=await connect(app,browser,CLAUDE_CALLBACK,BASE+CLAUDE_MCP_PATH,true);
+ const claude=await connect(app,browser,CLAUDE_CALLBACK,BASE+CLAUDE_MCP_PATH,true,'refresh@example.invalid');
  const refresh=(t:any)=>request(app).post('/token').type('form').send({grant_type:'refresh_token',client_id:t.clientId,refresh_token:t.refresh_token});
  const first=await refresh(claude);assert.equal(first.status,200,first.text);
  const duplicate=await refresh(claude);assert.equal(duplicate.status,200,'Duplicate within the grace window is not treated as theft');
- await db.query("UPDATE oauth_tokens SET used_at=used_at-60000 WHERE used_at IS NOT NULL");
+ await db.query("UPDATE oauth_tokens SET used_at=used_at-60000 WHERE used_at IS NOT NULL AND client_id=$1",[claude.clientId]);
  assert.equal((await refresh(claude)).status,400,'Replay after the window revokes the connection');
  assert.equal((await refresh({clientId:claude.clientId,refresh_token:first.body.refresh_token})).status,400);
- const chatgpt=await connect(app,browser,CHATGPT_CALLBACK,BASE+'/mcp',false);
+ const chatgpt=await connect(app,browser,CHATGPT_CALLBACK,BASE+'/mcp',false,'refresh@example.invalid');
  assert.equal((await refresh(chatgpt)).status,200);assert.equal((await refresh(chatgpt)).status,400,'ChatGPT replay is still rejected immediately');
- await db.close();
 });
 
 test('Claude Code loopback callbacks register; other plain-HTTP callbacks stay rejected',async()=>{
@@ -108,7 +110,6 @@ test('Claude Code loopback callbacks register; other plain-HTTP callbacks stay r
  assert.equal((await register('http://127.0.0.1:49152/callback')).status,201);
  assert.equal((await register('http://example.com/callback')).status,400);
  assert.equal((await register('http://localhost.example.com/callback')).status,400);
- await db.close();
 });
 
 test('migration copies existing ChatGPT restrictions to Claude and keeps inspectors human-only',async()=>{
