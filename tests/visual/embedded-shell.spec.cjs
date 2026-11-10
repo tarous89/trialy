@@ -26,10 +26,13 @@ for(const width of [1440,390])test(`Embedded sidebar, native gallery and context
  await expect.poll(()=>currentView(page)).toMatchObject({view:'templates',templateId:expect.any(String)});
  await modal.getByRole('button',{name:'Fullscreen preview'}).click();await expect(modal).toHaveClass(/is-expanded/);expect((await modal.boundingBox()).width).toBe(width);
  await page.screenshot({path:`/tmp/embedded-gallery-${width}.png`});
- await modal.getByRole('button',{name:'Use',exact:true}).click();await expect.poll(()=>page.evaluate(()=>window.lastOpenedUrl)).toContain('/?tab=templates&workspaceId='+f.workspaceId+'&template=');
- await modal.getByRole('button',{name:'Close preview'}).click();await page.screenshot({path:`/tmp/embedded-gallery-page-${width}.png`});if(await toggle.getAttribute('aria-expanded')==='false')await toggle.click();
+ await page.route('**/fixture/tool',async route=>{if(route.request().postDataJSON().name==='install_app_template')await new Promise(r=>setTimeout(r,550));await route.continue();});
+ await modal.getByRole('button',{name:'Use',exact:true}).click();await expect(root.getByRole('progressbar',{name:'Working'})).toBeVisible();
+ await expect(root.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Cash Runway',exact:true})).toBeVisible();
+ await expect(root.getByRole('progressbar',{name:'Working'})).toHaveCount(0);expect(await page.evaluate(()=>window.lastOpenedUrl)).toBeUndefined();
+ await expect(toggle).toHaveAttribute('aria-expanded','false');await toggle.click();
  await root.getByRole('button',{name:'Apps',exact:true}).click();await root.getByRole('button',{name:'New',exact:true}).click();await root.getByRole('menuitem',{name:'App',exact:true}).click();await expect(root.getByRole('heading',{name:'App templates',exact:true})).toBeVisible();
- const draft=await(await page.request.get(base+'/fixture/app-draft')).json();await page.evaluate(r=>window.deliver(r),draft);
+ const draft=await(await page.request.get(base+'/fixture/app-draft')).json();expect(draft.screen,JSON.stringify(draft).slice(0,1000)).toBe('tracker-preview');await page.evaluate(r=>window.deliver(r),draft);
  const app=root.frameLocator('iframe[title="Saved frontend code"]');await expect(app.getByRole('heading',{name:'Embedded draft',exact:true})).toBeVisible();
  await expect(toggle).toHaveAttribute('aria-expanded','false');await expect.poll(()=>currentView(page)).toMatchObject({view:'app',route:'/'});
  await app.getByRole('link',{name:'Details',exact:true}).click();await expect(app.getByRole('heading',{name:'Draft details',exact:true})).toBeVisible();await expect.poll(()=>currentView(page)).toMatchObject({view:'app',route:'/details'});

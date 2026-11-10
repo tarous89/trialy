@@ -3,7 +3,7 @@ const base='http://127.0.0.1:4179';
 for(const width of [1920,390])test(`Standard triggers, full width and native top actions preserve recurrence at ${width}px`,async({page})=>{
  await page.setViewportSize({width,height:1000});const f=await(await page.request.get(base+'/fixture/apps')).json(),id='31000000-0000-4000-8000-000000000021';
  const config={name:'Hourly research',appId:f.appId,objective:'Find evidence',instructions:'Preserve verified records and collect sources.',sourcePolicy:'Official publications',notificationPolicy:'Send a complete report',schedule:{description:'Hourly after completion',timeZone:'Europe/Berlin'},expiresAt:'2027-12-31T00:00:00Z',readBindings:[],automation:{runnerId:id,trigger:{kind:'after_success',minutes:60},initialLookbackDays:7,catchUp:'coalesce'}};let submitted;
- await page.route('**/app-services/automations',route=>route.fulfill({json:{id,state:'ready',enabled:true}}));
+ await page.route(/\/app-services\/automations(?:\?.*)?$/,route=>route.fulfill({json:{id,state:'ready',enabled:true}}));
  await page.route(/\/app-services\/automations\/definitions(?:[/?].*)?$/,route=>new URL(route.request().url()).pathname.endsWith(id)?route.fulfill({json:{id,kind:'research',version:0,enabled:true,config,app:{id:f.appId,name:'Tracker'}}}):route.fulfill({json:{rows:[{id,kind:'research',name:config.name,app_name:'Tracker',app_url:f.url,prompt:config.instructions,version:0,enabled:true,effectiveEnabled:true,connectionState:'ready',trigger:config.automation.trigger}],nextOffset:null}}));
  await page.route('**/app-services/automations/options?*',route=>route.fulfill({json:{owner:{name:'Owner',email:'owner@example.invalid'},members:[],tables:[],writeScopes:[]}}));
  await page.route('**/app-services/monitoring/prepare',route=>{submitted=route.request().postDataJSON();return route.fulfill({status:503,json:{message:'Retain draft'}});});
@@ -25,7 +25,7 @@ test('Multiple calendar days and timezone are editable without losing existing c
  const f=await(await page.request.get(base+'/fixture/apps')).json(),id='31000000-0000-4000-8000-000000000022';let submitted;
  const trigger={kind:'calendar',frequency:'weekly',time:'09:00',timeZone:'Europe/Berlin',anchor:'2026-11-02',interval:2,weekdays:[1,3,5],monthDay:31,monthEnd:'skip'};
  const config={name:'Research',appId:f.appId,instructions:'Collect evidence',sourcePolicy:'Primary sources',objective:'Review',schedule:{description:'Weekdays',timeZone:'Europe/Berlin'},automation:{runnerId:id,trigger},readBindings:[]};
- await page.route('**/app-services/automations',route=>route.fulfill({json:{id,state:'ready'}}));
+ await page.route(/\/app-services\/automations(?:\?.*)?$/,route=>route.fulfill({json:{id,state:'ready'}}));
  await page.route(`**/app-services/automations/definitions/research/${id}`,route=>route.fulfill({json:{id,kind:'research',enabled:true,config,version:0,app:{name:'Tracker'}}}));
  await page.route('**/app-services/automations/options?*',route=>route.fulfill({json:{owner:{email:'owner@example.invalid'},members:[],tables:[],writeScopes:[]}}));
  await page.route('**/app-services/monitoring/prepare',route=>{submitted=route.request().postDataJSON();return route.fulfill({status:503,json:{message:'Draft kept'}});});

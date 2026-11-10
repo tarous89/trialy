@@ -1,3 +1,4 @@
+import {Connectors} from '../connectors/service.js';
 import {z} from 'zod';
 import {randomUUID} from 'node:crypto';
 import type {Database} from '../db/database.js';
@@ -30,7 +31,14 @@ export class AutomationManagement{
   const owner=members.find(m=>m.id===a.userId);if(!owner)fail(403,'owner_required','Owner unavailable');
   const scopes=(await f.scopes(a,w)).filter((s:any)=>!s.revoked_at&&!s.schemaChanged&&s.body.autoWrite&&Date.parse(s.body.expiresAt)>Date.now()&&s.body.projectId===app.project_id&&s.body.bindings.length===1&&s.body.bindings.every((b:any)=>b.fields.every((key:string)=>tables.some((t:any)=>t.id===b.typeId&&t.fields.some((field:any)=>field.key===key&&field.writable))))).map((s:any)=>({scopeId:s.id,version:s.version}));
   const researchAutomations=[];for(const row of (await this.db.query("SELECT * FROM app_monitors WHERE deleted_at IS NULL AND workspace_id=$1 AND user_id=$2 AND app_id=$3 ORDER BY created_at,id",[w,a.userId,appId])).rows){try{const service=new AppMonitoring(this.db);if(await service.historyVisible(a,w,row))researchAutomations.push({id:row.id,version:row.version,name:row.config.name,enabled:row.enabled});}catch(e){if(![403,404,409].includes((e as any).status))throw e;}}
-  return {owner,researchAutomations,members:members.filter(m=>m.id!==owner.id),tables,writeScopes:scopes};
+  const connectors=[];const connectorService=new Connectors(this.db,(tx,actor,workspace,id)=>f.component(tx,actor,workspace,id));
+  // Only expose inputs for authorized operations; never include credentials or raw connection config.
+  for(const row of (await this.db.query('SELECT id FROM connectors WHERE workspace_id=$1 AND removed_at IS NULL',[w])).rows){
+   const c=await connectorService.read(a,w,row.id);if(!c.config.enabled||c.credentialStatus==='missing')continue;
+   const operations=c.config.operations.filter((o:any)=>o.apps.includes(appId)&&o.users.includes(a.userId)&&(a.origin!=='ai'||o.aiEnabled)&&!o.mappings.length&&o.parameters.every((p:any)=>p.kind!=='json')).map(o=>({id:o.id,name:o.name,parameters:o.parameters.filter(p=>!Object.hasOwn(o.constants,p.name))}));
+   if(operations.length)connectors.push({id:c.id,name:c.config.name,version:c.version,operations});
+  }
+  return {assistant:actorAssistant(a),connectors,owner,researchAutomations,members:members.filter(m=>m.id!==owner.id),tables,writeScopes:scopes};
  }
  async list(a:Actor,w:string,input:unknown){await this.owner(a,w);const v=automationList.parse(input);
   const dependencies=await automationDependencies(this.db,w,a.userId);

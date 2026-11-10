@@ -1,3 +1,4 @@
+import {cleanupRemovedAppFields} from './app-cleanup.js';
 import {appRevisionReview} from './app-review.js';
 import {appAutomationCopies,copyAppAutomations} from '../automations/copy.js';
 import {monitoringReceiptRuns} from '../app-services/monitoring-guard.js';
@@ -873,6 +874,7 @@ export class WorkspaceFoundation {
    else await tx.query('INSERT INTO workspace_components(id,workspace_id,project_id,name,format,source,bindings,created_by,execution,assets,source_access) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',[objectId,w,after.project_id,after.name,after.format,after.source,J(after.bindings),a.userId,J(after.execution??[]),J(after.assets??[]),after.source_access??'workspace']);
    if(op.kind==='save_component'&&op.reuseOrigin&&!before){after.allowed_users=[a.userId];after.ai_enabled=a.origin==='ai';await tx.query('UPDATE workspace_components SET allowed_users=$1,ai_enabled=$3 WHERE id=$2',[J([a.userId]),objectId,after.ai_enabled]);}
    await tx.query('UPDATE workspace_components SET resource_kind=$1,manifest=$2 WHERE id=$3',[after.resource_kind??'generic',after.manifest?J(after.manifest):null,objectId]);
+   if(op.kind==='save_component'||op.kind==='archive_component')await cleanupRemovedAppFields(tx,a,w,p,before,after);
   }
   else if(op.kind==='save_scope'){
    const stamp=await this.scopeStamp(tx,{...a,origin:'ai'},w,op.scope);
