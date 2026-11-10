@@ -1,0 +1,68 @@
+const {test,expect}=require('./test.cjs');
+const base='http://127.0.0.1:4179';
+async function currentView(page){return page.evaluate(()=>{const text=window.modelContextUpdates?.at(-1)?.content[0].text;return text?JSON.parse(text.slice(text.indexOf('\n')+1)):null;});}
+for(const width of [1440,390])test(`Embedded sidebar, native gallery and context at ${width}px`,async({page})=>{
+ await page.setViewportSize({width,height:1000});await page.request.post(base+'/fixture/reset-starters');
+ const f=await(await page.request.get(base+'/fixture/apps')).json();
+ await page.goto(base+'/?apps=1');await page.waitForFunction(()=>window.hostReady);
+ await page.evaluate(workspaceId=>window.deliver({screen:'home',workspaceId,viewerId:'fixture',workspaces:[],types:[]}),f.workspaceId);
+ const root=page.frameLocator('#app'),toggle=root.locator('.ty-shell-toggle'),header=root.locator('.ty-topbar');
+ await expect(toggle).toHaveAttribute('aria-expanded','true');await expect(root.getByRole('button',{name:'Templates',exact:true})).toHaveCount(0);
+ await expect(toggle.locator('svg rect')).toHaveCount(1);expect((await header.boundingBox()).x).toBe(0);
+ await expect(header.getByRole('button',{name:'Open TrialAgents',exact:true})).toBeVisible();await expect(header.locator('.ty-brand-dot')).toHaveCount(0);
+ await expect(header.getByRole('link',{name:/Open ChatGPT|Open Claude/})).toHaveCount(0);
+ await toggle.click();await expect(root.locator('.ty-sidebar')).toHaveCount(0);await toggle.hover();await expect(toggle).toHaveCSS('color','rgb(255, 255, 255)');
+ await root.getByRole('link',{name:'Browse app templates',exact:true}).click();await expect(root.getByRole('heading',{name:'App templates',exact:true})).toBeVisible();
+ await expect(toggle).toHaveAttribute('aria-expanded','true');if(width<760)await toggle.click();
+ expect(await page.evaluate(()=>window.lastOpenedUrl)).toBeUndefined();
+ const catalog=root.getByRole('region',{name:'App templates'});await expect(catalog.locator('article')).toHaveCount(23);
+ await root.getByLabel('Team',{exact:true}).selectOption('Biotech');await root.getByLabel('Workflow',{exact:true}).selectOption('Finance');
+ await expect(catalog.locator('article')).toHaveCount(1);const card=catalog.locator('article');await expect(card.getByRole('button')).toHaveCount(2);
+ await expect(card.locator('img')).toHaveJSProperty('naturalWidth',1440);await expect(card.locator('img')).toHaveAttribute('src',/^data:image\/jpeg;base64,/);
+ await root.getByRole('searchbox',{name:'Search templates'}).fill('missing app');await expect(root.getByRole('heading',{name:'No templates match'})).toBeVisible();await root.getByRole('searchbox',{name:'Search templates'}).fill('Cash');
+ await card.getByRole('button',{name:'Preview',exact:true}).click();const modal=root.getByRole('dialog',{name:'Cash Runway preview'});
+ await expect(root.frameLocator('iframe[title="Cash Runway interactive preview"]').getByRole('heading',{name:'Cash Runway',exact:true})).toBeVisible();
+ await expect(modal.locator('iframe')).toHaveAttribute('sandbox','allow-scripts');await expect(modal.locator('iframe')).toHaveAttribute('srcdoc',/connect-src 'none'/);
+ await expect.poll(()=>currentView(page)).toMatchObject({view:'templates',templateId:expect.any(String)});
+ await modal.getByRole('button',{name:'Fullscreen preview'}).click();await expect(modal).toHaveClass(/is-expanded/);expect((await modal.boundingBox()).width).toBe(width);
+ await page.screenshot({path:`/tmp/embedded-gallery-${width}.png`});
+ await modal.getByRole('button',{name:'Use',exact:true}).click();await expect.poll(()=>page.evaluate(()=>window.lastOpenedUrl)).toContain('/?tab=templates&workspaceId='+f.workspaceId+'&template=');
+ await modal.getByRole('button',{name:'Close preview'}).click();await page.screenshot({path:`/tmp/embedded-gallery-page-${width}.png`});if(await toggle.getAttribute('aria-expanded')==='false')await toggle.click();
+ await root.getByRole('button',{name:'Apps',exact:true}).click();await root.getByRole('button',{name:'New',exact:true}).click();await root.getByRole('menuitem',{name:'App',exact:true}).click();await expect(root.getByRole('heading',{name:'App templates',exact:true})).toBeVisible();
+ const draft=await(await page.request.get(base+'/fixture/app-draft')).json();await page.evaluate(r=>window.deliver(r),draft);
+ const app=root.frameLocator('iframe[title="Saved frontend code"]');await expect(app.getByRole('heading',{name:'Embedded draft',exact:true})).toBeVisible();
+ await expect(toggle).toHaveAttribute('aria-expanded','false');await expect.poll(()=>currentView(page)).toMatchObject({view:'app',route:'/'});
+ await app.getByRole('link',{name:'Details',exact:true}).click();await expect(app.getByRole('heading',{name:'Draft details',exact:true})).toBeVisible();await expect.poll(()=>currentView(page)).toMatchObject({view:'app',route:'/details'});
+ await toggle.click();await expect(toggle).toHaveCSS('color','rgb(126, 224, 183)');await root.getByRole('button',{name:'Apps',exact:true}).click();await expect(toggle).toHaveAttribute('aria-expanded','true');await expect.poll(()=>currentView(page)).toMatchObject({view:'home'});
+ if(width<760)await toggle.click();await page.screenshot({path:`/tmp/embedded-shell-${width}.png`});
+});
+test('embedded navigation works when the host does not support view context',async({page})=>{
+ const f=await(await page.request.get(base+'/fixture/apps')).json();await page.goto(base+'/?apps=1&noContext=1');await page.waitForFunction(()=>window.hostReady);
+ await page.evaluate(workspaceId=>window.deliver({screen:'home',workspaceId,viewerId:'fixture',workspaces:[],types:[]}),f.workspaceId);
+ const root=page.frameLocator('#app');await root.getByRole('link',{name:'Browse app templates'}).click();await expect(root.getByRole('heading',{name:'App templates',exact:true})).toBeVisible();expect(await page.evaluate(()=>window.modelContextUpdates)).toBeUndefined();
+});
+test('database columns and access selection update host context without record or draft text',async({page})=>{
+ const f=await(await page.request.get(base+'/fixture/apps')).json(),tableId='21000000-0000-4000-8000-000000000011',recordId='21000000-0000-4000-8000-000000000012';
+ const fields=[{key:'name',name:'Company name',kind:'text',readable:true,writable:true}],table={id:tableId,workspaceId:f.workspaceId,name:'Context companies',fields};
+ await page.route('**/fixture/tool',route=>{const {name}=route.request().postDataJSON();let result;
+  if(name==='read_account_schema')result={tables:[table],nextOffset:null};
+  else if(name==='read_database_table')result={table,rows:[{id:recordId,version:0,data:{name:'PRIVATE RECORD VALUE'}}],canEdit:true,canDelete:true,total:1};
+  else if(name==='read_access_directory')result={workspaces:[{id:f.workspaceId,name:'Fixture',owned:true}]};
+  else return route.continue();return route.fulfill({json:{structuredContent:{result}}});
+ });
+ await page.goto(base+'/?apps=1');await page.waitForFunction(()=>window.hostReady);await page.evaluate(workspaceId=>window.deliver({screen:'home',workspaceId,viewerId:'fixture',workspaces:[],types:[]}),f.workspaceId);
+ const root=page.frameLocator('#app');await root.getByRole('button',{name:'Database',exact:true}).click();await expect(root.getByRole('heading',{name:'Context companies',exact:true})).toBeVisible();
+ await root.locator('.ty-db-tree-row').locator('..').getByRole('button',{name:'Company name',exact:true}).click();
+ await expect.poll(()=>currentView(page)).toMatchObject({view:'database',tableId,field:'name',fields:[{key:'name',name:'Company name'}]});
+ await root.getByRole('switch',{name:'Allow edits'}).check();await root.getByRole('button',{name:'Edit Company name in row '+recordId}).click();await root.locator('.ty-db-editor textarea').fill('PRIVATE DRAFT TEXT');
+ await expect.poll(()=>currentView(page)).toMatchObject({editing:true,hasUnsavedChanges:true});expect(await page.evaluate(()=>JSON.stringify(window.modelContextUpdates))).not.toMatch(/PRIVATE RECORD VALUE|PRIVATE DRAFT TEXT/);
+ await root.getByRole('button',{name:'Ignore changes',exact:true}).click();await root.getByRole('button',{name:'Access',exact:true}).click();
+ await expect.poll(()=>currentView(page)).toMatchObject({view:'access-control',subjectId:expect.any(String)});
+ expect(await currentView(page)).not.toHaveProperty('tableId');
+ await root.getByRole('button',{name:'Apps',exact:true}).click();await expect.poll(()=>currentView(page)).toMatchObject({view:'home'});expect(await currentView(page)).not.toHaveProperty('subjectId');
+});
+test('standard tracker section updates are visible to the host',async({page})=>{
+ const initial=await(await page.request.get(base+'/fixture/initial')).json();await page.goto(base+'/?apps=1');await page.waitForFunction(()=>window.hostReady);await page.evaluate(r=>window.deliver(r),initial);
+ const frame=page.frameLocator('#app').frameLocator('iframe[title="Saved frontend code"]');await frame.getByRole('button',{name:'Contacts',exact:true}).click();
+ await expect.poll(()=>currentView(page)).toMatchObject({view:'app',appId:initial.component.id,section:'Contacts',tableId:expect.any(String)});
+});

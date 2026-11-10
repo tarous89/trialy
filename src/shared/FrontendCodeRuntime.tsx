@@ -1,3 +1,4 @@
+import {useWorkspaceView} from './WorkspaceView.js';
 import {SystemNotice} from './SystemNotice.js';
 import {parseAppUrl} from './app-route.js';
 import {AppPlatform,AppNavigation} from './AppPlatform.js';
@@ -27,6 +28,9 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
  const [schemaChanged,setSchemaChanged]=useState(false);
  const updateBanner=useRef<HTMLDivElement>(null);
  const [publishedUpdate,setPublishedUpdate]=useState(false),[confirmUpdate,setConfirmUpdate]=useState(false);
+ const [,setViewRevision]=useState(0);
+ const tab=output.current?.tracker?.config?.tabs?.[state.current?.tab];
+ useWorkspaceView({view:'app',appId:component?.id??previewId,appName:component?.name,appVersion:component?.version,route:navigation?.route.path,section:state.current?.settings?'Settings':tab?.name,tableId:tab?.typeId,fields:tab?.columns?.map((c:any)=>({key:c.field,name:c.label??c.field}))},!loadFailed);
  const localEdits=!!footer||!!recordReview||!!proposal||customDirty;
  const localEditsRef=useRef(localEdits);localEditsRef.current=localEdits;
  const checking=useRef(false),eventQueue=useRef<any[]>([]),blocked=useRef(false),saveReceipt=useRef<any>(null),approvedAction=useRef<string|null>(null);
@@ -157,7 +161,7 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
    else if(e.data.kind==='trialy.notice')setError(e.data.message);
    else if(e.data.kind==='trialy.rendered')onRendered?.();
    else if(e.data.kind==='trialy.footer')setFooter(e.data.footer);
-   else if(e.data.kind==='trialy.state'){const old=state.current,next=e.data.state;state.current=next;setDetailsOpen(!!next?.detail);if(output.current&&(old?.tab!==next?.tab||JSON.stringify(old?.offsets)!==JSON.stringify(next?.offsets)||JSON.stringify(old?.filters)!==JSON.stringify(next?.filters))){cancelPrefetch();prefetch({...output.current,state:next});}}
+   else if(e.data.kind==='trialy.state'){const old=state.current,next=e.data.state;state.current=next;if(old?.tab!==next?.tab||old?.settings!==next?.settings)setViewRevision(n=>n+1);setDetailsOpen(!!next?.detail);if(output.current&&(old?.tab!==next?.tab||JSON.stringify(old?.offsets)!==JSON.stringify(next?.offsets)||JSON.stringify(old?.filters)!==JSON.stringify(next?.filters))){cancelPrefetch();prefetch({...output.current,state:next});}}
    else if(e.data.kind==='trialy.resize'&&!output.current?.tracker&&Number.isFinite(e.data.height))setHeight(Math.max(200,Math.min(20000,e.data.height)));
    else if(e.data.kind==='trialy.event'&&!proposal){state.current=e.data.state??state.current;void run(e.data.event);}
   }

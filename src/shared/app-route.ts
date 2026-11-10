@@ -26,6 +26,7 @@ export function parseAppUrl(value:string){
 export function appSignInReturn(value:unknown):string|undefined{
  if(typeof value!=='string')return;
  if(value==='/join-app')return value;
+ try{if(value.startsWith('/?')){const url=new URL(value,'https://app.invalid');if(url.searchParams.get('tab')==='templates'&&!url.hash&&[...url.searchParams.keys()].every(k=>['tab','workspaceId','template'].includes(k)&&url.searchParams.getAll(k).length===1)&&id.safeParse(url.searchParams.get('workspaceId')).success&&/^[a-zA-Z0-9._-]{1,80}$/.test(url.searchParams.get('template')??''))return url.pathname+url.search;}}catch{}
  const parsed=parseAppUrl(value);if(parsed)return appUrl(parsed);
  try{if(!value.startsWith('/?')||/[\\\u0000-\u0020]/.test(value))return;const url=new URL(value,'https://app.invalid');if(url.hash||!['connectors','apps','automations'].includes(url.searchParams.get('tab')??'')||[...url.searchParams.keys()].some(k=>!['tab','workspaceId','connectionId','connectorReview','serviceApp','serviceReview','appId'].includes(k)||url.searchParams.getAll(k).length!==1))return;id.parse(url.searchParams.get('workspaceId'));for(const key of ['connectionId','connectorReview','serviceApp','serviceReview','appId'])if(url.searchParams.has(key))id.parse(url.searchParams.get(key));return url.pathname+url.search;}catch{return;}
 }

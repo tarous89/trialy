@@ -15,7 +15,7 @@ for(const width of [1440,390])test(`Individual app covers in platform and extens
   await expect(root.locator('.ty-app-cover')).toHaveCount(6);
   const mark=root.locator(embedded?'.ty-mobile-brand .ty-brand-mark':'.ty-platform-brand .ty-brand-mark');
 
-  await expect(mark).toBeVisible();if(!embedded&&width<760)await root.getByRole('button',{name:'Collapse navigation',exact:true}).click();await expect.poll(()=>mark.evaluate(img=>img.naturalWidth)).toBeGreaterThan(0);
+  await expect(mark).toBeVisible();if(width<760)await root.getByRole('button',{name:'Collapse navigation',exact:true}).click();await expect.poll(()=>mark.evaluate(img=>img.naturalWidth)).toBeGreaterThan(0);
 
   for(const cover of await root.locator('.ty-app-cover').all()){await expect(cover).not.toHaveCSS('background-image','none');expect((await cover.boundingBox()).height).toBeGreaterThan(100);}
   const styles=await root.locator('.ty-resource--app').evaluateAll(els=>els.map(el=>el.getAttribute('style')));expect(new Set(styles).size).toBe(6);
@@ -48,7 +48,7 @@ for(const entry of ['card','menu'])test(`A preview opened from extension Home st
  else await card.getByRole('button',{name:'Open Embedded draft',exact:true}).click();
  await expect(root.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Embedded draft',exact:true})).toBeVisible();
  await expect(root.locator('.ty-preview-approval').getByRole('button',{name:'Save app',exact:true})).toBeEnabled();
- expect(await page.evaluate(()=>window.lastOpenedUrl)).toBeFalsy();
+ expect(await page.evaluate(()=>window.lastOpenedUrl)).toBeFalsy();await expect(root.locator('.ty-shell-toggle')).toHaveAttribute('aria-expanded','false');
  await root.getByRole('button',{name:'Discard app',exact:true}).click();
  await expect(root.getByRole('heading',{name:'Apps',exact:true})).toBeVisible();
 });

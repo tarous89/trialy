@@ -445,3 +445,12 @@ Added isolated 24-hour tracker/page previews, persistent workspace save footer, 
 The product name is TrialAgents. Current README, CONTEXT, development, product scope and documentation index now describe a suite of connected customizable apps for ChatGPT, Claude and standalone web, followed by assistant customization and custom app creation. They capture same-tab app hosting, sidebar defaults, persistent assistant CTAs, plugin Open TrialAgents, dedicated gallery entry points, screenshot previews and publisher-approved database templates. Landing-page direction records suite/platform sections before custom creation.
 
 Superseded context, new-tab/watermark-only plans, old showcase research and dated UI release notes moved to [archive snapshots](docs/archive/2026-11-09-product-reset/README.md); old paths retain pointers. Hosted and repository-bundled guidance reflect the same product identity and shell. Template guidance advances to 1.3.17; immutable released template JSON and saved user apps remain unchanged. This is a documentation/guidance change, not proof of real-host parity, plugin package publication or unattended activation. Legacy technical identifiers remain compatible.
+
+
+## 10 November 2026 — shared plugin UI and view context
+
+ChatGPT and Claude share the web sidebar icon, visible hover/active states, expanded platform navigation and collapsed app/preview defaults. The embedded header stays full width, removes the wordmark dot and styles Open TrialAgents like the web assistant CTAs. The embed build now includes the shared platform stylesheet.
+
+Embedded Apps and New → App open the shared dedicated template gallery with search, Team/Workflow filters, screenshots and sandboxed fullscreen sample previews. A read-only app-visible MCP tool serves only approved catalog media in UI metadata; preview CSP blocks network requests. Use opens the selected template in the authenticated web platform, preserving human-only installation.
+
+Supported MCP Apps hosts receive bounded current-view metadata for apps/routes, standard tracker sections, templates, automations, database fields and access scopes. No record values, secrets or unsaved text are included; updates do not start conversation turns or grant permissions. Unsupported hosts remain usable. Actual acceptance in a signed-in ChatGPT or Claude conversation requires host verification beyond the synthetic integration tests. Saved apps, template versions, authorization and assistant-specific frame handling remain unchanged.

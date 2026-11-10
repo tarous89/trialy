@@ -1,3 +1,4 @@
+import {useWorkspaceView} from '../shared/WorkspaceView.js';
 import {SystemNotice} from '../shared/SystemNotice.js';
 import React,{useCallback,useRef,useState} from 'react';
 import {AppNavigation} from '../shared/AppPlatform.js';
@@ -7,6 +8,7 @@ import {resolveAppLink} from '../shared/app-links.js';
 /** Page navigation stays in the extension; leaving the app uses the host bridge. */
 export function EmbeddedAppNavigation({appId,workspaceId,source,route:initialRoute,origin,openLink,children}:{appId:string;workspaceId:string;source:'component'|'preview';route:AppRoute;origin:string;openLink:(url:string)=>void;children:React.ReactNode}){
  const [route,setRoute]=useState(initialRoute),[reset,setReset]=useState(0),[pending,setPending]=useState<AppRoute|null>(null),[error,setError]=useState('');
+ useWorkspaceView({view:'app',workspaceId,appId,route:route.path,selectedRecordIds:route.recordId?[route.recordId]:[]});
  const dirty=useRef(false),setDirty=useCallback((value:boolean)=>{dirty.current=value;},[]);
  const navigate=(href:string)=>{
   const target=resolveAppLink(href,{appId,workspaceId,source,route},origin);

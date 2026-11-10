@@ -1,3 +1,4 @@
+import {addAppMcp} from '../src/server/apps.js';
 import {templateMedia} from '../src/workspace/template-media.js';
 import {withActor,setDatabaseContext} from '../src/db/context.js';
 import {test} from 'node:test';
@@ -19,6 +20,11 @@ test('catalog approval, complete suite installation, retry and tenant isolation'
   const list=await catalog.list({limit:50});assert.equal(list.total,23);
   const actor={userId:randomUUID(),origin:'human' as const};await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,'catalog@example.invalid','Catalog tester']);
   const service=new Service(db),workspace=await service.createWorkspace(actor,'Catalog'),f=new WorkspaceFoundation(db);
+  const tools=new Map<string,any>();addAppMcp({registerTool:(name:string,config:any,handler:any)=>tools.set(name,{config,handler})} as any,f,actor,(fn:any)=>fn,{});
+  const mediaTool=tools.get('read_app_template_media');assert.deepEqual(mediaTool.config._meta.ui.visibility,['app']);assert.equal(mediaTool.config.annotations.readOnlyHint,true);
+  const sample=list.templates[0],mediaArgs={templateId:sample.id,version:sample.version};
+  const screenshot=await mediaTool.handler({...mediaArgs,kind:'screenshot'});assert.deepEqual(screenshot.content,[]);assert.equal(screenshot._meta.templateMedia.startsWith('data:image/jpeg;base64,'),true);assert.equal(JSON.stringify(screenshot.structuredContent).includes('base64'),false);
+  const previewMedia=await mediaTool.handler({...mediaArgs,kind:'preview'});assert.match(previewMedia._meta.templateMedia,/http-equiv="Content-Security-Policy"/);assert.match(previewMedia._meta.templateMedia,/connect-src 'none'/);
   for(const t of list.templates){
    assert.ok((await templateMedia(catalog,t.id,t.version,'preview')).toString().includes('<html'),t.id);
    const image=await templateMedia(catalog,t.id,t.version,'screenshot');assert.ok(Buffer.isBuffer(image)&&image[0]===255&&image[1]===216,t.id);
@@ -43,6 +49,7 @@ test('catalog approval, complete suite installation, retry and tenant isolation'
   const t=list.templates[0],request={templateId:t.id,version:t.version,digest:t.digest,name:t.name,requestKey:randomUUID()};
   await db.query("UPDATE app_template_catalog SET status='draft' WHERE template_id=$1",[t.id]);await syncTemplateCatalog(db);
   await assert.rejects(()=>catalog.read({templateId:t.id}));
+  assert.equal((await mediaTool.handler({templateId:t.id,version:t.version,kind:'preview'})).isError,true);
   await assert.rejects(()=>templateMedia(catalog,t.id,t.version,'preview'));
   await assert.rejects(()=>templateMedia(catalog,'../../etc/passwd',t.version,'screenshot'));await assert.rejects(()=>installCatalogApp(f,actor,workspace.id,request));
   await assert.rejects(()=>installCatalogApp(f,{...actor,origin:'ai'},workspace.id,request));

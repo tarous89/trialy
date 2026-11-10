@@ -11,8 +11,8 @@ for(const width of [1440,390])test(`Connectors stay in extension and toggle with
   return route.fulfill({json:{content:[],structuredContent:{result}}});
  });
  await page.goto(base+'/?apps=1');await page.waitForFunction(()=>window.hostReady);await page.evaluate(r=>window.deliver(r),{screen:'home',workspaceId:f.workspaceId,viewerId:'fixture',workspaces:[],types:[]});
- const root=page.frameLocator('#app');await root.getByRole('button',{name:'Open navigation',exact:true}).click();await root.getByRole('button',{name:'Connectors',exact:true}).click();
- await expect(root.getByRole('heading',{name:'Connectors',exact:true})).toBeVisible();await root.getByRole('button',{name:'Disable',exact:true}).click();
+ const root=page.frameLocator('#app');if(await root.getByRole('button',{name:'Expand navigation',exact:true}).count())await root.getByRole('button',{name:'Expand navigation',exact:true}).click();await root.getByRole('button',{name:'Connectors',exact:true}).click();
+ await expect(root.getByRole('heading',{name:'Connectors',exact:true})).toBeVisible();if(width<760)await root.getByRole('button',{name:'Collapse navigation',exact:true}).click();await root.getByRole('button',{name:'Disable',exact:true}).click();
  await expect(root.getByRole('alertdialog')).toContainText('Friday research');expect(controls).toHaveLength(0);
  await root.getByRole('alertdialog').getByRole('button',{name:'Disable ChatGPT',exact:true}).click();await expect(root.getByRole('button',{name:'Enable',exact:true})).toBeVisible();expect(controls[0]).toMatchObject({confirmed:true,impactDigest:'current',enabled:false});
  await root.getByRole('button',{name:'Enable',exact:true}).click();await expect(root.getByRole('button',{name:'Disable',exact:true})).toBeVisible();

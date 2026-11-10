@@ -1,6 +1,6 @@
 # TrialAgents — current project context
 
-Updated 9 November 2026 (Europe/Berlin). Read this before changing product behavior or authoring apps. Repository: `tarous89/trialy`; product: **TrialAgents**, not Trialy. Platform: https://platform.trialagents.com; MCP: https://platform.trialagents.com/mcp. Intel and CTIS are separate products.
+Updated 10 November 2026 (Europe/Berlin). Read this before changing product behavior or authoring apps. Repository: `tarous89/trialy`; product: **TrialAgents**, not Trialy. Platform: https://platform.trialagents.com; MCP: https://platform.trialagents.com/mcp. Intel and CTIS are separate products.
 
 ## Direction and precedence
 
@@ -12,7 +12,7 @@ The [product direction](docs/product/PRODUCT_DIRECTION.md) and [platform scope](
 
 Apps open in the same tab inside TrialAgents. The fixed header retains the official logo and sidebar toggle. Platform pages start expanded; individual apps start collapsed. Sidebar: Apps, Database, Access, Automations, Connectors, Logs; Settings separately. Legacy `home` routes/API names stay compatible.
 
-The web header always has labeled **Open ChatGPT** and **Open Claude** buttons, on platform pages and apps. Embedded/plugin headers instead use **Open TrialAgents**. No separate customization strip or duplicate app branding chrome.
+The web header always has labeled **Open ChatGPT** and **Open Claude** buttons, on platform pages and apps. Embedded/plugin headers instead use **Open TrialAgents**. ChatGPT and Claude use the same sidebar toggle icon and interaction: platform pages start expanded, app/preview views collapsed, with a fixed full-width header. Browse app templates on embedded Apps and New → App open the same dedicated gallery inside the plugin, with search, filters, screenshot cards and sandboxed previews. Its Use action opens the selected template in the web platform for authenticated installation. Embedded Open TrialAgents uses the same outlined CTA styling as the web assistant links; the wordmark has no green dot. No separate customization strip or duplicate app branding chrome.
 
 **New → App** and **Browse app templates** on Apps open a dedicated Templates page. Templates is not in the sidebar or an inline gallery on Apps. Search and Team/Workflow filters, screenshots, concise descriptions, full details in preview and sandboxed fullscreen previews support discovery. Cards have only **Preview** and **Use**, with an always-visible ChatGPT/Claude customization note.
 
@@ -51,6 +51,10 @@ Apps own their save behavior. Recommend saving tracker cell edits on completion,
 ## Current release evidence and verification limits
 
 The November 9 web releases introduced in-platform routing/catalog, the gallery, and persistent assistant CTAs. [PR #107](https://github.com/tarous89/trialy/pull/107), commit `6f6e7ad44517e661d074a05d6576c79a50901da6`, was verified live: matching JS/CSS/icon assets and healthy `/health`; production build and 145 browser tests passed. This proves that release's checks, not universal live ChatGPT/Claude visual parity or unattended activation. Recheck live source before future changes.
+
+## Assistant view context
+
+The embedded workspace sends a bounded current-view snapshot through MCP Apps `ui/update-model-context` when the host advertises text context support. It identifies the active app and route, standard tracker section, template preview, automation being edited, database table/field, or access subject/scope. Only navigation metadata is included; record values, secrets, draft text and pending permission changes are excluded. Hidden cached views do not contribute context. Updates are debounced and serialized, replace earlier context, and do not trigger chat messages. The assistant must re-read data and permissions before acting. Hosts typically apply this context to the next conversation turn; unsupported hosts continue working without automatic view awareness. Arbitrary custom app state beyond supported routes and standard tracker navigation is not inferred.
 
 ## Where to continue
 
