@@ -75,7 +75,7 @@ test('Claude connects through its own endpoint and stays a separate principal fr
  const claudeWidget=(await readResource(CLAUDE_MCP_PATH,uriOf(listed,'open_workspace'),claude.access_token)).body.result.contents[0].text;
  const chatgptWidget=(await readResource('/mcp',uriOf(chatgptTools,'open_workspace'))).body.result.contents[0].text;
  assert.notEqual(uriOf(listed,'open_workspace'),uriOf(chatgptTools,'open_workspace'),'Claude and ChatGPT widgets are cached separately');
- assert.equal(chatgptWidget,(await workspaceResource()).html,'ChatGPT widget is unchanged');assert.ok(!chatgptWidget.includes('trialy-frame-document'));
+ assert.equal(chatgptWidget,(await workspaceResource()).html,'ChatGPT widget is unchanged');assert.ok(!chatgptWidget.includes('<script type="application/json" id="trialy-frame-document">'),'ChatGPT widget carries no inline frame');
  const frameData=claudeWidget.match(/<script type="application\/json" id="trialy-frame-document">([^<]*)<\/script>/);assert.ok(frameData,'Claude widget carries the app frame document');
  assert.ok(/^[\x00-\x7e]*$/.test(frameData[1]),'Frame document is ASCII-escaped');assert.equal(JSON.parse(frameData[1]),await frontendFrameDocument(bundledAppFont),'Claude frame document matches the served frame');
  // Tokens only work on the endpoint they were issued for.
