@@ -20,6 +20,15 @@ import type { Service } from '../domain/service.js';
 import { operationSchema, recordQuerySchema, fieldChangeQuerySchema, id, AppError, ASSISTANT_NAMES, type Assistant } from '../shared/schema.js';
 /** ChatGPT keeps /mcp with optional sign-in. Claude uses its own endpoint that always requires sign-in. */
 export type McpOptions={path?:string;host?:Assistant};
+/** Claude shows MCP Apps inline by default; ask the embedded app to open user-initiated displays full screen. */
+const CLAUDE_FULLSCREEN_TOOLS=new Set(['open_workspace','open_app','finalize_app_preview']);
+function preferFullscreen(server:McpServer){
+ const register=server.registerTool.bind(server) as any;
+ (server as any).registerTool=(name:string,config:any,handler:any)=>!CLAUDE_FULLSCREEN_TOOLS.has(name)?register(name,config,handler):register(name,config,async(...args:any[])=>{
+  const r=await handler(...args),data=r?.structuredContent?.result;
+  return data&&typeof data==='object'&&!r.isError&&data.displayIntent!=='background'?{...r,structuredContent:{...r.structuredContent,result:{...data,preferredDisplayMode:'fullscreen'}}}:r;
+ });
+}
 export function addMcp(app:Express,s:Service,authenticate:RequestHandler,options:McpOptions={}) {
  const path=options.path??'/mcp',host=options.host??'chatgpt',claude=host==='claude';
  const createLimit=rateLimit({windowMs:60000,limit:10,standardHeaders:'draft-8',legacyHeaders:false});
@@ -31,6 +40,7 @@ export function addMcp(app:Express,s:Service,authenticate:RequestHandler,options
  const isCreate=(req:any)=>req.body?.method==='tools/call'&&req.body?.params?.name==='preview_tracker';
  const handler=async(req:any,res:any)=>{
   const actor=req.actor!;const server=new McpServer({name:'trialagents',title:'TrialAgents',version:'0.2.56'},{instructions:claude?claudeServerInstructions:serverInstructions});
+  if(claude)preferFullscreen(server);
   addTrackerDesignMcp(server);
   addWorkspaceGuidanceMcp(server);
   const bundle=await workspaceResource(),resource=bundle.uri;

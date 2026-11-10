@@ -39,6 +39,17 @@ import {BulkImport} from '../shared/BulkImport.js';
 import {ViewPicker,RecordView} from '../shared/WorkspaceViews.js';
 import type {Field} from '../shared/schema.js';
 const bridge=new App({name:'TrialAgents workspace',version:'0.2.37'},{availableDisplayModes:['inline','fullscreen']},{autoResize:true});
+// Only hosts whose server asks for it (Claude) switch to full screen, once per display; others keep their default.
+// Same approach as the Intel workspace: retry when the host reports its display modes later, never re-open after the user exits.
+let fullscreenWanted=false,fullscreenRequested=false,fullscreenPending=false;
+function requestFullscreen(ctx:any=bridge.getHostContext()){
+ if(!fullscreenWanted||fullscreenRequested||fullscreenPending)return;
+ if(ctx?.displayMode==='fullscreen'){fullscreenRequested=true;return;}
+ if(!ctx?.availableDisplayModes?.includes('fullscreen'))return;
+ fullscreenRequested=true;fullscreenPending=true;
+ void bridge.requestDisplayMode({mode:'fullscreen'}).catch(()=>{/* Keep the inline view; do not keep changing the host display. */}).finally(()=>{fullscreenPending=false;});
+}
+bridge.onhostcontextchanged=ctx=>requestFullscreen({...bridge.getHostContext(),...ctx});
 function unwrap(result:any){if(result.isError)throw Object.assign(new Error(result.content?.find((c:any)=>c.type==='text')?.text??'The action could not complete.'),result.structuredContent?.error??{});return result.structuredContent?.result;}
 async function call(name:string,args:Record<string,unknown>={}){return unwrap(await bridge.callServerTool({name,arguments:args}));}
 function Workspace(){
@@ -93,6 +104,7 @@ function Workspace(){
  const retainDisplay=(e?:any)=>{setUnavailableReason(e?.code==='manifest_stale'?'schema':e&&![401,403,404].includes(e.status)?'load':'missing');setError('');setNotice('');if(!visibleApp.current&&!(visibleSurface.current==='home'&&homeAppVisible.current)){setOpenedTracker(null);setTrackerPreview(null);setTrackerOutput(null);setView('unavailable');}};
  const receive=(result:any)=>{if(!active)return;try{
   const data=unwrap(result);if(data?.displayIntent==='background')return;
+  if(data?.preferredDisplayMode==='fullscreen'){fullscreenWanted=true;requestFullscreen();}
   if(['app-link','tracker','tracker-preview'].includes(data?.screen))retryDisplay.current=()=>receive(result);
   if(data?.screen==='app-link'){const epoch=++navigationEpoch.current;void call('open_app',{appId:data.appId,workspaceId:data.workspaceId,source:data.source??'component',route:data.route??{path:'/'}}).then(display=>{if(active&&epoch===navigationEpoch.current)receive({structuredContent:{result:display}});}).catch(e=>{if(active&&epoch===navigationEpoch.current)retainDisplay(e);});return;}
   if(data?.screen==='automations'){showPlatform('',data.workspaceId,'automations');return;}
