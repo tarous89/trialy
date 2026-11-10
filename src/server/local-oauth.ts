@@ -25,8 +25,13 @@ export function localOAuth(db:Database,base:string,legacyResource?:string):OAuth
  return {
  clientsStore:{getClient:async id=>{try{return await get(id,'client');}catch{return undefined;}},registerClient:async client=>{
   if(client.redirect_uris.length>10||client.redirect_uris.some(v=>{try{const u=new URL(v);return (u.protocol!=='https:'&&!loopback(u))||!!u.hash||!!u.username||!!u.password;}catch{return true;}}))throw new InvalidRequestError('Exact HTTPS or loopback callback URLs required');
-  if(client.token_endpoint_auth_method!=='none')throw new InvalidRequestError('Public clients must use PKCE and token_endpoint_auth_method none');
-  const data={...client,client_id:randomUUID(),client_id_issued_at:Math.floor(Date.now()/1000)};await db.query('INSERT INTO oauth_data VALUES($1,$2,NULL,$3)',[data.client_id,'client',JSON.stringify(data)]);return data;
+  // Discovery advertises 'none' and 'client_secret_post'. ChatGPT registers public clients ('none'); other hosts such as
+  // Claude may register with a secret, which the SDK issues and verifies at /token. PKCE stays mandatory for everyone.
+  // Basic auth is not supported by the token endpoint, so it is rejected here instead of failing later.
+  const method=client.token_endpoint_auth_method??(client.client_secret?'client_secret_post':'none');
+  if(method!=='none'&&method!=='client_secret_post')throw new InvalidRequestError('Use token_endpoint_auth_method none or client_secret_post');
+  if(method==='client_secret_post'&&!client.client_secret)throw new InvalidRequestError('Confidential registration requires an issued client secret');
+  const data={...client,token_endpoint_auth_method:method,client_id:randomUUID(),client_id_issued_at:Math.floor(Date.now()/1000)};await db.query('INSERT INTO oauth_data VALUES($1,$2,NULL,$3)',[data.client_id,'client',JSON.stringify(data)]);return data;
  }},
  authorize:async(client,p,res)=>{checkResource(p.resource);if(!p.state||p.state.length>2048||!p.scopes?.includes('trialy')||p.scopes.some(s=>s!=='trialy')||!client.redirect_uris.includes(p.redirectUri)||!/^[A-Za-z0-9_-]{43}$/.test(p.codeChallenge))throw new InvalidRequestError('Invalid scope, state, callback or PKCE');const assistant=assistantFor(p.resource?.href);const ticket=token();await db.query('INSERT INTO oauth_data VALUES($1,$2,$3,$4)',[hash(ticket),'pending',Date.now()+600000,JSON.stringify({...p,resource:assistant==='claude'?claudeResource:resource,assistant,clientId:client.client_id,clientName:client.client_name??'Connected app'})]);res.redirect(base+'/auth/login?connect='+ticket);},
  challengeForAuthorizationCode:async(client,code)=>{const d=await get(hash(code),'code');if(d.clientId!==client.client_id)throw new InvalidGrantError('Wrong client');return d.codeChallenge;},

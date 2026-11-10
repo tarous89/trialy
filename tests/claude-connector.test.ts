@@ -110,6 +110,13 @@ test('Claude Code loopback callbacks register; other plain-HTTP callbacks stay r
  assert.equal((await register('http://127.0.0.1:49152/callback')).status,201);
  assert.equal((await register('http://example.com/callback')).status,400);
  assert.equal((await register('http://localhost.example.com/callback')).status,400);
+ // Hosts may register as confidential clients (the method listed first in discovery) or omit the method.
+ const confidential=(body:any)=>request(app).post('/register').send({client_name:'Claude',redirect_uris:[CLAUDE_CALLBACK],grant_types:['authorization_code','refresh_token'],response_types:['code'],...body});
+ const post=await confidential({token_endpoint_auth_method:'client_secret_post'});assert.equal(post.status,201,post.text);assert.equal(post.body.token_endpoint_auth_method,'client_secret_post');assert.ok(post.body.client_secret);
+ const omitted=await confidential({});assert.equal(omitted.status,201,omitted.text);assert.equal(omitted.body.token_endpoint_auth_method,'client_secret_post');assert.ok(omitted.body.client_secret);
+ assert.equal((await confidential({token_endpoint_auth_method:'client_secret_basic'})).status,400);
+ // A confidential client must present its secret at the token endpoint.
+ const missing=await request(app).post('/token').type('form').send({grant_type:'authorization_code',client_id:post.body.client_id,code:'x',redirect_uri:CLAUDE_CALLBACK,code_verifier:'v'.repeat(43)});assert.equal(missing.status,400);assert.match(missing.text,/secret/i);
 });
 
 test('migration copies existing ChatGPT restrictions to Claude and keeps inspectors human-only',async()=>{
