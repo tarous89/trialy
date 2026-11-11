@@ -7,18 +7,18 @@ for(const width of [1920,900,390])test(`Compact database trigger cascades, prese
  await page.route('**/app-services/automations/options?*',r=>r.fulfill({json:{owner:{email:'owner@example.invalid'},members:[],tables,writeScopes:[]}}));
  await page.route('**/app-services/monitoring/prepare',r=>{submitted=r.request().postDataJSON();return r.fulfill({status:503,json:{message:'Draft retained'}});});
  await openPlatform(page,base+`/app-home?tab=automations&automationMode=new&workspaceId=${f.workspaceId}`);
- await page.getByLabel('Linked app',{exact:true}).selectOption(f.appId);await page.getByLabel('Name',{exact:true}).fill('Watch budgets');await page.locator('#automation-step-1>.ty-step-heading').click();
+ await page.getByLabel('Linked app',{exact:true}).selectOption(f.appId);await page.getByLabel('Name',{exact:true}).fill('Watch budgets');await openStep(page,1);
  await expect(page.getByRole('button',{name:'Back to automations'})).toHaveCount(0);
  const title=await page.getByRole('heading',{name:'New automation',exact:true}).boundingBox(),actions=await page.locator('.ty-page-actions').boundingBox();expect(actions.y-title.y).toBeLessThan(10);
  await page.getByLabel('Trigger',{exact:true}).selectOption('database');await expect(page.getByLabel('Column',{exact:true})).toBeDisabled();await expect(page.getByLabel('Change',{exact:true})).toBeDisabled();
  await page.getByLabel('Table',{exact:true}).selectOption('companies');await expect(page.getByLabel('Column',{exact:true})).toHaveValue('');await expect(page.getByLabel('Change',{exact:true})).toHaveValue('any');
- await finish(page);await page.getByRole('button',{name:'Review changes',exact:true}).click();await expect.poll(()=>submitted?.config.automation.trigger).toEqual({kind:'database',typeId:'companies',fields:[],events:['created','updated','deleted']});
- await page.locator('#automation-step-1>.ty-step-heading').click();await page.getByLabel('Column',{exact:true}).selectOption('budget');await page.getByLabel('Change',{exact:true}).selectOption('condition');await page.getByLabel('Value',{exact:true}).fill('12000');await finish(page);await page.getByRole('button',{name:'Review changes',exact:true}).click();await expect.poll(()=>submitted?.config.automation.trigger.becomes).toEqual({field:'budget',operator:'equals',value:12000});
- await page.locator('#automation-step-1>.ty-step-heading').click();if(width>=900){const boxes=await Promise.all(['Table','Column','Change'].map(label=>page.getByLabel(label,{exact:true}).boundingBox()));expect(Math.max(...boxes.map(b=>b.y))-Math.min(...boxes.map(b=>b.y))).toBeLessThan(2);}
+ await finish(page);await page.getByRole('button',{name:'Save',exact:true}).click();await expect.poll(()=>submitted?.config.automation.trigger).toEqual({kind:'database',typeId:'companies',fields:[],events:['created','updated','deleted']});
+ await openStep(page,1);await page.getByLabel('Column',{exact:true}).selectOption('budget');await page.getByLabel('Change',{exact:true}).selectOption('condition');await page.getByLabel('Value',{exact:true}).fill('12000');await finish(page);await page.getByRole('button',{name:'Save',exact:true}).click();await expect.poll(()=>submitted?.config.automation.trigger.becomes).toEqual({field:'budget',operator:'equals',value:12000});
+ await openStep(page,1);if(width>=900){const boxes=await Promise.all(['Table','Column','Change'].map(label=>page.getByLabel(label,{exact:true}).boundingBox()));expect(Math.max(...boxes.map(b=>b.y))-Math.min(...boxes.map(b=>b.y))).toBeLessThan(2);}
  await page.getByLabel('Table',{exact:true}).selectOption('tasks');await expect(page.getByLabel('Column',{exact:true})).toHaveValue('');await expect(page.getByLabel('Value',{exact:true})).toHaveCount(0);await expect(page.getByLabel('Column',{exact:true}).locator('option')).toHaveText(['Any column','Done']);
- await page.getByLabel('Column',{exact:true}).selectOption('done');await page.getByLabel('Change',{exact:true}).selectOption('condition');await page.getByLabel('Value',{exact:true}).selectOption('true');await finish(page);await page.getByRole('button',{name:'Review changes',exact:true}).click();await expect.poll(()=>submitted?.config.automation.trigger.becomes.value).toBe(true);
+ await page.getByLabel('Column',{exact:true}).selectOption('done');await page.getByLabel('Change',{exact:true}).selectOption('condition');await page.getByLabel('Value',{exact:true}).selectOption('true');await finish(page);await page.getByRole('button',{name:'Save',exact:true}).click();await expect.poll(()=>submitted?.config.automation.trigger.becomes.value).toBe(true);
  await expect(page.locator('body')).toHaveJSProperty('scrollWidth',width);await page.locator('#ty-main').evaluate(el=>el.scrollTop=0);await page.screenshot({path:`/tmp/compact-database-${width}.png`});
- await page.locator('#automation-step-1>.ty-step-heading').click();await page.getByLabel('Trigger',{exact:true}).selectOption('recurrent');await page.getByLabel('Frequency',{exact:true}).selectOption('weekly');await page.getByLabel('Monday',{exact:true}).check();await page.locator('#ty-main').evaluate(el=>el.scrollTop=0);await page.screenshot({path:`/tmp/compact-calendar-${width}.png`});
+ await openStep(page,1);await page.getByLabel('Trigger',{exact:true}).selectOption('recurrent');await page.getByLabel('Frequency',{exact:true}).selectOption('weekly');await page.getByLabel('Monday',{exact:true}).check();await page.locator('#ty-main').evaluate(el=>el.scrollTop=0);await page.screenshot({path:`/tmp/compact-calendar-${width}.png`});
 });
 
 test('Both default connectors appear before setup and Claude hands off without modifying ChatGPT',async({page})=>{
@@ -49,4 +49,6 @@ for(const assistant of ['chatgpt','claude'])test(`Plugin shares connector editor
  await page.screenshot({path:`/tmp/compact-plugin-connector-${assistant}.png`});
 });
 
-async function finish(page){await page.locator('#automation-step-2>.ty-step-heading').click();await page.locator('input[name="automation-worker"]:checked').click();await page.locator('#automation-step-3>.ty-step-heading').click();await page.getByLabel('Prompt / instructions').fill('Review changed budgets');}
+async function finish(page){await openStep(page,2);await page.locator('input[name="automation-worker"]:checked').click();await openStep(page,3);await page.getByLabel('Prompt / instructions').fill('Review changed budgets');}
+
+async function openStep(page,index){const h=page.locator(`#automation-step-${index}>.ty-step-heading`);if(await h.getAttribute('aria-expanded')!=='true')await h.click();}
