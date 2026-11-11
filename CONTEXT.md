@@ -73,3 +73,5 @@ The embedded workspace sends a bounded current-view snapshot through MCP Apps `u
 - [History](HISTORY.md), [archived superseded context](docs/archive/README.md)
 
 Keep both template Markdown guidance versions and `templateGuidance.version` synchronized. Read hosted guides through every `nextOffset`. Keep released template JSON immutable. Repository deployment, installed plugin-package publication and real host activation are distinct operations.
+
+New automation drafts have no selected trigger or worker. Require an explicit choice for each, keep their cards incomplete until chosen, and show setup only after a worker is selected. Preserve saved automation configurations when editing.

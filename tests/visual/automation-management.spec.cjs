@@ -113,7 +113,7 @@ test('Editing an existing function workflow preserves its steps without requirin
 
 async function creationStep(page,index){
  if(!await page.locator('.ty-automation-step').count())return;
- if(index===3){await creationStep(page,2);await page.locator('input[name="automation-worker"]:checked').click();}
+ if(index===3){await creationStep(page,1);await creationStep(page,2);const chosen=page.locator('input[name="automation-worker"]:checked');await (await chosen.count()?chosen:page.locator('input[name="automation-worker"]:not(:disabled)').first()).click();}
  const heading=page.locator(`#automation-step-${index}>.ty-step-heading`);
- if(await heading.getAttribute('aria-expanded')!=='true')await heading.click();
+ if(await heading.getAttribute('aria-expanded')!=='true')await heading.click();if(index===1&&await page.getByLabel('Trigger',{exact:true}).inputValue()==='')await page.getByLabel('Trigger',{exact:true}).selectOption('recurrent');
 }

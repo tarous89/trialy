@@ -49,6 +49,6 @@ for(const assistant of ['chatgpt','claude'])test(`Plugin shares connector editor
  await page.screenshot({path:`/tmp/compact-plugin-connector-${assistant}.png`});
 });
 
-async function finish(page){await openStep(page,2);await page.locator('input[name="automation-worker"]:checked').click();await openStep(page,3);await page.getByLabel('Prompt / instructions').fill('Review changed budgets');}
+async function finish(page){await openStep(page,2);await page.getByRole('radio',{name:/^ChatGPT prompt/}).click();await openStep(page,3);await page.getByLabel('Prompt / instructions').fill('Review changed budgets');}
 
 async function openStep(page,index){const h=page.locator(`#automation-step-${index}>.ty-step-heading`);if(await h.getAttribute('aria-expanded')!=='true')await h.click();}
