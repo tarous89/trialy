@@ -9,7 +9,7 @@
   },
   "life.project-oversight": {
     "schema": "templates/source/project-oversight/schema.example.json",
-    "version": "1.0.1"
+    "version": "2.0.0"
   },
   "life.pi-network-management": {
     "schema": "templates/source/pi-network-management/schema_mapping.example.json",

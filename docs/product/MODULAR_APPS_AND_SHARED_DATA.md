@@ -58,7 +58,7 @@ Verify current behaviour first; build only what is missing.
 | # | Item | Notes |
 |---|---|---|
 | 1 | **Table role metadata** (role key, template id, contract version) stored on tables bound by templates | Enables detection at install/reinstall; may reuse existing table mappings. |
-| 2 | **Install detection** of compatible core tables and retained app tables, with "connect existing" as default | Builds on the existing explicit new-table / existing-table choice. |
+| 2 | **Install detection** of compatible core tables and retained app tables, with "connect existing" as default | Builds on the existing explicit new-table / existing-table choice. **Core and optional roles implemented with Programs 2.0.0** (`sharedTableCandidates` in `src/workspace/template-catalog.ts`): detection reads role keys from live apps' `tableMap`; retained app tables of archived apps are still reached through restore. |
 | 3 | **Delete-app dialog** listing retained tables and their other users | Data preservation already holds; this makes it visible. |
 | 4 | **"Not used by any app" label** for unbound tables in Database, with archive as the first cleanup step | |
 | 5 | **Table deletion guard:** owner-only; blocked while any active app binds the table (list them); warns about inbound references from other tables; archive preferred | Confirm current table-deletion behaviour before implementing. |

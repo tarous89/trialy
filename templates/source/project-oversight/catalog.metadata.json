@@ -1,118 +1,128 @@
 {
   "id": "life.project-oversight",
-  "version": "1.0.1",
-  "name": "Project Oversight",
-  "description": "Six-screen, Smartsheet-inspired project execution console for biotech companies under 50 staff: owner-assessed portfolio health, baseline-vs-current milestones, deliverables, cross-functional risk/decision tracking and evidence-linked management reports.",
+  "version": "2.0.0",
+  "name": "Programs",
+  "description": "Milestones, dependencies, risks and decisions across all programs. One integrated timeline per program by function with baselines, slips with reasons, the critical path, stage gates, a RAID log, monthly updates and frozen leadership reports; cash at key milestones when Runway is used.",
   "tags": [
     "biotech",
-    "project-management",
-    "executive-oversight",
-    "milestone-tracking",
-    "risks",
-    "management-reporting",
-    "research-operations"
+    "program-management",
+    "milestones",
+    "gantt",
+    "critical-path",
+    "stage-gates",
+    "raid",
+    "board"
   ],
-  "whenToUse": "A biotech CEO, PMO or functional lead needs to coordinate internal cross-functional initiatives and leadership reviews with source-linked milestones, commitments and decisions.",
-  "whenNotToUse": "Not a validated GxP project system, CTMS, eTMF, patient data repository, ERP, legal authorization engine, Smartsheet clone or enterprise resource simulation suite. No mandatory external sync or automatic health classification.",
+  "whenToUse": "A small biotech (roughly 10–50 people) needs one integrated view of program milestones, dependencies, gates, risks and monthly status without enterprise PPM: an integrated timeline per program across CMC, nonclinical, clinical and regulatory, the critical path, slips with reasons, gate readiness and a monthly leadership report.",
+  "whenNotToUse": "Task-level project management (use the team's task tool), resource and capacity planning, portfolio prioritisation or rNPV, budgets (use Runway), timesheets, Kanban boards, document approval workflows, validated GxP or Part 11 project records, and any patient-level data.",
   "engine": "frontend-js",
   "defaults": {
-    "heading": "Project Oversight",
+    "heading": "Programs",
     "tableMap": "{}",
-    "layoutProfile": "{}",
-    "asOfDate": "",
     "pageSize": 25,
+    "layoutProfile": "{}",
     "readOnly": false,
-    "demoLabel": false
+    "demoLabel": false,
+    "asOfOverride": ""
   },
   "options": {
     "heading": {
       "type": "string",
-      "description": "Concise user-defined app title.",
-      "default": "Project Oversight"
+      "description": "App heading shown above every screen.",
+      "default": "Programs"
     },
     "tableMap": {
       "type": "string",
-      "description": "JSON: per-role actual authorized typeId UUID, logical-to-snake_case field map and writableFields. Must use real schema versions and granted manifest.",
+      "description": "JSON object keyed by stable role key: core data contract v1 roles programs (required) and people (optional, read only here); app roles programs.plan_items, programs.slips, programs.decisions, programs.raid, programs.updates, programs.reports, programs.settings; optional read-only runway.month_closes (Runway snapshots). Each value is {typeId:<authorized table UUID>, fields:{<logical key>:<real field key>}, writableFields:[<logical keys>]}. Real keys are lowercase snake_case.",
       "default": "{}"
-    },
-    "layoutProfile": {
-      "type": "string",
-      "description": "Host-saved reviewed layout {heading,tabs,cols,visible}, with stable IDs, persisted through prepare_tool_layout.",
-      "default": "{}"
-    },
-    "asOfDate": {
-      "type": "string",
-      "description": "Optional ISO reporting cutoff YYYY-MM-DD. In production defaults to current calendar date if omitted.",
-      "default": ""
     },
     "pageSize": {
       "type": "number",
-      "description": "Record page size 10-50, default 25; register and timeline paging use the authorized backend source.",
+      "description": "Rows per page in registers, 10–50; the template clamps the value.",
       "default": 25
+    },
+    "layoutProfile": {
+      "type": "string",
+      "description": "JSON presentation profile written only by native layout settings through a reviewed, versioned app update.",
+      "default": "{}"
     },
     "readOnly": {
       "type": "boolean",
-      "description": "Disable all local write proposals; platform permissions still authoritative.",
+      "description": "When true, the app proposes no writes even for users who may edit.",
       "default": false
     },
     "demoLabel": {
       "type": "boolean",
-      "description": "Mark local sample only; never import fictional records to production.",
+      "description": "Label the app as a fictional demo. Only for the repository preview.",
       "default": false
+    },
+    "asOfOverride": {
+      "type": "string",
+      "description": "Optional fixed as-of date (YYYY-MM-DD) for previews and tests only. Leave empty: the app uses today's date from the app runtime.",
+      "default": ""
     }
   },
-  "instructions": "Read current read_app_template_guidance authoring/usage 1.3.9 to end and read_app_design. Select this exact template ID, version and digest; do not inject duplicate templateConfiguration/templateBindings into catalog source. Internal app inherits TrialAgents identity and permissions; use official host watermark with canonical https://platform.trialagents.com link and no fabricated logo or app-level auth. Read authorized schemas first; create/reuse eight scalar role tables with actual snake_case fields from documentation.dataContract: projects, workstreams, milestones, deliverables, risks, decisions, updates, reports. Every select has exact options and every scalar multiple:false. References project_id/workstream_id/milestone_id/dependency_id are scalar parent UUID text, and parents must be saved before children with actual receipt IDs. Configure tableMap real IDs/field mappings and manifest read/write kinds and schema versions; no demo data. Default active project health Unassessed, not Green. Keep original baseline immutable; current date changes require dated source rationale; completed milestones/deliverables require actual and evidence, signed decisions require approver/date/rationale/evidence, approved reports require reviewed sources. Authoritative metrics require complete authorized reads; missing reports do not imply Green or zero. Prepare the exact six-screen source without app-local user management or external integration. Preview in the production sanitized frame with manifest and actual event.form values, then save through trusted review; record actions propose exact data with original record version, archive is reviewed archived:true with dependency check. Native layout uses templateLayoutSchema and tracker:layout, prepare_tool_layout / review/confirm and saved layoutProfile, never store layout as a database row. Save once with stable requestKey; reconcile receipts; revise existing app with expectedVersion. Optional monitoring uses shared workspace ChatGPT and separate backend TrialAgents email, only after separate consent. No automation is valid. Do not infer that ZIP publication is MCP registration, that Enabled verifies execution, or that a local preview is a live host acceptance.",
+  "instructions": "Programs 2.0.0 is a custom frontend-js program-management app that follows docs/product/MODULAR_APPS_AND_SHARED_DATA.md: the shared programs and people tables use the core data contract v1 role keys, app tables use programs.* role keys, features that use another app's data degrade gracefully, and removing an app or tab never deletes data. It replaces Project Oversight 1.0.1 for new installs; saved 1.0.1 apps are not migrated.\n\n1. Discover and pin. Read read_app_template_guidance (usage, then authoring when extending) to the last nextOffset, read_app_design, list_app_templates and read_app_template for life.project-oversight. Pin this exact version and digest and keep one requestKey for the creation.\n2. Install and reuse. Before installing, call list_archived_items (kind apps, this templateId); if an archived Programs app exists, offer to restore it first. The platform Use action shows the shared-data choice: when a compatible programs table already exists (for example created by Runway), reusing it is the default and no second programs table is created; the user can choose separate data instead (for a confidential program, use a separate app with separate data in a restricted project). An existing people table and Runway's month closes are connected the same way when present; they are never created by Programs. When preparing the app yourself with prepare_app_from_template, bind those existing tables under the same role keys with explicit bindings, unless the user explicitly chooses separate data. Never seed demo data.\n3. Map fields. tableMap maps each stable role key to an authorized table. Core roles use exactly the core data contract v1 fields; never rename, retype or remove them. Programs owns the optional programs fields health, health_rationale and health_date. Use multiple:false, lowercase snake_case real keys and scalar record-ID text for relationships (program_id, predecessor_id, plan_item_id, linked_item_id). runway.month_closes and people are read only in Programs.\n4. First plan in one session. From a development plan, slide, spreadsheet or description the user shares, propose one reviewed batch: the program record (stage required), 10–40 plan items with function, owner, dates, item_type and one predecessor each (create items before their successors, or in a second batch once the first receipt IDs exist), the first gates with criteria lines and top risks. Do not set baselines in that batch. When the user confirms the plan, they set the baseline in Plan (Set baseline), or you propose baseline_start/baseline_end equal to the current dates for review.\n5. Dates move. A later end_date on a planned, in-progress or at-risk item that has a baseline needs a reason; the reviewed save writes the item and exactly one programs.slips record {plan_item_id, changed_on, old_end, new_end, days, reason, detail}. Show the downstream preview (successors start the day after their predecessor's new end) and move successors only if the user accepts them in the same review. Reject a predecessor that would create a cycle.\n6. Gates. Criteria are lines starting with [met], [not met] or [open]. Prepare the gate pack (criteria status, open risks, recent decisions) on request. Never set a gate outcome or a program's health yourself: the user records them; follow-up milestones are created or cancelled in the same review as the outcome.\n7. Monthly updates and leadership report. Draft programs.updates text from recorded changes (slips, decisions, closed and new risks) without inventing progress; the user reviews it. The app assembles and freezes the month's report; saved reports never change.\n8. Customization: layout changes use the native gear (tracker:layout → prepare_tool_layout); business settings use a reviewed write to the programs.settings row; extra fields need a reviewed schema change and a separately reviewed app revision. Revise the same saved app; preserve IDs, bindings and access.\n9. Automations are optional and configured only after the app is saved: a monthly update reminder email, a slip notice email for key milestones and a monthly status draft on the Claude or ChatGPT runner. The app never waits for them.",
   "documentation": {
     "quickStart": [
-      "Retrieve complete current authoring/usage guidance 1.3.9, design kit and exact catalog digest; keep six distinct screens and official linked host watermark.",
-      "Inspect approved workspace/project data and required CRUD permissions. Create or reuse project/workstream/milestone/deliverable/risk/decision/update/report scalar schema according to dataContract, with fields as documented including each select enum and multiple:false.",
-      "Save project parent first; use actual returned UUIDs for linked child references. No sample data, patient records, app accounts or unverified external connectors.",
-      "Prepare and preview exact source with real tableMap, manifest read/write kinds, schema versions, no duplicate templateConfiguration declarations; test text/select/date and denied and partial reads in sanitized host.",
-      "After reviewed app save, edit status, copy non-approved draft, add dependency-safe child, archive only with complete child reads, then reopen versioned record and reconcile confirmation.",
-      "Open native gear, reorder screens and columns, review/confirm, reopen saved app and verify layoutProfile survives. All required editor fields remain visible even if table columns are hidden.",
-      "Use manual report creation by default. Optionally obtain separate approval for shared weekly ChatGPT research and separately for internal TrialAgents email; verify setup/run status and delivery independently."
+      "Read the current usage/authoring guidance and this template's documentation; pin life.project-oversight 2.0.0 and its digest with one requestKey.",
+      "Before installing, check for an archived Programs app and offer to restore it. Use installs it; keep the default to reuse an existing programs table (e.g. from Runway) unless the user wants separate data.",
+      "Settings → Add program: name, stage and lead. Optionally edit settings (function lanes, stages, health definitions, due-soon window, update day).",
+      "Plan → Add item for milestones and key activities with function, owner, dates, status and one predecessor; mark the decisive milestones as key. Or ask the assistant to build a first plan from a document you share.",
+      "Plan → Set baseline when the plan is agreed. Timeline then shows baseline ghost bars, the critical path and slips.",
+      "Gates & decisions → Add gate with criteria; RAID → add top risks; Updates → monthly update per program, then save the month's leadership report."
     ],
-    "dataContract": "Eight related role schemas, each scalar multiple:false; actual physical keys are lowercase snake_case, logical fields map 1:1. projects: name:text, objective:text, program:text, department:select[R&D|Clinical|Regulatory|Operations|Finance|Corporate|Other], phase:select[Discovery|Preclinical|Phase 1|Phase 2|Phase 3|Platform|Operations|Other], owner:text, status:select[Planned|Active|On hold|Completed], health:select[Unassessed|Green|Amber|Red], health_rationale:text, status_date:date, start_date:date, target_date:date, baseline_budget:money, currency:select[EUR|USD|GBP|CHF], source:text, archived:boolean; workstreams: name:text, project_id:text, function:select[R&D|Clinical|Regulatory|Quality|Operations|Finance|Business development|Other], lead:text, status:select[Planned|Active|On hold|Completed], archived:boolean; milestones: name:text, project_id:text, workstream_id:text, owner:text, baseline_date:date, current_date:date, actual_date:date, status:select[Planned|In progress|Blocked|Completed|Cancelled], dependency_id:text, change_reason:text, evidence:text, archived:boolean; deliverables: name:text, project_id:text, workstream_id:text, milestone_id:text, owner:text, due_date:date, actual_date:date, status:select[Planned|In progress|Blocked|Completed|Cancelled], evidence:text, notes:text, archived:boolean; risks: name:text, project_id:text, kind:select[Risk|Issue], impact:select[Low|Medium|High], likelihood:select[Low|Medium|High], priority:select[Low|Medium|High|Critical], status:select[Open|Mitigating|Resolved|Accepted], owner:text, mitigation:text, next_review:date, resolution_evidence:text, archived:boolean; decisions: name:text, project_id:text, owner:text, due_date:date, status:select[Pending|Approved|Declined|Deferred], decision_date:date, approver:text, options:text, rationale:text, evidence:text, archived:boolean; updates: name:text, project_id:text, period:date, owner:text, health:select[Unassessed|Green|Amber|Red], summary:text, source:text, status:select[Draft|Submitted|Reviewed], archived:boolean; reports: name:text, period:date, cutoff:date, status:select[Draft|In review|Approved], reviewer:text, narrative:text, sources:text, owner:text, archived:boolean. Every text URL, evidence reference and narrative uses database text, not URL/longtext type. Every select must use exactly listed options; date YYYY-MM-DD (real calendar date), money and number real finite scalar. Required fields reject blank, optional blank=>null, archived:boolean for reviewed soft deletion. project_id, workstream_id, milestone_id, dependency_id are scalar IDs of saved authorized parents; no nested relation objects. On app setup, tableMap JSON maps each role to the real typeId and each logical key to physical key, with writableFields explicit logical names and current schemaVersion in the bindings/manifest. Rows are authorized, versioned, never demo data. Parent archive validates complete children; independent DB changes still require host referential and permissions checks. Baseline dates immutable once created. Counts/rollups/overdue rates withhold authoritative values unless required source totals complete; per-role analytics bounded at 600 rows, per-page registers continue beyond this cap. Budget amounts are not aggregated across currencies. Unassessed or missing-reviewed-owner-update means missing status, never Green. Required at creation: projects: name, objective, phase, owner, status, health; workstreams: name, project_id, function, status; milestones: name, project_id, baseline_date, current_date, status; deliverables: name, project_id, owner, due_date, status; risks: name, project_id, kind, priority, status, owner; decisions: name, project_id, owner, status; updates: name, project_id, period, owner, health, summary, status; reports: name, period, cutoff, status, narrative.",
-    "interactionContract": "Six screens: portfolio owner-health dashboard, project/workstream directory, seven-month baseline/current/actual milestone timeline with table alternative, deliverables, segmented risks/decisions, saved report/status update viewer. Toolbar shrinkable search+Add, current-page filters, next/previous backend pages, details drawer and all-scalar edit form. Add/Edit/Duplicate/Delete(archive) on every relevant role; reviews through records.propose only, same record ID/expectedVersion on edit, cancel retains saved data, conflict retains local draft. Settings gear emits tracker:layout for native host; stable templateLayoutSchema supports reorder/visibility via versioned prepare_tool_layout, no data access changes. All required and hidden table fields remain accessible in editor. Scope and as-of input are local data-ui-state events handled before metrics. Reports show saved owner-approved narrative; ChatGPT handoff is text-only, platform Automations owns optional scheduled research and email. Custom sections inherit app-level access, not silently partitioned by HTML tab. Project selection filters the server query before pagination; totals and pages share the same scope. Read-only fields are labelled and disabled; required clears are rejected. Currency changes require clearing the prior budget in a separate reviewed change.",
-    "lifecycle": "Unsaved preview => trusted save => reopen exact app/version; metadata/draft not saved until reviewed write receipt. Retry ambiguous save with same request key and reconcile receipt, do not duplicate app. Edition retains original record version from open for conflict; in-flight failures keep local editor draft. Copy resets approvals/completion evidence and owner health, archive validates linked dependencies, never hard-deletes historical milestones. Disabled automations stay disabled, app continues without setup and execution. Native layout uses newly saved host-injected configuration on each render; Ignore retains old layout. Existing saved apps are not migrated by this new catalog version. Preserve current published view on failed optional backend operations and audit logs at platform level.",
+    "dataContract": "Stable role keys. Core data contract v1: programs (name text*, code text, indication text, modality select small_molecule/biologic/antibody/cell_therapy/gene_therapy/rna/vaccine/device/other, stage select* discovery/preclinical/ind_enabling/phase_1/phase_2/phase_3/registration/approved, lead text, status select active/paused/stopped/partnered, archived boolean; Programs-owned optional fields health select unassessed/green/amber/red, health_rationale text, health_date date) and people (name*, organization_id, title, email, archived; optional, read only in Programs; owner fields stay plain text names). App tables: programs.plan_items (name text*, program_id text* record ID of programs, item_type select* milestone/activity, function select* cmc/nonclinical/clinical/regulatory/other, owner text, start_date date, end_date date* (the milestone date for milestones), baseline_start date, baseline_end date, status select* planned/in_progress/done/at_risk/cancelled, predecessor_id text record ID of one plan_items record (finish-to-start, no lag), is_key boolean, notes text, archived boolean); programs.slips (plan_item_id text*, changed_on date*, old_end date*, new_end date*, days number*, reason select* scientific/cro_vendor/regulatory/manufacturing/funding/other, detail text); programs.decisions (name text*, program_id text*, kind select* gate/decision, target_date date, criteria text one per line [met]/[not met]/[open], outcome select pending/go/no_go/conditional/decided, decided_on date, approver text, options text, rationale text, linked_item_id text record ID of a plan item or RAID entry, archived boolean); programs.raid (name text*, program_id text, raid_type select* risk/assumption/issue/dependency, likelihood and impact select low/medium/high, owner text, mitigation text, next_review date, status select* open/monitoring/closed, linked_item_id text, archived boolean); programs.updates (program_id text*, month date* first day, health select*, rationale, summary, next_steps, author text); programs.reports (month date*, title text*, narrative text, contents text frozen JSON written once by the app, saved_on date); programs.settings (one row: functions and stages comma lists of enabled options in display order, health_definitions text, due_soon_days number default 90, update_day number default 5). Partner output, read only: runway.month_closes (month, closed, currency, metrics frozen JSON v2) from Runway. App output for other apps: programs.plan_items with is_key (Runway reads key milestones) and programs.reports. Every field is scalar multiple:false; relationships are record IDs, never names. Slip rule: a later end_date on a planned, in_progress or at_risk item with a baseline creates exactly one slips record in the same review. Health is always a human judgement with a date and rationale; the app never sets it. Access is app-level only: no per-screen protection is advertised. Hiding a program is not security; use a separate app with separate data in a restricted project. Reads are bounded to 800 rows per table; partial reads disable the critical path and totals.",
+    "interactionContract": "Seven screens with stable IDs for the native layout gear: overview, timeline, plan, decisions, raid, updates, settings; column groups items, raid and decisions. Overview: next key milestone (with Runway cash when connected), KPIs (overdue items, slips this quarter with total days, on-time rate of baselined milestones done this quarter), program cards (stage, health with assessment date and a flag when older than 45 days or unassessed, next milestone and days to it, open high risks), next N days (items, gates and decisions; N = due_soon_days), slips this quarter with top reasons, exceptions (missing monthly update, overdue milestones, gates without criteria, risks past review, stale health, predecessor cycles and overlaps). Timeline: Gantt by program and function lane, milestones as diamonds, baseline ghost bars, today line, critical path highlighted; click a bar for \"what drives this date\" (its predecessor chain) and Edit dates; bars never move by drag; program and function filters; 60 items per page; a table fallback; Present mode (read-only one-page timeline with key milestones, original vs current dates and slip reasons); cash and cushion markers at key milestones from the latest Runway snapshot (green ≥ 6 months, amber 3–6, red < 3) when runway.month_closes is connected and readable, otherwise hidden with a one-line note. Plan: register with search, filters (program, function, status, owner, date window), 25 rows per page, Details with slip story, Add/Edit/Duplicate/Archive, Set baseline per program and Reset baseline (reason kept in notes). The item editor shows the slip reason when required and the downstream preview with an accept checkbox. Gates & decisions: upcoming gates with criteria checklist, readiness and days to the gate; Record outcome (go/no-go/conditional/decided, date, approver, rationale, follow-up milestones to create, planned milestones to cancel, all in one review); decisions log linked to items or risks. RAID: 3 × 3 likelihood × impact matrix (click to filter), register, promote assumption → risk or risk → issue (new linked entry, original closed). Updates: monthly updates, leadership report assembly with preview, frozen save, archive with read-only view and Markdown export text. Settings: business settings row, programs with health assessment, links to platform Access and Automations. Every input carries data-ui-state and a stable data-action; failed saves keep the draft.",
+    "lifecycle": "A fresh preview renders with no writes. After the app is saved, every create, edit, archive, baseline, slip, gate outcome, promotion and report save is an exact records.propose batch (≤ 50 writes) that the user approves in the host review; the app shows a notice until then and the database is unchanged. Edits capture the record version when the editor opens; successors moved by an accepted downstream preview and milestones cancelled by a gate outcome carry the versions captured when the editor or gate opened, so a concurrent edit is rejected, not overwritten. Reconcile ambiguous saves by receipt; never retry with a new key. Saved reports are frozen; their contents never change after later edits. The as-of date is today's date from the app runtime and only filters the view (due soon, overdue, quarter); slips record changed_on and reports saved_on as that date. Layout changes are presentation-only reviewed app updates; saved configuration is re-read on every render. Archiving or deleting the app archives it and keeps all tables and records; restoring brings its automations back switched off. Removing a tab unbinds it; adding it back reconnects the same tables. Installing again first offers to restore an archived Programs app.",
     "limitations": [
-      "Standalone HTML uses fictional local review; native layout is available only in the TrialAgents host. It does not prove deployment or live automation.",
-      "Actual deployment needs whole-catalog loader validation, exact-version digest read, QuickJS, sanitized production frame with authorized manifest, real proposed writes, browser/UI design inspection and connected ChatGPT review.",
-      "Exact cross-record analytics are bounded to 600 authorized records per role; overflow or partial reads suppress total claims. Current-page search is not server-side full-text search.",
-      "Timeline has a fixed seven-month display window; exact milestone dates remain accessible through Details.",
-      "App records project metadata only: not a validated GxP system, clinical trial patient platform, expense ledger, contract signer or legal/financial approval executor.",
-      "No automatic health scoring. Prior-period actual trend requires owner-reviewed versioned snapshots, not inferred from today's status; periods missing such snapshots are reported unavailable.",
-      "ChatGPT/TrialAgents automation metadata is a suggestion, not activation or delivery; no scheduler or email operations on app render."
+      "One predecessor per item, finish-to-start, no lags or other dependency types; no resources, capacity or percent-complete roll-ups.",
+      "App-level access only: per-screen restrictions are not advertised for this custom app. Confidential programs need a separate app with separate data in a restricted project.",
+      "Reads are bounded to 800 rows per table; larger plans show partial data and withhold the critical path and totals.",
+      "Present mode cannot export an image file inside custom apps; use a screenshot or print to PDF. Report export is copyable Markdown text.",
+      "Cash markers need Runway 2.1 snapshots connected as runway.month_closes and readable by the viewer; reserve-based cushions from Runway settings are not used (cushion is to cash-out).",
+      "Automations are optional; the status-draft research needs a connected Claude or ChatGPT runner. No GxP or Part 11 claims."
     ],
     "examples": [
       {
-        "prompt": "Set up Project Oversight for our 18-person biotech with no initial records or recurring automation.",
-        "expectedBehavior": "Six usable empty screens and eight authorized scalar role schemas; no sample records, app-local auth, required external integrations or automatic research task."
+        "prompt": "Set up Programs for PX-101 from this development plan (fictional): IND-enabling small molecule, GMP batch to January, tox to February, IND end of March, first participant dosed end of May.",
+        "expectedBehavior": "Pins the template, installs or prepares the app (reusing an existing programs table), proposes one reviewed batch with the program and plan items by function with predecessors, then the gate and top risks; sets no baseline until the user confirms the plan."
       },
       {
-        "prompt": "Create a project and two workstreams, then add a project milestone with original baseline and revised target.",
-        "expectedBehavior": "Create parent project first, reuse its actual UUID, then workstreams/milestone with source evidence; never overwrite baseline and require dated explanation for later target changes."
+        "prompt": "The GMP batch moves from 31 January to 21 February because of the CDMO. What happens to the IND date?",
+        "expectedBehavior": "Explains the critical path and the downstream preview (drug product release, IND package, IND submission shift by 21 days); prepares the item edit with reason cro_vendor and exactly one slip; moves successors only if the user accepts them in the same review."
       },
       {
-        "prompt": "Show overdue deliverables for our oncology project and the accountable owners.",
-        "expectedBehavior": "Filter to authorized project identity; show due dates and completion evidence, page through all records and withhold exact totals on incomplete required sources."
+        "prompt": "Prepare the gate pack for the IND go / no-go.",
+        "expectedBehavior": "Reads the gate criteria (met / not met / open), open risks and recent decisions; summarises readiness and days to the gate; does not record an outcome."
       },
       {
-        "prompt": "Capture a critical operational risk and record the approved vendor decision.",
-        "expectedBehavior": "Use separate linked risk and decision records; approved decision requires approver, date, rationale and evidence; every proposal requires trusted review."
+        "prompt": "Draft the October updates for both programs and the leadership report.",
+        "expectedBehavior": "Drafts programs.updates text from recorded slips, decisions and risk changes without inventing progress and proposes them for review; the user saves the frozen report in Updates."
       },
       {
-        "prompt": "Prepare a leadership project report without scheduling anything, and explain the optional weekly ChatGPT research setup.",
-        "expectedBehavior": "Display cited manual handoff and reviewed Draft report. Optional shared-runner weekly monitoring requires separate owner consent; no promise of background run or automatic delivery."
+        "prompt": "We do not want any automations.",
+        "expectedBehavior": "Leaves the app fully usable with none; updates, slips and reports work manually."
       }
     ],
     "tasks": {
       "mode": "optional",
-      "whenUseful": "After first saving the app, only if an accountable owner requests recurring evidence-backed leadership status synthesis or internal follow-up notification. No automation needed for manual project tracking/reporting.",
-      "readRequirements": "Read current guidance 1.3.9, design kit, actual eight table schemas and complete authorized project/related-source pages. Explicit setup is inherited host identity, app-only access for arbitrary custom screens, with no authentication or sample-data import. Include a meaningful IANA timezone, approved cadence, period cutoff, eligible owner-reviewed status updates, dedup identity (app ID + reporting cutoff), allowed fields, expiry, no-findings policy and completion evidence. Do not treat a missing submitted report as healthy. Source ids/versions and review permission must be checked just before any write.",
-      "outputContract": "Default NONE: no automation needed. Optional once-weekly shared-ChatGPT owner workspace monitor only after saved app/consent, using reviewed project records to draft a source-linked Draft management report; only authorized writes under a bounded reviewed grant. Failed/partial evidence returns blocked or partial, preserves app and draft, never silently no_update. Optional separate TrialAgents email action is independently approved, uses a fixed non-confidential instruction to review the saved app, owner plus separately approved authorized TrialAgents members, and fires on a reviewed app-record status transition or the saved research-run status becoming completed. Do not schedule both an independent email and a completion email, do not send from ChatGPT or contact external project vendors. Disabled states remain editable; effects/outcomes go to platform Logs. For an approved internal notification, fixed subject: Project Oversight report is ready. Fixed body: A management report is available for review in your Project Oversight app. Open the saved report in TrialAgents to review its period, evidence and status. This notification does not imply report approval. Read the current automation guide before selecting typed triggers or action fields.",
-      "promptExample": "For the saved Project Oversight app, use only owner-authorized project, workstream, milestone, deliverable, risk, decision, and reviewed update records for the chosen cutoff. Confirm source coverage, project IDs, reviewer status and record dates. Compare baseline/current/actual milestones without overwriting baselines. List dated overdue deliverables and evidence, high/critical open risks, unresolved decisions, absent monthly owner updates, and follow-up owners. Draft a succinct leadership report citing record IDs/source links and publication cutoff; propose only a Draft report for human review. Distinguish facts, qualified interpretations and missing data. If required pages are missing, denied, short or over budget, return partial coverage, not false Green / zero / no_update. No automatic email, external outreach, unreviewed status changes, or patient-level data."
+      "whenUseful": "Three optional automations; no automation is a fully supported path. (1) Monthly update reminder: a TrialAgents email action on a monthly calendar on update_day, Europe/Berlin, to program leads who are registered members with app access, listing programs without an update for the month. (2) Slip notice: a TrialAgents email action triggered by creation of a programs.slips record for an item with is_key = true, to the owner, stating the item, old and new date, days and reason. (3) Monthly status draft: research on the shared Claude or ChatGPT runner after the update day; reads last month's slips, decisions and closed or new risks and proposes draft programs.updates text for human review, writing only to programs.updates under a narrow expiring grant. Manual path: the team writes updates in the app and checks Overview exceptions; nothing waits for automation.",
+      "readRequirements": "Reminder: programs (name, lead, status), programs.updates (program_id, month), programs.settings.update_day. Slip notice: programs.slips (plan_item_id, old_end, new_end, days, reason, detail) and programs.plan_items (name, owner, is_key). Status draft: programs.slips, programs.decisions, programs.raid and existing programs.updates for the month (deduplication).",
+      "outputContract": "Reminder: one email per recipient per month listing programs without an update; no_update when every active program has one. Slip notice: one email per created slip on a key milestone; never for non-key items. Status draft: at most one programs.updates record per program and month (dedup key program_id + month); never overwrites an existing update; never sets program health in the programs table; partial source reads are reported and nothing is written for incomplete programs.",
+      "promptExample": "Monthly, the day after the update day (Europe/Berlin): for each active program in Programs, read last month's slips, gate and decision outcomes, and RAID entries opened or closed. If the program has no programs.updates record for last month, propose one draft update {program_id, month: first day of last month, health: unassessed unless the user's latest assessment applies, rationale, summary, next_steps, author: \"Draft by assistant\"} built only from those records, citing them. Do not invent progress or change any other table. If every program already has an update, report no_update."
     }
   },
-  "examples": []
+  "examples": [
+    {
+      "heading": "Programs",
+      "tableMap": "{}",
+      "pageSize": 25,
+      "layoutProfile": "{}",
+      "readOnly": false,
+      "demoLabel": false,
+      "asOfOverride": ""
+    }
+  ],
+  "deprecated": false
 }

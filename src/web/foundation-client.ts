@@ -9,6 +9,7 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown)=
  list_app_templates:['/api/app-templates/list','POST',clean],
  read_app_template:['/api/app-templates/read','POST',clean],
  install_app_template:[`/api/workspaces/${v.workspaceId}/apps/install-template`,'POST',clean],
+ read_template_installation:[`/api/workspaces/${v.workspaceId}/apps/install-template/options`,'POST',clean],
  test_app_automation:[`${automation}/test`,'POST',clean],
  read_app_automation_options:[`${automation}/options?appId=${v.appId}`],
  list_app_automations:[`${automation}/definitions?${new URLSearchParams(Object.fromEntries(Object.entries(clean).filter(([,v])=>v!==undefined).map(([k,v])=>[k,String(v)])))}`],
