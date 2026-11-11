@@ -66,6 +66,7 @@ Verify current behaviour first; build only what is missing.
 | 7 | **Template validation:** core roles use contract keys and kinds; cross-app references only to core tables or outputs | Add to the authoring preflight. |
 | 8 | **Authoring guidance:** add rules 1–9 and the extension-table pattern to `templates/TEMPLATE_AUTHORING.md` (keep both guidance copies and `templateGuidance.version` in sync) | |
 
+| 10 | **Role-based connections** (late connection, custom-app roles, contract registry, single writer, versions) | See §7. |
 | 9 | **Archive-first lifecycle and PR #117 amendment** | See §6. Highest priority: archiving an app must not remove fields. Implemented in migration 060; see [Archive first](../APP_SERVICES.md#archive-first-migration-060). |
 
 Until items 1–6 ship, templates follow the rules manually: reuse via the install-time existing-table choice, graceful degradation in code, and no deletion of data by any app action.
@@ -114,3 +115,31 @@ PR #117 retires automations whose data bindings were removed and, in the same ap
 - Keep everything else from #117: retiring workflows whose bindings were removed, cancelling queued work, no record or audit deletion, owner/schema rights required.
 - Tests: archive → restore app keeps all fields and automations (disabled); remove tab → re-add tab reconnects; field used by an archived app is not archived; purge never touches populated or bound items; cross-owner and RLS cases from #117 still pass.
 
+## 7. Role-based connections (standard for all apps)
+
+**Rule:** apps never depend on which other app is installed, or on installing apps together. They depend only on **role keys with a versioned contract** (e.g. `organizations` core.v1, `runway.month_closes` runway.v2, `dataroom.engagement` dataroom.v1). Any app — catalog template or custom version built by Claude or ChatGPT — that binds a table under the same role key with a compatible contract connects automatically, in any install order.
+
+**Already built (Runway 2.1.0, Programs 2.0.0, template installer):** installer schemas mark roles with `contract`, `optional` and `readOnly`; Use connects each role to an existing compatible table that a live app binds under the same role key; reuse is the default; optional roles are never created; missing optional contract fields are added for writable roles.
+
+**Gaps to close (platform work):**
+
+| # | Gap | Design |
+|---|---|---|
+| 7.1 | **Late connection.** If app A declares an optional role (e.g. Programs → `runway.month_closes`) and the providing app B is installed *later*, A is not connected. | Handled by the **Data access step** below, shown whenever any app is added or saved. Nothing connects silently. Apps left unconnected show a reviewed "Connect" action in their empty state, which opens the same step. |
+| 7.2 | **Custom apps declaring roles.** Role keys and contracts exist for templates; custom apps need the same. | Allow `role`, `contract`, `optional`, `readOnly` on any app binding manifest (`prepare_app`, revisions). The server validates contract compatibility (field keys, kinds, cardinality, options, required fields) exactly as template reuse does. |
+| 7.3 | **Contract registry.** Custom apps must know the exact fields of each role. | Publish core contracts and every app output contract in one place (this document §4 for core; each app scope for its outputs), exposed read-only through the template guidance so assistants can build compatible custom apps. |
+| 7.4 | **One writer per output role.** Two apps must not both write `dataroom.engagement`. | The first live app binding an output role writable is its writer; another app may bind it read-only. A custom replacement can take over writing only when the current writer is archived or permanently deleted, with an explicit owner choice. Core roles stay multi-writer. |
+| 7.5 | **Contract versions.** | Additive changes keep the version compatible; a breaking change is a new version (v2) and apps declare which versions they read. Readers of v1 keep working when the writer moves to v2 only if v2 is a superset. |
+
+### Data access step (routine for every app add or save)
+
+One standard popup, shown whenever an app is **added (installed, created, copied, restored) or saved** with data bindings that are new or changed. Same layout and styling as the platform **Access** tab (Projects → app → parts, Database → tables → columns pattern, same rows, toggles and badges). No extra wizard.
+
+1. **Existing data this app can use.** One row per role the app declares that matches an existing table: table name, role, which apps already use it, what the app would do (Read or Read & write), record count if the user may see it. Per row: **Connect** (default for core roles and compatible optional roles) or **Do not connect** (for core roles this means "use separate data", which creates a new table).
+2. **Other apps that can use this app's data.** One row per live app that declares an optional role this app now provides (late connection, gap 7.1), with the read access it would get. Per row: **Connect** or **Do not connect**.
+3. **Who can use this app.** The same controls as the Access tab: team members and roles (view / edit), and **workers** — each user's Claude and ChatGPT connections and automation runners — with read / propose / no access. Defaults: inherit the project's current access; assistants read and propose.
+4. **Footer:** a one-line summary ("Connects 3 tables, gives Programs read access to 1, team access unchanged"), then **Save** / **Cancel**. Save commits app, connections and access in one reviewed transaction; Cancel changes nothing.
+
+Rules: the step lists only what the current user is allowed to grant; restricted tables appear as "restricted" without counts. "Do not connect" is remembered for that app and role (not asked again on every save) until the user chooses "Connect" from the app or the Access tab. When nothing is new, the step is skipped. Inside ChatGPT or Claude the same step is shown in the platform's review view; assistants can prepare it but never confirm it. Every choice is logged.
+
+Every app keeps rule 3: when a role is not connected or not readable, the feature that uses it hides itself with a short note and a reviewed "Connect" action where possible.
