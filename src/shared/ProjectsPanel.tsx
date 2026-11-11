@@ -26,7 +26,7 @@ export function ProjectsPanel({workspaceId,types,call,incoming,creationInChat=fa
  const [purpose,setPurpose]=useState(''),[criteria,setCriteria]=useState(''),[sourcePolicy,setSourcePolicy]=useState('Information supplied through authorized work on this project'),[basis,setBasis]=useState('tracking');
  const [fieldKeys,setFieldKeys]=useState<string[]>([]),[create,setCreate]=useState(true),[update,setUpdate]=useState(true),[links,setLinks]=useState(false);
  const invoke=(tool:string,args:Record<string,unknown>={})=>call(tool,{workspaceId,...args});
- async function refresh(){const [n,s,c]=await Promise.all([invoke('list_workspace_projects'),invoke('list_maintenance_scopes'),invoke('list_project_components').catch((e:Error)=>{setNotice('Components unavailable: '+e.message);return [];})]);setComponents(c);setNodes(n.nodes);setScopes(s);}
+ async function refresh(){const [n,s,c]=await Promise.all([invoke('list_workspace_projects'),invoke('list_maintenance_scopes'),invoke('list_project_components',{includeArchived:true}).catch((e:Error)=>{setNotice('Components unavailable: '+e.message);return [];})]);setComponents(c);setNodes(n.nodes);setScopes(s);}
  async function act(fn:()=>Promise<void>){setError('');setNotice('');setBusy(true);try{await fn();}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
  useEffect(()=>{void act(refresh);},[workspaceId]);
  useEffect(()=>{if(incoming?.workspaceFoundation&&incoming.workspaceId===workspaceId){if(incoming.body&&incoming.digest)setPreview(incoming);if(incoming.component)setComponent(incoming.component);void act(refresh);}},[incoming]);

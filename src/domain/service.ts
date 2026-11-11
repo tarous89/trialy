@@ -1,3 +1,4 @@
+import {archivedFieldsOf,restoreArchivedSchema} from './archive.js';
 import {requireWorkflow} from './effective-access.js';
 import {applyTypePolicy,assertWritable,assertRecordScope} from './effective-access.js';
 import {activeProject} from './project-context.js';
@@ -138,6 +139,13 @@ export class Service extends DataService {
   }
   if(op.kind==='accept_submission'){requireCurrentAction(a);if(p.role!=='owner')fail(403,'owner_required','A human owner must review external submissions');const submission=(await tx.query('SELECT f.id FROM form_submissions f LEFT JOIN submission_acceptances accepted ON accepted.submission_id=f.id WHERE f.id=$1 AND f.workspace_id=$2 AND f.type_id=$3 AND accepted.submission_id IS NULL',[op.submissionId,w,op.typeId])).rows[0];if(!submission)fail(409,'submission_unavailable','Submission is unavailable or already accepted');const linked=(await tx.query('SELECT l.project_id FROM external_links l JOIN form_submissions s ON s.link_id=l.id WHERE s.id=$1 AND s.workspace_id=$2',[op.submissionId,w])).rows[0];if(linked?.project_id)await activeProject(tx,a,w,linked.project_id);await this.validate(tx,a,w,{kind:'create_record',typeId:op.typeId,data:op.data});}
   if(['create_type','update_type','install_template','create_view','update_view'].includes(op.kind)&&p.role!=='owner')fail(403,'owner_required','Only the owner may configure this workspace');
+  if(op.kind==='restore_archived_schema'){
+   if(p.role!=='owner')fail(403,'owner_required','Only the workspace owner can restore archived fields and tables');
+   const t=(await tx.query('SELECT version,fields,archived_fields,archived_at,deleted_at FROM entity_types WHERE id=$1 AND workspace_id=$2',[op.typeId,w])).rows[0];
+   if(!t||t.deleted_at)fail(404,'table_deleted','This table was deleted permanently and cannot be restored');if(t.version!==op.expectedVersion)fail(409,'stale_version','Table changed; refresh and review again');
+   const archived=archivedFieldsOf(t);if(!archived.length&&!t.archived_at)fail(409,'not_archived','Nothing archived to restore');
+   if(op.fields?.some(k=>!archived.some(x=>x.field.key===k)))fail(404,'field_unavailable','Choose archived fields of this table');
+  }
   if(op.kind==='set_field_context'){
    if(p.role!=='owner')fail(403,'owner_required','Only the owner may edit column context');
    const {type,policy}=await typeAccess(tx,a,w,op.typeId,true);
@@ -292,9 +300,10 @@ export class Service extends DataService {
   return this.prepare(a,w,{kind:'save_document',...input});
  }
  private async prepare(a:Actor,w:string,op:Operation|FileOperation) {
-  const schemaFingerprint=['create_type','update_type','migrate_type','create_view','update_view','create_record','update_record','bulk_records','database_changes','accept_submission','upgrade_template','adopt_template','reverse_field_change','reverse_field_changes','archive_created_record','restore_archived_creation'].includes(op.kind)?checksum(json((await this.db.query('SELECT id,version FROM entity_types WHERE workspace_id=$1 ORDER BY id',[w])).rows)):undefined;
+  const schemaFingerprint=['create_type','update_type','migrate_type','create_view','update_view','create_record','update_record','bulk_records','database_changes','accept_submission','upgrade_template','adopt_template','reverse_field_change','reverse_field_changes','archive_created_record','restore_archived_creation','restore_archived_schema'].includes(op.kind)?checksum(json((await this.db.query('SELECT id,version FROM entity_types WHERE workspace_id=$1 ORDER BY id',[w])).rows)):undefined;
   await this.validate(this.db,a,w,op);await this.sweep();
   let summary:any=op.kind==='restore_record'?{...op,...await this.restoreData(this.db,a,w,op)}:op.kind==='save_document'?{...op,bytes:undefined,byteSize:op.bytes.length,checksum:checksum(op.bytes)}:op;
+  if(op.kind==='restore_archived_schema'){const t=(await this.db.query('SELECT name,archived_fields,archived_at FROM entity_types WHERE id=$1',[op.typeId])).rows[0];summary={...op,tableName:t.name,tableArchived:!!t.archived_at,fields:archivedFieldsOf(t).filter(x=>!op.fields||op.fields.includes(x.field.key)).map(x=>({key:x.field.key,name:x.field.name})),retains:'Record values were never removed. Restored fields return to Database, pickers and exports.'};}
   if(op.kind==='set_field_context'){const {type}=await typeAccess(this.db,a,w,op.typeId);summary={...op,columnName:type.fields.find((f:Field)=>f.key===op.field)?.name,before:type.fields.find((f:Field)=>f.key===op.field)?.description??'',after:op.description};}
   if(op.kind==='create_record'||op.kind==='update_record'||op.kind==='accept_submission'){
    const before=op.kind==='update_record'?(await this.db.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[op.recordId,w])).rows[0]:null;
@@ -370,6 +379,11 @@ export class Service extends DataService {
   return ids;
  }
  private async apply(tx:Connection,a:Actor,w:string,op:Operation|FileOperation,p:any):Promise<any[]> {
+  if(op.kind==='restore_archived_schema'){
+   const locked=(await tx.query('SELECT version FROM entity_types WHERE id=$1 AND workspace_id=$2 FOR UPDATE',[op.typeId,w])).rows[0];if(locked?.version!==op.expectedVersion)fail(409,'stale_version','Table changed; refresh and review again');
+   const r=await restoreArchivedSchema(tx,a,w,p,op.typeId,op.fields??'all',{reason:'Restored from the archived list'});
+   return [{id:op.typeId,kind:'type',restoredFields:r.fields,tableRestored:r.tableRestored,name:r.name}];
+  }
   if(op.kind==='set_field_context'){
    const {type}=await typeAccess(tx,a,w,op.typeId,true),before=type.fields.find((f:Field)=>f.key===op.field)?.description??'';
    const fields=type.fields.map((f:Field)=>f.key===op.field?{...f,description:op.description}:f),contextVersion=(type.context_version??0)+1;
@@ -443,7 +457,7 @@ await audit(tx,a,p,'submission.accepted',op.submissionId,null,{recordId:result[0
    const id=randomUUID();await tx.query('INSERT INTO entity_types(id,workspace_id,name,fields,concept) VALUES($1,$2,$3,$4,$5)',[id,w,op.name,json(op.fields),op.concept??null]);
    await revision(tx,a,w,id,'type',0,op);await audit(tx,a,p,'type.created',id,null,op);return [{id,kind:'type',version:0,name:op.name}];
   }
-  if(op.kind==='update_type'){const old=(await tx.query('SELECT * FROM entity_types WHERE id=$1 AND workspace_id=$2',[op.typeId,w])).rows[0];const version=old.version+1;await tx.query('UPDATE entity_types SET name=$1,fields=$2,version=$3,concept=$5 WHERE id=$4',[op.name,json(op.fields),version,op.typeId,op.concept===undefined?old.concept:op.concept]);await revision(tx,a,w,op.typeId,'type',version,{...op,concept:op.concept===undefined?old.concept:op.concept});await audit(tx,a,p,'type.updated',op.typeId,{name:old.name,fields:old.fields,concept:old.concept},{...op,concept:op.concept===undefined?old.concept:op.concept});return [{id:op.typeId,kind:'type',version}];}
+  if(op.kind==='update_type'){const old=(await tx.query('SELECT * FROM entity_types WHERE id=$1 AND workspace_id=$2',[op.typeId,w])).rows[0];const version=old.version+1;await tx.query('UPDATE entity_types SET name=$1,fields=$2,version=$3,concept=$5 WHERE id=$4',[op.name,json(op.fields),version,op.typeId,op.concept===undefined?old.concept:op.concept]);await revision(tx,a,w,op.typeId,'type',version,{...op,concept:op.concept===undefined?old.concept:op.concept});await audit(tx,a,p,'type.updated',op.typeId,{name:old.name,fields:old.fields,concept:old.concept},{...op,concept:op.concept===undefined?old.concept:op.concept});const redefined=archivedFieldsOf(old).filter(x=>op.fields.some(f=>f.key===x.field.key));if(redefined.length){await tx.query('UPDATE entity_types SET archived_fields=$2,archived_at=NULL,archived_by=NULL WHERE id=$1',[op.typeId,json(archivedFieldsOf(old).filter(x=>!redefined.includes(x)))]);await audit(tx,a,p,'field.restored',op.typeId,{archived:redefined.map(x=>x.field.key)},{restored:redefined.map(x=>({key:x.field.key,name:x.field.name}))},'Defined again in the table schema');}return [{id:op.typeId,kind:'type',version}];}
   if(op.kind==='create_record'||op.kind==='update_record'){
    const before=op.kind==='update_record'?(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2 FOR UPDATE',[op.recordId,w])).rows[0]:null;
    const id=before?.id??randomUUID(), version=before?before.version+1:0, rawData={...before?.data,...op.data};

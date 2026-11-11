@@ -10,6 +10,7 @@ import './design.css';
 import './brand.css';
 import './scroll.css';
 import './platform-shell.css';
+import './archived.css';
 export type Destination='home'|'templates'|'database'|'logs'|'access-control'|'settings'|'connectors'|'automations';
 const entries:{id:Destination;label:string;icon:IconName}[]=[{id:'home',label:'Apps',icon:'grid'},{id:'database',label:'Database',icon:'database'},{id:'access-control',label:'Access',icon:'lock'},{id:'logs',label:'Logs',icon:'logs'}];
 export function WorkspaceShell({children,selected,onNavigate,accountName,accountEmail,embedded=false,appView=false,working=false,headerActions,onOpenApp,onNew}:{children:React.ReactNode;selected:Destination;onNavigate:(d:Destination)=>void;accountName:string;accountEmail?:string;embedded?:boolean;appView?:boolean;working?:boolean;headerActions?:React.ReactNode;onOpenApp?:()=>void;onNew?:(kind:string)=>void}){

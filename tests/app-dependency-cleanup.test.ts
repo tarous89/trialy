@@ -8,7 +8,8 @@ import {withActor,setDatabaseContext} from '../src/db/context.js';
 import type {Database,Connection} from '../src/db/database.js';
 import {Service} from '../src/domain/service.js';
 import {WorkspaceFoundation} from '../src/workspace/service.js';
-test('app deletion cleans only unused empty fields and dependent workflows under runtime RLS',async t=>{
+import {deleteArchivedItem} from '../src/workspace/archive.js';
+test('removing bindings archives only unused empty fields and retires dependent workflows; archiving an app removes nothing (runtime RLS)',async t=>{
  const pg=new PGlite();t.after(()=>pg.close());for(const n of (await readdir('migrations')).filter(x=>x.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+n,'utf8'));await pg.exec(await readFile('ops/runtime-role.sql','utf8'));
  const storage=new AsyncLocalStorage<Connection>();const db:Database={query:async(q,v)=>storage.getStore()?.query(q,v)??db.transaction(tx=>tx.query(q,v)),transaction:async fn=>{const current=storage.getStore();if(current)return fn(current);return pg.transaction(async raw=>{await raw.exec('SET LOCAL ROLE trialy_runtime');const tx:Connection={query:async(q,v)=>{await setDatabaseContext(raw as any);return raw.query(q,v) as any;}};return storage.run(tx,()=>fn(tx));});},close:()=>pg.close()};
  const a={userId:randomUUID(),origin:'human' as const},other=randomUUID();for(const id of [a.userId,other])await pg.query('INSERT INTO users(id,subject,email,name) VALUES($1::uuid,$1::text,$2,$3)',[id,id+'@example.invalid','Cleanup']);
@@ -24,11 +25,21 @@ test('app deletion cleans only unused empty fields and dependent workflows under
   const monitor=randomUUID(),action=randomUUID();
   await pg.query("INSERT INTO app_monitors(id,workspace_id,user_id,app_id,config,scope_stamp) VALUES($1,$2,$3,$4,'{}','stamp')",[monitor,w.id,other,app]);
   await pg.query("INSERT INTO app_actions(id,workspace_id,user_id,app_id,config,approved_by) VALUES($1,$2,$3,$4,'{}',$3)",[action,w.id,other,app]);
+  // Archive is fully reversible: no field changes, automations suspended (not deleted).
   await save({kind:'archive_component',componentId:app,expectedVersion:0,archived:true});
-  assert.deepEqual((await pg.query<any>('SELECT fields FROM entity_types WHERE id=$1',[type])).rows[0].fields.map((f:any)=>f.key),['populated','zero','false','archived','shared']);
+  assert.deepEqual((await pg.query<any>('SELECT fields FROM entity_types WHERE id=$1',[type])).rows[0].fields.map((f:any)=>f.key),keys);
   assert.equal((await pg.query<any>('SELECT count(*)::int n FROM records WHERE type_id=$1',[type])).rows[0].n,2);
+  for(const [table,id] of [['app_monitors',monitor],['app_actions',action]]){const row=(await pg.query<any>(`SELECT * FROM ${table} WHERE id=$1`,[id])).rows[0];assert.equal(row.deleted_at,null);assert.ok(row.archived_with_app_at);assert.equal(row.enabled??!row.paused,false);}
+  assert.equal((await pg.query<any>("SELECT count(*)::int n FROM audit_events WHERE action='field.archived' AND object_id=$1",[type])).rows[0].n,0);
+  // Permanent deletion is a separate owner action. It retires the automations and
+  // archives (never removes) the unused empty fields only this app used.
+  await assert.rejects(()=>deleteArchivedItem(f,{...a,origin:'ai'},w.id,{kind:'app',id:app,confirmed:true}),/authenticated TrialAgents app/);
+  await deleteArchivedItem(f,a,w.id,{kind:'app',id:app,confirmed:true});
+  const mixed=(await pg.query<any>('SELECT fields,archived_fields FROM entity_types WHERE id=$1',[type])).rows[0];
+  assert.deepEqual(mixed.fields.map((f:any)=>f.key),['populated','zero','false','archived','shared']);assert.deepEqual(mixed.archived_fields.map((x:any)=>x.field.key),['empty','blank','array']);
   assert.ok((await pg.query<any>('SELECT deleted_at FROM app_monitors WHERE id=$1',[monitor])).rows[0].deleted_at);assert.ok((await pg.query<any>('SELECT deleted_at FROM app_actions WHERE id=$1',[action])).rows[0].deleted_at);
-  assert.equal((await pg.query<any>("SELECT count(*)::int n FROM audit_events WHERE action='app.empty_fields_removed' AND object_id=$1",[type])).rows[0].n,1);
+  assert.equal((await pg.query<any>("SELECT count(*)::int n FROM audit_events WHERE action='field.archived' AND object_id=$1",[type])).rows[0].n,1);
+  assert.equal((await pg.query<any>("SELECT count(*)::int n FROM audit_events WHERE action='app.deleted_permanently' AND object_id=$1",[app])).rows[0].n,1);
   assert.equal((await pg.query<any>("SELECT count(*)::int n FROM revisions WHERE object_kind='type' AND object_id=$1 AND version=1",[type])).rows[0].n,1);
 
   const partialType=await createTable('Partial',['keep','remove']),partial=await createApp('Partial',partialType,['keep','remove']),affected=randomUUID(),unaffected=randomUUID(),followup=randomUUID();
@@ -39,15 +50,19 @@ test('app deletion cleans only unused empty fields and dependent workflows under
   await save({kind:'save_component',componentId:partial,expectedVersion:0,projectId:project.id,content:{name:'Partial',format:'frontend-js',source:'return {html:"<h1>Partial</h1>"};',sourceAccess:'bindings',bindings:[{typeId:partialType,fields:['keep']}]}});
   assert.ok((await pg.query<any>('SELECT deleted_at FROM app_monitors WHERE id=$1',[affected])).rows[0].deleted_at);assert.equal((await pg.query<any>('SELECT deleted_at FROM app_monitors WHERE id=$1',[unaffected])).rows[0].deleted_at,null);assert.ok((await pg.query<any>('SELECT deleted_at FROM app_actions WHERE id=$1',[followup])).rows[0].deleted_at);
   assert.equal((await pg.query<any>('SELECT status FROM app_service_jobs WHERE id=$1',[job])).rows[0].status,'cancelled');assert.equal((await pg.query<any>('SELECT status FROM app_action_runs WHERE id=$1',[run])).rows[0].status,'cancelled');
-  assert.deepEqual((await pg.query<any>('SELECT fields FROM entity_types WHERE id=$1',[partialType])).rows[0].fields.map((f:any)=>f.key),['keep']);
-  const empty=await createTable('Empty app',['empty']),emptyApp=await createApp('Empty app',empty,['empty']);await save({kind:'archive_component',componentId:emptyApp,expectedVersion:0,archived:true});assert.deepEqual((await pg.query<any>('SELECT fields FROM entity_types WHERE id=$1',[empty])).rows[0].fields,[]);
+  const partialRow=(await pg.query<any>('SELECT fields,archived_fields FROM entity_types WHERE id=$1',[partialType])).rows[0];
+  assert.deepEqual(partialRow.fields.map((f:any)=>f.key),['keep']);assert.deepEqual(partialRow.archived_fields.map((x:any)=>x.field.key),['remove']);
+  const empty=await createTable('Empty app',['empty']),emptyApp=await createApp('Empty app',empty,['empty']);await save({kind:'archive_component',componentId:emptyApp,expectedVersion:0,archived:true});
+  assert.deepEqual((await pg.query<any>('SELECT fields FROM entity_types WHERE id=$1',[empty])).rows[0].fields.map((f:any)=>f.key),['empty']);
+  await deleteArchivedItem(f,a,w.id,{kind:'app',id:emptyApp,confirmed:true});
+  const emptied=(await pg.query<any>('SELECT fields,archived_fields,archived_at FROM entity_types WHERE id=$1',[empty])).rows[0];assert.deepEqual(emptied.fields,[]);assert.equal(emptied.archived_fields.length,1);assert.ok(emptied.archived_at);
   const rollbackType=await createTable('Rollback',['empty']),rollbackApp=await createApp('Rollback',rollbackType,['empty']);
   await assert.rejects(()=>db.transaction(async()=>{await save({kind:'archive_component',componentId:rollbackApp,expectedVersion:0,archived:true});throw Error('rollback cleanup');}),/rollback cleanup/);
   assert.equal((await pg.query<any>('SELECT archived FROM workspace_components WHERE id=$1',[rollbackApp])).rows[0].archived,false);assert.equal((await pg.query<any>('SELECT jsonb_array_length(fields) n FROM entity_types WHERE id=$1',[rollbackType])).rows[0].n,1);
   // A derived field in the retained schema protects its empty source column.
   const derivedType=await createTable('Derived dependency',['source','keep']),derivedApp=await createApp('Derived app',derivedType,['source']);
   await pg.query("UPDATE entity_types SET fields=fields || $2::jsonb WHERE id=$1",[derivedType,JSON.stringify([{key:'computed',name:'Computed',kind:'text',ai:true,computed:{source:'return input.source;',fields:['source']}}])]);
-  await save({kind:'archive_component',componentId:derivedApp,expectedVersion:0,archived:true});assert.equal((await pg.query<any>('SELECT fields FROM entity_types WHERE id=$1',[derivedType])).rows[0].fields.some((f:any)=>f.key==='source'),true);
+  await save({kind:'archive_component',componentId:derivedApp,expectedVersion:0,archived:true});await deleteArchivedItem(f,a,w.id,{kind:'app',id:derivedApp,confirmed:true});assert.equal((await pg.query<any>('SELECT fields FROM entity_types WHERE id=$1',[derivedType])).rows[0].fields.some((f:any)=>f.key==='source'),true);
   // The helper does not reveal eligibility across accounts.
   await withActor({userId:other,origin:'human'},async()=>assert.deepEqual((await db.query('SELECT trialy_security.unused_app_fields($1,$2,$3) k',[w.id,type,['populated']])).rows,[]));
  });

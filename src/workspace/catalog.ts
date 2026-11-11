@@ -10,7 +10,7 @@ export const catalogRequest=z.object({offset:z.number().int().min(0).max(1000000
 /** Metadata is deliberately projected: never return field code, defaults, samples or records. */
 export async function schemaCatalog(db:Connection,a:Actor,w:string,input:unknown={}){
  const v=catalogRequest.parse(input),p=await access(db,a,w);
- const rows=(await db.query('SELECT id,name,version,context_version,fields,concept FROM entity_types WHERE workspace_id=$1 AND ($2::uuid IS NULL OR id=$2) ORDER BY name,id LIMIT $3 OFFSET $4',[w,v.typeId??null,v.limit+1,v.offset])).rows;
+ const rows=(await db.query('SELECT id,name,version,context_version,fields,concept FROM entity_types WHERE workspace_id=$1 AND archived_at IS NULL AND deleted_at IS NULL AND ($2::uuid IS NULL OR id=$2) ORDER BY name,id LIMIT $3 OFFSET $4',[w,v.typeId??null,v.limit+1,v.offset])).rows;
  const tables=[];for(const t of rows.slice(0,v.limit)){const table=await catalogTable(db,a,p,t);if(table)tables.push(table);}
  return {workspaceId:w,tables,nextOffset:rows.length>v.limit?v.offset+v.limit:null,policy:'Schema visibility grants no access to entries, counts, execution or writes.'};
 }
@@ -38,7 +38,7 @@ async function accountCatalogRead(db:import('../db/database.js').Database,a:Acto
  const v=accountCatalogRequest.parse(input),{Service}=await import('../domain/service.js');
  const spaces=await new Service(db).workspaces(a);
  if(!spaces.length)return {tables:[],nextOffset:null};
- const rows=(await db.query('SELECT id,workspace_id,name,version,context_version,fields,concept FROM entity_types WHERE workspace_id=ANY($1::uuid[]) ORDER BY name,id LIMIT $2 OFFSET $3',[spaces.map(s=>s.id),v.limit+1,v.offset])).rows;
+ const rows=(await db.query('SELECT id,workspace_id,name,version,context_version,fields,concept FROM entity_types WHERE workspace_id=ANY($1::uuid[]) AND archived_at IS NULL AND deleted_at IS NULL ORDER BY name,id LIMIT $2 OFFSET $3',[spaces.map(s=>s.id),v.limit+1,v.offset])).rows;
  const tables=[],policies=new Map<string,Awaited<ReturnType<typeof access>>>();
  for(const row of rows.slice(0,v.limit)){
   let policy=policies.get(row.workspace_id);if(!policy){policy=await access(db,a,row.workspace_id);policies.set(row.workspace_id,policy);}

@@ -6,6 +6,7 @@ import {randomUUID} from 'node:crypto';
 import {Postgres} from '../src/db/database.js';
 import {withActor,withDatabaseContext,databaseContext} from '../src/db/context.js';
 import {Service} from '../src/domain/service.js';
+import {deleteArchivedItem} from '../src/workspace/archive.js';
 import {WorkspaceFoundation} from '../src/workspace/service.js';
 import {AppMonitoring} from '../src/app-services/monitoring.js';
 import {AppActions,dispatchAppActions} from '../src/app-services/service.js';
@@ -55,7 +56,7 @@ test('worker dispatch uses the authorizing owner through the production adapter 
  assert.equal((await pg.query<any>('SELECT paused FROM app_actions WHERE id=$1',[action.id])).rows[0].paused,true);
 } );
 
-test('app deletion removes every owners automation under runtime RLS without affecting other apps',async t=>{
+test('app archive suspends and permanent deletion retires every owners automation under runtime RLS without affecting other apps',async t=>{
  const {pg,db}=await fixture(t,true),a={userId:randomUUID(),origin:'human' as const},other=randomUUID();
  for(const id of [a.userId,other])await pg.query('INSERT INTO users(id,subject,email,name) VALUES($1::uuid,$1::text,$2,$1::text)',[id,id+'@example.invalid']);
  const s=new Service(db),f=new WorkspaceFoundation(db);
@@ -68,12 +69,20 @@ test('app deletion removes every owners automation under runtime RLS without aff
   await pg.query("INSERT INTO app_monitors(id,workspace_id,user_id,app_id,config,scope_stamp) VALUES($1,$2,$3,$4,'{}','test')",[randomUUID(),w.id,userId,appId]);
   await pg.query("INSERT INTO app_actions(id,workspace_id,user_id,app_id,config,approved_by) VALUES($1,$2,$3,$4,'{}',$3)",[randomUUID(),w.id,userId,appId]);
  }
+ // Archiving suspends every owner's automations of that app; permanent deletion retires them.
  await withActor(a,async()=>{const p=await f.preview(a,w.id,{kind:'archive_component',componentId:app.id,expectedVersion:0,archived:true});await f.confirm(a,w.id,p.id,p.digest);});
+ for(const table of ['app_monitors','app_actions']){
+  const suspended=(await pg.query<any>(`SELECT * FROM ${table} WHERE app_id=$1`,[app.id])).rows;
+  assert.equal(suspended.length,2);assert.ok(suspended.every(r=>!r.deleted_at&&r.archived_with_app_at&&(r.enabled===false||r.paused===true)));
+ }
+ await assert.rejects(pg.query('UPDATE app_monitors SET enabled=true WHERE app_id=$1',[app.id]),/archived_monitor_disabled/);
+ await assert.rejects(pg.query('UPDATE app_actions SET paused=false WHERE app_id=$1',[app.id]),/archived_action_paused/);
+ await withActor(a,()=>deleteArchivedItem(f,a,w.id,{kind:'app',id:app.id,confirmed:true}));
  for(const table of ['app_monitors','app_actions']){
   const removed=(await pg.query<any>(`SELECT * FROM ${table} WHERE app_id=$1`,[app.id])).rows;
   assert.equal(removed.length,2);assert.ok(removed.every(r=>r.deleted_at));
   const retained=(await pg.query<any>(`SELECT * FROM ${table} WHERE app_id=$1`,[keep.id])).rows;
-  assert.ok(retained.every(r=>!r.deleted_at));
+  assert.ok(retained.every(r=>!r.deleted_at&&!r.archived_with_app_at));
  }
  await assert.rejects(pg.query('UPDATE app_monitors SET enabled=true,deleted_at=NULL WHERE app_id=$1',[app.id]),/deleted_monitor_disabled/);
  await assert.rejects(pg.query('UPDATE app_actions SET paused=false,deleted_at=NULL WHERE app_id=$1',[app.id]),/deleted_action_paused/);

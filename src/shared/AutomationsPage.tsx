@@ -1,4 +1,5 @@
 import {useWorkspaceView} from './WorkspaceView.js';
+import {ArchivedItems} from './ArchivedItems.js';
 import React,{useEffect,useRef,useState} from 'react';
 import {AppPlatform} from './AppPlatform.js';
 import {Button,SearchField,Select} from './ui/Controls.js';
@@ -26,6 +27,7 @@ export function AutomationsPage({call,appId}:{call:Call;appId?:string}){
  {data?.rows.length===0&&<p className="ty-automation-empty">{filtered?'No matching automations.':'No automations configured.'}</p>}
  {!!data?.rows.length&&<div className="ty-automation-list">{data.rows.map((r:any)=><AutomationBoundary key={r.kind+r.id}><AutomationRow call={call} row={r} onEdit={()=>navigate({id:r.id,kind:r.kind})} onChanged={()=>void load()}/></AutomationBoundary>)}</div>}
  {data&&(offset>0||data.nextOffset!==null)&&<nav className="ty-page-pagination" aria-label="Pagination"><Button disabled={busy||offset===0} onClick={()=>void load(Math.max(0,offset-20))}>Previous page</Button><span>Page {Math.floor(offset/20)+1}</span><Button disabled={busy||data.nextOffset===null} onClick={()=>void load(data.nextOffset)}>Next page</Button></nav>}
+ <ArchivedItems call={call} kind="automations" refreshKey={data} onChanged={()=>void load(0)}/>
  </section>;
 }
 function AutomationRow({call,row:r,onChanged,onEdit}:{call:Call;row:any;onChanged:()=>void;onEdit:()=>void}){

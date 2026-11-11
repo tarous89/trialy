@@ -51,10 +51,10 @@ export class AutomationManagement{
   const rows=(await this.db.query(`SELECT d.*,c.name AS app_name,c.archived AS app_archived FROM (
    SELECT m.id,m.app_id,m.workspace_id,m.user_id,m.version,'research' AS kind,coalesce(m.assistant,'chatgpt') AS executor,m.config->>'name' AS name,m.enabled,m.config->>'expiresAt' AS expires_at,coalesce(m.config->'automation'->'trigger',m.config->'schedule') AS trigger,m.created_at,
     concat_ws(E'\\n\\n',m.config->>'objective',m.config->>'instructions') AS prompt,NULL::jsonb AS steps,(m.config->'automation' IS NULL AND m.task IS NOT NULL) AS external_schedule,m.config->'automation'->>'runnerId' AS runner_id,m.assistant AS owner
-   FROM app_monitors m WHERE m.deleted_at IS NULL
+   FROM app_monitors m WHERE m.deleted_at IS NULL AND m.archived_with_app_at IS NULL
    UNION ALL
    SELECT a.id,a.app_id,a.workspace_id,a.user_id,a.version,'action','trialagents',a.config->>'name',NOT a.paused,a.config->>'expiresAt',a.config->'trigger',a.created_at,NULL,a.config->'steps',false,NULL,a.assistant
-   FROM app_actions a WHERE a.deleted_at IS NULL
+   FROM app_actions a WHERE a.deleted_at IS NULL AND a.archived_with_app_at IS NULL
   ) d JOIN workspace_components c ON c.id=d.app_id AND c.workspace_id=d.workspace_id
   WHERE d.workspace_id=$1 AND d.user_id=$2 AND ($3::uuid IS NULL OR d.app_id=$3)
    AND ($4='' OR position(lower($4) in lower(d.name||' '||c.name))>0)
@@ -115,7 +115,7 @@ export class AutomationManagement{
   const r=(await this.db.query(`SELECT * FROM ${table} WHERE deleted_at IS NULL AND id=$1 AND workspace_id=$2 AND user_id=$3`,[automationId,w,a.userId])).rows[0];if(!r)fail(404,'not_found','Automation unavailable');
   const c=await new WorkspaceFoundation(this.db).component(this.db,a,w,r.app_id,false);
   const controlRevision=(await this.db.query("SELECT coalesce(max(event_sequence),0)::text revision FROM audit_events WHERE workspace_id=$1 AND object_id=$2 AND action IN ('monitoring.controlled','app_action.paused')",[w,r.id])).rows[0].revision;
-  return {id:r.id,version:r.version,kind,executor:kind==='research'?ownedBy(r)??'chatgpt':'trialagents',owner:ownedBy(r),canEdit:canEdit(a,ownedBy(r)),enabled:kind==='research'?r.enabled:!r.paused,controlRevision,lastError:kind==='action'?r.last_error??null:null,config:r.config,app:{id:c.id,name:c.name,url:appUrl({workspaceId:w,appId:c.id}),archived:c.archived||c.project_archived},managementOnly:true,task:r.task??null};
+  return {id:r.id,version:r.version,kind,executor:kind==='research'?ownedBy(r)??'chatgpt':'trialagents',owner:ownedBy(r),canEdit:canEdit(a,ownedBy(r)),enabled:kind==='research'?r.enabled:!r.paused,controlRevision,lastError:kind==='action'?r.last_error??null:null,config:r.config,archivedWithApp:!!r.archived_with_app_at,app:{id:c.id,name:c.name,url:appUrl({workspaceId:w,appId:c.id}),archived:c.archived||c.project_archived},managementOnly:true,task:r.task??null};
  }
  async prepareControl(a:Actor,w:string,input:unknown){
   const change=automationControl.parse(input),automation=await this.read(a,w,change.kind,change.automationId);if(change.enabled)requireAutomationOwner(a,automation.owner);
@@ -135,7 +135,7 @@ export class AutomationManagement{
   await tx.query('UPDATE app_service_previews SET consumed_at=now(),result=$2 WHERE id=$1',[p.id,JSON.stringify(result)]);return result;
  });}
  async control(a:Actor,w:string,kind:'research'|'action',automationId:string,version:number,enabled:boolean){requireCurrentAction(a);return this.db.transaction(async tx=>{
-  await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const db=adapter(tx),s=new AutomationManagement(db),r=await s.read(a,w,kind,automationId);if(r.version!==version)fail(409,'automation_changed','Reopen the current automation before changing it');
+  await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const db=adapter(tx),s=new AutomationManagement(db),r=await s.read(a,w,kind,automationId);if(r.version!==version)fail(409,'automation_changed','Reopen the current automation before changing it');if(enabled&&(r.archivedWithApp||r.app.archived))fail(409,'app_archived',`Restore ${r.app.name} first. Its automations come back switched off for review.`);
   if(kind==='research')return new AppMonitoring(db).control(a,w,automationId,version,enabled);
   return new AppActions(db).control(a,w,automationId,!enabled);
  });}

@@ -14,7 +14,7 @@ export class DataService {
   const result:{workspace:any;shared:boolean}[]=[];for(const w of rows){try{await access(this.db,a,w.id);let shared=a.origin==='ai';if(a.origin==='human')try{await access(this.db,{...a,origin:'ai'},w.id);shared=true;}catch{}result.push({workspace:w,shared});}catch{}}return result.sort((a,b)=>Number(b.shared)-Number(a.shared)).map(r=>r.workspace);
  }
  async types(a:Actor,w:string) {
-  const p=await access(this.db,a,w);const rows=(await this.db.query('SELECT * FROM entity_types WHERE workspace_id=$1 ORDER BY created_at,name',[w])).rows;
+  const p=await access(this.db,a,w);const rows=(await this.db.query('SELECT * FROM entity_types WHERE workspace_id=$1 AND archived_at IS NULL AND deleted_at IS NULL ORDER BY created_at,name',[w])).rows;
   const result=[];for(const t of rows){const policy=await applyTypePolicy(this.db,a,p,t);const fields=visibleFields(t.fields,policy,a);if(fields.length)result.push({...t,fields});}return result;
  }
  protected async recordQuery(a:Actor,w:string,t:string,opts:RecordQuery={},connection:Connection=this.db) {

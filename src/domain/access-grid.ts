@@ -30,7 +30,7 @@ export class AccessGrid{
   const trees=await f.nodes(a,w),components=await f.components(a,w);
   const projects=trees.nodes.filter(n=>!n.effective_archived),tools=components.filter(c=>!c.archived&&!c.project_archived);
   const sectionApps=(await this.db.query('SELECT id,source FROM workspace_components WHERE workspace_id=$1 AND archived=false',[w])).rows;
-  const automations=(await this.db.query("SELECT id,config->>'name' AS name,app_id,user_id FROM app_monitors WHERE workspace_id=$1 AND deleted_at IS NULL UNION ALL SELECT id,config->>'name' AS name,app_id,user_id FROM app_actions WHERE workspace_id=$1 AND deleted_at IS NULL",[w])).rows;
+  const automations=(await this.db.query("SELECT id,config->>'name' AS name,app_id,user_id FROM app_monitors WHERE workspace_id=$1 AND deleted_at IS NULL AND archived_with_app_at IS NULL UNION ALL SELECT id,config->>'name' AS name,app_id,user_id FROM app_actions WHERE workspace_id=$1 AND deleted_at IS NULL AND archived_with_app_at IS NULL",[w])).rows;
   const subjects:any[]=[];
   for(const s of selected){
    const actor:Actor={userId:isAssistant(s)?a.userId:s,origin:isAssistant(s)||!manage&&a.origin==='ai'?'ai':'human',...(s==='claude'||!isAssistant(s)&&!manage&&a.origin==='ai'&&a.assistant==='claude'?{assistant:'claude' as const}:{})};

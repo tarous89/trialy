@@ -6,6 +6,8 @@ import {readFile} from 'node:fs/promises';
 import {z} from 'zod';
 import {id,fail,fieldsSchema,newFieldsSchema,type Actor} from '../shared/schema.js';
 import {typeAccess,visibleFields} from '../domain/permissions.js';
+// Re-adding a removed tab may bind archived fields; the reviewed save restores them.
+import {typeAccessIncludingArchived} from '../domain/archive.js';
 import {derived} from '../shared/formulas.js';
 import {Service} from '../domain/service.js';
 import type {WorkspaceFoundation} from './service.js';
@@ -35,7 +37,7 @@ export async function trackerOperation(f:WorkspaceFoundation,a:Actor,w:string,in
  }
  const fields:any[]=[],bindings:any[]=[],tabs:any[]=[];
  for(const [i,tab] of v.tabs.entries()){
-  const draft=v.newTables.find(t=>t.id===tab.typeId);const resolved=draft?null:extensions.get(tab.typeId)??await typeAccess(f.db,a,w,tab.typeId);const type=resolved?.type??{...draft!,version:0},allowed=resolved?visibleFields(type.fields,resolved.policy,a):type.fields.filter((f:any)=>a.origin!=='ai'||f.ai);
+  const draft=v.newTables.find(t=>t.id===tab.typeId);const resolved=draft?null:extensions.get(tab.typeId)??await typeAccessIncludingArchived(f.db,a,w,tab.typeId);const type=resolved?.type??{...draft!,version:0},allowed=resolved?visibleFields(type.fields,resolved.policy,a):type.fields.filter((f:any)=>a.origin!=='ai'||f.ai);
   if(new Set(tab.columns.map(c=>c.field)).size!==tab.columns.length)fail(400,'duplicate_column','Each tab field must be unique');
   const selectedColumns=[...tab.columns,...(draft&&v.includeDetailFields?allowed.filter((field:any)=>!tab.columns.some(c=>c.field===field.key)).map((field:any)=>({field:field.key,visible:false,editable:true})):[])];
   const columns=selectedColumns.map((c:any,columnIndex)=>{const field=allowed.find((x:any)=>x.key===c.field);if(!field)fail(403,'field_unavailable','Choose an authorized existing field');

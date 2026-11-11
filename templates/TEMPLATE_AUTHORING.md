@@ -1,6 +1,6 @@
 # TrialAgents template authoring standard
 
-Version: 1.3.17
+Version: 1.3.18
 
 This is the living engineering contract for templates served by TrialAgents. Update it when a verified renderer, lifecycle or host-integration lesson changes. Retrieve the current copy with `read_app_template_guidance(resource:"authoring")`; follow `nextOffset` to the end. The response includes a version and content hash. Packaged plugin examples are not the catalog.
 
@@ -71,6 +71,16 @@ Every app keeps its backend app-level access boundary. Optional configuration mu
 - **Documentation:** each new template documents purpose, stable sections/inheritance or app-only access, optional data/connector bindings, automation mode (`none` is legitimate), executor, timing/timezone, exact prompt or action, sources, destinations, expiry/limits, write permissions, no-result/failure behavior and disable/edit/history. Include both an automation example when useful and a no-automation example. User management and ChatGPT use the same versioned definitions and review path.
 - **Continuity:** definitions stay listed and editable when disabled. Saving does not re-enable them. No standalone automation Delete action. No automation reads on app loading, navigation or ordinary saves; no scheduler failure banners inside generated apps. Never erase records or local input on task failure. Run outcomes belong in platform Logs; setup diagnostics stay in the private connection/setup flow.
 
+
+## Archive first: removing apps, tabs, fields and tables
+
+Nothing a user created is removed as a side effect ([modular apps §6](../docs/product/MODULAR_APPS_AND_SHARED_DATA.md#6-archive-first-apps-automations-and-database)).
+
+- **Deleting an app archives it.** Tables, records, fields and history stay. Its automations are paused and come back **switched off** when the app is restored (`prepare_workspace_change` with `archive_component` and `archived:false`); an owner re-enables them after review. Never enable them as part of a restore.
+- **Removing a tab or binding unbinds it.** Fields and tables that nothing else uses (including archived apps) and that hold no values are archived, not removed. Re-adding the tab with the same table IDs and field keys reconnects them: the reviewed app save restores them (workspace owner only, because it changes the shared schema).
+- **Archived items are hidden by default** from search, totals, charts, exports, pickers and list tools. Do not treat them as active data or recreate them under new names. An authorized owner can ask for them with `list_archived_items` (apps, automations, tables, or a table's fields); restore fields or a table with `prepare_change` `restore_archived_schema`.
+- **Templates:** before installing a template, check `list_archived_items` with `kind:"apps"` and the `templateId`. If an archived app from that template exists, offer "Restore your archived app" first; install a new copy only if the user chooses it.
+- **Permanent deletion is a human action** by the workspace owner on the TrialAgents website, only for archived items that are empty and unused (an optional automatic purge may remove such fields and tables after 90 days). Assistants never delete permanently and never present deletion as available to themselves.
 
 ## Automation management and Logs presentation
 

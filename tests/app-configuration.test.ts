@@ -26,7 +26,7 @@ test('optional sections inherit app access and protect source, data, writes, rev
  await assert.rejects(am.update(a,w,{expectedVersion:(await am.overview(a,w)).version,subject:b.userId,rule:{kind:'app_section',resourceId:app.id,field:'budget',read:'allow',write:'inherit'}}),/inherit/);
  const legacyOp=await trackerOperation(f,a,w,{...setup,tabs:setup.tabs.map(({accessId,...tab})=>tab)}),legacy=await change(legacyOp);assert.equal((await grid.read(a,w,b.userId)).rows.filter(r=>r.kind==='app_section'&&r.resourceId===legacy.id).length,0);assert.ok((await f.readComponent(b,w,legacy.id,true)).initialOutput.tracker);
 });
-test('unified management preserves disabled definitions, isolates owners, and archives without resuming',async t=>{
+test('unified management preserves disabled definitions, isolates owners, and archives and restores without resuming',async t=>{
  const {db,a,b,s,f,w,change}=await fixture(t),manage=new AutomationManagement(db),runners=new AutomationService(db),research=new AppMonitoring(db),actions=new AppActions(db),app=await change({kind:'save_component',content:{name:'Stable app',format:'frontend-js',sourceAccess:'bindings',bindings:[],source:'return {html:"<p>Stable app</p>"};'}}),expiry=new Date(Date.now()+86400000*30).toISOString();
  const prep=await runners.prepare(a,w,{preferences:{timeZone:'UTC'}}),runner=await runners.confirm(a,w,prep.id,prep.digest);assert.equal((await runners.setup(a,w)).executionPreference.reasoning,'high');assert.equal((await runners.setup(a,w)).hostExecutionSettings,'unverified');
  const config={name:'Research',appId:app.id,objective:'Review public updates',instructions:'Collect sources and summarize material updates.',sourcePolicy:'Primary public sources.',schedule:{description:'Daily',timeZone:'UTC'},expiresAt:expiry,automation:{runnerId:runner.id,trigger:{kind:'calendar',frequency:'daily',time:'06:00',timeZone:'UTC',anchor:'2026-01-01'}}};
@@ -52,15 +52,20 @@ test('unified management preserves disabled definitions, isolates owners, and ar
  await db.query("INSERT INTO automation_occurrences(id,workspace_id,user_id,runner_id,monitor_id,monitor_version,occurrence_key,due_at,reason) VALUES($1,$2,$3,$4,$5,1,'delete-pending',now(),'calendar')",[queued,w,a.userId,runner.id,monitor.id]);
  await db.query("INSERT INTO app_action_runs(id,workspace_id,user_id,action_id,action_version,occurrence) VALUES($1,$2,$3,$4,1,'delete-pending')",[run,w,a.userId,action.id]);
  await db.query("INSERT INTO app_service_jobs(id,workspace_id,user_id,app_id,kind,request_key,digest,payload,deadline_at) VALUES($1,$2,$3,$4,'connector','delete-pending','test','{}',now()+interval '1 hour')",[job,w,a.userId,app.id]);
- await change({kind:'archive_component',componentId:app.id,expectedVersion:0,archived:true});await change({kind:'archive_component',componentId:app.id,expectedVersion:1,archived:false});await assert.rejects(manage.read(a,w,'research',monitor.id),/unavailable/);await assert.rejects(manage.read(a,w,'action',action.id),/unavailable/);assert.equal((await manage.list(a,w,{})).rows.length,0);assert.equal((await manage.connector(a,w)).automations.length,0);assert.match((await f.readComponent(a,w,app.id)).component.source,/Stable app/);
+ // Archive first: archiving suspends (hidden from lists, cannot be enabled); restore brings them back switched off.
+ await change({kind:'archive_component',componentId:app.id,expectedVersion:0,archived:true});
+ assert.equal((await manage.list(a,w,{})).rows.length,0);assert.equal((await manage.connector(a,w)).automations.length,0);
+ await assert.rejects(manage.control(a,w,'research',monitor.id,(await manage.read(a,w,'research',monitor.id)).version,true),/Restore .* first|app_archived|active app/);
+ await change({kind:'archive_component',componentId:app.id,expectedVersion:1,archived:false});
+ assert.equal((await manage.read(a,w,'research',monitor.id)).enabled,false);assert.equal((await manage.read(a,w,'action',action.id)).enabled,false);
+ const restored=(await manage.list(a,w,{})).rows;assert.equal(restored.length,2);assert.ok(restored.every((r:any)=>!r.enabled&&!r.effectiveEnabled));assert.match((await f.readComponent(a,w,app.id)).component.source,/Stable app/);
  assert.equal((await db.query('SELECT status FROM automation_occurrences WHERE id=$1',[queued])).rows[0].status,'cancelled');
  assert.equal((await db.query('SELECT status FROM app_action_runs WHERE id=$1',[run])).rows[0].status,'cancelled');
  assert.equal((await db.query('SELECT status FROM app_service_jobs WHERE id=$1',[job])).rows[0].status,'cancelled');
  assert.equal((await db.query('SELECT * FROM automation_dispatch WHERE monitor_id=$1',[monitor.id])).rows.length,0);
- await assert.rejects(research.control(a,w,monitor.id,1,true),/unavailable/);
- await assert.rejects(actions.row(a,w,action.id),/unavailable/);
+ assert.equal((await actions.row(a,w,action.id)).paused,true,'restored switched off');
  assert.equal((await runners.setup(a,w)).state,'ready');
- const monthly=actionConfig.parse({...ac,trigger:{kind:'calendar',frequency:'monthly',anchor:'2026-01-01',time:'06:00',timeZone:'UTC',monthDay:31}});assert.equal(nextAction(monthly,new Date('2026-02-01T00:00Z'))?.toISOString(),'2026-02-28T06:00:00.000Z');await assert.rejects(manage.history(a,w,'research',monitor.id),/unavailable/);
+ const monthly=actionConfig.parse({...ac,trigger:{kind:'calendar',frequency:'monthly',anchor:'2026-01-01',time:'06:00',timeZone:'UTC',monthDay:31}});assert.equal(nextAction(monthly,new Date('2026-02-01T00:00Z'))?.toISOString(),'2026-02-28T06:00:00.000Z');assert.ok(Array.isArray((await manage.history(a,w,'research',monitor.id)).rows),'restored automations keep their history');
  await runners.control(a,w,runner.id,false,0);const rp=await runners.prepare(a,w,{expectedVersion:1,preferences:{time:'07:00',timeZone:'UTC'}});await runners.confirm(a,w,rp.id,rp.digest);assert.equal((await runners.setup(a,w)).state,'paused');
 });
 
