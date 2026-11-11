@@ -94,6 +94,7 @@ Format per app: users and job · reference app · scope (in / out) · records ·
 - **Records:** Round; Investor opportunity; Interaction; Commitment. Shared: Organization (fund), Person.
 - **Screens:** Round overview · Investor directory · Pipeline board · Interaction log · Commitments.
 - **Assistant angle:** research fund fit and recent investments in the assistant; prepare meeting briefs. Reuse the v1 `investor-crm` data contract and commitment-counting rules.
+- **Detailed scope:** final build scope in [apps/FUNDRAISE.md](apps/FUNDRAISE.md). Connects to Data Room (08) by the `dataroom.v1` roles in any install order; build Data Room next.
 
 ### BT2-04 — Contracts (rank 4, Core)
 *Register of CDAs, MSAs, SOWs and other agreements with key dates and obligations.*  
