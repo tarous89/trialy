@@ -18,7 +18,7 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown)=
  control_app_automation:[`${automation}/definitions/${v.kind}/${v.automationId}/control`,'POST',{expectedVersion:v.expectedVersion,enabled:v.enabled}],
  prepare_app_action:[`${services}/actions/prepare`,'POST',clean],
  read_automation_setup:[automation+(v.assistant?'?assistant='+encodeURIComponent(v.assistant):'')],
- read_automation_connector:[automation+'/connector'],
+ read_automation_connector:[automation+'/connector'+(v.assistant?'?assistant='+encodeURIComponent(v.assistant):'')],
  prepare_automation_setup:[automation+'/prepare','POST',clean],
  control_automation_runner:[`${automation}/${v.runnerId}/control`,'POST',{enabled:v.enabled,expectedVersion:v.expectedVersion,confirmed:v.confirmed,impactDigest:v.impactDigest}],
  disconnect_automation_runner:[`${automation}/${v.runnerId}/disconnect`,'POST',{}],

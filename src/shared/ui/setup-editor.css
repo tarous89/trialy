@@ -1,0 +1,90 @@
+/* Compact setup surfaces shared by the web platform and both assistant hosts. */
+.ty-workspace :is(.ty-automation-composer,.ty-connector-editor){container:setup / inline-size}
+.ty-workspace .ty-automation-composer{padding:0}
+.ty-workspace .ty-automation-composer .ty-page-actions{gap:8px;margin:0 0 16px;padding:0 0 14px;min-height:52px;align-items:center}
+.ty-automation-composer .ty-page-actions-summary{min-width:180px}
+.ty-workspace .ty-automation-composer .ty-page-actions h1{margin:0;font-size:27px;line-height:1.3;letter-spacing:-.7px;color:var(--ty-ink)}
+.ty-workspace .ty-automation-composer form{gap:14px}
+.ty-workspace .ty-automation-composer :is(.ty-automation-panel,.ty-automation-fields,.ty-automation-recipients){padding:18px 20px;border-radius:12px;gap:14px}
+.ty-workspace .ty-automation-composer :is(h2,legend){display:flex;align-items:center;gap:9px;font-size:14px;line-height:1.5;margin:0;float:none;width:auto}
+.ty-workspace .ty-automation-composer :is(h2,legend)>svg{color:#308265;flex:none}
+.ty-workspace .ty-automation-composer legend{padding:0 3px}
+.ty-workspace .ty-automation-composer label{gap:5px;font-size:12px;font-weight:500}
+.ty-workspace :is(.ty-automation-composer,.ty-connector-editor) :is(input:not([type=checkbox]):not([type=radio]),select,textarea){min-height:40px;padding:9px 11px;margin:0;border:1px solid #d8e3dc;border-radius:8px;background:#fbfdfb;color:#243e32;font:inherit;font-size:13px;line-height:1.5;box-sizing:border-box;transition:border-color .15s,box-shadow .15s}
+.ty-workspace :is(.ty-automation-composer,.ty-connector-editor) :is(input,select,textarea):hover{border-color:#a1bcad}
+.ty-workspace :is(.ty-automation-composer,.ty-connector-editor) :is(input,select,textarea):focus-visible{outline:2px solid #37986f;outline-offset:2px;box-shadow:0 0 0 4px #2d966b0d}
+.ty-workspace :is(.ty-automation-composer,.ty-connector-editor) :is(input,select,textarea):disabled{cursor:not-allowed;opacity:.6}
+.ty-automation-form-grid{gap:14px 20px}
+.ty-workspace .ty-automation-composer .ty-automation-fields{grid-template-columns:repeat(3,minmax(0,1fr));padding-top:14px}
+.ty-trigger-mode{grid-column:1/-1;display:grid;grid-template-columns:minmax(150px,240px) minmax(150px,240px) minmax(0,1fr);gap:14px;align-items:end}
+.ty-schedule-summary{display:flex;gap:7px;align-items:center;justify-self:end;align-self:center;color:#32644c;font-size:12px;line-height:1.5;background:#f0f7f2;padding:8px 11px;border:1px solid #e2eee5;border-radius:8px;overflow-wrap:anywhere;max-width:100%}
+.ty-schedule-summary>svg{flex:none}
+.ty-calendar-grid{grid-column:1/-1;display:grid;grid-template-columns:1fr .9fr 1fr 1.35fr 1.15fr;gap:14px;align-items:start}
+.ty-calendar-grid .ty-automation-weekdays{order:2}
+.ty-workspace .ty-automation-composer .ty-automation-help{grid-column:1/-1;font-size:12px;line-height:1.6}
+.ty-input-unit{display:flex;position:relative;min-width:0}
+.ty-workspace .ty-automation-composer .ty-input-unit input{padding-right:62px}
+.ty-input-unit>span{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:12px;color:#6a7e70;pointer-events:none}
+.ty-workspace .ty-automation-composer input:is([type=date],[type=time],[type=datetime-local]){background:#f2f8f4;color:#20523a;font-variant-numeric:tabular-nums;color-scheme:light;max-width:100%}
+.ty-database-cascade{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;background:#f4f8f5;border:1px solid #e3ece5;padding:14px;border-radius:10px}
+.ty-database-cascade>label{position:relative}
+.ty-database-cascade>label+label:before{content:'›';position:absolute;left:-17px;bottom:8px;color:#71a187;font-size:22px;font-weight:400}
+.ty-condition-row{grid-column:1/-1;display:flex;align-items:end;gap:14px;padding-left:14px;border-left:3px solid #8cbaa1}
+.ty-condition-prefix{font-size:12px;align-self:center;color:#55745e}.ty-condition-row>label{flex:1;max-width:360px}
+.ty-trigger-options{grid-column:1/-1;font-size:12px}.ty-trigger-options summary{cursor:pointer;color:#52715f;padding-block:4px}.ty-trigger-options[open]{display:grid;gap:12px}
+.ty-workspace .ty-automation-composer .ty-automation-weekdays{gap:6px;display:flex;flex-wrap:wrap}
+.ty-workspace .ty-automation-composer .ty-automation-weekdays legend{width:100%;font-size:12px;margin-bottom:7px}
+.ty-workspace .ty-automation-composer .ty-automation-weekdays label{position:relative;display:inline-flex;gap:0;cursor:pointer;margin:0}
+.ty-automation-weekdays label input{position:absolute;opacity:0;width:100%;height:100%;inset:0;cursor:pointer}
+.ty-automation-weekdays label>span{border:1px solid #dce7df;border-radius:7px;padding:7px 12px;background:#fafcfb;color:#61786a;transition:background .15s,border-color .15s}
+.ty-automation-weekdays label:has(input:checked)>span{background:#e4f3e9;border-color:#99c7ab;color:#216743;font-weight:600}
+.ty-automation-weekdays label:has(input:focus-visible)>span{outline:2px solid #37986f;outline-offset:2px}
+.ty-worker-choices{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.ty-workspace .ty-automation-composer .ty-worker-choice{position:relative;display:flex;flex-direction:row;align-items:center;gap:12px;padding:13px;border:1px solid #dce5df;border-radius:10px;cursor:pointer;background:#fcfdfc;transition:background .15s,border-color .15s,box-shadow .15s}
+.ty-worker-choice>input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;margin:0}
+.ty-worker-choice>span:not(.ty-worker-icon){min-width:0;flex:1}
+.ty-worker-choice strong{display:block;font-weight:600;color:#2e4939;font-size:13px}.ty-worker-choice small{display:block;font-size:11px;font-weight:400;color:#698172;margin-top:3px}
+.ty-worker-icon{display:inline-flex;align-items:center;justify-content:center;flex:none;color:#347256}
+.ty-worker-icon svg{display:block;width:20px;height:20px}.ty-worker-icon>span{display:block}
+.ty-worker-check{opacity:0;flex:none;color:#278056}
+.ty-workspace .ty-worker-choice:has(input:checked){border-color:#76af90;background:#edf7f0;box-shadow:0 0 0 1px #76af9020}
+.ty-worker-choice:has(input:checked) .ty-worker-check{opacity:1}
+.ty-workspace .ty-worker-choice:has(input:not(:disabled)):hover{border-color:#6aa486;background:#f0f8f3}
+.ty-worker-choice:has(input:disabled):not(:has(input:checked)){opacity:.55;cursor:default}
+.ty-worker-choice:has(input:focus-visible){outline:2px solid #37986f;outline-offset:2px}
+/* Assistant connectors are always present; status reflects each separate runner. */
+.ty-assistant-connectors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:16px 0 22px}
+.ty-workspace .ty-assistant-connectors .ty-connector-card{margin:0;padding:20px;border:1px solid #dce6df;border-radius:12px;background:#fff;min-width:0}
+.ty-assistant-identity{display:flex;gap:12px;align-items:center}.ty-assistant-identity>.ty-worker-icon{background:#eff6f1;border-radius:11px;padding:11px}
+.ty-workspace .ty-assistant-identity h2{font-size:17px;margin:0 0 6px;letter-spacing:-.2px}.ty-assistant-identity .ty-automation-state{margin:0}
+.ty-workspace .ty-connector-description-text{font-size:13px;color:#617a6a;margin:16px 0 0}
+.ty-connector-card .ty-actions{flex-wrap:wrap}.ty-connector-card .ty-connector-dependencies{margin-top:16px;font-size:12px}
+.ty-workspace .ty-connector-editor .ty-connector-heading{margin:0 0 14px;padding:0 0 14px;min-height:52px;border-bottom:1px solid var(--ty-border);gap:12px}
+.ty-workspace .ty-connector-editor .ty-connector-heading h1{font-size:27px;margin:0;line-height:1.3}
+.ty-workspace .ty-connector-editor .ty-setup{max-width:none}
+.ty-workspace .ty-connector-editor .ty-settings-tabs{display:flex;gap:20px;border-bottom:1px solid #dce5df;padding:0;margin:0 0 16px}
+.ty-workspace .ty-connector-editor .ty-settings-tabs button{display:flex;gap:7px;align-items:center;border:0;border-bottom:2px solid transparent;border-radius:0;background:none;padding:10px 2px;font-size:13px;color:#657e6e}
+.ty-workspace .ty-connector-editor .ty-settings-tabs button[aria-selected=true]{border-color:#288359;color:#216d48}
+.ty-workspace .ty-connector-panel{padding:18px 20px;border:1px solid #dce5df;border-radius:12px;background:#fff;margin:0 0 14px;min-width:0}
+.ty-workspace .ty-connector-panel h2{display:flex;align-items:center;gap:9px;font-size:14px;margin:0 0 14px}.ty-connector-panel h2 svg{color:#308265}
+.ty-connector-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 18px}
+.ty-workspace .ty-connector-editor .ty-setup label{margin:0;font-size:12px;gap:5px;min-width:0}
+.ty-workspace .ty-connector-editor .ty-setup .ty-project-access-toggle{margin:0;gap:8px;align-self:center}
+.ty-connector-description{grid-column:span 2;grid-row:span 2}
+.ty-connector-grid>p,.ty-connector-grid>.ty-actions{grid-column:1/-1;margin:0;font-size:12px}
+.ty-workspace .ty-connector-grid>.ty-actions{margin:0}
+.ty-connector-fields:has(>.ty-connector-panel){display:block}
+.ty-connector-fields:not(:has(>.ty-connector-panel)){display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 18px;padding:18px 20px;background:#fff;border:1px solid #dce5df;border-radius:12px}
+.ty-connector-fields>:is(h2,p,details,.ty-access-grid,.ty-connector-input,.ty-actions){grid-column:1/-1;margin:0}
+.ty-connector-fields>.ty-project-access-toggle{grid-column:1/-1}
+.ty-workspace .ty-connectors .ty-connector-input{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:0;padding:16px;background:#f6faf7;border:1px solid #e0eae3;border-radius:10px}
+.ty-connector-review-handoff{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px;background:#edf7f0;border:1px solid #b8d9c5;border-radius:9px;margin-bottom:14px;font-size:13px}
+@container setup (max-width:1100px){.ty-calendar-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.ty-trigger-mode{grid-template-columns:repeat(2,minmax(0,1fr))}.ty-schedule-summary{grid-column:1/-1;justify-self:start}.ty-worker-choices{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container setup (max-width:560px){.ty-workspace .ty-automation-composer .ty-page-actions-summary{flex-basis:100%}.ty-workspace .ty-automation-composer .ty-page-actions h1,.ty-workspace .ty-connector-editor .ty-connector-heading h1{font-size:24px}.ty-workspace .ty-automation-composer :is(.ty-automation-panel,.ty-automation-fields,.ty-automation-recipients),.ty-workspace .ty-connector-panel{padding:14px}.ty-calendar-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ty-trigger-mode{grid-template-columns:1fr}.ty-database-cascade{grid-template-columns:1fr;gap:10px}.ty-database-cascade>label:before{display:none}.ty-condition-row{flex-wrap:wrap}.ty-condition-prefix{width:100%}.ty-condition-row>label{min-width:120px}.ty-connector-grid,.ty-connector-fields:not(:has(>.ty-connector-panel)),.ty-workspace .ty-connectors .ty-connector-input{grid-template-columns:1fr}.ty-connector-description{grid-column:auto;grid-row:auto}.ty-worker-choice small{display:none}.ty-workspace .ty-automation-composer .ty-worker-choice{gap:8px;padding:11px}.ty-worker-choice strong{font-size:12px}.ty-worker-check{display:none}}
+@media(max-width:1050px){.ty-assistant-connectors{grid-template-columns:1fr}}
+.ty-workspace .ty-automation-content:has(>.ty-automation-recipients){display:grid;grid-template-columns:minmax(240px,.8fr) minmax(0,1.6fr);gap:14px;align-items:start}
+@container setup (max-width:800px){.ty-workspace .ty-automation-content:has(>.ty-automation-recipients){grid-template-columns:1fr}}
+
+.ty-workspace .ty-connectors .ty-button--primary{background:#087b50;border-color:#087b50;color:#fff}
+.ty-connector-description{grid-row:auto;order:2}.ty-connector-grid>.ty-project-access-toggle{order:2}.ty-connector-grid>p{order:3}
+.ty-connector-card .ty-automation-state:is([data-state=not_enabled],[data-state=loading],[data-state=restricted]){background:#edf2ef;color:#60776a}

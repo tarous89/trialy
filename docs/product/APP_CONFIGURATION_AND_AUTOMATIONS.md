@@ -12,7 +12,7 @@ An app is a saved interface with a stable identity and independently managed con
 | Database | Tables, relationships, records and the app's authorized data bindings |
 | Access Control | Each app's effective permissions; expand an app to configure registered tabs when needed; retain existing database and connection controls |
 | Connectors | Named external connections, allowed apps, operations and data scopes |
-| Automations | Workspace-wide list of app-linked automations, their configuration, status and history; separate shared ChatGPT connection setup |
+| Automations | Workspace-wide list of app-linked automations, their configuration, status and history; separate ChatGPT and Claude connection setup |
 
 Use the existing platform navigation and visual components. Product discussion may call the access destination Access Control; the current UI label is Access. This scope does not require renaming unrelated navigation. The new Automations destination belongs to platform management, not to every generated app's own navigation. A contextual link from app details opens this same list filtered to that app, without creating a second configuration store. Keep existing standalone app pages free of management chrome and preserve embedded operation.
 
@@ -52,7 +52,9 @@ Access revocation remains effective immediately for subsequent reads and effects
 
 ## Automations destination
 
-Show one full-width, paginated list of app-linked definitions, including database-triggered actions and disabled entries. Each row shows linked app, Trigger or Scheduled with readable frequency/timezone, prompt or typed action instructions, and Disable/Enable plus Edit. A concise empty state has no search/filter controls, pagination, setup panel or history. Shared daily ChatGPT setup is backend infrastructure independent of this list; do not display it as an app automation.
+Show one full-width, paginated list of app-linked definitions, including database-triggered actions and disabled entries. Each row shows linked app, Trigger or Scheduled with readable frequency/timezone, prompt or typed action instructions, and Disable/Enable plus Edit. A concise empty state has no search/filter controls, pagination, setup panel or history. Shared assistant connection setup is backend infrastructure independent of this list; do not display it as an app automation.
+
+The shared web/plugin editor keeps the title and Save/Ignore on one compact row without a back button. Use aligned schedule controls, weekday chips, restrained green selection states and assistant/worker icons. Database setup cascades through Table → Column → Change, with Any column and Any change defaults for research/connector actions. Changing a table clears dependent column/condition choices. Preserve existing multi-column triggers in advanced options, typed values, calendar anchors and timezone on unrelated edits. Email keeps its entry-creation/explicit-column-condition restrictions.
 
 Load full versioned configuration only when Edit is selected. Preserve typed schedule, prompt, source, scope, limits, expiry and action editors, validation and exact review. Do not manufacture an LLM prompt for a deterministic action. The enabled flag expresses intent, not verified readiness; readiness is checked separately through private setup tools.
 
@@ -71,7 +73,7 @@ An automation is durable app configuration. Offer **Disable**, **Enable** and **
 | Operation | Required result |
 | --- | --- |
 | Disable one automation | Stop new claims and fence further uncommitted effects from active attempts; retain app, records, definition, receipts and completed results |
-| Disable ChatGPT connection | Stop that runner's research; independent approved platform actions remain available; dependent chains respect parent disablement |
+| Disable an assistant connection | Stop that runner's research; independent approved platform actions remain available; dependent chains respect parent disablement |
 | Edit schedule/prompt | Version the definition and reconcile affected work; do not republish/reload the app or erase data/history |
 | Rename/move/publish app | Keep stable automation links; revalidate changed access, bindings and compatibility; layout-only edits do not interrupt research |
 | Archive app | Suspend its automations; restoring the app does not silently restart background work |
@@ -80,9 +82,11 @@ An automation is durable app configuration. Offer **Disable**, **Enable** and **
 
 Deleting or disabling automation never deletes underlying app records, tables or previously saved research. App deletion does not cascade into shared database data. Already committed results or already dispatched external effects cannot be undone by Disable; show this accurately in management history. Provider unknown outcomes use existing reconciliation instead of unsafe resend. A stale email dependency can be blocked without undoing completed research.
 
-## Shared ChatGPT connection and onboarding
+## Shared assistant connections and onboarding
 
-The shared connection is infrastructure for many definitions, not an automation row and not a task per app. Retain one logical runner/subscription per authorizing user and workspace. Daily dispatch (default 06:00 in the confirmed local timezone), immediate eligible triggers, due calculations, receipts and bounded continuation reuse the existing engine. The server sends a small wake-up event; ChatGPT fetches current authorized due instructions. Full mutable prompts do not live in callback payloads or a copied host schedule.
+Connectors displays ChatGPT and Claude from the beginning, each with its own current state and a Connect action. Inaccessible owner-managed setup stays visible with an accurate explanation. Never label an unconfigured or pending connection ready. Email is an integrated service and has no connector card. Setup continues in the appropriate assistant; another assistant may pause but cannot resume or edit that runner. Connector forms share their layout and configuration preparation across hosts. Secret entry, final connector review and external request approval stay on the authenticated website.
+
+The shared connection is infrastructure for many definitions, not an automation row and not a task per app. Retain one logical runner/subscription per assistant, authorizing user and workspace. Daily dispatch (default 06:00 in the confirmed local timezone), immediate eligible triggers, due calculations, receipts and bounded continuation reuse the existing engine. The server sends a small wake-up event; ChatGPT fetches current authorized due instructions. Full mutable prompts do not live in callback payloads or a copied host schedule.
 
 Check setup quietly at first supported plugin use, on every app-creation conversation, when adding an automation, and after reconnection or an explicit repair request. Complete already-authorized missing setup where the host supports it, otherwise offer a resumable suggestion. Repeat opportunities, not duplicate subscriptions. Do not reactivate a deliberately paused/disconnected runner or repeatedly pressure a user who declined. Plugin installation or OAuth alone cannot establish a host subscription or background-work authorization. When the host offers no install-time execution hook, first tool use is the actionable point. Reuse already-recorded consent and an existing runner; do not repeat permissions unnecessarily or create duplicate subscriptions.
 

@@ -7,15 +7,18 @@ import type {WorkspaceFoundation} from '../workspace/service.js';
 import {Connectors} from '../connectors/service.js';
 import {connectorApproval,connectorChange,connectorCall} from '../connectors/schema.js';
 export const connectorsFor=(f:WorkspaceFoundation)=>new Connectors(f.db,(tx,a,w,appId)=>f.component(tx,a,w,appId));
+export async function connectorDirectory(f:WorkspaceFoundation,a:Actor,w:string){
+ const p=await access(f.db,a,w),apps=await f.components(a,w);const tables=[];for(const row of (await f.db.query('SELECT id FROM entity_types WHERE workspace_id=$1 ORDER BY name,id',[w])).rows){try{const {type,policy}=await typeAccess(f.db,a,w,row.id);tables.push({id:type.id,name:type.name,fields:visibleFields(type.fields,policy,a).map(field=>({key:field.key,name:field.name,kind:field.kind,readable:true,writable:policy.write_fields.includes(field.key)&&!field.formula&&!field.computed&&!field.lookup}))});}catch(e){if(![403,404].includes((e as any).status))throw e;}}
+ const managed=p.role==='owner'||(await f.db.query("SELECT id FROM connectors WHERE workspace_id=$1 AND config->'managers' ? $2::text LIMIT 1",[w,a.userId])).rows.length>0;
+ const people=(await f.db.query(`SELECT u.id,u.name,m.role AS tenant_role,wa.role FROM users u JOIN memberships m ON m.user_id=u.id LEFT JOIN workspace_access wa ON wa.user_id=u.id AND wa.workspace_id=$1 WHERE m.tenant_id=$2 AND u.subject NOT LIKE 'public-app|%' AND ($3::boolean OR u.id=$4) AND (m.role='owner' OR wa.user_id IS NOT NULL) ORDER BY u.name,u.id`,[w,p.tenant_id,managed,a.userId])).rows.map(person=>({id:person.id,name:person.name,owner:person.tenant_role==='owner',canManage:person.tenant_role==='owner'||person.role==='editor'}));
+ return {apps:apps.filter(app=>!app.archived&&!app.project_archived).map(app=>({id:app.id,name:app.name,version:app.version})),tables,people,canCreate:p.role==='owner'&&!p.archived};
+}
 export function addConnectorApi(app:Express,f:WorkspaceFoundation,options:{service?:Connectors}={}){
  const c=options.service??connectorsFor(f),base='/api/workspaces/:workspaceId/connectors';
  const context=(req:any)=>({a:req.actor as Actor,w:id.parse(req.params.workspaceId)}),offset=z.coerce.number().int().min(0).max(1000000).default(0);
  app.get(base,async(req,res)=>{const {a,w}=context(req);res.json(await c.list(a,w,offset.parse(req.query.offset),z.string().max(200).default('').parse(req.query.q)));});
 
- app.get(`${base}/directory`,async(req,res)=>{const {a,w}=context(req),p=await access(f.db,a,w),apps=await f.components(a,w);const tables=[];for(const row of (await f.db.query('SELECT id FROM entity_types WHERE workspace_id=$1 ORDER BY name,id',[w])).rows){try{const {type,policy}=await typeAccess(f.db,a,w,row.id);tables.push({id:type.id,name:type.name,fields:visibleFields(type.fields,policy,a).map(field=>({key:field.key,name:field.name,kind:field.kind,readable:true,writable:policy.write_fields.includes(field.key)&&!field.formula&&!field.computed&&!field.lookup}))});}catch(e){if(![403,404].includes((e as any).status))throw e;}}
- const managed=p.role==='owner'||(await f.db.query("SELECT id FROM connectors WHERE workspace_id=$1 AND config->'managers' ? $2::text LIMIT 1",[w,a.userId])).rows.length>0;
- const people=(await f.db.query(`SELECT u.id,u.name,m.role AS tenant_role,wa.role FROM users u JOIN memberships m ON m.user_id=u.id LEFT JOIN workspace_access wa ON wa.user_id=u.id AND wa.workspace_id=$1 WHERE m.tenant_id=$2 AND u.subject NOT LIKE 'public-app|%' AND ($3::boolean OR u.id=$4) AND (m.role='owner' OR wa.user_id IS NOT NULL) ORDER BY u.name,u.id`,[w,p.tenant_id,managed,a.userId])).rows.map(person=>({id:person.id,name:person.name,owner:person.tenant_role==='owner',canManage:person.tenant_role==='owner'||person.role==='editor'}));
- res.json({apps:apps.filter(app=>!app.archived&&!app.project_archived).map(app=>({id:app.id,name:app.name,version:app.version})),tables,people,canCreate:p.role==='owner'&&!p.archived});});
+ app.get(`${base}/directory`,async(req,res)=>{const {a,w}=context(req);res.json(await connectorDirectory(f,a,w));});
  app.post(`${base}/prepare`,async(req,res)=>{const {a,w}=context(req);res.json(await c.prepare(a,w,req.body));});
  app.get(`${base}/reviews/:reviewId`,async(req,res)=>{const {a,w}=context(req);res.json(await c.readReview(a,w,id.parse(req.params.reviewId)));});
  app.post(`${base}/reviews/:reviewId/confirm`,async(req,res)=>{const {a,w}=context(req),v=connectorApproval.parse(req.body),reviewId=id.parse(req.params.reviewId),review=await c.readReview(a,w,reviewId);res.json(review.kind==='config'?await c.confirmConfig(a,w,reviewId,v.digest):await c.confirmInvocation(a,w,reviewId,v.digest));});
@@ -28,6 +31,7 @@ export function addConnectorApi(app:Express,f:WorkspaceFoundation,options:{servi
 }
 // Additive builder operations. Credential entry and approval intentionally have no model tool.
 export function addConnectorMcp(server:McpServer,f:WorkspaceFoundation,a:Actor,safe:any,metadata:any){
+ server.registerTool('connector_directory',{description:'Read app, table and teammate choices for the connector editor. Returns only currently authorized resources.',inputSchema:{workspaceId:id},annotations:{readOnlyHint:true,openWorldHint:false,destructiveHint:false},_meta:{...metadata,ui:{visibility:['app']}}},safe((v:any)=>connectorDirectory(f,a,v.workspaceId)));
  const c=connectorsFor(f),register=(name:string,description:string,inputSchema:any,readOnlyHint:boolean,fn:(v:any)=>Promise<any>)=>server.registerTool(name,{description,inputSchema,annotations:{readOnlyHint,openWorldHint:false,destructiveHint:false},_meta:metadata},safe(fn));
  register('list_connectors','Discover authorized outbound connectors. Never request credentials in chat.',{workspaceId:id,offset:z.number().int().min(0).default(0),query:z.string().max(200).default('')},true,v=>c.list(a,v.workspaceId,v.offset,v.query));
  register('read_connector','Read safe connector configuration, operation schemas and credential status; never secret values.',{workspaceId:id,connectionId:id},true,v=>c.read(a,v.workspaceId,v.connectionId));
