@@ -1,3 +1,11 @@
+## 11 November 2026 — Runway 2.0.0 replaces Cash Runway 1.2.2 in platform templates
+
+The owner approved publishing Runway 2.0.0 in place of Cash Runway 1.2.2. This is an explicit, owner-authorized exception to the rule against publishing through the bootstrap seed: `templates/catalog-seed.json` now names 2.0.0, and the pre-deploy catalog sync inserts it as approved. Galleries and `list_app_templates` show only the latest approved version, so new installs get Runway 2.0.0. The 1.2.2 row, its payload and installed 1.x apps are unchanged.
+
+## 10 November 2026 — Runway 2.0.0 template
+
+Built `life.cash-runway` 2.0.0, display name Runway, from the final scope in [RUNWAY.md](docs/product/app-template-blueprints/apps/RUNWAY.md). It has seven screens, 13 role-keyed tables, one live forecast, a locked budget per year, monthly close with frozen snapshots and a runway bridge, preview-first scenarios and 12 currencies with monthly rates. The 1.2.2 catalog JSON is unchanged; its source package moved byte-for-byte to `templates/source/cash-runway/archive/1.2.2/`, and its installer and seed paths point there. It was initially added as a draft catalog version.
+
 ## 10 November 2026 — In-plugin installation and unified automation setup
 
 Supersedes the temporary plugin-to-web installation handoff and the ChatGPT/Email category tabs. Approved templates now install and open inside the plugin through the existing atomic, permission-checked installer. All workspace surfaces share indeterminate progress feedback. Automation creation uses Trigger → Worker/connector → Setup with one Ignore changes action. App/part deletion cancels dependent workflows and removes only unshared empty fields, preserving records and schema/audit history.

@@ -2,7 +2,7 @@
 
 The website and MCP read approved versions from `app_template_catalog`. The catalog stores the immutable template payload, digest, installation schemas, and `status` (`draft` or `approved`). Runtime database roles have SELECT only, with an approved-only RLS policy. Publishing is an operator action, not a tenant permission.
 
-Migration 056 and `db:migrate` import repository versions once. `templates/catalog-seed.json` approves the existing 23 life-science versions requested for launch. Do not extend this bootstrap approval list for future releases. Existing statuses and payloads are never overwritten by deployment. New versions default to draft; older approved versions remain available until replaced or withdrawn.
+Migration 056 and `db:migrate` import repository versions once. `templates/catalog-seed.json` approves the existing 23 life-science versions requested for launch. Do not extend this bootstrap approval list for future releases. The one owner-approved exception: on 11 November 2026, `life.cash-runway` was moved from 1.2.2 to Runway 2.0.0. Existing statuses and payloads are never overwritten by deployment. New versions default to draft; older approved versions remain available until replaced or withdrawn.
 
 Use the migration/operator database connection in `MIGRATION_DATABASE_URL`:
 

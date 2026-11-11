@@ -3,6 +3,10 @@
     "catalogDigest": "ff444d1827239400967e5fda7bf50d2c17dba44bec0b134ad2fa1a045f9269aa",
     "previewSha256": "a34e7f43b263cd50bb9fa63b3c8e95f20e4a018db29066896768c3f2315ccfc3"
   },
+  "life.cash-runway@2.0.0": {
+    "catalogDigest": "1d69f5287bf99eeb46aa769cba3d2d9a6bb567e38e0b41728b8f28f123fb2c94",
+    "previewSha256": "a7d21abb0b00dc99438b3ad6c1c0635f56edd4d0494b6563fd941f6a59d59f1e"
+  },
   "life.inventory-management@1.0.2": {
     "catalogDigest": "7d23d6ce768db25dccfac1fa1fe8e1d157f3ca47efac2aaafe7cf371ff7911dd",
     "previewSha256": "103debb51a285ed4e002f8a81c1e9206316ecf9924d530d81e097f4846bf3b44"

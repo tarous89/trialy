@@ -20,15 +20,15 @@ for(const width of [1440,390])test(`Embedded sidebar, native gallery and context
  await expect(catalog.locator('article')).toHaveCount(1);const card=catalog.locator('article');await expect(card.getByRole('button')).toHaveCount(2);
  await expect(card.locator('img')).toHaveJSProperty('naturalWidth',1440);await expect(card.locator('img')).toHaveAttribute('src',/^data:image\/jpeg;base64,/);
  await root.getByRole('searchbox',{name:'Search templates'}).fill('missing app');await expect(root.getByRole('heading',{name:'No templates match'})).toBeVisible();await root.getByRole('searchbox',{name:'Search templates'}).fill('Cash');
- await card.getByRole('button',{name:'Preview',exact:true}).click();const modal=root.getByRole('dialog',{name:'Cash Runway preview'});
- await expect(root.frameLocator('iframe[title="Cash Runway interactive preview"]').getByRole('heading',{name:'Cash Runway',exact:true})).toBeVisible();
+ await card.getByRole('button',{name:'Preview',exact:true}).click();const modal=root.getByRole('dialog',{name:'Runway preview'});
+ await expect(root.frameLocator('iframe[title="Runway interactive preview"]').getByRole('heading',{name:'Runway',exact:true})).toBeVisible();
  await expect(modal.locator('iframe')).toHaveAttribute('sandbox','allow-scripts');await expect(modal.locator('iframe')).toHaveAttribute('srcdoc',/connect-src 'none'/);
  await expect.poll(()=>currentView(page)).toMatchObject({view:'templates',templateId:expect.any(String)});
  await modal.getByRole('button',{name:'Fullscreen preview'}).click();await expect(modal).toHaveClass(/is-expanded/);expect((await modal.boundingBox()).width).toBe(width);
  await page.screenshot({path:`/tmp/embedded-gallery-${width}.png`});
  await page.route('**/fixture/tool',async route=>{if(route.request().postDataJSON().name==='install_app_template')await new Promise(r=>setTimeout(r,550));await route.continue();});
  await modal.getByRole('button',{name:'Use',exact:true}).click();await expect(root.getByRole('progressbar',{name:'Working'})).toBeVisible();
- await expect(root.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Cash Runway',exact:true})).toBeVisible();
+ await expect(root.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Runway',exact:true})).toBeVisible();
  await expect(root.getByRole('progressbar',{name:'Working'})).toHaveCount(0);expect(await page.evaluate(()=>window.lastOpenedUrl)).toBeUndefined();
  await expect(toggle).toHaveAttribute('aria-expanded','false');await toggle.click();
  await root.getByRole('button',{name:'Apps',exact:true}).click();await root.getByRole('button',{name:'New',exact:true}).click();await root.getByRole('menuitem',{name:'App',exact:true}).click();await expect(root.getByRole('heading',{name:'App templates',exact:true})).toBeVisible();

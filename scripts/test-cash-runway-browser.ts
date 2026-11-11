@@ -35,32 +35,38 @@ const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
 try{
  const page=await browser.newPage({viewport:{width:1440,height:1100}}),errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto(`http://127.0.0.1:${(server.address() as any).port}`);const frame=page.frameLocator('#app');
- await frame.getByRole('heading',{name:'Cash Runway',exact:true}).waitFor();
- for(const section of ['ledger','budget','scenario','forecast','briefing','overview']){await frame.locator('.cr-nav [data-action="nav:'+section+'"]').click();await frame.locator('.cr-nav [data-action="nav:'+section+'"][aria-current="page"]').waitFor();}
- await frame.locator('.cr-nav [data-action="nav:ledger"]').click();await frame.getByRole('button',{name:'Add record',exact:true}).click();
- const form=frame.locator('form[data-action="save-record"]');await form.locator('[name="name"]').fill('Browser budget');await form.locator('[name="name"][value="Browser budget"]').waitFor();
- await form.locator('[name="kind"]').selectOption('budget_out');await form.locator('[name="kind"] option[value="budget_out"][selected]').waitFor({state:'attached'});
- await form.locator('[name="period"]').fill('2026-11-01');await form.locator('[name="period"][value="2026-11-01"]').waitFor();
- await form.locator('[name="amount"]').fill('125');await form.locator('[name="amount"][value="125"]').waitFor();
- await form.locator('[name="currency"]').fill('EUR');await form.locator('[name="currency"][value="EUR"]').waitFor();
+ await frame.getByRole('heading',{name:'Runway',exact:true}).waitFor();await frame.getByText('Cash lasts until Jul 2027').waitFor();
+ for(const section of ['cash_flow','plan','people','scenarios','actuals','settings','overview']){await frame.locator('.rw-nav [data-action="nav:'+section+'"]').click();await frame.locator('.rw-nav [data-action="nav:'+section+'"][aria-current="page"]').waitFor();assert.equal(await frame.locator('.rw-banner.bad').count(),0,section);}
+ await page.screenshot({path:'/tmp/runway-desktop-1440.png',fullPage:true});
+ await frame.locator('.rw-nav [data-action="nav:plan"]').click();await frame.getByRole('button',{name:'Add line',exact:true}).click();
+ const form=frame.locator('form[data-action="save-record"]');
+ await form.locator('[name="name"]').fill('Browser assay');await form.locator('[name="name"][value="Browser assay"]').waitFor();
+ await form.locator('[name="category"]').selectOption('Research');await form.locator('[name="category"] option[value="Research"][selected]').waitFor({state:'attached'});
+ await form.locator('[name="driver"]').selectOption('one_off');await form.locator('[name="driver"] option[value="one_off"][selected]').waitFor({state:'attached'});
+ await form.locator('[name="amount"]').fill('250');await form.locator('[name="amount"][value="250"]').waitFor();
+ await form.locator('[name="start_month"]').fill('2026-11');await form.locator('[name="start_month"][value="2026-11"]').waitFor();
+ await frame.getByText('Runway effect before saving').waitFor();
  assert.equal(await form.locator('input:disabled,select:disabled,textarea:disabled').count(),0);
  await form.getByRole('button',{name:'Prepare reviewed save'}).click();await page.locator('#approve').waitFor({state:'visible'});
- assert.equal((await x.s.records(x.actor,x.w.id,x.map.ledger.typeId,{limit:100,offset:0})).rows.length,3);
+ assert.equal((await x.s.records(x.actor,x.w.id,x.map.lines.typeId,{limit:100,offset:0})).rows.length,1);
  await page.locator('#approve').click();await page.locator('#approve').waitFor({state:'hidden'});
- assert.equal((await x.s.records(x.actor,x.w.id,x.map.ledger.typeId,{limit:100,offset:0})).rows.length,4);
- await frame.getByRole('button',{name:'App layout settings'}).click();await page.getByRole('button',{name:'Move Financial overview'}).waitFor();await page.screenshot({path:'/tmp/cash-layout-desktop.png',fullPage:true});
- await page.getByRole('button',{name:'Move Cash forecast'}).dragTo(page.getByRole('button',{name:'Move Financial overview'}));
+ assert.equal((await x.s.records(x.actor,x.w.id,x.map.lines.typeId,{limit:100,offset:0})).rows.length,2);
+ await frame.locator('.rw-nav [data-action="nav:overview"]').click();await frame.getByText('Cash lasts until Apr 2027').waitFor();
+ await frame.getByRole('button',{name:'App layout settings'}).click();await page.getByRole('button',{name:'Move Overview'}).waitFor();
+ await page.getByRole('button',{name:'Move Scenarios'}).dragTo(page.getByRole('button',{name:'Move Overview'}));
  await page.getByRole('button',{name:'Fields',exact:true}).click();
  await page.getByRole('button',{name:'Move Amount',exact:true}).click();await page.getByRole('button',{name:'Move Name',exact:true}).click();
  await page.getByRole('button',{name:'Review layout',exact:true}).click();await page.getByRole('button',{name:'Confirm layout',exact:true}).click();
- await frame.getByRole('heading',{name:'Cash Runway',exact:true}).waitFor();
- await frame.locator('.cr-nav button').first().filter({hasText:'Cash forecast'}).waitFor();
- await page.reload();try{await frame.getByRole('heading',{name:'Cash Runway',exact:true}).waitFor({timeout:10000});}catch(e){console.error('Reload diagnostic:',await page.locator('#error').textContent(),await frame.locator('body').innerText());throw e;}
- assert.equal(await frame.locator('.cr-nav button').first().getAttribute('data-action'),'nav:forecast');
- await frame.locator('.cr-nav [data-action="nav:ledger"]').click();assert.equal(await frame.locator('.cr-table th').first().textContent(),'Amount');
- await page.setViewportSize({width:390,height:844});await frame.getByRole('button',{name:'App layout settings'}).click();await page.getByRole('button',{name:'Move Cash forecast'}).waitFor();await page.screenshot({path:'/tmp/cash-layout-mobile.png',fullPage:true});
- await page.getByRole('button',{name:'Move Cash forecast'}).focus();await page.keyboard.press('Enter');await page.getByRole('button',{name:'Move Expense tracker'}).focus();await page.keyboard.press('Enter');
- await page.getByRole('button',{name:'Ignore changes',exact:true}).click();await frame.getByRole('heading',{name:'Cash Runway',exact:true}).waitFor();assert.equal(await frame.locator('.cr-nav button').first().getAttribute('data-action'),'nav:forecast');
+ await frame.getByRole('heading',{name:'Runway',exact:true}).waitFor();
+ await frame.locator('.rw-nav button').first().filter({hasText:'Scenarios'}).waitFor();
+ await page.reload();try{await frame.getByRole('heading',{name:'Runway',exact:true}).waitFor({timeout:10000});}catch(e){console.error('Reload diagnostic:',await page.locator('#error').textContent(),await frame.locator('body').innerText());throw e;}
+ assert.equal(await frame.locator('.rw-nav button').first().getAttribute('data-action'),'nav:scenarios');
+ await frame.locator('.rw-nav [data-action="nav:plan"]').click();await frame.locator('.rw-nav [data-action="nav:plan"][aria-current="page"]').waitFor();assert.equal(await frame.locator('.rw-table th').first().textContent(),'Amount');
+ await page.setViewportSize({width:390,height:844});await frame.locator('.rw-nav [data-action="nav:overview"]').click();await frame.getByText('Cash lasts until Apr 2027').waitFor();
+ assert.equal(await frame.locator('html').evaluate(e=>e.scrollWidth-e.clientWidth),0);await page.screenshot({path:'/tmp/runway-mobile-390.png',fullPage:true});
+ await frame.getByRole('button',{name:'App layout settings'}).click();await page.getByRole('button',{name:'Move Scenarios'}).waitFor();
+ await page.getByRole('button',{name:'Move Scenarios'}).focus();await page.keyboard.press('Enter');await page.getByRole('button',{name:'Move Cash flow'}).focus();await page.keyboard.press('Enter');
+ await page.getByRole('button',{name:'Ignore changes',exact:true}).click();await frame.getByRole('heading',{name:'Runway',exact:true}).waitFor();assert.equal(await frame.locator('.rw-nav button').first().getAttribute('data-action'),'nav:scenarios');
  assert.deepEqual(errors,[]);assert.equal(await page.locator('#error').textContent(),'');
- console.log('PASS: production sanitized frame, editable manifest-bound draft, exact DB review, six screens, native drag and pick/drop, save/reload, mobile ignore.');
+ console.log('PASS: production sanitized frame, editable manifest-bound draft with runway effect, exact DB review, seven screens, native drag and pick/drop, save/reload, 390px without horizontal overflow, mobile ignore.');
 }finally{await browser.close();await new Promise<void>(r=>server.close(()=>r()));await x.pg.close();}

@@ -33,16 +33,16 @@ for(const width of [1440,390])test(`template gallery, filters and fullscreen pre
  const catalog=page.getByRole('region',{name:'App templates'});await expect(catalog.locator('article')).toHaveCount(23);
  await page.getByLabel('Team',{exact:true}).selectOption('Biotech');await page.getByLabel('Workflow',{exact:true}).selectOption('Finance');
  await expect(catalog.locator('article')).toHaveCount(1);
- const card=catalog.locator('article');await expect(card.getByRole('heading',{name:'Cash Runway',exact:true})).toBeVisible();
+ const card=catalog.locator('article');await expect(card.getByRole('heading',{name:'Runway',exact:true})).toBeVisible();
  await expect(card.getByRole('button')).toHaveCount(2);await expect(card.getByRole('link')).toHaveCount(0);
  await expect(card.getByText('Customizable and usable in ChatGPT and Claude.')).toBeVisible();
  await expect(card.locator('img')).toHaveJSProperty('naturalWidth',1440);
  await page.getByRole('searchbox',{name:'Search templates'}).fill('no matching app');await expect(page.getByRole('heading',{name:'No templates match'})).toBeVisible();
  await page.getByRole('searchbox',{name:'Search templates'}).fill('Cash');
  await card.getByRole('button',{name:'Preview',exact:true}).click();
- const modal=page.getByRole('dialog',{name:'Cash Runway preview'});await expect(modal).toBeVisible();
- await expect(modal.locator('.ty-preview-description')).toContainText('financial planning');
- const frame=page.frameLocator('iframe[title="Cash Runway interactive preview"]');await expect(frame.locator('body')).toContainText('Cash Runway');
+ const modal=page.getByRole('dialog',{name:'Runway preview'});await expect(modal).toBeVisible();
+ await expect(modal.locator('.ty-preview-description')).toContainText('runway by program');
+ const frame=page.frameLocator('iframe[title="Runway interactive preview"]');await expect(frame.locator('body')).toContainText('Runway');
  await expect(modal.locator('iframe')).toHaveAttribute('sandbox','allow-scripts');
  await modal.getByRole('button',{name:'Fullscreen preview'}).click();await expect(modal).toHaveClass(/is-expanded/);
  const box=await modal.boundingBox();expect(box.width).toBe(width);expect(box.height).toBe(1000);
@@ -51,10 +51,10 @@ for(const width of [1440,390])test(`template gallery, filters and fullscreen pre
  await page.getByLabel('Team',{exact:true}).selectOption('');await page.getByLabel('Workflow',{exact:true}).selectOption('');await page.getByRole('searchbox',{name:'Search templates'}).fill('');
  await page.screenshot({path:`/tmp/gallery-page-${width}.png`});
  await expect(page.locator('body')).toHaveJSProperty('scrollWidth',width);
- const cash=catalog.locator('article').filter({has:page.getByRole('heading',{name:'Cash Runway',exact:true})});await cash.getByRole('button',{name:'Use',exact:true}).click();
+ const cash=catalog.locator('article').filter({has:page.getByRole('heading',{name:'Runway',exact:true})});await cash.getByRole('button',{name:'Use',exact:true}).click();
  await expect(page).toHaveURL(/\/apps\//);expect(context.pages()).toHaveLength(1);
  await expect(page.locator('.ty-app-assistants')).toHaveCount(0);
- await expect(page.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Cash Runway',exact:true})).toBeVisible();
+ await expect(page.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Runway',exact:true})).toBeVisible();
  for(const name of ['ChatGPT','Claude']){const link=page.locator('.ty-platform-header').getByRole('link',{name:'Open '+name});await expect(link).toBeVisible();expect(await link.locator('img').evaluate(img=>img.complete&&img.naturalWidth>0)).toBe(true);}
  await page.screenshot({path:`/tmp/gallery-installed-${width}.png`});
 });

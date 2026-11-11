@@ -1,38 +1,193 @@
 {
-  "ledger": {
-    "name": "ledger",
+  "settings": {
+    "name": "Runway settings",
+    "fields": [
+      {
+        "key": "reporting_currency",
+        "name": "Reporting currency",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "USD",
+          "EUR",
+          "GBP",
+          "CHF",
+          "CAD",
+          "AUD",
+          "JPY",
+          "CNY",
+          "SEK",
+          "DKK",
+          "NOK",
+          "INR"
+        ]
+      },
+      {
+        "key": "enabled_currencies",
+        "name": "Enabled currencies",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "runway_target_months",
+        "name": "Runway target",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "trailing_window_months",
+        "name": "Trailing burn window",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "min_cash_reserve",
+        "name": "Minimum cash reserve",
+        "kind": "money",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "loaded_cost_pct",
+        "name": "Loaded cost % on salaries",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "opening_balance",
+        "name": "Opening bank balance",
+        "kind": "money",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "opening_date",
+        "name": "Opening balance date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "categories",
+        "name": "Spend categories in order",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "reporting_currency": "reporting_currency",
+      "enabled_currencies": "enabled_currencies",
+      "runway_target_months": "runway_target_months",
+      "trailing_window_months": "trailing_window_months",
+      "min_cash_reserve": "min_cash_reserve",
+      "loaded_cost_pct": "loaded_cost_pct",
+      "opening_balance": "opening_balance",
+      "opening_date": "opening_date",
+      "categories": "categories"
+    }
+  },
+  "lines": {
+    "name": "Plan lines",
     "fields": [
       {
         "key": "name",
-        "name": "Line item",
+        "name": "Name",
         "kind": "text",
         "required": true,
         "multiple": false,
         "ai": true
       },
       {
-        "key": "kind",
-        "name": "Entry type",
+        "key": "direction",
+        "name": "Direction",
         "kind": "select",
         "required": true,
         "multiple": false,
         "ai": true,
         "options": [
-          "opening",
-          "actual_out",
-          "actual_in",
-          "budget_out",
-          "budget_in",
-          "funding_in"
+          "spend",
+          "cash_in"
         ]
       },
       {
-        "key": "period",
-        "name": "Period (YYYY-MM-DD)",
-        "kind": "date",
+        "key": "category",
+        "name": "Category",
+        "kind": "select",
         "required": true,
         "multiple": false,
+        "ai": true,
+        "options": [
+          "Clinical",
+          "CMC",
+          "Research",
+          "People",
+          "G&A",
+          "Facilities",
+          "Other"
+        ]
+      },
+      {
+        "key": "program_id",
+        "name": "Program",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a Programs record (scalar UUID text)."
+      },
+      {
+        "key": "counterparty_id",
+        "name": "Vendor / counterparty",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an Organizations record (scalar UUID text)."
+      },
+      {
+        "key": "agreement_id",
+        "name": "Agreement",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an Agreements record (scalar UUID text)."
+      },
+      {
+        "key": "schedule_group",
+        "name": "Payment schedule group",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
         "ai": true
+      },
+      {
+        "key": "driver",
+        "name": "Driver",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "monthly",
+          "one_off",
+          "spread"
+        ]
       },
       {
         "key": "amount",
@@ -45,59 +200,75 @@
       {
         "key": "currency",
         "name": "Currency",
-        "kind": "text",
+        "kind": "select",
         "required": true,
         "multiple": false,
-        "ai": true
+        "ai": true,
+        "options": [
+          "USD",
+          "EUR",
+          "GBP",
+          "CHF",
+          "CAD",
+          "AUD",
+          "JPY",
+          "CNY",
+          "SEK",
+          "DKK",
+          "NOK",
+          "INR"
+        ]
       },
       {
-        "key": "program",
-        "name": "Program",
-        "kind": "text",
+        "key": "start_month",
+        "name": "Start month",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Stored as the first day of the month."
+      },
+      {
+        "key": "end_month",
+        "name": "End month",
+        "kind": "date",
         "required": false,
         "multiple": false,
-        "ai": true
+        "ai": true,
+        "description": "Inclusive last month; stored as the first day of the month."
       },
       {
-        "key": "category",
-        "name": "Category",
-        "kind": "text",
-        "required": false,
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
         "multiple": false,
-        "ai": true
+        "ai": true,
+        "options": [
+          "committed",
+          "discretionary",
+          "contingent",
+          "received"
+        ]
       },
       {
-        "key": "commitment",
-        "name": "Commitment",
+        "key": "cash_in_type",
+        "name": "Cash-in type",
         "kind": "select",
         "required": false,
         "multiple": false,
         "ai": true,
         "options": [
-          "Committed",
-          "Discretionary",
-          "Contingent"
+          "equity",
+          "grant",
+          "partnership",
+          "tax_credit",
+          "other"
         ]
       },
       {
-        "key": "vendor",
-        "name": "Vendor / source party",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "source",
-        "name": "Finance reference URL",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
         "key": "notes",
-        "name": "Assumptions / evidence",
+        "name": "Notes",
         "kind": "text",
         "required": false,
         "multiple": false,
@@ -114,175 +285,781 @@
     ],
     "logicalFields": {
       "name": "name",
-      "kind": "kind",
-      "period": "period",
+      "direction": "direction",
+      "category": "category",
+      "program_id": "program_id",
+      "counterparty_id": "counterparty_id",
+      "agreement_id": "agreement_id",
+      "schedule_group": "schedule_group",
+      "driver": "driver",
       "amount": "amount",
       "currency": "currency",
-      "program": "program",
-      "category": "category",
-      "commitment": "commitment",
-      "vendor": "vendor",
-      "source": "source",
+      "start_month": "start_month",
+      "end_month": "end_month",
+      "status": "status",
+      "cash_in_type": "cash_in_type",
       "notes": "notes",
       "archived": "archived"
+    }
+  },
+  "positions": {
+    "name": "Positions",
+    "fields": [
+      {
+        "key": "title",
+        "name": "Title",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "program_id",
+        "name": "Program",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a Programs record (scalar UUID text)."
+      },
+      {
+        "key": "start_month",
+        "name": "Start month",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Stored as the first day of the month."
+      },
+      {
+        "key": "end_month",
+        "name": "End month",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Inclusive last month; stored as the first day of the month."
+      },
+      {
+        "key": "annual_salary",
+        "name": "Annual salary",
+        "kind": "money",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Sensitive: restrict this column for viewers who should not see pay."
+      },
+      {
+        "key": "currency",
+        "name": "Currency",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "USD",
+          "EUR",
+          "GBP",
+          "CHF",
+          "CAD",
+          "AUD",
+          "JPY",
+          "CNY",
+          "SEK",
+          "DKK",
+          "NOK",
+          "INR"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "current",
+          "planned"
+        ]
+      },
+      {
+        "key": "person_id",
+        "name": "Person record ID",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "title": "title",
+      "program_id": "program_id",
+      "start_month": "start_month",
+      "end_month": "end_month",
+      "annual_salary": "annual_salary",
+      "currency": "currency",
+      "status": "status",
+      "person_id": "person_id",
+      "archived": "archived"
+    }
+  },
+  "milestones": {
+    "name": "Milestones",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Milestone",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "program_id",
+        "name": "Program",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a Programs record (scalar UUID text)."
+      },
+      {
+        "key": "target_month",
+        "name": "Target month",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Stored as the first day of the month."
+      },
+      {
+        "key": "source_milestone_id",
+        "name": "Programs app milestone ID",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "program_id": "program_id",
+      "target_month": "target_month",
+      "source_milestone_id": "source_milestone_id",
+      "archived": "archived"
+    }
+  },
+  "actuals": {
+    "name": "Actuals",
+    "fields": [
+      {
+        "key": "month",
+        "name": "Month",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Stored as the first day of the month."
+      },
+      {
+        "key": "category",
+        "name": "Category",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Clinical",
+          "CMC",
+          "Research",
+          "People",
+          "G&A",
+          "Facilities",
+          "Other"
+        ]
+      },
+      {
+        "key": "program_id",
+        "name": "Program",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a Programs record (scalar UUID text)."
+      },
+      {
+        "key": "direction",
+        "name": "Direction",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "spend",
+          "cash_in"
+        ]
+      },
+      {
+        "key": "amount",
+        "name": "Amount",
+        "kind": "money",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "currency",
+        "name": "Currency",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "USD",
+          "EUR",
+          "GBP",
+          "CHF",
+          "CAD",
+          "AUD",
+          "JPY",
+          "CNY",
+          "SEK",
+          "DKK",
+          "NOK",
+          "INR"
+        ]
+      },
+      {
+        "key": "cash_in_type",
+        "name": "Cash-in type",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "equity",
+          "grant",
+          "partnership",
+          "tax_credit",
+          "other"
+        ]
+      },
+      {
+        "key": "note",
+        "name": "Note",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "month": "month",
+      "category": "category",
+      "program_id": "program_id",
+      "direction": "direction",
+      "amount": "amount",
+      "currency": "currency",
+      "cash_in_type": "cash_in_type",
+      "note": "note"
+    }
+  },
+  "closes": {
+    "name": "Month closes",
+    "fields": [
+      {
+        "key": "month",
+        "name": "Month",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Stored as the first day of the month."
+      },
+      {
+        "key": "closing_balance",
+        "name": "Closing bank balance",
+        "kind": "money",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "currency",
+        "name": "Currency",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "USD",
+          "EUR",
+          "GBP",
+          "CHF",
+          "CAD",
+          "AUD",
+          "JPY",
+          "CNY",
+          "SEK",
+          "DKK",
+          "NOK",
+          "INR"
+        ]
+      },
+      {
+        "key": "closed",
+        "name": "Closed",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "commentary",
+        "name": "Commentary",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "runway_months",
+        "name": "Runway",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "cash_out_month",
+        "name": "Cash-out month",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "runway_status",
+        "name": "Runway status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "ok",
+          "below_target"
+        ]
+      },
+      {
+        "key": "metrics",
+        "name": "Frozen metrics",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Frozen JSON snapshot written once at close; read-only."
+      },
+      {
+        "key": "rates_used",
+        "name": "Rates used",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Frozen JSON of exchange rates used; read-only."
+      },
+      {
+        "key": "closed_at",
+        "name": "Closed on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "month": "month",
+      "closing_balance": "closing_balance",
+      "currency": "currency",
+      "closed": "closed",
+      "commentary": "commentary",
+      "runway_months": "runway_months",
+      "cash_out_month": "cash_out_month",
+      "runway_status": "runway_status",
+      "metrics": "metrics",
+      "rates_used": "rates_used",
+      "closed_at": "closed_at"
+    }
+  },
+  "budgets": {
+    "name": "Budgets",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "year",
+        "name": "Year",
+        "kind": "number",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "locked_on",
+        "name": "Locked on",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "currency",
+        "name": "Currency",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "USD",
+          "EUR",
+          "GBP",
+          "CHF",
+          "CAD",
+          "AUD",
+          "JPY",
+          "CNY",
+          "SEK",
+          "DKK",
+          "NOK",
+          "INR"
+        ]
+      },
+      {
+        "key": "totals",
+        "name": "Frozen totals",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Frozen JSON of monthly totals by category and program; read-only."
+      },
+      {
+        "key": "rates_used",
+        "name": "Rates used",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Frozen JSON of exchange rates used; read-only."
+      },
+      {
+        "key": "notes",
+        "name": "Notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "year": "year",
+      "locked_on": "locked_on",
+      "currency": "currency",
+      "totals": "totals",
+      "rates_used": "rates_used",
+      "notes": "notes"
     }
   },
   "scenarios": {
-    "name": "scenarios",
+    "name": "Scenarios",
     "fields": [
       {
         "key": "name",
-        "name": "Scenario name",
+        "name": "Name",
         "kind": "text",
         "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "clinical_multiplier",
-        "name": "Clinical spend multiplier",
-        "kind": "number",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "people_delta",
-        "name": "Added monthly personnel cost",
-        "kind": "money",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "contractor_delta",
-        "name": "Added monthly contractor cost",
-        "kind": "money",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "funding_delay",
-        "name": "Funding delay (months)",
-        "kind": "number",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "trial_shift",
-        "name": "Clinical spend shift (months)",
-        "kind": "number",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "reserve",
-        "name": "Minimum cash reserve",
-        "kind": "money",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "cutoff",
-        "name": "Actuals cutoff",
-        "kind": "date",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "notes",
-        "name": "Rationale and assumptions",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "archived",
-        "name": "Archived",
-        "kind": "boolean",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      }
-    ],
-    "logicalFields": {
-      "name": "name",
-      "clinicalMultiplier": "clinical_multiplier",
-      "peopleDelta": "people_delta",
-      "contractorDelta": "contractor_delta",
-      "fundingDelay": "funding_delay",
-      "trialShift": "trial_shift",
-      "reserve": "reserve",
-      "cutoff": "cutoff",
-      "notes": "notes",
-      "archived": "archived"
-    }
-  },
-  "briefings": {
-    "name": "briefings",
-    "fields": [
-      {
-        "key": "name",
-        "name": "Report title",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "period",
-        "name": "Report period",
-        "kind": "date",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "cutoff",
-        "name": "Actuals cutoff",
-        "kind": "date",
-        "required": false,
         "multiple": false,
         "ai": true
       },
       {
         "key": "status",
-        "name": "Review status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "saved",
+          "adopted",
+          "archived"
+        ]
+      },
+      {
+        "key": "based_on_close",
+        "name": "Based on close",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "based_on_version",
+        "name": "Forecast version",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "created_on",
+        "name": "Created on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "summary",
+        "name": "Summary",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "status": "status",
+      "based_on_close": "based_on_close",
+      "based_on_version": "based_on_version",
+      "created_on": "created_on",
+      "summary": "summary"
+    }
+  },
+  "changes": {
+    "name": "Scenario changes",
+    "fields": [
+      {
+        "key": "scenario_id",
+        "name": "Scenario",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of the parent Scenarios record."
+      },
+      {
+        "key": "kind",
+        "name": "Change",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "shift_program",
+          "scale_program",
+          "stop_program",
+          "add_position",
+          "remove_position",
+          "move_cash_in",
+          "resize_cash_in",
+          "fx_shift"
+        ]
+      },
+      {
+        "key": "target_id",
+        "name": "Target record",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID the change applies to: a program, position or cash-in plan line."
+      },
+      {
+        "key": "months",
+        "name": "Months",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "pct",
+        "name": "Percent",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "amount",
+        "name": "Amount",
+        "kind": "money",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "currency",
+        "name": "Currency",
         "kind": "select",
         "required": false,
         "multiple": false,
         "ai": true,
         "options": [
-          "Draft",
-          "In review",
-          "Approved"
+          "USD",
+          "EUR",
+          "GBP",
+          "CHF",
+          "CAD",
+          "AUD",
+          "JPY",
+          "CNY",
+          "SEK",
+          "DKK",
+          "NOK",
+          "INR"
         ]
       },
       {
-        "key": "author",
-        "name": "Author / reviewer",
-        "kind": "text",
+        "key": "from_month",
+        "name": "From month",
+        "kind": "date",
         "required": false,
         "multiple": false,
         "ai": true
       },
       {
-        "key": "body",
-        "name": "Narrative",
+        "key": "label",
+        "name": "Label",
         "kind": "text",
         "required": false,
         "multiple": false,
         "ai": true
+      }
+    ],
+    "logicalFields": {
+      "scenario_id": "scenario_id",
+      "kind": "kind",
+      "target_id": "target_id",
+      "months": "months",
+      "pct": "pct",
+      "amount": "amount",
+      "currency": "currency",
+      "from_month": "from_month",
+      "label": "label"
+    }
+  },
+  "rates": {
+    "name": "FX rates",
+    "fields": [
+      {
+        "key": "month",
+        "name": "Month",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Stored as the first day of the month."
       },
       {
-        "key": "sources",
-        "name": "Data and evidence IDs",
+        "key": "currency",
+        "name": "Currency",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "USD",
+          "EUR",
+          "GBP",
+          "CHF",
+          "CAD",
+          "AUD",
+          "JPY",
+          "CNY",
+          "SEK",
+          "DKK",
+          "NOK",
+          "INR"
+        ]
+      },
+      {
+        "key": "rate_per_eur",
+        "name": "Units per 1 EUR",
+        "kind": "number",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Monthly average units of this currency per 1 EUR."
+      },
+      {
+        "key": "source",
+        "name": "Source",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "ecb",
+          "manual"
+        ]
+      },
+      {
+        "key": "source_ref",
+        "name": "Source reference",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "month": "month",
+      "currency": "currency",
+      "rate_per_eur": "rate_per_eur",
+      "source": "source",
+      "source_ref": "source_ref"
+    }
+  },
+  "programs": {
+    "name": "Programs",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Program name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "code",
+        "name": "Code",
         "kind": "text",
         "required": false,
         "multiple": false,
@@ -299,12 +1076,83 @@
     ],
     "logicalFields": {
       "name": "name",
-      "period": "period",
-      "cutoff": "cutoff",
-      "status": "status",
-      "author": "author",
-      "body": "body",
-      "sources": "sources",
+      "code": "code",
+      "archived": "archived"
+    }
+  },
+  "organizations": {
+    "name": "Organizations",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Organization",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "org_type",
+        "name": "Type",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "vendor",
+          "investor",
+          "funder",
+          "partner",
+          "other"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "org_type": "org_type",
+      "archived": "archived"
+    }
+  },
+  "agreements": {
+    "name": "Agreements",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Agreement",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "counterparty_id",
+        "name": "Counterparty ID",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an Organizations record (scalar UUID text)."
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "counterparty_id": "counterparty_id",
       "archived": "archived"
     }
   }
