@@ -8,6 +8,7 @@ import type {Database,Connection} from '../src/db/database.js';
 import {withActor,setDatabaseContext} from '../src/db/context.js';
 import {Service} from '../src/domain/service.js';
 import {WorkspaceFoundation} from '../src/workspace/service.js';
+import {addConnectorMcp} from '../src/server/connectors.js';
 import {Connectors,filterResponse} from '../src/connectors/service.js';
 import {connectorConfig,connectorOperation} from '../src/connectors/schema.js';
 import {connectorVault} from '../src/connectors/secrets.js';
@@ -55,6 +56,13 @@ test('connector policy, exact reviews, idempotency, data writes, quotas and revo
   const table=(await save({kind:'create_type',name:'Companies',fields:[{key:'name',name:'Name',kind:'text'},{key:'private',name:'Private',kind:'text',ai:false}]})).objects[0].id;
   const record=(await save({kind:'create_record',typeId:table,data:{name:'Acme',private:'Restricted'}})).objects[0].id;
   const appDraft=await f.preview(a,w.id,{kind:'save_component',content:{name:'Company app',format:'frontend-js',sourceAccess:'bindings',source:"return {html:'<p>Company</p>'};",bindings:[{typeId:table,fields:['name']}]}}),app=await f.confirm(a,w.id,appDraft.id,appDraft.digest);
+  await t.test('embedded connector choices exclude AI-restricted fields and never expose approval or secrets',async()=>{
+   const tools=new Map<string,any>();addConnectorMcp({registerTool:(name:string,metadata:any,handler:any)=>tools.set(name,{metadata,handler})} as any,f,ai,(fn:any)=>fn,{});
+   const directory=tools.get('connector_directory');assert.deepEqual(directory.metadata._meta.ui.visibility,['app']);
+   const choices=await directory.handler({workspaceId:w.id});assert.equal(choices.canCreate,true);assert.deepEqual(choices.tables.find((entry:any)=>entry.id===table).fields.map((field:any)=>field.key),['name']);
+   assert.ok(choices.apps.some((entry:any)=>entry.id===app.id));assert.equal(tools.has('confirm_connector_review'),false);assert.equal(tools.has('replace_connector_credential'),false);
+   await assert.rejects(directory.handler({workspaceId:randomUUID()}));
+  });
   const sent:OutboundRequest[]=[];let response='{"value":"Verified","private":"Not returned"}',reject=false;
   const transport:ConnectorTransport=async input=>{sent.push(input);if(reject)throw Error('Provider failed with sensitive detail');return {status:200,body:response,bytes:Buffer.byteLength(response),durationMs:5};};
   const c=new Connectors(db,(tx,actor,workspace,appId)=>f.component(tx,actor,workspace,appId),{transport,vault:connectorVault(randomBytes(32).toString('base64'))});

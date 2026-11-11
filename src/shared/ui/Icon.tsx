@@ -1,5 +1,6 @@
 import React from 'react';
 const paths={
+ mail:'M3 5h18v14H3Zm0 0 9 8 9-8',
  eye:'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Zm13 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0',
  eyeOff:'m3 3 18 18M9 5a10 10 0 0 1 3 0c6 0 10 7 10 7a20 20 0 0 1-3 4M6 6a22 22 0 0 0-4 6s4 7 10 7a11 11 0 0 0 5-1M9 9a4 4 0 0 0 6 6',
  trash:'M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7',

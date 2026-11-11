@@ -39,6 +39,9 @@ test('ChatGPT and Claude each own their runner and automations; either can pause
   assert.notEqual(chatgptRunner.id,claudeRunner.id);
   assert.deepEqual((await pg.query<any>('SELECT assistant FROM automation_runners ORDER BY assistant')).rows.map(r=>r.assistant),['chatgpt','claude']);
   assert.equal((await s.setup(human,w.id)).id,chatgptRunner.id,'Web defaults to the ChatGPT runner as before');
+  const webClaude=await manage.connector(human,w.id,'claude');assert.equal(webClaude.id,claudeRunner.id);assert.equal(webClaude.assistant,'claude');assert.equal(webClaude.canConfigure,true);assert.equal(webClaude.canPrepare,false);
+  const otherConnector=await as(chatgpt,()=>manage.connector(chatgpt,w.id,'claude'));assert.equal(otherConnector.id,claudeRunner.id);assert.equal(otherConnector.canConfigure,false);assert.equal(otherConnector.canPrepare,false);
+  assert.equal((await as(claude,()=>manage.connector(claude,w.id,'claude'))).canPrepare,true);
   const claudeSetup:any=await as(claude,()=>s.setup(claude,w.id));
   assert.equal(claudeSetup.id,claudeRunner.id);assert.equal(claudeSetup.state,'awaiting_subscription');assert.equal(claudeSetup.nextStep.kind,'connect_claude_routine');assert.match(claudeSetup.dispatcherPrompt,/routine-fire-payload/);
 

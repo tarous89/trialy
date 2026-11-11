@@ -79,7 +79,8 @@ export class AutomationManagement{
     const {runnerIds,...row}=d;automations.push({...row,appName:app.name,appArchived:app.archived||app.project_archived,effectiveEnabled:d.enabled&&!d.blockedReason&&setup.state==='ready'&&!app.archived&&!app.project_archived});
    }catch(e){if(![403,404].includes((e as any).status))throw e;}
   }
-  return {...setup,effectiveEnabled:!!setup.enabled&&setup.state==='ready',automations,impactDigest:checksum(JSON.stringify({runnerId:setup.id,version:setup.version,automations}))};
+  const target=assistant??actorAssistant(a)??'chatgpt';
+  return {...setup,assistant:target,canConfigure:a.origin!=='ai'||actorAssistant(a)===target,canPrepare:actorAssistant(a)===target||a.origin!=='ai'&&target==='chatgpt',effectiveEnabled:!!setup.enabled&&setup.state==='ready',automations,impactDigest:checksum(JSON.stringify({runnerId:setup.id,version:setup.version,automations}))};
  }
  async controlConnector(a:Actor,w:string,runnerId:string,enabled:boolean,version:number,confirmation?:{confirmed?:boolean;impactDigest?:string}){
   requireCurrentAction(a);return this.db.transaction(async tx=>{

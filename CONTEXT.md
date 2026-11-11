@@ -41,6 +41,14 @@ Save the app before optional automation setup. App resolution, loading, navigati
 
 First-save prompts apply only to never-saved apps. Published apps stay usable during ChatGPT edits and later publication; updates may offer a subtle optional refresh notice. Keep Search and Add record inline, disclose secondary filters when space is tight, use bounded active-page reads and avoid redundant rendering after layout saves. Extra log filters stay inline and wrap naturally into another row; they never float over events. Sidebar order: Apps, Database, Access, Automations, Connectors, Logs. Templates are optional accelerators, not mandatory app types.
 
+## Automation and connector editors
+
+Web, ChatGPT and Claude use the same compact automation editor: title and Save/Ignore in one top row, no Back to automations action, compact schedule/date controls, and icon-based worker choices. Database triggers cascade through **Table → Column → Change**, with Any column / Any change defaults for research and connector actions. Changing the table resets dependent choices; existing multi-column triggers and typed conditions remain intact until edited. Email still permits entry creation or a column condition, not broad update notifications.
+
+Connectors always shows separate ChatGPT and Claude cards, including before setup. Status and dependent workflows come from the selected assistant's runner. A card is not proof of a connected account or an activated background runner. Start/continue setup in the appropriate assistant; another assistant cannot resume or edit its runner. Non-owners see the default cards with owner-managed status. Email is built in, not a connector.
+
+The plugin and web share the connector configuration editor. Plugins can prepare configuration using authorized app/table/teammate choices. Final connector approval, secrets, credential replacement and external test requests retain the authenticated website boundary. Do not expose credential input or a model-side connector approval tool to achieve visual parity.
+
 ## Saving controls
 
 

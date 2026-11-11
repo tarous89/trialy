@@ -42,6 +42,7 @@ import {DocumentText} from '../shared/DocumentText.js';
 import type { Field } from '../shared/schema.js';
 import './style.css';
 import '../shared/views.css';
+import '../shared/ui/setup-editor.css';
 import {FieldEditor} from '../shared/FieldEditor.js';
 import {DocumentControls} from '../shared/DocumentControls.js';
 import {SchemaMigration} from './SchemaMigration.js';
