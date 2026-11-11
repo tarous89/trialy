@@ -11,6 +11,10 @@ import {WorkspaceFoundation} from '../src/workspace/service.js';
 import {schemaCatalog} from '../src/workspace/catalog.js';
 import {archivedItems,deleteArchivedItem} from '../src/workspace/archive.js';
 import {installCatalogApp} from '../src/workspace/template-catalog.js';
+import express from 'express';
+import request from 'supertest';
+import {addWorkspaceApi} from '../src/server/workspace-foundation.js';
+import {foundationClient} from '../src/web/foundation-client.js';
 
 // MODULAR_APPS_AND_SHARED_DATA.md §6: archive first, under the runtime role and RLS.
 async function fixture(t:any){
@@ -158,7 +162,15 @@ test('installing a template whose app is archived offers restore before creating
  const app=await rawApp('Runway',[],true),digest='a'.repeat(64);
  await pg.query("INSERT INTO app_template_catalog(template_id,version,status,digest,payload,install_schema) VALUES('life.test-runway','1.0.0','approved',$1,'{}','{}')",[digest]);
  await pg.query('INSERT INTO workspace_receipts(id,workspace_id,user_id,digest,result) VALUES($1,$2,$3,$4,$5)',[randomUUID(),w.id,a.userId,digest,JSON.stringify({appId:app,templateId:'life.test-runway'})]);
+ // An unrelated archived app must never be offered for this template.
+ const other=await rawApp('Revised generic app',[],true);
+ assert.deepEqual((await run(()=>archivedItems(f,a,w.id,{kind:'apps'}))).items.map((x:any)=>x.id).sort(),[app,other].sort());
  assert.deepEqual((await run(()=>archivedItems(f,a,w.id,{kind:'apps',templateId:'life.test-runway'}))).items.map((x:any)=>x.id),[app]);
+ // The website path (client mapping + REST route) keeps the template filter too.
+ let path='';await foundationClient(async(p:string)=>{path=p;return {};})('list_archived_items',{workspaceId:w.id,kind:'apps',templateId:'life.test-runway'});
+ assert.match(path,/[?&]templateId=life\.test-runway(&|$)/);
+ const web=express();web.use((req:any,_res,next)=>{req.actor=a;withActor(a,()=>next());});addWorkspaceApi(web,f);
+ const listed=await request(web).get(path).expect(200);assert.deepEqual(listed.body.items.map((x:any)=>x.id),[app]);
  await assert.rejects(()=>run(()=>installCatalogApp(f,a,w.id,{templateId:'life.test-runway',version:'1.0.0',digest,requestKey:randomUUID(),name:'Runway'})),/Restore your archived Runway app/);
 });
 

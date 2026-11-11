@@ -48,7 +48,7 @@ export function addWorkspaceApi(app:Express,f:WorkspaceFoundation){
  app.get(`${b}/projects/:projectId/relationships`,async(req,res)=>res.json(await f.projectRelationships(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.projectId),z.coerce.number().int().min(0).default(0).parse(req.query.offset))));
  app.get(`${b}/operational-status`,async(req,res)=>res.json(await operationalStatus(f.db,req.actor!,id.parse(req.params.workspaceId))));
  app.get(`${b}/collection-responses`,async(req,res)=>res.json(await f.collectionResponses(req.actor!,id.parse(req.params.workspaceId),z.coerce.number().int().min(0).default(0).parse(req.query.offset))));
- app.get(`${b}/archived`,async(req,res)=>res.json(await archivedItems(f,req.actor!,id.parse(req.params.workspaceId),{kind:req.query.kind,...(req.query.typeId?{typeId:req.query.typeId}:{})})));
+ app.get(`${b}/archived`,async(req,res)=>res.json(await archivedItems(f,req.actor!,id.parse(req.params.workspaceId),{kind:req.query.kind,...(req.query.typeId?{typeId:req.query.typeId}:{}),...(req.query.templateId?{templateId:req.query.templateId}:{})})));
  // Permanent deletion is website-only: never registered as an MCP tool.
  app.post(`${b}/archived/delete`,async(req,res)=>res.json(await deleteArchivedItem(f,req.actor!,id.parse(req.params.workspaceId),req.body)));
  app.post(`${b}/home`,async(req,res)=>res.json(await workspaceHome(f.db,req.actor!,id.parse(req.params.workspaceId),req.body)));
