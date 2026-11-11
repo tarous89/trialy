@@ -52,6 +52,9 @@ The apps are separate, but several share records and form natural packs (all ove
 
 ### Shared record types (shared by default)
 
+All apps follow [modular apps and shared data](../MODULAR_APPS_AND_SHARED_DATA.md): core shared tables use the core data contract, apps reuse rather than copy, cross-app features degrade gracefully, and deleting an app or tab never deletes data.
+
+
 Organization (investor, partner, CRO, vendor, site, competitor, funder) · Person (professional contacts only) · Program/Asset (indication, modality, stage) · Study · Contract reference · Document reference (title, version, location link — files stay in the customer's storage) · Task · Source/finding. Each app keeps its own private records (e.g. rounds, bids, accrual lines) and links to the shared ones by stable ID.
 
 ---

@@ -6,6 +6,9 @@
 
 **Governing contracts:** same as [Runway](RUNWAY.md#runway--final-app-scope-bt2-01): project context, template authoring and usage guidance (hosted version, all `nextOffset`s), shared build contract, interface rules, access control, write authorization, field capabilities, shared data. They win on any conflict.
 
+
+**Modularity:** follows [modular apps and shared data](../../MODULAR_APPS_AND_SHARED_DATA.md) — shared tables use the core data contract v1 role keys; cross-app features (Runway ↔ Programs) degrade gracefully; app or tab deletion never deletes data; reinstall reconnects by default. Include the §3 rule 9 acceptance test.
+
 ---
 
 ## 1. Evidence: what small biotechs need from program management

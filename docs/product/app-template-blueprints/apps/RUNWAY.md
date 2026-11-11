@@ -6,6 +6,9 @@
 
 **Governing contracts (this scope follows them; they win on any conflict):** [project context](../../../../CONTEXT.md) · [template authoring](../../../../templates/TEMPLATE_AUTHORING.md) and [usage](../../../../templates/TEMPLATE_USAGE.md) guidance (read the hosted version through every `nextOffset` before building) · [shared build contract](../DESIGN_AND_BUILD_CONTRACT.md) · [interface rules](../../../INTERFACE_RULES.md) · [access control](../../../ACCESS_CONTROL.md) and [app/tab access](../../APP_CONFIGURATION_AND_AUTOMATIONS.md#app-and-tab-access) · [write authorization](../../../WRITE_AUTHORIZATION.md) · [field capabilities](../../../FIELD_CAPABILITIES.md) · [shared data](../../../SHARED_DATA.md).
 
+
+**Modularity:** follows [modular apps and shared data](../../MODULAR_APPS_AND_SHARED_DATA.md) — shared tables use the core data contract v1 role keys; cross-app features (Runway ↔ Programs) degrade gracefully; app or tab deletion never deletes data; reinstall reconnects by default. Include the §3 rule 9 acceptance test.
+
 ---
 
 ## 1. Purpose and users

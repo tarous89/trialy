@@ -8,6 +8,10 @@ Current: 9 November 2026. This is not an authorization to start every item. [Con
 - Verify actual unattended ChatGPT runner activation and a real no-write cycle before claiming background readiness. A Claude runner would be new work.
 - Complete applicable production recovery/provider checks using current operational evidence, not dated release blockers.
 
+## Modular apps and shared data (committed requirement)
+
+- Implement the platform items in [modular apps and shared data §5](MODULAR_APPS_AND_SHARED_DATA.md#5-platform-work-roadmap): table role metadata, install/reinstall detection and reconnect, delete-app dialog listing retained tables, unbound-table label, table deletion guard, template validation of core roles, and authoring-guide rules. Verify current behaviour before building.
+
 ## Demand-driven enhancements
 
 - Measured app navigation/render/save performance improvements without data or input loss.
