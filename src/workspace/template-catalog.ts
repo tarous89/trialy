@@ -55,7 +55,7 @@ export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,i
    const s=shared.find(x=>x.role===role),choice=v.sharedTables?.[role];let reuse:any=null;
    if(s&&choice&&choice!=='new'){reuse=s.candidates.find((c:any)=>c.typeId===choice);if(!reuse)fail(409,'shared_table_unavailable','That existing table can no longer be reused. Reload and choose again.');}
    // "Install a new copy" without an explicit choice starts fresh (rule 8); the Use dialog always sends the choice.
-   else if(s&&choice===undefined&&!v.createNew){if(s.candidates.length===1)reuse=s.candidates[0];else if(s.candidates.length>1)fail(409,'shared_table_choice',`Choose which existing ${def.name} table to use, or choose separate data.`);}
+   else if(s&&choice===undefined&&!v.createNew){if(s.candidates.length===1)reuse=s.candidates[0];else if(s.candidates.length>1&&!def.optional)fail(409,'shared_table_choice',`Choose which existing ${def.name} table to use, or choose separate data.`);}
    if(reuse){
     let type=(await tx.query('SELECT * FROM entity_types WHERE id=$1 AND workspace_id=$2',[reuse.typeId,w])).rows[0];
     const add=def.fields.filter((x:any)=>!type.fields.some((f:any)=>f.key===x.key));
@@ -103,6 +103,7 @@ export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,i
 export async function sharedTableCandidates(db:Connection,a:Actor,w:string,schema:Record<string,any>):Promise<any[]>{
  const roles=(Object.entries(schema??{}) as [string,any][]).filter(([,d])=>d?.contract==='core.v1'||d?.optional===true);
  if(!roles.length)return [];
+ const core=JSON.parse(await readFile('templates/core-contract/v1.json','utf8'));
  const comps=(await db.query('SELECT id,name,source,bindings FROM workspace_components WHERE workspace_id=$1 AND NOT archived AND deleted_at IS NULL ORDER BY created_at,id',[w])).rows;
  const bound=new Map<string,Map<string,string[]>>();
  for(const c of comps){
@@ -119,7 +120,9 @@ export async function sharedTableCandidates(db:Connection,a:Actor,w:string,schem
   for(const [typeId,apps] of bound.get(role)??[]){
    let type:any;try{type=(await typeAccess(db,a,w,typeId)).type;}catch{continue;}
    if(type.archived_at||type.deleted_at)continue;
-   const compatible=def.fields.every((x:any)=>{const f=type.fields.find((f:any)=>f.key===x.key);return f?f.kind===x.kind&&!f.multiple&&(x.kind!=='select'||(x.options??[]).every((o:string)=>(f.options??[]).includes(o))):!x.required;});
+   // A core table has every contract field; only fields an app owns may be missing (they are added). A partner output has every declared field.
+   const owned=def.contract==='core.v1'?new Set((core.roles?.[role]?.fields??[]).filter((f:any)=>f.owner).map((f:any)=>f.key)):new Set();
+   const compatible=def.fields.every((x:any)=>{const f=type.fields.find((f:any)=>f.key===x.key);return f?f.kind===x.kind&&!f.multiple&&(x.kind!=='select'||(x.options??[]).every((o:string)=>(f.options??[]).includes(o))):owned.has(x.key);});
    const addFields=def.fields.filter((x:any)=>!type.fields.some((f:any)=>f.key===x.key)).map((x:any)=>x.key);
    if(!compatible||(def.readOnly&&addFields.length))continue;
    const records=Number((await db.query("SELECT count(*) AS n FROM records WHERE type_id=$1 AND workspace_id=$2 AND state<>'archived'",[typeId,w])).rows[0].n);

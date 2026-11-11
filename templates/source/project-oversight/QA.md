@@ -2,7 +2,7 @@
 
 Validated against the repository host on 11 November 2026 with disposable PGlite databases and fictional data, not a deployed account.
 
-**Catalog status:** see the pull request and `templates/catalog-seed.json`. The 1.0.1 catalog JSON, its catalog digest and its gallery preview hash are unchanged; its source package is archived byte-for-byte under `archive/1.0.1/`, and its installer, seed and test paths point there. Saved 1.0.1 apps are not migrated.
+**Catalog status:** on 11 November 2026 the owner asked for Programs 2.0.0 to be deployed into the platform. `templates/catalog-seed.json` names 2.0.0, so the pre-deploy catalog sync inserts it as approved (the same owner-approved exception as Runway). The gallery and `list_app_templates` show only the latest approved version, so new installs get 2.0.0. The 1.0.1 catalog JSON, its catalog digest and its gallery preview hash are unchanged; its source package is archived byte-for-byte under `archive/1.0.1/`, and its installer, seed and test paths point there. Saved 1.0.1 apps are not migrated.
 
 ## Decisions
 
