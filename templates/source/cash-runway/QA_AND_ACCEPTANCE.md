@@ -2,7 +2,7 @@
 
 Validated against the repository host on 11 November 2026 with disposable PGlite databases and fictional data, not a deployed account.
 
-**Catalog status:** 2.1.0 is a new catalog version and syncs as **draft**. The approved platform version stays 2.0.0, which replaced 1.2.2 on 11 November 2026 with owner approval, until the owner approves 2.1.0. Released 1.2.2 and 2.0.0 files are archived byte-for-byte under `archive/`, and their installer, seed and gallery entries point there.
+**Catalog status:** on 11 November 2026 the owner approved 2.1.0 to replace 2.0.0 in the platform templates. `templates/catalog-seed.json` names 2.1.0, so the pre-deploy catalog sync inserts it as approved. The gallery and `list_app_templates` show only the latest approved version, so new installs get 2.1.0. Existing 2.0.0 and 1.x apps and rows are unchanged. Released 1.2.2 and 2.0.0 files are archived byte-for-byte under `archive/`, and their installer, seed and gallery entries point there.
 
 **What changed from 2.0.0** ([modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md)):
 
@@ -100,7 +100,6 @@ Fictional dataset in `tests/cash-runway.test.ts`:
 
 ## Not verified here
 
-- Publisher approval and deployment of 2.1.0.
 - Platform install detection, the reconnect-by-default reinstall flow and table role metadata (modular apps §5, items 1–6). Runway follows those rules manually through explicit bindings until they ship.
 - A live ChatGPT or Claude host session, real workspace installs and real column restrictions on a deployed account.
 - Automation setup or delivery: the alert email and rates research were not configured and no email was sent.
