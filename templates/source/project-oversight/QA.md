@@ -29,7 +29,7 @@ Validated against the repository host on 11 November 2026 with disposable PGlite
 | `APP_DESIGN_CHECKS=off node --import tsx --test tests/programs.test.ts` | 13/13 passed, including the production design inspector on all seven screens |
 | `APP_DESIGN_CHECKS=off node --import tsx --test tests/programs-integration.test.ts` | 2/2 passed, including the rule 9 modularity test with the real installer |
 | `APP_DESIGN_CHECKS=off node --import tsx scripts/test-project-browser.ts` | Passed |
-| `npm test` (full suite) | See the pull request description |
+| `npm test` (full suite, 481 tests, with the browsers path below) | 480 passed. The one failure, `tests/monitoring-pv-integration.test.ts` (CO06, overlapping controls at 390 px), fails identically on unmodified `main` under this container's Chromium and passes in GitHub CI. |
 
 Browser checks ran against this container's Chromium through a `PLAYWRIGHT_BROWSERS_PATH` that maps the repository's pinned Playwright 1.51.1 browser names to the installed build. Test code was not changed for this.
 
