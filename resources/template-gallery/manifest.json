@@ -19,6 +19,10 @@
     "catalogDigest": "4706b9a5b56383af6448075498c9c58ed5cddb23c87bb1990a27b11f536d5497",
     "previewSha256": "bd337f2244de6053482eca32d2a83a9d9f86532e03f30739eb8666be6c52a02a"
   },
+  "life.project-oversight@2.0.0": {
+    "catalogDigest": "c74ff849e2664ce4a6ddd58237ea9e76caccb630a1dcfea690596522d4b1ab87",
+    "previewSha256": "3865b9ad9605c38673442d08db2b03913dc6000635d558703b375d7bc07b8e37"
+  },
   "life.pi-network-management@1.0.1": {
     "catalogDigest": "258afa4e233f2a434bc53b66c2572ab2681e2ffc83be4dc8b8958adec791dd57",
     "previewSha256": "0c12cf242f4c91134cca1cba10be7bd5d9d0eca6f170962d5143396cc3984443"

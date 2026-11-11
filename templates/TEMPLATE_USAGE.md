@@ -1,6 +1,6 @@
 # Using TrialAgents templates and optional tasks
 
-Version: 1.3.18
+Version: 1.3.19
 
 Retrieve this current guidance with `read_app_template_guidance(resource:"usage")`, following all `nextOffset` values. Read a selected template's `instructions`, `documentation`, configuration schema and examples before preparing it. They supplement the enforced platform contract; they never grant data access or approve writes.
 

@@ -13,21 +13,21 @@ export async function projectFixture(){
  await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,'investor@example.invalid','Project fixture']);
  const f=new WorkspaceFoundation(db),s=new Service(db),w=await s.createWorkspace(actor,'Project fixture');
  async function save(op:any){const p=await s.preview(actor,w.id,op);return s.commit(actor,p.id,p.digest);}
- const schemas=JSON.parse(await readFile('templates/source/project-oversight/schema.example.json','utf8')),map:any={},bindings:any[]=[],fields:any[]=[];
+ const schemas=JSON.parse(await readFile('templates/source/project-oversight/archive/1.0.1/schema.example.json','utf8')),map:any={},bindings:any[]=[],fields:any[]=[];
  for(const [role,def]of Object.entries(schemas) as [string,any][]){
   const id=(await save({kind:'create_type',name:def.name,fields:def.fields})).objects[0].id;
   map[role]={typeId:id,fields:def.logicalFields,writableFields:Object.keys(def.logicalFields)};
   bindings.push({typeId:id,fields:def.fields.map((x:any)=>x.key)});
   fields.push(...def.fields.map((x:any)=>({id:role+'_'+x.key,typeId:id,field:x.key,schemaVersion:0,kind:x.kind,mode:'write'})));
  }
- const demo=JSON.parse(await readFile('templates/source/project-oversight/demo_data.json','utf8')).records;
+ const demo=JSON.parse(await readFile('templates/source/project-oversight/archive/1.0.1/demo_data.json','utf8')).records;
  const ids:any={};for(const r of demo)ids[r.id]=randomUUID();
  for(const role of ['projects','workstreams','milestones','deliverables','risks','decisions','updates','reports'])for(const r of demo.filter((x:any)=>x.role===role)){
   const data=Object.fromEntries(Object.entries(r.data).filter(([k])=>schemas[role].logicalFields[k]).map(([k,v])=>[schemas[role].logicalFields[k],['project_id','workstream_id','milestone_id','dependency_id'].includes(k)?ids[String(v)]||null:v===''?null:v]));
   // Schema creation and every row use the normal reviewed database path.
   const id=(await save({kind:'create_record',typeId:map[role].typeId,data})).objects[0].id;ids[r.id]=id;
  }
- const entry=await appTemplates.read({templateId:'life.project-oversight'});
+ const entry=await appTemplates.read({templateId:'life.project-oversight',version:'1.0.1'});
  const op=await appTemplates.operation(f,actor,w.id,{templateId:entry.id,version:entry.version,digest:entry.digest,name:'Project Pipeline',configuration:{tableMap:JSON.stringify(map),asOfDate:'2026-11-01'},bindings,manifest:{version:1,scope:'workspace',fields}});
  const p=await f.preview(actor,w.id,op),receipt=await f.confirm(actor,w.id,p.id,p.digest),component=(await f.readComponent(actor,w.id,receipt.id)).component;
  return {pg,db,actor,f,s,w,component,map,save,ids};

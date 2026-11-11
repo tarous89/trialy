@@ -1,0 +1,5676 @@
+{
+  "notice": "All projects, amounts, people, records and sources are fabricated. Never import into a real workspace.",
+  "asOfDate": "2026-11-01",
+  "records": [
+    {
+      "role": "projects",
+      "id": "demo-projects-001",
+      "version": 1,
+      "data": {
+        "name": "AX-101 Discovery Platform",
+        "objective": "Coordinate milestones and decisions for fictional AX-101 Discovery Platform; all details are illustrative.",
+        "program": "Oncology",
+        "department": "R&D",
+        "phase": "Discovery",
+        "owner": "Development lead",
+        "status": "Active",
+        "health": "Green",
+        "health_rationale": "Reviewed owner judgement based on synthetic internal delivery notes.",
+        "status_date": "2026-10-28",
+        "start_date": "2026-01-15",
+        "target_date": "2027-06-30",
+        "baseline_budget": 900000,
+        "currency": "EUR",
+        "source": "SYNTHETIC-PROJECT-1",
+        "archived": false
+      }
+    },
+    {
+      "role": "projects",
+      "id": "demo-projects-002",
+      "version": 1,
+      "data": {
+        "name": "Oncology Lead Candidate",
+        "objective": "Coordinate milestones and decisions for fictional Oncology Lead Candidate; all details are illustrative.",
+        "program": "Rare disease",
+        "department": "Clinical",
+        "phase": "Preclinical",
+        "owner": "Clinical lead",
+        "status": "Active",
+        "health": "Amber",
+        "health_rationale": "Reviewed owner judgement based on synthetic internal delivery notes.",
+        "status_date": "2026-10-28",
+        "start_date": "2026-01-15",
+        "target_date": "2027-06-30",
+        "baseline_budget": 1400000,
+        "currency": "EUR",
+        "source": "SYNTHETIC-PROJECT-2",
+        "archived": false
+      }
+    },
+    {
+      "role": "projects",
+      "id": "demo-projects-003",
+      "version": 1,
+      "data": {
+        "name": "Rare Disease Gene Editing",
+        "objective": "Coordinate milestones and decisions for fictional Rare Disease Gene Editing; all details are illustrative.",
+        "program": "Platform",
+        "department": "Regulatory",
+        "phase": "Phase 1",
+        "owner": "Finance lead",
+        "status": "Active",
+        "health": "Red",
+        "health_rationale": "Reviewed owner judgement based on synthetic internal delivery notes.",
+        "status_date": "2026-10-28",
+        "start_date": "2026-01-15",
+        "target_date": "2027-06-30",
+        "baseline_budget": 650000,
+        "currency": "EUR",
+        "source": "SYNTHETIC-PROJECT-3",
+        "archived": false
+      }
+    },
+    {
+      "role": "projects",
+      "id": "demo-projects-004",
+      "version": 1,
+      "data": {
+        "name": "Immunology Formulation",
+        "objective": "Coordinate milestones and decisions for fictional Immunology Formulation; all details are illustrative.",
+        "program": "Corporate",
+        "department": "Operations",
+        "phase": "Platform",
+        "owner": "CEO",
+        "status": "Active",
+        "health": "Unassessed",
+        "health_rationale": null,
+        "status_date": null,
+        "start_date": "2026-01-15",
+        "target_date": "2027-06-30",
+        "baseline_budget": 900000,
+        "currency": "EUR",
+        "source": "SYNTHETIC-PROJECT-4",
+        "archived": false
+      }
+    },
+    {
+      "role": "projects",
+      "id": "demo-projects-005",
+      "version": 1,
+      "data": {
+        "name": "Regulatory Readiness",
+        "objective": "Coordinate milestones and decisions for fictional Regulatory Readiness; all details are illustrative.",
+        "program": "Operations",
+        "department": "Finance",
+        "phase": "Operations",
+        "owner": "Regulatory lead",
+        "status": "Active",
+        "health": "Green",
+        "health_rationale": "Reviewed owner judgement based on synthetic internal delivery notes.",
+        "status_date": "2026-10-28",
+        "start_date": "2026-01-15",
+        "target_date": "2027-06-30",
+        "baseline_budget": 1400000,
+        "currency": "EUR",
+        "source": "SYNTHETIC-PROJECT-5",
+        "archived": false
+      }
+    },
+    {
+      "role": "projects",
+      "id": "demo-projects-006",
+      "version": 1,
+      "data": {
+        "name": "Manufacturing Scale-up",
+        "objective": "Coordinate milestones and decisions for fictional Manufacturing Scale-up; all details are illustrative.",
+        "program": "Oncology",
+        "department": "R&D",
+        "phase": "Discovery",
+        "owner": "Development lead",
+        "status": "Active",
+        "health": "Amber",
+        "health_rationale": "Reviewed owner judgement based on synthetic internal delivery notes.",
+        "status_date": "2026-10-28",
+        "start_date": "2026-01-15",
+        "target_date": "2027-06-30",
+        "baseline_budget": 650000,
+        "currency": "EUR",
+        "source": "SYNTHETIC-PROJECT-6",
+        "archived": false
+      }
+    },
+    {
+      "role": "projects",
+      "id": "demo-projects-007",
+      "version": 1,
+      "data": {
+        "name": "Clinical Quality Plan",
+        "objective": "Coordinate milestones and decisions for fictional Clinical Quality Plan; all details are illustrative.",
+        "program": "Rare disease",
+        "department": "Clinical",
+        "phase": "Preclinical",
+        "owner": "Clinical lead",
+        "status": "Active",
+        "health": "Red",
+        "health_rationale": "Reviewed owner judgement based on synthetic internal delivery notes.",
+        "status_date": "2026-10-28",
+        "start_date": "2026-01-15",
+        "target_date": "2027-06-30",
+        "baseline_budget": 900000,
+        "currency": "EUR",
+        "source": "SYNTHETIC-PROJECT-7",
+        "archived": false
+      }
+    },
+    {
+      "role": "projects",
+      "id": "demo-projects-008",
+      "version": 1,
+      "data": {
+        "name": "Corporate Financing Plan",
+        "objective": "Coordinate milestones and decisions for fictional Corporate Financing Plan; all details are illustrative.",
+        "program": "Platform",
+        "department": "Regulatory",
+        "phase": "Phase 1",
+        "owner": "Finance lead",
+        "status": "Active",
+        "health": "Unassessed",
+        "health_rationale": null,
+        "status_date": null,
+        "start_date": "2026-01-15",
+        "target_date": "2027-06-30",
+        "baseline_budget": 1400000,
+        "currency": "EUR",
+        "source": "SYNTHETIC-PROJECT-8",
+        "archived": false
+      }
+    },
+    {
+      "role": "projects",
+      "id": "demo-projects-009",
+      "version": 1,
+      "data": {
+        "name": "Pipeline Portfolio Strategy",
+        "objective": "Coordinate milestones and decisions for fictional Pipeline Portfolio Strategy; all details are illustrative.",
+        "program": "Corporate",
+        "department": "Operations",
+        "phase": "Platform",
+        "owner": "CEO",
+        "status": "Active",
+        "health": "Green",
+        "health_rationale": "Reviewed owner judgement based on synthetic internal delivery notes.",
+        "status_date": "2026-10-28",
+        "start_date": "2026-01-15",
+        "target_date": "2027-06-30",
+        "baseline_budget": 650000,
+        "currency": "EUR",
+        "source": "SYNTHETIC-PROJECT-9",
+        "archived": false
+      }
+    },
+    {
+      "role": "projects",
+      "id": "demo-projects-010",
+      "version": 1,
+      "data": {
+        "name": "Vendor Qualification",
+        "objective": "Coordinate milestones and decisions for fictional Vendor Qualification; all details are illustrative.",
+        "program": "Operations",
+        "department": "Finance",
+        "phase": "Operations",
+        "owner": "Regulatory lead",
+        "status": "Active",
+        "health": "Amber",
+        "health_rationale": "Reviewed owner judgement based on synthetic internal delivery notes.",
+        "status_date": "2026-10-28",
+        "start_date": "2026-01-15",
+        "target_date": "2027-06-30",
+        "baseline_budget": 900000,
+        "currency": "EUR",
+        "source": "SYNTHETIC-PROJECT-10",
+        "archived": false
+      }
+    },
+    {
+      "role": "projects",
+      "id": "demo-projects-011",
+      "version": 1,
+      "data": {
+        "name": "Neurology Translational",
+        "objective": "Coordinate milestones and decisions for fictional Neurology Translational; all details are illustrative.",
+        "program": "Oncology",
+        "department": "R&D",
+        "phase": "Discovery",
+        "owner": "Development lead",
+        "status": "Active",
+        "health": "Red",
+        "health_rationale": "Reviewed owner judgement based on synthetic internal delivery notes.",
+        "status_date": "2026-10-28",
+        "start_date": "2026-01-15",
+        "target_date": "2027-06-30",
+        "baseline_budget": 1400000,
+        "currency": "EUR",
+        "source": "SYNTHETIC-PROJECT-11",
+        "archived": false
+      }
+    },
+    {
+      "role": "projects",
+      "id": "demo-projects-012",
+      "version": 1,
+      "data": {
+        "name": "CMC Process Transfer",
+        "objective": "Coordinate milestones and decisions for fictional CMC Process Transfer; all details are illustrative.",
+        "program": "Rare disease",
+        "department": "Clinical",
+        "phase": "Preclinical",
+        "owner": "Clinical lead",
+        "status": "Active",
+        "health": "Unassessed",
+        "health_rationale": null,
+        "status_date": null,
+        "start_date": "2026-01-15",
+        "target_date": "2027-06-30",
+        "baseline_budget": 650000,
+        "currency": "EUR",
+        "source": "SYNTHETIC-PROJECT-12",
+        "archived": false
+      }
+    },
+    {
+      "role": "projects",
+      "id": "demo-projects-013",
+      "version": 1,
+      "data": {
+        "name": "Clinical Data Strategy",
+        "objective": "Coordinate milestones and decisions for fictional Clinical Data Strategy; all details are illustrative.",
+        "program": "Platform",
+        "department": "Regulatory",
+        "phase": "Phase 1",
+        "owner": "Finance lead",
+        "status": "Planned",
+        "health": "Unassessed",
+        "health_rationale": null,
+        "status_date": null,
+        "start_date": "2026-01-15",
+        "target_date": "2027-06-30",
+        "baseline_budget": 900000,
+        "currency": "EUR",
+        "source": "SYNTHETIC-PROJECT-13",
+        "archived": false
+      }
+    },
+    {
+      "role": "projects",
+      "id": "demo-projects-014",
+      "version": 1,
+      "data": {
+        "name": "Field Medical Enablement",
+        "objective": "Coordinate milestones and decisions for fictional Field Medical Enablement; all details are illustrative.",
+        "program": "Corporate",
+        "department": "Operations",
+        "phase": "Platform",
+        "owner": "CEO",
+        "status": "On hold",
+        "health": "Unassessed",
+        "health_rationale": null,
+        "status_date": null,
+        "start_date": "2026-01-15",
+        "target_date": "2027-06-30",
+        "baseline_budget": 1400000,
+        "currency": "EUR",
+        "source": "SYNTHETIC-PROJECT-14",
+        "archived": false
+      }
+    },
+    {
+      "role": "projects",
+      "id": "demo-projects-015",
+      "version": 1,
+      "data": {
+        "name": "Quality System Refresh",
+        "objective": "Coordinate milestones and decisions for fictional Quality System Refresh; all details are illustrative.",
+        "program": "Operations",
+        "department": "Finance",
+        "phase": "Operations",
+        "owner": "Regulatory lead",
+        "status": "Completed",
+        "health": "Unassessed",
+        "health_rationale": null,
+        "status_date": null,
+        "start_date": "2026-01-15",
+        "target_date": "2027-06-30",
+        "baseline_budget": 650000,
+        "currency": "EUR",
+        "source": "SYNTHETIC-PROJECT-15",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-001",
+      "version": 1,
+      "data": {
+        "name": "Study setup #1",
+        "project_id": "demo-projects-001",
+        "function": "Clinical",
+        "lead": "Project manager",
+        "status": "Active",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-002",
+      "version": 1,
+      "data": {
+        "name": "Translational evidence #2",
+        "project_id": "demo-projects-002",
+        "function": "R&D",
+        "lead": "Department lead",
+        "status": "Planned",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-003",
+      "version": 1,
+      "data": {
+        "name": "Regulatory pathway #3",
+        "project_id": "demo-projects-003",
+        "function": "Regulatory",
+        "lead": "Development lead",
+        "status": "Completed",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-004",
+      "version": 1,
+      "data": {
+        "name": "Manufacturing readiness #4",
+        "project_id": "demo-projects-004",
+        "function": "Operations",
+        "lead": "Project manager",
+        "status": "Active",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-005",
+      "version": 1,
+      "data": {
+        "name": "Portfolio governance #5",
+        "project_id": "demo-projects-005",
+        "function": "Finance",
+        "lead": "Department lead",
+        "status": "Planned",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-006",
+      "version": 1,
+      "data": {
+        "name": "Study setup #6",
+        "project_id": "demo-projects-006",
+        "function": "Clinical",
+        "lead": "Development lead",
+        "status": "Completed",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-007",
+      "version": 1,
+      "data": {
+        "name": "Translational evidence #7",
+        "project_id": "demo-projects-007",
+        "function": "R&D",
+        "lead": "Project manager",
+        "status": "Active",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-008",
+      "version": 1,
+      "data": {
+        "name": "Regulatory pathway #8",
+        "project_id": "demo-projects-008",
+        "function": "Regulatory",
+        "lead": "Department lead",
+        "status": "Planned",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-009",
+      "version": 1,
+      "data": {
+        "name": "Manufacturing readiness #9",
+        "project_id": "demo-projects-009",
+        "function": "Operations",
+        "lead": "Development lead",
+        "status": "Completed",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-010",
+      "version": 1,
+      "data": {
+        "name": "Portfolio governance #10",
+        "project_id": "demo-projects-010",
+        "function": "Finance",
+        "lead": "Project manager",
+        "status": "Active",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-011",
+      "version": 1,
+      "data": {
+        "name": "Study setup #11",
+        "project_id": "demo-projects-011",
+        "function": "Clinical",
+        "lead": "Department lead",
+        "status": "Planned",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-012",
+      "version": 1,
+      "data": {
+        "name": "Translational evidence #12",
+        "project_id": "demo-projects-012",
+        "function": "R&D",
+        "lead": "Development lead",
+        "status": "Completed",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-013",
+      "version": 1,
+      "data": {
+        "name": "Regulatory pathway #13",
+        "project_id": "demo-projects-013",
+        "function": "Regulatory",
+        "lead": "Project manager",
+        "status": "Active",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-014",
+      "version": 1,
+      "data": {
+        "name": "Manufacturing readiness #14",
+        "project_id": "demo-projects-014",
+        "function": "Operations",
+        "lead": "Department lead",
+        "status": "Planned",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-015",
+      "version": 1,
+      "data": {
+        "name": "Portfolio governance #15",
+        "project_id": "demo-projects-015",
+        "function": "Finance",
+        "lead": "Development lead",
+        "status": "Completed",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-016",
+      "version": 1,
+      "data": {
+        "name": "Study setup #16",
+        "project_id": "demo-projects-001",
+        "function": "Clinical",
+        "lead": "Project manager",
+        "status": "Active",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-017",
+      "version": 1,
+      "data": {
+        "name": "Translational evidence #17",
+        "project_id": "demo-projects-002",
+        "function": "R&D",
+        "lead": "Department lead",
+        "status": "Planned",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-018",
+      "version": 1,
+      "data": {
+        "name": "Regulatory pathway #18",
+        "project_id": "demo-projects-003",
+        "function": "Regulatory",
+        "lead": "Development lead",
+        "status": "Completed",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-019",
+      "version": 1,
+      "data": {
+        "name": "Manufacturing readiness #19",
+        "project_id": "demo-projects-004",
+        "function": "Operations",
+        "lead": "Project manager",
+        "status": "Active",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-020",
+      "version": 1,
+      "data": {
+        "name": "Portfolio governance #20",
+        "project_id": "demo-projects-005",
+        "function": "Finance",
+        "lead": "Department lead",
+        "status": "Planned",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-021",
+      "version": 1,
+      "data": {
+        "name": "Study setup #21",
+        "project_id": "demo-projects-006",
+        "function": "Clinical",
+        "lead": "Development lead",
+        "status": "Completed",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-022",
+      "version": 1,
+      "data": {
+        "name": "Translational evidence #22",
+        "project_id": "demo-projects-007",
+        "function": "R&D",
+        "lead": "Project manager",
+        "status": "Active",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-023",
+      "version": 1,
+      "data": {
+        "name": "Regulatory pathway #23",
+        "project_id": "demo-projects-008",
+        "function": "Regulatory",
+        "lead": "Department lead",
+        "status": "Planned",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-024",
+      "version": 1,
+      "data": {
+        "name": "Manufacturing readiness #24",
+        "project_id": "demo-projects-009",
+        "function": "Operations",
+        "lead": "Development lead",
+        "status": "Completed",
+        "archived": false
+      }
+    },
+    {
+      "role": "workstreams",
+      "id": "demo-workstreams-025",
+      "version": 1,
+      "data": {
+        "name": "Portfolio governance #25",
+        "project_id": "demo-projects-010",
+        "function": "Finance",
+        "lead": "Project manager",
+        "status": "Active",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-001",
+      "version": 1,
+      "data": {
+        "name": "Protocol readiness 01",
+        "project_id": "demo-projects-001",
+        "workstream_id": "demo-workstreams-001",
+        "owner": "R&D lead",
+        "baseline_date": "2026-09-01",
+        "current_date": "2026-09-01",
+        "actual_date": null,
+        "status": "Planned",
+        "dependency_id": null,
+        "change_reason": null,
+        "evidence": "SYNTHETIC-TARGET-0",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-002",
+      "version": 1,
+      "data": {
+        "name": "Assay qualification 02",
+        "project_id": "demo-projects-002",
+        "workstream_id": "demo-workstreams-002",
+        "owner": "Clinical lead",
+        "baseline_date": "2026-09-18",
+        "current_date": "2026-09-23",
+        "actual_date": null,
+        "status": "In progress",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-1",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-003",
+      "version": 1,
+      "data": {
+        "name": "Agency package 03",
+        "project_id": "demo-projects-003",
+        "workstream_id": "demo-workstreams-003",
+        "owner": "PMO",
+        "baseline_date": "2026-10-05",
+        "current_date": "2026-10-17",
+        "actual_date": null,
+        "status": "Blocked",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-2",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-004",
+      "version": 1,
+      "data": {
+        "name": "Site activation 04",
+        "project_id": "demo-projects-004",
+        "workstream_id": "demo-workstreams-004",
+        "owner": "R&D lead",
+        "baseline_date": "2026-10-22",
+        "current_date": "2026-10-18",
+        "actual_date": "2026-10-15",
+        "status": "Completed",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-COMPLETION-3",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-005",
+      "version": 1,
+      "data": {
+        "name": "Data cut 05",
+        "project_id": "demo-projects-005",
+        "workstream_id": "demo-workstreams-005",
+        "owner": "Clinical lead",
+        "baseline_date": "2026-11-08",
+        "current_date": "2026-12-01",
+        "actual_date": null,
+        "status": "Cancelled",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-4",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-006",
+      "version": 1,
+      "data": {
+        "name": "CMC handoff 06",
+        "project_id": "demo-projects-006",
+        "workstream_id": "demo-workstreams-006",
+        "owner": "PMO",
+        "baseline_date": "2026-11-25",
+        "current_date": "2026-11-25",
+        "actual_date": null,
+        "status": "Planned",
+        "dependency_id": null,
+        "change_reason": null,
+        "evidence": "SYNTHETIC-TARGET-5",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-007",
+      "version": 1,
+      "data": {
+        "name": "Board gate 07",
+        "project_id": "demo-projects-007",
+        "workstream_id": "demo-workstreams-007",
+        "owner": "R&D lead",
+        "baseline_date": "2026-12-12",
+        "current_date": "2026-12-17",
+        "actual_date": null,
+        "status": "In progress",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-6",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-008",
+      "version": 1,
+      "data": {
+        "name": "Protocol readiness 08",
+        "project_id": "demo-projects-008",
+        "workstream_id": "demo-workstreams-008",
+        "owner": "Clinical lead",
+        "baseline_date": "2026-12-29",
+        "current_date": "2027-01-10",
+        "actual_date": null,
+        "status": "Blocked",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-7",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-009",
+      "version": 1,
+      "data": {
+        "name": "Assay qualification 09",
+        "project_id": "demo-projects-009",
+        "workstream_id": "demo-workstreams-009",
+        "owner": "PMO",
+        "baseline_date": "2027-01-15",
+        "current_date": "2027-01-11",
+        "actual_date": "2027-01-08",
+        "status": "Completed",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-COMPLETION-8",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-010",
+      "version": 1,
+      "data": {
+        "name": "Agency package 10",
+        "project_id": "demo-projects-010",
+        "workstream_id": "demo-workstreams-010",
+        "owner": "R&D lead",
+        "baseline_date": "2027-02-01",
+        "current_date": "2027-02-24",
+        "actual_date": null,
+        "status": "Cancelled",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-9",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-011",
+      "version": 1,
+      "data": {
+        "name": "Site activation 11",
+        "project_id": "demo-projects-011",
+        "workstream_id": "demo-workstreams-011",
+        "owner": "Clinical lead",
+        "baseline_date": "2027-02-18",
+        "current_date": "2027-02-18",
+        "actual_date": null,
+        "status": "Planned",
+        "dependency_id": null,
+        "change_reason": null,
+        "evidence": "SYNTHETIC-TARGET-10",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-012",
+      "version": 1,
+      "data": {
+        "name": "Data cut 12",
+        "project_id": "demo-projects-012",
+        "workstream_id": "demo-workstreams-012",
+        "owner": "PMO",
+        "baseline_date": "2027-03-07",
+        "current_date": "2027-03-12",
+        "actual_date": null,
+        "status": "In progress",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-11",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-013",
+      "version": 1,
+      "data": {
+        "name": "CMC handoff 13",
+        "project_id": "demo-projects-013",
+        "workstream_id": "demo-workstreams-013",
+        "owner": "R&D lead",
+        "baseline_date": "2027-03-24",
+        "current_date": "2027-04-05",
+        "actual_date": null,
+        "status": "Blocked",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-12",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-014",
+      "version": 1,
+      "data": {
+        "name": "Board gate 14",
+        "project_id": "demo-projects-014",
+        "workstream_id": "demo-workstreams-014",
+        "owner": "Clinical lead",
+        "baseline_date": "2027-04-10",
+        "current_date": "2027-04-06",
+        "actual_date": "2027-04-03",
+        "status": "Completed",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-COMPLETION-13",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-015",
+      "version": 1,
+      "data": {
+        "name": "Protocol readiness 15",
+        "project_id": "demo-projects-015",
+        "workstream_id": "demo-workstreams-015",
+        "owner": "PMO",
+        "baseline_date": "2027-04-27",
+        "current_date": "2027-05-20",
+        "actual_date": null,
+        "status": "Cancelled",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-14",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-016",
+      "version": 1,
+      "data": {
+        "name": "Assay qualification 16",
+        "project_id": "demo-projects-001",
+        "workstream_id": "demo-workstreams-001",
+        "owner": "R&D lead",
+        "baseline_date": "2027-05-14",
+        "current_date": "2027-05-14",
+        "actual_date": null,
+        "status": "Planned",
+        "dependency_id": null,
+        "change_reason": null,
+        "evidence": "SYNTHETIC-TARGET-15",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-017",
+      "version": 1,
+      "data": {
+        "name": "Agency package 17",
+        "project_id": "demo-projects-002",
+        "workstream_id": "demo-workstreams-002",
+        "owner": "Clinical lead",
+        "baseline_date": "2027-05-31",
+        "current_date": "2027-06-05",
+        "actual_date": null,
+        "status": "In progress",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-16",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-018",
+      "version": 1,
+      "data": {
+        "name": "Site activation 18",
+        "project_id": "demo-projects-003",
+        "workstream_id": "demo-workstreams-003",
+        "owner": "PMO",
+        "baseline_date": "2027-06-17",
+        "current_date": "2027-06-29",
+        "actual_date": null,
+        "status": "Blocked",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-17",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-019",
+      "version": 1,
+      "data": {
+        "name": "Data cut 19",
+        "project_id": "demo-projects-004",
+        "workstream_id": "demo-workstreams-004",
+        "owner": "R&D lead",
+        "baseline_date": "2027-07-04",
+        "current_date": "2027-06-30",
+        "actual_date": "2027-06-27",
+        "status": "Completed",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-COMPLETION-18",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-020",
+      "version": 1,
+      "data": {
+        "name": "CMC handoff 20",
+        "project_id": "demo-projects-005",
+        "workstream_id": "demo-workstreams-005",
+        "owner": "Clinical lead",
+        "baseline_date": "2027-07-21",
+        "current_date": "2027-08-13",
+        "actual_date": null,
+        "status": "Cancelled",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-19",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-021",
+      "version": 1,
+      "data": {
+        "name": "Board gate 21",
+        "project_id": "demo-projects-006",
+        "workstream_id": "demo-workstreams-006",
+        "owner": "PMO",
+        "baseline_date": "2027-08-07",
+        "current_date": "2027-08-07",
+        "actual_date": null,
+        "status": "Planned",
+        "dependency_id": null,
+        "change_reason": null,
+        "evidence": "SYNTHETIC-TARGET-20",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-022",
+      "version": 1,
+      "data": {
+        "name": "Protocol readiness 22",
+        "project_id": "demo-projects-007",
+        "workstream_id": "demo-workstreams-007",
+        "owner": "R&D lead",
+        "baseline_date": "2027-08-24",
+        "current_date": "2027-08-29",
+        "actual_date": null,
+        "status": "In progress",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-21",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-023",
+      "version": 1,
+      "data": {
+        "name": "Assay qualification 23",
+        "project_id": "demo-projects-008",
+        "workstream_id": "demo-workstreams-008",
+        "owner": "Clinical lead",
+        "baseline_date": "2027-09-10",
+        "current_date": "2027-09-22",
+        "actual_date": null,
+        "status": "Blocked",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-22",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-024",
+      "version": 1,
+      "data": {
+        "name": "Agency package 24",
+        "project_id": "demo-projects-009",
+        "workstream_id": "demo-workstreams-009",
+        "owner": "PMO",
+        "baseline_date": "2027-09-27",
+        "current_date": "2027-09-23",
+        "actual_date": "2027-09-20",
+        "status": "Completed",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-COMPLETION-23",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-025",
+      "version": 1,
+      "data": {
+        "name": "Site activation 25",
+        "project_id": "demo-projects-010",
+        "workstream_id": "demo-workstreams-010",
+        "owner": "R&D lead",
+        "baseline_date": "2027-10-14",
+        "current_date": "2027-11-06",
+        "actual_date": null,
+        "status": "Cancelled",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-24",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-026",
+      "version": 1,
+      "data": {
+        "name": "Data cut 26",
+        "project_id": "demo-projects-011",
+        "workstream_id": "demo-workstreams-011",
+        "owner": "Clinical lead",
+        "baseline_date": "2027-10-31",
+        "current_date": "2027-10-31",
+        "actual_date": null,
+        "status": "Planned",
+        "dependency_id": null,
+        "change_reason": null,
+        "evidence": "SYNTHETIC-TARGET-25",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-027",
+      "version": 1,
+      "data": {
+        "name": "CMC handoff 27",
+        "project_id": "demo-projects-012",
+        "workstream_id": "demo-workstreams-012",
+        "owner": "PMO",
+        "baseline_date": "2027-11-17",
+        "current_date": "2027-11-22",
+        "actual_date": null,
+        "status": "In progress",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-26",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-028",
+      "version": 1,
+      "data": {
+        "name": "Board gate 28",
+        "project_id": "demo-projects-013",
+        "workstream_id": "demo-workstreams-013",
+        "owner": "R&D lead",
+        "baseline_date": "2027-12-04",
+        "current_date": "2027-12-16",
+        "actual_date": null,
+        "status": "Blocked",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-27",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-029",
+      "version": 1,
+      "data": {
+        "name": "Protocol readiness 29",
+        "project_id": "demo-projects-014",
+        "workstream_id": "demo-workstreams-014",
+        "owner": "Clinical lead",
+        "baseline_date": "2027-12-21",
+        "current_date": "2027-12-17",
+        "actual_date": "2027-12-14",
+        "status": "Completed",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-COMPLETION-28",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-030",
+      "version": 1,
+      "data": {
+        "name": "Assay qualification 30",
+        "project_id": "demo-projects-015",
+        "workstream_id": "demo-workstreams-015",
+        "owner": "PMO",
+        "baseline_date": "2028-01-07",
+        "current_date": "2028-01-30",
+        "actual_date": null,
+        "status": "Cancelled",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-29",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-031",
+      "version": 1,
+      "data": {
+        "name": "Agency package 31",
+        "project_id": "demo-projects-001",
+        "workstream_id": "demo-workstreams-001",
+        "owner": "R&D lead",
+        "baseline_date": "2028-01-24",
+        "current_date": "2028-01-24",
+        "actual_date": null,
+        "status": "Planned",
+        "dependency_id": null,
+        "change_reason": null,
+        "evidence": "SYNTHETIC-TARGET-30",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-032",
+      "version": 1,
+      "data": {
+        "name": "Site activation 32",
+        "project_id": "demo-projects-002",
+        "workstream_id": "demo-workstreams-002",
+        "owner": "Clinical lead",
+        "baseline_date": "2028-02-10",
+        "current_date": "2028-02-15",
+        "actual_date": null,
+        "status": "In progress",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-31",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-033",
+      "version": 1,
+      "data": {
+        "name": "Data cut 33",
+        "project_id": "demo-projects-003",
+        "workstream_id": "demo-workstreams-003",
+        "owner": "PMO",
+        "baseline_date": "2028-02-27",
+        "current_date": "2028-03-10",
+        "actual_date": null,
+        "status": "Blocked",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-32",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-034",
+      "version": 1,
+      "data": {
+        "name": "CMC handoff 34",
+        "project_id": "demo-projects-004",
+        "workstream_id": "demo-workstreams-004",
+        "owner": "R&D lead",
+        "baseline_date": "2028-03-15",
+        "current_date": "2028-03-11",
+        "actual_date": "2028-03-08",
+        "status": "Completed",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-COMPLETION-33",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-035",
+      "version": 1,
+      "data": {
+        "name": "Board gate 35",
+        "project_id": "demo-projects-005",
+        "workstream_id": "demo-workstreams-005",
+        "owner": "Clinical lead",
+        "baseline_date": "2028-04-01",
+        "current_date": "2028-04-24",
+        "actual_date": null,
+        "status": "Cancelled",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-34",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-036",
+      "version": 1,
+      "data": {
+        "name": "Protocol readiness 36",
+        "project_id": "demo-projects-006",
+        "workstream_id": "demo-workstreams-006",
+        "owner": "PMO",
+        "baseline_date": "2028-04-18",
+        "current_date": "2028-04-18",
+        "actual_date": null,
+        "status": "Planned",
+        "dependency_id": null,
+        "change_reason": null,
+        "evidence": "SYNTHETIC-TARGET-35",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-037",
+      "version": 1,
+      "data": {
+        "name": "Assay qualification 37",
+        "project_id": "demo-projects-007",
+        "workstream_id": "demo-workstreams-007",
+        "owner": "R&D lead",
+        "baseline_date": "2028-05-05",
+        "current_date": "2028-05-10",
+        "actual_date": null,
+        "status": "In progress",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-36",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-038",
+      "version": 1,
+      "data": {
+        "name": "Agency package 38",
+        "project_id": "demo-projects-008",
+        "workstream_id": "demo-workstreams-008",
+        "owner": "Clinical lead",
+        "baseline_date": "2028-05-22",
+        "current_date": "2028-06-03",
+        "actual_date": null,
+        "status": "Blocked",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-37",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-039",
+      "version": 1,
+      "data": {
+        "name": "Site activation 39",
+        "project_id": "demo-projects-009",
+        "workstream_id": "demo-workstreams-009",
+        "owner": "PMO",
+        "baseline_date": "2028-06-08",
+        "current_date": "2028-06-04",
+        "actual_date": "2028-06-01",
+        "status": "Completed",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-COMPLETION-38",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-040",
+      "version": 1,
+      "data": {
+        "name": "Data cut 40",
+        "project_id": "demo-projects-010",
+        "workstream_id": "demo-workstreams-010",
+        "owner": "R&D lead",
+        "baseline_date": "2028-06-25",
+        "current_date": "2028-07-18",
+        "actual_date": null,
+        "status": "Cancelled",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-39",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-041",
+      "version": 1,
+      "data": {
+        "name": "CMC handoff 41",
+        "project_id": "demo-projects-011",
+        "workstream_id": "demo-workstreams-011",
+        "owner": "Clinical lead",
+        "baseline_date": "2028-07-12",
+        "current_date": "2028-07-12",
+        "actual_date": null,
+        "status": "Planned",
+        "dependency_id": null,
+        "change_reason": null,
+        "evidence": "SYNTHETIC-TARGET-40",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-042",
+      "version": 1,
+      "data": {
+        "name": "Board gate 42",
+        "project_id": "demo-projects-012",
+        "workstream_id": "demo-workstreams-012",
+        "owner": "PMO",
+        "baseline_date": "2028-07-29",
+        "current_date": "2028-08-03",
+        "actual_date": null,
+        "status": "In progress",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-41",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-043",
+      "version": 1,
+      "data": {
+        "name": "Protocol readiness 43",
+        "project_id": "demo-projects-013",
+        "workstream_id": "demo-workstreams-013",
+        "owner": "R&D lead",
+        "baseline_date": "2028-08-15",
+        "current_date": "2028-08-27",
+        "actual_date": null,
+        "status": "Blocked",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-42",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-044",
+      "version": 1,
+      "data": {
+        "name": "Assay qualification 44",
+        "project_id": "demo-projects-014",
+        "workstream_id": "demo-workstreams-014",
+        "owner": "Clinical lead",
+        "baseline_date": "2028-09-01",
+        "current_date": "2028-08-28",
+        "actual_date": "2028-08-25",
+        "status": "Completed",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-COMPLETION-43",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-045",
+      "version": 1,
+      "data": {
+        "name": "Agency package 45",
+        "project_id": "demo-projects-015",
+        "workstream_id": "demo-workstreams-015",
+        "owner": "PMO",
+        "baseline_date": "2028-09-18",
+        "current_date": "2028-10-11",
+        "actual_date": null,
+        "status": "Cancelled",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-44",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-046",
+      "version": 1,
+      "data": {
+        "name": "Site activation 46",
+        "project_id": "demo-projects-001",
+        "workstream_id": "demo-workstreams-001",
+        "owner": "R&D lead",
+        "baseline_date": "2028-10-05",
+        "current_date": "2028-10-05",
+        "actual_date": null,
+        "status": "Planned",
+        "dependency_id": null,
+        "change_reason": null,
+        "evidence": "SYNTHETIC-TARGET-45",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-047",
+      "version": 1,
+      "data": {
+        "name": "Data cut 47",
+        "project_id": "demo-projects-002",
+        "workstream_id": "demo-workstreams-002",
+        "owner": "Clinical lead",
+        "baseline_date": "2028-10-22",
+        "current_date": "2028-10-27",
+        "actual_date": null,
+        "status": "In progress",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-46",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-048",
+      "version": 1,
+      "data": {
+        "name": "CMC handoff 48",
+        "project_id": "demo-projects-003",
+        "workstream_id": "demo-workstreams-003",
+        "owner": "PMO",
+        "baseline_date": "2028-11-08",
+        "current_date": "2028-11-20",
+        "actual_date": null,
+        "status": "Blocked",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-47",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-049",
+      "version": 1,
+      "data": {
+        "name": "Board gate 49",
+        "project_id": "demo-projects-004",
+        "workstream_id": "demo-workstreams-004",
+        "owner": "R&D lead",
+        "baseline_date": "2028-11-25",
+        "current_date": "2028-11-21",
+        "actual_date": "2028-11-18",
+        "status": "Completed",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-COMPLETION-48",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-050",
+      "version": 1,
+      "data": {
+        "name": "Protocol readiness 50",
+        "project_id": "demo-projects-005",
+        "workstream_id": "demo-workstreams-005",
+        "owner": "Clinical lead",
+        "baseline_date": "2028-12-12",
+        "current_date": "2029-01-04",
+        "actual_date": null,
+        "status": "Cancelled",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-49",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-051",
+      "version": 1,
+      "data": {
+        "name": "Assay qualification 51",
+        "project_id": "demo-projects-006",
+        "workstream_id": "demo-workstreams-006",
+        "owner": "PMO",
+        "baseline_date": "2028-12-29",
+        "current_date": "2028-12-29",
+        "actual_date": null,
+        "status": "Planned",
+        "dependency_id": null,
+        "change_reason": null,
+        "evidence": "SYNTHETIC-TARGET-50",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-052",
+      "version": 1,
+      "data": {
+        "name": "Agency package 52",
+        "project_id": "demo-projects-007",
+        "workstream_id": "demo-workstreams-007",
+        "owner": "R&D lead",
+        "baseline_date": "2029-01-15",
+        "current_date": "2029-01-20",
+        "actual_date": null,
+        "status": "In progress",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-51",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-053",
+      "version": 1,
+      "data": {
+        "name": "Site activation 53",
+        "project_id": "demo-projects-008",
+        "workstream_id": "demo-workstreams-008",
+        "owner": "Clinical lead",
+        "baseline_date": "2029-02-01",
+        "current_date": "2029-02-13",
+        "actual_date": null,
+        "status": "Blocked",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-52",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-054",
+      "version": 1,
+      "data": {
+        "name": "Data cut 54",
+        "project_id": "demo-projects-009",
+        "workstream_id": "demo-workstreams-009",
+        "owner": "PMO",
+        "baseline_date": "2029-02-18",
+        "current_date": "2029-02-14",
+        "actual_date": "2029-02-11",
+        "status": "Completed",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-COMPLETION-53",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-055",
+      "version": 1,
+      "data": {
+        "name": "CMC handoff 55",
+        "project_id": "demo-projects-010",
+        "workstream_id": "demo-workstreams-010",
+        "owner": "R&D lead",
+        "baseline_date": "2029-03-07",
+        "current_date": "2029-03-30",
+        "actual_date": null,
+        "status": "Cancelled",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-54",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-056",
+      "version": 1,
+      "data": {
+        "name": "Board gate 56",
+        "project_id": "demo-projects-011",
+        "workstream_id": "demo-workstreams-011",
+        "owner": "Clinical lead",
+        "baseline_date": "2029-03-24",
+        "current_date": "2029-03-24",
+        "actual_date": null,
+        "status": "Planned",
+        "dependency_id": null,
+        "change_reason": null,
+        "evidence": "SYNTHETIC-TARGET-55",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-057",
+      "version": 1,
+      "data": {
+        "name": "Protocol readiness 57",
+        "project_id": "demo-projects-012",
+        "workstream_id": "demo-workstreams-012",
+        "owner": "PMO",
+        "baseline_date": "2029-04-10",
+        "current_date": "2029-04-15",
+        "actual_date": null,
+        "status": "In progress",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-56",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-058",
+      "version": 1,
+      "data": {
+        "name": "Assay qualification 58",
+        "project_id": "demo-projects-013",
+        "workstream_id": "demo-workstreams-013",
+        "owner": "R&D lead",
+        "baseline_date": "2029-04-27",
+        "current_date": "2029-05-09",
+        "actual_date": null,
+        "status": "Blocked",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-57",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-059",
+      "version": 1,
+      "data": {
+        "name": "Agency package 59",
+        "project_id": "demo-projects-014",
+        "workstream_id": "demo-workstreams-014",
+        "owner": "Clinical lead",
+        "baseline_date": "2029-05-14",
+        "current_date": "2029-05-10",
+        "actual_date": "2029-05-07",
+        "status": "Completed",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-COMPLETION-58",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-060",
+      "version": 1,
+      "data": {
+        "name": "Site activation 60",
+        "project_id": "demo-projects-015",
+        "workstream_id": "demo-workstreams-015",
+        "owner": "PMO",
+        "baseline_date": "2029-05-31",
+        "current_date": "2029-06-23",
+        "actual_date": null,
+        "status": "Cancelled",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-59",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-061",
+      "version": 1,
+      "data": {
+        "name": "Data cut 61",
+        "project_id": "demo-projects-001",
+        "workstream_id": "demo-workstreams-001",
+        "owner": "R&D lead",
+        "baseline_date": "2029-06-17",
+        "current_date": "2029-06-17",
+        "actual_date": null,
+        "status": "Planned",
+        "dependency_id": null,
+        "change_reason": null,
+        "evidence": "SYNTHETIC-TARGET-60",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-062",
+      "version": 1,
+      "data": {
+        "name": "CMC handoff 62",
+        "project_id": "demo-projects-002",
+        "workstream_id": "demo-workstreams-002",
+        "owner": "Clinical lead",
+        "baseline_date": "2029-07-04",
+        "current_date": "2029-07-09",
+        "actual_date": null,
+        "status": "In progress",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-61",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-063",
+      "version": 1,
+      "data": {
+        "name": "Board gate 63",
+        "project_id": "demo-projects-003",
+        "workstream_id": "demo-workstreams-003",
+        "owner": "PMO",
+        "baseline_date": "2029-07-21",
+        "current_date": "2029-08-02",
+        "actual_date": null,
+        "status": "Blocked",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-62",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-064",
+      "version": 1,
+      "data": {
+        "name": "Protocol readiness 64",
+        "project_id": "demo-projects-004",
+        "workstream_id": "demo-workstreams-004",
+        "owner": "R&D lead",
+        "baseline_date": "2029-08-07",
+        "current_date": "2029-08-03",
+        "actual_date": "2029-07-31",
+        "status": "Completed",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-COMPLETION-63",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-065",
+      "version": 1,
+      "data": {
+        "name": "Assay qualification 65",
+        "project_id": "demo-projects-005",
+        "workstream_id": "demo-workstreams-005",
+        "owner": "Clinical lead",
+        "baseline_date": "2029-08-24",
+        "current_date": "2029-09-16",
+        "actual_date": null,
+        "status": "Cancelled",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-64",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-066",
+      "version": 1,
+      "data": {
+        "name": "Agency package 66",
+        "project_id": "demo-projects-006",
+        "workstream_id": "demo-workstreams-006",
+        "owner": "PMO",
+        "baseline_date": "2029-09-10",
+        "current_date": "2029-09-10",
+        "actual_date": null,
+        "status": "Planned",
+        "dependency_id": null,
+        "change_reason": null,
+        "evidence": "SYNTHETIC-TARGET-65",
+        "archived": false
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "demo-milestones-067",
+      "version": 1,
+      "data": {
+        "name": "Site activation 67",
+        "project_id": "demo-projects-007",
+        "workstream_id": "demo-workstreams-007",
+        "owner": "R&D lead",
+        "baseline_date": "2029-09-27",
+        "current_date": "2029-10-02",
+        "actual_date": null,
+        "status": "In progress",
+        "dependency_id": null,
+        "change_reason": "Synthetic replan after resource change",
+        "evidence": "SYNTHETIC-TARGET-66",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-001",
+      "version": 1,
+      "data": {
+        "name": "Technical memo 01",
+        "project_id": "demo-projects-001",
+        "workstream_id": null,
+        "milestone_id": "demo-milestones-001",
+        "owner": "Project lead",
+        "due_date": "2026-10-03",
+        "actual_date": null,
+        "status": "In progress",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-002",
+      "version": 1,
+      "data": {
+        "name": "Quality review 02",
+        "project_id": "demo-projects-002",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2026-10-10",
+        "actual_date": null,
+        "status": "Planned",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-003",
+      "version": 1,
+      "data": {
+        "name": "Data package 03",
+        "project_id": "demo-projects-003",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2026-10-17",
+        "actual_date": null,
+        "status": "Blocked",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-004",
+      "version": 1,
+      "data": {
+        "name": "Vendor plan 04",
+        "project_id": "demo-projects-004",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Project lead",
+        "due_date": "2026-10-24",
+        "actual_date": "2026-10-23",
+        "status": "Completed",
+        "evidence": "SYNTHETIC-OUTPUT-3",
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-005",
+      "version": 1,
+      "data": {
+        "name": "Budget checkpoint 05",
+        "project_id": "demo-projects-005",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2026-10-31",
+        "actual_date": null,
+        "status": "In progress",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-006",
+      "version": 1,
+      "data": {
+        "name": "Risk register update 06",
+        "project_id": "demo-projects-006",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2026-11-07",
+        "actual_date": null,
+        "status": "Planned",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-007",
+      "version": 1,
+      "data": {
+        "name": "Technical memo 07",
+        "project_id": "demo-projects-007",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Project lead",
+        "due_date": "2026-11-14",
+        "actual_date": null,
+        "status": "Blocked",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-008",
+      "version": 1,
+      "data": {
+        "name": "Quality review 08",
+        "project_id": "demo-projects-008",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2026-11-21",
+        "actual_date": "2026-11-20",
+        "status": "Completed",
+        "evidence": "SYNTHETIC-OUTPUT-7",
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-009",
+      "version": 1,
+      "data": {
+        "name": "Data package 09",
+        "project_id": "demo-projects-009",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2026-11-28",
+        "actual_date": null,
+        "status": "In progress",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-010",
+      "version": 1,
+      "data": {
+        "name": "Vendor plan 10",
+        "project_id": "demo-projects-010",
+        "workstream_id": null,
+        "milestone_id": "demo-milestones-010",
+        "owner": "Project lead",
+        "due_date": "2026-12-05",
+        "actual_date": null,
+        "status": "Planned",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-011",
+      "version": 1,
+      "data": {
+        "name": "Budget checkpoint 11",
+        "project_id": "demo-projects-011",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2026-12-12",
+        "actual_date": null,
+        "status": "Blocked",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-012",
+      "version": 1,
+      "data": {
+        "name": "Risk register update 12",
+        "project_id": "demo-projects-012",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2026-12-19",
+        "actual_date": "2026-12-18",
+        "status": "Completed",
+        "evidence": "SYNTHETIC-OUTPUT-11",
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-013",
+      "version": 1,
+      "data": {
+        "name": "Technical memo 13",
+        "project_id": "demo-projects-013",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Project lead",
+        "due_date": "2026-12-26",
+        "actual_date": null,
+        "status": "In progress",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-014",
+      "version": 1,
+      "data": {
+        "name": "Quality review 14",
+        "project_id": "demo-projects-014",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2027-01-02",
+        "actual_date": null,
+        "status": "Planned",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-015",
+      "version": 1,
+      "data": {
+        "name": "Data package 15",
+        "project_id": "demo-projects-015",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2027-01-09",
+        "actual_date": null,
+        "status": "Blocked",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-016",
+      "version": 1,
+      "data": {
+        "name": "Vendor plan 16",
+        "project_id": "demo-projects-001",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Project lead",
+        "due_date": "2027-01-16",
+        "actual_date": "2027-01-15",
+        "status": "Completed",
+        "evidence": "SYNTHETIC-OUTPUT-15",
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-017",
+      "version": 1,
+      "data": {
+        "name": "Budget checkpoint 17",
+        "project_id": "demo-projects-002",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2027-01-23",
+        "actual_date": null,
+        "status": "In progress",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-018",
+      "version": 1,
+      "data": {
+        "name": "Risk register update 18",
+        "project_id": "demo-projects-003",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2027-01-30",
+        "actual_date": null,
+        "status": "Planned",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-019",
+      "version": 1,
+      "data": {
+        "name": "Technical memo 19",
+        "project_id": "demo-projects-004",
+        "workstream_id": null,
+        "milestone_id": "demo-milestones-019",
+        "owner": "Project lead",
+        "due_date": "2027-02-06",
+        "actual_date": null,
+        "status": "Blocked",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-020",
+      "version": 1,
+      "data": {
+        "name": "Quality review 20",
+        "project_id": "demo-projects-005",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2027-02-13",
+        "actual_date": "2027-02-12",
+        "status": "Completed",
+        "evidence": "SYNTHETIC-OUTPUT-19",
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-021",
+      "version": 1,
+      "data": {
+        "name": "Data package 21",
+        "project_id": "demo-projects-006",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2027-02-20",
+        "actual_date": null,
+        "status": "In progress",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-022",
+      "version": 1,
+      "data": {
+        "name": "Vendor plan 22",
+        "project_id": "demo-projects-007",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Project lead",
+        "due_date": "2027-02-27",
+        "actual_date": null,
+        "status": "Planned",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-023",
+      "version": 1,
+      "data": {
+        "name": "Budget checkpoint 23",
+        "project_id": "demo-projects-008",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2027-03-06",
+        "actual_date": null,
+        "status": "Blocked",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-024",
+      "version": 1,
+      "data": {
+        "name": "Risk register update 24",
+        "project_id": "demo-projects-009",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2027-03-13",
+        "actual_date": "2027-03-12",
+        "status": "Completed",
+        "evidence": "SYNTHETIC-OUTPUT-23",
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-025",
+      "version": 1,
+      "data": {
+        "name": "Technical memo 25",
+        "project_id": "demo-projects-010",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Project lead",
+        "due_date": "2027-03-20",
+        "actual_date": null,
+        "status": "In progress",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-026",
+      "version": 1,
+      "data": {
+        "name": "Quality review 26",
+        "project_id": "demo-projects-011",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2027-03-27",
+        "actual_date": null,
+        "status": "Planned",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-027",
+      "version": 1,
+      "data": {
+        "name": "Data package 27",
+        "project_id": "demo-projects-012",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2027-04-03",
+        "actual_date": null,
+        "status": "Blocked",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-028",
+      "version": 1,
+      "data": {
+        "name": "Vendor plan 28",
+        "project_id": "demo-projects-013",
+        "workstream_id": null,
+        "milestone_id": "demo-milestones-028",
+        "owner": "Project lead",
+        "due_date": "2027-04-10",
+        "actual_date": "2027-04-09",
+        "status": "Completed",
+        "evidence": "SYNTHETIC-OUTPUT-27",
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-029",
+      "version": 1,
+      "data": {
+        "name": "Budget checkpoint 29",
+        "project_id": "demo-projects-014",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2027-04-17",
+        "actual_date": null,
+        "status": "In progress",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-030",
+      "version": 1,
+      "data": {
+        "name": "Risk register update 30",
+        "project_id": "demo-projects-015",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2027-04-24",
+        "actual_date": null,
+        "status": "Planned",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-031",
+      "version": 1,
+      "data": {
+        "name": "Technical memo 31",
+        "project_id": "demo-projects-001",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Project lead",
+        "due_date": "2027-05-01",
+        "actual_date": null,
+        "status": "Blocked",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-032",
+      "version": 1,
+      "data": {
+        "name": "Quality review 32",
+        "project_id": "demo-projects-002",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2027-05-08",
+        "actual_date": "2027-05-07",
+        "status": "Completed",
+        "evidence": "SYNTHETIC-OUTPUT-31",
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-033",
+      "version": 1,
+      "data": {
+        "name": "Data package 33",
+        "project_id": "demo-projects-003",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2027-05-15",
+        "actual_date": null,
+        "status": "In progress",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-034",
+      "version": 1,
+      "data": {
+        "name": "Vendor plan 34",
+        "project_id": "demo-projects-004",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Project lead",
+        "due_date": "2027-05-22",
+        "actual_date": null,
+        "status": "Planned",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-035",
+      "version": 1,
+      "data": {
+        "name": "Budget checkpoint 35",
+        "project_id": "demo-projects-005",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2027-05-29",
+        "actual_date": null,
+        "status": "Blocked",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-036",
+      "version": 1,
+      "data": {
+        "name": "Risk register update 36",
+        "project_id": "demo-projects-006",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2027-06-05",
+        "actual_date": "2027-06-04",
+        "status": "Completed",
+        "evidence": "SYNTHETIC-OUTPUT-35",
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-037",
+      "version": 1,
+      "data": {
+        "name": "Technical memo 37",
+        "project_id": "demo-projects-007",
+        "workstream_id": null,
+        "milestone_id": "demo-milestones-037",
+        "owner": "Project lead",
+        "due_date": "2027-06-12",
+        "actual_date": null,
+        "status": "In progress",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-038",
+      "version": 1,
+      "data": {
+        "name": "Quality review 38",
+        "project_id": "demo-projects-008",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2027-06-19",
+        "actual_date": null,
+        "status": "Planned",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-039",
+      "version": 1,
+      "data": {
+        "name": "Data package 39",
+        "project_id": "demo-projects-009",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2027-06-26",
+        "actual_date": null,
+        "status": "Blocked",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-040",
+      "version": 1,
+      "data": {
+        "name": "Vendor plan 40",
+        "project_id": "demo-projects-010",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Project lead",
+        "due_date": "2027-07-03",
+        "actual_date": "2027-07-02",
+        "status": "Completed",
+        "evidence": "SYNTHETIC-OUTPUT-39",
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-041",
+      "version": 1,
+      "data": {
+        "name": "Budget checkpoint 41",
+        "project_id": "demo-projects-011",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2027-07-10",
+        "actual_date": null,
+        "status": "In progress",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-042",
+      "version": 1,
+      "data": {
+        "name": "Risk register update 42",
+        "project_id": "demo-projects-012",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2027-07-17",
+        "actual_date": null,
+        "status": "Planned",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-043",
+      "version": 1,
+      "data": {
+        "name": "Technical memo 43",
+        "project_id": "demo-projects-013",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Project lead",
+        "due_date": "2027-07-24",
+        "actual_date": null,
+        "status": "Blocked",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-044",
+      "version": 1,
+      "data": {
+        "name": "Quality review 44",
+        "project_id": "demo-projects-014",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2027-07-31",
+        "actual_date": "2027-07-30",
+        "status": "Completed",
+        "evidence": "SYNTHETIC-OUTPUT-43",
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-045",
+      "version": 1,
+      "data": {
+        "name": "Data package 45",
+        "project_id": "demo-projects-015",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2027-08-07",
+        "actual_date": null,
+        "status": "In progress",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-046",
+      "version": 1,
+      "data": {
+        "name": "Vendor plan 46",
+        "project_id": "demo-projects-001",
+        "workstream_id": null,
+        "milestone_id": "demo-milestones-046",
+        "owner": "Project lead",
+        "due_date": "2027-08-14",
+        "actual_date": null,
+        "status": "Planned",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-047",
+      "version": 1,
+      "data": {
+        "name": "Budget checkpoint 47",
+        "project_id": "demo-projects-002",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2027-08-21",
+        "actual_date": null,
+        "status": "Blocked",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-048",
+      "version": 1,
+      "data": {
+        "name": "Risk register update 48",
+        "project_id": "demo-projects-003",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2027-08-28",
+        "actual_date": "2027-08-27",
+        "status": "Completed",
+        "evidence": "SYNTHETIC-OUTPUT-47",
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-049",
+      "version": 1,
+      "data": {
+        "name": "Technical memo 49",
+        "project_id": "demo-projects-004",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Project lead",
+        "due_date": "2027-09-04",
+        "actual_date": null,
+        "status": "In progress",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-050",
+      "version": 1,
+      "data": {
+        "name": "Quality review 50",
+        "project_id": "demo-projects-005",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2027-09-11",
+        "actual_date": null,
+        "status": "Planned",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-051",
+      "version": 1,
+      "data": {
+        "name": "Data package 51",
+        "project_id": "demo-projects-006",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2027-09-18",
+        "actual_date": null,
+        "status": "Blocked",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-052",
+      "version": 1,
+      "data": {
+        "name": "Vendor plan 52",
+        "project_id": "demo-projects-007",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Project lead",
+        "due_date": "2027-09-25",
+        "actual_date": "2027-09-24",
+        "status": "Completed",
+        "evidence": "SYNTHETIC-OUTPUT-51",
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-053",
+      "version": 1,
+      "data": {
+        "name": "Budget checkpoint 53",
+        "project_id": "demo-projects-008",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2027-10-02",
+        "actual_date": null,
+        "status": "In progress",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-054",
+      "version": 1,
+      "data": {
+        "name": "Risk register update 54",
+        "project_id": "demo-projects-009",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2027-10-09",
+        "actual_date": null,
+        "status": "Planned",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-055",
+      "version": 1,
+      "data": {
+        "name": "Technical memo 55",
+        "project_id": "demo-projects-010",
+        "workstream_id": null,
+        "milestone_id": "demo-milestones-055",
+        "owner": "Project lead",
+        "due_date": "2027-10-16",
+        "actual_date": null,
+        "status": "Blocked",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-056",
+      "version": 1,
+      "data": {
+        "name": "Quality review 56",
+        "project_id": "demo-projects-011",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2027-10-23",
+        "actual_date": "2027-10-22",
+        "status": "Completed",
+        "evidence": "SYNTHETIC-OUTPUT-55",
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-057",
+      "version": 1,
+      "data": {
+        "name": "Data package 57",
+        "project_id": "demo-projects-012",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2027-10-30",
+        "actual_date": null,
+        "status": "In progress",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-058",
+      "version": 1,
+      "data": {
+        "name": "Vendor plan 58",
+        "project_id": "demo-projects-013",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Project lead",
+        "due_date": "2027-11-06",
+        "actual_date": null,
+        "status": "Planned",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-059",
+      "version": 1,
+      "data": {
+        "name": "Budget checkpoint 59",
+        "project_id": "demo-projects-014",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2027-11-13",
+        "actual_date": null,
+        "status": "Blocked",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-060",
+      "version": 1,
+      "data": {
+        "name": "Risk register update 60",
+        "project_id": "demo-projects-015",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2027-11-20",
+        "actual_date": "2027-11-19",
+        "status": "Completed",
+        "evidence": "SYNTHETIC-OUTPUT-59",
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-061",
+      "version": 1,
+      "data": {
+        "name": "Technical memo 61",
+        "project_id": "demo-projects-001",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Project lead",
+        "due_date": "2027-11-27",
+        "actual_date": null,
+        "status": "In progress",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-062",
+      "version": 1,
+      "data": {
+        "name": "Quality review 62",
+        "project_id": "demo-projects-002",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2027-12-04",
+        "actual_date": null,
+        "status": "Planned",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-063",
+      "version": 1,
+      "data": {
+        "name": "Data package 63",
+        "project_id": "demo-projects-003",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2027-12-11",
+        "actual_date": null,
+        "status": "Blocked",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-064",
+      "version": 1,
+      "data": {
+        "name": "Vendor plan 64",
+        "project_id": "demo-projects-004",
+        "workstream_id": null,
+        "milestone_id": "demo-milestones-064",
+        "owner": "Project lead",
+        "due_date": "2027-12-18",
+        "actual_date": "2027-12-17",
+        "status": "Completed",
+        "evidence": "SYNTHETIC-OUTPUT-63",
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-065",
+      "version": 1,
+      "data": {
+        "name": "Budget checkpoint 65",
+        "project_id": "demo-projects-005",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2027-12-25",
+        "actual_date": null,
+        "status": "In progress",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-066",
+      "version": 1,
+      "data": {
+        "name": "Risk register update 66",
+        "project_id": "demo-projects-006",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2028-01-01",
+        "actual_date": null,
+        "status": "Planned",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-067",
+      "version": 1,
+      "data": {
+        "name": "Technical memo 67",
+        "project_id": "demo-projects-007",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Project lead",
+        "due_date": "2028-01-08",
+        "actual_date": null,
+        "status": "Blocked",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-068",
+      "version": 1,
+      "data": {
+        "name": "Quality review 68",
+        "project_id": "demo-projects-008",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2028-01-15",
+        "actual_date": "2028-01-14",
+        "status": "Completed",
+        "evidence": "SYNTHETIC-OUTPUT-67",
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-069",
+      "version": 1,
+      "data": {
+        "name": "Data package 69",
+        "project_id": "demo-projects-009",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2028-01-22",
+        "actual_date": null,
+        "status": "In progress",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-070",
+      "version": 1,
+      "data": {
+        "name": "Vendor plan 70",
+        "project_id": "demo-projects-010",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Project lead",
+        "due_date": "2028-01-29",
+        "actual_date": null,
+        "status": "Planned",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-071",
+      "version": 1,
+      "data": {
+        "name": "Budget checkpoint 71",
+        "project_id": "demo-projects-011",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2028-02-05",
+        "actual_date": null,
+        "status": "Blocked",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-072",
+      "version": 1,
+      "data": {
+        "name": "Risk register update 72",
+        "project_id": "demo-projects-012",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2028-02-12",
+        "actual_date": "2028-02-11",
+        "status": "Completed",
+        "evidence": "SYNTHETIC-OUTPUT-71",
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-073",
+      "version": 1,
+      "data": {
+        "name": "Technical memo 73",
+        "project_id": "demo-projects-013",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Project lead",
+        "due_date": "2028-02-19",
+        "actual_date": null,
+        "status": "In progress",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-074",
+      "version": 1,
+      "data": {
+        "name": "Quality review 74",
+        "project_id": "demo-projects-014",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2028-02-26",
+        "actual_date": null,
+        "status": "Planned",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-075",
+      "version": 1,
+      "data": {
+        "name": "Data package 75",
+        "project_id": "demo-projects-015",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2028-03-04",
+        "actual_date": null,
+        "status": "Blocked",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-076",
+      "version": 1,
+      "data": {
+        "name": "Vendor plan 76",
+        "project_id": "demo-projects-001",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Project lead",
+        "due_date": "2028-03-11",
+        "actual_date": "2028-03-10",
+        "status": "Completed",
+        "evidence": "SYNTHETIC-OUTPUT-75",
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-077",
+      "version": 1,
+      "data": {
+        "name": "Budget checkpoint 77",
+        "project_id": "demo-projects-002",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2028-03-18",
+        "actual_date": null,
+        "status": "In progress",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-078",
+      "version": 1,
+      "data": {
+        "name": "Risk register update 78",
+        "project_id": "demo-projects-003",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2028-03-25",
+        "actual_date": null,
+        "status": "Planned",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-079",
+      "version": 1,
+      "data": {
+        "name": "Technical memo 79",
+        "project_id": "demo-projects-004",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Project lead",
+        "due_date": "2028-04-01",
+        "actual_date": null,
+        "status": "Blocked",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-080",
+      "version": 1,
+      "data": {
+        "name": "Quality review 80",
+        "project_id": "demo-projects-005",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2028-04-08",
+        "actual_date": "2028-04-07",
+        "status": "Completed",
+        "evidence": "SYNTHETIC-OUTPUT-79",
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-081",
+      "version": 1,
+      "data": {
+        "name": "Data package 81",
+        "project_id": "demo-projects-006",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2028-04-15",
+        "actual_date": null,
+        "status": "In progress",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-082",
+      "version": 1,
+      "data": {
+        "name": "Vendor plan 82",
+        "project_id": "demo-projects-007",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Project lead",
+        "due_date": "2028-04-22",
+        "actual_date": null,
+        "status": "Planned",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-083",
+      "version": 1,
+      "data": {
+        "name": "Budget checkpoint 83",
+        "project_id": "demo-projects-008",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2028-04-29",
+        "actual_date": null,
+        "status": "Blocked",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-084",
+      "version": 1,
+      "data": {
+        "name": "Risk register update 84",
+        "project_id": "demo-projects-009",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2028-05-06",
+        "actual_date": "2028-05-05",
+        "status": "Completed",
+        "evidence": "SYNTHETIC-OUTPUT-83",
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-085",
+      "version": 1,
+      "data": {
+        "name": "Technical memo 85",
+        "project_id": "demo-projects-010",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Project lead",
+        "due_date": "2028-05-13",
+        "actual_date": null,
+        "status": "In progress",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-086",
+      "version": 1,
+      "data": {
+        "name": "Quality review 86",
+        "project_id": "demo-projects-011",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Program manager",
+        "due_date": "2028-05-20",
+        "actual_date": null,
+        "status": "Planned",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-087",
+      "version": 1,
+      "data": {
+        "name": "Data package 87",
+        "project_id": "demo-projects-012",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Functional lead",
+        "due_date": "2028-05-27",
+        "actual_date": null,
+        "status": "Blocked",
+        "evidence": null,
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "deliverables",
+      "id": "demo-deliverables-088",
+      "version": 1,
+      "data": {
+        "name": "Vendor plan 88",
+        "project_id": "demo-projects-013",
+        "workstream_id": null,
+        "milestone_id": null,
+        "owner": "Project lead",
+        "due_date": "2028-06-03",
+        "actual_date": "2028-06-02",
+        "status": "Completed",
+        "evidence": "SYNTHETIC-OUTPUT-87",
+        "notes": "Fictional output for design review",
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-001",
+      "version": 1,
+      "data": {
+        "name": "Budget exposure 1",
+        "project_id": "demo-projects-001",
+        "kind": "Risk",
+        "impact": "Low",
+        "likelihood": "Low",
+        "priority": "Medium",
+        "status": "Open",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-10-20",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-002",
+      "version": 1,
+      "data": {
+        "name": "Critical vendor delay 2",
+        "project_id": "demo-projects-002",
+        "kind": "Issue",
+        "impact": "Medium",
+        "likelihood": "Medium",
+        "priority": "High",
+        "status": "Mitigating",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-10-22",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-003",
+      "version": 1,
+      "data": {
+        "name": "Resource gap 3",
+        "project_id": "demo-projects-003",
+        "kind": "Risk",
+        "impact": "High",
+        "likelihood": "High",
+        "priority": "Critical",
+        "status": "Resolved",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-10-24",
+        "resolution_evidence": "SYNTHETIC-CLOSURE-2",
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-004",
+      "version": 1,
+      "data": {
+        "name": "Agency question 4",
+        "project_id": "demo-projects-004",
+        "kind": "Issue",
+        "impact": "Low",
+        "likelihood": "Low",
+        "priority": "Low",
+        "status": "Accepted",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-10-26",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-005",
+      "version": 1,
+      "data": {
+        "name": "Assay performance 5",
+        "project_id": "demo-projects-005",
+        "kind": "Risk",
+        "impact": "Medium",
+        "likelihood": "Medium",
+        "priority": "Medium",
+        "status": "Open",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-10-28",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-006",
+      "version": 1,
+      "data": {
+        "name": "Data completeness 6",
+        "project_id": "demo-projects-006",
+        "kind": "Issue",
+        "impact": "High",
+        "likelihood": "High",
+        "priority": "High",
+        "status": "Mitigating",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-10-30",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-007",
+      "version": 1,
+      "data": {
+        "name": "Budget exposure 7",
+        "project_id": "demo-projects-007",
+        "kind": "Risk",
+        "impact": "Low",
+        "likelihood": "Low",
+        "priority": "Critical",
+        "status": "Resolved",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-11-01",
+        "resolution_evidence": "SYNTHETIC-CLOSURE-6",
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-008",
+      "version": 1,
+      "data": {
+        "name": "Critical vendor delay 8",
+        "project_id": "demo-projects-008",
+        "kind": "Issue",
+        "impact": "Medium",
+        "likelihood": "Medium",
+        "priority": "Low",
+        "status": "Accepted",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-11-03",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-009",
+      "version": 1,
+      "data": {
+        "name": "Resource gap 9",
+        "project_id": "demo-projects-009",
+        "kind": "Risk",
+        "impact": "High",
+        "likelihood": "High",
+        "priority": "Medium",
+        "status": "Open",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-11-05",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-010",
+      "version": 1,
+      "data": {
+        "name": "Agency question 10",
+        "project_id": "demo-projects-010",
+        "kind": "Issue",
+        "impact": "Low",
+        "likelihood": "Low",
+        "priority": "High",
+        "status": "Mitigating",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-11-07",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-011",
+      "version": 1,
+      "data": {
+        "name": "Assay performance 11",
+        "project_id": "demo-projects-011",
+        "kind": "Risk",
+        "impact": "Medium",
+        "likelihood": "Medium",
+        "priority": "Critical",
+        "status": "Resolved",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-11-09",
+        "resolution_evidence": "SYNTHETIC-CLOSURE-10",
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-012",
+      "version": 1,
+      "data": {
+        "name": "Data completeness 12",
+        "project_id": "demo-projects-012",
+        "kind": "Issue",
+        "impact": "High",
+        "likelihood": "High",
+        "priority": "Low",
+        "status": "Accepted",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-11-11",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-013",
+      "version": 1,
+      "data": {
+        "name": "Budget exposure 13",
+        "project_id": "demo-projects-013",
+        "kind": "Risk",
+        "impact": "Low",
+        "likelihood": "Low",
+        "priority": "Medium",
+        "status": "Open",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-11-13",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-014",
+      "version": 1,
+      "data": {
+        "name": "Critical vendor delay 14",
+        "project_id": "demo-projects-014",
+        "kind": "Issue",
+        "impact": "Medium",
+        "likelihood": "Medium",
+        "priority": "High",
+        "status": "Mitigating",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-11-15",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-015",
+      "version": 1,
+      "data": {
+        "name": "Resource gap 15",
+        "project_id": "demo-projects-015",
+        "kind": "Risk",
+        "impact": "High",
+        "likelihood": "High",
+        "priority": "Critical",
+        "status": "Resolved",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-11-17",
+        "resolution_evidence": "SYNTHETIC-CLOSURE-14",
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-016",
+      "version": 1,
+      "data": {
+        "name": "Agency question 16",
+        "project_id": "demo-projects-001",
+        "kind": "Issue",
+        "impact": "Low",
+        "likelihood": "Low",
+        "priority": "Low",
+        "status": "Accepted",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-11-19",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-017",
+      "version": 1,
+      "data": {
+        "name": "Assay performance 17",
+        "project_id": "demo-projects-002",
+        "kind": "Risk",
+        "impact": "Medium",
+        "likelihood": "Medium",
+        "priority": "Medium",
+        "status": "Open",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-11-21",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-018",
+      "version": 1,
+      "data": {
+        "name": "Data completeness 18",
+        "project_id": "demo-projects-003",
+        "kind": "Issue",
+        "impact": "High",
+        "likelihood": "High",
+        "priority": "High",
+        "status": "Mitigating",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-11-23",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-019",
+      "version": 1,
+      "data": {
+        "name": "Budget exposure 19",
+        "project_id": "demo-projects-004",
+        "kind": "Risk",
+        "impact": "Low",
+        "likelihood": "Low",
+        "priority": "Critical",
+        "status": "Resolved",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-11-25",
+        "resolution_evidence": "SYNTHETIC-CLOSURE-18",
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-020",
+      "version": 1,
+      "data": {
+        "name": "Critical vendor delay 20",
+        "project_id": "demo-projects-005",
+        "kind": "Issue",
+        "impact": "Medium",
+        "likelihood": "Medium",
+        "priority": "Low",
+        "status": "Accepted",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-11-27",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-021",
+      "version": 1,
+      "data": {
+        "name": "Resource gap 21",
+        "project_id": "demo-projects-006",
+        "kind": "Risk",
+        "impact": "High",
+        "likelihood": "High",
+        "priority": "Medium",
+        "status": "Open",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-11-29",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-022",
+      "version": 1,
+      "data": {
+        "name": "Agency question 22",
+        "project_id": "demo-projects-007",
+        "kind": "Issue",
+        "impact": "Low",
+        "likelihood": "Low",
+        "priority": "High",
+        "status": "Mitigating",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-12-01",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-023",
+      "version": 1,
+      "data": {
+        "name": "Assay performance 23",
+        "project_id": "demo-projects-008",
+        "kind": "Risk",
+        "impact": "Medium",
+        "likelihood": "Medium",
+        "priority": "Critical",
+        "status": "Resolved",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-12-03",
+        "resolution_evidence": "SYNTHETIC-CLOSURE-22",
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-024",
+      "version": 1,
+      "data": {
+        "name": "Data completeness 24",
+        "project_id": "demo-projects-009",
+        "kind": "Issue",
+        "impact": "High",
+        "likelihood": "High",
+        "priority": "Low",
+        "status": "Accepted",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-12-05",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-025",
+      "version": 1,
+      "data": {
+        "name": "Budget exposure 25",
+        "project_id": "demo-projects-010",
+        "kind": "Risk",
+        "impact": "Low",
+        "likelihood": "Low",
+        "priority": "Medium",
+        "status": "Open",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-12-07",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-026",
+      "version": 1,
+      "data": {
+        "name": "Critical vendor delay 26",
+        "project_id": "demo-projects-011",
+        "kind": "Issue",
+        "impact": "Medium",
+        "likelihood": "Medium",
+        "priority": "High",
+        "status": "Mitigating",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-12-09",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-027",
+      "version": 1,
+      "data": {
+        "name": "Resource gap 27",
+        "project_id": "demo-projects-012",
+        "kind": "Risk",
+        "impact": "High",
+        "likelihood": "High",
+        "priority": "Critical",
+        "status": "Resolved",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-12-11",
+        "resolution_evidence": "SYNTHETIC-CLOSURE-26",
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-028",
+      "version": 1,
+      "data": {
+        "name": "Agency question 28",
+        "project_id": "demo-projects-013",
+        "kind": "Issue",
+        "impact": "Low",
+        "likelihood": "Low",
+        "priority": "Low",
+        "status": "Accepted",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-12-13",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-029",
+      "version": 1,
+      "data": {
+        "name": "Assay performance 29",
+        "project_id": "demo-projects-014",
+        "kind": "Risk",
+        "impact": "Medium",
+        "likelihood": "Medium",
+        "priority": "Medium",
+        "status": "Open",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-12-15",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-030",
+      "version": 1,
+      "data": {
+        "name": "Data completeness 30",
+        "project_id": "demo-projects-015",
+        "kind": "Issue",
+        "impact": "High",
+        "likelihood": "High",
+        "priority": "High",
+        "status": "Mitigating",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-12-17",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-031",
+      "version": 1,
+      "data": {
+        "name": "Budget exposure 31",
+        "project_id": "demo-projects-001",
+        "kind": "Risk",
+        "impact": "Low",
+        "likelihood": "Low",
+        "priority": "Critical",
+        "status": "Resolved",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-12-19",
+        "resolution_evidence": "SYNTHETIC-CLOSURE-30",
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-032",
+      "version": 1,
+      "data": {
+        "name": "Critical vendor delay 32",
+        "project_id": "demo-projects-002",
+        "kind": "Issue",
+        "impact": "Medium",
+        "likelihood": "Medium",
+        "priority": "Low",
+        "status": "Accepted",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-12-21",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-033",
+      "version": 1,
+      "data": {
+        "name": "Resource gap 33",
+        "project_id": "demo-projects-003",
+        "kind": "Risk",
+        "impact": "High",
+        "likelihood": "High",
+        "priority": "Medium",
+        "status": "Open",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-12-23",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-034",
+      "version": 1,
+      "data": {
+        "name": "Agency question 34",
+        "project_id": "demo-projects-004",
+        "kind": "Issue",
+        "impact": "Low",
+        "likelihood": "Low",
+        "priority": "High",
+        "status": "Mitigating",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-12-25",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-035",
+      "version": 1,
+      "data": {
+        "name": "Assay performance 35",
+        "project_id": "demo-projects-005",
+        "kind": "Risk",
+        "impact": "Medium",
+        "likelihood": "Medium",
+        "priority": "Critical",
+        "status": "Resolved",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-12-27",
+        "resolution_evidence": "SYNTHETIC-CLOSURE-34",
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-036",
+      "version": 1,
+      "data": {
+        "name": "Data completeness 36",
+        "project_id": "demo-projects-006",
+        "kind": "Issue",
+        "impact": "High",
+        "likelihood": "High",
+        "priority": "Low",
+        "status": "Accepted",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-12-29",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-037",
+      "version": 1,
+      "data": {
+        "name": "Budget exposure 37",
+        "project_id": "demo-projects-007",
+        "kind": "Risk",
+        "impact": "Low",
+        "likelihood": "Low",
+        "priority": "Medium",
+        "status": "Open",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2026-12-31",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-038",
+      "version": 1,
+      "data": {
+        "name": "Critical vendor delay 38",
+        "project_id": "demo-projects-008",
+        "kind": "Issue",
+        "impact": "Medium",
+        "likelihood": "Medium",
+        "priority": "High",
+        "status": "Mitigating",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2027-01-02",
+        "resolution_evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "risks",
+      "id": "demo-risks-039",
+      "version": 1,
+      "data": {
+        "name": "Resource gap 39",
+        "project_id": "demo-projects-009",
+        "kind": "Risk",
+        "impact": "High",
+        "likelihood": "High",
+        "priority": "Critical",
+        "status": "Resolved",
+        "owner": "PMO lead",
+        "mitigation": "Owner review and dated corrective action",
+        "next_review": "2027-01-04",
+        "resolution_evidence": "SYNTHETIC-CLOSURE-38",
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-001",
+      "version": 1,
+      "data": {
+        "name": "Go / no-go gate 1",
+        "project_id": "demo-projects-001",
+        "owner": "Executive sponsor",
+        "due_date": "2026-10-15",
+        "status": "Pending",
+        "decision_date": null,
+        "approver": null,
+        "options": "Proceed / revise / defer",
+        "rationale": null,
+        "evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-002",
+      "version": 1,
+      "data": {
+        "name": "Vendor appointment 2",
+        "project_id": "demo-projects-002",
+        "owner": "Executive sponsor",
+        "due_date": "2026-10-16",
+        "status": "Approved",
+        "decision_date": "2026-10-16",
+        "approver": "CEO",
+        "options": "Proceed / revise / defer",
+        "rationale": "Synthesized exercise decision; no real approval",
+        "evidence": "SYNTHETIC-MINUTES-1",
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-003",
+      "version": 1,
+      "data": {
+        "name": "Budget allocation 3",
+        "project_id": "demo-projects-003",
+        "owner": "Executive sponsor",
+        "due_date": "2026-10-17",
+        "status": "Deferred",
+        "decision_date": null,
+        "approver": null,
+        "options": "Proceed / revise / defer",
+        "rationale": null,
+        "evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-004",
+      "version": 1,
+      "data": {
+        "name": "Scope revision 4",
+        "project_id": "demo-projects-004",
+        "owner": "Executive sponsor",
+        "due_date": "2026-10-18",
+        "status": "Declined",
+        "decision_date": "2026-10-18",
+        "approver": "CEO",
+        "options": "Proceed / revise / defer",
+        "rationale": "Synthesized exercise decision; no real approval",
+        "evidence": "SYNTHETIC-MINUTES-3",
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-005",
+      "version": 1,
+      "data": {
+        "name": "Go / no-go gate 5",
+        "project_id": "demo-projects-005",
+        "owner": "Executive sponsor",
+        "due_date": "2026-10-19",
+        "status": "Pending",
+        "decision_date": null,
+        "approver": null,
+        "options": "Proceed / revise / defer",
+        "rationale": null,
+        "evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-006",
+      "version": 1,
+      "data": {
+        "name": "Vendor appointment 6",
+        "project_id": "demo-projects-006",
+        "owner": "Executive sponsor",
+        "due_date": "2026-10-20",
+        "status": "Approved",
+        "decision_date": "2026-10-20",
+        "approver": "CEO",
+        "options": "Proceed / revise / defer",
+        "rationale": "Synthesized exercise decision; no real approval",
+        "evidence": "SYNTHETIC-MINUTES-5",
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-007",
+      "version": 1,
+      "data": {
+        "name": "Budget allocation 7",
+        "project_id": "demo-projects-007",
+        "owner": "Executive sponsor",
+        "due_date": "2026-10-21",
+        "status": "Deferred",
+        "decision_date": null,
+        "approver": null,
+        "options": "Proceed / revise / defer",
+        "rationale": null,
+        "evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-008",
+      "version": 1,
+      "data": {
+        "name": "Scope revision 8",
+        "project_id": "demo-projects-008",
+        "owner": "Executive sponsor",
+        "due_date": "2026-10-22",
+        "status": "Declined",
+        "decision_date": "2026-10-22",
+        "approver": "CEO",
+        "options": "Proceed / revise / defer",
+        "rationale": "Synthesized exercise decision; no real approval",
+        "evidence": "SYNTHETIC-MINUTES-7",
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-009",
+      "version": 1,
+      "data": {
+        "name": "Go / no-go gate 9",
+        "project_id": "demo-projects-009",
+        "owner": "Executive sponsor",
+        "due_date": "2026-10-23",
+        "status": "Pending",
+        "decision_date": null,
+        "approver": null,
+        "options": "Proceed / revise / defer",
+        "rationale": null,
+        "evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-010",
+      "version": 1,
+      "data": {
+        "name": "Vendor appointment 10",
+        "project_id": "demo-projects-010",
+        "owner": "Executive sponsor",
+        "due_date": "2026-10-24",
+        "status": "Approved",
+        "decision_date": "2026-10-24",
+        "approver": "CEO",
+        "options": "Proceed / revise / defer",
+        "rationale": "Synthesized exercise decision; no real approval",
+        "evidence": "SYNTHETIC-MINUTES-9",
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-011",
+      "version": 1,
+      "data": {
+        "name": "Budget allocation 11",
+        "project_id": "demo-projects-011",
+        "owner": "Executive sponsor",
+        "due_date": "2026-10-25",
+        "status": "Deferred",
+        "decision_date": null,
+        "approver": null,
+        "options": "Proceed / revise / defer",
+        "rationale": null,
+        "evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-012",
+      "version": 1,
+      "data": {
+        "name": "Scope revision 12",
+        "project_id": "demo-projects-012",
+        "owner": "Executive sponsor",
+        "due_date": "2026-10-26",
+        "status": "Declined",
+        "decision_date": "2026-10-26",
+        "approver": "CEO",
+        "options": "Proceed / revise / defer",
+        "rationale": "Synthesized exercise decision; no real approval",
+        "evidence": "SYNTHETIC-MINUTES-11",
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-013",
+      "version": 1,
+      "data": {
+        "name": "Go / no-go gate 13",
+        "project_id": "demo-projects-013",
+        "owner": "Executive sponsor",
+        "due_date": "2026-10-27",
+        "status": "Pending",
+        "decision_date": null,
+        "approver": null,
+        "options": "Proceed / revise / defer",
+        "rationale": null,
+        "evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-014",
+      "version": 1,
+      "data": {
+        "name": "Vendor appointment 14",
+        "project_id": "demo-projects-014",
+        "owner": "Executive sponsor",
+        "due_date": "2026-10-28",
+        "status": "Approved",
+        "decision_date": "2026-10-28",
+        "approver": "CEO",
+        "options": "Proceed / revise / defer",
+        "rationale": "Synthesized exercise decision; no real approval",
+        "evidence": "SYNTHETIC-MINUTES-13",
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-015",
+      "version": 1,
+      "data": {
+        "name": "Budget allocation 15",
+        "project_id": "demo-projects-015",
+        "owner": "Executive sponsor",
+        "due_date": "2026-10-29",
+        "status": "Deferred",
+        "decision_date": null,
+        "approver": null,
+        "options": "Proceed / revise / defer",
+        "rationale": null,
+        "evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-016",
+      "version": 1,
+      "data": {
+        "name": "Scope revision 16",
+        "project_id": "demo-projects-001",
+        "owner": "Executive sponsor",
+        "due_date": "2026-10-30",
+        "status": "Declined",
+        "decision_date": "2026-10-30",
+        "approver": "CEO",
+        "options": "Proceed / revise / defer",
+        "rationale": "Synthesized exercise decision; no real approval",
+        "evidence": "SYNTHETIC-MINUTES-15",
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-017",
+      "version": 1,
+      "data": {
+        "name": "Go / no-go gate 17",
+        "project_id": "demo-projects-002",
+        "owner": "Executive sponsor",
+        "due_date": "2026-10-31",
+        "status": "Pending",
+        "decision_date": null,
+        "approver": null,
+        "options": "Proceed / revise / defer",
+        "rationale": null,
+        "evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-018",
+      "version": 1,
+      "data": {
+        "name": "Vendor appointment 18",
+        "project_id": "demo-projects-003",
+        "owner": "Executive sponsor",
+        "due_date": "2026-11-01",
+        "status": "Approved",
+        "decision_date": "2026-11-01",
+        "approver": "CEO",
+        "options": "Proceed / revise / defer",
+        "rationale": "Synthesized exercise decision; no real approval",
+        "evidence": "SYNTHETIC-MINUTES-17",
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-019",
+      "version": 1,
+      "data": {
+        "name": "Budget allocation 19",
+        "project_id": "demo-projects-004",
+        "owner": "Executive sponsor",
+        "due_date": "2026-11-02",
+        "status": "Deferred",
+        "decision_date": null,
+        "approver": null,
+        "options": "Proceed / revise / defer",
+        "rationale": null,
+        "evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-020",
+      "version": 1,
+      "data": {
+        "name": "Scope revision 20",
+        "project_id": "demo-projects-005",
+        "owner": "Executive sponsor",
+        "due_date": "2026-11-03",
+        "status": "Declined",
+        "decision_date": "2026-11-03",
+        "approver": "CEO",
+        "options": "Proceed / revise / defer",
+        "rationale": "Synthesized exercise decision; no real approval",
+        "evidence": "SYNTHETIC-MINUTES-19",
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-021",
+      "version": 1,
+      "data": {
+        "name": "Go / no-go gate 21",
+        "project_id": "demo-projects-006",
+        "owner": "Executive sponsor",
+        "due_date": "2026-11-04",
+        "status": "Pending",
+        "decision_date": null,
+        "approver": null,
+        "options": "Proceed / revise / defer",
+        "rationale": null,
+        "evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-022",
+      "version": 1,
+      "data": {
+        "name": "Vendor appointment 22",
+        "project_id": "demo-projects-007",
+        "owner": "Executive sponsor",
+        "due_date": "2026-11-05",
+        "status": "Approved",
+        "decision_date": "2026-11-05",
+        "approver": "CEO",
+        "options": "Proceed / revise / defer",
+        "rationale": "Synthesized exercise decision; no real approval",
+        "evidence": "SYNTHETIC-MINUTES-21",
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-023",
+      "version": 1,
+      "data": {
+        "name": "Budget allocation 23",
+        "project_id": "demo-projects-008",
+        "owner": "Executive sponsor",
+        "due_date": "2026-11-06",
+        "status": "Deferred",
+        "decision_date": null,
+        "approver": null,
+        "options": "Proceed / revise / defer",
+        "rationale": null,
+        "evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-024",
+      "version": 1,
+      "data": {
+        "name": "Scope revision 24",
+        "project_id": "demo-projects-009",
+        "owner": "Executive sponsor",
+        "due_date": "2026-11-07",
+        "status": "Declined",
+        "decision_date": "2026-11-07",
+        "approver": "CEO",
+        "options": "Proceed / revise / defer",
+        "rationale": "Synthesized exercise decision; no real approval",
+        "evidence": "SYNTHETIC-MINUTES-23",
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-025",
+      "version": 1,
+      "data": {
+        "name": "Go / no-go gate 25",
+        "project_id": "demo-projects-010",
+        "owner": "Executive sponsor",
+        "due_date": "2026-11-08",
+        "status": "Pending",
+        "decision_date": null,
+        "approver": null,
+        "options": "Proceed / revise / defer",
+        "rationale": null,
+        "evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-026",
+      "version": 1,
+      "data": {
+        "name": "Vendor appointment 26",
+        "project_id": "demo-projects-011",
+        "owner": "Executive sponsor",
+        "due_date": "2026-11-09",
+        "status": "Approved",
+        "decision_date": "2026-11-09",
+        "approver": "CEO",
+        "options": "Proceed / revise / defer",
+        "rationale": "Synthesized exercise decision; no real approval",
+        "evidence": "SYNTHETIC-MINUTES-25",
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-027",
+      "version": 1,
+      "data": {
+        "name": "Budget allocation 27",
+        "project_id": "demo-projects-012",
+        "owner": "Executive sponsor",
+        "due_date": "2026-11-10",
+        "status": "Deferred",
+        "decision_date": null,
+        "approver": null,
+        "options": "Proceed / revise / defer",
+        "rationale": null,
+        "evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-028",
+      "version": 1,
+      "data": {
+        "name": "Scope revision 28",
+        "project_id": "demo-projects-013",
+        "owner": "Executive sponsor",
+        "due_date": "2026-11-11",
+        "status": "Declined",
+        "decision_date": "2026-11-11",
+        "approver": "CEO",
+        "options": "Proceed / revise / defer",
+        "rationale": "Synthesized exercise decision; no real approval",
+        "evidence": "SYNTHETIC-MINUTES-27",
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-029",
+      "version": 1,
+      "data": {
+        "name": "Go / no-go gate 29",
+        "project_id": "demo-projects-014",
+        "owner": "Executive sponsor",
+        "due_date": "2026-11-12",
+        "status": "Pending",
+        "decision_date": null,
+        "approver": null,
+        "options": "Proceed / revise / defer",
+        "rationale": null,
+        "evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-030",
+      "version": 1,
+      "data": {
+        "name": "Vendor appointment 30",
+        "project_id": "demo-projects-015",
+        "owner": "Executive sponsor",
+        "due_date": "2026-11-13",
+        "status": "Approved",
+        "decision_date": "2026-11-13",
+        "approver": "CEO",
+        "options": "Proceed / revise / defer",
+        "rationale": "Synthesized exercise decision; no real approval",
+        "evidence": "SYNTHETIC-MINUTES-29",
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-031",
+      "version": 1,
+      "data": {
+        "name": "Budget allocation 31",
+        "project_id": "demo-projects-001",
+        "owner": "Executive sponsor",
+        "due_date": "2026-11-14",
+        "status": "Deferred",
+        "decision_date": null,
+        "approver": null,
+        "options": "Proceed / revise / defer",
+        "rationale": null,
+        "evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-032",
+      "version": 1,
+      "data": {
+        "name": "Scope revision 32",
+        "project_id": "demo-projects-002",
+        "owner": "Executive sponsor",
+        "due_date": "2026-11-15",
+        "status": "Declined",
+        "decision_date": "2026-11-15",
+        "approver": "CEO",
+        "options": "Proceed / revise / defer",
+        "rationale": "Synthesized exercise decision; no real approval",
+        "evidence": "SYNTHETIC-MINUTES-31",
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-033",
+      "version": 1,
+      "data": {
+        "name": "Go / no-go gate 33",
+        "project_id": "demo-projects-003",
+        "owner": "Executive sponsor",
+        "due_date": "2026-11-16",
+        "status": "Pending",
+        "decision_date": null,
+        "approver": null,
+        "options": "Proceed / revise / defer",
+        "rationale": null,
+        "evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-034",
+      "version": 1,
+      "data": {
+        "name": "Vendor appointment 34",
+        "project_id": "demo-projects-004",
+        "owner": "Executive sponsor",
+        "due_date": "2026-11-17",
+        "status": "Approved",
+        "decision_date": "2026-11-17",
+        "approver": "CEO",
+        "options": "Proceed / revise / defer",
+        "rationale": "Synthesized exercise decision; no real approval",
+        "evidence": "SYNTHETIC-MINUTES-33",
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-035",
+      "version": 1,
+      "data": {
+        "name": "Budget allocation 35",
+        "project_id": "demo-projects-005",
+        "owner": "Executive sponsor",
+        "due_date": "2026-11-18",
+        "status": "Deferred",
+        "decision_date": null,
+        "approver": null,
+        "options": "Proceed / revise / defer",
+        "rationale": null,
+        "evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-036",
+      "version": 1,
+      "data": {
+        "name": "Scope revision 36",
+        "project_id": "demo-projects-006",
+        "owner": "Executive sponsor",
+        "due_date": "2026-11-19",
+        "status": "Declined",
+        "decision_date": "2026-11-19",
+        "approver": "CEO",
+        "options": "Proceed / revise / defer",
+        "rationale": "Synthesized exercise decision; no real approval",
+        "evidence": "SYNTHETIC-MINUTES-35",
+        "archived": false
+      }
+    },
+    {
+      "role": "decisions",
+      "id": "demo-decisions-037",
+      "version": 1,
+      "data": {
+        "name": "Go / no-go gate 37",
+        "project_id": "demo-projects-007",
+        "owner": "Executive sponsor",
+        "due_date": "2026-11-20",
+        "status": "Pending",
+        "decision_date": null,
+        "approver": null,
+        "options": "Proceed / revise / defer",
+        "rationale": null,
+        "evidence": null,
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-001",
+      "version": 1,
+      "data": {
+        "name": "AX-101 Discovery Platform · 09/2026",
+        "project_id": "demo-projects-001",
+        "period": "2026-09-01",
+        "owner": "Project owner",
+        "health": "Green",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-9-0",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-002",
+      "version": 1,
+      "data": {
+        "name": "Oncology Lead Candidate · 09/2026",
+        "project_id": "demo-projects-002",
+        "period": "2026-09-01",
+        "owner": "Project owner",
+        "health": "Unassessed",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": null,
+        "status": "Submitted",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-003",
+      "version": 1,
+      "data": {
+        "name": "Rare Disease Gene Editing · 09/2026",
+        "project_id": "demo-projects-003",
+        "period": "2026-09-01",
+        "owner": "Project owner",
+        "health": "Red",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-9-2",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-004",
+      "version": 1,
+      "data": {
+        "name": "Immunology Formulation · 09/2026",
+        "project_id": "demo-projects-004",
+        "period": "2026-09-01",
+        "owner": "Project owner",
+        "health": "Green",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-9-3",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-005",
+      "version": 1,
+      "data": {
+        "name": "Regulatory Readiness · 09/2026",
+        "project_id": "demo-projects-005",
+        "period": "2026-09-01",
+        "owner": "Project owner",
+        "health": "Amber",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-9-4",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-006",
+      "version": 1,
+      "data": {
+        "name": "Manufacturing Scale-up · 09/2026",
+        "project_id": "demo-projects-006",
+        "period": "2026-09-01",
+        "owner": "Project owner",
+        "health": "Red",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-9-5",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-007",
+      "version": 1,
+      "data": {
+        "name": "Clinical Quality Plan · 09/2026",
+        "project_id": "demo-projects-007",
+        "period": "2026-09-01",
+        "owner": "Project owner",
+        "health": "Unassessed",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": null,
+        "status": "Submitted",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-008",
+      "version": 1,
+      "data": {
+        "name": "Corporate Financing Plan · 09/2026",
+        "project_id": "demo-projects-008",
+        "period": "2026-09-01",
+        "owner": "Project owner",
+        "health": "Amber",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-9-7",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-009",
+      "version": 1,
+      "data": {
+        "name": "Pipeline Portfolio Strategy · 09/2026",
+        "project_id": "demo-projects-009",
+        "period": "2026-09-01",
+        "owner": "Project owner",
+        "health": "Red",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-9-8",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-010",
+      "version": 1,
+      "data": {
+        "name": "Vendor Qualification · 09/2026",
+        "project_id": "demo-projects-010",
+        "period": "2026-09-01",
+        "owner": "Project owner",
+        "health": "Green",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-9-9",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-011",
+      "version": 1,
+      "data": {
+        "name": "Neurology Translational · 09/2026",
+        "project_id": "demo-projects-011",
+        "period": "2026-09-01",
+        "owner": "Project owner",
+        "health": "Amber",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-9-10",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-012",
+      "version": 1,
+      "data": {
+        "name": "CMC Process Transfer · 09/2026",
+        "project_id": "demo-projects-012",
+        "period": "2026-09-01",
+        "owner": "Project owner",
+        "health": "Unassessed",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": null,
+        "status": "Submitted",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-013",
+      "version": 1,
+      "data": {
+        "name": "AX-101 Discovery Platform · 10/2026",
+        "project_id": "demo-projects-001",
+        "period": "2026-10-01",
+        "owner": "Project owner",
+        "health": "Unassessed",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": null,
+        "status": "Submitted",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-014",
+      "version": 1,
+      "data": {
+        "name": "Oncology Lead Candidate · 10/2026",
+        "project_id": "demo-projects-002",
+        "period": "2026-10-01",
+        "owner": "Project owner",
+        "health": "Amber",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-10-1",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-015",
+      "version": 1,
+      "data": {
+        "name": "Rare Disease Gene Editing · 10/2026",
+        "project_id": "demo-projects-003",
+        "period": "2026-10-01",
+        "owner": "Project owner",
+        "health": "Red",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-10-2",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-016",
+      "version": 1,
+      "data": {
+        "name": "Immunology Formulation · 10/2026",
+        "project_id": "demo-projects-004",
+        "period": "2026-10-01",
+        "owner": "Project owner",
+        "health": "Green",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-10-3",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-017",
+      "version": 1,
+      "data": {
+        "name": "Regulatory Readiness · 10/2026",
+        "project_id": "demo-projects-005",
+        "period": "2026-10-01",
+        "owner": "Project owner",
+        "health": "Amber",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-10-4",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-018",
+      "version": 1,
+      "data": {
+        "name": "Manufacturing Scale-up · 10/2026",
+        "project_id": "demo-projects-006",
+        "period": "2026-10-01",
+        "owner": "Project owner",
+        "health": "Unassessed",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": null,
+        "status": "Submitted",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-019",
+      "version": 1,
+      "data": {
+        "name": "Clinical Quality Plan · 10/2026",
+        "project_id": "demo-projects-007",
+        "period": "2026-10-01",
+        "owner": "Project owner",
+        "health": "Green",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-10-6",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-020",
+      "version": 1,
+      "data": {
+        "name": "Corporate Financing Plan · 10/2026",
+        "project_id": "demo-projects-008",
+        "period": "2026-10-01",
+        "owner": "Project owner",
+        "health": "Amber",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-10-7",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-021",
+      "version": 1,
+      "data": {
+        "name": "Pipeline Portfolio Strategy · 10/2026",
+        "project_id": "demo-projects-009",
+        "period": "2026-10-01",
+        "owner": "Project owner",
+        "health": "Red",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-10-8",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-022",
+      "version": 1,
+      "data": {
+        "name": "Vendor Qualification · 10/2026",
+        "project_id": "demo-projects-010",
+        "period": "2026-10-01",
+        "owner": "Project owner",
+        "health": "Green",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-10-9",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-023",
+      "version": 1,
+      "data": {
+        "name": "Neurology Translational · 10/2026",
+        "project_id": "demo-projects-011",
+        "period": "2026-10-01",
+        "owner": "Project owner",
+        "health": "Unassessed",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": null,
+        "status": "Submitted",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-024",
+      "version": 1,
+      "data": {
+        "name": "CMC Process Transfer · 10/2026",
+        "project_id": "demo-projects-012",
+        "period": "2026-10-01",
+        "owner": "Project owner",
+        "health": "Red",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-10-11",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-025",
+      "version": 1,
+      "data": {
+        "name": "AX-101 Discovery Platform · 11/2026",
+        "project_id": "demo-projects-001",
+        "period": "2026-11-01",
+        "owner": "Project owner",
+        "health": "Green",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-11-0",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-026",
+      "version": 1,
+      "data": {
+        "name": "Oncology Lead Candidate · 11/2026",
+        "project_id": "demo-projects-002",
+        "period": "2026-11-01",
+        "owner": "Project owner",
+        "health": "Amber",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-11-1",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-027",
+      "version": 1,
+      "data": {
+        "name": "Rare Disease Gene Editing · 11/2026",
+        "project_id": "demo-projects-003",
+        "period": "2026-11-01",
+        "owner": "Project owner",
+        "health": "Red",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-11-2",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-028",
+      "version": 1,
+      "data": {
+        "name": "Immunology Formulation · 11/2026",
+        "project_id": "demo-projects-004",
+        "period": "2026-11-01",
+        "owner": "Project owner",
+        "health": "Green",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-11-3",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-029",
+      "version": 1,
+      "data": {
+        "name": "Regulatory Readiness · 11/2026",
+        "project_id": "demo-projects-005",
+        "period": "2026-11-01",
+        "owner": "Project owner",
+        "health": "Unassessed",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": null,
+        "status": "Submitted",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-030",
+      "version": 1,
+      "data": {
+        "name": "Manufacturing Scale-up · 11/2026",
+        "project_id": "demo-projects-006",
+        "period": "2026-11-01",
+        "owner": "Project owner",
+        "health": "Red",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-11-5",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-031",
+      "version": 1,
+      "data": {
+        "name": "Clinical Quality Plan · 11/2026",
+        "project_id": "demo-projects-007",
+        "period": "2026-11-01",
+        "owner": "Project owner",
+        "health": "Green",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-11-6",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-032",
+      "version": 1,
+      "data": {
+        "name": "Corporate Financing Plan · 11/2026",
+        "project_id": "demo-projects-008",
+        "period": "2026-11-01",
+        "owner": "Project owner",
+        "health": "Amber",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-11-7",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-033",
+      "version": 1,
+      "data": {
+        "name": "Pipeline Portfolio Strategy · 11/2026",
+        "project_id": "demo-projects-009",
+        "period": "2026-11-01",
+        "owner": "Project owner",
+        "health": "Red",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-11-8",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-034",
+      "version": 1,
+      "data": {
+        "name": "Vendor Qualification · 11/2026",
+        "project_id": "demo-projects-010",
+        "period": "2026-11-01",
+        "owner": "Project owner",
+        "health": "Unassessed",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": null,
+        "status": "Submitted",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-035",
+      "version": 1,
+      "data": {
+        "name": "Neurology Translational · 11/2026",
+        "project_id": "demo-projects-011",
+        "period": "2026-11-01",
+        "owner": "Project owner",
+        "health": "Amber",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-11-10",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "updates",
+      "id": "demo-updates-036",
+      "version": 1,
+      "data": {
+        "name": "CMC Process Transfer · 11/2026",
+        "project_id": "demo-projects-012",
+        "period": "2026-11-01",
+        "owner": "Project owner",
+        "health": "Red",
+        "summary": "Fictional update with a reviewed owner assessment and outstanding actions.",
+        "source": "SYNTHETIC-STATUS-11-11",
+        "status": "Reviewed",
+        "archived": false
+      }
+    },
+    {
+      "role": "reports",
+      "id": "demo-reports-001",
+      "version": 1,
+      "data": {
+        "name": "Management review 2026-03",
+        "period": "2026-03-01",
+        "cutoff": "2026-03-01",
+        "status": "Approved",
+        "reviewer": "CEO",
+        "narrative": "Fictional narrative summarizing owner updates, milestone movement and decisions. No real company data.",
+        "sources": "SYNTHETIC-REPORT-SOURCES-0",
+        "owner": "Chief of Staff",
+        "archived": false
+      }
+    },
+    {
+      "role": "reports",
+      "id": "demo-reports-002",
+      "version": 1,
+      "data": {
+        "name": "Management review 2026-04",
+        "period": "2026-04-01",
+        "cutoff": "2026-04-01",
+        "status": "Draft",
+        "reviewer": null,
+        "narrative": "Fictional narrative summarizing owner updates, milestone movement and decisions. No real company data.",
+        "sources": null,
+        "owner": "Chief of Staff",
+        "archived": false
+      }
+    },
+    {
+      "role": "reports",
+      "id": "demo-reports-003",
+      "version": 1,
+      "data": {
+        "name": "Management review 2026-05",
+        "period": "2026-05-01",
+        "cutoff": "2026-05-01",
+        "status": "In review",
+        "reviewer": null,
+        "narrative": "Fictional narrative summarizing owner updates, milestone movement and decisions. No real company data.",
+        "sources": null,
+        "owner": "Chief of Staff",
+        "archived": false
+      }
+    },
+    {
+      "role": "reports",
+      "id": "demo-reports-004",
+      "version": 1,
+      "data": {
+        "name": "Management review 2026-06",
+        "period": "2026-06-01",
+        "cutoff": "2026-06-01",
+        "status": "Approved",
+        "reviewer": "CEO",
+        "narrative": "Fictional narrative summarizing owner updates, milestone movement and decisions. No real company data.",
+        "sources": "SYNTHETIC-REPORT-SOURCES-3",
+        "owner": "Chief of Staff",
+        "archived": false
+      }
+    },
+    {
+      "role": "reports",
+      "id": "demo-reports-005",
+      "version": 1,
+      "data": {
+        "name": "Management review 2026-07",
+        "period": "2026-07-01",
+        "cutoff": "2026-07-01",
+        "status": "Draft",
+        "reviewer": null,
+        "narrative": "Fictional narrative summarizing owner updates, milestone movement and decisions. No real company data.",
+        "sources": null,
+        "owner": "Chief of Staff",
+        "archived": false
+      }
+    },
+    {
+      "role": "reports",
+      "id": "demo-reports-006",
+      "version": 1,
+      "data": {
+        "name": "Management review 2026-08",
+        "period": "2026-08-01",
+        "cutoff": "2026-08-01",
+        "status": "In review",
+        "reviewer": null,
+        "narrative": "Fictional narrative summarizing owner updates, milestone movement and decisions. No real company data.",
+        "sources": null,
+        "owner": "Chief of Staff",
+        "archived": false
+      }
+    },
+    {
+      "role": "reports",
+      "id": "demo-reports-007",
+      "version": 1,
+      "data": {
+        "name": "Management review 2026-09",
+        "period": "2026-09-01",
+        "cutoff": "2026-09-01",
+        "status": "Approved",
+        "reviewer": "CEO",
+        "narrative": "Fictional narrative summarizing owner updates, milestone movement and decisions. No real company data.",
+        "sources": "SYNTHETIC-REPORT-SOURCES-6",
+        "owner": "Chief of Staff",
+        "archived": false
+      }
+    },
+    {
+      "role": "reports",
+      "id": "demo-reports-008",
+      "version": 1,
+      "data": {
+        "name": "Management review 2026-10",
+        "period": "2026-10-01",
+        "cutoff": "2026-10-01",
+        "status": "Draft",
+        "reviewer": null,
+        "narrative": "Fictional narrative summarizing owner updates, milestone movement and decisions. No real company data.",
+        "sources": null,
+        "owner": "Chief of Staff",
+        "archived": false
+      }
+    },
+    {
+      "role": "reports",
+      "id": "demo-reports-009",
+      "version": 1,
+      "data": {
+        "name": "Management review 2026-11",
+        "period": "2026-11-01",
+        "cutoff": "2026-11-01",
+        "status": "In review",
+        "reviewer": null,
+        "narrative": "Fictional narrative summarizing owner updates, milestone movement and decisions. No real company data.",
+        "sources": null,
+        "owner": "Chief of Staff",
+        "archived": false
+      }
+    },
+    {
+      "role": "reports",
+      "id": "demo-reports-010",
+      "version": 1,
+      "data": {
+        "name": "Management review 2026-12",
+        "period": "2026-12-01",
+        "cutoff": "2026-12-01",
+        "status": "Approved",
+        "reviewer": "CEO",
+        "narrative": "Fictional narrative summarizing owner updates, milestone movement and decisions. No real company data.",
+        "sources": "SYNTHETIC-REPORT-SOURCES-9",
+        "owner": "Chief of Staff",
+        "archived": false
+      }
+    }
+  ]
+}
