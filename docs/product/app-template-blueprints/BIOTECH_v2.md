@@ -16,7 +16,7 @@
 | Rank | ID | App | What it does | Main users | Reference app | Tier | v1 source |
 |---:|---|---|---|---|---|---|---|
 | 1 | BT2-01 | **Runway** | Cash, burn and runway by program, with what-if scenarios. | CEO, CFO, board | Abacum Life Sciences (domain) + Jirav (mechanics) | Core | replaces `cash-runway` |
-| 2 | BT2-02 | **Programs** | Milestones, dependencies, risks and decisions across all programs. | CEO, PM, functional leads | Smartsheet | Core | adapt `project-oversight` |
+| 2 | BT2-02 | **Programs** | Milestones, dependencies, risks and decisions across all programs. | CEO, PM, functional leads | Smartsheet (+ life-science PPM concepts: OnePlan, Planisware) | Core | replaces `project-oversight` |
 | 3 | BT2-03 | **Fundraise** | Investor pipeline for a round, from first contact to signed commitment. | CEO, CFO | Foundersuite | Core | adapt `investor-crm` |
 | 4 | BT2-04 | **Contracts** | Register of CDAs, MSAs, SOWs and other agreements with key dates and obligations. | CEO, BD, ClinOps, finance | Ironclad | Core | **new** |
 | 5 | BT2-05 | **CRO Bids** | Collect, compare and score outsourcing bids, then record the award. | ClinOps, R&D leads | Science Exchange / Scientist.com | Core | merge `cro-selection` + `sponsor-rfp-management` |
@@ -80,6 +80,7 @@ Format per app: users and job · reference app · scope (in / out) · records ·
 - **Records:** Milestone; Dependency; Risk (likelihood, impact, owner, mitigation); Decision; Action. Shared: Program, Study, Organization.
 - **Screens:** Portfolio overview · Program timeline · Risk register · Decision & action log · Status report.
 - **Assistant angle:** draft monthly status and board slides from the records; flag slipped milestones and overdue actions.
+- **Detailed scope:** final build scope in [apps/PROGRAMS.md](apps/PROGRAMS.md).
 
 ### BT2-03 — Fundraise (rank 3, Core)
 *Investor pipeline for a round, from first contact to signed commitment.*  
