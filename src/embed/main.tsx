@@ -110,9 +110,9 @@ function Workspace(){
  const [creationKind,setCreationKind]=useState('tracker'),[homeRevision,setHomeRevision]=useState(0),[automationsRevision,setAutomationsRevision]=useState(0);
  const chatNew=()=>void run(async()=>{const result=await bridge.sendMessage({role:'user',content:[{type:'text',text:'I want to build a new app in TrialAgents. Ask me what I want to build, or suggest a few useful ideas to choose from.'}]});if(result.isError)throw Error('Could not start the conversation. Please tell ChatGPT what you would like to build.');});
  const startNew=(kind:string)=>{if(kind==='app'&&state.workspaceId){setView('templates');return;}if(guest||!state.workspaceId){chatNew();return;}setCreationKind(kind);setView('create');};
- const useTemplate=React.useCallback(async(template:any,requestKey:string)=>withWorkspaceActivity(async()=>{
+ const useTemplate=React.useCallback(async(template:any,requestKey:string,options:{createNew?:boolean}={})=>withWorkspaceActivity(async()=>{
   const epoch=++navigationEpoch.current;transition.current.reset();
-  const installed=await call('install_app_template',{workspaceId:state.workspaceId,templateId:template.id,version:template.version,digest:template.digest,name:template.name,requestKey,confirmed:true});
+  const installed=await call('install_app_template',{workspaceId:state.workspaceId,templateId:template.id,version:template.version,digest:template.digest,name:template.name,requestKey,...(options.createNew?{createNew:true}:{}),confirmed:true});
   setHomeRevision(n=>n+1);
   const data=await call('open_app',{workspaceId:installed.workspaceId,appId:installed.appId,source:'component'}),{account,resolved,output}=await loadTrackerDisplay(data,call,()=>{});
   if(epoch!==navigationEpoch.current)return;

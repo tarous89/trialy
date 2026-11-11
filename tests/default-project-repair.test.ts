@@ -14,7 +14,9 @@ test('legacy account receives one default project; archived projects and tool pl
  await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[a.userId,a.userId,'old@example.invalid','Old account']);
  await pg.exec(await readFile('migrations/041_effective_access.sql','utf8'));
  // Current code reads the separate Claude switches added by migration 057; this legacy schema only needs the columns.
- await pg.exec("ALTER TABLE workspaces ADD COLUMN claude_enabled boolean NOT NULL DEFAULT false;ALTER TABLE workspace_access ADD COLUMN claude_enabled boolean NOT NULL DEFAULT false;");const service=new Service(db),old=await service.createWorkspace(a,'Legacy'),deleted=await service.createWorkspace(a,'Deleted starter');await service.setAi(a,old.id,true);
+ await pg.exec("ALTER TABLE workspaces ADD COLUMN claude_enabled boolean NOT NULL DEFAULT false;ALTER TABLE workspace_access ADD COLUMN claude_enabled boolean NOT NULL DEFAULT false;");
+ // Likewise the archive-first columns from migration 060.
+ await pg.exec("ALTER TABLE workspace_components ADD COLUMN deleted_at timestamptz;ALTER TABLE entity_types ADD COLUMN archived_fields jsonb NOT NULL DEFAULT '[]',ADD COLUMN archived_at timestamptz,ADD COLUMN deleted_at timestamptz;");const service=new Service(db),old=await service.createWorkspace(a,'Legacy'),deleted=await service.createWorkspace(a,'Deleted starter');await service.setAi(a,old.id,true);
  const archivedId=randomUUID();await db.query("INSERT INTO workspace_nodes(id,workspace_id,kind,name,archived) VALUES($1,$2,'project','Project 1',true)",[archivedId,deleted.id]);
  const migration=await readFile('migrations/039_existing_account_project.sql','utf8');await pg.exec(migration);await pg.exec(migration);
  const projects=(await workspaceHome(db,a,old.id)).projects;assert.equal(projects.length,1);assert.equal(projects[0].name,'Project 1');assert.ok(projects[0].createdAt);

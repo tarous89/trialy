@@ -66,7 +66,7 @@ Verify current behaviour first; build only what is missing.
 | 7 | **Template validation:** core roles use contract keys and kinds; cross-app references only to core tables or outputs | Add to the authoring preflight. |
 | 8 | **Authoring guidance:** add rules 1–9 and the extension-table pattern to `templates/TEMPLATE_AUTHORING.md` (keep both guidance copies and `templateGuidance.version` in sync) | |
 
-| 9 | **Archive-first lifecycle and PR #117 amendment** | See §6. Highest priority: archiving an app must not remove fields. |
+| 9 | **Archive-first lifecycle and PR #117 amendment** | See §6. Highest priority: archiving an app must not remove fields. Implemented in migration 060; see [Archive first](../APP_SERVICES.md#archive-first-migration-060). |
 
 Until items 1–6 ship, templates follow the rules manually: reuse via the install-time existing-table choice, graceful degradation in code, and no deletion of data by any app action.
 

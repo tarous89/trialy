@@ -10,7 +10,7 @@ export function ResourcesPanel({workspaceId,kind,projectId='',types,call}:{works
  const [collections,setCollections]=useState(false),[newForm,setNewForm]=useState(false),[name,setName]=useState(''),[typeId,setTypeId]=useState(''),[keys,setKeys]=useState<string[]>([]),[questions,setQuestions]=useState<Question[]>([]),[days,setDays]=useState(30);
  const invoke=(name:string,args:any={})=>call(name,{workspaceId,...args});
  async function act(fn:()=>Promise<void>){setBusy(true);setError('');try{await fn();}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
- async function refresh(){const [rows,nodes]=await Promise.all([invoke('list_project_components',projectId?{projectId}:{}),invoke('list_workspace_projects')]);setItems(rows);setProjects(nodes.nodes.filter((p:any)=>p.kind==='project'));}
+ async function refresh(){const [rows,nodes]=await Promise.all([invoke('list_project_components',projectId?{projectId,includeArchived:true}:{includeArchived:true}),invoke('list_workspace_projects')]);setItems(rows);setProjects(nodes.nodes.filter((p:any)=>p.kind==='project'));}
  useEffect(()=>{setSelected(null);setPreview(null);setNewForm(false);setCollections(false);},[workspaceId,kind]);
  useEffect(()=>{void act(refresh);},[workspaceId,projectId,kind]);
  const fields=(types.find(t=>t.id===typeId)?.fields??[]).filter((f:any)=>!f.formula&&!f.computed&&!f.lookup&&!['document','relationship','person','table','field'].includes(f.kind));

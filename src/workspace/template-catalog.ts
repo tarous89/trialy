@@ -1,3 +1,4 @@
+import {archivedTemplateApps} from './archive.js';
 import {requireCurrentAction} from '../domain/write-authorization.js';
 import {randomUUID,createHash} from 'node:crypto';
 import {readFile,readdir} from 'node:fs/promises';
@@ -23,7 +24,7 @@ export async function syncTemplateCatalog(db:Database){
  }
 }
 
-export const catalogInstallation=z.object({templateId:z.string().max(80),version:z.string().max(30),digest:z.string().regex(/^[a-f0-9]{64}$/),requestKey:z.string().uuid(),name:z.string().trim().min(1).max(100)}).strict();
+export const catalogInstallation=z.object({templateId:z.string().max(80),version:z.string().max(30),digest:z.string().regex(/^[a-f0-9]{64}$/),requestKey:z.string().uuid(),name:z.string().trim().min(1).max(100),createNew:z.boolean().optional()}).strict();
 /** One transaction: empty tables + app + existing audit/permission paths, or nothing. */
 export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,input:unknown){
  requireCurrentAction(a);
@@ -39,6 +40,8 @@ export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,i
   const row=(await tx.query("SELECT * FROM app_template_catalog WHERE template_id=$1 AND version=$2 AND status='approved'",[v.templateId,v.version])).rows[0];
   if(!row)fail(404,'not_found','Template unavailable');
   if(row.digest!==v.digest)fail(409,'template_changed','Reload the template catalog');
+  // Restoring an archived app from this template is offered before creating a new one.
+  if(!v.createNew){const archived=await archivedTemplateApps(tx,a,w,v.templateId);if(archived.length)fail(409,'archived_app_available',`Restore your archived ${archived[0].name} app, or choose to install a new copy.`);}
   const map:any={},bindings:any[]=[],fields:any[]=[];
   const usedNames=new Set((await tx.query('SELECT name FROM entity_types WHERE workspace_id=$1',[w])).rows.map(r=>r.name));
   for(const [role,def] of Object.entries(row.install_schema) as [string,any][]){

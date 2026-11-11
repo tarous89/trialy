@@ -38,6 +38,8 @@ export const databaseChangesSchema=z.object({kind:z.literal('database_changes'),
 export const operationSchema = z.discriminatedUnion('kind', [
  databaseChangesSchema,
  z.object({kind:z.literal('set_field_context'),typeId:id,field:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),expectedVersion:z.number().int().min(0),expectedContextVersion:z.number().int().min(0),description:z.string().trim().max(2000)}).strict(),
+ // Restore archived fields (all when omitted) and their table. Owner only; values were never removed.
+ z.object({kind:z.literal('restore_archived_schema'),typeId:id,expectedVersion:z.number().int().min(0),fields:z.array(z.string().regex(/^[a-z][a-z0-9_]{0,63}$/)).min(1).max(200).optional()}).strict(),
  z.object({kind:z.literal('reverse_field_change'),changeId:id,expectedVersion:z.number().int().min(0),reason:z.string().trim().min(1).max(1000)}),
  z.object({kind:z.literal('request_review'),recordId:id,expectedVersion:z.number().int().min(0),reviewerId:id,note:z.string().trim().min(1).max(1000),dueOn:z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable()}),
  z.object({kind:z.literal('accept_submission'),submissionId:id,typeId:id,data:values}),
