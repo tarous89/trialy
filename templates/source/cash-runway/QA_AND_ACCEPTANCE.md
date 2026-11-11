@@ -1,16 +1,25 @@
-# Runway 2.0.0 validation
+# Runway 2.1.0 validation
 
-Validated against the repository host on 10 November 2026 with disposable PGlite databases and fictional data, not a deployed account. On 11 November 2026 the owner approved 2.0.0 to replace 1.2.2 in the platform templates. `templates/catalog-seed.json` now names 2.0.0, so the pre-deploy catalog sync inserts it as approved. The website gallery and `list_app_templates` show only the latest approved version, so 1.2.2 stops being offered for new installs. Its existing production row keeps its status, so existing 1.x apps and exact-version reads keep working; set it to draft with the operator command only if exact-version access should also end.
+Validated against the repository host on 11 November 2026 with disposable PGlite databases and fictional data, not a deployed account.
+
+**Catalog status:** 2.1.0 is a new catalog version and syncs as **draft**. The approved platform version stays 2.0.0, which replaced 1.2.2 on 11 November 2026 with owner approval, until the owner approves 2.1.0. Released 1.2.2 and 2.0.0 files are archived byte-for-byte under `archive/`, and their installer, seed and gallery entries point there.
+
+**What changed from 2.0.0** ([modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md)):
+
+- **Role keys:** core data contract v1 role keys and fields for `programs`, `organizations` and `agreements`; stable `runway.*` role keys for app tables.
+- **Programs output:** reads the Programs app's key milestones (`programs.plan_items`) read-only.
+- **Degradation:** rule 3 behaviour throughout.
+- **Tests:** the rule 9 acceptance test.
 
 ## Commands and outcomes
 
 | Command | Result |
 | --- | --- |
 | `npm run build` (includes `node scripts/build-cash-runway-template.mjs --check`, every template drift check, `tsc --noEmit`, `vite build`, embed build) | Passed |
-| `APP_DESIGN_CHECKS=off node --import tsx --test tests/cash-runway.test.ts` | 11/11 passed, including the production design inspector on all seven screens and the scenario builder at 390 and 1440 px |
-| `APP_DESIGN_CHECKS=off node --import tsx --test tests/cash-runway-integration.test.ts` | 2/2 passed |
+| `APP_DESIGN_CHECKS=off node --import tsx --test tests/cash-runway.test.ts` | 15/15 passed, including the production design inspector on all seven screens and the scenario builder at 390 and 1440 px, the core-contract checks and the degradation tests |
+| `APP_DESIGN_CHECKS=off node --import tsx --test tests/cash-runway-integration.test.ts` | 3/3 passed, including the rule 9 modularity acceptance test |
 | `APP_DESIGN_CHECKS=off node --import tsx scripts/test-cash-runway-browser.ts` | Passed |
-| `npm test` (full suite, 453 tests, with the browsers path below) | 452 passed. One failure is unrelated and pre-existing: `tests/monitoring-pv-integration.test.ts` (CO06) reports overlapping controls at 390 px on unmodified `main` too. Without a usable Chromium, every design-gate test fails with "The design check could not finish" (20 failures); that is environmental. |
+| `npm test` (full suite, 466 tests, with the browsers path below) | 465 passed. The one failure is `tests/monitoring-pv-integration.test.ts` (CO06, overlapping controls at 390 px). It is unrelated, fails the same way on unmodified `main` under this container's Chromium, and passes in GitHub CI. |
 
 **What the unit tests cover:** the catalog entry runs in production QuickJS with the host-prepended configuration. Covered: the hand reconciliation below; month-rate conversion and the missing-rate exclusion; the contingent toggle; preview-only what-ifs; the program shift; the two-step scenario save; Outdated flags; adoption with versions captured at open (a stale record is rejected); frozen budgets and snapshots; in-order closing; restricted salaries (no salary value in any screen) and read-only users; short-page, unknown-total, unavailable, unbound and over-800-row reads; draft retention across re-renders and failed proposals; `data-ui-state` on every input; the native layout configuration rules.
 
@@ -19,6 +28,28 @@ Validated against the repository host on 10 November 2026 with disposable PGlite
 **What the browser test covers:** the production sanitized frame (CSP, manifest attached) across all seven screens with no data-check failure. A form-bound line draft with all inputs enabled and the runway effect shown, an exact database review, and an updated runway sentence. Native layout via mouse drag, field reordering, review/confirm and reload persistence. At 390 px: no horizontal overflow and keyboard pick-and-place with Ignore. Screenshots of the desktop at 1440 px and mobile at 390 px were inspected. The design inspector found contrast and clipping problems, which were fixed: the soft text colour is now `#55667A` and screen-reader text moved to `aria-label`s. Drawers and dialogs make the page behind them `inert`. They are not run through the inspector, because it counts fields scrolled inside the drawer body as overlapping the footer. They were checked by screenshot and by the browser test's form interaction instead. The offline preview was also inspected on every screen at 1440 and 390 px, with no horizontal page overflow.
 
 The browser checks ran against this container's Chromium through a `PLAYWRIGHT_BROWSERS_PATH` that maps the repository's pinned Playwright 1.51.1 browser names to the installed build. Test code was not changed for this.
+
+## Modularity (MODULAR_APPS_AND_SHARED_DATA.md §3)
+
+**Rule 9 acceptance test.** `tests/cash-runway-integration.test.ts` runs on a real PGlite database with every migration, the real catalog installer, and the real archive, restore and revision paths. Hand calculation: opening 1,000,000 EUR at Jun 2026 and 30,000 EUR/month spend. Mar 2029 closes at 10,000 and Apr 2029 is negative, so runway is 33 months. The Programs key milestone in Jun 2027 (12 months out) has 640,000 cash and a 21-month cushion.
+
+1. **Install alone:** 13 empty tables; the programs table has exactly the core contract v1 fields; manifest IDs are valid for dotted role keys. The app opens with "Set up your first runway".
+2. **Install with its partner:** a Programs app owns the core `programs` table and its `plan_items` output. Runway binds the existing `programs` table (only one programs table in the workspace) and reads `programs.plan_items` read-only. It shows "Cash lasts until Mar 2029, 21 months after IND filing", with IND filing at 640,000 EUR, a 21-month cushion, and the source "Programs app".
+3. **Delete the partner app:** Programs is archived. The record count is unchanged and no table is archived; Runway still shows the same, labelled numbers.
+4. **Remove one tab:** a reviewed Runway revision unbinds `programs.plan_items`. Runway shows "Cash lasts until Mar 2029." and "Only Runway milestones are shown"; records are unchanged, and the archived Programs app still protects its fields. Re-adding the binding reconnects the same table, and the milestone returns.
+5. **Reinstall:** with Runway archived, installing offers "Restore your archived Runway app". Restoring brings back the same bindings and data. "Install a new copy" (`createNew`) creates 13 fresh tables and leaves the original app's tables alone.
+
+**Platform fix found by this test.** `installCatalogApp` passed `createNew` into the strict template-preparation schema, so "install a new copy" failed for every template. It is fixed in `src/workspace/template-catalog.ts`. The installer also now derives valid manifest field IDs from namespaced role keys (`manifestFieldId`). IDs for existing templates are unchanged.
+
+**Unit tests for degradation** (`tests/cash-runway.test.ts`), all on the §12 dataset:
+
+- **Contract shape:** core roles equal core contract v1 field sets; app roles are `runway.*`; Runway never installs `programs.plan_items`; 2.0.0 short-key table maps still bind.
+- **No programs table:** program breakdowns are hidden with a note, and runway is unchanged at 26 months.
+- **Programs table unreadable:** names show "Program unavailable".
+- **Archived or deleted program:** "(archived)" for an archived program; a deleted program shows "Program unavailable". The reference is kept when the line is edited, and a new unknown ID is rejected.
+- **Programs output connected:** linked milestones follow the Programs date (Mar 2027: 711,920 EUR, 19-month cushion). Key milestones are added (Feb 2028: 289,440 EUR, 8 months); activities, cancelled and non-key items are ignored. The sentence becomes "Cash lasts until Oct 2028, 8 months after Phase 1 readout".
+- **Programs output unreadable:** the Runway date is used with the label "Programs link unavailable", plus a short note.
+- **Adoption:** adopting a program shift never proposes changes to Programs records or linked dates, and says so.
 
 ## Hand reconciliation (RUNWAY.md §12.11)
 
@@ -69,7 +100,8 @@ Fictional dataset in `tests/cash-runway.test.ts`:
 
 ## Not verified here
 
-- Deployed catalog availability and publisher approval of 2.0.0.
+- Publisher approval and deployment of 2.1.0.
+- Platform install detection, the reconnect-by-default reinstall flow and table role metadata (modular apps §5, items 1–6). Runway follows those rules manually through explicit bindings until they ship.
 - A live ChatGPT or Claude host session, real workspace installs and real column restrictions on a deployed account.
 - Automation setup or delivery: the alert email and rates research were not configured and no email was sent.
 - Program-level shared-table reuse, which needs an assistant-prepared app.

@@ -1,0 +1,123 @@
+{
+  "id": "life.cash-runway",
+  "version": "2.0.0",
+  "name": "Runway",
+  "description": "Cash, burn and runway by program, with what-if scenarios. One live forecast from spend and cash-in lines, people and milestones; a locked budget per year; monthly close with variance and frozen snapshots; 12 currencies with monthly rates.",
+  "tags": [
+    "biotech",
+    "finance",
+    "runway",
+    "cash-forecast",
+    "burn",
+    "budget",
+    "scenario-planning",
+    "board"
+  ],
+  "whenToUse": "A small biotech (roughly 10–50 people) needs cash runway, burn, budget versus actual and what-ifs by program without an ERP: how long the cash lasts, whether it reaches the next milestone, when to start raising, and a clean monthly picture for the board.",
+  "whenNotToUse": "General ledger or bookkeeping, payroll, three-statement reporting, revenue/AR/AP or debt modelling, consolidation, 13-week cash, tax-credit calculation, cap table or dilution, bank or accounting connectors, and any patient-level data.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "Runway",
+    "tableMap": "{}",
+    "pageSize": 25,
+    "layoutProfile": "{}",
+    "readOnly": false,
+    "demoLabel": false
+  },
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "App heading shown above every screen.",
+      "default": "Runway"
+    },
+    "tableMap": {
+      "type": "string",
+      "description": "JSON object keyed by role (settings, lines, positions, milestones, actuals, closes, budgets, scenarios, changes, rates, programs, organizations, agreements). Each value is {typeId:<authorized table UUID>, fields:{<logical key>:<real field key>}, writableFields:[<logical keys>]}. Real keys are lowercase snake_case.",
+      "default": "{}"
+    },
+    "pageSize": {
+      "type": "number",
+      "description": "Rows per page in registers, 10–50; the template clamps the value.",
+      "default": 25
+    },
+    "layoutProfile": {
+      "type": "string",
+      "description": "JSON presentation profile written only by native layout settings through a reviewed, versioned app update.",
+      "default": "{}"
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "When true, the app proposes no writes even for users who may edit.",
+      "default": false
+    },
+    "demoLabel": {
+      "type": "boolean",
+      "description": "Label the app as a fictional demo. Only for the repository preview.",
+      "default": false
+    }
+  },
+  "instructions": "Runway 2.0.0 is a custom frontend-js finance app. It replaces Cash Runway 1.x as a new major version; 1.x apps keep working and are not migrated.\n\n1. Discover and pin. Read read_app_template_guidance (usage, then authoring when extending) to the last nextOffset, read_app_design, list_app_templates and read_app_template for life.cash-runway. Pin this exact version and digest and keep one requestKey for the creation.\n2. Install. The platform Use action (website or plugin install_app_template) creates thirteen empty tables in one transaction and the saved app. To reuse an existing Programs, Organizations or Agreements table instead, prepare the app yourself with prepare_app_from_template and bind that table under the matching role after the user explicitly chooses shared data. Never copy records silently. Never seed demo data.\n3. Map fields. tableMap maps each role to an authorized table: settings → Runway settings (one row); lines → Plan lines; positions → Positions; milestones → Milestones; actuals → Actuals; closes → Month closes (also the frozen snapshots); budgets → Budgets (locked plan of record); scenarios → Scenarios; changes → Scenario changes; rates → FX rates; programs, organizations, agreements → shared record types (reuse an existing table or create one). Use the field kinds in documentation.dataContract, multiple:false for every field, lowercase snake_case real keys and scalar record-ID text for relationships. The manifest grants read or write per field; frozen JSON fields (closes.metrics, closes.rates_used, budgets.totals, budgets.rates_used) are written only by the app.\n4. First runway in one session. Ask for the bank balance and its month-end date, the reporting currency, programs and next milestones, the main spend lines and expected financing. Propose one reviewed batch: one settings row, programs, plan lines, positions, milestones and rates for every non-reporting currency. The app then shows the runway sentence.\n5. Monthly actuals. From a P&L or bank statement the user shares in chat, map lines to categories and propose actual records for the month plus, in the app, Actuals → Close month with the closing balance. Ask when a line is ambiguous. Only the app writes the month close and its frozen snapshot.\n6. What-ifs. Translate plain language into scenario changes (shift_program, scale_program, stop_program, add_position, remove_position, move_cash_in, resize_cash_in, fx_shift). Prefer describing the changes so the user builds the preview in Scenarios; save a scenario (scenarios record, then its scenario_changes records with scenario_id set to the saved receipt ID) only when asked.\n7. Never compute or overwrite results, never treat contingent cash as committed, never give accounting, tax or investment advice, and never write without the user's review unless a valid narrow standing grant covers fx_rates.\n8. Customization: layout changes use the native gear (tracker:layout → prepare_tool_layout); settings use a reviewed write to the settings row; new fields or categories need a reviewed schema change and a separately reviewed app revision. Revise the same saved app; preserve IDs, bindings and access.\n9. Automations are optional and configured only after the app is saved: a runway alert email on closes.runway_status becoming below_target, and a monthly exchange-rate research task. The app never waits for them.",
+  "documentation": {
+    "quickStart": [
+      "Read the current usage/authoring guidance and this template's documentation; pin life.cash-runway 2.0.0 and its digest with one requestKey.",
+      "Install with Use (creates 13 empty tables and the saved app atomically), or prepare the app with explicit bindings when the user chooses to reuse an existing Programs, Organizations or Agreements table.",
+      "Settings → Create settings: reporting currency, opening bank balance and its month-end date, runway target (default 18 months), trailing window (3 or 6), minimum reserve, loaded-cost %. Approve the review.",
+      "Settings → Programs and FX rates: add programs, and a monthly rate (units per 1 EUR) for every currency other than the reporting currency, including the reporting currency itself when it is not EUR.",
+      "Plan → add spend lines (monthly, one-off or spread), a payment schedule if needed, cash-in lines (equity, grant, partnership, tax credit or other; committed, contingent or received) and milestones. People → add current roles and planned hires.",
+      "Overview shows the runway sentence, cash curve, burn and exceptions. Each month: Actuals → Close month. Plan → Budgets → Lock as budget once per year to get variance."
+    ],
+    "dataContract": "Roles and tables: settings (Runway settings, one row: reporting_currency select of 12 currencies; enabled_currencies text comma list; runway_target_months number, default 18; trailing_window_months number 3 or 6; min_cash_reserve money; loaded_cost_pct number; opening_balance money in the reporting currency; opening_date date, the month-end of the opening balance; categories text comma list ordering the spend categories). lines (Plan lines: name text*, direction select spend/cash_in*, category select Clinical/CMC/Research/People/G&A/Facilities/Other*, program_id text record ID, counterparty_id text record ID, agreement_id text record ID, schedule_group text, driver select monthly/one_off/spread*, amount money* non-negative, currency select*, start_month date*, end_month date (inclusive), status select committed/discretionary/contingent/received*, cash_in_type select equity/grant/partnership/tax_credit/other (required for cash_in), notes text, archived boolean). positions (title*, program_id, start_month*, end_month, annual_salary money*, currency*, status current/planned*, person_id text, archived). milestones (name*, program_id, target_month*, source_milestone_id text, archived). actuals (month*, category*, program_id, direction*, amount*, currency*, cash_in_type, note). closes (month*, closing_balance money*, currency*, closed boolean, commentary text, runway_months number, cash_out_month date, runway_status select ok/below_target, metrics text frozen JSON, rates_used text frozen JSON, closed_at date). budgets (name*, year number*, locked_on date*, currency*, totals text frozen JSON, rates_used text frozen JSON, notes). scenarios (name*, status saved/adopted/archived*, based_on_close date, based_on_version text forecast fingerprint, created_on date, summary text). changes (scenario_id text*, kind select*, target_id, months number, pct number, amount money, currency select, from_month date, label text). rates (month*, currency*, rate_per_eur number*, source ecb/manual*, source_ref text). Shared: programs (name*, code, archived), organizations (name*, org_type, archived), agreements (name*, counterparty_id, archived). * = required. All fields are scalar (multiple:false); months are stored as the first day of the month; relationships are record IDs, never names.\n\nCalculations (deterministic, in the app, no clock): the as-of month is the latest closed month, or the opening month. Cash starts from the opening balance, then each confirmed close. monthly = amount every month from start to end; one_off = amount in the start month; spread = amount ÷ months from start to end inclusive. People cost = annual_salary ÷ 12 × (1 + loaded_cost_pct/100) for active months. Amounts convert through EUR cross-rates: closed months use their own month's rate, future months the latest available rate; a missing rate flags and excludes the row. Net burn = spend − operating cash in (cash_in_type other); equity, grants, partnership and tax credits are financing. Runway = full months after the as-of month with forecast closing cash ≥ 0, counting committed and received cash in; a second value adds contingent. Cash-out month = first month below zero. Start-raise = first month with less than the target runway left. Cushion = months of cash after a milestone (to the reserve when one is set). Variance = actual − budget by month and category (and program where coded). The runway bridge splits the change since the last snapshot into closed months, spend lines, people and cash-in; the parts add up to the total.\n\nAccess: Runway is a custom app with app-level access only; per-tab restrictions are not advertised. Restrict positions.annual_salary with a database column restriction for anyone who should not see pay: live people cost and live runway then show restricted, and snapshots still show the approved runway. Reads are bounded (up to 800 rows per table, 88 reads per render); partial, unavailable or unbound tables withhold exact totals.",
+    "interactionContract": "Seven screens with stable IDs for the native layout gear: overview, cash_flow, plan, people, scenarios, actuals, settings. Overview: runway sentence, runway months, cash-out and start-raise dates, cash curve (actual solid, forecast dotted, contingent dotted, reserve line, milestone markers green ≥ 6 months, amber 3–6, red < 3), monthly burn by category (separate chart), the bridge since the last snapshot and exceptions; every chart has a data-table fallback. Cash flow: monthly table (opening, cash in, spend by category or category × program, net burn, closing), source switch (live forecast, preview, saved scenarios, locked budgets), include-contingent toggle, cell drill-down to the lines behind it, and Export CSV as copyable text. Plan: lines register with search, Filters (direction, status, category, program), 25 rows per page, Details side panel, Edit, Duplicate and Archive; payment schedule form; milestones; Lock as budget. People: roles and hires register, headcount and people cost by program for 12 months, runway effect shown in the editor before saving and in the archive confirmation. Scenarios: build a preview (nothing stored), save it (two reviews: the scenario, then its changes), copy, compare 2–4 side by side with an overlay chart, adopt (versions captured when the confirmation opens; stale records are rejected), archive. Actuals: months with open/closed status, Close month (bank balance, actuals by category, cash received, commentary), variance against the locked budget, snapshots opened read-only, commentary edits. Settings: settings form, FX rates, programs, organizations, and pointers to platform Access and Automations. Every input carries data-ui-state and a stable data-action; drafts survive re-renders and failed proposals; Save is visible from the start and enabled only with changes. All writes are records.propose changes approved in the trusted TrialAgents review.",
+    "lifecycle": "A fresh preview renders with no writes. After the app is saved, every create, edit, archive, close, lock, scenario save and adoption is an exact records.propose batch that the user approves in the host review; the app shows a notice until then and the database is unchanged. Edits and archives carry the record version captured when the editor or confirmation opened, so concurrent changes fail instead of being overwritten, and the draft is kept. Closing a month writes the actuals and one month_closes record whose metrics JSON is frozen; budgets are frozen at lock; neither is edited later (only close commentary can change). Scenario previews live only in UI state; a saved scenario is flagged Outdated when lines, positions, milestones, settings, closes or rates change after it was saved, and must be re-saved before adoption. Reviewed layout changes persist only presentation configuration and are re-read on every render. Revisions keep the same app ID, bindings and access. Catalog updates never migrate saved apps.",
+    "limitations": [
+      "No accounting, bank or payroll connectors and no file parsers; actuals are typed in or proposed by an assistant from a document the user shares.",
+      "Monthly granularity only; no 13-week cash view, revenue, AR/AP, debt, deferred revenue or three-statement model.",
+      "App-level access only: per-screen restrictions are not supported for this custom app. Protect salaries with the database column restriction.",
+      "Export CSV shows copyable CSV text; custom apps cannot start a file download yet. Database tables also offer CSV download in TrialAgents.",
+      "The installer creates its own Programs, Organizations and Agreements tables; reusing existing shared tables requires an assistant-prepared app with explicit bindings.",
+      "Saving a scenario takes two reviews (the scenario, then its changes) because child records need the saved scenario ID. Adoption is limited to 50 record changes per review; exchange-rate shifts are never adopted.",
+      "Spend and cash-in categories are fixed select options; adding one needs a reviewed schema change and app revision.",
+      "The exchange-rate automation needs a connected Claude or ChatGPT runner; there is no platform service that loads ECB rates automatically."
+    ],
+    "examples": [
+      {
+        "prompt": "Set up Runway for our 20-person biotech: €8.4M in the bank at 31 Oct 2026, programs TX-1 and TX-2, Phase 1 readout in Sep 2027, a $4M grant we expect in mid-2027.",
+        "expectedBehavior": "Pins the template, installs or prepares the app, then proposes one reviewed batch: settings (EUR, opening 8,400,000 on 2026-10-31), two programs, the main spend lines, positions, the milestone, a contingent grant cash-in line in USD (cash_in_type grant) and monthly USD rates. Explains that the grant is excluded from base runway until committed. Fictional figures; nothing is seeded."
+      },
+      {
+        "prompt": "Here's our October P&L. Close the month.",
+        "expectedBehavior": "Maps P&L lines to Runway categories and programs, asks about ambiguous lines, and proposes actual records for October for review. Tells the user to open Actuals → Close October and enter the bank balance; the app then writes the close and frozen snapshot after review. Does not compute or write runway results itself."
+      },
+      {
+        "prompt": "What if the Series A closes four months later and we pause program B from January?",
+        "expectedBehavior": "Describes two changes: move_cash_in on the Series A line by +4 months and stop_program for program B from 2027-01. The user adds them in Scenarios to see the preview, runway and cash-out; nothing is stored unless the user saves the scenario."
+      },
+      {
+        "prompt": "Email me if a monthly close puts us below the runway target.",
+        "expectedBehavior": "After the app is saved, prepares one TrialAgents email action with a database trigger on closes.runway_status changing to below_target, recipient the account owner, fixed message pointing to the latest snapshot. No schedule; explains it is optional and reviewed separately."
+      },
+      {
+        "prompt": "Keep it manual, no automations.",
+        "expectedBehavior": "Saves the app with no automation; rates are entered in Settings or proposed by the assistant on request. The app works fully without any task."
+      }
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "Two optional automations: (1) runway alert: a TrialAgents email action with a database trigger when a month close sets runway_status to below_target; (2) monthly exchange rates: research on the shared Claude or ChatGPT runner, monthly on the third business day, Europe/Berlin. No automation is a fully supported path.",
+      "readRequirements": "Alert: closes.month, runway_months, cash_out_month, runway_status (read). Rates: settings.enabled_currencies and existing fx_rates month/currency (read) for deduplication.",
+      "outputContract": "Alert: one email to the owner (and only explicitly approved, registered, authorized members) with runway months, cash-out month and the start-raise date from the snapshot; no independent schedule. Rates: for each enabled currency without a row for the previous month, one fx_rates record {month: first day of previous month, currency, rate_per_eur: monthly average of ECB euro reference rates, source: ecb, source_ref: ECB reference URL}; dedup key month + currency; no_update when all rows exist; partial results never overwrite existing rows; writes only to fx_rates through review or a narrow expiring standing grant.",
+      "promptExample": "Monthly on the 3rd business day (Europe/Berlin): read Runway settings.enabled_currencies and existing fx_rates. For each enabled currency other than EUR with no row for the previous calendar month, compute the monthly average of the ECB euro foreign exchange reference rates for that month (units per 1 EUR, four decimals) and propose one fx_rates record with source ecb and the ECB page as source_ref. Do not change existing rows. If every row already exists, report no_update. If ECB data is unavailable, report the failure and write nothing."
+    }
+  },
+  "examples": [
+    {
+      "heading": "Runway",
+      "tableMap": "{}",
+      "pageSize": 25,
+      "layoutProfile": "{}",
+      "readOnly": false,
+      "demoLabel": false
+    }
+  ],
+  "deprecated": false
+}
