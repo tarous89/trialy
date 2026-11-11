@@ -112,11 +112,14 @@ test('Editing an existing function workflow preserves its steps without requirin
 });
 
 async function creationStep(page,index){
- const steps=page.locator('.ty-automation-step');if(!await steps.count())return;
- const target=page.locator(`#automation-step-${index}>.ty-step-heading`);
- if(await target.isDisabled())for(let i=0;i<index;i++){
-   const next=page.locator(`#automation-step-${i+1}>.ty-step-heading`);
-   if(await next.isDisabled()){await page.locator(`#automation-step-${i}>.ty-step-heading`).click();await page.getByRole('button',{name:['Continue to trigger','Continue to worker','Continue to setup'][i],exact:true}).click();}
+ if(!await page.locator('.ty-automation-step').count())return;
+ for(let i=0;i<index;i++){
+  const next=page.locator(`#automation-step-${i+1}>.ty-step-heading`);
+  if(await next.isDisabled()){
+   await page.locator(`#automation-step-${i}>.ty-step-heading`).click();
+   if(i===2)await page.locator('input[name="automation-worker"]:checked').click();
+   await expect(next).toBeEnabled();
+  }
  }
- await target.click();
+ await page.locator(`#automation-step-${index}>.ty-step-heading`).click();
 }

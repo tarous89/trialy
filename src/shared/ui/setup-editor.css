@@ -96,7 +96,7 @@
 .ty-automation-step{border:1px solid #dce5df;border-radius:12px;background:white;min-width:0;scroll-margin-top:20px;overflow:hidden}
 .ty-workspace .ty-step-heading{display:flex;align-items:center;gap:12px;width:100%;padding:16px 20px;border:0;border-radius:0;background:transparent;text-align:left;color:#284b3b;cursor:pointer}
 .ty-step-heading>span:nth-child(2){flex:1;min-width:0}.ty-step-heading strong{font-size:14px}.ty-step-heading small{display:block;font-size:12px;color:#647d70;margin-top:3px;overflow-wrap:anywhere}
-.ty-step-heading:disabled{opacity:.55;cursor:default}.ty-step-heading[aria-expanded=true]{background:#f0f7f3}
+.ty-workspace .ty-step-heading:disabled{opacity:1;cursor:default;color:#284b3b}.ty-step-heading[aria-expanded=true]{background:#f0f7f3}
 .ty-step-number{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#e5f1e9;color:#27774f;font-size:12px;flex:none}
 .ty-step-body{padding:16px;display:grid;gap:14px}.ty-step-body[hidden]{display:none}
 .ty-workspace .ty-step-body>.ty-automation-panel,.ty-workspace .ty-step-body>.ty-automation-fields{border:0;padding:0;border-radius:0}

@@ -7,7 +7,7 @@ for(const width of [1920,900,390])test(`Compact database trigger cascades, prese
  await page.route('**/app-services/automations/options?*',r=>r.fulfill({json:{owner:{email:'owner@example.invalid'},members:[],tables,writeScopes:[]}}));
  await page.route('**/app-services/monitoring/prepare',r=>{submitted=r.request().postDataJSON();return r.fulfill({status:503,json:{message:'Draft retained'}});});
  await openPlatform(page,base+`/app-home?tab=automations&automationMode=new&workspaceId=${f.workspaceId}`);
- await page.getByLabel('Linked app',{exact:true}).selectOption(f.appId);await page.getByLabel('Name',{exact:true}).fill('Watch budgets');await page.getByRole('button',{name:'Continue to trigger'}).click();
+ await page.getByLabel('Linked app',{exact:true}).selectOption(f.appId);await page.getByLabel('Name',{exact:true}).fill('Watch budgets');await page.locator('#automation-step-1>.ty-step-heading').click();
  await expect(page.getByRole('button',{name:'Back to automations'})).toHaveCount(0);
  const title=await page.getByRole('heading',{name:'New automation',exact:true}).boundingBox(),actions=await page.locator('.ty-page-actions').boundingBox();expect(actions.y-title.y).toBeLessThan(10);
  await page.getByLabel('Trigger',{exact:true}).selectOption('database');await expect(page.getByLabel('Column',{exact:true})).toBeDisabled();await expect(page.getByLabel('Change',{exact:true})).toBeDisabled();
@@ -49,4 +49,4 @@ for(const assistant of ['chatgpt','claude'])test(`Plugin shares connector editor
  await page.screenshot({path:`/tmp/compact-plugin-connector-${assistant}.png`});
 });
 
-async function finish(page){await page.getByRole('button',{name:'Continue to worker'}).click();await page.getByRole('button',{name:'Continue to setup'}).click();await page.getByLabel('Prompt / instructions').fill('Review changed budgets');}
+async function finish(page){await page.locator('#automation-step-2>.ty-step-heading').click();await page.locator('input[name="automation-worker"]:checked').click();await page.locator('#automation-step-3>.ty-step-heading').click();await page.getByLabel('Prompt / instructions').fill('Review changed budgets');}
