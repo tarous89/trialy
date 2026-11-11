@@ -88,3 +88,20 @@
 .ty-workspace .ty-connectors .ty-button--primary{background:#087b50;border-color:#087b50;color:#fff}
 .ty-connector-description{grid-row:auto;order:2}.ty-connector-grid>.ty-project-access-toggle{order:2}.ty-connector-grid>p{order:3}
 .ty-connector-card .ty-automation-state:is([data-state=not_enabled],[data-state=loading],[data-state=restricted]){background:#edf2ef;color:#60776a}
+/* Keep headings inside cards and progressively disclose new automation setup. */
+.ty-workspace .ty-automation-composer :is(.ty-automation-panel,.ty-automation-fields,.ty-automation-recipients){min-width:0;border:1px solid #dce5df;background:#fff;display:grid}
+.ty-workspace .ty-automation-composer :is(h2,.ty-automation-fields>h2){position:static;grid-column:1/-1;overflow-wrap:anywhere}
+.ty-workspace .ty-automation-composer :is(label,select,input,textarea,.ty-automation-recipient,small){min-width:0;max-width:100%;overflow-wrap:anywhere}
+.ty-workspace .ty-automation-composer :is(.ty-automation-panel,.ty-automation-fields,.ty-automation-step){scroll-margin-top:140px}
+.ty-automation-step{border:1px solid #dce5df;border-radius:12px;background:white;min-width:0;scroll-margin-top:20px;overflow:hidden}
+.ty-workspace .ty-step-heading{display:flex;align-items:center;gap:12px;width:100%;padding:16px 20px;border:0;border-radius:0;background:transparent;text-align:left;color:#284b3b;cursor:pointer}
+.ty-step-heading>span:nth-child(2){flex:1;min-width:0}.ty-step-heading strong{font-size:14px}.ty-step-heading small{display:block;font-size:12px;color:#647d70;margin-top:3px;overflow-wrap:anywhere}
+.ty-step-heading:disabled{opacity:.55;cursor:default}.ty-step-heading[aria-expanded=true]{background:#f0f7f3}
+.ty-step-number{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#e5f1e9;color:#27774f;font-size:12px;flex:none}
+.ty-step-body{padding:16px;display:grid;gap:14px}.ty-step-body[hidden]{display:none}
+.ty-workspace .ty-step-body>.ty-automation-panel,.ty-workspace .ty-step-body>.ty-automation-fields{border:0;padding:0;border-radius:0}
+.ty-step-body>.ty-automation-panel>h2,.ty-step-body>.ty-automation-fields>h2{display:none!important}
+.ty-step-next{display:flex;justify-content:flex-end}.ty-workspace .ty-step-next button{background:#e8f4ed;border-color:#a8cfb8;color:#216843}
+.ty-workspace .ty-automation-composer{margin:0;border:0;background:transparent;border-radius:0}
+.ty-workspace .ty-automation-composer .ty-automation-step{padding:0;margin:0}
+.ty-workspace .ty-automation-composer .ty-step-body{margin:0}
