@@ -28,6 +28,9 @@ for(const width of [1440,390])test(`Embedded sidebar, native gallery and context
  await page.screenshot({path:`/tmp/embedded-gallery-${width}.png`});
  await page.route('**/fixture/tool',async route=>{if(route.request().postDataJSON().name==='install_app_template')await new Promise(r=>setTimeout(r,550));await route.continue();});
  await modal.getByRole('button',{name:'Use',exact:true}).click();await expect(root.getByRole('progressbar',{name:'Working'})).toBeVisible();
+ const progress=await root.getByRole('progressbar',{name:'Working'}).boundingBox(),main=await root.locator('.ty-main-column').boundingBox();
+ expect(progress.x).toBe(main.x);expect(progress.width).toBe(main.width);expect(progress.y).toBe((await header.boundingBox()).height);
+ await expect(root.getByRole('progressbar',{name:'Working'})).toHaveCSS('background-color','rgb(38, 75, 60)');
  await expect(root.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Runway',exact:true})).toBeVisible();
  await expect(root.getByRole('progressbar',{name:'Working'})).toHaveCount(0);expect(await page.evaluate(()=>window.lastOpenedUrl)).toBeUndefined();
  await expect(toggle).toHaveAttribute('aria-expanded','false');await toggle.click();
