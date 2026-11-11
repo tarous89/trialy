@@ -26,8 +26,11 @@ for(const width of [1440,390])test(`Embedded sidebar, native gallery and context
  await expect.poll(()=>currentView(page)).toMatchObject({view:'templates',templateId:expect.any(String)});
  await modal.getByRole('button',{name:'Fullscreen preview'}).click();await expect(modal).toHaveClass(/is-expanded/);expect((await modal.boundingBox()).width).toBe(width);
  await page.screenshot({path:`/tmp/embedded-gallery-${width}.png`});
- await page.route('**/fixture/tool',async route=>{if(route.request().postDataJSON().name==='install_app_template')await new Promise(r=>setTimeout(r,550));await route.continue();});
- await modal.getByRole('button',{name:'Use',exact:true}).click();await expect(root.getByRole('progressbar',{name:'Working'})).toBeVisible();
+ await page.route('**/fixture/tool',async route=>{if(['install_app_template','confirm_data_access'].includes(route.request().postDataJSON().name))await new Promise(r=>setTimeout(r,550));await route.continue();});
+ await modal.getByRole('button',{name:'Use',exact:true}).click();
+ // The same data access step is shown inside the assistant; Save there is the user's action.
+ const step=root.getByRole('dialog',{name:'Data access'});await expect(step).toBeVisible();await page.screenshot({path:`/tmp/embedded-data-access-${width}.png`});
+ await step.getByRole('button',{name:'Save',exact:true}).click();await expect(root.getByRole('progressbar',{name:'Working'})).toBeVisible();
  const progress=await root.getByRole('progressbar',{name:'Working'}).boundingBox(),main=await root.locator('.ty-main-column').boundingBox();
  expect(progress.x).toBe(main.x);expect(progress.width).toBe(main.width);expect(progress.y).toBe((await header.boundingBox()).height);
  await expect(root.getByRole('progressbar',{name:'Working'})).toHaveCSS('background-color','rgb(38, 75, 60)');

@@ -1,0 +1,593 @@
+{
+  "registry": "role-contracts",
+  "version": "2026-11-11",
+  "source": "docs/product/MODULAR_APPS_AND_SHARED_DATA.md#7-role-based-connections-standard-for-all-apps",
+  "rules": "Output roles (kind output) are read-only results that one app writes and any app may read. One live writer per output table; other apps bind it read-only. A custom app may take over writing only after the current writer is archived or permanently deleted, with an explicit owner choice. Additive changes keep a version compatible; a breaking change is a new version. A reader declares the versions it reads; it also connects to a newer version that is a superset (every field of the version it reads, same kind, cardinality and options). Core roles are listed in templates/core-contract/v1.json and stay multi-writer. Roles of kind app are an app's working tables published for readers; the single-writer rule does not apply to them.",
+  "roles": {
+    "runway.month_closes": {
+      "name": "Runway month closes",
+      "kind": "output",
+      "writer": "life.cash-runway",
+      "description": "Frozen month-end snapshots. metrics holds the frozen JSON snapshot (v, asOf, currency, months[]).",
+      "versions": {
+        "runway.v2": {
+          "fields": [
+            {
+              "key": "month",
+              "name": "Month",
+              "kind": "date",
+              "required": true,
+              "multiple": false,
+              "description": "Stored as the first day of the month."
+            },
+            {
+              "key": "closing_balance",
+              "name": "Closing bank balance",
+              "kind": "money",
+              "required": true,
+              "multiple": false
+            },
+            {
+              "key": "currency",
+              "name": "Currency",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "USD",
+                "EUR",
+                "GBP",
+                "CHF",
+                "CAD",
+                "AUD",
+                "JPY",
+                "CNY",
+                "SEK",
+                "DKK",
+                "NOK",
+                "INR"
+              ]
+            },
+            {
+              "key": "closed",
+              "name": "Closed",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "commentary",
+              "name": "Commentary",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "runway_months",
+              "name": "Runway",
+              "kind": "number",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "cash_out_month",
+              "name": "Cash-out month",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "runway_status",
+              "name": "Runway status",
+              "kind": "select",
+              "required": false,
+              "multiple": false,
+              "options": [
+                "ok",
+                "below_target"
+              ]
+            },
+            {
+              "key": "metrics",
+              "name": "Frozen metrics",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Frozen JSON snapshot written once at close; read-only. App output for other apps."
+            },
+            {
+              "key": "rates_used",
+              "name": "Rates used",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Frozen JSON of exchange rates used; read-only."
+            },
+            {
+              "key": "closed_at",
+              "name": "Closed on",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            }
+          ]
+        }
+      }
+    },
+    "programs.plan_items": {
+      "name": "Program plan items",
+      "kind": "app",
+      "writer": "life.project-oversight",
+      "description": "Programs' own working table, published so other apps can read key milestones (items with is_key true). Not single-writer: copies of Programs that share data keep editing it.",
+      "versions": {
+        "programs.v2": {
+          "fields": [
+            {
+              "key": "name",
+              "name": "Name",
+              "kind": "text",
+              "required": true,
+              "multiple": false
+            },
+            {
+              "key": "program_id",
+              "name": "Program",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "Record ID of a programs record."
+            },
+            {
+              "key": "item_type",
+              "name": "Item type",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "milestone",
+                "activity"
+              ]
+            },
+            {
+              "key": "function",
+              "name": "Function",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "cmc",
+                "nonclinical",
+                "clinical",
+                "regulatory",
+                "other"
+              ]
+            },
+            {
+              "key": "owner",
+              "name": "Owner",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Owner name as plain text (a people record name when the people table is used)."
+            },
+            {
+              "key": "start_date",
+              "name": "Start date",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "end_date",
+              "name": "End date",
+              "kind": "date",
+              "required": true,
+              "multiple": false,
+              "description": "For milestones, the milestone date."
+            },
+            {
+              "key": "baseline_start",
+              "name": "Baseline start",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "baseline_end",
+              "name": "Baseline end",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "status",
+              "name": "Status",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "planned",
+                "in_progress",
+                "done",
+                "at_risk",
+                "cancelled"
+              ]
+            },
+            {
+              "key": "predecessor_id",
+              "name": "Predecessor",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of one plan_items record (finish-to-start)."
+            },
+            {
+              "key": "is_key",
+              "name": "Key milestone",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "notes",
+              "name": "Notes",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "archived",
+              "name": "Archived",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false
+            }
+          ]
+        }
+      }
+    },
+    "programs.reports": {
+      "name": "Leadership reports",
+      "kind": "output",
+      "writer": "life.project-oversight",
+      "description": "Saved monthly leadership reports.",
+      "versions": {
+        "programs.v2": {
+          "fields": [
+            {
+              "key": "month",
+              "name": "Month",
+              "kind": "date",
+              "required": true,
+              "multiple": false,
+              "description": "First day of the reported month."
+            },
+            {
+              "key": "title",
+              "name": "Title",
+              "kind": "text",
+              "required": true,
+              "multiple": false
+            },
+            {
+              "key": "narrative",
+              "name": "Narrative",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "contents",
+              "name": "Contents",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Frozen JSON of the included updates, milestones, slips, gates and risks. Written once by the app."
+            },
+            {
+              "key": "saved_on",
+              "name": "Saved on",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            }
+          ]
+        }
+      }
+    },
+    "fundraise.tranches": {
+      "name": "Financing tranches",
+      "kind": "output",
+      "writer": "life.investor-crm",
+      "description": "Planned in the Fundraise scope; read by Runway (cash-in) and Investor Updates.",
+      "versions": {
+        "fundraise.v1": {
+          "fields": [
+            {
+              "key": "round_id",
+              "name": "Round",
+              "kind": "text",
+              "required": true,
+              "multiple": false
+            },
+            {
+              "key": "tranche_no",
+              "name": "Tranche",
+              "kind": "number",
+              "required": true,
+              "multiple": false
+            },
+            {
+              "key": "amount",
+              "name": "Amount",
+              "kind": "money",
+              "required": true,
+              "multiple": false
+            },
+            {
+              "key": "currency",
+              "name": "Currency",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "USD",
+                "EUR",
+                "GBP",
+                "CHF",
+                "CAD",
+                "AUD",
+                "JPY",
+                "CNY",
+                "SEK",
+                "DKK",
+                "NOK",
+                "INR"
+              ]
+            },
+            {
+              "key": "condition",
+              "name": "Condition",
+              "kind": "text",
+              "required": true,
+              "multiple": false
+            },
+            {
+              "key": "milestone_id",
+              "name": "Milestone",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of a programs.plan_items record."
+            },
+            {
+              "key": "expected_on",
+              "name": "Expected on",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "status",
+              "name": "Status",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "expected",
+                "met",
+                "released",
+                "waived",
+                "missed"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "dataroom.access_grants": {
+      "name": "Data room access",
+      "kind": "output",
+      "writer": "Data Room app (planned)",
+      "description": "Who has access to which data room.",
+      "versions": {
+        "dataroom.v1": {
+          "fields": [
+            {
+              "key": "room_id",
+              "name": "Room",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "room_name",
+              "name": "Room name",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "room_purpose",
+              "name": "Room purpose",
+              "kind": "select",
+              "required": false,
+              "multiple": false,
+              "options": [
+                "financing",
+                "licensing",
+                "m_and_a",
+                "other"
+              ]
+            },
+            {
+              "key": "organization_id",
+              "name": "Organization",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of an organizations record."
+            },
+            {
+              "key": "person_id",
+              "name": "Person",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of a people record."
+            },
+            {
+              "key": "granted_on",
+              "name": "Granted on",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "expires_on",
+              "name": "Expires on",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "status",
+              "name": "Status",
+              "kind": "select",
+              "required": false,
+              "multiple": false,
+              "options": [
+                "invited",
+                "active",
+                "revoked",
+                "expired"
+              ]
+            },
+            {
+              "key": "agreement_accepted_on",
+              "name": "Agreement accepted on",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "source",
+              "name": "Source",
+              "kind": "select",
+              "required": false,
+              "multiple": false,
+              "options": [
+                "manual",
+                "tracked"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "dataroom.engagement": {
+      "name": "Data room engagement",
+      "kind": "output",
+      "writer": "Data Room app (planned)",
+      "description": "Who viewed what, how often.",
+      "versions": {
+        "dataroom.v1": {
+          "fields": [
+            {
+              "key": "grant_id",
+              "name": "Grant",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "organization_id",
+              "name": "Organization",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of an organizations record."
+            },
+            {
+              "key": "person_id",
+              "name": "Person",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of a people record."
+            },
+            {
+              "key": "document_ref",
+              "name": "Document reference",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "document_title",
+              "name": "Document title",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "first_viewed_on",
+              "name": "First viewed on",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "last_viewed_on",
+              "name": "Last viewed on",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "view_count",
+              "name": "Views",
+              "kind": "number",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "seconds_viewed",
+              "name": "Seconds viewed",
+              "kind": "number",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "downloads",
+              "name": "Downloads",
+              "kind": "number",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "source",
+              "name": "Source",
+              "kind": "select",
+              "required": false,
+              "multiple": false,
+              "options": [
+                "manual",
+                "docsend",
+                "sharevault",
+                "tracked"
+              ]
+            },
+            {
+              "key": "as_of",
+              "name": "As of",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            }
+          ]
+        }
+      }
+    }
+  }
+}

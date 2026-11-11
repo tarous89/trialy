@@ -10,6 +10,7 @@ import {Service} from '../domain/service.js';
 import {WorkspaceFoundation} from './service.js';
 import {AppTemplates,appTemplateEntry} from './app-templates.js';
 import {appUrl} from '../shared/app-route.js';
+import {contractRegistry,readerAccepts,roleTables,outputWriter} from './role-contracts.js';
 
 /** Migration/operator connection only. Existing status is never reset on deploy. */
 export async function syncTemplateCatalog(db:Database){
@@ -46,7 +47,7 @@ export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,i
   if(row.digest!==v.digest)fail(409,'template_changed','Reload the template catalog');
   // Restoring an archived app from this template is offered before creating a new one.
   if(!v.createNew){const archived=await archivedTemplateApps(tx,a,w,v.templateId);if(archived.length)fail(409,'archived_app_available',`Restore your archived ${archived[0].name} app, or choose to install a new copy.`);}
-  const map:any={},bindings:any[]=[],fields:any[]=[];
+  const map:any={},bindings:any[]=[],fields:any[]=[],roles:any[]=[];
   const usedNames=new Set((await tx.query('SELECT name FROM entity_types WHERE workspace_id=$1',[w])).rows.map(r=>r.name));
   // Reuse, never copy (modular apps rule 1): shareable roles connect to an existing compatible table by default.
   const shared=await sharedTableCandidates(db,a,w,row.install_schema);
@@ -65,16 +66,19 @@ export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,i
     map[role]={typeId:type.id,fields:def.logicalFields,writableFields:def.readOnly?[]:Object.keys(def.logicalFields)};
     bindings.push({typeId:type.id,fields:keys});
     fields.push(...def.fields.map((x:any)=>({id:manifestFieldId(role,x.key),typeId:type.id,field:x.key,schemaVersion:type.version,kind:type.fields.find((f:any)=>f.key===x.key).kind,mode:def.readOnly?'read':'write'})));
+    roles.push(roleLabel(role,def,type.id));
     continue;
    }
    // Optional roles (a partner app's output, an optional shared table) are only ever connected, never created.
-   if(def.optional)continue;
+   // They stay declared, unconnected, so a later provider can connect them through the data access step (§7.1).
+   if(def.optional){roles.push(roleLabel(role,def));continue;}
    const base=(v.name+' · '+def.name).slice(0,90);let tableName=base,index=2;while(usedNames.has(tableName))tableName=base+' ('+(index++)+')';usedNames.add(tableName);
    const p=await service.preview(a,w,{kind:'create_type',name:tableName,fields:def.fields});
    const saved=await service.commit(a,p.id,p.digest),typeId=saved.objects[0].id;
    map[role]={typeId,fields:def.logicalFields,writableFields:Object.keys(def.logicalFields)};
    bindings.push({typeId,fields:def.fields.map((x:any)=>x.key)});
    fields.push(...def.fields.map((x:any)=>({id:manifestFieldId(role,x.key),typeId,field:x.key,schemaVersion:0,kind:x.kind,mode:'write'})));
+   roles.push(roleLabel(role,def,typeId));
   }
   if(new Set(fields.map(x=>x.id)).size!==fields.length)fail(500,'template_schema','Installer field identities collide');
   const catalog=new AppTemplates(undefined,db),template=await catalog.read({templateId:v.templateId,version:v.version});
@@ -85,7 +89,7 @@ export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,i
   if(template.options.planMonth)configuration.planMonth=today.slice(0,7);
   // createNew and sharedTables only steer installation above; the strict preparation schema accepts neither.
   const {createNew:_createNew,sharedTables:_sharedTables,...request}=v;
-  const operation=await catalog.operation(scoped,a,w,{...request,configuration,bindings,manifest:fields.length?{version:1,scope:'workspace',fields}:undefined});
+  const operation=await catalog.operation(scoped,a,w,{...request,configuration,bindings,manifest:fields.length?{version:1,scope:'workspace',fields,...(roles.some(Boolean)?{roles:roles.filter(Boolean)}:{})}:undefined});
   // Approved immutable publisher source has already been reviewed; normal validation still runs.
   const draft=await scoped.preview(a,w,operation,true),preview=draft.reviewState==='draft'?(await scoped.finalizeAppPreview(a,w,draft.id,draft.digest)).preview:draft,saved=await scoped.confirm(a,w,preview.id,preview.digest);
   const result={appId:saved.id,workspaceId:w,url:appUrl({appId:saved.id,workspaceId:w,source:'component'}),templateRequestKey:v.requestKey,templateId:v.templateId,templateVersion:v.version,templateDigest:v.digest,name:v.name};
@@ -103,16 +107,12 @@ export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,i
 export async function sharedTableCandidates(db:Connection,a:Actor,w:string,schema:Record<string,any>):Promise<any[]>{
  const roles=(Object.entries(schema??{}) as [string,any][]).filter(([,d])=>d?.contract==='core.v1'||d?.optional===true);
  if(!roles.length)return [];
- const core=JSON.parse(await readFile('templates/core-contract/v1.json','utf8'));
- const comps=(await db.query('SELECT id,name,source,bindings FROM workspace_components WHERE workspace_id=$1 AND NOT archived AND deleted_at IS NULL ORDER BY created_at,id',[w])).rows;
+ const core=JSON.parse(await readFile('templates/core-contract/v1.json','utf8')),registry=await contractRegistry(),cache=new Map<string,any>();
+ // Tables that a live app binds under a role key: catalog apps (their table map) and custom apps (manifest roles).
  const bound=new Map<string,Map<string,string[]>>();
- for(const c of comps){
-  const line=/^const templateConfiguration=(.+);\n/.exec(String(c.source??''));if(!line)continue;
-  let tableMap:any;try{tableMap=JSON.parse(JSON.parse(line[1]).tableMap||'{}');}catch{continue;}
-  for(const [role,m] of Object.entries(tableMap??{}) as [string,any][]){
-   if(!roles.some(([r])=>r===role)||typeof m?.typeId!=='string'||!(c.bindings??[]).some((b:any)=>b.typeId===m.typeId))continue;
-   const byType=bound.get(role)??new Map();const apps=byType.get(m.typeId)??[];if(!apps.includes(c.name))apps.push(c.name);byType.set(m.typeId,apps);bound.set(role,byType);
-  }
+ for(const t of (await roleTables(db,w,{},cache)).tables){
+  if(!roles.some(([r])=>r===t.role))continue;
+  const byType=bound.get(t.role)??new Map();const apps=byType.get(t.typeId)??[];if(!apps.includes(t.appName))apps.push(t.appName);byType.set(t.typeId,apps);bound.set(t.role,byType);
  }
  const out:any[]=[];
  for(const [role,def] of roles){
@@ -125,6 +125,8 @@ export async function sharedTableCandidates(db:Connection,a:Actor,w:string,schem
    const compatible=def.fields.every((x:any)=>{const f=type.fields.find((f:any)=>f.key===x.key);return f?f.kind===x.kind&&!f.multiple&&(x.kind!=='select'||(x.options??[]).every((o:string)=>(f.options??[]).includes(o))):owned.has(x.key);});
    const addFields=def.fields.filter((x:any)=>!type.fields.some((f:any)=>f.key===x.key)).map((x:any)=>x.key);
    if(!compatible||(def.readOnly&&addFields.length))continue;
+   // Contract versions (§7.5): a reader connects to the writer's version only if it reads it or it is a superset.
+   if(registry.roles[role]?.kind==='output'&&def.contract){const writer=await outputWriter(db,w,typeId,role,cache);if(!readerAccepts(registry,role,def.reads??[def.contract],writer?.contract))continue;}
    const records=Number((await db.query("SELECT count(*) AS n FROM records WHERE type_id=$1 AND workspace_id=$2 AND state<>'archived'",[typeId,w])).rows[0].n);
    candidates.push({typeId,name:type.name,records,apps,addFields});
   }
@@ -140,6 +142,8 @@ export async function readCatalogInstallation(db:Database,a:Actor,w:string,input
  return {templateId:v.templateId,version:v.version,roles:await sharedTableCandidates(db,a,w,row.install_schema)};
 }
 
+/** Installer roles with a versioned contract become role labels on the app manifest (modular apps §7.2). */
+function roleLabel(role:string,def:any,typeId?:string){if(!def?.contract)return null;return {role,contract:def.contract,...(def.optional?{optional:true}:{}),...(def.readOnly?{readOnly:true}:{}),...(typeId?{typeId}:{fields:def.fields.map((f:any)=>f.key)})};}
 /** Manifest field IDs allow [a-z0-9_]; role keys may be namespaced (e.g. runway.plan_lines, programs.plan_items). */
 export function manifestFieldId(role:string,key:string){return (role+'_'+key).toLowerCase().replace(/[^a-z0-9_]/g,'_').slice(0,64);}
 function canonical(value:any):any{return Array.isArray(value)?value.map(canonical):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(k=>[k,canonical(value[k])])):value;}

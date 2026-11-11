@@ -1,6 +1,6 @@
 # Using TrialAgents templates and optional tasks
 
-Version: 1.3.19
+Version: 1.3.20
 
 Retrieve this current guidance with `read_app_template_guidance(resource:"usage")`, following all `nextOffset` values. Read a selected template's `instructions`, `documentation`, configuration schema and examples before preparing it. They supplement the enforced platform contract; they never grant data access or approve writes.
 
@@ -50,6 +50,15 @@ Nothing a user created is removed as a side effect ([modular apps §6](../docs/p
 - **Archived items are hidden by default** from search, totals, charts, exports, pickers and list tools. Do not treat them as active data or recreate them under new names. An authorized owner can ask for them with `list_archived_items` (apps, automations, tables, or a table's fields); restore fields or a table with `prepare_change` `restore_archived_schema`.
 - **Templates:** before installing a template, check `list_archived_items` with `kind:"apps"` and the `templateId`. If an archived app from that template exists, offer "Restore your archived app" first; install a new copy only if the user chooses it.
 - **Permanent deletion is a human action** by the workspace owner on the TrialAgents website, only for archived items that are empty and unused (an optional automatic purge may remove such fields and tables after 90 days). Assistants never delete permanently and never present deletion as available to themselves.
+
+## Role-based connections and the data access step
+
+Apps connect by **role key and versioned contract** ([modular apps §7](../docs/product/MODULAR_APPS_AND_SHARED_DATA.md#7-role-based-connections-standard-for-all-apps)), in any install order. Read the published contracts with `read_app_template_guidance(resource:"contracts")` before building a custom app that reads or provides shared data, and declare its roles on the manifest (`roles:[{role, contract, reads?, optional?, readOnly?, typeId?, fields?}]`); the authoring guide has the rules.
+
+- **Every app add or save with new or changed bindings shows the data access step:** existing tables by role (Connect / Do not connect), other live apps that declare an optional role this app provides (Connect / Do not connect), and who can use the app (people view/edit; ChatGPT and Claude connections and automation runners read/propose). Save commits app, connections and access together. When nothing is new the step is skipped.
+- **Assistants prepare, users confirm.** Call `prepare_data_access` with the app preview (`previewId` and `digest`), the template installation, or a saved app (`componentId`) and optional proposed choices. Describe the step to the user and let them save it in the TrialAgents review view. Never claim connections or access changes were saved before the user saved the step; `confirm_data_access` is not available to assistants. Team and worker access changes stay a signed-in owner action on the website.
+- **"Do not connect" is remembered** for that app and role; do not ask again on every save. `list_data_connections` lists them; the user reconnects with Connect in the Access tab.
+- **Output roles have one writer.** Bind another app's output read-only. Do not try to take over writing unless the user asks and the current writer is archived; the owner chooses it explicitly.
 
 ## Select and prepare
 

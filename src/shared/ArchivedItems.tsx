@@ -1,5 +1,6 @@
 import React,{useEffect,useId,useState} from 'react';
 import {Button} from './ui/Controls.js';
+import {useDataAccessStep} from './DataAccessStep.js';
 type Call=(name:string,args:any)=>Promise<any>;
 type Kind='apps'|'automations'|'tables'|'fields';
 const LABEL:Record<Kind,string>={apps:'apps',automations:'automations',tables:'tables',fields:'fields'};
@@ -17,6 +18,7 @@ const remember=(key:string,open:boolean)=>{try{sessionStorage.setItem(key,open?'
 export function ArchivedItems({call,kind,typeId,refreshKey,onChanged,layout='list'}:{call:Call;kind:Kind;typeId?:string;refreshKey?:unknown;onChanged?:()=>void;layout?:'list'|'grid'|'compact'}){
  const storageKey='trialy-archived:'+kind,listId=useId();
  const [data,setData]=useState<any>(null),[open,setOpen]=useState(()=>remembered(storageKey)),[busy,setBusy]=useState(''),[error,setError]=useState(''),[confirming,setConfirming]=useState<{item:any;action:'restore'|'delete';review?:any}|null>(null),[reload,setReload]=useState(0);
+ const dataAccess=useDataAccessStep(call);
  useEffect(()=>{let live=true;call('list_archived_items',{kind,...(typeId?{typeId}:{})}).then(r=>{if(live)setData(r);}).catch(()=>{if(live)setData(null);});return()=>{live=false;};},[kind,typeId,refreshKey,reload]);
  const items:any[]=data?.items??[];
  if(!items.length)return null;
@@ -28,7 +30,8 @@ export function ArchivedItems({call,kind,typeId,refreshKey,onChanged,layout='lis
   const review=preview.archiveReview;
   // Something it depends on was deleted permanently: say exactly what, and proceed only on confirmation.
   if(!confirmed&&review?.unavailable?.length){await call('discard_workspace_preview',{previewId:preview.id}).catch(()=>{});return {needsConfirmation:review};}
-  await call('confirm_workspace_change',{previewId:preview.id,digest:preview.digest,confirmed:true});return null;
+  // Restoring adds the app back: the data access step lists other apps that can use its data again.
+  await dataAccess.gate({previewId:preview.id,digest:preview.digest},()=>call('confirm_workspace_change',{previewId:preview.id,digest:preview.digest,confirmed:true}));return null;
  }
  async function restore(item:any,confirmed=false){setBusy(item.key??item.id);setError('');try{
   if(item.kind==='app'||item.kind==='automation'){
@@ -45,7 +48,7 @@ export function ArchivedItems({call,kind,typeId,refreshKey,onChanged,layout='lis
  async function remove(item:any){setBusy(item.key??item.id);setError('');try{await call('delete_archived_item',{kind:item.kind,id:item.id,...(item.key?{key:item.key}:{}),confirmed:true});done();}catch(e){setError((e as Error).message);}finally{setBusy('');}}
  const keeps=(item:any)=>{const tables=item.keeps?.tables??[],records=tables.reduce((n:number,t:any)=>n+Number(t.records??0),0);return `Deleting this app keeps its ${plural(tables.length,'table')} and ${plural(records,'record')} in Database.`;};
  const meta=(item:any)=>[item.archivedAt&&`Archived ${date(item.archivedAt)}`,item.kind==='app'&&item.keeps&&plural(item.keeps.tables.length,'table'),item.kind==='automation'&&`App: ${item.appName}`,item.kind==='table'&&`${plural(item.records??0,'record')} · ${plural(item.fields??0,'archived field')}`,item.kind==='field'&&item.fieldKind].filter(Boolean).join(' · ');
- return <section className={`ty-archived ty-archived--${layout}`} aria-label={`Archived ${label}`}>
+ return <section className={`ty-archived ty-archived--${layout}`} aria-label={`Archived ${label}`}>{dataAccess.element}
   <button type="button" className="ty-archived-toggle" aria-expanded={open} aria-controls={listId} onClick={toggle}>{open?`Hide archived ${label}`:`Show archived ${label} (${items.length})`}</button>
   {error&&<p role="alert" className="ty-archived-error">{error}</p>}
   {open&&<ul id={listId} className="ty-archived-list">{items.map(item=>{const key=item.key??item.id,reasonId=listId+'-'+key;return <li key={key} className="ty-archived-item">

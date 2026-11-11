@@ -4,8 +4,11 @@ import type {Connection} from '../db/database.js';
 import {typeAccess,visibleFields} from '../domain/permissions.js';
 import {derived} from '../shared/formulas.js';
 import {isDeepStrictEqual} from 'node:util';
+import {roleDeclaration} from './role-contracts.js';
 export const resourceKind=z.enum(['generic','tracker','form','visualization']);
-export const resourceManifest=z.object({version:z.literal(1),scope:z.enum(['project','workspace']).default('project'),fields:z.array(z.object({id:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),typeId:id,field:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),schemaVersion:z.number().int().min(0),kind:z.string().min(1).max(30),mode:z.enum(['read','write']),label:z.string().min(1).max(100).optional()}).strict()).min(1).max(200)}).strict();
+export const resourceManifest=z.object({version:z.literal(1),scope:z.enum(['project','workspace']).default('project'),fields:z.array(z.object({id:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),typeId:id,field:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),schemaVersion:z.number().int().min(0),kind:z.string().min(1).max(30),mode:z.enum(['read','write']),label:z.string().min(1).max(100).optional()}).strict()).min(1).max(200),
+ /** Role keys with a versioned contract (modular apps §7.2). Same rules as template installer roles. */
+ roles:z.array(roleDeclaration).max(50).optional()}).strict();
 export type Manifest=z.infer<typeof resourceManifest>;
 // Optional new columns do not change an existing app's reviewed field contract.
 // Verify the complete saved schema history; missing or incompatible history fails closed.

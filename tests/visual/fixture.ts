@@ -26,7 +26,7 @@ export async function fixture(){
  const calls:string[]=[];
  const appTools=new Map<string,any>();addAppMcp({registerTool:(name:string,config:any,handler:any)=>appTools.set(name,{config,handler})} as any,f,actor,(fn:any)=>fn,{});
  const tools=async(name:string,v:any):Promise<any>=>{calls.push(name);
-  if(name==='install_app_template'||name==='read_template_installation')return appTools.get(name).handler(v);
+  if(['install_app_template','read_template_installation','read_data_access','confirm_data_access','list_data_connections'].includes(name))return appTools.get(name).handler(v);
   if(name==='list_app_templates')return new AppTemplates(undefined,db).list(v);
   if(name==='move_tool'){const {workspaceId,...request}=v;return moveTool(db,{...actor,origin:'ai',actionConfirmed:true},workspaceId??w.id,request);}
   if(name==='open_app')return openApp(f,actor,v);
