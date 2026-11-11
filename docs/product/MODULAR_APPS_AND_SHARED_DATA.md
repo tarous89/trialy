@@ -33,7 +33,7 @@ This matches what the platform already guarantees: app deletion does not cascade
 4. **Shared schemas only grow.** Apps may add optional fields to core tables only if the [core data contract](#4-core-data-contract-v1) lists them. Never rename, retype or remove a core field. App-specific data about a shared record goes into the app's own table keyed by that record's ID (extension-table pattern).
 5. **Stable role keys.** Each table a template binds has a stable role key (e.g. `programs`, `runway.plan_lines`) and a contract version. The same keys are used on install, reinstall and when a removed tab is added back.
 6. **Removing a tab unbinds; it never deletes.** Data stays; dependent features in other apps degrade per rule 3. Re-adding the tab reconnects the same tables.
-7. **Deleting an app keeps its data.** The delete dialog lists the tables that stay in Database and which other apps still use them. Archiving or deleting the app's own tables is a separate, explicit step (see §5); core tables are never offered for deletion from the app dialog.
+7. **Removing an app archives it and keeps its data.** The dialog lists the tables that stay in Database and which other apps still use them. Fields and tables nobody uses any more are archived, not removed (see §6); permanent deletion is a separate owner action; core tables with data are never deleted from an app dialog.
 8. **Reinstall reconnects by default.** If retained tables for the same template and role keys exist, offer "Reconnect your previous data (N records)" (default) or "Start fresh". Schema differences are applied as additive, reviewed changes.
 9. **Acceptance test in every template:** install alone; install with its partner apps; delete a partner app; remove one tab; reinstall. The app must keep working with correct, explicitly labelled data in each step.
 
@@ -66,4 +66,37 @@ Verify current behaviour first; build only what is missing.
 | 7 | **Template validation:** core roles use contract keys and kinds; cross-app references only to core tables or outputs | Add to the authoring preflight. |
 | 8 | **Authoring guidance:** add rules 1–9 and the extension-table pattern to `templates/TEMPLATE_AUTHORING.md` (keep both guidance copies and `templateGuidance.version` in sync) | |
 
+| 9 | **Archive-first lifecycle and PR #117 amendment** | See §6. Highest priority: archiving an app must not remove fields. |
+
 Until items 1–6 ship, templates follow the rules manually: reuse via the install-time existing-table choice, graceful degradation in code, and no deletion of data by any app action.
+
+## 6. Archive first: apps, automations and database
+
+**Principle:** nothing a user created is permanently removed by a side effect. Removing an app, tab, automation, table or field **archives** it: hidden from normal lists, data and history intact, restorable. Permanent deletion is a separate, explicit owner action on archived items, or an automatic purge only of items that are both **empty and unused** after a retention period.
+
+| Object | "Remove" does | Restore | Permanent deletion |
+|---|---|---|---|
+| App | Archive (already `archive_component`) | `restore_component`, with its tabs, bindings and automations (disabled) | Owner, from the archived list, after confirming what stays |
+| Tab | Unbind; data stays | Re-add the tab: same role keys reconnect | Not applicable |
+| Automation | Disable / archive with the app (no standalone delete, as today) | Restored **disabled**; owner re-enables after review | Not offered |
+| Field | **Archive** when no live or archived app, view, link, scope, function, connector, automation or cross-table link uses it | Automatic when an app binds it again (inside that app's reviewed save) | Empty + unused + archived ≥ 90 days → automatic purge allowed; otherwise owner action |
+| Table | **Archive** when all its fields are archived or no binding uses it | Automatic when an app binds it again | Same rule as fields; never for core tables with data |
+| Record | Archive (`archived` flag, as today) | Unarchive | Owner-only, as today |
+
+### Review of PR #117 (migration 059, `src/workspace/app-cleanup.ts`)
+
+PR #117 retires automations whose data bindings were removed and, in the same app save, **removes unused empty fields** from schemas (an all-empty schema becomes an invisible table identity). Its dependency check (`trialy_security.unused_app_fields`) is thorough — it looks at every owner's records including archived rows, other apps, derived fields, views, links, scopes, functions, connectors and automations — and should be kept. Three behaviours conflict with this design and should be amended:
+
+1. **Cleanup also runs on `archive_component`.** Archiving ("deleting") an app immediately removes the empty fields only it used, so a later `restore_component` points at fields that no longer exist. Archive must stay fully reversible.
+2. **Archived apps do not protect fields** (the check only counts `NOT c.archived` components). Bindings of archived apps must count as in use until the app is permanently deleted.
+3. **Automations of archived apps are soft-deleted** (`deleted_at` set on monitors/actions) rather than suspended, so they cannot be restored with the app. They should be disabled and marked suspended-by-archive, then restored disabled.
+
+**Amendment (to build in Claude Code, with tests):**
+- Do not call `cleanupRemovedAppFields` on `archive_component`.
+- Treat archived apps' bindings as users in `unused_app_fields`.
+- Replace field removal with **field archiving** (new archived state on fields and tables, hidden by default in Database and pickers, values retained); un-archive automatically when a reviewed app save binds them again.
+- Add an owner-only "Delete permanently" for archived, empty, unused fields/tables, and an optional scheduled purge of items that stayed empty, unused and archived for 90 days.
+- On app archive, suspend (not delete) its automations; on restore, bring them back disabled.
+- Keep everything else from #117: retiring workflows whose bindings were removed, cancelling queued work, no record or audit deletion, owner/schema rights required.
+- Tests: archive → restore app keeps all fields and automations (disabled); remove tab → re-add tab reconnects; field used by an archived app is not archived; purge never touches populated or bound items; cross-owner and RLS cases from #117 still pass.
+
