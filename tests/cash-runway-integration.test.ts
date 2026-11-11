@@ -39,14 +39,15 @@ test('installed Runway uses the real manifest, reviewed writes and versioned nat
   await assert.rejects(f.runFrontend(actor,w.id,{componentId:saved.id,expectedVersion:saved.version,state:edit.state,event:{kind:'submit',action:'save-record',form:{name:'Stale edit'}}}),/changed|version/i);
  }finally{await x.pg.close();}
 });
-test('the 2.0.0 installer schema creates thirteen empty tables and an app that opens with no automation',async()=>{
+test('the approved 2.0.0 catalog entry replaces 1.2.2 and its installer creates thirteen empty tables and an app that opens with no automation',async()=>{
  const x=await cashFixture();
  try{
   await syncTemplateCatalog(x.db);const row=(await x.db.query("SELECT status,install_schema FROM app_template_catalog WHERE template_id='life.cash-runway' AND version='2.0.0'")).rows[0];
-  assert.equal(row.status,'draft');assert.equal(Object.keys(row.install_schema).length,13);
-  assert.equal((await x.db.query("SELECT status FROM app_template_catalog WHERE template_id='life.cash-runway' AND version='1.2.2'")).rows[0].status,'approved');
-  await x.db.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.cash-runway' AND version='2.0.0'");// test database only
-  const t=await new AppTemplates(undefined,x.db).read({templateId:'life.cash-runway',version:'2.0.0'});
+  // Owner-approved replacement: a fresh catalog approves 2.0.0 and lists it instead of 1.2.2.
+  assert.equal(row.status,'approved');assert.equal(Object.keys(row.install_schema).length,13);
+  assert.equal((await x.db.query("SELECT status FROM app_template_catalog WHERE template_id='life.cash-runway' AND version='1.2.2'")).rows[0].status,'draft');
+  const catalog=new AppTemplates(undefined,x.db),listed=(await catalog.list({query:'runway'})).templates.find(t=>t.id==='life.cash-runway');assert.equal(listed?.version,'2.0.0');assert.equal(listed?.name,'Runway');
+  const t=await catalog.read({templateId:'life.cash-runway'});assert.equal(t.version,'2.0.0');
   const w=await x.s.createWorkspace(x.actor,'Install'),before=(await x.db.query('SELECT count(*)::int n FROM entity_types WHERE workspace_id=$1',[w.id])).rows[0].n;
   const app=await installCatalogApp(x.f,x.actor,w.id,{templateId:t.id,version:t.version,digest:t.digest,name:'Runway',requestKey:randomUUID()});
   assert.equal((await x.db.query('SELECT count(*)::int n FROM entity_types WHERE workspace_id=$1',[w.id])).rows[0].n-before,13);

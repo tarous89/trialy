@@ -1,6 +1,6 @@
 # Runway 2.0.0 validation
 
-Validated against the repository host on 10 November 2026 with disposable PGlite databases and fictional data, not a deployed account. The catalog version is new and defaults to **draft**. It needs publisher approval through the operator flow; `templates/catalog-seed.json` approval was not extended.
+Validated against the repository host on 10 November 2026 with disposable PGlite databases and fictional data, not a deployed account. On 11 November 2026 the owner approved 2.0.0 to replace 1.2.2 in the platform templates. `templates/catalog-seed.json` now names 2.0.0, so the pre-deploy catalog sync inserts it as approved. The website gallery and `list_app_templates` show only the latest approved version, so 1.2.2 stops being offered for new installs. Its existing production row keeps its status, so existing 1.x apps and exact-version reads keep working; set it to draft with the operator command only if exact-version access should also end.
 
 ## Commands and outcomes
 
