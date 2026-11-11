@@ -83,6 +83,20 @@ Until items 1–6 ship, templates follow the rules manually: reuse via the insta
 | Table | **Archive** when all its fields are archived or no binding uses it | Automatic when an app binds it again | Same rule as fields; never for core tables with data |
 | Record | Archive (`archived` flag, as today) | Unarchive | Owner-only, as today |
 
+### Archived items in the interface
+
+Same pattern on **Apps**, **Automations** and **Database** (tables, and fields on a table's page):
+
+- **Entry point:** one subtle, light-text link at the bottom of the page's list: "Show archived apps (3)" / "Show archived automations (2)" / "Show archived tables (1)" / "Show archived fields (4)". Shown **only when the count is above zero** and **only to people who can restore those items** (workspace owners; for apps also the app's owner). Others never see archived items, counts or names.
+- **Expanded view:** the archived items appear **below** the normal list, in the same layout, columns and styling, visually muted. Actions per item: **Restore** and **Delete**. The link changes to "Hide archived". The expanded state is remembered for the session.
+- **Accessibility:** "pale" is done with a muted surface, lighter borders and icons, and an "Archived" label on each item. Text stays at least at the muted-ink contrast of the design system (≥ 4.5:1); state is never shown by colour alone. Keyboard and screen-reader accessible; same on mobile.
+- **Exclusions:** archived items are left out of search, totals, charts, exports, pickers and assistant listings by default. MCP list tools return them only on an explicit include-archived request by an authorized owner.
+- **Restore:** brings back the item with its links; automations come back **disabled**. Restoring an automation archived together with its app happens by restoring the app. A name clash adds "(restored)". If something the item depends on was permanently deleted, restore says exactly what is unavailable and proceeds only after the user confirms.
+- **Delete:** a confirmation lists what will be removed and what stays (e.g. "Deleting this app keeps its 3 tables and 412 records in Database"). For fields and tables, Delete is **enabled only when the item is empty and unused**; otherwise it is disabled with a one-line reason (e.g. "Contains 58 values" or "Used by archived app Runway"). Items scheduled for automatic purge show "Deletes automatically on 12 Feb 2027" in the same light text.
+- **Assistants:** Claude and ChatGPT may list archived items for an authorized owner and prepare a restore for review. Permanent deletion is always a human action in the platform, never an assistant action.
+- **Templates:** installing a template whose app is archived first offers "Restore your archived Runway app" before creating a new one.
+- **Logs:** archive, restore, permanent delete and automatic purge are recorded in Logs and the audit trail.
+
 ### Review of PR #117 (migration 059, `src/workspace/app-cleanup.ts`)
 
 PR #117 retires automations whose data bindings were removed and, in the same app save, **removes unused empty fields** from schemas (an all-empty schema becomes an invisible table identity). Its dependency check (`trialy_security.unused_app_fields`) is thorough — it looks at every owner's records including archived rows, other apps, derived fields, views, links, scopes, functions, connectors and automations — and should be kept. Three behaviours conflict with this design and should be amended:
