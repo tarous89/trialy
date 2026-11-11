@@ -110,3 +110,28 @@
 .ty-workspace .ty-automation-step[data-complete=false] .ty-step-number{background:#e3e7ea;color:#53616b}
 .ty-workspace .ty-automation-step[data-complete=false] .ty-step-heading small{color:#69757e}
 .ty-workspace .ty-automation-step[data-complete=true]>.ty-step-heading{background:#f0f7f3;color:#284b3b}
+
+/* Compact automation list: title, metadata and preview share one reading edge. */
+.ty-workspace .ty-automation-row{grid-template-columns:minmax(0,1fr) auto;gap:8px 24px;padding:16px 20px}
+.ty-workspace .ty-automation-card-top{grid-column:1;grid-row:1;justify-content:flex-start;gap:12px}
+.ty-workspace .ty-automation-card-top h2{margin:0;font-size:15px;line-height:1.4}
+.ty-workspace .ty-automation-kind{display:none}
+.ty-workspace .ty-automation-card-body{grid-column:1;grid-row:2;display:flex;align-items:center;flex-wrap:wrap;gap:6px 18px;margin:0;font-size:12px;line-height:1.5}
+.ty-workspace .ty-automation-card-body :is(.ty-automation-app,.ty-automation-timing){display:flex;align-items:center;gap:6px;min-width:0}
+.ty-workspace .ty-automation-card-body svg{flex-shrink:0;color:#6b8075}
+.ty-workspace .ty-automation-card-body .ty-automation-services{gap:6px;justify-content:flex-start}
+.ty-workspace .ty-automation-services .ty-service-label{background:transparent;border:0;padding:0;color:#64766d;font-size:12px}
+.ty-workspace .ty-automation-services .ty-service-label+.ty-service-label::before{content:'·';margin-right:6px}
+.ty-workspace .ty-automation-row>.ty-automation-prompt{grid-column:1;grid-row:3}
+.ty-workspace .ty-automation-row>.ty-automation-prompt p{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:1;overflow:hidden;max-height:1.5em}
+.ty-workspace .ty-automation-card-footer{grid-column:2;grid-row:1/4;align-self:center;flex-direction:column-reverse;align-items:flex-end;gap:6px}
+@media(max-width:1100px){
+ .ty-workspace .ty-automation-row{gap:8px 14px}
+ .ty-workspace .ty-automation-card-footer .ty-actions{flex-wrap:nowrap}
+}
+@media(max-width:760px){
+ .ty-workspace .ty-automation-row{grid-template-columns:minmax(0,1fr);padding:14px}
+ .ty-workspace .ty-automation-card-footer{grid-column:1;grid-row:4;justify-self:end;margin-top:2px}
+ .ty-workspace .ty-automation-card-top{justify-content:space-between}
+ .ty-workspace .ty-automation-row>.ty-automation-prompt p{-webkit-line-clamp:2;max-height:3em}
+}
