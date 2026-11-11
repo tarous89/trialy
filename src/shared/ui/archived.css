@@ -31,3 +31,18 @@
 .ty-workspace .ty-db-tree .ty-archived-item .ty-archived-actions button:disabled{color:var(--ty-muted);background:#f7f9f8}
 .ty-workspace .ty-archived--compact,.ty-workspace .ty-archived--compact .ty-archived-list{grid-template-columns:minmax(0,1fr)}
 .ty-workspace .ty-archived--compact .ty-archived-item *{min-width:0;white-space:normal}
+
+/* Quiet text actions, shared by archived apps, automations, tables and fields. */
+.ty-workspace .ty-archived-actions{gap:16px;align-items:center;justify-content:flex-start}
+.ty-workspace .ty-archived .ty-archived-actions .ty-archive-text-action,
+.ty-workspace .ty-db-tree .ty-archived-item .ty-archived-actions .ty-archive-text-action{
+ display:inline-flex;flex:none;width:auto;min-height:28px;justify-content:flex-start;
+ margin:0;padding:3px 0;border:0;border-radius:3px;box-shadow:none;
+ background:transparent;color:var(--ty-muted);font:inherit;font-size:13px;font-weight:500;
+ text-decoration:underline;text-decoration-color:transparent;text-underline-offset:3px;cursor:pointer
+}
+.ty-workspace .ty-archived .ty-archive-text-action:not(:disabled):hover{color:#176a47;text-decoration-color:currentColor}
+.ty-workspace .ty-archived .ty-archive-text-action--delete:not(:disabled):hover{color:#9b2c2c}
+.ty-workspace .ty-archived .ty-archive-text-action:focus-visible{outline:2px solid var(--ty-focus);outline-offset:3px}
+.ty-workspace .ty-archived .ty-archive-text-action:disabled{opacity:.5;cursor:not-allowed}
+.ty-workspace .ty-archived--compact .ty-archived-actions{flex-direction:row;flex-wrap:wrap}
