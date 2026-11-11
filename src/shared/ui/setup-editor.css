@@ -106,7 +106,7 @@
 .ty-workspace .ty-automation-composer .ty-automation-step{padding:0;margin:0}
 .ty-workspace .ty-automation-composer .ty-step-body{margin:0}
 
-.ty-workspace .ty-automation-step[data-complete=false]>.ty-step-heading{background:#fff1ef;color:#813b35}
-.ty-workspace .ty-automation-step[data-complete=false] .ty-step-number{background:#f9dfdb;color:#9b4037}
-.ty-workspace .ty-automation-step[data-complete=false] .ty-step-heading small{color:#995c55}
+.ty-workspace .ty-automation-step[data-complete=false]>.ty-step-heading{background:#f1f3f4;color:#38434a}
+.ty-workspace .ty-automation-step[data-complete=false] .ty-step-number{background:#e3e7ea;color:#53616b}
+.ty-workspace .ty-automation-step[data-complete=false] .ty-step-heading small{color:#69757e}
 .ty-workspace .ty-automation-step[data-complete=true]>.ty-step-heading{background:#f0f7f3;color:#284b3b}
