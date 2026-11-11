@@ -48,9 +48,9 @@ try{
  await frame.getByText('Runway effect before saving').waitFor();
  assert.equal(await form.locator('input:disabled,select:disabled,textarea:disabled').count(),0);
  await form.getByRole('button',{name:'Prepare reviewed save'}).click();await page.locator('#approve').waitFor({state:'visible'});
- assert.equal((await x.s.records(x.actor,x.w.id,x.map.lines.typeId,{limit:100,offset:0})).rows.length,1);
+ assert.equal((await x.s.records(x.actor,x.w.id,x.map['runway.plan_lines'].typeId,{limit:100,offset:0})).rows.length,1);
  await page.locator('#approve').click();await page.locator('#approve').waitFor({state:'hidden'});
- assert.equal((await x.s.records(x.actor,x.w.id,x.map.lines.typeId,{limit:100,offset:0})).rows.length,2);
+ assert.equal((await x.s.records(x.actor,x.w.id,x.map['runway.plan_lines'].typeId,{limit:100,offset:0})).rows.length,2);
  await frame.locator('.rw-nav [data-action="nav:overview"]').click();await frame.getByText('Cash lasts until Apr 2027').waitFor();
  await frame.getByRole('button',{name:'App layout settings'}).click();await page.getByRole('button',{name:'Move Overview'}).waitFor();
  await page.getByRole('button',{name:'Move Scenarios'}).dragTo(page.getByRole('button',{name:'Move Overview'}));

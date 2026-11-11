@@ -1,0 +1,68 @@
+{
+  "contract": "core.v1",
+  "source": "docs/product/MODULAR_APPS_AND_SHARED_DATA.md#4-core-data-contract-v1",
+  "rules": "One table per role per workspace. Scalar fields (multiple:false), lowercase snake_case keys, an archived boolean on each role. Shared schemas only grow: never rename, retype or remove a field. Fields with an owner are optional fields that only that app writes; other apps may read them. Apps add an owned field only when they bind the table.",
+  "roles": {
+    "organizations": {
+      "name": "Organizations",
+      "fields": [
+        {"key": "name", "name": "Name", "kind": "text", "required": true, "multiple": false, "ai": true},
+        {"key": "org_type", "name": "Type", "kind": "select", "required": false, "multiple": false, "ai": true, "options": ["company", "investor", "cro", "cdmo", "site", "funder", "partner", "agency", "other"]},
+        {"key": "country", "name": "Country", "kind": "text", "required": false, "multiple": false, "ai": true},
+        {"key": "website", "name": "Website", "kind": "text", "required": false, "multiple": false, "ai": true},
+        {"key": "archived", "name": "Archived", "kind": "boolean", "required": false, "multiple": false, "ai": true}
+      ]
+    },
+    "people": {
+      "name": "People",
+      "description": "Professional contacts only.",
+      "fields": [
+        {"key": "name", "name": "Name", "kind": "text", "required": true, "multiple": false, "ai": true},
+        {"key": "organization_id", "name": "Organization", "kind": "text", "required": false, "multiple": false, "ai": true, "description": "Record ID of an organizations record."},
+        {"key": "title", "name": "Title", "kind": "text", "required": false, "multiple": false, "ai": true},
+        {"key": "email", "name": "Email", "kind": "text", "required": false, "multiple": false, "ai": true},
+        {"key": "archived", "name": "Archived", "kind": "boolean", "required": false, "multiple": false, "ai": true}
+      ]
+    },
+    "programs": {
+      "name": "Programs",
+      "fields": [
+        {"key": "name", "name": "Name", "kind": "text", "required": true, "multiple": false, "ai": true},
+        {"key": "code", "name": "Code", "kind": "text", "required": false, "multiple": false, "ai": true},
+        {"key": "indication", "name": "Indication", "kind": "text", "required": false, "multiple": false, "ai": true},
+        {"key": "modality", "name": "Modality", "kind": "select", "required": false, "multiple": false, "ai": true, "options": ["small_molecule", "biologic", "antibody", "cell_therapy", "gene_therapy", "rna", "vaccine", "device", "other"]},
+        {"key": "stage", "name": "Stage", "kind": "select", "required": true, "multiple": false, "ai": true, "options": ["discovery", "preclinical", "ind_enabling", "phase_1", "phase_2", "phase_3", "registration", "approved"]},
+        {"key": "lead", "name": "Lead", "kind": "text", "required": false, "multiple": false, "ai": true},
+        {"key": "status", "name": "Status", "kind": "select", "required": false, "multiple": false, "ai": true, "options": ["active", "paused", "stopped", "partnered"]},
+        {"key": "archived", "name": "Archived", "kind": "boolean", "required": false, "multiple": false, "ai": true},
+        {"key": "health", "name": "Health", "kind": "select", "required": false, "multiple": false, "ai": true, "options": ["unassessed", "green", "amber", "red"], "owner": "life.project-oversight"},
+        {"key": "health_rationale", "name": "Health rationale", "kind": "text", "required": false, "multiple": false, "ai": true, "owner": "life.project-oversight"},
+        {"key": "health_date", "name": "Health date", "kind": "date", "required": false, "multiple": false, "ai": true, "owner": "life.project-oversight"}
+      ]
+    },
+    "studies": {
+      "name": "Studies",
+      "fields": [
+        {"key": "name", "name": "Name", "kind": "text", "required": true, "multiple": false, "ai": true},
+        {"key": "program_id", "name": "Program", "kind": "text", "required": false, "multiple": false, "ai": true, "description": "Record ID of a programs record."},
+        {"key": "phase", "name": "Phase", "kind": "text", "required": false, "multiple": false, "ai": true},
+        {"key": "registry_id", "name": "Registry ID", "kind": "text", "required": false, "multiple": false, "ai": true, "description": "EU CT or NCT number."},
+        {"key": "status", "name": "Status", "kind": "text", "required": false, "multiple": false, "ai": true},
+        {"key": "archived", "name": "Archived", "kind": "boolean", "required": false, "multiple": false, "ai": true}
+      ]
+    },
+    "agreements": {
+      "name": "Agreements",
+      "description": "Primary owner: Contracts.",
+      "fields": [
+        {"key": "name", "name": "Name", "kind": "text", "required": true, "multiple": false, "ai": true},
+        {"key": "counterparty_id", "name": "Counterparty", "kind": "text", "required": false, "multiple": false, "ai": true, "description": "Record ID of an organizations record."},
+        {"key": "agreement_type", "name": "Agreement type", "kind": "text", "required": false, "multiple": false, "ai": true},
+        {"key": "status", "name": "Status", "kind": "text", "required": false, "multiple": false, "ai": true},
+        {"key": "effective_date", "name": "Effective date", "kind": "date", "required": false, "multiple": false, "ai": true},
+        {"key": "expiry_date", "name": "Expiry date", "kind": "date", "required": false, "multiple": false, "ai": true},
+        {"key": "archived", "name": "Archived", "kind": "boolean", "required": false, "multiple": false, "ai": true}
+      ]
+    }
+  }
+}

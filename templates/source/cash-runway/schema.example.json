@@ -1,6 +1,7 @@
 {
-  "settings": {
+  "runway.settings": {
     "name": "Runway settings",
+    "contract": "runway.v2",
     "fields": [
       {
         "key": "reporting_currency",
@@ -101,8 +102,9 @@
       "categories": "categories"
     }
   },
-  "lines": {
-    "name": "Plan lines",
+  "runway.plan_lines": {
+    "name": "Runway plan lines",
+    "contract": "runway.v2",
     "fields": [
       {
         "key": "name",
@@ -148,7 +150,7 @@
         "required": false,
         "multiple": false,
         "ai": true,
-        "description": "Record ID of a Programs record (scalar UUID text)."
+        "description": "Record ID of a programs record (core role programs)."
       },
       {
         "key": "counterparty_id",
@@ -157,7 +159,7 @@
         "required": false,
         "multiple": false,
         "ai": true,
-        "description": "Record ID of an Organizations record (scalar UUID text)."
+        "description": "Record ID of an organizations record (core role organizations)."
       },
       {
         "key": "agreement_id",
@@ -166,7 +168,7 @@
         "required": false,
         "multiple": false,
         "ai": true,
-        "description": "Record ID of an Agreements record (scalar UUID text)."
+        "description": "Record ID of an agreements record (core role agreements)."
       },
       {
         "key": "schedule_group",
@@ -302,8 +304,9 @@
       "archived": "archived"
     }
   },
-  "positions": {
-    "name": "Positions",
+  "runway.positions": {
+    "name": "Runway positions",
+    "contract": "runway.v2",
     "fields": [
       {
         "key": "title",
@@ -320,7 +323,7 @@
         "required": false,
         "multiple": false,
         "ai": true,
-        "description": "Record ID of a Programs record (scalar UUID text)."
+        "description": "Record ID of a programs record (core role programs)."
       },
       {
         "key": "start_month",
@@ -412,8 +415,9 @@
       "archived": "archived"
     }
   },
-  "milestones": {
-    "name": "Milestones",
+  "runway.milestones": {
+    "name": "Runway milestones",
+    "contract": "runway.v2",
     "fields": [
       {
         "key": "name",
@@ -430,7 +434,7 @@
         "required": false,
         "multiple": false,
         "ai": true,
-        "description": "Record ID of a Programs record (scalar UUID text)."
+        "description": "Record ID of a programs record (core role programs)."
       },
       {
         "key": "target_month",
@@ -447,7 +451,8 @@
         "kind": "text",
         "required": false,
         "multiple": false,
-        "ai": true
+        "ai": true,
+        "description": "Record ID of a Programs app plan_items milestone (role programs.plan_items); its date is used while it is readable."
       },
       {
         "key": "archived",
@@ -466,8 +471,9 @@
       "archived": "archived"
     }
   },
-  "actuals": {
-    "name": "Actuals",
+  "runway.actuals": {
+    "name": "Runway actuals",
+    "contract": "runway.v2",
     "fields": [
       {
         "key": "month",
@@ -502,7 +508,7 @@
         "required": false,
         "multiple": false,
         "ai": true,
-        "description": "Record ID of a Programs record (scalar UUID text)."
+        "description": "Record ID of a programs record (core role programs)."
       },
       {
         "key": "direction",
@@ -581,8 +587,9 @@
       "note": "note"
     }
   },
-  "closes": {
-    "name": "Month closes",
+  "runway.month_closes": {
+    "name": "Runway month closes",
+    "contract": "runway.v2",
     "fields": [
       {
         "key": "month",
@@ -674,7 +681,7 @@
         "required": false,
         "multiple": false,
         "ai": true,
-        "description": "Frozen JSON snapshot written once at close; read-only."
+        "description": "Frozen JSON snapshot written once at close; read-only. App output for other apps."
       },
       {
         "key": "rates_used",
@@ -708,8 +715,9 @@
       "closed_at": "closed_at"
     }
   },
-  "budgets": {
-    "name": "Budgets",
+  "runway.budgets": {
+    "name": "Runway budgets",
+    "contract": "runway.v2",
     "fields": [
       {
         "key": "name",
@@ -794,8 +802,9 @@
       "notes": "notes"
     }
   },
-  "scenarios": {
-    "name": "Scenarios",
+  "runway.scenarios": {
+    "name": "Runway scenarios",
+    "contract": "runway.v2",
     "fields": [
       {
         "key": "name",
@@ -860,8 +869,9 @@
       "summary": "summary"
     }
   },
-  "changes": {
-    "name": "Scenario changes",
+  "runway.scenario_changes": {
+    "name": "Runway scenario changes",
+    "contract": "runway.v2",
     "fields": [
       {
         "key": "scenario_id",
@@ -870,7 +880,7 @@
         "required": true,
         "multiple": false,
         "ai": true,
-        "description": "Record ID of the parent Scenarios record."
+        "description": "Record ID of the parent runway.scenarios record."
       },
       {
         "key": "kind",
@@ -974,8 +984,9 @@
       "label": "label"
     }
   },
-  "rates": {
-    "name": "FX rates",
+  "runway.fx_rates": {
+    "name": "Runway FX rates",
+    "contract": "runway.v2",
     "fields": [
       {
         "key": "month",
@@ -1048,10 +1059,11 @@
   },
   "programs": {
     "name": "Programs",
+    "contract": "core.v1",
     "fields": [
       {
         "key": "name",
-        "name": "Program name",
+        "name": "Name",
         "kind": "text",
         "required": true,
         "multiple": false,
@@ -1066,44 +1078,70 @@
         "ai": true
       },
       {
-        "key": "archived",
-        "name": "Archived",
-        "kind": "boolean",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      }
-    ],
-    "logicalFields": {
-      "name": "name",
-      "code": "code",
-      "archived": "archived"
-    }
-  },
-  "organizations": {
-    "name": "Organizations",
-    "fields": [
-      {
-        "key": "name",
-        "name": "Organization",
+        "key": "indication",
+        "name": "Indication",
         "kind": "text",
-        "required": true,
+        "required": false,
         "multiple": false,
         "ai": true
       },
       {
-        "key": "org_type",
-        "name": "Type",
+        "key": "modality",
+        "name": "Modality",
         "kind": "select",
         "required": false,
         "multiple": false,
         "ai": true,
         "options": [
-          "vendor",
-          "investor",
-          "funder",
-          "partner",
+          "small_molecule",
+          "biologic",
+          "antibody",
+          "cell_therapy",
+          "gene_therapy",
+          "rna",
+          "vaccine",
+          "device",
           "other"
+        ]
+      },
+      {
+        "key": "stage",
+        "name": "Stage",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "discovery",
+          "preclinical",
+          "ind_enabling",
+          "phase_1",
+          "phase_2",
+          "phase_3",
+          "registration",
+          "approved"
+        ]
+      },
+      {
+        "key": "lead",
+        "name": "Lead",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "active",
+          "paused",
+          "stopped",
+          "partnered"
         ]
       },
       {
@@ -1117,16 +1155,86 @@
     ],
     "logicalFields": {
       "name": "name",
+      "code": "code",
+      "indication": "indication",
+      "modality": "modality",
+      "stage": "stage",
+      "lead": "lead",
+      "status": "status",
+      "archived": "archived"
+    }
+  },
+  "organizations": {
+    "name": "Organizations",
+    "contract": "core.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "org_type",
+        "name": "Type",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "company",
+          "investor",
+          "cro",
+          "cdmo",
+          "site",
+          "funder",
+          "partner",
+          "agency",
+          "other"
+        ]
+      },
+      {
+        "key": "country",
+        "name": "Country",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "website",
+        "name": "Website",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
       "org_type": "org_type",
+      "country": "country",
+      "website": "website",
       "archived": "archived"
     }
   },
   "agreements": {
     "name": "Agreements",
+    "contract": "core.v1",
     "fields": [
       {
         "key": "name",
-        "name": "Agreement",
+        "name": "Name",
         "kind": "text",
         "required": true,
         "multiple": false,
@@ -1134,12 +1242,44 @@
       },
       {
         "key": "counterparty_id",
-        "name": "Counterparty ID",
+        "name": "Counterparty",
         "kind": "text",
         "required": false,
         "multiple": false,
         "ai": true,
-        "description": "Record ID of an Organizations record (scalar UUID text)."
+        "description": "Record ID of an organizations record."
+      },
+      {
+        "key": "agreement_type",
+        "name": "Agreement type",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "effective_date",
+        "name": "Effective date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "expiry_date",
+        "name": "Expiry date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
       },
       {
         "key": "archived",
@@ -1153,6 +1293,10 @@
     "logicalFields": {
       "name": "name",
       "counterparty_id": "counterparty_id",
+      "agreement_type": "agreement_type",
+      "status": "status",
+      "effective_date": "effective_date",
+      "expiry_date": "expiry_date",
       "archived": "archived"
     }
   }

@@ -50,15 +50,18 @@ export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,i
    const saved=await service.commit(a,p.id,p.digest),typeId=saved.objects[0].id;
    map[role]={typeId,fields:def.logicalFields,writableFields:Object.keys(def.logicalFields)};
    bindings.push({typeId,fields:def.fields.map((x:any)=>x.key)});
-   fields.push(...def.fields.map((x:any)=>({id:role+'_'+x.key,typeId,field:x.key,schemaVersion:0,kind:x.kind,mode:'write'})));
+   fields.push(...def.fields.map((x:any)=>({id:manifestFieldId(role,x.key),typeId,field:x.key,schemaVersion:0,kind:x.kind,mode:'write'})));
   }
+  if(new Set(fields.map(x=>x.id)).size!==fields.length)fail(500,'template_schema','Installer field identities collide');
   const catalog=new AppTemplates(undefined,db),template=await catalog.read({templateId:v.templateId,version:v.version});
   const configuration:any={};
   if(template.options.tableMap)configuration.tableMap=JSON.stringify(map);
   const today=new Date().toISOString().slice(0,10);
   for(const key of ['asOf','asOfDate','cutoff','startWeek'])if(template.options[key])configuration[key]=today;
   if(template.options.planMonth)configuration.planMonth=today.slice(0,7);
-  const operation=await catalog.operation(scoped,a,w,{...v,configuration,bindings,manifest:fields.length?{version:1,scope:'workspace',fields}:undefined});
+  // createNew only steers the archived-app check above; the strict preparation schema does not accept it.
+  const {createNew:_createNew,...request}=v;
+  const operation=await catalog.operation(scoped,a,w,{...request,configuration,bindings,manifest:fields.length?{version:1,scope:'workspace',fields}:undefined});
   // Approved immutable publisher source has already been reviewed; normal validation still runs.
   const draft=await scoped.preview(a,w,operation,true),preview=draft.reviewState==='draft'?(await scoped.finalizeAppPreview(a,w,draft.id,draft.digest)).preview:draft,saved=await scoped.confirm(a,w,preview.id,preview.digest);
   const result={appId:saved.id,workspaceId:w,url:appUrl({appId:saved.id,workspaceId:w,source:'component'}),templateRequestKey:v.requestKey,templateId:v.templateId,templateVersion:v.version,templateDigest:v.digest,name:v.name};
@@ -67,4 +70,6 @@ export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,i
  });
 }
 
+/** Manifest field IDs allow [a-z0-9_]; role keys may be namespaced (e.g. runway.plan_lines, programs.plan_items). */
+export function manifestFieldId(role:string,key:string){return (role+'_'+key).toLowerCase().replace(/[^a-z0-9_]/g,'_').slice(0,64);}
 function canonical(value:any):any{return Array.isArray(value)?value.map(canonical):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(k=>[k,canonical(value[k])])):value;}

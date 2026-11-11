@@ -7,6 +7,10 @@
     "catalogDigest": "1d69f5287bf99eeb46aa769cba3d2d9a6bb567e38e0b41728b8f28f123fb2c94",
     "previewSha256": "a7d21abb0b00dc99438b3ad6c1c0635f56edd4d0494b6563fd941f6a59d59f1e"
   },
+  "life.cash-runway@2.1.0": {
+    "catalogDigest": "dcf578b91b2c1ac05afe42ea2f1e2172c280783c9a1602e90d054fdec1cc651a",
+    "previewSha256": "17a7b1f36ca54a8784b1dc282b69279666f40def510c448496447d902dce3293"
+  },
   "life.inventory-management@1.0.2": {
     "catalogDigest": "7d23d6ce768db25dccfac1fa1fe8e1d157f3ca47efac2aaafe7cf371ff7911dd",
     "previewSha256": "103debb51a285ed4e002f8a81c1e9206316ecf9924d530d81e097f4846bf3b44"

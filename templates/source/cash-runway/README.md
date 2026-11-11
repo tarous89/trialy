@@ -1,6 +1,6 @@
-# Runway 2.0.0 (`life.cash-runway`)
+# Runway 2.1.0 (`life.cash-runway`)
 
-Cash, burn and runway by program, with what-if scenarios. Scope: [RUNWAY.md](../../../docs/product/app-template-blueprints/apps/RUNWAY.md). This is a new major version of the catalog ID `life.cash-runway`. The released 1.2.2 catalog JSON is unchanged, and its source package is archived byte-for-byte under [`archive/1.2.2/`](archive/1.2.2/). Saved 1.x apps are not migrated.
+Cash, burn and runway by program, with what-if scenarios. Scope: [RUNWAY.md](../../../docs/product/app-template-blueprints/apps/RUNWAY.md). It follows [modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md). The released catalog JSON for 1.2.2 and 2.0.0 is unchanged, and their source packages are archived byte-for-byte under [`archive/`](archive/). Saved apps are not migrated.
 
 ## Files
 
@@ -15,11 +15,32 @@ Cash, burn and runway by program, with what-if scenarios. Scope: [RUNWAY.md](../
 | `QA_AND_ACCEPTANCE.md` | Commands, results, the hand reconciliation and unverified boundaries. |
 | `AUTOMATION_RECIPES.md` | The two optional automations and the no-automation path. |
 
-Edit the source, CSS and metadata, then run `node scripts/build-cash-runway-template.mjs`. This regenerates `templates/apps/life.cash-runway-2.0.0.json` and the preview; `--check` runs in `npm run build`. Do not edit 2.0.0 once released: publish 2.0.1 or later instead, and archive the previous package first if its schema or preview would change. After a catalog or preview change, regenerate the gallery screenshot and manifest entry (`node scripts/build-template-screenshots.mjs`).
+Edit the source, CSS and metadata, then run `node scripts/build-cash-runway-template.mjs`. This regenerates `templates/apps/life.cash-runway-2.1.0.json` and the preview; `--check` runs in `npm run build`. Do not edit a released version: publish a new version instead, and archive the previous package first if its schema or preview would change. After a catalog or preview change, regenerate the gallery screenshot and manifest entry (`node scripts/build-template-screenshots.mjs`).
 
-## Roles and tables
+## Roles, shared data and modularity
 
-`tableMap` keys: `settings` (Runway settings, one row), `lines` (plan lines), `positions`, `milestones`, `actuals`, `closes` (month closes and frozen snapshots), `budgets`, `scenarios`, `changes` (scenario changes), `rates` (FX rates), plus the shared roles `programs`, `organizations` and `agreements`. Each role maps to a real table ID, logical-to-real field keys and writable logical keys. Frozen JSON fields are `closes.metrics`, `closes.rates_used`, `budgets.totals` and `budgets.rates_used`. The installer creates its own shared tables. To reuse existing Programs, Organizations or Agreements tables, prepare the app with explicit bindings after the user chooses shared data.
+`tableMap` uses stable role keys (rule 5):
+
+- **This app's tables:** `runway.settings` (one row), `runway.plan_lines`, `runway.positions`, `runway.milestones`, `runway.actuals`, `runway.budgets`, `runway.scenarios`, `runway.scenario_changes`, `runway.fx_rates`. Also `runway.month_closes`, an **app output** whose frozen snapshots other apps, such as Investor Updates and Board, may read.
+- **Core shared tables** (core data contract v1, [`templates/core-contract/v1.json`](../../core-contract/v1.json)): `programs`, `organizations`, `agreements`. Runway's schema copies the contract fields exactly, and a test enforces it. Runway never writes fields another app owns, such as the Programs `health` fields.
+- **Partner output, read only:** `programs.plan_items`, the Programs app's milestones. Runway uses key milestones (`item_type = milestone`, `is_key`, not cancelled). A Runway milestone with `source_milestone_id` follows that Programs date. Runway never proposes a change to Programs data.
+- **2.0.0 compatibility:** the short 2.0.0 role keys (`settings`, `lines` and so on) are still read.
+
+Runway works alone; rule 3 degradation:
+
+- **No programs table:** program breakdowns are hidden with a one-line note, and totals are unaffected.
+- **Unreadable programs table:** names show "Program unavailable".
+- **Archived or deleted program:** archived programs are labelled "(archived)"; a deleted one shows "Program unavailable", and the reference is kept when the line is edited.
+- **No Programs output connected:** only Runway's own milestones are used, with a note.
+- **Programs output unreadable or partial:** linked milestones keep their Runway date, labelled "Programs link unavailable".
+
+Platform behaviour this relies on, with Runway's rule 9 test covering each:
+
+- **Deleting an app** archives it and keeps its tables and records.
+- **Removing a binding** unbinds it; re-adding it reconnects the same table.
+- **Reinstalling** offers to restore the archived app first; "install a new copy" starts fresh and leaves the old data untouched.
+
+The Use installer still creates new tables for every role. Reusing existing core tables or the Programs output is done by an assistant-prepared app with explicit bindings until platform install detection ships (modular apps §5, items 1–2).
 
 ## Calculation contract
 

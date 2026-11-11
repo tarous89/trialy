@@ -4,7 +4,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000001",
       "version": 1,
-      "role": "settings",
+      "role": "runway.settings",
       "data": {
         "reporting_currency": "EUR",
         "enabled_currencies": "EUR, USD, GBP",
@@ -24,7 +24,11 @@
       "data": {
         "name": "FB-101 (oncology)",
         "code": "FB-101",
-        "archived": false
+        "archived": false,
+        "stage": "phase_1",
+        "modality": "antibody",
+        "indication": "Solid tumours",
+        "status": "active"
       }
     },
     {
@@ -34,7 +38,11 @@
       "data": {
         "name": "FB-202 (fibrosis)",
         "code": "FB-202",
-        "archived": false
+        "archived": false,
+        "stage": "ind_enabling",
+        "modality": "small_molecule",
+        "indication": "Pulmonary fibrosis",
+        "status": "active"
       }
     },
     {
@@ -44,7 +52,11 @@
       "data": {
         "name": "Platform",
         "code": "PLAT",
-        "archived": false
+        "archived": false,
+        "stage": "discovery",
+        "modality": "other",
+        "indication": "Platform",
+        "status": "active"
       }
     },
     {
@@ -53,7 +65,7 @@
       "role": "organizations",
       "data": {
         "name": "Fictional CRO Ltd",
-        "org_type": "vendor",
+        "org_type": "cro",
         "archived": false
       }
     },
@@ -80,7 +92,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000008",
       "version": 1,
-      "role": "rates",
+      "role": "runway.fx_rates",
       "data": {
         "month": "2026-08-01",
         "currency": "USD",
@@ -92,7 +104,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000009",
       "version": 1,
-      "role": "rates",
+      "role": "runway.fx_rates",
       "data": {
         "month": "2026-08-01",
         "currency": "GBP",
@@ -104,7 +116,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000010",
       "version": 1,
-      "role": "rates",
+      "role": "runway.fx_rates",
       "data": {
         "month": "2026-09-01",
         "currency": "USD",
@@ -116,7 +128,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000011",
       "version": 1,
-      "role": "rates",
+      "role": "runway.fx_rates",
       "data": {
         "month": "2026-09-01",
         "currency": "GBP",
@@ -128,7 +140,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000012",
       "version": 1,
-      "role": "rates",
+      "role": "runway.fx_rates",
       "data": {
         "month": "2026-10-01",
         "currency": "USD",
@@ -140,7 +152,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000013",
       "version": 1,
-      "role": "rates",
+      "role": "runway.fx_rates",
       "data": {
         "month": "2026-10-01",
         "currency": "GBP",
@@ -152,7 +164,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000014",
       "version": 1,
-      "role": "lines",
+      "role": "runway.plan_lines",
       "data": {
         "name": "FB-101 Phase 1 CRO services",
         "status": "committed",
@@ -171,7 +183,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000015",
       "version": 1,
-      "role": "lines",
+      "role": "runway.plan_lines",
       "data": {
         "name": "FB-101 site and patient costs",
         "status": "committed",
@@ -189,7 +201,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000016",
       "version": 1,
-      "role": "lines",
+      "role": "runway.plan_lines",
       "data": {
         "name": "FB-101 drug product manufacturing",
         "status": "committed",
@@ -207,7 +219,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000017",
       "version": 1,
-      "role": "lines",
+      "role": "runway.plan_lines",
       "data": {
         "name": "FB-101 drug product release",
         "status": "committed",
@@ -225,7 +237,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000018",
       "version": 1,
-      "role": "lines",
+      "role": "runway.plan_lines",
       "data": {
         "name": "FB-202 IND-enabling tox (UK CRO)",
         "status": "committed",
@@ -243,7 +255,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000019",
       "version": 1,
-      "role": "lines",
+      "role": "runway.plan_lines",
       "data": {
         "name": "FB-202 IND-enabling tox (UK CRO) final",
         "status": "committed",
@@ -261,7 +273,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000020",
       "version": 1,
-      "role": "lines",
+      "role": "runway.plan_lines",
       "data": {
         "name": "FB-202 discovery chemistry",
         "status": "discretionary",
@@ -279,7 +291,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000021",
       "version": 1,
-      "role": "lines",
+      "role": "runway.plan_lines",
       "data": {
         "name": "Platform screening consumables",
         "status": "committed",
@@ -296,7 +308,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000022",
       "version": 1,
-      "role": "lines",
+      "role": "runway.plan_lines",
       "data": {
         "name": "Lab and office lease",
         "status": "committed",
@@ -312,7 +324,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000023",
       "version": 1,
-      "role": "lines",
+      "role": "runway.plan_lines",
       "data": {
         "name": "Finance, legal and insurance",
         "status": "committed",
@@ -328,7 +340,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000024",
       "version": 1,
-      "role": "lines",
+      "role": "runway.plan_lines",
       "data": {
         "name": "Series A second tranche",
         "status": "committed",
@@ -346,7 +358,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000025",
       "version": 1,
-      "role": "lines",
+      "role": "runway.plan_lines",
       "data": {
         "name": "Foundation research grant",
         "status": "contingent",
@@ -365,7 +377,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000026",
       "version": 1,
-      "role": "lines",
+      "role": "runway.plan_lines",
       "data": {
         "name": "R&D tax credit",
         "status": "committed",
@@ -382,7 +394,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000027",
       "version": 1,
-      "role": "positions",
+      "role": "runway.positions",
       "data": {
         "title": "Chief executive officer",
         "currency": "EUR",
@@ -396,7 +408,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000028",
       "version": 1,
-      "role": "positions",
+      "role": "runway.positions",
       "data": {
         "title": "Chief medical officer",
         "currency": "EUR",
@@ -410,7 +422,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000029",
       "version": 1,
-      "role": "positions",
+      "role": "runway.positions",
       "data": {
         "title": "Head of CMC",
         "currency": "EUR",
@@ -424,7 +436,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000030",
       "version": 1,
-      "role": "positions",
+      "role": "runway.positions",
       "data": {
         "title": "Senior scientist",
         "currency": "EUR",
@@ -438,7 +450,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000031",
       "version": 1,
-      "role": "positions",
+      "role": "runway.positions",
       "data": {
         "title": "Scientist",
         "currency": "EUR",
@@ -452,7 +464,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000032",
       "version": 1,
-      "role": "positions",
+      "role": "runway.positions",
       "data": {
         "title": "Finance and operations lead",
         "currency": "EUR",
@@ -466,7 +478,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000033",
       "version": 1,
-      "role": "positions",
+      "role": "runway.positions",
       "data": {
         "title": "Clinical operations manager (US)",
         "currency": "USD",
@@ -480,7 +492,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000034",
       "version": 1,
-      "role": "positions",
+      "role": "runway.positions",
       "data": {
         "title": "Toxicologist",
         "currency": "EUR",
@@ -494,7 +506,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000035",
       "version": 1,
-      "role": "milestones",
+      "role": "runway.milestones",
       "data": {
         "name": "FB-101 first patient dosed",
         "archived": false,
@@ -505,7 +517,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000036",
       "version": 1,
-      "role": "milestones",
+      "role": "runway.milestones",
       "data": {
         "name": "FB-202 IND filing",
         "archived": false,
@@ -516,7 +528,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000037",
       "version": 1,
-      "role": "milestones",
+      "role": "runway.milestones",
       "data": {
         "name": "FB-101 Phase 1 readout",
         "archived": false,
@@ -527,7 +539,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000038",
       "version": 1,
-      "role": "budgets",
+      "role": "runway.budgets",
       "data": {
         "name": "Budget 2026",
         "year": 2026,
@@ -541,7 +553,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000039",
       "version": 1,
-      "role": "actuals",
+      "role": "runway.actuals",
       "data": {
         "month": "2026-09-01",
         "category": "Clinical",
@@ -553,7 +565,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000040",
       "version": 1,
-      "role": "actuals",
+      "role": "runway.actuals",
       "data": {
         "month": "2026-09-01",
         "category": "CMC",
@@ -565,7 +577,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000041",
       "version": 1,
-      "role": "actuals",
+      "role": "runway.actuals",
       "data": {
         "month": "2026-09-01",
         "category": "Research",
@@ -577,7 +589,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000042",
       "version": 1,
-      "role": "actuals",
+      "role": "runway.actuals",
       "data": {
         "month": "2026-09-01",
         "category": "People",
@@ -589,7 +601,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000043",
       "version": 1,
-      "role": "actuals",
+      "role": "runway.actuals",
       "data": {
         "month": "2026-09-01",
         "category": "G&A",
@@ -601,7 +613,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000044",
       "version": 1,
-      "role": "actuals",
+      "role": "runway.actuals",
       "data": {
         "month": "2026-09-01",
         "category": "Facilities",
@@ -613,7 +625,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000045",
       "version": 1,
-      "role": "closes",
+      "role": "runway.month_closes",
       "data": {
         "month": "2026-09-01",
         "closing_balance": 9226000,
@@ -631,7 +643,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000046",
       "version": 1,
-      "role": "actuals",
+      "role": "runway.actuals",
       "data": {
         "month": "2026-10-01",
         "category": "Clinical",
@@ -643,7 +655,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000047",
       "version": 1,
-      "role": "actuals",
+      "role": "runway.actuals",
       "data": {
         "month": "2026-10-01",
         "category": "CMC",
@@ -655,7 +667,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000048",
       "version": 1,
-      "role": "actuals",
+      "role": "runway.actuals",
       "data": {
         "month": "2026-10-01",
         "category": "Research",
@@ -667,7 +679,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000049",
       "version": 1,
-      "role": "actuals",
+      "role": "runway.actuals",
       "data": {
         "month": "2026-10-01",
         "category": "People",
@@ -679,7 +691,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000050",
       "version": 1,
-      "role": "actuals",
+      "role": "runway.actuals",
       "data": {
         "month": "2026-10-01",
         "category": "G&A",
@@ -691,7 +703,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000051",
       "version": 1,
-      "role": "actuals",
+      "role": "runway.actuals",
       "data": {
         "month": "2026-10-01",
         "category": "Facilities",
@@ -703,7 +715,7 @@
     {
       "id": "d0000000-0000-4000-8000-000000000052",
       "version": 1,
-      "role": "closes",
+      "role": "runway.month_closes",
       "data": {
         "month": "2026-10-01",
         "closing_balance": 8631000,
@@ -721,20 +733,20 @@
     {
       "id": "d0000000-0000-4000-8000-000000000053",
       "version": 1,
-      "role": "scenarios",
+      "role": "runway.scenarios",
       "data": {
         "name": "Series A tranche slips 4 months",
         "status": "saved",
         "based_on_close": "2026-10-01",
         "based_on_version": "3911e8e0",
         "created_on": "2026-10-01",
-        "summary": "Move “Series A second tranche” by +4 months"
+        "summary": "Move \u201cSeries A second tranche\u201d by +4 months"
       }
     },
     {
       "id": "d0000000-0000-4000-8000-000000000054",
       "version": 1,
-      "role": "changes",
+      "role": "runway.scenario_changes",
       "data": {
         "kind": "move_cash_in",
         "target_id": "d0000000-0000-4000-8000-000000000024",

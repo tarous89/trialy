@@ -1,3 +1,7 @@
+## 11 November 2026 — Runway 2.1.0: modular apps and shared data
+
+Runway 2.1.0 follows [modular apps and shared data](docs/product/MODULAR_APPS_AND_SHARED_DATA.md). Shared tables use the core data contract v1 role keys and fields; the contract is now in `templates/core-contract/v1.json`. App tables use stable `runway.*` role keys. The Programs app's key milestones are read from `programs.plan_items` read-only. Missing, unreadable, archived or deleted partner data degrades with short explanations and never changes totals. The rule 9 acceptance test runs on the real installer and the archive, restore and revision paths. Platform fixes: "install a new copy" (`createNew`) no longer fails the strict preparation schema, and installer manifest IDs accept namespaced role keys. The owner approved 2.1.0 to replace 2.0.0 in the platform templates; `catalog-seed.json` names 2.1.0 under the same owner-authorized exception used for 2.0.0.
+
 ## 11 November 2026 — Runway 2.0.0 replaces Cash Runway 1.2.2 in platform templates
 
 The owner approved publishing Runway 2.0.0 in place of Cash Runway 1.2.2. This is an explicit, owner-authorized exception to the rule against publishing through the bootstrap seed: `templates/catalog-seed.json` now names 2.0.0, and the pre-deploy catalog sync inserts it as approved. Galleries and `list_app_templates` show only the latest approved version, so new installs get Runway 2.0.0. The 1.2.2 row, its payload and installed 1.x apps are unchanged.
