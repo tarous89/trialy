@@ -54,8 +54,8 @@ export function ArchivedItems({call,kind,typeId,refreshKey,onChanged,layout='lis
     {item.purgeAt&&<small className="ty-archived-meta">Deletes automatically on {date(item.purgeAt)}</small>}
     {!item.canDelete&&item.deleteBlockedReason&&<small id={reasonId} className="ty-archived-meta">{item.deleteBlockedReason}</small>}</div>
    <div className="ty-archived-actions">
-    <Button disabled={!!busy} onClick={()=>void restore(item)}>{busy===key?'Restoring…':'Restore'}</Button>
-    <Button disabled={!!busy||!item.canDelete} aria-describedby={!item.canDelete&&item.deleteBlockedReason?reasonId:undefined} onClick={()=>setConfirming({item,action:'delete'})}>Delete</Button>
+    <button type="button" className="ty-archive-text-action" disabled={!!busy} onClick={()=>void restore(item)}>{busy===key?'Restoring…':'Restore'}</button>
+    <button type="button" className="ty-archive-text-action ty-archive-text-action--delete" disabled={!!busy||!item.canDelete} aria-describedby={!item.canDelete&&item.deleteBlockedReason?reasonId:undefined} onClick={()=>setConfirming({item,action:'delete'})}>Delete</button>
    </div></li>;})}</ul>}
   {confirming&&<div className="ty-content-overlay"><section role="alertdialog" aria-modal="true" aria-labelledby={listId+'-title'} className="ty-confirm-dialog">
    {confirming.action==='delete'?<><h2 id={listId+'-title'}>Delete {confirming.item.name} permanently?</h2>
