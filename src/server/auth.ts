@@ -26,8 +26,26 @@ export function configureAuth(app:Express,db:Postgres,env:NodeJS.ProcessEnv){
  appPublicUrl(env);
  const production=env.NODE_ENV==='production',base=oauthPublicUrl(env);
  if(production&&!base.startsWith('https://'))throw new Error('Production requires HTTPS');if(!env.SESSION_SECRET||env.SESSION_SECRET.length<32)throw new Error('SESSION_SECRET must have 32 characters');if(production)app.set('trust proxy',1);
- const Store=connectPg(session);app.use(session({name:'trialy_session',secret:env.SESSION_SECRET,store:new Store({pool:db.pool,tableName:'session'}),resave:false,saveUninitialized:false,rolling:true,cookie:{httpOnly:true,secure:production,sameSite:'lax',maxAge:30*24*3600000}}));
+ const Store=connectPg(session);app.use(session({name:'trialy_session',secret:env.SESSION_SECRET,store:throttleTouch(new Store({pool:db.pool,tableName:'session'})),resave:false,saveUninitialized:false,rolling:true,cookie:{httpOnly:true,secure:production,sameSite:'lax',maxAge:30*24*3600000}}));
  return addLocalAuth(app,db,base,env.MFA_ENCRYPTION_KEY??env.SESSION_SECRET,env.LEGACY_MCP_RESOURCE_URL);
+}
+/** Rolling sessions otherwise UPDATE the session row on every request. Extending a
+ * 30-day expiry at most once per interval per session keeps rolling expiry (lagging
+ * by at most the interval) without a database write on each click. Sign-in, MFA,
+ * sign-out and session_version revocation are unaffected: they use set/destroy/regenerate
+ * and the per-request account check. */
+export const SESSION_TOUCH_INTERVAL_MS=15*60000;
+export function throttleTouch<S extends session.Store>(store:S,interval=SESSION_TOUCH_INTERVAL_MS,now=()=>Date.now()):S{
+ const touch=store.touch?.bind(store),destroy=store.destroy.bind(store),touched=new Map<string,number>();
+ if(!touch)return store;
+ store.touch=(sid:string,sess:session.SessionData,callback?:(err?:any)=>void)=>{
+  const time=now(),last=touched.get(sid);
+  if(last!==undefined&&time-last<interval){callback?.();return;}
+  if(touched.size>=10000)for(const [key,at] of touched)if(time-at>=interval)touched.delete(key);
+  (touch as any)(sid,sess,(err?:any)=>{if(!err)touched.set(sid,time);callback?.(err);});
+ };
+ store.destroy=(sid:string,callback?:(err?:any)=>void)=>{touched.delete(sid);destroy(sid,callback);};
+ return store;
 }
 // Sessions may be injected by focused tests; production always uses PostgreSQL above.
 export function addLocalAuth(app:Express,db:Database,base:string,mfaKey=process.env.MFA_ENCRYPTION_KEY??process.env.SESSION_SECRET??'',legacyResource?:string){

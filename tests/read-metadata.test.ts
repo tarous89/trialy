@@ -33,3 +33,20 @@ test('PostgreSQL parser functions are excluded from cloned transaction metadata'
  const db:Database={query:async()=>{calls++;return {rows:[row] as any,rowCount:1,_parsers:[(value:string)=>value],_types:{getTypeParser:()=>String}};},transaction:fn=>fn(db),close:async()=>{}};
  await withReadMetadata(db,async inner=>{const first=await inner.query(sql,['t','w']);assert.deepEqual(Object.keys(first).sort(),['rowCount','rows']);first.rows[0].fields[0].key='changed';const second=await inner.query(sql,['t','w']);assert.equal(second.rows[0].fields[0].key,'name');assert.equal(second.rowCount,1);});assert.equal(calls,2);assert.equal(row.fields[0].key,'name');
 });
+test('final checks share one transaction and keep each reused entry\'s own context',async()=>{
+ let transactions=0;const seen:string[]=[];
+ const conn={query:async()=>{seen.push(databaseContext().actor?.userId??'');return {rows:[{actor:databaseContext().actor?.userId}] as any};}};
+ const db:Database={query:conn.query,transaction:async fn=>{transactions++;return fn(conn);},close:async()=>{}};
+ await withReadMetadata(db,async inner=>{
+  for(const userId of ['owner','member'])for(let i=0;i<2;i++)await withActor({userId,origin:'human'},()=>inner.query(sql,['t','w']));
+  await inner.query('SELECT fields FROM entity_types WHERE workspace_id=$1',['w']);
+ });
+ // Two reused entries are checked in one transaction; the unreused entry is not rechecked.
+ assert.equal(transactions,1);assert.deepEqual(seen,['owner','member','','owner','member']);
+ transactions=0;await withReadMetadata(db,inner=>inner.query(sql,['t','w']));assert.equal(transactions,0);
+});
+test('a failed final check rejects the response even when it runs inside the shared check transaction',async()=>{
+ let version=0;const conn={query:async()=>({rows:[{version}] as any})};
+ const db:Database={query:conn.query,transaction:async fn=>fn(conn),close:async()=>{}};
+ await assert.rejects(withReadMetadata(db,async inner=>{await inner.query(sql,['t','w']);version++;await inner.query(sql,['t','w']);return 'must not return';}),/Access or schema changed/);
+});

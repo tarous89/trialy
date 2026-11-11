@@ -44,10 +44,16 @@ export async function withReadMetadata<T>(db:Database,read:(db:Database)=>Promis
  try{
   const value=await read(scoped);
   // Deliberately bypass the cache. Bounded sequential checks avoid pool floods.
-  for(const entry of entries.values())if(entry.hits){
-   const current=await withDatabaseContext(entry.context,()=>db.query(entry.sql,entry.values));
-   if(!isDeepStrictEqual(current.rows,(await entry.result).rows))fail(409,'access_changed','Access or schema changed; reload this page');
-  }
+  // One READ COMMITTED transaction gives each check a fresh snapshot, exactly like
+  // separate transactions, and the adapter still applies each entry's own context,
+  // while sharing one connection instead of four round trips per check.
+  const reused=[...entries.values()].filter(entry=>entry.hits);
+  if(reused.length)await db.transaction(async tx=>{
+   for(const entry of reused){
+    const current=await withDatabaseContext(entry.context,()=>tx.query(entry.sql,entry.values));
+    if(!isDeepStrictEqual(current.rows,(await entry.result).rows))fail(409,'access_changed','Access or schema changed; reload this page');
+   }
+  });
   return value;
  }finally{entries.clear();sessions.delete(scoped);originals.delete(scoped);}
 }

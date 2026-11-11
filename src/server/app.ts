@@ -23,13 +23,16 @@ import { AppError, id, recordQuerySchema, fieldChangeQuerySchema } from '../shar
 import { Service } from '../domain/service.js';
 import {inspectionHtml} from '../domain/inspection.js';
 import { templates } from '../domain/templates.js';
+// The frame document only depends on deployment constants; build it once per process.
+const frameScriptHash=createHash('sha256').update(FRAME_SCRIPT).digest('base64');
+let frameDocument:Promise<string>|undefined;
 export function baseApp() {
  const app=express();app.disable('x-powered-by');app.use(helmet({contentSecurityPolicy:{directives:{defaultSrc:["'self'"],scriptSrc:["'self'"],styleSrc:["'self'","'unsafe-inline'"],frameSrc:["'self'",...new Set([new URL(appPublicUrl()).origin,oauthPublicUrl()])],frameAncestors:["'self'"]}}}));
  // Public stateless frame shell. HTTP sandbox also protects direct navigation.
  app.get('/frontend/frame',async(_req,res)=>{
-  const hash=createHash('sha256').update(FRAME_SCRIPT).digest('base64');
+  const hash=frameScriptHash;
   res.removeHeader('X-Frame-Options');res.set('Content-Security-Policy',`sandbox allow-scripts${process.env.SIMPLE_APPS_ENABLED==='true'?' allow-popups allow-popups-to-escape-sandbox':''}; default-src 'none'; script-src 'sha256-${hash}'; style-src 'unsafe-inline'; img-src data:; font-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'`);
-  res.set('Cache-Control','public, max-age=0, must-revalidate');res.set('Cross-Origin-Resource-Policy','cross-origin');res.type('html').send(await frontendFrameDocument(bundledAppFont));
+  res.set('Cache-Control','public, max-age=0, must-revalidate');res.set('Cross-Origin-Resource-Policy','cross-origin');res.type('html').send(await (frameDocument??=frontendFrameDocument(bundledAppFont).catch(e=>{frameDocument=undefined;throw e;})));
  });
  app.use(express.json({verify:(req,_res,buffer)=>{if(req.url==='/notifications/webhook')(req as any).rawBody=Buffer.from(buffer);},limit:'36mb'}));app.use(rateLimit({windowMs:60000,limit:180,standardHeaders:'draft-8',legacyHeaders:false,skip:req=>req.path===CLAUDE_MCP_PATH&&!!req.get('authorization')}));
  app.use((req,res,next)=>{const requestId=randomUUID(),started=performance.now(),metrics={queryCount:0,databaseMs:0,poolWaitMs:0,metadataHits:0};res.set('X-Request-ID',requestId);res.on('finish',()=>{if(process.env.NODE_ENV!=='test')console.log(JSON.stringify({requestId,method:req.method,path:req.path,...(req.path==='/mcp'&&['events/list','events/subscribe','events/unsubscribe'].includes(req.body?.method)?{mcpMethod:req.body.method}:{}),...(req.path==='/mcp'&&req.body?.method==='tools/call'&&['run_component_frontend','prepare_tool_layout','confirm_workspace_change','read_project_component','check_component_access'].includes(req.body.params?.name)?{tool:req.body.params.name}:{}),durationMs:Math.round(performance.now()-started),queryCount:metrics.queryCount,databaseMs:Math.round(metrics.databaseMs),poolWaitMs:Math.round(metrics.poolWaitMs),metadataHits:metrics.metadataHits,status:res.statusCode,time:new Date().toISOString()}));});withRequestMetrics(metrics,next);});

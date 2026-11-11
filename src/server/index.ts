@@ -15,7 +15,13 @@ if(!process.env.DATABASE_URL)throw new Error('DATABASE_URL required');
 const db=new Postgres(runtimeConnection(process.env,'web'));const service=new Service(db,Number(process.env.MAX_FILE_BYTES??26214400));
 await enforceRuntimeRole(db);
 console.log(JSON.stringify({event:'simple_apps_configuration',enabled:process.env.SIMPLE_APPS_ENABLED==='true',connectorCredentialKey:process.env.CONNECTOR_ENCRYPTION_KEY?'present':'missing'}));
-const app=baseApp();app.get('/ready',async(_req,res)=>{try{await db.query('SELECT 1');res.json({status:'ready'});}catch{res.status(503).json({status:'unavailable'});}});const auth=configureAuth(app,db,process.env);addGuestRoutes(app,new GuestDrafts(db),oauthPublicUrl());addApi(app,service,auth.human);addMcp(app,service,auth.ai);
+const app=baseApp();
+// Built files never need a session or database work. Serve them before auth so asset
+// requests skip the session lookup, expiry write and account check. Vite fingerprints
+// /assets file names, so browsers may keep them; index.html is still revalidated.
+app.use('/assets',express.static('dist/web/assets',{immutable:true,maxAge:'365d',index:false}));
+app.use(express.static('dist/web',{index:false}));
+app.get('/ready',async(_req,res)=>{try{await db.query('SELECT 1');res.json({status:'ready'});}catch{res.status(503).json({status:'unavailable'});}});const auth=configureAuth(app,db,process.env);addGuestRoutes(app,new GuestDrafts(db),oauthPublicUrl());addApi(app,service,auth.human);addMcp(app,service,auth.ai);
 // Claude's separate endpoint. CLAUDE_MCP_ENABLED=false removes it without affecting ChatGPT.
 if(process.env.CLAUDE_MCP_ENABLED!=='false')addMcp(app,service,auth.claude,{path:CLAUDE_MCP_PATH,host:'claude'});
 app.use(express.static('dist/web'));app.get('/{*path}',(req,res)=>{if(req.path.startsWith('/api/')||req.path.startsWith('/auth/')){res.status(404).json({error:'not_found'});return;}res.sendFile('index.html',{root:'dist/web'});});app.use(errors);
