@@ -1,943 +1,1384 @@
 {
-  "rounds": {
-    "name": "rounds",
-    "fields": [
-      {
-        "key": "name",
-        "name": "Round name",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "target_amount",
-        "name": "Target",
-        "kind": "money",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "currency",
-        "name": "Currency",
-        "kind": "select",
-        "required": true,
-        "multiple": false,
-        "ai": true,
-        "options": [
-          "EUR",
-          "USD",
-          "GBP",
-          "CHF"
-        ]
-      },
-      {
-        "key": "status",
-        "name": "Round status",
-        "kind": "select",
-        "required": true,
-        "multiple": false,
-        "ai": true,
-        "options": [
-          "Planning",
-          "Active",
-          "Closed"
-        ]
-      },
-      {
-        "key": "expected_close",
-        "name": "Target close",
-        "kind": "date",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "owner",
-        "name": "Round lead",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "notes",
-        "name": "Notes",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "archived",
-        "name": "Archived",
-        "kind": "boolean",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      }
-    ],
-    "logicalFields": {
-      "name": "name",
-      "target_amount": "target_amount",
-      "currency": "currency",
-      "status": "status",
-      "expected_close": "expected_close",
-      "owner": "owner",
-      "notes": "notes",
-      "archived": "archived"
-    },
-    "mappingContract": "tableMap[role]={typeId:approvedUUID,fields:{logical_key:existing_physical_snake_case,...},writableFields:[logical keys confirmed in manifest]}",
-    "references": {}
-  },
-  "investors": {
-    "name": "investors",
-    "fields": [
-      {
-        "key": "name",
-        "name": "Investor / fund",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "kind",
-        "name": "Investor type",
-        "kind": "select",
-        "required": true,
-        "multiple": false,
-        "ai": true,
-        "options": [
-          "VC",
-          "Corporate VC",
-          "Family office",
-          "Angel",
-          "Foundation",
-          "Other"
-        ]
-      },
-      {
-        "key": "geography",
-        "name": "Geography",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "focus",
-        "name": "Sector focus",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "stage_focus",
-        "name": "Investment stages",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "ticket_min",
-        "name": "Ticket minimum",
-        "kind": "money",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "ticket_max",
-        "name": "Ticket maximum",
-        "kind": "money",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "currency",
-        "name": "Ticket currency",
-        "kind": "select",
-        "required": false,
-        "multiple": false,
-        "ai": true,
-        "options": [
-          "EUR",
-          "USD",
-          "GBP",
-          "CHF"
-        ]
-      },
-      {
-        "key": "website",
-        "name": "Website source URL",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "source",
-        "name": "Evidence URL",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "source_date",
-        "name": "Verified on",
-        "kind": "date",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "owner",
-        "name": "Relationship owner",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "notes",
-        "name": "Fit notes",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "archived",
-        "name": "Archived",
-        "kind": "boolean",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      }
-    ],
-    "logicalFields": {
-      "name": "name",
-      "kind": "kind",
-      "geography": "geography",
-      "focus": "focus",
-      "stage_focus": "stage_focus",
-      "ticket_min": "ticket_min",
-      "ticket_max": "ticket_max",
-      "currency": "currency",
-      "website": "website",
-      "source": "source",
-      "source_date": "source_date",
-      "owner": "owner",
-      "notes": "notes",
-      "archived": "archived"
-    },
-    "mappingContract": "tableMap[role]={typeId:approvedUUID,fields:{logical_key:existing_physical_snake_case,...},writableFields:[logical keys confirmed in manifest]}",
-    "references": {}
-  },
-  "contacts": {
-    "name": "contacts",
-    "fields": [
-      {
-        "key": "name",
-        "name": "Contact name",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "investor_id",
-        "name": "Investor organization",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "title",
-        "name": "Job title",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "channel",
-        "name": "Preferred channel",
-        "kind": "select",
-        "required": false,
-        "multiple": false,
-        "ai": true,
-        "options": [
-          "Email",
-          "LinkedIn",
-          "Phone",
-          "Introducer"
-        ]
-      },
-      {
-        "key": "email",
-        "name": "Professional email",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "linkedin",
-        "name": "Professional profile",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "notes",
-        "name": "Relationship notes",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "archived",
-        "name": "Archived",
-        "kind": "boolean",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      }
-    ],
-    "logicalFields": {
-      "name": "name",
-      "investor_id": "investor_id",
-      "title": "title",
-      "channel": "channel",
-      "email": "email",
-      "linkedin": "linkedin",
-      "notes": "notes",
-      "archived": "archived"
-    },
-    "mappingContract": "tableMap[role]={typeId:approvedUUID,fields:{logical_key:existing_physical_snake_case,...},writableFields:[logical keys confirmed in manifest]}",
-    "references": {
-      "investor_id": {
-        "targetRole": "investors",
-        "storage": "scalar text of the actual authorized record UUID (not label or object)"
-      }
-    }
-  },
-  "opportunities": {
-    "name": "opportunities",
-    "fields": [
-      {
-        "key": "name",
-        "name": "Opportunity label",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "investor_id",
-        "name": "Investor",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "round_id",
-        "name": "Fundraise round",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "stage",
-        "name": "Pipeline stage",
-        "kind": "select",
-        "required": true,
-        "multiple": false,
-        "ai": true,
-        "options": [
-          "Identified",
-          "Qualified",
-          "Contacted",
-          "Due diligence",
-          "Committed",
-          "Declined"
-        ]
-      },
-      {
-        "key": "indicative_amount",
-        "name": "Indicative interest",
-        "kind": "money",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "committed_amount",
-        "name": "Signed amount",
-        "kind": "money",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "commitment_status",
-        "name": "Commitment evidence",
-        "kind": "select",
-        "required": false,
-        "multiple": false,
-        "ai": true,
-        "options": [
-          "None",
-          "Verbal",
-          "Signed"
-        ]
-      },
-      {
-        "key": "currency",
-        "name": "Currency",
-        "kind": "select",
-        "required": true,
-        "multiple": false,
-        "ai": true,
-        "options": [
-          "EUR",
-          "USD",
-          "GBP",
-          "CHF"
-        ]
-      },
-      {
-        "key": "commitment_date",
-        "name": "Signed date",
-        "kind": "date",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "evidence_ref",
-        "name": "Signed evidence reference",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "owner",
-        "name": "Relationship lead",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "next_step",
-        "name": "Next step",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "next_due",
-        "name": "Next due",
-        "kind": "date",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "expected_close",
-        "name": "Expected close",
-        "kind": "date",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "last_contact",
-        "name": "Last contact",
-        "kind": "date",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "priority",
-        "name": "Priority",
-        "kind": "select",
-        "required": false,
-        "multiple": false,
-        "ai": true,
-        "options": [
-          "High",
-          "Medium",
-          "Low"
-        ]
-      },
-      {
-        "key": "notes",
-        "name": "Decision notes",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "archived",
-        "name": "Archived",
-        "kind": "boolean",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      }
-    ],
-    "logicalFields": {
-      "name": "name",
-      "investor_id": "investor_id",
-      "round_id": "round_id",
-      "stage": "stage",
-      "indicative_amount": "indicative_amount",
-      "committed_amount": "committed_amount",
-      "commitment_status": "commitment_status",
-      "currency": "currency",
-      "commitment_date": "commitment_date",
-      "evidence_ref": "evidence_ref",
-      "owner": "owner",
-      "next_step": "next_step",
-      "next_due": "next_due",
-      "expected_close": "expected_close",
-      "last_contact": "last_contact",
-      "priority": "priority",
-      "notes": "notes",
-      "archived": "archived"
-    },
-    "mappingContract": "tableMap[role]={typeId:approvedUUID,fields:{logical_key:existing_physical_snake_case,...},writableFields:[logical keys confirmed in manifest]}",
-    "references": {
-      "investor_id": {
-        "targetRole": "investors",
-        "storage": "scalar text of the actual authorized record UUID (not label or object)"
-      },
-      "round_id": {
-        "targetRole": "rounds",
-        "storage": "scalar text of the actual authorized record UUID (not label or object)"
-      }
-    }
-  },
-  "interactions": {
-    "name": "interactions",
-    "fields": [
-      {
-        "key": "name",
-        "name": "Conversation subject",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "opportunity_id",
-        "name": "Opportunity",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "contact_id",
-        "name": "Contact",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "date",
-        "name": "Interaction date",
-        "kind": "date",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "channel",
-        "name": "Channel",
-        "kind": "select",
-        "required": true,
-        "multiple": false,
-        "ai": true,
-        "options": [
-          "Meeting",
-          "Call",
-          "Email",
-          "Warm intro",
-          "Other"
-        ]
-      },
-      {
-        "key": "outcome",
-        "name": "Outcome",
-        "kind": "select",
-        "required": false,
-        "multiple": false,
-        "ai": true,
-        "options": [
-          "Positive",
-          "Neutral",
-          "Negative",
-          "No response"
-        ]
-      },
-      {
-        "key": "summary",
-        "name": "Conversation notes",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "source",
-        "name": "Source / minutes reference",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "owner",
-        "name": "Recorded by",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "archived",
-        "name": "Archived",
-        "kind": "boolean",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      }
-    ],
-    "logicalFields": {
-      "name": "name",
-      "opportunity_id": "opportunity_id",
-      "contact_id": "contact_id",
-      "date": "date",
-      "channel": "channel",
-      "outcome": "outcome",
-      "summary": "summary",
-      "source": "source",
-      "owner": "owner",
-      "archived": "archived"
-    },
-    "mappingContract": "tableMap[role]={typeId:approvedUUID,fields:{logical_key:existing_physical_snake_case,...},writableFields:[logical keys confirmed in manifest]}",
-    "references": {
-      "opportunity_id": {
-        "targetRole": "opportunities",
-        "storage": "scalar text of the actual authorized record UUID (not label or object)"
-      },
-      "contact_id": {
-        "targetRole": "contacts",
-        "storage": "scalar text of the actual authorized record UUID (not label or object)"
-      }
-    }
-  },
-  "tasks": {
-    "name": "tasks",
-    "fields": [
-      {
-        "key": "name",
-        "name": "Action title",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "opportunity_id",
-        "name": "Opportunity",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "owner",
-        "name": "Owner",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "due",
-        "name": "Due date",
-        "kind": "date",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "status",
-        "name": "Status",
-        "kind": "select",
-        "required": true,
-        "multiple": false,
-        "ai": true,
-        "options": [
-          "Open",
-          "Done",
-          "Cancelled"
-        ]
-      },
-      {
-        "key": "outcome",
-        "name": "Completion notes",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "archived",
-        "name": "Archived",
-        "kind": "boolean",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      }
-    ],
-    "logicalFields": {
-      "name": "name",
-      "opportunity_id": "opportunity_id",
-      "owner": "owner",
-      "due": "due",
-      "status": "status",
-      "outcome": "outcome",
-      "archived": "archived"
-    },
-    "mappingContract": "tableMap[role]={typeId:approvedUUID,fields:{logical_key:existing_physical_snake_case,...},writableFields:[logical keys confirmed in manifest]}",
-    "references": {
-      "opportunity_id": {
-        "targetRole": "opportunities",
-        "storage": "scalar text of the actual authorized record UUID (not label or object)"
-      }
-    }
-  },
-  "briefs": {
-    "name": "briefs",
-    "fields": [
-      {
-        "key": "name",
-        "name": "Research brief",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "sector",
-        "name": "Sector / modality",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "geography",
-        "name": "Target geography",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "stage_focus",
-        "name": "Round / investor stage",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "ticket",
-        "name": "Target ticket",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "exclusions",
-        "name": "Exclude",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "notes",
-        "name": "Research instructions",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "owner",
-        "name": "Research owner",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "archived",
-        "name": "Archived",
-        "kind": "boolean",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      }
-    ],
-    "logicalFields": {
-      "name": "name",
-      "sector": "sector",
-      "geography": "geography",
-      "stage_focus": "stage_focus",
-      "ticket": "ticket",
-      "exclusions": "exclusions",
-      "notes": "notes",
-      "owner": "owner",
-      "archived": "archived"
-    },
-    "mappingContract": "tableMap[role]={typeId:approvedUUID,fields:{logical_key:existing_physical_snake_case,...},writableFields:[logical keys confirmed in manifest]}",
-    "references": {}
-  },
-  "findings": {
-    "name": "findings",
-    "fields": [
-      {
-        "key": "name",
-        "name": "Finding title",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "brief_id",
-        "name": "Research brief",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "investor_id",
-        "name": "Matched investor",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "topic",
-        "name": "Category",
-        "kind": "select",
-        "required": true,
-        "multiple": false,
-        "ai": true,
-        "options": [
-          "Fund focus",
-          "New funding",
-          "Investment activity",
-          "Hiring / team",
-          "Other"
-        ]
-      },
-      {
-        "key": "observed_date",
-        "name": "Evidence date",
-        "kind": "date",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "source_url",
-        "name": "Primary source URL",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "relevance",
-        "name": "Evidence summary",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "status",
-        "name": "Review status",
-        "kind": "select",
-        "required": true,
-        "multiple": false,
-        "ai": true,
-        "options": [
-          "Candidate",
-          "Approved",
-          "Excluded"
-        ]
-      },
-      {
-        "key": "archived",
-        "name": "Archived",
-        "kind": "boolean",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      }
-    ],
-    "logicalFields": {
-      "name": "name",
-      "brief_id": "brief_id",
-      "investor_id": "investor_id",
-      "topic": "topic",
-      "observed_date": "observed_date",
-      "source_url": "source_url",
-      "relevance": "relevance",
-      "status": "status",
-      "archived": "archived"
-    },
-    "mappingContract": "tableMap[role]={typeId:approvedUUID,fields:{logical_key:existing_physical_snake_case,...},writableFields:[logical keys confirmed in manifest]}",
-    "references": {
-      "brief_id": {
-        "targetRole": "briefs",
-        "storage": "scalar text of the actual authorized record UUID (not label or object)"
-      },
-      "investor_id": {
-        "targetRole": "investors",
-        "storage": "scalar text of the actual authorized record UUID (not label or object)"
-      }
-    }
+ "organizations": {
+  "name": "Organizations",
+  "contract": "core.v1",
+  "fields": [
+   {
+    "key": "name",
+    "name": "Name",
+    "kind": "text",
+    "required": true,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "org_type",
+    "name": "Type",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "company",
+     "investor",
+     "cro",
+     "cdmo",
+     "site",
+     "funder",
+     "partner",
+     "agency",
+     "other"
+    ]
+   },
+   {
+    "key": "country",
+    "name": "Country",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "website",
+    "name": "Website",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "archived",
+    "name": "Archived",
+    "kind": "boolean",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   }
+  ],
+  "logicalFields": {
+   "name": "name",
+   "org_type": "org_type",
+   "country": "country",
+   "website": "website",
+   "archived": "archived"
   }
+ },
+ "people": {
+  "name": "People",
+  "contract": "core.v1",
+  "fields": [
+   {
+    "key": "name",
+    "name": "Name",
+    "kind": "text",
+    "required": true,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "organization_id",
+    "name": "Organization",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Record ID of an organizations record."
+   },
+   {
+    "key": "title",
+    "name": "Title",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "email",
+    "name": "Email",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "archived",
+    "name": "Archived",
+    "kind": "boolean",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   }
+  ],
+  "logicalFields": {
+   "name": "name",
+   "organization_id": "organization_id",
+   "title": "title",
+   "email": "email",
+   "archived": "archived"
+  }
+ },
+ "fundraise.settings": {
+  "name": "Fundraise settings",
+  "contract": "fundraise.v1",
+  "fields": [
+   {
+    "key": "default_currency",
+    "name": "Default currency",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "USD",
+     "EUR",
+     "GBP",
+     "CHF",
+     "CAD",
+     "AUD",
+     "JPY",
+     "CNY",
+     "SEK",
+     "DKK",
+     "NOK",
+     "INR"
+    ]
+   },
+   {
+    "key": "stale_days",
+    "name": "Stale after (days)",
+    "kind": "number",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Active conversations with no activity for this many days are stale. Default 14."
+   },
+   {
+    "key": "stages",
+    "name": "Stages",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Comma list of enabled pipeline stages in display order: target, contacted, first_meeting, partner_meeting, due_diligence, term_sheet, committed, closed, passed."
+   },
+   {
+    "key": "pass_reasons",
+    "name": "Pass reasons",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Comma list of pass reasons offered when an investor passes, for example too_early, want_in_vivo_data, outside_mandate, cheque_size, valuation, team, other."
+   },
+   {
+    "key": "modalities",
+    "name": "Modalities",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Comma list of modalities used for fit, for example small_molecule, antibody, cell_therapy."
+   },
+   {
+    "key": "therapeutic_areas",
+    "name": "Therapeutic areas",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Comma list of therapeutic areas used for fit, for example oncology, immunology, neurology."
+   },
+   {
+    "key": "dev_stages",
+    "name": "Development stages",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Comma list of development stages used for fit, for example discovery, preclinical, phase_1."
+   }
+  ],
+  "logicalFields": {
+   "default_currency": "default_currency",
+   "stale_days": "stale_days",
+   "stages": "stages",
+   "pass_reasons": "pass_reasons",
+   "modalities": "modalities",
+   "therapeutic_areas": "therapeutic_areas",
+   "dev_stages": "dev_stages"
+  }
+ },
+ "fundraise.investor_profiles": {
+  "name": "Investor profiles",
+  "contract": "fundraise.v1",
+  "fields": [
+   {
+    "key": "organization_id",
+    "name": "Organization",
+    "kind": "text",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "description": "Record ID of an organizations record (org_type investor)."
+   },
+   {
+    "key": "investor_type",
+    "name": "Investor type",
+    "kind": "select",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "specialist_ls_vc",
+     "generalist_vc",
+     "pharma_cvc",
+     "strategic",
+     "family_office",
+     "angel",
+     "public_fund",
+     "other"
+    ]
+   },
+   {
+    "key": "tier",
+    "name": "Tier",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "a",
+     "b",
+     "c"
+    ]
+   },
+   {
+    "key": "profile_status",
+    "name": "Profile status",
+    "kind": "select",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "description": "Assistant-researched investors start as proposed and become active only when the user accepts them.",
+    "options": [
+     "proposed",
+     "accepted",
+     "rejected"
+    ]
+   },
+   {
+    "key": "modalities",
+    "name": "Modalities",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Comma list from the Settings vocabulary."
+   },
+   {
+    "key": "therapeutic_areas",
+    "name": "Therapeutic areas",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Comma list from the Settings vocabulary."
+   },
+   {
+    "key": "dev_stages",
+    "name": "Development stages",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Comma list from the Settings vocabulary."
+   },
+   {
+    "key": "check_min",
+    "name": "Cheque min",
+    "kind": "money",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "check_max",
+    "name": "Cheque max",
+    "kind": "money",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "currency",
+    "name": "Currency",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "USD",
+     "EUR",
+     "GBP",
+     "CHF",
+     "CAD",
+     "AUD",
+     "JPY",
+     "CNY",
+     "SEK",
+     "DKK",
+     "NOK",
+     "INR"
+    ]
+   },
+   {
+    "key": "leads_rounds",
+    "name": "Leads rounds",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "yes",
+     "no",
+     "sometimes"
+    ]
+   },
+   {
+    "key": "fund_vintage_year",
+    "name": "Fund vintage year",
+    "kind": "number",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "intro_path",
+    "name": "Intro path",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Who can introduce you, as plain text."
+   },
+   {
+    "key": "source",
+    "name": "Source",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Where the profile came from (URL or note). Required for assistant-proposed profiles."
+   },
+   {
+    "key": "source_date",
+    "name": "Source date",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "notes",
+    "name": "Notes",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "archived",
+    "name": "Archived",
+    "kind": "boolean",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   }
+  ],
+  "logicalFields": {
+   "organization_id": "organization_id",
+   "investor_type": "investor_type",
+   "tier": "tier",
+   "profile_status": "profile_status",
+   "modalities": "modalities",
+   "therapeutic_areas": "therapeutic_areas",
+   "dev_stages": "dev_stages",
+   "check_min": "check_min",
+   "check_max": "check_max",
+   "currency": "currency",
+   "leads_rounds": "leads_rounds",
+   "fund_vintage_year": "fund_vintage_year",
+   "intro_path": "intro_path",
+   "source": "source",
+   "source_date": "source_date",
+   "notes": "notes",
+   "archived": "archived"
+  }
+ },
+ "fundraise.rounds": {
+  "name": "Rounds",
+  "contract": "fundraise.v1",
+  "fields": [
+   {
+    "key": "name",
+    "name": "Name",
+    "kind": "text",
+    "required": true,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "round_type",
+    "name": "Round type",
+    "kind": "select",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "pre_seed",
+     "seed",
+     "bridge",
+     "series_a",
+     "series_b",
+     "series_c",
+     "other"
+    ]
+   },
+   {
+    "key": "target_amount",
+    "name": "Target",
+    "kind": "money",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "currency",
+    "name": "Currency",
+    "kind": "select",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "USD",
+     "EUR",
+     "GBP",
+     "CHF",
+     "CAD",
+     "AUD",
+     "JPY",
+     "CNY",
+     "SEK",
+     "DKK",
+     "NOK",
+     "INR"
+    ]
+   },
+   {
+    "key": "status",
+    "name": "Status",
+    "kind": "select",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "planning",
+     "active",
+     "closed",
+     "abandoned"
+    ]
+   },
+   {
+    "key": "opened_on",
+    "name": "Opened on",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "target_close",
+    "name": "Target close",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "closed_on",
+    "name": "Closed on",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "lead_org_id",
+    "name": "Lead investor",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Record ID of the lead investor organizations record."
+   },
+   {
+    "key": "notes",
+    "name": "Notes",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "archived",
+    "name": "Archived",
+    "kind": "boolean",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   }
+  ],
+  "logicalFields": {
+   "name": "name",
+   "round_type": "round_type",
+   "target_amount": "target_amount",
+   "currency": "currency",
+   "status": "status",
+   "opened_on": "opened_on",
+   "target_close": "target_close",
+   "closed_on": "closed_on",
+   "lead_org_id": "lead_org_id",
+   "notes": "notes",
+   "archived": "archived"
+  }
+ },
+ "fundraise.opportunities": {
+  "name": "Opportunities",
+  "contract": "fundraise.v1",
+  "fields": [
+   {
+    "key": "round_id",
+    "name": "Round",
+    "kind": "text",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "description": "Record ID of a fundraise.rounds record."
+   },
+   {
+    "key": "organization_id",
+    "name": "Investor",
+    "kind": "text",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "description": "Record ID of an organizations record."
+   },
+   {
+    "key": "primary_contact_id",
+    "name": "Primary contact",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Record ID of a people record."
+   },
+   {
+    "key": "stage",
+    "name": "Stage",
+    "kind": "select",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "target",
+     "contacted",
+     "first_meeting",
+     "partner_meeting",
+     "due_diligence",
+     "term_sheet",
+     "committed",
+     "closed",
+     "passed"
+    ]
+   },
+   {
+    "key": "interest",
+    "name": "Interest",
+    "kind": "select",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "description": "Only signed counts as raised.",
+    "options": [
+     "none",
+     "soft",
+     "verbal",
+     "signed"
+    ]
+   },
+   {
+    "key": "amount_indicated",
+    "name": "Amount indicated",
+    "kind": "money",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "amount_committed",
+    "name": "Amount committed",
+    "kind": "money",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "currency",
+    "name": "Currency",
+    "kind": "select",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "USD",
+     "EUR",
+     "GBP",
+     "CHF",
+     "CAD",
+     "AUD",
+     "JPY",
+     "CNY",
+     "SEK",
+     "DKK",
+     "NOK",
+     "INR"
+    ]
+   },
+   {
+    "key": "is_lead",
+    "name": "Lead",
+    "kind": "boolean",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "owner",
+    "name": "Owner",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "next_step",
+    "name": "Next step",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "next_due",
+    "name": "Next step due",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "last_activity_on",
+    "name": "Last activity on",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Updated by the app in the same reviewed save as each activity."
+   },
+   {
+    "key": "pass_reason",
+    "name": "Pass reason",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "too_early",
+     "want_in_vivo_data",
+     "want_clinical_data",
+     "outside_mandate",
+     "cheque_size",
+     "valuation",
+     "team",
+     "competition",
+     "timing",
+     "other"
+    ]
+   },
+   {
+    "key": "pass_detail",
+    "name": "Pass detail",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "offer_received_on",
+    "name": "Offer received on",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "offer_amount",
+    "name": "Offer amount",
+    "kind": "money",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "offer_pre_money",
+    "name": "Pre-money valuation",
+    "kind": "money",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "offer_instrument",
+    "name": "Instrument",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "priced",
+     "safe",
+     "convertible",
+     "other"
+    ]
+   },
+   {
+    "key": "offer_board_seat",
+    "name": "Board seat",
+    "kind": "boolean",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "offer_expires_on",
+    "name": "Offer expires on",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "offer_status",
+    "name": "Offer status",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "received",
+     "negotiating",
+     "accepted",
+     "declined",
+     "expired"
+    ]
+   },
+   {
+    "key": "offer_notes",
+    "name": "Offer notes",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "cda_status",
+    "name": "CDA/NDA status",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "none",
+     "sent",
+     "signed"
+    ]
+   },
+   {
+    "key": "cda_signed_on",
+    "name": "CDA signed on",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "archived",
+    "name": "Archived",
+    "kind": "boolean",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   }
+  ],
+  "logicalFields": {
+   "round_id": "round_id",
+   "organization_id": "organization_id",
+   "primary_contact_id": "primary_contact_id",
+   "stage": "stage",
+   "interest": "interest",
+   "amount_indicated": "amount_indicated",
+   "amount_committed": "amount_committed",
+   "currency": "currency",
+   "is_lead": "is_lead",
+   "owner": "owner",
+   "next_step": "next_step",
+   "next_due": "next_due",
+   "last_activity_on": "last_activity_on",
+   "pass_reason": "pass_reason",
+   "pass_detail": "pass_detail",
+   "offer_received_on": "offer_received_on",
+   "offer_amount": "offer_amount",
+   "offer_pre_money": "offer_pre_money",
+   "offer_instrument": "offer_instrument",
+   "offer_board_seat": "offer_board_seat",
+   "offer_expires_on": "offer_expires_on",
+   "offer_status": "offer_status",
+   "offer_notes": "offer_notes",
+   "cda_status": "cda_status",
+   "cda_signed_on": "cda_signed_on",
+   "archived": "archived"
+  }
+ },
+ "fundraise.activities": {
+  "name": "Activities",
+  "contract": "fundraise.v1",
+  "fields": [
+   {
+    "key": "opportunity_id",
+    "name": "Opportunity",
+    "kind": "text",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "description": "Record ID of a fundraise.opportunities record."
+   },
+   {
+    "key": "contact_id",
+    "name": "Contact",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Record ID of a people record."
+   },
+   {
+    "key": "activity_on",
+    "name": "Date",
+    "kind": "date",
+    "required": true,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "kind",
+    "name": "Kind",
+    "kind": "select",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "email",
+     "call",
+     "meeting",
+     "intro",
+     "event",
+     "other"
+    ]
+   },
+   {
+    "key": "summary",
+    "name": "Summary",
+    "kind": "text",
+    "required": true,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "outcome",
+    "name": "Outcome",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "follow_up_due",
+    "name": "Follow-up due",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "source",
+    "name": "Source",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "manual",
+     "assistant"
+    ]
+   }
+  ],
+  "logicalFields": {
+   "opportunity_id": "opportunity_id",
+   "contact_id": "contact_id",
+   "activity_on": "activity_on",
+   "kind": "kind",
+   "summary": "summary",
+   "outcome": "outcome",
+   "follow_up_due": "follow_up_due",
+   "source": "source"
+  }
+ },
+ "fundraise.tranches": {
+  "name": "Tranches",
+  "description": "App output (fundraise.tranches fundraise.v1): read-only for Runway (cash-in) and Investor Updates. Fundraise is its single writer.",
+  "contract": "fundraise.v1",
+  "fields": [
+   {
+    "key": "round_id",
+    "name": "Round",
+    "kind": "text",
+    "required": true,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "tranche_no",
+    "name": "Tranche",
+    "kind": "number",
+    "required": true,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "amount",
+    "name": "Amount",
+    "kind": "money",
+    "required": true,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "currency",
+    "name": "Currency",
+    "kind": "select",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "USD",
+     "EUR",
+     "GBP",
+     "CHF",
+     "CAD",
+     "AUD",
+     "JPY",
+     "CNY",
+     "SEK",
+     "DKK",
+     "NOK",
+     "INR"
+    ]
+   },
+   {
+    "key": "condition",
+    "name": "Condition",
+    "kind": "text",
+    "required": true,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "milestone_id",
+    "name": "Milestone",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Record ID of a programs.plan_items record."
+   },
+   {
+    "key": "expected_on",
+    "name": "Expected on",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "status",
+    "name": "Status",
+    "kind": "select",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "expected",
+     "met",
+     "released",
+     "waived",
+     "missed"
+    ]
+   }
+  ],
+  "logicalFields": {
+   "round_id": "round_id",
+   "tranche_no": "tranche_no",
+   "amount": "amount",
+   "currency": "currency",
+   "condition": "condition",
+   "milestone_id": "milestone_id",
+   "expected_on": "expected_on",
+   "status": "status"
+  }
+ },
+ "dataroom.access_grants": {
+  "name": "Data room access",
+  "description": "Integration: Fundraise's own table for access entered by hand (or proposed by the assistant from DocSend/ShareVault reports); read-only once the user links a Data Room provider inside the app.",
+  "contract": "dataroom.v1",
+  "optional": true,
+  "integration": true,
+  "fields": [
+   {
+    "key": "room_id",
+    "name": "Room",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "room_name",
+    "name": "Room name",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "room_purpose",
+    "name": "Room purpose",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "financing",
+     "licensing",
+     "m_and_a",
+     "other"
+    ]
+   },
+   {
+    "key": "organization_id",
+    "name": "Organization",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Record ID of an organizations record."
+   },
+   {
+    "key": "person_id",
+    "name": "Person",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Record ID of a people record."
+   },
+   {
+    "key": "granted_on",
+    "name": "Granted on",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "expires_on",
+    "name": "Expires on",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "status",
+    "name": "Status",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "invited",
+     "active",
+     "revoked",
+     "expired"
+    ]
+   },
+   {
+    "key": "agreement_accepted_on",
+    "name": "Agreement accepted on",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "source",
+    "name": "Source",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "manual",
+     "tracked"
+    ]
+   }
+  ],
+  "logicalFields": {
+   "room_id": "room_id",
+   "room_name": "room_name",
+   "room_purpose": "room_purpose",
+   "organization_id": "organization_id",
+   "person_id": "person_id",
+   "granted_on": "granted_on",
+   "expires_on": "expires_on",
+   "status": "status",
+   "agreement_accepted_on": "agreement_accepted_on",
+   "source": "source"
+  }
+ },
+ "dataroom.engagement": {
+  "name": "Data room views",
+  "description": "Integration: Fundraise's own table for views entered by hand; read-only once the user links a Data Room provider inside the app.",
+  "contract": "dataroom.v1",
+  "optional": true,
+  "integration": true,
+  "fields": [
+   {
+    "key": "grant_id",
+    "name": "Grant",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "organization_id",
+    "name": "Organization",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Record ID of an organizations record."
+   },
+   {
+    "key": "person_id",
+    "name": "Person",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Record ID of a people record."
+   },
+   {
+    "key": "document_ref",
+    "name": "Document reference",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "document_title",
+    "name": "Document title",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "first_viewed_on",
+    "name": "First viewed on",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "last_viewed_on",
+    "name": "Last viewed on",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "view_count",
+    "name": "Views",
+    "kind": "number",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "seconds_viewed",
+    "name": "Seconds viewed",
+    "kind": "number",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "downloads",
+    "name": "Downloads",
+    "kind": "number",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "source",
+    "name": "Source",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "manual",
+     "docsend",
+     "sharevault",
+     "tracked"
+    ]
+   },
+   {
+    "key": "as_of",
+    "name": "As of",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   }
+  ],
+  "logicalFields": {
+   "grant_id": "grant_id",
+   "organization_id": "organization_id",
+   "person_id": "person_id",
+   "document_ref": "document_ref",
+   "document_title": "document_title",
+   "first_viewed_on": "first_viewed_on",
+   "last_viewed_on": "last_viewed_on",
+   "view_count": "view_count",
+   "seconds_viewed": "seconds_viewed",
+   "downloads": "downloads",
+   "source": "source",
+   "as_of": "as_of"
+  }
+ },
+ "programs.plan_items": {
+  "name": "Milestones",
+  "description": "Integration: Fundraise's own milestone entries for tranche conditions; read-only Programs plan items (key milestones) once the user links Programs inside the app. Binds only name, program_id, item_type, end_date, status and is_key.",
+  "contract": "programs.v2",
+  "optional": true,
+  "integration": true,
+  "fields": [
+   {
+    "key": "name",
+    "name": "Name",
+    "kind": "text",
+    "required": true,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "program_id",
+    "name": "Program",
+    "kind": "text",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "description": "Record ID of a programs record (Programs). For your own milestone entries, the program name or code."
+   },
+   {
+    "key": "item_type",
+    "name": "Item type",
+    "kind": "select",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "milestone",
+     "activity"
+    ]
+   },
+   {
+    "key": "end_date",
+    "name": "End date",
+    "kind": "date",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "description": "For milestones, the milestone date."
+   },
+   {
+    "key": "status",
+    "name": "Status",
+    "kind": "select",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "planned",
+     "in_progress",
+     "done",
+     "at_risk",
+     "cancelled"
+    ]
+   },
+   {
+    "key": "is_key",
+    "name": "Key milestone",
+    "kind": "boolean",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   }
+  ],
+  "logicalFields": {
+   "name": "name",
+   "program_id": "program_id",
+   "item_type": "item_type",
+   "end_date": "end_date",
+   "status": "status",
+   "is_key": "is_key"
+  }
+ }
 }

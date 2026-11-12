@@ -1,0 +1,943 @@
+{
+  "rounds": {
+    "name": "rounds",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Round name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "target_amount",
+        "name": "Target",
+        "kind": "money",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "currency",
+        "name": "Currency",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "EUR",
+          "USD",
+          "GBP",
+          "CHF"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "Round status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Planning",
+          "Active",
+          "Closed"
+        ]
+      },
+      {
+        "key": "expected_close",
+        "name": "Target close",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Round lead",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "Notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "target_amount": "target_amount",
+      "currency": "currency",
+      "status": "status",
+      "expected_close": "expected_close",
+      "owner": "owner",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "mappingContract": "tableMap[role]={typeId:approvedUUID,fields:{logical_key:existing_physical_snake_case,...},writableFields:[logical keys confirmed in manifest]}",
+    "references": {}
+  },
+  "investors": {
+    "name": "investors",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Investor / fund",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "kind",
+        "name": "Investor type",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "VC",
+          "Corporate VC",
+          "Family office",
+          "Angel",
+          "Foundation",
+          "Other"
+        ]
+      },
+      {
+        "key": "geography",
+        "name": "Geography",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "focus",
+        "name": "Sector focus",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "stage_focus",
+        "name": "Investment stages",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "ticket_min",
+        "name": "Ticket minimum",
+        "kind": "money",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "ticket_max",
+        "name": "Ticket maximum",
+        "kind": "money",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "currency",
+        "name": "Ticket currency",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "EUR",
+          "USD",
+          "GBP",
+          "CHF"
+        ]
+      },
+      {
+        "key": "website",
+        "name": "Website source URL",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source",
+        "name": "Evidence URL",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source_date",
+        "name": "Verified on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Relationship owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "Fit notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "kind": "kind",
+      "geography": "geography",
+      "focus": "focus",
+      "stage_focus": "stage_focus",
+      "ticket_min": "ticket_min",
+      "ticket_max": "ticket_max",
+      "currency": "currency",
+      "website": "website",
+      "source": "source",
+      "source_date": "source_date",
+      "owner": "owner",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "mappingContract": "tableMap[role]={typeId:approvedUUID,fields:{logical_key:existing_physical_snake_case,...},writableFields:[logical keys confirmed in manifest]}",
+    "references": {}
+  },
+  "contacts": {
+    "name": "contacts",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Contact name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "investor_id",
+        "name": "Investor organization",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "title",
+        "name": "Job title",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "channel",
+        "name": "Preferred channel",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Email",
+          "LinkedIn",
+          "Phone",
+          "Introducer"
+        ]
+      },
+      {
+        "key": "email",
+        "name": "Professional email",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "linkedin",
+        "name": "Professional profile",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "Relationship notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "investor_id": "investor_id",
+      "title": "title",
+      "channel": "channel",
+      "email": "email",
+      "linkedin": "linkedin",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "mappingContract": "tableMap[role]={typeId:approvedUUID,fields:{logical_key:existing_physical_snake_case,...},writableFields:[logical keys confirmed in manifest]}",
+    "references": {
+      "investor_id": {
+        "targetRole": "investors",
+        "storage": "scalar text of the actual authorized record UUID (not label or object)"
+      }
+    }
+  },
+  "opportunities": {
+    "name": "opportunities",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Opportunity label",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "investor_id",
+        "name": "Investor",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "round_id",
+        "name": "Fundraise round",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "stage",
+        "name": "Pipeline stage",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Identified",
+          "Qualified",
+          "Contacted",
+          "Due diligence",
+          "Committed",
+          "Declined"
+        ]
+      },
+      {
+        "key": "indicative_amount",
+        "name": "Indicative interest",
+        "kind": "money",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "committed_amount",
+        "name": "Signed amount",
+        "kind": "money",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "commitment_status",
+        "name": "Commitment evidence",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "None",
+          "Verbal",
+          "Signed"
+        ]
+      },
+      {
+        "key": "currency",
+        "name": "Currency",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "EUR",
+          "USD",
+          "GBP",
+          "CHF"
+        ]
+      },
+      {
+        "key": "commitment_date",
+        "name": "Signed date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "evidence_ref",
+        "name": "Signed evidence reference",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Relationship lead",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "next_step",
+        "name": "Next step",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "next_due",
+        "name": "Next due",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "expected_close",
+        "name": "Expected close",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "last_contact",
+        "name": "Last contact",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "priority",
+        "name": "Priority",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "High",
+          "Medium",
+          "Low"
+        ]
+      },
+      {
+        "key": "notes",
+        "name": "Decision notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "investor_id": "investor_id",
+      "round_id": "round_id",
+      "stage": "stage",
+      "indicative_amount": "indicative_amount",
+      "committed_amount": "committed_amount",
+      "commitment_status": "commitment_status",
+      "currency": "currency",
+      "commitment_date": "commitment_date",
+      "evidence_ref": "evidence_ref",
+      "owner": "owner",
+      "next_step": "next_step",
+      "next_due": "next_due",
+      "expected_close": "expected_close",
+      "last_contact": "last_contact",
+      "priority": "priority",
+      "notes": "notes",
+      "archived": "archived"
+    },
+    "mappingContract": "tableMap[role]={typeId:approvedUUID,fields:{logical_key:existing_physical_snake_case,...},writableFields:[logical keys confirmed in manifest]}",
+    "references": {
+      "investor_id": {
+        "targetRole": "investors",
+        "storage": "scalar text of the actual authorized record UUID (not label or object)"
+      },
+      "round_id": {
+        "targetRole": "rounds",
+        "storage": "scalar text of the actual authorized record UUID (not label or object)"
+      }
+    }
+  },
+  "interactions": {
+    "name": "interactions",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Conversation subject",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "opportunity_id",
+        "name": "Opportunity",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "contact_id",
+        "name": "Contact",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "date",
+        "name": "Interaction date",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "channel",
+        "name": "Channel",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Meeting",
+          "Call",
+          "Email",
+          "Warm intro",
+          "Other"
+        ]
+      },
+      {
+        "key": "outcome",
+        "name": "Outcome",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Positive",
+          "Neutral",
+          "Negative",
+          "No response"
+        ]
+      },
+      {
+        "key": "summary",
+        "name": "Conversation notes",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source",
+        "name": "Source / minutes reference",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Recorded by",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "opportunity_id": "opportunity_id",
+      "contact_id": "contact_id",
+      "date": "date",
+      "channel": "channel",
+      "outcome": "outcome",
+      "summary": "summary",
+      "source": "source",
+      "owner": "owner",
+      "archived": "archived"
+    },
+    "mappingContract": "tableMap[role]={typeId:approvedUUID,fields:{logical_key:existing_physical_snake_case,...},writableFields:[logical keys confirmed in manifest]}",
+    "references": {
+      "opportunity_id": {
+        "targetRole": "opportunities",
+        "storage": "scalar text of the actual authorized record UUID (not label or object)"
+      },
+      "contact_id": {
+        "targetRole": "contacts",
+        "storage": "scalar text of the actual authorized record UUID (not label or object)"
+      }
+    }
+  },
+  "tasks": {
+    "name": "tasks",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Action title",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "opportunity_id",
+        "name": "Opportunity",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "due",
+        "name": "Due date",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Open",
+          "Done",
+          "Cancelled"
+        ]
+      },
+      {
+        "key": "outcome",
+        "name": "Completion notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "opportunity_id": "opportunity_id",
+      "owner": "owner",
+      "due": "due",
+      "status": "status",
+      "outcome": "outcome",
+      "archived": "archived"
+    },
+    "mappingContract": "tableMap[role]={typeId:approvedUUID,fields:{logical_key:existing_physical_snake_case,...},writableFields:[logical keys confirmed in manifest]}",
+    "references": {
+      "opportunity_id": {
+        "targetRole": "opportunities",
+        "storage": "scalar text of the actual authorized record UUID (not label or object)"
+      }
+    }
+  },
+  "briefs": {
+    "name": "briefs",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Research brief",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "sector",
+        "name": "Sector / modality",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "geography",
+        "name": "Target geography",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "stage_focus",
+        "name": "Round / investor stage",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "ticket",
+        "name": "Target ticket",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "exclusions",
+        "name": "Exclude",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "Research instructions",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Research owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "sector": "sector",
+      "geography": "geography",
+      "stage_focus": "stage_focus",
+      "ticket": "ticket",
+      "exclusions": "exclusions",
+      "notes": "notes",
+      "owner": "owner",
+      "archived": "archived"
+    },
+    "mappingContract": "tableMap[role]={typeId:approvedUUID,fields:{logical_key:existing_physical_snake_case,...},writableFields:[logical keys confirmed in manifest]}",
+    "references": {}
+  },
+  "findings": {
+    "name": "findings",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Finding title",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "brief_id",
+        "name": "Research brief",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "investor_id",
+        "name": "Matched investor",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "topic",
+        "name": "Category",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Fund focus",
+          "New funding",
+          "Investment activity",
+          "Hiring / team",
+          "Other"
+        ]
+      },
+      {
+        "key": "observed_date",
+        "name": "Evidence date",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source_url",
+        "name": "Primary source URL",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "relevance",
+        "name": "Evidence summary",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Review status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Candidate",
+          "Approved",
+          "Excluded"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "brief_id": "brief_id",
+      "investor_id": "investor_id",
+      "topic": "topic",
+      "observed_date": "observed_date",
+      "source_url": "source_url",
+      "relevance": "relevance",
+      "status": "status",
+      "archived": "archived"
+    },
+    "mappingContract": "tableMap[role]={typeId:approvedUUID,fields:{logical_key:existing_physical_snake_case,...},writableFields:[logical keys confirmed in manifest]}",
+    "references": {
+      "brief_id": {
+        "targetRole": "briefs",
+        "storage": "scalar text of the actual authorized record UUID (not label or object)"
+      },
+      "investor_id": {
+        "targetRole": "investors",
+        "storage": "scalar text of the actual authorized record UUID (not label or object)"
+      }
+    }
+  }
+}
