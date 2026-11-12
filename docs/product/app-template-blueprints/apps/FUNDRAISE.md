@@ -6,6 +6,8 @@
 
 **Governing contracts:** as for [Runway](RUNWAY.md) and [Programs](PROGRAMS.md), plus [modular apps and shared data](../../MODULAR_APPS_AND_SHARED_DATA.md) — in particular §4 core contract, §6 archive first and **§7 role-based connections**. They win on any conflict.
 
+**Update 12 Nov 2026 (platform PR #134, integrations):** connections to other apps use the **integration** pattern: Fundraise keeps its own tables for that data so users can enter it by hand, and offers one subtle line ("Works with Data Room. **Add Data Room**" / "Data Room is in your workspace. **Use its data**") rendered as a `data-trialy-integration` button; the platform opens the dialog. There is no "not connected" state. Build against guidance 1.3.20 or later and the contract registry (`read_app_template_guidance(resource:"contracts")`). If #134 is not merged when building, stop and ask.
+
 **Decisions (11 Nov 2026):** no built-in investor database (own list + assistant research); light term-sheet fields for comparing offers; strategic/pharma investors and public equity funds are investor types (grants stay in Grants, 19); no email integration (assistants log from the user's own connected mail/calendar for review); several rounds over time with shared investor history; **Data Room connection by role, not by install bundle**; cap table summary and post-round investor updates belong to Investor Updates (06).
 
 ---
@@ -57,12 +59,12 @@ Custom `frontend-js` app on the Vivid kit, theme **forest** with dark-teal hero 
 
 | # | Screen (id) | Capabilities |
 |---|---|---|
-| 1 | **Overview** (`overview`) | (1) Round thermometer and lead badge for the active round. (2) Funnel: count by stage. (3) Stale and due list. (4) Engagement highlights (only when Data Room is connected; otherwise a short note with a reviewed "Connect data room" action). |
+| 1 | **Overview** (`overview`) | (1) Round thermometer and lead badge for the active round. (2) Funnel: count by stage. (3) Stale and due list. (4) Engagement highlights (from own entries or the linked Data Room). |
 | 2 | **Pipeline** (`pipeline`) | (1) Board by stage for the selected round; card shows investor, tier, interest, amount, next step, engagement dot. (2) Move stage via a reviewed edit (drag opens the edit; nothing saves without review). (3) Filters: tier, investor type, owner, interest. (4) Opportunity detail side panel: contacts, activity, offer, data-room access and views. |
 | 3 | **Investors** (`investors`) | (1) Ranked target list with tier, type, modality/area/stage fit, cheque range, leads (yes/no/sometimes), fund vintage, intro path. (2) Add or import (assistant-proposed, reviewed). (3) Accept or reject assistant-proposed investors. (4) Investor history across rounds. |
-| 4 | **Round** (`round`) | (1) Round settings: type, target, currency, dates, lead. (2) Syndicate table: committed amounts and % of round. (3) Offer comparison. (4) Tranches with condition, milestone, expected date and status. |
+| 4 | **Round** (`round`) | (1) Round settings: type, target, currency, dates, lead. (2) Syndicate table: committed amounts and % of round. (3) Offer comparison. (4) Tranches with condition, milestone (own milestone entries, or Programs via integration line "Works with Programs"), expected date and status. |
 | 5 | **Activity** (`activity`) | (1) Log of emails, calls, meetings, intros, events. (2) Add activity (or let the assistant propose entries from connected mail/calendar). (3) Follow-ups due. (4) Pass reasons summary. |
-| 6 | **Engagement** (`engagement`) | Shown with content only when `dataroom.access_grants` / `dataroom.engagement` are connected. (1) Access by investor: invited, active, revoked, expired, agreement accepted. (2) Views by investor and document: first/last view, count, time where available. (3) Signals list (hot, never opened, re-opened). (4) "Give access" opens the Data Room app's access form pre-filled (the Data Room app writes). |
+| 6 | **Engagement** (`engagement`) | Always available. (1) Access by investor: invited, active, revoked, expired, agreement accepted. (2) Views by investor and document: first/last view, count, time where available. (3) Signals list (hot, never opened, re-opened). (4) Record access and views by hand (or assistant-proposed from DocSend/ShareVault reports); integration line "Works with Data Room. **Add Data Room**" / "**Use its data**". Once linked: read-only, and "Give access" opens the Data Room app. |
 | 7 | **Settings** (`settings`) | (1) Stages and pass reasons. (2) Fit vocabularies: modalities, therapeutic areas, development stages. (3) Stale threshold (default 14 days), default currency. (4) Links to Access and Automations. |
 
 Shared behaviours, chart rules and states as in [Runway §3](RUNWAY.md#3-screens-7).
@@ -84,18 +86,17 @@ Shared behaviours, chart rules and states as in [Runway §3](RUNWAY.md#3-screens
 
 Principles as in [Runway §5](RUNWAY.md#5-data-model). Contract for own tables: `fundraise.v1`.
 
-**Shared and connected roles**
+**Shared and integration roles**
 
 | Role | Contract | Mode | Use |
 |---|---|---|---|
 | `organizations` | core.v1 | read/write | Investors (`org_type` = investor) |
 | `people` | core.v1 | read/write | Investor contacts |
-| `agreements` | core.v1 | optional, read-only | CDA/NDA status per investor (written by Contracts) |
-| `programs` | core.v1 | optional, read-only | Program context for tranches |
-| `programs.plan_items` | programs.v2 | optional, read-only | Milestones for tranche conditions |
-| `runway.fx_rates` | runway.v2 | optional, read-only | Converting amounts in other currencies to the round currency |
-| `dataroom.access_grants` | dataroom.v1 | optional, read-only | Who has access |
-| `dataroom.engagement` | dataroom.v1 | optional, read-only | Who viewed what, how often |
+| `dataroom.access_grants` | dataroom.v1 | **integration** (own table for manual entry; read-only once linked to a Data Room provider) | Who has access |
+| `dataroom.engagement` | dataroom.v1 | **integration** (as above) | Who viewed what, how often (manual, from DocSend/ShareVault reports, or the provider's data) |
+| `programs.plan_items` | programs.v2 | **integration**, bind only `name`, `program_id`, `item_type`, `end_date`, `status`, `is_key` | Milestones for tranche conditions (own milestone entries until linked to Programs) |
+
+Not used as roles: `agreements` (CDA/NDA status is two fields on opportunities: `cda_status` none / sent / signed, `cda_signed_on`); `runway.fx_rates` (not a published output role; amounts in another currency are flagged and excluded until the registry publishes it — then add it as an integration).
 
 **Own tables (`fundraise.*`)**
 
@@ -104,7 +105,7 @@ Principles as in [Runway §5](RUNWAY.md#5-data-model). Contract for own tables: 
 | `fundraise.settings` (one row) | default_currency (select), stale_days (number, 14), stages (text list), pass_reasons (text list), modalities (text list), therapeutic_areas (text list), dev_stages (text list) |
 | `fundraise.investor_profiles` | organization_id (text*, UUID→organizations), investor_type (select*: specialist_ls_vc / generalist_vc / pharma_cvc / strategic / family_office / angel / public_fund / other), tier (select: a / b / c), profile_status (select*: proposed / accepted / rejected), modalities (text), therapeutic_areas (text), dev_stages (text), check_min (money), check_max (money), currency (select), leads_rounds (select: yes / no / sometimes), fund_vintage_year (number), intro_path (text), source (text), source_date (date), notes (text), archived (boolean) |
 | `fundraise.rounds` | name (text*), round_type (select*: pre_seed / seed / bridge / series_a / series_b / series_c / other), target_amount (money), currency (select*), status (select*: planning / active / closed / abandoned), opened_on (date), target_close (date), closed_on (date), lead_org_id (text), notes (text), archived (boolean) |
-| `fundraise.opportunities` | round_id (text*), organization_id (text*), primary_contact_id (text), stage (select*: target / contacted / first_meeting / partner_meeting / due_diligence / term_sheet / committed / closed / passed), interest (select*: none / soft / verbal / signed), amount_indicated (money), amount_committed (money), currency (select*), is_lead (boolean), owner (text), next_step (text), next_due (date), last_activity_on (date), pass_reason (select), pass_detail (text), offer_received_on (date), offer_amount (money), offer_pre_money (money), offer_instrument (select: priced / safe / convertible / other), offer_board_seat (boolean), offer_expires_on (date), offer_status (select: received / negotiating / accepted / declined / expired), offer_notes (text), archived (boolean) |
+| `fundraise.opportunities` | round_id (text*), organization_id (text*), primary_contact_id (text), stage (select*: target / contacted / first_meeting / partner_meeting / due_diligence / term_sheet / committed / closed / passed), interest (select*: none / soft / verbal / signed), amount_indicated (money), amount_committed (money), currency (select*), is_lead (boolean), owner (text), next_step (text), next_due (date), last_activity_on (date), pass_reason (select), pass_detail (text), offer_received_on (date), offer_amount (money), offer_pre_money (money), offer_instrument (select: priced / safe / convertible / other), offer_board_seat (boolean), offer_expires_on (date), offer_status (select: received / negotiating / accepted / declined / expired), offer_notes (text), cda_status (select: none / sent / signed), cda_signed_on (date), archived (boolean) |
 | `fundraise.activities` | opportunity_id (text*), contact_id (text), activity_on (date*), kind (select*: email / call / meeting / intro / event / other), summary (text*), outcome (text), follow_up_due (date), source (select: manual / assistant) |
 | `fundraise.tranches` (output) | round_id (text*), tranche_no (number*), amount (money*), currency (select*), condition (text*), milestone_id (text, UUID→programs.plan_items), expected_on (date), status (select*: expected / met / released / waived / missed) |
 
@@ -117,21 +118,21 @@ Principles as in [Runway §5](RUNWAY.md#5-data-model). Contract for own tables: 
 | `dataroom.access_grants` | room_id, room_name, room_purpose (financing / licensing / m_and_a / other), organization_id, person_id, granted_on, expires_on, status (invited / active / revoked / expired), agreement_accepted_on, source (manual / tracked) |
 | `dataroom.engagement` | grant_id, organization_id, person_id, document_ref, document_title, first_viewed_on, last_viewed_on, view_count, seconds_viewed (optional), downloads (optional), source (manual / docsend / sharevault / tracked), as_of |
 
-Phase 1 (Data Room app): grants and engagement entered manually or by the assistant from DocSend/ShareVault reports. Phase 2 (platform secure rooms): the platform writes the same fields automatically. Fundraise does not change between phases.
+Fundraise's own `dataroom.*` tables hold manual entries (typed in, or proposed by the assistant from DocSend/ShareVault reports). When a Data Room provider exists and the user chooses "Use its data", Fundraise reads the provider's tables read-only; own entries stay in Database, nothing is copied or merged. Phase 2 (platform secure rooms) writes the provider's tables automatically; Fundraise does not change.
 
 ---
 
 ## 6. Calculation rules
 
 - **Raised** = Σ `amount_committed` where interest = signed, in the round currency. **Verbal** and **soft** are shown separately and never added to raised.
-- **Currency:** amounts in another currency are converted with `runway.fx_rates` when connected and readable; otherwise flagged and excluded, never guessed.
+- **Currency:** amounts in another currency than the round are flagged and excluded, never guessed (conversion is added when an fx-rates output role is published).
 - **Progress** = raised ÷ target (empty when no target).
 - **Lead status** = opportunity with `is_lead`; badge shows its stage and offer status.
 - **Stale** = active stage (contacted … term_sheet) and `last_activity_on` older than `stale_days`.
 - **Funnel** = count of opportunities per stage for the round; **days in stage** from the latest stage change in record history (or `last_activity_on` when history is unavailable).
 - **Pass patterns** = counts by `pass_reason` for the round and across rounds.
-- **Engagement signals** (when connected): *hot* = ≥ 3 views in the last 7 days; *never opened* = active grant with no engagement rows; *re-opened* = a view after ≥ 14 days without views; *depth* = distinct documents viewed ÷ documents shared with that grant (when shared count is available).
-- **Tranche on track** = linked milestone status from Programs (when connected): done → met candidate; at risk → flagged; no link → "not linked".
+- **Engagement signals** (from own entries or the linked provider, whichever is the source): *hot* = ≥ 3 views in the last 7 days; *never opened* = active grant with no engagement rows; *re-opened* = a view after ≥ 14 days without views; *depth* = distinct documents viewed ÷ documents shared with that grant (when shared count is available).
+- **Tranche on track** = status of the tranche's milestone (own entry or Programs, whichever is the source): done → met candidate; at risk → flagged; no milestone → "no milestone".
 - **As-of date** handled as in Programs §7. Bounded reads; partial reads disable totals and say so.
 
 ---
@@ -160,15 +161,15 @@ Customization paths as in [Runway §8](RUNWAY.md#8-customization-users-claude-an
 
 | App / role | Relationship |
 |---|---|
-| Data Room (08) — `dataroom.*` | Access and engagement per investor; "Give access" opens the Data Room form. |
-| Programs (02) — `programs.plan_items` | Tranche conditions linked to milestones. |
-| Runway (01) — `runway.fx_rates`; reads `fundraise.tranches` (future Runway version) | Currency conversion; tranches as contingent → committed cash-in. Until Runway reads the role, equity cash-in lines stay manual in Runway. |
-| Contracts (04) — `agreements` | CDA/NDA status per investor. |
-| BD Pipeline (07) | Shares organizations, people and the `dataroom.*` roles (licensing rooms). |
+| Data Room (08) — `dataroom.*` (integration) | Manual access and views in Fundraise until the user links a Data Room; then the provider's data, read-only. |
+| Programs (02) — `programs.plan_items` (integration) | Own milestone entries for tranches until linked to Programs. |
+| Runway (01) — reads `fundraise.tranches` (future Runway version, as an integration) | Tranches as contingent → committed cash-in. Until then, equity cash-in stays manual in Runway. |
+| Contracts (04) | CDA/NDA status kept as two fields on opportunities (no role). |
+| BD Pipeline (07) | Shares organizations and people; uses the same `dataroom.*` integration for licensing rooms. |
 | Investor Updates (06) | Later: holders from closed rounds, cap-table summary, post-round updates. |
 | Deal Comps (18) | Later: round benchmarks for terms. |
 
-When a role is not connected: the dependent feature hides with a short note and, where possible, a reviewed "Connect" action ([modular §7](../../MODULAR_APPS_AND_SHARED_DATA.md#7-role-based-connections-standard-for-all-apps)).
+Integrations follow the platform pattern: own data first, one subtle `data-trialy-integration` line to add or use the provider, the platform's dialog to choose the source, read-only once linked ([modular §7](../../MODULAR_APPS_AND_SHARED_DATA.md#7-role-based-connections-standard-for-all-apps)).
 
 ---
 
@@ -197,16 +198,16 @@ When a role is not connected: the dependent feature hides with a short note and,
 
 ## 12. Package checklist and acceptance criteria
 
-**Package:** new immutable `templates/apps/life.investor-crm-2.0.0.json` (draft until approved); installer schema with roles, `contract`, `optional`, `readOnly` as in §5; full `catalog.metadata.json` documentation (including the `dataroom.v1` contract it reads and the `fundraise.tranches` output it publishes); fictional `demo_data.json`; `templateLayoutSchema` with the seven ids; reviewed draft forms; build `--check`; browser test.
+**Package:** new immutable `templates/apps/life.investor-crm-2.0.0.json` (draft until approved); installer schema with roles, `contract`, `optional`, `integration` as in §5, and `fundraise.tranches` matching the registry entry in `templates/contracts/outputs.json`; full `catalog.metadata.json` documentation (including the `dataroom.v1` contract it reads and the `fundraise.tranches` output it publishes); fictional `demo_data.json`; `templateLayoutSchema` with the seven ids; reviewed draft forms; build `--check`; browser test.
 
 **Acceptance (beyond the shared contract):**
 1. Only signed commitments count as raised; verbal and soft are shown separately; the sum reconciles with a hand-checked fictional round.
-2. An amount in another currency converts when `runway.fx_rates` is connected; otherwise it is flagged and excluded.
+2. An amount in another currency than the round is flagged and excluded from totals.
 3. Stale and due lists match a fictional dataset with known dates.
 4. Assistant-proposed investors stay `proposed` until accepted; rejected ones never appear in the pipeline.
 5. Saving an activity updates `last_activity_on` in the same reviewed save.
-6. **Install-order test:** install Fundraise alone (Engagement shows the connect note); then install a provider of `dataroom.v1` (catalog Data Room or a custom app with the same roles) — Fundraise connects through the provider's install review or one reviewed "Connect" click, and shows grants and views; archive the provider — Fundraise keeps working and hides engagement.
-7. Tranche linked to a Programs milestone shows its status; with Programs absent it shows "not linked".
+6. **Integration test:** install Fundraise alone — Engagement works with manual entries and shows "Add Data Room"; add a provider of `dataroom.v1` (catalog Data Room or a custom app) — the line changes to "Use its data"; choose it — Engagement reads the provider read-only and manual entries stay in Database; archive the provider — Fundraise keeps working and says the data is unavailable. Repeat with the provider installed first (connects at install).
+7. A tranche's milestone status comes from own entries, or from Programs once linked; with no milestone it shows "no milestone".
 8. Modularity test (rule 9) and archive-first checks pass.
 9. Desktop 1440 / mobile 390; pipeline board scrolls horizontally inside its card.
 
