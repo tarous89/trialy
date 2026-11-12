@@ -1,6 +1,6 @@
 # Contracts 1.0.0 (`life.contracts`)
 
-Register of CDAs, MSAs, SOWs and other agreements with key dates and obligations. Scope: [CONTRACTS.md](../../../docs/product/app-template-blueprints/apps/CONTRACTS.md) (BT2-04). It follows [modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md) and template guidance 1.3.21 (built against 1.3.20 plus the documents capability this package added). New template; there is no earlier version. The catalog entry is a **draft** until the owner approves it (`templates/catalog-seed.json` is unchanged).
+Register of CDAs, MSAs, SOWs and other agreements with key dates and obligations. Scope: [CONTRACTS.md](../../../docs/product/app-template-blueprints/apps/CONTRACTS.md) (BT2-04). It follows [modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md) and template guidance 1.3.21 (built against 1.3.20 plus the documents capability this package added). New template; there is no earlier version. The owner approved publication on 12 November 2026: `templates/catalog-seed.json` names 1.0.0 and migration 063 approves the draft row an earlier deployment imported, so it appears in app templates.
 
 ## Files
 
@@ -15,7 +15,7 @@ Register of CDAs, MSAs, SOWs and other agreements with key dates and obligations
 | `QA.md` | Commands, results, hand calculations, acceptance criteria 1–10 and unverified boundaries. |
 | `AUTOMATION_RECIPES.md` | The two optional automations and the no-automation path. |
 
-Edit the source, CSS and metadata, then run `node scripts/build-contracts-template.mjs`. This regenerates `templates/apps/life.contracts-1.0.0.json` and the preview; `--check` runs in `npm run build`. Do not edit a released version: publish a new version and archive the previous package first. After approval, generate the gallery screenshot and manifest entry (`node scripts/build-template-screenshots.mjs`).
+Edit the source, CSS and metadata, then run `node scripts/build-contracts-template.mjs`. This regenerates `templates/apps/life.contracts-1.0.0.json` and the preview; `--check` runs in `npm run build`. Do not edit a released version: publish a new version and archive the previous package first. After a preview change, regenerate the gallery screenshot and manifest entry (`node scripts/build-template-screenshots.mjs`); the 1.0.0 screenshot is `resources/template-gallery/life.contracts@1.0.0.jpg`.
 
 ## Roles (scope §5)
 

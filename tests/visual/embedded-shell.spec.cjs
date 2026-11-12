@@ -15,7 +15,7 @@ for(const width of [1440,390])test(`Embedded sidebar, native gallery and context
  await root.getByRole('link',{name:'Browse app templates',exact:true}).click();await expect(root.getByRole('heading',{name:'App templates',exact:true})).toBeVisible();
  await expect(toggle).toHaveAttribute('aria-expanded','true');if(width<760)await toggle.click();
  expect(await page.evaluate(()=>window.lastOpenedUrl)).toBeUndefined();
- const catalog=root.getByRole('region',{name:'App templates'});await expect(catalog.locator('article')).toHaveCount(23);
+ const catalog=root.getByRole('region',{name:'App templates'});await expect(catalog.locator('article')).toHaveCount(24);
  await root.getByLabel('Team',{exact:true}).selectOption('Biotech');await root.getByLabel('Workflow',{exact:true}).selectOption('Finance');
  await expect(catalog.locator('article')).toHaveCount(1);const card=catalog.locator('article');await expect(card.getByRole('button')).toHaveCount(2);
  await expect(card.locator('img')).toHaveJSProperty('naturalWidth',1440);await expect(card.locator('img')).toHaveAttribute('src',/^data:image\/jpeg;base64,/);

@@ -2,7 +2,7 @@
 
 Validated against the repository host on 12 November 2026 with disposable PGlite databases, the real catalog sync, installer, Add app step, in-app integration dialog, reviewed write path, document upload, the text-extraction worker and the real MCP endpoints, using fictional data only. Not a deployed account.
 
-**Catalog status:** draft. `templates/catalog-seed.json` is unchanged, so the catalog sync imports 1.0.0 as `draft`; tests approve it only inside their own databases. Publication needs the owner's approval (seed or operator approval), as for Runway and Programs.
+**Catalog status:** approved (owner request, 12 November 2026). Merged as a draft in #140; the publication change adds `life.contracts` 1.0.0 to `templates/catalog-seed.json` (fresh databases import it approved) and migration 063 approves the draft row already imported by the deployment of #140, once, so a later operator withdrawal sticks (`tests/template-catalog.test.ts`). The catalog JSON, digest and installer schema are unchanged. Gallery screenshot: `resources/template-gallery/life.contracts@1.0.0.jpg`.
 
 **Guidance:** built against template guidance 1.3.20 and the contract registry; this package adds the documents capability and bumps the guidance to **1.3.21** (`templates/TEMPLATE_AUTHORING.md`, `templates/TEMPLATE_USAGE.md`, `templateGuidance.version`).
 
@@ -81,5 +81,4 @@ Also covered: every input has `data-ui-state`; record versions are captured when
 
 - Live Claude and ChatGPT sessions on a deployed account, real installs, and the upload dialog inside the ChatGPT and Claude hosts (it uses the existing `preview_document_upload` app tool and `commit_change`; only the website client route was added and exercised by the browser harness's equivalent calls).
 - Automation setup or delivery: no digest or extraction automation was configured and no email was sent.
-- The gallery screenshot and manifest entry (generated after approval).
 - `npm run test:visual` (the platform visual suite) — see the PR for its CI result.

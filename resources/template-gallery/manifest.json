@@ -106,5 +106,9 @@
   "life.co-trial-monitoring-pv@1.1.1": {
     "catalogDigest": "f7f82cf6e34d05f2cdbdd6b4051aa672131088c5c718e2093033257b1d3c7912",
     "previewSha256": "96d71df0682151d274f77fc3920a7689a6a4f92e1fadb9be38f8610915b25797"
+  },
+  "life.contracts@1.0.0": {
+    "catalogDigest": "87c4b28ee46835b1d34d1d31a5b4d7e49e3600cee2b2a31e753fd2b2655d9ac7",
+    "previewSha256": "085608c5b3e2b3d98a86a8a44e3c935300124bec0c62dc6ce89d1b4fbb664023"
   }
 }
