@@ -30,7 +30,7 @@ for(const width of [1440,390])test(`template gallery, filters and fullscreen pre
  await page.getByRole('link',{name:'Browse app templates',exact:true}).click();
  await expect(page).toHaveURL(/tab=templates/);
  if(width<760)await page.getByRole('button',{name:'Collapse navigation',exact:true}).click();
- const catalog=page.getByRole('region',{name:'App templates'});await expect(catalog.locator('article')).toHaveCount(23);
+ const catalog=page.getByRole('region',{name:'App templates'});await expect(catalog.locator('article')).toHaveCount(24);
  await page.getByLabel('Team',{exact:true}).selectOption('Biotech');await page.getByLabel('Workflow',{exact:true}).selectOption('Finance');
  await expect(catalog.locator('article')).toHaveCount(1);
  const card=catalog.locator('article');await expect(card.getByRole('heading',{name:'Runway',exact:true})).toBeVisible();
@@ -69,7 +69,7 @@ for(const width of [1440,390])test(`template gallery, filters and fullscreen pre
 });
 test('every approved template renders an isolated interactive preview',async({page})=>{
  await page.goto(base+'/app-home?tab=templates');
- const cards=page.locator('.ty-gallery-card');await expect(cards).toHaveCount(23);
+ const cards=page.locator('.ty-gallery-card');await expect(cards).toHaveCount(24);
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  for(let i=0;i<23;i++){
   await cards.nth(i).getByRole('button',{name:'Preview',exact:true}).click();

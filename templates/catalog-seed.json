@@ -90,5 +90,9 @@
   "life.co-trial-monitoring-pv": {
     "schema": "templates/source/co06-trial-monitoring-pv/schema.example.json",
     "version": "1.1.1"
+  },
+  "life.contracts": {
+    "schema": "templates/source/contracts/schema.example.json",
+    "version": "1.0.0"
   }
 }
