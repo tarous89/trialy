@@ -15,6 +15,7 @@
 | --- | --- | --- |
 | Runway official app page | https://trialagents.com/apps/runway | Published; production URL checked 12 November 2026 |
 | Runway vs Excel | https://trialagents.com/apps/runway-vs-excel | Published editorial comparison; final revision [PR #177](https://github.com/tarous89/trialagents-public/pull/177), live verified 12 November 2026 |
+| Cash runway software shortlist (B1) | https://trialagents.com/apps/best-cash-runway-software-biotech | Published in public-site PR #178; live verified 12 November 2026; closing footnote removed in PR #179 |
 | App pages index | https://trialagents.com/apps | Published; production URL checked 12 November 2026 |
 
 These are intended canonical URLs. Do not assert that a URL is live until checked on the production CDN.
@@ -28,7 +29,7 @@ These are intended canonical URLs. Do not assert that a URL is live until checke
 - **Approved order:** native ChatGPT/Claude → unlimited customization possibilities → add/connect more apps → automations, access control, logs/history and Runway functions → concise comparison table → closing CTA.
 - **Assistant modes:** use the actual app in supported chat surfaces, manage supported functions conversationally, customize the whole app/build bespoke apps, and continue on the web. Browser screenshots are explicitly browser views; no claim of fresh end-to-end host acceptance testing.
 - **Runway evidence:** monthly actuals, locked budgets, snapshots and scenario previews; configured follow-up/FX workflows; authorized data access. Show how adjacent operational apps can connect; do not promise automatic sync.
-- **Editorial format:** roughly 800 words, byline/date/first-party disclosure, opening answer, jump links, six consistently numbered headings, three genuine Runway 2.1.0 demo screenshots, compact table and sources, one closing “Open TrialAgents” CTA.
+- **Editorial format:** roughly 800 words, byline/date/first-party disclosure, opening answer, jump links, six consistently numbered headings, three genuine Runway 2.1.0 demo screenshots, compact table, one closing “Open TrialAgents” CTA.
 - **Visual reference:** 1040 px outer width; 18 px desktop / 17 px mobile body; dark text; consistent pale-green headings and dark-green number badges. Shared real site header/footer/contact/analytics retained.
 - **Pricing:** removed from article, matrix and metadata. The earlier flat-rate pricing request is superseded. The global navigation Pricing link may remain.
 - **Fairness:** acknowledge Excel's modeling flexibility and Copilot. State meaningful Runway boundaries briefly; no fictional performance benchmark.
@@ -42,7 +43,7 @@ These are intended canonical URLs. Do not assert that a URL is live until checke
 | Search metadata | Descriptive unique title/description, self-canonical, `index,follow`, one article H1 |
 | Structure | Ordered H2 sections, jump links and semantic comparison table; concise answer-first content |
 | Structured data | Parseable Article and BreadcrumbList; headline, organization author/publisher and publication/update dates match the article |
-| Trust and evidence | Byline, meaningful review date, first-party disclosure, fictional demo labels, official Microsoft/product source links and scope limits |
+| Trust and evidence | Byline, meaningful review date, first-party disclosure, fictional demo labels, scope limits and first-party disclosure; closing source block removed at owner request in PR #179 |
 | Images/readability | Three real screenshots with alt text and dimensions; later images lazy-loaded; desktop/mobile checks passed for final release |
 | Discovery | Sitemap and supplemental LLM discovery files checked; robots.txt explicitly permits major search/AI discovery agents |
 | Preview enhancement | Title/description social metadata present; dedicated social image and Article image remain optional improvements |
@@ -66,7 +67,11 @@ These are intended canonical URLs. Do not assert that a URL is live until checke
 - Comparison matrix: budgeting, cash flows, CRO commitments, headcount, scenarios, access and integrations.
 - Recommendations by company stage and finance maturity.
 - Limitations of TrialAgents and independent buying criteria.
-- **Status:** research candidate.
+- **Status:** Published at https://trialagents.com/apps/best-cash-runway-software-biotech; public-site PR #178, merge `8ebb2906ef61860ff8eae892f90cd9ce5a56c94b`; live checked 12 November 2026.
+- **Accepted implementation:** five options (TrialAgents, Float, Fathom, Jirav, Excel), workflow-fit table, concise vendor profiles, official Float/Fathom/Jirav marks, two Runway browser screenshots, no pricing.
+- **Final ending:** public-site PR #179 removes both A1 and B1 closing footnote sections. The Runway CTA is the final article block before the global footer; retain inline source links and near-claim limits.
+- **Evidence:** Float's official Xero/QuickBooks and prerequisites pages; Fathom official homepage/scenario docs; Jirav planning and account-capability docs; Microsoft Copilot-in-Excel documentation. All reviewed 12 November 2026; not a comparative hands-on benchmark.
+- **Assets:** Float inline logo from floatapp.com, Fathom official website SVG lockup, Jirav official website header logo. Logos identify vendors, not endorsements. Fathom's pale logo uses a dark background for contrast.
 
 ### B2. Best Float Alternatives for Biotech Startups
 - Identify documented reasons a biotech team might seek a different tool.
@@ -84,7 +89,12 @@ These are intended canonical URLs. Do not assert that a URL is live until checke
 - Show authorized inputs, proposal and human-reviewed writes.
 - Explain deterministic calculations, access limitations and what remains in the browser.
 - Compare verified competing AI approaches without claiming exclusivity.
-- **Status:** requires actual host testing and screenshots.
+- **Status:** C1 publication prepared 12 November 2026 at planned route `/apps/manage-biotech-cash-runway-chatgpt`; verify live CDN before marking published.
+- **Evidence:** live catalog `life.cash-runway 2.1.0`, digest `dcf578b91b2c1ac05afe42ea2f1e2172c280783c9a1602e90d054fdec1cc651a`; current apps guide, template interaction contract and examples read through the connected tools. Reviewed Runway calculation/integration test source; reading tests is not evidence they were executed in this session.
+- **Verification boundary:** publish as a documented guided workflow with example prompts, not a measured or completed end-to-end ChatGPT/Claude session. Do not fabricate host screenshots. Existing Runway template screenshots are browser views.
+- **Important operational details:** opening balance uses a month-end date; contingent financing is separate from base runway; assistant proposes inputs, app calculates outputs; user builds transient previews in Scenarios; scenario save and adoption are distinct reviewed steps; app writes frozen close snapshots.
+- **Connected platform:** explicitly bind authorized existing Programs/shared tables; default template installation does not imply automatic connections. Whole-app customization preserves saved IDs, data bindings and access. Optional automations require separate setup; no background-runner promise.
+- **Final layout:** concise numbered tutorial, real prompts and expected outcomes, in-body qualifications/links, genuine screenshots, one Start with Runway card last; no closing footnote.
 
 ### C2. How to Model Biotech Runway with Claude
 - Show verified Claude connection and authorized app actions.
