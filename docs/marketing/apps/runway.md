@@ -13,8 +13,8 @@
 
 | Page | URL | State |
 | --- | --- | --- |
-| Runway official app page | https://trialagents.com/apps/runway | HTML authored in [public-site PR #173](https://github.com/tarous89/trialagents-public/pull/173); CDN deployment not verified |
-| Runway vs Excel | https://trialagents.com/apps/runway-vs-excel | HTML authored in the same PR; CDN deployment not verified |
+| Runway official app page | https://trialagents.com/apps/runway | Source merged to public-site main ([PR #173](https://github.com/tarous89/trialagents-public/pull/173)); CDN deployment not verified |
+| Runway vs Excel | https://trialagents.com/apps/runway-vs-excel | Source merged to public-site main; CDN deployment not verified |
 | App pages index | https://trialagents.com/apps | HTML authored in the same PR; CDN deployment not verified |
 
 These are intended canonical URLs. Do not assert that a URL is live until checked on the production CDN.
@@ -28,7 +28,7 @@ These are intended canonical URLs. Do not assert that a URL is live until checke
 - Fictional CRO payment-delay case using the same assumptions in both approaches.
 - Reasons to choose Runway, reasons to keep Excel and when to use both.
 - FAQ, dates, source links and product CTA.
-- **Status:** authored in PR #173.
+- **Status:** Source merged in PR #173; production CDN verification pending.
 
 ### A2. TrialAgents Runway vs Float
 - **Intent:** alternative to small-business cash forecasting software.
@@ -111,6 +111,6 @@ These are intended canonical URLs. Do not assert that a URL is live until checke
 
 ## Production method and next steps
 
-Start with the product hub and A1 comparison in PR #173. Validate production HTML, canonical metadata, static assets, real header/footer, sitemap and LLM discovery files after CDN release. Then prioritize D1 and C1 for original industry-specific and assistant-specific evidence. Only publish additional pages when competitor facts, live host tests or promised downloadable assets are available.
+The product hub and A1 comparison were merged via PR #173; verify CDN delivery before calling either page live. Validate production HTML, canonical metadata, static assets, real header/footer, sitemap and LLM discovery files after CDN release. Then prioritize D1 and C1 for original industry-specific and assistant-specific evidence. Only publish additional pages when competitor facts, live host tests or promised downloadable assets are available.
 
 Use the shared [five-series standard](../TRIALAGENTS_APPS_SEO_AND_LLM_CONTENT_PLAYBOOK.md) for each article's layout, disclosure, source evidence, structured data, review workflow and internal linking. Every new Runway article links to the official Runway hub, and the index links back to this plan.
