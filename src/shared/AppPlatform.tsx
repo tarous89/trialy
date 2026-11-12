@@ -2,6 +2,6 @@ import React from 'react';
 import type {AppRoute} from './app-route.js';
 import {PLATFORM_ORIGIN} from './public-url.js';
 /** frameDocument: hosts that block nested frames from the platform origin (Claude) render the app frame inline with srcdoc. */
-export const AppPlatform=React.createContext<{enabled:boolean;origin:string;openLink?:(url:string)=>void;frameDocument?:string;readTemplateMedia?:(id:string,version:string,kind:'screenshot'|'preview')=>Promise<string>;useTemplate?:(template:any,requestKey:string,options?:{createNew?:boolean;sharedTables?:Record<string,string>})=>Promise<void>}>({enabled:false,origin:''});
+export const AppPlatform=React.createContext<{enabled:boolean;origin:string;openLink?:(url:string)=>void;frameDocument?:string;readTemplateMedia?:(id:string,version:string,kind:'screenshot'|'preview')=>Promise<string>;useTemplate?:(template:any,requestKey:string,options?:{createNew?:boolean;sharedTables?:Record<string,string>;dataAccess?:any})=>Promise<void>}>({enabled:false,origin:''});
 export const AppNavigation=React.createContext<{route:AppRoute;reset:number;location?:{appId:string;workspaceId:string;source:string};navigate:(href:string)=>void;setDirty:(dirty:boolean)=>void}|null>(null);
 export const APP_BRAND={watermark:'Built with TrialAgents',home:'/',website:PLATFORM_ORIGIN} as const;

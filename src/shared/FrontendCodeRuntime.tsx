@@ -11,6 +11,7 @@ import {TrackerRecordForm} from './TrackerRecordForm.js';
 import React,{useEffect,useRef,useState} from 'react';
 import {useAccessRecheck} from './useAccessRecheck.js';
 import {AppUnavailable} from './AppUnavailable.js';
+import {IntegrationDialog} from './IntegrationDialog.js';
 type Call=(name:string,args:Record<string,unknown>)=>Promise<any>;
 const navigationRead=(event:any)=>event.kind==='open'||/^(tab:|next$|prev$|previous$|filter:|sort:|sort-field:|sort$|search$|query$|overview-next$|overview-previous$|overview-panel$)/.test(event.action??'');
 export function FrontendCodeRuntime({component,previewId,initialOutput,call,onProposal,onUnavailable,onHome,onAccess,onLayout,onBusyChange,onRendered,onUpdated}:{component?:any;previewId?:string;initialOutput?:any;call:Call;onProposal:(p:any)=>void;onUnavailable?:(message:string)=>void;onHome?:()=>void;onAccess?:()=>void;onLayout?:()=>void;onBusyChange?:(busy:boolean)=>void;onRendered?:()=>void;onUpdated?:(component:any)=>void}){
@@ -149,6 +150,7 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
   setFooter(null);setRecordReview(null);setProposal(null);setReviewProposal(false);blocked.current=false;setCustomDirty(false);saveReceipt.current=null;setError('');frame.current?.contentWindow?.postMessage({kind:'trialy.save-idle',channel:channel.current,blocked:false},'*');
  }
  useEffect(()=>{live.current=true;if(initialOutput){output.current=mergeTrackerSnapshot(null,initialOutput);state.current=initialOutput.state;setStandard(!!initialOutput.tracker);setFrameUrl(initialOutput.frameUrl);setProposal(initialOutput.proposal);onBusyChange?.(false);prefetch(output.current);}else void run();return()=>{live.current=false;cancelPrefetch();};},[]);
+ const [integration,setIntegration]=useState<{role:string}|null>(null);
  const routeKey=JSON.stringify([navigation?.route,navigation?.reset]),lastRoute=useRef(routeKey),lastReset=useRef(navigation?.reset);
  useEffect(()=>{if(lastRoute.current!==routeKey){lastRoute.current=routeKey;if(lastReset.current!==navigation?.reset){lastReset.current=navigation?.reset;state.current=null;blocked.current=false;setProposal(null);setFooter(null);setRecordReview(null);}setCustomDirty(false);void run();}},[routeKey]);
  useEffect(()=>{navigation?.setDirty(localEdits);return()=>navigation?.setDirty(false);},[localEdits,navigation?.setDirty]);
@@ -156,6 +158,7 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
  useEffect(()=>{const receive=(e:MessageEvent)=>{if(e.source!==frame.current?.contentWindow)return;if(e.data?.kind==='trialy.ready'){setReady(true);send();}
   else if(e.data.channel===channel.current){
    if(e.data.kind==='trialy.link'&&typeof e.data.href==='string')navigationRef.current?.navigate(e.data.href);
+   else if(e.data.kind==='trialy.integration'&&typeof e.data.role==='string'&&current.current?.id)setIntegration({role:e.data.role});
    else if(e.data.kind==='trialy.dirty'){if(e.data.dirty)navigationRef.current?.setDirty(true);setCustomDirty(!!e.data.dirty);}
    else if(e.data.kind==='trialy.approve'&&output.current?.tracker&&['bound-batch','tracker:create','save-layout'].includes(e.data.action))approvedAction.current=e.data.action;
    else if(e.data.kind==='trialy.notice')setError(e.data.message);
@@ -172,7 +175,7 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
  useEffect(()=>{if(!frameUrl||ready)return;const timer=setTimeout(()=>setLoadFailed(true),8000);return()=>clearTimeout(timer);},[frameUrl,ready]);
  const retryLoad=()=>{setLoadFailed(false);if(frameUrl&&!ready&&frame.current){frame.current.src=frameUrl;}else void (current.current?loadPublished():run());};
  if(loadFailed&&!ready&&!frameUrl)return <AppUnavailable onHome={onHome} onRetry={retryLoad} reason={schemaChanged?'schema':'load'}/>;
- return <section className={`ty-tracker-surface ${standard?'ty-tracker--standard':''} ${detailsOpen?'ty-tracker--details':''}`} aria-label={platform.enabled?"App":"Tracker"}>
+ return <section className={`ty-tracker-surface ${standard?'ty-tracker--standard':''} ${detailsOpen?'ty-tracker--details':''}`} aria-label={platform.enabled?"App":"Tracker"}>{integration&&current.current&&<IntegrationDialog call={call} appId={current.current.id} role={integration.role} onClose={()=>setIntegration(null)} onChanged={()=>void loadPublished()}/>}
  {schemaChanged&&ready&&<div role="status">The saved app is still here. Its connected fields changed and need review.</div>}
  {error&&<SystemNotice error message={error} onDismiss={()=>setError('')}/>}{retryEvent&&<div className="ty-actions"><button className="ty-button" disabled={busy} onClick={()=>{if(retryEvent.action==='bound-batch')approvedAction.current='bound-batch';void run(retryEvent);}}>{retryEvent.action==='bound-batch'?'Retry save':'Retry loading'}</button></div>}{saveReceipt.current&&!busy&&<div className="ty-runtime-recovery"><button onClick={async()=>{setBusy(true);try{await finishSave();setError('');}catch(e){actionError(e);}finally{setBusy(false);}}}>{saveReceipt.current?.saved?'Reload saved data':'Retry save'}</button></div>}
  {publishedUpdate&&<div ref={updateBanner} className="ty-app-update" role="status"><span>This app has been updated. Refresh when you’re ready.</span><button disabled={busy} onClick={()=>localEditsRef.current?setConfirmUpdate(true):void loadPublished()}>Refresh to latest version</button></div>}

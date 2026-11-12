@@ -86,3 +86,4 @@ button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}bu
 .pg-report{white-space:pre-wrap;font-size:14px;color:#2B2F3A;background:#FBFAFD;border:1px solid var(--line);border-radius:10px;padding:14px 16px}
 .pg-asof{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 @media(max-width:720px){.pg-gantt{--lw:150px !important}.pg-cards3{grid-template-columns:minmax(0,1fr)}.pg-matrix{grid-template-columns:auto repeat(3,minmax(0,1fr))}}
+.pg-linkbtn{border:0;background:none;padding:0;margin:0;color:var(--plum-dark);text-decoration:underline;text-underline-offset:2px;font:inherit;cursor:pointer}.pg-linkbtn:hover{color:var(--plum)}

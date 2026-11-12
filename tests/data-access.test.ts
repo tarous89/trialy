@@ -1,0 +1,172 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {PGlite} from '@electric-sql/pglite';
+import {readFile,readdir} from 'node:fs/promises';
+import {randomUUID} from 'node:crypto';
+import {WorkspaceFoundation} from '../src/workspace/service.js';
+import {Service} from '../src/domain/service.js';
+import {AppTemplates} from '../src/workspace/app-templates.js';
+import {syncTemplateCatalog,installCatalogApp} from '../src/workspace/template-catalog.js';
+import {dataAccessStep,prepareDataAccess,confirmDataAccess,preparedChoices} from '../src/workspace/data-access.js';
+import {contractRegistry,readerAccepts,isSuperset} from '../src/workspace/role-contracts.js';
+import {readTemplateGuidance} from '../src/workspace/app-templates.js';
+import {AccessGrid} from '../src/domain/access-grid.js';
+import type {Database,Connection} from '../src/db/database.js';
+import type {Actor} from '../src/shared/schema.js';
+
+/* Modular apps §7: connect existing tables or create new ones at install, and role-based contracts, with the real installer. */
+async function setup(){
+ const pg=new PGlite();for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
+ const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
+ const actor:Actor={userId:randomUUID(),origin:'human'};
+ await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,'owner@example.invalid','Owner']);
+ const f=new WorkspaceFoundation(db),s=new Service(db);
+ await syncTemplateCatalog(db);
+ await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.project-oversight' AND version='2.0.0'");
+ const catalog=new AppTemplates(undefined,db);
+ const P=await catalog.read({templateId:'life.project-oversight',version:'2.0.0'}),R=await catalog.read({templateId:'life.cash-runway',version:'2.1.0'});
+ // Adding a template as the gallery does: the choice is shown only when existing tables can be connected.
+ const install=async(w:string,t:any,name:string,connections:Record<string,string>={})=>{
+  const target={install:{templateId:t.id,version:t.version,digest:t.digest,name,requestKey:randomUUID()}};
+  const step=await dataAccessStep(f,actor,w,target);
+  const receipt=step.needed?await confirmDataAccess(f,actor,w,{...target,connections,stepDigest:step.digest}):await installCatalogApp(f,actor,w,target.install);
+  return {step,receipt};
+ };
+ const comp=async(w:string,id:string)=>(await f.readComponent(actor,w,id)).component;
+ const mapOf=(c:any)=>JSON.parse(JSON.parse(/^const templateConfiguration=(.+);\n/.exec(c.source)![1]).tableMap);
+ const change=async(w:string,op:any)=>{const p=await f.preview(actor,w,op);return f.confirm(actor,w,p.id,p.digest);};
+ const save=async(w:string,typeId:string,data:any)=>{const p=await s.preview(actor,w,{kind:'create_record',typeId,data});return (await s.commit(actor,p.id,p.digest)).objects[0].id as string;};
+ const v=async(id:string)=>(await pg.query<any>('SELECT version FROM workspace_components WHERE id=$1',[id])).rows[0].version;
+ const open=async(w:string,id:string,state:any={})=>{const c=await comp(w,id);return f.runFrontend(actor,w,{componentId:c.id,expectedVersion:c.version,state,event:{kind:'open'}});};
+ return {pg,db,f,s,actor,P,R,install,comp,mapOf,change,save,v,open};
+}
+const closes=async(x:any,w:string,typeId:string)=>{
+ const months=Array.from({length:40},(_,i)=>{const d=new Date(Date.UTC(2026,10+i,1));return {m:d.toISOString().slice(0,7),l:0,p:0,c:1000000-30000*(i+1),k:1000000-30000*(i+1)};});
+ await x.save(w,typeId,{month:'2026-10-01',closing_balance:1000000,currency:'EUR',closed:true,metrics:JSON.stringify({v:2,asOf:'2026-10',currency:'EUR',months})});
+};
+async function customCloses(x:any,w:string,name:string,extra:any={}){
+ const registry=await contractRegistry(),fields=registry.roles['runway.month_closes'].versions['runway.v2'].fields.map(f=>({...f,ai:true}));
+ const typeId=(await (async()=>{const p=await x.s.preview(x.actor,w,{kind:'create_type',name:name+' table',fields});return (await x.s.commit(x.actor,p.id,p.digest)).objects[0].id;})()) as string;
+ const manifest={version:1,scope:'workspace',fields:fields.map((f:any)=>({id:'mc_'+f.key,typeId,field:f.key,schemaVersion:0,kind:f.kind,mode:'write'})),roles:[{role:'runway.month_closes',contract:'runway.v2',typeId,...extra}]};
+ const content={name,format:'frontend-js',source:"return {html:'<p>Closes</p>',state:input.state};",sourceAccess:'workspace',manifest,bindings:[{typeId,fields:fields.map((f:any)=>f.key)}]};
+ return {typeId,content,manifest};
+}
+
+test('both install orders: existing tables are offered only when they exist; Create new gives new tables; access is chosen before installing',async()=>{
+ const x=await setup();const {f,s,actor,P,R,pg}=x;
+ const tables=async(w:string)=>(await pg.query<any>('SELECT count(*)::int n FROM entity_types WHERE workspace_id=$1 AND deleted_at IS NULL',[w])).rows[0].n;
+ try{
+  // Order 1: Runway first (nothing to connect: no choice, new tables), then Programs connects Runway's programs table and month closes.
+  const w1=await s.createWorkspace(actor,'Runway first');
+  const r1=await x.install(w1.id,R,'Runway');assert.deepEqual(r1.step.tables,[]);
+  const rmap=x.mapOf(await x.comp(w1.id,r1.receipt.appId));
+  const p1=await x.install(w1.id,P,'Programs');
+  assert.deepEqual(p1.step.tables.map((t:any)=>[t.role,t.alternative,t.choice===t.candidates[0].typeId]).sort(),[['programs','new',true],['runway.month_closes','skip',true]]);
+  const pmap=x.mapOf(await x.comp(w1.id,p1.receipt.appId));
+  assert.equal(pmap.programs.typeId,rmap.programs.typeId);assert.equal(pmap['runway.month_closes'].typeId,rmap['runway.month_closes'].typeId);
+  assert.ok(pmap.people?.typeId,'an optional table the app writes is created when there is nothing to connect');
+  assert.equal((await pg.query<any>("SELECT count(*)::int n FROM audit_events WHERE action='workspace.data_access_step'")).rows[0].n,2,'each choice is logged');
+  const prog=await x.save(w1.id,pmap.programs.typeId,{name:'TX-1',stage:'phase_1',status:'active',archived:false});
+  await x.save(w1.id,pmap['programs.plan_items'].typeId,{name:'IND filing',program_id:prog,item_type:'milestone',function:'regulatory',end_date:'2027-06-20',status:'planned',is_key:true,archived:false});
+  await closes(x,w1.id,rmap['runway.month_closes'].typeId);
+  assert.match((await x.open(w1.id,p1.receipt.appId,{section:'timeline'})).html,/EUR 760k · 25 months cushion/);
+
+  // Order 2: Programs first, then Runway. Runway can connect Programs' programs table; nothing connects to Programs afterwards.
+  const w2=await s.createWorkspace(actor,'Programs first');
+  const p2=await x.install(w2.id,P,'Programs');assert.deepEqual(p2.step.tables,[]);
+  const before=x.mapOf(await x.comp(w2.id,p2.receipt.appId));
+  const r2=await x.install(w2.id,R,'Runway');
+  assert.deepEqual(r2.step.tables.map((t:any)=>[t.role,t.candidates[0].apps]),[['programs',['Programs']]]);
+  assert.equal(x.mapOf(await x.comp(w2.id,r2.receipt.appId)).programs.typeId,before.programs.typeId,'one programs table');
+  assert.deepEqual(x.mapOf(await x.comp(w2.id,p2.receipt.appId)),before,'an installed app is not changed by a later install');
+
+  // Opting out creates new tables: Create new for programs gives Runway its own table.
+  const w3=await s.createWorkspace(actor,'Separate');await x.install(w3.id,P,'Programs');const t3=await tables(w3.id);
+  const r3=await x.install(w3.id,R,'Runway',{programs:'new'});
+  assert.notEqual(x.mapOf(await x.comp(w3.id,r3.receipt.appId)).programs.typeId,before.programs.typeId);
+  assert.equal(await tables(w3.id)-t3,13,'all thirteen Runway tables are new');
+  // Access is decided before installing: the owner keeps Claude off this app; ChatGPT inherits the project's access.
+  assert.equal(r3.step.access.canChange,true);assert.deepEqual(r3.step.access.assistants.map((a:any)=>[a.id,a.level]),[['chatgpt','propose'],['claude','propose']]);
+  const t4={install:{templateId:R.id,version:R.version,digest:R.digest,name:'Runway private',requestKey:randomUUID()}};
+  const s4=await dataAccessStep(f,actor,w3.id,t4);
+  const private4=await confirmDataAccess(f,actor,w3.id,{...t4,connections:{},access:[{subject:'claude',level:'none'}],stepDigest:s4.digest});
+  const claudeRow=(await new AccessGrid(x.db).read(actor,w3.id,'claude')).rows.find((r:any)=>r.key==='tool:'+private4.appId+':');assert.equal(claudeRow.read,false);
+  const chatgptRow=(await new AccessGrid(x.db).read(actor,w3.id,'chatgpt')).rows.find((r:any)=>r.key==='tool:'+private4.appId+':');assert.equal(chatgptRow.read,true);
+  // A stale choice is refused and nothing is installed.
+  const target={install:{templateId:R.id,version:R.version,digest:R.digest,name:'Runway 2',requestKey:randomUUID()}};
+  await assert.rejects(confirmDataAccess(f,actor,w3.id,{...target,connections:{},stepDigest:'0'.repeat(64)}),/Review the choice again/);
+ }finally{await x.pg.close();}
+});
+
+test('assistants prepare the choice but never confirm it',async()=>{
+ const x=await setup();const {f,s,actor,P,R}=x;
+ try{
+  const w=await s.createWorkspace(actor,'Assistant');const p=await x.install(w.id,P,'Programs');
+  const programs=x.mapOf(await x.comp(w.id,p.receipt.appId)).programs.typeId;
+  const ai:Actor={...actor,origin:'ai'};
+  const target={install:{templateId:R.id,version:R.version,digest:R.digest,name:'Runway',requestKey:randomUUID()}};
+  const prepared=await prepareDataAccess(f,ai,w.id,{...target,connections:{programs:'new'}});
+  assert.match(prepared.confirmation,/cannot confirm/);assert.equal(prepared.tables[0].choice,'new');assert.equal(prepared.access.canChange,false,'access is decided by the signed-in owner on the website');
+  await assert.rejects(confirmDataAccess(f,ai,w.id,{...target,connections:{},stepDigest:prepared.digest}),/cannot approve its own changes/);
+  // The user sees the proposal prefilled in the dialog and adds the app there (the app-only Add action).
+  const step=await dataAccessStep(f,ai,w.id,target);assert.deepEqual(await preparedChoices(f.db,ai,w.id,step),{programs:'new'});
+  const saved=await confirmDataAccess(f,{...ai,actionConfirmed:true},w.id,{...target,connections:{programs:programs},stepDigest:step.digest});
+  assert.equal(x.mapOf(await x.comp(w.id,saved.appId)).programs.typeId,programs);
+ }finally{await x.pg.close();}
+});
+
+test('a custom app provides a role: contract labels are validated and the installer can connect to it',async()=>{
+ const x=await setup();const {f,s,actor,P}=x;
+ try{
+  const w=await s.createWorkspace(actor,'Custom provider');
+  const custom=await customCloses(x,w.id,'Board closes');
+  const saved=await x.change(w.id,{kind:'save_component',projectId:null,content:custom.content});
+  assert.equal((await x.pg.query<any>('SELECT app_id FROM role_writers WHERE type_id=$1',[custom.typeId])).rows[0].app_id,saved.id,'the first writer is registered');
+  const p=await x.install(w.id,P,'Programs');
+  const row=p.step.tables.find((r:any)=>r.role==='runway.month_closes');assert.deepEqual(row!.candidates.map((c:any)=>[c.name,c.apps]),[['Board closes table',['Board closes']]]);
+  assert.equal(x.mapOf(await x.comp(w.id,p.receipt.appId))['runway.month_closes'].typeId,custom.typeId);
+  const bad=(roles:any[],manifest:any=custom.manifest)=>f.preview(actor,w.id,{kind:'save_component',projectId:null,content:{...custom.content,name:'Bad',manifest:{...manifest,roles}}});
+  await assert.rejects(bad([{role:'sites',contract:'core.v1',typeId:custom.typeId}]),/not a core role/);
+  await assert.rejects(bad([{role:'runway.month_closes',contract:'runway.v9',typeId:custom.typeId}]),/no contract runway.v9/);
+  await assert.rejects(bad([{role:'runway.month_closes',contract:'runway.v2',typeId:custom.typeId,readOnly:true}]),/declared read-only/);
+  await assert.rejects(bad([{role:'programs',contract:'core.v1',typeId:custom.typeId}]),/does not match Programs core.v1/);
+  await assert.rejects(bad([{role:'runway.month_closes',contract:'runway.v2',typeId:custom.typeId}]),/Board closes writes Runway month closes/);
+  const reader={...custom.manifest,fields:custom.manifest.fields.map((m:any)=>({...m,mode:'read'}))};
+  await f.preview(actor,w.id,{kind:'save_component',projectId:null,content:{...custom.content,name:'Reader',manifest:{...reader,roles:[{role:'runway.month_closes',contract:'runway.v2',typeId:custom.typeId,readOnly:true}]}}});
+ }finally{await x.pg.close();}
+});
+
+test('archiving the writer: a custom replacement takes over only by explicit owner choice; the restored writer can only read',async()=>{
+ const x=await setup();const {f,s,actor,P,R,pg}=x;
+ try{
+  const w=await s.createWorkspace(actor,'Writer');
+  const r=await x.install(w.id,R,'Runway'),p=await x.install(w.id,P,'Programs');
+  const closesType=x.mapOf(await x.comp(w.id,r.receipt.appId))['runway.month_closes'].typeId;
+  assert.equal((await pg.query<any>('SELECT app_id FROM role_writers WHERE type_id=$1',[closesType])).rows[0].app_id,r.receipt.appId);
+  const custom=await customCloses(x,w.id,'Replacement');
+  const replacement=(name:string,takeover?:boolean)=>{const manifest={...custom.manifest,fields:custom.manifest.fields.map((m:any)=>({...m,typeId:closesType})),roles:[{role:'runway.month_closes',contract:'runway.v2',typeId:closesType}]};return f.preview(actor,w.id,{kind:'save_component',projectId:null,...(takeover?{roleWriterTakeover:['runway.month_closes']}:{}),content:{...custom.content,name,manifest,bindings:[{typeId:closesType,fields:custom.content.bindings[0].fields}]}});};
+  await assert.rejects(replacement('Replacement'),/Runway writes Runway month closes/);
+  await x.change(w.id,{kind:'archive_component',componentId:r.receipt.appId,expectedVersion:await x.v(r.receipt.appId),archived:true});
+  await assert.rejects(replacement('Replacement'),/An owner can choose to take over/);
+  const taken=await replacement('Replacement',true);const saved=await f.confirm(actor,w.id,taken.id,taken.digest);
+  const writer=(await pg.query<any>('SELECT app_id,taken_over_from FROM role_writers WHERE type_id=$1',[closesType])).rows[0];assert.deepEqual([writer.app_id,writer.taken_over_from],[saved.id,r.receipt.appId]);
+  // Restore Runway: it comes back, but writes to month closes are refused (it can still read them); the reader is unaffected.
+  await x.change(w.id,{kind:'archive_component',componentId:r.receipt.appId,expectedVersion:await x.v(r.receipt.appId),archived:false});
+  await assert.rejects(f.preview(actor,w.id,{kind:'apply_component_records',componentId:r.receipt.appId,expectedVersion:await x.v(r.receipt.appId),changes:[{kind:'create_record',typeId:closesType,data:{month:'2026-11-01',closing_balance:1,currency:'EUR'}}]}),/Replacement writes Runway month closes; Runway can read it/);
+  await f.preview(actor,w.id,{kind:'apply_component_records',componentId:saved.id,expectedVersion:await x.v(saved.id),changes:[{kind:'create_record',typeId:closesType,data:{month:'2026-11-01',closing_balance:1,currency:'EUR'}}]});
+  assert.doesNotMatch((await x.open(w.id,p.receipt.appId,{section:'timeline'})).html,/pg-banner bad|could not be shown/);
+ }finally{await x.pg.close();}
+});
+
+test('contract versions: additive versions stay compatible, breaking ones need readers to declare them; the registry is in the guidance',async()=>{
+ const registry=structuredClone(await contractRegistry());
+ const v2=registry.roles['runway.month_closes'].versions['runway.v2'].fields;
+ registry.roles['runway.month_closes'].versions['runway.v3']={fields:[...v2,{key:'board_note',name:'Board note',kind:'text'}]};
+ registry.roles['runway.month_closes'].versions['runway.v4']={fields:v2.map(f=>f.key==='metrics'?{...f,kind:'number'}:f)};
+ assert.equal(isSuperset(registry.roles['runway.month_closes'].versions['runway.v3'].fields,v2),true);
+ assert.equal(readerAccepts(registry,'runway.month_closes',['runway.v2'],'runway.v3'),true,'readers of v2 keep working when the writer moves to a superset');
+ assert.equal(readerAccepts(registry,'runway.month_closes',['runway.v2'],'runway.v4'),false,'a breaking version is not read by v2 readers');
+ assert.equal(readerAccepts(registry,'runway.month_closes',['runway.v2','runway.v4'],'runway.v4'),true,'apps declare which versions they read');
+ let text='',offset:number|null=0;while(offset!==null){const page=await readTemplateGuidance({resource:'contracts',offset});text+=page.text;offset=page.nextOffset;}const published=JSON.parse(text);
+ assert.equal(published.registry,'role-contracts');assert.ok(published.roles.organizations.versions['core.v1']);assert.ok(published.roles['dataroom.engagement'].versions['dataroom.v1']);assert.equal(published.roles['runway.month_closes'].kind,'output');
+});

@@ -60,12 +60,12 @@ test('rule 9 modularity with the real installer: alone, with Runway (reuse, neve
   const mapOf=(c:any)=>JSON.parse(JSON.parse(/^const templateConfiguration=(.+);\n/.exec(c.source)![1]).tableMap);
   const v=async(id:string)=>(await pg.query<any>('SELECT version FROM workspace_components WHERE id=$1',[id])).rows[0].version;
 
-  // 1. Install alone: eight tables (programs + seven app tables); the optional people and Runway roles are never created.
+  // 1. Install alone: nine new tables (programs, people and seven app tables); Runway's read-only output is never created.
   const w1=await s.createWorkspace(actor,'Alone');
   assert.deepEqual((await readCatalogInstallation(db,actor,w1.id,{templateId:P.id,version:P.version})).roles,[]);
   const alone=await install(w1.id,P,'Programs');
-  assert.equal(await tables(w1.id),8);
-  const m1=mapOf(await comp(w1.id,alone.appId));assert.equal(m1.people,undefined);assert.equal(m1['runway.month_closes'],undefined);
+  assert.equal(await tables(w1.id),9);
+  const m1=mapOf(await comp(w1.id,alone.appId));assert.ok(m1.people.typeId);assert.equal(m1['runway.month_closes'],undefined);
   assert.deepEqual((await pg.query<any>('SELECT fields FROM entity_types WHERE id=$1',[m1.programs.typeId])).rows[0].fields.map((f:any)=>f.key),contract.roles.programs.fields.map((f:any)=>f.key));
   const a1=(await open(w1.id,alone.appId)).html;assert.match(a1,/No programs yet/);assert.match(a1,/Runway is not connected|No programs yet/);assert.doesNotMatch(a1,/pg-banner bad|could not be shown/);
 
@@ -79,7 +79,7 @@ test('rule 9 modularity with the real installer: alone, with Runway (reuse, neve
   assert.deepEqual(plan.roles.find((r:any)=>r.role==='programs').candidates[0].addFields,['health','health_rationale','health_date']);
   assert.deepEqual(plan.roles.find((r:any)=>r.role==='programs').candidates[0].apps,['Runway']);
   const programs=await install(w2.id,P,'Programs');
-  assert.equal(await tables(w2.id)-before,7,'only the seven Programs app tables are created');
+  assert.equal(await tables(w2.id)-before,8,'only the seven Programs app tables and people (Runway has none) are created');
   assert.equal(await count("SELECT count(*)::int n FROM entity_types WHERE workspace_id=$1 AND name ILIKE '%programs' AND deleted_at IS NULL",[w2.id]),1,'one shared programs table');
   const pmap=mapOf(await comp(w2.id,programs.appId));assert.equal(pmap.programs.typeId,rmap.programs.typeId);assert.equal(pmap['runway.month_closes'].typeId,rmap['runway.month_closes'].typeId);
   assert.deepEqual(pmap['runway.month_closes'].writableFields,[]);
@@ -128,7 +128,7 @@ test('rule 9 modularity with the real installer: alone, with Runway (reuse, neve
   // "Install a new copy" without a choice starts fresh; an explicit separate-data choice never touches the shared table.
   const freshCopy=await install(w2.id,P,'Programs copy',{createNew:true});assert.notEqual(mapOf(await comp(w2.id,freshCopy.appId)).programs.typeId,pmap.programs.typeId);
   const w3=await s.createWorkspace(actor,'Separate');await install(w3.id,RW,'Runway');const t3=await tables(w3.id);
-  const separate=await install(w3.id,P,'Programs',{sharedTables:{programs:'new','runway.month_closes':'new'}});assert.equal(await tables(w3.id)-t3,8);assert.equal(mapOf(await comp(w3.id,separate.appId))['runway.month_closes'],undefined);
+  const separate=await install(w3.id,P,'Programs',{sharedTables:{programs:'new','runway.month_closes':'new'}});assert.equal(await tables(w3.id)-t3,9);assert.equal(mapOf(await comp(w3.id,separate.appId))['runway.month_closes'],undefined);
   // Two compatible programs tables: the installer asks instead of guessing.
   await assert.rejects(()=>install(w2.id,P,'Programs three'),/Choose which existing Programs table/);
  }finally{await x.pg.close();}

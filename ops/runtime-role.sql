@@ -87,3 +87,6 @@ GRANT SELECT,UPDATE ON support_requests TO trialy_worker;
 GRANT EXECUTE ON FUNCTION ensure_default_project(uuid) TO trialy_runtime;
 
 GRANT SELECT ON app_template_catalog TO trialy_runtime;
+
+-- Role-based connections (migration 061): output-role writers.
+GRANT SELECT,INSERT,UPDATE ON role_writers TO trialy_runtime;

@@ -870,7 +870,7 @@
         "required": false,
         "multiple": false,
         "ai": true,
-        "description": "Day of the month monthly updates are due (1–28)."
+        "description": "Day of the month monthly updates are due (1\u201328)."
       }
     ],
     "logicalFields": {
@@ -882,10 +882,11 @@
     }
   },
   "runway.month_closes": {
-    "name": "Runway month closes",
+    "name": "Cash forecast",
+    "description": "Integration: Runway's month closes when the user links Runway inside the app (read-only); otherwise Programs' own table for monthly cash entered by hand (month, closing cash, currency).",
     "contract": "runway.v2",
     "optional": true,
-    "readOnly": true,
+    "integration": true,
     "fields": [
       {
         "key": "month",
@@ -895,6 +896,14 @@
         "multiple": false,
         "ai": true,
         "description": "Stored as the first day of the month."
+      },
+      {
+        "key": "closing_balance",
+        "name": "Closing bank balance",
+        "kind": "money",
+        "required": true,
+        "multiple": false,
+        "ai": true
       },
       {
         "key": "currency",
@@ -938,8 +947,9 @@
     ],
     "logicalFields": {
       "month": "month",
-      "closed": "closed",
+      "closing_balance": "closing_balance",
       "currency": "currency",
+      "closed": "closed",
       "metrics": "metrics"
     }
   }

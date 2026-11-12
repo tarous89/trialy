@@ -1,4 +1,5 @@
-import {syncTemplateCatalog} from '../../src/workspace/template-catalog.js';
+import {syncTemplateCatalog,installCatalogApp} from '../../src/workspace/template-catalog.js';
+import {AppTemplates} from '../../src/workspace/app-templates.js';
 import {trackerOperation} from '../../src/workspace/tracker-template.js';
 import {AppSharing} from '../../src/app-services/sharing.js';
 import {addAppServicesApi} from '../../src/server/app-services.js';
@@ -41,6 +42,13 @@ export async function addAppsFixture(app:Express,db:Database,actor:Actor,w:any){
  app.post('/fixture/generic-layout',async(_req,res)=>{const op=await trackerOperation(f,actor,w.id,{name:'Generic layout fixture',description:'Layout regression',tabs:[{name:'Companies',typeId:companyTable,columns:[{field:'name'}]}]});const p=await f.preview(actor,w.id,{...op,content:{...op.content,resourceKind:'generic'}}),saved=await f.confirm(actor,w.id,p.id,p.digest);res.json({id:saved.id,workspaceId:w.id,url:appUrl({appId:saved.id,workspaceId:w.id})});});
  app.post('/fixture/approve-starters',async(_req,res)=>{await db.query("UPDATE app_template_catalog SET status='approved' WHERE template_id IN ('simple.calculator','simple.checklist')");res.json({ok:true});});
  app.post('/fixture/reset-starters',async(_req,res)=>{await db.query("UPDATE app_template_catalog SET status='draft' WHERE template_id IN ('simple.calculator','simple.checklist')");res.json({ok:true});});
+ // In-app integration: Programs 2.1.0 (draft, approved here only) with its own cash forecast, and Runway added afterwards.
+ app.post('/fixture/programs-integration',async(_req,res)=>{
+  await db.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.project-oversight' AND version='2.1.0'");
+  const catalog=new AppTemplates(undefined,db),P=await catalog.read({templateId:'life.project-oversight',version:'2.1.0'}),R=await catalog.read({templateId:'life.cash-runway',version:'2.1.0'});
+  const programs=await installCatalogApp(f,actor,w.id,{templateId:P.id,version:P.version,digest:P.digest,name:'Programs',requestKey:crypto.randomUUID(),createNew:true});
+  const runway=await installCatalogApp(f,actor,w.id,{templateId:R.id,version:R.version,digest:R.digest,name:'Runway',requestKey:crypto.randomUUID(),createNew:true});
+  res.json({url:programs.url,appId:programs.appId,runwayId:runway.appId,workspaceId:w.id});});
  app.get('/fixture/apps',(_req,res)=>res.json({workspaceId:w.id,appId:saved.id,recordId:record.id,connectionId:connection.id,url:appUrl({appId:saved.id,workspaceId:w.id}),sends}));
  app.post('/fixture/publication',async(req,res)=>{
   const p=await s.preview(actor,w.id,{kind:'create_type',name:'Continuity items '+crypto.randomUUID().slice(0,8),fields:[{key:'name',name:'Name',kind:'text',ai:true}]}),typeId=(await s.commit(actor,p.id,p.digest)).objects[0].id;

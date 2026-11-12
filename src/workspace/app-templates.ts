@@ -1,3 +1,4 @@
+import {contractRegistry} from './role-contracts.js';
 import type {Database} from '../db/database.js';
 import {readFile,readdir} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
@@ -14,11 +15,12 @@ const documentation=z.object({quickStart:items,dataContract:prose,interactionCon
 export const appTemplateEntry=z.object({id:key,version,name:z.string().min(1).max(100),description:z.string().min(1).max(1000),tags:z.array(z.string().max(50)).max(20),whenToUse:z.string().min(1).max(2000),whenNotToUse:z.string().min(1).max(2000),instructions:z.string().min(1).max(20000),documentation:documentation.optional(),engine:z.enum(['tracker','frontend-js']),defaults:z.record(z.string(),z.unknown()).default({}),options:z.record(z.string().regex(/^[a-z][a-zA-Z0-9_]{0,63}$/),option).default({}),source:z.string().max(180000).optional(),examples:z.array(z.record(z.string(),z.unknown())).max(5).default([]),deprecated:z.boolean().default(false)}).strict();
 export const templateQuery=z.object({query:z.string().max(200).default(''),offset:z.number().int().min(0).default(0),limit:z.number().int().min(1).max(50).default(20)}).strict();
 export const templateRead=z.object({templateId:key,version:version.optional()}).strict();
-export const templateGuidanceRequest=z.object({resource:z.enum(['authoring','usage']).default('usage'),offset:z.number().int().min(0).default(0)}).strict();
-export const templateGuidance={tool:'read_app_template_guidance',version:'1.3.19',resources:['usage','authoring'],hostedAttribution:'Apps open inside TrialAgents under its fixed header. The platform sidebar is expanded on platform tabs and collapsed for individual apps. Keep every app control within the available content viewport below the header; do not add a duplicate platform header, sidebar or attribution badge. Use the host navigation adapter for same-tab app links and the Apps destination.',usage:'Read usage guidance and the template documentation before preparation; read authoring guidance when building or extending templates.'};
+export const templateGuidanceRequest=z.object({resource:z.enum(['authoring','usage','contracts']).default('usage'),offset:z.number().int().min(0).default(0)}).strict();
+export const templateGuidance={tool:'read_app_template_guidance',version:'1.3.20',resources:['usage','authoring','contracts'],hostedAttribution:'Apps open inside TrialAgents under its fixed header. The platform sidebar is expanded on platform tabs and collapsed for individual apps. Keep every app control within the available content viewport below the header; do not add a duplicate platform header, sidebar or attribution badge. Use the host navigation adapter for same-tab app links and the Apps destination.',usage:'Read usage guidance and the template documentation before preparation; read authoring guidance when building or extending templates; read contracts (the role contract registry) before declaring roles on a custom app.'};
 export async function readTemplateGuidance(input:unknown={}){
  const {resource,offset}=templateGuidanceRequest.parse(input),file=resource==='authoring'?'TEMPLATE_AUTHORING.md':'TEMPLATE_USAGE.md';
- const source=await readFile(new URL('../../templates/'+file,import.meta.url),'utf8');
+ // contracts: the read-only role contract registry (core contract v1 and every published app output contract), as JSON text.
+ const source=resource==='contracts'?JSON.stringify(await contractRegistry(),null,1):await readFile(new URL('../../templates/'+file,import.meta.url),'utf8');
  if(offset>source.length)fail(400,'guidance_offset','Offset exceeds guidance length');
  const text=source.slice(offset,offset+12000),end=offset+text.length;
  return {...templateGuidance,resource,sha256:createHash('sha256').update(source).digest('hex'),offset,totalCharacters:source.length,nextOffset:end<source.length?end:null,text};

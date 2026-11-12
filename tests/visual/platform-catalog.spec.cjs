@@ -52,9 +52,15 @@ for(const width of [1440,390])test(`template gallery, filters and fullscreen pre
  await page.screenshot({path:`/tmp/gallery-page-${width}.png`});
  await expect(page.locator('body')).toHaveJSProperty('scrollWidth',width);
  const cash=catalog.locator('article').filter({has:page.getByRole('heading',{name:'Runway',exact:true})});await cash.getByRole('button',{name:'Use',exact:true}).click();
- // Reuse, never copy: when an earlier install left compatible shared tables, Use offers them first, with reuse selected.
- const share=page.getByRole('region',{name:'Use existing data'});await Promise.race([page.waitForURL(/\/apps\//),share.waitFor()]);
- if(await share.isVisible()){await expect(share.getByRole('combobox',{name:'Programs'})).toHaveValue(/^[0-9a-f-]{36}$/);await share.getByRole('button',{name:'Use Runway',exact:true}).click();}
+ // Use asks once: per existing table Connect (selected) or Create new, and who can use the app.
+ const choice=page.getByRole('dialog',{name:/^(Use existing data\?|Add Runway)$/});await Promise.race([page.waitForURL(/\/apps\//),choice.waitFor()]);
+ if(await choice.isVisible()){
+  if(await choice.getByRole('radio',{name:'Connect'}).count())await expect(choice.getByRole('radio',{name:'Connect'}).first()).toHaveAttribute('aria-checked','true');
+  await expect(choice.getByRole('combobox',{name:'Access for Claude'})).toHaveValue('propose');
+  await page.screenshot({path:`/tmp/gallery-data-access-${width}.png`});
+  expect(await choice.evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
+  await choice.getByRole('button',{name:'Add app',exact:true}).click();
+ }
  await expect(page).toHaveURL(/\/apps\//);expect(context.pages()).toHaveLength(1);
  await expect(page.locator('.ty-app-assistants')).toHaveCount(0);
  await expect(page.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Runway',exact:true})).toBeVisible();

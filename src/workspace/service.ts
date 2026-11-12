@@ -21,6 +21,8 @@ import {standardTracker,renderStandard} from './standard-tracker.js';
 import {isDeepStrictEqual} from 'node:util';
 import {applyTrackerLayout,trackerOperation} from './tracker-template.js';
 import {validateResource,requireManifestWrite} from './resource-contract.js';
+import {validateAppRoles,requireRoleWriter,appRoles} from './role-contracts.js';
+import {appIntegrations} from './integrations.js';
 import {DerivedReader} from '../domain/derived-fields.js';
 import {derived} from '../shared/formulas.js';
 import {exchangeReview,createExchange} from '../domain/exchange.js';
@@ -219,6 +221,10 @@ export class WorkspaceFoundation {
      if(name==='project.records'){const page=await this.projectRecords(a,w,projectId,v.offset,typeIds);return {projectId,records:page.records.map(r=>projectRecord(r.record)),nextOffset:page.nextOffset};}
      const page=await this.projectRelationships(a,w,projectId,v.offset,typeIds);return {projectId,relationships:page.relationships.filter(r=>content.bindings.find((b:any)=>b.typeId===r.source.typeId)?.fields.includes(r.field)).map(r=>({field:r.field,label:r.label,source:projectRecord(r.source),target:projectRecord(r.target)})),nextOffset:page.nextOffset};
     }
+    // Role-based connections: which declared roles are connected, to which bound table (modular apps §7). No records.
+    if(name==='roles.list'){const roles=await appRoles(this.db,w,{...content,id:request.componentId??null});return {roles:roles.map(r=>({role:r.role,name:r.name,contract:r.contract,connected:!!r.typeId,typeId:r.typeId??null,optional:!!r.optional,readOnly:!!r.readOnly,writable:r.writable,fields:(content.manifest?.fields??[]).filter((f:any)=>f.typeId===r.typeId).map((f:any)=>({id:f.id,field:f.field,mode:f.mode}))}))};}
+    // In-app integrations: where each integration's data comes from and the subtle offer to show (install, connect or none).
+    if(name==='integrations.list')return {integrations:await appIntegrations(this.db,a,w,{...content,id:request.componentId??null})};
     if(name==='files.list')return this.componentAssets(this.db,a,w,content.assets);
     if(name==='files.text'||name==='files.image'){
      const v=z.object({name:z.string().max(64),offset:z.number().int().min(0).default(0)}).strict().parse(value);
@@ -692,6 +698,8 @@ export class WorkspaceFoundation {
     validateSectionRevision(await access(tx,a,w),previous,op.content);
     if(previous?.manifest&&op.content.manifest===null)fail(400,'manifest_required','Connected apps must retain their data contract when changing presentation.');
     await validateResource(tx,a,w,{...op.content,resourceKind:op.content.resourceKind??previous?.resource_kind??'generic',manifest:op.content.manifest===undefined?previous?.manifest:op.content.manifest});await this.componentAssets(tx,a,w,op.content.assets);
+    // Role and contract labels (modular apps §7.2–7.5): compatibility, one writer per output role, contract versions.
+    await validateAppRoles(tx,a,w,{id:op.componentId??null,name:op.content.name,manifest:op.content.manifest===undefined?previous?.manifest:op.content.manifest,bindings:op.content.bindings},{takeover:op.roleWriterTakeover});
     if(new Set(op.content.execution.map(e=>e.name)).size!==op.content.execution.length)fail(400,'duplicate_binding','Function binding names must be unique');
     const foundation=new Foundation(adapter(tx));
     for(const e of op.content.execution){const r=await foundation.revision(a,w,e.revisionId);if(op.content.sourceAccess==='bindings'&&r.body.scope.documents)fail(403,'function_binding','Bound-audience components cannot attach functions with workspace-wide document access');for(const typeId of r.body.scope.typeIds){const {type,policy}=await typeAccess(tx,{...a,origin:'ai'},w,typeId);const binding=op.content.bindings.find(b=>b.typeId===typeId);if(!binding||visibleFields(type.fields,policy,{...a,origin:'ai'}).some(f=>!binding.fields.includes(f.key)))fail(403,'function_binding','Function execution needs explicit bindings for every readable field of its declared tables');}if(e.grantId){const g=(await foundation.grants(a,w)).find(g=>g.id===e.grantId);if(!g||g.authorization_version!==1||g.revoked_at||new Date(g.expires_at).getTime()<=Date.now()||g.revision_id!==e.revisionId)fail(403,'grant_unavailable','Choose a current permission for this function revision');}}
@@ -702,11 +710,13 @@ export class WorkspaceFoundation {
   }
   if(op.kind==='apply_component_records'){
    const runtime=op.viewId?await this.runtimeComponent(tx,a,w,op.componentId,op.expectedVersion,op.viewId):null,c=runtime?.c??await this.component(tx,a,w,op.componentId);if(runtime)assertRuntimeScope(runtime.latest,c);else await validateResource(tx,a,w,c,true);if(c.archived||c.project_archived||c.format!=='frontend-js'||c.version!==op.expectedVersion)fail(409,'component_changed','Interface changed');
+   const writerCache=new Map<string,any>();
    for(const change of op.changes){
     const record=change.kind==='update_record'?await this.record(tx,a,w,change.recordId,true):null;
     if(record&&change.kind==='update_record'&&record.version!==change.expectedVersion)fail(409,'stale_version','Record changed');
     const typeId=change.kind==='create_record'?change.typeId:record!.type_id;
     requireManifestWrite(c,typeId,Object.keys(change.data));if(runtime)requireManifestWrite(runtime.latest,typeId,Object.keys(change.data));
+    await requireRoleWriter(tx,w,c,typeId,writerCache);
     if(record&&c.manifest?.scope==='project'&&!(await tx.query('SELECT id FROM project_records WHERE workspace_id=$1 AND project_id=$2 AND record_id=$3 AND revoked_at IS NULL',[w,c.project_id,record.id])).rows.length)fail(403,'project_scope','Record is outside this project');
     const binding=c.bindings.find((b:any)=>b.typeId===typeId);const {type,policy}=await typeAccess(tx,a,w,typeId,true);const fields=visibleFields(type.fields,policy,a);
     if(runtime)assertRuntimeWriteSchema(runtime.view,typeId,type.fields,Object.keys(change.data));
@@ -907,6 +917,7 @@ export class WorkspaceFoundation {
    await tx.query('UPDATE workspace_components SET resource_kind=$1,manifest=$2 WHERE id=$3',[after.resource_kind??'generic',after.manifest?J(after.manifest):null,objectId]);
    // Archiving keeps bindings (and so fields) intact; only removed bindings are cleaned up.
    if(op.kind==='save_component')await cleanupRemovedAppFields(tx,a,w,p,before,after);
+   if(op.kind==='save_component')await validateAppRoles(tx,a,w,{id:objectId,name:after.name,manifest:after.manifest,bindings:after.bindings??[]},{takeover:op.roleWriterTakeover,apply:true});
    if(op.kind==='archive_component'&&before.archived!==op.archived)await this.auditAppArchive(tx,a,p,objectId,op.archived);
   }
   else if(op.kind==='save_scope'){

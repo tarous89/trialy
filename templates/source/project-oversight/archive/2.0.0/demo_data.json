@@ -1,0 +1,854 @@
+{
+ "fictional": true,
+ "note": "Fictional preview records for Programs 2.0.0. Never seed into a workspace.",
+ "records": [
+  {
+   "role": "programs",
+   "id": "00000000-0000-4000-8000-000000000001",
+   "version": 1,
+   "data": {
+    "name": "PX-101",
+    "code": "PX-101",
+    "indication": "Idiopathic pulmonary fibrosis",
+    "modality": "small_molecule",
+    "stage": "ind_enabling",
+    "lead": "Dana Ortiz",
+    "status": "active",
+    "archived": false,
+    "health": "amber",
+    "health_rationale": "GMP batch two weeks late; IND date still holds if the tox report lands in February.",
+    "health_date": "2026-10-28"
+   }
+  },
+  {
+   "role": "programs",
+   "id": "00000000-0000-4000-8000-000000000002",
+   "version": 1,
+   "data": {
+    "name": "PX-202",
+    "code": "PX-202",
+    "indication": "Solid tumours",
+    "modality": "antibody",
+    "stage": "preclinical",
+    "lead": "Sam Lee",
+    "status": "active",
+    "archived": false,
+    "health": "green",
+    "health_rationale": "Cell line on track; candidate selection data package complete.",
+    "health_date": "2026-08-20"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000003",
+   "version": 1,
+   "data": {
+    "name": "Dana Ortiz",
+    "title": "Head of programs",
+    "archived": false
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000004",
+   "version": 1,
+   "data": {
+    "name": "Sam Lee",
+    "title": "Biology lead",
+    "archived": false
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000005",
+   "version": 1,
+   "data": {
+    "name": "Priya Shah",
+    "title": "CMC lead",
+    "archived": false
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000006",
+   "version": 1,
+   "data": {
+    "name": "Jon Berg",
+    "title": "Regulatory lead",
+    "archived": false
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000007",
+   "version": 1,
+   "data": {
+    "name": "Mei Chen",
+    "title": "Clinical operations",
+    "archived": false
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000008",
+   "version": 1,
+   "data": {
+    "is_key": false,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": null,
+    "start_date": "2026-06-01",
+    "baseline_start": "2026-06-01",
+    "baseline_end": "2026-09-30",
+    "name": "API process development",
+    "program_id": "00000000-0000-4000-8000-000000000001",
+    "item_type": "activity",
+    "function": "cmc",
+    "owner": "Priya Shah",
+    "end_date": "2026-10-15",
+    "status": "done"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000009",
+   "version": 1,
+   "data": {
+    "is_key": false,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": "00000000-0000-4000-8000-000000000008",
+    "start_date": "2026-10-16",
+    "baseline_start": "2026-10-01",
+    "baseline_end": "2027-01-15",
+    "name": "GMP drug substance batch",
+    "program_id": "00000000-0000-4000-8000-000000000001",
+    "item_type": "activity",
+    "function": "cmc",
+    "owner": "Priya Shah",
+    "end_date": "2027-01-31",
+    "status": "in_progress"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000010",
+   "version": 1,
+   "data": {
+    "is_key": false,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": "00000000-0000-4000-8000-000000000009",
+    "start_date": null,
+    "baseline_start": null,
+    "baseline_end": "2027-02-01",
+    "name": "Drug product release",
+    "program_id": "00000000-0000-4000-8000-000000000001",
+    "item_type": "milestone",
+    "function": "cmc",
+    "owner": "Priya Shah",
+    "end_date": "2027-02-15",
+    "status": "planned"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000011",
+   "version": 1,
+   "data": {
+    "is_key": false,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": null,
+    "start_date": "2026-09-01",
+    "baseline_start": "2026-09-01",
+    "baseline_end": "2027-01-20",
+    "name": "GLP 28-day tox study",
+    "program_id": "00000000-0000-4000-8000-000000000001",
+    "item_type": "activity",
+    "function": "nonclinical",
+    "owner": "Sam Lee",
+    "end_date": "2027-01-20",
+    "status": "in_progress"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000012",
+   "version": 1,
+   "data": {
+    "is_key": false,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": "00000000-0000-4000-8000-000000000011",
+    "start_date": null,
+    "baseline_start": null,
+    "baseline_end": "2027-03-01",
+    "name": "Final tox report",
+    "program_id": "00000000-0000-4000-8000-000000000001",
+    "item_type": "milestone",
+    "function": "nonclinical",
+    "owner": "Sam Lee",
+    "end_date": "2027-03-01",
+    "status": "planned"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000013",
+   "version": 1,
+   "data": {
+    "is_key": false,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": "00000000-0000-4000-8000-000000000010",
+    "start_date": "2027-02-16",
+    "baseline_start": "2027-02-02",
+    "baseline_end": "2027-03-06",
+    "name": "IND package compiled",
+    "program_id": "00000000-0000-4000-8000-000000000001",
+    "item_type": "activity",
+    "function": "regulatory",
+    "owner": "Jon Berg",
+    "end_date": "2027-03-20",
+    "status": "planned"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000014",
+   "version": 1,
+   "data": {
+    "is_key": true,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": "00000000-0000-4000-8000-000000000013",
+    "start_date": null,
+    "baseline_start": null,
+    "baseline_end": "2027-03-15",
+    "name": "IND submission",
+    "program_id": "00000000-0000-4000-8000-000000000001",
+    "item_type": "milestone",
+    "function": "regulatory",
+    "owner": "Jon Berg",
+    "end_date": "2027-03-31",
+    "status": "planned"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000015",
+   "version": 1,
+   "data": {
+    "is_key": false,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": "00000000-0000-4000-8000-000000000014",
+    "start_date": "2027-04-01",
+    "baseline_start": "2027-03-16",
+    "baseline_end": "2027-04-14",
+    "name": "FDA 30-day review",
+    "program_id": "00000000-0000-4000-8000-000000000001",
+    "item_type": "activity",
+    "function": "regulatory",
+    "owner": "Jon Berg",
+    "end_date": "2027-04-30",
+    "status": "planned"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000016",
+   "version": 1,
+   "data": {
+    "is_key": false,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": null,
+    "start_date": null,
+    "baseline_start": null,
+    "baseline_end": "2026-12-15",
+    "name": "Phase 1 CRO selected",
+    "program_id": "00000000-0000-4000-8000-000000000001",
+    "item_type": "milestone",
+    "function": "clinical",
+    "owner": "Mei Chen",
+    "end_date": "2026-12-15",
+    "status": "planned"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000017",
+   "version": 1,
+   "data": {
+    "is_key": false,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": "00000000-0000-4000-8000-000000000016",
+    "start_date": "2027-03-01",
+    "baseline_start": "2027-03-01",
+    "baseline_end": "2027-05-15",
+    "name": "Site activation",
+    "program_id": "00000000-0000-4000-8000-000000000001",
+    "item_type": "activity",
+    "function": "clinical",
+    "owner": "Mei Chen",
+    "end_date": "2027-05-15",
+    "status": "planned"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000018",
+   "version": 1,
+   "data": {
+    "is_key": true,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": "00000000-0000-4000-8000-000000000015",
+    "start_date": null,
+    "baseline_start": null,
+    "baseline_end": "2027-05-15",
+    "name": "First participant dosed",
+    "program_id": "00000000-0000-4000-8000-000000000001",
+    "item_type": "milestone",
+    "function": "clinical",
+    "owner": "Mei Chen",
+    "end_date": "2027-05-31",
+    "status": "planned"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000019",
+   "version": 1,
+   "data": {
+    "is_key": false,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": "00000000-0000-4000-8000-000000000018",
+    "start_date": "2027-06-01",
+    "baseline_start": "2027-05-16",
+    "baseline_end": "2028-01-15",
+    "name": "Phase 1 SAD/MAD",
+    "program_id": "00000000-0000-4000-8000-000000000001",
+    "item_type": "activity",
+    "function": "clinical",
+    "owner": "Mei Chen",
+    "end_date": "2028-01-31",
+    "status": "planned"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000020",
+   "version": 1,
+   "data": {
+    "is_key": true,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": "00000000-0000-4000-8000-000000000019",
+    "start_date": null,
+    "baseline_start": null,
+    "baseline_end": "2028-03-15",
+    "name": "Phase 1 topline data",
+    "program_id": "00000000-0000-4000-8000-000000000001",
+    "item_type": "milestone",
+    "function": "clinical",
+    "owner": "Dana Ortiz",
+    "end_date": "2028-03-31",
+    "status": "planned"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000021",
+   "version": 1,
+   "data": {
+    "is_key": false,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": null,
+    "start_date": null,
+    "baseline_start": null,
+    "baseline_end": "2026-10-20",
+    "name": "Pre-IND meeting",
+    "program_id": "00000000-0000-4000-8000-000000000001",
+    "item_type": "milestone",
+    "function": "regulatory",
+    "owner": "Jon Berg",
+    "end_date": "2026-10-20",
+    "status": "done"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000022",
+   "version": 1,
+   "data": {
+    "is_key": false,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": null,
+    "start_date": "2026-05-01",
+    "baseline_start": null,
+    "baseline_end": null,
+    "name": "Cell line development",
+    "program_id": "00000000-0000-4000-8000-000000000002",
+    "item_type": "activity",
+    "function": "cmc",
+    "owner": "Priya Shah",
+    "end_date": "2026-12-31",
+    "status": "in_progress"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000023",
+   "version": 1,
+   "data": {
+    "is_key": true,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": null,
+    "start_date": null,
+    "baseline_start": null,
+    "baseline_end": null,
+    "name": "Candidate selection",
+    "program_id": "00000000-0000-4000-8000-000000000002",
+    "item_type": "milestone",
+    "function": "other",
+    "owner": "Sam Lee",
+    "end_date": "2026-12-15",
+    "status": "planned"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000024",
+   "version": 1,
+   "data": {
+    "is_key": false,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": "00000000-0000-4000-8000-000000000023",
+    "start_date": "2027-01-04",
+    "baseline_start": null,
+    "baseline_end": null,
+    "name": "Pilot tox",
+    "program_id": "00000000-0000-4000-8000-000000000002",
+    "item_type": "activity",
+    "function": "nonclinical",
+    "owner": "Sam Lee",
+    "end_date": "2027-04-30",
+    "status": "planned"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000025",
+   "version": 1,
+   "data": {
+    "is_key": false,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": "00000000-0000-4000-8000-000000000022",
+    "start_date": "2027-01-04",
+    "baseline_start": null,
+    "baseline_end": null,
+    "name": "GMP manufacturing",
+    "program_id": "00000000-0000-4000-8000-000000000002",
+    "item_type": "activity",
+    "function": "cmc",
+    "owner": "Priya Shah",
+    "end_date": "2027-08-31",
+    "status": "planned"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000026",
+   "version": 1,
+   "data": {
+    "is_key": false,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": "00000000-0000-4000-8000-000000000024",
+    "start_date": "2027-05-03",
+    "baseline_start": null,
+    "baseline_end": null,
+    "name": "GLP tox",
+    "program_id": "00000000-0000-4000-8000-000000000002",
+    "item_type": "activity",
+    "function": "nonclinical",
+    "owner": "Sam Lee",
+    "end_date": "2027-10-29",
+    "status": "planned"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000027",
+   "version": 1,
+   "data": {
+    "is_key": true,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": "00000000-0000-4000-8000-000000000026",
+    "start_date": null,
+    "baseline_start": null,
+    "baseline_end": null,
+    "name": "CTA submission",
+    "program_id": "00000000-0000-4000-8000-000000000002",
+    "item_type": "milestone",
+    "function": "regulatory",
+    "owner": "Jon Berg",
+    "end_date": "2027-12-15",
+    "status": "planned"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000028",
+   "version": 1,
+   "data": {
+    "is_key": false,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": "00000000-0000-4000-8000-000000000027",
+    "start_date": null,
+    "baseline_start": null,
+    "baseline_end": null,
+    "name": "CTA approval",
+    "program_id": "00000000-0000-4000-8000-000000000002",
+    "item_type": "milestone",
+    "function": "regulatory",
+    "owner": "Jon Berg",
+    "end_date": "2028-02-15",
+    "status": "planned"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000029",
+   "version": 1,
+   "data": {
+    "is_key": true,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": "00000000-0000-4000-8000-000000000028",
+    "start_date": null,
+    "baseline_start": null,
+    "baseline_end": null,
+    "name": "First-in-human dose",
+    "program_id": "00000000-0000-4000-8000-000000000002",
+    "item_type": "milestone",
+    "function": "clinical",
+    "owner": "Mei Chen",
+    "end_date": "2028-03-15",
+    "status": "planned"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000030",
+   "version": 1,
+   "data": {
+    "is_key": false,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": null,
+    "start_date": "2027-02-01",
+    "baseline_start": null,
+    "baseline_end": null,
+    "name": "Biomarker assay",
+    "program_id": "00000000-0000-4000-8000-000000000002",
+    "item_type": "activity",
+    "function": "nonclinical",
+    "owner": "Sam Lee",
+    "end_date": "2027-06-30",
+    "status": "planned"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000031",
+   "version": 1,
+   "data": {
+    "is_key": false,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": "00000000-0000-4000-8000-000000000025",
+    "start_date": "2027-09-01",
+    "baseline_start": null,
+    "baseline_end": null,
+    "name": "Formulation development",
+    "program_id": "00000000-0000-4000-8000-000000000002",
+    "item_type": "activity",
+    "function": "cmc",
+    "owner": "Priya Shah",
+    "end_date": "2027-11-30",
+    "status": "planned"
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "00000000-0000-4000-8000-000000000032",
+   "version": 1,
+   "data": {
+    "is_key": false,
+    "archived": false,
+    "notes": null,
+    "predecessor_id": null,
+    "start_date": null,
+    "baseline_start": null,
+    "baseline_end": null,
+    "name": "Scientific advisory board",
+    "program_id": "00000000-0000-4000-8000-000000000002",
+    "item_type": "milestone",
+    "function": "other",
+    "owner": "Dana Ortiz",
+    "end_date": "2027-03-10",
+    "status": "planned"
+   }
+  },
+  {
+   "role": "programs.slips",
+   "id": "00000000-0000-4000-8000-000000000033",
+   "version": 1,
+   "data": {
+    "plan_item_id": "00000000-0000-4000-8000-000000000008",
+    "changed_on": "2026-09-24",
+    "old_end": "2026-09-30",
+    "new_end": "2026-10-15",
+    "days": 15,
+    "reason": "manufacturing",
+    "detail": "Impurity profile needed one more crystallisation run."
+   }
+  },
+  {
+   "role": "programs.slips",
+   "id": "00000000-0000-4000-8000-000000000034",
+   "version": 1,
+   "data": {
+    "plan_item_id": "00000000-0000-4000-8000-000000000009",
+    "changed_on": "2026-10-05",
+    "old_end": "2027-01-15",
+    "new_end": "2027-01-31",
+    "days": 16,
+    "reason": "cro_vendor",
+    "detail": "CDMO slot moved two weeks."
+   }
+  },
+  {
+   "role": "programs.decisions",
+   "id": "00000000-0000-4000-8000-000000000035",
+   "version": 1,
+   "data": {
+    "name": "IND go / no-go",
+    "program_id": "00000000-0000-4000-8000-000000000001",
+    "kind": "gate",
+    "target_date": "2027-03-22",
+    "criteria": "[met] Pre-IND meeting minutes agreed\n[open] GLP tox report final\n[open] Drug product released\n[not met] Phase 1 CRO contract signed",
+    "outcome": "pending",
+    "decided_on": null,
+    "approver": null,
+    "options": null,
+    "rationale": null,
+    "linked_item_id": "00000000-0000-4000-8000-000000000014",
+    "archived": false
+   }
+  },
+  {
+   "role": "programs.decisions",
+   "id": "00000000-0000-4000-8000-000000000036",
+   "version": 1,
+   "data": {
+    "name": "Candidate selection",
+    "program_id": "00000000-0000-4000-8000-000000000002",
+    "kind": "gate",
+    "target_date": "2026-12-15",
+    "criteria": "[met] Potency below 1 nM\n[met] Developability package\n[open] Freedom-to-operate opinion",
+    "outcome": "pending",
+    "linked_item_id": "00000000-0000-4000-8000-000000000023",
+    "archived": false
+   }
+  },
+  {
+   "role": "programs.decisions",
+   "id": "00000000-0000-4000-8000-000000000037",
+   "version": 1,
+   "data": {
+    "name": "Phase 1 CRO shortlist",
+    "program_id": "00000000-0000-4000-8000-000000000001",
+    "kind": "decision",
+    "target_date": "2026-10-30",
+    "outcome": "decided",
+    "decided_on": "2026-10-29",
+    "approver": "Dana Ortiz",
+    "options": "Two full-service CROs; one niche respiratory CRO",
+    "rationale": "Respiratory experience and EU sites outweigh the 8% price difference.",
+    "linked_item_id": "00000000-0000-4000-8000-000000000016",
+    "archived": false
+   }
+  },
+  {
+   "role": "programs.raid",
+   "id": "00000000-0000-4000-8000-000000000038",
+   "version": 1,
+   "data": {
+    "archived": false,
+    "linked_item_id": "00000000-0000-4000-8000-000000000009",
+    "name": "GMP batch yield below target",
+    "program_id": "00000000-0000-4000-8000-000000000001",
+    "raid_type": "risk",
+    "likelihood": "medium",
+    "impact": "high",
+    "owner": "Priya Shah",
+    "mitigation": "Second CDMO slot on hold for March.",
+    "next_review": "2026-11-20",
+    "status": "open"
+   }
+  },
+  {
+   "role": "programs.raid",
+   "id": "00000000-0000-4000-8000-000000000039",
+   "version": 1,
+   "data": {
+    "archived": false,
+    "linked_item_id": null,
+    "name": "FDA asks for an extra tox species",
+    "program_id": "00000000-0000-4000-8000-000000000001",
+    "raid_type": "risk",
+    "likelihood": "low",
+    "impact": "high",
+    "owner": "Jon Berg",
+    "mitigation": "Pre-IND minutes cover the species choice.",
+    "next_review": "2026-10-31",
+    "status": "open"
+   }
+  },
+  {
+   "role": "programs.raid",
+   "id": "00000000-0000-4000-8000-000000000040",
+   "version": 1,
+   "data": {
+    "archived": false,
+    "linked_item_id": null,
+    "name": "Single cell-line supplier",
+    "program_id": "00000000-0000-4000-8000-000000000002",
+    "raid_type": "dependency",
+    "likelihood": "medium",
+    "impact": "medium",
+    "owner": "Priya Shah",
+    "mitigation": "Backup supplier qualified by Q1.",
+    "next_review": "2026-12-01",
+    "status": "monitoring"
+   }
+  },
+  {
+   "role": "programs.raid",
+   "id": "00000000-0000-4000-8000-000000000041",
+   "version": 1,
+   "data": {
+    "archived": false,
+    "linked_item_id": null,
+    "name": "Phase 1 sites enrol 4 participants/month",
+    "program_id": "00000000-0000-4000-8000-000000000001",
+    "raid_type": "assumption",
+    "likelihood": "medium",
+    "impact": "medium",
+    "owner": "Mei Chen",
+    "next_review": "2027-01-15",
+    "status": "open"
+   }
+  },
+  {
+   "role": "programs.raid",
+   "id": "00000000-0000-4000-8000-000000000042",
+   "version": 1,
+   "data": {
+    "archived": false,
+    "linked_item_id": null,
+    "name": "Tox CRO capacity in Q2",
+    "program_id": "00000000-0000-4000-8000-000000000002",
+    "raid_type": "issue",
+    "likelihood": "high",
+    "impact": "medium",
+    "owner": "Sam Lee",
+    "mitigation": "Booked pilot tox slot in January.",
+    "next_review": "2026-11-15",
+    "status": "open"
+   }
+  },
+  {
+   "role": "programs.raid",
+   "id": "00000000-0000-4000-8000-000000000043",
+   "version": 1,
+   "data": {
+    "archived": false,
+    "linked_item_id": null,
+    "name": "Patent opposition window",
+    "program_id": "00000000-0000-4000-8000-000000000002",
+    "raid_type": "risk",
+    "likelihood": "low",
+    "impact": "low",
+    "owner": "Dana Ortiz",
+    "next_review": "2027-02-01",
+    "status": "open"
+   }
+  },
+  {
+   "role": "programs.updates",
+   "id": "00000000-0000-4000-8000-000000000044",
+   "version": 1,
+   "data": {
+    "program_id": "00000000-0000-4000-8000-000000000001",
+    "month": "2026-10-01",
+    "health": "amber",
+    "rationale": "GMP batch two weeks late.",
+    "summary": "API process locked; GMP batch started 16 Oct. Tox in-life phase on schedule.",
+    "next_steps": "Release drug product by mid-February; book IND writing team.",
+    "author": "Dana Ortiz"
+   }
+  },
+  {
+   "role": "programs.updates",
+   "id": "00000000-0000-4000-8000-000000000045",
+   "version": 1,
+   "data": {
+    "program_id": "00000000-0000-4000-8000-000000000002",
+    "month": "2026-10-01",
+    "health": "green",
+    "rationale": "All workstreams on plan.",
+    "summary": "Candidate data package complete; selection meeting set for December.",
+    "next_steps": "Freedom-to-operate opinion; book pilot tox.",
+    "author": "Sam Lee"
+   }
+  },
+  {
+   "role": "programs.settings",
+   "id": "00000000-0000-4000-8000-000000000046",
+   "version": 1,
+   "data": {
+    "functions": "cmc, nonclinical, regulatory, clinical, other",
+    "stages": "discovery, preclinical, ind_enabling, phase_1, phase_2, phase_3, registration, approved",
+    "health_definitions": "Green: key dates and budget hold. Amber: a key date is at risk but recoverable within the quarter. Red: a key date or the program goal is no longer achievable without a decision.",
+    "due_soon_days": 90,
+    "update_day": 5
+   }
+  },
+  {
+   "role": "runway.month_closes",
+   "id": "00000000-0000-4000-8000-000000000047",
+   "version": 1,
+   "data": {
+    "month": "2026-10-01",
+    "closed": true,
+    "currency": "EUR",
+    "metrics": "{\"v\":2,\"asOf\":\"2026-10\",\"currency\":\"EUR\",\"start\":24000000,\"horizon\":60,\"runway\":{\"months\":39,\"beyond\":false,\"lastsUntil\":\"2030-01\",\"cashOut\":\"2030-02\",\"startRaise\":\"2028-05\"},\"months\":[{\"m\":\"2026-11\",\"l\":420000,\"p\":180000,\"c\":23400000,\"k\":23400000},{\"m\":\"2026-12\",\"l\":420000,\"p\":180000,\"c\":22800000,\"k\":22800000},{\"m\":\"2027-01\",\"l\":420000,\"p\":180000,\"c\":22200000,\"k\":22200000},{\"m\":\"2027-02\",\"l\":420000,\"p\":180000,\"c\":21600000,\"k\":21600000},{\"m\":\"2027-03\",\"l\":420000,\"p\":180000,\"c\":21000000,\"k\":21000000},{\"m\":\"2027-04\",\"l\":420000,\"p\":180000,\"c\":20400000,\"k\":20400000},{\"m\":\"2027-05\",\"l\":420000,\"p\":180000,\"c\":19800000,\"k\":19800000},{\"m\":\"2027-06\",\"l\":420000,\"p\":180000,\"c\":19200000,\"k\":19200000},{\"m\":\"2027-07\",\"l\":420000,\"p\":180000,\"c\":18600000,\"k\":18600000},{\"m\":\"2027-08\",\"l\":420000,\"p\":180000,\"c\":18000000,\"k\":18000000},{\"m\":\"2027-09\",\"l\":420000,\"p\":180000,\"c\":17400000,\"k\":17400000},{\"m\":\"2027-10\",\"l\":420000,\"p\":180000,\"c\":16800000,\"k\":16800000},{\"m\":\"2027-11\",\"l\":420000,\"p\":180000,\"c\":16200000,\"k\":16200000},{\"m\":\"2027-12\",\"l\":420000,\"p\":180000,\"c\":15600000,\"k\":15600000},{\"m\":\"2028-01\",\"l\":420000,\"p\":180000,\"c\":15000000,\"k\":15000000},{\"m\":\"2028-02\",\"l\":420000,\"p\":180000,\"c\":14400000,\"k\":14400000},{\"m\":\"2028-03\",\"l\":420000,\"p\":180000,\"c\":13800000,\"k\":13800000},{\"m\":\"2028-04\",\"l\":420000,\"p\":180000,\"c\":13200000,\"k\":13200000},{\"m\":\"2028-05\",\"l\":420000,\"p\":180000,\"c\":12600000,\"k\":12600000},{\"m\":\"2028-06\",\"l\":420000,\"p\":180000,\"c\":12000000,\"k\":12000000},{\"m\":\"2028-07\",\"l\":420000,\"p\":180000,\"c\":11400000,\"k\":11400000},{\"m\":\"2028-08\",\"l\":420000,\"p\":180000,\"c\":10800000,\"k\":10800000},{\"m\":\"2028-09\",\"l\":420000,\"p\":180000,\"c\":10200000,\"k\":10200000},{\"m\":\"2028-10\",\"l\":420000,\"p\":180000,\"c\":9600000,\"k\":9600000},{\"m\":\"2028-11\",\"l\":420000,\"p\":180000,\"c\":9000000,\"k\":9000000},{\"m\":\"2028-12\",\"l\":420000,\"p\":180000,\"c\":8400000,\"k\":8400000},{\"m\":\"2029-01\",\"l\":420000,\"p\":180000,\"c\":7800000,\"k\":7800000},{\"m\":\"2029-02\",\"l\":420000,\"p\":180000,\"c\":7200000,\"k\":7200000},{\"m\":\"2029-03\",\"l\":420000,\"p\":180000,\"c\":6600000,\"k\":6600000},{\"m\":\"2029-04\",\"l\":420000,\"p\":180000,\"c\":6000000,\"k\":6000000},{\"m\":\"2029-05\",\"l\":420000,\"p\":180000,\"c\":5400000,\"k\":5400000},{\"m\":\"2029-06\",\"l\":420000,\"p\":180000,\"c\":4800000,\"k\":4800000},{\"m\":\"2029-07\",\"l\":420000,\"p\":180000,\"c\":4200000,\"k\":4200000},{\"m\":\"2029-08\",\"l\":420000,\"p\":180000,\"c\":3600000,\"k\":3600000},{\"m\":\"2029-09\",\"l\":420000,\"p\":180000,\"c\":3000000,\"k\":3000000},{\"m\":\"2029-10\",\"l\":420000,\"p\":180000,\"c\":2400000,\"k\":2400000},{\"m\":\"2029-11\",\"l\":420000,\"p\":180000,\"c\":1800000,\"k\":1800000},{\"m\":\"2029-12\",\"l\":420000,\"p\":180000,\"c\":1200000,\"k\":1200000},{\"m\":\"2030-01\",\"l\":420000,\"p\":180000,\"c\":600000,\"k\":600000},{\"m\":\"2030-02\",\"l\":420000,\"p\":180000,\"c\":0,\"k\":0},{\"m\":\"2030-03\",\"l\":420000,\"p\":180000,\"c\":-600000,\"k\":-600000},{\"m\":\"2030-04\",\"l\":420000,\"p\":180000,\"c\":-1200000,\"k\":-1200000},{\"m\":\"2030-05\",\"l\":420000,\"p\":180000,\"c\":-1800000,\"k\":-1800000},{\"m\":\"2030-06\",\"l\":420000,\"p\":180000,\"c\":-2400000,\"k\":-2400000},{\"m\":\"2030-07\",\"l\":420000,\"p\":180000,\"c\":-3000000,\"k\":-3000000},{\"m\":\"2030-08\",\"l\":420000,\"p\":180000,\"c\":-3600000,\"k\":-3600000},{\"m\":\"2030-09\",\"l\":420000,\"p\":180000,\"c\":-4200000,\"k\":-4200000},{\"m\":\"2030-10\",\"l\":420000,\"p\":180000,\"c\":-4800000,\"k\":-4800000},{\"m\":\"2030-11\",\"l\":420000,\"p\":180000,\"c\":-5400000,\"k\":-5400000},{\"m\":\"2030-12\",\"l\":420000,\"p\":180000,\"c\":-6000000,\"k\":-6000000},{\"m\":\"2031-01\",\"l\":420000,\"p\":180000,\"c\":-6600000,\"k\":-6600000},{\"m\":\"2031-02\",\"l\":420000,\"p\":180000,\"c\":-7200000,\"k\":-7200000},{\"m\":\"2031-03\",\"l\":420000,\"p\":180000,\"c\":-7800000,\"k\":-7800000},{\"m\":\"2031-04\",\"l\":420000,\"p\":180000,\"c\":-8400000,\"k\":-8400000},{\"m\":\"2031-05\",\"l\":420000,\"p\":180000,\"c\":-9000000,\"k\":-9000000},{\"m\":\"2031-06\",\"l\":420000,\"p\":180000,\"c\":-9600000,\"k\":-9600000},{\"m\":\"2031-07\",\"l\":420000,\"p\":180000,\"c\":-10200000,\"k\":-10200000},{\"m\":\"2031-08\",\"l\":420000,\"p\":180000,\"c\":-10800000,\"k\":-10800000},{\"m\":\"2031-09\",\"l\":420000,\"p\":180000,\"c\":-11400000,\"k\":-11400000},{\"m\":\"2031-10\",\"l\":420000,\"p\":180000,\"c\":-12000000,\"k\":-12000000},{\"m\":\"2031-11\",\"l\":420000,\"p\":180000,\"c\":-12600000,\"k\":-12600000},{\"m\":\"2031-12\",\"l\":420000,\"p\":180000,\"c\":-13200000,\"k\":-13200000},{\"m\":\"2032-01\",\"l\":420000,\"p\":180000,\"c\":-13800000,\"k\":-13800000},{\"m\":\"2032-02\",\"l\":420000,\"p\":180000,\"c\":-14400000,\"k\":-14400000},{\"m\":\"2032-03\",\"l\":420000,\"p\":180000,\"c\":-15000000,\"k\":-15000000},{\"m\":\"2032-04\",\"l\":420000,\"p\":180000,\"c\":-15600000,\"k\":-15600000},{\"m\":\"2032-05\",\"l\":420000,\"p\":180000,\"c\":-16200000,\"k\":-16200000},{\"m\":\"2032-06\",\"l\":420000,\"p\":180000,\"c\":-16800000,\"k\":-16800000},{\"m\":\"2032-07\",\"l\":420000,\"p\":180000,\"c\":-17400000,\"k\":-17400000},{\"m\":\"2032-08\",\"l\":420000,\"p\":180000,\"c\":-18000000,\"k\":-18000000},{\"m\":\"2032-09\",\"l\":420000,\"p\":180000,\"c\":-18600000,\"k\":-18600000},{\"m\":\"2032-10\",\"l\":420000,\"p\":180000,\"c\":-19200000,\"k\":-19200000}]}"
+   }
+  }
+ ]
+}

@@ -1,0 +1,18 @@
+/* Add-app choice: connect an existing table or create a new one. Uses the standard confirm dialog. */
+.ty-data-access-all{display:flex;justify-content:flex-end;margin:-8px 0 4px}
+.ty-data-access-list{list-style:none;margin:0 0 4px;padding:0;display:grid;gap:8px}
+.ty-data-access-list li{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;min-height:40px}
+.ty-data-access-list li>span{overflow-wrap:anywhere;min-width:0}
+.ty-data-access-list select{width:auto;max-width:100%;margin:0}
+.ty-data-access-choice{display:inline-flex;padding:0!important;border:1px solid #c6d4cb;border-radius:7px;overflow:hidden;flex-shrink:0}
+.ty-confirm-dialog .ty-data-access-choice button{border:0!important;border-radius:0!important;margin:0!important;background:white!important;color:#33433a!important;padding:6px 12px!important;font:inherit;font-size:13px!important;font-weight:400!important;min-height:32px!important;box-shadow:none!important;cursor:pointer}
+.ty-confirm-dialog .ty-data-access-choice button+button{border-left:1px solid #c6d4cb!important}
+.ty-confirm-dialog .ty-data-access-choice button[aria-checked=true]{background:#edf5f0!important;color:#152721!important;font-weight:600!important}
+.ty-data-access-choice button:focus-visible{outline:2px solid #1d5a3a;outline-offset:-2px}
+.ty-data-access-subhead{font-size:14px;font-weight:600;margin:20px 0 8px!important}
+.ty-integration-options{display:grid;gap:8px;margin:0 0 4px}
+.ty-integration-options label{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1px solid #d8dfda;border-radius:8px;cursor:pointer;margin:0}
+.ty-integration-options label.is-selected{border-color:#1d5a3a;background:#f4faf6}
+.ty-integration-options input{width:auto!important;margin:3px 0 0!important;flex-shrink:0}
+.ty-integration-options span{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ty-integration-options small{color:#5d6b63;font-size:12px;overflow-wrap:anywhere}

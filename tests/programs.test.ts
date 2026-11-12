@@ -7,8 +7,8 @@ import {appTemplates} from '../src/workspace/app-templates.js';
 import {readCustomLayout} from '../src/shared/custom-layout.js';
 import {fieldSchema} from '../src/shared/schema.js';
 
-/* Programs 2.0.0: the catalog entry, prepared exactly as AppTemplates.operation prepends configuration, executed in production QuickJS. */
-const entry=await appTemplates.read({templateId:'life.project-oversight',version:'2.0.0'});
+/* Programs 2.1.0: the catalog entry, prepared exactly as AppTemplates.operation prepends configuration, executed in production QuickJS. */
+const entry=await appTemplates.read({templateId:'life.project-oversight',version:'2.1.0'});
 const schema=JSON.parse(await readFile('templates/source/project-oversight/schema.example.json','utf8'));
 const contract=JSON.parse(await readFile('templates/core-contract/v1.json','utf8'));
 const demo=JSON.parse(await readFile('templates/source/project-oversight/demo_data.json','utf8')).records;
@@ -34,12 +34,12 @@ const item=(rows:Row[],name:string)=>rows.find(r=>r.role==='programs.plan_items'
 const critLists=(html:string)=>[...html.matchAll(/<ol class="pg-crit">(.*?)<\/ol>/g)].map(m=>[...m[1].matchAll(/<li><span><strong>(.*?)<\/strong>/g)].map(x=>x[1]));
 
 test('catalog entry, contract-shaped scalar schema and seven layout screens',async()=>{
- assert.equal(entry.version,'2.0.0');assert.equal(entry.name,'Programs');assert.equal(entry.engine,'frontend-js');
+ assert.equal(entry.version,'2.1.0');assert.equal(entry.name,'Programs');assert.equal(entry.engine,'frontend-js');
  assert.ok(entry.source!.length<180000);
  for(const def of Object.values(schema) as any[])for(const f of def.fields){assert.ok(fieldSchema.safeParse(f).success,JSON.stringify(f));assert.equal(f.multiple,false);assert.match(f.key,/^[a-z][a-z0-9_]{0,63}$/);}
  // Core roles use exactly the core data contract v1 fields (Programs owns the health fields on programs).
  for(const role of ['programs','people'])assert.deepEqual(schema[role].fields,contract.roles[role].fields.map(({owner,...f}:any)=>f),role);
- assert.equal(schema.people.optional,true);assert.equal(schema['runway.month_closes'].readOnly,true);assert.equal(schema['runway.month_closes'].optional,true);
+ assert.equal(schema.people.optional,true);assert.equal(schema['runway.month_closes'].readOnly,undefined);assert.equal(schema['runway.month_closes'].integration,true);assert.equal(schema['runway.month_closes'].optional,true);
  const app=roles.filter(r=>!schema[r].optional&&r!=='programs');assert.deepEqual(app,['programs.plan_items','programs.slips','programs.decisions','programs.raid','programs.updates','programs.reports','programs.settings']);
  assert.equal(1+app.length,8,'eight tables at install');
  const runwayCloses=JSON.parse(await readFile('templates/source/cash-runway/schema.example.json','utf8'))['runway.month_closes'];
@@ -149,10 +149,21 @@ test('Runway link: cash markers when readable, a short note and no error when mi
  assert.doesNotMatch(tl,/Drug product release Priya Shah · 15 Feb 2027 · \+14 days EUR/,'non-key milestones have no marker');
  const noRunway=Object.fromEntries(Object.entries(fullMap).filter(([k])=>k!=='runway.month_closes'));
  const missing=await render(rows,{section:'timeline'},undefined,{config:cfgFor(noRunway)});
- assert.match(text(missing.html),/Runway is not connected to this app, so cash markers are hidden/);assert.doesNotMatch(missing.html,/cushion<\/span>|pg-banner bad/);
+ assert.match(text(missing.html),/Cash markers are hidden: this app has no cash forecast table/);assert.doesNotMatch(missing.html,/cushion<\/span>|pg-banner bad/);
  const denied=await render(rows,{section:'timeline'},undefined,{read:(v:any,all:Row[])=>v.typeId==='runway.month_closes'?{unavailable:true}:{rows:all.filter(r=>r.role===v.typeId).slice(v.offset,v.offset+v.limit),total:all.filter(r=>r.role===v.typeId).length}});
  assert.match(text(denied.html),/Runway snapshots are not readable for you/);assert.doesNotMatch(denied.html,/cushion<\/span>|pg-banner bad/);
  assert.match(text(denied.html),/IND submission/,'the timeline still works');
+});
+
+test('manual cash forecast: entered months drive cash at key milestones and the hint offers Runway',async()=>{
+ // Replace Runway's snapshot with monthly closing cash entered by hand: 24.0M in Nov 2026, −0.6M a month to 0.6M in Feb 2030.
+ const rows=fresh().filter(r=>r.role!=='runway.month_closes');
+ for(let i=0;i<40;i++){const d=new Date(Date.UTC(2026,10+i,1));rows.push({id:randomUUID(),version:0,role:'runway.month_closes',data:{month:d.toISOString().slice(0,10),closing_balance:24000000-600000*i,currency:'EUR'}});}
+ const tl=text((await render(rows,{section:'timeline'})).html);
+ // Mar 2027 = 24.0M − 4 × 0.6M = 21.6M; no negative month is entered, so the cushion is at least the 35 months to Feb 2030.
+ assert.match(tl,/IND submission .*EUR 21\.6M · ≥ 35 months cushion/);
+ const settings=(await render(rows,{section:'settings'})).html;
+ assert.match(settings,/<h2>Cash forecast<\/h2>/);assert.match(text(settings),/Feb 2030 EUR 600k/);assert.match(settings,/data-action="add:closes"/);
 });
 
 test('partial reads disable the critical path and totals and say so',async()=>{

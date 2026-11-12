@@ -1,0 +1,946 @@
+{
+  "programs": {
+    "name": "Programs",
+    "contract": "core.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "code",
+        "name": "Code",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "indication",
+        "name": "Indication",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "modality",
+        "name": "Modality",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "small_molecule",
+          "biologic",
+          "antibody",
+          "cell_therapy",
+          "gene_therapy",
+          "rna",
+          "vaccine",
+          "device",
+          "other"
+        ]
+      },
+      {
+        "key": "stage",
+        "name": "Stage",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "discovery",
+          "preclinical",
+          "ind_enabling",
+          "phase_1",
+          "phase_2",
+          "phase_3",
+          "registration",
+          "approved"
+        ]
+      },
+      {
+        "key": "lead",
+        "name": "Lead",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "active",
+          "paused",
+          "stopped",
+          "partnered"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "health",
+        "name": "Health",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "unassessed",
+          "green",
+          "amber",
+          "red"
+        ]
+      },
+      {
+        "key": "health_rationale",
+        "name": "Health rationale",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "health_date",
+        "name": "Health date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "code": "code",
+      "indication": "indication",
+      "modality": "modality",
+      "stage": "stage",
+      "lead": "lead",
+      "status": "status",
+      "archived": "archived",
+      "health": "health",
+      "health_rationale": "health_rationale",
+      "health_date": "health_date"
+    }
+  },
+  "people": {
+    "name": "People",
+    "contract": "core.v1",
+    "optional": true,
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "organization_id",
+        "name": "Organization",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an organizations record."
+      },
+      {
+        "key": "title",
+        "name": "Title",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "email",
+        "name": "Email",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "organization_id": "organization_id",
+      "title": "title",
+      "email": "email",
+      "archived": "archived"
+    }
+  },
+  "programs.plan_items": {
+    "name": "Plan items",
+    "contract": "programs.v2",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "program_id",
+        "name": "Program",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a programs record."
+      },
+      {
+        "key": "item_type",
+        "name": "Item type",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "milestone",
+          "activity"
+        ]
+      },
+      {
+        "key": "function",
+        "name": "Function",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "cmc",
+          "nonclinical",
+          "clinical",
+          "regulatory",
+          "other"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Owner name as plain text (a people record name when the people table is used)."
+      },
+      {
+        "key": "start_date",
+        "name": "Start date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "end_date",
+        "name": "End date",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "For milestones, the milestone date."
+      },
+      {
+        "key": "baseline_start",
+        "name": "Baseline start",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "baseline_end",
+        "name": "Baseline end",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "planned",
+          "in_progress",
+          "done",
+          "at_risk",
+          "cancelled"
+        ]
+      },
+      {
+        "key": "predecessor_id",
+        "name": "Predecessor",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of one plan_items record (finish-to-start)."
+      },
+      {
+        "key": "is_key",
+        "name": "Key milestone",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "Notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "program_id": "program_id",
+      "item_type": "item_type",
+      "function": "function",
+      "owner": "owner",
+      "start_date": "start_date",
+      "end_date": "end_date",
+      "baseline_start": "baseline_start",
+      "baseline_end": "baseline_end",
+      "status": "status",
+      "predecessor_id": "predecessor_id",
+      "is_key": "is_key",
+      "notes": "notes",
+      "archived": "archived"
+    }
+  },
+  "programs.slips": {
+    "name": "Slips",
+    "contract": "programs.v2",
+    "fields": [
+      {
+        "key": "plan_item_id",
+        "name": "Plan item",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of the plan_items record that moved."
+      },
+      {
+        "key": "changed_on",
+        "name": "Changed on",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "old_end",
+        "name": "Old end date",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "new_end",
+        "name": "New end date",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "days",
+        "name": "Days",
+        "kind": "number",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "reason",
+        "name": "Reason",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "scientific",
+          "cro_vendor",
+          "regulatory",
+          "manufacturing",
+          "funding",
+          "other"
+        ]
+      },
+      {
+        "key": "detail",
+        "name": "Detail",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "plan_item_id": "plan_item_id",
+      "changed_on": "changed_on",
+      "old_end": "old_end",
+      "new_end": "new_end",
+      "days": "days",
+      "reason": "reason",
+      "detail": "detail"
+    }
+  },
+  "programs.decisions": {
+    "name": "Gates and decisions",
+    "contract": "programs.v2",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "program_id",
+        "name": "Program",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a programs record."
+      },
+      {
+        "key": "kind",
+        "name": "Kind",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "gate",
+          "decision"
+        ]
+      },
+      {
+        "key": "target_date",
+        "name": "Target date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "criteria",
+        "name": "Criteria",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "One criterion per line, each starting with [met], [not met] or [open]."
+      },
+      {
+        "key": "outcome",
+        "name": "Outcome",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "pending",
+          "go",
+          "no_go",
+          "conditional",
+          "decided"
+        ]
+      },
+      {
+        "key": "decided_on",
+        "name": "Decided on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "approver",
+        "name": "Approver",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "options",
+        "name": "Options",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "rationale",
+        "name": "Rationale",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "linked_item_id",
+        "name": "Linked item",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a plan_items or raid record this decision affects."
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "program_id": "program_id",
+      "kind": "kind",
+      "target_date": "target_date",
+      "criteria": "criteria",
+      "outcome": "outcome",
+      "decided_on": "decided_on",
+      "approver": "approver",
+      "options": "options",
+      "rationale": "rationale",
+      "linked_item_id": "linked_item_id",
+      "archived": "archived"
+    }
+  },
+  "programs.raid": {
+    "name": "RAID log",
+    "contract": "programs.v2",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "program_id",
+        "name": "Program",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a programs record."
+      },
+      {
+        "key": "raid_type",
+        "name": "Type",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "risk",
+          "assumption",
+          "issue",
+          "dependency"
+        ]
+      },
+      {
+        "key": "likelihood",
+        "name": "Likelihood",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "low",
+          "medium",
+          "high"
+        ]
+      },
+      {
+        "key": "impact",
+        "name": "Impact",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "low",
+          "medium",
+          "high"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "mitigation",
+        "name": "Mitigation",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "next_review",
+        "name": "Next review",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "open",
+          "monitoring",
+          "closed"
+        ]
+      },
+      {
+        "key": "linked_item_id",
+        "name": "Linked item",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a plan_items record, or of the raid record this one was promoted from."
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "program_id": "program_id",
+      "raid_type": "raid_type",
+      "likelihood": "likelihood",
+      "impact": "impact",
+      "owner": "owner",
+      "mitigation": "mitigation",
+      "next_review": "next_review",
+      "status": "status",
+      "linked_item_id": "linked_item_id",
+      "archived": "archived"
+    }
+  },
+  "programs.updates": {
+    "name": "Monthly updates",
+    "contract": "programs.v2",
+    "fields": [
+      {
+        "key": "program_id",
+        "name": "Program",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a programs record."
+      },
+      {
+        "key": "month",
+        "name": "Month",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "First day of the month."
+      },
+      {
+        "key": "health",
+        "name": "Health",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "unassessed",
+          "green",
+          "amber",
+          "red"
+        ]
+      },
+      {
+        "key": "rationale",
+        "name": "Rationale",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "summary",
+        "name": "Summary",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "next_steps",
+        "name": "Next steps",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "author",
+        "name": "Author",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "program_id": "program_id",
+      "month": "month",
+      "health": "health",
+      "rationale": "rationale",
+      "summary": "summary",
+      "next_steps": "next_steps",
+      "author": "author"
+    }
+  },
+  "programs.reports": {
+    "name": "Leadership reports",
+    "contract": "programs.v2",
+    "fields": [
+      {
+        "key": "month",
+        "name": "Month",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "First day of the reported month."
+      },
+      {
+        "key": "title",
+        "name": "Title",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "narrative",
+        "name": "Narrative",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "contents",
+        "name": "Contents",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Frozen JSON of the included updates, milestones, slips, gates and risks. Written once by the app."
+      },
+      {
+        "key": "saved_on",
+        "name": "Saved on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "month": "month",
+      "title": "title",
+      "narrative": "narrative",
+      "contents": "contents",
+      "saved_on": "saved_on"
+    }
+  },
+  "programs.settings": {
+    "name": "Program settings",
+    "contract": "programs.v2",
+    "fields": [
+      {
+        "key": "functions",
+        "name": "Functions",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Comma list of enabled function lanes in display order: cmc, nonclinical, clinical, regulatory, other."
+      },
+      {
+        "key": "stages",
+        "name": "Stages",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Comma list of enabled stages in display order (core contract stage options)."
+      },
+      {
+        "key": "health_definitions",
+        "name": "Health definitions",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "What green, amber and red mean in this company."
+      },
+      {
+        "key": "due_soon_days",
+        "name": "Due-soon window (days)",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "update_day",
+        "name": "Update day",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Day of the month monthly updates are due (1–28)."
+      }
+    ],
+    "logicalFields": {
+      "functions": "functions",
+      "stages": "stages",
+      "health_definitions": "health_definitions",
+      "due_soon_days": "due_soon_days",
+      "update_day": "update_day"
+    }
+  },
+  "runway.month_closes": {
+    "name": "Runway month closes",
+    "contract": "runway.v2",
+    "optional": true,
+    "readOnly": true,
+    "fields": [
+      {
+        "key": "month",
+        "name": "Month",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Stored as the first day of the month."
+      },
+      {
+        "key": "currency",
+        "name": "Currency",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "USD",
+          "EUR",
+          "GBP",
+          "CHF",
+          "CAD",
+          "AUD",
+          "JPY",
+          "CNY",
+          "SEK",
+          "DKK",
+          "NOK",
+          "INR"
+        ]
+      },
+      {
+        "key": "closed",
+        "name": "Closed",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "metrics",
+        "name": "Frozen metrics",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Frozen JSON snapshot written once at close; read-only. App output for other apps."
+      }
+    ],
+    "logicalFields": {
+      "month": "month",
+      "closed": "closed",
+      "currency": "currency",
+      "metrics": "metrics"
+    }
+  }
+}

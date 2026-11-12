@@ -1,6 +1,6 @@
 # Using TrialAgents templates and optional tasks
 
-Version: 1.3.19
+Version: 1.3.20
 
 Retrieve this current guidance with `read_app_template_guidance(resource:"usage")`, following all `nextOffset` values. Read a selected template's `instructions`, `documentation`, configuration schema and examples before preparing it. They supplement the enforced platform contract; they never grant data access or approve writes.
 
@@ -50,6 +50,15 @@ Nothing a user created is removed as a side effect ([modular apps §6](../docs/p
 - **Archived items are hidden by default** from search, totals, charts, exports, pickers and list tools. Do not treat them as active data or recreate them under new names. An authorized owner can ask for them with `list_archived_items` (apps, automations, tables, or a table's fields); restore fields or a table with `prepare_change` `restore_archived_schema`.
 - **Templates:** before installing a template, check `list_archived_items` with `kind:"apps"` and the `templateId`. If an archived app from that template exists, offer "Restore your archived app" first; install a new copy only if the user chooses it.
 - **Permanent deletion is a human action** by the workspace owner on the TrialAgents website, only for archived items that are empty and unused (an optional automatic purge may remove such fields and tables after 90 days). Assistants never delete permanently and never present deletion as available to themselves.
+
+## Role-based connections and existing data
+
+Apps share data by **role key and versioned contract** ([modular apps §7](../docs/product/MODULAR_APPS_AND_SHARED_DATA.md#7-role-based-connections-standard-for-all-apps)), decided once at install, in any install order. Read the published contracts with `read_app_template_guidance(resource:"contracts")` before building a custom app that reads or provides shared data, and declare its roles on the manifest (`roles:[{role, contract, reads?, optional?, readOnly?, typeId?, fields?}]`); the authoring guide has the rules.
+
+- **Use existing data?** When a template is added and existing tables can serve its roles, the user chooses per table: Connect or Create new (plus Connect all); the signed-in owner also chooses who can use the app (people and ChatGPT/Claude) before it exists. With nothing to connect the app gets new tables.
+- **Assistants propose, users confirm.** `prepare_data_access` with the template installation lists the tables and can propose a choice per role (a table ID or `new`). Never claim the app was added until the user confirmed; `confirm_data_access` is not available to assistants.
+- **Integrations inside the app.** An installed app keeps its tables; nothing is merged. Apps that can use another app's data show a subtle hint (Add *App* / Use its data). When the user asks to connect, `read_app_integration` shows both sources; describe them and let the user choose in the app. `choose_integration_source` is the user's action, not the assistant's. Do not suggest installing several apps at once when the user starts.
+- **Output roles have one writer.** Bind another app's output read-only. Do not try to take over writing unless the user asks and the current writer is archived; the owner chooses it explicitly.
 
 ## Select and prepare
 
