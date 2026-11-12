@@ -10,7 +10,7 @@ This directory holds **one dedicated Markdown content plan per TrialAgents built
 
 | App | Plan | Status | Last reviewed |
 | --- | --- | --- | --- |
-| Runway | [Runway SEO & LLM content plan](runway.md) | Initial pages drafted; CDN publication pending | 2026-11-12 |
+| Runway | [Runway SEO & LLM content plan](runway.md) | Runway hub and Excel comparison published; editorial/SEO audit recorded | 2026-11-12 |
 
 <!--
 When the first plan is approved, replace the sentence above with a Markdown table:
