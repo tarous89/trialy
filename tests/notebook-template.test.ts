@@ -9,7 +9,7 @@ async function run({data=demo,state={},event={kind:'open'},denied=[],cfg=config,
 
 const click=(action:string)=>({kind:'click',action}),submit=(form:any)=>({kind:'submit',action:'save',form});
 test('whole catalog, scalar schemas, native layout and production design gate',async()=>{
- assert.equal(entry.version,'1.2.2');assert.ok((await appTemplates.list()).templates.some(t=>t.id===entry.id));
+ assert.equal(entry.version,'1.2.2');assert.ok((await appTemplates.list({limit:50})).templates.some(t=>t.id===entry.id));
  for(const s of Object.values(schemas) as any[])for(const f of s.fields){assert.ok(fieldSchema.safeParse(f).success);assert.equal(f.multiple,false);}
  assert.ok(readCustomLayout('const templateConfiguration='+JSON.stringify(config)+';\n'+entry.source));
  const frames=[];for(const tab of ['overview','directory','entry','protocols','results','summary']){const {out}=await run({state:{tab,project:'proj-cell',experiment:'exp-001'}});assert.equal((out.html.match(/<h1>/g)||[]).length,1);for(const tag of out.html.match(/<(?:select|input|textarea)\b[^>]*>/g)||[])assert.match(tag,/data-ui-state/);frames.push({name:tab,html:out.html,css:out.css});}

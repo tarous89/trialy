@@ -1,0 +1,1293 @@
+{
+ "asOf": "2026-11-12",
+ "note": "Fictional records for previews and tests only. Never seed into a workspace.",
+ "records": [
+  {
+   "role": "organizations",
+   "id": "org-northwind",
+   "version": 0,
+   "data": {
+    "name": "Northwind Bio",
+    "org_type": "company",
+    "country": "Denmark",
+    "website": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "org-helix",
+   "version": 0,
+   "data": {
+    "name": "Helix Clinical Research",
+    "org_type": "cro",
+    "country": "Ireland",
+    "website": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "org-aurora",
+   "version": 0,
+   "data": {
+    "name": "Aurora Institute of Technology",
+    "org_type": "partner",
+    "country": "United States",
+    "website": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "org-corvane",
+   "version": 0,
+   "data": {
+    "name": "Corvane Biologics",
+    "org_type": "cdmo",
+    "country": "Belgium",
+    "website": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "org-lumen",
+   "version": 0,
+   "data": {
+    "name": "Lumen Capital Partners",
+    "org_type": "investor",
+    "country": "United Kingdom",
+    "website": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "org-brightwater",
+   "version": 0,
+   "data": {
+    "name": "Brightwater Data Services",
+    "org_type": "other",
+    "country": "Netherlands",
+    "website": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "org-meridian",
+   "version": 0,
+   "data": {
+    "name": "Meridian Pharma KK",
+    "org_type": "partner",
+    "country": "Japan",
+    "website": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "org-aldric",
+   "version": 0,
+   "data": {
+    "name": "St Aldric University Hospital",
+    "org_type": "site",
+    "country": "Germany",
+    "website": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "org-kestrel",
+   "version": 0,
+   "data": {
+    "name": "Kestrel Advisory Ltd",
+    "org_type": "other",
+    "country": "United Kingdom",
+    "website": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "org-harbour",
+   "version": 0,
+   "data": {
+    "name": "Harbourside Science Park",
+    "org_type": "other",
+    "country": "Germany",
+    "website": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "programs",
+   "id": "prog-101",
+   "version": 0,
+   "data": {
+    "name": "PX-101",
+    "code": "PX-101",
+    "indication": "Fictional solid tumour indication",
+    "modality": "small_molecule",
+    "stage": "phase_1",
+    "lead": "Program lead (fictional)",
+    "status": "active",
+    "archived": false
+   }
+  },
+  {
+   "role": "programs",
+   "id": "prog-202",
+   "version": 0,
+   "data": {
+    "name": "PX-202",
+    "code": "PX-202",
+    "indication": "Fictional autoimmune indication",
+    "modality": "antibody",
+    "stage": "preclinical",
+    "lead": "Program lead (fictional)",
+    "status": "active",
+    "archived": false
+   }
+  },
+  {
+   "role": "studies",
+   "id": "study-101-001",
+   "version": 0,
+   "data": {
+    "name": "PX-101-001 Phase 1 SAD/MAD",
+    "program_id": "prog-101",
+    "phase": "Phase 1",
+    "registry_id": null,
+    "status": "recruiting",
+    "archived": false
+   }
+  },
+  {
+   "role": "people",
+   "id": "person-ravi",
+   "version": 0,
+   "data": {
+    "name": "Ravi Okonedo",
+    "organization_id": "org-helix",
+    "title": "Contracts manager",
+    "email": "contracts@helix.example",
+    "archived": false
+   }
+  },
+  {
+   "role": "people",
+   "id": "person-lena",
+   "version": 0,
+   "data": {
+    "name": "Lena Varga",
+    "organization_id": "org-corvane",
+    "title": "Business development",
+    "email": "bd@corvane.example",
+    "archived": false
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "ms-ind",
+   "version": 0,
+   "data": {
+    "name": "IND submission",
+    "program_id": "prog-101",
+    "item_type": "milestone",
+    "end_date": "2027-04-21",
+    "status": "planned",
+    "is_key": true
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "ms-topline",
+   "version": 0,
+   "data": {
+    "name": "Phase 1 topline data",
+    "program_id": "prog-101",
+    "item_type": "milestone",
+    "end_date": "2028-03-31",
+    "status": "planned",
+    "is_key": true
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "ms-dc",
+   "version": 0,
+   "data": {
+    "name": "Development candidate nominated",
+    "program_id": "prog-202",
+    "item_type": "milestone",
+    "end_date": "2027-01-31",
+    "status": "planned",
+    "is_key": true
+   }
+  },
+  {
+   "role": "programs.plan_items",
+   "id": "ms-fih",
+   "version": 0,
+   "data": {
+    "name": "First-in-human dose",
+    "program_id": "prog-202",
+    "item_type": "milestone",
+    "end_date": "2028-03-15",
+    "status": "planned",
+    "is_key": true
+   }
+  },
+  {
+   "role": "contracts.settings",
+   "id": "settings-1",
+   "version": 0,
+   "data": {
+    "default_currency": "EUR",
+    "reminder_days": "30, 60, 90",
+    "digest_day": 1,
+    "agreement_types": null,
+    "obligation_kinds": null
+   }
+  },
+  {
+   "role": "agreements",
+   "id": "ag-cda-northwind",
+   "version": 0,
+   "data": {
+    "name": "Mutual CDA — Northwind Bio",
+    "counterparty_id": "org-northwind",
+    "agreement_type": "cda_nda",
+    "status": "active",
+    "effective_date": "2025-03-01",
+    "expiry_date": "2027-03-01",
+    "archived": false,
+    "parent_id": null,
+    "program_id": null,
+    "study_id": null,
+    "total_value": null,
+    "currency": null,
+    "signed_on": "2025-02-27",
+    "owner": "Head of BD (fictional)"
+   }
+  },
+  {
+   "role": "contracts.terms",
+   "id": "terms-ag-cda-northwind",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-cda-northwind",
+    "renewal": null,
+    "renewal_term_months": null,
+    "notice_days": null,
+    "confidentiality_years": 5,
+    "cda_direction": "mutual",
+    "purpose": "Evaluate co-development of PX-202",
+    "governing_law": "Denmark",
+    "document_id": null,
+    "document_version_id": null,
+    "document_link": null,
+    "extraction_status": "verified",
+    "source_quotes": null,
+    "verified_by": "Legal ops (fictional)",
+    "verified_on": "2025-03-03",
+    "status_since": "2025-02-27",
+    "notes": null,
+    "notice_deadline": null,
+    "confidentiality_end": "2032-03-01"
+   }
+  },
+  {
+   "role": "agreements",
+   "id": "ag-cda-lumen",
+   "version": 0,
+   "data": {
+    "name": "CDA — Lumen Capital Partners",
+    "counterparty_id": "org-lumen",
+    "agreement_type": "cda_nda",
+    "status": "active",
+    "effective_date": "2026-01-10",
+    "expiry_date": null,
+    "archived": false,
+    "parent_id": null,
+    "program_id": null,
+    "study_id": null,
+    "total_value": null,
+    "currency": null,
+    "signed_on": "2026-01-10",
+    "owner": "CFO (fictional)"
+   }
+  },
+  {
+   "role": "contracts.terms",
+   "id": "terms-ag-cda-lumen",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-cda-lumen",
+    "renewal": null,
+    "renewal_term_months": null,
+    "notice_days": null,
+    "confidentiality_years": 3,
+    "cda_direction": "outgoing",
+    "purpose": "Series B due diligence",
+    "governing_law": null,
+    "document_id": null,
+    "document_version_id": null,
+    "document_link": null,
+    "extraction_status": "none",
+    "source_quotes": null,
+    "verified_by": null,
+    "verified_on": null,
+    "status_since": "2026-01-10",
+    "notes": null,
+    "notice_deadline": null,
+    "confidentiality_end": "2029-01-10"
+   }
+  },
+  {
+   "role": "agreements",
+   "id": "ag-cda-meridian-2023",
+   "version": 0,
+   "data": {
+    "name": "CDA — Meridian Pharma KK (2023)",
+    "counterparty_id": "org-meridian",
+    "agreement_type": "cda_nda",
+    "status": "expired",
+    "effective_date": "2023-02-28",
+    "expiry_date": "2024-02-29",
+    "archived": false,
+    "parent_id": null,
+    "program_id": null,
+    "study_id": null,
+    "total_value": null,
+    "currency": null,
+    "signed_on": "2023-02-28",
+    "owner": null
+   }
+  },
+  {
+   "role": "contracts.terms",
+   "id": "terms-ag-cda-meridian-2023",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-cda-meridian-2023",
+    "renewal": null,
+    "renewal_term_months": null,
+    "notice_days": null,
+    "confidentiality_years": 2,
+    "cda_direction": "incoming",
+    "purpose": "Review of a Japanese asset",
+    "governing_law": null,
+    "document_id": null,
+    "document_version_id": null,
+    "document_link": null,
+    "extraction_status": "none",
+    "source_quotes": null,
+    "verified_by": null,
+    "verified_on": null,
+    "status_since": "2024-02-29",
+    "notes": null,
+    "notice_deadline": null,
+    "confidentiality_end": "2026-02-28"
+   }
+  },
+  {
+   "role": "agreements",
+   "id": "ag-cda-meridian-2026",
+   "version": 0,
+   "data": {
+    "name": "CDA — Meridian Pharma KK (partnering 2026)",
+    "counterparty_id": "org-meridian",
+    "agreement_type": "cda_nda",
+    "status": "out_for_signature",
+    "effective_date": null,
+    "expiry_date": null,
+    "archived": false,
+    "parent_id": null,
+    "program_id": null,
+    "study_id": null,
+    "total_value": null,
+    "currency": null,
+    "signed_on": null,
+    "owner": "Head of BD (fictional)"
+   }
+  },
+  {
+   "role": "contracts.terms",
+   "id": "terms-ag-cda-meridian-2026",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-cda-meridian-2026",
+    "renewal": null,
+    "renewal_term_months": null,
+    "notice_days": null,
+    "confidentiality_years": null,
+    "cda_direction": "mutual",
+    "purpose": "Partnering discussion for PX-202 in Japan",
+    "governing_law": null,
+    "document_id": null,
+    "document_version_id": null,
+    "document_link": null,
+    "extraction_status": "none",
+    "source_quotes": null,
+    "verified_by": null,
+    "verified_on": null,
+    "status_since": "2026-10-30",
+    "notes": null,
+    "notice_deadline": null,
+    "confidentiality_end": null
+   }
+  },
+  {
+   "role": "agreements",
+   "id": "ag-msa-helix",
+   "version": 0,
+   "data": {
+    "name": "Master services agreement — Helix Clinical Research",
+    "counterparty_id": "org-helix",
+    "agreement_type": "msa",
+    "status": "active",
+    "effective_date": "2024-06-15",
+    "expiry_date": "2027-06-14",
+    "archived": false,
+    "parent_id": null,
+    "program_id": "prog-101",
+    "study_id": null,
+    "total_value": null,
+    "currency": "EUR",
+    "signed_on": "2024-06-10",
+    "owner": "Clinical operations lead (fictional)"
+   }
+  },
+  {
+   "role": "contracts.terms",
+   "id": "terms-ag-msa-helix",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-msa-helix",
+    "renewal": "automatic",
+    "renewal_term_months": 12,
+    "notice_days": 90,
+    "confidentiality_years": null,
+    "cda_direction": null,
+    "purpose": null,
+    "governing_law": "Ireland",
+    "document_id": "00000000-0000-4000-8000-0000000000a5",
+    "document_version_id": "00000000-0000-4000-8000-0000000000b5",
+    "document_link": null,
+    "extraction_status": "verified",
+    "source_quotes": "{\"renewal\": {\"quote\": \"This Agreement shall renew automatically for successive periods of twelve (12) months unless either Party gives notice of non-renewal.\", \"page\": 14}, \"notice_days\": {\"quote\": \"Notice of non-renewal shall be given no less than ninety (90) days before the end of the then-current term.\", \"page\": 14}}",
+    "verified_by": "Legal ops (fictional)",
+    "verified_on": "2024-06-20",
+    "status_since": "2024-06-10",
+    "notes": null,
+    "notice_deadline": "2027-03-16",
+    "confidentiality_end": null
+   }
+  },
+  {
+   "role": "agreements",
+   "id": "ag-sow1",
+   "version": 0,
+   "data": {
+    "name": "SOW 1 — PX-101 Phase 1 conduct",
+    "counterparty_id": "org-helix",
+    "agreement_type": "sow_work_order",
+    "status": "active",
+    "effective_date": "2025-01-15",
+    "expiry_date": "2027-12-31",
+    "archived": false,
+    "parent_id": "ag-msa-helix",
+    "program_id": "prog-101",
+    "study_id": "study-101-001",
+    "total_value": 1200000,
+    "currency": "EUR",
+    "signed_on": "2025-01-10",
+    "owner": "Clinical operations lead (fictional)"
+   }
+  },
+  {
+   "role": "contracts.terms",
+   "id": "terms-ag-sow1",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-sow1",
+    "renewal": null,
+    "renewal_term_months": null,
+    "notice_days": null,
+    "confidentiality_years": null,
+    "cda_direction": null,
+    "purpose": null,
+    "governing_law": null,
+    "document_id": null,
+    "document_version_id": null,
+    "document_link": null,
+    "extraction_status": "none",
+    "source_quotes": null,
+    "verified_by": null,
+    "verified_on": null,
+    "status_since": "2025-01-10",
+    "notes": null,
+    "notice_deadline": null,
+    "confidentiality_end": null
+   }
+  },
+  {
+   "role": "agreements",
+   "id": "ag-sow2",
+   "version": 0,
+   "data": {
+    "name": "SOW 2 — PX-101 bioanalysis",
+    "counterparty_id": "org-helix",
+    "agreement_type": "sow_work_order",
+    "status": "active",
+    "effective_date": "2025-06-01",
+    "expiry_date": "2026-12-31",
+    "archived": false,
+    "parent_id": "ag-msa-helix",
+    "program_id": "prog-101",
+    "study_id": "study-101-001",
+    "total_value": 850000,
+    "currency": "EUR",
+    "signed_on": "2025-05-28",
+    "owner": null
+   }
+  },
+  {
+   "role": "contracts.terms",
+   "id": "terms-ag-sow2",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-sow2",
+    "renewal": null,
+    "renewal_term_months": null,
+    "notice_days": null,
+    "confidentiality_years": null,
+    "cda_direction": null,
+    "purpose": null,
+    "governing_law": null,
+    "document_id": null,
+    "document_version_id": null,
+    "document_link": null,
+    "extraction_status": "none",
+    "source_quotes": null,
+    "verified_by": null,
+    "verified_on": null,
+    "status_since": "2025-05-28",
+    "notes": null,
+    "notice_deadline": null,
+    "confidentiality_end": null
+   }
+  },
+  {
+   "role": "agreements",
+   "id": "ag-co1",
+   "version": 0,
+   "data": {
+    "name": "Change order 1 to SOW 1 — additional cohort",
+    "counterparty_id": "org-helix",
+    "agreement_type": "change_order",
+    "status": "active",
+    "effective_date": "2026-03-01",
+    "expiry_date": "2027-12-31",
+    "archived": false,
+    "parent_id": "ag-sow1",
+    "program_id": "prog-101",
+    "study_id": "study-101-001",
+    "total_value": 150000,
+    "currency": "EUR",
+    "signed_on": "2026-02-25",
+    "owner": null
+   }
+  },
+  {
+   "role": "agreements",
+   "id": "ag-co2",
+   "version": 0,
+   "data": {
+    "name": "Change order 2 to SOW 2 — US laboratory transfer",
+    "counterparty_id": "org-helix",
+    "agreement_type": "change_order",
+    "status": "active",
+    "effective_date": "2026-07-01",
+    "expiry_date": "2026-12-31",
+    "archived": false,
+    "parent_id": "ag-sow2",
+    "program_id": "prog-101",
+    "study_id": null,
+    "total_value": 40000,
+    "currency": "USD",
+    "signed_on": "2026-06-24",
+    "owner": null
+   }
+  },
+  {
+   "role": "agreements",
+   "id": "ag-corvane",
+   "version": 0,
+   "data": {
+    "name": "Supply agreement — Corvane Biologics (PX-101 drug product)",
+    "counterparty_id": "org-corvane",
+    "agreement_type": "cmo_supply",
+    "status": "active",
+    "effective_date": "2025-10-01",
+    "expiry_date": "2027-09-30",
+    "archived": false,
+    "parent_id": null,
+    "program_id": "prog-101",
+    "study_id": null,
+    "total_value": 2400000,
+    "currency": "EUR",
+    "signed_on": "2025-09-22",
+    "owner": "CMC lead (fictional)"
+   }
+  },
+  {
+   "role": "contracts.terms",
+   "id": "terms-ag-corvane",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-corvane",
+    "renewal": "option",
+    "renewal_term_months": 24,
+    "notice_days": 180,
+    "confidentiality_years": null,
+    "cda_direction": null,
+    "purpose": null,
+    "governing_law": "Belgium",
+    "document_id": "00000000-0000-4000-8000-0000000000a6",
+    "document_version_id": "00000000-0000-4000-8000-0000000000b6",
+    "document_link": null,
+    "extraction_status": "proposed",
+    "source_quotes": "{\"renewal\": {\"quote\": \"The Customer may extend the Term once for a further twenty-four (24) months by written notice.\", \"page\": 3}, \"renewal_term_months\": {\"quote\": \"The Customer may extend the Term once for a further twenty-four (24) months by written notice.\", \"page\": 3}, \"notice_days\": {\"quote\": \"Such notice shall be given at least one hundred and eighty (180) days before expiry of the Initial Term.\", \"page\": 3}, \"governing_law\": {\"quote\": \"This Agreement is governed by the laws of Belgium.\", \"page\": 18}}",
+    "verified_by": null,
+    "verified_on": null,
+    "status_since": "2025-09-22",
+    "notes": null,
+    "notice_deadline": "2027-04-03",
+    "confidentiality_end": null
+   }
+  },
+  {
+   "role": "agreements",
+   "id": "ag-aurora",
+   "version": 0,
+   "data": {
+    "name": "Exclusive licence — Aurora Institute of Technology (PX-202 antibody)",
+    "counterparty_id": "org-aurora",
+    "agreement_type": "licence_in",
+    "status": "active",
+    "effective_date": "2024-09-01",
+    "expiry_date": "2039-08-31",
+    "archived": false,
+    "parent_id": null,
+    "program_id": "prog-202",
+    "study_id": null,
+    "total_value": 500000,
+    "currency": "USD",
+    "signed_on": "2024-08-28",
+    "owner": "Head of BD (fictional)"
+   }
+  },
+  {
+   "role": "contracts.terms",
+   "id": "terms-ag-aurora",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-aurora",
+    "renewal": null,
+    "renewal_term_months": null,
+    "notice_days": null,
+    "confidentiality_years": null,
+    "cda_direction": null,
+    "purpose": null,
+    "governing_law": "New York",
+    "document_id": null,
+    "document_version_id": null,
+    "document_link": null,
+    "extraction_status": "verified",
+    "source_quotes": null,
+    "verified_by": "Legal ops (fictional)",
+    "verified_on": "2024-09-05",
+    "status_since": "2024-08-28",
+    "notes": null,
+    "notice_deadline": null,
+    "confidentiality_end": null
+   }
+  },
+  {
+   "role": "agreements",
+   "id": "ag-meridian-sub",
+   "version": 0,
+   "data": {
+    "name": "Sublicence — Meridian Pharma KK (PX-202 Japan)",
+    "counterparty_id": "org-meridian",
+    "agreement_type": "licence_out",
+    "status": "in_negotiation",
+    "effective_date": null,
+    "expiry_date": null,
+    "archived": false,
+    "parent_id": "ag-aurora",
+    "program_id": "prog-202",
+    "study_id": null,
+    "total_value": null,
+    "currency": "USD",
+    "signed_on": null,
+    "owner": "Head of BD (fictional)"
+   }
+  },
+  {
+   "role": "contracts.terms",
+   "id": "terms-ag-meridian-sub",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-meridian-sub",
+    "renewal": null,
+    "renewal_term_months": null,
+    "notice_days": null,
+    "confidentiality_years": null,
+    "cda_direction": null,
+    "purpose": null,
+    "governing_law": null,
+    "document_id": null,
+    "document_version_id": null,
+    "document_link": null,
+    "extraction_status": "none",
+    "source_quotes": null,
+    "verified_by": null,
+    "verified_on": null,
+    "status_since": "2026-09-15",
+    "notes": null,
+    "notice_deadline": null,
+    "confidentiality_end": null
+   }
+  },
+  {
+   "role": "agreements",
+   "id": "ag-brightwater",
+   "version": 0,
+   "data": {
+    "name": "Data processing agreement — Brightwater Data Services",
+    "counterparty_id": "org-brightwater",
+    "agreement_type": "data_processing",
+    "status": "active",
+    "effective_date": "2025-12-01",
+    "expiry_date": "2026-12-31",
+    "archived": false,
+    "parent_id": null,
+    "program_id": null,
+    "study_id": null,
+    "total_value": 18000,
+    "currency": "EUR",
+    "signed_on": "2025-11-25",
+    "owner": null
+   }
+  },
+  {
+   "role": "contracts.terms",
+   "id": "terms-ag-brightwater",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-brightwater",
+    "renewal": "automatic",
+    "renewal_term_months": 12,
+    "notice_days": 30,
+    "confidentiality_years": null,
+    "cda_direction": null,
+    "purpose": null,
+    "governing_law": "Netherlands",
+    "document_id": null,
+    "document_version_id": null,
+    "document_link": null,
+    "extraction_status": "none",
+    "source_quotes": null,
+    "verified_by": null,
+    "verified_on": null,
+    "status_since": "2025-11-25",
+    "notes": null,
+    "notice_deadline": "2026-12-01",
+    "confidentiality_end": null
+   }
+  },
+  {
+   "role": "agreements",
+   "id": "ag-aldric",
+   "version": 0,
+   "data": {
+    "name": "Clinical trial agreement — St Aldric University Hospital (PX-101-001)",
+    "counterparty_id": "org-aldric",
+    "agreement_type": "clinical_trial_agreement",
+    "status": "drafting",
+    "effective_date": null,
+    "expiry_date": null,
+    "archived": false,
+    "parent_id": null,
+    "program_id": "prog-101",
+    "study_id": "study-101-001",
+    "total_value": 180000,
+    "currency": "EUR",
+    "signed_on": null,
+    "owner": "Clinical operations lead (fictional)"
+   }
+  },
+  {
+   "role": "contracts.terms",
+   "id": "terms-ag-aldric",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-aldric",
+    "renewal": null,
+    "renewal_term_months": null,
+    "notice_days": null,
+    "confidentiality_years": null,
+    "cda_direction": null,
+    "purpose": null,
+    "governing_law": null,
+    "document_id": null,
+    "document_version_id": null,
+    "document_link": null,
+    "extraction_status": "none",
+    "source_quotes": null,
+    "verified_by": null,
+    "verified_on": null,
+    "status_since": "2026-11-02",
+    "notes": null,
+    "notice_deadline": null,
+    "confidentiality_end": null
+   }
+  },
+  {
+   "role": "agreements",
+   "id": "ag-kestrel",
+   "version": 0,
+   "data": {
+    "name": "Scientific advisory agreement — Kestrel Advisory Ltd",
+    "counterparty_id": "org-kestrel",
+    "agreement_type": "consulting_advisory",
+    "status": "active",
+    "effective_date": "2026-02-01",
+    "expiry_date": "2027-01-31",
+    "archived": false,
+    "parent_id": null,
+    "program_id": null,
+    "study_id": null,
+    "total_value": 24000,
+    "currency": "EUR",
+    "signed_on": "2026-01-28",
+    "owner": null
+   }
+  },
+  {
+   "role": "contracts.terms",
+   "id": "terms-ag-kestrel",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-kestrel",
+    "renewal": "option",
+    "renewal_term_months": 12,
+    "notice_days": 30,
+    "confidentiality_years": null,
+    "cda_direction": null,
+    "purpose": null,
+    "governing_law": null,
+    "document_id": null,
+    "document_version_id": null,
+    "document_link": null,
+    "extraction_status": "none",
+    "source_quotes": null,
+    "verified_by": null,
+    "verified_on": null,
+    "status_since": "2026-01-28",
+    "notes": null,
+    "notice_deadline": "2027-01-01",
+    "confidentiality_end": null
+   }
+  },
+  {
+   "role": "agreements",
+   "id": "ag-lease",
+   "version": 0,
+   "data": {
+    "name": "Laboratory lease — Harbourside Science Park",
+    "counterparty_id": "org-harbour",
+    "agreement_type": "lease_services",
+    "status": "active",
+    "effective_date": "2024-01-01",
+    "expiry_date": "2028-12-31",
+    "archived": false,
+    "parent_id": null,
+    "program_id": null,
+    "study_id": null,
+    "total_value": null,
+    "currency": "EUR",
+    "signed_on": "2023-11-20",
+    "owner": null
+   }
+  },
+  {
+   "role": "contracts.terms",
+   "id": "terms-ag-lease",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-lease",
+    "renewal": "automatic",
+    "renewal_term_months": 60,
+    "notice_days": 180,
+    "confidentiality_years": null,
+    "cda_direction": null,
+    "purpose": null,
+    "governing_law": null,
+    "document_id": null,
+    "document_version_id": null,
+    "document_link": null,
+    "extraction_status": "none",
+    "source_quotes": null,
+    "verified_by": null,
+    "verified_on": null,
+    "status_since": "2023-11-20",
+    "notes": null,
+    "notice_deadline": "2028-07-04",
+    "confidentiality_end": null
+   }
+  },
+  {
+   "role": "contracts.obligations",
+   "id": "ob-sow1-fee",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-sow1",
+    "title": "SOW 1 quarterly service fee",
+    "kind": "payment",
+    "direction": "we_owe",
+    "due_date": "2025-03-31",
+    "recurrence": "quarterly",
+    "trigger": null,
+    "milestone_id": null,
+    "amount": 100000,
+    "currency": "EUR",
+    "owner": "Finance (fictional)",
+    "status": "open",
+    "verified": true,
+    "source_quote": null,
+    "source_page": null,
+    "source_document_version_id": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "contracts.obligations",
+   "id": "ob-sow1-report",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-sow1",
+    "title": "Monthly enrolment report",
+    "kind": "report",
+    "direction": "they_owe",
+    "due_date": "2025-02-28",
+    "recurrence": "monthly",
+    "trigger": null,
+    "milestone_id": null,
+    "amount": null,
+    "currency": null,
+    "owner": "Clinical operations lead (fictional)",
+    "status": "open",
+    "verified": true,
+    "source_quote": null,
+    "source_page": null,
+    "source_document_version_id": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "contracts.obligations",
+   "id": "ob-aurora-fih",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-aurora",
+    "title": "Milestone payment on first-in-human dose",
+    "kind": "payment",
+    "direction": "we_owe",
+    "due_date": null,
+    "recurrence": "none",
+    "trigger": "First participant dosed with PX-202",
+    "milestone_id": "ms-fih",
+    "amount": 1000000,
+    "currency": "USD",
+    "owner": "Finance (fictional)",
+    "status": "open",
+    "verified": true,
+    "source_quote": null,
+    "source_page": null,
+    "source_document_version_id": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "contracts.obligations",
+   "id": "ob-aurora-tox",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-aurora",
+    "title": "Start IND-enabling GLP toxicology",
+    "kind": "diligence_milestone",
+    "direction": "we_owe",
+    "due_date": "2027-03-31",
+    "recurrence": "none",
+    "trigger": null,
+    "milestone_id": null,
+    "amount": null,
+    "currency": null,
+    "owner": "Nonclinical lead (fictional)",
+    "status": "open",
+    "verified": true,
+    "source_quote": "Licensee shall initiate IND-enabling GLP toxicology studies no later than 31 March 2027.",
+    "source_page": 9,
+    "source_document_version_id": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "contracts.obligations",
+   "id": "ob-aurora-report",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-aurora",
+    "title": "Annual diligence report to Aurora",
+    "kind": "report",
+    "direction": "we_owe",
+    "due_date": "2025-09-30",
+    "recurrence": "annual",
+    "trigger": null,
+    "milestone_id": null,
+    "amount": null,
+    "currency": null,
+    "owner": "Head of BD (fictional)",
+    "status": "open",
+    "verified": true,
+    "source_quote": null,
+    "source_page": null,
+    "source_document_version_id": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "contracts.obligations",
+   "id": "ob-bw-breach",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-brightwater",
+    "title": "Personal data breach notice within 72 hours",
+    "kind": "notice",
+    "direction": "they_owe",
+    "due_date": null,
+    "recurrence": "none",
+    "trigger": "Personal data breach affecting study data",
+    "milestone_id": null,
+    "amount": null,
+    "currency": null,
+    "owner": null,
+    "status": "open",
+    "verified": true,
+    "source_quote": null,
+    "source_page": null,
+    "source_document_version_id": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "contracts.obligations",
+   "id": "ob-helix-insurance",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-msa-helix",
+    "title": "Certificate of insurance",
+    "kind": "insurance",
+    "direction": "they_owe",
+    "due_date": "2025-06-15",
+    "recurrence": "annual",
+    "trigger": null,
+    "milestone_id": null,
+    "amount": null,
+    "currency": null,
+    "owner": null,
+    "status": "open",
+    "verified": true,
+    "source_quote": null,
+    "source_page": null,
+    "source_document_version_id": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "contracts.obligations",
+   "id": "ob-sow2-b3",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-sow2",
+    "title": "SOW 2 bioanalysis invoice — batch 3",
+    "kind": "payment",
+    "direction": "we_owe",
+    "due_date": "2026-10-31",
+    "recurrence": "none",
+    "trigger": null,
+    "milestone_id": null,
+    "amount": 120000,
+    "currency": "EUR",
+    "owner": "Finance (fictional)",
+    "status": "open",
+    "verified": true,
+    "source_quote": null,
+    "source_page": null,
+    "source_document_version_id": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "contracts.obligations",
+   "id": "ob-sow2-b2",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-sow2",
+    "title": "SOW 2 bioanalysis invoice — batch 2",
+    "kind": "payment",
+    "direction": "we_owe",
+    "due_date": "2026-07-31",
+    "recurrence": "none",
+    "trigger": null,
+    "milestone_id": null,
+    "amount": 110000,
+    "currency": "EUR",
+    "owner": null,
+    "status": "done",
+    "verified": true,
+    "source_quote": null,
+    "source_page": null,
+    "source_document_version_id": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "contracts.obligations",
+   "id": "ob-kestrel-retainer",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-kestrel",
+    "title": "Advisory retainer",
+    "kind": "payment",
+    "direction": "we_owe",
+    "due_date": "2026-02-28",
+    "recurrence": "monthly",
+    "trigger": null,
+    "milestone_id": null,
+    "amount": 2000,
+    "currency": "EUR",
+    "owner": "Finance (fictional)",
+    "status": "open",
+    "verified": true,
+    "source_quote": null,
+    "source_page": null,
+    "source_document_version_id": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "contracts.obligations",
+   "id": "ob-co2-fee",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-co2",
+    "title": "US laboratory transfer fee",
+    "kind": "payment",
+    "direction": "we_owe",
+    "due_date": "2026-12-15",
+    "recurrence": "none",
+    "trigger": null,
+    "milestone_id": null,
+    "amount": 40000,
+    "currency": "USD",
+    "owner": "Finance (fictional)",
+    "status": "open",
+    "verified": true,
+    "source_quote": null,
+    "source_page": null,
+    "source_document_version_id": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "contracts.obligations",
+   "id": "ob-corvane-capacity",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-corvane",
+    "title": "Annual capacity reservation fee",
+    "kind": "payment",
+    "direction": "we_owe",
+    "due_date": "2026-10-01",
+    "recurrence": "annual",
+    "trigger": null,
+    "milestone_id": null,
+    "amount": 300000,
+    "currency": "EUR",
+    "owner": null,
+    "status": "open",
+    "verified": false,
+    "source_quote": "The Customer shall pay an annual capacity reservation fee of EUR 300,000 on each anniversary of the Effective Date.",
+    "source_page": 7,
+    "source_document_version_id": "00000000-0000-4000-8000-0000000000b6",
+    "archived": false
+   }
+  },
+  {
+   "role": "contracts.obligations",
+   "id": "ob-corvane-forecast",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-corvane",
+    "title": "Quarterly rolling forecast",
+    "kind": "report",
+    "direction": "we_owe",
+    "due_date": "2026-12-31",
+    "recurrence": "quarterly",
+    "trigger": null,
+    "milestone_id": null,
+    "amount": null,
+    "currency": null,
+    "owner": null,
+    "status": "open",
+    "verified": false,
+    "source_quote": "The Customer shall provide a rolling eighteen-month forecast at the end of each calendar quarter.",
+    "source_page": 4,
+    "source_document_version_id": "00000000-0000-4000-8000-0000000000b6",
+    "archived": false
+   }
+  },
+  {
+   "role": "contracts.obligations",
+   "id": "ob-corvane-audit",
+   "version": 0,
+   "data": {
+    "agreement_id": "ag-corvane",
+    "title": "Quality audit on 30 days notice",
+    "kind": "audit",
+    "direction": "they_owe",
+    "due_date": null,
+    "recurrence": "none",
+    "trigger": "Customer gives 30 days written notice",
+    "milestone_id": null,
+    "amount": null,
+    "currency": null,
+    "owner": null,
+    "status": "open",
+    "verified": false,
+    "source_quote": "The Customer may audit the Facility once per year on thirty (30) days prior written notice.",
+    "source_page": 11,
+    "source_document_version_id": "00000000-0000-4000-8000-0000000000b6",
+    "archived": false
+   }
+  }
+ ]
+}

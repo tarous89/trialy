@@ -14,6 +14,8 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npx playwright install --with-deps chromium --only-shell
+      # The extraction worker reads PDFs with poppler's pdftotext, as in the production image (Dockerfile).
+      - run: sudo apt-get update && sudo apt-get install -y poppler-utils
       - run: npm test
       - run: sudo apt-get install -y fonts-dejavu-core
       - run: npm run test:visual

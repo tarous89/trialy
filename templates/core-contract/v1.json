@@ -61,7 +61,14 @@
         {"key": "status", "name": "Status", "kind": "text", "required": false, "multiple": false, "ai": true},
         {"key": "effective_date", "name": "Effective date", "kind": "date", "required": false, "multiple": false, "ai": true},
         {"key": "expiry_date", "name": "Expiry date", "kind": "date", "required": false, "multiple": false, "ai": true},
-        {"key": "archived", "name": "Archived", "kind": "boolean", "required": false, "multiple": false, "ai": true}
+        {"key": "archived", "name": "Archived", "kind": "boolean", "required": false, "multiple": false, "ai": true},
+        {"key": "parent_id", "name": "Parent agreement", "kind": "text", "required": false, "multiple": false, "ai": true, "description": "Record ID of the master agreements record (MSA for a SOW, licence for a sublicence).", "owner": "life.contracts"},
+        {"key": "program_id", "name": "Program", "kind": "text", "required": false, "multiple": false, "ai": true, "description": "Record ID of a programs record.", "owner": "life.contracts"},
+        {"key": "study_id", "name": "Study", "kind": "text", "required": false, "multiple": false, "ai": true, "description": "Record ID of a studies record.", "owner": "life.contracts"},
+        {"key": "total_value", "name": "Total value", "kind": "money", "required": false, "multiple": false, "ai": true, "owner": "life.contracts"},
+        {"key": "currency", "name": "Currency", "kind": "select", "required": false, "multiple": false, "ai": true, "options": ["USD", "EUR", "GBP", "CHF", "CAD", "AUD", "JPY", "CNY", "SEK", "DKK", "NOK", "INR"], "owner": "life.contracts"},
+        {"key": "signed_on", "name": "Signed on", "kind": "date", "required": false, "multiple": false, "ai": true, "owner": "life.contracts"},
+        {"key": "owner", "name": "Owner", "kind": "text", "required": false, "multiple": false, "ai": true, "description": "Internal owner (plain-text name).", "owner": "life.contracts"}
       ]
     }
   }

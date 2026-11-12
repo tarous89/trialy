@@ -25,5 +25,6 @@
   "life.investigator-crm@1.0.1": "templates/source/investigator-crm/schema_mapping.example.json",
   "life.cro-selection@1.0.1": "templates/source/cro-selection/schema.example.json",
   "life.cro-sponsor-updates@1.0.1": "templates/source/cro-sponsor-updates/schema.example.json",
-  "life.co-trial-monitoring-pv@1.1.1": "templates/source/co06-trial-monitoring-pv/schema.example.json"
+  "life.co-trial-monitoring-pv@1.1.1": "templates/source/co06-trial-monitoring-pv/schema.example.json",
+  "life.contracts@1.0.0": "templates/source/contracts/schema.example.json"
 }

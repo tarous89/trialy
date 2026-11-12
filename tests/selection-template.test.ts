@@ -9,7 +9,7 @@ async function run({data=demo,state={},event={kind:'open'},denied=[],cfg=config,
 const click=(action:string)=>({kind:'click',action}),submit=(form:any)=>({kind:'submit',action:'save-record',form});
 
 test('catalog, scalar schema, native layout and all routes pass real runtime/design checks',async()=>{
- assert.equal(entry.version,'1.0.1');assert.ok((await appTemplates.list()).templates.some(t=>t.id===entry.id));
+ assert.equal(entry.version,'1.0.1');assert.ok((await appTemplates.list({limit:50})).templates.some(t=>t.id===entry.id));
  assert.ok(readCustomLayout('const templateConfiguration='+JSON.stringify(config)+';\n'+entry.source));
  for(const s of Object.values(schemas) as any[])for(const f of s.fields){assert.ok(fieldSchema.safeParse(f).success);assert.equal(f.multiple,false);}
  const frames=[];for(const screen of ['overview','shortlist','criteria','comparison','decision']){const {out}=await run({state:{screen,selectionId:'sel001'}});assert.equal((out.html.match(/<h1>/g)||[]).length,1);assert.doesNotMatch(out.html,/bindings are absent/);for(const tag of out.html.match(/<(?:select|input|textarea)\b[^>]*>/g)||[])assert.match(tag,/data-ui-state/);frames.push({name:screen,html:out.html,css:out.css});}
