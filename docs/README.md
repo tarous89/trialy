@@ -23,7 +23,8 @@ Named provider setup/automation documents remain provider-specific. They do not 
 
 ## Marketing and discovery
 
-- [SEO and AI-discovery content series playbook](marketing/SEO_AND_AI_DISCOVERY_CONTENT_SERIES.md): reusable methods and page layouts for the five app-agnostic series A–E (head-to-head comparisons, alternatives, ChatGPT/Claude/MCP discovery, biotech/CRO workflows, and practical resources).
+- [TrialAgents Apps SEO & LLM Content Playbook](marketing/TRIALAGENTS_APPS_SEO_AND_LLM_CONTENT_PLAYBOOK.md): shared five-series A–E editorial methodology, evidence standards and article layouts for TrialAgents apps.
+- [Individual app content plans](marketing/apps/README.md): linked app-by-app plans, added one at a time; [per-app plan template](marketing/apps/_APP_CONTENT_PLAN_TEMPLATE.md).
 
 ## History
 
