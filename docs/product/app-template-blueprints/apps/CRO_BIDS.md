@@ -42,7 +42,7 @@ Sources read 12 November 2026: Scientist.com, Science Exchange, ClinAI, Clinical
 **Out:** supplier accounts or portal; purchasing, POs, invoices, payments; e-signature; auctions; negotiation workflow; automatic award decisions; TrialAgents Intel longlist; vendor performance during studies (CRO Oversight, 16).
 
 **Small features that delight:**
-1. **One request, many suppliers:** write once, invite 3–5 suppliers, each gets their own link and email in one confirmed send.
+1. **One request, many suppliers:** write once, invite 3–5 suppliers; each gets their own link and an email from `no-reply@trialagents.com` built from the default text, edited or personalised per supplier (by the user or the assistant), in one confirmed send.
 2. **Live response status:** opened · CDA signed · documents downloaded · draft saved · submitted (v2, 3 Mar 14:10) · unread messages.
 3. **Upload-to-grid:** the connected assistant maps an uploaded bid (PDF or spreadsheet) into the bid grid and flags assumption deviations ("assumes 40% fewer monitoring visits").
 4. **Realism check:** cheapest bid vs assumptions, pass-throughs and change-order risk side by side.
@@ -60,11 +60,11 @@ Custom `frontend-js` app on the Vivid kit, theme **ocean**, declared in `templat
 |---|---|---|
 | 1 | **Overview** (`overview`) | (1) Open requests with mode, stage, deadline and responses received / invited. (2) Waiting on us: unread messages, unanswered questions, submissions to accept. (3) Decisions due. (4) Recent awards. |
 | 2 | **Requests** (`requests`) | (1) Create a request: mode (quick quote / full RFP), service type, program/study, scope, sponsor assumptions, timeline, question set, bid-grid template, CDA option. (2) Stages: draft → RFI (optional) → RFP sent → responses → evaluation → bid defence (full RFP) → award / closed. (3) Documents out (RFP pack). (4) Request summary for leadership. |
-| 3 | **Suppliers** (`suppliers`) | (1) Longlist and shortlist for the request (shared organizations, type cro / cdmo / lab / other). (2) Invite: recipient emails, create links, preview and **send email** (human-confirmed) or copy link. (3) Per-supplier status (opened, CDA, downloads, draft, submitted, messages). (4) Supplier history across past requests. |
+| 3 | **Suppliers** (`suppliers`) | (1) Longlist and shortlist for the request (shared organizations, type cro / cdmo / lab / other). (2) Invite: recipient emails, create links, then **send email** from `no-reply@trialagents.com` using the default text for the email type (edit for all, personalise per supplier, or ask the assistant to personalise; preview exactly as sent; human-confirmed), or copy link. (3) Per-supplier status (opened, CDA, downloads, draft, submitted, messages). (4) Supplier history across past requests. |
 | 4 | **Messages** (`messages`) | (1) Per-supplier private threads. (2) Clarifications log for the request (published to all, asker anonymised). (3) Reply privately or publish as clarification; post an addendum. (4) Question deadline and "unanswered" list. |
 | 5 | **Bid grid** (`bids`) | (1) Sponsor baseline (assumptions and expected cost by category). (2) Each bid normalised into the template's categories; totals, pass-throughs, timeline. (3) Deviations from assumptions flagged; clarifications requested from here open a message. (4) Accept a submission or map an uploaded bid (assistant-proposed, reviewed). |
 | 6 | **Evaluation** (`evaluation`) | (1) Weighted criteria (sum 100%), mandatory items. (2) Reviewer scorecards 1–5 with evidence; prices hidden until scoring is complete (switchable). (3) Ranking and spread between reviewers. (4) Bid defence (full RFP): agenda, attendees, notes, proposed delivery team, due-diligence checklist. |
-| 7 | **Award & settings** (`award`) | (1) Decision: selected supplier, rationale, approver, date; unsuccessful suppliers listed. (2) Award handoff to connected apps (reviewed). (3) Templates: question sets, bid-grid templates, criteria sets, confidentiality text, email texts. (4) Links to Access and Automations. |
+| 7 | **Award & settings** (`award`) | (1) Decision: selected supplier, rationale, approver, date; unsuccessful suppliers listed. (2) Award handoff to connected apps (reviewed). (3) Templates: question sets, bid-grid templates, criteria sets, confidentiality text; default email texts per type (RFI invitation, RFP invitation, quick-quote request, reminder, clarification, award / not selected) saved as workspace defaults in the platform exchange. (4) Links to Access and Automations. |
 
 Shared behaviours, chart rules and states as in [Runway §3](RUNWAY.md#3-screens-7). Integration lines follow the platform pattern.
 
@@ -98,7 +98,7 @@ Principles as in [Runway §5](RUNWAY.md#5-data-model). Own tables use contract `
 
 | Table | Key fields (kind) |
 |---|---|
-| `crobids.settings` (one row) | default_currency (select), blind_scoring (boolean, true), question_deadline_days (number, 7), confidentiality_text (text), email_templates (text) |
+| `crobids.settings` (one row) | default_currency (select), blind_scoring (boolean, true), question_deadline_days (number, 7), confidentiality_text (text) |
 | `crobids.templates` | name (text*), kind (select*: question_set / bid_grid / criteria_set), service_type (select: clinical_study / preclinical_study / cmc / bioanalytical / other), content (text, JSON: questions, grid categories with units, or criteria with weights), archived (boolean) |
 | `crobids.requests` | name (text*), mode (select*: quick_quote / full_rfp), service_type (select*), program_id (text), study_id (text), scope (text*), assumptions (text, JSON: e.g. sites, patients, months, visits), currency (select*), stage (select*: draft / rfi / rfp_sent / responses / evaluation / bid_defence / awarded / closed), cda_option (select*: send_pdf / contracts / skip / none), cda_gate (boolean), question_deadline (date), response_deadline (date*), decision_due (date), owner (text), exchange_group_id (text), question_set_id (text), grid_template_id (text), criteria_set_id (text), archived (boolean) |
 | `crobids.invitations` | request_id (text*), organization_id (text*), contact_ids (text, comma list of people IDs), recipient_emails (text*), exchange_id (text), status (select*: longlist / invited / declined / submitted / shortlisted / not_selected / awarded), cda_status (select: not_needed / sent / signed / in_place_elsewhere), cda_in_place_on (date), agreement_id (text), notes (text) |
@@ -162,7 +162,7 @@ Handoff writes are always prepared for the owning app's review; CRO Bids never w
 
 - Draft the request (scope, assumptions, questions) from a protocol synopsis or notes the user shares.
 - Map uploaded bids into the grid with deviations; summarise differences between bids.
-- Draft supplier emails, private replies, clarifications and the award rationale.
+- Personalise supplier emails from the default text, draft private replies, clarifications and the award rationale.
 - Never: send email, publish clarifications, accept submissions, choose the winner, or give legal advice.
 - **`whenToUse`:** a small biotech sources preclinical, CMC or clinical services and needs to send requests, collect and compare bids, talk to suppliers and record the award. **`whenNotToUse`:** purchasing and payments, contract drafting, vendor performance management during studies, supplier marketplaces.
 
@@ -173,7 +173,7 @@ Handoff writes are always prepared for the owning app's review; CRO Bids never w
 **Package:** new major version under `templates/source/cro-selection/` (archive 1.0.1); immutable `templates/apps/life.cro-selection-2.0.0.json` (draft until approved); mark `sponsor-rfp-management` for catalog archival on approval; installer roles as in §5; `crobids.awards` in the registry; default templates (question sets for quick quote and clinical RFP; bid-grid templates for clinical study, preclinical study, CMC; one criteria set) as fictional examples; full `catalog.metadata.json` documentation; fictional `demo_data.json`; `templateLayoutSchema` with seven ids; build `--check`; browser test.
 
 **Acceptance (beyond the shared contract and [External exchange §4](../../EXTERNAL_EXCHANGE.md#4-acceptance-criteria)):**
-1. Quick quote end to end: 3 suppliers invited by email in one confirmed send; 2 submit with files; comparison and award recorded.
+1. Quick quote end to end: 3 suppliers invited by email in one confirmed send (default text, one personalised by the assistant, preview matches what is sent); 2 submit with files; comparison and award recorded.
 2. Full RFP end to end: RFI → shortlist → RFP pack → CDA (send PDF) with gate → private question and published clarification (anonymised, emailed to all) → draft and resubmission → deadline closes → accept and map → blind scoring → bid defence notes → award.
 3. CDA via Contracts: signed CDA filed as agreement; gate checks it. CDA skip: "in place elsewhere" recorded, no gate.
 4. Bid grid totals and deviations match a hand-checked fictional set; other currencies listed, not converted.

@@ -43,9 +43,11 @@ Per exchange group, one of:
 
 ### 2.3 Outbound email from the TrialAgents domain
 
-- Sender shown as "<Person> at <Company> via TrialAgents" from a TrialAgents sending domain (e.g. `exchange@mail.trialagents.com`), **Reply-To = the sending user's email**. SPF, DKIM and DMARC aligned; bounce and complaint handling; per-workspace and per-day rate limits; suppression list.
+- **From:** `no-reply@trialagents.com`, display name "<Person> at <Company> via TrialAgents". **Reply-To:** the sending user's email, so replies reach the sender directly; the footer says "Replies go to <sender email>; you can also answer on your page." SPF, DKIM and DMARC aligned for `trialagents.com`; bounce and complaint handling; per-workspace and per-day rate limits; suppression list.
 - Email types: invitation (with link), reminder before deadline, clarification published, new message, deadline extended, exchange revoked. Every email carries the link, never attachments.
-- **Every send is human-confirmed** in the app (one review for a batch: recipients, subject, text). Claude and ChatGPT may draft the text and prepare the send, never confirm it.
+- **Default message for every planned email.** Each email type has a default subject and body, written plainly, with placeholders: `{recipient_name}`, `{recipient_company}`, `{sender_name}`, `{sender_company}`, `{title}`, `{deadline}`, `{link}`, `{message}` (for clarification and message emails). Apps can supply their own defaults per email type (e.g. CRO Bids "RFP invitation"); the workspace can save its own default per type, which then replaces the app default.
+- **Edit and personalise before sending.** The send review shows each email exactly as it will be sent (subject and body with placeholders filled). The user can edit the text for everyone in the batch, or personalise individual recipients (e.g. a sentence for one CRO). Claude or ChatGPT can propose edits or personalised versions on request; the user sees and confirms the final text. The link, sender identity and footer cannot be removed.
+- **Every send is human-confirmed** in the app (one review for a batch: recipients, subject, final text per recipient). Assistants may draft, personalise and prepare the send, never confirm it. Reminders that the owner pre-approved for a request use the saved text and are listed in the request's activity.
 - No open-tracking pixels; delivery status only (sent / delivered / bounced). Footer identifies the sender, workspace and TrialAgents, with a "report abuse" link.
 - Recipients are limited to email addresses on the exchange's recipient list; no free-form mass mailing.
 - Inbound replies go to the sender's own mailbox (Reply-To); messages written on the exchange page go into the thread.
@@ -66,7 +68,7 @@ New submission, new message, document uploaded, deadline passed: in-app and emai
 
 Exposed through the app runtime (`tools.call`) and MCP, each write via workspace review:
 - `exchange.createGroup`, `exchange.invite` (per recipient, bound to a record), `exchange.updateBrief`, `exchange.shareDocuments`, `exchange.requestDocument`, `exchange.extend`, `exchange.revoke`.
-- `exchange.prepareEmail` / `exchange.sendEmail` (human-confirmed).
+- `exchange.defaultEmail` (default subject/body for an email type, app or workspace default), `exchange.prepareEmail` (batch text + per-recipient overrides, rendered preview), `exchange.sendEmail` (human-confirmed).
 - `exchange.listSubmissions`, `exchange.acceptSubmission` (maps fields into the app's tables, like `accept_collection_response`).
 - `exchange.listMessages`, `exchange.reply` (private), `exchange.publishClarification` (to group).
 - Read-only status per exchange for app UIs: opened, acknowledged, documents downloaded, draft saved, submitted (version, time), documents back status, unread messages.
@@ -85,7 +87,7 @@ Recipient accounts or portals; e-signature (signed PDFs are uploaded back); wate
 2. Draft save and resubmission work until the deadline; after it, the page is read-only and uploads are refused.
 3. Click-through acknowledgement is required before documents; with "signed document required", other documents stay locked until the owner accepts the signed upload.
 4. A private reply is visible only to that recipient; a published clarification appears for every recipient in the group without the asker's identity, and triggers an email to each.
-5. Outbound email: human confirmation required; From/Reply-To/DKIM correct; bounces recorded; rate limit enforced; assistants can prepare but not send.
+5. Outbound email: sent from `no-reply@trialagents.com` with Reply-To the sender; default text per email type with placeholders; batch edit and per-recipient personalisation shown exactly as sent; human confirmation required; DKIM/SPF/DMARC pass; bounces recorded; rate limit enforced; assistants can draft and personalise but not send.
 6. Unaccepted uploaded files are not readable by AI; accepted ones follow document AI permissions.
 7. Revoking a link stops access immediately and keeps all received content.
 8. Recipient page works at 390 and 1440 px, keyboard accessible, contrast ≥ 4.5:1.
