@@ -14,7 +14,7 @@
 | Page | URL | State |
 | --- | --- | --- |
 | Runway official app page | https://trialagents.com/apps/runway | Source merged to public-site main ([PR #173](https://github.com/tarous89/trialagents-public/pull/173)); CDN deployment not verified |
-| Runway vs Excel | https://trialagents.com/apps/runway-vs-excel | Source merged to public-site main; CDN deployment not verified |
+| Runway vs Excel | https://trialagents.com/apps/runway-vs-excel | Redesigned screenshot-led page merged in [PR #174](https://github.com/tarous89/trialagents-public/pull/174); CDN delivery not yet verified |
 | App pages index | https://trialagents.com/apps | HTML authored in the same PR; CDN deployment not verified |
 
 These are intended canonical URLs. Do not assert that a URL is live until checked on the production CDN.
@@ -28,7 +28,7 @@ These are intended canonical URLs. Do not assert that a URL is live until checke
 - Fictional CRO payment-delay case using the same assumptions in both approaches.
 - Reasons to choose Runway, reasons to keep Excel and when to use both.
 - FAQ, dates, source links and product CTA.
-- **Status:** Source merged in PR #173; production CDN verification pending.
+- **Status:** Screenshot-led redesign merged in PR #174; production CDN verification pending.
 
 ### A2. TrialAgents Runway vs Float
 - **Intent:** alternative to small-business cash forecasting software.
@@ -111,6 +111,8 @@ These are intended canonical URLs. Do not assert that a URL is live until checke
 
 ## Production method and next steps
 
-The product hub and A1 comparison were merged via PR #173; verify CDN delivery before calling either page live. Validate production HTML, canonical metadata, static assets, real header/footer, sitemap and LLM discovery files after CDN release. Then prioritize D1 and C1 for original industry-specific and assistant-specific evidence. Only publish additional pages when competitor facts, live host tests or promised downloadable assets are available.
+Runway's product hub was merged via PR #173 and its screenshot-led A1 comparison redesign via PR #174; verify CDN delivery before calling either page live. Validate production HTML, canonical metadata, static assets, real header/footer, sitemap and LLM discovery files after CDN release. Then prioritize D1 and C1 for original industry-specific and assistant-specific evidence. Only publish additional pages when competitor facts, live host tests or promised downloadable assets are available.
 
 Use the shared [five-series standard](../TRIALAGENTS_APPS_SEO_AND_LLM_CONTENT_PLAYBOOK.md) for each article's layout, disclosure, source evidence, structured data, review workflow and internal linking. Every new Runway article links to the official Runway hub, and the index links back to this plan.
+
+**Design QA (2026-11-12):** The Runway vs Excel comparison now uses the current Runway 2.1.0 fictional-data demo, seven distinct screenshots, one for every major visual section, short advantage-first copy, and the shared public header/footer. PR #174 passed the exact-head predeploy gate, including desktop and mobile browser checks. Merge commit 8f480676f9c0f465dc25def0465da5baa6655797. Cloudflare delivery must be independently verified.
