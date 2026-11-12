@@ -9,3 +9,4 @@
 .ty-confirm-dialog .ty-data-access-choice button+button{border-left:1px solid #c6d4cb!important}
 .ty-confirm-dialog .ty-data-access-choice button[aria-checked=true]{background:#edf5f0!important;color:#152721!important;font-weight:600!important}
 .ty-data-access-choice button:focus-visible{outline:2px solid #1d5a3a;outline-offset:-2px}
+.ty-data-access-subhead{font-size:14px;font-weight:600;margin:20px 0 8px!important}

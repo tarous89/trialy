@@ -140,13 +140,14 @@ PR #117 retires automations whose data bindings were removed and, in the same ap
 
 ### Data access step (at install only)
 
-**Decision (12 November 2026, replaces the earlier three-section design).** One small dialog in the style of the platform's other confirm dialogs, shown **only when an app is installed and existing tables can serve its roles**. Otherwise there is no dialog and the app gets new tables.
+**Decision (12 November 2026, replaces the earlier three-section design).** One small dialog in the style of the platform's other confirm dialogs, shown when an app is installed. It lists existing tables only when some can serve the app's roles; otherwise the app gets new tables. The signed-in owner also decides who can use the app before it exists.
 
 - Title "Use existing data?" and one line: "*App* can connect to tables already in your database."
 - One row per table: its name and two options, **Connect** (default) or **Create new**. For another app's read-only output (which this app cannot create) the second option is **Don't use**. If several tables fit a role, a select picks which one.
 - **Connect all** when there is more than one row.
-- **Cancel** / **Add app**. Add app installs the app with the chosen tables and new tables for everything else, in one transaction; the choice is logged. Cancel installs nothing.
+- **Who can use it:** each non-owner member (No access / Can view / Can edit) and ChatGPT and Claude (No access / Can read / Can propose edits). Defaults inherit the project's access. Only the owner, signed in on the website, can change these here (the Access tab's own rules, in the same transaction); members and assistants see no access rows, and the dialog is skipped when there is neither a table nor an access choice to make.
+- **Cancel** / **Add app**. Add app installs the app with the chosen tables and new tables for everything else, and applies the access choices, in one transaction; the choices are logged. Cancel installs nothing.
 
-There is no "not connected" state, no later connection prompt and no access section: once an app is installed, it is installed. Access stays in the Access tab. Saves, copies and restores show no dialog. Inside ChatGPT and Claude the same dialog is shown in the plugin; assistants may propose choices with `prepare_data_access` (prefilling the dialog) but cannot confirm it (`confirm_data_access` is the app-only Add app action; the web endpoint requires a signed-in human).
+There is no "not connected" state and no later connection prompt: once an app is installed, it is installed. Later access changes happen in the Access tab. Saves, copies and restores show no dialog. Inside ChatGPT and Claude the same dialog is shown in the plugin; assistants may propose choices with `prepare_data_access` (prefilling the dialog) but cannot confirm it (`confirm_data_access` is the app-only Add app action; the web endpoint requires a signed-in human).
 
 Every app keeps rule 3: when another app's output is not available or not readable, the feature that uses it hides itself with a short note.

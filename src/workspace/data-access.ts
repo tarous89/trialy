@@ -3,8 +3,10 @@ import {z} from 'zod';
 import type {Database,Connection} from '../db/database.js';
 import {audit} from '../domain/evidence.js';
 import {access} from '../domain/permissions.js';
+import {AccessGrid,rowKey} from '../domain/access-grid.js';
+import {AccessManagement} from '../domain/access-management.js';
 import {requireCurrentAction} from '../domain/write-authorization.js';
-import {fail,id,type Actor} from '../shared/schema.js';
+import {fail,id,ASSISTANT_NAMES,type Actor} from '../shared/schema.js';
 import {WorkspaceFoundation} from './service.js';
 import {installCatalogApp,sharedTableCandidates} from './template-catalog.js';
 import {roleKey} from './role-contracts.js';
@@ -18,13 +20,27 @@ const digest64=z.string().regex(/^[a-f0-9]{64}$/);
 const install=z.object({templateId:z.string().max(80),version:z.string().max(30),digest:digest64.optional(),name:z.string().trim().min(1).max(100).optional(),requestKey:z.string().uuid().optional(),createNew:z.boolean().optional()}).strict();
 /** Per role: the existing table to connect, or 'new' (another app's read-only output: not used). Omitted roles connect. */
 const connections=z.record(roleKey,z.union([id,z.literal('new')])).default({});
+/** Who can use the app: people none/view/edit, ChatGPT and Claude none/read/propose. Omitted subjects keep the project's access. */
+const accessLevels=z.array(z.object({subject:z.union([id,z.literal('chatgpt'),z.literal('claude')]),level:z.enum(['none','view','edit','read','propose'])}).strict()).max(500).default([]);
 export const dataAccessTarget=z.object({install}).strict();
 export const dataAccessPrepareShape={install,connections};
-export const dataAccessCommitShape={install,connections,stepDigest:digest64};
+export const dataAccessCommitShape={install,connections,access:accessLevels,stepDigest:digest64};
 const prepareInput=z.object(dataAccessPrepareShape).strict(),commitInput=z.object(dataAccessCommitShape).strict();
 const tx=(db:Connection):Database=>({query:db.query.bind(db) as any,transaction:fn=>fn(db),close:async()=>{}});
 
-/** The existing tables an installation can connect to, one row per role. `needed` is false when there are none. */
+/** Who can use the new app. It inherits the project's access; only the owner, signed in on the website, changes it here. */
+async function accessSection(db:Connection,a:Actor,w:string){
+ const p=await access(db,a,w);
+ if(p.role!=='owner'||a.origin!=='human')return {canChange:false,people:[],assistants:[],version:p.access_version};
+ const project=(await db.query("SELECT id FROM workspace_nodes WHERE workspace_id=$1 AND kind='project' AND parent_id IS NULL AND archived=false ORDER BY CASE WHEN name='Project 1' THEN 0 ELSE 1 END,created_at,id LIMIT 1",[w])).rows[0]?.id;
+ const key=project?rowKey('project',project):null,grid=new AccessGrid(tx(db));
+ const level=async(subject:string)=>{if(!key)return null;try{const r=(await grid.read(a,w,subject)).rows.find((x:any)=>x.key===key);return r?{read:r.read===true,write:r.write===true}:null;}catch{return null;}};
+ const people=[];for(const x of (await new AccessManagement(tx(db)).overview(a,w)).people.filter((x:any)=>x.role!=='owner')){const g=await level(x.id);people.push({id:x.id,name:x.name||x.email,level:!g?'view':g.write?'edit':g.read?'view':'none',levels:x.role==='inspector'?['none','view']:['none','view','edit']});}
+ const assistants=[];for(const x of ['chatgpt','claude'] as const){const g=await level(x);assistants.push({id:x,name:ASSISTANT_NAMES[x],level:!g?'propose':g.write?'propose':g.read?'read':'none',levels:['none','read','propose']});}
+ return {canChange:true,people,assistants,version:p.access_version};
+}
+
+/** The existing tables an installation can connect to (one row per role) and who can use the app. Skipped when there is nothing to decide. */
 export async function dataAccessStep(f:WorkspaceFoundation,a:Actor,w:string,input:unknown){
  const v=dataAccessTarget.parse(input);
  const row=(await f.db.query("SELECT install_schema,payload FROM app_template_catalog WHERE template_id=$1 AND version=$2 AND status='approved'",[v.install.templateId,v.install.version])).rows[0];
@@ -32,8 +48,10 @@ export async function dataAccessStep(f:WorkspaceFoundation,a:Actor,w:string,inpu
  const tables=(await sharedTableCandidates(f.db,a,w,row.install_schema)).map((r:any)=>({role:r.role,name:r.name,readOnly:r.readOnly,
   // Another app's read-only output cannot be created by this app; its second option is to not use it.
   alternative:r.readOnly?'skip':'new',candidates:r.candidates.map((c:any)=>({typeId:c.typeId,name:c.name,records:c.records,apps:c.apps})),choice:r.candidates[0].typeId}));
- const identity={install:{templateId:v.install.templateId,version:v.install.version},tables:tables.map(t=>[t.role,t.candidates.map((c:any)=>c.typeId)])};
- return {app:v.install.name??row.payload?.name??v.install.templateId,needed:tables.length>0,tables,digest:createHash('sha256').update(JSON.stringify(identity)).digest('hex')};
+ const accessRows=await accessSection(f.db,a,w);
+ const identity={install:{templateId:v.install.templateId,version:v.install.version},tables:tables.map(t=>[t.role,t.candidates.map((c:any)=>c.typeId)]),access:[accessRows.version,...[...accessRows.people,...accessRows.assistants].map((x:any)=>[x.id,x.level])]};
+ // Shown when there are tables to connect, or when the signed-in owner can decide access before the app exists.
+ return {app:v.install.name??row.payload?.name??v.install.templateId,needed:tables.length>0||accessRows.canChange,tables,access:accessRows,digest:createHash('sha256').update(JSON.stringify(identity)).digest('hex')};
 }
 
 function validate(step:any,choices:Record<string,string>){
@@ -62,7 +80,12 @@ export async function confirmDataAccess(f:WorkspaceFoundation,a:Actor,w:string,i
   validate(step,v.connections);
   const sharedTables=Object.fromEntries(step.tables.map((r:any)=>[r.role,v.connections[r.role]??r.choice]));
   const i=v.install,receipt=await installCatalogApp(sf,a,w,{templateId:i.templateId,version:i.version,digest:i.digest!,name:i.name!,requestKey:i.requestKey!,...(i.createNew?{createNew:true}:{}),...(Object.keys(sharedTables).length?{sharedTables}:{})});
-  await audit(t,a,await access(t,a,w),'workspace.data_access_step',receipt.appId,null,{tables:sharedTables});
+  // Access chosen before installing: app rules saved by the Access tab's own rules, in the same transaction.
+  const current=new Map<string,string>([...step.access.people,...step.access.assistants].map((x:any)=>[x.id,x.level]));
+  for(const x of v.access)if(!current.has(x.subject)||!([...step.access.people,...step.access.assistants].find((r:any)=>r.id===x.subject)!.levels.includes(x.level)))fail(400,'invalid_access','Choose a listed person or assistant and one of its access levels');
+  const changes=v.access.filter(x=>current.get(x.subject)!==x.level).map(x=>({subject:x.subject,kind:'tool' as const,resourceId:receipt.appId,read:x.level!=='none',write:x.level==='edit'||x.level==='propose'}));
+  if(changes.length){if(!step.access.canChange)fail(403,'human_required','Change access in your signed-in owner session on the TrialAgents website.');await new AccessGrid(tx(t)).save(a,w,{expectedVersion:(await access(t,a,w)).access_version,changes});}
+  await audit(t,a,await access(t,a,w),'workspace.data_access_step',receipt.appId,null,{tables:sharedTables,access:changes.map(c=>({subject:c.subject,read:c.read,write:c.write}))});
   await t.query("DELETE FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND body->'operation'->>'kind'='data_access_step'",[w,a.userId]);
   return receipt;
  });

@@ -29,7 +29,7 @@ for(const width of [1440,390])test(`Embedded sidebar, native gallery and context
  await page.route('**/fixture/tool',async route=>{if(['install_app_template','confirm_data_access'].includes(route.request().postDataJSON().name))await new Promise(r=>setTimeout(r,550));await route.continue();});
  await modal.getByRole('button',{name:'Use',exact:true}).click();
  // With existing tables to connect, the same choice is shown inside the assistant; Add app there is the user's action.
- const choice=root.getByRole('dialog',{name:'Use existing data?'}),working=root.getByRole('progressbar',{name:'Working'});
+ const choice=root.getByRole('dialog',{name:/^(Use existing data\?|Add Runway)$/}),working=root.getByRole('progressbar',{name:'Working'});
  await expect(choice.or(working)).toBeVisible();
  if(await choice.isVisible()){await page.screenshot({path:`/tmp/embedded-data-access-${width}.png`});await choice.getByRole('button',{name:'Add app',exact:true}).click();}
  await expect(working).toBeVisible();
