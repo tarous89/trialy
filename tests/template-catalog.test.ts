@@ -65,3 +65,25 @@ test('catalog approval, complete suite installation, retry and tenant isolation'
   assert.equal((await catalog.list({limit:50})).total,22);
  }finally{await pg.close();}
 });
+
+test('migration 062 approves Programs 2.1.0 once, if an earlier deployment imported it as a draft; a later withdrawal sticks',async()=>{
+ const pg=new PGlite();
+ try{
+  const files=(await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort(),last=files.find(f=>f.startsWith('062_'))!;
+  for(const file of files.filter(f=>f<last))await pg.exec(await readFile('migrations/'+file,'utf8'));
+  const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
+  await syncTemplateCatalog(db);
+  const status=async()=>Object.fromEntries((await pg.query<any>("SELECT template_id||'@'||version AS k,status FROM app_template_catalog ORDER BY 1")).rows.map(r=>[r.k,r.status]));
+  // As in production: 2.1.0 was imported as a draft by the deployment of #134, while 2.0.0 was approved.
+  await pg.query("UPDATE app_template_catalog SET status='draft' WHERE template_id='life.project-oversight' AND version='2.1.0'");
+  await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.project-oversight' AND version='2.0.0'");
+  const before=await status();
+  await pg.exec(await readFile('migrations/'+last,'utf8'));await syncTemplateCatalog(db);
+  const after=await status();
+  assert.equal(after['life.project-oversight@2.1.0'],'approved');assert.equal(after['life.project-oversight@2.0.0'],'approved','2.0.0 stays available');
+  for(const [k,v] of Object.entries(before))if(k!=='life.project-oversight@2.1.0')assert.equal(after[k],v,k);
+  // An operator withdrawal afterwards is not undone by later deployments.
+  await pg.query("UPDATE app_template_catalog SET status='draft' WHERE template_id='life.project-oversight' AND version='2.1.0'");await syncTemplateCatalog(db);
+  assert.equal((await status())['life.project-oversight@2.1.0'],'draft');
+ }finally{await pg.close();}
+});
