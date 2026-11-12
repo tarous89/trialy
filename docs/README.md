@@ -21,6 +21,10 @@ Current product: **TrialAgents** — connected, customizable apps for ChatGPT, C
 
 Named provider setup/automation documents remain provider-specific. They do not restrict the overall product to that provider. Blueprint/source-package QA describes its dated package; current catalog status and living guidance govern publication.
 
+## Marketing and discovery
+
+- [SEO and AI-discovery content series playbook](marketing/SEO_AND_AI_DISCOVERY_CONTENT_SERIES.md): reusable methods and page layouts for the five app-agnostic series A–E (head-to-head comparisons, alternatives, ChatGPT/Claude/MCP discovery, biotech/CRO workflows, and practical resources).
+
 ## History
 
 [HISTORY.md](../HISTORY.md) records decisions/releases. [Archive](archive/README.md) holds superseded plans and prior context. Old paths remain short pointers so references do not silently break. Archive contents are evidence, never current instructions; do not revive old Home/type selection/new-tab/watermark-only behavior from them.
