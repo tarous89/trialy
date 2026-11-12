@@ -18,6 +18,12 @@ export const roleDeclaration=z.object({
  /** Only ever connected, never created (another app's output, an optional shared table). */
  optional:z.boolean().optional(),
  readOnly:z.boolean().optional(),
+ /** Integration: data another app can provide. The app keeps its own table for manual entry until the user links it to that app's table (read-only). */
+ integration:z.boolean().optional(),
+ /** The bound table belongs to another app (linked integration source). */
+ linked:z.boolean().optional(),
+ /** The user chose this source in the in-app connect dialog; the app no longer suggests the other. */
+ chosen:z.boolean().optional(),
  /** The bound table. Omitted only for an optional role that is not used. */
  typeId:id.optional(),
  /** Field keys to bind when an unconnected role is connected later (from the contract). */
@@ -72,6 +78,8 @@ export function templateTableMap(source:unknown):Record<string,any>|null{
  const line=/^const templateConfiguration=(.+);\n/.exec(String(source??''));if(!line)return null;
  try{const map=JSON.parse(JSON.parse(line[1]).tableMap||'null');return map&&typeof map==='object'?map:null;}catch{return null;}
 }
+/** templateBindings, prepended to catalog source next to templateConfiguration, lists the bound tables the app may read. */
+export function withTemplateBindings(source:string,bindings:any[]){return source.replace(/^(const templateConfiguration=.+;\n)const templateBindings=.+;\n/,(_:string,head:string)=>head+'const templateBindings='+JSON.stringify(bindings)+';\n');}
 export function withTableMap(source:string,map:any){return source.replace(/^const templateConfiguration=(.+);\n/,(_:string,json:string)=>'const templateConfiguration='+JSON.stringify({...JSON.parse(json),tableMap:JSON.stringify(map)})+';\n');}
 
 export type AppRole=RoleDeclaration&{name:string;writable:boolean;source:'manifest'|'template';logicalFields?:Record<string,string>;def?:any};
@@ -104,18 +112,18 @@ export async function appRoles(db:Connection,w:string,c:any,cache?:Map<string,an
   if(!def?.contract||!roleKey.safeParse(role).success)continue;
   const m=map[role],typeId=bound(m?.typeId)?m.typeId:undefined;
   if(!typeId&&!def.optional)continue;
-  out.push({role,contract:def.contract,...(def.optional?{optional:true}:{}),...(def.readOnly?{readOnly:true}:{}),...(typeId?{typeId}:{}),fields:def.fields.map((f:any)=>f.key),name:def.name,writable:!def.readOnly&&writes(typeId),source:'template',logicalFields:def.logicalFields,def});
+  out.push({role,contract:def.contract,...(def.optional?{optional:true}:{}),...(def.readOnly?{readOnly:true}:{}),...(def.integration?{integration:true}:{}),...(typeId?{typeId}:{}),fields:def.fields.map((f:any)=>f.key),name:def.name,writable:!def.readOnly&&writes(typeId),source:'template',logicalFields:def.logicalFields,def});
  }
  // An installer schema is unavailable: keep the roles the table map binds.
  if(!schema)for(const [role,m] of Object.entries(map) as [string,any][])if(bound(m?.typeId)&&registry.roles[role]){const versions=Object.keys(registry.roles[role].versions);out.push({role,contract:versions.at(-1)!,typeId:m.typeId,name:registry.roles[role]?.name??role,writable:writes(m.typeId)&&(m.writableFields??[]).length>0,source:'template',logicalFields:m.fields});}
  return out;
 }
-export type RoleTable={appId:string;appName:string;archived:boolean;createdAt:any;role:string;contract:string;typeId:string;writable:boolean;readOnly:boolean};
+export type RoleTable={appId:string;appName:string;archived:boolean;createdAt:any;role:string;contract:string;typeId:string;writable:boolean;readOnly:boolean;integration:boolean};
 /** Every table bound under a role by an app that is not permanently deleted (live apps first, in creation order). */
 export async function roleTables(db:Connection,w:string,opts:{includeArchived?:boolean}={},cache?:Map<string,any>):Promise<{apps:any[];tables:RoleTable[]}>{
  const apps=(await db.query(`SELECT id,name,source,bindings,manifest,archived,created_at FROM workspace_components WHERE workspace_id=$1 AND deleted_at IS NULL ${opts.includeArchived?'':'AND NOT archived'} ORDER BY archived,created_at,id`,[w])).rows;
  const tables:RoleTable[]=[];
- for(const c of apps)for(const r of await appRoles(db,w,c,cache))if(r.typeId)tables.push({appId:c.id,appName:c.name,archived:!!c.archived,createdAt:c.created_at,role:r.role,contract:r.contract,typeId:r.typeId,writable:r.writable,readOnly:!!r.readOnly});
+ for(const c of apps)for(const r of await appRoles(db,w,c,cache))if(r.typeId)tables.push({appId:c.id,appName:c.name,archived:!!c.archived,createdAt:c.created_at,role:r.role,contract:r.contract,typeId:r.typeId,writable:r.writable,readOnly:!!r.readOnly,integration:!!r.integration});
  return {apps,tables};
 }
 
@@ -160,7 +168,8 @@ export async function validateAppRoles(db:Connection,a:Actor,w:string,app:{id?:s
   const contract=known.versions[r.contract].fields;
   // Readers bind a subset; writers of an output provide every contract field. Core owned fields may be missing (they are added).
   const owned=new Set(known.kind==='core'?contract.filter(f=>f.owner).map(f=>f.key):[]);
-  const needed=r.readOnly||known.kind==='core'?contract.filter(f=>binding.fields.includes(f.key)||(known.kind==='core'&&f.required)):contract;
+  // Readers, core roles and integrations (manual entries use the fields the app needs) bind a subset; writers of an output provide every field.
+  const needed=r.readOnly||r.integration||known.kind==='core'?contract.filter(f=>binding.fields.includes(f.key)||(known.kind==='core'&&f.required)):contract;
   const check=tableCompatible(needed,type.fields,owned);
   if(!check.compatible)fail(409,'role_incompatible',`${type.name} does not match ${label} ${r.contract}: ${check.problems.slice(0,3).join('; ')}`);
   if(known.kind!=='output')continue;

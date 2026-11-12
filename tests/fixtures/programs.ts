@@ -8,7 +8,7 @@ import {manifestFieldId} from '../../src/workspace/template-catalog.js';
 import type {Database,Connection} from '../../src/db/database.js';
 import type {Actor} from '../../src/shared/schema.js';
 const REF_KEYS=['program_id','predecessor_id','plan_item_id','linked_item_id'];
-/** Programs 2.0.0 on a disposable database: the documented schema created through reviewed writes, the fictional demo records
+/** Programs 2.1.0 on a disposable database: the documented schema created through reviewed writes, the fictional demo records
  * saved with real receipt IDs substituted into every relationship, then the catalog app prepared with a manifest. */
 export async function programsFixture(opts:{demo?:boolean}={}){
  const pg=new PGlite();for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
@@ -28,7 +28,7 @@ export async function programsFixture(opts:{demo?:boolean}={}){
  if(opts.demo!==false){const demo=JSON.parse(await readFile('templates/source/project-oversight/demo_data.json','utf8')).records;
   for(const r of demo){const data=Object.fromEntries(Object.entries(r.data).filter(([,v])=>v!==null).map(([k,v])=>[k,REF_KEYS.includes(k)?ids[v as string]:v]));
    ids[r.id]=(await save({kind:'create_record',typeId:map[r.role].typeId,data})).objects[0].id;}}
- const entry=await appTemplates.read({templateId:'life.project-oversight',version:'2.0.0'});
+ const entry=await appTemplates.read({templateId:'life.project-oversight',version:'2.1.0'});
  const op=await appTemplates.operation(f,actor,w.id,{templateId:entry.id,version:entry.version,digest:entry.digest,name:'Programs',configuration:{tableMap:JSON.stringify(map),asOfOverride:'2026-11-11'},bindings,manifest:{version:1,scope:'workspace',fields}});
  const p=await f.preview(actor,w.id,op),receipt=await f.confirm(actor,w.id,p.id,p.digest),component=(await f.readComponent(actor,w.id,receipt.id)).component;
  return {pg,db,actor,f,s,w,component,map,bindings,fields,save,ids,entry};

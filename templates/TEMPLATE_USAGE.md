@@ -57,7 +57,7 @@ Apps share data by **role key and versioned contract** ([modular apps §7](../do
 
 - **Use existing data?** When a template is added and existing tables can serve its roles, the user chooses per table: Connect or Create new (plus Connect all); the signed-in owner also chooses who can use the app (people and ChatGPT/Claude) before it exists. With nothing to connect the app gets new tables.
 - **Assistants propose, users confirm.** `prepare_data_access` with the template installation lists the tables and can propose a choice per role (a table ID or `new`). Never claim the app was added until the user confirmed; `confirm_data_access` is not available to assistants.
-- **No later connection.** An installed app keeps its tables; do not try to reconnect it to another app's tables afterwards. Merging tables is not a supported operation.
+- **Integrations inside the app.** An installed app keeps its tables; nothing is merged. Apps that can use another app's data show a subtle hint (Add *App* / Use its data). When the user asks to connect, `read_app_integration` shows both sources; describe them and let the user choose in the app. `choose_integration_source` is the user's action, not the assistant's. Do not suggest installing several apps at once when the user starts.
 - **Output roles have one writer.** Bind another app's output read-only. Do not try to take over writing unless the user asks and the current writer is archived; the owner chooses it explicitly.
 
 ## Select and prepare

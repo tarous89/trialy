@@ -62,15 +62,17 @@ export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,i
     const add=def.fields.filter((x:any)=>!type.fields.some((f:any)=>f.key===x.key));
     // Shared schemas only grow: missing contract fields are added as optional fields in this same reviewed installation.
     if(add.length){const p=await service.preview(a,w,{kind:'update_type',typeId:type.id,expectedVersion:type.version,name:type.name,fields:[...type.fields,...add.map((x:any)=>({...x,required:false}))]});await service.commit(a,p.id,p.digest);type=(await tx.query('SELECT * FROM entity_types WHERE id=$1 AND workspace_id=$2',[reuse.typeId,w])).rows[0];}
-    const keys=def.fields.map((x:any)=>x.key);
-    map[role]={typeId:type.id,fields:def.logicalFields,writableFields:def.readOnly?[]:Object.keys(def.logicalFields)};
+    const keys=def.fields.map((x:any)=>x.key),readOnly=def.readOnly||def.integration;
+    map[role]={typeId:type.id,fields:def.logicalFields,writableFields:readOnly?[]:Object.keys(def.logicalFields)};
     bindings.push({typeId:type.id,fields:keys});
-    fields.push(...def.fields.map((x:any)=>({id:manifestFieldId(role,x.key),typeId:type.id,field:x.key,schemaVersion:type.version,kind:type.fields.find((f:any)=>f.key===x.key).kind,mode:def.readOnly?'read':'write'})));
-    roles.push(roleLabel(role,def,type.id));
+    fields.push(...def.fields.map((x:any)=>({id:manifestFieldId(role,x.key),typeId:type.id,field:x.key,schemaVersion:type.version,kind:type.fields.find((f:any)=>f.key===x.key).kind,mode:readOnly?'read':'write'})));
+    // An integration connected at install reads the other app's table; the app does not write it.
+    roles.push(roleLabel(role,def,type.id,!!def.integration));
     continue;
    }
    // Another app's read-only output is only ever connected, never created; the feature that reads it hides itself (rule 3).
    // Every other role that is not connected gets a new table: an installed app always has its own tables.
+   // For an integration this is the app's own table for manual entry, until the user links another app's data inside the app.
    if(def.optional&&def.readOnly){roles.push(roleLabel(role,def));continue;}
    const base=(v.name+' · '+def.name).slice(0,90);let tableName=base,index=2;while(usedNames.has(tableName))tableName=base+' ('+(index++)+')';usedNames.add(tableName);
    const p=await service.preview(a,w,{kind:'create_type',name:tableName,fields:def.fields});
@@ -111,7 +113,9 @@ export async function sharedTableCandidates(db:Connection,a:Actor,w:string,schem
  // Tables that a live app binds under a role key: catalog apps (their table map) and custom apps (manifest roles).
  const bound=new Map<string,Map<string,string[]>>();
  for(const t of (await roleTables(db,w,{},cache)).tables){
-  if(!roles.some(([r])=>r===t.role))continue;
+  const def=roles.find(([r])=>r===t.role)?.[1];if(!def)continue;
+  // An integration connects only to the providing app's table, never to another app's manual entries.
+  if(def.integration&&(t.integration||t.readOnly))continue;
   const byType=bound.get(t.role)??new Map();const apps=byType.get(t.typeId)??[];if(!apps.includes(t.appName))apps.push(t.appName);byType.set(t.typeId,apps);bound.set(t.role,byType);
  }
  const out:any[]=[];
@@ -124,7 +128,7 @@ export async function sharedTableCandidates(db:Connection,a:Actor,w:string,schem
    const owned=def.contract==='core.v1'?new Set((core.roles?.[role]?.fields??[]).filter((f:any)=>f.owner).map((f:any)=>f.key)):new Set();
    const compatible=def.fields.every((x:any)=>{const f=type.fields.find((f:any)=>f.key===x.key);return f?f.kind===x.kind&&!f.multiple&&(x.kind!=='select'||(x.options??[]).every((o:string)=>(f.options??[]).includes(o))):owned.has(x.key);});
    const addFields=def.fields.filter((x:any)=>!type.fields.some((f:any)=>f.key===x.key)).map((x:any)=>x.key);
-   if(!compatible||(def.readOnly&&addFields.length))continue;
+   if(!compatible||((def.readOnly||def.integration)&&addFields.length))continue;
    // Contract versions (§7.5): a reader connects to the writer's version only if it reads it or it is a superset.
    if(registry.roles[role]?.kind==='output'&&def.contract){const writer=await outputWriter(db,w,typeId,role,cache);if(!readerAccepts(registry,role,def.reads??[def.contract],writer?.contract))continue;}
    const records=Number((await db.query("SELECT count(*) AS n FROM records WHERE type_id=$1 AND workspace_id=$2 AND state<>'archived'",[typeId,w])).rows[0].n);
@@ -143,7 +147,7 @@ export async function readCatalogInstallation(db:Database,a:Actor,w:string,input
 }
 
 /** Installer roles with a versioned contract become role labels on the app manifest (modular apps §7.2). */
-function roleLabel(role:string,def:any,typeId?:string){if(!def?.contract)return null;return {role,contract:def.contract,...(def.optional?{optional:true}:{}),...(def.readOnly?{readOnly:true}:{}),...(typeId?{typeId}:{fields:def.fields.map((f:any)=>f.key)})};}
+function roleLabel(role:string,def:any,typeId?:string,linked=false){if(!def?.contract)return null;return {role,contract:def.contract,...(def.optional?{optional:true}:{}),...(def.readOnly||linked?{readOnly:true}:{}),...(def.integration?{integration:true}:{}),...(linked?{linked:true}:{}),...(typeId?{typeId}:{fields:def.fields.map((f:any)=>f.key)})};}
 /** Manifest field IDs allow [a-z0-9_]; role keys may be namespaced (e.g. runway.plan_lines, programs.plan_items). */
 export function manifestFieldId(role:string,key:string){return (role+'_'+key).toLowerCase().replace(/[^a-z0-9_]/g,'_').slice(0,64);}
 function canonical(value:any):any{return Array.isArray(value)?value.map(canonical):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(k=>[k,canonical(value[k])])):value;}

@@ -22,6 +22,7 @@ import {isDeepStrictEqual} from 'node:util';
 import {applyTrackerLayout,trackerOperation} from './tracker-template.js';
 import {validateResource,requireManifestWrite} from './resource-contract.js';
 import {validateAppRoles,requireRoleWriter,appRoles} from './role-contracts.js';
+import {appIntegrations} from './integrations.js';
 import {DerivedReader} from '../domain/derived-fields.js';
 import {derived} from '../shared/formulas.js';
 import {exchangeReview,createExchange} from '../domain/exchange.js';
@@ -222,6 +223,8 @@ export class WorkspaceFoundation {
     }
     // Role-based connections: which declared roles are connected, to which bound table (modular apps §7). No records.
     if(name==='roles.list'){const roles=await appRoles(this.db,w,{...content,id:request.componentId??null});return {roles:roles.map(r=>({role:r.role,name:r.name,contract:r.contract,connected:!!r.typeId,typeId:r.typeId??null,optional:!!r.optional,readOnly:!!r.readOnly,writable:r.writable,fields:(content.manifest?.fields??[]).filter((f:any)=>f.typeId===r.typeId).map((f:any)=>({id:f.id,field:f.field,mode:f.mode}))}))};}
+    // In-app integrations: where each integration's data comes from and the subtle offer to show (install, connect or none).
+    if(name==='integrations.list')return {integrations:await appIntegrations(this.db,a,w,{...content,id:request.componentId??null})};
     if(name==='files.list')return this.componentAssets(this.db,a,w,content.assets);
     if(name==='files.text'||name==='files.image'){
      const v=z.object({name:z.string().max(64),offset:z.number().int().min(0).default(0)}).strict().parse(value);
