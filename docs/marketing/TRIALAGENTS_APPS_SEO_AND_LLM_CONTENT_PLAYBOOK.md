@@ -20,14 +20,24 @@ These rules supersede earlier closing-source-section instructions throughout thi
 
 ## Series D implementation rules — 12 November 2026
 
-- Lead with a specific biotech operational question and answer it before promoting software. This intentionally adapts the platform-first comparison format: inside the product section, preserve native ChatGPT/Claude → whole-app customization → connected apps → relevant controls.
+- Lead with a concrete biotech/CRO use case and demonstrate the named TrialAgents app throughout: inputs → actual app actions/screens → outputs → review and decision. Do not write a generic industry article and append a product pitch. Platform advantages retain native ChatGPT/Claude → whole-app customization → connected apps → relevant controls order.
 - Use one transparent fictional worked example with explicit opening conditions, units, timing, excluded variables and a reproducible calculation. Independently recalculate every displayed value before publication.
 - Distinguish cash timing from cost changes, cash from expense recognition, and a monthly forecast from exact-day liquidity. Do not imply that a modeled payment delay alters contractual obligations.
 - Tie decisions to real team responsibilities: clinical operations validates activity/milestones, finance reconciles amounts and cash dates, leadership reviews the funding decision.
 - Cite factual industry examples inline from primary sources; do not generalize one company's contract terms to all CRO agreements. Keep review scope and detailed evidence in the app plan.
 - Separate product screenshots from worked-example outputs. A genuine demo screenshot must not be presented as a run of the article's scenario unless it actually is.
 - Retain concise prose, consistent green numbered headings, wider/darker editorial styling, no pricing comparison, no closing footnote, and one final Start with [App] card.
-- The approved initial example is Runway D1, CRO payment timing. Reuse its educational structure, not its exact topic or numbers, for other apps.
+- The revised reference is Runway D1: model a program delay in Settings/Plan, preview supported scenarios, inspect Cash flow, then review before adoption. The initial generic educational version is superseded.
+
+## Category clarification and visual standards — 12 November 2026
+
+A–E are recurring viewpoints on **each app**, not five sequential steps or unrelated topics: A direct comparison; B alternatives/shortlists; C assistant-native use; D concrete app use cases; E practical resources/setup/migration. Multiple posts can exist within each category.
+
+- C should visibly explain how the assistant and app work together. D must show the app addressing a real operational scenario. E must give a usable setup, mapping, reconciliation or migration method (or a real working resource if promised).
+- Add purposeful media where it helps: real screen captures, clear workflow illustrations and calculated charts with accessible text/table equivalents. Do not use generic decorative images, fabricated assistant screens or stock graphics as evidence.
+- Label actual screenshots and fictional illustrations accurately; distinguish app demo data from the worked example's inputs/outputs. Do not claim the worked example was run in the app unless it was.
+- The first published E article may be a migration guide. A planned downloadable spreadsheet is a separate candidate and stays unpublished until the file exists and its formulas are validated.
+- Never label an implementation “approved” merely because it was published. Record user corrections and superseded versions clearly.
 
 ## How the per-app plans are organized
 
@@ -129,7 +139,7 @@ Each cluster has one primary canonical URL and a single main query intent:
 - **A:** decision between **two named products**.
 - **B:** selection among **several alternatives** or replacements.
 - **C:** **assistant/environment** capability and workflow.
-- **D:** **life-sciences problem or persona**, whether or not software is selected.
+- **D:** **concrete life-sciences use case of the app**, demonstrated through its inputs, actions and outputs.
 - **E:** **completion of a task**, template, migration, checklist, or implementation.
 
 Do not publish both “7 best X tools” and “10 best X tools” for the same audience without a substantive distinction. Do not create one near-identical page per tiny app/vendor keyword permutation. Use internal anchors or FAQs where a separate page would add little.
@@ -274,7 +284,7 @@ Use a few genuine, well-captioned screenshots to support claims rather than a sc
 
 ## 8. Series D — Biotech- and CRO-specific problems
 
-**Purpose:** Own the specialized operational questions that general business software content does not answer well. This series can be educational without insisting on TrialAgents as the solution.
+**Purpose:** Show the named TrialAgents app solving a specific biotech/CRO job through a concrete use case. Teach the workflow by demonstrating the app throughout, not by adding a product section to a generic educational article.
 
 ### Method
 
@@ -283,7 +293,7 @@ Use a few genuine, well-captioned screenshots to support claims rather than a sc
 - Interview or use reliable sources to establish the real constraints; do not generalize from generic SaaS workflows.
 - Use a transparent **fictional worked example** (inputs, assumptions, methods, outcomes), reusable across D/E and selected A/B pages.
 - Separate facts, assumptions, opinions, and product capabilities. Any regulated, medical, financial, privacy or legal claim needs appropriate expert review.
-- Answer the operational question on its own merits before featuring software.
+- Answer the operational question through a concrete app workflow: inputs, supported actions, outputs and the decision they enable.
 - Compare the spreadsheet/manual path, specialist tools, and customizable app approach where they genuinely fit.
 - Explain how the relevant TrialAgents app could help *with verified functionality*, and what still requires human judgment.
 
@@ -298,7 +308,7 @@ Use a few genuine, well-captioned screenshots to support claims rather than a sc
 7. **How to manage this with software:** compare manual, specialist, and configurable app options fairly.
 8. **Pitfalls, governance and validation:** what software or AI does not replace.
 9. **Reusable checklist**, context-specific FAQ, expert/source references.
-10. **Optional TrialAgents app demonstration**, related E template and relevant A/B pages.
+10. **App-centered conclusion:** the result, next app action, related E guide and relevant A/B pages. App demonstration is required throughout the article.
 
 ### Specific layout modules
 

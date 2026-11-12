@@ -18,6 +18,7 @@
 | Cash runway software shortlist (B1) | https://trialagents.com/apps/best-cash-runway-software-biotech | Published in public-site PR #178; live verified 12 November 2026; closing footnote removed in PR #179 |
 | Runway in ChatGPT (C1) | https://trialagents.com/apps/manage-biotech-cash-runway-chatgpt | Published in public-site PR #180; live verified 12 November 2026 |
 | CRO payment timing (D1) | https://trialagents.com/apps/cro-payment-timing-biotech-cash-runway | Published; production URL checked 12 November 2026 |
+| Excel-to-Runway migration (E2) | https://trialagents.com/apps/excel-to-trialagents-runway | First Series E post; Published in [public-site PR #182](https://github.com/tarous89/trialagents-public/pull/182), merge `6ce6d6f2382c5926fc0f5972eab9e4f952064daa`. Exact-head tests and desktop/mobile checks passed. Cloudflare build and live C/D/E content, images, canonical/schema, final CTA, app index/hub, sitemap.xml, llms.txt and llm.xml verified on 12 November 2026. |
 | App pages index | https://trialagents.com/apps | Published; production URL checked 12 November 2026 |
 
 These are intended canonical URLs. Do not assert that a URL is live until checked on the production CDN.
@@ -97,7 +98,7 @@ These are intended canonical URLs. Do not assert that a URL is live until checke
 - **Verification boundary:** publish as a documented guided workflow with example prompts, not a measured or completed end-to-end ChatGPT/Claude session. Do not fabricate host screenshots. Existing Runway template screenshots are browser views.
 - **Important operational details:** opening balance uses a month-end date; contingent financing is separate from base runway; assistant proposes inputs, app calculates outputs; user builds transient previews in Scenarios; scenario save and adoption are distinct reviewed steps; app writes frozen close snapshots.
 - **Connected platform:** explicitly bind authorized existing Programs/shared tables; default template installation does not imply automatic connections. Whole-app customization preserves saved IDs, data bindings and access. Optional automations require separate setup; no background-runner promise.
-- **Final layout:** concise numbered tutorial, real prompts and expected outcomes, in-body qualifications/links, genuine screenshots, one Start with Runway card last; no closing footnote.
+- **Final layout:** concise numbered tutorial, prompts and expected outcomes, workflow illustration and three genuine browser screenshots (Overview, Scenarios, Actuals), one Start with Runway card last; no closing footnote. Media enrichment released with public-site PR #182.
 
 ### C2. How to Model Biotech Runway with Claude
 - Show verified Claude connection and authorized app actions.
@@ -108,18 +109,16 @@ These are intended canonical URLs. Do not assert that a URL is live until checke
 
 ## Series D — Biotech-specific operational workflows
 
-### D1. How CRO Payment Timing Changes Biotech Cash Runway
-- **Canonical:** https://trialagents.com/apps/cro-payment-timing-biotech-cash-runway
-- **Target:** small clinical-stage biotech sponsors, especially finance, clinical operations and leadership evaluating CRO cash commitments.
-- **Distinct intent:** explain payment timing versus added cost, with an operational schedule and a reproducible monthly cash example; not another comparison or assistant tutorial.
-- **Method:** three dates (service, invoice, payment); a payment-type/owner checklist; baseline versus timing-only versus delay-plus-costs; milestone/cash-buffer review; then a concise platform demonstration in the approved advantage order.
-- **Fictional assumptions:** EUR 2.4m at 31 December; EUR 0.2m recurring monthly outflow excluding the featured CRO payment; EUR 0.6m paid in March (baseline) or September (timing-only); third scenario adds EUR 0.15m in each of July and August. No incoming financing, interest or FX changes. Formula: opening cash minus cumulative recurring outflows, CRO payments and extra costs.
-- **Validated outputs (EUR m, baseline / timing-only / added-cost case):** January 2.20/2.20/2.20; March 1.20/1.80/1.80; June 0.60/1.20/1.20; August 0.20/0.80/0.50; September 0.00/0.00/-0.30. All 15 values independently recalculated using decimal arithmetic. These are a standalone educational example, not a saved app run.
-- **Industry sources:** [Clene 2024 accounting policies](https://www.sec.gov/Archives/edgar/data/1822791/000143774925008956/R26.htm) for payment/service-period differences; [Incyte Q1 2021 accounting policies](https://www.sec.gov/Archives/edgar/data/879169/000155837021005692/R24.htm) for initiation/milestone and pass-through examples. Reviewed 12 November 2026; illustrative disclosed practices, not universal or current contractual terms.
-- **Product evidence:** live `life.cash-runway` 2.1.0 template reread 12 November 2026; the current documented capabilities support monthly forecasts, scenarios, actuals, budgets and frozen snapshots. No new ChatGPT/Claude end-to-end test or contract/accounting review claimed.
-- **Asset:** genuine `/apps/assets/runway-2-1/05-scenarios.jpg` browser demo screenshot, explicitly distinct from the worked-example output.
-- **Layout:** approved wide/high-contrast article, six consistent numbered headings, two compact tables, one screenshot, inline citations, and final Start with Runway card without a closing footnote.
-- **Status:** Published 12 November 2026 at the canonical above; [public-site PR #181](https://github.com/tarous89/trialagents-public/pull/181), merge `06ed159b13c826d385fcabbe0859431e768a4290`. Exact-head predeploy and desktop/mobile checks passed; Cloudflare production build succeeded and live HTML, screenshot, canonical, schema, final CTA, hub/index links, sitemap.xml, llms.txt and llm.xml were verified.
+### D1. Model CRO Payment Timing in TrialAgents Runway
+- **Canonical:** https://trialagents.com/apps/cro-payment-timing-biotech-cash-runway (unchanged).
+- **Owner correction:** the original generic cash-planning article is superseded. D is a recurring category of concrete app use cases; demonstrate Runway throughout, rather than append a product section.
+- **Workflow:** Settings/Plan input mapping → Shift a program +3 months → second case adds Scale program spend +50% → Cash flow inspection → milestone review → save/adopt separately.
+- **Fictional baseline:** EUR 2.4m at 31 December 2026; zero reserve; EUR 0.2m monthly unassigned company operating spend from January 2027; one EUR 0.6m committed Clinical one-off CRO spend in March, assigned to Program B; one Runway-owned Program B milestone in June. No financing, positions or FX movements.
+- **Scenario semantics:** shift_program moves all program-linked lines, positions and Runway-owned milestones. The example isolates one spend line and one milestone, moving them to June and September respectively. scale_program +50% changes the sole spend to EUR 0.9m. This is a cost-overrun stress assumption, not an estimate that delays generally cost 50% more. Programs-owned milestones are read-only and are not changed by Runway.
+- **Independently checked EUR m results (baseline / delay / delay+cost):** March 1.20/1.80/1.80; June 0.60/0.60/0.30; August 0.20/0.20/-0.10; September 0.00/0.00/-0.30. Milestone cash: June 0.60 / September 0.00 / September -0.30. First negative months: October / October / August. Zero is not a positive reserve.
+- **Media:** three genuine browser demo screenshots (03-plan, 05-scenarios, 02-cash-flow); calculated accessible SVG chart with text/table equivalent. Demo screenshots are not a run of the worked example.
+- **Evidence:** current life.cash-runway 2.1.0 documentation and source read 12 November 2026 (shift_program and scale_program behavior checked). [Clene clinical accrual policy](https://www.sec.gov/Archives/edgar/data/1822791/000143774925008956/R26.htm) supports the brief cash/expense distinction. No fresh host end-to-end test or customer migration claimed.
+- **Release:** Published in [public-site PR #182](https://github.com/tarous89/trialagents-public/pull/182), merge `6ce6d6f2382c5926fc0f5972eab9e4f952064daa`. Exact-head tests and desktop/mobile checks passed. Cloudflare build and live C/D/E content, images, canonical/schema, final CTA, app index/hub, sitemap.xml, llms.txt and llm.xml verified on 12 November 2026.
 
 ### D2. How to Forecast Cash to the Next Phase I Milestone
 - Define milestone and working-capital needs at the relevant biotech stage.
@@ -139,13 +138,16 @@ These are intended canonical URLs. Do not assert that a URL is live until checke
 - Link to a working template file and the Runway product page.
 - **Status:** asset must be created before publication.
 
-### E2. Move from Excel to a Biotech Runway App
-- Inventory input data, formulas, dependencies and important business rules.
-- Explain field mappings to the current Runway catalog.
-- Document a supported manual/import process; do not promise direct synchronization.
-- Reconcile totals and verify access control before switching workflows.
-- Include rollback, limitations and a finance reviewer checklist.
-- **Status:** research and workflow verification needed.
+### E2. Move Your Biotech Cash Forecast from Excel to TrialAgents Runway
+- **Canonical:** https://trialagents.com/apps/excel-to-trialagents-runway
+- **Category:** first published Series E post; practical setup/migration, separate from E1's unbuilt spreadsheet download.
+- **Method:** retain the dated source workbook; map source inputs to Settings, Plan, People and Actuals; prepare reviewed records; reconcile monthly cash; configure access and ownership before cutover.
+- **Usable resource:** in-article mapping checklist, prompt, reconciliation example and cutover checklist. No downloadable workbook or native import feature is promised.
+- **Boundaries:** Runway has no built-in Excel parser, formula/macro conversion or live spreadsheet synchronization. Use supported assistant proposals/manual inputs. Reuse shared tables via explicit bindings. Never import forecast outputs or frozen snapshots as editable inputs.
+- **Example:** fictional EUR 1,000,000 opening balance minus EUR 100,000 operating spend minus EUR 200,000 CRO payment = EUR 700,000 closing cash. Independently recalculated; not a completed customer migration.
+- **Media:** Keep/Map/Reconcile workflow illustration, two genuine browser demo screenshots (03-plan and 02-cash-flow), mapping and reconciliation tables.
+- **Product evidence:** current life.cash-runway 2.1.0 data contract, interaction contract and limits reread 12 November 2026.
+- **Release:** Published in [public-site PR #182](https://github.com/tarous89/trialagents-public/pull/182), merge `6ce6d6f2382c5926fc0f5972eab9e4f952064daa`. Exact-head tests and desktop/mobile checks passed. Cloudflare build and live C/D/E content, images, canonical/schema, final CTA, app index/hub, sitemap.xml, llms.txt and llm.xml verified on 12 November 2026.
 
 ## Production method and next steps
 
@@ -153,4 +155,4 @@ The approved A1 comparison is live. Preserve its concise, platform-first editori
 
 The public implementation lives in `tarous89/trialagents-public`: `static/apps/runway-vs-excel.html`, `static/apps/runway.css` and `scripts/render-app-pages.mjs`. Follow that repository's publishing checks and verify served production content after every release. These Markdown files are planning/editorial records, not the deployed source.
 
-A1, B1, C1 and D1 are published. Next consider E1 only after creating and validating its promised working spreadsheet; C2 needs separate Claude evidence. Before publishing, verify competitor facts, separately test host-specific behavior and create any promised assets. Link each article to the official Runway hub; add cross-series links only to real, relevant published pages. Monitor indexing, engagement, CTA conversion and observed AI referrals separately from implementation QA.
+All five categories now have a published example: A1, B1, C1, revised D1 and E2. E1 remains a separate candidate requiring a real validated spreadsheet before publication; C2 needs separate Claude evidence. Before publishing, verify competitor facts, separately test host-specific behavior and create any promised assets. Link each article to the official Runway hub; add cross-series links only to real, relevant published pages. Monitor indexing, engagement, CTA conversion and observed AI referrals separately from implementation QA.
