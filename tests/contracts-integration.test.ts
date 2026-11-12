@@ -178,6 +178,8 @@ test('acceptance 3: Claude and ChatGPT each propose terms and obligations with q
   const dpa=await upload('Brightwater DPA (signed, fictional).pdf',pdf([['DATA PROCESSING AGREEMENT (FICTIONAL)','This Agreement starts on 1 December 2025 and ends on 31 December 2026.'],['It renews automatically for twelve (12) months unless terminated on thirty (30) days written notice.','The Processor shall notify a personal data breach within seventy-two (72) hours.']]),true);
   const scan=await upload('Lab lease (scan, not AI-readable).pdf',pdf([['LEASE (FICTIONAL)','Rent is EUR 20,000 per month.']]),false);
   while(await runOne(x.db));
+  // The real worker must have extracted all three PDFs (needs poppler's pdftotext, as in production).
+  assert.deepEqual((await pg.query<any>('SELECT status,diagnostic FROM extractions ORDER BY updated_at')).rows.map((r:any)=>r.status),['ready','ready','ready'],'PDF text extraction did not finish; is pdftotext installed?');
   const call=await x.assistants(),claude=call('/claude'),chatgpt=call('/mcp');
   // Each assistant sees only AI-readable originals; the scan is not listed and cannot be read (reported, never guessed).
   for(const ask of [claude,chatgpt]){const docs=await ask('list_documents',{workspaceId:w});const ids=docs.map((d:any)=>d.id);assert.ok(ids.includes(cda.versionId)&&ids.includes(dpa.versionId));assert.ok(!ids.includes(scan.versionId));
