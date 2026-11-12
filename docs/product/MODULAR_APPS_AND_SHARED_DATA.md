@@ -47,7 +47,7 @@ Standard role keys and fields that all templates share (scalar, lowercase snake_
 | `people` | name*, organization_id, title, email, archived (professional contacts only) |
 | `programs` | name*, code, indication, modality, stage*, lead, status (active / paused / stopped / partnered), archived; health, health_rationale, health_date *(app: Programs)* |
 | `studies` | name*, program_id, phase, registry_id (EU CT or NCT number), status, archived |
-| `agreements` | name*, counterparty_id, agreement_type, status, effective_date, expiry_date, archived *(primary owner: Contracts)* |
+| `agreements` | name*, counterparty_id, agreement_type, status, effective_date, expiry_date, archived *(primary owner: Contracts)*; parent_id, program_id, study_id, total_value, currency, signed_on, owner *(app: Contracts; additive, proposed 12 Nov 2026 — see [Contracts §5](app-template-blueprints/apps/CONTRACTS.md#5-data-model))* |
 
 Documents use the platform document records. New core roles are added only when at least two apps need the same record type; changes to this contract are versioned (v1, v2…) and additive.
 

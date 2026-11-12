@@ -19,7 +19,7 @@
 | 02 Programs | [apps/PROGRAMS.md](apps/PROGRAMS.md) | `life.project-oversight` 2.1.0 published (#136), with manual cash forecast and Runway integration |
 | 03 Fundraise | [apps/FUNDRAISE.md](apps/FUNDRAISE.md) | Scoped; build next |
 | 08 Data Room | to scope | Build right after Fundraise (writer of the `dataroom.v1` roles Fundraise reads) |
-| 04 Contracts | in scoping | — |
+| 04 Contracts | [apps/CONTRACTS.md](apps/CONTRACTS.md) | Scoped |
 
 All apps follow [modular apps and shared data](../MODULAR_APPS_AND_SHARED_DATA.md): core contract v1 roles, the add-app dialog (Connect / Create new per table, access), and **in-app integrations** — an app keeps its own table for data another app can provide, offers one subtle "Add <app>" / "Use its data" line, and reads the provider read-only once the user chooses it. There is no "not connected" state. Contracts for every output role are in `templates/contracts/outputs.json` (readable via `read_app_template_guidance(resource:"contracts")`).
 
@@ -30,7 +30,7 @@ All apps follow [modular apps and shared data](../MODULAR_APPS_AND_SHARED_DATA.m
 | 1 | BT2-01 | **Runway** | Cash, burn and runway by program, with what-if scenarios. | CEO, CFO, board | Abacum Life Sciences (domain) + Jirav (mechanics) | Core | replaces `cash-runway` |
 | 2 | BT2-02 | **Programs** | Milestones, dependencies, risks and decisions across all programs. | CEO, PM, functional leads | Smartsheet (+ life-science PPM concepts: OnePlan, Planisware) | Core | replaces `project-oversight` |
 | 3 | BT2-03 | **Fundraise** | Investor pipeline for a round, from first contact to signed commitment. | CEO, CFO | Foundersuite (+ Visible for engagement) | Core | replaces `investor-crm` |
-| 4 | BT2-04 | **Contracts** | Register of CDAs, MSAs, SOWs and other agreements with key dates and obligations. | CEO, BD, ClinOps, finance | Ironclad | Core | **new** |
+| 4 | BT2-04 | **Contracts** | Register of CDAs, MSAs, SOWs and other agreements with key dates and obligations. | CEO, BD, ClinOps, finance | ContractSafe/ContractWorks (size) + Gatekeeper/Contract Logix (biotech) + Ironclad (AI extraction) | Core | **new** |
 | 5 | BT2-05 | **CRO Bids** | Collect, compare and score outsourcing bids, then record the award. | ClinOps, R&D leads | Science Exchange / Scientist.com | Core | merge `cro-selection` + `sponsor-rfp-management` |
 | 6 | BT2-06 | **Investor Updates** | Regular updates, KPI history and a cap-table summary for existing investors. | CEO, CFO | Visible | Core | **new** (split from Investor CRM) |
 | 7 | BT2-07 | **BD Pipeline** | Partnering targets, conference meetings and licensing deals by stage. | CEO, BD | Inova Partnering (Inpart) | Core | adapt `partnership-tracker` |
@@ -117,6 +117,7 @@ Format per app: users and job · reference app · scope (in / out) · records ·
 - **Records:** Agreement; Amendment/change order; Obligation; Key date. Shared: Organization, Person, Program, Study, Document reference.
 - **Screens:** Expiries & obligations overview · Agreement register · Agreement detail (hierarchy) · Obligations tracker · CDA tracker.
 - **Assistant angle:** extract key dates and obligations from a contract the user provides, as a reviewed proposal; remind before expiry. Every other pack links here.
+- **Detailed scope:** final build scope in [apps/CONTRACTS.md](apps/CONTRACTS.md).
 
 ### BT2-05 — CRO Bids (rank 5, Core)
 *Collect, compare and score outsourcing bids, then record the award.*  
