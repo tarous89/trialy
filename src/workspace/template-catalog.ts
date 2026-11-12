@@ -27,7 +27,7 @@ export async function syncTemplateCatalog(db:Database){
 }
 
 export const catalogInstallation=z.object({templateId:z.string().max(80),version:z.string().max(30),digest:z.string().regex(/^[a-f0-9]{64}$/),requestKey:z.string().uuid(),name:z.string().trim().min(1).max(100),createNew:z.boolean().optional(),
- /** Per shareable role: an existing table ID to reuse, or 'new' for separate data (optional roles: not connected). Omitted roles default to reuse when exactly one compatible table exists. */
+ /** Per shareable role: an existing table ID to reuse, or 'new' for a new table (another app's read-only output: not used). Omitted roles default to reuse when exactly one compatible table exists. */
  sharedTables:z.record(z.string().max(80),z.union([z.string().uuid(),z.literal('new')])).optional()}).strict();
 export const catalogInstallationRead=z.object({templateId:z.string().max(80),version:z.string().max(30)}).strict();
 /** One transaction: empty tables + app + existing audit/permission paths, or nothing. */
@@ -69,9 +69,9 @@ export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,i
     roles.push(roleLabel(role,def,type.id));
     continue;
    }
-   // Optional roles (a partner app's output, an optional shared table) are only ever connected, never created.
-   // They stay declared, unconnected, so a later provider can connect them through the data access step (§7.1).
-   if(def.optional){roles.push(roleLabel(role,def));continue;}
+   // Another app's read-only output is only ever connected, never created; the feature that reads it hides itself (rule 3).
+   // Every other role that is not connected gets a new table: an installed app always has its own tables.
+   if(def.optional&&def.readOnly){roles.push(roleLabel(role,def));continue;}
    const base=(v.name+' · '+def.name).slice(0,90);let tableName=base,index=2;while(usedNames.has(tableName))tableName=base+' ('+(index++)+')';usedNames.add(tableName);
    const p=await service.preview(a,w,{kind:'create_type',name:tableName,fields:def.fields});
    const saved=await service.commit(a,p.id,p.digest),typeId=saved.objects[0].id;

@@ -42,9 +42,7 @@ for(const embedded of [false,true])test(`Saved app revisions have no first-save 
  }
  await expect(root.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Reviewed revision',exact:true})).toBeVisible();
  await expect(root.locator('.ty-tracker-preview>.ty-action-footer')).toHaveCount(0);
- await expect(root.getByRole('alert')).toHaveCount(0);
- // The save checks the data access step first (nothing is new here); wait for it to finish before archiving.
- await expect(root.getByLabel('App update review')).toHaveCount(0);await expect.poll(async()=>(await call(page,'read_project_component',{componentId:saved.id})).component.version).toBe(1);await archive(page,saved.id);
+ await expect(root.getByRole('alert')).toHaveCount(0);await archive(page,saved.id);
 });
 
 for(const fromHome of [false,true])test(`Failed extension replacement keeps the app opened ${fromHome?'from legacy Home':'by ChatGPT'} without recovery messages`,async({page})=>{

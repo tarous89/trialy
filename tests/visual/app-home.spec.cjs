@@ -88,8 +88,5 @@ for(const width of [1440,390])test(`Finalized new app replaces Home with approva
  const frame=root.frameLocator('iframe[title="Saved frontend code"]');await frame.getByRole('button',{name:'Companies',exact:true}).click();
  await expect.poll(async()=>{const f=await root.locator('iframe[title="Saved frontend code"]').boundingBox(),b=await footer.boundingBox();return f.y+f.height-b.y;}).toBeLessThanOrEqual(1);
  await footer.getByRole('button',{name:'Save app',exact:true}).click();
- // A new app with bindings opens the data access step; its Save commits the app, connections and access together.
- const step=root.getByRole('dialog',{name:'Data access'});await expect(step).toBeVisible();await expect(step.getByRole('heading',{name:'Who can use this app'})).toBeVisible();
- await step.getByRole('button',{name:'Save',exact:true}).click();
  await expect(root.getByRole('heading',{name:'Apps',exact:true})).toBeVisible();await expect(footer).toHaveCount(0);
 });

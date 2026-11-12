@@ -18,7 +18,7 @@ export const roleDeclaration=z.object({
  /** Only ever connected, never created (another app's output, an optional shared table). */
  optional:z.boolean().optional(),
  readOnly:z.boolean().optional(),
- /** The bound table. Omitted only for an optional role that is not connected yet. */
+ /** The bound table. Omitted only for an optional role that is not used. */
  typeId:id.optional(),
  /** Field keys to bind when an unconnected role is connected later (from the contract). */
  fields:z.array(z.string().regex(/^[a-z][a-z0-9_]{0,63}$/)).min(1).max(100).optional()
@@ -72,8 +72,6 @@ export function templateTableMap(source:unknown):Record<string,any>|null{
  const line=/^const templateConfiguration=(.+);\n/.exec(String(source??''));if(!line)return null;
  try{const map=JSON.parse(JSON.parse(line[1]).tableMap||'null');return map&&typeof map==='object'?map:null;}catch{return null;}
 }
-/** templateBindings, prepended to catalog source next to templateConfiguration, lists the bound tables the app may read. */
-export function withTemplateBindings(source:string,bindings:any[]){return source.replace(/^(const templateConfiguration=.+;\n)const templateBindings=.+;\n/,(_:string,head:string)=>head+'const templateBindings='+JSON.stringify(bindings)+';\n');}
 export function withTableMap(source:string,map:any){return source.replace(/^const templateConfiguration=(.+);\n/,(_:string,json:string)=>'const templateConfiguration='+JSON.stringify({...JSON.parse(json),tableMap:JSON.stringify(map)})+';\n');}
 
 export type AppRole=RoleDeclaration&{name:string;writable:boolean;source:'manifest'|'template';logicalFields?:Record<string,string>;def?:any};

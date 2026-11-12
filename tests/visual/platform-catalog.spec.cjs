@@ -52,14 +52,14 @@ for(const width of [1440,390])test(`template gallery, filters and fullscreen pre
  await page.screenshot({path:`/tmp/gallery-page-${width}.png`});
  await expect(page.locator('body')).toHaveJSProperty('scrollWidth',width);
  const cash=catalog.locator('article').filter({has:page.getByRole('heading',{name:'Runway',exact:true})});await cash.getByRole('button',{name:'Use',exact:true}).click();
- // The data access step: existing data by role (Connect is the default), other apps, and who can use the app; Save commits all.
- const step=page.getByRole('dialog',{name:'Data access'});await expect(step).toBeVisible();
- for(const name of ['Existing data this app can use','Other apps that can use this app’s data','Who can use this app'])await expect(step.getByRole('heading',{name})).toBeVisible();
- const programs=step.locator('[data-role="programs"]');if(await programs.count())await expect(programs.getByRole('radio',{name:'Connect'})).toHaveAttribute('aria-checked','true');
- await expect(step.getByRole('status')).toContainText(/team access unchanged/);
- await page.screenshot({path:`/tmp/gallery-data-access-${width}.png`});
- expect(await step.evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
- await step.getByRole('button',{name:'Save',exact:true}).click();
+ // When existing tables can serve the app, Use asks once per table: Connect (selected) or Create new.
+ const choice=page.getByRole('dialog',{name:'Use existing data?'});await Promise.race([page.waitForURL(/\/apps\//),choice.waitFor()]);
+ if(await choice.isVisible()){
+  await expect(choice.getByRole('radio',{name:'Connect'}).first()).toHaveAttribute('aria-checked','true');
+  await page.screenshot({path:`/tmp/gallery-data-access-${width}.png`});
+  expect(await choice.evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
+  await choice.getByRole('button',{name:'Add app',exact:true}).click();
+ }
  await expect(page).toHaveURL(/\/apps\//);expect(context.pages()).toHaveLength(1);
  await expect(page.locator('.ty-app-assistants')).toHaveCount(0);
  await expect(page.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Runway',exact:true})).toBeVisible();

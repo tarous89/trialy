@@ -6,14 +6,14 @@ import {randomUUID} from 'node:crypto';
 import {WorkspaceFoundation} from '../src/workspace/service.js';
 import {Service} from '../src/domain/service.js';
 import {AppTemplates} from '../src/workspace/app-templates.js';
-import {syncTemplateCatalog} from '../src/workspace/template-catalog.js';
-import {dataAccessStep,prepareDataAccess,confirmDataAccess,declinedConnections,preparedChoices} from '../src/workspace/data-access.js';
+import {syncTemplateCatalog,installCatalogApp} from '../src/workspace/template-catalog.js';
+import {dataAccessStep,prepareDataAccess,confirmDataAccess,preparedChoices} from '../src/workspace/data-access.js';
 import {contractRegistry,readerAccepts,isSuperset} from '../src/workspace/role-contracts.js';
 import {readTemplateGuidance} from '../src/workspace/app-templates.js';
 import type {Database,Connection} from '../src/db/database.js';
 import type {Actor} from '../src/shared/schema.js';
 
-/* Modular apps §7: the data access step and role-based connections, with the real installer and reviewed saves. */
+/* Modular apps §7: connect existing tables or create new ones at install, and role-based contracts, with the real installer. */
 async function setup(){
  const pg=new PGlite();for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
  const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
@@ -24,11 +24,12 @@ async function setup(){
  await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.project-oversight' AND version='2.0.0'");
  const catalog=new AppTemplates(undefined,db);
  const P=await catalog.read({templateId:'life.project-oversight',version:'2.0.0'}),R=await catalog.read({templateId:'life.cash-runway',version:'2.1.0'});
- const install=async(w:string,t:any,name:string,choose:(step:any)=>any={}as any)=>{
+ // Adding a template as the gallery does: the choice is shown only when existing tables can be connected.
+ const install=async(w:string,t:any,name:string,connections:Record<string,string>={})=>{
   const target={install:{templateId:t.id,version:t.version,digest:t.digest,name,requestKey:randomUUID()}};
-  const step=await dataAccessStep(f,actor,w,target);assert.equal(step.needed,true,'every app add shows the step');
-  const choices=typeof choose==='function'?choose(step):choose;
-  return {step,receipt:await confirmDataAccess(f,actor,w,{...target,...choices,stepDigest:step.digest})};
+  const step=await dataAccessStep(f,actor,w,target);
+  const receipt=step.needed?await confirmDataAccess(f,actor,w,{...target,connections,stepDigest:step.digest}):await installCatalogApp(f,actor,w,target.install);
+  return {step,receipt};
  };
  const comp=async(w:string,id:string)=>(await f.readComponent(actor,w,id)).component;
  const mapOf=(c:any)=>JSON.parse(JSON.parse(/^const templateConfiguration=(.+);\n/.exec(c.source)![1]).tableMap);
@@ -50,111 +51,80 @@ async function customCloses(x:any,w:string,name:string,extra:any={}){
  return {typeId,content,manifest};
 }
 
-test('both install orders connect by role: Runway then Programs, and Programs then Runway (late connection through the step)',async()=>{
- const x=await setup();const {f,s,actor,P,R}=x;
+test('both install orders: the choice appears only when existing tables can be connected; opting out creates new tables',async()=>{
+ const x=await setup();const {f,s,actor,P,R,pg}=x;
+ const tables=async(w:string)=>(await pg.query<any>('SELECT count(*)::int n FROM entity_types WHERE workspace_id=$1 AND deleted_at IS NULL',[w])).rows[0].n;
  try{
-  // Order 1: Runway first. Programs' step lists Runway's programs table and month closes; Connect is the default.
+  // Order 1: Runway first (nothing to connect: no choice, new tables), then Programs connects Runway's programs table and month closes.
   const w1=await s.createWorkspace(actor,'Runway first');
-  const r1=await x.install(w1.id,R,'Runway');assert.deepEqual(r1.step.existing,[]);assert.deepEqual(r1.step.consumers,[]);
+  const r1=await x.install(w1.id,R,'Runway');assert.equal(r1.step.needed,false);assert.deepEqual(r1.step.tables,[]);
   const rmap=x.mapOf(await x.comp(w1.id,r1.receipt.appId));
   const p1=await x.install(w1.id,P,'Programs');
-  assert.deepEqual(p1.step.existing.map((r:any)=>[r.role,r.mode,r.choice===r.candidates[0].typeId]).sort(),[['programs','write',true],['runway.month_closes','read',true]]);
-  assert.match(p1.receipt.dataAccess.summary,/Connects 2 tables/);
+  assert.deepEqual(p1.step.tables.map((t:any)=>[t.role,t.alternative,t.choice===t.candidates[0].typeId]).sort(),[['programs','new',true],['runway.month_closes','skip',true]]);
   const pmap=x.mapOf(await x.comp(w1.id,p1.receipt.appId));
   assert.equal(pmap.programs.typeId,rmap.programs.typeId);assert.equal(pmap['runway.month_closes'].typeId,rmap['runway.month_closes'].typeId);
-  assert.equal((await x.pg.query<any>("SELECT count(*)::int n FROM audit_events WHERE action='workspace.data_access_step'")).rows[0].n,2,'every choice is logged');
+  assert.ok(pmap.people?.typeId,'an optional table the app writes is created when there is nothing to connect');
+  assert.equal((await pg.query<any>("SELECT count(*)::int n FROM audit_events WHERE action='workspace.data_access_step'")).rows[0].n,1,'the choice is logged');
+  const prog=await x.save(w1.id,pmap.programs.typeId,{name:'TX-1',stage:'phase_1',status:'active',archived:false});
+  await x.save(w1.id,pmap['programs.plan_items'].typeId,{name:'IND filing',program_id:prog,item_type:'milestone',function:'regulatory',end_date:'2027-06-20',status:'planned',is_key:true,archived:false});
+  await closes(x,w1.id,rmap['runway.month_closes'].typeId);
+  assert.match((await x.open(w1.id,p1.receipt.appId,{section:'timeline'})).html,/EUR 760k · 25 months cushion/);
 
-  // Order 2: Programs alone first. Its optional Runway role stays declared and unconnected.
+  // Order 2: Programs first, then Runway. Runway can connect Programs' programs table; nothing connects to Programs afterwards.
   const w2=await s.createWorkspace(actor,'Programs first');
-  const p2=await x.install(w2.id,P,'Programs');
-  const programs=await x.comp(w2.id,p2.receipt.appId);
-  assert.deepEqual(programs.manifest.roles.find((r:any)=>r.role==='runway.month_closes'),{role:'runway.month_closes',contract:'runway.v2',optional:true,readOnly:true,fields:['month','currency','closed','metrics']});
-  assert.match((await x.open(w2.id,programs.id,{section:'timeline'})).html,/Runway is not connected|No programs yet/);
-  // Runway's step: reuse Programs' programs table (section 1) and give Programs read access to month closes (section 2).
-  let runwayStep:any;
-  const r2=await x.install(w2.id,R,'Runway',(step:any)=>{runwayStep=step;return {};});
-  assert.deepEqual(runwayStep.existing.map((r:any)=>[r.role,r.candidates[0].apps]),[['programs',['Programs']]]);
-  assert.deepEqual(runwayStep.consumers.map((c:any)=>[c.appName,c.role,c.mode,c.connect]),[['Programs','runway.month_closes','read',true]]);
-  assert.match(r2.receipt.dataAccess.summary,/gives Programs read access to 1/);
-  const rmap2=x.mapOf(await x.comp(w2.id,r2.receipt.appId)),after=await x.comp(w2.id,programs.id),pmap2=x.mapOf(after);
-  assert.equal(pmap2['runway.month_closes'].typeId,rmap2['runway.month_closes'].typeId);assert.deepEqual(pmap2['runway.month_closes'].writableFields,[]);
-  assert.equal(rmap2.programs.typeId,pmap2.programs.typeId,'one programs table');
-  assert.ok(after.manifest.fields.filter((m:any)=>m.typeId===rmap2['runway.month_closes'].typeId).every((m:any)=>m.mode==='read'));
-  assert.equal(after.manifest.roles.find((r:any)=>r.role==='runway.month_closes').typeId,rmap2['runway.month_closes'].typeId);
-  // Programs now shows Runway's cash at its key milestones.
-  const prog=await x.save(w2.id,pmap2.programs.typeId,{name:'TX-1',stage:'phase_1',status:'active',archived:false});
-  await x.save(w2.id,pmap2['programs.plan_items'].typeId,{name:'IND filing',program_id:prog,item_type:'milestone',function:'regulatory',end_date:'2027-06-20',status:'planned',is_key:true,archived:false});
-  await closes(x,w2.id,rmap2['runway.month_closes'].typeId);
-  assert.match((await x.open(w2.id,programs.id,{section:'timeline'})).html,/EUR 760k · 25 months cushion/);
+  const p2=await x.install(w2.id,P,'Programs');assert.equal(p2.step.needed,false);
+  const before=x.mapOf(await x.comp(w2.id,p2.receipt.appId));
+  const r2=await x.install(w2.id,R,'Runway');
+  assert.deepEqual(r2.step.tables.map((t:any)=>[t.role,t.candidates[0].apps]),[['programs',['Programs']]]);
+  assert.equal(x.mapOf(await x.comp(w2.id,r2.receipt.appId)).programs.typeId,before.programs.typeId,'one programs table');
+  assert.deepEqual(x.mapOf(await x.comp(w2.id,p2.receipt.appId)),before,'an installed app is not changed by a later install');
 
-  // A later save with nothing new skips the step; a stale review is refused.
-  const c=await x.comp(w2.id,r2.receipt.appId);
-  const rename=await f.preview(actor,w2.id,{kind:'save_component',componentId:c.id,expectedVersion:c.version,projectId:c.project_id,content:{name:'Runway (board)',format:c.format,source:c.source,sourceAccess:c.source_access,resourceKind:c.resource_kind,manifest:c.manifest,bindings:c.bindings,assets:c.assets,execution:c.execution}});
-  const quiet=await dataAccessStep(f,actor,w2.id,{previewId:rename.id,digest:rename.digest});assert.equal(quiet.needed,false,JSON.stringify([quiet.existing,quiet.consumers]));
-  await assert.rejects(confirmDataAccess(f,actor,w2.id,{previewId:rename.id,digest:rename.digest,stepDigest:'0'.repeat(64)}),/Review the data access step again/);
+  // Opting out creates new tables: Create new for programs gives Runway its own table.
+  const w3=await s.createWorkspace(actor,'Separate');await x.install(w3.id,P,'Programs');const t3=await tables(w3.id);
+  const r3=await x.install(w3.id,R,'Runway',{programs:'new'});
+  assert.notEqual(x.mapOf(await x.comp(w3.id,r3.receipt.appId)).programs.typeId,before.programs.typeId);
+  assert.equal(await tables(w3.id)-t3,13,'all thirteen Runway tables are new');
+  // A stale choice is refused and nothing is installed.
+  const target={install:{templateId:R.id,version:R.version,digest:R.digest,name:'Runway 2',requestKey:randomUUID()}};
+  await assert.rejects(confirmDataAccess(f,actor,w3.id,{...target,connections:{},stepDigest:'0'.repeat(64)}),/Review the choice again/);
  }finally{await x.pg.close();}
 });
 
-test('assistants prepare the step but never confirm it',async()=>{
+test('assistants prepare the choice but never confirm it',async()=>{
  const x=await setup();const {f,s,actor,P,R}=x;
  try{
-  const w=await s.createWorkspace(actor,'Assistant');await x.install(w.id,P,'Programs');
+  const w=await s.createWorkspace(actor,'Assistant');const p=await x.install(w.id,P,'Programs');
+  const programs=x.mapOf(await x.comp(w.id,p.receipt.appId)).programs.typeId;
   const ai:Actor={...actor,origin:'ai'};
   const target={install:{templateId:R.id,version:R.version,digest:R.digest,name:'Runway',requestKey:randomUUID()}};
-  const prepared=await prepareDataAccess(f,ai,w.id,{...target,consumers:[]});
-  assert.match(prepared.confirmation,/cannot confirm/);assert.equal(prepared.access.canChange,false,'access is shown, not changed, inside an assistant');
-  await assert.rejects(confirmDataAccess(f,ai,w.id,{...target,stepDigest:prepared.digest}),/cannot approve its own changes/);
-  await assert.rejects(prepareDataAccess(f,ai,w.id,{...target,access:[{subject:'chatgpt',level:'none'}]}),/signed-in owner session/);
-  // The user sees the prepared proposal in the review view and saves it there (the app-only Save action).
-  const step=await dataAccessStep(f,ai,w.id,target);assert.deepEqual(await preparedChoices(f.db,ai,w.id,step),{connections:{},consumers:[],access:[]});
-  const saved=await confirmDataAccess(f,{...ai,actionConfirmed:true},w.id,{...target,stepDigest:step.digest});assert.ok(saved.appId);
+  const prepared=await prepareDataAccess(f,ai,w.id,{...target,connections:{programs:'new'}});
+  assert.match(prepared.confirmation,/cannot confirm/);assert.equal(prepared.tables[0].choice,'new');
+  await assert.rejects(confirmDataAccess(f,ai,w.id,{...target,connections:{},stepDigest:prepared.digest}),/cannot approve its own changes/);
+  // The user sees the proposal prefilled in the dialog and adds the app there (the app-only Add action).
+  const step=await dataAccessStep(f,ai,w.id,target);assert.deepEqual(await preparedChoices(f.db,ai,w.id,step),{programs:'new'});
+  const saved=await confirmDataAccess(f,{...ai,actionConfirmed:true},w.id,{...target,connections:{programs:programs},stepDigest:step.digest});
+  assert.equal(x.mapOf(await x.comp(w.id,saved.appId)).programs.typeId,programs);
  }finally{await x.pg.close();}
 });
 
-test('a custom app provides a role: contract labels are validated and the installer connects to it',async()=>{
+test('a custom app provides a role: contract labels are validated and the installer can connect to it',async()=>{
  const x=await setup();const {f,s,actor,P}=x;
  try{
   const w=await s.createWorkspace(actor,'Custom provider');
   const custom=await customCloses(x,w.id,'Board closes');
   const saved=await x.change(w.id,{kind:'save_component',projectId:null,content:custom.content});
   assert.equal((await x.pg.query<any>('SELECT app_id FROM role_writers WHERE type_id=$1',[custom.typeId])).rows[0].app_id,saved.id,'the first writer is registered');
-  // Programs' step finds the custom app's table under runway.month_closes and binds it read-only.
   const p=await x.install(w.id,P,'Programs');
-  const row=p.step.existing.find((r:any)=>r.role==='runway.month_closes');assert.deepEqual(row.candidates.map((c:any)=>[c.name,c.apps]),[['Board closes table',['Board closes']]]);
+  const row=p.step.tables.find((r:any)=>r.role==='runway.month_closes');assert.deepEqual(row!.candidates.map((c:any)=>[c.name,c.apps]),[['Board closes table',['Board closes']]]);
   assert.equal(x.mapOf(await x.comp(w.id,p.receipt.appId))['runway.month_closes'].typeId,custom.typeId);
-  // Compatibility checks, exactly as template reuse: kinds, unknown core roles, unknown versions, read-only roles.
   const bad=(roles:any[],manifest:any=custom.manifest)=>f.preview(actor,w.id,{kind:'save_component',projectId:null,content:{...custom.content,name:'Bad',manifest:{...manifest,roles}}});
   await assert.rejects(bad([{role:'sites',contract:'core.v1',typeId:custom.typeId}]),/not a core role/);
   await assert.rejects(bad([{role:'runway.month_closes',contract:'runway.v9',typeId:custom.typeId}]),/no contract runway.v9/);
   await assert.rejects(bad([{role:'runway.month_closes',contract:'runway.v2',typeId:custom.typeId,readOnly:true}]),/declared read-only/);
   await assert.rejects(bad([{role:'programs',contract:'core.v1',typeId:custom.typeId}]),/does not match Programs core.v1/);
-  // One writer per output role: a second writer is refused while the first is live; a read-only reader is fine.
   await assert.rejects(bad([{role:'runway.month_closes',contract:'runway.v2',typeId:custom.typeId}]),/Board closes writes Runway month closes/);
   const reader={...custom.manifest,fields:custom.manifest.fields.map((m:any)=>({...m,mode:'read'}))};
   await f.preview(actor,w.id,{kind:'save_component',projectId:null,content:{...custom.content,name:'Reader',manifest:{...reader,roles:[{role:'runway.month_closes',contract:'runway.v2',typeId:custom.typeId,readOnly:true}]}}});
- }finally{await x.pg.close();}
-});
-
-test('"Do not connect" is remembered per app and role until Connect is chosen explicitly',async()=>{
- const x=await setup();const {f,s,actor,P,R}=x;
- try{
-  const w=await s.createWorkspace(actor,'Declined');
-  const p=await x.install(w.id,P,'Programs');
-  const r=await x.install(w.id,R,'Runway',(step:any)=>({consumers:step.consumers.map((c:any)=>({appId:c.appId,role:c.role,connect:false}))}));
-  assert.equal(x.mapOf(await x.comp(w.id,p.receipt.appId))['runway.month_closes'],undefined,'nothing connects');
-  assert.deepEqual((await declinedConnections(f,actor,w.id)).connections.map((c:any)=>[c.appName,c.role]),[['Programs','runway.month_closes']]);
-  // Another provider of the same role is added later: the declined connection is not asked again.
-  const custom=await customCloses(x,w.id,'Second closes');
-  const preview=await f.preview(actor,w.id,{kind:'save_component',projectId:null,content:custom.content});
-  const step=await dataAccessStep(f,actor,w.id,{previewId:preview.id,digest:preview.digest});
-  assert.equal(step.needed,true);assert.deepEqual(step.consumers,[]);
-  // Connect from the Access tab (a saved app target) lists it again, marked as remembered, and connecting clears the choice.
-  const again=await dataAccessStep(f,actor,w.id,{componentId:p.receipt.appId});
-  const row=again.existing.find((r:any)=>r.role==='runway.month_closes');assert.equal(row.remembered,true);
-  const runwayCloses=x.mapOf(await x.comp(w.id,r.receipt.appId))['runway.month_closes'].typeId;assert.equal(row.choice,runwayCloses);
-  await confirmDataAccess(f,actor,w.id,{componentId:p.receipt.appId,stepDigest:again.digest});
-  assert.equal(x.mapOf(await x.comp(w.id,p.receipt.appId))['runway.month_closes'].typeId,runwayCloses);
-  assert.deepEqual((await declinedConnections(f,actor,w.id)).connections,[]);
  }finally{await x.pg.close();}
 });
 
