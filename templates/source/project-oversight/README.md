@@ -53,7 +53,7 @@ Programs works alone; rule 3 degradation:
 - The gear emits `tracker:layout` (screens; column groups `items`, `raid`, `decisions`). Saved configuration is re-read on every render.
 - No app login, browser storage, network calls or automation reads.
 
-## 2.1.0 (draft) — cash forecast and Runway integration
+## 2.1.0 — cash forecast and Runway integration
 
-Cash at key milestones no longer requires Runway. Settings has a **Cash forecast**: closing cash by month, entered by hand (role `runway.month_closes`, marked `integration`, in Programs' own table). A subtle line offers **Add Runway** when Runway is not in the workspace, or **Use its cash data** once it is; the platform dialog shows both sources and the user picks one, used from then on (Runway's snapshots, read only). Manual entries stay in Database; nothing is merged. 2.0.0 is archived unchanged under `archive/2.0.0/`. Version 2.1.0 is a draft until the owner approves it.
+Cash at key milestones no longer requires Runway. Settings has a **Cash forecast**: closing cash by month, entered by hand (role `runway.month_closes`, marked `integration`, in Programs' own table). A subtle line offers **Add Runway** when Runway is not in the workspace, or **Use its cash data** once it is; the platform dialog shows both sources and the user picks one, used from then on (Runway's snapshots, read only). Manual entries stay in Database; nothing is merged. 2.0.0 is archived unchanged under `archive/2.0.0/`. The owner approved 2.1.0 on 12 November 2026 (seed and migration 062).
 
