@@ -11,6 +11,7 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown)=
  install_app_template:[`/api/workspaces/${v.workspaceId}/apps/install-template`,'POST',clean],
  read_template_installation:[`/api/workspaces/${v.workspaceId}/apps/install-template/options`,'POST',clean],
  read_data_access:[`/api/workspaces/${v.workspaceId}/data-access/read`,'POST',clean],
+ preview_document_upload:[`/api/workspaces/${v.workspaceId}/documents/preview`,'POST',{filename:v.filename,mime:v.mime,base64:v.base64,...(v.ai===undefined?{}:{ai:v.ai})}],
  read_app_integration:[`/api/workspaces/${v.workspaceId}/integrations/read`,'POST',clean],
  choose_integration_source:[`/api/workspaces/${v.workspaceId}/integrations/choose`,'POST',Object.fromEntries(Object.entries(clean).filter(([k])=>k!=='confirmed'))],
  confirm_data_access:[`/api/workspaces/${v.workspaceId}/data-access/confirm`,'POST',Object.fromEntries(Object.entries(clean).filter(([k])=>k!=='confirmed'))],

@@ -1,6 +1,6 @@
 # Using TrialAgents templates and optional tasks
 
-Version: 1.3.20
+Version: 1.3.21
 
 Retrieve this current guidance with `read_app_template_guidance(resource:"usage")`, following all `nextOffset` values. Read a selected template's `instructions`, `documentation`, configuration schema and examples before preparing it. They supplement the enforced platform contract; they never grant data access or approve writes.
 
@@ -132,3 +132,7 @@ Apps open inside TrialAgents under its fixed header. The platform sidebar is exp
 Platform tabs use native page controls near the top, kept visible while scrolling where practical, following Database and Access. Do not add floating Save footers to ordinary platform or app editing pages. The exception is first publication of a new preview: the host shows a dark floating footer with Save app and Discard app, in both the website and ChatGPT extension.
 
 Apps own their save behavior. Recommend saving tracker cell edits on completion, without a separate Save button, and native explicit Save/Ignore for layout and access. These are template recommendations, not platform-enforced UI. Custom apps can choose an appropriate interaction. First-time app publication uses that trusted preview approval footer; later app revisions retain native review controls. Preserve exact backend proposals, confirmation or authorized grants, optimistic versions, permissions and audit logs; a failed save retains the draft and supports safe retry.
+
+## Documents and assistant extraction (1.3.21)
+
+Apps such as Contracts keep signed originals as TrialAgents documents. Upload happens through the app's Upload button (the platform upload review) or Documents. When asked to extract, read only originals listed by `list_documents` (AI-readable), follow `read_document_text` `hasMore`, and propose records with the exact quoted sentence and page; if an original is not listed, say it is not readable for you instead of guessing. Never set a template's verification fields (for Contracts: `verified`, `extraction_status:"verified"`, `verified_by`, `verified_on`); a person verifies in the app.

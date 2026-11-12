@@ -1,6 +1,6 @@
 {
   "registry": "role-contracts",
-  "version": "2026-11-11",
+  "version": "2026-11-12",
   "source": "docs/product/MODULAR_APPS_AND_SHARED_DATA.md#7-role-based-connections-standard-for-all-apps",
   "rules": "Output roles (kind output) are read-only results that one app writes and any app may read. One live writer per output table; other apps bind it read-only. A custom app may take over writing only after the current writer is archived or permanently deleted, with an explicit owner choice. Additive changes keep a version compatible; a breaking change is a new version. A reader declares the versions it reads; it also connects to a newer version that is a superset (every field of the version it reads, same kind, cardinality and options). Core roles are listed in templates/core-contract/v1.json and stay multi-writer. Roles of kind app are an app's working tables published for readers; the single-writer rule does not apply to them.",
   "roles": {
@@ -582,6 +582,186 @@
               "key": "as_of",
               "name": "As of",
               "kind": "date",
+              "required": false,
+              "multiple": false
+            }
+          ]
+        }
+      }
+    },
+    "contracts.obligations": {
+      "name": "Contract obligations",
+      "kind": "output",
+      "writer": "life.contracts",
+      "description": "Obligations owed by and to the company under its agreements, including milestone and recurring payments (kind payment). Unverified rows (verified false) are assistant proposals and are never counted as confirmed.",
+      "versions": {
+        "contracts.v1": {
+          "fields": [
+            {
+              "key": "agreement_id",
+              "name": "Agreement",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "Record ID of an agreements record (core role agreements)."
+            },
+            {
+              "key": "title",
+              "name": "Title",
+              "kind": "text",
+              "required": true,
+              "multiple": false
+            },
+            {
+              "key": "kind",
+              "name": "Kind",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "payment",
+                "report",
+                "diligence_milestone",
+                "notice",
+                "delivery",
+                "publication_review",
+                "audit",
+                "insurance",
+                "royalty",
+                "other"
+              ]
+            },
+            {
+              "key": "direction",
+              "name": "Direction",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "we_owe",
+                "they_owe"
+              ]
+            },
+            {
+              "key": "due_date",
+              "name": "Due date",
+              "kind": "date",
+              "required": false,
+              "multiple": false,
+              "description": "First or only due date. A recurring obligation repeats from it."
+            },
+            {
+              "key": "recurrence",
+              "name": "Recurrence",
+              "kind": "select",
+              "required": false,
+              "multiple": false,
+              "options": [
+                "none",
+                "monthly",
+                "quarterly",
+                "annual"
+              ]
+            },
+            {
+              "key": "trigger",
+              "name": "Trigger",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Event that triggers the obligation when it has no fixed date (e.g. first patient dosed)."
+            },
+            {
+              "key": "milestone_id",
+              "name": "Milestone",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of a programs.plan_items record (Programs, or Contracts' own milestone entries)."
+            },
+            {
+              "key": "amount",
+              "name": "Amount",
+              "kind": "money",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "currency",
+              "name": "Currency",
+              "kind": "select",
+              "required": false,
+              "multiple": false,
+              "options": [
+                "USD",
+                "EUR",
+                "GBP",
+                "CHF",
+                "CAD",
+                "AUD",
+                "JPY",
+                "CNY",
+                "SEK",
+                "DKK",
+                "NOK",
+                "INR"
+              ]
+            },
+            {
+              "key": "owner",
+              "name": "Owner",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "status",
+              "name": "Status",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "open",
+                "done",
+                "waived",
+                "missed"
+              ]
+            },
+            {
+              "key": "verified",
+              "name": "Verified",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false,
+              "description": "True only after a person verified it in Contracts. Assistant proposals are always false."
+            },
+            {
+              "key": "source_quote",
+              "name": "Source quote",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Exact sentence from the signed original."
+            },
+            {
+              "key": "source_page",
+              "name": "Source page",
+              "kind": "number",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "source_document_version_id",
+              "name": "Source document version",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "TrialAgents document version ID of the signed original the quote comes from."
+            },
+            {
+              "key": "archived",
+              "name": "Archived",
+              "kind": "boolean",
               "required": false,
               "multiple": false
             }

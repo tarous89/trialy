@@ -4,6 +4,8 @@ The website and MCP read approved versions from `app_template_catalog`. The cata
 
 Migration 056 and `db:migrate` import repository versions once. `templates/catalog-seed.json` approves the existing 23 life-science versions requested for launch. Do not extend this bootstrap approval list for future releases. Owner-approved exceptions: on 11 November 2026, `life.cash-runway` was moved from 1.2.2 to Runway 2.0.0, then to Runway 2.1.0, and `life.project-oversight` was moved from Project Oversight 1.0.1 to Programs 2.0.0. On 12 November 2026 the owner approved Programs 2.1.0: the seed names it for new databases, and one-time migration 062 approves the draft row an earlier deployment had imported (a later withdrawal is not undone). Existing statuses and payloads are never overwritten by deployment. New versions default to draft; older approved versions remain available until replaced or withdrawn.
 
+Contracts (`life.contracts`) 1.0.0 was added on 12 November 2026 as a draft; it is not in the seed and is visible only after a publisher approves it.
+
 Use the migration/operator database connection in `MIGRATION_DATABASE_URL`:
 
 ```

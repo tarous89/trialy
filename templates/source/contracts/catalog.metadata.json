@@ -1,0 +1,117 @@
+{
+ "id": "life.contracts",
+ "version": "1.0.0",
+ "name": "Contracts",
+ "description": "Register of CDAs, MSAs, SOWs and other agreements with key dates and obligations: contract families with total value, notice and expiry alarms, obligations owed by and to the company, a CDA check, a pre-signature pipeline and a due-diligence list. Signed originals are TrialAgents documents; Claude or ChatGPT proposes terms with quotes and a person verifies them.",
+ "tags": [
+  "biotech",
+  "contracts",
+  "agreements",
+  "cda",
+  "msa",
+  "sow",
+  "obligations",
+  "licensing"
+ ],
+ "whenToUse": "A small biotech needs one register of its agreements (CDAs, MSAs, SOWs, change orders, MTAs, licences, CMO supply, quality, consulting, clinical trial, data processing and lease agreements) with families, key dates, notice deadlines, obligations, CDAs and reminders, with signed originals stored in TrialAgents and assistant extraction verified by a person.",
+ "whenNotToUse": "Drafting or negotiating contract language, clause libraries, redlining, approval chains, e-signature, legal review or risk scoring, procurement, purchase orders and invoice matching (Trial Finance), and employment contracts.",
+ "engine": "frontend-js",
+ "defaults": {
+  "heading": "Contracts",
+  "tableMap": "{}",
+  "pageSize": 25,
+  "layoutProfile": "{}",
+  "readOnly": false,
+  "demoLabel": false,
+  "asOfOverride": ""
+ },
+ "options": {
+  "heading": {
+   "type": "string",
+   "description": "App heading shown above every screen.",
+   "default": "Contracts"
+  },
+  "tableMap": {
+   "type": "string",
+   "description": "JSON object keyed by stable role key: core data contract v1 roles agreements and organizations (required) and people, programs, studies (optional); app roles contracts.settings, contracts.terms, contracts.obligations (output, contract contracts.v1); integration programs.plan_items (programs.v2): this app's own milestone entries, or Programs' plan items (read only) once the user links Programs inside the app. Each value is {typeId:<authorized table UUID>, fields:{<logical key>:<real field key>}, writableFields:[<logical keys>]}. Real keys are lowercase snake_case.",
+   "default": "{}"
+  },
+  "pageSize": {
+   "type": "number",
+   "description": "Rows per page in registers, 10–50; the template clamps the value.",
+   "default": 25
+  },
+  "layoutProfile": {
+   "type": "string",
+   "description": "JSON presentation profile written only by native layout settings through a reviewed, versioned app update.",
+   "default": "{}"
+  },
+  "readOnly": {
+   "type": "boolean",
+   "description": "When true, the app proposes no writes even for users who may edit.",
+   "default": false
+  },
+  "demoLabel": {
+   "type": "boolean",
+   "description": "Label the app as a fictional demo. Only for the repository preview.",
+   "default": false
+  },
+  "asOfOverride": {
+   "type": "string",
+   "description": "Optional fixed as-of date (YYYY-MM-DD) for previews and tests only. Leave empty: the app uses today's date from the app runtime.",
+   "default": ""
+  }
+ },
+ "instructions": "Contracts 1.0.0 is a custom frontend-js contract register that follows docs/product/MODULAR_APPS_AND_SHARED_DATA.md: shared tables use core data contract v1 role keys (agreements, organizations, people, programs, studies), app tables use contracts.* role keys, contracts.obligations is a published output (contract contracts.v1, writer life.contracts), programs.plan_items is an integration with Programs, features that use another app's data degrade gracefully, and removing an app or tab never deletes data.\n\n1. Discover and pin. Read read_app_template_guidance (usage; authoring when extending; contracts for the role registry) to the last nextOffset, read_app_design, list_app_templates and read_app_template for life.contracts. Pin this exact version and digest and keep one requestKey for the creation.\n2. Install and reuse. Before installing, call list_archived_items (kind apps, this templateId) and offer to restore an archived Contracts app first. Use shows the Use existing data? dialog: an existing agreements table (for example Runway's) and organizations table are connected by default, and the seven Contracts-owned optional agreements fields (parent_id, program_id, study_id, total_value, currency, signed_on, owner) are added to it in the same installation. people, programs and studies connect when present, otherwise Contracts gets its own tables. When Programs is installed, its plan items are offered for programs.plan_items (read only); otherwise Contracts keeps its own milestone entries. You may propose choices with prepare_data_access; only the user confirms. Never seed demo data.\n3. Map fields. Core roles use exactly the core data contract v1 fields; never rename, retype or remove them. agreement_type and status stay text fields in the core contract; Contracts writes only the documented option values. Only Contracts writes the Contracts-owned agreements fields. Use multiple:false, lowercase snake_case real keys and scalar record-ID text for relationships (counterparty_id, parent_id, program_id, study_id, agreement_id, milestone_id).\n4. Signed originals. Originals are TrialAgents documents: the user uploads them with the app's Upload button (platform upload review with explicit confirmation) or in Documents, and attaches them to an agreement (contracts.terms document_id and document_version_id); an external URL can go in document_link. Inside the app, documents.list, documents.search and documents.quote use the user's own document permissions.\n5. Extraction (Claude or ChatGPT, each through its own connection). Use list_documents, read_document_text (follow hasMore) and search_documents only on AI-readable originals. If an original the user names is not listed, say it is not readable for you and ask the owner to make it AI-readable in Documents; never guess its contents. Propose, in one reviewed prepare_change batch: the agreements record if it is missing (name, agreement_type, counterparty_id, status, effective_date, expiry_date, signed_on, total_value, currency, parent_id when it is a SOW or change order of a known MSA); the contracts.terms record {agreement_id, renewal, renewal_term_months, notice_days, notice_deadline, confidentiality_years, confidentiality_end, cda_direction, purpose, governing_law, document_id, document_version_id, extraction_status:\"proposed\", source_quotes: JSON {field:{quote,page}}}; and contracts.obligations {agreement_id, title, kind, direction, due_date or trigger, recurrence, milestone_id, amount, currency, owner, status:\"open\", verified:false, source_quote (the exact sentence), source_page, source_document_version_id}. Compute notice_deadline = expiry_date − notice_days (renewal automatic or option) and confidentiality_end = (expiry_date, or effective_date without expiry) + confidentiality_years. Create the agreement first and add terms and obligations once its receipt ID exists. Quote exactly; flag uncertainty in the chat; never set verified true, extraction_status verified, verified_by or verified_on. A person verifies in the app (Verify proposals), where each quote is checked against the extracted text.\n6. Answer from the register: “do we have a CDA with X?” (agreements of type cda_nda for that organization with direction and confidentiality end), “what renews next quarter?” (notice deadlines and expiries), “what do we owe CRO Y?” (open obligations, verified first; label unverified ones). Draft renewal decision notes and the due-diligence list on request. Never give legal advice or risk opinions, draft or negotiate contract language, or send documents.\n7. Customization: layout changes use the native gear (tracker:layout → prepare_tool_layout); business settings use a reviewed write to the contracts.settings row; extra fields need a reviewed schema change and a separately reviewed app revision. Revise the same saved app; preserve IDs, bindings and access.\n8. Automations are optional and configured only after the app is saved: a weekly contract digest email and a daily extraction of new originals on the user's Claude or ChatGPT runner that writes only unverified proposals. The app never waits for them.",
+ "documentation": {
+  "quickStart": [
+   "Read the current usage, authoring and contracts guidance and this template's documentation; pin life.contracts 1.0.0 and its digest with one requestKey.",
+   "Before installing, check for an archived Contracts app and offer to restore it. Use installs it; keep the defaults that connect an existing agreements and organizations table (for example from Runway).",
+   "Settings → Add organization for each counterparty (or reuse the shared organizations). Optionally edit settings: agreement types, obligation kinds, reminder windows (30, 60, 90 days), digest day and default currency.",
+   "Register → Add agreement, or Upload and extract: upload the signed PDF, then ask Claude or ChatGPT to propose the agreement, key terms and obligations with quotes and pages.",
+   "Open the agreement → Verify proposals: check each quote, enter your name and approve the review. Only verified items count as confirmed.",
+   "Add SOWs and change orders with Add child agreement; track CDAs in CDAs and agreements before signature in Pipeline."
+  ],
+  "dataContract": "Stable role keys. Core data contract v1: agreements (name text*, counterparty_id text record ID of organizations, agreement_type text with values cda_nda/msa/sow_work_order/change_order/mta/research_collaboration/licence_in/licence_out/cmo_supply/quality_agreement/consulting_advisory/clinical_trial_agreement/data_processing/lease_services/other, status text with values drafting/in_negotiation/out_for_signature/active/expired/terminated/superseded, effective_date date, expiry_date date, archived boolean; Contracts-owned optional fields parent_id text record ID of the master agreement, program_id, study_id, total_value money, currency select USD/EUR/GBP/CHF/CAD/AUD/JPY/CNY/SEK/DKK/NOK/INR, signed_on date, owner text), organizations (name*, org_type, country, website, archived), and optional people, programs, studies (core fields). App tables (contracts.v1): contracts.settings (one row: default_currency, reminder_days comma list default 30,60,90, digest_day number 1 = Monday, agreement_types and obligation_kinds comma lists of enabled values in order); contracts.terms (one per agreement: agreement_id text*, renewal select none/automatic/option, renewal_term_months, notice_days, notice_deadline date set on save, confidentiality_years, confidentiality_end date set on save, cda_direction select mutual/incoming/outgoing, purpose, governing_law, document_id, document_version_id, document_link URL text, extraction_status select none/proposed/verified, source_quotes JSON text {field:{quote,page}}, verified_by text, verified_on date, status_since date, notes). Output contracts.obligations (contracts.v1, writer life.contracts): agreement_id*, title*, kind* payment/report/diligence_milestone/notice/delivery/publication_review/audit/insurance/royalty/other, direction* we_owe/they_owe, due_date, recurrence none/monthly/quarterly/annual, trigger, milestone_id record ID of programs.plan_items, amount money, currency, owner, status* open/done/waived/missed, verified boolean, source_quote, source_page number, source_document_version_id, archived. Integration programs.plan_items (programs.v2; name, program_id, item_type, end_date, status, is_key): Contracts' own milestone entries until the user links Programs in the app, then Programs' plan items read only. Calculations: notice_deadline = expiry_date − notice_days when renewal is automatic or option; confidentiality_end = (expiry_date, or effective_date without expiry) + confidentiality_years × 12 calendar months, day clamped to the month end; family value = master total_value + Σ children per currency, other currencies listed separately and never converted, change-order share = Σ change orders ÷ family value in the master's currency; earliest expiry and next notice over active members; next due of a recurring obligation = first occurrence on or after the as-of date; expires before milestone = active agreement whose program has a key milestone after its expiry. Unverified = obligations with verified false or terms with extraction_status proposed; never counted as confirmed. Every field is scalar multiple:false; relationships are record IDs. Reads are bounded to 800 rows per table; partial reads disable totals and say so. Signed originals are TrialAgents documents with their own permissions and AI-readable flag. Access is app-level; database column rules can hide total_value and amount, and can deny assistant writes to the verification fields.",
+  "interactionContract": "Seven screens with stable IDs for the native layout gear: overview, register, families, obligations, cdas, pipeline, settings; column groups agreements and obligations. Overview: next deadline sentence (“Cancel X by 1 Dec 2026 or it renews for 12 months”), counts per reminder window, the next 90 days (expiries, notice deadlines, verified obligations due, CDA confidentiality ends), needs attention (overdue obligations, unverified extractions, agreements that expire before a key milestone), agreements by type and status, and in-flight agreements with days in status. Register: search over the register and optionally the signed originals (documents.search, with coverage), filters (type, counterparty, program, status, verification, expiry window), paging, Add agreement, Upload and extract (data-trialy-document upload button: the platform upload review), Due-diligence list (filters for types, statuses and a minimum value; copyable Markdown), and a side panel with key terms, renewal decision, signed original (AI-readable and extraction status, upload or attach), family, obligations with quotes, counterparty contacts and record history. Families: collapsible tree per master with family value per currency, change-order share, earliest expiry, next notice and Add child agreement. Obligations: table with next due, verified status, Mark done/waived/missed and Verify (all reviewed), a 12-month calendar and payments by month and currency. CDAs: “Have we signed a CDA with…?” check, new CDA request (counterparty and purpose, status drafting), CDAs by organization and confidentiality ending within a year. Pipeline: three columns (drafting, in negotiation, out for signature) with owner and days in status, reviewed moves and Mark signed (dates, then the prompt to upload the signed original). Settings: reviewed settings row, milestones (own entries, or Programs read only, with the subtle Add Programs / Use its milestones line), counterparties, access and automation pointers. Verify proposals: proposed values with quotes and pages, each checked against the extracted text (documents.quote), a decision per obligation (verify, leave, reject) and the verifier's name; one reviewed batch. Every input carries data-ui-state and a stable data-action; drafts survive failed proposals; record versions are captured when an editor or confirmation opens; at most 50 writes per review. No app login, browser storage or network calls.",
+  "lifecycle": "New previews show fictional or empty data and never read documents or write. Saved apps re-read their tables and configuration on every render; layout changes are reviewed app revisions; record writes are records.propose batches confirmed in the TrialAgents review, and a stale version is rejected with the draft kept. A new agreement's starting key terms are offered as a follow-up save once the agreement has its record ID. Uploading an original is a platform review with explicit confirmation; the app then learns the new version ID and offers to attach it. Assistant extraction creates proposals only; verification is a reviewed human save in the app that records the verifier's name and date. Archiving hides records but keeps them and their history; removing the app or a tab never deletes data; an archived app is restored with its data and its automations switched off. Linking Programs is a one-time choice in the in-app integration dialog; after that the milestones are read only and Contracts' own entries stay in Database.",
+  "limitations": [
+   "No drafting, templates, clause library, redlining, negotiation workflow, approval chains or e-signature; no legal advice or risk scores.",
+   "Extraction is done by the user's connected assistant (Claude or ChatGPT), not by the app; only AI-readable originals can be extracted, and scanned originals need text extraction to finish first.",
+   "Assistants are told never to verify; enforce it with Database column rules that deny Claude and ChatGPT writes to verified, extraction_status, verified_by and verified_on.",
+   "Amounts in different currencies are never converted or summed together.",
+   "Days in status are known only for status changes made in Contracts (status_since); older agreements show “unknown”.",
+   "Reads are bounded to 800 rows per table and 200 document versions; partial reads disable totals and say so.",
+   "Runway, Trial Finance and Data Room read the shared agreements and contracts.obligations; their own integrations ship in their own versions."
+  ],
+  "examples": [
+   {
+    "prompt": "I uploaded the signed Corvane supply agreement. Extract the key terms and obligations into Contracts.",
+    "expectedBehavior": "Checks list_documents for the AI-readable original, reads its text, and proposes one reviewed batch: the agreement if missing, contracts.terms with extraction_status proposed and source quotes with pages, and obligations with verified false, source_quote and source_page. Tells the user to verify them in Contracts; never sets verified."
+   },
+   {
+    "prompt": "Have we signed a CDA with Northwind Bio?",
+    "expectedBehavior": "Reads agreements of type cda_nda for that organization and answers with the agreement, direction (mutual), status, signature date and confidentiality end (1 Mar 2032 in the fictional demo)."
+   },
+   {
+    "prompt": "What renews or needs notice in the next 90 days?",
+    "expectedBehavior": "Lists active agreements with notice deadlines and expiries in the window, for example “Cancel the Brightwater data processing agreement by 1 Dec 2026 or it renews for 12 months”, and offers to draft the renewal decision note."
+   },
+   {
+    "prompt": "Prepare the due-diligence list of active licences and agreements over EUR 100,000.",
+    "expectedBehavior": "Uses the register (or the app's Due-diligence list) to produce a list with type, counterparty, status, dates, value, renewal and confidentiality; marks unverified terms; does not give a legal opinion."
+   },
+   {
+    "prompt": "We do not want any automations.",
+    "expectedBehavior": "Saves the app with no automation. The Overview, Obligations and CDA screens give the same information on demand."
+   }
+  ],
+  "tasks": {
+   "mode": "optional",
+   "whenUseful": "Two optional automations; no automation is a fully supported path. (1) Weekly contract digest: a TrialAgents email action on a weekly calendar on contracts.settings.digest_day at 08:00 Europe/Berlin to the owner (and only explicitly approved registered members with app access), listing notice deadlines and expiries within the reminder windows, verified obligations due and overdue, CDA confidentiality ends, and the number of unverified extractions shown separately. (2) Extraction of new originals: research on the user's own Claude or ChatGPT runner, daily, for agreements with a document_version_id and extraction_status none; reads the AI-readable original and proposes terms and obligations with quotes and pages, writing only contracts.terms and contracts.obligations as unverified proposals under a narrow expiring grant, or preparing them for review.",
+   "readRequirements": "Digest: agreements (name, status, expiry_date, counterparty_id), contracts.terms (notice_deadline, confidentiality_end, extraction_status), contracts.obligations (title, due_date, recurrence, status, verified, amount, currency), contracts.settings (reminder_days, digest_day), organizations (name). Extraction: contracts.terms (agreement_id, document_version_id, extraction_status), agreements, and the AI-readable document text (list_documents, read_document_text).",
+   "outputContract": "Digest: one email per recipient per week; unverified items are listed separately and never counted as confirmed; no_update only when nothing is in the windows and the quiet policy allows it. Extraction: per agreement at most one terms update (extraction_status none → proposed, source_quotes) and new obligations with verified false, source_quote, source_page and source_document_version_id; deduplicated by agreement_id + title + due_date; never sets verified, verified_by or verified_on; originals that are not AI-readable or whose text is not ready are reported and skipped, never guessed.",
+   "promptExample": "Daily at 07:00 Europe/Berlin: for each Contracts agreement whose contracts.terms record has a document_version_id and extraction_status none, read that document version with read_document_text (all chunks). If it is not listed or not ready, report it and skip. Otherwise propose renewal, renewal_term_months, notice_days, confidentiality_years, cda_direction, purpose and governing_law with source_quotes {field:{quote,page}}, compute notice_deadline and confidentiality_end, set extraction_status proposed, and create contracts.obligations (payments, reports, diligence milestones, notices, audits, insurance, royalties) with verified false, the exact source_quote, source_page and source_document_version_id. Skip obligations that already exist for the same agreement, title and due date. Never set verified or verified_by. Report what was proposed and what needs a person to verify in Contracts."
+  }
+ }
+}
