@@ -4,6 +4,20 @@
 **Scope:** TrialAgents built-in apps (current and future). This is the shared A–E methodology; keep app-specific content plans in linked, separate Markdown files.  
 **Owner:** Marketing/content. **Review trigger:** material changes to product capabilities, competitors, assistant integrations, or search guidance.
 
+## Final article-ending and Series B/C rules — 12 November 2026
+
+These rules supersede earlier closing-source-section instructions throughout this document.
+
+- End every app blog article with one **Start with [App]** CTA card. It is the final article block immediately before the shared site footer. No sources, methodology, caveats, related-reading sections or footnotes after it.
+- Remove closing footnote sections rather than moving them below the CTA. Keep essential factual qualifications next to the claim, product-source links inline, byline/date and a short first-party disclosure near the top. Keep detailed evidence, asset provenance and test limitations in the app's Markdown plan.
+- Keep pricing out of these app comparisons and shortlists unless the owner explicitly commissions pricing content.
+- **Series B:** lead with a useful shortlist table and differentiate options by workflow fit; no invented overall scores. TrialAgents' profile keeps native ChatGPT/Claude → whole-app customization → connected apps → relevant controls order. Use official identifying logos where available and genuine, clearly captioned screenshots. Avoid repeated CTAs.
+- **Series C:** lead with what the connected app lets the reader do inside the named assistant. Provide specific prompts, prerequisites, expected results and review points. Distinguish app UI, conversational record proposals, source customization, shared data and optional automations. Explain which steps happen in the app. Do not label a documented recipe as a completed end-to-end host test.
+- The standard Runway app computes financial outputs deterministically. Assistants prepare inputs and commentary; do not tell them to invent or overwrite derived forecasts or frozen snapshots. Scenario previews are distinct from saved scenarios and adopted forecasts.
+- Use the approved wider, high-contrast editorial design and consistent numbered green headings. Keep text concise. No simulated chat screenshots, fictional product interfaces, unsourced vendor marks or statements of host parity.
+- Browser screenshots must be labeled as browser screenshots; they are not evidence of embedded ChatGPT/Claude rendering. Store the reviewed template version/digest and the verification scope in the app plan.
+- Keep app plans current with published URLs and verified release status. Source merge, passed checks and live CDN availability are separate stages.
+
 ## How the per-app plans are organized
 
 This document is the **single shared methodology** for all TrialAgents app SEO/LLM pages. Do not copy or modify these rules for each new app. Instead, create one linked page per app.
@@ -195,8 +209,8 @@ Use a few genuine, well-captioned screenshots to support claims rather than a sc
 1. **H1:** “[N] Best [Vendor] Alternatives for [Audience]” or “Best [Category] Software for [Audience].”
 2. **Quick answer:** who should consider switching and a short, genuinely differentiated shortlist.
 3. **Why people seek alternatives:** specific limitations or product changes, sourced and dated.
-4. **Comparison-at-a-glance matrix:** tools, best for, key capability, limitations, AI/host support if relevant, pricing posture.
-5. **Individual option blocks (repeat for each):** what it does; best for; strengths; limitations; pricing/source; what makes it different from the named vendor. Include TrialAgents on equal editorial terms.
+4. **Comparison-at-a-glance matrix:** tools, best for, key capability, limitations, AI/host support if relevant, setup considerations.
+5. **Individual option blocks (repeat for each):** what it does; best for; strengths; limitations; source; what makes it different from the named vendor. Include TrialAgents on equal editorial terms.
 6. **How we selected the products:** inclusion/exclusion criteria and testing disclosures.
 7. **Recommendations by use case:** a choice map, including reasons not to choose TrialAgents.
 8. **Switching or implementation considerations:** how to avoid losing workflows or data.
