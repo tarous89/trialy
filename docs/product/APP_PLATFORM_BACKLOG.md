@@ -8,6 +8,10 @@ Current: 9 November 2026. This is not an authorization to start every item. [Con
 - Verify actual unattended ChatGPT runner activation and a real no-write cycle before claiming background readiness. A Claude runner would be new work.
 - Complete applicable production recovery/provider checks using current operational evidence, not dated release blockers.
 
+## External exchange (committed, 12 Nov 2026)
+
+- Build [external exchange](EXTERNAL_EXCHANGE.md): per-recipient links, brief and documents out, response form with drafts and resubmission, documents back (e.g. signed CDA), private messages and anonymised clarifications, confidentiality gate, outbound email from the TrialAgents domain (human-confirmed), notifications, app API. First consumer: CRO Bids; reused later by Data Room secure rooms, Diligence Q&A, Site Finder and Investor Updates.
+
 ## Modular apps and shared data (committed requirement)
 
 - Implement the platform items in [modular apps and shared data §5](MODULAR_APPS_AND_SHARED_DATA.md#5-platform-work-roadmap): table role metadata, install/reinstall detection and reconnect, delete-app dialog listing retained tables, unbound-table label, table deletion guard, template validation of core roles, and authoring-guide rules. Verify current behaviour before building.

@@ -20,6 +20,7 @@
 | 03 Fundraise | [apps/FUNDRAISE.md](apps/FUNDRAISE.md) | Scoped; build next |
 | 08 Data Room | to scope | Build right after Fundraise (writer of the `dataroom.v1` roles Fundraise reads) |
 | 04 Contracts | [apps/CONTRACTS.md](apps/CONTRACTS.md) | Scoped |
+| 05 CRO Bids | [apps/CRO_BIDS.md](apps/CRO_BIDS.md) | Scoped; needs platform [External exchange](../EXTERNAL_EXCHANGE.md) first |
 
 All apps follow [modular apps and shared data](../MODULAR_APPS_AND_SHARED_DATA.md): core contract v1 roles, the add-app dialog (Connect / Create new per table, access), and **in-app integrations** — an app keeps its own table for data another app can provide, offers one subtle "Add <app>" / "Use its data" line, and reads the provider read-only once the user chooses it. There is no "not connected" state. Contracts for every output role are in `templates/contracts/outputs.json` (readable via `read_app_template_guidance(resource:"contracts")`).
 
@@ -31,7 +32,7 @@ All apps follow [modular apps and shared data](../MODULAR_APPS_AND_SHARED_DATA.m
 | 2 | BT2-02 | **Programs** | Milestones, dependencies, risks and decisions across all programs. | CEO, PM, functional leads | Smartsheet (+ life-science PPM concepts: OnePlan, Planisware) | Core | replaces `project-oversight` |
 | 3 | BT2-03 | **Fundraise** | Investor pipeline for a round, from first contact to signed commitment. | CEO, CFO | Foundersuite (+ Visible for engagement) | Core | replaces `investor-crm` |
 | 4 | BT2-04 | **Contracts** | Register of CDAs, MSAs, SOWs and other agreements with key dates and obligations. | CEO, BD, ClinOps, finance | ContractSafe/ContractWorks (size) + Gatekeeper/Contract Logix (biotech) + Ironclad (AI extraction) | Core | **new** |
-| 5 | BT2-05 | **CRO Bids** | Collect, compare and score outsourcing bids, then record the award. | ClinOps, R&D leads | Science Exchange / Scientist.com | Core | merge `cro-selection` + `sponsor-rfp-management` |
+| 5 | BT2-05 | **CRO Bids** | Collect, compare and score outsourcing bids, then record the award. | ClinOps, R&D leads | Scientist.com (+ Science Exchange; ClinAI / bid-grid practice) | Core | merge `cro-selection` + `sponsor-rfp-management` |
 | 6 | BT2-06 | **Investor Updates** | Regular updates, KPI history and a cap-table summary for existing investors. | CEO, CFO | Visible | Core | **new** (split from Investor CRM) |
 | 7 | BT2-07 | **BD Pipeline** | Partnering targets, conference meetings and licensing deals by stage. | CEO, BD | Inova Partnering (Inpart) | Core | adapt `partnership-tracker` |
 | 8 | BT2-08 | **Data Room** | Data room index, readiness gaps and who has access to which version. | CEO, CFO, BD | ShareVault | Core | **new** |
@@ -128,6 +129,7 @@ Format per app: users and job · reference app · scope (in / out) · records ·
 - **Records:** Sourcing request; Bid; Bid line; Score; Award decision. Shared: Organization (vendor), Program, Study.
 - **Screens:** Requests overview · Vendor longlist · Bid comparison grid · Weighted scoring · Decision record.
 - **Assistant angle:** compare bid documents line by line and flag missing items; on award, offer to create the agreement in 04 and the vendor in 16.
+- **Detailed scope:** final build scope in [apps/CRO_BIDS.md](apps/CRO_BIDS.md); suppliers respond through the platform [External exchange](../EXTERNAL_EXCHANGE.md).
 
 ### BT2-06 — Investor Updates (rank 6, Core)
 *Regular updates and KPI history for existing investors.*  
