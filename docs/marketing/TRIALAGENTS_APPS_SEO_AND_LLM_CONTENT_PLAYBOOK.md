@@ -18,6 +18,17 @@ These rules supersede earlier closing-source-section instructions throughout thi
 - Browser screenshots must be labeled as browser screenshots; they are not evidence of embedded ChatGPT/Claude rendering. Store the reviewed template version/digest and the verification scope in the app plan.
 - Keep app plans current with published URLs and verified release status. Source merge, passed checks and live CDN availability are separate stages.
 
+## Series D implementation rules — 12 November 2026
+
+- Lead with a specific biotech operational question and answer it before promoting software. This intentionally adapts the platform-first comparison format: inside the product section, preserve native ChatGPT/Claude → whole-app customization → connected apps → relevant controls.
+- Use one transparent fictional worked example with explicit opening conditions, units, timing, excluded variables and a reproducible calculation. Independently recalculate every displayed value before publication.
+- Distinguish cash timing from cost changes, cash from expense recognition, and a monthly forecast from exact-day liquidity. Do not imply that a modeled payment delay alters contractual obligations.
+- Tie decisions to real team responsibilities: clinical operations validates activity/milestones, finance reconciles amounts and cash dates, leadership reviews the funding decision.
+- Cite factual industry examples inline from primary sources; do not generalize one company's contract terms to all CRO agreements. Keep review scope and detailed evidence in the app plan.
+- Separate product screenshots from worked-example outputs. A genuine demo screenshot must not be presented as a run of the article's scenario unless it actually is.
+- Retain concise prose, consistent green numbered headings, wider/darker editorial styling, no pricing comparison, no closing footnote, and one final Start with [App] card.
+- The approved initial example is Runway D1, CRO payment timing. Reuse its educational structure, not its exact topic or numbers, for other apps.
+
 ## How the per-app plans are organized
 
 This document is the **single shared methodology** for all TrialAgents app SEO/LLM pages. Do not copy or modify these rules for each new app. Instead, create one linked page per app.
