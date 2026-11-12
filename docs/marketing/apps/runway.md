@@ -16,6 +16,7 @@
 | Runway official app page | https://trialagents.com/apps/runway | Published; production URL checked 12 November 2026 |
 | Runway vs Excel | https://trialagents.com/apps/runway-vs-excel | Published editorial comparison; final revision [PR #177](https://github.com/tarous89/trialagents-public/pull/177), live verified 12 November 2026 |
 | Cash runway software shortlist (B1) | https://trialagents.com/apps/best-cash-runway-software-biotech | Published in public-site PR #178; live verified 12 November 2026; closing footnote removed in PR #179 |
+| Runway in ChatGPT (C1) | https://trialagents.com/apps/manage-biotech-cash-runway-chatgpt | Published in public-site PR #180; live verified 12 November 2026 |
 | App pages index | https://trialagents.com/apps | Published; production URL checked 12 November 2026 |
 
 These are intended canonical URLs. Do not assert that a URL is live until checked on the production CDN.
@@ -85,11 +86,12 @@ These are intended canonical URLs. Do not assert that a URL is live until checke
 
 ### C1. How to Manage Biotech Cash Runway in ChatGPT
 - Define prompt-only advice, spreadsheets, MCP and persistent app workflows.
-- Provide a step-by-step, tested ChatGPT Runway example.
+- Provide a step-by-step documented ChatGPT Runway example; describe hands-on testing only when actually completed.
 - Show authorized inputs, proposal and human-reviewed writes.
 - Explain deterministic calculations, access limitations and what remains in the browser.
 - Compare verified competing AI approaches without claiming exclusivity.
-- **Status:** C1 publication prepared 12 November 2026 at planned route `/apps/manage-biotech-cash-runway-chatgpt`; verify live CDN before marking published.
+- **Status:** Published at https://trialagents.com/apps/manage-biotech-cash-runway-chatgpt; [public-site PR #180](https://github.com/tarous89/trialagents-public/pull/180), merge `31aa26d461b799eceb221498cf0e94ad48ccda8b`; live CDN verified 12 November 2026.
+- **Publication QA:** exact-head automated checks passed, including desktop/mobile coverage, image loading and the final-CTA assertion for A1/B1/C1. Production Cloudflare build, served HTML, app-index/hub links and llms.txt entry verified. The generated sitemap passed build validation; a direct live sitemap fetch returned HTTP 403 in this session, so live sitemap retrieval was not independently confirmed. This verifies the article, not an end-to-end host workflow.
 - **Evidence:** live catalog `life.cash-runway 2.1.0`, digest `dcf578b91b2c1ac05afe42ea2f1e2172c280783c9a1602e90d054fdec1cc651a`; current apps guide, template interaction contract and examples read through the connected tools. Reviewed Runway calculation/integration test source; reading tests is not evidence they were executed in this session.
 - **Verification boundary:** publish as a documented guided workflow with example prompts, not a measured or completed end-to-end ChatGPT/Claude session. Do not fabricate host screenshots. Existing Runway template screenshots are browser views.
 - **Important operational details:** opening balance uses a month-end date; contingent financing is separate from base runway; assistant proposes inputs, app calculates outputs; user builds transient previews in Scenarios; scenario save and adoption are distinct reviewed steps; app writes frozen close snapshots.
@@ -145,4 +147,4 @@ The approved A1 comparison is live. Preserve its concise, platform-first editori
 
 The public implementation lives in `tarous89/trialagents-public`: `static/apps/runway-vs-excel.html`, `static/apps/runway.css` and `scripts/render-app-pages.mjs`. Follow that repository's publishing checks and verify served production content after every release. These Markdown files are planning/editorial records, not the deployed source.
 
-Prioritize D1 and C1 for additional industry-specific and assistant-specific evidence. Before publishing, verify competitor facts, separately test host-specific behavior and create any promised assets. Link each article to the official Runway hub; add cross-series links only to real, relevant published pages. Monitor indexing, engagement, CTA conversion and observed AI referrals separately from implementation QA.
+A1, B1 and C1 are published. Prioritize D1 for the next industry-specific workflow; C2 needs separate Claude evidence. Before publishing, verify competitor facts, separately test host-specific behavior and create any promised assets. Link each article to the official Runway hub; add cross-series links only to real, relevant published pages. Monitor indexing, engagement, CTA conversion and observed AI referrals separately from implementation QA.
