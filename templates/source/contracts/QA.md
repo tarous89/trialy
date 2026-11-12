@@ -37,7 +37,8 @@ Validated against the repository host on 12 November 2026 with disposable PGlite
 | `APP_DESIGN_CHECKS=off node --import tsx --test tests/contracts.test.ts` | 12/12 passed, including the production design inspector (seven screens plus the verification and details panels, 1440 and 390 px) |
 | `APP_DESIGN_CHECKS=off node --import tsx --test tests/contracts-integration.test.ts` | 5/5 passed |
 | `APP_DESIGN_CHECKS=off node --import tsx scripts/test-contracts-browser.ts` | Passed |
-| `npm test` (full suite) | FULL_SUITE_RESULT |
+| `npm test` (full suite, 507 tests) | 505 passed. `tests/monitoring-pv-integration.test.ts` (CO06, overlapping controls at 390 px) fails identically on unmodified `main` in this container, as recorded for Programs. `tests/feasibility-template.test.ts` failed because the repository catalog list is name-sorted with a default page of 20 and Contracts pushed Site Feasibility to the second page; that check and the same check in four other template tests now read the list with `limit: 50` (their intent, discoverability, is unchanged). All five pass. |
+| `npx playwright test tests/visual/zzz-app-integrations.spec.cjs tests/visual/platform-catalog.spec.cjs` | 9/9 passed (the specs nearest the changed runtime and catalog code; the full visual suite runs in CI) |
 
 Browser-based checks (design inspector, browser test) ran against this container's Chromium through a `PLAYWRIGHT_BROWSERS_PATH` that maps the repository's pinned Playwright 1.51.1 browser names to the installed build, as for Programs. Test code was not changed for this. The Programs design-inspector test fails identically without that mapping.
 
