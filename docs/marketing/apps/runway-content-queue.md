@@ -10,7 +10,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | --- | --- | --- | --- |
 | A1 | TrialAgents Runway vs Excel: Biotech Cash Planning Compared | Already covered / published | [Live article](https://trialagents.com/apps/runway-vs-excel) |
 | A2 | TrialAgents Runway vs Float: Which Cash Flow Forecasting App Is Better for Biotech Startups? | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-float) |
-| A3 | TrialAgents Runway vs cfo.ai (Formerly Runway): AI Financial Planning for Biotech Startups | Draft PR #186; validation in progress — not published | [Source PR](https://github.com/tarous89/trialagents-public/pull/186) |
+| A3 | TrialAgents Runway vs cfo.ai (Formerly Runway): AI Financial Planning for Biotech Startups | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-cfo-ai) |
 | A4 | TrialAgents Runway vs LivePlan: Startup Financial Planning for Pre-Revenue Biotechs | Queued — verify and publish | — |
 | A5 | TrialAgents Runway vs Fathom: Cash Runway Monitoring vs Financial Reporting | Queued — verify and publish | — |
 | A6 | TrialAgents Runway vs Puzzle: AI Accounting vs AI-Native Cash Runway Planning | Queued — verify and publish | — |
@@ -68,7 +68,7 @@ All listed published pages were recorded as live in [Runway's app plan](runway.m
 
 ## Publication sequence and hourly worker contract
 
-1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2 is now published; the next candidate is **A3: Runway vs cfo.ai**, subject to current queue and live-state checks.
+1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2 and A3 are now published; the next candidate is **A4: Runway vs LivePlan**, subject to current queue and live-state checks.
 2. Re-read the **current** shared playbook and [Runway plan](runway.md). Use the approved genuine screenshots, wide dark editorial shell, numbered green headings, platform advantage order, honest competitor treatment, one final "Start with Runway" CTA and standard shared header/footer.
 3. Research and verify vendor identities, capabilities, URL destinations, AI/Claude/ChatGPT host experiences separately, formulas and substantive claims. Keep the no-pricing-in-A/B rule; in other series, only discuss verified prices if explicitly appropriate and editorially approved. Real screenshots only, no invented interfaces or citations. Treat claims in tentative titles as hypotheses.
 4. Make the article genuinely distinct from existing Runway pages. Do not create weak "year-only", vendor-name-swapped or keyword-cannibalizing pages. If the subject is already answered on a live URL, mark it as covered, link it and advance to the next eligible item **within the same run**, without publishing duplicate content.
@@ -106,3 +106,9 @@ Owner requests an hourly **ChatGPT Work** execution with **Astra, medium thinkin
 ### A3 source checkpoint — 13 November 2026
 
 PR #186, head `a525b09a46d09af33bcbdc7bd67a733583434afe`, prepares /apps/runway-vs-cfo-ai. Primary sources: https://cfo.ai/agents (MCP, deterministic calculations, permissions and lineage), https://cfo.ai/integrations (connection catalog), https://cfo.ai/blog/why-runway (model customization and brand continuity), https://cfo.ai/terms (Runway Financial legal identity). Rebrand wording retained; comparison does not imply TrialAgents has exclusive AI/MCP support. Three genuine Runway 2.1 browser demo screenshots; no competitor or host acceptance test claimed. Await exact-head CI, visual review, merge and live verification. Resume this PR before starting A4.
+
+### A3 publication verified — 13 November 2026
+
+Published https://trialagents.com/apps/runway-vs-cfo-ai via PR #186, release `edb3973328d7c69bc1f74508994b611302bdb36e`. Predeploy run 43412977689 passed 282 tests, snapshot/metadata/discovery and desktop/mobile browser checks; visual artifacts reviewed. Automatic deployment completed without Cloudflare login. Production checks confirmed HTTP 200, expected H1 and self-canonical, Article/BreadcrumbList schema, three real screenshots, /apps index and sitemap.xml/llms.txt/llm.xml inclusion. Loader `/_snapshot/query-assets/114933b27c521a75f333.js` matches homepage and both it and client `/_snapshot/query-assets/c251da7b4969f7c85048.js` return 200. Final CTA retained; no tracking changes or synthetic events. This supersedes A3's pending checkpoint.
+
+**7 published; 40 remaining. Next eligible topic: A4, Runway vs LivePlan**, subject to fresh queue/claim checks. Search rankings, actual indexing and assistant citations are not established by publication QA.
