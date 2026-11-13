@@ -17,7 +17,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | A7 | TrialAgents Runway vs Aleph: a biotech planning app or connected FP&A? | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-aleph) |
 | A8 | TrialAgents Runway vs Jirav: cash planning and three-statement FP&A for biotech | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-jirav) |
 | A9 | TrialAgents Runway vs Bob Finance (Formerly Mosaic): Financial and Workforce Planning | Deferred — vendor relaunch/availability verification required | [Current vendor notice](https://www.hibob.com/platform/finance/) |
-| A10 | TrialAgents Runway vs Exigyn: adaptable cash planning or biotech FP&A? | Merged PR #193 — deployment verification pending | [Source PR](https://github.com/tarous89/trialagents-public/pull/193) |
+| A10 | TrialAgents Runway vs Exigyn: adaptable cash planning or biotech FP&A? | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-exigyn) |
 | A11 | TrialAgents Runway vs Caladan: Clinical Trial Budgeting and Cash Runway | Queued — verify and publish | — |
 | A12 | TrialAgents Runway vs Airtable: Cash Runway Tracking for Biotech Teams | Queued — verify and publish | — |
 | B1 | Best Cash Runway Management Software for Biotech Startups in 2027 | Already covered / published | [Live article](https://trialagents.com/apps/best-cash-runway-software-biotech) |
@@ -68,7 +68,7 @@ All listed published pages were recorded as live in [Runway's app plan](runway.m
 
 ## Publication sequence and hourly worker contract
 
-1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2–A8 are published. **Next eligible: A10, Runway vs Exigyn, subject to research and claim checks. A9 deferred pending Bob Finance availability.** See the latest release checkpoint below.
+1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2–A8 are published. **Next eligible: A11, Runway vs Caladan, subject to research and claim checks. A10 is published; A9 remains deferred by owner decision.** See the latest release checkpoint below.
 2. Re-read the **current** shared playbook and [Runway plan](runway.md). Use the approved genuine screenshots, wide dark editorial shell, numbered green headings, platform advantage order, honest competitor treatment, one final "Start with Runway" CTA and standard shared header/footer.
 3. Research and verify vendor identities, capabilities, URL destinations, AI/Claude/ChatGPT host experiences separately, formulas and substantive claims. Keep the no-pricing-in-A/B rule; in other series, only discuss verified prices if explicitly appropriate and editorially approved. Real screenshots only, no invented interfaces or citations. Treat claims in tentative titles as hypotheses.
 4. Make the article genuinely distinct from existing Runway pages. Do not create weak "year-only", vendor-name-swapped or keyword-cannibalizing pages. If the subject is already answered on a live URL, mark it as covered, link it and advance to the next eligible item **within the same run**, without publishing duplicate content.
@@ -281,3 +281,14 @@ Prepared on public branch `runway-a10-exigyn-20261113`, head `9cf1a0f9fce4b867bc
 
 
 A10 merged checkpoint: PR #193 released `e552a878768a5df5daebea5302688713568588d1` after successful exact-head predeploy 43491069636 and desktop/mobile artifact 14070201181 inspection. Cloudflare build and production verification in progress; initial HTTP 404 is pending deployment. Resume A10 before another topic if interrupted.
+
+
+### A10 published — 13 November 2026
+
+**TrialAgents Runway vs Exigyn: adaptable cash planning or biotech FP&A?** — https://trialagents.com/apps/runway-vs-exigyn
+
+Published via [PR #193](https://github.com/tarous89/trialagents-public/pull/193), exact source head `9cf1a0f9fce4b867bcf79a0636c39489226108fe`, release `e552a878768a5df5daebea5302688713568588d1`. Predeploy run 43491069636 passed full tests, snapshot/discovery and browser checks. Desktop/mobile artifact 14070201181 inspected; accessible horizontally scrolling comparison table on mobile, no page-layout blocker. Existing Cloudflare automatic build and article-aware production verification succeeded. Early 404s resolved within the bounded deployment wait.
+
+Independent live checks passed: expected HTTP 200 content, exact visually reviewed fragment/CSS, one H1, title/description, self-canonical, Article/BreadcrumbList schema, three genuine images, all article links, one final Start with Runway CTA; /apps listing, one sitemap.xml canonical entry, llms.txt and llm.xml. Homepage-identical analytics loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js` both HTTP 200. Tracking scripts, configuration, consent, events, collectors and attribution unchanged; no synthetic production events.
+
+This supersedes A10 pending/source checkpoints. **13 published, 34 unfinished**, including deferred A9. Next eligible candidate: A11, Runway vs Caladan, subject to fresh vendor research and claim checks. No additional article published in this run.
