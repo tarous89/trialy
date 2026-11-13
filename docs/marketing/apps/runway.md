@@ -234,3 +234,13 @@ Status: source PR awaiting exact-head predeploy, desktop/mobile artifact review,
 ### A6 merged release checkpoint — 13 November 2026
 
 PR #189 merged at 14:07 UTC, release `730ec8d33dad332c44066926fd93235619bf5837`. Exact head `493e89f0894d641100f05108e942b4a5d20a9e7e` passed predeploy run 43438638202 (282 tests, snapshot/metadata/discovery, desktop/mobile and site regressions). Article desktop/mobile artifacts 14045736270 visually inspected; no layout blocker, standard accessible comparison-table horizontal scrolling on narrow screens. Initial article HTTP 404 at 14:07 UTC is automatic deployment pending, not an authentication fault. Live verification is running; resume this release before A7 if interrupted.
+
+
+### A6 publication verified — 13 November 2026
+
+- **Published:** [TrialAgents Runway vs Puzzle: AI accounting and biotech cash planning](https://trialagents.com/apps/runway-vs-puzzle). Source [PR #189](https://github.com/tarous89/trialagents-public/pull/189), exact head `493e89f0894d641100f05108e942b4a5d20a9e7e`; merged release `730ec8d33dad332c44066926fd93235619bf5837` at 14:07 UTC.
+- Exact-head predeploy run `43438638202` passed **282 tests**, snapshot, metadata/discovery, desktop/mobile and site regression checks. Inspected both article screenshots in artifact `14045736270`; no layout blocker. The standard comparison table uses an accessible horizontal-scroll region on narrow screens.
+- GitHub-connected Cloudflare Workers build succeeded automatically. Early 404s were deployment pending; expected HTTP 200 article verified by 14:11 UTC, without dashboard authentication or manual deployment. Served article fragment and CSS exactly match the source reviewed at desktop/mobile sizes.
+- Live checks passed: expected H1/title/description, self-canonical, no noindex directive, Article/BreadcrumbList schema, three genuine images, internal/primary-source links and final Start with Runway CTA. Twenty URLs checked; /apps listing, single canonical sitemap.xml entry, llms.txt and llm.xml inclusion confirmed. HTTP headers deliver HTML.
+- Article uses the homepage-identical loader `/_snapshot/query-assets/114933b27c521a75f333.js`; loader and dependency `/_snapshot/query-assets/c251da7b4969f7c85048.js` return HTTP 200. Existing tracking scripts, configuration, consent, events, attribution and collectors unchanged; no synthetic production events.
+- This supersedes A6's source and merged-pending checkpoints. **10 published; 37 remaining. Next eligible: A7, Runway vs Aleph**, subject to fresh queue/claim checks. Publication QA does not establish search indexing, rankings or assistant citations. Refresh this comparison when either vendor's documented capabilities or integration scope changes.
