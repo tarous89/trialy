@@ -18,7 +18,7 @@
 | 01 Runway | [apps/RUNWAY.md](apps/RUNWAY.md) | `life.cash-runway` 2.1.0 published (#131) |
 | 02 Programs | [apps/PROGRAMS.md](apps/PROGRAMS.md) | `life.project-oversight` 2.1.0 published (#136), with manual cash forecast and Runway integration |
 | 03 Fundraise | [apps/FUNDRAISE.md](apps/FUNDRAISE.md) | Built in PR #137 (open) |
-| 08 Data Room | to scope | Build right after Fundraise (writer of the `dataroom.v1` roles Fundraise reads) |
+| 08 Data Room | [apps/DATA_ROOM.md](apps/DATA_ROOM.md) | Scope approved (13 Nov); hosted rooms (only) on external exchange + room extension ([§5](../EXTERNAL_EXCHANGE.md#5-room-extension-for-data-room)); build as PR A (platform) then PR B (app); includes Diligence Q&A (12) |
 | 04 Contracts | [apps/CONTRACTS.md](apps/CONTRACTS.md) | `life.contracts` 1.0.0 published (#141) |
 | 05 CRO Selection | [apps/CRO_SELECTION.md](apps/CRO_SELECTION.md) | Scoped (13 Nov); build after External exchange PR #147 is merged |
 
@@ -35,11 +35,11 @@ All apps follow [modular apps and shared data](../MODULAR_APPS_AND_SHARED_DATA.m
 | 5 | BT2-05 | **CRO Selection** | Choose CROs, CDMOs and labs: from the need to a signed award and handover. | ClinOps, R&D leads | Scientist.com (+ Science Exchange; ClinAI / bid-grid practice) | Core | merge `cro-selection` + `sponsor-rfp-management` |
 | 6 | BT2-06 | **Investor Updates** | Regular updates, KPI history and a cap-table summary for existing investors. | CEO, CFO | Visible | Core | **new** (split from Investor CRM) |
 | 7 | BT2-07 | **BD Pipeline** | Partnering targets, conference meetings and licensing deals by stage. | CEO, BD | Inova Partnering (Inpart) | Core | adapt `partnership-tracker` |
-| 8 | BT2-08 | **Data Room** | Data room index, readiness gaps and who has access to which version. | CEO, CFO, BD | ShareVault | Core | **new** |
+| 8 | BT2-08 | **Data Room** | Prepare, share and track data rooms for financing, licensing, partnering and M&A, with diligence Q&A. | CEO, CFO, BD | ShareVault (domain) + DocSend/Papermark (mechanics) + Ansarada (Q&A) | Core | **new** (includes BT2-12) |
 | 9 | BT2-09 | **Lab Inventory** | Reagents and consumables, requests and reorders. | Lab managers, scientists | Quartzy | Core | adapt `inventory-management` |
 | 10 | BT2-10 | **Landscape** | Competitor assets, trials, readouts and deals in your indications. | CEO, BD, CSO/CMO | Citeline Biomedtracker (alt. Evaluate) | Core · **TrialAgents edge** | **new** (absorbs `literature-radar` intent) |
 | 11 | BT2-11 | **Trial Finance** | Clinical budgets vs invoices and monthly accrual estimates. | CFO, ClinOps | Condor | Extended | **new** |
-| 12 | BT2-12 | **Diligence Q&A** | Incoming diligence questions, approved answers and what was disclosed to whom. | CEO, CFO, BD | Ansarada (Q&A workflow) | Extended | **new** (split from data room) |
+| 12 | BT2-12 | ~~Diligence Q&A~~ | **Merged into Data Room (08)** on 13 Nov 2026: Q&A belongs to the room. Slot open. | — | — | — | — |
 | 13 | BT2-13 | **Lab Records** | Experiments, protocols and results linked to programs and outsourced studies. | CSO, scientists | Benchling | Extended | adapt `experiment-notebook` |
 | 14 | BT2-14 | **Board** | Board meetings, packs, resolutions and action items. | CEO, company secretary | Diligent Boards | Extended | **new** |
 | 15 | BT2-15 | **IP Portfolio** | Patent families, deadlines, costs and freedom-to-operate actions. | CEO, CSO, IP counsel | Anaqua | Extended | **new** |
@@ -58,7 +58,7 @@ All apps follow [modular apps and shared data](../MODULAR_APPS_AND_SHARED_DATA.m
 The apps are separate, but several share records and form natural packs (all over the shared Organization / Person / Program records):
 
 - **Finance pack:** Runway (01) ← Trial Finance (11) → Investor Updates (06) → Board (14). Accruals feed the runway; the runway feeds updates and board packs.
-- **Deal pack** (fundraising *and* licensing follow the same path: targets → outreach → CDA → non-confidential deck → data room → diligence → term sheet): Fundraise (03), BD Pipeline (07), Contracts (04), Data Room (08), Diligence Q&A (12), Deal Comps (18).
+- **Deal pack** (fundraising *and* licensing follow the same path: targets → outreach → CDA → non-confidential deck → data room → diligence → term sheet): Fundraise (03), BD Pipeline (07), Contracts (04), Data Room (08, includes Diligence Q&A), Deal Comps (18).
 - **Outsourcing pack:** CRO Selection (05) → Contracts (04) → CRO Oversight (16) → Trial Finance (11).
 - **Clinical pack:** Landscape (10), Site Finder (17), Regulatory (20), CRO Oversight (16).
 - **Science pack:** Lab Records (13), Lab Inventory (09), IP Portfolio (15).
@@ -152,14 +152,9 @@ Format per app: users and job · reference app · scope (in / out) · records ·
 - **Assistant angle:** research partner pipelines and deal history; prepare one-page meeting briefs before conferences.
 
 ### BT2-08 — Data Room (rank 8, Core)
-*Data room index, readiness gaps and who has access to which version.*  
-*Long name: Data Room Index & Readiness*
-- **Users / job:** prepare and run a data room for a round or licensing deal: what must be in it, what is missing, which version was shared with whom.
-- **Reference app:** ShareVault — life-science virtual data room for fundraising, licensing and M&A.
-- **In scope:** room index (standard folder structure for financing and licensing rooms), required-document checklist with readiness status, document references and versions, access list per party, change log. **Out (v2):** hosting files for external parties, watermarking, view tracking. Files stay in Drive/SharePoint/Box; hosting is a separate later decision because it is a security product.
-- **Records:** Data room; Room section; Required item; Document reference; Access grant (party, scope, dates). Shared: Organization, Person, Program, Agreement (CDA must exist before access).
-- **Screens:** Readiness overview · Room index · Missing items · Access list · Change log.
-- **Assistant angle:** check readiness against a standard financing or licensing checklist; summarise what changed since a party last had access.
+*Prepare, share and track data rooms for financing, licensing, partnering and M&A, with diligence Q&A.*  
+*Long name: Data Room & Diligence Q&A*
+- **Final scope:** [apps/DATA_ROOM.md](apps/DATA_ROOM.md) (13 Nov 2026). It supersedes the earlier index-only brief: rooms are hosted on the platform external exchange, with per-person links, Non-confidential / Confidential / custom levels, a CDA entry step, view and download tracking, structured Q&A and email notifications. It writes `dataroom.v1` for Fundraise and BD Pipeline.
 
 ### BT2-09 — Lab Inventory (rank 9, Core)
 *Reagents and consumables, requests and reorders.*  
@@ -191,15 +186,8 @@ Format per app: users and job · reference app · scope (in / out) · records ·
 - **Screens:** Study finance overview · Budget vs actual · Invoices · Accrual worksheet · Change orders.
 - **Assistant angle:** check invoices against contract lines and flag mismatches; feed approved accruals into 01.
 
-### BT2-12 — Diligence Q&A (rank 12, Extended)
-*Incoming diligence questions, approved answers and what was disclosed to whom.*  
-*Long name: Due Diligence Q&A Tracker*
-- **Users / job:** handle incoming diligence questions from investors or partners: assign, answer, approve and track what was disclosed to whom.
-- **Reference app:** Ansarada — data room Q&A workflow.
-- **In scope:** question log per party, category, assignee, draft and approved answer, linked documents (08), status and due date. **Out:** sending answers externally from the app.
-- **Records:** DD question; Answer; Disclosure record. Shared: Organization, Person, Document reference.
-- **Screens:** Q&A overview · Question log · Answer review · Disclosure history.
-- **Assistant angle:** draft answers from approved documents; spot repeated questions across parties and reuse approved answers.
+### BT2-12 — Diligence Q&A (merged)
+Merged into [Data Room (08)](apps/DATA_ROOM.md) on 13 November 2026: the question log, assignment, approval, private or published answers and the disclosure record are part of each room.
 
 ### BT2-13 — Lab Records (rank 13, Extended)
 *Experiments, protocols and results linked to programs and outsourced studies.*  

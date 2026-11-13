@@ -1,5 +1,7 @@
 # Runway — SEO and LLM content plan
 
+**Full Runway A–E editorial queue (47 titles, including 5 already covered):** [canonical publishing queue](runway-content-queue.md). The earlier A1/A2 sections below record detailed release history, not the full campaign inventory. New publishing work must use the linked 47-title queue and prevent duplicates.
+
 [All app plans](README.md) · [Shared TrialAgents Apps SEO & LLM Content Playbook](../TRIALAGENTS_APPS_SEO_AND_LLM_CONTENT_PLAYBOOK.md)
 
 **App:** Runway by TrialAgents · **Approved catalog:** life.cash-runway 2.1.0 · **Reviewed:** 12 November 2026.  
@@ -60,7 +62,7 @@ These are intended canonical URLs. Do not assert that a URL is live until checke
 - Compare accounting connections, forecast depth, biotech spending, milestones and supported AI workflows.
 - Model vendor-payment timing across R&D programs in a fictional example.
 - Explain circumstances favoring each product and any complementary use.
-- **Status:** research candidate; do not publish before verification.
+- **Status:** Published 13 November 2026 at https://trialagents.com/apps/runway-vs-float via PR #184 (`c0ecfd43bb5a57adf58bd38d0ffc499e764cb5c3`); live HTML, screenshots, discovery and unchanged loader/client delivery verified.
 
 ## Series B — Alternatives and category discovery
 
@@ -156,3 +158,138 @@ The approved A1 comparison is live. Preserve its concise, platform-first editori
 The public implementation lives in `tarous89/trialagents-public`: `static/apps/runway-vs-excel.html`, `static/apps/runway.css` and `scripts/render-app-pages.mjs`. Follow that repository's publishing checks and verify served production content after every release. These Markdown files are planning/editorial records, not the deployed source.
 
 All five categories now have a published example: A1, B1, C1, revised D1 and E2. E1 remains a separate candidate requiring a real validated spreadsheet before publication; C2 needs separate Claude evidence. Before publishing, verify competitor facts, separately test host-specific behavior and create any promised assets. Link each article to the official Runway hub; add cross-series links only to real, relevant published pages. Monitor indexing, engagement, CTA conversion and observed AI referrals separately from implementation QA.
+
+
+### A2 release checkpoint — 13 November 2026 (historical; superseded below)
+
+Runway vs Float source merged in public-site PR #184, commit `c0ecfd43bb5a57adf58bd38d0ffc499e764cb5c3`. Exact-head predeploy passed 282 tests, snapshot/discovery checks and desktop/mobile browser QA; visual artifacts reviewed. Publication remains blocked pending authenticated Cloudflare deployment: the canonical route returned HTTP 404 after merge. The homepage-only production check is not article publication evidence. See the canonical queue for continuation; preserve tracking and verify served loader/client assets before marking Published.
+
+### A2 live verification and release-process correction — 13 November 2026
+
+A2 is published at https://trialagents.com/apps/runway-vs-float. The existing GitHub-connected Cloudflare build deployed merged main automatically; the earlier claim that Cloudflare sign-in was required was incorrect. HTTP 200, expected H1/canonical, Article/BreadcrumbList, three genuine screenshots, final CTA, app index and sitemap/LLM discovery verified. Loader and analytics dependency both return 200 and match homepage delivery. No tracking changes or synthetic events. See the shared playbook's corrected GitHub-to-CDN procedure and canonical queue; A3 is next, 41 topics remain.
+
+
+### A3 Runway vs cfo.ai — release record, 13 November 2026
+
+- Canonical target: https://trialagents.com/apps/runway-vs-cfo-ai. Title: TrialAgents Runway vs cfo.ai: AI financial planning for biotech startups. Distinct intent: choose biotech operational app planning versus a financial model connected to established business systems, acknowledging both products' AI capabilities.
+- Primary evidence reviewed: https://cfo.ai/terms identifies Runway Financial, Inc.; https://cfo.ai/blog/why-runway documents brand continuity, model adaptation and simulation/save distinction; https://cfo.ai/agents documents MCP, deterministic calculation, source lineage and permissions; https://cfo.ai/integrations documents integration types and catalog. No prices or unsupported host UI parity claims. Not a hands-on cfo.ai benchmark.
+- Media: existing genuine Runway 2.1 browser demo assets 01-overview.jpg, 03-plan.jpg, 05-scenarios.jpg. Screenshots show fictional data, distinct from the qualitative evaluation brief. No generated or competitor screenshots.
+- PR #186 source head `a525b09a46d09af33bcbdc7bd67a733583434afe`; predeploy run 43412977689 passed all checks. Desktop/mobile artifact screenshots reviewed. Merged release `edb3973328d7c69bc1f74508994b611302bdb36e`. Shared header/footer, analytics implementation and consent unchanged.
+- Publication pending live verification after automatic deployment; source merge alone is not publication. See canonical queue for latest completion status. Refresh on material cfo.ai integration/host/model changes or Runway catalog changes.
+
+### A3 publication verified — 13 November 2026
+
+Published https://trialagents.com/apps/runway-vs-cfo-ai via PR #186, release `edb3973328d7c69bc1f74508994b611302bdb36e`. Predeploy run 43412977689 passed 282 tests, snapshot/metadata/discovery and desktop/mobile browser checks; visual artifacts reviewed. Automatic deployment completed without Cloudflare login. Production checks confirmed HTTP 200, expected H1 and self-canonical, Article/BreadcrumbList schema, three real screenshots, /apps index and sitemap.xml/llms.txt/llm.xml inclusion. Loader `/_snapshot/query-assets/114933b27c521a75f333.js` matches homepage and both it and client `/_snapshot/query-assets/c251da7b4969f7c85048.js` return 200. Final CTA retained; no tracking changes or synthetic events. This supersedes A3's pending checkpoint.
+
+**7 published; 40 remaining. Next eligible topic: A4, Runway vs LivePlan**, subject to fresh queue/claim checks. Search rankings, actual indexing and assistant citations are not established by publication QA.
+
+
+### A4 source checkpoint — 13 November 2026
+
+Claimed in the current hourly run; [public-site PR #187](https://github.com/tarous89/trialagents-public/pull/187), head `2f387d3df8d8ee76647e771abd65f84eaf825935`, prepares https://trialagents.com/apps/runway-vs-liveplan. Title: TrialAgents Runway vs LivePlan: startup financial planning for pre-revenue biotechs. Distinct intent: an adaptable biotech operating plan versus a business plan with linked financial statements; fictional grant-and-hire review brief, without invented outcomes.
+
+Primary evidence reviewed: LivePlan's https://www.liveplan.com/features/business-plan-builder and https://www.liveplan.com/features/financial-forecasts-and-scenarios; https://help.liveplan.com/using-the-liveplan-mcp-connector documents early access, read/write operations and host setup paths (not independently acceptance-tested); current product updates document AI forecasting/import; QuickBooks Online help and Desktop end-of-support documentation establish connection limits. No pricing or exclusive-AI claims. TrialAgents catalog life.cash-runway 2.1.0 reread; three genuine approved browser demo screenshots (01-overview, 03-plan, 05-scenarios). Shared analytics unchanged.
+
+Status: awaiting exact-head predeploy, desktop/mobile artifact review, merge and automatic deployment. Resume PR #187 before selecting A5. Refresh this comparison when LivePlan host/integration scope or the Runway catalog changes.
+
+
+### A4 publication verified — 13 November 2026
+
+- **Published:** [TrialAgents Runway vs LivePlan: startup financial planning for pre-revenue biotechs](https://trialagents.com/apps/runway-vs-liveplan). Source [PR #187](https://github.com/tarous89/trialagents-public/pull/187), exact head `2f387d3df8d8ee76647e771abd65f84eaf825935`; merged release `4833e06f8b58274af124725a1af87c00f58498b7` at 12:03 UTC.
+- Predeploy run `43421043276` passed **282 tests**, candidate snapshot, metadata/discovery and desktop/mobile browser checks. Inspected both article screenshots in artifact `14034052936`. No layout blocker; the comparison table retains the standard accessible horizontal-scroll region on narrow screens.
+- Existing GitHub-connected Cloudflare Workers build completed successfully. Initial 404 responses were deployment pending; HTTP 200 and expected served content verified by 12:06 UTC, with no dashboard authentication or manual deployment. Served article exactly matches the source reviewed at desktop/mobile sizes.
+- Production verification passed: one expected H1, title/description, self-canonical, index/follow, Article/BreadcrumbList schema, three genuine screenshots, internal and primary-source links, final Start with Runway CTA, /apps listing, one canonical sitemap.xml entry and llms.txt/llm.xml inclusion. Response headers showed HTTP 200 HTML without a noindex directive.
+- Homepage-identical loader `/_snapshot/query-assets/114933b27c521a75f333.js` and analytics dependency `/_snapshot/query-assets/c251da7b4969f7c85048.js` both return HTTP 200. Tracking implementation, configuration and consent untouched; no synthetic production events sent.
+- This supersedes A4's pending source checkpoint. **8 published; 39 remaining. Next eligible: A5, Runway vs Fathom**, after fresh queue/claim and release checks. Actual search indexing, rankings and assistant citations are not established by publication QA.
+
+
+### A5 source checkpoint — 13 November 2026
+
+[Public-site PR #188](https://github.com/tarous89/trialagents-public/pull/188), exact head `d562d3226211c6cc3e44763ffcc2894dc993db2c`, prepares https://trialagents.com/apps/runway-vs-fathom. Title: TrialAgents Runway vs Fathom: cash planning and financial reporting for biotech. The original “Cash Runway Monitoring vs Financial Reporting” candidate was broadened because Fathom also offers three-way financial forecasts; do not depict it as reporting-only. Distinct angle: a month-end cash underspend caused by payment timing, and the separate decision to add a hire. Qualitative fictional evaluation brief, no invented calculation or hands-on outcome.
+
+Primary evidence reviewed 13 November: https://support.fathomhq.com/en/articles/17312058-connect-to-fathom-s-mcp-server (beta read-only statements/KPIs, excludes forecast/budget and writes); https://support.fathomhq.com/en/articles/13654481-use-the-commentary-writer (AI commentary); https://support.fathomhq.com/en/articles/4616642-get-started-with-forecasting (three-way forecasts); https://support.fathomhq.com/en/articles/9487016-forecast-what-ifs (microforecasts/scenarios); https://support.fathomhq.com/en/articles/4606855-report-on-your-forecast (reports and snapshot limitations); https://www.fathomhq.com/integrations (accounting/file routes; cloud daily sync is not a blanket promise for every route). No prices or unsupported exclusivity/host-parity claims.
+
+Runway catalog 2.1.0 reread (blob `3bd4fdc73c5d2c36299b1569b05903900ba9689d`); genuine approved browser demo assets 01-overview, 06-actuals, 02-cash-flow. No new host acceptance test. Shared shell and analytics unchanged. Status: awaiting exact-head CI, desktop/mobile visual review, merge and actual CDN verification. Resume PR #188 before selecting A6. Refresh on changes to Fathom MCP scope, forecast/reporting/integration behavior or Runway catalog.
+
+
+### A5 publication verified — 13 November 2026
+
+- **Published:** [TrialAgents Runway vs Fathom: cash planning and financial reporting for biotech](https://trialagents.com/apps/runway-vs-fathom). [Public-site PR #188](https://github.com/tarous89/trialagents-public/pull/188), exact head `d562d3226211c6cc3e44763ffcc2894dc993db2c`; merged release `95bf743cafdfbf3b154c319a9103041d83a9b6a7` at 13:02 UTC.
+- Exact-head predeploy run `43429273589` passed **282 tests**, candidate snapshot, metadata/discovery and desktop/mobile browser checks. Both Fathom-article screenshots in artifact `14040105610` inspected. Images, headings and final CTA render correctly; the comparison table uses the existing accessible horizontal-scroll region on narrow screens.
+- Existing GitHub-connected Cloudflare Workers build succeeded. Initial 404 responses were deployment pending; expected live HTTP 200 HTML verified by 13:07 UTC without dashboard authentication or manual deployment. The served article and embedded responsive CSS exactly match the source inspected at desktop/mobile sizes.
+- Verified one expected H1, title/description, self-canonical, index/follow, matching Article/BreadcrumbList schema, all three genuine screenshots, internal/primary-source links and final Start with Runway CTA. /apps listing, one canonical sitemap.xml entry, llms.txt and llm.xml all include the article. HTTP headers permit ordinary HTML delivery without noindex.
+- Identical homepage loader `/_snapshot/query-assets/114933b27c521a75f333.js` and analytics dependency `/_snapshot/query-assets/c251da7b4969f7c85048.js` both return HTTP 200. Existing tracking scripts, configuration, consent and attribution unchanged; no synthetic production events sent.
+- This supersedes A5's pending source checkpoint. **9 published; 38 remaining. Next eligible: A6, Runway vs Puzzle**, subject to fresh queue/claim and release checks. Search indexing, rankings, real-user performance and assistant citations remain unverified.
+
+
+### A6 source checkpoint — 13 November 2026
+
+Claimed this hourly run; [public-site PR #189](https://github.com/tarous89/trialagents-public/pull/189), exact head `493e89f0894d641100f05108e942b4a5d20a9e7e`, prepares https://trialagents.com/apps/runway-vs-puzzle. Title: TrialAgents Runway vs Puzzle: AI accounting and biotech cash planning. Title refined to avoid suggesting AI access is exclusive to TrialAgents. Distinct intent: accounting close versus dated future program commitments; fictional evaluation brief, not an executed benchmark.
+
+Primary evidence: Puzzle's https://help.puzzle.io/en/articles/15331316-how-to-setup-your-puzzle-mcp (read-only default, optional beta writes, company/AI prerequisites); https://help.puzzle.io/en/articles/13623194-api-and-mcp-access-in-puzzle (self-serve MCP versus case-by-case partner API); https://help.puzzle.io/en/articles/9155896-faq-integrations (overnight sync and record-specific limits); https://help.puzzle.io/en/articles/8471491-can-i-do-projections-in-puzzle (custom burn assumption versus projections); https://help.puzzle.io/en/articles/8646694-the-monthly-checklist; https://puzzle.io/legal/faq and https://puzzle.io/solutions/startup. No native Puzzle-to-TrialAgents connection or independently tested host parity claimed. Current Runway life.cash-runway 2.1.0 catalog reviewed. Three approved genuine browser demo screenshots: 01-overview, 03-plan, 05-scenarios. No pricing or tracking changes.
+
+Status: source PR awaiting exact-head predeploy, desktop/mobile artifact review, merge and automatic CDN publication. Resume PR #189 before A7; do not mark Published until live checks pass.
+
+
+### A6 merged release checkpoint — 13 November 2026
+
+PR #189 merged at 14:07 UTC, release `730ec8d33dad332c44066926fd93235619bf5837`. Exact head `493e89f0894d641100f05108e942b4a5d20a9e7e` passed predeploy run 43438638202 (282 tests, snapshot/metadata/discovery, desktop/mobile and site regressions). Article desktop/mobile artifacts 14045736270 visually inspected; no layout blocker, standard accessible comparison-table horizontal scrolling on narrow screens. Initial article HTTP 404 at 14:07 UTC is automatic deployment pending, not an authentication fault. Live verification is running; resume this release before A7 if interrupted.
+
+
+### A6 publication verified — 13 November 2026
+
+- **Published:** [TrialAgents Runway vs Puzzle: AI accounting and biotech cash planning](https://trialagents.com/apps/runway-vs-puzzle). Source [PR #189](https://github.com/tarous89/trialagents-public/pull/189), exact head `493e89f0894d641100f05108e942b4a5d20a9e7e`; merged release `730ec8d33dad332c44066926fd93235619bf5837` at 14:07 UTC.
+- Exact-head predeploy run `43438638202` passed **282 tests**, snapshot, metadata/discovery, desktop/mobile and site regression checks. Inspected both article screenshots in artifact `14045736270`; no layout blocker. The standard comparison table uses an accessible horizontal-scroll region on narrow screens.
+- GitHub-connected Cloudflare Workers build succeeded automatically. Early 404s were deployment pending; expected HTTP 200 article verified by 14:11 UTC, without dashboard authentication or manual deployment. Served article fragment and CSS exactly match the source reviewed at desktop/mobile sizes.
+- Live checks passed: expected H1/title/description, self-canonical, no noindex directive, Article/BreadcrumbList schema, three genuine images, internal/primary-source links and final Start with Runway CTA. Twenty URLs checked; /apps listing, single canonical sitemap.xml entry, llms.txt and llm.xml inclusion confirmed. HTTP headers deliver HTML.
+- Article uses the homepage-identical loader `/_snapshot/query-assets/114933b27c521a75f333.js`; loader and dependency `/_snapshot/query-assets/c251da7b4969f7c85048.js` return HTTP 200. Existing tracking scripts, configuration, consent, events, attribution and collectors unchanged; no synthetic production events.
+- This supersedes A6's source and merged-pending checkpoints. **10 published; 37 remaining. Next eligible: A7, Runway vs Aleph**, subject to fresh queue/claim checks. Publication QA does not establish search indexing, rankings or assistant citations. Refresh this comparison when either vendor's documented capabilities or integration scope changes.
+
+
+### A7 source checkpoint — 13 November 2026
+
+[Public-site PR #190](https://github.com/tarous89/trialagents-public/pull/190), exact head `0ba9bbc13a6ba11a1bfeeb1e0b1c72194a06b1d0`, prepares https://trialagents.com/apps/runway-vs-aleph. Title: TrialAgents Runway vs Aleph: a biotech planning app or connected FP&A?. Refined title distinguishes an operational biotech app from connected spreadsheet FP&A without suggesting exclusive AI support. Distinct intent: forecast ownership and a hiring-plan handoff between a fractional CFO and program lead; fictional evaluation brief, not an executed benchmark.
+
+Primary evidence reviewed: https://www.getaleph.com/blog/introducing-aleph-mcp (documented Claude/ChatGPT finance-data and agent access); https://claude.com/marketplace/connectors/aleph (independent Claude listing with sign-in and write tools); https://www.getaleph.com/platform/spreadsheets and https://www.getaleph.com/solutions/budget-planning (bidirectional spreadsheets, selective cells, versions, scenarios); https://www.getaleph.com/integrations and https://www.getaleph.com/solutions/headcount-planning (source catalog and headcount workflow); https://www.getaleph.com/agentic-budgeting (permission-aware changes and rationale). Do not infer upstream write-back or universal refresh behavior from spreadsheet bidirectionality. No numeric connector-count claim, pricing, native TrialAgents-to-Aleph sync or new host acceptance test. Current life.cash-runway 2.1.0 catalog reread; approved genuine browser screenshots 01-overview, 05-scenarios, 06-actuals. Tracking unchanged.
+
+Status: awaiting exact-head predeploy, desktop/mobile artifact review, merge and live CDN verification. Resume PR #190 before A8. Refresh when Aleph host/connector/model behavior or the Runway catalog changes.
+
+
+### A7 merged release checkpoint — 13 November 2026
+
+PR #190 merged at 15:02 UTC (16:02 CET), release `548a60541a2196694a7fb0d5deab6bab14e04ca0`. Exact head `0ba9bbc13a6ba11a1bfeeb1e0b1c72194a06b1d0` passed predeploy run 43447534931: 282 tests, candidate snapshot/metadata/discovery, desktop/mobile and site regressions. Both article screenshots in artifact 14049122023 inspected; no layout blocker, standard accessible horizontal-scroll comparison table on narrow screens. Initial article HTTP 404 is automatic deployment pending, not an authentication fault. Live verification running; resume this release before A8 if interrupted.
+
+
+### A7 publication verified — 13 November 2026
+
+- **Published:** [TrialAgents Runway vs Aleph: a biotech planning app or connected FP&A?](https://trialagents.com/apps/runway-vs-aleph). Source [PR #190](https://github.com/tarous89/trialagents-public/pull/190), exact head `0ba9bbc13a6ba11a1bfeeb1e0b1c72194a06b1d0`; merged release `548a60541a2196694a7fb0d5deab6bab14e04ca0` at 15:02 UTC (16:02 CET).
+- Exact-head predeploy run `43447534931` passed **282 tests**, candidate snapshot, metadata/discovery, desktop/mobile and broader site regression checks. Both article screenshots in artifact `14049122023` inspected; no layout blocker. Standard comparison table retains accessible horizontal scrolling on narrow screens.
+- Existing GitHub-connected Cloudflare Workers build succeeded automatically. Initial 404s were deployment pending; expected HTTP 200 article and complete live checks passed in this run, without dashboard sign-in or manual deployment. Served article fragment and responsive CSS exactly match visually reviewed source.
+- Verified expected H1/title/description, self-canonical, Article/BreadcrumbList schema, no noindex directive, HTML HTTP delivery, robots crawl permissions, three genuine images, internal/primary-source links and one final Start with Runway CTA. Nineteen URLs checked, plus robots.txt. /apps, one canonical sitemap.xml entry, llms.txt and llm.xml all include the article.
+- Homepage-identical loader `/_snapshot/query-assets/114933b27c521a75f333.js` and analytics dependency `/_snapshot/query-assets/c251da7b4969f7c85048.js` return HTTP 200. Existing scripts, configuration, events, consent, collectors and attribution unchanged; no synthetic production events.
+- This supersedes A7's source and merged-pending checkpoints. **11 published; 36 remaining. Next eligible: A8, Runway vs Jirav**, subject to fresh queue/claim checks. Publication QA does not establish indexing, search rankings, real-user performance or assistant citations. Refresh on Aleph host/connector/model changes or changes to the Runway catalog.
+
+
+### A8 source checkpoint — 13 November 2026
+
+[PR #191](https://github.com/tarous89/trialagents-public/pull/191), exact head `3141fab470702c8a5ae946cbd5f8741c2cce4584`, prepares https://trialagents.com/apps/runway-vs-jirav. Title: TrialAgents Runway vs Jirav: cash planning and three-statement FP&A for biotech. Refined title identifies the distinct comparison: monthly cash commitments versus accounting recognition and linked statements. Fictional laboratory-instrument evaluation brief; no executed benchmark or accounting-treatment recommendation.
+
+Primary evidence reviewed: https://www.jirav.com/business-planning-budgeting-forecasting; https://help.jirav.com/auto-forecast; https://help.jirav.com/forecast-settings; https://help.jirav.com/actuals (nightly last-60-day accounting imports except Desktop/Excel; workforce mapping); https://help.jirav.com/account-subscription-options (capability-dependent drivers/scenarios); https://help.jirav.com/balance-sheet-planning-guide (System Cash, capex/prepaids/payables). No pricing, universal integration claims or unsupported Jirav AI-host parity. Equivalent Jirav ChatGPT/Claude app operation was not verified; absence is not asserted. Runway life.cash-runway 2.1.0 reread; approved browser demo screenshots 01-overview, 03-plan, 02-cash-flow. Tracking unchanged.
+
+Await exact-head predeploy, desktop/mobile artifact review, merge and live verification. Resume PR #191 before A9. Refresh on Jirav forecasting/host/integration changes or Runway catalog changes.
+
+
+### A8 merged release checkpoint — 13 November 2026
+
+PR #191 merged at 16:01 UTC (17:01 CET), release `c802b3207fa7eff1a301e8aba656a9c1e636d484`. Exact head `3141fab470702c8a5ae946cbd5f8741c2cce4584` passed predeploy run 43457306088: 282 tests, candidate snapshot, metadata/discovery and desktop/mobile/site regressions. Both article screenshots in artifact 14055560474 inspected; no layout blocker, standard accessible horizontal-scroll table on narrow screens. Initial HTTP 404 is automatic deployment pending, not an authentication fault. Live verification running; resume this release before A9 if interrupted.
+
+
+### A8 deployment wait exhausted — 13 November 2026, 17:16 CET
+
+**Merged; deployment pending/unverified. Do not mark Published or draft A9 yet.** PR #191 release `c802b3207fa7eff1a301e8aba656a9c1e636d484` merged at 16:01 UTC (17:01 CET). Repeated direct HTTP checks approximately every 30–60 seconds through 16:16 UTC (17:16 CET), covering the 15-minute wait budget, consistently returned **404** for https://trialagents.com/apps/runway-vs-jirav. Exact-head predeploy 43457306088 passed 282 tests and desktop/mobile/site checks; visual artifact 14055560474 inspected. Source head `3141fab470702c8a5ae946cbd5f8741c2cce4584` remains validated.
+
+Available merged-commit evidence: generic `production` check succeeded; it verifies homepage/footer, not this article. No Cloudflare Workers build check was exposed for this release in the observed check-runs responses, and the separate commit statuses list was empty. Neither observation establishes that deployment is absent or an authentication problem. No failed build, configuration fault or permission fault has been evidenced. No dashboard sign-in, manual deployment or tracking change attempted.
+
+Live article content/canonical/schema/responsive delivery, images/links/final CTA, discovery inclusion and homepage-identical analytics loader/client verification remain **unverified for this release** because the article is not served. Next run must first recheck this merged release and available build evidence; when HTTP 200 appears, complete all live checks before updating status. Fix only evidenced source failures through a new exact-head PR gate. Treat the delay as transient/pending, not a reason to disable the ongoing queue task.
+
+**Queue remains 11 published, 36 remaining (including this merged, unverified A8); 35 other topics await publication.**

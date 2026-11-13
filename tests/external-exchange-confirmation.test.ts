@@ -11,7 +11,7 @@ import {WorkspaceFoundation} from '../src/workspace/service.js';
 import {listExchanges} from '../src/domain/external-exchange.js';
 import type {Actor} from '../src/shared/schema.js';
 
-/* One confirmation when something goes out (template guidance 1.3.23): preparing what nobody outside has seen is applied on a person's
+/* One confirmation when something goes out (template guidance 1.3.24): preparing what nobody outside has seen is applied on a person's
  * click and logged; sends, replies, clarifications, acceptances and revocations are reviewed, and may carry the app's own record changes,
  * which commit in the same transaction. Runtime role and row security as in the platform exchange test. */
 test('External exchange from apps: preparation on click, one reviewed send that also updates the bound record, notify-all, assistants always reviewed',async t=>{

@@ -4,7 +4,7 @@ import {randomUUID} from 'node:crypto';
 import {croSelectionSuite,text} from './fixtures/cro-selection.js';
 import {listExchangeSubmissions,prepareExchangeEmailBatch,listExchanges} from '../src/domain/external-exchange.js';
 
-/* CRO_SELECTION.md §13 through the real installer, app runtime, workspace review, platform exchange (guidance 1.3.23: one confirmation
+/* CRO_SELECTION.md §13 through the real installer, app runtime, workspace review, platform exchange (guidance 1.3.24: one confirmation
  * when something goes out), supplier pages and email delivery. Fictional data only; disposable databases, not a deployed account. */
 const unesc=(s:string)=>s.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&amp;/g,'&');
 const notices=(sent:any[])=>sent.filter((m:any)=>!/^Your verification code/.test(m.subject));

@@ -4,7 +4,7 @@ This package was validated against the repository host on 13 November 2026, usin
 
 **Catalog status:** draft. `templates/catalog-seed.json` still names 1.0.1, and 2.0.0 is approved only inside the test databases. `life.cro-selection` 1.0.1 and `life.sponsor-rfp-management` 1.0.1 are marked for archival in `templates/catalog-retirements.json`. The withdrawal happens in the owner's publication change; see `docs/TEMPLATE_CATALOG.md`.
 
-**Guidance:** read 1.3.22 in full, in particular "External exchange from apps" and "Platform documents inside apps", plus the contract registry. Built on **1.3.23**, which this branch introduces after the owner's decision (one confirmation when something goes out). Contract registry version 2026-11-13 adds `croselection.awards`.
+**Guidance:** read 1.3.22 in full, in particular "External exchange from apps" and "Platform documents inside apps", plus the contract registry. Built on **1.3.24**, which this branch introduces after the owner's decision (one confirmation when something goes out). Contract registry version 2026-11-13 adds `croselection.awards`.
 
 ## Owner decisions applied (13 November 2026)
 
