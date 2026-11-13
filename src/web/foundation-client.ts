@@ -69,7 +69,7 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown)=
  read_effective_access:[`/api/workspaces/${v.workspaceId}/effective-access`],
  explain_effective_access:[`/api/workspaces/${v.workspaceId}/effective-access/${v.subject}`],
  update_effective_access:[`/api/workspaces/${v.workspaceId}/effective-access`,'POST',v.change],
- list_archived_items:[`${o}/archived?kind=${encodeURIComponent(v.kind)}${v.typeId?'&typeId='+encodeURIComponent(v.typeId):''}${v.templateId?'&templateId='+encodeURIComponent(v.templateId):''}`],
+ list_archived_items:[`${o}/archived?kind=${encodeURIComponent(v.kind)}${v.typeId?'&typeId='+encodeURIComponent(v.typeId):''}${v.templateId?'&templateId='+encodeURIComponent(v.templateId):''}${v.summaryOnly===undefined?'':'&summaryOnly='+String(v.summaryOnly)}`],
  delete_archived_item:[`${o}/archived/delete`,'POST',clean],
  read_account_home:['/api/account/home','POST',Object.fromEntries(Object.entries(v).filter(([k])=>k!=='workspaceId'))],
  read_account_schema:['/api/account/schema','POST',{offset:v.offset??0,limit:v.limit??25}],

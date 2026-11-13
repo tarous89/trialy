@@ -1,6 +1,6 @@
 # Performance measurement
 
-Implementation increments of the [reviewed performance scope](scopes/PLATFORM_AND_APP_PERFORMANCE_2026-11-13.md), authorized 13 November 2026. These add measurements, the P04 static-asset fix and safe N2 session-write reduction. They do not change templates, permissions, data, integrations, execution limits or session expiry.
+Implementation increments of the [reviewed performance scope](scopes/PLATFORM_AND_APP_PERFORMANCE_2026-11-13.md), authorized 13 November 2026. These add measurements, the P04 static-asset fix, safe N2 session-write reduction and P02 startup deferral. They do not change templates, permissions, data, integrations, execution limits or session expiry.
 
 ## Request counters
 
@@ -60,6 +60,22 @@ An actual `connect-pg-simple` store backed by PGlite, using the production sessi
 
 The separate real-auth fixture sends 12 signed-in requests: all 12 still read the session, check `session_version` and receive the rolling cookie, while only one expiry row update occurs. Tests also cover separate sessions/expiries, multiple store instances, failures and retries, concurrent save/delete boundaries, shorter expiry, expired sessions, immediate CSRF/MFA-state saves and account revocation. These are synthetic checks, not production latency measurements.
 
+## P02: defer unrelated startup reads
+
+The web shell no longer reads workspace-wide `/types` and `/views` when opening Home, modern Database or a direct saved-app/draft link. Database retains its own paged account catalog and row reads. Legacy screens and access editors request the metadata they consume; legacy functions opened from Home load schemas for that function’s workspace. Requests are scoped to the current user/workspace, late responses are ignored after leaving that scope, and failed loads offer retry. Metadata stays in memory only.
+
+Collapsed Apps, Automations, table and field archive lists call the existing `list_archived_items` capability with optional `summaryOnly:true`. The response contains an authorized count and an empty `items` array. Expanding a section uses the original detailed read for restore/delete controls, record counts and dependency warnings. A section remembered as expanded intentionally loads details on reopening. Failed reads expose retry; collapsed or unmounted sections discard late detail replies. The same shared UI is used by the web and embedded hosts.
+
+The summary preserves the existing workspace/tenant, owner/creator, ancestor, app and assistant access checks. It skips record/automation inventories and schema deletion-usage scans. It is **not a constant-query app count**: the existing per-app `component` authorization checks still run. Default reads and template-filtered archive discovery retain their detailed behavior unless the caller explicitly requests a summary. There are no migrations, template changes, app data changes or integration-contract changes; installed and planned templates do not require edits.
+
+| Synthetic workload | Before | P02 |
+| --- | ---: | ---: |
+| Web Home or direct app/draft opening: unrelated workspace metadata requests | 2 (`types`, `views`) | 0 |
+| Two permitted archived apps: application database queries | 18 (full details) | 14 (collapsed summary) |
+| Details while an archive section is collapsed | Full inventory | Authorized count only |
+
+The archive fixture runs with the runtime database role and row-level security. It compares detailed and summary visibility for owners, app creators, ancestor/app restrictions, explicit deny rules, ChatGPT/Claude access and unrelated accounts. It also exercises all archive kinds and retains restore, deletion, template discovery and purge checks. Browser regressions cover startup request absence, Database navigation, direct saved/draft links, legacy schema/view loading, failures/retry, late replies, remembered expansion, restore/delete and embedded summary/detail calls. These checks establish requests and work removed, not production latency savings. The separate Home polling/access-trigger coordination remains P03.
+
 ## Production verification after release
 
 1. Record the deployed commit and actual web/database instance configuration. Neither this document nor `render.yaml` proves production capacity.
@@ -68,4 +84,4 @@ The separate real-auth fixture sends 12 signed-in requests: all 12 still read th
 4. Compare request counts and p50/p95 time to usable content with database, session and sandbox counters. Check CPU/memory and busy rates from the actual host. Retain exact saves, revocation, app-version and tenant-isolation acceptance.
 5. Test the deployed flow in actual ChatGPT and Claude as well as the web. Synthetic host tests do not establish real host acceptance.
 
-Production before/after timings, hosting capacity and live-host acceptance remain pending. P14 is measurement support plus a synthetic baseline, not a completed production performance study. For N2, compare actual `sessionTouchesCoalesced`/`sessionTouchNoops` with session queries before estimating savings. Next scoped change: P02 startup deferral.
+Production before/after timings, hosting capacity and live-host acceptance remain pending. P14 is measurement support plus a synthetic baseline, not a completed production performance study. For N2, compare actual `sessionTouchesCoalesced`/`sessionTouchNoops` with session queries before estimating savings. Next scoped change: P03 refresh/access-trigger coordination.

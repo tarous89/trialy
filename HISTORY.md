@@ -1,3 +1,9 @@
+## 13 November 2026 — Performance increment 3: defer startup reads
+
+P02 removes workspace-wide schema/view reads from Home, modern Database and direct app/draft startup. Legacy consumers load their metadata on demand with retry and user/workspace-scoped response guards. Collapsed archive sections fetch authorized counts; expansion retains the original detail, restore/delete and dependency checks, including a remembered expanded state.
+
+Archive count visibility retains owner/creator, ancestor, app, assistant and tenant rules. A two-app runtime-role fixture drops from 18 to 14 application queries by skipping inventories; per-app authorization still runs. No template edits, data migrations or integration changes. Production timing and live-host acceptance remain pending release; status and validation are tracked in [PR #155](https://github.com/tarous89/trialy/pull/155) and [performance measurement](docs/PERFORMANCE_MEASUREMENT.md). Validation: production build/type checks, 19 focused backend checks and 52 distinct browser scenarios across the focused runs pass locally. Full CI is tracked on the PR. Next: P03 refresh/access-trigger coordination.
+
 ## 13 November 2026 — Performance increment 2: redundant session writes
 
 N2 now shares identical in-flight session expiry writes and avoids a PostgreSQL row update when the stored expiry is already identical. The actual session-store fixture reduces 12 overlapping touches from 12 driver queries/row updates to one; a later identical expiry still queries the database but does not update the row. Numeric counters expose coalesced touches, updated rows and no-op expiry queries. All session reads, current revocation checks, immediate session-data saves, cookie behavior and existing expiry precision remain intact. Sharing lasts only while a query is running and is cleared by session saves/deletes; errors reach all waiting callbacks and retries perform fresh work.

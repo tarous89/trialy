@@ -11,7 +11,7 @@ import type {WorkspaceFoundation} from './service.js';
 /** Optional automatic purge (MODULAR_APPS_AND_SHARED_DATA.md §6). Off unless enabled. */
 export const ARCHIVE_PURGE_DAYS=90;
 export const archivePurgeEnabled=(env:NodeJS.ProcessEnv=process.env)=>env.ARCHIVE_PURGE_ENABLED==='true';
-export const archivedQuery=z.object({kind:z.enum(['apps','automations','tables','fields']),typeId:id.optional(),templateId:z.string().max(80).optional()}).strict();
+export const archivedQuery=z.object({kind:z.enum(['apps','automations','tables','fields']),typeId:id.optional(),templateId:z.string().max(80).optional(),summaryOnly:z.boolean().optional()}).strict();
 export const archivedDeletion=z.object({kind:z.enum(['app','automation','table','field']),id,key:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/).optional(),confirmed:z.literal(true)}).strict();
 
 const USES:Record<string,string>={field:'Referenced by another field',view:'Used by a saved view',link:'Used by a shared form or view',scope:'Used by a maintenance scope',function:'Used by a function',connector:'Used by a connector',automation:'Used by an automation',cross_table_link:'Linked to records in another table',table_mapping:'Used by a table mapping'};
@@ -33,12 +33,13 @@ const usage=async(db:Connection,w:string,t:string,k:string|null)=>(await db.quer
  */
 export async function archivedItems(f:WorkspaceFoundation,a:Actor,w:string,input:unknown){
  const v=archivedQuery.parse(input),db=f.db,p=await access(db,a,w),owner=p.role==='owner',human=a.origin==='human';
- const items:any[]=[];
+ const items:any[]=[];let count=0;
  if(v.kind==='apps'){
-  const rows=v.templateId?await archivedTemplateApps(db,a,w,v.templateId):(await db.query('SELECT id,name,project_id,archived_at,created_by,bindings,version FROM workspace_components WHERE workspace_id=$1 AND archived AND deleted_at IS NULL ORDER BY archived_at DESC NULLS LAST,name,id',[w])).rows;
+  const rows=v.templateId?await archivedTemplateApps(db,a,w,v.templateId):(await db.query(`SELECT ${v.summaryOnly?'id,created_by':'id,name,project_id,archived_at,created_by,bindings,version'} FROM workspace_components WHERE workspace_id=$1 AND archived AND deleted_at IS NULL AND ($2::boolean OR created_by=$3) ORDER BY archived_at DESC NULLS LAST,name,id`,[w,owner,a.userId])).rows;
   for(const r of rows){
    if(!owner&&r.created_by!==a.userId)continue;
    try{await f.component(db,a,w,r.id,false);}catch(e){if([403,404].includes((e as any).status))continue;throw e;}
+   if(v.summaryOnly){count++;continue;}
    const tables=(await db.query("SELECT t.id,t.name,(SELECT count(*)::int FROM records x WHERE x.type_id=t.id AND x.workspace_id=t.workspace_id) AS records FROM entity_types t WHERE t.workspace_id=$1 AND t.deleted_at IS NULL AND t.id::text IN (SELECT b->>'typeId' FROM jsonb_array_elements($2::jsonb) b) ORDER BY t.name,t.id",[w,JSON.stringify(r.bindings)])).rows;
    const automations=Number((await db.query('SELECT (SELECT count(*) FROM app_monitors WHERE app_id=$1 AND deleted_at IS NULL)+(SELECT count(*) FROM app_actions WHERE app_id=$1 AND deleted_at IS NULL) AS n',[r.id])).rows[0].n);
    items.push({kind:'app',id:r.id,name:r.name,version:r.version,archivedAt:r.archived_at,canRestore:true,canDelete:owner&&human,deleteBlockedReason:owner?(human?null:'Delete permanently on the TrialAgents website'):'Only the workspace owner can delete permanently',keeps:{tables,automations}});
@@ -48,17 +49,21 @@ export async function archivedItems(f:WorkspaceFoundation,a:Actor,w:string,input
    SELECT id,app_id,'research' AS kind,config->>'name' AS name,archived_with_app_at,workspace_id,user_id FROM app_monitors WHERE deleted_at IS NULL AND archived_with_app_at IS NOT NULL
    UNION ALL SELECT id,app_id,'action',config->>'name',archived_with_app_at,workspace_id,user_id FROM app_actions WHERE deleted_at IS NULL AND archived_with_app_at IS NOT NULL
   ) d JOIN workspace_components c ON c.id=d.app_id AND c.workspace_id=d.workspace_id WHERE d.workspace_id=$1 AND d.user_id=$2 AND c.archived AND c.deleted_at IS NULL ORDER BY d.archived_with_app_at DESC,d.id`,[w,a.userId])).rows;
-  for(const r of rows)items.push({kind:'automation',automationKind:r.kind,id:r.id,name:r.name,appId:r.app_id,appName:r.app_name,archivedAt:r.archived_with_app_at,canRestore:true,restoreVia:{kind:'app',id:r.app_id,name:r.app_name},canDelete:false,deleteBlockedReason:`Deleted together with app ${r.app_name}`});
+  if(v.summaryOnly)count=rows.length;
+  else for(const r of rows)items.push({kind:'automation',automationKind:r.kind,id:r.id,name:r.name,appId:r.app_id,appName:r.app_name,archivedAt:r.archived_with_app_at,canRestore:true,restoreVia:{kind:'app',id:r.app_id,name:r.app_name},canDelete:false,deleteBlockedReason:`Deleted together with app ${r.app_name}`});
  }else if(owner&&v.kind==='tables'){
+  if(v.summaryOnly)return {kind:v.kind,workspaceId:w,items:[],summaryOnly:true,count:Number((await db.query('SELECT count(*) AS n FROM entity_types WHERE workspace_id=$1 AND archived_at IS NOT NULL AND deleted_at IS NULL',[w])).rows[0].n)};
   const rows=(await db.query('SELECT id,name,version,archived_at,archived_fields FROM entity_types WHERE workspace_id=$1 AND archived_at IS NOT NULL AND deleted_at IS NULL ORDER BY archived_at DESC,name,id',[w])).rows;
   for(const t of rows){const u=await usage(db,w,t.id,null),blocked=deletionBlocker(u,true);
    items.push({kind:'table',id:t.id,name:t.name,version:t.version,archivedAt:t.archived_at,fields:archivedFieldsOf(t).length,records:Number(u?.values??0),canRestore:true,canDelete:!blocked&&human,deleteBlockedReason:blocked??(human?null:'Delete permanently on the TrialAgents website'),purgeAt:purgeAt(t.archived_at,blocked)});}
  }else if(owner&&v.kind==='fields'){
   if(!v.typeId)fail(400,'table_required','Choose a table');
   const t=(await db.query('SELECT id,name,version,archived_fields FROM entity_types WHERE id=$1 AND workspace_id=$2 AND deleted_at IS NULL',[v.typeId,w])).rows[0];if(!t)fail(404,'not_found','Table not found');
-  for(const x of archivedFieldsOf(t)){const u=await usage(db,w,t.id,x.field.key),blocked=deletionBlocker(u);
+  if(v.summaryOnly)count=archivedFieldsOf(t).length;
+  else for(const x of archivedFieldsOf(t)){const u=await usage(db,w,t.id,x.field.key),blocked=deletionBlocker(u);
    items.push({kind:'field',id:t.id,typeId:t.id,tableVersion:t.version,key:x.field.key,name:x.field.name,fieldKind:x.field.kind,archivedAt:x.archivedAt,values:Number(u?.values??0),canRestore:true,canDelete:!blocked&&human,deleteBlockedReason:blocked??(human?null:'Delete permanently on the TrialAgents website'),purgeAt:purgeAt(x.archivedAt,blocked)});}
  }
+ if(v.summaryOnly)return {kind:v.kind,workspaceId:w,count,items:[],summaryOnly:true};
  return {kind:v.kind,workspaceId:w,count:items.length,items,policy:'Archived items are hidden from search, totals, exports, pickers and default lists. Permanent deletion is a human owner action on the TrialAgents website.'};
 }
 

@@ -1,3 +1,4 @@
+import {archivedItems} from '../../src/workspace/archive.js';
 import {AppTemplates} from '../../src/workspace/app-templates.js';
 import {addAppMcp} from '../../src/server/apps.js';
 import {moveTool} from '../../src/workspace/tool-placement.js';
@@ -40,6 +41,7 @@ export async function fixture(){
   if(name==='initialize_account')return {viewerId:actor.userId,workspaceId:w.id,workspaces:[w],types:await s.types(actor,w.id)};
   if(name==='list_project_sharing_members')return [];
   if(name==='list_workspace_projects')return f.nodes(actor,w.id);
+  if(name==='list_archived_items'){const {workspaceId,...query}=v;return archivedItems(f,actor,workspaceId??w.id,query);}
   if(name==='list_views')return [];
   if(name==='read_access_grid')return new AccessGrid(db).read(actor,w.id,v.subject);
   if(name==='prepare_tool_layout'){const {workspaceId,...request}=v;return prepareToolLayout(f,actor,w.id,request);}
