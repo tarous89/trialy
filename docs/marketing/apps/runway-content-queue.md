@@ -17,7 +17,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | A7 | TrialAgents Runway vs Aleph: a biotech planning app or connected FP&A? | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-aleph) |
 | A8 | TrialAgents Runway vs Jirav: cash planning and three-statement FP&A for biotech | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-jirav) |
 | A9 | TrialAgents Runway vs Bob Finance (Formerly Mosaic): Financial and Workforce Planning | Deferred — vendor relaunch/availability verification required | [Current vendor notice](https://www.hibob.com/platform/finance/) |
-| A10 | TrialAgents Runway vs Exigyn: AI-Powered Financial Operations for Life Sciences | Queued — verify and publish | — |
+| A10 | TrialAgents Runway vs Exigyn: adaptable cash planning or biotech FP&A? | Source PR in progress — resume before another topic | Branch runway-a10-exigyn-20261113 |
 | A11 | TrialAgents Runway vs Caladan: Clinical Trial Budgeting and Cash Runway | Queued — verify and publish | — |
 | A12 | TrialAgents Runway vs Airtable: Cash Runway Tracking for Biotech Teams | Queued — verify and publish | — |
 | B1 | Best Cash Runway Management Software for Biotech Startups in 2027 | Already covered / published | [Live article](https://trialagents.com/apps/best-cash-runway-software-biotech) |
@@ -273,3 +273,8 @@ Current inventory remains 12 published, 35 unfinished (including deferred A9). N
 Keep A9 (Runway vs Bob Finance, formerly Mosaic) deferred and move ahead with A10 (Runway vs Exigyn). Bob Finance's current relaunch notice does not make an article inherently impossible: a future comparison may cover documented differences with a prominent, dated availability caveat, clearly separating historical/announced capabilities from currently available and independently tested behavior. Do not call Bob Finance or HiBob discontinued. The owner has chosen to proceed with A10 now rather than prepare that qualified A9 article.
 
 A10 is the next publication priority. Resume its existing research above, recheck claims/PRs before claiming work, and complete drafting, exact-head validation, visual review and live verification through the existing GitHub-to-CDN process. A9 remains unfinished, not Published or removed from the inventory.
+
+
+### A10 source claim — 13 November 2026
+
+Prepared on public branch `runway-a10-exigyn-20261113`, head `9cf1a0f9fce4b867bcf79a0636c39489226108fe`. Resume this source PR before any other topic. Primary evidence: Exigyn homepage, /mcp and /biotech-fpa-software reviewed; distinguish documented MCP writes and specialist finance scope from TrialAgents whole-app customization. No host test or integration performance claimed. Await exact-head checks, visual review, merge and live verification. A9 remains deferred by owner instruction.
