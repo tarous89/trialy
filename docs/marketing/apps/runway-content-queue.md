@@ -24,7 +24,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | B2 | 7 Float alternatives for small biotech teams: choose by the workflow you need | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/float-alternatives-biotech) |
 | B3 | cfo.ai (Runway Financial) alternatives: choose who owns the model | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/cfo-ai-alternatives-startups) |
 | B4 | Finmark alternatives after retirement: rebuild a forecast you can trust | Published — live verified 13 November 2026 UTC | [Live article](https://trialagents.com/apps/finmark-alternatives-biotech) |
-| B5 | Best LivePlan Alternatives for Biotech and Life Sciences Startups | Queued — verify and publish | — |
+| B5 | LivePlan alternatives for biotech: choose the plan you need next | In progress — claimed 14 November 2026 | Branch content/runway-b5-liveplan-alternatives-20261114 |
 | B6 | Best Fathom Alternatives for Biotech Financial Reporting and Forecasting | Queued — verify and publish | — |
 | B7 | Best AI-Native FP&A Software for Startups | Queued — verify and publish | — |
 | B8 | Best Excel and Google Sheets Alternatives for Biotech Budgeting | Queued — verify and publish | — |
@@ -415,3 +415,8 @@ B3 independently rechecked HTTP 200; no open Runway source PRs; public main `7cc
 - **Tracking unchanged:** identical homepage loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js`, both HTTP 200. No tracking scripts/configuration/events/consent/collectors/attribution changed; no synthetic production events sent.
 
 This supersedes B4 claim/source/pending checkpoints. **18 published; 29 unfinished**, including owner-deferred A9. **Next eligible: B5, LivePlan alternatives**, subject to fresh queue, evidence, duplicate and claim checks. Only B4 was newly published in this run. Search indexing, rankings, real-user performance and assistant citations remain unverified.
+
+
+### 14 November 2026 — B5 execution claim
+
+B4 independently rechecked HTTP 200; public main `36a19c75eb4cd1c17f75f6c405f2b4b73932fc7d`; no open Runway PRs. B5 claimed on `content/runway-b5-liveplan-alternatives-20261114`. Distinct angle: choose the next deliverable (guided business plan, collaborative plan, editable projection workbook or ongoing biotech operating cash plan) and check narrative/forecast consistency. Four proposed options: TrialAgents Runway, Upmetrics, Bizplan and ProjectionHub. Retitled to avoid unsupported overall rankings. LivePlan's current AI/MCP capabilities acknowledged, with early-access/review limits. Not a renamed B2/B3/B4 shortlist. No publication claimed: 18 published, 29 unfinished.
