@@ -23,22 +23,26 @@ const email=z.string().trim().toLowerCase().email().max(200);
 const slotSchema=z.object({key:z.string().regex(/^[a-z][a-z0-9_]{0,39}$/),label:z.string().trim().min(1).max(120),required:z.boolean().default(false)}).strict();
 const dateSchema=z.object({label:z.string().trim().min(1).max(80),date:z.string().regex(/^\d{4}-\d{2}-\d{2}$/)}).strict();
 export const briefSchema=z.object({title:z.string().trim().min(1).max(160),summary:z.string().max(20000).default(''),dates:z.array(dateSchema).max(20).default([]),senderName:z.string().trim().max(120).optional(),senderCompany:z.string().trim().max(160).optional(),privacyNotice:z.string().max(2000).optional(),gate:z.enum(['none','acknowledgement','signed_document']).optional(),gateText:z.string().max(5000).optional(),gateSlot:z.string().max(40).optional(),verifyEmail:z.boolean().optional(),messagesAfterDeadline:z.boolean().optional()}).strict();
-export const exchangeGroupSchema=briefSchema.extend({appId:id.optional(),logoVersionId:id.optional(),documents:z.array(id).max(50).default([]),gateDocument:id.optional(),typeId:id.optional(),fields:z.array(z.string().max(64)).max(100).default([]),questions:questionsSchema.optional(),maxFiles:z.number().int().min(0).max(10).default(10),slots:z.array(slotSchema).max(20).default([]),emailDefaults:emailDefaultsSchema.default({})}).strict();
+export const exchangeGroupSchema=briefSchema.extend({appId:id.optional(),appRef:z.string().trim().min(1).max(200).optional(),logoVersionId:id.optional(),documents:z.array(id).max(50).default([]),gateDocument:id.optional(),typeId:id.optional(),fields:z.array(z.string().max(64)).max(100).default([]),questions:questionsSchema.optional(),maxFiles:z.number().int().min(0).max(10).default(10),slots:z.array(slotSchema).max(20).default([]),emailDefaults:emailDefaultsSchema.default({})}).strict();
 export const recipientSchema=z.object({emails:z.array(email).min(1).max(5),name:z.string().trim().max(120).default(''),company:z.string().trim().max(160).default(''),recordId:id.optional()}).strict();
+/** Record changes an app carries with a reviewed exchange operation (e.g. the invited supplier's status); validated and committed with it, in one transaction. */
+export const exchangeRecordChanges=z.object({componentId:id,expectedVersion:z.number().int().min(0),viewId:id.optional(),changes:z.array(z.record(z.string(),z.unknown())).min(1).max(50)}).strict();
+const withRecords={records:exchangeRecordChanges.optional()};
 export const exchangeOperations=[
  z.object({kind:z.literal('create_exchange_group'),config:exchangeGroupSchema}).strict(),
  z.object({kind:z.literal('invite_exchange'),groupId:id,recipients:z.array(recipientSchema).min(1).max(100),days:z.number().int().min(1).max(90)}).strict(),
  z.object({kind:z.literal('update_exchange_brief'),groupId:id,expectedVersion:z.number().int().min(1),brief:briefSchema.partial()}).strict(),
  z.object({kind:z.literal('share_exchange_documents'),groupId:id,expectedVersion:z.number().int().min(1),add:z.array(id).max(50).default([]),remove:z.array(id).max(50).default([]),logoVersionId:id.nullable().optional(),gateDocument:id.nullable().optional()}).strict(),
  z.object({kind:z.literal('request_exchange_document'),groupId:id,expectedVersion:z.number().int().min(1),slot:slotSchema}).strict(),
- z.object({kind:z.literal('extend_exchange'),exchangeId:id,days:z.number().int().min(1).max(90),notify:z.boolean().default(true)}).strict(),
- z.object({kind:z.literal('revoke_exchange'),exchangeId:id,reason:z.string().trim().min(1).max(1000),notify:z.boolean().default(false)}).strict(),
- z.object({kind:z.literal('accept_exchange_submission'),submissionId:id,data:z.record(z.string(),z.union([z.string().max(50000),z.number().finite(),z.boolean(),z.array(z.union([z.string().max(50000),z.number().finite()])).max(100),z.null()])),target:z.enum(['new','bound']).default('new')}).strict(),
- z.object({kind:z.literal('accept_exchange_file'),fileId:id,ai:z.boolean().default(false)}).strict(),
- z.object({kind:z.literal('reply_exchange'),exchangeId:id,body:z.string().trim().min(1).max(10000),notify:z.boolean().default(true)}).strict(),
- z.object({kind:z.literal('publish_exchange_clarification'),groupId:id,question:z.string().trim().max(5000).default(''),body:z.string().trim().min(1).max(10000),sourceMessageId:id.optional(),notify:z.boolean().default(true)}).strict(),
+ z.object({kind:z.literal('extend_exchange'),exchangeId:id,days:z.number().int().min(1).max(90),notify:z.boolean().default(true),...withRecords}).strict(),
+ z.object({kind:z.literal('revoke_exchange'),exchangeId:id,reason:z.string().trim().min(1).max(1000),notify:z.boolean().default(false),...withRecords}).strict(),
+ z.object({kind:z.literal('accept_exchange_submission'),submissionId:id,data:z.record(z.string(),z.union([z.string().max(50000),z.number().finite(),z.boolean(),z.array(z.union([z.string().max(50000),z.number().finite()])).max(100),z.null()])),target:z.enum(['new','bound']).default('new'),...withRecords}).strict(),
+ z.object({kind:z.literal('accept_exchange_file'),fileId:id,ai:z.boolean().default(false),...withRecords}).strict(),
+ z.object({kind:z.literal('reply_exchange'),exchangeId:id,body:z.string().trim().min(1).max(10000),notify:z.boolean().default(true),...withRecords}).strict(),
+ z.object({kind:z.literal('reply_exchanges'),replies:z.array(z.object({exchangeId:id,body:z.string().trim().min(1).max(10000)}).strict()).min(1).max(100),notify:z.boolean().default(true),...withRecords}).strict(),
+ z.object({kind:z.literal('publish_exchange_clarification'),groupId:id,question:z.string().trim().max(5000).default(''),body:z.string().trim().min(1).max(10000),sourceMessageId:id.optional(),notify:z.boolean().default(true),...withRecords}).strict(),
  z.object({kind:z.literal('save_exchange_email_default'),emailType:z.enum(EMAIL_TYPES),text:emailTextSchema.nullable()}).strict(),
- z.object({kind:z.literal('send_exchange_email'),batchId:id,digest:z.string().length(64)}).strict()
+ z.object({kind:z.literal('send_exchange_email'),batchId:id,digest:z.string().length(64),...withRecords}).strict()
 ] as const;
 export const exchangeOperationKinds=exchangeOperations.map(s=>s.shape.kind.value);
 export type ExchangeOperation=z.infer<typeof exchangeOperations[number]>;
@@ -56,7 +60,7 @@ export async function exchangeAuthority(tx:Connection,a:Actor,w:string,appId:str
 export async function groupRow(tx:Connection,w:string,groupId:string){const g=(await tx.query('SELECT * FROM exchange_groups WHERE id=$1 AND workspace_id=$2',[groupId,w])).rows[0];if(!g)fail(404,'not_found','Exchange group not found');return g;}
 export async function exchangeRow(tx:Connection,w:string,exchangeId:string){const e=(await tx.query('SELECT * FROM exchanges WHERE id=$1 AND workspace_id=$2',[exchangeId,w])).rows[0];if(!e)fail(404,'not_found','Exchange not found');return e;}
 const publicExchange=(e:any)=>({id:e.id,groupId:e.group_id,recordId:e.record_id,recipientName:e.recipient_name,recipientCompany:e.recipient_company,recipientEmails:e.recipient_emails,expiresAt:e.expires_at,revokedAt:e.revoked_at,createdAt:e.created_at,version:e.version});
-const publicGroup=(g:any)=>({id:g.id,appId:g.app_id,title:g.title,summary:g.summary,dates:g.dates,senderName:g.sender_name,senderCompany:g.sender_company,logoVersionId:g.logo_version_id,privacyNotice:g.privacy_notice,gate:g.gate,gateText:g.gate_text,gateSlot:g.gate_slot,verifyEmail:g.verify_email,messagesAfterDeadline:g.messages_after_deadline,documents:g.documents,typeId:g.type_id,fields:g.fields,questions:g.questions,maxFiles:g.max_files,slots:g.slots,emailDefaults:g.email_defaults,archived:g.archived,version:g.version,createdAt:g.created_at});
+const publicGroup=(g:any)=>({id:g.id,appId:g.app_id,appRef:g.app_ref??null,title:g.title,summary:g.summary,dates:g.dates,senderName:g.sender_name,senderCompany:g.sender_company,logoVersionId:g.logo_version_id,privacyNotice:g.privacy_notice,gate:g.gate,gateText:g.gate_text,gateSlot:g.gate_slot,verifyEmail:g.verify_email,messagesAfterDeadline:g.messages_after_deadline,documents:g.documents,typeId:g.type_id,fields:g.fields,questions:g.questions,maxFiles:g.max_files,slots:g.slots,emailDefaults:g.email_defaults,archived:g.archived,version:g.version,createdAt:g.created_at});
 /** Access events written by the recipient page and by workspace actions; both the per-exchange log and the workspace audit trail. */
 export async function logExchange(tx:Connection,exchange:any,kind:string,detail:Record<string,unknown>,actor?:Actor){
  await tx.query('INSERT INTO exchange_events(id,workspace_id,exchange_id,kind,detail) VALUES($1,$2,$3,$4,$5)',[randomUUID(),exchange.workspace_id,exchange.id,kind,J(detail)]);
@@ -85,7 +89,7 @@ export async function exchangeReview(tx:Connection,a:Actor,w:string,op:ExchangeO
   if(new Set(c.slots.map(s=>s.key)).size!==c.slots.length)fail(400,'duplicate_slot','Slot keys must be unique');
   return {group:{...c,gate,gateText:c.gateText??(gate==='none'?'':defaultGateText),verifyEmail:c.verifyEmail??documents.length>0,senderName:c.senderName||sender.senderName,senderCompany:c.senderCompany||sender.senderCompany,privacyNotice:c.privacyNotice??defaultPrivacy,documents:documents.map(d=>({...d,gate:d.versionId===c.gateDocument})),typeVersion:form.type?.version??null,questions:form.questions},effect:'Create an exchange group. Recipients are invited separately; nothing is sent yet.'};
  }
- if(op.kind==='send_exchange_email'){const b=await batchReview(tx,w,op.batchId,op.digest),g=await groupRow(tx,w,b.group_id);await exchangeAuthority(tx,a,w,g.app_id,true);return {batchId:b.id,digest:b.digest,emailType:b.email_type,from:b.display_name,replyTo:b.reply_to,scheduledAt:b.scheduled_at,emails:(b.rendered as any[]).map(r=>({to:r.to,exchangeId:r.exchangeId,subject:r.subject,text:r.text,personalised:r.personalised})),effect:b.scheduled_at?'Approve this reminder now; it is sent at the scheduled time with exactly this text.':'Send these emails exactly as shown. Only a person can confirm.'};}
+ if(op.kind==='send_exchange_email'){const b=await batchReview(tx,w,op.batchId,op.digest),g=await groupRow(tx,w,b.group_id);await exchangeAuthority(tx,a,w,g.app_id,true);const recipients=await Promise.all((b.rendered as any[]).map(async(r:any)=>{const e=await exchangeRow(tx,w,r.exchangeId);return {to:r.to,exchangeId:e.id,deadline:e.expires_at};}));return {plan:{title:g.title,documents:(g.documents as any[]).map(d=>d.filename),requestedDocuments:(g.slots as any[]).map(s=>s.label),gate:g.gate,emailVerification:g.verify_email,recipients},batchId:b.id,digest:b.digest,emailType:b.email_type,from:b.display_name,replyTo:b.reply_to,scheduledAt:b.scheduled_at,emails:(b.rendered as any[]).map(r=>({to:r.to,exchangeId:r.exchangeId,subject:r.subject,text:r.text,personalised:r.personalised})),effect:b.scheduled_at?'Approve this reminder now; it is sent at the scheduled time with exactly this text.':'Send these emails exactly as shown. Only a person can confirm.'};}
  if(op.kind==='save_exchange_email_default'){await exchangeAuthority(tx,a,w,null,true);return {emailType:op.emailType,text:op.text,placeholders:['{recipient_name}','{recipient_company}','{sender_name}','{sender_company}','{title}','{deadline}','{link}','{message}'],effect:op.text?'Save this workspace default; it replaces the app default for this email type.':'Remove the workspace default; the app or platform default applies again.'};}
  if(op.kind==='accept_exchange_submission'){
   const s=(await tx.query('SELECT s.*,x.record_id,x.group_id FROM exchange_submissions s JOIN exchanges x ON x.id=s.exchange_id LEFT JOIN exchange_acceptances acc ON acc.submission_id=s.id WHERE s.id=$1 AND s.workspace_id=$2 AND acc.submission_id IS NULL',[op.submissionId,w])).rows[0];if(!s)fail(409,'submission_unavailable','Submission is unavailable or already accepted');
@@ -102,6 +106,11 @@ export async function exchangeReview(tx:Connection,a:Actor,w:string,op:ExchangeO
   return {fileId:f.id,exchangeId:f.exchange_id,slot:f.slot,filename:f.filename,mime:f.mime,byteSize:f.byte_size,checksum:f.checksum,ai:op.ai,effect:'Save this received file as a TrialAgents document'+(f.slot===g.gate_slot&&g.gate==='signed_document'?' and unlock the other shared documents for this recipient':'')+'. Unaccepted uploads stay out of AI reach.'};
  }
  if(op.kind==='reply_exchange'){const e=await exchangeRow(tx,w,op.exchangeId),g=await groupRow(tx,w,e.group_id);await exchangeAuthority(tx,a,w,g.app_id,true);if(e.revoked_at)fail(409,'exchange_revoked','This exchange was revoked');return {exchangeId:e.id,recipient:e.recipient_name||e.recipient_emails[0],body:op.body,notify:op.notify,email:op.notify?await noticePreview(tx,w,g,e,'message',op.body):null,effect:'Post a private message visible only to this recipient'+(op.notify?' and email them a notice with a link':'')+'.'};}
+ if(op.kind==='reply_exchanges'){
+  if(new Set(op.replies.map(r=>r.exchangeId)).size!==op.replies.length)fail(400,'duplicate_recipient','One message per recipient');
+  const out=[];for(const r of op.replies){const e=await exchangeRow(tx,w,r.exchangeId),g=await groupRow(tx,w,e.group_id);await exchangeAuthority(tx,a,w,g.app_id,true);if(e.revoked_at)fail(409,'exchange_revoked','An exchange in this batch was revoked');out.push({exchangeId:e.id,recipient:e.recipient_name||e.recipient_emails[0],body:r.body,email:op.notify?await noticePreview(tx,w,g,e,'message',r.body):null});}
+  return {replies:out,notify:op.notify,effect:'Post one private message to each of these recipients, visible only to that recipient'+(op.notify?', and email each a notice with a link':'')+'.'};
+ }
  if(op.kind==='publish_exchange_clarification'){
   const g=await groupRow(tx,w,op.groupId);await exchangeAuthority(tx,a,w,g.app_id,true);
   if(op.sourceMessageId){const m=(await tx.query("SELECT id FROM exchange_messages WHERE id=$1 AND group_id=$2 AND kind='private' AND author='recipient'",[op.sourceMessageId,g.id])).rows[0];if(!m)fail(404,'not_found','Source question not found in this group');}
@@ -127,11 +136,11 @@ export async function exchangeReview(tx:Connection,a:Actor,w:string,op:ExchangeO
 async function noticePreview(tx:Connection,w:string,g:any,e:any,type:EmailType,message=''){const p=(await tx.query('SELECT id,name,tenant_id FROM workspaces WHERE id=$1',[w])).rows[0];const sender=await senderIdentity(tx,{userId:g.owner_id,origin:'human'},w,p),text=await resolveDefault(tx,w,g,type);const values=emailValues(g,e,{name:sender.senderName,company:sender.senderCompany},message);return {to:e.recipient_emails,subject:(text.subject as string).replace(/\{([a-z_]+)\}/g,(m,k)=>(values as any)[k]??m),source:text.source};}
 export async function liveExchanges(tx:Connection,groupId:string){return (await tx.query('SELECT * FROM exchanges WHERE group_id=$1 AND revoked_at IS NULL ORDER BY created_at',[groupId])).rows;}
 export async function commitExchangeOperation(tx:Connection,a:Actor,w:string,op:ExchangeOperation,authorization?:WriteAuthorization):Promise<any>{
- requireCurrentAction(a);if(['send_exchange_email','publish_exchange_clarification','accept_exchange_submission','accept_exchange_file','reply_exchange'].includes(op.kind))requireHuman(a);
+ requireCurrentAction(a);if(['send_exchange_email','publish_exchange_clarification','accept_exchange_submission','accept_exchange_file','reply_exchange','reply_exchanges'].includes(op.kind))requireHuman(a);
  const review=await exchangeReview(tx,a,w,op),p=await access(tx,a,w,true);
  if(op.kind==='create_exchange_group'){
   const g=review.group,groupId=randomUUID();
-  await tx.query('INSERT INTO exchange_groups(id,workspace_id,owner_id,app_id,title,summary,dates,sender_name,sender_company,logo_version_id,privacy_notice,gate,gate_text,gate_slot,verify_email,messages_after_deadline,documents,type_id,type_version,fields,questions,max_files,slots,email_defaults) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24)',[groupId,w,a.userId,g.appId??null,g.title,g.summary,J(g.dates),g.senderName,g.senderCompany,g.logoVersionId??null,g.privacyNotice,g.gate,g.gateText,g.gateSlot??null,g.verifyEmail,g.messagesAfterDeadline??true,J(g.documents),g.typeId??null,g.typeVersion,J(g.fields),J(g.questions),g.maxFiles,J(g.slots),J(g.emailDefaults)]);
+  await tx.query('INSERT INTO exchange_groups(id,workspace_id,owner_id,app_id,app_ref,title,summary,dates,sender_name,sender_company,logo_version_id,privacy_notice,gate,gate_text,gate_slot,verify_email,messages_after_deadline,documents,type_id,type_version,fields,questions,max_files,slots,email_defaults) VALUES($1,$2,$3,$4,$25,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24)',[groupId,w,a.userId,g.appId??null,g.title,g.summary,J(g.dates),g.senderName,g.senderCompany,g.logoVersionId??null,g.privacyNotice,g.gate,g.gateText,g.gateSlot??null,g.verifyEmail,g.messagesAfterDeadline??true,J(g.documents),g.typeId??null,g.typeVersion,J(g.fields),J(g.questions),g.maxFiles,J(g.slots),J(g.emailDefaults),g.appRef??null]);
   await audit(tx,a,p,'exchange.group_created',groupId,null,{...review,authorization,appId:g.appId??null});return {status:'saved',groupId,group:publicGroup(await groupRow(tx,w,groupId))};
  }
  if(op.kind==='invite_exchange'){
@@ -165,6 +174,12 @@ export async function commitExchangeOperation(tx:Connection,a:Actor,w:string,op:
   await tx.query("INSERT INTO exchange_messages(id,workspace_id,group_id,exchange_id,kind,author,body,author_id) VALUES($1,$2,$3,$4,'private','workspace',$5,$6)",[messageId,w,g.id,e.id,op.body,a.userId]);
   await logExchange(tx,e,'message',{messageId,author:'workspace',authorization},a);const emails=op.notify?await queueExchangeNotice(tx,a,w,p,g,e,'message',op.body):[];return {status:'saved',messageId,emails};
  }
+ if(op.kind==='reply_exchanges'){
+  const sent=[];for(const r of op.replies){const e=await exchangeRow(tx,w,r.exchangeId),g=await groupRow(tx,w,e.group_id),messageId=randomUUID();
+   await tx.query("INSERT INTO exchange_messages(id,workspace_id,group_id,exchange_id,kind,author,body,author_id) VALUES($1,$2,$3,$4,'private','workspace',$5,$6)",[messageId,w,g.id,e.id,r.body,a.userId]);
+   await logExchange(tx,e,'message',{messageId,author:'workspace',authorization},a);sent.push({exchangeId:e.id,messageId,emails:op.notify?await queueExchangeNotice(tx,a,w,p,g,e,'message',r.body):[]});}
+  return {status:'saved',messages:sent};
+ }
  if(op.kind==='publish_exchange_clarification'){
   const g=await groupRow(tx,w,op.groupId),messageId=randomUUID();
   await tx.query("INSERT INTO exchange_messages(id,workspace_id,group_id,exchange_id,kind,author,question,body,author_id,source_message_id) VALUES($1,$2,$3,NULL,'clarification','workspace',$4,$5,$6,$7)",[messageId,w,g.id,op.question||null,op.body,a.userId,op.sourceMessageId??null]);
@@ -194,8 +209,8 @@ export async function exchangeStatus(tx:Connection,e:any,group:any){
  const closed=!!e.revoked_at||new Date(e.expires_at).getTime()<=Date.now();
  return {opened:first('opened'),lastOpened:last('opened'),verified:first('verified'),acknowledged:first('acknowledged'),downloads:events.filter(x=>x.kind==='downloaded').map(x=>({versionId:x.detail.versionId,filename:x.detail.filename,at:x.created_at})),draftSavedAt:draft?.updated_at??null,submitted:submitted?{version:submitted.version,at:submitted.created_at,submissionId:submitted.id,accepted:!!submitted.record_id,recordId:submitted.record_id}:null,documentsBack,unreadMessages:unread,expiresAt:e.expires_at,revokedAt:e.revoked_at,closed,state:e.revoked_at?'revoked':closed?'closed':submitted?'submitted':draft?'draft':first('opened')?'opened':'invited'};
 }
-export async function listExchanges(db:Connection,a:Actor,w:string,q:{groupId?:string;appId?:string;offset?:number}){
- const groups=(await db.query('SELECT * FROM exchange_groups WHERE workspace_id=$1 AND ($2::uuid IS NULL OR id=$2) AND ($3::uuid IS NULL OR app_id=$3) ORDER BY created_at DESC LIMIT 26 OFFSET $4',[w,q.groupId??null,q.appId??null,q.offset??0])).rows;
+export async function listExchanges(db:Connection,a:Actor,w:string,q:{groupId?:string;appId?:string;appRef?:string;offset?:number}){
+ const groups=(await db.query('SELECT * FROM exchange_groups WHERE workspace_id=$1 AND ($2::uuid IS NULL OR id=$2) AND ($3::uuid IS NULL OR app_id=$3) AND ($5::text IS NULL OR app_ref=$5) ORDER BY created_at DESC LIMIT 26 OFFSET $4',[w,q.groupId??null,q.appId??null,q.offset??0,q.appRef??null])).rows;
  const result=[];for(const g of groups.slice(0,25)){try{await exchangeAuthority(db,a,w,g.app_id,false);}catch(e){if([403,404].includes((e as any).status))continue;throw e;}
   const exchanges=[];for(const e of (await db.query('SELECT * FROM exchanges WHERE group_id=$1 ORDER BY created_at',[g.id])).rows)exchanges.push({...publicExchange(e),...(a.origin==='human'?{url:exchangeLink(e.link_token)}:{}),status:await exchangeStatus(db,e,g)});
   result.push({...publicGroup(g),exchanges});}
@@ -258,6 +273,7 @@ export async function sweepExchangeDeadlines(db:Database){
 export async function exchangeOperationApp(db:Connection,w:string,op:ExchangeOperation):Promise<string|null>{
  if(op.kind==='create_exchange_group')return op.config.appId??null;
  if(op.kind==='save_exchange_email_default')return null;
+ if(op.kind==='reply_exchanges'){const apps=new Set<string|null>();for(const r of op.replies)apps.add((await groupRow(db,w,(await exchangeRow(db,w,r.exchangeId)).group_id)).app_id);if(apps.size!==1)fail(400,'exchange_scope','Reply to recipients of one app at a time');return [...apps][0];}
  if('groupId' in op)return (await groupRow(db,w,op.groupId)).app_id;
  if('exchangeId' in op)return (await groupRow(db,w,(await exchangeRow(db,w,op.exchangeId)).group_id)).app_id;
  const row=op.kind==='send_exchange_email'?(await db.query('SELECT group_id FROM exchange_email_batches WHERE id=$1 AND workspace_id=$2',[op.batchId,w])).rows[0]
@@ -265,12 +281,12 @@ export async function exchangeOperationApp(db:Connection,w:string,op:ExchangeOpe
   :(await db.query('SELECT x.group_id FROM exchange_files f JOIN exchanges x ON x.id=f.exchange_id WHERE f.id=$1 AND f.workspace_id=$2',[op.fileId,w])).rows[0];
  if(!row)fail(404,'not_found','Exchange item not found');return (await groupRow(db,w,row.group_id)).app_id;
 }
-export const appExchangeWrites:Record<string,ExchangeOperation['kind']>={'exchange.createGroup':'create_exchange_group','exchange.invite':'invite_exchange','exchange.updateBrief':'update_exchange_brief','exchange.shareDocuments':'share_exchange_documents','exchange.requestDocument':'request_exchange_document','exchange.extend':'extend_exchange','exchange.revoke':'revoke_exchange','exchange.sendEmail':'send_exchange_email','exchange.acceptSubmission':'accept_exchange_submission','exchange.acceptFile':'accept_exchange_file','exchange.reply':'reply_exchange','exchange.publishClarification':'publish_exchange_clarification','exchange.saveDefaultEmail':'save_exchange_email_default'};
+export const appExchangeWrites:Record<string,ExchangeOperation['kind']>={'exchange.createGroup':'create_exchange_group','exchange.invite':'invite_exchange','exchange.updateBrief':'update_exchange_brief','exchange.shareDocuments':'share_exchange_documents','exchange.requestDocument':'request_exchange_document','exchange.extend':'extend_exchange','exchange.revoke':'revoke_exchange','exchange.sendEmail':'send_exchange_email','exchange.acceptSubmission':'accept_exchange_submission','exchange.acceptFile':'accept_exchange_file','exchange.reply':'reply_exchange','exchange.replyAll':'reply_exchanges','exchange.publishClarification':'publish_exchange_clarification','exchange.saveDefaultEmail':'save_exchange_email_default'};
 export const appExchangeReads=['exchange.list','exchange.status','exchange.listSubmissions','exchange.listMessages','exchange.defaultEmail','exchange.prepareEmail','exchange.listEmails','exchange.notifications'] as const;
 /** Read-side capabilities for a saved app; every result is limited to groups created by that app. */
 export async function appExchangeRead(db:Database,a:Actor,w:string,appId:string,name:string,value:unknown){
  const v=(value??{}) as any,own=async(groupId?:string,exchangeId?:string)=>{const gid=groupId??(exchangeId?(await exchangeRow(db,w,exchangeId)).group_id:undefined);if(gid&&(await groupRow(db,w,gid)).app_id!==appId)fail(403,'exchange_scope','This exchange group belongs to another app');};
- if(name==='exchange.list')return listExchanges(db,a,w,{appId,groupId:v.groupId,offset:v.offset});
+ if(name==='exchange.list')return listExchanges(db,a,w,{appId,groupId:v.groupId,appRef:typeof v.appRef==='string'?v.appRef.slice(0,200):undefined,offset:v.offset});
  if(name==='exchange.status'){await own(undefined,id.parse(v.exchangeId));const e=await exchangeRow(db,w,v.exchangeId),g=await groupRow(db,w,e.group_id);await exchangeAuthority(db,a,w,g.app_id,false);return {exchangeId:e.id,recordId:e.record_id,status:await exchangeStatus(db,e,g)};}
  if(name==='exchange.listSubmissions'){await own(v.groupId,v.exchangeId);if(!v.groupId&&!v.exchangeId)fail(400,'scope_required','Pass groupId or exchangeId');return listExchangeSubmissions(db,a,w,v);}
  if(name==='exchange.listMessages'){await own(v.groupId,v.exchangeId);if(!v.groupId&&!v.exchangeId)fail(400,'scope_required','Pass groupId or exchangeId');return listExchangeMessages(db,a,w,{...v,markRead:a.origin==='human'&&v.markRead!==false});}
@@ -280,3 +296,11 @@ export async function appExchangeRead(db:Database,a:Actor,w:string,appId:string,
  if(name==='exchange.notifications')return listExchangeNotifications(db,a,w,false);
  fail(400,'unknown_capability','Unknown exchange capability');
 }
+
+/** Whether people outside the workspace may already see this group (an email was sent, a reminder approved, or a recipient opened a page).
+ * Until then, preparing a group is not communication, so an app may apply it on a person's click without a separate review. */
+export async function exchangeReachedOutside(db:Connection,q:{groupId?:string;exchangeId?:string}){
+ return !!(await db.query("SELECT 1 FROM exchange_events v JOIN exchanges e ON e.id=v.exchange_id WHERE v.kind IN ('email_sent','reminder_approved','opened','verified','acknowledged','submitted','message') AND (e.group_id=$1 OR e.id=$2) LIMIT 1",[q.groupId??null,q.exchangeId??null])).rows.length;
+}
+/** Exchange operations that change only what nobody outside has seen yet. Everything else that reaches recipients is reviewed. */
+export const preparationKinds=['create_exchange_group','invite_exchange','update_exchange_brief','share_exchange_documents','request_exchange_document','extend_exchange'] as const;
