@@ -21,7 +21,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | A11 | TrialAgents Runway vs Caladan: from trial budgets to company cash runway | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-caladan) |
 | A12 | TrialAgents Runway vs Airtable: a cash planning app or a model you build | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-airtable) |
 | B1 | Best Cash Runway Management Software for Biotech Startups in 2027 | Already covered / published | [Live article](https://trialagents.com/apps/best-cash-runway-software-biotech) |
-| B2 | 7 Float alternatives for small biotech teams: choose by the workflow you need | Claimed — source preparation 13 November 2026 21:00 UTC | Branch `content/runway-b2-float-alternatives-20261113`; publication unverified |
+| B2 | 7 Float alternatives for small biotech teams: choose by the workflow you need | Claimed — source PR #196 — 13 November 2026 20:58 UTC | Branch `content/runway-b2-float-alternatives-20261113`; publication unverified |
 | B3 | Best cfo.ai / Runway Financial Alternatives for Startup Founders | Queued — verify and publish | — |
 | B4 | Best Finmark Alternatives After Its Discontinuation | Queued — verify and publish | — |
 | B5 | Best LivePlan Alternatives for Biotech and Life Sciences Startups | Queued — verify and publish | — |
@@ -342,3 +342,10 @@ This supersedes A12 pending checkpoints. **15 published; 32 unfinished**, includ
 
 - B2 claimed for a seven-option Float switching guide. A12 independently rechecked HTTP 200; no open Runway source PR at start. A9 remains deferred. Branch `content/runway-b2-float-alternatives-20261113` starts at `08d271a8fbabad07926be0a25326d0bb62db7cf8`.
 - Title adjusted to describe conditional workflow fit, not an invented measured ranking. Distinct from B1: switching triggers, Float-specific liquidity requirements and cutover checks. No publication claimed; 15 published, 32 unfinished.
+
+
+### 13 November 2026 — B2 source checkpoint (20:58 UTC)
+
+- B2: **7 Float alternatives for small biotech teams: choose by the workflow you need**. Source [PR #196](https://github.com/tarous89/trialagents-public/pull/196), head `2d30cc1a16eee951404cb36f654357513fe41e7c`; proposed URL `https://trialagents.com/apps/float-alternatives-biotech`.
+- Seven conditional options: TrialAgents Runway, Fathom, Jirav, LivePlan, Aleph, Exigyn and Excel. Primary vendor pages checked on 13 November; Float identified as floatapp.com cash forecasting (Xero/QuickBooks). Scope distinguishes weekly liquidity from standard monthly Runway planning; no direct Float importer or automatic cross-app sync claimed. Official identifying logos reused from B1; two genuine approved Runway screenshots. No pricing, invented rankings or host tests.
+- Distinct from B1 through Float-specific switching triggers and baseline/payment/funding reconciliation. Exact-head predeploy run `43506384328` in progress. Not merged or published; 15 published, 32 unfinished. Resume this PR before selecting another topic.
