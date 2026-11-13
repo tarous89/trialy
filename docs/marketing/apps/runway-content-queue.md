@@ -9,7 +9,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | ID | Proposed title | Queue status | Covered by / published URL |
 | --- | --- | --- | --- |
 | A1 | TrialAgents Runway vs Excel: Biotech Cash Planning Compared | Already covered / published | [Live article](https://trialagents.com/apps/runway-vs-excel) |
-| A2 | TrialAgents Runway vs Float: Which Cash Flow Forecasting App Is Better for Biotech Startups? | Queued — verify and publish | — |
+| A2 | TrialAgents Runway vs Float: Which Cash Flow Forecasting App Is Better for Biotech Startups? | Draft PR #184; awaiting CI and production release verification — not published | [Draft PR](https://github.com/tarous89/trialagents-public/pull/184) |
 | A3 | TrialAgents Runway vs cfo.ai (Formerly Runway): AI Financial Planning for Biotech Startups | Queued — verify and publish | — |
 | A4 | TrialAgents Runway vs LivePlan: Startup Financial Planning for Pre-Revenue Biotechs | Queued — verify and publish | — |
 | A5 | TrialAgents Runway vs Fathom: Cash Runway Monitoring vs Financial Reporting | Queued — verify and publish | — |
@@ -82,3 +82,9 @@ All listed published pages were recorded as live in [Runway's app plan](runway.m
 ## Work execution preference
 
 Owner requests an hourly **ChatGPT Work** execution with **Astra, medium thinking effort**, if that scheduling environment supports these settings. Task-system scheduling support and model/mode selection must be independently verified; a prompt preference is not proof of execution mode.
+
+### 13 November 2026 — A2 execution checkpoint
+
+- Prepared A2 Runway vs Float HTML, integrated its canonical route into the public snapshot renderer, /apps index, sitemap/LLM discovery generation and source/browser/snapshot tests in [public-site PR #184](https://github.com/tarous89/trialagents-public/pull/184), head commit `805f576fbb758b072d54a995d8dd11be1ce8f894`.
+- **Status: NOT PUBLISHED.** No successful CI, merge, Cloudflare deployment, production article HTTP check or served analytics-chain verification was available in this run. GitHub commit status returned no checks. Do not mark A2 complete or move to A3 until the draft is reconciled, tests pass and production is verified.
+- Next execution: check PR #184 and current main for conflicts, run the full source and browser QA, inspect CI results, correct any failures, merge only when safe, verify the CDN and shared analytics assets, then update A2 to Published with the final live URL and release SHA.
