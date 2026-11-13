@@ -22,7 +22,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | A12 | TrialAgents Runway vs Airtable: a cash planning app or a model you build | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-airtable) |
 | B1 | Best Cash Runway Management Software for Biotech Startups in 2027 | Already covered / published | [Live article](https://trialagents.com/apps/best-cash-runway-software-biotech) |
 | B2 | 7 Float alternatives for small biotech teams: choose by the workflow you need | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/float-alternatives-biotech) |
-| B3 | cfo.ai (Runway Financial) alternatives: choose who owns the model | Claimed — source preparation 13 November 2026 | Branch `content/runway-b3-cfo-alternatives-20261113`; publication unverified |
+| B3 | cfo.ai (Runway Financial) alternatives: choose who owns the model | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/cfo-ai-alternatives-startups) |
 | B4 | Best Finmark Alternatives After Its Discontinuation | Queued — verify and publish | — |
 | B5 | Best LivePlan Alternatives for Biotech and Life Sciences Startups | Queued — verify and publish | — |
 | B6 | Best Fathom Alternatives for Biotech Financial Reporting and Forecasting | Queued — verify and publish | — |
@@ -68,7 +68,7 @@ All listed published pages were recorded as live in [Runway's app plan](runway.m
 
 ## Publication sequence and hourly worker contract
 
-1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2–A8 are published. **Next eligible: B3, cfo.ai / Runway Financial alternatives, subject to research, duplicate and claim checks. A10–A12 and B2 are published; A9 remains deferred by owner decision.** See the latest release checkpoint below.
+1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2–A8 are published. **Next eligible: B4, Finmark alternatives, subject to lifecycle research, duplicate and claim checks. A10–A12 and B2–B3 are published; A9 remains deferred by owner decision.** See the latest release checkpoint below.
 2. Re-read the **current** shared playbook and [Runway plan](runway.md). Use the approved genuine screenshots, wide dark editorial shell, numbered green headings, platform advantage order, honest competitor treatment, one final "Start with Runway" CTA and standard shared header/footer.
 3. Research and verify vendor identities, capabilities, URL destinations, AI/Claude/ChatGPT host experiences separately, formulas and substantive claims. Keep the no-pricing-in-A/B rule; in other series, only discuss verified prices if explicitly appropriate and editorially approved. Real screenshots only, no invented interfaces or citations. Treat claims in tentative titles as hypotheses.
 4. Make the article genuinely distinct from existing Runway pages. Do not create weak "year-only", vendor-name-swapped or keyword-cannibalizing pages. If the subject is already answered on a live URL, mark it as covered, link it and advance to the next eligible item **within the same run**, without publishing duplicate content.
@@ -380,3 +380,14 @@ B2 independently rechecked HTTP 200; public main `46434bf1b1469842026ed529cc9f2c
 - **Current total:** 16 published, 31 unfinished, including deferred A9.
 
 - **B3 merged; deployment pending/unverified — 23:05 CET:** PR #197 merged as `7ccd3ac92a202e16d896d444cb4157e5e1887ab7` after head `23312ce13b179257f60ef2337efb53572ad86bde` passed exact-head predeploy `43515320404`. Desktop/mobile artifact `14081215415` inspected; no rendering blocker. Await existing GitHub-connected build and verify `https://trialagents.com/apps/cfo-ai-alternatives-startups`; do not start B4 until this release is reconciled.
+
+
+### 13 November 2026 — B3 published and live verified (23:10 CET)
+
+- **Published:** [cfo.ai (Runway Financial) alternatives: choose who owns the model](https://trialagents.com/apps/cfo-ai-alternatives-startups). Five workflow-specific options and a model-ownership/demo brief distinguish B3 from B1/B2 and the A3 head-to-head. The candidate title was refined to avoid implying an unsupported measured ranking.
+- **Release:** [PR #197](https://github.com/tarous89/trialagents-public/pull/197), exact head `23312ce13b179257f60ef2337efb53572ad86bde`, merged release `7ccd3ac92a202e16d896d444cb4157e5e1887ab7` at 23:05 CET. Predeploy `43515320404` passed; desktop 1440px and mobile 390px artifact `14081215415` inspected. Two genuine 1226×790 screenshots and identifying logos decoded, shared chrome/final CTA checks passed, no page overflow or JS errors; the comparison table uses its own narrow-screen scroll region.
+- **Deployment evidence:** existing GitHub-connected build succeeded (Workers check `132200535765`), production check `132199282565` succeeded. Initial 404s resolved through normal automatic deployment; no dashboard sign-in or manual deployment.
+- **Independent live verification:** HTTP 200 text/html, no noindex directive/header, expected H1/title/description and self-canonical, matching Article/BreadcrumbList schema, exact reviewed article fragment and shared CSS. Header/footer match the homepage; one final Start with Runway link. All 21 checked page/image/source/CTA/analytics URLs returned 200. /apps, sitemap.xml (one canonical entry), llms.txt and llm.xml contain the route. robots.txt permits crawling.
+- **Tracking unchanged:** the article uses the identical homepage loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js`; both delivered HTTP 200. No tracking code/configuration/events/consent/collectors/attribution changed and no synthetic production events were sent.
+
+This supersedes B3 source and merged-pending checkpoints. **17 published; 30 unfinished**, including owner-deferred A9. **Next eligible: B4, Finmark alternatives**, subject to fresh lifecycle, claim and duplicate checks; its proposed discontinuation premise is not yet verified by this run. Only B3 was newly published. Search indexing, rankings, real-user performance and assistant citations remain unverified.
