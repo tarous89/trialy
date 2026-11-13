@@ -126,6 +126,10 @@ code. MCP request metrics now include an allowlisted tool name for frontend read
 layout preparation, confirmation, component reads and access checks, without
 logging arguments, record data or filter values. Diagnose with tool/path, query
 count, database time, pool wait and request duration before adding another cache.
+The November 13 [measurement reference](PERFORMANCE_MEASUREMENT.md) defines the
+additional transaction/context/session round-trip and sandbox counters, includes
+Claude tool labels, and records populated custom-app fixtures. Existing query-count
+semantics are unchanged; driver calls and overlapping timings are reported separately.
 
 Responsive toolbar lessons and future-template requirements are maintained in
 [`templates/TEMPLATE_AUTHORING.md`](../templates/TEMPLATE_AUTHORING.md). These shared

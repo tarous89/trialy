@@ -1,6 +1,14 @@
 # TrialAgents platform and app performance recommendations
 
-**Date:** 13 November 2026 (Europe/Berlin). **Status:** recommendations consolidated from the platform-opening and in-app experience review; implementation is not authorized by this document alone. Saving this document changes no runtime, template, data, permissions or integration.
+**Date:** 13 November 2026 (Europe/Berlin). **Status:** the owner authorized sequential implementation on 13 November after incorporating the review replies. The recommendations and review blocks below retain their original assessment; the implementation table records progress separately.
+
+| Step | Progress | Feature / integration effect |
+| --- | --- | --- |
+| P14 — measurement | Request/database/session/sandbox counters and populated synthetic app baseline implemented; production measurements remain pending release. See [measurement definitions and evidence](../PERFORMANCE_MEASUREMENT.md). | Numeric diagnostics only; no template, permission, data or integration change. |
+| P04 — public assets | Immutable fingerprinted assets before sessions; explicit asset failures and revalidated HTML implemented and verified by focused HTTP tests. Not yet deployed. | Automatic web benefit; installed apps/templates unchanged; no private-response caching. |
+| Next | N2 → P02 → P03 → P06 → P12, then the remaining reviewed sequence. | Each change retains its own compatibility and verification requirements. |
+
+**Review notes:** quoted blocks labelled **Review (13 Nov 2026)** and section 6 were added after a code check of the recommendations at `main` `f49c8c7`. They are review comments, not part of the original recommendations; the tables and text outside them are unchanged. A follow-up review then corrected several of these comments (P02, P03, P04, P05, P07, P08, P10, P11, P14, N1, N3, N4, red flags 1 and 4, and the revised order). Each corrected comment is marked *Corrected after follow-up review*. Figures in the review comments are estimates from reading the code, not measurements; production latency and hosting capacity remain unmeasured.
 
 **Evidence baseline:** source inspected at `4e10a34fe7b151a8836fadc3e4c2b62cc04c96de`; planning refreshed against `05e8ea0` before writing. The intervening changes did not modify the inspected runtime. Live public assets and local synthetic fixtures were checked; authenticated production timings and Render capacity metrics were not captured. Performance ratings are expected impact, not measured production speed gains.
 
@@ -27,6 +35,15 @@ Ordered by expected speed impact, with loading-indicator clarity last because it
 | P05 | Observed: main web entry eagerly imports many platform/editor sections. | Initial download and parsing include unused screens. | Split sections into lazy-loaded chunks; load editors and secondary pages when opened. | **Medium**, strongest on first visits/slower devices. | **Medium**, 1–2 days. | First visit to an unloaded section may show a local placeholder. | **Automatic** for web; validate embed packaging separately; template source unchanged. |
 | P06 | Observed: global bar tracks every pending API request after 150 ms. | Background work makes a usable screen look continuously busy. | Reserve global progress for foreground navigation/actions; keep routine checks quiet; show local preview/loading states. | **High perceived**, negligible direct latency gain. | **Low**, 0.25–0.5 day. | Changes loading feedback only; preserve errors and visible save progress. | **Automatic**; shared indicator behavior across supported hosts. |
 
+> **Review (13 Nov 2026):** I checked these items against the code at `main` `f49c8c7`. I only read the code; I did not profile or measure anything. Markers: ⬆ prioritize or raise the impact · ⬇ impact is overstated, or the gain is too small for the effort right now · ✎ the description is inaccurate or incomplete · ✓ agree.
+>
+> - **P01 ✎ ⬆ (multi-workspace).** Partly inaccurate. `workspaceHome` already cuts the list to the final page before building previews and reuses identical table samples (`src/workspace/home.ts:39-41`). The real amplifiers are: (a) `accountHome` asks every workspace for `offset+limit` items *with previews* and then discards most of them (`home.ts:71`). Page N costs about N×20 previews per workspace, and past 100 items it calls `workspaceHome` again, which rebuilds the full listing. (b) The work before pagination has sequential N+1 reads over *all* items, not just the page: `engine.revision` per function (`home.ts:23`), `typeAccess` per shared link, `activeNode` per placement. "Previews later" does not fix these. (c) The legacy branch of `readApp` (`src/workspace/apps.ts:33`) builds Home with previews in pages of 100 just to find one item. *Implementation:* add a `previews:false` mode and use it in the merge step of `accountHome` and in `readApp`. Build previews only for the final merged account page. Replace the per-item lookups with set-based queries. Consider dropping or capping the `count(*)` each preview runs. Very high for multi-workspace accounts, Medium for single-workspace accounts.
+> - **P02 ✓ Keep among the early fixes.** *(Corrected after follow-up review.)* I first rated this Medium; that was wrong. App creators, not only owners, can receive their archived apps (`src/workspace/archive.ts:30-35`), and the request runs before the client learns the list is empty. `types` and `views` load in parallel with Home and don't block its first render (`src/web/main.tsx:90,116`). They still use pool connections and CPU and keep the global progress bar on longer. Do it together with P03.
+> - **P03 ⬆ Worthwhile; its size needs measurement.** *(Corrected after follow-up review.)* `useAccessRecheck` listens to both `focus` and `visibilitychange` (`src/shared/useAccessRecheck.ts:5-6`), so returning to a tab *can* trigger two Home loads. React batching and the effect's timer cleanup may merge them, and when they don't, the server still computes the discarded load, because nothing aborts it. Home polling is off while an app screen is open (`HomePanel.tsx:41`), so the `/api/me`, Home and component-access checks don't normally all run together. I can't claim it is the biggest server-load item without measurement. *Quick part (Low):* merge focus and visibility into one debounced trigger with a minimum interval. Refresh Home on return instead of every 30 s while it is visible. Keep the cheap access check on the timer. Abort superseded fetches with an `AbortController`.
+> - **P04 ⬆ ✎ Impact understated.** *(Corrected after follow-up review.)* It is not only about revalidating on repeat visits. For a signed-in user, every static request runs about three logical session/auth operations: loading the session, a `session_version` SELECT (`src/server/auth.ts:37`) and a session-touch UPDATE (`rolling:true` + connect-pg-simple, `auth.ts:29`). The wrapped `session_version` query adds its own transaction and context round trips (N1). The `Set-Cookie` that `rolling:true` adds to static responses can stop a CDN or proxy from caching them, depending on its configuration. `express.static` is mounted after the auth setup (`src/server/index.ts:18,21`). *Implementation:* mount `/assets` (Vite's fingerprinted directory) **before** `configureAuth`, with `immutable, max-age=31536000` and **`fallthrough:false`**, so a missing hashed chunk returns 404 instead of `index.html` served as `text/html`. Do **not** mark the files copied from `public/` immutable (fonts and PNGs are not fingerprinted). Send `index.html` with `Cache-Control: no-cache`. Ship before P05.
+> - **P05 ⬇ Low–medium, with deploy risk.** *(Corrected after follow-up review.)* It only helps the standalone web app. The ChatGPT/Claude embed is a single inlined IIFE (`scripts/build-embed.ts`) and gains nothing. After a Render deploy, the old chunk files are gone, so open tabs that lazy-load a section fail. P04's `fallthrough:false` only makes the failure a clean 404 instead of an HTML response; it does not bring the deleted chunks back. Recovery is still needed: keep the previous build's `/assets` for at least one release, and/or handle `vite:preloadError` with a reload that preserves drafts.
+> - **P06 ✓.** Confirmed: every web `api()` call is counted by the progress bar (`main.tsx:60`), including the 30 s polls. The embed already excludes `check_component_access`. Add a `{background:true}` option to `api()` instead of changing call sites one by one. A background failure that means revocation must still surface.
+
 ### 1.2 Shared app runtime and interaction
 
 Standard trackers already have a persistent iframe, 120-second instance-local snapshots, a 16-page bound, neighboring-tab/next-page prefetch and selected in-flight navigation deduplication. Extend these concepts deliberately: the repository's 24 seed packages use custom source, not that recognized standard-tracker fast path.
@@ -41,12 +58,27 @@ Standard trackers already have a persistent iframe, 120-second instance-local sn
 | P12 | Observed: saves trigger a full rerender and clear standard snapshots; temporary post-save reload errors can be suppressed. | Successful saves can feel slow or leave unclear refresh state. | Distinguish saved receipt from refreshed view; retain inputs/screen; expose safe reload retry; refresh only affected data when dependencies are known. | **High usability**, **Medium** latency reduction. | **Low–medium** for clarity/retry; **Medium–high** for selective refresh. | Explicit “saved, refresh pending/failed”; no false success or mutation replay; retain authoritative recalculation. | Basic handling **Automatic**; dependency-aware refresh **Versioned / Design-time**; reconcile receipts across all hosts. |
 | P13 | Observed: frame repaint replaces root content; some focus/scroll restoration already exists; custom navigation resets several states. | Context can be lost or rebuilt unnecessarily between screens. | Extend stable focus, selection, scroll and per-screen filter retention; keep usable content while loading; use shared local loading/error states. | **Medium perceived**, smaller direct speed gain. | **Low–medium** initially. | Improves continuity without changing business actions; respect intentional reset and dirty-draft rules. | Shared host fixes **Automatic**; custom state/region conventions may need **Versioned / Design-time** adoption. |
 
+> **Review (13 Nov 2026):**
+>
+> - **P07 ✓ Very high, plus an addition.** *(Corrected after follow-up review.)* Capability calls are **strictly sequential**: a second in-flight call is rejected with `capability_limit` (`src/foundation/runtime.ts:17`). Each `records.read` costs an IPC round trip, a `runtimeComponent` revalidation (`src/workspace/service.ts:277`), a page query and a `count(*)` query (`service.ts:294`). A batch read capability (N4) helps template adoption. Server-side aggregation can help simple totals, but generic database aggregation cannot replace app-specific calculation rules such as Runway's forecasting; those still need complete authorized inputs.
+> - **P08 ✓, with a condition.** *(Corrected after follow-up review.)* I first called the per-read `runtimeComponent` check (`service.ts:277`) mostly redundant with the recheck after execution (`service.ts:317-318`). That only holds for pure reads. Custom execution can call actions and connectors before it finishes (`actions.run` and others, `service.ts:203-206`), so authorization must stay at every side-effect boundary. Reuse checks only within carefully defined read-only operations. Separately, the final recheck in `withReadMetadata` runs sequentially, one transaction per entry (`src/db/read-metadata.ts:46`). Extending it only saves work when cache hits outnumber entries, so measure first. Do it together with N1 (§6).
+> - **P09 ✓, plus an addition.** The server never aborts an execution when the client disconnects. `execute()` accepts an `AbortSignal` (`runtime.ts:6`), but no caller passes one. Abandoned or superseded requests hold one of the 2 global slots for up to 15 s. "Coalesce superseded reads" must include aborting on the server when `req` closes (N3).
+> - **P10 ✓ Keep at Medium, covering Home and direct links.** *(Corrected after follow-up review.)* I wrote that opening from Home already uses one request; that was wrong. Home sends `includeOutput:true`, but `readComponent` returns initial output only for recognized standard trackers or an empty shared-section view (`src/workspace/service.ts:471`). Normal custom apps, including the catalog apps, still need a separate render on both paths. *Implementation:* if the first render fails (for example `runtime_busy`), opening must still succeed. Return the metadata and fall back to a separate render request.
+> - **P11 ⬆ Split it.** *(Corrected after follow-up review.)* Confirmed: the cap of two published custom executions is module-level (`service.ts:193`) and shared by all users of the process, across web, ChatGPT and Claude. The third concurrent interaction, or the same user overlapping on the same app, gets an immediate 429. All 24 seed apps use custom source. Start-up cost per execution is **unmeasured**; my earlier "100 ms or more" was an estimate. **P11a (⬆ early, Medium):** a bounded fair queue (per-user fairness, a short wait, then 429), plus client retry with backoff on `runtime_busy` for read navigation only. This improves reliability under contention; it does not add processing capacity. **P11b (Medium):** a pre-started *single-use* child that is used once and then killed, which keeps today's isolation. Today `runtime-child.mjs` loads the QuickJS WASM module only after it receives `start`, so loading the module must also move to spawn time. Runtime and context creation stay per execution, so some start-up cost remains. **P11c (High, defer):** a reusable warm pool, only if P11b is not enough. Memory: each child has a 96 MB Node old-space limit plus a 64 MiB WASM memory ceiling (QuickJS runtime limit 16 MB). Size concurrency from memory data, not from guesses.
+> - **P12 ⬆ (basic part).** Confirmed and user-facing. A post-save rerender failure other than "unavailable" is swallowed silently (`src/shared/FrontendCodeRuntime.tsx:146-150`). The user sees the *pre-save* values with no notice. The basic "Saved · refresh failed · Retry" state is Low complexity; treat it as a fix, not polish.
+> - **P13 ✓.** The rating is right (perceived impact only).
+
 ### 1.3 Measurement, compatibility and release scope
 
 | ID | Current status | Issue | Recommendation | Performance impact | Complexity | Feature impact | Integration / template impact |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | P14 | Existing logs record duration, SQL count, database time, pool wait and metadata hits; local diagnostics available. | No authenticated production baseline establishes exact savings or server-capacity cause. | Measure open, tab/filter, save and return-to-tab paths before/after; separate foreground, prefetch, database, sandbox and transport costs. | **Indirect high**: targets real bottlenecks. | **Low–medium**. | No feature change; do not log records, secrets or draft content. | Verify web plus actual ChatGPT/Claude flows; upgrade hosting only if measured capacity warrants it. |
 | P15 | Guidance already requires bounded active reads, exact saves and compatible runtime behavior. | Custom templates can still use broad-read patterns; template publication does not upgrade saved copies. | Add measurable custom-app budgets, screen dependency/action declarations and upgrade checks to shared guidance; pilot, then release immutable template versions. | **High cumulative** across future apps. | **Medium** plus per-template adoption. | Preserve app identity, customizations, data, access, audit history and existing workflows. | **Versioned / Design-time**; synchronize guidance through existing mechanisms; catalog approval, deployment and installed-app upgrade remain distinct. |
+
+> **Review (13 Nov 2026):**
+>
+> - **P14 ✎ ⬆ The counters undercount.** *(Corrected after follow-up review.)* Confirmed: `metrics.queryCount` counts application statements only. The `BEGIN`, `set_config` and `COMMIT` added to every query (`src/db/database.ts:10,26`) and the session-store queries (run directly on `db.pool`) are not counted. The real statement count is therefore higher than the recorded 237; my earlier "700–950" is an estimate, not a measurement. Add statement and round-trip counters, fork/IPC/sandbox time, counts of 429 `runtime_busy`, and host CPU throttling. Profile with **populated** fixtures. Hosting: the `render.yaml` Blueprint is explicitly labelled development/staging, so it says nothing confirmed about production capacity. Measure production before drawing any hosting conclusion.
+> - **P15 ✓.** Add explicit budgets: maximum capability calls per interaction, maximum rows sent into the sandbox, and use of batch reads and aggregation.
 
 ## 2. Apps
 
@@ -58,12 +90,20 @@ Standard trackers already have a persistent iframe, 120-second instance-local sn
 | RW2 | Forecast/scenario code calculates from authorized inputs during execution. | Unchanged inputs can repeat calculation work; partial-page shortcuts would change results. | Reuse versioned calculation results only while all input/data/access versions remain valid; refresh dependent results after confirmed edits. | **High**, to verify with populated scenarios. | **High**. | Preserve currency rules, complete forecasts, scenario comparisons and frozen snapshots. | **Versioned** plus platform support; invalidate when linked Programs/other authorized inputs change. |
 | RW3 | Filters, details and edits run through the custom state/host flow. | Context and post-save refresh can interrupt finance work. | Adopt P12/P13; retain selected scenario, period, filters and scroll; distinguish confirmed save from reload failure. | **High perceived**. | **Medium**. | Preserve exact review, stale-version protection and draft recovery. | **Versioned** for template state behavior; platform save fixes benefit automatically. |
 
+> **Review (13 Nov 2026):**
+>
+> - **RW1 ✓ ✎.** *(Corrected after follow-up review.)* The rating stands, but the 13 reads come from an empty fixture, so they show only the *floor*. Runway reads each role in up to 8 pages of 100 rows, within an 88-call budget (`templates/source/cash-runway/cash-runway.source.js:76,81`). It re-reads everything on every click. With larger data, the cost of each interaction grows and can reach the sandbox limits. In that case Runway already marks its results provisional rather than exact (red flag 4). Profile with realistic volumes before fixing the P07 design.
+> - **RW2 ⬇ for now.** A forecast over hundreds of rows in QuickJS is probably cheap compared with the reads that feed it. The work is High complexity and carries a correctness risk around invalidation. Defer it until P14 shows that calculation time matters.
+> - **RW3 ✓.** Mostly comes free with P12/P13.
+
 ### 2.2 Programs — `life.project-oversight` 2.1.0
 
 | ID | Current status | Issue | Recommendation | Performance impact | Complexity | Feature impact | Integration / template impact |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | PG1 | Observed: empty fixture performs 10 table reads on open, Settings navigation and menu action. | Settings, ordinary lists and reports share broad data loading. | Adopt P07/P09; separate active-screen reads from timeline/critical-path inputs. | **Very high**. | **Medium–high**. | Preserve complete dependencies whenever critical-path calculations run. | **Versioned**; keep shared programs and read-only Runway integration compatible. |
 | PG2 | Timeline, dependency, report and editing workflows use the same custom execution path. | Unchanged calculations and full post-save work can repeat. | Reuse results against explicit input versions; refresh affected views; retain selected program, timeline position and filters. | **High** performance/usability. | **Medium–high**. | Frozen leadership reports stay frozen; reviewed slips and gate actions remain exact. | **Versioned**; retain `programs.*` output contracts and linked cash-data freshness. |
+
+> **Review (13 Nov 2026):** **PG1 ✓ ✎:** the same caveat as RW1 applies: these are empty-fixture figures. **PG2 ⬇ (calculation-reuse part):** defer for the same reasons as RW2. The context-retention half belongs with P13.
 
 ### 2.3 Contracts — `life.contracts` 1.0.0
 
@@ -72,6 +112,8 @@ Standard trackers already have a persistent iframe, 120-second instance-local sn
 | CT1 | Observed: empty fixture performs 9 table reads on open, Settings navigation and menu action. | Register, obligations, families and support data reload together. | Adopt P07/P09; page the register; load agreement/document details on demand; request appropriate family/obligation summaries separately. | **Very high**. | **Medium–high**. | Preserve complete family totals, deadlines and verified/unverified distinctions. | **Versioned**; retain shared agreements, `contracts.obligations` output and Programs milestones. |
 | CT2 | Saves and details use common rerender flow. | Unrelated summaries reload; failed refresh can be unclear. | Apply P12/P13; refresh affected agreement/family/obligations and keep detail/filter position. | **High usability**, **Medium** speed. | **Medium**. | Preserve source quotes, document verification, reviewed edits and receipts. | **Versioned** for targeted dependencies; platform document permissions and original versions unchanged. |
 
+> **Review (13 Nov 2026):** **CT1 ✓ ✎:** the same caveat as RW1 applies: these are empty-fixture figures. **CT2 ✓.**
+
 ### 2.4 Fundraise — `life.investor-crm` 2.0.0, open PR #137
 
 | ID | Current status | Issue | Recommendation | Performance impact | Complexity | Feature impact | Integration / template impact |
@@ -79,12 +121,16 @@ Standard trackers already have a persistent iframe, 120-second instance-local sn
 | FR1 | Source inspected in PR #137: loads 11 roles before event handling; not merged/released at review. | Broad-read pattern will repeat across pipeline, Settings and engagement. | Adopt P07/P09 before release; load active pipeline page, needed summaries and on-demand engagement separately. | **High expected**; no production measurement. | **Medium–high**. | Keep signed-commitment totals, reviewed moves and investor comparisons correct. | **Design-time / PR revision**; preserve `fundraise.v1`, `dataroom.v1` and Programs integrations. |
 | FR2 | Shared save/state handling available; custom screen state owns pipeline context. | Repeated actions can lose working context or perform redundant refresh. | Apply P12/P13 and guidance budgets before merge. | **High perceived**, **Medium** speed. | **Medium**. | Preserve round, pipeline filters and draft recovery; sends remain separately authorized. | **Design-time**; no migration of existing Investor CRM 1.0.1 implied. |
 
+> **Review (13 Nov 2026):** **FR1 ⬆:** the PR is the cheapest moment to apply P07/P09 and the batch read (N4). Do it before merge. I did not re-check the current state of PR #137. **FR2 ✓.**
+
 ### 2.5 CRO Selection — existing 1.0.1 and planned replacement
 
 | ID | Current status | Issue | Recommendation | Performance impact | Complexity | Feature impact | Integration / template impact |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | CS1 | Existing custom package unprofiled; replacement scope approved/scoped in current plan. | Broad request/vendor/bid/exchange loading could reproduce the same issue. | Profile existing app; make P07/P09/P15 requirements for the replacement; load bids, documents, messages and submissions when needed. | **High expected**. | **Medium–high**. | Preserve complete bid comparisons, scoring and award/handoff workflows. | Existing source **Versioned**; new build **Design-time**; retain external exchange review and shared contracts. |
 | CS2 | Planned workflow includes supplier communication and reviewed handoffs. | Generic cached/retried interactions could replay external actions. | Keep cached navigation separate from send, accept, award and connector actions; use receipts and targeted refresh. | **Medium** speed; **High** reliability. | **Medium**. | No weakening of approvals or delivery status. | **Design-time**; preserve exchange, documents and downstream app contracts. |
+
+> **Review (13 Nov 2026):** **CS1 ✓.** **CS2 ✎:** this is a reliability and safety guardrail, not a performance item. Keep it, but label it that way so it is not cut when performance work is deprioritized. The same applies to DR2 and IU2.
 
 ### 2.6 Data Room, including Diligence Q&A — planned `life.data-room` 1.0.0
 
@@ -95,12 +141,16 @@ Standard trackers already have a persistent iframe, 120-second instance-local sn
 | DR1 | Approved scope; platform room extension and app build still planned. | Loading all documents, engagement, recipients and Q&A upfront could be costly. | Apply P07/P09/P15 during platform-extension and app design; page indexes/status, load document/Q&A details on demand. | **High expected**. | **Medium–high** incremental adoption. | Keep hosted rooms, levels, version history and room-based Q&A; no separate Q&A app. | **Design-time**; external exchange + room extension; preserve Fundraise/BD `dataroom.v1` consumers. |
 | DR2 | Planned private document access, tracking and reviewed email actions. | Caching could obscure access changes or replay sends/approvals. | Scope reads to viewer/room/access version; keep views/download tracking authoritative; exclude sends and approval actions from replay. | **Medium** speed; **High** reliability. | **Medium–high**. | Preserve access revocation, view/download evidence and exact send confirmation. | **Design-time**; no publicly cached private documents or bearer links. |
 
+> **Review (13 Nov 2026):** **DR1 ✓.** **DR2 ✎:** a reliability and safety guardrail; see CS2.
+
 ### 2.7 Investor Updates — planned BT2-06
 
 | ID | Current status | Issue | Recommendation | Performance impact | Complexity | Feature impact | Integration / template impact |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | IU1 | Planned app; no app-specific runtime measured. | Report/KPI, document and recipient data could all load on every action. | Adopt P07/P09/P15; load selected period/report and summary first, recipient/document detail on demand. | **High expected**. | **Medium** incremental adoption. | Preserve approved snapshots and reporting completeness. | **Design-time**; retain finance/shared-data contracts and external exchange where implemented. |
 | IU2 | Planned sharing and assistant-assisted reporting. | Navigation retries must not become repeat publications or deliveries. | Apply P12/P13 and separate cached reads from confirmed publication/send actions. | **Medium** speed; **High** usability/reliability. | **Medium**. | Keep drafts, explicit confirmation and receipt-based retries. | **Design-time**; no new automation or email permissions. |
+
+> **Review (13 Nov 2026):** **IU1 ✓.** **IU2 ✎:** a reliability and safety guardrail; see CS2.
 
 ### 2.8 Other existing templates — each app
 
@@ -129,6 +179,8 @@ These packages are in the repository seed and use custom source, but were **not 
 | Sponsor Updates — CRO 1.0.1 | Custom; unprofiled. | Same runtime exposure. | Profile selected report and supporting-record reads. | **Medium–high potential**. | Shared + **Medium**. | Preserve approved/frozen reports and drafts. | **Automatic + Versioned**; no automatic sends or schedule changes. |
 | Trial Monitoring & PV Oversight — Sponsor 1.1.1 | Custom; unprofiled. | Same runtime exposure. | Profile active oversight pages and supporting details. | **Medium–high potential**. | Shared + **Medium**. | Preserve aggregate oversight records and existing scope limits. | **Automatic + Versioned**; access and automations unchanged. |
 
+> **Review (13 Nov 2026):** **⬇** *(Corrected after follow-up review.)* "Medium–high potential" is applied uniformly without profiling. Replace it with **"Unmeasured"** until each app is profiled. Apps that read few tables will gain mostly from the platform fixes. A static scan of each source's bound roles and read loops could rank them cheaply before any per-app work is scheduled.
+
 ### 2.9 Other planned biotech apps — each app
 
 These rows apply the conversation's shared future-template recommendation; they are **design requirements, not newly diagnosed defects**. Development should reuse P07/P09/P12/P13/P15, retain complete calculations, and keep external side effects outside cached/replayed navigation. Complexity below is incremental performance adoption, not the whole app build.
@@ -147,6 +199,8 @@ These rows apply the conversation's shared future-template recommendation; they 
 | Grants (19) | Planned Grant Pipeline adaptation. | Broad call/application/report reads could repeat. | Active pipeline page plus on-demand reports and sources. | **Medium–high potential**. | **Medium**. | Preserve deadlines, provenance and summaries. | **Design-time**; research/notification authority unchanged. |
 | Regulatory (20) | Planned submission-template reshaping. | Document and commitment details could load upfront. | Selected tracker page and on-demand source documents. | **Medium–high potential**. | **Medium**. | Preserve commitments, histories and evidence. | **Design-time**; document/shared-data contracts retained. |
 
+> **Review (13 Nov 2026):** **✓** Agree; these are design-time requirements.
+
 Programs, Runway, Contracts, Fundraise, CRO Selection, Investor Updates and Data Room are covered individually above. CRO Oversight is covered with its existing template. Diligence Q&A is included only under Data Room, consistent with the latest approved scope.
 
 ## 3. Recommended implementation order
@@ -158,6 +212,14 @@ Programs, Runway, Contracts, Fundraise, CRO Selection, Investor Updates and Data
 5. **Further optimizations:** P05 and measured P11; selective calculation/refresh reuse after dependency contracts are explicit. Expand to other templates using profiling, not assumed defects.
 
 **Easiest implementation first:** progress/asset caching → startup deferral and save/reload clarity → coordinated refresh and combined app-open → section splitting and state retention → Home/custom read restructuring → dependency-aware caching/local actions and isolated worker pooling. Actual order may change with measurements.
+
+> **Review (13 Nov 2026):** Suggested revised order:
+>
+> 1. **Baseline:** P14 with the corrected counters and populated fixtures.
+> 2. **Early fixes:** P04 → N2 → P02 → P03 (quick part) → P06 → P12 (basic). Then P11a and N3 (both Medium), treated as reliability under contention.
+> 3. **Shared read efficiency (Medium):** N1 → P01 (`previews:false`, set-based queries) → P08 (read-only reuse only) → P10.
+> 4. **Custom-app pilot:** N4 + P07 + P09 on Runway, then Programs and Contracts. Revise Fundraise inside PR #137. Template adoption is extra work on top of the platform capability.
+> 5. **Later:** P11b, P05 (only after P04 and with asset retention), P13 follow-ups, §2.8 per-app work ranked by measurement, and last of all RW2/PG2 calculation reuse.
 
 ## 4. Verification and compatibility requirements
 
@@ -186,6 +248,8 @@ Programs, Runway, Contracts, Fundraise, CRO Selection, Investor Updates and Data
 | Seed template classification | 24 seed packages use custom source; none recognized by `standardTracker`. | Repository seed, not a live catalog query or per-template performance profile. |
 | Fundraise PR #137 | Eleven data roles loaded before event handling. | Source observation; no production timing. |
 
+> **Review (13 Nov 2026):** The database query counts above leave out the `BEGIN`/`set_config`/`COMMIT` around every query and the session-store queries (see P14), so the real number of statements is higher; how much higher has not been measured *(corrected after follow-up review)*. The `records.read` counts come from empty fixtures and show the fixed overhead only, not the cost with real data.
+
 ### Implementation references
 
 - [Web startup](../../src/web/main.tsx), [Home client](../../src/shared/HomePanel.tsx), [Home backend](../../src/workspace/home.ts), [archive loading](../../src/shared/ArchivedItems.tsx).
@@ -195,5 +259,27 @@ Programs, Runway, Contracts, Fundraise, CRO Selection, Investor Updates and Data
 - [Existing tracker optimizations](../tracker-performance.md), [snapshot cache](../../src/shared/tracker-cache.ts), [in-flight reads](../../src/shared/frontend-reads.ts), [performance fixture](../../tests/tracker-performance.test.ts), [account-page fixture](../../tests/page-performance.test.ts).
 - [Runway source](../../templates/source/cash-runway/cash-runway.source.js), [Programs source](../../templates/source/project-oversight/programs.source.js), [Contracts source](../../templates/source/contracts/contracts.source.js), [Fundraise PR](https://github.com/tarous89/trialy/pull/137) and [reviewed Fundraise source](https://github.com/tarous89/trialy/blob/9eb6d173c43a9f6fa9ed88f6a1bae19cfc959243/templates/source/investor-crm/fundraise.source.js#L80).
 - [Current catalog contract](../TEMPLATE_CATALOG.md), [seed packages](../../templates/catalog-seed.json), [authoring guidance](../../templates/TEMPLATE_AUTHORING.md), [current biotech plan](../product/app-template-blueprints/BIOTECH_v2.md), [Data Room scope including Q&A](../product/app-template-blueprints/apps/DATA_ROOM.md), [modular app/shared-data contract](../product/MODULAR_APPS_AND_SHARED_DATA.md).
+
+## 6. Review: additional red flags and missing recommendations
+
+*Added by review (13 Nov 2026); not part of the original recommendations.*
+
+### Red flags affecting current users
+
+1. **Shared sandbox cap (P11).** *(Corrected after follow-up review.)* Two published custom executions run per process, shared across web, ChatGPT and Claude. An assistant rendering an app can make a web user's click fail with "This interface is busy", and the other way round. This is a reliability problem under contention. A queue makes the failure graceful but does not add capacity.
+2. **No abort propagation.** Abandoned requests keep running on the server and keep their sandbox slot, which compounds flag 1. Superseded Home rebuilds (from P03's double trigger) also run to completion.
+3. **Idle tabs cause continuous load (P03 + N2).** A visible Home tab rebuilds account Home every 30 s and touches the session row on each request. This grows with users × open tabs and competes with real work on 0.5 CPU and a 10-connection pool.
+4. **Capacity and degraded functionality with populated data.** *(Corrected after follow-up review.)* The sandbox allows 100 calls, a 4 MB cumulative read payload and 15 s wall time per execution (`src/foundation/runtime.ts:5,19`), and Runway allows itself 88 calls. The apps already detect incomplete reads, so they do not show complete-looking results silently: Runway marks results provisional and not exact, and Programs and Contracts suppress the affected totals and calculations. The existing incomplete-data tests for all three pass. The risk is that larger datasets push users into this degraded mode, or into "Read budget exceeded" failures. Empty-fixture profiling cannot show how often that happens.
+5. **Silent stale view after save (P12).** This happens today: after a save, a failed refresh leaves the old values on screen with no notice.
+6. **Lazy chunks break across deploys** if P05 ships without P04's `fallthrough:false` and a preload-error handler.
+
+### Missing recommendations
+
+| ID | Issue | Recommendation | Performance impact | Complexity |
+| --- | --- | --- | --- | --- |
+| N1 ⬆ | `Postgres.query()` wraps **every** standalone query in its own transaction (`src/db/database.ts:10`). That adds a pool checkout plus `BEGIN`, `set_config(...)` and `COMMIT` around each query; the overhead is confirmed, the size of the effect is not. It affects Home, rechecks, records reads and auth. | Run read endpoints (Home, lists, app open, metadata rechecks) inside **one request-scoped transaction**, so the context is set once. **Never hold it across a sandbox execution** (15 s wall time, pool of 10). Alternatively, send `BEGIN` and `set_config` in one round trip. Keep `is_local=true` so the RLS context can never leak across pooled connections. *(Complexity corrected after follow-up review.)* | **High** expected, platform-wide; to be measured. | **Medium**. |
+| N2 | Each request touches the session (rolling cookie plus a store `touch` UPDATE) and runs a `session_version` SELECT. That includes static assets and every 30 s poll. | P04 removes this for assets. For the API, limit touch writes to, for example, once per hour per session (the rolling cookie can still refresh). Keep the `session_version` check, because it enforces revocation. | **Medium**. | **Low**. |
+| N3 | No abort propagation (red flag 2). | *(Corrected after follow-up review.)* Do **not** use `req.on('close')`: in Node it also fires after a normal, completed request. Detect a response that closed early instead (`res.on('close')` while `!res.writableFinished`), and on the MCP path use the request's cancellation signal. Propagate it through both web and MCP paths into `execute()` and long Home reads. Stopping the sandbox does not cancel a database query already running, and it does not undo an action. So cancel only between read steps, and let an action or connector call that has already started finish and record its receipt. | **Medium**; **High under contention**. | **Medium**. |
+| N4 | Capability calls run one after another (see P07). | *(Corrected after follow-up review.)* Add a `records.readMany` batch capability with bounded subrequests. Every subrequest keeps the existing binding, permission and read-budget checks, and the existing pagination and completeness semantics stay the same. A `total` may be reused only for the identical authorized query (same table, filters, search, scope and access version) within one execution, not simply because `offset>0`. Optionally add an index on `records(workspace_id,type_id,created_at,id) WHERE state<>'archived'` (today only `(workspace_id,type_id)` exists); this is low priority at current data sizes. | **High** for custom apps. | **Medium**, plus per-template adoption. |
 
 This document consolidates recommendations and compatibility effects. It does not replace the governing access, write, template or integration contracts.
