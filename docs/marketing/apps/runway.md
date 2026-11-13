@@ -391,3 +391,14 @@ Primary evidence reviewed: Airtable's https://airtable.com/developers/agents/mcp
 ### A12 merged release checkpoint — 13 November 2026
 
 PR #195 merged at 20:22 UTC (21:22 CET), release `08d271a8fbabad07926be0a25326d0bb62db7cf8`. Exact head `ee36603f4b87480bef67986e1dccf6eab7e023cf` passed predeploy 43499933636: both jobs, full tests, snapshot/metadata/discovery and browser/site regressions. Desktop/mobile Airtable screenshots in artifact 14072724696 inspected; no layout blocker, accessible horizontal-scroll comparison table on mobile. Automatic deployment pending; resume this release before a new article if interrupted. No tracking changes or synthetic production events.
+
+
+### A12 published — 13 November 2026
+
+**TrialAgents Runway vs Airtable: a cash planning app or a model you build** — https://trialagents.com/apps/runway-vs-airtable
+
+Published via [PR #195](https://github.com/tarous89/trialagents-public/pull/195), exact head `ee36603f4b87480bef67986e1dccf6eab7e023cf`, release `08d271a8fbabad07926be0a25326d0bb62db7cf8` merged at 20:22 UTC (21:22 CET). Predeploy 43499933636 passed both jobs, full tests, candidate snapshot/metadata/discovery and browser/site regressions. Desktop/mobile screenshots in artifact 14072724696 inspected; no layout blocker, accessible horizontal-scroll comparison table on mobile. Existing automatic Cloudflare build and article-aware production check succeeded; initial 404s resolved within the bounded wait.
+
+Independent live verification passed at approximately 20:25 UTC (21:25 CET): HTTP 200 text/html, exact reviewed article fragment and CSS, one H1, expected title/description, self-canonical, Article/BreadcrumbList schema, no noindex directive, robots crawl permission, three genuine images, working internal/primary-source links and one final CTA. /apps listing, one canonical sitemap.xml entry, llms.txt and llm.xml all verified. Seventeen linked page/asset URLs returned 200, in addition to the article and discovery files. Homepage-identical loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js` both HTTP 200. Tracking scripts, configuration, events, consent, collectors and attribution unchanged; no synthetic production events or manual deployment.
+
+This supersedes A12 pending checkpoints. **15 published; 32 unfinished**, including owner-deferred A9. Next eligible: **B2, Float alternatives for small biotechs**, subject to fresh evidence, duplicate and claim checks. No search-indexing or assistant-citation result is implied. Only A12 was newly published in this run.
