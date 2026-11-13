@@ -18,7 +18,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | A8 | TrialAgents Runway vs Jirav: cash planning and three-statement FP&A for biotech | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-jirav) |
 | A9 | TrialAgents Runway vs Bob Finance (Formerly Mosaic): Financial and Workforce Planning | Deferred — vendor relaunch/availability verification required | [Current vendor notice](https://www.hibob.com/platform/finance/) |
 | A10 | TrialAgents Runway vs Exigyn: adaptable cash planning or biotech FP&A? | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-exigyn) |
-| A11 | TrialAgents Runway vs Caladan: from trial budgets to company cash runway | In progress — source PR #194; not yet published | [Source PR](https://github.com/tarous89/trialagents-public/pull/194) |
+| A11 | TrialAgents Runway vs Caladan: from trial budgets to company cash runway | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-caladan) |
 | A12 | TrialAgents Runway vs Airtable: Cash Runway Tracking for Biotech Teams | Queued — verify and publish | — |
 | B1 | Best Cash Runway Management Software for Biotech Startups in 2027 | Already covered / published | [Live article](https://trialagents.com/apps/best-cash-runway-software-biotech) |
 | B2 | 7 Best Float Alternatives for Small Biotech Companies | Queued — verify and publish | — |
@@ -68,7 +68,7 @@ All listed published pages were recorded as live in [Runway's app plan](runway.m
 
 ## Publication sequence and hourly worker contract
 
-1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2–A8 are published. **Next eligible: A11, Runway vs Caladan, subject to research and claim checks. A10 is published; A9 remains deferred by owner decision.** See the latest release checkpoint below.
+1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2–A8 are published. **Next eligible: A12, Runway vs Airtable, subject to research and claim checks. A10 and A11 are published; A9 remains deferred by owner decision.** See the latest release checkpoint below.
 2. Re-read the **current** shared playbook and [Runway plan](runway.md). Use the approved genuine screenshots, wide dark editorial shell, numbered green headings, platform advantage order, honest competitor treatment, one final "Start with Runway" CTA and standard shared header/footer.
 3. Research and verify vendor identities, capabilities, URL destinations, AI/Claude/ChatGPT host experiences separately, formulas and substantive claims. Keep the no-pricing-in-A/B rule; in other series, only discuss verified prices if explicitly appropriate and editorially approved. Real screenshots only, no invented interfaces or citations. Treat claims in tentative titles as hypotheses.
 4. Make the article genuinely distinct from existing Runway pages. Do not create weak "year-only", vendor-name-swapped or keyword-cannibalizing pages. If the subject is already answered on a live URL, mark it as covered, link it and advance to the next eligible item **within the same run**, without publishing duplicate content.
@@ -302,3 +302,14 @@ This supersedes A10 pending/source checkpoints. **13 published, 34 unfinished**,
 ### A11 merged release checkpoint — 13 November 2026
 
 PR #194 merged at 20:07 UTC (21:07 CET), release `6271373f2f7aaa0717fc6672caeaca328be084dc`. Exact head `d2c85fb8c92d591f5e8d5432dd22c61316becf9e` passed predeploy 43497327243 (both jobs, full tests, candidate snapshot, metadata/discovery, browser and site regressions). Desktop/mobile Caladan screenshots in artifact 14071744031 inspected; no layout blocker, standard accessible horizontal-scroll comparison table on mobile. Automatic deployment pending; live verification underway. Resume this release before another topic if interrupted. No authentication fault inferred or tracking changes made.
+
+
+### A11 published — 13 November 2026
+
+**TrialAgents Runway vs Caladan: from trial budgets to company cash runway** — https://trialagents.com/apps/runway-vs-caladan
+
+Published via [PR #194](https://github.com/tarous89/trialagents-public/pull/194), exact head `d2c85fb8c92d591f5e8d5432dd22c61316becf9e`, merged release `6271373f2f7aaa0717fc6672caeaca328be084dc` at 20:07 UTC (21:07 CET). Predeploy run 43497327243 passed both jobs, full tests, snapshot/discovery and browser/site regressions. Desktop/mobile screenshots in artifact 14071744031 inspected; no layout blocker, accessible horizontal-scroll comparison table on mobile. Cloudflare automatic build and article-aware production verification succeeded. Early 404s resolved within the bounded deployment wait; no manual deployment or dashboard access.
+
+Independent live verification completed at approximately 20:12 UTC (21:12 CET): expected HTTP 200 HTML; exact reviewed article fragment and responsive CSS; one H1; expected title/description; self-canonical; Article/BreadcrumbList schema; no noindex directive; three genuine images; all article links and final CTA; /apps listing, single canonical sitemap.xml entry, llms.txt and llm.xml. Thirteen linked asset/page URLs returned 200, in addition to the article and discovery files. Homepage-identical analytics loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js` both HTTP 200. Existing tracking scripts, configuration, events, consent, collectors and attribution unchanged; no synthetic production events.
+
+This supersedes A11 source/pending checkpoints. **14 published; 33 unfinished**, including deferred A9. Next eligible: **A12, Runway vs Airtable**, subject to fresh queue, claim and evidence checks. Publication QA does not establish search indexing or assistant citations. Only A11 was newly published in this run.
