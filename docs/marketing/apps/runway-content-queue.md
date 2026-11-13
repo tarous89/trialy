@@ -22,7 +22,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | A12 | TrialAgents Runway vs Airtable: a cash planning app or a model you build | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-airtable) |
 | B1 | Best Cash Runway Management Software for Biotech Startups in 2027 | Already covered / published | [Live article](https://trialagents.com/apps/best-cash-runway-software-biotech) |
 | B2 | 7 Float alternatives for small biotech teams: choose by the workflow you need | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/float-alternatives-biotech) |
-| B3 | Best cfo.ai / Runway Financial Alternatives for Startup Founders | Queued — verify and publish | — |
+| B3 | cfo.ai (Runway Financial) alternatives: choose who owns the model | Claimed — source preparation 13 November 2026 | Branch `content/runway-b3-cfo-alternatives-20261113`; publication unverified |
 | B4 | Best Finmark Alternatives After Its Discontinuation | Queued — verify and publish | — |
 | B5 | Best LivePlan Alternatives for Biotech and Life Sciences Startups | Queued — verify and publish | — |
 | B6 | Best Fathom Alternatives for Biotech Financial Reporting and Forecasting | Queued — verify and publish | — |
@@ -364,3 +364,8 @@ This supersedes A12 pending checkpoints. **15 published; 32 unfinished**, includ
 - **Tracking preserved:** identical homepage loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js` both return HTTP 200. No tracking source/configuration/event/consent/collector/attribution changes; no synthetic production events sent.
 
 This supersedes all B2 claim/source/pending checkpoints above. **16 published; 31 unfinished**, including owner-deferred A9. **Next eligible: B3, cfo.ai / Runway Financial alternatives**, subject to fresh queue, claim, vendor and duplicate checks. Only B2 was newly published in this run. Publication verification does not establish search indexing, rankings or assistant citations.
+
+
+### 13 November 2026 — B3 execution claim
+
+B2 independently rechecked HTTP 200; public main `46434bf1b1469842026ed529cc9f2ce40ddbd8e9`; no open Runway PRs. B3 claimed on `content/runway-b3-cfo-alternatives-20261113`. Proposed title refined to conditional model ownership rather than an unsupported overall ranking. Five options: TrialAgents Runway, Aleph, Jirav, Abacum and Excel. Distinct intent: founder/finance responsibilities, calculation ownership and a concrete model demonstration brief; not B2's short-term cash replacement guide. No publication claimed; 16 published, 31 unfinished.
