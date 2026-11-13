@@ -22,6 +22,7 @@
 | CRO payment timing (D1) | https://trialagents.com/apps/cro-payment-timing-biotech-cash-runway | Published; production URL checked 12 November 2026 |
 | Excel-to-Runway migration (E2) | https://trialagents.com/apps/excel-to-trialagents-runway | First Series E post; Published in [public-site PR #182](https://github.com/tarous89/trialagents-public/pull/182), merge `6ce6d6f2382c5926fc0f5972eab9e4f952064daa`. Exact-head tests and desktop/mobile checks passed. Cloudflare build and live C/D/E content, images, canonical/schema, final CTA, app index/hub, sitemap.xml, llms.txt and llm.xml verified on 12 November 2026. |
 | Runway vs Jirav (A8) | https://trialagents.com/apps/runway-vs-jirav | Published; source PR #191, repair PR #192, release `5f6860060c427c0c18168f2d15bb70b46407a443`; live verified 13 November 2026. |
+| Runway vs Exigyn (A10) | https://trialagents.com/apps/runway-vs-exigyn | Published via PR #193, release `e552a878768a5df5daebea5302688713568588d1`; live verified 13 November 2026. |
 | App pages index | https://trialagents.com/apps | Published; production URL checked 12 November 2026 |
 
 These are intended canonical URLs. Do not assert that a URL is live until checked on the production CDN.
@@ -344,3 +345,14 @@ A10 is the next publication priority. Resume its existing research above, rechec
 ### A10 source checkpoint — 13 November 2026
 
 [PR #193](https://github.com/tarous89/trialagents-public/pull/193), exact head `9cf1a0f9fce4b867bcf79a0636c39489226108fe`, prepares `/apps/runway-vs-exigyn`: **TrialAgents Runway vs Exigyn: adaptable cash planning or biotech FP&A?** Primary evidence: https://www.exigyn.com/, https://www.exigyn.com/mcp, https://www.exigyn.com/biotech-fpa-software. MCP documentation supports role-scoped model queries/writes; product page documents clinical accruals/headcount/reporting. Listed integrations do not establish tested scope, direction or cadence. No hands-on benchmark, new host acceptance test, pricing or exclusive AI claim. Approved Runway 2.1 catalog reread. Fictional evaluation brief separates a program delay from a fixed contractual deposit; program shift is not represented as selective invoice movement. Genuine Runway screenshots 01-overview, 03-plan and 02-cash-flow; no synthetic interfaces. Standard shell/tracking retained. Predeploy 43491069636 running; resume this PR before drafting another article. Refresh on vendor MCP/integration/model or Runway catalog changes.
+
+
+### A10 published — 13 November 2026
+
+**TrialAgents Runway vs Exigyn: adaptable cash planning or biotech FP&A?** — https://trialagents.com/apps/runway-vs-exigyn
+
+Published via [PR #193](https://github.com/tarous89/trialagents-public/pull/193), exact source head `9cf1a0f9fce4b867bcf79a0636c39489226108fe`, release `e552a878768a5df5daebea5302688713568588d1`. Predeploy run 43491069636 passed full tests, snapshot/discovery and browser checks. Desktop/mobile artifact 14070201181 inspected; accessible horizontally scrolling comparison table on mobile, no page-layout blocker. Existing Cloudflare automatic build and article-aware production verification succeeded. Early 404s resolved within the bounded deployment wait.
+
+Independent live checks passed: expected HTTP 200 content, exact visually reviewed fragment/CSS, one H1, title/description, self-canonical, Article/BreadcrumbList schema, three genuine images, all article links, one final Start with Runway CTA; /apps listing, one sitemap.xml canonical entry, llms.txt and llm.xml. Homepage-identical analytics loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js` both HTTP 200. Tracking scripts, configuration, consent, events, collectors and attribution unchanged; no synthetic production events.
+
+This supersedes A10 pending/source checkpoints. **13 published, 34 unfinished**, including deferred A9. Next eligible candidate: A11, Runway vs Caladan, subject to fresh vendor research and claim checks. No additional article published in this run.
