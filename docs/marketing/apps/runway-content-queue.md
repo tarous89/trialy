@@ -9,7 +9,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | ID | Proposed title | Queue status | Covered by / published URL |
 | --- | --- | --- | --- |
 | A1 | TrialAgents Runway vs Excel: Biotech Cash Planning Compared | Already covered / published | [Live article](https://trialagents.com/apps/runway-vs-excel) |
-| A2 | TrialAgents Runway vs Float: Which Cash Flow Forecasting App Is Better for Biotech Startups? | Draft PR #184; awaiting CI and production release verification — not published | [Draft PR](https://github.com/tarous89/trialagents-public/pull/184) |
+| A2 | TrialAgents Runway vs Float: Which Cash Flow Forecasting App Is Better for Biotech Startups? | Merged PR #184; blocked on Cloudflare deployment/sign-in — not published | [Draft PR](https://github.com/tarous89/trialagents-public/pull/184) |
 | A3 | TrialAgents Runway vs cfo.ai (Formerly Runway): AI Financial Planning for Biotech Startups | Queued — verify and publish | — |
 | A4 | TrialAgents Runway vs LivePlan: Startup Financial Planning for Pre-Revenue Biotechs | Queued — verify and publish | — |
 | A5 | TrialAgents Runway vs Fathom: Cash Runway Monitoring vs Financial Reporting | Queued — verify and publish | — |
@@ -88,3 +88,9 @@ Owner requests an hourly **ChatGPT Work** execution with **Astra, medium thinkin
 - Prepared A2 Runway vs Float HTML, integrated its canonical route into the public snapshot renderer, /apps index, sitemap/LLM discovery generation and source/browser/snapshot tests in [public-site PR #184](https://github.com/tarous89/trialagents-public/pull/184), head commit `805f576fbb758b072d54a995d8dd11be1ce8f894`.
 - **Status: NOT PUBLISHED.** No successful CI, merge, Cloudflare deployment, production article HTTP check or served analytics-chain verification was available in this run. GitHub commit status returned no checks. Do not mark A2 complete or move to A3 until the draft is reconciled, tests pass and production is verified.
 - Next execution: check PR #184 and current main for conflicts, run the full source and browser QA, inspect CI results, correct any failures, merge only when safe, verify the CDN and shared analytics assets, then update A2 to Published with the final live URL and release SHA.
+
+### 13 November 2026 — A2 resumed release checkpoint
+
+- PR #184 merged at `c0ecfd43bb5a57adf58bd38d0ffc499e764cb5c3` after exact-head predeploy run 43404273315 passed: 282 tests, candidate snapshot, metadata/discovery checks and desktop/mobile browser checks. Reviewed A2 desktop/mobile screenshot artifacts; no layout blocker.
+- Rechecked Float product and QuickBooks primary materials; comparison remains consistent with documented accounting integration, scenarios and daily/weekly/monthly views. Existing analytics implementation was unchanged by this PR.
+- **NOT PUBLISHED:** production `https://trialagents.com/apps/runway-vs-float` still returned HTTP 404 after merge. The green production run 43405089814 checks homepage/footer only, not A2 publication. Cloudflare dashboard requires sign-in; no connected Cloudflare plugin was available. Next step is authenticated Cloudflare build/deployment of merged main, then article/assets/discovery/analytics HTTP verification. Do not advance to A3 before finishing A2.
