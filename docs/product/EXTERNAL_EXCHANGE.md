@@ -79,7 +79,7 @@ Same TrialAgents design system, light and plain: company name and logo of the se
 
 ## 3. Out of scope (v1)
 
-Recipient accounts or portals; e-signature (signed PDFs are uploaded back); watermarking and view-time tracking (secure rooms, later, reuse this exchange); open tracking; attachments in emails; auctions; recipients seeing each other.
+Recipient accounts or portals; e-signature (signed PDFs are uploaded back); watermarking (view tracking and rooms: see §5); open tracking; attachments in emails; auctions; recipients seeing each other.
 
 ## 4. Acceptance criteria
 
@@ -92,3 +92,28 @@ Recipient accounts or portals; e-signature (signed PDFs are uploaded back); wate
 7. Revoking a link stops access immediately and keeps all received content.
 8. Recipient page works at 390 and 1440 px, keyboard accessible, contrast ≥ 4.5:1.
 9. Audit log records invitations, sends, opens, acknowledgements, downloads, submissions, messages, clarifications, acceptances and revocations.
+
+## 5. Room extension (for Data Room)
+
+**Status:** scoped 13 November 2026 for [Data Room](app-template-blueprints/apps/DATA_ROOM.md) (BT2-08). Build as its own PR before the Data Room app. Everything in §2 still applies (per-person links, verification, gates, review, audit, email rules, AI rules). Additions:
+
+| # | Addition | What it does |
+|---|---|---|
+| R1 | **Room mode** | Group kind `room` (default kind `request` is today's behaviour). No response form, no submissions and no deadline countdown. Access lasts until revoked, or until an optional end date (1–730 days, extendable). The page shows **Room · Q&A** instead of Brief · Documents · Your response · Messages. |
+| R2 | **Sections and index** | Shared documents carry `section` (number and title) and `order`. The recipient page shows a numbered index with search, a document count per section, and *New* / *Updated* badges since the person's last visit. |
+| R3 | **Levels** | A group defines ordered levels (e.g. Non-confidential, Confidential, custom). Each shared document has one level; each exchange holds its allowed levels. `exchange.setLevels` is a reviewed operation. Each level has its own entry step: none, click-through text, or *signed document required* (existing slot and acceptance flow), so a signed CDA unlocks only the level it protects. A person never sees, searches or is notified about documents above their levels. |
+| R4 | **Viewer and view events** | Inline viewer for PDF and images (other types download). A `viewed` event is recorded per document version, with approximate visible seconds from viewer heartbeats. A `view_only` option per document hides the download (no DRM claim). `exchange.status` adds per-document views, seconds, downloads and last seen. |
+| R5 | **Versions in place** | `exchange.replaceDocument` swaps a shared document for a newer version of the same platform document, keeping its section, order and level. Only the latest version is shown; earlier views stay in the record. |
+| R6 | **Room Q&A** | In room mode, recipients ask questions (text, optional section or document reference) instead of free messages. Questions reach the app as question events bound to the exchange. The workspace answers privately (`exchange.answer`), or publishes to the whole room or to one level (`exchange.publishAnswer`, asker anonymised). Answers are immutable after send; editing creates a new answer. |
+| R7 | **Bound output tables** | A room group can bind an access table and an engagement table (the app's `dataroom.access_grants` and `dataroom.engagement`). The platform keeps grant status, `last_seen_on` and engagement rows current from exchange events, as system writes labelled `source: tracked`. These are recorded facts, so no review is needed; people and assistants cannot edit them. Archiving the group stops updates. |
+| R8 | **Room emails and notifications** | New email types: *access granted* (invitation), *access changed* (levels), *documents updated* (daily digest listing only documents at the person's levels; sent automatically only when the owner pre-approved the room's digest text), *question answered*, *answer published*, *access ending*, *access revoked*. Defaults, editing, personalisation, display name and human confirmation work as in §2.3. Workspace notifications: first open per person, question asked, access ending, and optionally a hot or quiet party. |
+
+**Acceptance (room extension):**
+1. A room group has no form or deadline; access ends only on revoke or the end date.
+2. Levels are enforced on the page, in search, in "what changed", in published answers and in the digest.
+3. A signed CDA unlocks only its level.
+4. Each view and download is recorded per version with an approximate duration. View-only hides the download.
+5. A replaced document keeps its place and shows as *Updated*.
+6. Bound tables update without review and cannot be edited by people or assistants.
+7. Q&A: a private answer reaches only the asker; a published answer reaches the room or level without naming the asker; each triggers the matching email.
+8. Every new email type is shown exactly as sent and is human-confirmed, or pre-approved for the digest; assistants can draft but not send.
