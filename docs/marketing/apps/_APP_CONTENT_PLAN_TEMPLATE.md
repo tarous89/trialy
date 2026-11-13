@@ -16,6 +16,16 @@
 | Plan status | Draft |
 | Plan reviewed | [YYYY-MM-DD] |
 
+## Final rules to carry into every article
+
+- Keep the category faithful: A comparison; B alternatives/shortlist; C assistant-native use; D concrete use of the app; E usable setup, migration or resource.
+- Lead platform benefits in this order: native ChatGPT/Claude (actual app UI, conversational management and browser continuation), whole-app customization/bespoke apps, adding and explicitly connecting apps, then relevant automations/access/logs and app features. Verify each host independently.
+- Omit pricing from app comparisons and shortlists. Keep prose concise and first-party disclosure clear.
+- Reuse the wide, darker editorial style: approximately 1040px outer canvas, 18px desktop/17px mobile body, consistent numbered green section headings. Use genuine screenshots/official marks and accurate illustration captions.
+- End with one **Start with [App]** card as the last article block. No closing footnote; put necessary sources/qualifications inline and detailed evidence in this plan.
+- Preserve shared header/footer, contact flow and the existing tracking process. Verify both published analytics assets load; do not alter tracking events, consent, attribution or configuration.
+- Validate served HTML, canonical, schema, sitemap and supplemental discovery, links, images and mobile reading. Do not equate implementation with search indexing or AI citations.
+
 ## 1. App positioning and verifiable differentiation
 
 - **Primary outcome:** [What the app helps a team accomplish.]
@@ -41,7 +51,7 @@
 
 ### A1. [Proposed article title]
 - **Intent / reader:** [Audience and choice.]
-- **H1 / URL:** [Title] · `/compare/[app]-vs-[competitor]/`
+- **H1 / URL:** [Title] · `/apps/[app]-vs-[competitor]`
 - **Unique value:** [Why this is not another generic feature list.]
 - **Outline:**
   - Quick comparison and conditional verdict.
@@ -49,8 +59,8 @@
   - Feature/capability matrix with dated sources.
   - Real biotech/CRO workflow tested with the same assumptions.
   - AI/host compatibility, permissions, customization and integration caveats.
-  - Costs/setup if verified; who should choose each.
-  - FAQ, evidence, next steps and related pages.
+  - Setup considerations and who should choose each; no pricing comparison.
+  - Optional useful FAQ, inline evidence and related links; one final Start with [App] card.
 - **Evidence needed / priority:** [Primary sources, tested demo; P1/P2/P3.]
 
 _Add A2, A3, etc. only when each is materially distinct._
@@ -61,7 +71,7 @@ _Add A2, A3, etc. only when each is materially distinct._
 
 ### B1. [Proposed article title]
 - **Intent / reader:** [Vendor switching, replacement, or category discovery.]
-- **H1 / URL:** [Title] · `/alternatives/[topic]/`
+- **H1 / URL:** [Title] · `/apps/[topic]-alternatives` or `/apps/best-[category]-[audience]`
 - **Unique value:** [Reason people seek alternatives and the biotech/CRO lens.]
 - **Outline:**
   - Direct answer and shortlist, with audience fit.
@@ -70,8 +80,8 @@ _Add A2, A3, etc. only when each is materially distinct._
   - Comparison table; balanced mini-review for each product.
   - Product-specific trade-offs and when TrialAgents is not best.
   - Migration/implementation considerations if relevant.
-  - FAQ, sources and links to Series A and D.
-- **Evidence needed / priority:** [Primary sources, dates, pricing verification; P1/P2/P3.]
+  - Optional useful FAQ, inline sources and Series A/D links before the final Start with [App] card.
+- **Evidence needed / priority:** [Primary sources, dates, workflow/feature verification; P1/P2/P3.]
 
 _Add B2, etc., only with a separate search intent._
 
@@ -81,7 +91,7 @@ _Add B2, etc., only with a separate search intent._
 
 ### C1. [Proposed article title]
 - **Intent / reader:** [What users want to achieve through which assistant.]
-- **H1 / URL:** [Title] · `/ai-apps/[topic]/`
+- **H1 / URL:** [Title] · `/apps/[workflow]-[host]`
 - **Unique value:** [A tested workflow that answers the exact AI-assistant question.]
 - **Outline:**
   - Answer what “works inside [host]” really means.
@@ -90,7 +100,7 @@ _Add B2, etc., only with a separate search intent._
   - Actual prerequisites, access scopes and setup steps.
   - Numbered reproducible demonstration on fictional data.
   - Comparison with competing AI/MCP offerings.
-  - Supported versus unavailable features, guardrails, and FAQ.
+  - Supported versus unavailable features, review points and optional FAQ; final Start with [App] card.
 - **Evidence needed / priority:** [Host-specific tests and dates; P1/P2/P3.]
 
 _If Claude or ChatGPT actions are unverified, document that status rather than inventing a demonstration._
@@ -101,16 +111,17 @@ _If Claude or ChatGPT actions are unverified, document that status rather than i
 
 ### D1. [Proposed article title]
 - **Intent / reader:** [Stage, persona, real operational pain.]
-- **H1 / URL:** [Title] · `/biotech/[workflow]/` or `/cro/[workflow]/`
-- **Unique value:** [Specific life-sciences constraints absent in general business guides.]
+- **H1 / URL:** [Title] · `/apps/[app]-[workflow]` or a concise use-case slug
+- **Unique value:** [A specific biotech/CRO decision demonstrated through this app throughout the article.]
 - **Outline:**
   - Brief operational answer and where it applies.
   - Required inputs, roles, terminology and boundaries.
-  - Practical step-by-step workflow and decision points.
+  - Actual app screens/actions: inputs → supported actions → outputs → human review and decision.
   - Worked example with transparent fictional assumptions.
-  - Manual and specialist approaches versus configurable apps.
+  - What the modeled result means for the team; manual/specialist alternatives only where useful.
   - Errors, compliance/quality checks and human judgment.
-  - Checklist, FAQ, sources and optional app illustration.
+  - Purposeful app screenshots and an accessible calculated chart/workflow when useful; inline sources.
+  - Optional reusable checklist or FAQ before the final Start with [App] card; no generic article with an appended product pitch.
 - **Evidence needed / priority:** [Expert/domain sources, test data; P1/P2/P3.]
 
 _Add stage/persona variants only if the method truly changes._
@@ -121,7 +132,7 @@ _Add stage/persona variants only if the method truly changes._
 
 ### E1. [Proposed article title]
 - **Intent / reader:** [A task to complete or working resource to obtain.]
-- **H1 / URL:** [Title] · `/templates/[topic]/` or `/guides/[topic]/`
+- **H1 / URL:** [Title] · `/apps/[topic]-template` or `/apps/[source]-to-[app]`
 - **Unique value:** [Working asset or tested implementation, not a signup disguise.]
 - **Outline:**
   - Immediate answer or actual downloadable resource and what it contains.
@@ -130,7 +141,7 @@ _Add stage/persona variants only if the method truly changes._
   - Numbered implementation steps and worked sample.
   - Independent validation, troubleshooting and limitations.
   - Manual approach versus verified TrialAgents app workflow.
-  - Alternatives, FAQ, version/date and relevant next steps.
+  - Optional alternatives/FAQ and version/date; a final Start with [App] card.
 - **Evidence needed / priority:** [Real artifact, correctness checks; P1/P2/P3.]
 
 _Add E2, etc., only once their asset or instructional value can be delivered._
@@ -153,17 +164,20 @@ Pick a small initial pilot; series with no credible topic should remain absent. 
 - **Series D → E/B:** [Relevant relationships.]
 - **Series E → C/A:** [Relevant relationships.]
 - **Primary CTA:** [Tested destination and honest action.]
-- **Secondary resource CTA:** [Actual template/checklist/example, if it exists.]
+- **Resource action:** [Actual template/checklist/example, if it exists; position it where useful before the final app CTA.]
 
 ## 10. Publication QA and ongoing maintenance
 
 - [ ] App availability, display name, version and host-specific behaviors verified.
 - [ ] Each proposed page targets a distinct search intent with original evidence.
 - [ ] Competitor and product claims have credible sources and dates.
-- [ ] Page outlines follow the shared A–E methods and article layouts.
+- [ ] Page outlines follow the selected A–E method and the final rules above; no pricing in comparisons/shortlists.
 - [ ] Regulatory, clinical, financial or numerical examples have appropriate review.
 - [ ] Internal links and canonical paths avoid overlapping content.
 - [ ] Any stated downloadable resources, tested integrations or product screenshots actually exist.
-- [ ] Publication order, owner, reviewer and refresh triggers are recorded.
+- [ ] One final Start with [App] card ends the article; no closing footnote.
+- [ ] Existing tracking scripts/configuration are unchanged and the shared published loader/client chain loads successfully.
+- [ ] Live metadata, crawlable HTML, schema, sitemap/discovery, links, media and desktop/mobile behavior checked.
+- [ ] Publication order, owner, reviewer, release/live verification and refresh triggers are recorded.
 
 **Plan change log:** [Date — change — reviewer.]

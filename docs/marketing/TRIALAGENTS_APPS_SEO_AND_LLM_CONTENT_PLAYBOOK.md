@@ -4,6 +4,16 @@
 **Scope:** TrialAgents built-in apps (current and future). This is the shared A–E methodology; keep app-specific content plans in linked, separate Markdown files.  
 **Owner:** Marketing/content. **Review trigger:** material changes to product capabilities, competitors, assistant integrations, or search guidance.
 
+## Start here for any future app blog
+
+1. Read this shared playbook and the selected [app plan](apps/README.md); copy the [plan template](apps/_APP_CONTENT_PLAN_TEMPLATE.md) only for a newly selected app.
+2. Choose the category before outlining: **A** named comparison; **B** alternatives/shortlist; **C** assistant-native use; **D** concrete app use case; **E** practical setup, migration or usable resource.
+3. Apply the final positioning, concise editorial design, genuine-media and final-CTA rules below. A–E blueprints are adaptable modules, not a requirement to include every possible section.
+4. Verify the actual deployed HTML, assets and discovery entries. Preserve the existing tracking process exactly; confirm the shared loader and its analytics dependency both load successfully. Merely finding a script tag is not enough.
+5. Record the published URL, app/host evidence, media provenance, validation and release in the app plan. Keep earlier decisions only as explicitly superseded history.
+
+The current Runway examples are linked in [Runway's plan](apps/runway.md). This shared guide applies to future apps and products; the plan holds product-specific evidence.
+
 ## Final article-ending and Series B/C rules — 12 November 2026
 
 These rules supersede earlier closing-source-section instructions throughout this document.
@@ -65,7 +75,7 @@ These decisions govern future blog posts, especially Series A, and supersede ear
 - **Use genuine visual evidence selectively:** the accepted Runway article has three relevant screenshots, not one mandatory screenshot per section. Caption fictional demo data and the actual surface shown. A browser screenshot does not prove an embedded assistant interface.
 - **Increase reading width and font size:** Runway reference is approximately 1040 px outer article width, 18 px desktop body and 17 px mobile body. Keep paragraphs readable and tables/screenshots wide enough to inspect.
 - **Use darker text and one heading treatment:** reference body #24382b, secondary text #405547; numbered section headings use pale green #e8f1ea, border #c9dacd, title #102d1b and white numbers on #205c37. Use one consistent style and spacing across major sections; do not alternate arbitrary section colors. Icons may supplement meaning, not replace heading text.
-- **Preserve the real site shell:** standard TrialAgents header, footer, contact flow, analytics, brand colors and working destinations. Keep mobile reading order, responsive tables and no horizontal page overflow.
+- **Preserve the real site shell and tracking:** standard TrialAgents header, footer, contact flow, analytics, consent, brand colors and working destinations. Never change the existing tracking scripts/releases, event names, collectors, attribution, consent or configuration while publishing blogs. Reuse the homepage's published analytics assets exactly once and verify their HTTP delivery. Test runtime events with intercepted requests, not synthetic production traffic. Keep mobile reading order, responsive tables and no horizontal page overflow.
 - **Conversion through clarity:** answer the reader's comparison question first, demonstrate meaningful platform advantages, acknowledge relevant competitor strengths and boundaries briefly, and offer one clear next step after the evidence. Do not disguise first-party promotion as an independent review.
 - **Publishing is verified, not assumed:** source merge, build completion and live CDN verification are separate states. Record the final deployed URL and review date. Preserve canonical URLs and check metadata, schema, assets, links and discovery files.
 
@@ -108,7 +118,7 @@ Before proposing topics, record:
 4. Genuine alternative products and tools that those users consider (including spreadsheets where relevant); capture current names and lifecycle status.
 5. Search intent clusters: direct comparison, switching, category selection, assistant integration, industry problem, downloadable resource.
 6. Existing site pages to avoid overlapping keywords or creating near-duplicate pages.
-7. Evidence available: hands-on tests, primary documentation, public pricing, product screenshots, reusable fictional dataset, and editorial reviewer.
+7. Evidence available: hands-on tests, primary documentation, product screenshots, reusable fictional dataset, and editorial reviewer.
 
 **Selection rule:** no page gets approved until its specific question, audience, differentiating evidence, and unique value versus existing pages can be stated in one sentence.
 
@@ -217,11 +227,11 @@ Use a few genuine, well-captioned screenshots to support claims rather than a sc
 
 ### Method
 
-- Identify the actual trigger: discontinued software, high price, missing capabilities, integration constraints, or a biotech-specific need.
+- Identify the actual trigger: discontinued software, missing capabilities, integration constraints, or a biotech-specific need.
 - Clearly separate **“[Vendor] alternatives”**, **“[Vendor] replacements”** (for discontinued services), and **“best [Category] software”** (broader shortlist). These may deserve separate pages only when intent and evidence differ.
 - Define inclusion criteria and evaluation dimensions before selecting the list; usually 5–8 relevant tools, never an arbitrary list length.
 - Include genuine competing options even if TrialAgents is not the best on some criteria. Explicitly state product limitations.
-- Verify each vendor's current name, availability, supported integrations, pricing disclosure, and relevant use case.
+- Verify each vendor's current name, availability, supported integrations and relevant use case.
 - Recommend by persona/scenario (e.g., founder, finance lead, CRO operations, clinical team), not a fabricated overall numeric score.
 - For migration-oriented alternatives, explain data export, retraining, setup, and what cannot be moved.
 
@@ -242,8 +252,8 @@ Use a few genuine, well-captioned screenshots to support claims rather than a sc
 - **Primary:** succinct sortable-feeling static comparison table (actual sorting optional) and consistent vendor option cards.
 - **Supporting:** “Best for…” labels grounded in criteria, chooser matrix, documented replacement/migration checklist.
 
-**Suggested URLs:** /alternatives/[competitor]-alternatives-[audience]/ and /alternatives/best-[category]-[audience]/.  
-**Primary CTA:** “Compare TrialAgents [App] with [Vendor]” leading to Series A, with an optional app CTA.  
+**Suggested URLs:** `/apps/[competitor]-alternatives-[audience]` or `/apps/best-[category]-[audience]`; preserve existing canonical URLs.  
+**Final CTA:** one “Start with [App]” card. Place a useful Series A comparison link earlier in the article.  
 **Do not:** use near-duplicate “top tools” lists for every keyword variation; never call a discontinued brand an active standalone offer.
 
 ## 7. Series C — AI-native apps in ChatGPT, Claude, and MCP
@@ -278,8 +288,8 @@ Use a few genuine, well-captioned screenshots to support claims rather than a sc
 - **Primary:** host capability matrix plus numbered end-to-end walkthrough.
 - **Supporting:** screenshot of each meaningful tested step, compact “supported/needs setup/unknown” legend, example prompt users can copy.
 
-**Suggested URLs:** /ai-apps/chatgpt-[workflow]-apps/, /ai-apps/claude-[workflow]-apps/, /ai-apps/mcp-[category]-software/.  
-**Primary CTA:** open the documented ChatGPT, Claude or web route supported for that app.  
+**Suggested URLs:** `/apps/[workflow]-chatgpt`, `/apps/[workflow]-claude` or `/apps/mcp-[category]-software`; preserve existing canonical URLs.  
+**Final CTA:** one “Start with [App]” card opening the documented, working ChatGPT, Claude or web route.  
 **Do not:** conflate connecting an MCP server with in-chat UI rendering or successful background automation.
 
 ## 8. Series D — Biotech- and CRO-specific problems
@@ -315,8 +325,8 @@ Use a few genuine, well-captioned screenshots to support claims rather than a sc
 - **Primary:** workflow diagram/checklist and one reproducible worked example.
 - **Supporting:** role-by-role decision table, stage-specific decision tree, assumptions callout, template download.
 
-**Suggested URLs:** /biotech/[stage-or-persona]-[workflow]/ or /cro/[workflow]/ when CRO intent is genuinely distinct.  
-**Primary CTA:** use the related practical guide/template (E), followed by an optional app demonstration.  
+**Suggested URLs:** `/apps/[app]-[stage-or-persona]-[workflow]` or a concise use-case slug; preserve existing canonical URLs.  
+**Final CTA:** one “Start with [App]” card. Link a relevant E resource earlier. Demonstrating the app throughout Series D is mandatory.  
 **Do not:** publish thin “for biotech” variants of generic posts; the industry detail must materially change the method.
 
 ## 9. Series E — Templates, migration, implementation, and practical resources
@@ -351,8 +361,8 @@ Use a few genuine, well-captioned screenshots to support claims rather than a sc
 - **Primary:** actual downloadable asset or clearly navigable instructions, with preview and numbered steps.
 - **Supporting:** field dictionary, migration mapping table, checklist, before/after example and verification steps.
 
-**Suggested URLs:** /templates/[category]-template/ and /guides/[workflow]-[action]/; for own alternatives, /alternatives/trialagents-[app]-alternatives/.  
-**Primary CTA:** get/use the resource; secondary CTA: try or preview the related TrialAgents app.  
+**Suggested URLs:** `/apps/[category]-template`, `/apps/[workflow]-[action]` or `/apps/trialagents-[app]-alternatives`; preserve existing canonical URLs.  
+**Resource action:** provide the usable resource or method at the relevant point. **Final CTA:** one “Start with [App]” card, with no closing footnote or content after it.  
 **Do not:** disguise a locked lead form as a “free download,” or claim a template/feature exists before it is published.
 
 ## 10. Cross-series linking and app hubs
@@ -420,7 +430,7 @@ A page is ready only when all conditions below are met:
 - [ ] It serves a distinct intent for a real user and an actually available/relevant app.
 - [ ] Title, H1, short answer, headings and URL identify the exact entities and task.
 - [ ] It follows the assigned series methodology and layout, with substantive original detail.
-- [ ] Competitive claims, pricing, integrations, availability and rebrands are sourced and dated.
+- [ ] Competitive claims, integrations, availability and rebrands are sourced and dated; pricing is absent from app comparisons and shortlists.
 - [ ] TrialAgents claims match the current approved app and verified ChatGPT/Claude/web capabilities.
 - [ ] “Supported,” “configurable,” “planned,” “unsupported,” and “not verified” are clearly distinguished.
 - [ ] Both TrialAgents strengths and limitations are disclosed; no automatic first-place recommendation.
@@ -430,7 +440,10 @@ A page is ready only when all conditions below are met:
 - [ ] Relevant internal links lead to the app hub and 2–3 complementary pages without duplication.
 - [ ] Editorial disclosure, sources, author/reviewer and meaningful review date are visible.
 - [ ] No unverifiable AI-search rankings, fake testimonials, invented benchmarks, or manipulative LLM instructions.
-- [ ] Page is scheduled for refresh and measurable against its original search intent.
+- [ ] Existing tracking process is unchanged; shared loader and analytics dependency return 200 and match the homepage. Do not send synthetic production events.
+- [ ] The URL appears once in the canonical sitemap and in current supplemental discovery files; robots and response headers allow indexing.
+- [ ] One final Start with [App] card is the last article block, with no closing footnote.
+- [ ] Page has a recorded refresh trigger and is measurable against its original search intent.
 
 ## 13. Launch strategy
 
