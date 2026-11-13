@@ -388,7 +388,7 @@
     "dataroom.access_grants": {
       "name": "Data room access",
       "kind": "output",
-      "writer": "Data Room app (planned)",
+      "writer": "life.data-room",
       "description": "Who has access to which data room.",
       "versions": {
         "dataroom.v1": {
@@ -416,9 +416,11 @@
               "options": [
                 "financing",
                 "licensing",
+                "partnering",
                 "m_and_a",
                 "other"
-              ]
+              ],
+              "description": "Readers treat unknown values as other. partnering added 13 Nov 2026 (additive)."
             },
             {
               "key": "organization_id",
@@ -488,7 +490,7 @@
     "dataroom.engagement": {
       "name": "Data room engagement",
       "kind": "output",
-      "writer": "Data Room app (planned)",
+      "writer": "life.data-room",
       "description": "Who viewed what, how often.",
       "versions": {
         "dataroom.v1": {

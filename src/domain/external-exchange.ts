@@ -11,7 +11,7 @@ import {requireHuman,requireCurrentAction,type WriteAuthorization} from './write
 import {Service} from './service.js';
 import {EMAIL_TYPES,emailDefaultsSchema,emailTextSchema,exchangeLink,prepareEmailSchema,prepareExchangeEmail,batchReview,confirmExchangeBatch,queueExchangeNotice,resolveDefault,senderIdentity,queueEmail,emailValues,platformDefaults,noticeEmailSchema,renderNotices,queueNotices,PLACEHOLDERS,type EmailType} from '../app-services/exchange-email.js';
 import {documentItemSchema,documentPlacementSchema,levelKey,levelSchema,trackingSchema,roomOperations,roomOperationKinds,roomDays,roomEnded,type RoomOperation} from './exchange-room-model.js';
-import {roomReview,commitRoomOperation,roomStatus,levelsProblem,documentsProblem,placed,trackingReview,liveRoomExchanges,digestDocuments,listExchangeQuestions,requireRoom} from './exchange-rooms.js';
+import {levelUnlockNotice,roomReview,commitRoomOperation,roomStatus,levelsProblem,documentsProblem,placed,trackingReview,liveRoomExchanges,digestDocuments,listExchangeQuestions,requireRoom} from './exchange-rooms.js';
 
 /**
  * External exchange (docs/product/EXTERNAL_EXCHANGE.md): exchange groups with one time-limited,
@@ -39,7 +39,7 @@ export const exchangeOperations=[
  z.object({kind:z.literal('extend_exchange'),exchangeId:id,days:roomDays,notify:z.boolean().default(true),...withRecords}).strict(),
  z.object({kind:z.literal('revoke_exchange'),exchangeId:id,reason:z.string().trim().min(1).max(1000),notify:z.boolean().default(false),email:noticeEmailSchema.optional(),...withRecords}).strict(),
  z.object({kind:z.literal('accept_exchange_submission'),submissionId:id,data:z.record(z.string(),z.union([z.string().max(50000),z.number().finite(),z.boolean(),z.array(z.union([z.string().max(50000),z.number().finite()])).max(100),z.null()])),target:z.enum(['new','bound']).default('new'),...withRecords}).strict(),
- z.object({kind:z.literal('accept_exchange_file'),fileId:id,ai:z.boolean().default(false),...withRecords}).strict(),
+ z.object({kind:z.literal('accept_exchange_file'),fileId:id,ai:z.boolean().default(false),notify:z.boolean().default(false),...withRecords}).strict(),
  z.object({kind:z.literal('reply_exchange'),exchangeId:id,body:z.string().trim().min(1).max(10000),notify:z.boolean().default(true),...withRecords}).strict(),
  z.object({kind:z.literal('reply_exchanges'),replies:z.array(z.object({exchangeId:id,body:z.string().trim().min(1).max(10000)}).strict()).min(1).max(100),notify:z.boolean().default(true),...withRecords}).strict(),
  z.object({kind:z.literal('publish_exchange_clarification'),groupId:id,question:z.string().trim().max(5000).default(''),body:z.string().trim().min(1).max(10000),sourceMessageId:id.optional(),notify:z.boolean().default(true),...withRecords}).strict(),
@@ -113,7 +113,9 @@ export async function exchangeReview(tx:Connection,a:Actor,w:string,op:ExchangeO
  if(op.kind==='accept_exchange_file'){
   const f=(await tx.query('SELECT f.id,f.exchange_id,f.slot,f.filename,f.mime,f.byte_size,f.checksum,f.submission_id,x.group_id FROM exchange_files f JOIN exchanges x ON x.id=f.exchange_id LEFT JOIN exchange_file_acceptances acc ON acc.file_id=f.id WHERE f.id=$1 AND f.workspace_id=$2 AND acc.file_id IS NULL AND f.removed_at IS NULL AND (f.submission_id IS NOT NULL OR f.slot IS NOT NULL)',[op.fileId,w])).rows[0];if(!f)fail(409,'file_unavailable','File is unavailable, unsubmitted or already accepted');
   const g=await groupRow(tx,w,f.group_id),p=await exchangeAuthority(tx,a,w,g.app_id,true);if(p.role!=='owner')fail(403,'owner_required','A workspace owner accepts received files');
-  return {fileId:f.id,exchangeId:f.exchange_id,slot:f.slot,filename:f.filename,mime:f.mime,byteSize:f.byte_size,checksum:f.checksum,ai:op.ai,effect:'Save this received file as a TrialAgents document'+(f.slot===g.gate_slot&&g.gate==='signed_document'?' and unlock the other shared documents for this recipient':'')+'. Unaccepted uploads stay out of AI reach.'};
+  // Room: the signed document of a level opens that level for this person only; with notify, they get the access-changed email shown here.
+  const unlock=op.notify?await levelUnlockNotice(tx,a,w,g,{...await exchangeRow(tx,w,f.exchange_id)},f.slot):null;
+  return {fileId:f.id,exchangeId:f.exchange_id,slot:f.slot,filename:f.filename,mime:f.mime,byteSize:f.byte_size,checksum:f.checksum,ai:op.ai,...(unlock?{unlocks:unlock.level,email:unlock.email}:{}),effect:'Save this received file as a TrialAgents document'+(f.slot===g.gate_slot&&g.gate==='signed_document'?' and unlock the other shared documents for this recipient':'')+(unlock?` and open the ${unlock.level} level for this person, emailing them the access change shown`:'')+'. Unaccepted uploads stay out of AI reach.'};
  }
  if(op.kind==='reply_exchange'){const e=await exchangeRow(tx,w,op.exchangeId),g=await groupRow(tx,w,e.group_id);await exchangeAuthority(tx,a,w,g.app_id,true);if(e.revoked_at)fail(409,'exchange_revoked','This exchange was revoked');return {exchangeId:e.id,recipient:e.recipient_name||e.recipient_emails[0],body:op.body,notify:op.notify,email:op.notify?await noticePreview(tx,w,g,e,'message',op.body):null,effect:'Post a private message visible only to this recipient'+(op.notify?' and email them a notice with a link':'')+'.'};}
  if(op.kind==='reply_exchanges'){
@@ -199,7 +201,9 @@ export async function commitExchangeOperation(tx:Connection,a:Actor,w:string,op:
   const f=(await tx.query('SELECT * FROM exchange_files WHERE id=$1 AND workspace_id=$2',[op.fileId,w])).rows[0],bytes=Buffer.from(f.bytes);if(checksum(bytes)!==f.checksum)fail(500,'integrity_failure','Original integrity check failed');
   const service=new Service(adapter(tx)),draft=await service.previewFile(a,w,{filename:f.filename,mime:f.mime,bytes,ai:op.ai}),receipt=await service.commit(a,draft.id,draft.digest,authorization),versionId=receipt.objects[0].versionId;
   const e=await exchangeRow(tx,w,f.exchange_id);await tx.query('INSERT INTO exchange_file_acceptances(file_id,workspace_id,exchange_id,version_id,actor_id) VALUES($1,$2,$3,$4,$5)',[f.id,w,e.id,versionId,a.userId]);
-  await logExchange(tx,e,'file_accepted',{fileId:f.id,slot:f.slot,versionId,ai:op.ai,authorization},a);return {status:'saved',fileId:f.id,versionId};
+  await logExchange(tx,e,'file_accepted',{fileId:f.id,slot:f.slot,versionId,ai:op.ai,authorization},a);
+  const unlock=op.notify?await levelUnlockNotice(tx,a,w,await groupRow(tx,w,e.group_id),e,f.slot):null;
+  return {status:'saved',fileId:f.id,versionId,emails:unlock?.email?await queueNotices(tx,w,await groupRow(tx,w,e.group_id),unlock.email):[]};
  }
  if(op.kind==='reply_exchange'){
   const e=await exchangeRow(tx,w,op.exchangeId),g=await groupRow(tx,w,e.group_id),messageId=randomUUID();

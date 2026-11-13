@@ -116,6 +116,12 @@ Recipient accounts or portals; e-signature (signed PDFs are uploaded back); wate
 | R7 | **Bound output tables** | A room group can bind an access table and an engagement table (the app's `dataroom.access_grants` and `dataroom.engagement`). The platform keeps grant status, `last_seen_on` and engagement rows current from exchange events, as system writes labelled `source: tracked`. These are recorded facts, so no review is needed; people and assistants cannot edit them. Archiving the group stops updates. |
 | R8 | **Room emails and notifications** | New email types: *access granted* (invitation), *access changed* (levels), *documents updated* (daily digest listing only documents at the person's levels; sent automatically only when the owner pre-approved the room's digest text), *question answered*, *answer published*, *access ending*, *access revoked*. Defaults, editing, personalisation, display name and human confirmation work as in §2.3. Workspace notifications: first open per person, question asked, access ending, and optionally a hot or quiet party. |
 
+**Additions for Data Room (13 November 2026, guidance 1.3.25):**
+- Room operations carry the app's record changes in the same review.
+- `set_exchange_levels` can record a level's entry step as met for one person (`entered`, with a required note; migration 067), for a CDA in place elsewhere or on file in Contracts.
+- `accept_exchange_file` with `notify` emails the access change when a signed document opens a level.
+- Room status adds `openLevels` and an access history for the disclosure record.
+
 **Acceptance (room extension):**
 1. A room group has no form or deadline; access ends only on revoke or the end date.
 2. Levels are enforced on the page, in search, in "what changed", in published answers and in the digest.
