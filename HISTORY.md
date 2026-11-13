@@ -1,3 +1,9 @@
+## 13 November 2026 — Performance increment 6: save receipts and refresh recovery
+
+Basic P12 separates a successful save from loading its result. App edits, draft saves and standard/custom layouts retain their submitted screen, show “Saved” as soon as the server acknowledges the write, and offer a persistent reload action if the follow-up read fails. Retained content stays read-only until refresh succeeds. Reload attempts do not repeat the mutation; an expired read lease can be renewed, while access loss removes the retained view without losing the acknowledgement. Late draft/layout reads cannot reopen a view the user has left.
+
+No template edits, migrations or integration-contract changes. This improves feedback and prevents duplicate save attempts; authoritative refresh still runs and selective refresh remains deferred. P06 CI is green. Current validation and release status are recorded in [PR #155](https://github.com/tarous89/trialy/pull/155) and [performance measurement](docs/PERFORMANCE_MEASUREMENT.md). Not merged or deployed. Next: P11a, then N3.
+
 ## 13 November 2026 — Performance increment 5: foreground loading feedback
 
 P06 keeps routine account/access/Home checks, automatic return-to-tab refreshes, collapsed archive counts and optional tracker prefetches out of the global progress bar. Initial loads, navigation, searches, expanded details, saves, retries and explicit Refresh keep visible foreground feedback. The shared 150 ms delay and main-column placement remain intact. A click joining an in-flight prefetch shows progress for the user's wait without duplicating its request. Background work cannot prolong a completed foreground action's bar, and errors/revocation still surface through their existing handlers.
