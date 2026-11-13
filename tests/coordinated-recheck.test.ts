@@ -25,3 +25,15 @@ test('a failed check can be retried and a disposed scheduled microtask cannot st
  s.request('interval');t.tick(0);await settle();s.request('return');t.tick(1000);await settle();assert.equal(calls,2);
  const cancelled=coordinatedRecheck(()=>{calls++;},t.clock);cancelled.request('interval');t.tick(0);cancelled.dispose();await settle();assert.equal(calls,2);s.dispose();
 });
+test('a return during a running interval is queued once, including when that check fails',async()=>{
+ const t=timer(),reasons:string[]=[];let reject!:(e:Error)=>void;
+ const s=coordinatedRecheck(reason=>{reasons.push(reason);if(reasons.length===1)return new Promise<void>((_,r)=>reject=r);},t.clock);
+ s.request('interval');t.tick(0);await settle();s.request('return');s.request('return');s.request('interval');
+ t.tick(2000);await settle();assert.deepEqual(reasons,['interval']);reject(Error('temporary'));await settle();
+ t.tick(99);await settle();assert.equal(reasons.length,1);t.tick(1);await settle();assert.deepEqual(reasons,['interval','return']);
+ t.tick(5000);await settle();assert.equal(reasons.length,2);s.dispose();
+});
+test('disposing a running check discards its queued return',async()=>{
+ const t=timer();let finish!:()=>void,calls=0;const s=coordinatedRecheck(()=>{calls++;return new Promise<void>(r=>finish=r);},t.clock);
+ s.request('interval');t.tick(0);await settle();s.request('return');s.dispose();finish();await settle();t.tick(5000);await settle();assert.equal(calls,1);assert.equal(t.jobs.size,0);
+});

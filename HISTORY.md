@@ -1,3 +1,7 @@
+## 13 November 2026 — PR #155 review corrections
+
+Preserve same-scope metadata/editors during refresh, suppress obsolete idle Home results, and force fresh account reads after workspace creation/sign-in. Queue return events received during checks, avoid duplicate Home reads on re-enable, and detect abandoned Home responses with `res.close` / `writableFinished`. Revision hashing excludes revoked project memberships and uses bounded aggregate state while retaining historical document access coverage. Scope notes now explicitly cover idle card samples/totals, deployment recovery, safety items and measurement limits. No template, migration or external integration changes. PR remains unmerged and undeployed; evidence is in [performance measurement](docs/PERFORMANCE_MEASUREMENT.md).
+
 ## 13 November 2026 — Performance increment 6: save receipts and refresh recovery
 
 Basic P12 separates a successful save from loading its result. App edits, draft saves and standard/custom layouts retain their submitted screen, show “Saved” as soon as the server acknowledges the write, and offer a persistent reload action if the follow-up read fails. Retained content stays read-only until refresh succeeds. Reload attempts do not repeat the mutation; an expired read lease can be renewed, while access loss removes the retained view without losing the acknowledgement. Late draft/layout reads cannot reopen a view the user has left.

@@ -26,8 +26,19 @@ test('Home revision checks use metadata only and detect account, app, field, pro
  await changed(()=>admin.query("UPDATE entity_types SET fields=jsonb_set(fields,'{0,ai}','false') WHERE id=$1",[table]));
  await changed(()=>admin.query("UPDATE workspaces SET permission_rules=$2 WHERE id=$1",[w.id,JSON.stringify([{subject:member.userId,kind:'tool',resourceId:app.id,read:'deny',write:'inherit'}])]),member);
  await changed(()=>admin.query('INSERT INTO project_records(id,workspace_id,project_id,record_id,created_by,reason) VALUES($1,$2,$3,$4,$5,$6)',[randomUUID(),w.id,project,record,owner.userId,'Scope']));
+ // Revocation removes an active membership from the digest; old revoked history is irrelevant.
+ await changed(()=>admin.query('UPDATE project_records SET revoked_at=now() WHERE project_id=$1',[project]));
+ const revoked=await revision();await admin.query("UPDATE project_records SET reason='Historical correction' WHERE project_id=$1",[project]);assert.deepEqual(await revision(),revoked);
+ await changed(()=>admin.query('UPDATE project_records SET revoked_at=NULL WHERE project_id=$1',[project]));
+ // Historical document versions remain relevant to attached sources and AI access.
+ const document=randomUUID();
+ for(const version of [2,1])await changed(()=>admin.query("INSERT INTO document_versions(id,document_id,workspace_id,filename,mime,byte_size,checksum,version,ai_enabled,created_by) VALUES($1,$2,$3,'source.txt','text/plain',0,'fixture',$4,false,$5)",[randomUUID(),document,w.id,version,owner.userId]));
  await changed(()=>admin.query('INSERT INTO document_access(document_id,workspace_id,allowed_users) VALUES($1,$2,$3)',[randomUUID(),w.id,JSON.stringify([owner.userId])]));
  await changed(()=>admin.query("INSERT INTO folder_access(workspace_id,folder,allowed_users) VALUES($1,'Private',$2)",[w.id,JSON.stringify([owner.userId])]));
+ // Identically named folders written in one transaction must not cancel in XOR.
+ const second=await s.createWorkspace(owner,'Second private workspace');
+ await admin.transaction(async tx=>{for(const id of [w.id,second.id])await tx.query("INSERT INTO folder_access(workspace_id,folder,allowed_users) VALUES($1,'Same name',$2)",[id,JSON.stringify([owner.userId])]);});
+ await changed(()=>admin.transaction(async tx=>{await tx.query("UPDATE folder_access SET allowed_users='[]' WHERE folder='Same name'");}));
  await changed(()=>admin.query('UPDATE workspace_access SET ai_enabled=false WHERE workspace_id=$1 AND user_id=$2',[w.id,member.userId]),{...member,origin:'ai'});
  await changed(()=>admin.query('UPDATE workspaces SET claude_enabled=false WHERE id=$1',[w.id]),{...owner,origin:'ai',assistant:'claude'});
  const isolated=await revision();await admin.query("UPDATE workspaces SET name='Other changed' WHERE id=$1",[unrelated.id]);assert.deepEqual(await revision(),isolated,'another tenant cannot invalidate this account');

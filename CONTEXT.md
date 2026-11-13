@@ -78,6 +78,10 @@ The November 9 web releases introduced in-platform routing/catalog, the gallery,
 
 The embedded workspace sends a bounded current-view snapshot through MCP Apps `ui/update-model-context` when the host advertises text context support. It identifies the active app and route, standard tracker section, template preview, automation being edited, database table/field, or access subject/scope. Only navigation metadata is included; record values, secrets, draft text and pending permission changes are excluded. Hidden cached views do not contribute context. Updates are debounced and serialized, replace earlier context, and do not trigger chat messages. The assistant must re-read data and permissions before acting. Hosts typically apply this context to the next conversation turn; unsupported hosts continue working without automatic view awareness. Arbitrary custom app state beyond supported routes and standard tracker navigation is not inferred.
 
+## Performance refresh boundaries
+
+Same-workspace/viewer metadata revalidation retains the editor through transient failures; authorization failure or scope changes clear it. Account reads after writes must bypass older pending snapshots, and old checks must not replace newer foreground results. Home idle revision checks cover metadata/access, not record samples or totals; returning/local changes refresh content. Revision aggregates are bounded in memory but still scan metadata, including relevant historical document versions. Keep P05 deploy/chunk recovery, P09's open tracker race, N1 no transaction held across sandbox execution and N3 no cancellation/replay of started actions explicit. CS2/DR2/IU2 are safety work. See [scope](docs/scopes/PLATFORM_AND_APP_PERFORMANCE_2026-11-13.md) and [measurement](docs/PERFORMANCE_MEASUREMENT.md).
+
 ## Where to continue
 
 - [Development and outstanding verification](DEVELOPMENT.md)
