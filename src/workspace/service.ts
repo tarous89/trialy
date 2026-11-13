@@ -44,7 +44,7 @@ import {fail,type Actor} from '../shared/schema.js';
 import {maintenanceSchema,maintenanceBatch,workspaceOperation,type WorkspaceOperation} from './schema.js';
 import {isExchangeOperation,exchangeReview as externalExchangeReview,commitExchangeOperation,appExchangeWrites,appExchangeReads,appExchangeRead,exchangeOperationApp,exchangeReachedOutside,preparationKinds} from '../domain/external-exchange.js';
 /** The app record changes an exchange operation carries, as the reviewed app record operation they are validated and committed as. */
-const exchangeRecords=(op:any)=>op?.records?{kind:'apply_component_records' as const,componentId:op.records.componentId,expectedVersion:op.records.expectedVersion,...(op.records.viewId?{viewId:op.records.viewId}:{}),changes:op.records.changes}:null;
+const exchangeRecords=(op:any)=>{const r=isExchangeOperation(op)?(op as any).records:null;return r?{kind:'apply_component_records' as const,componentId:r.componentId,expectedVersion:r.expectedVersion,...(r.viewId?{viewId:r.viewId}:{}),changes:r.changes}:null;};
 const withoutRecords=(op:any)=>{const {records,...rest}=op;return rest;};
 const J=JSON.stringify;
 const activeFrontends=new Set<string>(),activeDraftFrontends=new Set<string>();
