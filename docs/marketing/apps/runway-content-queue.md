@@ -21,7 +21,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | A11 | TrialAgents Runway vs Caladan: from trial budgets to company cash runway | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-caladan) |
 | A12 | TrialAgents Runway vs Airtable: a cash planning app or a model you build | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-airtable) |
 | B1 | Best Cash Runway Management Software for Biotech Startups in 2027 | Already covered / published | [Live article](https://trialagents.com/apps/best-cash-runway-software-biotech) |
-| B2 | 7 Best Float Alternatives for Small Biotech Companies | Queued — verify and publish | — |
+| B2 | 7 Float alternatives for small biotech teams: choose by the workflow you need | Claimed — source preparation 13 November 2026 21:00 UTC | Branch `content/runway-b2-float-alternatives-20261113`; publication unverified |
 | B3 | Best cfo.ai / Runway Financial Alternatives for Startup Founders | Queued — verify and publish | — |
 | B4 | Best Finmark Alternatives After Its Discontinuation | Queued — verify and publish | — |
 | B5 | Best LivePlan Alternatives for Biotech and Life Sciences Startups | Queued — verify and publish | — |
@@ -336,3 +336,9 @@ Published via [PR #195](https://github.com/tarous89/trialagents-public/pull/195)
 Independent live verification passed at approximately 20:25 UTC (21:25 CET): HTTP 200 text/html, exact reviewed article fragment and CSS, one H1, expected title/description, self-canonical, Article/BreadcrumbList schema, no noindex directive, robots crawl permission, three genuine images, working internal/primary-source links and one final CTA. /apps listing, one canonical sitemap.xml entry, llms.txt and llm.xml all verified. Seventeen linked page/asset URLs returned 200, in addition to the article and discovery files. Homepage-identical loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js` both HTTP 200. Tracking scripts, configuration, events, consent, collectors and attribution unchanged; no synthetic production events or manual deployment.
 
 This supersedes A12 pending checkpoints. **15 published; 32 unfinished**, including owner-deferred A9. Next eligible: **B2, Float alternatives for small biotechs**, subject to fresh evidence, duplicate and claim checks. No search-indexing or assistant-citation result is implied. Only A12 was newly published in this run.
+
+
+### 13 November 2026 — B2 execution claim
+
+- B2 claimed for a seven-option Float switching guide. A12 independently rechecked HTTP 200; no open Runway source PR at start. A9 remains deferred. Branch `content/runway-b2-float-alternatives-20261113` starts at `08d271a8fbabad07926be0a25326d0bb62db7cf8`.
+- Title adjusted to describe conditional workflow fit, not an invented measured ranking. Distinct from B1: switching triggers, Float-specific liquidity requirements and cutover checks. No publication claimed; 15 published, 32 unfinished.
