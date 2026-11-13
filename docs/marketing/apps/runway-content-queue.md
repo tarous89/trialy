@@ -15,7 +15,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | A5 | TrialAgents Runway vs Fathom: cash planning and financial reporting for biotech | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-fathom) |
 | A6 | TrialAgents Runway vs Puzzle: AI accounting and biotech cash planning | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-puzzle) |
 | A7 | TrialAgents Runway vs Aleph: a biotech planning app or connected FP&A? | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-aleph) |
-| A8 | TrialAgents Runway vs Jirav: cash planning and three-statement FP&A for biotech | Source PR #191 — validation pending | [Source PR](https://github.com/tarous89/trialagents-public/pull/191) |
+| A8 | TrialAgents Runway vs Jirav: cash planning and three-statement FP&A for biotech | Merged PR #191 — deployment pending/unverified | [Source PR](https://github.com/tarous89/trialagents-public/pull/191) |
 | A9 | TrialAgents Runway vs Bob Finance (Formerly Mosaic): Financial and Workforce Planning | Queued — verify and publish | — |
 | A10 | TrialAgents Runway vs Exigyn: AI-Powered Financial Operations for Life Sciences | Queued — verify and publish | — |
 | A11 | TrialAgents Runway vs Caladan: Clinical Trial Budgeting and Cash Runway | Queued — verify and publish | — |
@@ -207,3 +207,8 @@ PR #190 merged at 15:02 UTC (16:02 CET), release `548a60541a2196694a7fb0d5deab6b
 Primary evidence reviewed: https://www.jirav.com/business-planning-budgeting-forecasting; https://help.jirav.com/auto-forecast; https://help.jirav.com/forecast-settings; https://help.jirav.com/actuals (nightly last-60-day accounting imports except Desktop/Excel; workforce mapping); https://help.jirav.com/account-subscription-options (capability-dependent drivers/scenarios); https://help.jirav.com/balance-sheet-planning-guide (System Cash, capex/prepaids/payables). No pricing, universal integration claims or unsupported Jirav AI-host parity. Equivalent Jirav ChatGPT/Claude app operation was not verified; absence is not asserted. Runway life.cash-runway 2.1.0 reread; approved browser demo screenshots 01-overview, 03-plan, 02-cash-flow. Tracking unchanged.
 
 Await exact-head predeploy, desktop/mobile artifact review, merge and live verification. Resume PR #191 before A9. Refresh on Jirav forecasting/host/integration changes or Runway catalog changes.
+
+
+### A8 merged release checkpoint — 13 November 2026
+
+PR #191 merged at 16:01 UTC (17:01 CET), release `c802b3207fa7eff1a301e8aba656a9c1e636d484`. Exact head `3141fab470702c8a5ae946cbd5f8741c2cce4584` passed predeploy run 43457306088: 282 tests, candidate snapshot, metadata/discovery and desktop/mobile/site regressions. Both article screenshots in artifact 14055560474 inspected; no layout blocker, standard accessible horizontal-scroll table on narrow screens. Initial HTTP 404 is automatic deployment pending, not an authentication fault. Live verification running; resume this release before A9 if interrupted.
