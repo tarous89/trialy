@@ -15,7 +15,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | A5 | TrialAgents Runway vs Fathom: cash planning and financial reporting for biotech | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-fathom) |
 | A6 | TrialAgents Runway vs Puzzle: AI accounting and biotech cash planning | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-puzzle) |
 | A7 | TrialAgents Runway vs Aleph: a biotech planning app or connected FP&A? | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-aleph) |
-| A8 | TrialAgents Runway vs Jirav: FP&A Software for Small Biotech Companies | Claimed — 13 November 2026; research/source preparation | — |
+| A8 | TrialAgents Runway vs Jirav: cash planning and three-statement FP&A for biotech | Source PR #191 — validation pending | [Source PR](https://github.com/tarous89/trialagents-public/pull/191) |
 | A9 | TrialAgents Runway vs Bob Finance (Formerly Mosaic): Financial and Workforce Planning | Queued — verify and publish | — |
 | A10 | TrialAgents Runway vs Exigyn: AI-Powered Financial Operations for Life Sciences | Queued — verify and publish | — |
 | A11 | TrialAgents Runway vs Caladan: Clinical Trial Budgeting and Cash Runway | Queued — verify and publish | — |
@@ -198,3 +198,12 @@ PR #190 merged at 15:02 UTC (16:02 CET), release `548a60541a2196694a7fb0d5deab6b
 - Verified expected H1/title/description, self-canonical, Article/BreadcrumbList schema, no noindex directive, HTML HTTP delivery, robots crawl permissions, three genuine images, internal/primary-source links and one final Start with Runway CTA. Nineteen URLs checked, plus robots.txt. /apps, one canonical sitemap.xml entry, llms.txt and llm.xml all include the article.
 - Homepage-identical loader `/_snapshot/query-assets/114933b27c521a75f333.js` and analytics dependency `/_snapshot/query-assets/c251da7b4969f7c85048.js` return HTTP 200. Existing scripts, configuration, events, consent, collectors and attribution unchanged; no synthetic production events.
 - This supersedes A7's source and merged-pending checkpoints. **11 published; 36 remaining. Next eligible: A8, Runway vs Jirav**, subject to fresh queue/claim checks. Publication QA does not establish indexing, search rankings, real-user performance or assistant citations. Refresh on Aleph host/connector/model changes or changes to the Runway catalog.
+
+
+### A8 source checkpoint — 13 November 2026
+
+[PR #191](https://github.com/tarous89/trialagents-public/pull/191), exact head `3141fab470702c8a5ae946cbd5f8741c2cce4584`, prepares https://trialagents.com/apps/runway-vs-jirav. Title: TrialAgents Runway vs Jirav: cash planning and three-statement FP&A for biotech. Refined title identifies the distinct comparison: monthly cash commitments versus accounting recognition and linked statements. Fictional laboratory-instrument evaluation brief; no executed benchmark or accounting-treatment recommendation.
+
+Primary evidence reviewed: https://www.jirav.com/business-planning-budgeting-forecasting; https://help.jirav.com/auto-forecast; https://help.jirav.com/forecast-settings; https://help.jirav.com/actuals (nightly last-60-day accounting imports except Desktop/Excel; workforce mapping); https://help.jirav.com/account-subscription-options (capability-dependent drivers/scenarios); https://help.jirav.com/balance-sheet-planning-guide (System Cash, capex/prepaids/payables). No pricing, universal integration claims or unsupported Jirav AI-host parity. Equivalent Jirav ChatGPT/Claude app operation was not verified; absence is not asserted. Runway life.cash-runway 2.1.0 reread; approved browser demo screenshots 01-overview, 03-plan, 02-cash-flow. Tracking unchanged.
+
+Await exact-head predeploy, desktop/mobile artifact review, merge and live verification. Resume PR #191 before A9. Refresh on Jirav forecasting/host/integration changes or Runway catalog changes.
