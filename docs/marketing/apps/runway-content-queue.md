@@ -23,7 +23,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | B1 | Best Cash Runway Management Software for Biotech Startups in 2027 | Already covered / published | [Live article](https://trialagents.com/apps/best-cash-runway-software-biotech) |
 | B2 | 7 Float alternatives for small biotech teams: choose by the workflow you need | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/float-alternatives-biotech) |
 | B3 | cfo.ai (Runway Financial) alternatives: choose who owns the model | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/cfo-ai-alternatives-startups) |
-| B4 | Best Finmark Alternatives After Its Discontinuation | Queued — verify and publish | — |
+| B4 | Finmark alternatives after retirement: rebuild a forecast you can trust | In progress — claimed 13 November 2026 | Branch content/runway-b4-finmark-alternatives-20261113 |
 | B5 | Best LivePlan Alternatives for Biotech and Life Sciences Startups | Queued — verify and publish | — |
 | B6 | Best Fathom Alternatives for Biotech Financial Reporting and Forecasting | Queued — verify and publish | — |
 | B7 | Best AI-Native FP&A Software for Startups | Queued — verify and publish | — |
@@ -391,3 +391,8 @@ B2 independently rechecked HTTP 200; public main `46434bf1b1469842026ed529cc9f2c
 - **Tracking unchanged:** the article uses the identical homepage loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js`; both delivered HTTP 200. No tracking code/configuration/events/consent/collectors/attribution changed and no synthetic production events were sent.
 
 This supersedes B3 source and merged-pending checkpoints. **17 published; 30 unfinished**, including owner-deferred A9. **Next eligible: B4, Finmark alternatives**, subject to fresh lifecycle, claim and duplicate checks; its proposed discontinuation premise is not yet verified by this run. Only B3 was newly published. Search indexing, rankings, real-user performance and assistant citations remain unverified.
+
+
+### 13 November 2026 — B4 execution claim
+
+B3 independently rechecked HTTP 200; no open Runway source PRs; public main `7ccd3ac92a202e16d896d444cb4157e5e1887ab7`. B4 claimed on `content/runway-b4-finmark-alternatives-20261113`. BILL's indexed official export guide (https://help.bill.com/direct/s/article/000004579) states an April 1, 2026 retirement deadline; direct retrieval returns a loading/CSS error, so no post-deadline access or recovery is asserted. Retitled to avoid unsupported overall rankings. Distinct intent: four replacement workflows and a preserved-baseline reconstruction checklist using files already held, not a renamed B2/B3 shortlist. No publication claimed; 17 published, 30 unfinished.
