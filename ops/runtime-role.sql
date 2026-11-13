@@ -90,3 +90,8 @@ GRANT SELECT ON app_template_catalog TO trialy_runtime;
 
 -- Role-based connections (migration 061): output-role writers.
 GRANT SELECT,INSERT,UPDATE ON role_writers TO trialy_runtime;
+
+-- External exchange (migration 064): recipient pages, received content, outbound email and notifications.
+GRANT SELECT,INSERT,UPDATE ON exchange_groups,exchanges,exchange_verifications,exchange_drafts,exchange_files,exchange_email_batches,exchange_emails,exchange_email_defaults,exchange_sender_preferences,exchange_notifications TO trialy_runtime;
+GRANT DELETE ON exchange_drafts,exchange_email_defaults TO trialy_runtime;
+GRANT SELECT,INSERT ON exchange_submissions,exchange_file_acceptances,exchange_acceptances,exchange_messages,exchange_message_reads,exchange_events TO trialy_runtime;

@@ -9,7 +9,7 @@ import {fail,id,assistantOf,isAssistant,ASSISTANTS,ASSISTANT_NAMES,type Actor,ty
 /** Connections shown to this actor: both on the web, only its own assistant inside an assistant (ChatGPT sees exactly what it saw before). */
 export function visibleAssistants(a:Actor):Assistant[]{return a.origin==='ai'?[assistantOf(a)]:[...ASSISTANTS];}
 const connectionDescription='Inherits each connected person’s access. Restrictions below can only reduce it.';
-export const accessUpdate=z.object({expectedVersion:z.number().int().min(0),subject:z.union([id,z.literal('chatgpt'),z.literal('claude')]),role:z.enum(['viewer','editor','inspector']).optional(),databaseBrowse:z.boolean().optional(),directData:z.boolean().optional(),chatgpt:z.boolean().optional(),claude:z.boolean().optional(),rule:accessRuleSchema.omit({subject:true,bindings:true,shareId:true}).optional()}).strict();
+export const accessUpdate=z.object({expectedVersion:z.number().int().min(0),subject:z.union([id,z.literal('chatgpt'),z.literal('claude')]),role:z.enum(['viewer','editor','inspector']).optional(),databaseBrowse:z.boolean().optional(),directData:z.boolean().optional(),externalSend:z.boolean().optional(),chatgpt:z.boolean().optional(),claude:z.boolean().optional(),rule:accessRuleSchema.omit({subject:true,bindings:true,shareId:true}).optional()}).strict();
 export class AccessManagement{
  constructor(private db:Database){}
  async overview(a:Actor,w:string){
@@ -62,7 +62,7 @@ export class AccessManagement{
    }
    if(v.subject==='chatgpt'){if(v.chatgpt!==undefined)await tx.query('UPDATE workspaces SET ai_enabled=$2 WHERE id=$1',[w,v.chatgpt]);}
    else if(v.subject==='claude'){if(v.claude!==undefined)await tx.query('UPDATE workspaces SET claude_enabled=$2 WHERE id=$1',[w,v.claude]);}
-   else await tx.query(`UPDATE workspace_access SET role=COALESCE($6,role),database_browse=COALESCE($3,database_browse),direct_data=COALESCE($4,direct_data),ai_enabled=CASE WHEN COALESCE($6,role)='inspector' THEN false ELSE COALESCE($5,ai_enabled) END,claude_enabled=CASE WHEN COALESCE($6,role)='inspector' THEN false ELSE COALESCE($7,claude_enabled) END WHERE workspace_id=$1 AND user_id=$2`,[w,v.subject,v.databaseBrowse??null,v.directData??null,v.chatgpt??null,v.role??null,v.claude??null]);
+   else await tx.query(`UPDATE workspace_access SET role=COALESCE($6,role),database_browse=COALESCE($3,database_browse),direct_data=COALESCE($4,direct_data),ai_enabled=CASE WHEN COALESCE($6,role)='inspector' THEN false ELSE COALESCE($5,ai_enabled) END,claude_enabled=CASE WHEN COALESCE($6,role)='inspector' THEN false ELSE COALESCE($7,claude_enabled) END,external_send=CASE WHEN COALESCE($6,role)='inspector' THEN false ELSE COALESCE($8,external_send) END WHERE workspace_id=$1 AND user_id=$2`,[w,v.subject,v.databaseBrowse??null,v.directData??null,v.chatgpt??null,v.role??null,v.claude??null,v.externalSend??null]);
    await tx.query('UPDATE workspaces SET permission_rules=$2,access_version=access_version+1 WHERE id=$1',[w,JSON.stringify(rules)]);
    await audit(tx,a,p,'access.policy_changed',w,{version:p.access_version,rules:p.permission_rules},{...v,rule:changed,version:p.access_version+1});return {saved:true,version:p.access_version+1};
   });

@@ -14,6 +14,7 @@ import {addFoundationApi} from './foundation.js';
 import {addReviews} from './reviews.js';
 import {addInvitations} from './invitations.js';
 import {addExternal} from './external.js';
+import {addExternalExchange} from './external-exchange.js';
 import express, { type RequestHandler, type ErrorRequestHandler } from 'express';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
@@ -38,6 +39,7 @@ export function baseApp() {
 export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  addPublicAppServices(app,s.db,human);
  addExternal(app,s,human);
+ addExternalExchange(app,s);
  addInvitations(app,s,human);
  app.get('/api/config',(_req,res)=>res.json({simpleApps:process.env.SIMPLE_APPS_ENABLED==='true',brand:process.env.BRAND_NAME??'TrialAgents',demo:process.env.LOCAL_DEMO==='true'&&process.env.NODE_ENV!=='production'}));
  app.use('/api',human);app.use('/api',(_req,res,next)=>{res.set('Cache-Control','no-store');next();});

@@ -7,12 +7,12 @@ import {useEmbeddedNavigation} from './ui/PageNavigation.js';
 import {Icon,type IconName} from './ui/Icon.js';
 export const AccessHost=React.createContext<((url:string)=>void)|null>(null);
 type Call=(name:string,args:any)=>Promise<any>;
-export type AccessScope={kind:'project'|'tool'|'database'|'table'|'column'|'workflow'|'automation'|'app_section';resourceId:string;field?:string;name?:string};
+export type AccessScope={kind:'project'|'tool'|'database'|'table'|'column'|'workflow'|'automation'|'app_section'|'external_send';resourceId:string;field?:string;name?:string};
 type State=boolean|'mixed';
 type Row=Omit<AccessScope,'kind'>&{kind:AccessScope['kind']|'connection';key:string;read:State;write:State;parentId?:string;canChange:boolean;canChangeWrite:boolean;sources?:any[];hint?:string};
 type Change={subject:string;kind:string;resourceId:string;field?:string;read:boolean;write:boolean};
 const keyOf=(r:{kind:string;resourceId:string;field?:string})=>[r.kind,r.resourceId,r.field??''].join(':');
-const iconFor:Record<string,IconName>={project:'folder',tool:'grid',app_section:'list',database:'database',table:'tracker',column:'list',workflow:'automation',automation:'automation',connection:'lock'};
+const iconFor:Record<string,IconName>={project:'folder',tool:'grid',app_section:'list',database:'database',table:'tracker',column:'list',workflow:'automation',automation:'automation',connection:'lock',external_send:'lock'};
 export function AccessPage({call,initialWorkspaceId,initialDraft,initialReviewId,openLink}:{call:Call;initialWorkspaceId?:string;initialDraft?:any;initialReviewId?:string;openLink?:(url:string)=>void}){
  const [review,setReview]=useState<any>(initialDraft),[reviewReady,setReviewReady]=useState(!initialReviewId);
  const [directory,setDirectory]=useState<any[]>([]),[selected,setSelected]=useState(initialWorkspaceId??''),[group,setGroup]=useState('owned'),[dirty,setDirty]=useState(false),[error,setError]=useState('');
@@ -86,7 +86,7 @@ export function AccessPanel({call,scope,onClose,openLink,initialDraft,onDirty,tr
 
 
  {dirty&&<div className="ty-access-change-summary"><span>{changes.length} changed {changes.length===1?'row':'rows'}</span>{impacts.length>0&&<button className="ty-access-impact-link" onClick={()=>setReviewing(true)}>Connected apps affected</button>}{embedded&&<small>Confirm access changes in your signed-in TrialAgents account.</small>}</div>}
- <div role="table" aria-label="Resource permissions" className="ty-access-grid" aria-busy={loading}><div role="row" className="ty-access-grid-head"><span role="columnheader">Resource</span><span role="columnheader">Can view</span><span role="columnheader">Can edit</span></div>{(!scope||projects.length>0||unassigned.length>0)&&section('Projects',[...projects,...unassigned])}{(!scope||tables.length>0)&&<>{section('Database',scope?tables:rows.filter(r=>r.kind==='database'))}</>}</div>
+ <div role="table" aria-label="Resource permissions" className="ty-access-grid" aria-busy={loading}><div role="row" className="ty-access-grid-head"><span role="columnheader">Resource</span><span role="columnheader">Can view</span><span role="columnheader">Can edit</span></div>{(!scope||projects.length>0||unassigned.length>0)&&section('Projects',[...projects,...unassigned])}{(!scope||tables.length>0)&&<>{section('Database',scope?tables:rows.filter(r=>r.kind==='database'))}</>}{!scope&&rows.some(r=>r.kind==='external_send')&&section('Outside the workspace',rows.filter(r=>r.kind==='external_send'))}</div>
  {reviewing&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="alertdialog" aria-modal="true" aria-label="Connected apps will be affected"><h2>Connected apps will be affected</h2>{impacts.map((c,i)=><p key={i}>Changing access to {rows.find(r=>r.key===keyOf(c))?.name??'this data'} affects the linked information in {c.tools.map((t:any)=>t.name).join(', ')}.</p>)}<div className="ty-actions"><button className="ty-button" onClick={()=>setReviewing(false)}>Keep reviewing</button><button className="ty-button ty-button--primary" onClick={()=>void save(true)}>Confirm access changes</button></div></section></div>}
 
 

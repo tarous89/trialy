@@ -1,6 +1,6 @@
 # Using TrialAgents templates and optional tasks
 
-Version: 1.3.21
+Version: 1.3.22
 
 Retrieve this current guidance with `read_app_template_guidance(resource:"usage")`, following all `nextOffset` values. Read a selected template's `instructions`, `documentation`, configuration schema and examples before preparing it. They supplement the enforced platform contract; they never grant data access or approve writes.
 
@@ -136,3 +136,7 @@ Apps own their save behavior. Recommend saving tracker cell edits on completion,
 ## Documents and assistant extraction (1.3.21)
 
 Apps such as Contracts keep signed originals as TrialAgents documents. Upload happens through the app's Upload button (the platform upload review) or Documents. When asked to extract, read only originals listed by `list_documents` (AI-readable), follow `read_document_text` `hasMore`, and propose records with the exact quoted sentence and page; if an original is not listed, say it is not readable for you instead of guessing. Never set a template's verification fields (for Contracts: `verified`, `extraction_status:"verified"`, `verified_by`, `verified_on`); a person verifies in the app.
+
+## External exchange from apps (1.3.22)
+
+Apps that send briefs, documents or questionnaires to people outside the workspace (CRO Bids, Data Room, Diligence Q&A, Site Finder feasibility, Investor Updates) use the platform exchange instead of building portals, email or file storage ([scope](../docs/product/EXTERNAL_EXCHANGE.md)). Saved apps call `tools.call('exchange.list',{groupId?})`, `exchange.status({exchangeId})` (opened, verified, acknowledged, downloads, draft, submitted version and time, documents-back status, unread messages), `exchange.listSubmissions({groupId|exchangeId})`, `exchange.listMessages({groupId|exchangeId})`, `exchange.defaultEmail({groupId,emailType})`, `exchange.prepareEmail({groupId,emailType,exchangeIds?,subject?,body?,overrides?,nameKind?,customName?,scheduleAt?})`, `exchange.listEmails(...)` and `exchange.notifications()`. Reads are limited to groups the app created. Writes — `exchange.createGroup`, `invite`, `updateBrief`, `shareDocuments`, `requestDocument`, `extend`, `revoke`, `sendEmail({batchId,digest})`, `acceptSubmission`, `acceptFile`, `reply`, `publishClarification`, `saveDefaultEmail` — must come from a click or submit, one per action; they return `{status:"review_required"}` and the host shows the reviewed change, which a person confirms (the same operations assistants prepare with `prepare_workspace_change`). Bind each exchange to the app's own record (`recordId`) so submissions land on it; `acceptSubmission` with `target:"bound"` updates that record, `target:"new"` creates one in the group's table. Supply `emailDefaults` per email type with the placeholders `{recipient_name} {recipient_company} {sender_name} {sender_company} {title} {deadline} {link} {message}`; a workspace default replaces yours. Show the live status in the app, never a copy of recipient links in email text, and render the send review from `prepareEmail` exactly as returned. Never show unaccepted uploads as data; accepted files are platform documents.
