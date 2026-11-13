@@ -8,9 +8,6 @@ on:
       - 'src/automations/**'
       - 'tests/visual/**'
       - '.github/workflows/automation-ui.yml'
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
 jobs:
   automation-ui:
     runs-on: ubuntu-24.04
@@ -21,7 +18,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          node-version: '24'
           cache: npm
       - run: npm ci
       - run: npm run build
