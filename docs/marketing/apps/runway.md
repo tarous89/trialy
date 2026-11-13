@@ -332,3 +332,10 @@ Re-read canonical queue, plan and playbook; no open Runway source PR found. A8 c
 Selected next research candidate: A10, Runway vs Exigyn. Primary evidence https://www.exigyn.com/ and https://www.exigyn.com/biotech-fpa-software currently describe biotech runway, accruals, headcount and board reporting, AI approval workflows and MCP connections to Claude/ChatGPT/Gemini. Treat these as vendor-documented capabilities, not independently tested workflows. Do not assert exclusive AI/MCP support for TrialAgents or equate a listed integration with verified scope, direction or sync cadence. Further integration/host evidence and a distinct editorial draft remain required. No A10 source PR, merge or publication in this review; no active claim retained. No tracking changes or production events.
 
 Current inventory remains 12 published, 35 unfinished (including deferred A9). Next publishing run should take A10 if unclaimed, while retaining A9 for availability review.
+
+
+### Owner decision — 13 November 2026
+
+Keep A9 (Runway vs Bob Finance, formerly Mosaic) deferred and move ahead with A10 (Runway vs Exigyn). Bob Finance's current relaunch notice does not make an article inherently impossible: a future comparison may cover documented differences with a prominent, dated availability caveat, clearly separating historical/announced capabilities from currently available and independently tested behavior. Do not call Bob Finance or HiBob discontinued. The owner has chosen to proceed with A10 now rather than prepare that qualified A9 article.
+
+A10 is the next publication priority. Resume its existing research above, recheck claims/PRs before claiming work, and complete drafting, exact-head validation, visual review and live verification through the existing GitHub-to-CDN process. A9 remains unfinished, not Published or removed from the inventory.
