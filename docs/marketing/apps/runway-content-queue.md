@@ -15,7 +15,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | A5 | TrialAgents Runway vs Fathom: cash planning and financial reporting for biotech | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-fathom) |
 | A6 | TrialAgents Runway vs Puzzle: AI accounting and biotech cash planning | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-puzzle) |
 | A7 | TrialAgents Runway vs Aleph: a biotech planning app or connected FP&A? | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-aleph) |
-| A8 | TrialAgents Runway vs Jirav: FP&A Software for Small Biotech Companies | Queued — verify and publish | — |
+| A8 | TrialAgents Runway vs Jirav: FP&A Software for Small Biotech Companies | Claimed — 13 November 2026; research/source preparation | — |
 | A9 | TrialAgents Runway vs Bob Finance (Formerly Mosaic): Financial and Workforce Planning | Queued — verify and publish | — |
 | A10 | TrialAgents Runway vs Exigyn: AI-Powered Financial Operations for Life Sciences | Queued — verify and publish | — |
 | A11 | TrialAgents Runway vs Caladan: Clinical Trial Budgeting and Cash Runway | Queued — verify and publish | — |
