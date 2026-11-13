@@ -10,7 +10,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | --- | --- | --- | --- |
 | A1 | TrialAgents Runway vs Excel: Biotech Cash Planning Compared | Already covered / published | [Live article](https://trialagents.com/apps/runway-vs-excel) |
 | A2 | TrialAgents Runway vs Float: Which Cash Flow Forecasting App Is Better for Biotech Startups? | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-float) |
-| A3 | TrialAgents Runway vs cfo.ai (Formerly Runway): AI Financial Planning for Biotech Startups | In progress — 13 November 2026; source branch content/runway-a3-cfo-ai | — |
+| A3 | TrialAgents Runway vs cfo.ai (Formerly Runway): AI Financial Planning for Biotech Startups | Draft PR #186; validation in progress — not published | [Source PR](https://github.com/tarous89/trialagents-public/pull/186) |
 | A4 | TrialAgents Runway vs LivePlan: Startup Financial Planning for Pre-Revenue Biotechs | Queued — verify and publish | — |
 | A5 | TrialAgents Runway vs Fathom: Cash Runway Monitoring vs Financial Reporting | Queued — verify and publish | — |
 | A6 | TrialAgents Runway vs Puzzle: AI Accounting vs AI-Native Cash Runway Planning | Queued — verify and publish | — |
@@ -102,3 +102,7 @@ Owner requests an hourly **ChatGPT Work** execution with **Astra, medium thinkin
 - Source QA remains predeploy run 43404273315: 282 tests, snapshot/discovery and desktop/mobile checks passed; visual artifacts reviewed.
 - Read the shared playbook's corrected GitHub-to-CDN release procedure. Early 404/stale content is deployment pending; wait and verify. Do not request Cloudflare access for routine publication.
 - **Queue totals: 6 published, 41 remaining. Next: A3**, after verifying its vendor identity and claims.
+
+### A3 source checkpoint — 13 November 2026
+
+PR #186, head `a525b09a46d09af33bcbdc7bd67a733583434afe`, prepares /apps/runway-vs-cfo-ai. Primary sources: https://cfo.ai/agents (MCP, deterministic calculations, permissions and lineage), https://cfo.ai/integrations (connection catalog), https://cfo.ai/blog/why-runway (model customization and brand continuity), https://cfo.ai/terms (Runway Financial legal identity). Rebrand wording retained; comparison does not imply TrialAgents has exclusive AI/MCP support. Three genuine Runway 2.1 browser demo screenshots; no competitor or host acceptance test claimed. Await exact-head CI, visual review, merge and live verification. Resume this PR before starting A4.
