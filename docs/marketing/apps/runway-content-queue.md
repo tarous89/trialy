@@ -14,7 +14,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | A4 | TrialAgents Runway vs LivePlan: startup financial planning for pre-revenue biotechs | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-liveplan) |
 | A5 | TrialAgents Runway vs Fathom: cash planning and financial reporting for biotech | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-fathom) |
 | A6 | TrialAgents Runway vs Puzzle: AI accounting and biotech cash planning | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-puzzle) |
-| A7 | TrialAgents Runway vs Aleph: a biotech planning app or connected FP&A? | Source PR #190 — validation pending | [Source PR](https://github.com/tarous89/trialagents-public/pull/190) |
+| A7 | TrialAgents Runway vs Aleph: a biotech planning app or connected FP&A? | Merged PR #190 — deployment pending/unverified | [Source PR](https://github.com/tarous89/trialagents-public/pull/190) |
 | A8 | TrialAgents Runway vs Jirav: FP&A Software for Small Biotech Companies | Queued — verify and publish | — |
 | A9 | TrialAgents Runway vs Bob Finance (Formerly Mosaic): Financial and Workforce Planning | Queued — verify and publish | — |
 | A10 | TrialAgents Runway vs Exigyn: AI-Powered Financial Operations for Life Sciences | Queued — verify and publish | — |
@@ -183,3 +183,8 @@ PR #189 merged at 14:07 UTC, release `730ec8d33dad332c44066926fd93235619bf5837`.
 Primary evidence reviewed: https://www.getaleph.com/blog/introducing-aleph-mcp (documented Claude/ChatGPT finance-data and agent access); https://claude.com/marketplace/connectors/aleph (independent Claude listing with sign-in and write tools); https://www.getaleph.com/platform/spreadsheets and https://www.getaleph.com/solutions/budget-planning (bidirectional spreadsheets, selective cells, versions, scenarios); https://www.getaleph.com/integrations and https://www.getaleph.com/solutions/headcount-planning (source catalog and headcount workflow); https://www.getaleph.com/agentic-budgeting (permission-aware changes and rationale). Do not infer upstream write-back or universal refresh behavior from spreadsheet bidirectionality. No numeric connector-count claim, pricing, native TrialAgents-to-Aleph sync or new host acceptance test. Current life.cash-runway 2.1.0 catalog reread; approved genuine browser screenshots 01-overview, 05-scenarios, 06-actuals. Tracking unchanged.
 
 Status: awaiting exact-head predeploy, desktop/mobile artifact review, merge and live CDN verification. Resume PR #190 before A8. Refresh when Aleph host/connector/model behavior or the Runway catalog changes.
+
+
+### A7 merged release checkpoint — 13 November 2026
+
+PR #190 merged at 15:02 UTC (16:02 CET), release `548a60541a2196694a7fb0d5deab6bab14e04ca0`. Exact head `0ba9bbc13a6ba11a1bfeeb1e0b1c72194a06b1d0` passed predeploy run 43447534931: 282 tests, candidate snapshot/metadata/discovery, desktop/mobile and site regressions. Both article screenshots in artifact 14049122023 inspected; no layout blocker, standard accessible horizontal-scroll comparison table on narrow screens. Initial article HTTP 404 is automatic deployment pending, not an authentication fault. Live verification running; resume this release before A8 if interrupted.
