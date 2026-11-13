@@ -239,3 +239,8 @@ Keep A8 pending and resume it first next run. Complete content, canonical/schema
 ### A8 follow-up verification — 13 November 2026, 18:53 CET
 
 Resumed the existing pending release, with no new article or source change. Repeated direct HTTP checks still return 404 for https://trialagents.com/apps/runway-vs-jirav. /apps, sitemap.xml, llms.txt and llm.xml return 200 but omit the route; Aleph remains 200. Public main remains `c802b3207fa7eff1a301e8aba656a9c1e636d484` (PR #191, merged 17:01 CET). No open Runway PRs. Available check-runs still expose only successful generic production verification; no new failed-build or permission/configuration evidence. Original exact-head predeploy/visual review and exhausted 15-minute wait are recorded above. Live publication remains unverified. No tracking changes or synthetic events. Resume A8 before A9; queue remains **11 published, 36 remaining**. Pending deployment monitoring remains enabled; no authentication diagnosis inferred.
+
+
+### A8 repair in progress — 13 November 2026, 19:22 CET
+
+Owner requested investigation and repair. Public-site [PR #192](https://github.com/tarous89/trialagents-public/pull/192), head `00f54801a2aad86fdd751153c92ca529d00f26ad`, fixes the evidenced monitoring gap: the old production check passed on an unchanged homepage without checking A8. New checks compare every app fragment/CSS with release source and verify canonical/discovery delivery, with a bounded 15-minute wait. The original Cloudflare trigger/build cause is not established. A8 remains unverified (HTTP 404). Resume this repair PR/release before other work; do not create another A8 PR or draft A9. Exact-head full predeploy is running; no deployment or tracking change is claimed yet.
