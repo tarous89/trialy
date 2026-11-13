@@ -89,4 +89,11 @@ for(const width of [1440,390])test(`Finalized new app replaces Home with approva
  await expect.poll(async()=>{const f=await root.locator('iframe[title="Saved frontend code"]').boundingBox(),b=await footer.boundingBox();return f.y+f.height-b.y;}).toBeLessThanOrEqual(1);
  await footer.getByRole('button',{name:'Save app',exact:true}).click();
  await expect(root.getByRole('heading',{name:'Apps',exact:true})).toBeVisible();await expect(footer).toHaveCount(0);
+ // Leave the shared fixture workspace as this test found it. Later specs list the workspace's
+ // apps (for example the connector Allowed apps screenshot in apps.spec.cjs).
+ const saved=(await call('read_workspace_home',{workspaceId:initial.workspaceId,query:'New app approval',limit:100})).resources.filter(r=>r.source==='component'&&r.name==='New app approval');
+ expect(saved).toHaveLength(1);
+ const current=await call('read_project_component',{componentId:saved[0].id});
+ const archive=await call('prepare_workspace_change',{operation:{kind:'archive_component',componentId:saved[0].id,expectedVersion:current.component.version,archived:true}});
+ await call('confirm_workspace_change',{previewId:archive.id,digest:archive.digest});
 });
