@@ -18,7 +18,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | A8 | TrialAgents Runway vs Jirav: cash planning and three-statement FP&A for biotech | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-jirav) |
 | A9 | TrialAgents Runway vs Bob Finance (Formerly Mosaic): Financial and Workforce Planning | Deferred — vendor relaunch/availability verification required | [Current vendor notice](https://www.hibob.com/platform/finance/) |
 | A10 | TrialAgents Runway vs Exigyn: adaptable cash planning or biotech FP&A? | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-exigyn) |
-| A11 | TrialAgents Runway vs Caladan: Clinical Trial Budgeting and Cash Runway | Queued — verify and publish | — |
+| A11 | TrialAgents Runway vs Caladan: from trial budgets to company cash runway | In progress — source PR #194; not yet published | [Source PR](https://github.com/tarous89/trialagents-public/pull/194) |
 | A12 | TrialAgents Runway vs Airtable: Cash Runway Tracking for Biotech Teams | Queued — verify and publish | — |
 | B1 | Best Cash Runway Management Software for Biotech Startups in 2027 | Already covered / published | [Live article](https://trialagents.com/apps/best-cash-runway-software-biotech) |
 | B2 | 7 Best Float Alternatives for Small Biotech Companies | Queued — verify and publish | — |
@@ -292,3 +292,8 @@ Published via [PR #193](https://github.com/tarous89/trialagents-public/pull/193)
 Independent live checks passed: expected HTTP 200 content, exact visually reviewed fragment/CSS, one H1, title/description, self-canonical, Article/BreadcrumbList schema, three genuine images, all article links, one final Start with Runway CTA; /apps listing, one sitemap.xml canonical entry, llms.txt and llm.xml. Homepage-identical analytics loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js` both HTTP 200. Tracking scripts, configuration, consent, events, collectors and attribution unchanged; no synthetic production events.
 
 This supersedes A10 pending/source checkpoints. **13 published, 34 unfinished**, including deferred A9. Next eligible candidate: A11, Runway vs Caladan, subject to fresh vendor research and claim checks. No additional article published in this run.
+
+
+### A11 source checkpoint — 13 November 2026
+
+[PR #194](https://github.com/tarous89/trialagents-public/pull/194), exact head `b167060325010ee9cf03e565a1d8614edb441bf4`, prepares /apps/runway-vs-caladan: **TrialAgents Runway vs Caladan: from trial budgets to company cash runway**. Claimed for this run; resume this PR before drafting another article. Distinct scope: reviewed study-budget-to-company-cash handoff, avoiding double-counting and distinguishing modeled costs from contractual payments. Primary sources: https://caladan.ai/, /pages/trialcast, /pages/runwaymap and /pages/vendorcast. CaladanCore/TrialCast/VendorCast are vendor-listed in production; TrialCast notes limited availability; RunwayMap and ExecReady remain coming soon. No current RunwayMap availability, benchmark database size, savings, security certification or unverified host parity claimed. Runway 2.1 catalog reread; three genuine browser screenshots. No pricing or tracking changes. Await exact-head predeploy, visual artifacts, merge and live verification.
