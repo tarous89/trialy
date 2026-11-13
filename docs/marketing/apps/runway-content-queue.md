@@ -17,7 +17,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | A7 | TrialAgents Runway vs Aleph: a biotech planning app or connected FP&A? | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-aleph) |
 | A8 | TrialAgents Runway vs Jirav: cash planning and three-statement FP&A for biotech | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-jirav) |
 | A9 | TrialAgents Runway vs Bob Finance (Formerly Mosaic): Financial and Workforce Planning | Deferred — vendor relaunch/availability verification required | [Current vendor notice](https://www.hibob.com/platform/finance/) |
-| A10 | TrialAgents Runway vs Exigyn: adaptable cash planning or biotech FP&A? | Source PR in progress — resume before another topic | Branch runway-a10-exigyn-20261113 |
+| A10 | TrialAgents Runway vs Exigyn: adaptable cash planning or biotech FP&A? | Merged PR #193 — deployment verification pending | [Source PR](https://github.com/tarous89/trialagents-public/pull/193) |
 | A11 | TrialAgents Runway vs Caladan: Clinical Trial Budgeting and Cash Runway | Queued — verify and publish | — |
 | A12 | TrialAgents Runway vs Airtable: Cash Runway Tracking for Biotech Teams | Queued — verify and publish | — |
 | B1 | Best Cash Runway Management Software for Biotech Startups in 2027 | Already covered / published | [Live article](https://trialagents.com/apps/best-cash-runway-software-biotech) |
@@ -278,3 +278,6 @@ A10 is the next publication priority. Resume its existing research above, rechec
 ### A10 source claim — 13 November 2026
 
 Prepared on public branch `runway-a10-exigyn-20261113`, head `9cf1a0f9fce4b867bcf79a0636c39489226108fe`. Resume this source PR before any other topic. Primary evidence: Exigyn homepage, /mcp and /biotech-fpa-software reviewed; distinguish documented MCP writes and specialist finance scope from TrialAgents whole-app customization. No host test or integration performance claimed. Await exact-head checks, visual review, merge and live verification. A9 remains deferred by owner instruction.
+
+
+A10 merged checkpoint: PR #193 released `e552a878768a5df5daebea5302688713568588d1` after successful exact-head predeploy 43491069636 and desktop/mobile artifact 14070201181 inspection. Cloudflare build and production verification in progress; initial HTTP 404 is pending deployment. Resume A10 before another topic if interrupted.
