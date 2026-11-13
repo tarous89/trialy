@@ -68,7 +68,7 @@ All listed published pages were recorded as live in [Runway's app plan](runway.m
 
 ## Publication sequence and hourly worker contract
 
-1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2–A7 are now published; the next candidate is **A8: Runway vs Jirav**, subject to current queue and live-state checks.
+1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2–A7 are published. **Resume A8: Runway vs Jirav, merged PR #191 but deployment pending/unverified, before drafting A9.** See the latest release checkpoint below.
 2. Re-read the **current** shared playbook and [Runway plan](runway.md). Use the approved genuine screenshots, wide dark editorial shell, numbered green headings, platform advantage order, honest competitor treatment, one final "Start with Runway" CTA and standard shared header/footer.
 3. Research and verify vendor identities, capabilities, URL destinations, AI/Claude/ChatGPT host experiences separately, formulas and substantive claims. Keep the no-pricing-in-A/B rule; in other series, only discuss verified prices if explicitly appropriate and editorially approved. Real screenshots only, no invented interfaces or citations. Treat claims in tentative titles as hypotheses.
 4. Make the article genuinely distinct from existing Runway pages. Do not create weak "year-only", vendor-name-swapped or keyword-cannibalizing pages. If the subject is already answered on a live URL, mark it as covered, link it and advance to the next eligible item **within the same run**, without publishing duplicate content.
@@ -212,3 +212,14 @@ Await exact-head predeploy, desktop/mobile artifact review, merge and live verif
 ### A8 merged release checkpoint — 13 November 2026
 
 PR #191 merged at 16:01 UTC (17:01 CET), release `c802b3207fa7eff1a301e8aba656a9c1e636d484`. Exact head `3141fab470702c8a5ae946cbd5f8741c2cce4584` passed predeploy run 43457306088: 282 tests, candidate snapshot, metadata/discovery and desktop/mobile/site regressions. Both article screenshots in artifact 14055560474 inspected; no layout blocker, standard accessible horizontal-scroll table on narrow screens. Initial HTTP 404 is automatic deployment pending, not an authentication fault. Live verification running; resume this release before A9 if interrupted.
+
+
+### A8 deployment wait exhausted — 13 November 2026, 17:16 CET
+
+**Merged; deployment pending/unverified. Do not mark Published or draft A9 yet.** PR #191 release `c802b3207fa7eff1a301e8aba656a9c1e636d484` merged at 16:01 UTC (17:01 CET). Repeated direct HTTP checks approximately every 30–60 seconds through 16:16 UTC (17:16 CET), covering the 15-minute wait budget, consistently returned **404** for https://trialagents.com/apps/runway-vs-jirav. Exact-head predeploy 43457306088 passed 282 tests and desktop/mobile/site checks; visual artifact 14055560474 inspected. Source head `3141fab470702c8a5ae946cbd5f8741c2cce4584` remains validated.
+
+Available merged-commit evidence: generic `production` check succeeded; it verifies homepage/footer, not this article. No Cloudflare Workers build check was exposed for this release in the observed check-runs responses, and the separate commit statuses list was empty. Neither observation establishes that deployment is absent or an authentication problem. No failed build, configuration fault or permission fault has been evidenced. No dashboard sign-in, manual deployment or tracking change attempted.
+
+Live article content/canonical/schema/responsive delivery, images/links/final CTA, discovery inclusion and homepage-identical analytics loader/client verification remain **unverified for this release** because the article is not served. Next run must first recheck this merged release and available build evidence; when HTTP 200 appears, complete all live checks before updating status. Fix only evidenced source failures through a new exact-head PR gate. Treat the delay as transient/pending, not a reason to disable the ongoing queue task.
+
+**Queue remains 11 published, 36 remaining (including this merged, unverified A8); 35 other topics await publication.**
