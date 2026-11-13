@@ -2,6 +2,7 @@ import {AsyncLocalStorage} from 'node:async_hooks';
 export const createRequestMetrics=()=>({
  queryCount:0,databaseMs:0,poolWaitMs:0,metadataHits:0,
  databaseRoundTrips:0,postgresMs:0,transactions:0,contextSets:0,sessionQueries:0,sessionMs:0,
+ sessionTouchesCoalesced:0,sessionTouchWrites:0,sessionTouchNoops:0,
  sandboxRuns:0,sandboxStartupMs:0,sandboxMs:0,capabilityCalls:0,capabilityMs:0,capabilityBytes:0,runtimeBusy:0,
 });
 export type RequestMetrics=ReturnType<typeof createRequestMetrics>;
