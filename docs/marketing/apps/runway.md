@@ -182,3 +182,12 @@ A2 is published at https://trialagents.com/apps/runway-vs-float. The existing Gi
 Published https://trialagents.com/apps/runway-vs-cfo-ai via PR #186, release `edb3973328d7c69bc1f74508994b611302bdb36e`. Predeploy run 43412977689 passed 282 tests, snapshot/metadata/discovery and desktop/mobile browser checks; visual artifacts reviewed. Automatic deployment completed without Cloudflare login. Production checks confirmed HTTP 200, expected H1 and self-canonical, Article/BreadcrumbList schema, three real screenshots, /apps index and sitemap.xml/llms.txt/llm.xml inclusion. Loader `/_snapshot/query-assets/114933b27c521a75f333.js` matches homepage and both it and client `/_snapshot/query-assets/c251da7b4969f7c85048.js` return 200. Final CTA retained; no tracking changes or synthetic events. This supersedes A3's pending checkpoint.
 
 **7 published; 40 remaining. Next eligible topic: A4, Runway vs LivePlan**, subject to fresh queue/claim checks. Search rankings, actual indexing and assistant citations are not established by publication QA.
+
+
+### A4 source checkpoint — 13 November 2026
+
+Claimed in the current hourly run; [public-site PR #187](https://github.com/tarous89/trialagents-public/pull/187), head `2f387d3df8d8ee76647e771abd65f84eaf825935`, prepares https://trialagents.com/apps/runway-vs-liveplan. Title: TrialAgents Runway vs LivePlan: startup financial planning for pre-revenue biotechs. Distinct intent: an adaptable biotech operating plan versus a business plan with linked financial statements; fictional grant-and-hire review brief, without invented outcomes.
+
+Primary evidence reviewed: LivePlan's https://www.liveplan.com/features/business-plan-builder and https://www.liveplan.com/features/financial-forecasts-and-scenarios; https://help.liveplan.com/using-the-liveplan-mcp-connector documents early access, read/write operations and host setup paths (not independently acceptance-tested); current product updates document AI forecasting/import; QuickBooks Online help and Desktop end-of-support documentation establish connection limits. No pricing or exclusive-AI claims. TrialAgents catalog life.cash-runway 2.1.0 reread; three genuine approved browser demo screenshots (01-overview, 03-plan, 05-scenarios). Shared analytics unchanged.
+
+Status: awaiting exact-head predeploy, desktop/mobile artifact review, merge and automatic deployment. Resume PR #187 before selecting A5. Refresh this comparison when LivePlan host/integration scope or the Runway catalog changes.
