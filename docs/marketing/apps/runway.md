@@ -323,3 +323,12 @@ Resumed the existing pending release, with no new article or source change. Repe
 - Homepage-identical loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js` both return HTTP 200. Tracking scripts/configuration/events/consent/collectors/attribution unchanged; no synthetic production events.
 
 **12 published; 35 remaining. Next eligible: A9**, subject to fresh claim, queue and vendor-evidence checks. No second article published in this repair run.
+
+
+### Eligibility review — 13 November 2026, 19:55 CET
+
+Re-read canonical queue, plan and playbook; no open Runway source PR found. A8 canonical returned HTTP 200 again. A9 is deferred pending current Bob Finance availability: https://www.hibob.com/platform/finance/ explicitly says it is being reimagined and will return in a few months (reviewed today). Do not represent the historical Mosaic/Bob Finance feature inventory as an available current offer. Revisit after an official relaunch/current availability confirmation; this is not a claim that HiBob or its workforce-planning module is discontinued.
+
+Selected next research candidate: A10, Runway vs Exigyn. Primary evidence https://www.exigyn.com/ and https://www.exigyn.com/biotech-fpa-software currently describe biotech runway, accruals, headcount and board reporting, AI approval workflows and MCP connections to Claude/ChatGPT/Gemini. Treat these as vendor-documented capabilities, not independently tested workflows. Do not assert exclusive AI/MCP support for TrialAgents or equate a listed integration with verified scope, direction or sync cadence. Further integration/host evidence and a distinct editorial draft remain required. No A10 source PR, merge or publication in this review; no active claim retained. No tracking changes or production events.
+
+Current inventory remains 12 published, 35 unfinished (including deferred A9). Next publishing run should take A10 if unclaimed, while retaining A9 for availability review.
