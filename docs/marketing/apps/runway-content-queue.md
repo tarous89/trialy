@@ -13,7 +13,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | A3 | TrialAgents Runway vs cfo.ai (Formerly Runway): AI Financial Planning for Biotech Startups | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-cfo-ai) |
 | A4 | TrialAgents Runway vs LivePlan: startup financial planning for pre-revenue biotechs | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-liveplan) |
 | A5 | TrialAgents Runway vs Fathom: cash planning and financial reporting for biotech | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-fathom) |
-| A6 | TrialAgents Runway vs Puzzle: AI accounting and biotech cash planning | Source PR #189 — validation pending | [Source PR](https://github.com/tarous89/trialagents-public/pull/189) |
+| A6 | TrialAgents Runway vs Puzzle: AI accounting and biotech cash planning | Merged PR #189 — deployment pending/unverified | [Source PR](https://github.com/tarous89/trialagents-public/pull/189) |
 | A7 | TrialAgents Runway vs Aleph: AI-Native FP&A for Lean Biotech Teams | Queued — verify and publish | — |
 | A8 | TrialAgents Runway vs Jirav: FP&A Software for Small Biotech Companies | Queued — verify and publish | — |
 | A9 | TrialAgents Runway vs Bob Finance (Formerly Mosaic): Financial and Workforce Planning | Queued — verify and publish | — |
@@ -159,3 +159,8 @@ Claimed this hourly run; [public-site PR #189](https://github.com/tarous89/trial
 Primary evidence: Puzzle's https://help.puzzle.io/en/articles/15331316-how-to-setup-your-puzzle-mcp (read-only default, optional beta writes, company/AI prerequisites); https://help.puzzle.io/en/articles/13623194-api-and-mcp-access-in-puzzle (self-serve MCP versus case-by-case partner API); https://help.puzzle.io/en/articles/9155896-faq-integrations (overnight sync and record-specific limits); https://help.puzzle.io/en/articles/8471491-can-i-do-projections-in-puzzle (custom burn assumption versus projections); https://help.puzzle.io/en/articles/8646694-the-monthly-checklist; https://puzzle.io/legal/faq and https://puzzle.io/solutions/startup. No native Puzzle-to-TrialAgents connection or independently tested host parity claimed. Current Runway life.cash-runway 2.1.0 catalog reviewed. Three approved genuine browser demo screenshots: 01-overview, 03-plan, 05-scenarios. No pricing or tracking changes.
 
 Status: source PR awaiting exact-head predeploy, desktop/mobile artifact review, merge and automatic CDN publication. Resume PR #189 before A7; do not mark Published until live checks pass.
+
+
+### A6 merged release checkpoint — 13 November 2026
+
+PR #189 merged at 14:07 UTC, release `730ec8d33dad332c44066926fd93235619bf5837`. Exact head `493e89f0894d641100f05108e942b4a5d20a9e7e` passed predeploy run 43438638202 (282 tests, snapshot/metadata/discovery, desktop/mobile and site regressions). Article desktop/mobile artifacts 14045736270 visually inspected; no layout blocker, standard accessible comparison-table horizontal scrolling on narrow screens. Initial article HTTP 404 at 14:07 UTC is automatic deployment pending, not an authentication fault. Live verification is running; resume this release before A7 if interrupted.
