@@ -368,3 +368,14 @@ Availability clarification is included in final head above. No benchmark counts 
 ### A11 merged release checkpoint — 13 November 2026
 
 PR #194 merged at 20:07 UTC (21:07 CET), release `6271373f2f7aaa0717fc6672caeaca328be084dc`. Exact head `d2c85fb8c92d591f5e8d5432dd22c61316becf9e` passed predeploy 43497327243 (both jobs, full tests, candidate snapshot, metadata/discovery, browser and site regressions). Desktop/mobile Caladan screenshots in artifact 14071744031 inspected; no layout blocker, standard accessible horizontal-scroll comparison table on mobile. Automatic deployment pending; live verification underway. Resume this release before another topic if interrupted. No authentication fault inferred or tracking changes made.
+
+
+### A11 published — 13 November 2026
+
+**TrialAgents Runway vs Caladan: from trial budgets to company cash runway** — https://trialagents.com/apps/runway-vs-caladan
+
+Published via [PR #194](https://github.com/tarous89/trialagents-public/pull/194), exact head `d2c85fb8c92d591f5e8d5432dd22c61316becf9e`, merged release `6271373f2f7aaa0717fc6672caeaca328be084dc` at 20:07 UTC (21:07 CET). Predeploy run 43497327243 passed both jobs, full tests, snapshot/discovery and browser/site regressions. Desktop/mobile screenshots in artifact 14071744031 inspected; no layout blocker, accessible horizontal-scroll comparison table on mobile. Cloudflare automatic build and article-aware production verification succeeded. Early 404s resolved within the bounded deployment wait; no manual deployment or dashboard access.
+
+Independent live verification completed at approximately 20:12 UTC (21:12 CET): expected HTTP 200 HTML; exact reviewed article fragment and responsive CSS; one H1; expected title/description; self-canonical; Article/BreadcrumbList schema; no noindex directive; three genuine images; all article links and final CTA; /apps listing, single canonical sitemap.xml entry, llms.txt and llm.xml. Thirteen linked asset/page URLs returned 200, in addition to the article and discovery files. Homepage-identical analytics loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js` both HTTP 200. Existing tracking scripts, configuration, events, consent, collectors and attribution unchanged; no synthetic production events.
+
+This supersedes A11 source/pending checkpoints. **14 published; 33 unfinished**, including deferred A9. Next eligible: **A12, Runway vs Airtable**, subject to fresh queue, claim and evidence checks. Publication QA does not establish search indexing or assistant citations. Only A11 was newly published in this run.
