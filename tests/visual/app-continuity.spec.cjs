@@ -51,7 +51,9 @@ for(const fromHome of [false,true])test(`Failed extension replacement keeps the 
  const root=page.frameLocator('#app'),frame=root.frameLocator('iframe[title="Saved frontend code"]');let homeApp;
  if(fromHome){
   const p=await call(page,'prepare_workspace_change',{operation:{kind:'save_component',content:{name:'Home continuity fixture',format:'frontend-js',source:`return {html:'<h1>Calculator</h1><label>Draft note<input aria-label="Draft note"></label>'};`}}});homeApp=await call(page,'confirm_workspace_change',{previewId:p.id,digest:p.digest});
-  await page.evaluate(r=>window.deliver(r),{screen:'home',workspaceId:f.workspaceId,viewerId:'fixture',workspaces:[],types:[]});
+  // Keep the real fixture actor: a placeholder ID would model an account switch
+  // when the replacement loads open_workspace, correctly clearing the old app.
+  const account=await call(page,'open_workspace');await page.evaluate(r=>window.deliver(r),account);
   await root.getByRole('button',{name:'Actions for Home continuity fixture',exact:true}).click();await root.getByRole('menuitem',{name:'Open',exact:true}).click();
  }else await page.evaluate(r=>window.deliver(r),await (await page.request.get(base+'/fixture/app-display?appId='+f.appId+'&path=/calculator')).json());
  await expect(frame.getByRole('heading',{name:'Calculator',exact:true})).toBeVisible();await frame.getByLabel('Draft note').fill('Keep this input');

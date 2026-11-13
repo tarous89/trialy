@@ -1,550 +1,2430 @@
 {
-  "selections": [
-    {
-      "id": "sel001",
+ "note": "Fictional records for the offline preview and the tests. Never seed them into a workspace. The exchange section imitates platform exchange state for the preview only.",
+ "asOf": "2026-11-13",
+ "records": [
+  {
+   "role": "organizations",
+   "id": "org-helix",
+   "version": 0,
+   "data": {
+    "name": "Helix Clinical Research GmbH (fictional)",
+    "org_type": "cro",
+    "country": "Germany",
+    "website": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "org-northlake",
+   "version": 0,
+   "data": {
+    "name": "Northlake CRO Ltd (fictional)",
+    "org_type": "cro",
+    "country": "United Kingdom",
+    "website": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "org-meridian",
+   "version": 0,
+   "data": {
+    "name": "Meridian Trials SAS (fictional)",
+    "org_type": "cro",
+    "country": "France",
+    "website": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "org-sable",
+   "version": 0,
+   "data": {
+    "name": "Sable Biosciences Inc (fictional)",
+    "org_type": "cro",
+    "country": "United States",
+    "website": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "org-quartz",
+   "version": 0,
+   "data": {
+    "name": "Quartz Tox Labs BV (fictional)",
+    "org_type": "other",
+    "country": "Netherlands",
+    "website": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "org-ember",
+   "version": 0,
+   "data": {
+    "name": "Ember Bioanalytics AB (fictional)",
+    "org_type": "other",
+    "country": "Sweden",
+    "website": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "org-corvane",
+   "version": 0,
+   "data": {
+    "name": "Corvane Biologics CDMO (fictional)",
+    "org_type": "cdmo",
+    "country": "Ireland",
+    "website": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "people",
+   "id": "p-anna",
+   "version": 0,
+   "data": {
+    "name": "Anna Example (fictional)",
+    "organization_id": "org-helix",
+    "title": "Business development",
+    "email": "anna@helix.example",
+    "archived": false
+   }
+  },
+  {
+   "role": "people",
+   "id": "p-ben",
+   "version": 0,
+   "data": {
+    "name": "Ben Sample (fictional)",
+    "organization_id": "org-northlake",
+    "title": "Business development",
+    "email": "ben@northlake.example",
+    "archived": false
+   }
+  },
+  {
+   "role": "people",
+   "id": "p-cara",
+   "version": 0,
+   "data": {
+    "name": "Cara Placeholder (fictional)",
+    "organization_id": "org-meridian",
+    "title": "Business development",
+    "email": "cara@meridian.example",
+    "archived": false
+   }
+  },
+  {
+   "role": "people",
+   "id": "p-dev",
+   "version": 0,
+   "data": {
+    "name": "Dev Specimen (fictional)",
+    "organization_id": "org-sable",
+    "title": "Business development",
+    "email": "dev@sable.example",
+    "archived": false
+   }
+  },
+  {
+   "role": "people",
+   "id": "p-eva",
+   "version": 0,
+   "data": {
+    "name": "Eva Testcase (fictional)",
+    "organization_id": "org-quartz",
+    "title": "Business development",
+    "email": "eva@quartz.example",
+    "archived": false
+   }
+  },
+  {
+   "role": "people",
+   "id": "p-finn",
+   "version": 0,
+   "data": {
+    "name": "Finn Mock (fictional)",
+    "organization_id": "org-ember",
+    "title": "Business development",
+    "email": "finn@ember.example",
+    "archived": false
+   }
+  },
+  {
+   "role": "programs",
+   "id": "prog-px101",
+   "version": 0,
+   "data": {
+    "name": "PX-101",
+    "code": "PX-101",
+    "indication": "Atopic dermatitis",
+    "modality": "small_molecule",
+    "stage": "phase_1",
+    "lead": "R. Lead (fictional)",
+    "status": "active",
+    "archived": false
+   }
+  },
+  {
+   "role": "studies",
+   "id": "study-201",
+   "version": 0,
+   "data": {
+    "name": "PX-101-201",
+    "program_id": "prog-px101",
+    "phase": "Phase 2",
+    "registry_id": null,
+    "status": "planned",
+    "archived": false
+   }
+  },
+  {
+   "role": "agreements",
+   "id": "ag-ember",
+   "version": 0,
+   "data": {
+    "name": "Work order — Ember Bioanalytics AB (fictional) (Bioanalytical method validation)",
+    "counterparty_id": "org-ember",
+    "agreement_type": "sow_work_order",
+    "status": "active",
+    "effective_date": "2026-10-12",
+    "expiry_date": null,
+    "archived": false
+   }
+  },
+  {
+   "role": "croselection.settings",
+   "id": "settings",
+   "version": 0,
+   "data": {
+    "default_currency": "EUR",
+    "blind_scoring": false,
+    "question_deadline_days": 7,
+    "confidentiality_text": null,
+    "decision_texts": null,
+    "invitation_texts": null
+   }
+  },
+  {
+   "role": "croselection.requests",
+   "id": "req-p2",
+   "version": 0,
+   "data": {
+    "name": "PX-101 Phase 2 study CRO",
+    "mode": "full_selection",
+    "service_type": "clinical_study",
+    "program_id": "prog-px101",
+    "study_id": "study-201",
+    "scope": "Full-service CRO for PX-101-201, a randomised, double-blind, placebo-controlled Phase 2 study in adults with moderate to severe atopic dermatitis (fictional).",
+    "assumptions": "{\"notes\": \"120 patients, 24 sites in Germany, France, Poland and the United Kingdom; 16 weeks of treatment; 8 on-site monitoring visits per site; enrolment over 9 months.\", \"baseline\": [{\"category\": \"Study start-up\", \"amount\": 180000}, {\"category\": \"Project management\", \"amount\": 240000}, {\"category\": \"Monitoring\", \"amount\": 520000}, {\"category\": \"Data management\", \"amount\": 160000}, {\"category\": \"Biostatistics\", \"amount\": 90000}, {\"category\": \"Medical writing\", \"amount\": 60000}, {\"category\": \"Safety management\", \"amount\": 70000}, {\"category\": \"Regulatory and ethics\", \"amount\": 80000}, {\"category\": \"Pass-through costs\", \"amount\": 200000}]}",
+    "budget_estimate": 1600000,
+    "currency": "EUR",
+    "stage": "evaluation",
+    "cda_option": "send_pdf",
+    "cda_gate": true,
+    "question_deadline": "2026-10-20",
+    "response_deadline": "2026-11-03",
+    "decision_due": "2026-11-24",
+    "owner": "C. Ops (fictional)",
+    "archived": false,
+    "rfi_questions": "Describe your experience in this indication and phase in the last five years.\nWhere do you have your own staff, and where do you use partners?\nWhich systems do you use for EDC, eTMF and safety?\nWhen was your last inspection or sponsor audit, and what was the outcome?\nWho would lead the project, and what is their current workload?",
+    "questions": "Confirm that your price follows the bid grid and our assumptions. List every deviation.\nDescribe your site selection and start-up plan, with timelines per country.\nDescribe your monitoring strategy and its cost if enrolment is slower than assumed.\nName the proposed delivery team with roles and allocation.\nList pass-through costs and how you control them.\nDescribe your change-order process and its most common causes.\nWhich activities are subcontracted, and to whom?\nGive two sponsor references for comparable studies.",
+    "cost_categories": "Study start-up\nProject management\nMonitoring\nData management\nBiostatistics\nMedical writing\nSafety management\nRegulatory and ethics\nPass-through costs"
+   }
+  },
+  {
+   "role": "croselection.invitations",
+   "id": "inv-helix",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "organization_id": "org-helix",
+    "contact_ids": "p-anna",
+    "recipient_emails": "anna@helix.example",
+    "status": "finalist",
+    "cda_status": "signed",
+    "cda_in_place_on": null,
+    "cda_agreement_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.invitations",
+   "id": "inv-northlake",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "organization_id": "org-northlake",
+    "contact_ids": "p-ben",
+    "recipient_emails": "ben@northlake.example",
+    "status": "finalist",
+    "cda_status": "signed",
+    "cda_in_place_on": null,
+    "cda_agreement_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.invitations",
+   "id": "inv-meridian",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "organization_id": "org-meridian",
+    "contact_ids": "p-cara",
+    "recipient_emails": "cara@meridian.example",
+    "status": "submitted",
+    "cda_status": "signed",
+    "cda_in_place_on": null,
+    "cda_agreement_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.invitations",
+   "id": "inv-sable",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "organization_id": "org-sable",
+    "contact_ids": "p-dev",
+    "recipient_emails": "dev@sable.example",
+    "status": "declined",
+    "cda_status": null,
+    "cda_in_place_on": null,
+    "cda_agreement_id": null,
+    "notes": "Declined after the RFI: no capacity before Q3 2027."
+   }
+  },
+  {
+   "role": "croselection.proposals",
+   "id": "prop-rfi-helix",
+   "version": 0,
+   "data": {
+    "invitation_id": "inv-helix",
+    "round": "rfi",
+    "version": 1,
+    "submitted_on": "2026-09-22",
+    "source": "exchange",
+    "total": null,
+    "pass_through": null,
+    "currency": null,
+    "start_weeks": null,
+    "duration_months": null,
+    "answers": "1. Three Phase 2 dermatology studies since 2022 (fictional answer).\n2. Own staff in DE, FR, PL, UK.\n3. Validated EDC and eTMF, hosted in the EU.\n4. Sponsor audit in 2025, no critical findings.\n5. Named project lead at 60% allocation.",
+    "assumptions_delta": null,
+    "document_ids": null,
+    "accepted_on": "2026-09-22",
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.proposals",
+   "id": "prop-rfi-northlake",
+   "version": 0,
+   "data": {
+    "invitation_id": "inv-northlake",
+    "round": "rfi",
+    "version": 1,
+    "submitted_on": "2026-09-22",
+    "source": "exchange",
+    "total": null,
+    "pass_through": null,
+    "currency": null,
+    "start_weeks": null,
+    "duration_months": null,
+    "answers": "1. Three Phase 2 dermatology studies since 2022 (fictional answer).\n2. Own staff in DE, FR, PL, UK.\n3. Validated EDC and eTMF, hosted in the EU.\n4. Sponsor audit in 2025, no critical findings.\n5. Named project lead at 60% allocation.",
+    "assumptions_delta": null,
+    "document_ids": null,
+    "accepted_on": "2026-09-22",
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.proposals",
+   "id": "prop-rfi-meridian",
+   "version": 0,
+   "data": {
+    "invitation_id": "inv-meridian",
+    "round": "rfi",
+    "version": 1,
+    "submitted_on": "2026-09-22",
+    "source": "exchange",
+    "total": null,
+    "pass_through": null,
+    "currency": null,
+    "start_weeks": null,
+    "duration_months": null,
+    "answers": "1. Three Phase 2 dermatology studies since 2022 (fictional answer).\n2. Own staff in DE, FR, PL, UK.\n3. Validated EDC and eTMF, hosted in the EU.\n4. Sponsor audit in 2025, no critical findings.\n5. Named project lead at 60% allocation.",
+    "assumptions_delta": null,
+    "document_ids": null,
+    "accepted_on": "2026-09-22",
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.proposals",
+   "id": "prop-rfi-sable",
+   "version": 0,
+   "data": {
+    "invitation_id": "inv-sable",
+    "round": "rfi",
+    "version": 1,
+    "submitted_on": "2026-09-22",
+    "source": "exchange",
+    "total": null,
+    "pass_through": null,
+    "currency": null,
+    "start_weeks": null,
+    "duration_months": null,
+    "answers": "1. Three Phase 2 dermatology studies since 2022 (fictional answer).\n2. Own staff in DE, FR, PL, UK.\n3. Validated EDC and eTMF, hosted in the EU.\n4. Sponsor audit in 2025, no critical findings.\n5. Named project lead at 60% allocation.",
+    "assumptions_delta": null,
+    "document_ids": null,
+    "accepted_on": "2026-09-22",
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.proposals",
+   "id": "prop-helix-1",
+   "version": 0,
+   "data": {
+    "invitation_id": "inv-helix",
+    "round": "rfp",
+    "version": 1,
+    "submitted_on": "2026-10-28",
+    "source": "exchange",
+    "total": 1720000,
+    "pass_through": 215000,
+    "currency": "EUR",
+    "start_weeks": 6,
+    "duration_months": 20,
+    "answers": "Initial proposal (fictional).",
+    "assumptions_delta": null,
+    "document_ids": null,
+    "accepted_on": "2026-10-28",
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.proposals",
+   "id": "prop-helix-2",
+   "version": 0,
+   "data": {
+    "invitation_id": "inv-helix",
+    "round": "rfp",
+    "version": 2,
+    "submitted_on": "2026-11-02",
+    "source": "exchange",
+    "total": 1650000,
+    "pass_through": 210000,
+    "currency": "EUR",
+    "start_weeks": 6,
+    "duration_months": 20,
+    "answers": "1. Price follows the bid grid; one deviation in monitoring.\n2. Start-up in 14 weeks across four countries.\n4. Project lead, two CRAs per country, data manager, biostatistician.",
+    "assumptions_delta": "Monitoring assumes 10% more on-site visits than the sponsor assumption.",
+    "document_ids": "00000000-0000-4000-8000-0000000000d5",
+    "accepted_on": "2026-11-02",
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.proposals",
+   "id": "prop-northlake-1",
+   "version": 0,
+   "data": {
+    "invitation_id": "inv-northlake",
+    "round": "rfp",
+    "version": 1,
+    "submitted_on": "2026-11-03",
+    "source": "exchange",
+    "total": 1240000,
+    "pass_through": 180000,
+    "currency": "EUR",
+    "start_weeks": 4,
+    "duration_months": 18,
+    "answers": "1. Price follows the bid grid with a risk-based monitoring model.\n2. Start-up in 12 weeks.",
+    "assumptions_delta": "Assumes 40% fewer monitoring visits (risk-based monitoring) and central laboratory set-up invoiced in USD.",
+    "document_ids": "00000000-0000-4000-8000-0000000000d6",
+    "accepted_on": "2026-11-03",
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.proposals",
+   "id": "prop-meridian-1",
+   "version": 0,
+   "data": {
+    "invitation_id": "inv-meridian",
+    "round": "rfp",
+    "version": 1,
+    "submitted_on": "2026-11-01",
+    "source": "exchange",
+    "total": 1580000,
+    "pass_through": 195000,
+    "currency": "EUR",
+    "start_weeks": 8,
+    "duration_months": 21,
+    "answers": "Proposal follows the bid grid; file to be mapped (fictional).",
+    "assumptions_delta": null,
+    "document_ids": null,
+    "accepted_on": "2026-11-01",
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.proposal_lines",
+   "id": "prop-helix-2-l1",
+   "version": 0,
+   "data": {
+    "proposal_id": "prop-helix-2",
+    "category": "Study start-up",
+    "description": null,
+    "units": null,
+    "unit_cost": null,
+    "amount": 170000,
+    "currency": "EUR",
+    "deviation": null
+   }
+  },
+  {
+   "role": "croselection.proposal_lines",
+   "id": "prop-helix-2-l2",
+   "version": 0,
+   "data": {
+    "proposal_id": "prop-helix-2",
+    "category": "Project management",
+    "description": null,
+    "units": null,
+    "unit_cost": null,
+    "amount": 250000,
+    "currency": "EUR",
+    "deviation": null
+   }
+  },
+  {
+   "role": "croselection.proposal_lines",
+   "id": "prop-helix-2-l3",
+   "version": 0,
+   "data": {
+    "proposal_id": "prop-helix-2",
+    "category": "Monitoring",
+    "description": null,
+    "units": null,
+    "unit_cost": null,
+    "amount": 560000,
+    "currency": "EUR",
+    "deviation": "Assumes 10% more on-site visits"
+   }
+  },
+  {
+   "role": "croselection.proposal_lines",
+   "id": "prop-helix-2-l4",
+   "version": 0,
+   "data": {
+    "proposal_id": "prop-helix-2",
+    "category": "Data management",
+    "description": null,
+    "units": null,
+    "unit_cost": null,
+    "amount": 150000,
+    "currency": "EUR",
+    "deviation": null
+   }
+  },
+  {
+   "role": "croselection.proposal_lines",
+   "id": "prop-helix-2-l5",
+   "version": 0,
+   "data": {
+    "proposal_id": "prop-helix-2",
+    "category": "Biostatistics",
+    "description": null,
+    "units": null,
+    "unit_cost": null,
+    "amount": 95000,
+    "currency": "EUR",
+    "deviation": null
+   }
+  },
+  {
+   "role": "croselection.proposal_lines",
+   "id": "prop-helix-2-l6",
+   "version": 0,
+   "data": {
+    "proposal_id": "prop-helix-2",
+    "category": "Medical writing",
+    "description": null,
+    "units": null,
+    "unit_cost": null,
+    "amount": 60000,
+    "currency": "EUR",
+    "deviation": null
+   }
+  },
+  {
+   "role": "croselection.proposal_lines",
+   "id": "prop-helix-2-l7",
+   "version": 0,
+   "data": {
+    "proposal_id": "prop-helix-2",
+    "category": "Safety management",
+    "description": null,
+    "units": null,
+    "unit_cost": null,
+    "amount": 75000,
+    "currency": "EUR",
+    "deviation": null
+   }
+  },
+  {
+   "role": "croselection.proposal_lines",
+   "id": "prop-helix-2-l8",
+   "version": 0,
+   "data": {
+    "proposal_id": "prop-helix-2",
+    "category": "Regulatory and ethics",
+    "description": null,
+    "units": null,
+    "unit_cost": null,
+    "amount": 80000,
+    "currency": "EUR",
+    "deviation": null
+   }
+  },
+  {
+   "role": "croselection.proposal_lines",
+   "id": "prop-helix-2-l9",
+   "version": 0,
+   "data": {
+    "proposal_id": "prop-helix-2",
+    "category": "Pass-through costs",
+    "description": null,
+    "units": null,
+    "unit_cost": null,
+    "amount": 210000,
+    "currency": "EUR",
+    "deviation": null
+   }
+  },
+  {
+   "role": "croselection.proposal_lines",
+   "id": "prop-northlake-1-l1",
+   "version": 0,
+   "data": {
+    "proposal_id": "prop-northlake-1",
+    "category": "Study start-up",
+    "description": null,
+    "units": null,
+    "unit_cost": null,
+    "amount": 150000,
+    "currency": "EUR",
+    "deviation": null
+   }
+  },
+  {
+   "role": "croselection.proposal_lines",
+   "id": "prop-northlake-1-l2",
+   "version": 0,
+   "data": {
+    "proposal_id": "prop-northlake-1",
+    "category": "Project management",
+    "description": null,
+    "units": null,
+    "unit_cost": null,
+    "amount": 200000,
+    "currency": "EUR",
+    "deviation": null
+   }
+  },
+  {
+   "role": "croselection.proposal_lines",
+   "id": "prop-northlake-1-l3",
+   "version": 0,
+   "data": {
+    "proposal_id": "prop-northlake-1",
+    "category": "Monitoring",
+    "description": null,
+    "units": null,
+    "unit_cost": null,
+    "amount": 310000,
+    "currency": "EUR",
+    "deviation": "Assumes 40% fewer monitoring visits"
+   }
+  },
+  {
+   "role": "croselection.proposal_lines",
+   "id": "prop-northlake-1-l4",
+   "version": 0,
+   "data": {
+    "proposal_id": "prop-northlake-1",
+    "category": "Data management",
+    "description": null,
+    "units": null,
+    "unit_cost": null,
+    "amount": 140000,
+    "currency": "EUR",
+    "deviation": null
+   }
+  },
+  {
+   "role": "croselection.proposal_lines",
+   "id": "prop-northlake-1-l5",
+   "version": 0,
+   "data": {
+    "proposal_id": "prop-northlake-1",
+    "category": "Biostatistics",
+    "description": null,
+    "units": null,
+    "unit_cost": null,
+    "amount": 80000,
+    "currency": "EUR",
+    "deviation": null
+   }
+  },
+  {
+   "role": "croselection.proposal_lines",
+   "id": "prop-northlake-1-l6",
+   "version": 0,
+   "data": {
+    "proposal_id": "prop-northlake-1",
+    "category": "Medical writing",
+    "description": null,
+    "units": null,
+    "unit_cost": null,
+    "amount": 50000,
+    "currency": "EUR",
+    "deviation": null
+   }
+  },
+  {
+   "role": "croselection.proposal_lines",
+   "id": "prop-northlake-1-l7",
+   "version": 0,
+   "data": {
+    "proposal_id": "prop-northlake-1",
+    "category": "Safety management",
+    "description": null,
+    "units": null,
+    "unit_cost": null,
+    "amount": 60000,
+    "currency": "EUR",
+    "deviation": null
+   }
+  },
+  {
+   "role": "croselection.proposal_lines",
+   "id": "prop-northlake-1-l8",
+   "version": 0,
+   "data": {
+    "proposal_id": "prop-northlake-1",
+    "category": "Regulatory and ethics",
+    "description": null,
+    "units": null,
+    "unit_cost": null,
+    "amount": 70000,
+    "currency": "EUR",
+    "deviation": null
+   }
+  },
+  {
+   "role": "croselection.proposal_lines",
+   "id": "prop-northlake-1-l9",
+   "version": 0,
+   "data": {
+    "proposal_id": "prop-northlake-1",
+    "category": "Pass-through costs",
+    "description": null,
+    "units": null,
+    "unit_cost": null,
+    "amount": 180000,
+    "currency": "EUR",
+    "deviation": null
+   }
+  },
+  {
+   "role": "croselection.proposal_lines",
+   "id": "prop-northlake-1-usd",
+   "version": 0,
+   "data": {
+    "proposal_id": "prop-northlake-1",
+    "category": "Pass-through costs",
+    "description": "Central laboratory set-up",
+    "units": 1,
+    "unit_cost": 40000,
+    "amount": 40000,
+    "currency": "USD",
+    "deviation": null
+   }
+  },
+  {
+   "role": "croselection.criteria",
+   "id": "crit-exp",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "name": "Relevant experience",
+    "category": "scientific",
+    "weight": 25,
+    "mandatory": true
+   }
+  },
+  {
+   "role": "croselection.criteria",
+   "id": "crit-team",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "name": "Delivery team",
+    "category": "operational",
+    "weight": 20,
+    "mandatory": false
+   }
+  },
+  {
+   "role": "croselection.criteria",
+   "id": "crit-plan",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "name": "Operational plan and timelines",
+    "category": "operational",
+    "weight": 20,
+    "mandatory": false
+   }
+  },
+  {
+   "role": "croselection.criteria",
+   "id": "crit-qual",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "name": "Quality system",
+    "category": "quality",
+    "weight": 15,
+    "mandatory": true
+   }
+  },
+  {
+   "role": "croselection.criteria",
+   "id": "crit-price",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "name": "Price and price realism",
+    "category": "commercial",
+    "weight": 15,
+    "mandatory": false
+   }
+  },
+  {
+   "role": "croselection.criteria",
+   "id": "crit-rel",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "name": "Working relationship",
+    "category": "relationship",
+    "weight": 5,
+    "mandatory": false
+   }
+  },
+  {
+   "role": "croselection.scores",
+   "id": "score-01",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-helix",
+    "criterion_id": "crit-exp",
+    "reviewer": "A. Reviewer (fictional)",
+    "score": 5,
+    "evidence": null
+   }
+  },
+  {
+   "role": "croselection.scores",
+   "id": "score-02",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-helix",
+    "criterion_id": "crit-team",
+    "reviewer": "A. Reviewer (fictional)",
+    "score": 4,
+    "evidence": null
+   }
+  },
+  {
+   "role": "croselection.scores",
+   "id": "score-03",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-helix",
+    "criterion_id": "crit-plan",
+    "reviewer": "A. Reviewer (fictional)",
+    "score": 4,
+    "evidence": "Proposal section and RFI answer (fictional)."
+   }
+  },
+  {
+   "role": "croselection.scores",
+   "id": "score-04",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-helix",
+    "criterion_id": "crit-qual",
+    "reviewer": "A. Reviewer (fictional)",
+    "score": 4,
+    "evidence": null
+   }
+  },
+  {
+   "role": "croselection.scores",
+   "id": "score-05",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-helix",
+    "criterion_id": "crit-price",
+    "reviewer": "A. Reviewer (fictional)",
+    "score": 3,
+    "evidence": null
+   }
+  },
+  {
+   "role": "croselection.scores",
+   "id": "score-06",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-helix",
+    "criterion_id": "crit-rel",
+    "reviewer": "A. Reviewer (fictional)",
+    "score": 4,
+    "evidence": "Proposal section and RFI answer (fictional)."
+   }
+  },
+  {
+   "role": "croselection.scores",
+   "id": "score-07",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-helix",
+    "criterion_id": "crit-exp",
+    "reviewer": "B. Reviewer (fictional)",
+    "score": 4,
+    "evidence": null
+   }
+  },
+  {
+   "role": "croselection.scores",
+   "id": "score-08",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-helix",
+    "criterion_id": "crit-team",
+    "reviewer": "B. Reviewer (fictional)",
+    "score": 4,
+    "evidence": null
+   }
+  },
+  {
+   "role": "croselection.scores",
+   "id": "score-09",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-helix",
+    "criterion_id": "crit-plan",
+    "reviewer": "B. Reviewer (fictional)",
+    "score": 3,
+    "evidence": "Proposal section and RFI answer (fictional)."
+   }
+  },
+  {
+   "role": "croselection.scores",
+   "id": "score-10",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-helix",
+    "criterion_id": "crit-qual",
+    "reviewer": "B. Reviewer (fictional)",
+    "score": 4,
+    "evidence": null
+   }
+  },
+  {
+   "role": "croselection.scores",
+   "id": "score-11",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-helix",
+    "criterion_id": "crit-price",
+    "reviewer": "B. Reviewer (fictional)",
+    "score": 3,
+    "evidence": null
+   }
+  },
+  {
+   "role": "croselection.scores",
+   "id": "score-12",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-helix",
+    "criterion_id": "crit-rel",
+    "reviewer": "B. Reviewer (fictional)",
+    "score": 5,
+    "evidence": "Proposal section and RFI answer (fictional)."
+   }
+  },
+  {
+   "role": "croselection.scores",
+   "id": "score-13",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-northlake",
+    "criterion_id": "crit-exp",
+    "reviewer": "A. Reviewer (fictional)",
+    "score": 3,
+    "evidence": null
+   }
+  },
+  {
+   "role": "croselection.scores",
+   "id": "score-14",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-northlake",
+    "criterion_id": "crit-team",
+    "reviewer": "A. Reviewer (fictional)",
+    "score": 3,
+    "evidence": null
+   }
+  },
+  {
+   "role": "croselection.scores",
+   "id": "score-15",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-northlake",
+    "criterion_id": "crit-plan",
+    "reviewer": "A. Reviewer (fictional)",
+    "score": 3,
+    "evidence": "Proposal section and RFI answer (fictional)."
+   }
+  },
+  {
+   "role": "croselection.scores",
+   "id": "score-16",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-northlake",
+    "criterion_id": "crit-qual",
+    "reviewer": "A. Reviewer (fictional)",
+    "score": 2,
+    "evidence": null
+   }
+  },
+  {
+   "role": "croselection.scores",
+   "id": "score-17",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-northlake",
+    "criterion_id": "crit-price",
+    "reviewer": "A. Reviewer (fictional)",
+    "score": 5,
+    "evidence": null
+   }
+  },
+  {
+   "role": "croselection.scores",
+   "id": "score-18",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-northlake",
+    "criterion_id": "crit-rel",
+    "reviewer": "A. Reviewer (fictional)",
+    "score": 3,
+    "evidence": "Proposal section and RFI answer (fictional)."
+   }
+  },
+  {
+   "role": "croselection.scores",
+   "id": "score-19",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-northlake",
+    "criterion_id": "crit-exp",
+    "reviewer": "B. Reviewer (fictional)",
+    "score": 4,
+    "evidence": null
+   }
+  },
+  {
+   "role": "croselection.scores",
+   "id": "score-20",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-northlake",
+    "criterion_id": "crit-team",
+    "reviewer": "B. Reviewer (fictional)",
+    "score": 3,
+    "evidence": null
+   }
+  },
+  {
+   "role": "croselection.scores",
+   "id": "score-21",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-northlake",
+    "criterion_id": "crit-plan",
+    "reviewer": "B. Reviewer (fictional)",
+    "score": 2,
+    "evidence": "Proposal section and RFI answer (fictional)."
+   }
+  },
+  {
+   "role": "croselection.scores",
+   "id": "score-22",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-northlake",
+    "criterion_id": "crit-qual",
+    "reviewer": "B. Reviewer (fictional)",
+    "score": 3,
+    "evidence": null
+   }
+  },
+  {
+   "role": "croselection.scores",
+   "id": "score-23",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-northlake",
+    "criterion_id": "crit-price",
+    "reviewer": "B. Reviewer (fictional)",
+    "score": 5,
+    "evidence": null
+   }
+  },
+  {
+   "role": "croselection.checklist_items",
+   "id": "chk-helix-1",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-helix",
+    "scope": "qualification",
+    "item": "Quality audit or questionnaire reviewed",
+    "owner": "Q. Assurance (fictional)",
+    "due": "2026-11-20",
+    "status": "done",
+    "evidence_document_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.checklist_items",
+   "id": "chk-helix-2",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-helix",
+    "scope": "qualification",
+    "item": "Two references checked",
+    "owner": "Q. Assurance (fictional)",
+    "due": "2026-11-20",
+    "status": "done",
+    "evidence_document_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.checklist_items",
+   "id": "chk-helix-3",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-helix",
+    "scope": "qualification",
+    "item": "Financial standing reviewed",
+    "owner": "Q. Assurance (fictional)",
+    "due": "2026-11-20",
+    "status": "done",
+    "evidence_document_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.checklist_items",
+   "id": "chk-helix-4",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-helix",
+    "scope": "qualification",
+    "item": "Insurance certificate received",
+    "owner": "Q. Assurance (fictional)",
+    "due": "2026-11-20",
+    "status": "open",
+    "evidence_document_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.checklist_items",
+   "id": "chk-helix-5",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-helix",
+    "scope": "qualification",
+    "item": "Data protection assessment completed",
+    "owner": "Q. Assurance (fictional)",
+    "due": "2026-11-20",
+    "status": "done",
+    "evidence_document_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.checklist_items",
+   "id": "chk-northlake-1",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-northlake",
+    "scope": "qualification",
+    "item": "Quality audit or questionnaire reviewed",
+    "owner": "Q. Assurance (fictional)",
+    "due": "2026-11-20",
+    "status": "issue",
+    "evidence_document_id": null,
+    "notes": "Open CAPA from a 2025 sponsor audit; evidence of closure requested."
+   }
+  },
+  {
+   "role": "croselection.checklist_items",
+   "id": "chk-northlake-2",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-northlake",
+    "scope": "qualification",
+    "item": "Two references checked",
+    "owner": "Q. Assurance (fictional)",
+    "due": "2026-11-20",
+    "status": "done",
+    "evidence_document_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.checklist_items",
+   "id": "chk-northlake-3",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-northlake",
+    "scope": "qualification",
+    "item": "Financial standing reviewed",
+    "owner": "Q. Assurance (fictional)",
+    "due": "2026-11-20",
+    "status": "done",
+    "evidence_document_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.checklist_items",
+   "id": "chk-northlake-4",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-northlake",
+    "scope": "qualification",
+    "item": "Insurance certificate received",
+    "owner": "Q. Assurance (fictional)",
+    "due": "2026-11-20",
+    "status": "open",
+    "evidence_document_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.checklist_items",
+   "id": "chk-northlake-5",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-northlake",
+    "scope": "qualification",
+    "item": "Data protection assessment completed",
+    "owner": "Q. Assurance (fictional)",
+    "due": "2026-11-20",
+    "status": "done",
+    "evidence_document_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.checklist_items",
+   "id": "chk-bid-helix-1",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-helix",
+    "scope": "bid_defence",
+    "item": "Agenda sent",
+    "owner": "C. Ops (fictional)",
+    "due": "2026-11-18",
+    "status": "done",
+    "evidence_document_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.checklist_items",
+   "id": "chk-bid-helix-2",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-helix",
+    "scope": "bid_defence",
+    "item": "Attendees confirmed",
+    "owner": "C. Ops (fictional)",
+    "due": "2026-11-18",
+    "status": "done",
+    "evidence_document_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.checklist_items",
+   "id": "chk-bid-helix-3",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-helix",
+    "scope": "bid_defence",
+    "item": "Proposed delivery team presented",
+    "owner": "C. Ops (fictional)",
+    "due": "2026-11-18",
+    "status": "open",
+    "evidence_document_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.checklist_items",
+   "id": "chk-bid-helix-4",
+   "version": 0,
+   "data": {
+    "request_id": "req-p2",
+    "invitation_id": "inv-helix",
+    "scope": "bid_defence",
+    "item": "Notes and open points recorded",
+    "owner": "C. Ops (fictional)",
+    "due": "2026-11-18",
+    "status": "open",
+    "evidence_document_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.requests",
+   "id": "req-tox",
+   "version": 0,
+   "data": {
+    "name": "28-day GLP toxicology study quote",
+    "mode": "quick_quote",
+    "service_type": "preclinical_study",
+    "program_id": "prog-px101",
+    "study_id": null,
+    "scope": "28-day repeat-dose GLP toxicology study in rats with toxicokinetics for PX-101 (fictional).",
+    "assumptions": "{\"notes\": \"Three dose groups plus control; 10 animals per sex per group; recovery groups at high dose and control.\", \"baseline\": [{\"category\": \"In-life phase\", \"amount\": 120000}, {\"category\": \"Bioanalysis\", \"amount\": 40000}, {\"category\": \"Histopathology\", \"amount\": 30000}, {\"category\": \"Reporting\", \"amount\": 20000}]}",
+    "budget_estimate": 210000,
+    "currency": "EUR",
+    "stage": "proposals",
+    "cda_option": "none",
+    "cda_gate": false,
+    "question_deadline": "2026-11-13",
+    "response_deadline": "2026-11-20",
+    "decision_due": "2026-11-27",
+    "owner": "N. Clinical (fictional)",
+    "archived": false,
+    "rfi_questions": null,
+    "questions": null,
+    "cost_categories": null
+   }
+  },
+  {
+   "role": "croselection.invitations",
+   "id": "inv-q-quartz",
+   "version": 0,
+   "data": {
+    "request_id": "req-tox",
+    "organization_id": "org-quartz",
+    "contact_ids": null,
+    "recipient_emails": "eva@quartz.example",
+    "status": "submitted",
+    "cda_status": "not_needed",
+    "cda_in_place_on": null,
+    "cda_agreement_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.invitations",
+   "id": "inv-q-ember",
+   "version": 0,
+   "data": {
+    "request_id": "req-tox",
+    "organization_id": "org-ember",
+    "contact_ids": null,
+    "recipient_emails": "finn@ember.example",
+    "status": "rfp_invited",
+    "cda_status": "not_needed",
+    "cda_in_place_on": null,
+    "cda_agreement_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.invitations",
+   "id": "inv-q-sable",
+   "version": 0,
+   "data": {
+    "request_id": "req-tox",
+    "organization_id": "org-sable",
+    "contact_ids": null,
+    "recipient_emails": "dev@sable.example",
+    "status": "rfp_invited",
+    "cda_status": "not_needed",
+    "cda_in_place_on": null,
+    "cda_agreement_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.proposals",
+   "id": "prop-quartz",
+   "version": 0,
+   "data": {
+    "invitation_id": "inv-q-quartz",
+    "round": "quote",
+    "version": 1,
+    "submitted_on": "2026-11-11",
+    "source": "exchange",
+    "total": 198000,
+    "pass_through": null,
+    "currency": "EUR",
+    "start_weeks": 6,
+    "duration_months": 5,
+    "answers": "1. Includes TK and a draft and final report; excludes test article shipment.\n2. Start in 6 weeks; 5 months to the final report.",
+    "assumptions_delta": null,
+    "document_ids": null,
+    "accepted_on": "2026-11-11",
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.requests",
+   "id": "req-bioa",
+   "version": 0,
+   "data": {
+    "name": "Bioanalytical method validation",
+    "mode": "quick_quote",
+    "service_type": "bioanalytical",
+    "program_id": "prog-px101",
+    "study_id": null,
+    "scope": "Validation of an LC-MS/MS method for PX-101 in human plasma (fictional).",
+    "assumptions": null,
+    "budget_estimate": 90000,
+    "currency": "GBP",
+    "stage": "closed",
+    "cda_option": "skip",
+    "cda_gate": false,
+    "question_deadline": null,
+    "response_deadline": "2026-09-18",
+    "decision_due": "2026-09-30",
+    "owner": "N. Clinical (fictional)",
+    "archived": false,
+    "rfi_questions": null,
+    "questions": null,
+    "cost_categories": null
+   }
+  },
+  {
+   "role": "croselection.invitations",
+   "id": "inv-b-ember",
+   "version": 0,
+   "data": {
+    "request_id": "req-bioa",
+    "organization_id": "org-ember",
+    "contact_ids": null,
+    "recipient_emails": "finn@ember.example",
+    "status": "selected",
+    "cda_status": "in_place_elsewhere",
+    "cda_in_place_on": "2026-03-01",
+    "cda_agreement_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.invitations",
+   "id": "inv-b-quartz",
+   "version": 0,
+   "data": {
+    "request_id": "req-bioa",
+    "organization_id": "org-quartz",
+    "contact_ids": null,
+    "recipient_emails": "eva@quartz.example",
+    "status": "not_selected",
+    "cda_status": "in_place_elsewhere",
+    "cda_in_place_on": "2025-11-15",
+    "cda_agreement_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.proposals",
+   "id": "prop-b-ember",
+   "version": 0,
+   "data": {
+    "invitation_id": "inv-b-ember",
+    "round": "quote",
+    "version": 1,
+    "submitted_on": "2026-09-16",
+    "source": "manual",
+    "total": 85000,
+    "pass_through": null,
+    "currency": "GBP",
+    "start_weeks": 3,
+    "duration_months": 3,
+    "answers": null,
+    "assumptions_delta": null,
+    "document_ids": null,
+    "accepted_on": "2026-09-16",
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.proposals",
+   "id": "prop-b-quartz",
+   "version": 0,
+   "data": {
+    "invitation_id": "inv-b-quartz",
+    "round": "quote",
+    "version": 1,
+    "submitted_on": "2026-09-17",
+    "source": "manual",
+    "total": 97000,
+    "pass_through": null,
+    "currency": "GBP",
+    "start_weeks": 5,
+    "duration_months": 4,
+    "answers": null,
+    "assumptions_delta": null,
+    "document_ids": null,
+    "accepted_on": "2026-09-17",
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.awards",
+   "id": "award-bioa",
+   "version": 0,
+   "data": {
+    "request_id": "req-bioa",
+    "organization_id": "org-ember",
+    "service_type": "bioanalytical",
+    "program_id": "prog-px101",
+    "study_id": null,
+    "total": 85000,
+    "currency": "GBP",
+    "start_date": "2026-10-19",
+    "duration_months": 3,
+    "rationale": "Lower price, earlier start and prior validated methods for related compounds (fictional).",
+    "approver": "R. Lead (fictional)",
+    "decided_on": "2026-09-30",
+    "delivery_team": "Lab lead and one analyst (fictional).",
+    "agreement_id": "ag-ember",
+    "onboarding_status": "complete",
+    "handoff_status": null
+   }
+  },
+  {
+   "role": "croselection.checklist_items",
+   "id": "chk-onb-1",
+   "version": 0,
+   "data": {
+    "request_id": "req-bioa",
+    "invitation_id": null,
+    "scope": "onboarding",
+    "item": "Contract signed",
+    "owner": "N. Clinical (fictional)",
+    "due": "2026-10-16",
+    "status": "done",
+    "evidence_document_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.checklist_items",
+   "id": "chk-onb-2",
+   "version": 0,
+   "data": {
+    "request_id": "req-bioa",
+    "invitation_id": null,
+    "scope": "onboarding",
+    "item": "Quality agreement signed",
+    "owner": "N. Clinical (fictional)",
+    "due": "2026-10-16",
+    "status": "done",
+    "evidence_document_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.checklist_items",
+   "id": "chk-onb-3",
+   "version": 0,
+   "data": {
+    "request_id": "req-bioa",
+    "invitation_id": null,
+    "scope": "onboarding",
+    "item": "Kick-off meeting held",
+    "owner": "N. Clinical (fictional)",
+    "due": "2026-10-16",
+    "status": "done",
+    "evidence_document_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.checklist_items",
+   "id": "chk-onb-4",
+   "version": 0,
+   "data": {
+    "request_id": "req-bioa",
+    "invitation_id": null,
+    "scope": "onboarding",
+    "item": "Delivery team confirmed",
+    "owner": "N. Clinical (fictional)",
+    "due": "2026-10-16",
+    "status": "done",
+    "evidence_document_id": null,
+    "notes": null
+   }
+  },
+  {
+   "role": "croselection.checklist_items",
+   "id": "chk-onb-5",
+   "version": 0,
+   "data": {
+    "request_id": "req-bioa",
+    "invitation_id": null,
+    "scope": "onboarding",
+    "item": "Systems access set up",
+    "owner": "N. Clinical (fictional)",
+    "due": "2026-10-16",
+    "status": "not_applicable",
+    "evidence_document_id": null,
+    "notes": null
+   }
+  }
+ ],
+ "exchange": {
+  "groups": [
+   {
+    "id": "00000000-0000-4000-8000-0000000000a2",
+    "title": "RFP: PX-101 Phase 2 study CRO",
+    "summary": "Request for proposal (fictional).",
+    "dates": [],
+    "senderName": "C. Ops (fictional)",
+    "senderCompany": "Example Therapeutics (fictional)",
+    "gate": "signed_document",
+    "gateSlot": "signed_cda",
+    "verifyEmail": true,
+    "messagesAfterDeadline": true,
+    "documents": [
+     {
+      "versionId": "00000000-0000-4000-8000-0000000000d2",
+      "documentId": "00000000-0000-4000-8000-0000000000c3",
+      "filename": "Mutual CDA (fictional).pdf",
+      "mime": "application/pdf",
+      "byteSize": 182000,
+      "gate": true
+     },
+     {
+      "versionId": "00000000-0000-4000-8000-0000000000d0",
+      "documentId": "00000000-0000-4000-8000-0000000000c1",
+      "filename": "PX-101-201 request pack (fictional).pdf",
+      "mime": "application/pdf",
+      "byteSize": 1240000,
+      "gate": false
+     },
+     {
+      "versionId": "00000000-0000-4000-8000-0000000000d1",
+      "documentId": "00000000-0000-4000-8000-0000000000c2",
+      "filename": "Bid grid PX-101-201 (fictional).xlsx",
+      "mime": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "byteSize": 48000,
+      "gate": false
+     }
+    ],
+    "slots": [
+     {
+      "key": "signed_cda",
+      "label": "Signed CDA",
+      "required": true
+     }
+    ],
+    "archived": false,
+    "version": 2,
+    "createdAt": "2026-10-05T09:00:00.000Z",
+    "exchanges": [
+     {
+      "id": "00000000-0000-4000-8000-0000000000e4",
+      "groupId": "00000000-0000-4000-8000-0000000000a2",
+      "recordId": "inv-helix",
+      "recipientName": "Anna Example (fictional)",
+      "recipientCompany": "Helix Clinical Research GmbH (fictional)",
+      "recipientEmails": [
+       "anna@helix.example"
+      ],
+      "expiresAt": "2026-11-03T23:59:00.000Z",
+      "revokedAt": null,
+      "createdAt": "2026-10-06T09:00:00.000Z",
       "version": 1,
-      "data": {
-        "name": "AX-217 Oncology Phase II",
-        "program": "AX-217",
-        "scope": "EU full-service CRO for a multicountry Phase II",
-        "owner": "Head of Clinical Operations",
-        "dueDate": "2026-11-18",
-        "status": "Evaluation",
-        "currency": "EUR",
-        "archived": false
+      "status": {
+       "opened": "2026-10-06T10:12:00.000Z",
+       "lastOpened": null,
+       "verified": "2026-10-06T10:14:00.000Z",
+       "acknowledged": null,
+       "downloads": [
+        {
+         "versionId": "00000000-0000-4000-8000-0000000000d0",
+         "filename": "PX-101-201 request pack (fictional).pdf",
+         "at": "2026-10-08T10:00:00.000Z"
+        },
+        {
+         "versionId": "00000000-0000-4000-8000-0000000000d1",
+         "filename": "Bid grid PX-101-201 (fictional).xlsx",
+         "at": "2026-10-08T10:00:00.000Z"
+        }
+       ],
+       "draftSavedAt": null,
+       "submitted": {
+        "version": 2,
+        "at": "2026-11-02T14:10:00.000Z",
+        "submissionId": "00000000-0000-4000-8000-0000000000b2",
+        "accepted": true,
+        "recordId": "prop-helix-2"
+       },
+       "documentsBack": [
+        {
+         "slot": "signed_cda",
+         "label": "Signed CDA",
+         "required": true,
+         "status": "accepted",
+         "fileId": "00000000-0000-4000-8000-0000000000f1",
+         "versionId": "00000000-0000-4000-8000-0000000000d4",
+         "receivedAt": "2026-10-07T09:00:00.000Z"
+        }
+       ],
+       "unreadMessages": 0,
+       "expiresAt": "2026-11-03T23:59:00.000Z",
+       "revokedAt": null,
+       "closed": true,
+       "state": "closed"
       }
-    },
-    {
-      "id": "sel002",
+     },
+     {
+      "id": "00000000-0000-4000-8000-0000000000e5",
+      "groupId": "00000000-0000-4000-8000-0000000000a2",
+      "recordId": "inv-northlake",
+      "recipientName": "Ben Sample (fictional)",
+      "recipientCompany": "Northlake CRO Ltd (fictional)",
+      "recipientEmails": [
+       "ben@northlake.example"
+      ],
+      "expiresAt": "2026-11-03T23:59:00.000Z",
+      "revokedAt": null,
+      "createdAt": "2026-10-06T09:00:00.000Z",
       "version": 1,
-      "data": {
-        "name": "NX-204 Rare Disease FIH",
-        "program": "NX-204",
-        "scope": "EU Phase I clinical operations, data and statistics",
-        "owner": "COO",
-        "dueDate": "2026-12-04",
-        "status": "RFP open",
-        "currency": "EUR",
-        "archived": false
+      "status": {
+       "opened": "2026-10-06T12:40:00.000Z",
+       "lastOpened": null,
+       "verified": "2026-10-06T12:41:00.000Z",
+       "acknowledged": null,
+       "downloads": [
+        {
+         "versionId": "00000000-0000-4000-8000-0000000000d0",
+         "filename": "PX-101-201 request pack (fictional).pdf",
+         "at": "2026-10-08T10:00:00.000Z"
+        },
+        {
+         "versionId": "00000000-0000-4000-8000-0000000000d1",
+         "filename": "Bid grid PX-101-201 (fictional).xlsx",
+         "at": "2026-10-08T10:00:00.000Z"
+        }
+       ],
+       "draftSavedAt": null,
+       "submitted": {
+        "version": 1,
+        "at": "2026-11-03T17:45:00.000Z",
+        "submissionId": "00000000-0000-4000-8000-0000000000b3",
+        "accepted": true,
+        "recordId": "prop-northlake-1"
+       },
+       "documentsBack": [
+        {
+         "slot": "signed_cda",
+         "label": "Signed CDA",
+         "required": true,
+         "status": "accepted",
+         "fileId": "00000000-0000-4000-8000-0000000000f2",
+         "versionId": "00000000-0000-4000-8000-0000000000d7",
+         "receivedAt": "2026-10-08T11:00:00.000Z"
+        }
+       ],
+       "unreadMessages": 1,
+       "expiresAt": "2026-11-03T23:59:00.000Z",
+       "revokedAt": null,
+       "closed": true,
+       "state": "closed"
       }
-    }
+     },
+     {
+      "id": "00000000-0000-4000-8000-0000000000e6",
+      "groupId": "00000000-0000-4000-8000-0000000000a2",
+      "recordId": "inv-meridian",
+      "recipientName": "Cara Placeholder (fictional)",
+      "recipientCompany": "Meridian Trials SAS (fictional)",
+      "recipientEmails": [
+       "cara@meridian.example"
+      ],
+      "expiresAt": "2026-11-17T23:59:00.000Z",
+      "revokedAt": null,
+      "createdAt": "2026-10-06T09:00:00.000Z",
+      "version": 1,
+      "status": {
+       "opened": "2026-10-07T08:05:00.000Z",
+       "lastOpened": null,
+       "verified": "2026-10-07T08:06:00.000Z",
+       "acknowledged": null,
+       "downloads": [
+        {
+         "versionId": "00000000-0000-4000-8000-0000000000d0",
+         "filename": "PX-101-201 request pack (fictional).pdf",
+         "at": "2026-10-08T10:00:00.000Z"
+        }
+       ],
+       "draftSavedAt": null,
+       "submitted": {
+        "version": 2,
+        "at": "2026-11-12T16:20:00.000Z",
+        "submissionId": "00000000-0000-4000-8000-0000000000b7",
+        "accepted": false,
+        "recordId": null
+       },
+       "documentsBack": [
+        {
+         "slot": "signed_cda",
+         "label": "Signed CDA",
+         "required": true,
+         "status": "accepted",
+         "fileId": "00000000-0000-4000-8000-0000000000f3",
+         "versionId": "00000000-0000-4000-8000-0000000000d8",
+         "receivedAt": "2026-10-09T15:00:00.000Z"
+        }
+       ],
+       "unreadMessages": 0,
+       "expiresAt": "2026-11-17T23:59:00.000Z",
+       "revokedAt": null,
+       "closed": false,
+       "state": "submitted"
+      }
+     }
+    ],
+    "appRef": "request:req-p2:rfp"
+   },
+   {
+    "id": "00000000-0000-4000-8000-0000000000a1",
+    "title": "RFI: PX-101 Phase 2 study CRO",
+    "summary": "Capability questionnaire (fictional).",
+    "dates": [],
+    "senderName": "C. Ops (fictional)",
+    "senderCompany": "Example Therapeutics (fictional)",
+    "gate": "none",
+    "gateSlot": null,
+    "verifyEmail": true,
+    "messagesAfterDeadline": true,
+    "documents": [],
+    "slots": [],
+    "archived": false,
+    "version": 2,
+    "createdAt": "2026-10-05T09:00:00.000Z",
+    "exchanges": [
+     {
+      "id": "00000000-0000-4000-8000-0000000000e0",
+      "groupId": "00000000-0000-4000-8000-0000000000a1",
+      "recordId": "inv-helix",
+      "recipientName": "Anna Example (fictional)",
+      "recipientCompany": "Helix Clinical Research GmbH (fictional)",
+      "recipientEmails": [
+       "anna@helix.example"
+      ],
+      "expiresAt": "2026-09-22T23:59:00.000Z",
+      "revokedAt": null,
+      "createdAt": "2026-10-06T09:00:00.000Z",
+      "version": 1,
+      "status": {
+       "opened": "2026-09-10T09:00:00.000Z",
+       "lastOpened": null,
+       "verified": null,
+       "acknowledged": null,
+       "downloads": [],
+       "draftSavedAt": null,
+       "submitted": {
+        "version": 1,
+        "at": "2026-09-20T11:00:00.000Z",
+        "submissionId": "00000000-0000-4000-8000-0000000000b8",
+        "accepted": true,
+        "recordId": "prop-rfi-helix"
+       },
+       "documentsBack": [],
+       "unreadMessages": 0,
+       "expiresAt": "2026-09-22T23:59:00.000Z",
+       "revokedAt": null,
+       "closed": true,
+       "state": "closed"
+      }
+     },
+     {
+      "id": "00000000-0000-4000-8000-0000000000e1",
+      "groupId": "00000000-0000-4000-8000-0000000000a1",
+      "recordId": "inv-northlake",
+      "recipientName": "Ben Sample (fictional)",
+      "recipientCompany": "Northlake CRO Ltd (fictional)",
+      "recipientEmails": [
+       "ben@northlake.example"
+      ],
+      "expiresAt": "2026-09-22T23:59:00.000Z",
+      "revokedAt": null,
+      "createdAt": "2026-10-06T09:00:00.000Z",
+      "version": 1,
+      "status": {
+       "opened": "2026-09-10T09:00:00.000Z",
+       "lastOpened": null,
+       "verified": null,
+       "acknowledged": null,
+       "downloads": [],
+       "draftSavedAt": null,
+       "submitted": {
+        "version": 1,
+        "at": "2026-09-21T11:00:00.000Z",
+        "submissionId": "00000000-0000-4000-8000-0000000000b9",
+        "accepted": true,
+        "recordId": "prop-rfi-northlake"
+       },
+       "documentsBack": [],
+       "unreadMessages": 0,
+       "expiresAt": "2026-09-22T23:59:00.000Z",
+       "revokedAt": null,
+       "closed": true,
+       "state": "closed"
+      }
+     },
+     {
+      "id": "00000000-0000-4000-8000-0000000000e2",
+      "groupId": "00000000-0000-4000-8000-0000000000a1",
+      "recordId": "inv-meridian",
+      "recipientName": "Cara Placeholder (fictional)",
+      "recipientCompany": "Meridian Trials SAS (fictional)",
+      "recipientEmails": [
+       "cara@meridian.example"
+      ],
+      "expiresAt": "2026-09-22T23:59:00.000Z",
+      "revokedAt": null,
+      "createdAt": "2026-10-06T09:00:00.000Z",
+      "version": 1,
+      "status": {
+       "opened": "2026-09-10T09:00:00.000Z",
+       "lastOpened": null,
+       "verified": null,
+       "acknowledged": null,
+       "downloads": [],
+       "draftSavedAt": null,
+       "submitted": {
+        "version": 1,
+        "at": "2026-09-22T11:00:00.000Z",
+        "submissionId": "00000000-0000-4000-8000-0000000000ba",
+        "accepted": true,
+        "recordId": "prop-rfi-meridian"
+       },
+       "documentsBack": [],
+       "unreadMessages": 0,
+       "expiresAt": "2026-09-22T23:59:00.000Z",
+       "revokedAt": null,
+       "closed": true,
+       "state": "closed"
+      }
+     },
+     {
+      "id": "00000000-0000-4000-8000-0000000000e3",
+      "groupId": "00000000-0000-4000-8000-0000000000a1",
+      "recordId": "inv-sable",
+      "recipientName": "Dev Specimen (fictional)",
+      "recipientCompany": "Sable Biosciences Inc (fictional)",
+      "recipientEmails": [
+       "dev@sable.example"
+      ],
+      "expiresAt": "2026-09-22T23:59:00.000Z",
+      "revokedAt": null,
+      "createdAt": "2026-10-06T09:00:00.000Z",
+      "version": 1,
+      "status": {
+       "opened": "2026-09-10T09:00:00.000Z",
+       "lastOpened": null,
+       "verified": null,
+       "acknowledged": null,
+       "downloads": [],
+       "draftSavedAt": null,
+       "submitted": {
+        "version": 1,
+        "at": "2026-09-23T11:00:00.000Z",
+        "submissionId": "00000000-0000-4000-8000-0000000000bb",
+        "accepted": true,
+        "recordId": "prop-rfi-sable"
+       },
+       "documentsBack": [],
+       "unreadMessages": 0,
+       "expiresAt": "2026-09-22T23:59:00.000Z",
+       "revokedAt": null,
+       "closed": true,
+       "state": "closed"
+      }
+     }
+    ],
+    "appRef": "request:req-p2:rfi"
+   },
+   {
+    "id": "00000000-0000-4000-8000-0000000000a3",
+    "title": "Quote request: 28-day GLP toxicology study quote",
+    "summary": "Quote request (fictional).",
+    "dates": [],
+    "senderName": "C. Ops (fictional)",
+    "senderCompany": "Example Therapeutics (fictional)",
+    "gate": "acknowledgement",
+    "gateSlot": null,
+    "verifyEmail": true,
+    "messagesAfterDeadline": true,
+    "documents": [
+     {
+      "versionId": "00000000-0000-4000-8000-0000000000d3",
+      "documentId": "00000000-0000-4000-8000-0000000000c4",
+      "filename": "Study outline (fictional).pdf",
+      "mime": "application/pdf",
+      "byteSize": 96000,
+      "gate": false
+     }
+    ],
+    "slots": [],
+    "archived": false,
+    "version": 2,
+    "createdAt": "2026-10-05T09:00:00.000Z",
+    "exchanges": [
+     {
+      "id": "00000000-0000-4000-8000-0000000000e7",
+      "groupId": "00000000-0000-4000-8000-0000000000a3",
+      "recordId": "inv-q-quartz",
+      "recipientName": "Eva Testcase (fictional)",
+      "recipientCompany": "Quartz Tox Labs BV (fictional)",
+      "recipientEmails": [
+       "eva@quartz.example"
+      ],
+      "expiresAt": "2026-11-20T23:59:00.000Z",
+      "revokedAt": null,
+      "createdAt": "2026-10-06T09:00:00.000Z",
+      "version": 1,
+      "status": {
+       "opened": "2026-11-06T09:30:00.000Z",
+       "lastOpened": null,
+       "verified": "2026-11-06T09:31:00.000Z",
+       "acknowledged": "2026-11-06T09:32:00.000Z",
+       "downloads": [
+        {
+         "versionId": "00000000-0000-4000-8000-0000000000d3",
+         "filename": "Study outline (fictional).pdf",
+         "at": "2026-10-08T10:00:00.000Z"
+        }
+       ],
+       "draftSavedAt": null,
+       "submitted": {
+        "version": 1,
+        "at": "2026-11-11T13:00:00.000Z",
+        "submissionId": "00000000-0000-4000-8000-0000000000b5",
+        "accepted": true,
+        "recordId": "prop-quartz"
+       },
+       "documentsBack": [],
+       "unreadMessages": 0,
+       "expiresAt": "2026-11-20T23:59:00.000Z",
+       "revokedAt": null,
+       "closed": false,
+       "state": "submitted"
+      }
+     },
+     {
+      "id": "00000000-0000-4000-8000-0000000000e8",
+      "groupId": "00000000-0000-4000-8000-0000000000a3",
+      "recordId": "inv-q-ember",
+      "recipientName": "Finn Mock (fictional)",
+      "recipientCompany": "Ember Bioanalytics AB (fictional)",
+      "recipientEmails": [
+       "finn@ember.example"
+      ],
+      "expiresAt": "2026-11-20T23:59:00.000Z",
+      "revokedAt": null,
+      "createdAt": "2026-10-06T09:00:00.000Z",
+      "version": 1,
+      "status": {
+       "opened": "2026-11-07T14:00:00.000Z",
+       "lastOpened": null,
+       "verified": "2026-11-07T14:02:00.000Z",
+       "acknowledged": "2026-11-07T14:03:00.000Z",
+       "downloads": [],
+       "draftSavedAt": "2026-11-12T10:15:00.000Z",
+       "submitted": null,
+       "documentsBack": [],
+       "unreadMessages": 0,
+       "expiresAt": "2026-11-20T23:59:00.000Z",
+       "revokedAt": null,
+       "closed": false,
+       "state": "draft"
+      }
+     },
+     {
+      "id": "00000000-0000-4000-8000-0000000000e9",
+      "groupId": "00000000-0000-4000-8000-0000000000a3",
+      "recordId": "inv-q-sable",
+      "recipientName": "Dev Specimen (fictional)",
+      "recipientCompany": "Sable Biosciences Inc (fictional)",
+      "recipientEmails": [
+       "dev@sable.example"
+      ],
+      "expiresAt": "2026-11-20T23:59:00.000Z",
+      "revokedAt": null,
+      "createdAt": "2026-10-06T09:00:00.000Z",
+      "version": 1,
+      "status": {
+       "opened": null,
+       "lastOpened": null,
+       "verified": null,
+       "acknowledged": null,
+       "downloads": [],
+       "draftSavedAt": null,
+       "submitted": null,
+       "documentsBack": [],
+       "unreadMessages": 0,
+       "expiresAt": "2026-11-20T23:59:00.000Z",
+       "revokedAt": null,
+       "closed": false,
+       "state": "invited"
+      }
+     }
+    ],
+    "appRef": "request:req-tox:rfp"
+   }
   ],
-  "vendors": [
-    {
-      "id": "ven001",
-      "version": 1,
-      "data": {
-        "name": "Asteria Clinical",
-        "services": "Full-service; Monitoring",
-        "regions": "EU; UK",
-        "experience": "Phase II oncology · 12-country operations",
-        "website": "https://example.org/asteria",
-        "contact": "Business Development Lead",
-        "lastVerified": "2026-10-28",
-        "archived": false
-      }
+  "submissions": [
+   {
+    "id": "00000000-0000-4000-8000-0000000000b7",
+    "exchangeId": "00000000-0000-4000-8000-0000000000e6",
+    "groupId": "00000000-0000-4000-8000-0000000000a2",
+    "boundRecordId": "inv-meridian",
+    "recipientName": "Cara Placeholder (fictional)",
+    "version": 2,
+    "submittedAt": "2026-11-12T16:20:00.000Z",
+    "accepted": false,
+    "recordId": null,
+    "acceptedAt": null,
+    "data": {
+     "total": 1545000,
+     "pass_through": 190000,
+     "currency": "EUR",
+     "start_weeks": 8,
+     "duration_months": 21,
+     "answers": "1. Revised price after the clarification on monitoring visits (fictional).",
+     "assumptions_delta": "None.",
+     "notes": null
     },
-    {
-      "id": "ven002",
-      "version": 1,
-      "data": {
-        "name": "Northbridge Research",
-        "services": "Oncology trials; Data",
-        "regions": "EU; UK",
-        "experience": "Solid tumor oncology and EU site networks",
-        "website": "https://example.org/northbridge",
-        "contact": "Clinical Operations Director",
-        "lastVerified": "2026-10-29",
-        "archived": false
-      }
+    "files": [
+     {
+      "id": "00000000-0000-4000-8000-0000000000f7",
+      "filename": "Meridian proposal v2 (fictional).xlsx",
+      "mime": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "byteSize": 64000,
+      "accepted": false,
+      "versionId": null
+     }
+    ]
+   },
+   {
+    "id": "00000000-0000-4000-8000-0000000000b6",
+    "exchangeId": "00000000-0000-4000-8000-0000000000e6",
+    "groupId": "00000000-0000-4000-8000-0000000000a2",
+    "boundRecordId": "inv-meridian",
+    "recipientName": "Cara Placeholder (fictional)",
+    "version": 1,
+    "submittedAt": "2026-11-01T10:00:00.000Z",
+    "accepted": true,
+    "recordId": "prop-meridian-1",
+    "acceptedAt": "2026-11-01T15:00:00.000Z",
+    "data": {
+     "total": 1580000
     },
-    {
-      "id": "ven003",
-      "version": 1,
-      "data": {
-        "name": "Vireo Trials",
-        "services": "Biometrics; Clinical operations",
-        "regions": "EU; US",
-        "experience": "Phase I–III oncology and rare disease",
-        "website": "https://example.org/vireo",
-        "contact": "Scientific Partnerships Lead",
-        "lastVerified": "2026-10-30",
-        "archived": false
-      }
-    },
-    {
-      "id": "ven004",
-      "version": 1,
-      "data": {
-        "name": "Bluefield BioServices",
-        "services": "Site startup; Monitoring",
-        "regions": "EU",
-        "experience": "Phase II site activation and recruitment operations",
-        "website": "https://example.org/bluefield",
-        "contact": "Commercial Lead",
-        "lastVerified": "2026-10-27",
-        "archived": false
-      }
-    },
-    {
-      "id": "ven005",
-      "version": 1,
-      "data": {
-        "name": "Origo Research Group",
-        "services": "Phase I; Data Management",
-        "regions": "EU; UK",
-        "experience": "Early phase rare disease studies",
-        "website": "https://example.org/origo",
-        "contact": "BD Manager",
-        "lastVerified": "2026-10-27",
-        "archived": false
-      }
-    }
+    "files": []
+   }
   ],
-  "bids": [
-    {
-      "id": "bid001",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "vendorId": "ven001",
-        "status": "Received",
-        "fee": 1850000,
-        "passThrough": 420000,
-        "startupWeeks": 13,
-        "assumptions": "Full-service with central data handling; excludes imaging vendor fees.",
-        "clarification": "Confirm monitoring capacity in Spain and Italy.",
-        "clarificationDue": "2026-11-07",
-        "submittedAt": "2026-10-21",
-        "archived": false
-      }
-    },
-    {
-      "id": "bid002",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "vendorId": "ven002",
-        "status": "Received",
-        "fee": 1930000,
-        "passThrough": 360000,
-        "startupWeeks": 10,
-        "assumptions": "Includes named oncology CTM; investigator grants included; lab costs excluded.",
-        "clarification": "",
-        "clarificationDue": "",
-        "submittedAt": "2026-10-22",
-        "archived": false
-      }
-    },
-    {
-      "id": "bid003",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "vendorId": "ven003",
-        "status": "Received",
-        "fee": 1760000,
-        "passThrough": 510000,
-        "startupWeeks": 12,
-        "assumptions": "Split clinical and data workstreams; pass-through depends on country mix.",
-        "clarification": "Request detailed start-up milestone assumptions.",
-        "clarificationDue": "2026-11-09",
-        "submittedAt": "2026-10-25",
-        "archived": false
-      }
-    },
-    {
-      "id": "bid004",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "vendorId": "ven004",
-        "status": "Invited",
-        "fee": null,
-        "passThrough": null,
-        "startupWeeks": null,
-        "assumptions": "",
-        "clarification": "",
-        "clarificationDue": "",
-        "submittedAt": "",
-        "archived": false
-      }
-    },
-    {
-      "id": "bid005",
-      "version": 1,
-      "data": {
-        "selectionId": "sel002",
-        "vendorId": "ven003",
-        "status": "Invited",
-        "fee": null,
-        "passThrough": null,
-        "startupWeeks": null,
-        "assumptions": "",
-        "clarification": "",
-        "clarificationDue": "",
-        "submittedAt": "",
-        "archived": false
-      }
-    },
-    {
-      "id": "bid006",
-      "version": 1,
-      "data": {
-        "selectionId": "sel002",
-        "vendorId": "ven005",
-        "status": "Invited",
-        "fee": null,
-        "passThrough": null,
-        "startupWeeks": null,
-        "assumptions": "",
-        "clarification": "",
-        "clarificationDue": "",
-        "submittedAt": "",
-        "archived": false
-      }
-    }
+  "messages": [
+   {
+    "id": "00000000-0000-4000-8000-000000000091",
+    "groupId": "00000000-0000-4000-8000-0000000000a2",
+    "exchangeId": "00000000-0000-4000-8000-0000000000e4",
+    "kind": "private",
+    "author": "recipient",
+    "recipientName": "Anna Example (fictional)",
+    "question": null,
+    "body": "Can the number of on-site monitoring visits be reduced if we add central monitoring?",
+    "sourceMessageId": null,
+    "createdAt": "2026-10-14T09:20:00.000Z",
+    "read": true
+   },
+   {
+    "id": "00000000-0000-4000-8000-000000000092",
+    "groupId": "00000000-0000-4000-8000-0000000000a2",
+    "exchangeId": null,
+    "kind": "clarification",
+    "author": "workspace",
+    "recipientName": null,
+    "question": "Can the number of on-site monitoring visits be reduced if we add central monitoring?",
+    "body": "Please price 8 on-site visits per site as stated. You may add a risk-based alternative as a separate option and state the difference.",
+    "sourceMessageId": "00000000-0000-4000-8000-000000000091",
+    "createdAt": "2026-10-15T11:00:00.000Z",
+    "read": true
+   },
+   {
+    "id": "00000000-0000-4000-8000-000000000093",
+    "groupId": "00000000-0000-4000-8000-0000000000a2",
+    "exchangeId": "00000000-0000-4000-8000-0000000000e4",
+    "kind": "private",
+    "author": "workspace",
+    "recipientName": null,
+    "question": null,
+    "body": "Thank you. We answered this for all bidders as a clarification.",
+    "sourceMessageId": null,
+    "createdAt": "2026-10-15T11:05:00.000Z",
+    "read": true
+   },
+   {
+    "id": "00000000-0000-4000-8000-000000000094",
+    "groupId": "00000000-0000-4000-8000-0000000000a2",
+    "exchangeId": "00000000-0000-4000-8000-0000000000e5",
+    "kind": "private",
+    "author": "recipient",
+    "recipientName": "Ben Sample (fictional)",
+    "question": null,
+    "body": "Is the central laboratory in scope, and can it be invoiced in USD?",
+    "sourceMessageId": null,
+    "createdAt": "2026-11-12T08:30:00.000Z",
+    "read": false
+   },
+   {
+    "id": "00000000-0000-4000-8000-000000000095",
+    "groupId": "00000000-0000-4000-8000-0000000000a2",
+    "exchangeId": null,
+    "kind": "clarification",
+    "author": "workspace",
+    "recipientName": null,
+    "question": null,
+    "body": "Addendum 1: the screening period is extended from 21 to 28 days. No other change.",
+    "sourceMessageId": null,
+    "createdAt": "2026-10-22T10:00:00.000Z",
+    "read": true
+   }
   ],
-  "criteria": [
-    {
-      "id": "crit001",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "name": "Therapeutic fit",
-        "category": "Scientific",
-        "weight": 25,
-        "mandatory": true,
-        "minimum": 3,
-        "owner": "Medical Director",
-        "archived": false
-      }
-    },
-    {
-      "id": "crit002",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "name": "EU site execution",
-        "category": "Operations",
-        "weight": 20,
-        "mandatory": true,
-        "minimum": 3,
-        "owner": "Clinical Operations",
-        "archived": false
-      }
-    },
-    {
-      "id": "crit003",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "name": "Study start-up team",
-        "category": "Operations",
-        "weight": 20,
-        "mandatory": true,
-        "minimum": 3,
-        "owner": "Clinical Operations",
-        "archived": false
-      }
-    },
-    {
-      "id": "crit004",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "name": "Quality & oversight",
-        "category": "Quality",
-        "weight": 20,
-        "mandatory": true,
-        "minimum": 3,
-        "owner": "Quality Lead",
-        "archived": false
-      }
-    },
-    {
-      "id": "crit005",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "name": "Commercial terms",
-        "category": "Commercial",
-        "weight": 15,
-        "mandatory": false,
-        "minimum": 3,
-        "owner": "Finance",
-        "archived": false
-      }
-    },
-    {
-      "id": "crit006",
-      "version": 1,
-      "data": {
-        "selectionId": "sel002",
-        "name": "Early-phase execution",
-        "category": "Scientific",
-        "weight": 40,
-        "mandatory": true,
-        "minimum": 3,
-        "owner": "Medical Director",
-        "archived": false
-      }
-    },
-    {
-      "id": "crit007",
-      "version": 1,
-      "data": {
-        "selectionId": "sel002",
-        "name": "Phase I start-up",
-        "category": "Operations",
-        "weight": 35,
-        "mandatory": true,
-        "minimum": 3,
-        "owner": "COO",
-        "archived": false
-      }
-    },
-    {
-      "id": "crit008",
-      "version": 1,
-      "data": {
-        "selectionId": "sel002",
-        "name": "Commercial transparency",
-        "category": "Commercial",
-        "weight": 25,
-        "mandatory": false,
-        "minimum": 3,
-        "owner": "Finance",
-        "archived": false
-      }
-    }
-  ],
-  "ratings": [
-    {
-      "id": "rat001",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "vendorId": "ven001",
-        "criterionId": "crit001",
-        "reviewer": "Medical Director",
-        "score": 4,
-        "evidence": "Bid response, section 1",
-        "rationale": "Evidence documented in received proposal.",
-        "archived": false
-      }
-    },
-    {
-      "id": "rat002",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "vendorId": "ven001",
-        "criterionId": "crit002",
-        "reviewer": "Clinical Operations",
-        "score": 3,
-        "evidence": "Bid response, section 2",
-        "rationale": "Evidence documented in received proposal.",
-        "archived": false
-      }
-    },
-    {
-      "id": "rat003",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "vendorId": "ven001",
-        "criterionId": "crit003",
-        "reviewer": "Clinical Operations",
-        "score": 4,
-        "evidence": "Bid response, section 3",
-        "rationale": "Evidence documented in received proposal.",
-        "archived": false
-      }
-    },
-    {
-      "id": "rat004",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "vendorId": "ven001",
-        "criterionId": "crit004",
-        "reviewer": "Quality Lead",
-        "score": 4,
-        "evidence": "Bid response, section 4",
-        "rationale": "Evidence documented in received proposal.",
-        "archived": false
-      }
-    },
-    {
-      "id": "rat005",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "vendorId": "ven001",
-        "criterionId": "crit005",
-        "reviewer": "Finance",
-        "score": 3,
-        "evidence": "Bid response, section 5",
-        "rationale": "Evidence documented in received proposal.",
-        "archived": false
-      }
-    },
-    {
-      "id": "rat006",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "vendorId": "ven002",
-        "criterionId": "crit001",
-        "reviewer": "Medical Director",
-        "score": 5,
-        "evidence": "Bid response, section 1",
-        "rationale": "Evidence documented in received proposal.",
-        "archived": false
-      }
-    },
-    {
-      "id": "rat007",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "vendorId": "ven002",
-        "criterionId": "crit002",
-        "reviewer": "Clinical Operations",
-        "score": 4,
-        "evidence": "Bid response, section 2",
-        "rationale": "Evidence documented in received proposal.",
-        "archived": false
-      }
-    },
-    {
-      "id": "rat008",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "vendorId": "ven002",
-        "criterionId": "crit003",
-        "reviewer": "Clinical Operations",
-        "score": 5,
-        "evidence": "Bid response, section 3",
-        "rationale": "Evidence documented in received proposal.",
-        "archived": false
-      }
-    },
-    {
-      "id": "rat009",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "vendorId": "ven002",
-        "criterionId": "crit004",
-        "reviewer": "Quality Lead",
-        "score": 4,
-        "evidence": "Bid response, section 4",
-        "rationale": "Evidence documented in received proposal.",
-        "archived": false
-      }
-    },
-    {
-      "id": "rat010",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "vendorId": "ven002",
-        "criterionId": "crit005",
-        "reviewer": "Finance",
-        "score": 3,
-        "evidence": "Bid response, section 5",
-        "rationale": "Evidence documented in received proposal.",
-        "archived": false
-      }
-    },
-    {
-      "id": "rat011",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "vendorId": "ven003",
-        "criterionId": "crit001",
-        "reviewer": "Medical Director",
-        "score": 4,
-        "evidence": "Bid response, section 1",
-        "rationale": "Documented bidder response requires team confirmation.",
-        "archived": false
-      }
-    },
-    {
-      "id": "rat012",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "vendorId": "ven003",
-        "criterionId": "crit002",
-        "reviewer": "Clinical Operations",
-        "score": 3,
-        "evidence": "Bid response, section 2",
-        "rationale": "Documented bidder response requires team confirmation.",
-        "archived": false
-      }
-    },
-    {
-      "id": "rat013",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "vendorId": "ven003",
-        "criterionId": "crit003",
-        "reviewer": "Clinical Operations",
-        "score": 3,
-        "evidence": "Bid response, section 3",
-        "rationale": "Documented bidder response requires team confirmation.",
-        "archived": false
-      }
-    },
-    {
-      "id": "rat014",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "vendorId": "ven003",
-        "criterionId": "crit004",
-        "reviewer": "Quality Lead",
-        "score": 2,
-        "evidence": "Bid response, section 4",
-        "rationale": "Documented bidder response requires team confirmation.",
-        "archived": false
-      }
-    },
-    {
-      "id": "rat015",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "vendorId": "ven001",
-        "criterionId": "crit001",
-        "reviewer": "Chief Medical Officer",
-        "score": 2,
-        "evidence": "Medical review 2026-10-30",
-        "rationale": "Questioned direct experience at proposed sites.",
-        "archived": false
-      }
-    }
-  ],
-  "decisions": [
-    {
-      "id": "dec001",
-      "version": 1,
-      "data": {
-        "selectionId": "sel001",
-        "vendorId": "ven002",
-        "status": "Draft",
-        "rationale": "Tentative preference pending quality and commercial due diligence.",
-        "approver": "",
-        "approvedAt": "",
-        "nextStep": "Clarify resource commitments and negotiate draft scope.",
-        "archived": false
-      }
-    }
+  "emails": [
+   {
+    "id": "00000000-0000-4000-8000-000000000071",
+    "groupId": "00000000-0000-4000-8000-0000000000a2",
+    "exchangeId": "00000000-0000-4000-8000-0000000000e4",
+    "batchId": "00000000-0000-4000-8000-000000000070",
+    "emailType": "invitation",
+    "to": "anna@helix.example",
+    "from": "Example Therapeutics at TrialAgents",
+    "replyTo": "owner@example.invalid",
+    "subject": "Example Therapeutics (fictional): request for proposal",
+    "status": "delivered",
+    "diagnostic": null,
+    "createdAt": "2026-10-06T09:05:00.000Z",
+    "sentAt": "2026-10-06T09:05:30.000Z"
+   },
+   {
+    "id": "00000000-0000-4000-8000-000000000072",
+    "groupId": "00000000-0000-4000-8000-0000000000a2",
+    "exchangeId": "00000000-0000-4000-8000-0000000000e5",
+    "batchId": "00000000-0000-4000-8000-000000000070",
+    "emailType": "invitation",
+    "to": "ben@northlake.example",
+    "from": "Example Therapeutics at TrialAgents",
+    "replyTo": "owner@example.invalid",
+    "subject": "Example Therapeutics (fictional): request for proposal",
+    "status": "delivered",
+    "diagnostic": null,
+    "createdAt": "2026-10-06T09:05:00.000Z",
+    "sentAt": "2026-10-06T09:05:30.000Z"
+   },
+   {
+    "id": "00000000-0000-4000-8000-000000000073",
+    "groupId": "00000000-0000-4000-8000-0000000000a2",
+    "exchangeId": "00000000-0000-4000-8000-0000000000e6",
+    "batchId": "00000000-0000-4000-8000-000000000070",
+    "emailType": "invitation",
+    "to": "cara@meridian.example",
+    "from": "Example Therapeutics at TrialAgents",
+    "replyTo": "owner@example.invalid",
+    "subject": "Example Therapeutics (fictional): request for proposal",
+    "status": "delivered",
+    "diagnostic": null,
+    "createdAt": "2026-10-06T09:05:00.000Z",
+    "sentAt": "2026-10-06T09:05:30.000Z"
+   }
   ]
+ },
+ "documents": [
+  {
+   "documentId": "00000000-0000-4000-8000-0000000000c0",
+   "versionId": "00000000-0000-4000-8000-0000000000d0",
+   "version": 0,
+   "latest": true,
+   "filename": "PX-101-201 request pack (fictional).pdf",
+   "mime": "application/pdf",
+   "byteSize": 100000,
+   "aiReadable": false,
+   "extraction": "unavailable",
+   "uploadedOn": "2026-10-02",
+   "complete": true
+  },
+  {
+   "documentId": "00000000-0000-4000-8000-0000000000c1",
+   "versionId": "00000000-0000-4000-8000-0000000000d1",
+   "version": 0,
+   "latest": true,
+   "filename": "Bid grid PX-101-201 (fictional).xlsx",
+   "mime": "application/pdf",
+   "byteSize": 100000,
+   "aiReadable": false,
+   "extraction": "unavailable",
+   "uploadedOn": "2026-10-02",
+   "complete": true
+  },
+  {
+   "documentId": "00000000-0000-4000-8000-0000000000c2",
+   "versionId": "00000000-0000-4000-8000-0000000000d2",
+   "version": 0,
+   "latest": true,
+   "filename": "Mutual CDA (fictional).pdf",
+   "mime": "application/pdf",
+   "byteSize": 100000,
+   "aiReadable": false,
+   "extraction": "unavailable",
+   "uploadedOn": "2026-10-01",
+   "complete": true
+  },
+  {
+   "documentId": "00000000-0000-4000-8000-0000000000c3",
+   "versionId": "00000000-0000-4000-8000-0000000000d3",
+   "version": 0,
+   "latest": true,
+   "filename": "Study outline (fictional).pdf",
+   "mime": "application/pdf",
+   "byteSize": 100000,
+   "aiReadable": false,
+   "extraction": "unavailable",
+   "uploadedOn": "2026-11-04",
+   "complete": true
+  },
+  {
+   "documentId": "00000000-0000-4000-8000-0000000000c4",
+   "versionId": "00000000-0000-4000-8000-0000000000d4",
+   "version": 0,
+   "latest": true,
+   "filename": "Helix signed CDA (fictional).pdf",
+   "mime": "application/pdf",
+   "byteSize": 100000,
+   "aiReadable": false,
+   "extraction": "unavailable",
+   "uploadedOn": "2026-10-07",
+   "complete": true
+  },
+  {
+   "documentId": "00000000-0000-4000-8000-0000000000c5",
+   "versionId": "00000000-0000-4000-8000-0000000000d5",
+   "version": 0,
+   "latest": true,
+   "filename": "Helix proposal v2 (fictional).xlsx",
+   "mime": "application/pdf",
+   "byteSize": 100000,
+   "aiReadable": true,
+   "extraction": "ready",
+   "uploadedOn": "2026-11-02",
+   "complete": true
+  },
+  {
+   "documentId": "00000000-0000-4000-8000-0000000000c6",
+   "versionId": "00000000-0000-4000-8000-0000000000d6",
+   "version": 0,
+   "latest": true,
+   "filename": "Northlake proposal (fictional).xlsx",
+   "mime": "application/pdf",
+   "byteSize": 100000,
+   "aiReadable": true,
+   "extraction": "ready",
+   "uploadedOn": "2026-11-03",
+   "complete": true
+  }
+ ]
 }

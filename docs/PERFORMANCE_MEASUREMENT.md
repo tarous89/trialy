@@ -1,6 +1,6 @@
 # Performance measurement
 
-Implementation increments of the [reviewed performance scope](scopes/PLATFORM_AND_APP_PERFORMANCE_2026-11-13.md), authorized 13 November 2026. These add measurements, the P04 static-asset fix, safe N2 session-write reduction and P02 startup deferral. They do not change templates, permissions, data, integrations, execution limits or session expiry.
+Implementation increments of the [reviewed performance scope](scopes/PLATFORM_AND_APP_PERFORMANCE_2026-11-13.md), authorized 13 November 2026. These add measurements, the P04 static-asset fix, safe N2 session-write reduction, P02 startup deferral and P03 refresh coordination. They do not change templates, permission rules, saved data, integration contracts, execution limits or session expiry.
 
 ## Request counters
 
@@ -74,7 +74,27 @@ The summary preserves the existing workspace/tenant, owner/creator, ancestor, ap
 | Two permitted archived apps: application database queries | 18 (full details) | 14 (collapsed summary) |
 | Details while an archive section is collapsed | Full inventory | Authorized count only |
 
-The archive fixture runs with the runtime database role and row-level security. It compares detailed and summary visibility for owners, app creators, ancestor/app restrictions, explicit deny rules, ChatGPT/Claude access and unrelated accounts. It also exercises all archive kinds and retains restore, deletion, template discovery and purge checks. Browser regressions cover startup request absence, Database navigation, direct saved/draft links, legacy schema/view loading, failures/retry, late replies, remembered expansion, restore/delete and embedded summary/detail calls. These checks establish requests and work removed, not production latency savings. The separate Home polling/access-trigger coordination remains P03.
+The archive fixture runs with the runtime database role and row-level security. It compares detailed and summary visibility for owners, app creators, ancestor/app restrictions, explicit deny rules, ChatGPT/Claude access and unrelated accounts. It also exercises all archive kinds and retains restore, deletion, template discovery and purge checks. Browser regressions cover startup request absence, Database navigation, direct saved/draft links, legacy schema/view loading, failures/retry, late replies, remembered expansion, restore/delete and embedded summary/detail calls. These checks establish requests and work removed, not production latency savings. P03 below replaces repeated full Home polling with metadata checks.
+
+## P03 — coordinate refresh and access checks
+
+The shared scheduler merges focus/visibility event bursts over 100 ms, spaces automatic starts by at least one second and keeps one read in flight per subscription. It does not cache completed responses or replay writes. The web account check also shares its pending `/api/me` read. Temporary account errors retain the mounted app and draft; actual 401/403/404 responses clear the signed-in view. Hidden documents pause automatic checks. Mounted apps inside an inactive platform panel pause their checks and recheck when shown again.
+
+Home still loads on opening, returning to the tab/panel, changing filters/pages, local mutations and retry. While Home remains visible, its 30-second timer uses `/api/account/home/revision` (app-only MCP tool `check_account_home`) instead of rebuilding previews and archives. A full account Home read supplies the baseline revision. An unchanged revision leaves Home and the archive list mounted; a changed revision clears both before an authorized reload, so a failed reload cannot leave revoked content visible. A temporary check failure retains usable content. Ordinary record-value edits do not invalidate this metadata stamp: Home thumbnails receive those values on return or the next full load. Open-app access/version checks remain periodic and never execute generated code; explicit app Refresh still executes normally.
+
+The opaque revision hashes current actor-scoped workspace membership and metadata tuple identities (`xmin`), including types, app/project permissions, project record membership and document/folder restrictions. Other tenants cannot affect it. PostgreSQL hashes each metadata group before returning it, so database-to-server output is bounded. It reads no record values, source or document bytes, and sends only a hash to the client. It is an invalidation hint, never an access grant or write token. Existing full-read permission checks, final freshness checks and all write authorization remain in place. Home remounts when the embedded viewer identity changes; a failed replacement for the same viewer retains the existing app. The stamp is taken before content so a concurrent change cannot certify earlier content as current. No authorization result is cached across requests.
+
+| Populated synthetic Home fixture | Before P03 | P03 |
+| --- | ---: | ---: |
+| Idle Home timer: application queries, excluding separate account/archive calls | 32 (full Home) | 4 (metadata check) |
+| Full Home read: application queries | 32 | 33 (includes baseline revision) |
+| Unchanged idle/return metadata: additional archive reads | Every Home refresh | 0 |
+
+These are application-query counts, not latency or database round-trip measurements. The revision query still scans metadata and project-membership rows, so cost grows with their cardinality; it is not constant database work. Production latency and larger-account cost need measurement after release.
+
+Superseded web Home requests use `AbortController`; the server stops abandoned Home reads at stage/loop boundaries after any active SQL finishes. This does not cancel SQL already executing, nor the unrelated sandbox execution work scoped elsewhere. The MCP host bridge has no request cancellation API, so embedded superseded replies are ignored. A host with an older tool catalog falls back to the original authorized full Home read until its catalog updates. Installed and planned templates, app features and integration contracts require no changes. Actual ChatGPT/Claude host acceptance remains pending; local embedded tests use a synthetic host. The request metrics allowlist labels both Home tool names without recording arguments. Background progress-bar presentation is still P06.
+
+Validation includes deterministic scheduler checks, runtime-role/RLS revision and cancellation checks, REST authentication/no-store and MCP registration checks, and web/embedded browser scenarios for merged events, hidden panels, late replies, retry, revoked access, retained drafts and explicit Refresh. Production build/type checks and 19 focused backend checks pass. Across the focused browser runs, 72 distinct scenarios pass, including all 37 cases in the final continuity/app/refresh run. Full CI and deployment status remain on [PR #155](https://github.com/tarous89/trialy/pull/155).
 
 ## Production verification after release
 
@@ -84,4 +104,4 @@ The archive fixture runs with the runtime database role and row-level security. 
 4. Compare request counts and p50/p95 time to usable content with database, session and sandbox counters. Check CPU/memory and busy rates from the actual host. Retain exact saves, revocation, app-version and tenant-isolation acceptance.
 5. Test the deployed flow in actual ChatGPT and Claude as well as the web. Synthetic host tests do not establish real host acceptance.
 
-Production before/after timings, hosting capacity and live-host acceptance remain pending. P14 is measurement support plus a synthetic baseline, not a completed production performance study. For N2, compare actual `sessionTouchesCoalesced`/`sessionTouchNoops` with session queries before estimating savings. Next scoped change: P03 refresh/access-trigger coordination.
+Production before/after timings, hosting capacity and live-host acceptance remain pending. P14 is measurement support plus a synthetic baseline, not a completed production performance study. For N2, compare actual `sessionTouchesCoalesced`/`sessionTouchNoops` with session queries before estimating savings. Next scoped change: P06 foreground/background progress feedback, then basic P12.

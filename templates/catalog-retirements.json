@@ -1,0 +1,19 @@
+{
+  "note": "Catalog versions marked for archival. Nothing here changes the catalog on deployment: when the owner approves the replacement, the publication change approves it (catalog-seed.json and a one-time migration, as for Programs 2.1.0 and Contracts 1.0.0) and withdraws each version below in the same migration (status draft), removes its entry from catalog-seed.json and its gallery card. Released JSON files, installer schemas and saved apps are never changed or removed; existing installs keep working.",
+  "retirements": [
+    {
+      "templateId": "life.cro-selection",
+      "version": "1.0.1",
+      "replacedBy": "life.cro-selection@2.0.0",
+      "reason": "CRO Selection 2.0.0 (CRO_SELECTION.md, BT2-05) is the new major version of the same app.",
+      "decided": "2026-11-13"
+    },
+    {
+      "templateId": "life.sponsor-rfp-management",
+      "version": "1.0.1",
+      "replacedBy": "life.cro-selection@2.0.0",
+      "reason": "Sponsor-side RFP management is covered by CRO Selection 2.0.0 (full selection mode); scope CRO_SELECTION.md.",
+      "decided": "2026-11-13"
+    }
+  ]
+}

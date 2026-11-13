@@ -1,6 +1,6 @@
 # External exchange — platform scope
 
-**Status:** Platform scope, 12 November 2026; implemented in PR #147 (template guidance 1.3.22). First consumer: [CRO Selection](app-template-blueprints/apps/CRO_SELECTION.md) (RFI/RFP to suppliers). Designed to be reused by Data Room secure rooms, Diligence Q&A, Site Finder feasibility questionnaires and Investor Updates. Extends the existing public forms (`create_collection_link`, `list_collection_responses`, `accept_collection_response`, `src/domain/exchange.ts`, `src/server/external.ts`). Follows [access control](../ACCESS_CONTROL.md), [write authorization](../WRITE_AUTHORIZATION.md), [shared data](../SHARED_DATA.md), [modular apps](MODULAR_APPS_AND_SHARED_DATA.md) and the interface rules.
+**Status:** Platform scope, 12 November 2026; implemented in PR #147 (template guidance 1.3.22); one confirmation per outgoing communication from 13 November 2026 (guidance 1.3.24, §2.8). First consumer: [CRO Selection](app-template-blueprints/apps/CRO_SELECTION.md) (RFI/RFP to suppliers). Designed to be reused by Data Room secure rooms, Diligence Q&A, Site Finder feasibility questionnaires and Investor Updates. Extends the existing public forms (`create_collection_link`, `list_collection_responses`, `accept_collection_response`, `src/domain/exchange.ts`, `src/server/external.ts`). Follows [access control](../ACCESS_CONTROL.md), [write authorization](../WRITE_AUTHORIZATION.md), [shared data](../SHARED_DATA.md), [modular apps](MODULAR_APPS_AND_SHARED_DATA.md) and the interface rules.
 
 **Owner decisions (12 Nov 2026):** per-recipient links before CRO Selection; outbound email to people outside the workspace **from the TrialAgents domain**; simple document exchange (e.g. CDA PDF out, signed PDF back), optional; back-and-forth messages and shared clarifications **in version 1**.
 
@@ -76,6 +76,14 @@ Exposed through the app runtime (`tools.call`) and MCP, each write via workspace
 ### 2.7 Recipient page design
 
 Same TrialAgents design system, light and plain: company name and logo of the sender, title, deadline countdown, then tabs or sections **Brief · Documents · Your response · Messages**. Mobile friendly. No TrialAgents account or marketing shown; small "Powered by TrialAgents" footer.
+
+### 2.8 One confirmation, when something goes out (owner decision, 13 Nov 2026)
+
+- Preparing what nobody outside has seen yet (a new group, new links, and documents, brief, requested slots or a silent deadline change until the first email, reminder approval or recipient visit) is applied on a person's own click in an app and audit-logged. No separate review.
+- Everything that reaches recipients or brings their data in is one review: sends (with the plan: documents, requested documents, gate, deadlines, and every email as sent), private replies (one or many: `reply_exchanges`), clarifications, notices of extension or revocation, revocation, and acceptance of submissions and files. Changes to anything recipients have already seen are reviewed too.
+- The app's own record changes in the same action (for example the supplier's status "invited") join that review and commit in the same transaction: nothing is sent without them and nothing is saved without the send.
+- Groups carry an optional `app_ref` (migration 066) so apps find their rounds without copying IDs into records.
+- Assistants never confirm; for them every exchange operation stays a review.
 
 ## 3. Out of scope (v1)
 

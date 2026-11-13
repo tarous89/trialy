@@ -21,6 +21,7 @@
 | Runway in ChatGPT (C1) | https://trialagents.com/apps/manage-biotech-cash-runway-chatgpt | Published in public-site PR #180; live verified 12 November 2026 |
 | CRO payment timing (D1) | https://trialagents.com/apps/cro-payment-timing-biotech-cash-runway | Published; production URL checked 12 November 2026 |
 | Excel-to-Runway migration (E2) | https://trialagents.com/apps/excel-to-trialagents-runway | First Series E post; Published in [public-site PR #182](https://github.com/tarous89/trialagents-public/pull/182), merge `6ce6d6f2382c5926fc0f5972eab9e4f952064daa`. Exact-head tests and desktop/mobile checks passed. Cloudflare build and live C/D/E content, images, canonical/schema, final CTA, app index/hub, sitemap.xml, llms.txt and llm.xml verified on 12 November 2026. |
+| Runway vs Jirav (A8) | https://trialagents.com/apps/runway-vs-jirav | Published; source PR #191, repair PR #192, release `5f6860060c427c0c18168f2d15bb70b46407a443`; live verified 13 November 2026. |
 | App pages index | https://trialagents.com/apps | Published; production URL checked 12 November 2026 |
 
 These are intended canonical URLs. Do not assert that a URL is live until checked on the production CDN.
@@ -309,3 +310,37 @@ Keep A8 pending and resume it first next run. Complete content, canonical/schema
 ### A8 follow-up verification — 13 November 2026, 18:53 CET
 
 Resumed the existing pending release, with no new article or source change. Repeated direct HTTP checks still return 404 for https://trialagents.com/apps/runway-vs-jirav. /apps, sitemap.xml, llms.txt and llm.xml return 200 but omit the route; Aleph remains 200. Public main remains `c802b3207fa7eff1a301e8aba656a9c1e636d484` (PR #191, merged 17:01 CET). No open Runway PRs. Available check-runs still expose only successful generic production verification; no new failed-build or permission/configuration evidence. Original exact-head predeploy/visual review and exhausted 15-minute wait are recorded above. Live publication remains unverified. No tracking changes or synthetic events. Resume A8 before A9; queue remains **11 published, 36 remaining**. Pending deployment monitoring remains enabled; no authentication diagnosis inferred.
+
+
+### A8 published and monitoring repaired — 13 November 2026, 19:33 CET
+
+**Published:** [TrialAgents Runway vs Jirav: cash planning and three-statement FP&A for biotech](https://trialagents.com/apps/runway-vs-jirav). This supersedes all A8 pending checkpoints above.
+
+- Source PR #191: exact head `3141fab470702c8a5ae946cbd5f8741c2cce4584`, merge `c802b3207fa7eff1a301e8aba656a9c1e636d484` at 17:01 CET. The site continued serving the older snapshot for over two hours. Cloudflare later reported a build starting 19:21:45 CET and succeeding 19:24:43 CET; direct article checks still returned 404 afterward. The precise original trigger/build delay was not established. No authentication fault was evidenced.
+- Evidenced process defect: the old green production check verified only an unchanged homepage/footer. [Repair PR #192](https://github.com/tarous89/trialagents-public/pull/192) adds source-matching app content/CSS, canonicals and all discovery surfaces to the existing production check, polling every 45 seconds for up to 15 minutes. Exact head `00f54801a2aad86fdd751153c92ca529d00f26ad` passed predeploy 43481960608: 290 tests, snapshot and browser regressions. Desktop/mobile Jirav screenshots in artifact 14066186131 inspected; no blocker.
+- Repair release `5f6860060c427c0c18168f2d15bb70b46407a443` merged through the existing gate. Its automatic Cloudflare build succeeded 19:31:18 CET. Production run 43483007011 initially detected stale /apps four times, then verified all 14 app pages and discovery at 19:31:56 CET. No manual Wrangler deployment, new token, dashboard sign-in or deployment integration was used.
+- Independent live verification passed: HTTP 200 expected article, exact reviewed source fragment/CSS, one H1, title/description, self-canonical, Article/BreadcrumbList schema, three genuine images, internal and primary-source links, one final CTA, /apps, one sitemap.xml canonical entry, llms.txt and llm.xml. Responsive rendering inspected in exact-head desktop/mobile artifacts; served fragment/CSS match them.
+- Homepage-identical loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js` both return HTTP 200. Tracking scripts/configuration/events/consent/collectors/attribution unchanged; no synthetic production events.
+
+**12 published; 35 remaining. Next eligible: A9**, subject to fresh claim, queue and vendor-evidence checks. No second article published in this repair run.
+
+
+### Eligibility review — 13 November 2026, 19:55 CET
+
+Re-read canonical queue, plan and playbook; no open Runway source PR found. A8 canonical returned HTTP 200 again. A9 is deferred pending current Bob Finance availability: https://www.hibob.com/platform/finance/ explicitly says it is being reimagined and will return in a few months (reviewed today). Do not represent the historical Mosaic/Bob Finance feature inventory as an available current offer. Revisit after an official relaunch/current availability confirmation; this is not a claim that HiBob or its workforce-planning module is discontinued.
+
+Selected next research candidate: A10, Runway vs Exigyn. Primary evidence https://www.exigyn.com/ and https://www.exigyn.com/biotech-fpa-software currently describe biotech runway, accruals, headcount and board reporting, AI approval workflows and MCP connections to Claude/ChatGPT/Gemini. Treat these as vendor-documented capabilities, not independently tested workflows. Do not assert exclusive AI/MCP support for TrialAgents or equate a listed integration with verified scope, direction or sync cadence. Further integration/host evidence and a distinct editorial draft remain required. No A10 source PR, merge or publication in this review; no active claim retained. No tracking changes or production events.
+
+Current inventory remains 12 published, 35 unfinished (including deferred A9). Next publishing run should take A10 if unclaimed, while retaining A9 for availability review.
+
+
+### Owner decision — 13 November 2026
+
+Keep A9 (Runway vs Bob Finance, formerly Mosaic) deferred and move ahead with A10 (Runway vs Exigyn). Bob Finance's current relaunch notice does not make an article inherently impossible: a future comparison may cover documented differences with a prominent, dated availability caveat, clearly separating historical/announced capabilities from currently available and independently tested behavior. Do not call Bob Finance or HiBob discontinued. The owner has chosen to proceed with A10 now rather than prepare that qualified A9 article.
+
+A10 is the next publication priority. Resume its existing research above, recheck claims/PRs before claiming work, and complete drafting, exact-head validation, visual review and live verification through the existing GitHub-to-CDN process. A9 remains unfinished, not Published or removed from the inventory.
+
+
+### A10 source checkpoint — 13 November 2026
+
+[PR #193](https://github.com/tarous89/trialagents-public/pull/193), exact head `9cf1a0f9fce4b867bcf79a0636c39489226108fe`, prepares `/apps/runway-vs-exigyn`: **TrialAgents Runway vs Exigyn: adaptable cash planning or biotech FP&A?** Primary evidence: https://www.exigyn.com/, https://www.exigyn.com/mcp, https://www.exigyn.com/biotech-fpa-software. MCP documentation supports role-scoped model queries/writes; product page documents clinical accruals/headcount/reporting. Listed integrations do not establish tested scope, direction or cadence. No hands-on benchmark, new host acceptance test, pricing or exclusive AI claim. Approved Runway 2.1 catalog reread. Fictional evaluation brief separates a program delay from a fixed contractual deposit; program shift is not represented as selective invoice movement. Genuine Runway screenshots 01-overview, 03-plan and 02-cash-flow; no synthetic interfaces. Standard shell/tracking retained. Predeploy 43491069636 running; resume this PR before drafting another article. Refresh on vendor MCP/integration/model or Runway catalog changes.

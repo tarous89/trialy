@@ -1,480 +1,1486 @@
 {
-  "selections": {
-    "name": "CRO Selection selections",
+  "organizations": {
+    "name": "Organizations",
+    "contract": "core.v1",
     "fields": [
       {
         "key": "name",
-        "name": "Selection name",
+        "name": "Name",
         "kind": "text",
+        "required": true,
         "multiple": false,
-        "required": true
+        "ai": true
       },
       {
-        "key": "program",
-        "name": "Program or asset",
-        "kind": "text",
-        "multiple": false,
-        "required": false
-      },
-      {
-        "key": "scope",
-        "name": "Outsourced work",
-        "kind": "text",
-        "multiple": false,
-        "required": false
-      },
-      {
-        "key": "owner",
-        "name": "Decision owner",
-        "kind": "text",
-        "multiple": false,
-        "required": false
-      },
-      {
-        "key": "due_date",
-        "name": "RFP response deadline",
-        "kind": "date",
-        "multiple": false,
-        "required": false
-      },
-      {
-        "key": "status",
-        "name": "Phase",
+        "key": "org_type",
+        "name": "Type",
         "kind": "select",
-        "multiple": false,
         "required": false,
+        "multiple": false,
+        "ai": true,
         "options": [
-          "Draft",
-          "RFP open",
-          "Evaluation",
-          "Decision",
-          "Awarded"
+          "company",
+          "investor",
+          "cro",
+          "cdmo",
+          "site",
+          "funder",
+          "partner",
+          "agency",
+          "other"
         ]
       },
       {
-        "key": "currency",
-        "name": "Bid currency",
-        "kind": "select",
-        "multiple": false,
+        "key": "country",
+        "name": "Country",
+        "kind": "text",
         "required": false,
-        "options": [
-          "EUR",
-          "USD",
-          "GBP"
-        ]
-      },
-      {
-        "key": "archived",
-        "name": "Archived",
-        "kind": "boolean",
         "multiple": false,
-        "required": false
-      }
-    ],
-    "logicalFields": {
-      "name": "name",
-      "program": "program",
-      "scope": "scope",
-      "owner": "owner",
-      "dueDate": "due_date",
-      "status": "status",
-      "currency": "currency",
-      "archived": "archived"
-    }
-  },
-  "vendors": {
-    "name": "CRO Selection vendors",
-    "fields": [
-      {
-        "key": "name",
-        "name": "CRO name",
-        "kind": "text",
-        "multiple": false,
-        "required": true
-      },
-      {
-        "key": "services",
-        "name": "Services and scope",
-        "kind": "text",
-        "multiple": false,
-        "required": false
-      },
-      {
-        "key": "regions",
-        "name": "Geographic delivery",
-        "kind": "text",
-        "multiple": false,
-        "required": false
-      },
-      {
-        "key": "experience",
-        "name": "Therapeutic / phase expertise",
-        "kind": "text",
-        "multiple": false,
-        "required": false
+        "ai": true
       },
       {
         "key": "website",
-        "name": "Evidence or company URL",
+        "name": "Website",
         "kind": "text",
+        "required": false,
         "multiple": false,
-        "required": false
-      },
-      {
-        "key": "contact",
-        "name": "Professional CRO contact",
-        "kind": "text",
-        "multiple": false,
-        "required": false
-      },
-      {
-        "key": "last_verified",
-        "name": "Verified on",
-        "kind": "date",
-        "multiple": false,
-        "required": false
+        "ai": true
       },
       {
         "key": "archived",
         "name": "Archived",
         "kind": "boolean",
+        "required": false,
         "multiple": false,
-        "required": false
+        "ai": true
       }
     ],
     "logicalFields": {
       "name": "name",
-      "services": "services",
-      "regions": "regions",
-      "experience": "experience",
+      "org_type": "org_type",
+      "country": "country",
       "website": "website",
-      "contact": "contact",
-      "lastVerified": "last_verified",
       "archived": "archived"
     }
   },
-  "bids": {
-    "name": "CRO Selection bids",
+  "people": {
+    "name": "People",
+    "contract": "core.v1",
+    "optional": true,
     "fields": [
       {
-        "key": "selection_id",
-        "name": "Selection",
+        "key": "name",
+        "name": "Name",
         "kind": "text",
+        "required": true,
         "multiple": false,
-        "required": false
+        "ai": true
       },
       {
-        "key": "vendor_id",
-        "name": "CRO",
+        "key": "organization_id",
+        "name": "Organization",
         "kind": "text",
-        "multiple": false,
-        "required": false
-      },
-      {
-        "key": "status",
-        "name": "Response status",
-        "kind": "select",
-        "multiple": false,
         "required": false,
-        "options": [
-          "Invited",
-          "Received",
-          "Declined"
-        ]
-      },
-      {
-        "key": "fee",
-        "name": "Professional fee (selection currency)",
-        "kind": "number",
         "multiple": false,
-        "required": false
+        "ai": true,
+        "description": "Record ID of an organizations record."
       },
       {
-        "key": "pass_through",
-        "name": "Pass-through estimate",
-        "kind": "number",
-        "multiple": false,
-        "required": false
-      },
-      {
-        "key": "startup_weeks",
-        "name": "Startup time (weeks)",
-        "kind": "number",
-        "multiple": false,
-        "required": false
-      },
-      {
-        "key": "assumptions",
-        "name": "Scope / commercial assumptions",
+        "key": "title",
+        "name": "Title",
         "kind": "text",
+        "required": false,
         "multiple": false,
-        "required": false
+        "ai": true
       },
       {
-        "key": "clarification",
-        "name": "Open clarification",
+        "key": "email",
+        "name": "Email",
         "kind": "text",
+        "required": false,
         "multiple": false,
-        "required": false
-      },
-      {
-        "key": "clarification_due",
-        "name": "Clarification due",
-        "kind": "date",
-        "multiple": false,
-        "required": false
-      },
-      {
-        "key": "submitted_at",
-        "name": "Received on",
-        "kind": "date",
-        "multiple": false,
-        "required": false
+        "ai": true
       },
       {
         "key": "archived",
         "name": "Archived",
         "kind": "boolean",
+        "required": false,
         "multiple": false,
-        "required": false
+        "ai": true
       }
     ],
     "logicalFields": {
-      "selectionId": "selection_id",
-      "vendorId": "vendor_id",
-      "status": "status",
-      "fee": "fee",
-      "passThrough": "pass_through",
-      "startupWeeks": "startup_weeks",
-      "assumptions": "assumptions",
-      "clarification": "clarification",
-      "clarificationDue": "clarification_due",
-      "submittedAt": "submitted_at",
+      "name": "name",
+      "organization_id": "organization_id",
+      "title": "title",
+      "email": "email",
       "archived": "archived"
     }
   },
-  "criteria": {
-    "name": "CRO Selection criteria",
+  "programs": {
+    "name": "Programs",
+    "contract": "core.v1",
+    "optional": true,
     "fields": [
       {
-        "key": "selection_id",
-        "name": "Selection",
+        "key": "name",
+        "name": "Name",
         "kind": "text",
+        "required": true,
         "multiple": false,
-        "required": false
+        "ai": true
+      },
+      {
+        "key": "code",
+        "name": "Code",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "indication",
+        "name": "Indication",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "modality",
+        "name": "Modality",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "small_molecule",
+          "biologic",
+          "antibody",
+          "cell_therapy",
+          "gene_therapy",
+          "rna",
+          "vaccine",
+          "device",
+          "other"
+        ]
+      },
+      {
+        "key": "stage",
+        "name": "Stage",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "discovery",
+          "preclinical",
+          "ind_enabling",
+          "phase_1",
+          "phase_2",
+          "phase_3",
+          "registration",
+          "approved"
+        ]
+      },
+      {
+        "key": "lead",
+        "name": "Lead",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "active",
+          "paused",
+          "stopped",
+          "partnered"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "code": "code",
+      "indication": "indication",
+      "modality": "modality",
+      "stage": "stage",
+      "lead": "lead",
+      "status": "status",
+      "archived": "archived"
+    }
+  },
+  "studies": {
+    "name": "Studies",
+    "contract": "core.v1",
+    "optional": true,
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "program_id",
+        "name": "Program",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a programs record."
+      },
+      {
+        "key": "phase",
+        "name": "Phase",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "registry_id",
+        "name": "Registry ID",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "EU CT or NCT number."
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "program_id": "program_id",
+      "phase": "phase",
+      "registry_id": "registry_id",
+      "status": "status",
+      "archived": "archived"
+    }
+  },
+  "agreements": {
+    "name": "Agreements",
+    "contract": "core.v1",
+    "optional": true,
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "counterparty_id",
+        "name": "Counterparty",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an organizations record."
+      },
+      {
+        "key": "agreement_type",
+        "name": "Agreement type",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "effective_date",
+        "name": "Effective date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "expiry_date",
+        "name": "Expiry date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "counterparty_id": "counterparty_id",
+      "agreement_type": "agreement_type",
+      "status": "status",
+      "effective_date": "effective_date",
+      "expiry_date": "expiry_date",
+      "archived": "archived"
+    },
+    "description": "CDA and award agreement references. CRO Selection binds the core fields only; Contracts-owned fields are left to Contracts."
+  },
+  "croselection.settings": {
+    "name": "CRO Selection settings",
+    "contract": "croselection.v1",
+    "fields": [
+      {
+        "key": "default_currency",
+        "name": "Default currency",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "USD",
+          "EUR",
+          "GBP",
+          "CHF",
+          "CAD",
+          "AUD",
+          "JPY",
+          "CNY",
+          "SEK",
+          "DKK",
+          "NOK",
+          "INR"
+        ]
+      },
+      {
+        "key": "blind_scoring",
+        "name": "Blind scoring",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Default off. When on, prices are hidden in Evaluation until every reviewer has scored every finalist, or a person reveals them."
+      },
+      {
+        "key": "question_deadline_days",
+        "name": "Question deadline (days before the response deadline)",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Default 7."
+      },
+      {
+        "key": "confidentiality_text",
+        "name": "Confidentiality text",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Shown to suppliers before they see shared documents (click-through gate)."
+      },
+      {
+        "key": "decision_texts",
+        "name": "Decision texts",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON object {winner, others}: the texts of the Notify all review; \"others\" includes the debrief offer."
+      },
+      {
+        "key": "invitation_texts",
+        "name": "Invitation texts",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON object {rfi|rfp|quick_quote:{subject,body}}: the invitation email per request kind. Other email types use the platform defaults."
+      }
+    ],
+    "logicalFields": {
+      "default_currency": "default_currency",
+      "blind_scoring": "blind_scoring",
+      "question_deadline_days": "question_deadline_days",
+      "confidentiality_text": "confidentiality_text",
+      "decision_texts": "decision_texts",
+      "invitation_texts": "invitation_texts"
+    }
+  },
+  "croselection.requests": {
+    "name": "Requests",
+    "contract": "croselection.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "mode",
+        "name": "Mode",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "quick_quote",
+          "full_selection"
+        ]
+      },
+      {
+        "key": "service_type",
+        "name": "Service type",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "clinical_study",
+          "preclinical_study",
+          "cmc",
+          "bioanalytical",
+          "other"
+        ]
+      },
+      {
+        "key": "program_id",
+        "name": "Program",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a programs record."
+      },
+      {
+        "key": "study_id",
+        "name": "Study",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a studies record."
+      },
+      {
+        "key": "scope",
+        "name": "Scope",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "assumptions",
+        "name": "Sponsor assumptions",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON {notes, baseline:[{category,amount}]}: the sponsor baseline by cost category in the request currency."
+      },
+      {
+        "key": "budget_estimate",
+        "name": "Budget estimate",
+        "kind": "money",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "currency",
+        "name": "Currency",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "USD",
+          "EUR",
+          "GBP",
+          "CHF",
+          "CAD",
+          "AUD",
+          "JPY",
+          "CNY",
+          "SEK",
+          "DKK",
+          "NOK",
+          "INR"
+        ]
+      },
+      {
+        "key": "stage",
+        "name": "Stage",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "need",
+          "longlist",
+          "rfi",
+          "rfp",
+          "questions",
+          "proposals",
+          "evaluation",
+          "bid_defence",
+          "decision",
+          "onboarding",
+          "closed"
+        ]
+      },
+      {
+        "key": "cda_option",
+        "name": "CDA option",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "send_pdf",
+          "contracts",
+          "skip",
+          "none"
+        ]
+      },
+      {
+        "key": "cda_gate",
+        "name": "CDA gate",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "With send_pdf: the RFP pack stays locked until the signed CDA is accepted."
+      },
+      {
+        "key": "question_deadline",
+        "name": "Question deadline",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "response_deadline",
+        "name": "Response deadline",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "decision_due",
+        "name": "Decision due",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Internal owner (plain-text name)."
+      },
+      {
+        "key": "rfi_questions",
+        "name": "RFI questions",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "One question per line, sent in the RFI brief. Starts from the built-in capability questions."
+      },
+      {
+        "key": "questions",
+        "name": "Questions",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "One question per line, sent in the RFP or quote brief. Starts from the built-in questions for the service type and mode."
+      },
+      {
+        "key": "cost_categories",
+        "name": "Cost categories",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "One bid-grid cost category per line. Starts from the built-in grid for the service type."
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "mode": "mode",
+      "service_type": "service_type",
+      "program_id": "program_id",
+      "study_id": "study_id",
+      "scope": "scope",
+      "assumptions": "assumptions",
+      "budget_estimate": "budget_estimate",
+      "currency": "currency",
+      "stage": "stage",
+      "cda_option": "cda_option",
+      "cda_gate": "cda_gate",
+      "question_deadline": "question_deadline",
+      "response_deadline": "response_deadline",
+      "decision_due": "decision_due",
+      "owner": "owner",
+      "rfi_questions": "rfi_questions",
+      "questions": "questions",
+      "cost_categories": "cost_categories",
+      "archived": "archived"
+    }
+  },
+  "croselection.invitations": {
+    "name": "Invitations",
+    "contract": "croselection.v1",
+    "fields": [
+      {
+        "key": "request_id",
+        "name": "Request",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a croselection.requests record."
+      },
+      {
+        "key": "organization_id",
+        "name": "Supplier",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an organizations record."
+      },
+      {
+        "key": "contact_ids",
+        "name": "Contacts",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Comma list of people record IDs."
+      },
+      {
+        "key": "recipient_emails",
+        "name": "Recipient emails",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Comma list of 1 to 5 email addresses that may open the supplier page."
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "longlist",
+          "rfi_invited",
+          "shortlisted",
+          "rfp_invited",
+          "declined",
+          "submitted",
+          "finalist",
+          "not_selected",
+          "selected"
+        ]
+      },
+      {
+        "key": "cda_status",
+        "name": "CDA status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "not_needed",
+          "sent",
+          "signed",
+          "in_place_elsewhere"
+        ]
+      },
+      {
+        "key": "cda_in_place_on",
+        "name": "CDA in place on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "cda_agreement_id",
+        "name": "CDA agreement",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an agreements record (CDA filed through Contracts)."
+      },
+      {
+        "key": "notes",
+        "name": "Notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "request_id": "request_id",
+      "organization_id": "organization_id",
+      "contact_ids": "contact_ids",
+      "recipient_emails": "recipient_emails",
+      "status": "status",
+      "cda_status": "cda_status",
+      "cda_in_place_on": "cda_in_place_on",
+      "cda_agreement_id": "cda_agreement_id",
+      "notes": "notes"
+    }
+  },
+  "croselection.proposals": {
+    "name": "Proposals",
+    "contract": "croselection.v1",
+    "fields": [
+      {
+        "key": "invitation_id",
+        "name": "Invitation",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a croselection.invitations record. Set by CRO Selection when a submission is accepted."
+      },
+      {
+        "key": "round",
+        "name": "Round",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "rfi",
+          "rfp",
+          "quote"
+        ],
+        "description": "Set by CRO Selection at acceptance."
+      },
+      {
+        "key": "version",
+        "name": "Version",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Submission version. Set by CRO Selection at acceptance."
+      },
+      {
+        "key": "submitted_on",
+        "name": "Submitted on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Set by CRO Selection at acceptance."
+      },
+      {
+        "key": "source",
+        "name": "Source",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "exchange",
+          "manual",
+          "assistant_mapped"
+        ],
+        "description": "Set by CRO Selection."
+      },
+      {
+        "key": "total",
+        "name": "Total price",
+        "kind": "money",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "pass_through",
+        "name": "Pass-through costs",
+        "kind": "money",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "currency",
+        "name": "Currency",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "USD",
+          "EUR",
+          "GBP",
+          "CHF",
+          "CAD",
+          "AUD",
+          "JPY",
+          "CNY",
+          "SEK",
+          "DKK",
+          "NOK",
+          "INR"
+        ]
+      },
+      {
+        "key": "start_weeks",
+        "name": "Weeks to start",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "duration_months",
+        "name": "Duration (months)",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "answers",
+        "name": "Answers",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Answers to the numbered questions in the brief (JSON or plain text)."
+      },
+      {
+        "key": "assumptions_delta",
+        "name": "Deviations from the sponsor assumptions",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "document_ids",
+        "name": "Documents",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Comma list of TrialAgents document version IDs of accepted files."
+      },
+      {
+        "key": "accepted_on",
+        "name": "Accepted on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "Notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "invitation_id": "invitation_id",
+      "round": "round",
+      "version": "version",
+      "submitted_on": "submitted_on",
+      "source": "source",
+      "total": "total",
+      "pass_through": "pass_through",
+      "currency": "currency",
+      "start_weeks": "start_weeks",
+      "duration_months": "duration_months",
+      "answers": "answers",
+      "assumptions_delta": "assumptions_delta",
+      "document_ids": "document_ids",
+      "accepted_on": "accepted_on",
+      "notes": "notes"
+    },
+    "description": "Also the response table of every exchange group. The platform requires each database-required field of a response table to be a question on the supplier page, so the five fields the scope marks required that a supplier cannot answer (invitation_id, round, version, submitted_on, source) and currency (not asked in an RFI) are enforced by CRO Selection at acceptance instead of by the database."
+  },
+  "croselection.proposal_lines": {
+    "name": "Proposal lines",
+    "contract": "croselection.v1",
+    "fields": [
+      {
+        "key": "proposal_id",
+        "name": "Proposal",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a croselection.proposals record."
+      },
+      {
+        "key": "category",
+        "name": "Cost category",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "description",
+        "name": "Description",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "units",
+        "name": "Units",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "unit_cost",
+        "name": "Unit cost",
+        "kind": "money",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "amount",
+        "name": "Amount",
+        "kind": "money",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "currency",
+        "name": "Currency",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "USD",
+          "EUR",
+          "GBP",
+          "CHF",
+          "CAD",
+          "AUD",
+          "JPY",
+          "CNY",
+          "SEK",
+          "DKK",
+          "NOK",
+          "INR"
+        ]
+      },
+      {
+        "key": "deviation",
+        "name": "Deviation",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "How this line departs from the sponsor assumptions."
+      }
+    ],
+    "logicalFields": {
+      "proposal_id": "proposal_id",
+      "category": "category",
+      "description": "description",
+      "units": "units",
+      "unit_cost": "unit_cost",
+      "amount": "amount",
+      "currency": "currency",
+      "deviation": "deviation"
+    }
+  },
+  "croselection.criteria": {
+    "name": "Criteria",
+    "contract": "croselection.v1",
+    "fields": [
+      {
+        "key": "request_id",
+        "name": "Request",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a croselection.requests record."
       },
       {
         "key": "name",
-        "name": "Evaluation criterion",
+        "name": "Name",
         "kind": "text",
+        "required": true,
         "multiple": false,
-        "required": true
+        "ai": true
       },
       {
         "key": "category",
         "name": "Category",
         "kind": "select",
-        "multiple": false,
         "required": false,
+        "multiple": false,
+        "ai": true,
         "options": [
-          "Scientific",
-          "Operations",
-          "Quality",
-          "Technology",
-          "Commercial"
+          "scientific",
+          "operational",
+          "quality",
+          "commercial",
+          "relationship"
         ]
       },
       {
         "key": "weight",
-        "name": "Weight (%)",
+        "name": "Weight",
         "kind": "number",
+        "required": true,
         "multiple": false,
-        "required": false
+        "ai": true,
+        "description": "Percent; the weights of a request add up to 100."
       },
       {
         "key": "mandatory",
-        "name": "Mandatory pass check",
+        "name": "Mandatory",
         "kind": "boolean",
+        "required": false,
         "multiple": false,
-        "required": false
-      },
-      {
-        "key": "minimum",
-        "name": "Minimum acceptable rating",
-        "kind": "number",
-        "multiple": false,
-        "required": false
-      },
-      {
-        "key": "owner",
-        "name": "Responsible reviewer",
-        "kind": "text",
-        "multiple": false,
-        "required": false
-      },
-      {
-        "key": "archived",
-        "name": "Archived",
-        "kind": "boolean",
-        "multiple": false,
-        "required": false
+        "ai": true
       }
     ],
     "logicalFields": {
-      "selectionId": "selection_id",
+      "request_id": "request_id",
       "name": "name",
       "category": "category",
       "weight": "weight",
-      "mandatory": "mandatory",
-      "minimum": "minimum",
-      "owner": "owner",
-      "archived": "archived"
+      "mandatory": "mandatory"
     }
   },
-  "ratings": {
-    "name": "CRO Selection ratings",
+  "croselection.scores": {
+    "name": "Scores",
+    "contract": "croselection.v1",
     "fields": [
       {
-        "key": "selection_id",
-        "name": "Selection",
+        "key": "request_id",
+        "name": "Request",
         "kind": "text",
+        "required": true,
         "multiple": false,
-        "required": false
+        "ai": true,
+        "description": "Record ID of a croselection.requests record."
       },
       {
-        "key": "vendor_id",
-        "name": "CRO",
+        "key": "invitation_id",
+        "name": "Invitation",
         "kind": "text",
+        "required": true,
         "multiple": false,
-        "required": false
+        "ai": true,
+        "description": "Record ID of a croselection.invitations record."
       },
       {
         "key": "criterion_id",
         "name": "Criterion",
         "kind": "text",
+        "required": true,
         "multiple": false,
-        "required": false
+        "ai": true,
+        "description": "Record ID of a croselection.criteria record."
       },
       {
         "key": "reviewer",
         "name": "Reviewer",
         "kind": "text",
+        "required": true,
         "multiple": false,
-        "required": false
+        "ai": true
       },
       {
         "key": "score",
-        "name": "Assessment (1\u20135)",
+        "name": "Score",
         "kind": "number",
+        "required": true,
         "multiple": false,
-        "required": false
+        "ai": true,
+        "description": "1 to 5."
       },
       {
         "key": "evidence",
-        "name": "Evidence reference / proposal page",
+        "name": "Evidence",
         "kind": "text",
+        "required": false,
         "multiple": false,
-        "required": false
-      },
-      {
-        "key": "rationale",
-        "name": "Short justification",
-        "kind": "text",
-        "multiple": false,
-        "required": false
-      },
-      {
-        "key": "archived",
-        "name": "Archived",
-        "kind": "boolean",
-        "multiple": false,
-        "required": false
+        "ai": true
       }
     ],
     "logicalFields": {
-      "selectionId": "selection_id",
-      "vendorId": "vendor_id",
-      "criterionId": "criterion_id",
+      "request_id": "request_id",
+      "invitation_id": "invitation_id",
+      "criterion_id": "criterion_id",
       "reviewer": "reviewer",
       "score": "score",
-      "evidence": "evidence",
-      "rationale": "rationale",
-      "archived": "archived"
+      "evidence": "evidence"
     }
   },
-  "decisions": {
-    "name": "CRO Selection decisions",
+  "croselection.checklist_items": {
+    "name": "Checklist items",
+    "contract": "croselection.v1",
     "fields": [
       {
-        "key": "selection_id",
-        "name": "Selection",
+        "key": "request_id",
+        "name": "Request",
         "kind": "text",
+        "required": true,
         "multiple": false,
-        "required": false
+        "ai": true,
+        "description": "Record ID of a croselection.requests record."
       },
       {
-        "key": "vendor_id",
-        "name": "Recommended CRO",
+        "key": "invitation_id",
+        "name": "Invitation",
         "kind": "text",
-        "multiple": false,
-        "required": false
-      },
-      {
-        "key": "status",
-        "name": "Decision status",
-        "kind": "select",
-        "multiple": false,
         "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a croselection.invitations record."
+      },
+      {
+        "key": "scope",
+        "name": "Scope",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
         "options": [
-          "Draft",
-          "Approved"
+          "qualification",
+          "bid_defence",
+          "onboarding"
         ]
       },
       {
-        "key": "rationale",
-        "name": "Evidence-based decision rationale",
+        "key": "item",
+        "name": "Item",
         "kind": "text",
+        "required": true,
         "multiple": false,
-        "required": false
+        "ai": true
       },
       {
-        "key": "approver",
-        "name": "Decision approver",
+        "key": "owner",
+        "name": "Owner",
         "kind": "text",
+        "required": false,
         "multiple": false,
-        "required": false
+        "ai": true
       },
       {
-        "key": "approved_at",
-        "name": "Approval date",
+        "key": "due",
+        "name": "Due",
         "kind": "date",
+        "required": false,
         "multiple": false,
-        "required": false
+        "ai": true
       },
       {
-        "key": "next_step",
-        "name": "Negotiation / contract handoff",
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "open",
+          "done",
+          "not_applicable",
+          "issue"
+        ]
+      },
+      {
+        "key": "evidence_document_id",
+        "name": "Evidence document",
         "kind": "text",
+        "required": false,
         "multiple": false,
-        "required": false
+        "ai": true,
+        "description": "TrialAgents document version ID."
       },
       {
-        "key": "archived",
-        "name": "Archived",
-        "kind": "boolean",
+        "key": "notes",
+        "name": "Notes",
+        "kind": "text",
+        "required": false,
         "multiple": false,
-        "required": false
+        "ai": true
       }
     ],
     "logicalFields": {
-      "selectionId": "selection_id",
-      "vendorId": "vendor_id",
+      "request_id": "request_id",
+      "invitation_id": "invitation_id",
+      "scope": "scope",
+      "item": "item",
+      "owner": "owner",
+      "due": "due",
       "status": "status",
+      "evidence_document_id": "evidence_document_id",
+      "notes": "notes"
+    }
+  },
+  "croselection.awards": {
+    "name": "Awards",
+    "contract": "croselection.v1",
+    "fields": [
+      {
+        "key": "request_id",
+        "name": "Request",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a croselection.requests record."
+      },
+      {
+        "key": "organization_id",
+        "name": "Supplier",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an organizations record (core role organizations)."
+      },
+      {
+        "key": "service_type",
+        "name": "Service type",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "clinical_study",
+          "preclinical_study",
+          "cmc",
+          "bioanalytical",
+          "other"
+        ]
+      },
+      {
+        "key": "program_id",
+        "name": "Program",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a programs record."
+      },
+      {
+        "key": "study_id",
+        "name": "Study",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a studies record."
+      },
+      {
+        "key": "total",
+        "name": "Awarded total",
+        "kind": "money",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "currency",
+        "name": "Currency",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "USD",
+          "EUR",
+          "GBP",
+          "CHF",
+          "CAD",
+          "AUD",
+          "JPY",
+          "CNY",
+          "SEK",
+          "DKK",
+          "NOK",
+          "INR"
+        ]
+      },
+      {
+        "key": "start_date",
+        "name": "Start date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "duration_months",
+        "name": "Duration (months)",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "rationale",
+        "name": "Rationale",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "approver",
+        "name": "Approver",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "decided_on",
+        "name": "Decided on",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "delivery_team",
+        "name": "Delivery team",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "The supplier delivery team confirmed for the work."
+      },
+      {
+        "key": "agreement_id",
+        "name": "Agreement",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an agreements record (award contract)."
+      },
+      {
+        "key": "onboarding_status",
+        "name": "Onboarding status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "in_progress",
+          "complete"
+        ]
+      },
+      {
+        "key": "handoff_status",
+        "name": "Handoff status",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON {prepared_on, agreement, runway:{state,lines[]}, programs:{state,milestones[]}}: what the award handoff prepared for other apps."
+      }
+    ],
+    "logicalFields": {
+      "request_id": "request_id",
+      "organization_id": "organization_id",
+      "service_type": "service_type",
+      "program_id": "program_id",
+      "study_id": "study_id",
+      "total": "total",
+      "currency": "currency",
+      "start_date": "start_date",
+      "duration_months": "duration_months",
       "rationale": "rationale",
       "approver": "approver",
-      "approvedAt": "approved_at",
-      "nextStep": "next_step",
-      "archived": "archived"
+      "decided_on": "decided_on",
+      "delivery_team": "delivery_team",
+      "agreement_id": "agreement_id",
+      "onboarding_status": "onboarding_status",
+      "handoff_status": "handoff_status"
     }
   }
 }

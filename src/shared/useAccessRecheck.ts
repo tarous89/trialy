@@ -1,8 +1,12 @@
 import {useEffect,useRef} from 'react';
+import {coordinatedRecheck,type RecheckReason} from './coordinated-recheck.js';
 /** Revalidate visible cached views on return and every 30s; never re-execute generated code. */
-export function useAccessRecheck(check:()=>void,enabled=true){
- const latest=useRef(check);latest.current=check;
- useEffect(()=>{if(!enabled)return;const run=()=>{if(document.visibilityState==='visible')latest.current();};
- window.addEventListener('focus',run);document.addEventListener('visibilitychange',run);const timer=setInterval(run,30000);
- return()=>{window.removeEventListener('focus',run);document.removeEventListener('visibilitychange',run);clearInterval(timer);};},[enabled]);
+export function useAccessRecheck(check:(reason:RecheckReason,signal:AbortSignal)=>void|Promise<void>,enabled=true,scopeKey=''){
+ const latest=useRef(check),wasActive=useRef(false);latest.current=check;
+ useEffect(()=>{if(!enabled)return;const scheduled=coordinatedRecheck((reason,signal)=>{if(document.visibilityState==='visible')return latest.current(reason,signal);});
+ if(wasActive.current)scheduled.request('return');wasActive.current=true;
+ const returned=()=>{if(document.visibilityState==='visible')scheduled.request('return');};
+ window.addEventListener('focus',returned);document.addEventListener('visibilitychange',returned);
+ const timer=setInterval(()=>{if(document.visibilityState==='visible')scheduled.request('interval');},30000);
+ return()=>{scheduled.dispose();window.removeEventListener('focus',returned);document.removeEventListener('visibilitychange',returned);clearInterval(timer);};},[enabled,scopeKey]);
 }

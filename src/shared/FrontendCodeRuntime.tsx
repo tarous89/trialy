@@ -15,7 +15,7 @@ import {IntegrationDialog} from './IntegrationDialog.js';
 import {DocumentUploadDialog} from './DocumentUploadDialog.js';
 type Call=(name:string,args:Record<string,unknown>)=>Promise<any>;
 const navigationRead=(event:any)=>event.kind==='open'||/^(tab:|next$|prev$|previous$|filter:|sort:|sort-field:|sort$|search$|query$|overview-next$|overview-previous$|overview-panel$)/.test(event.action??'');
-export function FrontendCodeRuntime({component,previewId,initialOutput,call,onProposal,onUnavailable,onHome,onAccess,onLayout,onBusyChange,onRendered,onUpdated}:{component?:any;previewId?:string;initialOutput?:any;call:Call;onProposal:(p:any)=>void;onUnavailable?:(message:string)=>void;onHome?:()=>void;onAccess?:()=>void;onLayout?:()=>void;onBusyChange?:(busy:boolean)=>void;onRendered?:()=>void;onUpdated?:(component:any)=>void}){
+export function FrontendCodeRuntime({active=true,component,previewId,initialOutput,call,onProposal,onUnavailable,onHome,onAccess,onLayout,onBusyChange,onRendered,onUpdated}:{active?:boolean;component?:any;previewId?:string;initialOutput?:any;call:Call;onProposal:(p:any)=>void;onUnavailable?:(message:string)=>void;onHome?:()=>void;onAccess?:()=>void;onLayout?:()=>void;onBusyChange?:(busy:boolean)=>void;onRendered?:()=>void;onUpdated?:(component:any)=>void}){
  const platform=React.useContext(AppPlatform),navigation=React.useContext(AppNavigation),navigationRef=useRef(navigation);navigationRef.current=navigation;
  const platformRef=useRef(platform);platformRef.current=platform;
  const [connectorReviews,setConnectorReviews]=useState<any[]>([]),[customDirty,setCustomDirty]=useState(false);
@@ -53,10 +53,10 @@ export function FrontendCodeRuntime({component,previewId,initialOutput,call,onPr
   }catch(e){if(live.current){setConfirmUpdate(false);setSchemaChanged((e as any)?.code==='manifest_stale');if(unavailable(e)){clearOutput();setLoadFailed(true);onUnavailable?.('No app is available');}else {setLoadFailed(!output.current);setError((e as Error).message||'The latest version could not load. Your work is still here.');}}}
   finally{busyRef.current=false;if(live.current){setBusy(false);if(eventQueue.current.length&&!blocked.current)void run(eventQueue.current.shift());}}
  }
- useAccessRecheck(()=>{if(!current.current||checking.current||busyRef.current)return;checking.current=true;const c=current.current;void call('check_component_access',{componentId:c.id,...(output.current?.viewId?{viewId:output.current.viewId}:{})}).then(r=>{
-  if(!live.current||c!==current.current)return;
+ useAccessRecheck((_reason,signal)=>{if(!current.current||checking.current||busyRef.current)return;checking.current=true;const c=current.current;return call('check_component_access',{componentId:c.id,...(output.current?.viewId?{viewId:output.current.viewId}:{})}).then(r=>{
+  if(signal.aborted||!live.current||c!==current.current)return;
   if(r.version!==c.version)setPublishedUpdate(true);
- }).catch(e=>{if(live.current){if(unavailable(e)){clearOutput();setLoadFailed(true);onUnavailable?.('No app is available');}else if(e?.code==='app_view_expired')setPublishedUpdate(true);/* A temporary network failure must never remove the app. */}}).finally(()=>{checking.current=false;});},!!component);
+ }).catch(e=>{if(!signal.aborted&&live.current&&c===current.current){if(unavailable(e)){clearOutput();setLoadFailed(true);onUnavailable?.('No app is available');}else if(e?.code==='app_view_expired')setPublishedUpdate(true);/* A temporary network failure must never remove the app. */}}).finally(()=>{checking.current=false;});},active&&!!component,component?.id);
  const prefetchTimer=useRef<ReturnType<typeof setTimeout>|undefined>(undefined),generation=useRef(0);
  function cancelPrefetch(){generation.current++;clearTimeout(prefetchTimer.current);}
  function prefetch(result:any){
