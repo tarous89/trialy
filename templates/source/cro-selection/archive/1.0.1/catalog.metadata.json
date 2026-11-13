@@ -1,0 +1,120 @@
+{
+  "id": "life.cro-selection",
+  "version": "1.0.1",
+  "name": "CRO Selection",
+  "description": "Internal, sponsor-side evaluation of 3\u20135 CRO bids for small biotech teams: requirements, vendor comparison, evidence-based scoring and accountable selection.",
+  "tags": [
+    "biotech",
+    "CRO",
+    "vendor selection",
+    "procurement",
+    "outsourcing",
+    "sponsor",
+    "RFP",
+    "scorecard"
+  ],
+  "whenToUse": "Use when a biotech or pharma sponsor with a lean outsourcing team wants to choose a CRO across one program/service scope using consistent requirements, comparable bids, documented evaluations and reviewable decisions.",
+  "whenNotToUse": "Not for CRO-side proposal writing or multi-tier ERP procurement, regulated supplier qualification certification, vendor payments, or exposing supplier portals.",
+  "engine": "frontend-js",
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "Single app heading in native TrialAgents layout.",
+      "required": false,
+      "default": "CRO Selection"
+    },
+    "tableMap": {
+      "type": "string",
+      "description": "Owner-approved role map to existing TrialAgents table IDs and allowed field names.",
+      "required": false,
+      "default": "{}"
+    },
+    "layoutProfile": {
+      "type": "string",
+      "description": "Native, reviewed presentation-only layout profile.",
+      "required": false,
+      "default": "{\"heading\":\"CRO Selection\",\"tabs\":[\"overview\",\"shortlist\",\"criteria\",\"comparison\",\"decision\"],\"cols\":{\"selections\":[\"name\",\"program\",\"scope\",\"owner\",\"dueDate\",\"status\"],\"vendors\":[\"name\",\"services\",\"regions\",\"experience\",\"website\",\"contact\"],\"bids\":[\"vendorId\",\"status\",\"fee\",\"passThrough\",\"startupWeeks\",\"assumptions\"],\"criteria\":[\"name\",\"category\",\"weight\",\"mandatory\",\"minimum\",\"owner\"],\"ratings\":[\"vendorId\",\"criterionId\",\"reviewer\",\"score\",\"evidence\"],\"decisions\":[\"vendorId\",\"status\",\"rationale\",\"approver\",\"nextStep\"]},\"visible\":{\"vendors:website\":false,\"ratings:evidence\":false,\"decisions:approver\":false}}"
+    },
+    "pageSize": {
+      "type": "number",
+      "description": "Small-team pagination; clamped 10\u201325.",
+      "required": false,
+      "default": 20
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "Disable proposed changes without altering platform permissions.",
+      "required": false,
+      "default": false
+    },
+    "demoLabel": {
+      "type": "boolean",
+      "description": "Only for fictional standalone screenshot preview.",
+      "required": false,
+      "default": false
+    }
+  },
+  "defaults": {
+    "heading": "CRO Selection",
+    "tableMap": "{}",
+    "layoutProfile": "{\"heading\":\"CRO Selection\",\"tabs\":[\"overview\",\"shortlist\",\"criteria\",\"comparison\",\"decision\"],\"cols\":{\"selections\":[\"name\",\"program\",\"scope\",\"owner\",\"dueDate\",\"status\"],\"vendors\":[\"name\",\"services\",\"regions\",\"experience\",\"website\",\"contact\"],\"bids\":[\"vendorId\",\"status\",\"fee\",\"passThrough\",\"startupWeeks\",\"assumptions\"],\"criteria\":[\"name\",\"category\",\"weight\",\"mandatory\",\"minimum\",\"owner\"],\"ratings\":[\"vendorId\",\"criterionId\",\"reviewer\",\"score\",\"evidence\"],\"decisions\":[\"vendorId\",\"status\",\"rationale\",\"approver\",\"nextStep\"]},\"visible\":{\"vendors:website\":false,\"ratings:evidence\":false,\"decisions:approver\":false}}",
+    "pageSize": 20,
+    "readOnly": false,
+    "demoLabel": false
+  },
+  "instructions": "Retrieve latest `read_app_template_guidance(resource:\"authoring\")` and `resource:\"usage\"` in full, plus `read_app_design`. Select CRO Selection by exact template ID/version and SHA digest via list/read tools. Confirm user needs a sponsor-side selection, not a CRO proposal authoring tracker; create/reuse only authorized internal TrialAgents app and record tables. Respect no app auth or account pages; the platform watermark handles the official TrialAgents logo/link to https://platform.trialagents.com. Set the reviewed, explicit tableMap of selection, vendor, bid, criterion, rating, decision roles and actual field IDs; do not use fictional demo rows. Reuse source and presentation CSS unless the user requests changes. Preview all five routes, review responsive behavior, results and missing-data states, and submit through normal app preview/save approvals. Configure optional ChatGPT via prepare_app_monitoring or deterministic/email via prepare_app_action only AFTER the saved app and separate approval; list/read existing automations, reuse stable authoringKeys, preserve disabled state and never create ChatGPT tasks per app. Keep sourcing confidential, use existing app access, never promise completion, never send bidder email or approve CRO automatically. The native gear and templateLayoutSchema/layoutProfile support versioned, presentation-only layout reordering; preserve tab/field IDs and existing access. Follow HOST_INTEGRATION.md and AUTOMATION_RECIPES.md for scope. Use the exact scalar schema and logical-to-snake_case mapping in documentation.dataContract. The host prepends templateConfiguration/templateBindings: never prepend another declaration inside catalog source. Preserve template source/style; configure through options and native layout. Preview through the real host before reviewed save. Reconcile app and record receipts before retries. Never bypass unavailable data checks or stale version errors. Read the current usage/automation guides for optional setup.",
+  "documentation": {
+    "quickStart": [
+      "Read the current authoring and usage guidance, then retrieve the selected version and digest via TrialAgents MCP. Do not create a separate login or accounts.",
+      "Confirm this is a sponsor-side CRO selection (not a CRO proposal-writing app). Choose a real trial/program and a single bid currency.",
+      "Inspect actual schemas/access, create or reuse six authorized scalar tables according to dataContract and schema.example.json. Use multiple:false on every field. Save parents first and bind actual table UUIDs and snake_case keys through tableMap plus bindings/manifest. Scope tables to the intended small team; reads are bounded to 200 rows per role.",
+      "Invite or record 3\u20135 CROs in one selection, record proposal costs and timelines, define a concise set of five or fewer weighted requirements totaling 100%, and mark mandatory thresholds.",
+      "Record evidence-backed scores from 1\u20133 internal reviewers. Compare complete/incomplete assessments, verify mandatory criteria and clarify scope assumptions.",
+      "Preview desktop/mobile routes; review prepared changes, save the app, and separately confirm any optional ChatGPT/email automation. Never automatically approve awards.",
+      "Save with no automation by default. If requested, read read_automation_setup and read_app_automation_guide, then list_app_automations; configure only separately approved app-linked definitions and reconcile receipts. Do not claim a schedule or delivery was activated by this package."
+    ],
+    "dataContract": "Six normalized data roles: selections{name(required),program,scope,owner,dueDate ISO date,status Draft|RFP open|Evaluation|Decision|Awarded,currency EUR|USD|GBP,archived}; vendors{name(required),services,regions,experience,website text,contact text,lastVerified ISO date,archived}; bids{selectionId,vendorId,status Invited|Received|Declined,fee nullable nonnegative number,passThrough nullable nonnegative number,startupWeeks nullable number,assumptions,clarification,clarificationDue,submittedAt,archived}; criteria{selectionId,name,category Scientific|Operations|Quality|Technology|Commercial,weight percentage 0..100,mandatory boolean,minimum 1..5,owner,archived}; ratings{selectionId,vendorId,criterionId,reviewer,score 1..5,evidence,rationale,archived}; decisions{selectionId,vendorId,status Draft|Approved,rationale,approver,approvedAt,nextStep,archived}. Normalize vendors globally, bids/criteria/ratings/decisions per selection. Read only authorized fields using tableMap and templateBindings. Score one criterion as average of recorded ratings (not imputed) then provisional normalized score=sum(weight*meanRating/5)/sum(scoredWeights)*100. Coverage=sum(scoredWeights)/sum(allWeights). Gate approval on Received bid, 100% defined total weight, complete ratings and each mandatory mean>=minimum. Price is never part of composite rating unless explicitly rated as Commercial criterion. Cost and pass-through are separate and a single owner-chosen currency. Never automatically award. Demo records fictional and never committed. Auth and privacy always inherited from TrialAgents. All fields are scalar: set multiple:false explicitly. Use text for URLs, evidence, multiline notes and references containing saved record UUIDs; number for fee/passThrough/startupWeeks/weight/minimum/score; date for dueDate/lastVerified/clarificationDue/submittedAt/approvedAt; boolean for mandatory/archived; select for status/currency/category with the values listed above. Map every logical camelCase key to its lowercase snake_case database key (selectionId\u2192selection_id, vendorId\u2192vendor_id, criterionId\u2192criterion_id, passThrough\u2192pass_through, startupWeeks\u2192startup_weeks, dueDate\u2192due_date, lastVerified\u2192last_verified, clarificationDue\u2192clarification_due, submittedAt\u2192submitted_at, approvedAt\u2192approved_at, nextStep\u2192next_step). All other keys are already valid. Bind every listed field; partial/multiple schemas require explicit repair before use. Amounts are scalar numbers in the selected currency, missing values null. Do not use multi-value relationship fields. Save parent selections/vendors/criteria first and use their receipt IDs in dependent records. Reuse verified records; never commit fictional demo data.",
+    "interactionContract": "Five routes: selection overview, 3\u20135 CRO shortlist, weighted requirements, comparable side-by-side bid matrix, decision scorecard. Sidebar app name has no decorative logo/icon. Header uses exactly one page heading and a selection chooser; no welcome banners, duplicate headlines or login controls. Search the vendor/criterion page, paginate at 20 (max 25), use per-record three-dot menu with Edit, Duplicate and Archive; archive is a reviewed soft update, not permanent deletion. Record drawers use data-ui-state and data-action, submit records.propose only through host review; no unreviewed writes. Native settings gear uses tracker:layout and declared templateLayoutSchema plus versioned layoutProfile; host provides drag reordering and persistence. On mobile, compare/score matrices scroll in labelled regions, no page-level overflow. Esc/keyboard interactions and drawer confirmation are ultimately host responsibilities. Native layout controls screen order/visibility and drawer field order/visibility; fixed overview cards and comparison metrics retain their meaning. Hidden draft fields retain values and remain subject to validation. All actual input/select/textarea controls use data-ui-state; drafts retain opening versions and survive failed proposals. Compare at most five CROs per page with next/previous controls. Individual assessment actions identify each reviewer. Manage automations in platform Automations, outcomes in Logs.",
+    "lifecycle": "Template catalog is a versioned, read-on-demand starter, not deployed app source. Prepare app draft with authorized table bindings, preview, obtain approval, then save; the code does not create actual tables without reviewed operations. Keep stable role and record identifiers. Every mutation is a records.propose create_record or update_record with expectedVersion, subject to outer user confirmation; failed/stale reviews leave old data and draft intact. Selection changes never grant access. Archive retains history. Layout-only changes use host prepare_tool_layout with saved component version and update only templateConfiguration.layoutProfile. Optional automations are configured after app save, never block opening. Reuse app IDs and exact versions; on a lost confirmation response reconcile its receipt before retrying. Ignore/discard pending previews without replacing the saved app. Automation definitions keep stable IDs/authoringKeys and disabled state on edit; archive suspends them and restore/copy never automatically resumes them. Approved decision evidence is frozen in this UI until reset to Draft. Database editors can change evidence independently: revalidate current evidence before relying on an approval, which is a recorded human decision, not a live certification.",
+    "limitations": [
+      "No bidder self-service portal, supplier account, e-signatures, invoice/payroll, formal regulated qualification sign-off, or automated direct outreach to CROs.",
+      "The custom UI inherits app-wide TrialAgents access; a hidden HTML section is not a permission boundary. Use separate protected apps/standard tabs when proposal confidentiality requires narrower access.",
+      "Side-by-side comparison is intended for 3\u20135 CROs in one selection, with one currency. No exchange-rate conversion, bid line-item cost normalization or vendor response extraction from PDFs.",
+      "Live record reads are bounded (200 per role). Missing bindings and incomplete data cause a visible warning. No authoritative score or approval if required data is incomplete.",
+      "Standalone HTML uses fictional local simulation only. Host layout drag persistence, record writes, email delivery and automation execution must be independently verified on TrialAgents."
+    ],
+    "examples": [
+      {
+        "prompt": "Create a CRO selection for our EU Phase II oncology program, inviting four CROs and a five-criterion scorecard.",
+        "expectedBehavior": "Make a private app-linked selection with brief scope, 4 CRO organizations and explicit weighted criteria after review. No emails are sent or bids invented."
+      },
+      {
+        "prompt": "Compare three received CRO proposals on price, start-up timeline, therapeutic fit, oversight quality and staffing.",
+        "expectedBehavior": "Use recorded bids and 1\u20135 cited ratings only; show missing answers, mandatory gates, score coverage and separate price figures. No automatic award."
+      },
+      {
+        "prompt": "Draft a leadership CRO selection memo and notify internal reviewers when approved.",
+        "expectedBehavior": "Prepare evidence-based narrative from approved records; request human review. Optionally prepare a TrialAgents email automation only after saved decision, with authorized recipients."
+      },
+      {
+        "prompt": "Create a CRO selection app with no automation.",
+        "expectedBehavior": "Save a usable app with inherited access and no runner, email or schedule dependency."
+      }
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "Default: no automation; use an on-demand decision memo. Optional weekly Europe/Berlin readiness review for one explicitly selected saved selection, until its award/owner-approved end date. Save the app first. Reuse shared runner through prepare_app_monitoring, authoringKey life.cro-selection.readiness.v1. Read current setup/automation guides; no per-app ChatGPT Task. Missing setup leaves the app usable.",
+      "readRequirements": "Read complete authorized selection, bids, criteria, reviewer ratings/evidence and decisions using persisted IDs. Do not treat denied, partial or >200-row template snapshots as complete; automation must page its authorized source to completion independently. Deduplicate by selection ID, source record versions and run receipt. Reconcile successful output before retrying. Never research private supplier contacts or infer ratings.",
+      "outputContract": "On-demand draft in the current conversation, or an explicitly approved saved report destination chosen during setup. No unspecified report table. Writes always require exact review unless an unexpired scoped ongoing grant covers them. Missing destination/authority is blocked, not saved. no_update requires complete coverage and an approved silence policy; incomplete/denied reads report a gap. Stop at scope expiry or award. Optional independent TrialAgents email via prepare_app_action on actual decisions.status transition into Approved; authoringKey life.cro-selection.email.approved.v1. Owner by default; add only approved registered team members with current access. Fixed subject: CRO selection approved. Fixed body: A CRO selection decision was approved. Open the linked app to review the rationale and handoff. Use only platform-supported app link placeholders after reading current guide, never invented record interpolation. Recheck committed transition/current state, coalesce duplicates, cancel obsolete/revoked work, respect delivery limits. No completion email for the same transition. Failed delivery never reruns research. Disable/edit in Automations; execution history in Logs. Definitions retain disabled state on edit and never auto-resume after copy/restore.",
+      "promptExample": "For the one authorized saved CRO selection, read all eligible bids, criteria and reviewer evidence. Summarize changed or unresolved responses, mandatory failures, missing evidence, reviewer disagreements, cost assumptions and internal next actions with source IDs and evidence dates. Compare only complete evidence. Do not invent ratings, select a CRO, approve an award or send email. Deliver to the specifically approved destination; proposed writes require review or a valid scoped grant. Reconcile prior receipts and source versions. Report incomplete coverage; silence only after complete coverage under the approved quiet policy."
+    }
+  },
+  "examples": [
+    {
+      "heading": "CRO Selection",
+      "pageSize": 20,
+      "readOnly": false
+    }
+  ],
+  "deprecated": false
+}

@@ -1,10 +1,11 @@
 import {readFile,writeFile} from 'node:fs/promises';
-const root=new URL('../templates/source/cro-selection/',import.meta.url),read=n=>readFile(new URL(n,root),'utf8');
+// CRO Selection (life.cro-selection) 1.0.1, released. Its files are archived unchanged under templates/source/cro-selection/archive/1.0.1/; 2.x is built by build-cro-selection-template.mjs.
+const root=new URL('../templates/source/cro-selection/archive/1.0.1/',import.meta.url),read=n=>readFile(new URL(n,root),'utf8');
 const [metadata,source,css,demo,schemas]=await Promise.all(['catalog.metadata.json','source.js','style.css','demo_data.json','schema.example.json'].map(read));
 const entry=JSON.parse(metadata);entry.source='const SELECT_CSS='+JSON.stringify(css)+';\n'+source;
 const serialized=JSON.stringify(entry,null,2)+'\n';
 if(Buffer.byteLength(serialized)>300000||entry.source.length>180000)throw Error('Template exceeds catalog limits');
-const catalog=new URL('../../apps/'+entry.id+'-'+entry.version+'.json',root);
+const catalog=new URL('../../../../apps/'+entry.id+'-'+entry.version+'.json',root);
 const preview=`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CRO Selection fictional preview</title><style>${css}</style><body><div id="surface"></div><script>
 const source=${JSON.stringify(entry.source).replaceAll('</','<\/')};
 const demo=Object.entries(${demo}).flatMap(([role,records])=>records.map(r=>({...r,role}))); const metadata=${metadata};

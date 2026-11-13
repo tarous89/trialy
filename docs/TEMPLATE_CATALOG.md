@@ -6,6 +6,16 @@ Migration 056 and `db:migrate` import repository versions once. `templates/catal
 
 Contracts (`life.contracts`) 1.0.0 was added on 12 November 2026 as a draft (#140) and approved the same day at the owner's request: the seed names 1.0.0 and migration 063 approves the draft row imported by that deployment, once.
 
+CRO Selection (`life.cro-selection`) 2.0.0 was added on 13 November 2026 as a draft. It replaces CRO Selection 1.0.1 and Sponsor RFP Management (`life.sponsor-rfp-management`) 1.0.1. Versions to withdraw on a replacement's approval are listed in `templates/catalog-retirements.json`; deployment does not act on that file.
+
+When the owner approves 2.0.0, the publication change does four things:
+- names 2.0.0 in the seed;
+- adds a one-time migration that approves the 2.0.0 draft row and sets both retired versions to `draft` (withdrawn);
+- removes the `life.sponsor-rfp-management` seed entry and gallery card;
+- regenerates the gallery media.
+
+Released files, installer schemas and installed apps stay unchanged.
+
 Use the migration/operator database connection in `MIGRATION_DATABASE_URL`:
 
 ```

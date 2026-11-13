@@ -1,0 +1,46 @@
+import {readFile,writeFile} from 'node:fs/promises';
+import {transformSync} from 'esbuild';
+// CRO Selection (life.cro-selection) 2.x: catalog JSON and the offline fictional preview, generated from templates/source/cro-selection/.
+// The released 1.0.1 files are archived unchanged under templates/source/cro-selection/archive/1.0.1/ (built by build-selection-template.mjs).
+const root=new URL('../templates/source/cro-selection/',import.meta.url),read=n=>readFile(new URL(n,root),'utf8');
+const [metadata,source,css,demo,schema]=await Promise.all(['catalog.metadata.json','cro-selection.source.js','cro-selection.css','demo_data.json','schema.example.json'].map(read));
+// The readable source is canonical; the catalog carries it with whitespace and redundant syntax removed (identifiers unchanged) so it stays under the
+// 180,000-character catalog limit with room for the host-prepended configuration. Line 1 (templateLayoutSchema) is kept verbatim.
+const nl=source.indexOf('\n'),layoutLine=source.slice(0,nl);if(!layoutLine.startsWith('const templateLayoutSchema='))throw Error('Line 1 must declare templateLayoutSchema');
+const wrapped=transformSync('globalThis.__app=function(input,tools,templateConfiguration,templateBindings){'+source.slice(nl+1)+'\n};',{minifyWhitespace:true,minifySyntax:true,legalComments:'none'}).code.trim();
+const pre='globalThis.__app=function(input,tools,templateConfiguration,templateBindings){';if(!wrapped.startsWith(pre)||!wrapped.endsWith('};'))throw Error('Unexpected minifier output');
+const entry=JSON.parse(metadata);entry.source='const CROSELECTION_CSS='+JSON.stringify(css)+';\n'+layoutLine+'\n'+wrapped.slice(pre.length,-2)+'\n';
+const serialized=JSON.stringify(entry,null,2)+'\n';
+if(Buffer.byteLength(serialized)>300000||entry.source.length>180000||css.length>50000)throw Error('CRO Selection template exceeds catalog limits ('+entry.source.length+' source characters)');
+const catalog=new URL('../../apps/'+entry.id+'-'+entry.version+'.json',root);
+const preview=`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CRO Selection fictional preview</title><style>${css}</style><body><div style="padding:10px 16px;background:#fff;border-bottom:1px solid #DCE4EA;font:13px Inter,Arial,sans-serif;color:#1F3D57">Fictional local demo, fixed as of 13 Nov 2026. Supplier pages, emails, documents, Database review, permissions and persistent layout use the TrialAgents host; this file contacts nobody.</div><div id="surface"></div><script>
+const source=${JSON.stringify(entry.source).replaceAll('</','<\/')};
+const demo=${demo};const metadata=${metadata};const schema=${schema};
+const roles=Object.keys(schema);
+const map=Object.fromEntries(roles.map(role=>[role,{typeId:role,fields:schema[role].logicalFields,writableFields:Object.keys(schema[role].logicalFields)}]));
+const bindings=roles.map(role=>({typeId:role,fields:Object.values(schema[role].logicalFields)}));
+const config={...metadata.defaults,demoLabel:true,asOfOverride:demo.asOf,tableMap:JSON.stringify(map)};
+const render=new Function('input','tools','templateConfiguration','templateBindings',source);
+const X=demo.exchange;let state={},rows=demo.records.map(r=>({...r})),proposal=null,next=1;
+function exchange(name,v){if(name==='exchange.list')return {groups:X.groups.filter(g=>!v.groupId||g.id===v.groupId),nextOffset:null};
+ if(name==='exchange.status'){for(const g of X.groups)for(const e of g.exchanges)if(e.id===v.exchangeId)return {exchangeId:e.id,recordId:e.recordId,status:e.status};throw Error('not found');}
+ if(name==='exchange.listSubmissions')return {submissions:X.submissions.filter(s=>s.groupId===v.groupId),nextOffset:null};
+ if(name==='exchange.listMessages')return {messages:X.messages.filter(m=>!v.groupId||m.groupId===v.groupId).slice().reverse(),nextOffset:null};
+ if(name==='exchange.listEmails')return {emails:X.emails.filter(m=>m.groupId===v.groupId),nextOffset:null};
+ if(name==='exchange.defaultEmail')return {unavailable:true};
+ if(name==='exchange.prepareEmail')throw Error('The send review needs the TrialAgents host. This preview sends nothing.');
+ return {status:'review_required'};}
+function dispatch(event){if(event.action==='tracker:layout'){alert('Layout is managed in native TrialAgents app settings. This file demonstrates the screens only.');return;}
+ const out=render({saved:true,writable:true,state,event},{call:(name,v)=>{if(name==='records.read'){const all=rows.filter(r=>r.role===v.typeId);return {rows:all.slice(v.offset,v.offset+v.limit),total:all.length};}if(name==='records.propose'){proposal=v;return {status:'proposed'};}if(name.startsWith('exchange.')){if(!name.match(/^exchange\\.(list|status|listSubmissions|listMessages|listEmails|defaultEmail|prepareEmail)$/))alert('FICTIONAL LOCAL PREVIEW: '+name+' would be shown for review in TrialAgents. Nothing is sent.');return exchange(name,v);}if(name==='documents.list')return {documents:demo.documents,total:demo.documents.length,complete:true};throw Error('Unsupported preview capability');}},config,bindings);
+ state=out.state;document.getElementById('surface').innerHTML=out.html;
+ if(proposal){const changes=proposal;proposal=null;if(confirm('FICTIONAL LOCAL REVIEW ONLY\\n'+JSON.stringify(changes,null,2).slice(0,3000))){if(changes.some(c=>c.kind==='update_record'&&!rows.some(r=>r.id===c.recordId&&r.version===c.expectedVersion))){alert('Stale review: a record changed since the form opened.');return;}for(const c of changes){if(c.kind==='create_record')rows.push({role:c.typeId,id:'00000000-0000-4000-9000-'+String(next++).padStart(12,'0'),version:0,data:c.data});else{const r=rows.find(r=>r.id===c.recordId);r.data={...r.data,...c.data};r.version++;}}dispatch({kind:'open',action:''});}}
+}
+function eventFor(kind,target){const trigger=target.closest('[data-action]');if(!trigger)return;const form=trigger.closest('form');dispatch({kind,action:trigger.dataset.action,value:target.type==='checkbox'?target.checked:target.value??null,form:form?Object.fromEntries(new FormData(form)):{}});}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&!b.disabled&&b.type!=='submit'&&!b.dataset.trialyDocument)eventFor('click',b);});
+document.addEventListener('submit',e=>{e.preventDefault();eventFor('submit',e.target);});
+document.addEventListener('change',e=>eventFor('change',e.target));
+dispatch({kind:'open',action:''});
+</script></body></html>`;
+async function output(url,text){if(process.argv.includes('--check')){if(await readFile(url,'utf8')!==text)throw Error('Generated file is stale: '+url.pathname);}else await writeFile(url,text);}
+await output(catalog,serialized);await output(new URL('cro-selection.preview.html',root),preview);
+console.log('CRO Selection '+entry.version+': catalog and preview '+(process.argv.includes('--check')?'verified':'built'));

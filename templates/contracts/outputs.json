@@ -1,6 +1,6 @@
 {
   "registry": "role-contracts",
-  "version": "2026-11-12",
+  "version": "2026-11-13",
   "source": "docs/product/MODULAR_APPS_AND_SHARED_DATA.md#7-role-based-connections-standard-for-all-apps",
   "rules": "Output roles (kind output) are read-only results that one app writes and any app may read. One live writer per output table; other apps bind it read-only. A custom app may take over writing only after the current writer is archived or permanently deleted, with an explicit owner choice. Additive changes keep a version compatible; a breaking change is a new version. A reader declares the versions it reads; it also connects to a newer version that is a superset (every field of the version it reads, same kind, cardinality and options). Core roles are listed in templates/core-contract/v1.json and stay multi-writer. Roles of kind app are an app's working tables published for readers; the single-writer rule does not apply to them.",
   "roles": {
@@ -764,6 +764,162 @@
               "kind": "boolean",
               "required": false,
               "multiple": false
+            }
+          ]
+        }
+      }
+    },
+    "croselection.awards": {
+      "name": "CRO Selection awards",
+      "kind": "output",
+      "writer": "life.cro-selection",
+      "description": "One record per awarded request: supplier, service, program and study, awarded total and currency, start and duration, rationale, approver, decision date, delivery team, award agreement and onboarding status. Read by CRO Oversight (baseline), Runway (awarded cost), Trial Finance and Programs. A decision is always made by a person.",
+      "versions": {
+        "croselection.v1": {
+          "fields": [
+            {
+              "key": "request_id",
+              "name": "Request",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "Record ID of a croselection.requests record."
+            },
+            {
+              "key": "organization_id",
+              "name": "Supplier",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "Record ID of an organizations record (core role organizations)."
+            },
+            {
+              "key": "service_type",
+              "name": "Service type",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "clinical_study",
+                "preclinical_study",
+                "cmc",
+                "bioanalytical",
+                "other"
+              ]
+            },
+            {
+              "key": "program_id",
+              "name": "Program",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of a programs record."
+            },
+            {
+              "key": "study_id",
+              "name": "Study",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of a studies record."
+            },
+            {
+              "key": "total",
+              "name": "Awarded total",
+              "kind": "money",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "currency",
+              "name": "Currency",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "USD",
+                "EUR",
+                "GBP",
+                "CHF",
+                "CAD",
+                "AUD",
+                "JPY",
+                "CNY",
+                "SEK",
+                "DKK",
+                "NOK",
+                "INR"
+              ]
+            },
+            {
+              "key": "start_date",
+              "name": "Start date",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "duration_months",
+              "name": "Duration (months)",
+              "kind": "number",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "rationale",
+              "name": "Rationale",
+              "kind": "text",
+              "required": true,
+              "multiple": false
+            },
+            {
+              "key": "approver",
+              "name": "Approver",
+              "kind": "text",
+              "required": true,
+              "multiple": false
+            },
+            {
+              "key": "decided_on",
+              "name": "Decided on",
+              "kind": "date",
+              "required": true,
+              "multiple": false
+            },
+            {
+              "key": "delivery_team",
+              "name": "Delivery team",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "The supplier delivery team confirmed for the work."
+            },
+            {
+              "key": "agreement_id",
+              "name": "Agreement",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of an agreements record (award contract)."
+            },
+            {
+              "key": "onboarding_status",
+              "name": "Onboarding status",
+              "kind": "select",
+              "required": false,
+              "multiple": false,
+              "options": [
+                "in_progress",
+                "complete"
+              ]
+            },
+            {
+              "key": "handoff_status",
+              "name": "Handoff status",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "JSON {prepared_on, agreement, runway:{state,lines[]}, programs:{state,milestones[]}}: what the award handoff prepared for other apps."
             }
           ]
         }
