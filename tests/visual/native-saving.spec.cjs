@@ -17,6 +17,9 @@ for(const width of [1440,390])test(`tracker commits cell edits without injected 
  await expect.poll(()=>confirms).toBe(1);
  await expect(app.getByRole('button',{name:'Edit Company',exact:true}).filter({hasText:name})).toBeVisible();
  await app.getByRole('button',{name:'Contacts',exact:true}).click();
+ // This scenario verifies persistence after completed navigation. Superseding a
+ // cold tab with a cached tab is a separate navigation-ordering regression (P09).
+ await expect(app.getByRole('button',{name:'Contacts',exact:true})).toHaveClass(/active/);
  await app.getByRole('button',{name:'Companies',exact:true}).click();
  await expect(app.getByText(name,{exact:true})).toBeVisible();
  await page.screenshot({path:'/tmp/native-saving-'+width+'.png'});

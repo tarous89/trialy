@@ -1,18 +1,23 @@
 import {useEffect,useRef,useState} from 'react';
 import {useAccessRecheck} from './useAccessRecheck.js';
-type Options={signal?:AbortSignal};
+import type {WorkspaceRequestOptions as Options} from './workspace-request.js';
 const empty=()=>({projects:[],resources:[],total:0});
 /** Home content refreshes on return/local changes; idle checks read metadata only. */
 export function useHomeData(scope:string,args:any,refresh:number,active:boolean,load:(args:any,options:Options)=>Promise<any>,check:(options:Options)=>Promise<any>){
  const key=JSON.stringify([scope,args]),current=useRef(key);current.current=key;
  const [data,setData]=useState<any>(empty),[loading,setLoading]=useState(true),[failed,setFailed]=useState(false),[valid,setValid]=useState(false),[archiveRevision,setArchiveRevision]=useState(0),[reload,setReload]=useState(0);
  const loaded=useRef(''),revision=useRef<string|undefined>(undefined),previousQuery=useRef(args.query),pending=useRef<{controller:AbortController;promise?:Promise<void>}|undefined>(undefined);
+ const trigger=useRef({key,refresh,reload,active:false});
  useEffect(()=>{
+  const previous=trigger.current;trigger.current={key,refresh,reload,active};
   if(!active)return;
+  // Only automatic revalidation is quiet. Opening this panel, changing filters,
+  // saving and explicit retry stay foreground, even if a check is also due.
+  const background=previous.active&&previous.key===key&&previous.refresh===refresh&&previous.reload!==reload;
   const read={controller:new AbortController(),promise:undefined as Promise<void>|undefined};pending.current=read;
   const delay=previousQuery.current===args.query?0:150;previousQuery.current=args.query;
   setLoading(loaded.current!==key);if(loaded.current!==key)setData(empty());setFailed(false);
-  const timer=setTimeout(()=>{read.promise=load(args,{signal:read.controller.signal}).then(result=>{
+  const timer=setTimeout(()=>{read.promise=load(args,{signal:read.controller.signal,background}).then(result=>{
    if(read.controller.signal.aborted||current.current!==key)return;
    if(!loaded.current||!result.revision||revision.current!==result.revision)setArchiveRevision(n=>n+1);
    loaded.current=key;revision.current=result.revision;setData(result);setValid(true);setFailed(false);
@@ -30,7 +35,7 @@ export function useHomeData(scope:string,args:any,refresh:number,active:boolean,
   if(reason==='return'||!revision.current){setReload(n=>n+1);return;}
   const captured=key;
   try{
-   const next=await check({signal});if(signal.aborted||current.current!==captured)return;
+   const next=await check({signal,background:true});if(signal.aborted||current.current!==captured)return;
    if(next?.revision!==revision.current){
     // A revision can mean revoked fields/rows. Do not retain them if reload fails.
     setData(empty());setValid(false);loaded.current='';revision.current=undefined;setReload(n=>n+1);

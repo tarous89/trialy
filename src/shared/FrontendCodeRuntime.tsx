@@ -1,3 +1,5 @@
+import {withWorkspaceActivity} from './WorkspaceActivity.js';
+import type {WorkspaceRequestOptions} from './workspace-request.js';
 import {useWorkspaceView} from './WorkspaceView.js';
 import {SystemNotice} from './SystemNotice.js';
 import {parseAppUrl} from './app-route.js';
@@ -13,7 +15,7 @@ import {useAccessRecheck} from './useAccessRecheck.js';
 import {AppUnavailable} from './AppUnavailable.js';
 import {IntegrationDialog} from './IntegrationDialog.js';
 import {DocumentUploadDialog} from './DocumentUploadDialog.js';
-type Call=(name:string,args:Record<string,unknown>)=>Promise<any>;
+type Call=(name:string,args:Record<string,unknown>,options?:WorkspaceRequestOptions)=>Promise<any>;
 const navigationRead=(event:any)=>event.kind==='open'||/^(tab:|next$|prev$|previous$|filter:|sort:|sort-field:|sort$|search$|query$|overview-next$|overview-previous$|overview-panel$)/.test(event.action??'');
 export function FrontendCodeRuntime({active=true,component,previewId,initialOutput,call,onProposal,onUnavailable,onHome,onAccess,onLayout,onBusyChange,onRendered,onUpdated}:{active?:boolean;component?:any;previewId?:string;initialOutput?:any;call:Call;onProposal:(p:any)=>void;onUnavailable?:(message:string)=>void;onHome?:()=>void;onAccess?:()=>void;onLayout?:()=>void;onBusyChange?:(busy:boolean)=>void;onRendered?:()=>void;onUpdated?:(component:any)=>void}){
  const platform=React.useContext(AppPlatform),navigation=React.useContext(AppNavigation),navigationRef=useRef(navigation);navigationRef.current=navigation;
@@ -37,7 +39,8 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
  const localEditsRef=useRef(localEdits);localEditsRef.current=localEdits;
  const checking=useRef(false),eventQueue=useRef<any[]>([]),blocked=useRef(false),saveReceipt=useRef<any>(null),approvedAction=useRef<string|null>(null);
  const navigationReads=useRef(new FrontendReads());
- const readFrontend=(request:any)=>navigationReads.current.run(request,request=>call('run_component_frontend',{request}),!!output.current?.tracker);
+ // Track each foreground waiter, including a click joining an optional prefetch.
+ const readFrontend=(request:any,options:WorkspaceRequestOptions={})=>withWorkspaceActivity(()=>navigationReads.current.run(request,request=>call('run_component_frontend',{request},{background:true}),!!output.current?.tracker),options);
  function clearOutput(){cancelPrefetch();setRecordReview(null);saveReceipt.current=null;approvedAction.current=null;setDetailsOpen(false);eventQueue.current=[];output.current=null;state.current=null;setFrameUrl('');setReady(false);setProposal(null);setFooter(null);setCustomDirty(false);blocked.current=false;navigationRef.current?.setDirty(false);}
  function viewRequest(c=current.current){return {componentId:c.id,expectedVersion:c.version,...(output.current?.viewId?{viewId:output.current.viewId}:{})};}
  function actionError(e:unknown){const status=(e as any)?.status;if(saveReceipt.current&&!saveReceipt.current.saved&&status>=400&&status<500)saveReceipt.current=null;setError(saveReceipt.current?.saved?'Your changes were saved, but the app could not reload them. You can retry loading the saved data.':(e as Error).message||'This action could not complete. Your work is still here.');}
@@ -70,7 +73,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
   if(!needed.length)return;
   prefetchTimer.current=setTimeout(async()=>{for(const {action} of needed){try{
    if(!live.current||busyRef.current||generation.current!==captured)return;
-   const next=await readFrontend({...(c?viewRequest(c):{previewId}),...(navigationRef.current?{route:navigationRef.current.route}:{}),state:st,event:{kind:'click',action}});
+   const next=await readFrontend({...(c?viewRequest(c):{previewId}),...(navigationRef.current?{route:navigationRef.current.route}:{}),state:st,event:{kind:'click',action}},{background:true});
    if(!live.current||generation.current!==captured||busyRef.current||!output.current||next.accessVersion!==output.current.accessVersion)return;
    const merged=mergeTrackerSnapshot(output.current,next);output.current={...output.current,tracker:merged.tracker};
    frame.current?.contentWindow?.postMessage({kind:'trialy.cache',channel:channel.current,tracker:merged.tracker},'*');

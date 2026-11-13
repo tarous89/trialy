@@ -1,3 +1,4 @@
+import type {WorkspaceRequestOptions} from './workspace-request.js';
 import type {AppRoute} from './app-route.js';
 import {AppPlatform,AppNavigation} from './AppPlatform.js';
 import React,{useState,useRef} from 'react';
@@ -5,11 +6,11 @@ import {FrontendCodeRuntime} from './FrontendCodeRuntime.js';
 import {PreviewApprovalFooter} from './PreviewApprovalFooter.js';
 import {EmbeddedNavigation} from './ui/PageNavigation.js';
 import {Button} from './ui/Controls.js';
-type Call=(name:string,args:any)=>Promise<any>;
+type Call=(name:string,args:any,options?:WorkspaceRequestOptions)=>Promise<any>;
 /** The save click approves the visible tracker and its required new tables together. */
 export function TrackerDraft({preview,call,onSaved,onDiscard,onProposal,initialOutput}:{initialOutput?:any;preview:any;call:Call;onSaved:(component:any,output?:any,route?:AppRoute)=>void;onDiscard:()=>void;onProposal:(p:any)=>void}){
  const [busy,setBusy]=useState(false),[rendering,setRendering]=useState(true),[rendered,setRendered]=useState(false),[error,setError]=useState('');
- const invoke=(name:string,args:any={})=>call(name,{workspaceId:preview.workspaceId,...args});
+ const invoke=(name:string,args:any={},options?:WorkspaceRequestOptions)=>call(name,{workspaceId:preview.workspaceId,...args},options);
  const platform=React.useContext(AppPlatform);
  const navigation=React.useContext(AppNavigation);
  const embedded=React.useContext(EmbeddedNavigation);

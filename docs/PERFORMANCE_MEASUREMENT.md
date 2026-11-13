@@ -1,6 +1,6 @@
 # Performance measurement
 
-Implementation increments of the [reviewed performance scope](scopes/PLATFORM_AND_APP_PERFORMANCE_2026-11-13.md), authorized 13 November 2026. These add measurements, the P04 static-asset fix, safe N2 session-write reduction, P02 startup deferral and P03 refresh coordination. They do not change templates, permission rules, saved data, integration contracts, execution limits or session expiry.
+Implementation increments of the [reviewed performance scope](scopes/PLATFORM_AND_APP_PERFORMANCE_2026-11-13.md), authorized 13 November 2026. These add measurements, the P04 static-asset fix, safe N2 session-write reduction, P02 startup deferral, P03 refresh coordination and P06 loading feedback. They do not change templates, permission rules, saved data, integration contracts, execution limits or session expiry.
 
 ## Request counters
 
@@ -92,9 +92,33 @@ The opaque revision hashes current actor-scoped workspace membership and metadat
 
 These are application-query counts, not latency or database round-trip measurements. The revision query still scans metadata and project-membership rows, so cost grows with their cardinality; it is not constant database work. Production latency and larger-account cost need measurement after release.
 
-Superseded web Home requests use `AbortController`; the server stops abandoned Home reads at stage/loop boundaries after any active SQL finishes. This does not cancel SQL already executing, nor the unrelated sandbox execution work scoped elsewhere. The MCP host bridge has no request cancellation API, so embedded superseded replies are ignored. A host with an older tool catalog falls back to the original authorized full Home read until its catalog updates. Installed and planned templates, app features and integration contracts require no changes. Actual ChatGPT/Claude host acceptance remains pending; local embedded tests use a synthetic host. The request metrics allowlist labels both Home tool names without recording arguments. Background progress-bar presentation is still P06.
+Superseded web Home requests use `AbortController`; the server stops abandoned Home reads at stage/loop boundaries after any active SQL finishes. This does not cancel SQL already executing, nor the unrelated sandbox execution work scoped elsewhere. The MCP host bridge has no request cancellation API, so embedded superseded replies are ignored. A host with an older tool catalog falls back to the original authorized full Home read until its catalog updates. Installed and planned templates, app features and integration contracts require no changes. Actual ChatGPT/Claude host acceptance remains pending; local embedded tests use a synthetic host. The request metrics allowlist labels both Home tool names without recording arguments. P06 below makes routine background work quiet in the global progress bar.
 
 Validation includes deterministic scheduler checks, runtime-role/RLS revision and cancellation checks, REST authentication/no-store and MCP registration checks, and web/embedded browser scenarios for merged events, hidden panels, late replies, retry, revoked access, retained drafts and explicit Refresh. Production build/type checks and 19 focused backend checks pass. Across the focused browser runs, 72 distinct scenarios pass, including all 37 cases in the final continuity/app/refresh run. Full CI and deployment status remain on [PR #155](https://github.com/tarous89/trialy/pull/155).
+
+## P06 — foreground progress and quiet background work
+
+The web API helper and embedded tool adapter now share local `background` request options. The global progress bar counts only foreground waits; a background request can neither start the bar nor keep it visible after the last foreground operation settles. The existing 150 ms delay and main-column positioning remain unchanged. The option is transport/UI metadata only and is never included in API bodies or MCP arguments.
+
+| Operation | Feedback |
+| --- | --- |
+| Initial account/Home/app load, navigation, filtering, paging, explicit retry, explicit Refresh and saves | Existing foreground bar after 150 ms, plus existing local loading/busy states |
+| Routine account/app-access/Home revision checks and automatic return-to-tab Home refresh | Quiet global bar; existing content stays usable, and errors/revocation still follow their existing paths |
+| Home reload after metadata invalidation | Local Home skeleton while potentially revoked content is replaced; quiet global bar |
+| Collapsed archive count | Quiet global bar; failures still show the archive error and Retry |
+| Expanded archive details | Existing local loading text and foreground bar |
+| Optional standard-tracker tab/page prefetch | Quiet global bar |
+| User navigation joining an already-pending prefetch | Foreground progress for the user's wait, without issuing another request |
+
+The runtime tracks foreground consumers outside its existing in-flight read coordinator. This preserves visible feedback when a click shares a prefetch and keeps the transport call from being counted twice. Save proposals, confirmations and receipt/retry handling keep their existing execution and permission behavior. Both rejected and aborted foreground requests release their activity slot; background failures still reach the caller. This does not change request scheduling, prefetch limits, caching, permission checks, generated app source or backend execution times.
+
+There are no data migrations, installed/planned template changes or integration-contract changes. Shared web/embedded shells receive the behavior automatically; actual ChatGPT/Claude host acceptance remains a release check. This is a perceived responsiveness improvement, not a measured latency reduction.
+
+The P03 CI run passed 192 of 193 browser tests; its remaining visibility fixture expected a now-unnecessary initial read in an inactive panel. A separate test correction now verifies zero inactive reads and metadata-only periodic checks in an active panel, with a revision-bearing fixture. Both corrected cases pass locally. The full P06 browser rerun passed **206/206** cases without screenshot updates. After completing request-option forwarding through the legacy Projects/Resources wrappers, the final production build/type check and **26 focused browser checks** pass, covering held background requests overlapping searches/Refresh, return checks, archive details, native-save persistence/retry, save failures, revocation, shared prefetch and responsive bar placement. CI status is tracked on [PR #155](https://github.com/tarous89/trialy/pull/155).
+
+P06 verification also reproduced a pre-existing standard-tracker navigation race on both the P03 and P06 builds: a held cold-tab response can override a later return to a cached tab. This is recorded under P09 in the recommendation scope. The save-persistence test waits for the destination tab before returning; it does not claim to cover superseded navigation. The first full P06 browser run passed 202/206 cases: this race interrupted one save test before cleanup and its renamed fixture record caused three subsequent screenshot differences. A fresh save/tracker run passed all seven cases; the corrected full-suite result is recorded above.
+
+The preceding P03 core CI run completed with 538 passing checks and one failed test process: `pi-network-integration.test.ts` hit a native Node 24.22.2/V8 `jit_page_->allocations_.erase(addr) == 1` assertion while unregistering a WASM allocation. A local Node 24.22.1 recheck did not reproduce that assertion, but its bounded browser design inspection returned `design_check_unavailable`, so it is not recorded as a pass. No runtime flags, production limits or unrelated application code were changed to bypass these failures. The new commit requires its own green CI before release.
 
 ## Production verification after release
 
@@ -104,4 +128,4 @@ Validation includes deterministic scheduler checks, runtime-role/RLS revision an
 4. Compare request counts and p50/p95 time to usable content with database, session and sandbox counters. Check CPU/memory and busy rates from the actual host. Retain exact saves, revocation, app-version and tenant-isolation acceptance.
 5. Test the deployed flow in actual ChatGPT and Claude as well as the web. Synthetic host tests do not establish real host acceptance.
 
-Production before/after timings, hosting capacity and live-host acceptance remain pending. P14 is measurement support plus a synthetic baseline, not a completed production performance study. For N2, compare actual `sessionTouchesCoalesced`/`sessionTouchNoops` with session queries before estimating savings. Next scoped change: P06 foreground/background progress feedback, then basic P12.
+Production before/after timings, hosting capacity and live-host acceptance remain pending. P14 is measurement support plus a synthetic baseline, not a completed production performance study. For N2, compare actual `sessionTouchesCoalesced`/`sessionTouchNoops` with session queries before estimating savings. Next scoped change: basic P12 save-receipt and refresh/retry clarity.

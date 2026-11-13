@@ -1,3 +1,4 @@
+import type {WorkspaceRequestOptions} from './workspace-request.js';
 import {AppPlatform,AppNavigation} from './AppPlatform.js';
 import {readStandardConfig} from './standard-tool.js';
 import {ToolLayout} from './ToolLayout.js';
@@ -9,7 +10,7 @@ import {ComponentRuntime} from './ComponentRuntime.js';
 import {ProjectSharing} from './ProjectSharing.js';
 import React,{useState,useEffect,useRef} from 'react';
 import {AppUnavailable} from './AppUnavailable.js';
-type Call=(name:string,args:Record<string,unknown>)=>Promise<any>;
+type Call=(name:string,args:Record<string,unknown>,options?:WorkspaceRequestOptions)=>Promise<any>;
 export function ComponentEditor({active=true,component:initialComponent,projects,call,onBack,onPreview,initialOutput}:{active?:boolean;initialOutput?:any;component:any;projects:any[];call:Call;onBack:()=>void;onPreview:(p:any)=>void}){
  const platform=React.useContext(AppPlatform),navigation=React.useContext(AppNavigation);
  const [component,setComponent]=useState(initialComponent);

@@ -1,3 +1,4 @@
+import type {WorkspaceRequestOptions} from './workspace-request.js';
 import {WorkspaceShell} from './ui/WorkspaceShell.js';
 import {AssistantLinks} from './AssistantLinks.js';
 import {SystemNotice} from './SystemNotice.js';
@@ -13,7 +14,7 @@ import {CollectionsPanel} from './CollectionsPanel.js';
 import {ChangeSummary} from './ChangeSummary.js';
 import {Button} from './ui/Controls.js';
 import './ui/design.css';import './ui/brand.css';import './ui/scroll.css';import './app-pages.css';
-type Call=(name:string,args:any)=>Promise<any>;
+type Call=(name:string,args:any,options?:WorkspaceRequestOptions)=>Promise<any>;
 export function StandaloneApp({signedIn,loading=false,call,api,accountName='Account',accountEmail}:{accountName?:string;accountEmail?:string;signedIn:boolean;loading?:boolean;call:Call;api:(path:string,method?:string,body?:unknown)=>Promise<any>}){
  const [url,setUrl]=useState(location.pathname+location.search),current=useMemo(()=>parseAppUrl(url),[url]);
  const [reset,setReset]=useState(0),[loadFailed,setLoadFailed]=useState(false),[loadStatus,setLoadStatus]=useState(0);
@@ -23,7 +24,7 @@ export function StandaloneApp({signedIn,loading=false,call,api,accountName='Acco
  const navigate=(href:string)=>{if(!current)return;const target=resolveAppLink(href,current,location.origin);if(!target){setError('This link is not available.');return;}if(target.kind==='external'){window.open(target.href,'_blank','noopener,noreferrer');return;}if(dirty.current||proposal){setPending(target.href);return;}assign(target.href);};
  useEffect(()=>{const pop=()=>{const next=location.pathname+location.search;if(dirty.current||proposal){history.pushState(null,'',activeUrl.current);setPending(next);}else{activeUrl.current=next;setUrl(next);}};const unload=(e:BeforeUnloadEvent)=>{if(dirty.current||proposal){e.preventDefault();e.returnValue='';}};window.addEventListener('popstate',pop);window.addEventListener('beforeunload',unload);return()=>{window.removeEventListener('popstate',pop);window.removeEventListener('beforeunload',unload);};},[proposal]);
  useEffect(()=>{if(!signedIn||!current)return;let live=true;setLoadFailed(false);setLoaded((old:any)=>old?.appId===current.appId&&old?.workspaceId===current.workspaceId&&old?.source===current.source?old:null);void api('/api/apps/resolve','POST',current).then(r=>{if(live){setLoaded({...r,loadedRevision:reload});document.title=r.component?.name??r.resource?.name??'App';}}).catch(e=>{if(live){setLoadFailed(true);setLoadStatus(e.status??0);if([401,403,404].includes(e.status))setLoaded(null);}});return()=>{live=false;};},[signedIn,current?.appId,current?.workspaceId,current?.source,reload]);
- const invoke=(name:string,args:any={})=>call(name,{workspaceId:current?.workspaceId,...args});
+ const invoke=(name:string,args:any={},options?:WorkspaceRequestOptions)=>call(name,{workspaceId:current?.workspaceId,...args},options);
  const platformNavigate=(tab:string,kind?:string)=>{const next='/?tab='+encodeURIComponent(tab==='settings'?'access':tab)+(kind?'&new='+encodeURIComponent(kind):'')+(current?.workspaceId?'&workspaceId='+current.workspaceId:'');if(dirty.current||proposal){setPending(next);return;}location.assign(next);};
  const goHome=()=>{if(dirty.current||proposal){setPending('/?tab=home');return;}location.assign(APP_BRAND.home+'?tab=home');};
  const component=loaded?.component??loaded?.preview?.component;

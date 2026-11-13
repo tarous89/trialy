@@ -1,3 +1,9 @@
+## 13 November 2026 — Performance increment 5: foreground loading feedback
+
+P06 keeps routine account/access/Home checks, automatic return-to-tab refreshes, collapsed archive counts and optional tracker prefetches out of the global progress bar. Initial loads, navigation, searches, expanded details, saves, retries and explicit Refresh keep visible foreground feedback. The shared 150 ms delay and main-column placement remain intact. A click joining an in-flight prefetch shows progress for the user's wait without duplicating its request. Background work cannot prolong a completed foreground action's bar, and errors/revocation still surface through their existing handlers.
+
+No template edits, migrations, permission or integration-contract changes. This improves loading feedback rather than backend latency. A separate P03 CI test correction checks zero inactive Home reads and metadata-only active checks. Validation and release status are in [PR #155](https://github.com/tarous89/trialy/pull/155) and [performance measurement](docs/PERFORMANCE_MEASUREMENT.md). Next: basic P12 save-receipt and refresh/retry clarity.
+
 ## 13 November 2026 — Performance increment 4: coordinate refresh checks
 
 P03 merges return-to-tab event bursts and shares in-flight account reads. Idle Home now checks metadata instead of rebuilding content and archives every 30 seconds. Changed metadata clears old Home/archive content before an authorized reload; return, local changes, filtering and retry still load content. Temporary account failures retain mounted apps/drafts, while revoked sessions clear them. Open apps keep periodic access/version checks and explicit Refresh; hidden panels pause automatic checks. Superseded web Home reads abort, with server cancellation at safe stage boundaries; embedded late replies are ignored.

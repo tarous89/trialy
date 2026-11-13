@@ -21,7 +21,7 @@ import {ProjectSettings} from './ProjectSettings.js';
 import {ProjectsPanel} from './ProjectsPanel.js';
 import {ResourcesPanel} from './ResourcesPanel.js';
 import {useHomeData} from './useHomeData.js';
-type ReadOptions={signal?:AbortSignal};
+import type {WorkspaceRequestOptions as ReadOptions} from './workspace-request.js';
 type Call=(name:string,args:any,options?:ReadOptions)=>Promise<any>;
 export function HomePanel({workspaceId,loadHome,loadTypes,types,call,onDocuments,viewerId,onLegacyAutomations,onCompose,onAppVisibilityChange,onBrowseTemplates,active=true}:{loadTypes?:(workspaceId:string)=>Promise<any[]>;onBrowseTemplates?:()=>void;active?:boolean;workspaceId:string;loadHome?:(args:any,options?:ReadOptions)=>Promise<any>;types:any[];call:Call;onDocuments:()=>void;viewerId?:string;onLegacyAutomations?:()=>void;onCompose?:(message:string)=>Promise<void>;onAppVisibilityChange?:(visible:boolean)=>void}){
  const platform=React.useContext(AppPlatform);
@@ -41,7 +41,7 @@ export function HomePanel({workspaceId,loadHome,loadTypes,types,call,onDocuments
  const home=(args:any,options:ReadOptions)=>loadHome?loadHome(args,options):call('read_account_home',args,options);
  const homeData=useHomeData(JSON.stringify([workspaceId,viewerId]),{query:state.query,kind:platform.enabled?'all':state.kind,projectId:state.projectId,sort:state.sort,offset,limit:20},refresh,active&&screen==='home',home,options=>call('check_account_home',{},options));
  const {data,setData,loading,failed:loadFailed}=homeData;
- const invoke=(name:string,args:any={})=>call(name,{workspaceId:activeWorkspace.current,...args});
+ const invoke=(name:string,args:any={},options?:ReadOptions)=>call(name,{workspaceId:activeWorkspace.current,...args},options);
  useEffect(()=>{try{localStorage.setItem('trialy-layout:'+workspaceId+':'+(viewerId??'session'),state.layout);}catch{}},[workspaceId,state.layout]);
  useEffect(()=>{if(screen==='home'&&!loading)window.scrollTo(0,scroll.current);},[screen,loading]);
  useEffect(()=>{const navigate=(e:Event)=>{opening.current++;setError('');if((e as CustomEvent).detail==='home'){setScreen('home');setOffset(0);setState(s=>({...s,projectId:'',kind:'all',query:''}));setSelected(null);setProposal(null);setRefresh(r=>r+1);}};window.addEventListener('trialy:navigate',navigate);return()=>window.removeEventListener('trialy:navigate',navigate);},[]);
