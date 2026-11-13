@@ -14,7 +14,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | A4 | TrialAgents Runway vs LivePlan: startup financial planning for pre-revenue biotechs | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-liveplan) |
 | A5 | TrialAgents Runway vs Fathom: cash planning and financial reporting for biotech | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-fathom) |
 | A6 | TrialAgents Runway vs Puzzle: AI accounting and biotech cash planning | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-puzzle) |
-| A7 | TrialAgents Runway vs Aleph: AI-Native FP&A for Lean Biotech Teams | Claimed — 13 November 2026; research/source preparation | — |
+| A7 | TrialAgents Runway vs Aleph: a biotech planning app or connected FP&A? | Source PR #190 — validation pending | [Source PR](https://github.com/tarous89/trialagents-public/pull/190) |
 | A8 | TrialAgents Runway vs Jirav: FP&A Software for Small Biotech Companies | Queued — verify and publish | — |
 | A9 | TrialAgents Runway vs Bob Finance (Formerly Mosaic): Financial and Workforce Planning | Queued — verify and publish | — |
 | A10 | TrialAgents Runway vs Exigyn: AI-Powered Financial Operations for Life Sciences | Queued — verify and publish | — |
@@ -174,3 +174,12 @@ PR #189 merged at 14:07 UTC, release `730ec8d33dad332c44066926fd93235619bf5837`.
 - Live checks passed: expected H1/title/description, self-canonical, no noindex directive, Article/BreadcrumbList schema, three genuine images, internal/primary-source links and final Start with Runway CTA. Twenty URLs checked; /apps listing, single canonical sitemap.xml entry, llms.txt and llm.xml inclusion confirmed. HTTP headers deliver HTML.
 - Article uses the homepage-identical loader `/_snapshot/query-assets/114933b27c521a75f333.js`; loader and dependency `/_snapshot/query-assets/c251da7b4969f7c85048.js` return HTTP 200. Existing tracking scripts, configuration, consent, events, attribution and collectors unchanged; no synthetic production events.
 - This supersedes A6's source and merged-pending checkpoints. **10 published; 37 remaining. Next eligible: A7, Runway vs Aleph**, subject to fresh queue/claim checks. Publication QA does not establish search indexing, rankings or assistant citations. Refresh this comparison when either vendor's documented capabilities or integration scope changes.
+
+
+### A7 source checkpoint — 13 November 2026
+
+[Public-site PR #190](https://github.com/tarous89/trialagents-public/pull/190), exact head `0ba9bbc13a6ba11a1bfeeb1e0b1c72194a06b1d0`, prepares https://trialagents.com/apps/runway-vs-aleph. Title: TrialAgents Runway vs Aleph: a biotech planning app or connected FP&A?. Refined title distinguishes an operational biotech app from connected spreadsheet FP&A without suggesting exclusive AI support. Distinct intent: forecast ownership and a hiring-plan handoff between a fractional CFO and program lead; fictional evaluation brief, not an executed benchmark.
+
+Primary evidence reviewed: https://www.getaleph.com/blog/introducing-aleph-mcp (documented Claude/ChatGPT finance-data and agent access); https://claude.com/marketplace/connectors/aleph (independent Claude listing with sign-in and write tools); https://www.getaleph.com/platform/spreadsheets and https://www.getaleph.com/solutions/budget-planning (bidirectional spreadsheets, selective cells, versions, scenarios); https://www.getaleph.com/integrations and https://www.getaleph.com/solutions/headcount-planning (source catalog and headcount workflow); https://www.getaleph.com/agentic-budgeting (permission-aware changes and rationale). Do not infer upstream write-back or universal refresh behavior from spreadsheet bidirectionality. No numeric connector-count claim, pricing, native TrialAgents-to-Aleph sync or new host acceptance test. Current life.cash-runway 2.1.0 catalog reread; approved genuine browser screenshots 01-overview, 05-scenarios, 06-actuals. Tracking unchanged.
+
+Status: awaiting exact-head predeploy, desktop/mobile artifact review, merge and live CDN verification. Resume PR #190 before A8. Refresh when Aleph host/connector/model behavior or the Runway catalog changes.
