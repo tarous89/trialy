@@ -62,7 +62,7 @@ These are intended canonical URLs. Do not assert that a URL is live until checke
 - Compare accounting connections, forecast depth, biotech spending, milestones and supported AI workflows.
 - Model vendor-payment timing across R&D programs in a fictional example.
 - Explain circumstances favoring each product and any complementary use.
-- **Status:** research candidate; do not publish before verification.
+- **Status:** Published 13 November 2026 at https://trialagents.com/apps/runway-vs-float via PR #184 (`c0ecfd43bb5a57adf58bd38d0ffc499e764cb5c3`); live HTML, screenshots, discovery and unchanged loader/client delivery verified.
 
 ## Series B — Alternatives and category discovery
 
@@ -160,6 +160,10 @@ The public implementation lives in `tarous89/trialagents-public`: `static/apps/r
 All five categories now have a published example: A1, B1, C1, revised D1 and E2. E1 remains a separate candidate requiring a real validated spreadsheet before publication; C2 needs separate Claude evidence. Before publishing, verify competitor facts, separately test host-specific behavior and create any promised assets. Link each article to the official Runway hub; add cross-series links only to real, relevant published pages. Monitor indexing, engagement, CTA conversion and observed AI referrals separately from implementation QA.
 
 
-### A2 release checkpoint — 13 November 2026
+### A2 release checkpoint — 13 November 2026 (historical; superseded below)
 
 Runway vs Float source merged in public-site PR #184, commit `c0ecfd43bb5a57adf58bd38d0ffc499e764cb5c3`. Exact-head predeploy passed 282 tests, snapshot/discovery checks and desktop/mobile browser QA; visual artifacts reviewed. Publication remains blocked pending authenticated Cloudflare deployment: the canonical route returned HTTP 404 after merge. The homepage-only production check is not article publication evidence. See the canonical queue for continuation; preserve tracking and verify served loader/client assets before marking Published.
+
+### A2 live verification and release-process correction — 13 November 2026
+
+A2 is published at https://trialagents.com/apps/runway-vs-float. The existing GitHub-connected Cloudflare build deployed merged main automatically; the earlier claim that Cloudflare sign-in was required was incorrect. HTTP 200, expected H1/canonical, Article/BreadcrumbList, three genuine screenshots, final CTA, app index and sitemap/LLM discovery verified. Loader and analytics dependency both return 200 and match homepage delivery. No tracking changes or synthetic events. See the shared playbook's corrected GitHub-to-CDN procedure and canonical queue; A3 is next, 41 topics remain.
