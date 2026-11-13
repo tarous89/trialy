@@ -158,3 +158,8 @@ The approved A1 comparison is live. Preserve its concise, platform-first editori
 The public implementation lives in `tarous89/trialagents-public`: `static/apps/runway-vs-excel.html`, `static/apps/runway.css` and `scripts/render-app-pages.mjs`. Follow that repository's publishing checks and verify served production content after every release. These Markdown files are planning/editorial records, not the deployed source.
 
 All five categories now have a published example: A1, B1, C1, revised D1 and E2. E1 remains a separate candidate requiring a real validated spreadsheet before publication; C2 needs separate Claude evidence. Before publishing, verify competitor facts, separately test host-specific behavior and create any promised assets. Link each article to the official Runway hub; add cross-series links only to real, relevant published pages. Monitor indexing, engagement, CTA conversion and observed AI referrals separately from implementation QA.
+
+
+### A2 release checkpoint — 13 November 2026
+
+Runway vs Float source merged in public-site PR #184, commit `c0ecfd43bb5a57adf58bd38d0ffc499e764cb5c3`. Exact-head predeploy passed 282 tests, snapshot/discovery checks and desktop/mobile browser QA; visual artifacts reviewed. Publication remains blocked pending authenticated Cloudflare deployment: the canonical route returned HTTP 404 after merge. The homepage-only production check is not article publication evidence. See the canonical queue for continuation; preserve tracking and verify served loader/client assets before marking Published.
