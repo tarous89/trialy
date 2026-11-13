@@ -11,7 +11,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | A1 | TrialAgents Runway vs Excel: Biotech Cash Planning Compared | Already covered / published | [Live article](https://trialagents.com/apps/runway-vs-excel) |
 | A2 | TrialAgents Runway vs Float: Which Cash Flow Forecasting App Is Better for Biotech Startups? | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-float) |
 | A3 | TrialAgents Runway vs cfo.ai (Formerly Runway): AI Financial Planning for Biotech Startups | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-cfo-ai) |
-| A4 | TrialAgents Runway vs LivePlan: Startup Financial Planning for Pre-Revenue Biotechs | Claimed — 13 November 2026, current hourly run | Branch `runway-a4-liveplan-20261113`; research/source preparation |
+| A4 | TrialAgents Runway vs LivePlan: startup financial planning for pre-revenue biotechs | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-liveplan) |
 | A5 | TrialAgents Runway vs Fathom: Cash Runway Monitoring vs Financial Reporting | Queued — verify and publish | — |
 | A6 | TrialAgents Runway vs Puzzle: AI Accounting vs AI-Native Cash Runway Planning | Queued — verify and publish | — |
 | A7 | TrialAgents Runway vs Aleph: AI-Native FP&A for Lean Biotech Teams | Queued — verify and publish | — |
@@ -68,7 +68,7 @@ All listed published pages were recorded as live in [Runway's app plan](runway.m
 
 ## Publication sequence and hourly worker contract
 
-1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2 and A3 are now published; the next candidate is **A4: Runway vs LivePlan**, subject to current queue and live-state checks.
+1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2, A3 and A4 are now published; the next candidate is **A5: Runway vs Fathom**, subject to current queue and live-state checks.
 2. Re-read the **current** shared playbook and [Runway plan](runway.md). Use the approved genuine screenshots, wide dark editorial shell, numbered green headings, platform advantage order, honest competitor treatment, one final "Start with Runway" CTA and standard shared header/footer.
 3. Research and verify vendor identities, capabilities, URL destinations, AI/Claude/ChatGPT host experiences separately, formulas and substantive claims. Keep the no-pricing-in-A/B rule; in other series, only discuss verified prices if explicitly appropriate and editorially approved. Real screenshots only, no invented interfaces or citations. Treat claims in tentative titles as hypotheses.
 4. Make the article genuinely distinct from existing Runway pages. Do not create weak "year-only", vendor-name-swapped or keyword-cannibalizing pages. If the subject is already answered on a live URL, mark it as covered, link it and advance to the next eligible item **within the same run**, without publishing duplicate content.
@@ -121,3 +121,13 @@ Claimed in the current hourly run; [public-site PR #187](https://github.com/taro
 Primary evidence reviewed: LivePlan's https://www.liveplan.com/features/business-plan-builder and https://www.liveplan.com/features/financial-forecasts-and-scenarios; https://help.liveplan.com/using-the-liveplan-mcp-connector documents early access, read/write operations and host setup paths (not independently acceptance-tested); current product updates document AI forecasting/import; QuickBooks Online help and Desktop end-of-support documentation establish connection limits. No pricing or exclusive-AI claims. TrialAgents catalog life.cash-runway 2.1.0 reread; three genuine approved browser demo screenshots (01-overview, 03-plan, 05-scenarios). Shared analytics unchanged.
 
 Status: awaiting exact-head predeploy, desktop/mobile artifact review, merge and automatic deployment. Resume PR #187 before selecting A5. Refresh this comparison when LivePlan host/integration scope or the Runway catalog changes.
+
+
+### A4 publication verified — 13 November 2026
+
+- **Published:** [TrialAgents Runway vs LivePlan: startup financial planning for pre-revenue biotechs](https://trialagents.com/apps/runway-vs-liveplan). Source [PR #187](https://github.com/tarous89/trialagents-public/pull/187), exact head `2f387d3df8d8ee76647e771abd65f84eaf825935`; merged release `4833e06f8b58274af124725a1af87c00f58498b7` at 12:03 UTC.
+- Predeploy run `43421043276` passed **282 tests**, candidate snapshot, metadata/discovery and desktop/mobile browser checks. Inspected both article screenshots in artifact `14034052936`. No layout blocker; the comparison table retains the standard accessible horizontal-scroll region on narrow screens.
+- Existing GitHub-connected Cloudflare Workers build completed successfully. Initial 404 responses were deployment pending; HTTP 200 and expected served content verified by 12:06 UTC, with no dashboard authentication or manual deployment. Served article exactly matches the source reviewed at desktop/mobile sizes.
+- Production verification passed: one expected H1, title/description, self-canonical, index/follow, Article/BreadcrumbList schema, three genuine screenshots, internal and primary-source links, final Start with Runway CTA, /apps listing, one canonical sitemap.xml entry and llms.txt/llm.xml inclusion. Response headers showed HTTP 200 HTML without a noindex directive.
+- Homepage-identical loader `/_snapshot/query-assets/114933b27c521a75f333.js` and analytics dependency `/_snapshot/query-assets/c251da7b4969f7c85048.js` both return HTTP 200. Tracking implementation, configuration and consent untouched; no synthetic production events sent.
+- This supersedes A4's pending source checkpoint. **8 published; 39 remaining. Next eligible: A5, Runway vs Fathom**, after fresh queue/claim and release checks. Actual search indexing, rankings and assistant citations are not established by publication QA.
