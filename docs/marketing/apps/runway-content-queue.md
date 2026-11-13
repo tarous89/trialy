@@ -16,7 +16,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | A6 | TrialAgents Runway vs Puzzle: AI accounting and biotech cash planning | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-puzzle) |
 | A7 | TrialAgents Runway vs Aleph: a biotech planning app or connected FP&A? | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-aleph) |
 | A8 | TrialAgents Runway vs Jirav: cash planning and three-statement FP&A for biotech | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-jirav) |
-| A9 | TrialAgents Runway vs Bob Finance (Formerly Mosaic): Financial and Workforce Planning | Queued — verify and publish | — |
+| A9 | TrialAgents Runway vs Bob Finance (Formerly Mosaic): Financial and Workforce Planning | Deferred — vendor relaunch/availability verification required | [Current vendor notice](https://www.hibob.com/platform/finance/) |
 | A10 | TrialAgents Runway vs Exigyn: AI-Powered Financial Operations for Life Sciences | Queued — verify and publish | — |
 | A11 | TrialAgents Runway vs Caladan: Clinical Trial Budgeting and Cash Runway | Queued — verify and publish | — |
 | A12 | TrialAgents Runway vs Airtable: Cash Runway Tracking for Biotech Teams | Queued — verify and publish | — |
@@ -68,7 +68,7 @@ All listed published pages were recorded as live in [Runway's app plan](runway.m
 
 ## Publication sequence and hourly worker contract
 
-1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2–A8 are published. **Next eligible: A9, Runway vs Bob Finance (formerly Mosaic), subject to current vendor research and claim checks.** See the latest release checkpoint below.
+1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2–A8 are published. **Next eligible: A10, Runway vs Exigyn, subject to research and claim checks. A9 deferred pending Bob Finance availability.** See the latest release checkpoint below.
 2. Re-read the **current** shared playbook and [Runway plan](runway.md). Use the approved genuine screenshots, wide dark editorial shell, numbered green headings, platform advantage order, honest competitor treatment, one final "Start with Runway" CTA and standard shared header/footer.
 3. Research and verify vendor identities, capabilities, URL destinations, AI/Claude/ChatGPT host experiences separately, formulas and substantive claims. Keep the no-pricing-in-A/B rule; in other series, only discuss verified prices if explicitly appropriate and editorially approved. Real screenshots only, no invented interfaces or citations. Treat claims in tentative titles as hypotheses.
 4. Make the article genuinely distinct from existing Runway pages. Do not create weak "year-only", vendor-name-swapped or keyword-cannibalizing pages. If the subject is already answered on a live URL, mark it as covered, link it and advance to the next eligible item **within the same run**, without publishing duplicate content.
@@ -257,3 +257,12 @@ Owner requested investigation and repair. Public-site [PR #192](https://github.c
 - Homepage-identical loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js` both return HTTP 200. Tracking scripts/configuration/events/consent/collectors/attribution unchanged; no synthetic production events.
 
 **12 published; 35 remaining. Next eligible: A9**, subject to fresh claim, queue and vendor-evidence checks. No second article published in this repair run.
+
+
+### Eligibility review — 13 November 2026, 19:55 CET
+
+Re-read canonical queue, plan and playbook; no open Runway source PR found. A8 canonical returned HTTP 200 again. A9 is deferred pending current Bob Finance availability: https://www.hibob.com/platform/finance/ explicitly says it is being reimagined and will return in a few months (reviewed today). Do not represent the historical Mosaic/Bob Finance feature inventory as an available current offer. Revisit after an official relaunch/current availability confirmation; this is not a claim that HiBob or its workforce-planning module is discontinued.
+
+Selected next research candidate: A10, Runway vs Exigyn. Primary evidence https://www.exigyn.com/ and https://www.exigyn.com/biotech-fpa-software currently describe biotech runway, accruals, headcount and board reporting, AI approval workflows and MCP connections to Claude/ChatGPT/Gemini. Treat these as vendor-documented capabilities, not independently tested workflows. Do not assert exclusive AI/MCP support for TrialAgents or equate a listed integration with verified scope, direction or sync cadence. Further integration/host evidence and a distinct editorial draft remain required. No A10 source PR, merge or publication in this review; no active claim retained. No tracking changes or production events.
+
+Current inventory remains 12 published, 35 unfinished (including deferred A9). Next publishing run should take A10 if unclaimed, while retaining A9 for availability review.
