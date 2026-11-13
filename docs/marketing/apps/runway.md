@@ -176,3 +176,9 @@ A2 is published at https://trialagents.com/apps/runway-vs-float. The existing Gi
 - Media: existing genuine Runway 2.1 browser demo assets 01-overview.jpg, 03-plan.jpg, 05-scenarios.jpg. Screenshots show fictional data, distinct from the qualitative evaluation brief. No generated or competitor screenshots.
 - PR #186 source head `a525b09a46d09af33bcbdc7bd67a733583434afe`; predeploy run 43412977689 passed all checks. Desktop/mobile artifact screenshots reviewed. Merged release `edb3973328d7c69bc1f74508994b611302bdb36e`. Shared header/footer, analytics implementation and consent unchanged.
 - Publication pending live verification after automatic deployment; source merge alone is not publication. See canonical queue for latest completion status. Refresh on material cfo.ai integration/host/model changes or Runway catalog changes.
+
+### A3 publication verified — 13 November 2026
+
+Published https://trialagents.com/apps/runway-vs-cfo-ai via PR #186, release `edb3973328d7c69bc1f74508994b611302bdb36e`. Predeploy run 43412977689 passed 282 tests, snapshot/metadata/discovery and desktop/mobile browser checks; visual artifacts reviewed. Automatic deployment completed without Cloudflare login. Production checks confirmed HTTP 200, expected H1 and self-canonical, Article/BreadcrumbList schema, three real screenshots, /apps index and sitemap.xml/llms.txt/llm.xml inclusion. Loader `/_snapshot/query-assets/114933b27c521a75f333.js` matches homepage and both it and client `/_snapshot/query-assets/c251da7b4969f7c85048.js` return 200. Final CTA retained; no tracking changes or synthetic events. This supersedes A3's pending checkpoint.
+
+**7 published; 40 remaining. Next eligible topic: A4, Runway vs LivePlan**, subject to fresh queue/claim checks. Search rankings, actual indexing and assistant citations are not established by publication QA.
