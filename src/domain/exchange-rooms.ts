@@ -5,7 +5,7 @@ import {typeAccess,access} from './permissions.js';
 import {audit} from './evidence.js';
 import {exchangeAuthority,groupRow,exchangeRow,logExchange,documentRows} from './external-exchange.js';
 import {renderNotices,queueNotices,levelNames,type NoticeEmail} from '../app-services/exchange-email.js';
-import {ACCESS_TRACKED,ENGAGEMENT_FIELDS,TRACKED_FIELD_KIND,roomView,changedSince,documentLines,gateState,roomEnded,titleOf,type RoomOperation,type RoomDocument} from './exchange-room-model.js';
+import {ACCESS_TRACKED,ENGAGEMENT_FIELDS,TRACKED_FIELD_KIND,levelStates,roomView,changedSince,documentLines,gateState,roomEnded,titleOf,type RoomOperation,type RoomDocument} from './exchange-room-model.js';
 
 /**
  * Room extension (docs/product/EXTERNAL_EXCHANGE.md §5): levels, documents replaced in place, room
@@ -51,6 +51,11 @@ export async function trackingReview(tx:Connection,a:Actor,w:string,tracking:{ac
  return result;
 }
 const noticeRecipients=(emails:any[])=>emails.map(m=>({exchangeId:m.exchangeId,to:m.to,subject:m.subject,text:m.text,personalised:m.personalised}));
+/** The access-changed email when an accepted signed document opens a level for one person (rendered as sent; queued on confirm). */
+export async function levelUnlockNotice(tx:Connection,a:Actor,w:string,g:any,e:any,slot:string|null){
+ const level=(g.levels as any[]??[]).find(l=>l.entry==='signed_document'&&l.slot===slot);if(g.kind!=='room'||!level)return null;
+ return {level:level.name as string,email:await notices(tx,a,w,g,[e],'access_changed','',undefined)};
+}
 async function notices(tx:Connection,a:Actor,w:string,g:any,exchanges:any[],type:any,message:string,email:NoticeEmail|undefined,documentsFor?:(e:any)=>Promise<string>){
  const p=await access(tx,a,w,true);const r=await renderNotices(tx,a,w,p,g,exchanges,type,message,email,documentsFor);
  return {...r,emails:noticeRecipients(r.emails)};
@@ -66,7 +71,9 @@ export async function roomReview(tx:Connection,a:Actor,w:string,op:RoomOperation
   const e=await exchangeRow(tx,w,op.exchangeId),g=await groupRow(tx,w,e.group_id);await exchangeAuthority(tx,a,w,g.app_id,true);requireRoom(g);if(g.archived)fail(409,'group_archived','This room is archived');if(e.revoked_at)fail(409,'exchange_revoked','Access was revoked');
   const keys=new Set((g.levels as any[]).map(l=>l.key));if(op.levels.some(k=>!keys.has(k))||new Set(op.levels).size!==op.levels.length)fail(400,'invalid_level','Choose distinct levels of this room');
   const ordered=(g.levels as any[]).filter(l=>op.levels.includes(l.key)).map(l=>l.key),next={...e,levels:ordered};
-  return {exchangeId:e.id,recipient:e.recipient_name||e.recipient_emails[0],from:e.levels,to:ordered,levels:levelNames(g,next),added:ordered.filter(k=>!(e.levels as string[]).includes(k)),removed:(e.levels as string[]).filter(k=>!ordered.includes(k)),notify:op.notify,email:op.notify?await notices(tx,a,w,g,[next],'access_changed','',op.email):null,effect:'Change the levels this person can open'+(op.notify?' and send them the email shown':'')+'. Documents at other levels stay invisible to them.'};
+  if(op.entered.some(k=>!ordered.includes(k)||(g.levels as any[]).find(l=>l.key===k)?.entry==='none'))fail(400,'entry_scope','Record an entry step only for levels with a step that this person gets');if(op.entered.length&&!op.enteredNote)fail(400,'entry_note','Say how the entry step was met (for example the date the CDA was signed)');
+  const enteredNames=(g.levels as any[]).filter(l=>op.entered.includes(l.key)).map(l=>l.name);
+  return {exchangeId:e.id,recipient:e.recipient_name||e.recipient_emails[0],from:e.levels,to:ordered,levels:levelNames(g,next),entryRecorded:enteredNames,enteredNote:op.enteredNote??null,added:ordered.filter(k=>!(e.levels as string[]).includes(k)),removed:(e.levels as string[]).filter(k=>!ordered.includes(k)),notify:op.notify,email:op.notify?await notices(tx,a,w,g,[next],'access_changed','',op.email):null,effect:'Change the levels this person can open'+(enteredNames.length?`; record the entry step for ${enteredNames.join(', ')} as met (${op.enteredNote})`:'')+(op.notify?' and send them the email shown':'')+'. Documents at other levels stay invisible to them.'};
  }
  if(op.kind==='answer_exchange_question'){
   const q=await questionRow(tx,w,op.questionId),g=await groupRow(tx,w,q.group_id),e=await exchangeRow(tx,w,q.exchange_id);await exchangeAuthority(tx,a,w,g.app_id,true);if(g.archived)fail(409,'group_archived','This room is archived');
@@ -115,7 +122,7 @@ export async function commitRoomOperation(tx:Connection,a:Actor,w:string,op:Room
  const p=await access(tx,a,w,true);
  if(op.kind==='set_exchange_levels'){
   await tx.query('UPDATE exchanges SET levels=$3,version=version+1 WHERE id=$1 AND workspace_id=$2',[op.exchangeId,w,J(review.to)]);const e=await exchangeRow(tx,w,op.exchangeId),g=await groupRow(tx,w,e.group_id);
-  await logExchange(tx,e,'levels_changed',{from:review.from,to:review.to,authorization},a);return {status:'saved',exchangeId:e.id,levels:e.levels,emails:review.email?await queueNotices(tx,w,g,review.email):[]};
+  await logExchange(tx,e,'levels_changed',{from:review.from,to:review.to,authorization},a);for(const level of op.entered)await logExchange(tx,e,'level_entry_recorded',{level,note:op.enteredNote,authorization},a);return {status:'saved',exchangeId:e.id,levels:e.levels,emails:review.email?await queueNotices(tx,w,g,review.email):[]};
  }
  if(op.kind==='answer_exchange_question'){
   const q=await questionRow(tx,w,op.questionId),e=await exchangeRow(tx,w,q.exchange_id),g=await groupRow(tx,w,q.group_id),answerId=randomUUID();
@@ -149,7 +156,10 @@ export async function roomStatus(tx:Connection,e:any,g:any){
  const docs=(g.documents as RoomDocument[]).map(d=>{const ids=[d.versionId,...(d.previous??[])],v=views.filter(x=>x.document_id===d.documentId),dl=downloads.filter(x=>x.document_id===d.documentId||ids.includes(x.version_id));const last=[...v.map(x=>x.last),...dl.map(x=>x.last)].filter(Boolean).sort((a,b)=>new Date(b).getTime()-new Date(a).getTime())[0]??null;
   return {documentId:d.documentId,versionId:d.versionId,title:titleOf(d),section:d.section?.number??null,level:d.level??null,views:v.reduce((n,x)=>n+x.views,0),seconds:v.reduce((n,x)=>n+x.seconds,0),downloads:dl.reduce((n,x)=>n+x.n,0),lastSeen:last,versions:ids.map(id=>({versionId:id,current:id===d.versionId,views:v.find(x=>x.version_id===id)?.views??0,seconds:v.find(x=>x.version_id===id)?.seconds??0,downloads:dl.filter(x=>x.version_id===id).reduce((n,x)=>n+x.n,0)}))};});
  const questions=Number((await tx.query('SELECT count(*) AS n FROM exchange_questions WHERE exchange_id=$1',[e.id])).rows[0].n),digest=(await tx.query("SELECT max(created_at) AS at FROM exchange_events WHERE exchange_id=$1 AND kind='digest_sent'",[e.id])).rows[0].at;
- return {levels:e.levels,levelNames:levelNames(g,e),documents:docs,questions,digestSentAt:digest};
+ // Open levels and the access history (for an app's disclosure record): grants, level changes, recorded and completed entry steps, emails, revocation.
+ const openLevels=(await levelStates(tx,g,e)).filter(l=>l.open).map(l=>l.key);
+ const history=(await tx.query("SELECT kind,detail,created_at FROM exchange_events WHERE exchange_id=$1 AND kind IN ('invited','levels_changed','level_entry_recorded','level_acknowledged','file_accepted','extended','revoked','email_sent') ORDER BY created_at",[e.id])).rows.map(x=>({kind:x.kind,at:x.created_at,...(x.kind==='levels_changed'?{from:x.detail.from,to:x.detail.to}:x.kind==='invited'?{levels:x.detail.levels??null}:['level_entry_recorded','level_acknowledged'].includes(x.kind)?{level:x.detail.level??null,note:x.detail.note??null}:x.kind==='email_sent'?{emailType:x.detail.emailType}:x.kind==='extended'?{to:x.detail.to}:{})}));
+ return {levels:e.levels,levelNames:levelNames(g,e),openLevels,history,documents:docs,questions,digestSentAt:digest};
 }
 
 export async function listExchangeQuestions(db:Connection,a:Actor,w:string,q:{groupId?:string;exchangeId?:string;offset?:number}){

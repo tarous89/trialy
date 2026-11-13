@@ -1,0 +1,1352 @@
+{
+ "asOf": "2026-11-13",
+ "note": "Fictional companies, people and documents for the offline preview and tests. Emails use the reserved .invalid domain.",
+ "records": [
+  {
+   "role": "organizations",
+   "id": "00000000-0000-4000-8000-000000000001",
+   "version": 0,
+   "data": {
+    "name": "Alder Peak Capital",
+    "org_type": "investor",
+    "country": "United Kingdom"
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "00000000-0000-4000-8000-000000000002",
+   "version": 0,
+   "data": {
+    "name": "Birchway Ventures",
+    "org_type": "investor",
+    "country": "Germany"
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "00000000-0000-4000-8000-000000000003",
+   "version": 0,
+   "data": {
+    "name": "Cedarline Pharma",
+    "org_type": "partner",
+    "country": "Switzerland"
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "00000000-0000-4000-8000-000000000004",
+   "version": 0,
+   "data": {
+    "name": "Duneport Health Fund",
+    "org_type": "investor",
+    "country": "Netherlands"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000005",
+   "version": 0,
+   "data": {
+    "name": "Ana Fictus",
+    "organization_id": "00000000-0000-4000-8000-000000000001",
+    "email": "ana@alder.invalid",
+    "title": "Partner"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000006",
+   "version": 0,
+   "data": {
+    "name": "Ben Example",
+    "organization_id": "00000000-0000-4000-8000-000000000002",
+    "email": "ben@birch.invalid",
+    "title": "Partner"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000007",
+   "version": 0,
+   "data": {
+    "name": "Chloe Sample",
+    "organization_id": "00000000-0000-4000-8000-000000000003",
+    "email": "chloe@cedar.invalid",
+    "title": "BD Director"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000008",
+   "version": 0,
+   "data": {
+    "name": "Dev Placeholder",
+    "organization_id": "00000000-0000-4000-8000-000000000004",
+    "email": "dev@dune.invalid",
+    "title": "Partner"
+   }
+  },
+  {
+   "role": "programs",
+   "id": "00000000-0000-4000-8000-000000000009",
+   "version": 0,
+   "data": {
+    "name": "NWB-101 (fibrosis)",
+    "stage": "phase_1"
+   }
+  },
+  {
+   "role": "agreements",
+   "id": "00000000-0000-4000-8000-000000000010",
+   "version": 0,
+   "data": {
+    "name": "CDA: Cedarline Pharma (mutual)",
+    "counterparty_id": "00000000-0000-4000-8000-000000000003",
+    "agreement_type": "cda_nda",
+    "status": "active",
+    "effective_date": "2026-09-02",
+    "expiry_date": "2029-09-02"
+   }
+  },
+  {
+   "role": "dataroom.settings",
+   "id": "00000000-0000-4000-8000-000000000011",
+   "version": 0,
+   "data": {
+    "default_access_days": 180,
+    "view_only_default": false,
+    "quiet_days": 10,
+    "qa_approval_required": true,
+    "notify_updates_default": false,
+    "sender_display": "organization"
+   }
+  },
+  {
+   "role": "dataroom.rooms",
+   "id": "00000000-0000-4000-8000-000000000033",
+   "version": 2,
+   "data": {
+    "name": "Series B data room",
+    "purpose": "financing",
+    "status": "live",
+    "program_ids": "00000000-0000-4000-8000-000000000009",
+    "round_id": "Series B (2026)",
+    "template_id": "builtin:financing",
+    "cda_option": "none",
+    "welcome_note": "Welcome to the Northwind Bio Series B data room. Start with the teaser and presentation; ask questions in Q&A.",
+    "contact_person_id": null,
+    "notify_updates": true,
+    "owner": "Robin Lead"
+   }
+  },
+  {
+   "role": "dataroom.levels",
+   "id": "00000000-0000-4000-8000-000000000034",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "name": "Non-confidential",
+    "kind": "non_confidential",
+    "order": 1,
+    "entry": "none"
+   }
+  },
+  {
+   "role": "dataroom.levels",
+   "id": "00000000-0000-4000-8000-000000000035",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "name": "Confidential",
+    "kind": "confidential",
+    "order": 2,
+    "entry": "click_through"
+   }
+  },
+  {
+   "role": "dataroom.sections",
+   "id": "00000000-0000-4000-8000-000000000036",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "number": "1",
+    "name": "Company and corporate",
+    "order": 1
+   }
+  },
+  {
+   "role": "dataroom.items",
+   "id": "00000000-0000-4000-8000-000000000037",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "section_id": "00000000-0000-4000-8000-000000000036",
+    "title": "Company teaser or one-pager",
+    "required": true,
+    "status": "ready",
+    "level_id": "00000000-0000-4000-8000-000000000034",
+    "view_only": false,
+    "document_id": "00000000-0000-4000-9000-000000000012",
+    "version_id": "00000000-0000-4000-9100-000000000013",
+    "updated_on": "2026-10-21"
+   }
+  },
+  {
+   "role": "dataroom.items",
+   "id": "00000000-0000-4000-8000-000000000038",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "section_id": "00000000-0000-4000-8000-000000000036",
+    "title": "Presentation deck",
+    "required": true,
+    "status": "ready",
+    "level_id": "00000000-0000-4000-8000-000000000034",
+    "view_only": true,
+    "document_id": "00000000-0000-4000-9000-000000000014",
+    "version_id": "00000000-0000-4000-9100-000000000015",
+    "updated_on": "2026-10-21"
+   }
+  },
+  {
+   "role": "dataroom.items",
+   "id": "00000000-0000-4000-8000-000000000039",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "section_id": "00000000-0000-4000-8000-000000000036",
+    "title": "Management team and board",
+    "required": true,
+    "status": "missing",
+    "level_id": "00000000-0000-4000-8000-000000000034",
+    "view_only": false,
+    "owner": "Robin Lead",
+    "due": "2026-11-10"
+   }
+  },
+  {
+   "role": "dataroom.items",
+   "id": "00000000-0000-4000-8000-000000000040",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "section_id": "00000000-0000-4000-8000-000000000036",
+    "title": "Articles and corporate documents",
+    "required": false,
+    "status": "missing",
+    "level_id": "00000000-0000-4000-8000-000000000035",
+    "view_only": false
+   }
+  },
+  {
+   "role": "dataroom.sections",
+   "id": "00000000-0000-4000-8000-000000000041",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "number": "2",
+    "name": "Financial",
+    "order": 2
+   }
+  },
+  {
+   "role": "dataroom.items",
+   "id": "00000000-0000-4000-8000-000000000042",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "section_id": "00000000-0000-4000-8000-000000000041",
+    "title": "Financial statements",
+    "required": true,
+    "status": "ready",
+    "level_id": "00000000-0000-4000-8000-000000000035",
+    "view_only": false,
+    "document_id": "00000000-0000-4000-9000-000000000016",
+    "version_id": "00000000-0000-4000-9100-000000000017",
+    "updated_on": "2026-10-21"
+   }
+  },
+  {
+   "role": "dataroom.items",
+   "id": "00000000-0000-4000-8000-000000000043",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "section_id": "00000000-0000-4000-8000-000000000041",
+    "title": "Cash forecast and runway",
+    "required": true,
+    "status": "ready",
+    "level_id": "00000000-0000-4000-8000-000000000035",
+    "view_only": false,
+    "document_id": "00000000-0000-4000-9000-000000000018",
+    "version_id": "00000000-0000-4000-9100-000000000019",
+    "updated_on": "2026-11-12"
+   }
+  },
+  {
+   "role": "dataroom.items",
+   "id": "00000000-0000-4000-8000-000000000044",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "section_id": "00000000-0000-4000-8000-000000000041",
+    "title": "Financial model",
+    "required": true,
+    "status": "in_progress",
+    "level_id": "00000000-0000-4000-8000-000000000035",
+    "view_only": false,
+    "owner": "Sam CFO",
+    "due": "2026-11-18"
+   }
+  },
+  {
+   "role": "dataroom.items",
+   "id": "00000000-0000-4000-8000-000000000045",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "section_id": "00000000-0000-4000-8000-000000000041",
+    "title": "Budget and use of proceeds",
+    "required": true,
+    "status": "missing",
+    "level_id": "00000000-0000-4000-8000-000000000035",
+    "view_only": false
+   }
+  },
+  {
+   "role": "dataroom.sections",
+   "id": "00000000-0000-4000-8000-000000000046",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "number": "3",
+    "name": "Capitalisation and legal",
+    "order": 3
+   }
+  },
+  {
+   "role": "dataroom.items",
+   "id": "00000000-0000-4000-8000-000000000047",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "section_id": "00000000-0000-4000-8000-000000000046",
+    "title": "Cap table",
+    "required": true,
+    "status": "ready",
+    "level_id": "00000000-0000-4000-8000-000000000035",
+    "view_only": false,
+    "document_id": "00000000-0000-4000-9000-000000000020",
+    "version_id": "00000000-0000-4000-9100-000000000021",
+    "updated_on": "2026-10-21"
+   }
+  },
+  {
+   "role": "dataroom.items",
+   "id": "00000000-0000-4000-8000-000000000048",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "section_id": "00000000-0000-4000-8000-000000000046",
+    "title": "Shareholder and investment agreements",
+    "required": true,
+    "status": "missing",
+    "level_id": "00000000-0000-4000-8000-000000000035",
+    "view_only": false
+   }
+  },
+  {
+   "role": "dataroom.sections",
+   "id": "00000000-0000-4000-8000-000000000049",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "number": "4",
+    "name": "Intellectual property",
+    "order": 4
+   }
+  },
+  {
+   "role": "dataroom.items",
+   "id": "00000000-0000-4000-8000-000000000050",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "section_id": "00000000-0000-4000-8000-000000000049",
+    "title": "Patent schedule",
+    "required": true,
+    "status": "ready",
+    "level_id": "00000000-0000-4000-8000-000000000035",
+    "view_only": false,
+    "document_id": "00000000-0000-4000-9000-000000000022",
+    "version_id": "00000000-0000-4000-9100-000000000023",
+    "updated_on": "2026-10-21"
+   }
+  },
+  {
+   "role": "dataroom.items",
+   "id": "00000000-0000-4000-8000-000000000051",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "section_id": "00000000-0000-4000-8000-000000000049",
+    "title": "IP assignments and licences",
+    "required": true,
+    "status": "missing",
+    "level_id": "00000000-0000-4000-8000-000000000035",
+    "view_only": false
+   }
+  },
+  {
+   "role": "dataroom.sections",
+   "id": "00000000-0000-4000-8000-000000000052",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "number": "5",
+    "name": "Science and platform",
+    "order": 5
+   }
+  },
+  {
+   "role": "dataroom.items",
+   "id": "00000000-0000-4000-8000-000000000053",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "section_id": "00000000-0000-4000-8000-000000000052",
+    "title": "Platform overview",
+    "required": true,
+    "status": "missing",
+    "level_id": "00000000-0000-4000-8000-000000000034",
+    "view_only": false
+   }
+  },
+  {
+   "role": "dataroom.items",
+   "id": "00000000-0000-4000-8000-000000000054",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "section_id": "00000000-0000-4000-8000-000000000052",
+    "title": "Key data package",
+    "required": true,
+    "status": "ready",
+    "level_id": "00000000-0000-4000-8000-000000000035",
+    "view_only": false,
+    "document_id": "00000000-0000-4000-9000-000000000024",
+    "version_id": "00000000-0000-4000-9100-000000000025",
+    "updated_on": "2026-10-21"
+   }
+  },
+  {
+   "role": "dataroom.sections",
+   "id": "00000000-0000-4000-8000-000000000055",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "number": "6",
+    "name": "Clinical",
+    "order": 6
+   }
+  },
+  {
+   "role": "dataroom.items",
+   "id": "00000000-0000-4000-8000-000000000056",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "section_id": "00000000-0000-4000-8000-000000000055",
+    "title": "Development plan",
+    "required": true,
+    "status": "ready",
+    "level_id": "00000000-0000-4000-8000-000000000035",
+    "view_only": false,
+    "document_id": "00000000-0000-4000-9000-000000000026",
+    "version_id": "00000000-0000-4000-9100-000000000027",
+    "updated_on": "2026-10-21"
+   }
+  },
+  {
+   "role": "dataroom.sections",
+   "id": "00000000-0000-4000-8000-000000000057",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "number": "9",
+    "name": "Commercial and other",
+    "order": 7
+   }
+  },
+  {
+   "role": "dataroom.items",
+   "id": "00000000-0000-4000-8000-000000000058",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "section_id": "00000000-0000-4000-8000-000000000057",
+    "title": "Market and competitive analysis",
+    "required": true,
+    "status": "ready",
+    "level_id": "00000000-0000-4000-8000-000000000034",
+    "view_only": false,
+    "document_id": "00000000-0000-4000-9000-000000000030",
+    "version_id": "00000000-0000-4000-9100-000000000031",
+    "updated_on": "2026-10-21"
+   }
+  },
+  {
+   "role": "dataroom.access_grants",
+   "id": "00000000-0000-4000-8000-000000000064",
+   "version": 3,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "room_name": "Series B data room",
+    "room_purpose": "financing",
+    "organization_id": "00000000-0000-4000-8000-000000000001",
+    "person_id": "00000000-0000-4000-8000-000000000005",
+    "granted_on": "2026-10-22",
+    "expires_on": "2027-05-06",
+    "status": "active",
+    "agreement_accepted_on": "2026-10-23",
+    "source": "tracked",
+    "level_ids": "00000000-0000-4000-8000-000000000034,00000000-0000-4000-8000-000000000035",
+    "recipient_email": "ana@alder.invalid",
+    "exchange_id": "00000000-0000-4000-7100-000000000060",
+    "cda_status": "not_needed",
+    "last_seen_on": "2026-11-12"
+   }
+  },
+  {
+   "role": "dataroom.access_grants",
+   "id": "00000000-0000-4000-8000-000000000065",
+   "version": 3,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "room_name": "Series B data room",
+    "room_purpose": "financing",
+    "organization_id": "00000000-0000-4000-8000-000000000002",
+    "person_id": "00000000-0000-4000-8000-000000000006",
+    "granted_on": "2026-10-22",
+    "expires_on": "2027-05-06",
+    "status": "active",
+    "agreement_accepted_on": "2026-10-23",
+    "source": "tracked",
+    "level_ids": "00000000-0000-4000-8000-000000000034",
+    "recipient_email": "ben@birch.invalid",
+    "exchange_id": "00000000-0000-4000-7100-000000000061",
+    "cda_status": "not_needed",
+    "last_seen_on": "2026-10-28"
+   }
+  },
+  {
+   "role": "dataroom.access_grants",
+   "id": "00000000-0000-4000-8000-000000000066",
+   "version": 3,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "room_name": "Series B data room",
+    "room_purpose": "financing",
+    "organization_id": "00000000-0000-4000-8000-000000000004",
+    "person_id": "00000000-0000-4000-8000-000000000008",
+    "granted_on": "2026-11-04",
+    "expires_on": "2027-05-06",
+    "status": "invited",
+    "agreement_accepted_on": null,
+    "source": "tracked",
+    "level_ids": "00000000-0000-4000-8000-000000000034,00000000-0000-4000-8000-000000000035",
+    "recipient_email": "dev@dune.invalid",
+    "exchange_id": "00000000-0000-4000-7100-000000000062",
+    "cda_status": "not_needed",
+    "last_seen_on": null
+   }
+  },
+  {
+   "role": "dataroom.engagement",
+   "id": "00000000-0000-4000-8000-000000000067",
+   "version": 0,
+   "data": {
+    "grant_id": "00000000-0000-4000-8000-000000000064",
+    "organization_id": "00000000-0000-4000-8000-000000000001",
+    "person_id": "00000000-0000-4000-8000-000000000005",
+    "document_ref": "00000000-0000-4000-9000-000000000014",
+    "document_title": "Presentation deck",
+    "first_viewed_on": "2026-10-23",
+    "last_viewed_on": "2026-11-12",
+    "view_count": 4,
+    "seconds_viewed": 1260,
+    "downloads": 0,
+    "source": "tracked",
+    "as_of": "2026-11-13",
+    "section_id": "00000000-0000-4000-8000-000000000036"
+   }
+  },
+  {
+   "role": "dataroom.engagement",
+   "id": "00000000-0000-4000-8000-000000000068",
+   "version": 0,
+   "data": {
+    "grant_id": "00000000-0000-4000-8000-000000000064",
+    "organization_id": "00000000-0000-4000-8000-000000000001",
+    "person_id": "00000000-0000-4000-8000-000000000005",
+    "document_ref": "00000000-0000-4000-9000-000000000018",
+    "document_title": "Cash forecast and runway",
+    "first_viewed_on": "2026-10-24",
+    "last_viewed_on": "2026-11-12",
+    "view_count": 3,
+    "seconds_viewed": 940,
+    "downloads": 1,
+    "source": "tracked",
+    "as_of": "2026-11-13",
+    "section_id": "00000000-0000-4000-8000-000000000041"
+   }
+  },
+  {
+   "role": "dataroom.engagement",
+   "id": "00000000-0000-4000-8000-000000000069",
+   "version": 0,
+   "data": {
+    "grant_id": "00000000-0000-4000-8000-000000000064",
+    "organization_id": "00000000-0000-4000-8000-000000000001",
+    "person_id": "00000000-0000-4000-8000-000000000005",
+    "document_ref": "00000000-0000-4000-9000-000000000024",
+    "document_title": "Key data package",
+    "first_viewed_on": "2026-10-25",
+    "last_viewed_on": "2026-11-11",
+    "view_count": 2,
+    "seconds_viewed": 1810,
+    "downloads": 1,
+    "source": "tracked",
+    "as_of": "2026-11-13",
+    "section_id": "00000000-0000-4000-8000-000000000052"
+   }
+  },
+  {
+   "role": "dataroom.engagement",
+   "id": "00000000-0000-4000-8000-000000000070",
+   "version": 0,
+   "data": {
+    "grant_id": "00000000-0000-4000-8000-000000000065",
+    "organization_id": "00000000-0000-4000-8000-000000000002",
+    "person_id": "00000000-0000-4000-8000-000000000006",
+    "document_ref": "00000000-0000-4000-9000-000000000012",
+    "document_title": "Company teaser or one-pager",
+    "first_viewed_on": "2026-10-23",
+    "last_viewed_on": "2026-10-28",
+    "view_count": 1,
+    "seconds_viewed": 95,
+    "downloads": 1,
+    "source": "tracked",
+    "as_of": "2026-11-13",
+    "section_id": "00000000-0000-4000-8000-000000000036"
+   }
+  },
+  {
+   "role": "dataroom.questions",
+   "id": "00000000-0000-4000-8000-000000000072",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "grant_id": "00000000-0000-4000-8000-000000000064",
+    "organization_id": "00000000-0000-4000-8000-000000000001",
+    "person_id": "00000000-0000-4000-8000-000000000005",
+    "asked_on": "2026-11-11",
+    "category": "financial",
+    "section_id": "00000000-0000-4000-8000-000000000041",
+    "question": "Does the cash forecast include the planned Phase 2 start in Q3 2027?",
+    "status": "drafting",
+    "assignee": "Sam CFO",
+    "due": "2026-11-15",
+    "answer": "Yes. The forecast includes Phase 2 start-up costs from July 2027 and assumes the Series B closes in Q1 2027.",
+    "message_id": "00000000-0000-4000-7200-000000000071"
+   }
+  },
+  {
+   "role": "dataroom.questions",
+   "id": "00000000-0000-4000-8000-000000000074",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000033",
+    "grant_id": "00000000-0000-4000-8000-000000000065",
+    "organization_id": "00000000-0000-4000-8000-000000000002",
+    "person_id": "00000000-0000-4000-8000-000000000006",
+    "asked_on": "2026-11-01",
+    "category": "corporate",
+    "question": "When is the first close planned?",
+    "status": "published",
+    "answer": "First close is planned for the end of Q1 2027.",
+    "approved_by": "Robin Lead",
+    "answered_on": "2026-11-03",
+    "visibility": "room",
+    "message_id": "00000000-0000-4000-7200-000000000073"
+   }
+  },
+  {
+   "role": "dataroom.rooms",
+   "id": "00000000-0000-4000-8000-000000000075",
+   "version": 1,
+   "data": {
+    "name": "NWB-101 licensing room",
+    "purpose": "licensing",
+    "status": "preparing",
+    "program_ids": "00000000-0000-4000-8000-000000000009",
+    "opportunity_ref": "Cedarline: NWB-101 licence",
+    "template_id": "builtin:licensing",
+    "cda_option": "contracts",
+    "notify_updates": false,
+    "owner": "Robin Lead"
+   }
+  },
+  {
+   "role": "dataroom.levels",
+   "id": "00000000-0000-4000-8000-000000000076",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000075",
+    "name": "Non-confidential",
+    "kind": "non_confidential",
+    "order": 1,
+    "entry": "none"
+   }
+  },
+  {
+   "role": "dataroom.levels",
+   "id": "00000000-0000-4000-8000-000000000077",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000075",
+    "name": "Confidential",
+    "kind": "confidential",
+    "order": 2,
+    "entry": "signed_cda"
+   }
+  },
+  {
+   "role": "dataroom.sections",
+   "id": "00000000-0000-4000-8000-000000000078",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000075",
+    "number": "6",
+    "name": "Clinical",
+    "order": 1
+   }
+  },
+  {
+   "role": "dataroom.items",
+   "id": "00000000-0000-4000-8000-000000000079",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000075",
+    "section_id": "00000000-0000-4000-8000-000000000078",
+    "title": "Development plan",
+    "required": true,
+    "status": "ready",
+    "level_id": "00000000-0000-4000-8000-000000000077",
+    "document_id": "00000000-0000-4000-9000-000000000026",
+    "version_id": "00000000-0000-4000-9100-000000000027",
+    "updated_on": "2026-10-21"
+   }
+  },
+  {
+   "role": "dataroom.items",
+   "id": "00000000-0000-4000-8000-000000000080",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000075",
+    "section_id": "00000000-0000-4000-8000-000000000078",
+    "title": "Clinical study reports or summaries",
+    "required": true,
+    "status": "missing",
+    "level_id": "00000000-0000-4000-8000-000000000077",
+    "owner": "Kim CMO",
+    "due": "2026-11-20"
+   }
+  },
+  {
+   "role": "dataroom.access_grants",
+   "id": "00000000-0000-4000-8000-000000000081",
+   "version": 3,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000075",
+    "room_name": "NWB-101 licensing room",
+    "room_purpose": "licensing",
+    "organization_id": "00000000-0000-4000-8000-000000000003",
+    "person_id": "00000000-0000-4000-8000-000000000007",
+    "granted_on": "2026-11-12",
+    "expires_on": "2027-05-06",
+    "status": "invited",
+    "agreement_accepted_on": null,
+    "source": "tracked",
+    "level_ids": "00000000-0000-4000-8000-000000000076",
+    "recipient_email": "chloe@cedar.invalid",
+    "exchange_id": null,
+    "cda_status": "not_needed",
+    "last_seen_on": null
+   }
+  }
+ ],
+ "documents": [
+  {
+   "documentId": "00000000-0000-4000-9000-000000000012",
+   "versionId": "00000000-0000-4000-9100-000000000013",
+   "version": 1,
+   "latest": true,
+   "filename": "Company teaser.pdf",
+   "aiReadable": true,
+   "uploadedOn": "2026-10-20"
+  },
+  {
+   "documentId": "00000000-0000-4000-9000-000000000014",
+   "versionId": "00000000-0000-4000-9100-000000000015",
+   "version": 1,
+   "latest": false,
+   "filename": "Investor presentation.pdf",
+   "aiReadable": true,
+   "uploadedOn": "2026-10-20"
+  },
+  {
+   "documentId": "00000000-0000-4000-9000-000000000016",
+   "versionId": "00000000-0000-4000-9100-000000000017",
+   "version": 1,
+   "latest": true,
+   "filename": "Financial statements FY2025.pdf",
+   "aiReadable": true,
+   "uploadedOn": "2026-10-20"
+  },
+  {
+   "documentId": "00000000-0000-4000-9000-000000000018",
+   "versionId": "00000000-0000-4000-9100-000000000019",
+   "version": 1,
+   "latest": true,
+   "filename": "Cash forecast 2026-2028.pdf",
+   "aiReadable": true,
+   "uploadedOn": "2026-10-20"
+  },
+  {
+   "documentId": "00000000-0000-4000-9000-000000000020",
+   "versionId": "00000000-0000-4000-9100-000000000021",
+   "version": 1,
+   "latest": true,
+   "filename": "Cap table summary.pdf",
+   "aiReadable": true,
+   "uploadedOn": "2026-10-20"
+  },
+  {
+   "documentId": "00000000-0000-4000-9000-000000000022",
+   "versionId": "00000000-0000-4000-9100-000000000023",
+   "version": 1,
+   "latest": true,
+   "filename": "Patent schedule.pdf",
+   "aiReadable": true,
+   "uploadedOn": "2026-10-20"
+  },
+  {
+   "documentId": "00000000-0000-4000-9000-000000000024",
+   "versionId": "00000000-0000-4000-9100-000000000025",
+   "version": 1,
+   "latest": true,
+   "filename": "NWB-101 key data package.pdf",
+   "aiReadable": true,
+   "uploadedOn": "2026-10-20"
+  },
+  {
+   "documentId": "00000000-0000-4000-9000-000000000026",
+   "versionId": "00000000-0000-4000-9100-000000000027",
+   "version": 1,
+   "latest": true,
+   "filename": "Development plan.pdf",
+   "aiReadable": true,
+   "uploadedOn": "2026-10-20"
+  },
+  {
+   "documentId": "00000000-0000-4000-9000-000000000028",
+   "versionId": "00000000-0000-4000-9100-000000000029",
+   "version": 1,
+   "latest": true,
+   "filename": "Mutual CDA template.pdf",
+   "aiReadable": true,
+   "uploadedOn": "2026-10-20"
+  },
+  {
+   "documentId": "00000000-0000-4000-9000-000000000030",
+   "versionId": "00000000-0000-4000-9100-000000000031",
+   "version": 1,
+   "latest": true,
+   "filename": "Market analysis.pdf",
+   "aiReadable": true,
+   "uploadedOn": "2026-10-20"
+  },
+  {
+   "documentId": "00000000-0000-4000-9000-000000000014",
+   "versionId": "00000000-0000-4000-9100-000000000032",
+   "version": 2,
+   "latest": true,
+   "filename": "Investor presentation.pdf",
+   "aiReadable": true,
+   "uploadedOn": "2026-11-12"
+  }
+ ],
+ "exchange": {
+  "groups": [
+   {
+    "id": "00000000-0000-4000-7000-000000000059",
+    "appRef": "room:00000000-0000-4000-8000-000000000033",
+    "kind": "room",
+    "archived": false,
+    "title": "Series B data room",
+    "levels": [
+     {
+      "key": "l00000000000040008000000000000034",
+      "name": "Non-confidential",
+      "entry": "none"
+     },
+     {
+      "key": "l00000000000040008000000000000035",
+      "name": "Confidential",
+      "entry": "click_through"
+     }
+    ],
+    "documents": [
+     {
+      "versionId": "00000000-0000-4000-9100-000000000013",
+      "documentId": "00000000-0000-4000-9000-000000000012",
+      "filename": "Company teaser.pdf",
+      "mime": "application/pdf",
+      "byteSize": 240000,
+      "title": "Company teaser or one-pager",
+      "section": {
+       "number": "1",
+       "title": "Company and corporate"
+      },
+      "order": 0,
+      "level": "l00000000000040008000000000000034",
+      "viewOnly": false,
+      "gate": false,
+      "addedAt": "2026-10-21T09:00:00.000Z"
+     },
+     {
+      "versionId": "00000000-0000-4000-9100-000000000015",
+      "documentId": "00000000-0000-4000-9000-000000000014",
+      "filename": "Investor presentation.pdf",
+      "mime": "application/pdf",
+      "byteSize": 240000,
+      "title": "Presentation deck",
+      "section": {
+       "number": "1",
+       "title": "Company and corporate"
+      },
+      "order": 0,
+      "level": "l00000000000040008000000000000034",
+      "viewOnly": true,
+      "gate": false,
+      "addedAt": "2026-10-21T09:00:00.000Z"
+     },
+     {
+      "versionId": "00000000-0000-4000-9100-000000000017",
+      "documentId": "00000000-0000-4000-9000-000000000016",
+      "filename": "Financial statements FY2025.pdf",
+      "mime": "application/pdf",
+      "byteSize": 240000,
+      "title": "Financial statements",
+      "section": {
+       "number": "2",
+       "title": "Financial"
+      },
+      "order": 0,
+      "level": "l00000000000040008000000000000035",
+      "viewOnly": false,
+      "gate": false,
+      "addedAt": "2026-10-21T09:00:00.000Z"
+     },
+     {
+      "versionId": "00000000-0000-4000-9100-000000000019",
+      "documentId": "00000000-0000-4000-9000-000000000018",
+      "filename": "Cash forecast 2026-2028.pdf",
+      "mime": "application/pdf",
+      "byteSize": 240000,
+      "title": "Cash forecast and runway",
+      "section": {
+       "number": "2",
+       "title": "Financial"
+      },
+      "order": 0,
+      "level": "l00000000000040008000000000000035",
+      "viewOnly": false,
+      "gate": false,
+      "addedAt": "2026-10-21T09:00:00.000Z",
+      "updatedAt": "2026-11-12T10:00:00.000Z"
+     },
+     {
+      "versionId": "00000000-0000-4000-9100-000000000021",
+      "documentId": "00000000-0000-4000-9000-000000000020",
+      "filename": "Cap table summary.pdf",
+      "mime": "application/pdf",
+      "byteSize": 240000,
+      "title": "Cap table",
+      "section": {
+       "number": "3",
+       "title": "Capitalisation and legal"
+      },
+      "order": 0,
+      "level": "l00000000000040008000000000000035",
+      "viewOnly": false,
+      "gate": false,
+      "addedAt": "2026-10-21T09:00:00.000Z"
+     },
+     {
+      "versionId": "00000000-0000-4000-9100-000000000023",
+      "documentId": "00000000-0000-4000-9000-000000000022",
+      "filename": "Patent schedule.pdf",
+      "mime": "application/pdf",
+      "byteSize": 240000,
+      "title": "Patent schedule",
+      "section": {
+       "number": "4",
+       "title": "Intellectual property"
+      },
+      "order": 0,
+      "level": "l00000000000040008000000000000035",
+      "viewOnly": false,
+      "gate": false,
+      "addedAt": "2026-10-21T09:00:00.000Z"
+     },
+     {
+      "versionId": "00000000-0000-4000-9100-000000000025",
+      "documentId": "00000000-0000-4000-9000-000000000024",
+      "filename": "NWB-101 key data package.pdf",
+      "mime": "application/pdf",
+      "byteSize": 240000,
+      "title": "Key data package",
+      "section": {
+       "number": "5",
+       "title": "Science and platform"
+      },
+      "order": 0,
+      "level": "l00000000000040008000000000000035",
+      "viewOnly": false,
+      "gate": false,
+      "addedAt": "2026-10-21T09:00:00.000Z"
+     },
+     {
+      "versionId": "00000000-0000-4000-9100-000000000027",
+      "documentId": "00000000-0000-4000-9000-000000000026",
+      "filename": "Development plan.pdf",
+      "mime": "application/pdf",
+      "byteSize": 240000,
+      "title": "Development plan",
+      "section": {
+       "number": "6",
+       "title": "Clinical"
+      },
+      "order": 0,
+      "level": "l00000000000040008000000000000035",
+      "viewOnly": false,
+      "gate": false,
+      "addedAt": "2026-10-21T09:00:00.000Z"
+     }
+    ],
+    "digest": {
+     "subject": "{title}: documents added or updated",
+     "body": "Dear {recipient_name},\n\n{message}\n\n{link}",
+     "approvedAt": "2026-10-22T09:00:00.000Z"
+    },
+    "version": 6,
+    "exchanges": [
+     {
+      "id": "00000000-0000-4000-7100-000000000060",
+      "groupId": "00000000-0000-4000-7000-000000000059",
+      "recordId": "00000000-0000-4000-8000-000000000064",
+      "recipientName": "Ana Fictus",
+      "recipientCompany": "Alder Peak Capital",
+      "recipientEmails": [
+       "ana@alder.invalid"
+      ],
+      "expiresAt": "2027-05-06T00:00:00.000Z",
+      "revokedAt": null,
+      "levels": [
+       "l00000000000040008000000000000034",
+       "l00000000000040008000000000000035"
+      ],
+      "createdAt": "2026-10-22T09:00:00.000Z",
+      "version": 2,
+      "status": {
+       "kind": "room",
+       "opened": "2026-10-23T10:00:00.000Z",
+       "lastOpened": "2026-11-12T15:30:00.000Z",
+       "levels": [
+        "l00000000000040008000000000000034",
+        "l00000000000040008000000000000035"
+       ],
+       "openLevels": [
+        "l00000000000040008000000000000034",
+        "l00000000000040008000000000000035"
+       ],
+       "history": [
+        {
+         "kind": "invited",
+         "at": "2026-10-22T09:00:00.000Z",
+         "levels": [
+          "l00000000000040008000000000000034"
+         ]
+        },
+        {
+         "kind": "email_sent",
+         "at": "2026-10-22T09:02:00.000Z",
+         "emailType": "access_granted"
+        },
+        {
+         "kind": "levels_changed",
+         "at": "2026-10-23T11:00:00.000Z",
+         "from": [
+          "l00000000000040008000000000000034"
+         ],
+         "to": [
+          "l00000000000040008000000000000034",
+          "l00000000000040008000000000000035"
+         ]
+        },
+        {
+         "kind": "acknowledged",
+         "at": "2026-10-23T11:20:00.000Z",
+         "level": "l00000000000040008000000000000035"
+        }
+       ],
+       "documents": [
+        {
+         "documentId": "00000000-0000-4000-9000-000000000014",
+         "versionId": "00000000-0000-4000-9100-000000000015",
+         "title": "Presentation deck",
+         "section": "1",
+         "level": "l00000000000040008000000000000034",
+         "views": 4,
+         "seconds": 1260,
+         "downloads": 0,
+         "lastSeen": "2026-11-12T15:30:00.000Z",
+         "versions": [
+          {
+           "versionId": "00000000-0000-4000-9100-000000000015",
+           "current": true,
+           "views": 4,
+           "seconds": 1260,
+           "downloads": 0
+          }
+         ]
+        },
+        {
+         "documentId": "00000000-0000-4000-9000-000000000018",
+         "versionId": "00000000-0000-4000-9100-000000000019",
+         "title": "Cash forecast and runway",
+         "section": "2",
+         "level": "l00000000000040008000000000000035",
+         "views": 3,
+         "seconds": 940,
+         "downloads": 1,
+         "lastSeen": "2026-11-12T15:30:00.000Z",
+         "versions": [
+          {
+           "versionId": "00000000-0000-4000-9100-000000000019",
+           "current": true,
+           "views": 3,
+           "seconds": 940,
+           "downloads": 1
+          }
+         ]
+        },
+        {
+         "documentId": "00000000-0000-4000-9000-000000000024",
+         "versionId": "00000000-0000-4000-9100-000000000025",
+         "title": "Key data package",
+         "section": "5",
+         "level": "l00000000000040008000000000000035",
+         "views": 2,
+         "seconds": 1810,
+         "downloads": 1,
+         "lastSeen": "2026-11-11T15:30:00.000Z",
+         "versions": [
+          {
+           "versionId": "00000000-0000-4000-9100-000000000025",
+           "current": true,
+           "views": 2,
+           "seconds": 1810,
+           "downloads": 1
+          }
+         ]
+        }
+       ],
+       "questions": 1,
+       "documentsBack": [],
+       "expiresAt": "2027-05-06T00:00:00.000Z",
+       "closed": false,
+       "state": "active"
+      }
+     },
+     {
+      "id": "00000000-0000-4000-7100-000000000061",
+      "groupId": "00000000-0000-4000-7000-000000000059",
+      "recordId": "00000000-0000-4000-8000-000000000065",
+      "recipientName": "Ben Example",
+      "recipientCompany": "Birchway Ventures",
+      "recipientEmails": [
+       "ben@birch.invalid"
+      ],
+      "expiresAt": "2027-05-06T00:00:00.000Z",
+      "revokedAt": null,
+      "levels": [
+       "l00000000000040008000000000000034"
+      ],
+      "createdAt": "2026-10-22T09:00:00.000Z",
+      "version": 1,
+      "status": {
+       "kind": "room",
+       "opened": "2026-10-23T10:00:00.000Z",
+       "lastOpened": "2026-10-28T09:10:00.000Z",
+       "levels": [
+        "l00000000000040008000000000000034"
+       ],
+       "openLevels": [
+        "l00000000000040008000000000000034"
+       ],
+       "history": [
+        {
+         "kind": "invited",
+         "at": "2026-10-22T09:00:00.000Z",
+         "levels": [
+          "l00000000000040008000000000000034"
+         ]
+        },
+        {
+         "kind": "email_sent",
+         "at": "2026-10-22T09:02:00.000Z",
+         "emailType": "access_granted"
+        }
+       ],
+       "documents": [
+        {
+         "documentId": "00000000-0000-4000-9000-000000000012",
+         "versionId": "00000000-0000-4000-9100-000000000013",
+         "title": "Company teaser or one-pager",
+         "section": "1",
+         "level": "l00000000000040008000000000000034",
+         "views": 1,
+         "seconds": 95,
+         "downloads": 1,
+         "lastSeen": "2026-10-28T15:30:00.000Z",
+         "versions": [
+          {
+           "versionId": "00000000-0000-4000-9100-000000000013",
+           "current": true,
+           "views": 1,
+           "seconds": 95,
+           "downloads": 1
+          }
+         ]
+        }
+       ],
+       "questions": 1,
+       "documentsBack": [],
+       "expiresAt": "2027-05-06T00:00:00.000Z",
+       "closed": false,
+       "state": "active"
+      }
+     },
+     {
+      "id": "00000000-0000-4000-7100-000000000062",
+      "groupId": "00000000-0000-4000-7000-000000000059",
+      "recordId": "00000000-0000-4000-8000-000000000066",
+      "recipientName": "Dev Placeholder",
+      "recipientCompany": "Duneport Health Fund",
+      "recipientEmails": [
+       "dev@dune.invalid"
+      ],
+      "expiresAt": "2027-05-06T00:00:00.000Z",
+      "revokedAt": null,
+      "levels": [
+       "l00000000000040008000000000000034",
+       "l00000000000040008000000000000035"
+      ],
+      "createdAt": "2026-11-04T09:00:00.000Z",
+      "version": 1,
+      "status": {
+       "kind": "room",
+       "opened": null,
+       "lastOpened": null,
+       "levels": [
+        "l00000000000040008000000000000034",
+        "l00000000000040008000000000000035"
+       ],
+       "openLevels": [
+        "l00000000000040008000000000000034"
+       ],
+       "history": [
+        {
+         "kind": "invited",
+         "at": "2026-11-04T09:00:00.000Z",
+         "levels": [
+          "l00000000000040008000000000000034",
+          "l00000000000040008000000000000035"
+         ]
+        },
+        {
+         "kind": "email_sent",
+         "at": "2026-11-04T09:01:00.000Z",
+         "emailType": "access_granted"
+        }
+       ],
+       "documents": [],
+       "questions": 0,
+       "documentsBack": [],
+       "expiresAt": "2027-05-06T00:00:00.000Z",
+       "closed": false,
+       "state": "invited"
+      }
+     }
+    ]
+   }
+  ],
+  "questions": [
+   {
+    "id": "00000000-0000-4000-7200-000000000071",
+    "groupId": "00000000-0000-4000-7000-000000000059",
+    "exchangeId": "00000000-0000-4000-7100-000000000060",
+    "recipientName": "Ana Fictus",
+    "recipientCompany": "Alder Peak Capital",
+    "body": "Does the cash forecast include the planned Phase 2 start in Q3 2027?",
+    "section": "2",
+    "documentId": null,
+    "documentTitle": null,
+    "askedAt": "2026-11-11T14:00:00.000Z",
+    "answers": [],
+    "answered": false
+   },
+   {
+    "id": "00000000-0000-4000-7200-000000000082",
+    "groupId": "00000000-0000-4000-7000-000000000059",
+    "exchangeId": "00000000-0000-4000-7100-000000000061",
+    "recipientName": "Ben Example",
+    "recipientCompany": "Birchway Ventures",
+    "body": "Is there an updated patent schedule after the October filing?",
+    "section": "4",
+    "documentId": "00000000-0000-4000-9000-000000000022",
+    "documentTitle": "Patent schedule",
+    "askedAt": "2026-11-12T16:20:00.000Z",
+    "answers": [],
+    "answered": false
+   }
+  ],
+  "published": [
+   {
+    "id": "00000000-0000-4000-7300-000000000083",
+    "questionId": null,
+    "visibility": "room",
+    "level": null,
+    "question": "When is the first close planned?",
+    "body": "First close is planned for the end of Q1 2027.",
+    "createdAt": "2026-11-03T10:00:00.000Z"
+   }
+  ],
+  "messages": [],
+  "emails": [],
+  "submissions": []
+ }
+}

@@ -22,6 +22,7 @@
 | CRO payment timing (D1) | https://trialagents.com/apps/cro-payment-timing-biotech-cash-runway | Published; production URL checked 12 November 2026 |
 | Excel-to-Runway migration (E2) | https://trialagents.com/apps/excel-to-trialagents-runway | First Series E post; Published in [public-site PR #182](https://github.com/tarous89/trialagents-public/pull/182), merge `6ce6d6f2382c5926fc0f5972eab9e4f952064daa`. Exact-head tests and desktop/mobile checks passed. Cloudflare build and live C/D/E content, images, canonical/schema, final CTA, app index/hub, sitemap.xml, llms.txt and llm.xml verified on 12 November 2026. |
 | Runway vs Jirav (A8) | https://trialagents.com/apps/runway-vs-jirav | Published; source PR #191, repair PR #192, release `5f6860060c427c0c18168f2d15bb70b46407a443`; live verified 13 November 2026. |
+| Runway vs Exigyn (A10) | https://trialagents.com/apps/runway-vs-exigyn | Published via PR #193, release `e552a878768a5df5daebea5302688713568588d1`; live verified 13 November 2026. |
 | App pages index | https://trialagents.com/apps | Published; production URL checked 12 November 2026 |
 
 These are intended canonical URLs. Do not assert that a URL is live until checked on the production CDN.
@@ -344,3 +345,82 @@ A10 is the next publication priority. Resume its existing research above, rechec
 ### A10 source checkpoint — 13 November 2026
 
 [PR #193](https://github.com/tarous89/trialagents-public/pull/193), exact head `9cf1a0f9fce4b867bcf79a0636c39489226108fe`, prepares `/apps/runway-vs-exigyn`: **TrialAgents Runway vs Exigyn: adaptable cash planning or biotech FP&A?** Primary evidence: https://www.exigyn.com/, https://www.exigyn.com/mcp, https://www.exigyn.com/biotech-fpa-software. MCP documentation supports role-scoped model queries/writes; product page documents clinical accruals/headcount/reporting. Listed integrations do not establish tested scope, direction or cadence. No hands-on benchmark, new host acceptance test, pricing or exclusive AI claim. Approved Runway 2.1 catalog reread. Fictional evaluation brief separates a program delay from a fixed contractual deposit; program shift is not represented as selective invoice movement. Genuine Runway screenshots 01-overview, 03-plan and 02-cash-flow; no synthetic interfaces. Standard shell/tracking retained. Predeploy 43491069636 running; resume this PR before drafting another article. Refresh on vendor MCP/integration/model or Runway catalog changes.
+
+
+### A10 published — 13 November 2026
+
+**TrialAgents Runway vs Exigyn: adaptable cash planning or biotech FP&A?** — https://trialagents.com/apps/runway-vs-exigyn
+
+Published via [PR #193](https://github.com/tarous89/trialagents-public/pull/193), exact source head `9cf1a0f9fce4b867bcf79a0636c39489226108fe`, release `e552a878768a5df5daebea5302688713568588d1`. Predeploy run 43491069636 passed full tests, snapshot/discovery and browser checks. Desktop/mobile artifact 14070201181 inspected; accessible horizontally scrolling comparison table on mobile, no page-layout blocker. Existing Cloudflare automatic build and article-aware production verification succeeded. Early 404s resolved within the bounded deployment wait.
+
+Independent live checks passed: expected HTTP 200 content, exact visually reviewed fragment/CSS, one H1, title/description, self-canonical, Article/BreadcrumbList schema, three genuine images, all article links, one final Start with Runway CTA; /apps listing, one sitemap.xml canonical entry, llms.txt and llm.xml. Homepage-identical analytics loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js` both HTTP 200. Tracking scripts, configuration, consent, events, collectors and attribution unchanged; no synthetic production events.
+
+This supersedes A10 pending/source checkpoints. **13 published, 34 unfinished**, including deferred A9. Next eligible candidate: A11, Runway vs Caladan, subject to fresh vendor research and claim checks. No additional article published in this run.
+
+
+### A11 source checkpoint — 13 November 2026
+
+[PR #194](https://github.com/tarous89/trialagents-public/pull/194), exact head `d2c85fb8c92d591f5e8d5432dd22c61316becf9e`, prepares /apps/runway-vs-caladan: **TrialAgents Runway vs Caladan: from trial budgets to company cash runway**. Claimed for this run; resume this PR before drafting another article. Distinct scope: reviewed study-budget-to-company-cash handoff, avoiding double-counting and distinguishing modeled costs from contractual payments. Primary sources: https://caladan.ai/, /pages/trialcast, /pages/runwaymap and /pages/vendorcast. CaladanCore/TrialCast/VendorCast are vendor-listed in production; TrialCast notes limited availability; RunwayMap and ExecReady remain coming soon. No current RunwayMap availability, benchmark database size, savings, security certification or unverified host parity claimed. Runway 2.1 catalog reread; three genuine browser screenshots. No pricing or tracking changes. Await exact-head predeploy, visual artifacts, merge and live verification.
+
+Availability clarification is included in final head above. No benchmark counts repeated because current vendor pages differ; no inferred statistical validation or compliance certification. Refresh this comparison on module launch, integration or host changes.
+
+
+### A11 merged release checkpoint — 13 November 2026
+
+PR #194 merged at 20:07 UTC (21:07 CET), release `6271373f2f7aaa0717fc6672caeaca328be084dc`. Exact head `d2c85fb8c92d591f5e8d5432dd22c61316becf9e` passed predeploy 43497327243 (both jobs, full tests, candidate snapshot, metadata/discovery, browser and site regressions). Desktop/mobile Caladan screenshots in artifact 14071744031 inspected; no layout blocker, standard accessible horizontal-scroll comparison table on mobile. Automatic deployment pending; live verification underway. Resume this release before another topic if interrupted. No authentication fault inferred or tracking changes made.
+
+
+### A11 published — 13 November 2026
+
+**TrialAgents Runway vs Caladan: from trial budgets to company cash runway** — https://trialagents.com/apps/runway-vs-caladan
+
+Published via [PR #194](https://github.com/tarous89/trialagents-public/pull/194), exact head `d2c85fb8c92d591f5e8d5432dd22c61316becf9e`, merged release `6271373f2f7aaa0717fc6672caeaca328be084dc` at 20:07 UTC (21:07 CET). Predeploy run 43497327243 passed both jobs, full tests, snapshot/discovery and browser/site regressions. Desktop/mobile screenshots in artifact 14071744031 inspected; no layout blocker, accessible horizontal-scroll comparison table on mobile. Cloudflare automatic build and article-aware production verification succeeded. Early 404s resolved within the bounded deployment wait; no manual deployment or dashboard access.
+
+Independent live verification completed at approximately 20:12 UTC (21:12 CET): expected HTTP 200 HTML; exact reviewed article fragment and responsive CSS; one H1; expected title/description; self-canonical; Article/BreadcrumbList schema; no noindex directive; three genuine images; all article links and final CTA; /apps listing, single canonical sitemap.xml entry, llms.txt and llm.xml. Thirteen linked asset/page URLs returned 200, in addition to the article and discovery files. Homepage-identical analytics loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js` both HTTP 200. Existing tracking scripts, configuration, events, consent, collectors and attribution unchanged; no synthetic production events.
+
+This supersedes A11 source/pending checkpoints. **14 published; 33 unfinished**, including deferred A9. Next eligible: **A12, Runway vs Airtable**, subject to fresh queue, claim and evidence checks. Publication QA does not establish search indexing or assistant citations. Only A11 was newly published in this run.
+
+
+### A12 source checkpoint — 13 November 2026
+
+[PR #195](https://github.com/tarous89/trialagents-public/pull/195), exact head `ee36603f4b87480bef67986e1dccf6eab7e023cf`, prepares https://trialagents.com/apps/runway-vs-airtable: **TrialAgents Runway vs Airtable: a cash planning app or a model you build**. Claimed for this run; resume this PR before another topic. Distinct comparison: ownership of monthly cash calculations and preservation of a closed month, rather than an exclusive-AI claim. Fictional January-close/CRO-payment-change brief; no executed product benchmark.
+
+Primary evidence reviewed: Airtable's https://airtable.com/developers/agents/mcp/chatgpt and https://airtable.com/developers/agents/mcp/claude (separate official OAuth connector instructions); https://support.airtable.com/articles/9897799762-using-the-airtable-mcp-server (authorized operations, interface limits and UI activation of automation drafts); https://support.airtable.com/articles/1744327578-using-omni-ai-in-airtable (app building); https://support.airtable.com/articles/8772429326-getting-started-with-the-airtable-formula-field (record-local formulas and linked-record aggregation); https://support.airtable.com/articles/8435404541-two-way-syncing-in-airtable and https://support.airtable.com/articles/8169929594-airtable-sync-integrations-overview (base sync versus one-way external sync). No pricing, claim that Airtable lacks AI/customization, universal bidirectional integration or new host acceptance test. Approved Runway 2.1 catalog reread; genuine 01-overview, 03-plan, 06-actuals browser demo screenshots. Standard shell and tracking unchanged. Await exact-head validation, artifact review, merge and live checks. Refresh on Airtable host/formula/sync changes or Runway model changes.
+
+
+### A12 merged release checkpoint — 13 November 2026
+
+PR #195 merged at 20:22 UTC (21:22 CET), release `08d271a8fbabad07926be0a25326d0bb62db7cf8`. Exact head `ee36603f4b87480bef67986e1dccf6eab7e023cf` passed predeploy 43499933636: both jobs, full tests, snapshot/metadata/discovery and browser/site regressions. Desktop/mobile Airtable screenshots in artifact 14072724696 inspected; no layout blocker, accessible horizontal-scroll comparison table on mobile. Automatic deployment pending; resume this release before a new article if interrupted. No tracking changes or synthetic production events.
+
+
+### A12 published — 13 November 2026
+
+**TrialAgents Runway vs Airtable: a cash planning app or a model you build** — https://trialagents.com/apps/runway-vs-airtable
+
+Published via [PR #195](https://github.com/tarous89/trialagents-public/pull/195), exact head `ee36603f4b87480bef67986e1dccf6eab7e023cf`, release `08d271a8fbabad07926be0a25326d0bb62db7cf8` merged at 20:22 UTC (21:22 CET). Predeploy 43499933636 passed both jobs, full tests, candidate snapshot/metadata/discovery and browser/site regressions. Desktop/mobile screenshots in artifact 14072724696 inspected; no layout blocker, accessible horizontal-scroll comparison table on mobile. Existing automatic Cloudflare build and article-aware production check succeeded; initial 404s resolved within the bounded wait.
+
+Independent live verification passed at approximately 20:25 UTC (21:25 CET): HTTP 200 text/html, exact reviewed article fragment and CSS, one H1, expected title/description, self-canonical, Article/BreadcrumbList schema, no noindex directive, robots crawl permission, three genuine images, working internal/primary-source links and one final CTA. /apps listing, one canonical sitemap.xml entry, llms.txt and llm.xml all verified. Seventeen linked page/asset URLs returned 200, in addition to the article and discovery files. Homepage-identical loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js` both HTTP 200. Tracking scripts, configuration, events, consent, collectors and attribution unchanged; no synthetic production events or manual deployment.
+
+This supersedes A12 pending checkpoints. **15 published; 32 unfinished**, including owner-deferred A9. Next eligible: **B2, Float alternatives for small biotechs**, subject to fresh evidence, duplicate and claim checks. No search-indexing or assistant-citation result is implied. Only A12 was newly published in this run.
+
+
+### 13 November 2026 — B2 source checkpoint (20:58 UTC)
+
+- B2: **7 Float alternatives for small biotech teams: choose by the workflow you need**. Source [PR #196](https://github.com/tarous89/trialagents-public/pull/196), head `2d30cc1a16eee951404cb36f654357513fe41e7c`; proposed URL `https://trialagents.com/apps/float-alternatives-biotech`.
+- Seven conditional options: TrialAgents Runway, Fathom, Jirav, LivePlan, Aleph, Exigyn and Excel. Primary vendor pages checked on 13 November; Float identified as floatapp.com cash forecasting (Xero/QuickBooks). Scope distinguishes weekly liquidity from standard monthly Runway planning; no direct Float importer or automatic cross-app sync claimed. Official identifying logos reused from B1; two genuine approved Runway screenshots. No pricing, invented rankings or host tests.
+- Distinct from B1 through Float-specific switching triggers and baseline/payment/funding reconciliation. Exact-head predeploy run `43506384328` in progress. Not merged or published; 15 published, 32 unfinished. Resume this PR before selecting another topic.
+
+- **B2 visual-review revision, 21:05 UTC:** first gate passed but visual review found low contrast on Fathom's light identifying logo. Fixed only its background; current PR #196 head `5677708665b0fc1612eb7cd9a2d7f8f11c82e114`, new exact-head predeploy `43507468285` running. Still not merged/published. Review the revised artifacts before merge.
+
+- **B2 merged; deployment pending/unverified — 21:12 UTC:** PR #196 merged as `46434bf1b1469842026ed529cc9f2ce40ddbd8e9` after exact-head `5677708665b0fc1612eb7cd9a2d7f8f11c82e114` passed predeploy `43507468285`. Revised desktop/mobile artifact `14076782521` inspected; Fathom contrast corrected, no rendering blocker. Existing GitHub-connected CDN build is asynchronous. Recheck `https://trialagents.com/apps/float-alternatives-biotech` and complete live verification; do not select B3 before resolving this release.
+
+
+### 13 November 2026 — B2 published and live verified (21:16 UTC / 22:16 CET)
+
+- **Published:** [7 Float alternatives for small biotech teams: choose by the workflow you need](https://trialagents.com/apps/float-alternatives-biotech). Title refined from the proposed “7 Best Float Alternatives for Small Biotech Companies” to state conditional workflow fit without implying measured rankings. Seven options and a Float-specific cutover checklist distinguish this article from B1's broad shortlist.
+- **Release:** [PR #196](https://github.com/tarous89/trialagents-public/pull/196), validated head `5677708665b0fc1612eb7cd9a2d7f8f11c82e114`, merged release `46434bf1b1469842026ed529cc9f2ce40ddbd8e9` at 21:12 UTC. Exact-head predeploy `43507468285` passed; desktop 1440px and mobile 390px artifacts `14076782521` inspected after correcting Fathom logo contrast. Figures and embedded logos decode; no page overflow or JS error. Responsive table retains its own horizontal scroll region on narrow screens.
+- **Deployment:** existing GitHub-connected automatic build succeeded (Workers check `132174099082`); production check `132172483745` succeeded. Early 404s resolved during the asynchronous build. No dashboard sign-in, manual deployment or new integration.
+- **Independent live QA:** article HTTP 200 with text/html and no noindex header; exact article fragment and shared CSS match the reviewed source. One H1, expected title/description, self-canonical, Article/BreadcrumbList schema, identical shared header/footer and one final Start with Runway CTA verified. All 20 linked page/image/analytics URLs returned 200; two approved genuine screenshots retain 1226×790 dimensions in browser QA. /apps, sitemap.xml (one canonical entry), llms.txt and llm.xml all include the article.
+- **Tracking preserved:** identical homepage loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js` both return HTTP 200. No tracking source/configuration/event/consent/collector/attribution changes; no synthetic production events sent.
+
+This supersedes all B2 claim/source/pending checkpoints above. **16 published; 31 unfinished**, including owner-deferred A9. **Next eligible: B3, cfo.ai / Runway Financial alternatives**, subject to fresh queue, claim, vendor and duplicate checks. Only B2 was newly published in this run. Publication verification does not establish search indexing, rankings or assistant citations.

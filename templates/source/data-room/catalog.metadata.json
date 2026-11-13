@@ -1,0 +1,114 @@
+{
+  "id": "life.data-room",
+  "version": "1.0.0",
+  "name": "Data Room",
+  "description": "Prepare, share and track data rooms for financing, licensing, partnering and M&A, with diligence Q&A built in. A standard 9-section biotech index weighted by purpose, a readiness checklist with owners and due dates, documents from the platform document store (one set reused across rooms, versions kept in place), levels (Non-confidential, Confidential and custom) with a click-through or signed-CDA entry step, one private link per person with no recipient accounts, emails from TrialAgents in one confirmed send, per-person and per-document engagement, structured Q&A with approval and private or published answers, and a disclosure record. Writes the dataroom.v1 outputs that Fundraise and BD Pipeline read.",
+  "tags": [
+    "biotech",
+    "data room",
+    "due diligence",
+    "financing",
+    "licensing",
+    "partnering",
+    "m&a",
+    "investors",
+    "cda",
+    "q&a"
+  ],
+  "whenToUse": "A small biotech prepares or runs a data room for a round, licensing, partnering or M&A: index, readiness, sharing with investors or partners, levels, CDA, tracking who viewed what, diligence Q&A.",
+  "whenNotToUse": "General file storage, board portals, contract drafting or e-signature (use Contracts for the register), investor update emails (Investor Updates), cap-table management, watermarking, redaction or eCTD viewing.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "Data Room",
+    "tableMap": "{}",
+    "pageSize": 25,
+    "layoutProfile": "{}",
+    "readOnly": false,
+    "demoLabel": false,
+    "asOfOverride": ""
+  },
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "App heading shown above every screen.",
+      "default": "Data Room"
+    },
+    "tableMap": {
+      "type": "string",
+      "description": "JSON object keyed by stable role key: core data contract v1 roles organizations (required) and people, programs, agreements (optional; agreements binds the core fields only); app roles dataroom.settings, dataroom.templates, dataroom.rooms, dataroom.levels, dataroom.sections, dataroom.items, dataroom.questions and the published outputs dataroom.access_grants and dataroom.engagement (contract dataroom.v1; this app is their writer). Each value is {typeId:<authorized table UUID>, fields:{<logical key>:<real field key>}, writableFields:[<logical keys>]}. Real keys are lowercase snake_case. The installer writes it; never invent table IDs.",
+      "default": "{}"
+    },
+    "pageSize": {
+      "type": "number",
+      "description": "Rows per page in registers (10 to 50).",
+      "default": 25
+    },
+    "layoutProfile": {
+      "type": "string",
+      "description": "Stringified native layout profile (heading, tabs, cols, visible) written by the layout gear review. Do not edit by hand.",
+      "default": "{}"
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "Disable every write control in this copy.",
+      "default": false
+    },
+    "demoLabel": {
+      "type": "boolean",
+      "description": "Label the data as fictional (offline preview only).",
+      "default": false
+    },
+    "asOfOverride": {
+      "type": "string",
+      "description": "Pinned as-of date YYYY-MM-DD for previews and tests. Leave empty in real apps: the app uses today's date.",
+      "default": ""
+    }
+  },
+  "instructions": "Data Room 1.0.0 is a custom frontend-js app (Vivid kit, theme forest) for data rooms in financing, licensing, partnering and M&A, with diligence Q&A (it also covers the former Diligence Q&A scope). Read read_app_template_guidance (usage, authoring and contracts, every nextOffset; guidance 1.3.25 or later, especially \"External exchange from apps\", \"Exchange rooms\" and \"Platform documents inside apps\") before preparing it. Pin life.data-room 1.0.0 with its digest. Do not add login, accounts, a portal, email code, file storage or viewers: rooms are the platform exchange in room mode.\nINSTALL. Check list_archived_items (kind apps, templateId life.data-room) and offer to restore an archived app first. Use installs the app with empty tables. The Use existing data? dialog connects existing organizations, people, programs or agreements tables by default (core.v1; reuse, never copy); everything else gets new dataroom.* tables. Data Room writes the outputs dataroom.access_grants and dataroom.engagement (dataroom.v1); another app that already writes them keeps writing unless the owner takes over after archiving it. Assistants may propose choices with prepare_data_access and never confirm them. No records are seeded; the financing, licensing, partnering and M&A index templates are built in.\nSET-UP. New room (purpose, programs, Fundraise round and BD opportunity references, index template, CDA option, welcome note, contact person) → set up levels and sections (one review: Non-confidential and Confidential; the Confidential entry step follows the CDA option) → add the checklist items from the template (one review) → attach platform documents to items with level and view-only → make the room live. Readiness = ready ÷ (required − not applicable), per room and per section.\nEXCHANGE (guidance 1.3.25 rooms). One room group per room: exchange.createGroup({kind:\"room\",appRef:\"room:<room id>\",levels,slots,documents:[{versionId,title,section,order,level,viewOnly,toSign}],tracking:{accessTypeId,engagementTypeId},notifyEngagement,quietDays,emailDefaults}). Level keys are \"l\"+the level record ID without dashes; entry none / click_through (Settings text) / signed_document (signed_cda, with its own slot signed_<level key>). One exchange per person bound to its dataroom.access_grants record (exchange.invite with recordId, and the levels for everyone in that invitation). Invitations: exchange.prepareEmail access_granted, shown exactly as returned, then exchange.sendEmail; nothing is sent without that confirmation. Index changes: exchange.shareDocuments({add,update,remove}); new versions: exchange.replaceDocument (same place, Updated for parties). Levels: exchange.setLevels (with entered + enteredNote for a CDA in place elsewhere or on file in Contracts) and exchange.defineLevels for custom levels. Signed CDA: exchange.acceptFile on the level slot opens only that level and emails the person. Q&A: questions arrive in exchange.listQuestions, are logged as dataroom.questions, answered with exchange.answer (private) or exchange.publishAnswer (scope room or level, asker anonymised). Daily updates digest: exchange.approveDigest with the approved text. Revoke and extend: exchange.revoke / exchange.extend. Archiving a live room: exchange.archiveGroup. Granting, levels, publishing, answers, acceptance, revocation and the digest are confirmed by a person; assistants draft only.\nTRACKED DATA. TrialAgents keeps dataroom.access_grants status (invited / active / revoked / expired), last_seen_on and source (tracked), and one dataroom.engagement row per person and document (views, seconds, downloads, first and last viewed, as_of). These fields are read-only to people, assistants and this app. Archiving a room's app stops links and updates.\nAI. Assistants read rooms and Q&A records the user can read and documents only where the document's AI setting allows; they never see links. They draft indexes, readiness plans, invitation and notification texts (prepare_exchange_email), answers with document references and engagement summaries. They never send, grant, change levels, publish, accept or revoke, and never advise on what is legally safe to disclose.",
+  "documentation": {
+    "quickStart": [
+      "Read the current usage, authoring and contracts guidance and this documentation; pin life.data-room 1.0.0 and its digest with one requestKey.",
+      "Check for an archived Data Room app and offer to restore it. Otherwise Use installs it; keep the defaults that connect existing organizations, people, programs and agreements tables.",
+      "Settings: adjust default access length, quiet days, Q&A approval, the click-through text and the email texts per type and purpose.",
+      "Rooms: create a room, set up levels and sections, then add the checklist items from the template.",
+      "Index: attach documents to items, choose the level and view-only, watch readiness; preview the room as a party.",
+      "Make the room live, add parties, give access and confirm one invitation send. Follow engagement on Activity and answer questions on Q&A."
+    ],
+    "dataContract": "Stable role keys; every field scalar (multiple false), lowercase snake_case, relationships by record ID in text fields. Core data contract v1: organizations (name*, org_type, country, website, archived), people (optional: name*, organization_id, title, email, archived), programs (optional), agreements (optional; core fields only; CDAs filed with agreement_type cda_nda). App tables, contract dataroom.v1: dataroom.settings (one row: default_access_days 180, blank = until revoked; view_only_default false; quiet_days 10; qa_approval_required true; notify_updates_default false; entry_text; sender_display organization/first_name; email_texts JSON {<email type>:{<purpose>|all:{subject,body}}}), dataroom.templates (name*, purpose*, content JSON {sections:[{number,name,items:[{title,required,level,weight}]}]}, archived), dataroom.rooms (name*, purpose* financing/licensing/partnering/m_and_a/other, status* preparing/live/closed, program_ids, round_id, opportunity_ref, template_id, cda_option* send_pdf/contracts/in_place/none, welcome_note, contact_person_id, notify_updates, exchange_group_id, owner, archived), dataroom.levels (room_id*, name*, kind* non_confidential/confidential/custom, order*, entry* none/click_through/signed_cda), dataroom.sections (room_id*, number*, name*, parent_id, order*), dataroom.items (room_id*, section_id*, title*, required, status* missing/in_progress/ready/not_applicable, owner, due, document_id, version_id, level_id*, view_only, updated_on, notes), dataroom.questions (room_id*, grant_id, organization_id, person_id, asked_on*, category, section_id, item_id, question*, status* new/assigned/drafting/in_review/answered/published/declined, assignee, due, answer, approved_by, answered_on, visibility private/room/level, level_id, reused_from, document_ids, message_id). Published outputs (writer life.data-room, dataroom.v1, read by Fundraise, BD Pipeline and custom apps): dataroom.access_grants (room_id, room_name, room_purpose financing/licensing/partnering/m_and_a/other, organization_id, person_id, granted_on, expires_on, status, agreement_accepted_on, source manual/tracked; app fields level_ids, recipient_email*, exchange_id, cda_status not_needed/sent/signed/in_place_elsewhere, cda_agreement_id, last_seen_on) and dataroom.engagement (grant_id, organization_id, person_id, document_ref, document_title, first_viewed_on, last_viewed_on, view_count, seconds_viewed, downloads, source manual/docsend/sharevault/tracked, as_of; app field section_id). Data Room writes only source tracked; status, last_seen_on and every engagement row are platform-kept and read-only. agreement_accepted_on is set by the app when a CDA is accepted or recorded as in place.",
+    "interactionContract": "Seven screens with stable IDs for the native layout gear: overview, rooms, index, parties, activity, qa, settings; column groups parties and questions. A room picker selects the room on every room screen; party, document and question details open in the side panel. Overview: rooms with purpose, status, readiness and invited/active people; activity (opens this week, new viewers, hot and quiet parties); waiting on us (new and overdue questions, signed CDAs to accept, items due); recent changes and emails sent. Rooms: new room, set-up steps, levels with entry steps and custom levels, branding (title, welcome note, contact), status, the daily updates digest. Index: numbered sections and items with readiness per section, attach documents (platform upload or an existing document), level and view-only, newer versions offered in place, publish index changes to the room, preview as a party at a level. Parties: parties with levels, CDA, status, granted, ends and last seen; add party, give access and invite in one confirmed send with personalisation; levels with CDA options; accept a signed CDA; revoke; extend; disclosure record. Activity: engagement grid by party and section, per-document opens with versions, time and downloads, quiet and hot parties, what changed since each party's last visit and a call brief to copy. Q&A: new questions from the room, the log with assign/draft/approve/answer privately/publish/decline, approved answers and repeated-question suggestions. Settings: index templates (copy and edit), email texts per type and purpose, defaults, Access and Automations.",
+    "lifecycle": "A new preview shows empty or fictional data, never writes and never contacts anyone; exchange and document capabilities need the saved app. Saved apps re-read their tables, the room groups and configuration on every render. Record writes are records.propose batches (at most 50 per review) confirmed in the TrialAgents review; a stale version is rejected with the draft kept. Exchange writes are one per click: preparation nobody outside has seen (creating the room, links, documents) is applied on the person's click; sends, level changes, answers, publications, acceptances, digest approval and revocations are reviewed and carry the app's record changes in the same transaction. Layout changes are reviewed presentation-only edits. Archive first: archiving a room record is a reviewed change; archiving the app stops every link and tracked update; restoring re-enables only unexpired grants. Fundraise keeps working with \"data unavailable\" while the app is archived.",
+    "limitations": [
+      "Hosted rooms only: no external-room mode, watermarking, screenshot blocking, page-by-page analytics, redaction, eCTD viewer, custom domains or recipient accounts. View-only hides the download but cannot stop screenshots.",
+      "The inline viewer shows PDF and images; other files download (unless view-only). Engagement is approximate visible time from viewer heartbeats.",
+      "Fundraise and BD Pipeline publish no opportunity tables as roles, so parties are picked from shared organizations and people; the round and opportunity are kept as references. Fundraise and BD Pipeline read this app's dataroom.v1 outputs.",
+      "E-signature is out: a signed CDA is uploaded back and accepted by a workspace owner. \"Use Contracts\" files the accepted CDA as a core agreements record (cda_nda) for Contracts; link it to the party from Levels.",
+      "A review holds at most 50 record changes: set-up runs as two reviews (levels and sections, then the checklist items), and templates hold at most 50 items.",
+      "Not legal advice on what to disclose."
+    ],
+    "examples": [
+      {
+        "prompt": "Set up a data room for our Series B and get it ready for investors next week.",
+        "expectedBehavior": "Proposes one dataroom.rooms record (purpose financing, template builtin:financing, CDA option as discussed) and explains the two set-up reviews and the readiness gaps; drafts a readiness plan with owners and dates. Sends nothing."
+      },
+      {
+        "prompt": "Invite Alder Peak and Birchway to the Series B room; personalise Ana's email to mention our call.",
+        "expectedBehavior": "Proposes the access_grants rows if missing. After the user gives access in the app, prepares the access_granted batch with prepare_exchange_email with an override for Ana, and tells the user to review and confirm the send in the app. Never sends or confirms."
+      },
+      {
+        "prompt": "What has Cedarline looked at since our last call, and what are their open questions?",
+        "expectedBehavior": "Reads list_exchanges (room status) and the dataroom.questions records the user can read and summarises opened documents with views and time, changes since their last visit, and open questions. Does not see or share links."
+      },
+      {
+        "prompt": "Draft answers for the new questions in the licensing room.",
+        "expectedBehavior": "Reads only AI-readable documents, drafts answers with document references and proposes them as question record updates (status drafting). Spots repeated questions and proposes reusing approved answers. Never approves, answers or publishes."
+      }
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "Four optional automations; the app never waits for one. (1) Updates digest to parties: once a day, when a room has the digest on and documents changed, TrialAgents sends the pre-approved text (approved on Rooms; exchange.approveDigest), listing only documents at each person's levels. (2) Room digest to the owner: a daily TrialAgents email action while a room is live, covering new viewers, quiet and hot parties, new questions, overdue answers and items due; fixed text pointing to Overview. (3) Access ending: 7 days before expires_on the owner gets a workspace notification; the party gets an email only if the owner pre-approved an access_ending reminder in the send review. (4) Answer drafts: a research worker on the user's Claude or ChatGPT runner proposes answers for new questions with document references, for review.",
+      "readRequirements": "dataroom.rooms, dataroom.items, dataroom.questions and dataroom.access_grants records the user can read, the room status from list_exchanges (no links), and AI-readable platform documents only.",
+      "outputContract": "Digests (1, 2) are TrialAgents emails with fixed or pre-approved text and no record writes. Answer drafts (4) are reviewed dataroom.questions updates (answer, status drafting; dedup key: question record ID); no other table. No output when nothing changed (no_update).",
+      "promptExample": "For each new question in the Data Room Q&A log without an answer, read the AI-readable documents of the room that relate to its section or document, draft a short factual answer that cites the documents by title, flag questions that repeat an approved answer and propose reusing it, and propose the drafts for review. Do not approve, send, publish, grant or revoke anything. Without an automation, ask the assistant the same in chat."
+    }
+  }
+}

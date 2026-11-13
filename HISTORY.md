@@ -34,6 +34,27 @@ Owner-authorized sequential implementation of the [reviewed performance scope](d
 
 P04 serves Vite's public fingerprinted `/assets` before authentication with one-year immutable caching. Missing assets return a real error instead of SPA HTML; root/index/deep-link HTML revalidates; unhashed public files and private APIs keep their existing cache/auth boundaries. The signed-in HTTP fixture reduces driver calls per existing hashed asset from six to zero and verifies session revocation still blocks API access. No migration, catalog version, installed app, data, permission, integration or automation changes. Build/type checks, focused measurement/HTTP/runtime/context checks and 11 login/runtime-recovery browser checks pass. Full-suite results and release status are tracked with the implementation change; production deployment and before/after latency are not yet verified.
 
+## 13 November 2026 — Data Room 1.0.0 (draft) and room additions
+
+Built `life.data-room` 1.0.0, display name Data Room, from the final scope [DATA_ROOM.md](docs/product/app-template-blueprints/apps/DATA_ROOM.md) (BT2-08, which also covers the former Diligence Q&A, BT2-12). It runs on the exchange rooms of #152.
+- **Screens:** seven screens on the Vivid kit, theme forest: Overview, Rooms, Index, Parties, Activity, Q&A and Settings.
+- **Index:** the standard 9-section biotech index for financing, licensing, partnering and M&A, with required items weighted by purpose and readiness per room and per section.
+- **Documents:** one platform document set reused across rooms; a newer version keeps its place in the room.
+- **Levels and entry steps:** Non-confidential, Confidential and custom levels, each with an entry step. CDA options are send PDF, Contracts, in place elsewhere or none.
+- **Sharing:** one link per person and invitations in one confirmed send.
+- **Tracking:** engagement per party, section and document, with quiet and hot parties, what changed since each party's last visit, a call brief and a disclosure record.
+- **Q&A:** assign, draft, approve, then answer privately or publish to the room or a level.
+- **Emails:** default texts per email type and room purpose, plus an approved daily digest.
+- **Outputs:** writes `dataroom.v1`; the registry writer is now `life.data-room`, and `room_purpose` gains `partnering` (additive).
+- **Assistants:** draft only.
+- **Status:** a draft; the seed does not name it.
+
+Room additions for it (guidance 1.3.25), all additive:
+- Room operations can carry the app's record changes in the same review.
+- `set_exchange_levels` can record a level's entry step as met for one person, with a required note (migration 067 extends `exchange_level_open`).
+- `accept_exchange_file` can email the access change when a signed document opens a level.
+- Room status adds `openLevels` and an access history.
+
 ## 13 November 2026 — External exchange rooms (platform, for Data Room)
 
 Built the room extension of the [external exchange](docs/product/EXTERNAL_EXCHANGE.md#5-room-extension-for-data-room) (§5, R1–R8) before the Data Room app (migration 065). Room groups (`kind:"room"`) have no form, submissions or deadline; access lasts until revoked or an end date of 1–730 days, and a room link stops at its end date. Shared documents carry a section, order, level, view-only and "to sign" flag; the page shows Room · Q&A with a numbered index, search and New / Updated badges since the last visit. Ordered levels have their own entry step (none, click-through, or a signed document using the existing slot and acceptance, so a signed CDA unlocks only its level); one function decides what a person sees and is used by the page, search, "what changed", answers, the digest and room emails, and row security enforces the same rule for document versions and answers (sections with only locked documents are not even named). Inline viewer for PDF and images with a `viewed` event per version, 30-minute repeat-open rule and approximate seconds from heartbeats; view-only hides the download; `exchange.status` adds per-document views, seconds, downloads and last seen. New reviewed operations: `define_exchange_levels`, `set_exchange_levels`, `replace_exchange_document` (same place and level, shown as Updated), `answer_exchange_question` (private), `publish_exchange_answer` (room or level, asker anonymised, refused when a referenced document is above some recipients' levels), `approve_exchange_digest`, `archive_exchange_group`; all are human-confirmed, as are room invitations and revocations. Bound output tables (access and engagement) are kept current by the worker as source "tracked" without review; a database trigger refuses those fields to people, assistants and every other write path. New email types access granted, access changed, documents updated (daily digest, automatic only with owner-approved text), question answered, answer published, access ending and access revoked, rendered in each review exactly as sent; workspace notifications for first open, question asked, access ending and optional hot or quiet parties. App runtime `exchange.*` additions, MCP `list_exchange_questions`, template guidance 1.3.23. Page CSP now allows `blob:` images and frames for the viewer. Tests: `tests/exchange-rooms.test.ts` (§5 acceptance 1–8 under the runtime role) and `tests/visual/exchange-room.spec.cjs` (390 and 1440 px, keyboard, contrast).
