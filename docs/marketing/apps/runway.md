@@ -167,3 +167,12 @@ Runway vs Float source merged in public-site PR #184, commit `c0ecfd43bb5a57adf5
 ### A2 live verification and release-process correction — 13 November 2026
 
 A2 is published at https://trialagents.com/apps/runway-vs-float. The existing GitHub-connected Cloudflare build deployed merged main automatically; the earlier claim that Cloudflare sign-in was required was incorrect. HTTP 200, expected H1/canonical, Article/BreadcrumbList, three genuine screenshots, final CTA, app index and sitemap/LLM discovery verified. Loader and analytics dependency both return 200 and match homepage delivery. No tracking changes or synthetic events. See the shared playbook's corrected GitHub-to-CDN procedure and canonical queue; A3 is next, 41 topics remain.
+
+
+### A3 Runway vs cfo.ai — release record, 13 November 2026
+
+- Canonical target: https://trialagents.com/apps/runway-vs-cfo-ai. Title: TrialAgents Runway vs cfo.ai: AI financial planning for biotech startups. Distinct intent: choose biotech operational app planning versus a financial model connected to established business systems, acknowledging both products' AI capabilities.
+- Primary evidence reviewed: https://cfo.ai/terms identifies Runway Financial, Inc.; https://cfo.ai/blog/why-runway documents brand continuity, model adaptation and simulation/save distinction; https://cfo.ai/agents documents MCP, deterministic calculation, source lineage and permissions; https://cfo.ai/integrations documents integration types and catalog. No prices or unsupported host UI parity claims. Not a hands-on cfo.ai benchmark.
+- Media: existing genuine Runway 2.1 browser demo assets 01-overview.jpg, 03-plan.jpg, 05-scenarios.jpg. Screenshots show fictional data, distinct from the qualitative evaluation brief. No generated or competitor screenshots.
+- PR #186 source head `a525b09a46d09af33bcbdc7bd67a733583434afe`; predeploy run 43412977689 passed all checks. Desktop/mobile artifact screenshots reviewed. Merged release `edb3973328d7c69bc1f74508994b611302bdb36e`. Shared header/footer, analytics implementation and consent unchanged.
+- Publication pending live verification after automatic deployment; source merge alone is not publication. See canonical queue for latest completion status. Refresh on material cfo.ai integration/host/model changes or Runway catalog changes.
