@@ -398,7 +398,7 @@
         "required": false,
         "multiple": false,
         "ai": true,
-        "description": "Default true: prices are hidden in Evaluation until every reviewer has scored every finalist, or a person reveals them."
+        "description": "Default off. When on, prices are hidden in Evaluation until every reviewer has scored every finalist, or a person reveals them."
       },
       {
         "key": "question_deadline_days",
@@ -425,16 +425,16 @@
         "required": false,
         "multiple": false,
         "ai": true,
-        "description": "JSON object {winner, unsuccessful, debrief}: default texts of the decision notices."
+        "description": "JSON object {winner, others}: the texts of the Notify all review; \"others\" includes the debrief offer."
       },
       {
-        "key": "email_texts",
-        "name": "Email texts",
+        "key": "invitation_texts",
+        "name": "Invitation texts",
         "kind": "text",
         "required": false,
         "multiple": false,
         "ai": true,
-        "description": "JSON object {rfi|rfp|quick_quote:{invitation|reminder|clarification|message|extended|revoked:{subject,body}}}: the app defaults per request kind and exchange email type. Missing entries use the built-in texts."
+        "description": "JSON object {rfi|rfp|quick_quote:{subject,body}}: the invitation email per request kind. Other email types use the platform defaults."
       }
     ],
     "logicalFields": {
@@ -443,74 +443,7 @@
       "question_deadline_days": "question_deadline_days",
       "confidentiality_text": "confidentiality_text",
       "decision_texts": "decision_texts",
-      "email_texts": "email_texts"
-    }
-  },
-  "croselection.templates": {
-    "name": "Selection templates",
-    "contract": "croselection.v1",
-    "fields": [
-      {
-        "key": "name",
-        "name": "Name",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "kind",
-        "name": "Kind",
-        "kind": "select",
-        "required": true,
-        "multiple": false,
-        "ai": true,
-        "options": [
-          "question_set",
-          "bid_grid",
-          "criteria_set",
-          "checklist"
-        ]
-      },
-      {
-        "key": "service_type",
-        "name": "Service type",
-        "kind": "select",
-        "required": false,
-        "multiple": false,
-        "ai": true,
-        "options": [
-          "clinical_study",
-          "preclinical_study",
-          "cmc",
-          "bioanalytical",
-          "other"
-        ]
-      },
-      {
-        "key": "content",
-        "name": "Content",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true,
-        "description": "JSON. question_set: {round, questions:[text]}; bid_grid: {categories:[text]}; criteria_set: {criteria:[{name,category,weight,mandatory}]}; checklist: {scope, items:[text]}."
-      },
-      {
-        "key": "archived",
-        "name": "Archived",
-        "kind": "boolean",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      }
-    ],
-    "logicalFields": {
-      "name": "name",
-      "kind": "kind",
-      "service_type": "service_type",
-      "content": "content",
-      "archived": "archived"
+      "invitation_texts": "invitation_texts"
     }
   },
   "croselection.requests": {
@@ -695,49 +628,31 @@
         "description": "Internal owner (plain-text name)."
       },
       {
-        "key": "rfi_group_id",
-        "name": "RFI exchange group",
+        "key": "rfi_questions",
+        "name": "RFI questions",
         "kind": "text",
         "required": false,
         "multiple": false,
         "ai": true,
-        "description": "Platform exchange group ID of the RFI round."
+        "description": "One question per line, sent in the RFI brief. Starts from the built-in capability questions."
       },
       {
-        "key": "rfp_group_id",
-        "name": "RFP exchange group",
+        "key": "questions",
+        "name": "Questions",
         "kind": "text",
         "required": false,
         "multiple": false,
         "ai": true,
-        "description": "Platform exchange group ID of the RFP or quick-quote round."
+        "description": "One question per line, sent in the RFP or quote brief. Starts from the built-in questions for the service type and mode."
       },
       {
-        "key": "question_set_id",
-        "name": "Question set",
+        "key": "cost_categories",
+        "name": "Cost categories",
         "kind": "text",
         "required": false,
         "multiple": false,
         "ai": true,
-        "description": "Record ID of a croselection.templates record."
-      },
-      {
-        "key": "grid_template_id",
-        "name": "Bid-grid template",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true,
-        "description": "Record ID of a croselection.templates record."
-      },
-      {
-        "key": "criteria_set_id",
-        "name": "Criteria set",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true,
-        "description": "Record ID of a croselection.templates record."
+        "description": "One bid-grid cost category per line. Starts from the built-in grid for the service type."
       },
       {
         "key": "archived",
@@ -765,11 +680,9 @@
       "response_deadline": "response_deadline",
       "decision_due": "decision_due",
       "owner": "owner",
-      "rfi_group_id": "rfi_group_id",
-      "rfp_group_id": "rfp_group_id",
-      "question_set_id": "question_set_id",
-      "grid_template_id": "grid_template_id",
-      "criteria_set_id": "criteria_set_id",
+      "rfi_questions": "rfi_questions",
+      "questions": "questions",
+      "cost_categories": "cost_categories",
       "archived": "archived"
     }
   },
@@ -812,24 +725,6 @@
         "multiple": false,
         "ai": true,
         "description": "Comma list of 1 to 5 email addresses that may open the supplier page."
-      },
-      {
-        "key": "rfi_exchange_id",
-        "name": "RFI exchange",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true,
-        "description": "Platform exchange ID. Never a link."
-      },
-      {
-        "key": "rfp_exchange_id",
-        "name": "RFP exchange",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true,
-        "description": "Platform exchange ID. Never a link."
       },
       {
         "key": "status",
@@ -895,8 +790,6 @@
       "organization_id": "organization_id",
       "contact_ids": "contact_ids",
       "recipient_emails": "recipient_emails",
-      "rfi_exchange_id": "rfi_exchange_id",
-      "rfp_exchange_id": "rfp_exchange_id",
       "status": "status",
       "cda_status": "cda_status",
       "cda_in_place_on": "cda_in_place_on",

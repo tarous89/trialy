@@ -5,7 +5,7 @@ import {croSelectionFixture} from '../tests/fixtures/cro-selection.js';
 import {frontendFrameDocument} from '../src/shared/frontend-frame.js';
 /* CRO Selection 2.0.0 in the production sanitized frame with a manifest attached: eight screens at 1440 and 390 px (no page overflow,
  * no error banner), inputs enabled, a typed reviewed edit with nothing written before approval, a drawer on mobile, and the layout gear event. */
-const x=await croSelectionFixture();let queue:Promise<any>=Promise.resolve();// one app run at a time per person, as the host doeslet component=x.component;const frame=await frontendFrameDocument();const host:string[]=[];
+const x=await croSelectionFixture();let queue:Promise<any>=Promise.resolve();/* one app run at a time per person, as the host does */let component=x.component;const frame=await frontendFrameDocument();const host:string[]=[];
 const server=createServer(async(req,res)=>{try{
  if(req.url==='/frame'){res.setHeader('Content-Type','text/html');res.end(frame);return;}
  if(req.url==='/api'){let body='';for await(const chunk of req)body+=chunk;const {name,args}=JSON.parse(body);let result:any;

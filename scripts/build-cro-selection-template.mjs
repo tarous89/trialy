@@ -22,7 +22,7 @@ const bindings=roles.map(role=>({typeId:role,fields:Object.values(schema[role].l
 const config={...metadata.defaults,demoLabel:true,asOfOverride:demo.asOf,tableMap:JSON.stringify(map)};
 const render=new Function('input','tools','templateConfiguration','templateBindings',source);
 const X=demo.exchange;let state={},rows=demo.records.map(r=>({...r})),proposal=null,next=1;
-function exchange(name,v){if(name==='exchange.list')return {groups:X.groups.filter(g=>!v.groupId||g.id===v.groupId),nextOffset:null};
+function exchange(name,v){if(name==='exchange.list')return {groups:X.groups.filter(g=>(!v.groupId||g.id===v.groupId)&&(!v.appRef||g.appRef===v.appRef)),nextOffset:null};
  if(name==='exchange.status'){for(const g of X.groups)for(const e of g.exchanges)if(e.id===v.exchangeId)return {exchangeId:e.id,recordId:e.recordId,status:e.status};throw Error('not found');}
  if(name==='exchange.listSubmissions')return {submissions:X.submissions.filter(s=>s.groupId===v.groupId),nextOffset:null};
  if(name==='exchange.listMessages')return {messages:X.messages.filter(m=>!v.groupId||m.groupId===v.groupId).slice().reverse(),nextOffset:null};

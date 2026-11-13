@@ -17,7 +17,7 @@ test('catalog entry, scalar schema, roles as in scope §7, croselection.awards i
  for(const def of Object.values(schema) as any[])for(const f of def.fields){assert.ok(fieldSchema.safeParse(f).success,JSON.stringify(f));assert.equal(f.multiple,false);assert.match(f.key,/^[a-z][a-z0-9_]{0,63}$/);}
  const modes=Object.fromEntries(roles.map(r=>[r,[schema[r].contract,!!schema[r].optional,!!schema[r].readOnly]]));
  assert.deepEqual(modes,{organizations:['core.v1',false,false],people:['core.v1',true,false],programs:['core.v1',true,false],studies:['core.v1',true,false],agreements:['core.v1',true,false],
-  ...Object.fromEntries(['settings','templates','requests','invitations','proposals','proposal_lines','criteria','scores','checklist_items','awards'].map(k=>['croselection.'+k,['croselection.v1',false,false]]))});
+  ...Object.fromEntries(['settings','requests','invitations','proposals','proposal_lines','criteria','scores','checklist_items','awards'].map(k=>['croselection.'+k,['croselection.v1',false,false]]))});
  // Core roles bind exactly the contract's non-owned fields; agreements: core fields only (Contracts-owned fields are left to Contracts).
  for(const r of ['organizations','people','programs','studies','agreements'])assert.deepEqual(strip(schema[r].fields),strip(contract.roles[r].fields.filter((f:any)=>!f.owner)),r);
  // The output contract is published with writer life.cro-selection and the writer table provides every field of it.
@@ -57,7 +57,9 @@ test('acceptance 4: grid totals and deviations match the hand-checked set; other
 });
 
 test('acceptance 5: blind scoring hides prices until complete or revealed; a qualification issue blocks "selected" without an override reason',async()=>{
- const rows=fresh();
+ const rows=fresh();rows.find(x=>x.id==='settings')!.data.blind_scoring=true;
+ // Blind scoring is off by default (owner decision); with it on, prices are hidden until scoring is complete.
+ assert.match(text((await render(fresh(),{section:'evaluation',requestId:'req-p2'})).html),/EUR 1,240,000/,'off by default: prices shown');
  // Demo: B. Reviewer has not scored Northlake's working relationship → 1 score missing → prices hidden.
  let r=await render(rows,{section:'evaluation',requestId:'req-p2'});let t=text(r.html);
  assert.match(t,/Prices are hidden: 1 score missing from 2 reviewers/);assert.doesNotMatch(t,/EUR 1,650,000|EUR 1,240,000/);
@@ -70,7 +72,7 @@ test('acceptance 5: blind scoring hides prices until complete or revealed; a qua
  rows.push({id:'score-x',version:0,role:'croselection.scores',data:{request_id:'req-p2',invitation_id:'inv-northlake',criterion_id:'crit-rel',reviewer:'B. Reviewer (fictional)',score:4,evidence:null}});
  t=text((await render(rows,{section:'evaluation',requestId:'req-p2'})).html);assert.match(t,/Scoring is complete: prices are shown/);assert.match(t,/3\.28 \/ 5 6 of 6 criteria scored Fails mandatory: Quality system/);assert.match(t,/EUR 1,240,000/);
  // Blind scoring off in Settings: prices always shown.
- const off=fresh();off.find(x=>x.id==='settings')!.data.blind_scoring=false;assert.match(text((await render(off,{section:'evaluation',requestId:'req-p2'})).html),/EUR 1,240,000/);
+ const off=fresh();assert.match(text((await render(off,{section:'evaluation',requestId:'req-p2'})).html),/EUR 1,240,000/);
  // Qualification: Northlake has an issue. Deciding for Northlake without a reason is refused; with a reason the override is recorded.
  const open=await render(rows,{section:'decision',requestId:'req-p2'},{kind:'click',action:'panel:decide:new'});
  const form={invitation_id:'inv-northlake',rationale:'Lowest price (fictional).',approver:'R. Lead (fictional)',decided_on:'2026-11-20'};
@@ -88,7 +90,7 @@ test('acceptance 6 (app side): exchange writes only from explicit clicks, one pe
  assert.deepEqual(r.xwrites.map(w=>w.name),['exchange.reply']);assert.match(r.state.notice,/Only this supplier will see it/);
  // A change event cannot trigger an exchange write; nor can a preview or a read-only user.
  const ch=await render(rows,{section:'proposals',requestId:'req-p2'},{kind:'change',action:'accept-file:00000000-0000-4000-8000-0000000000f7',value:'x'});assert.equal(ch.xwrites.length,0);assert.match(ch.state.notice,/explicit click/);
- const pv=await render(rows,{section:'decision',requestId:'req-p2'},{kind:'click',action:'debrief:off'},{saved:false});assert.equal(pv.xwrites.length,0);assert.match(pv.state.notice,/Save the app/);
+ const pv=await render(rows,{section:'decision',requestId:'req-p2'},{kind:'click',action:'request-cda'},{saved:false});assert.equal(pv.xwrites.length,0);assert.match(pv.state.notice,/Save the app/);
  const ro=await render(rows,{section:'messages',requestId:'req-p2',round:'rfp',thread:'00000000-0000-4000-8000-0000000000e5'},{kind:'submit',action:'reply',form:{body:'x'}},{writable:false});assert.equal(ro.xwrites.length,0);
  assert.match(ro.html,/<button type="submit" class="cs-btn cs-btn-primary" disabled>Reply privately \(reviewed\)/);
  // The send review shows the batch exactly as returned; elsewhere no link appears.
@@ -132,14 +134,19 @@ test('calculation edge cases: stated total without lines, quick quote stages, qu
  const base={name:'X',service_type:'cmc',scope:'S',currency:'EUR',cda_option:'skip',response_deadline:'2027-01-10'};
  assert.equal((await render(rows,add.state,{kind:'submit',action:'save-record',form:base})).changes[0].data.question_deadline,'2027-01-03');
  assert.match((await render(rows,add.state,{kind:'submit',action:'save-record',form:{...base,cda_gate:'on'}})).state.notice,/CDA gate needs the option/);
- // Criteria set weights must add up to 100.
- const tp=await render(rows,{section:'settings'},{kind:'click',action:'add:templates:criteria_set'});
- assert.match((await render(rows,tp.state,{kind:'submit',action:'save-record',form:{name:'C',kind:'criteria_set',content_text:'A | scientific | 60 | yes\nB | commercial | 30'}})).state.notice,/add up to 100/);
+ // Default templates: a new request starts from the built-in questions and cost categories for its service type, editable on the request.
+ const made=(await render(rows,add.state,{kind:'submit',action:'save-record',form:base})).changes[0].data;
+ assert.equal(made.cost_categories.split('\n')[0],'Process development','CMC bid grid');assert.match(made.questions,/^Confirm that your price follows the bid grid/);assert.match(made.rfi_questions,/^Describe your experience/);
+ const quick=await render(rows,{section:'requests'},{kind:'click',action:'add:requests:quick_quote'});
+ const q2=(await render(rows,quick.state,{kind:'submit',action:'save-record',form:{...base,service_type:'preclinical_study'}})).changes[0].data;assert.match(q2.questions,/^What does your price include/);assert.equal(q2.rfi_questions,undefined,'a quick quote has no RFI');
  // Decision texts fill the supplier and request names.
  rows.push({id:'award-tox',version:0,role:'croselection.awards',data:{request_id:'req-tox',organization_id:'org-quartz',service_type:'preclinical_study',total:198000,currency:'EUR',rationale:'R',approver:'A',decided_on:'2026-11-13'}});
  rows.find(r=>r.id==='inv-q-quartz')!.data.status='selected';for(const id of ['inv-q-ember','inv-q-sable'])rows.find(r=>r.id===id)!.data.status='not_selected';
- const d=text((await render(rows,{section:'decision',requestId:'req-tox'})).html);assert.match(d,/we have selected Quartz Tox Labs BV \(fictional\) for "28-day GLP toxicology study quote"/);
- assert.equal((d.match(/selected another supplier for this work\. This says nothing against (Ember|Sable)[\s\S]*?If you would like a short debrief call/g)||[]).length,2,'unsuccessful suppliers get the courteous note and the debrief offer');
+ // Notify all: one review, one private message per supplier, the winner text and the text for the others (with the debrief offer).
+ const n=await render(rows,{section:'decision',requestId:'req-tox'},{kind:'submit',action:'notify-all',form:{}});
+ assert.deepEqual(n.xwrites.map(w=>w.name),['exchange.replyAll']);const rp=n.xwrites[0].value.replies;assert.equal(rp.length,3);assert.equal(n.xwrites[0].value.notify,true);
+ assert.match(rp.find((x:any)=>x.exchangeId.endsWith('e7')).body,/we have selected Quartz Tox Labs BV \(fictional\) for "28-day GLP toxicology study quote"/);
+ assert.equal(rp.filter((x:any)=>/selected another supplier for this work\.\s+This says nothing against (Ember|Sable)[\s\S]*If you would like a short debrief call/.test(x.body)).length,2);
 });
 
 test('production design inspector accepts all eight screens and the main panels',async()=>{

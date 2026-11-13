@@ -206,131 +206,11 @@
    "version": 0,
    "data": {
     "default_currency": "EUR",
-    "blind_scoring": true,
+    "blind_scoring": false,
     "question_deadline_days": 7,
     "confidentiality_text": null,
     "decision_texts": null,
-    "email_texts": null
-   }
-  },
-  {
-   "role": "croselection.templates",
-   "id": "tpl-q-quote",
-   "version": 0,
-   "data": {
-    "name": "Quick quote questions",
-    "kind": "question_set",
-    "service_type": "other",
-    "content": "{\"round\": \"quote\", \"questions\": [\"What does your price include, and what is excluded?\", \"When can you start, and how long will the work take?\", \"Which of our assumptions would you change, and why?\", \"Who will lead the work, and what similar work have they done?\"]}",
-    "archived": false
-   }
-  },
-  {
-   "role": "croselection.templates",
-   "id": "tpl-q-rfi",
-   "version": 0,
-   "data": {
-    "name": "RFI capability questionnaire",
-    "kind": "question_set",
-    "service_type": "clinical_study",
-    "content": "{\"round\": \"rfi\", \"questions\": [\"Describe your experience in this indication and phase in the last five years.\", \"Where do you have your own staff, and where do you use partners?\", \"Which systems do you use for EDC, eTMF and safety?\", \"When was your last inspection or sponsor audit, and what was the outcome?\", \"Who would lead the project, and what is their current workload?\"]}",
-    "archived": false
-   }
-  },
-  {
-   "role": "croselection.templates",
-   "id": "tpl-q-rfp",
-   "version": 0,
-   "data": {
-    "name": "Clinical study RFP questions",
-    "kind": "question_set",
-    "service_type": "clinical_study",
-    "content": "{\"round\": \"rfp\", \"questions\": [\"Confirm that your price follows the bid grid and our assumptions. List every deviation.\", \"Describe your site selection and start-up plan, with timelines per country.\", \"Describe your monitoring strategy and its cost if enrolment is slower than assumed.\", \"Name the proposed delivery team with roles and allocation.\", \"List pass-through costs and how you control them.\", \"Describe your change-order process and its most common causes.\", \"Which activities are subcontracted, and to whom?\", \"Give two sponsor references for comparable studies.\"]}",
-    "archived": false
-   }
-  },
-  {
-   "role": "croselection.templates",
-   "id": "tpl-g-clin",
-   "version": 0,
-   "data": {
-    "name": "Clinical study bid grid",
-    "kind": "bid_grid",
-    "service_type": "clinical_study",
-    "content": "{\"categories\": [\"Study start-up\", \"Project management\", \"Monitoring\", \"Data management\", \"Biostatistics\", \"Medical writing\", \"Safety management\", \"Regulatory and ethics\", \"Pass-through costs\"]}",
-    "archived": false
-   }
-  },
-  {
-   "role": "croselection.templates",
-   "id": "tpl-g-pre",
-   "version": 0,
-   "data": {
-    "name": "Preclinical study bid grid",
-    "kind": "bid_grid",
-    "service_type": "preclinical_study",
-    "content": "{\"categories\": [\"Study design and protocol\", \"In-life phase\", \"Bioanalysis\", \"Histopathology\", \"Reporting\", \"Pass-through costs\"]}",
-    "archived": false
-   }
-  },
-  {
-   "role": "croselection.templates",
-   "id": "tpl-g-cmc",
-   "version": 0,
-   "data": {
-    "name": "CMC bid grid",
-    "kind": "bid_grid",
-    "service_type": "cmc",
-    "content": "{\"categories\": [\"Process development\", \"Analytical development\", \"Engineering batch\", \"GMP manufacture\", \"Release testing\", \"Stability studies\", \"Pass-through costs\"]}",
-    "archived": false
-   }
-  },
-  {
-   "role": "croselection.templates",
-   "id": "tpl-crit",
-   "version": 0,
-   "data": {
-    "name": "Standard selection criteria",
-    "kind": "criteria_set",
-    "service_type": "other",
-    "content": "{\"criteria\": [{\"name\": \"Relevant experience\", \"category\": \"scientific\", \"weight\": 25, \"mandatory\": true}, {\"name\": \"Delivery team\", \"category\": \"operational\", \"weight\": 20, \"mandatory\": false}, {\"name\": \"Operational plan and timelines\", \"category\": \"operational\", \"weight\": 20, \"mandatory\": false}, {\"name\": \"Quality system\", \"category\": \"quality\", \"weight\": 15, \"mandatory\": true}, {\"name\": \"Price and price realism\", \"category\": \"commercial\", \"weight\": 15, \"mandatory\": false}, {\"name\": \"Working relationship\", \"category\": \"relationship\", \"weight\": 5, \"mandatory\": false}]}",
-    "archived": false
-   }
-  },
-  {
-   "role": "croselection.templates",
-   "id": "tpl-c-qual",
-   "version": 0,
-   "data": {
-    "name": "Qualification checklist",
-    "kind": "checklist",
-    "service_type": "other",
-    "content": "{\"scope\": \"qualification\", \"items\": [\"Quality audit or questionnaire reviewed\", \"Two references checked\", \"Financial standing reviewed\", \"Insurance certificate received\", \"Data protection assessment completed\"]}",
-    "archived": false
-   }
-  },
-  {
-   "role": "croselection.templates",
-   "id": "tpl-c-bid",
-   "version": 0,
-   "data": {
-    "name": "Bid defence checklist",
-    "kind": "checklist",
-    "service_type": "other",
-    "content": "{\"scope\": \"bid_defence\", \"items\": [\"Agenda sent\", \"Attendees confirmed\", \"Proposed delivery team presented\", \"Notes and open points recorded\"]}",
-    "archived": false
-   }
-  },
-  {
-   "role": "croselection.templates",
-   "id": "tpl-c-onb",
-   "version": 0,
-   "data": {
-    "name": "Onboarding checklist",
-    "kind": "checklist",
-    "service_type": "other",
-    "content": "{\"scope\": \"onboarding\", \"items\": [\"Contract signed\", \"Quality agreement signed\", \"Kick-off meeting held\", \"Delivery team confirmed\", \"Systems access set up\"]}",
-    "archived": false
+    "invitation_texts": null
    }
   },
   {
@@ -354,12 +234,10 @@
     "response_deadline": "2026-11-03",
     "decision_due": "2026-11-24",
     "owner": "C. Ops (fictional)",
-    "rfi_group_id": "00000000-0000-4000-8000-0000000000a1",
-    "rfp_group_id": "00000000-0000-4000-8000-0000000000a2",
-    "question_set_id": "tpl-q-rfp",
-    "grid_template_id": "tpl-g-clin",
-    "criteria_set_id": "tpl-crit",
-    "archived": false
+    "archived": false,
+    "rfi_questions": "Describe your experience in this indication and phase in the last five years.\nWhere do you have your own staff, and where do you use partners?\nWhich systems do you use for EDC, eTMF and safety?\nWhen was your last inspection or sponsor audit, and what was the outcome?\nWho would lead the project, and what is their current workload?",
+    "questions": "Confirm that your price follows the bid grid and our assumptions. List every deviation.\nDescribe your site selection and start-up plan, with timelines per country.\nDescribe your monitoring strategy and its cost if enrolment is slower than assumed.\nName the proposed delivery team with roles and allocation.\nList pass-through costs and how you control them.\nDescribe your change-order process and its most common causes.\nWhich activities are subcontracted, and to whom?\nGive two sponsor references for comparable studies.",
+    "cost_categories": "Study start-up\nProject management\nMonitoring\nData management\nBiostatistics\nMedical writing\nSafety management\nRegulatory and ethics\nPass-through costs"
    }
   },
   {
@@ -371,8 +249,6 @@
     "organization_id": "org-helix",
     "contact_ids": "p-anna",
     "recipient_emails": "anna@helix.example",
-    "rfi_exchange_id": "00000000-0000-4000-8000-0000000000e0",
-    "rfp_exchange_id": "00000000-0000-4000-8000-0000000000e4",
     "status": "finalist",
     "cda_status": "signed",
     "cda_in_place_on": null,
@@ -389,8 +265,6 @@
     "organization_id": "org-northlake",
     "contact_ids": "p-ben",
     "recipient_emails": "ben@northlake.example",
-    "rfi_exchange_id": "00000000-0000-4000-8000-0000000000e1",
-    "rfp_exchange_id": "00000000-0000-4000-8000-0000000000e5",
     "status": "finalist",
     "cda_status": "signed",
     "cda_in_place_on": null,
@@ -407,8 +281,6 @@
     "organization_id": "org-meridian",
     "contact_ids": "p-cara",
     "recipient_emails": "cara@meridian.example",
-    "rfi_exchange_id": "00000000-0000-4000-8000-0000000000e2",
-    "rfp_exchange_id": "00000000-0000-4000-8000-0000000000e6",
     "status": "submitted",
     "cda_status": "signed",
     "cda_in_place_on": null,
@@ -425,8 +297,6 @@
     "organization_id": "org-sable",
     "contact_ids": "p-dev",
     "recipient_emails": "dev@sable.example",
-    "rfi_exchange_id": "00000000-0000-4000-8000-0000000000e3",
-    "rfp_exchange_id": null,
     "status": "declined",
     "cda_status": null,
     "cda_in_place_on": null,
@@ -1511,12 +1381,10 @@
     "response_deadline": "2026-11-20",
     "decision_due": "2026-11-27",
     "owner": "N. Clinical (fictional)",
-    "rfi_group_id": null,
-    "rfp_group_id": "00000000-0000-4000-8000-0000000000a3",
-    "question_set_id": "tpl-q-quote",
-    "grid_template_id": "tpl-g-pre",
-    "criteria_set_id": null,
-    "archived": false
+    "archived": false,
+    "rfi_questions": null,
+    "questions": null,
+    "cost_categories": null
    }
   },
   {
@@ -1528,8 +1396,6 @@
     "organization_id": "org-quartz",
     "contact_ids": null,
     "recipient_emails": "eva@quartz.example",
-    "rfi_exchange_id": null,
-    "rfp_exchange_id": "00000000-0000-4000-8000-0000000000e7",
     "status": "submitted",
     "cda_status": "not_needed",
     "cda_in_place_on": null,
@@ -1546,8 +1412,6 @@
     "organization_id": "org-ember",
     "contact_ids": null,
     "recipient_emails": "finn@ember.example",
-    "rfi_exchange_id": null,
-    "rfp_exchange_id": "00000000-0000-4000-8000-0000000000e8",
     "status": "rfp_invited",
     "cda_status": "not_needed",
     "cda_in_place_on": null,
@@ -1564,8 +1428,6 @@
     "organization_id": "org-sable",
     "contact_ids": null,
     "recipient_emails": "dev@sable.example",
-    "rfi_exchange_id": null,
-    "rfp_exchange_id": "00000000-0000-4000-8000-0000000000e9",
     "status": "rfp_invited",
     "cda_status": "not_needed",
     "cda_in_place_on": null,
@@ -1616,12 +1478,10 @@
     "response_deadline": "2026-09-18",
     "decision_due": "2026-09-30",
     "owner": "N. Clinical (fictional)",
-    "rfi_group_id": null,
-    "rfp_group_id": null,
-    "question_set_id": null,
-    "grid_template_id": null,
-    "criteria_set_id": null,
-    "archived": false
+    "archived": false,
+    "rfi_questions": null,
+    "questions": null,
+    "cost_categories": null
    }
   },
   {
@@ -1633,8 +1493,6 @@
     "organization_id": "org-ember",
     "contact_ids": null,
     "recipient_emails": "finn@ember.example",
-    "rfi_exchange_id": null,
-    "rfp_exchange_id": null,
     "status": "selected",
     "cda_status": "in_place_elsewhere",
     "cda_in_place_on": "2026-03-01",
@@ -1651,8 +1509,6 @@
     "organization_id": "org-quartz",
     "contact_ids": null,
     "recipient_emails": "eva@quartz.example",
-    "rfi_exchange_id": null,
-    "rfp_exchange_id": null,
     "status": "not_selected",
     "cda_status": "in_place_elsewhere",
     "cda_in_place_on": "2025-11-15",
@@ -2021,7 +1877,8 @@
        "state": "submitted"
       }
      }
-    ]
+    ],
+    "appRef": "request:req-p2:rfp"
    },
    {
     "id": "00000000-0000-4000-8000-0000000000a1",
@@ -2180,7 +2037,8 @@
        "state": "closed"
       }
      }
-    ]
+    ],
+    "appRef": "request:req-p2:rfi"
    },
    {
     "id": "00000000-0000-4000-8000-0000000000a3",
@@ -2307,7 +2165,8 @@
        "state": "invited"
       }
      }
-    ]
+    ],
+    "appRef": "request:req-tox:rfp"
    }
   ],
   "submissions": [
