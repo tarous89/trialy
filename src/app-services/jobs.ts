@@ -33,7 +33,7 @@ export async function authorizeJob(db:Database,j:any,reading=false){
   return a;
  });
 }
-export type EmailTransport=(payload:{from:string;to:string[];subject:string;text:string;headers?:Record<string,string>},key:string,signal:AbortSignal)=>Promise<{id:string}>;
+export type EmailTransport=(payload:{from:string;to:string[];subject:string;text:string;reply_to?:string;headers?:Record<string,string>},key:string,signal:AbortSignal)=>Promise<{id:string}>;
 export const resendEmail:EmailTransport=async(payload,key,signal)=>{
  const apiKey=process.env.APP_NOTIFICATION_RESEND_API_KEY??process.env.RESEND_API_KEY;if(!apiKey)throw Object.assign(Error('Email service is not configured'),{permanent:true});
  const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{authorization:'Bearer '+apiKey,'content-type':'application/json','Idempotency-Key':key},body:J(payload),signal});
