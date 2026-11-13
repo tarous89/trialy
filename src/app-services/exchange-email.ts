@@ -16,9 +16,14 @@ import type {EmailTransport} from './jobs.js';
  */
 export const FROM_ADDRESS='no-reply@trialagents.com';
 export const SUFFIX=' at TrialAgents';
-export const EMAIL_TYPES=['invitation','reminder','clarification','message','extended','revoked'] as const;
+export const REQUEST_EMAIL_TYPES=['invitation','reminder','clarification','message','revoked'] as const;
+/** Room emails (§5 R8): access granted is the room invitation; the digest goes out automatically only with owner-approved text. */
+export const ROOM_EMAIL_TYPES=['access_granted','access_changed','documents_updated','question_answered','answer_published','access_ending','access_revoked'] as const;
+export const EMAIL_TYPES=['invitation','reminder','clarification','message','extended','revoked',...ROOM_EMAIL_TYPES] as const;
 export type EmailType=typeof EMAIL_TYPES[number];
-export const PLACEHOLDERS=['recipient_name','recipient_company','sender_name','sender_company','title','deadline','link','message'] as const;
+/** Which email types fit a group: request types for requests, room types for rooms; "extended" for both. */
+export function emailTypeFits(kind:string,type:EmailType){return type==='extended'||(kind==='room'?(ROOM_EMAIL_TYPES as readonly string[]).includes(type):(REQUEST_EMAIL_TYPES as readonly string[]).includes(type));}
+export const PLACEHOLDERS=['recipient_name','recipient_company','sender_name','sender_company','title','deadline','link','message','levels','documents'] as const;
 export const emailTextSchema=z.object({subject:z.string().trim().min(1).max(200),body:z.string().trim().min(1).max(10000)}).strict();
 export const emailDefaultsSchema=z.partialRecord(z.enum(EMAIL_TYPES),emailTextSchema);
 export const platformDefaults:Record<EmailType,{subject:string;body:string}>={
@@ -27,7 +32,14 @@ export const platformDefaults:Record<EmailType,{subject:string;body:string}>={
  clarification:{subject:'Clarification published: {title}',body:'Dear {recipient_name},\n\nA clarification was published for all recipients of "{title}":\n\n{message}\n\nRead it on your page:\n{link}'},
  message:{subject:'New message about {title}',body:'Dear {recipient_name},\n\n{sender_name} from {sender_company} wrote to you about "{title}":\n\n{message}\n\nReply on your page:\n{link}'},
  extended:{subject:'Deadline extended: {title}',body:'Dear {recipient_name},\n\nThe deadline for "{title}" has been extended to {deadline}.\n\nOpen your page:\n{link}'},
- revoked:{subject:'Access closed: {title}',body:'Dear {recipient_name},\n\n{sender_name} from {sender_company} has closed your access to "{title}". Anything you already submitted is kept by the sender.\n\nIf you have questions, reply to this email.'}
+ revoked:{subject:'Access closed: {title}',body:'Dear {recipient_name},\n\n{sender_name} from {sender_company} has closed your access to "{title}". Anything you already submitted is kept by the sender.\n\nIf you have questions, reply to this email.'},
+ access_granted:{subject:'Access to {title}',body:'Dear {recipient_name},\n\n{sender_name} from {sender_company} has given {recipient_company} access to "{title}" ({levels}).\n\nOpen the room to read the index, view the documents and ask questions:\n{link}\n\nAccess: {deadline}.'},
+ access_changed:{subject:'Your access to {title} changed',body:'Dear {recipient_name},\n\nYour access to "{title}" now covers: {levels}.\n\nOpen the room:\n{link}'},
+ documents_updated:{subject:'New and updated documents in {title}',body:'Dear {recipient_name},\n\nThese documents were added or updated in "{title}" since your last update:\n\n{documents}\n\nOpen the room:\n{link}'},
+ question_answered:{subject:'Your question about {title} was answered',body:'Dear {recipient_name},\n\n{sender_name} from {sender_company} answered your question about "{title}":\n\n{message}\n\nRead it in the room:\n{link}'},
+ answer_published:{subject:'New answer in {title}',body:'Dear {recipient_name},\n\nAn answer was published in "{title}":\n\n{message}\n\nRead it in the room:\n{link}'},
+ access_ending:{subject:'Your access to {title} ends soon',body:'Dear {recipient_name},\n\nYour access to "{title}" ends on {deadline}. If you need more time, reply to this email.\n\nOpen the room:\n{link}'},
+ access_revoked:{subject:'Access closed: {title}',body:'Dear {recipient_name},\n\n{sender_name} from {sender_company} has closed your access to "{title}".\n\nIf you have questions, reply to this email.'}
 };
 export type EmailValues=Record<typeof PLACEHOLDERS[number],string>;
 export const fill=(template:string,values:EmailValues)=>template.replace(/\{([a-z_]+)\}/g,(m,key)=>key in values?values[key as keyof EmailValues]:m);
@@ -45,10 +57,14 @@ export function renderEmail(text:{subject:string;body:string},values:EmailValues
  return {subject,text:body+footer(sender,link,emailId)};
 }
 export const exchangeLink=(token:string)=>new URL('/exchange#'+token,appPublicUrl()).toString();
-export const formatDeadline=(d:Date|string)=>new Date(d).toLocaleString('en-GB',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'UTC'})+' UTC';
-export function emailValues(group:any,exchange:any,sender:{name:string;company:string},message=''):EmailValues{
- return {recipient_name:exchange.recipient_name||'recipient',recipient_company:exchange.recipient_company||'your organization',sender_name:sender.name,sender_company:sender.company,title:group.title,deadline:formatDeadline(exchange.expires_at),link:exchangeLink(exchange.link_token),message};
+export const formatDeadline=(d:Date|string|null)=>d===null||d===undefined?'until access is revoked':new Date(d).toLocaleString('en-GB',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'UTC'})+' UTC';
+/** Names of the levels a person holds, in the group's order (room emails). */
+export const levelNames=(group:any,exchange:any)=>((group.levels??[]) as any[]).filter(l=>((exchange.levels??[]) as string[]).includes(l.key)).map(l=>l.name).join(', ')||'the room';
+export function emailValues(group:any,exchange:any,sender:{name:string;company:string},message='',documents=''):EmailValues{
+ return {recipient_name:exchange.recipient_name||'recipient',recipient_company:exchange.recipient_company||'your organization',sender_name:sender.name,sender_company:sender.company,title:group.title,deadline:group.kind==='room'&&exchange.expires_at?'until '+formatDeadline(exchange.expires_at):formatDeadline(exchange.expires_at),link:exchangeLink(exchange.link_token),message,levels:levelNames(group,exchange),documents};
 }
+/** The link is left out of emails that tell a person their access ended. */
+export const linkless=(type:EmailType)=>type==='revoked'||type==='access_revoked';
 /** Workspace default (saved by the workspace) replaces the app default, which replaces the platform default. */
 export async function resolveDefault(tx:Connection,w:string,group:any|null,type:EmailType){
  const saved=(await tx.query('SELECT subject,body FROM exchange_email_defaults WHERE workspace_id=$1 AND email_type=$2',[w,type])).rows[0];
@@ -87,7 +103,27 @@ export async function queueEmail(tx:Connection,m:{id?:string;workspaceId:string;
 export async function queueExchangeNotice(tx:Connection,a:Actor,w:string,p:any,group:any,exchange:any,type:EmailType,message=''){
  const sender=await senderIdentity(tx,{userId:group.owner_id,origin:'human'},w,p),text=await resolveDefault(tx,w,group,type),values=emailValues(group,exchange,{name:sender.senderName,company:sender.senderCompany},message);
  const recipients:string[]=exchange.recipient_emails;await assertEmailBudget(tx,w,recipients);const queued=[];
- for(const to of recipients){const id=randomUUID();const rendered=renderEmail(text,values,{name:sender.senderName,company:sender.senderCompany,email:sender.replyTo},type==='revoked'?null:values.link,id);queued.push(await queueEmail(tx,{id,workspaceId:w,groupId:group.id,exchangeId:exchange.id,emailType:type,to,fromName:sender.displayName,replyTo:sender.replyTo,subject:rendered.subject,text:rendered.text}));}
+ for(const to of recipients){const id=randomUUID();const rendered=renderEmail(text,values,{name:sender.senderName,company:sender.senderCompany,email:sender.replyTo},linkless(type)?null:values.link,id);queued.push(await queueEmail(tx,{id,workspaceId:w,groupId:group.id,exchangeId:exchange.id,emailType:type,to,fromName:sender.displayName,replyTo:sender.replyTo,subject:rendered.subject,text:rendered.text}));}
+ return queued;
+}
+/**
+ * Room notices (§5 R8) sent as part of a reviewed operation (answer, published answer, access change,
+ * revocation): rendered in the review exactly as they are queued after a person confirms, with batch
+ * text edits, per-recipient personalisation and the display-name choice. Deterministic, so the
+ * confirmation can compare it with the review: the report-abuse link carries no per-email id.
+ */
+export const noticeEmailSchema=z.object({subject:z.string().trim().min(1).max(200).optional(),body:z.string().trim().min(1).max(10000).optional(),overrides:z.record(z.string().uuid(),z.object({subject:z.string().trim().min(1).max(200).optional(),body:z.string().trim().min(1).max(10000).optional()}).strict()).default({}),nameKind:z.enum(['organization','person','custom']).optional(),customName:z.string().max(80).optional()}).strict();
+export type NoticeEmail=z.infer<typeof noticeEmailSchema>;
+export async function renderNotices(tx:Connection,a:Actor,w:string,p:any,group:any,exchanges:any[],type:EmailType,message:string,option:NoticeEmail|undefined,documentsFor?:(e:any)=>Promise<string>){
+ const o=option??{overrides:{}},overrides=o.overrides??{};if(Object.keys(overrides).some(id=>!exchanges.some(e=>e.id===id)))fail(400,'override_scope','Personalise only recipients of this email');
+ const sender=await senderIdentity(tx,a,w,p,{nameKind:o.nameKind,customName:o.customName}),base=await resolveDefault(tx,w,group,type),batchText={subject:o.subject??base.subject,body:o.body??base.body},emails=[];
+ for(const e of exchanges){const x=overrides[e.id]??{},text={subject:x.subject??batchText.subject,body:x.body??batchText.body},values=emailValues(group,e,{name:sender.senderName,company:sender.senderCompany},message,documentsFor?await documentsFor(e):'');
+  for(const to of e.recipient_emails as string[])emails.push({exchangeId:e.id,to,personalised:!!(x.subject||x.body),...renderEmail(text,values,{name:sender.senderName,company:sender.senderCompany,email:sender.replyTo},linkless(type)?null:values.link,'')});}
+ return {emailType:type,from:`${sender.displayName} <${FROM_ADDRESS}>`,displayName:sender.displayName,replyTo:sender.replyTo,defaultSource:base.source,batchText,emails};
+}
+export async function queueNotices(tx:Connection,w:string,group:any,rendered:Awaited<ReturnType<typeof renderNotices>>){
+ await assertEmailBudget(tx,w,rendered.emails.map(e=>e.to));const queued=[];
+ for(const m of rendered.emails)queued.push(await queueEmail(tx,{workspaceId:w,groupId:group.id,exchangeId:m.exchangeId,emailType:rendered.emailType,to:m.to,fromName:rendered.displayName,replyTo:rendered.replyTo,subject:m.subject,text:m.text}));
  return queued;
 }
 export const prepareEmailSchema=z.object({groupId:z.string().uuid(),emailType:z.enum(EMAIL_TYPES),exchangeIds:z.array(z.string().uuid()).min(1).max(200).optional(),subject:z.string().trim().min(1).max(200).optional(),body:z.string().trim().min(1).max(10000).optional(),overrides:z.record(z.string().uuid(),z.object({subject:z.string().trim().min(1).max(200).optional(),body:z.string().trim().min(1).max(10000).optional()}).strict()).default({}),message:z.string().max(5000).default(''),nameKind:z.enum(['organization','person','custom']).optional(),customName:z.string().max(80).optional(),scheduleAt:z.iso.datetime().optional()}).strict();
@@ -97,17 +133,18 @@ export type PrepareEmail=z.infer<typeof prepareEmailSchema>;
  * exchange, from the batch text (default or edited) with optional per-recipient personalisation.
  * Recipients are limited to the exchanges' recipient lists. Stored with a digest for human confirmation.
  */
-export async function prepareExchangeEmail(tx:Connection,a:Actor,w:string,p:any,group:any,exchanges:any[],input:PrepareEmail){
+export async function prepareExchangeEmail(tx:Connection,a:Actor,w:string,p:any,group:any,exchanges:any[],input:PrepareEmail,documentsFor?:(e:any)=>Promise<string>){
+ if(!emailTypeFits(group.kind??'request',input.emailType))fail(400,'email_type',`${input.emailType} emails are not used for ${group.kind==='room'?'rooms':'requests'}`);
  const selected=input.exchangeIds?exchanges.filter(e=>input.exchangeIds!.includes(e.id)):exchanges;
  if(input.exchangeIds&&selected.length!==new Set(input.exchangeIds).size)fail(404,'not_found','Choose recipients of this exchange group');
  if(!selected.length)fail(400,'no_recipients','This group has no active recipients');
  if(Object.keys(input.overrides).some(id=>!selected.some(e=>e.id===id)))fail(400,'override_scope','Personalise only selected recipients');
- if(input.scheduleAt&&selected.some(e=>new Date(input.scheduleAt!).getTime()>=new Date(e.expires_at).getTime()))fail(400,'schedule_late','Schedule reminders before every selected deadline');
+ if(input.scheduleAt&&selected.some(e=>e.expires_at&&new Date(input.scheduleAt!).getTime()>=new Date(e.expires_at).getTime()))fail(400,'schedule_late','Schedule reminders before every selected deadline');
  if(input.scheduleAt&&new Date(input.scheduleAt).getTime()<Date.now())fail(400,'schedule_past','Schedule a future time');
  const sender=await senderIdentity(tx,a,w,p,{nameKind:input.nameKind,customName:input.customName}),base=await resolveDefault(tx,w,group,input.emailType);
  const batchText={subject:input.subject??base.subject,body:input.body??base.body},id=randomUUID(),rendered=[];
- for(const e of selected){const o=input.overrides[e.id]??{},text={subject:o.subject??batchText.subject,body:o.body??batchText.body},values=emailValues(group,e,{name:sender.senderName,company:sender.senderCompany},input.message);
-  for(const to of e.recipient_emails as string[]){const emailId=randomUUID();rendered.push({emailId,exchangeId:e.id,to,recipientName:e.recipient_name,personalised:!!(o.subject||o.body),...renderEmail(text,values,{name:sender.senderName,company:sender.senderCompany,email:sender.replyTo},input.emailType==='revoked'?null:values.link,emailId)});}}
+ for(const e of selected){const o=input.overrides[e.id]??{},text={subject:o.subject??batchText.subject,body:o.body??batchText.body},values=emailValues(group,e,{name:sender.senderName,company:sender.senderCompany},input.message,documentsFor?await documentsFor(e):'');
+  for(const to of e.recipient_emails as string[]){const emailId=randomUUID();rendered.push({emailId,exchangeId:e.id,to,recipientName:e.recipient_name,personalised:!!(o.subject||o.body),...renderEmail(text,values,{name:sender.senderName,company:sender.senderCompany,email:sender.replyTo},linkless(input.emailType)?null:values.link,emailId)});}}
  const envelope={id,groupId:group.id,emailType:input.emailType,from:`${sender.displayName} <${FROM_ADDRESS}>`,replyTo:sender.replyTo,scheduledAt:input.scheduleAt??null,batchText,overrides:input.overrides,emails:rendered.map(r=>({exchangeId:r.exchangeId,to:r.to,subject:r.subject,text:r.text,personalised:r.personalised}))},digest=checksum(JSON.stringify(envelope));
  await tx.query('INSERT INTO exchange_email_batches(id,workspace_id,group_id,email_type,display_name,reply_to,sender_user_id,subject_template,body_template,overrides,rendered,digest,scheduled_at,created_by) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)',[id,w,group.id,input.emailType,sender.displayName,sender.replyTo,a.userId,batchText.subject,batchText.body,JSON.stringify(input.overrides),JSON.stringify(rendered),digest,input.scheduleAt??null,a.userId]);
  await rememberSender(tx,a,w,sender.kind,sender.customName);
@@ -131,7 +168,7 @@ export async function runScheduledExchangeBatches(db:Database){
  const due=(await db.query("SELECT * FROM exchange_email_batches WHERE status='confirmed' AND scheduled_at<=now() ORDER BY scheduled_at LIMIT 20")).rows;
  for(const b of due)await db.transaction(async tx=>{
   const current=(await tx.query("SELECT * FROM exchange_email_batches WHERE id=$1 AND status='confirmed' FOR UPDATE",[b.id])).rows[0];if(!current)return;
-  const live=(await tx.query('SELECT e.id FROM exchanges e JOIN exchange_groups g ON g.id=e.group_id WHERE e.group_id=$1 AND e.revoked_at IS NULL AND e.expires_at>now() AND NOT g.archived',[b.group_id])).rows.map(r=>r.id);
+  const live=(await tx.query('SELECT e.id FROM exchanges e JOIN exchange_groups g ON g.id=e.group_id WHERE e.group_id=$1 AND e.revoked_at IS NULL AND (e.expires_at IS NULL OR e.expires_at>now()) AND NOT g.archived',[b.group_id])).rows.map(r=>r.id);
   const rendered=(current.rendered as any[]).filter(r=>live.includes(r.exchangeId));const p=(await tx.query('SELECT id,tenant_id FROM workspaces WHERE id=$1',[b.workspace_id])).rows[0];
   await queueBatch(tx,{...current,rendered});await tx.query("UPDATE exchange_email_batches SET status='sent' WHERE id=$1",[b.id]);
   await tx.query('INSERT INTO audit_events(id,workspace_id,tenant_id,actor_id,action,object_id,origin,after_value) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',[randomUUID(),b.workspace_id,p.tenant_id,current.confirmed_by,'exchange.reminder_sent',b.id,'worker',JSON.stringify({emailType:current.email_type,recipients:rendered.map(r=>r.to),skipped:(current.rendered as any[]).length-rendered.length,approvedAt:current.confirmed_at})]);

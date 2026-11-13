@@ -25,7 +25,7 @@ import { Service } from '../domain/service.js';
 import {inspectionHtml} from '../domain/inspection.js';
 import { templates } from '../domain/templates.js';
 export function baseApp() {
- const app=express();app.disable('x-powered-by');app.use(helmet({contentSecurityPolicy:{directives:{defaultSrc:["'self'"],scriptSrc:["'self'"],styleSrc:["'self'","'unsafe-inline'"],frameSrc:["'self'",...new Set([new URL(appPublicUrl()).origin,oauthPublicUrl()])],frameAncestors:["'self'"]}}}));
+ const app=express();app.disable('x-powered-by');app.use(helmet({contentSecurityPolicy:{directives:{defaultSrc:["'self'"],scriptSrc:["'self'"],styleSrc:["'self'","'unsafe-inline'"],imgSrc:["'self'","data:","blob:"],frameSrc:["'self'","blob:",...new Set([new URL(appPublicUrl()).origin,oauthPublicUrl()])],frameAncestors:["'self'"]}}}));
  // Public stateless frame shell. HTTP sandbox also protects direct navigation.
  app.get('/frontend/frame',async(_req,res)=>{
   const hash=createHash('sha256').update(FRAME_SCRIPT).digest('base64');

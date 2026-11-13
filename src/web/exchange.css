@@ -36,3 +36,12 @@
 .xp-verify{max-width:440px;margin:48px auto;background:#fff;border:1px solid var(--x-border);border-radius:14px;padding:24px}.xp-code{letter-spacing:6px;font-size:22px!important;text-align:center}
 @media (min-width:900px){.xp-main{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}.xp-title h1{font-size:30px}}
 @media (prefers-reduced-motion:no-preference){.xp-tab{transition:color 120ms,border-color 120ms}}
+/* Room mode (§5): index, badges, search and the inline viewer. */
+.xp-num{display:inline-block;min-width:2.4em;margin-right:8px;color:var(--x-muted);font-variant-numeric:tabular-nums;font-weight:600}
+.xp-badge{margin-left:8px;vertical-align:1px}
+.xp-index{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px}.xp-index h4{font-size:15px;font-weight:650;margin:0 0 8px}
+.xp-search{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin:16px 0}
+.xp-answer{border-left:3px solid var(--x-green);padding:8px 0 4px 12px;margin-top:10px;background:#fff}
+.xp-viewer{position:fixed;inset:0;z-index:10;background:#fff;display:flex;flex-direction:column}
+.xp-viewer-bar{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--x-border)}.xp-viewer-bar strong{flex:1;min-width:0;overflow-wrap:anywhere}
+.xp-viewer-frame{flex:1;border:0;width:100%}.xp-viewer-image{flex:1;min-height:0;object-fit:contain;max-width:100%;margin:auto;padding:16px}

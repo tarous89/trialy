@@ -95,7 +95,7 @@ Recipient accounts or portals; e-signature (signed PDFs are uploaded back); wate
 
 ## 5. Room extension (for Data Room)
 
-**Status:** scoped 13 November 2026 for [Data Room](app-template-blueprints/apps/DATA_ROOM.md) (BT2-08). Build as its own PR before the Data Room app. Everything in §2 still applies (per-person links, verification, gates, review, audit, email rules, AI rules). Additions:
+**Status:** scoped 13 November 2026 for [Data Room](app-template-blueprints/apps/DATA_ROOM.md) (BT2-08); implemented as its own PR before the Data Room app (migration 065, `src/domain/exchange-room-model.ts`, `src/domain/exchange-rooms.ts`, recipient page `src/web/RecipientRoom.tsx`; template guidance 1.3.23; tests `tests/exchange-rooms.test.ts` and `tests/visual/exchange-room.spec.cjs`). Everything in §2 still applies (per-person links, verification, gates, review, audit, email rules, AI rules). Additions:
 
 | # | Addition | What it does |
 |---|---|---|
