@@ -223,3 +223,14 @@ Available merged-commit evidence: generic `production` check succeeded; it verif
 Live article content/canonical/schema/responsive delivery, images/links/final CTA, discovery inclusion and homepage-identical analytics loader/client verification remain **unverified for this release** because the article is not served. Next run must first recheck this merged release and available build evidence; when HTTP 200 appears, complete all live checks before updating status. Fix only evidenced source failures through a new exact-head PR gate. Treat the delay as transient/pending, not a reason to disable the ongoing queue task.
 
 **Queue remains 11 published, 36 remaining (including this merged, unverified A8); 35 other topics await publication.**
+
+
+### A8 resumed verification — 13 November 2026, 17:52 CET
+
+**Still merged; deployment pending/unverified.** Resumed PR #191 before any new topic. Current public main is still release `c802b3207fa7eff1a301e8aba656a9c1e636d484`; PR merged at 17:01 CET. Exact-head predeploy run 43457306088 remains successful, and the prior desktop/mobile artifact review stands. No open Runway PRs found.
+
+Fresh repeated HTTP checks through 17:52 CET: canonical /apps/runway-vs-jirav and trailing-slash variant return 404. /apps, sitemap.xml, llms.txt and llm.xml return 200 but omit the Jirav route; the prior Aleph article returns 200. Confirmed merged source includes the article fragment, renderer spec, snapshot fragment loading and /apps card. No source wiring defect evidenced. These observations are consistent with the previous public snapshot still being served, but do not establish why the new release has not appeared.
+
+Available merged-commit check-runs still show only successful generic production verification, not an article-specific or Cloudflare build result. No configuration/permission fault or failed build is evidenced; no authentication escalation, manual deployment, empty trigger commit, tracking change or new article attempted. The original 15-minute post-merge wait budget was already exhausted; this run resumed live/release reconciliation rather than creating a competing release.
+
+Keep A8 pending and resume it first next run. Complete content, canonical/schema, responsive/source matching, images/links/CTA, discovery and homepage-identical analytics HTTP checks once served. **11 published, 36 remaining**, including A8. Task retained while the deployment state remains unresolved/pending.
