@@ -17,13 +17,15 @@ export const documentPlacementSchema=documentItemSchema.omit({versionId:true}).e
 export const trackingSchema=z.object({accessTypeId:id.optional(),engagementTypeId:id.optional()}).strict();
 export const roomDays=z.number().int().min(1).max(730);
 const expectedVersion=z.number().int().min(1);
+/** App record changes a reviewed room operation carries (for example the grant's levels), committed in the same transaction (guidance 1.3.24). */
+const withRecords={records:z.object({componentId:id,expectedVersion:z.number().int().min(0),viewId:id.optional(),changes:z.array(z.record(z.string(),z.unknown())).min(1).max(50)}).strict().optional()};
 export const roomOperations=[
- z.object({kind:z.literal('define_exchange_levels'),groupId:id,expectedVersion,levels:z.array(levelSchema).min(1).max(10)}).strict(),
- z.object({kind:z.literal('set_exchange_levels'),exchangeId:id,levels:z.array(levelKey).min(1).max(10),notify:z.boolean().default(true),email:noticeEmailSchema.optional()}).strict(),
- z.object({kind:z.literal('replace_exchange_document'),groupId:id,expectedVersion,versionId:id,newVersionId:id}).strict(),
- z.object({kind:z.literal('answer_exchange_question'),questionId:id,body:z.string().trim().min(1).max(10000),supersedes:id.optional(),notify:z.boolean().default(true),email:noticeEmailSchema.optional()}).strict(),
- z.object({kind:z.literal('publish_exchange_answer'),groupId:id,questionId:id.optional(),question:z.string().trim().max(5000).optional(),body:z.string().trim().min(1).max(10000),scope:z.enum(['room','level']),level:levelKey.optional(),supersedes:id.optional(),notify:z.boolean().default(true),email:noticeEmailSchema.optional()}).strict(),
- z.object({kind:z.literal('approve_exchange_digest'),groupId:id,expectedVersion,text:emailTextSchema.nullable(),nameKind:z.enum(['organization','person','custom']).optional(),customName:z.string().max(80).optional()}).strict(),
+ z.object({kind:z.literal('define_exchange_levels'),groupId:id,expectedVersion,levels:z.array(levelSchema).min(1).max(10),...withRecords}).strict(),
+ z.object({kind:z.literal('set_exchange_levels'),exchangeId:id,levels:z.array(levelKey).min(1).max(10),entered:z.array(levelKey).max(10).default([]),enteredNote:z.string().trim().min(1).max(500).optional(),notify:z.boolean().default(true),email:noticeEmailSchema.optional(),...withRecords}).strict(),
+ z.object({kind:z.literal('replace_exchange_document'),groupId:id,expectedVersion,versionId:id,newVersionId:id,...withRecords}).strict(),
+ z.object({kind:z.literal('answer_exchange_question'),questionId:id,body:z.string().trim().min(1).max(10000),supersedes:id.optional(),notify:z.boolean().default(true),email:noticeEmailSchema.optional(),...withRecords}).strict(),
+ z.object({kind:z.literal('publish_exchange_answer'),groupId:id,questionId:id.optional(),question:z.string().trim().max(5000).optional(),body:z.string().trim().min(1).max(10000),scope:z.enum(['room','level']),level:levelKey.optional(),supersedes:id.optional(),notify:z.boolean().default(true),email:noticeEmailSchema.optional(),...withRecords}).strict(),
+ z.object({kind:z.literal('approve_exchange_digest'),groupId:id,expectedVersion,text:emailTextSchema.nullable(),nameKind:z.enum(['organization','person','custom']).optional(),customName:z.string().max(80).optional(),...withRecords}).strict(),
  z.object({kind:z.literal('archive_exchange_group'),groupId:id,archived:z.boolean()}).strict()
 ] as const;
 export type RoomOperation=z.infer<typeof roomOperations[number]>;
@@ -53,9 +55,11 @@ export const viewable=(mime:string)=>/^(application\/pdf|image\/(png|jpeg|gif|we
 export async function levelStates(tx:Connection,g:any,e:any){
  const held=new Set((e.levels??[]) as string[]);
  const acks=(await tx.query("SELECT detail,created_at FROM exchange_events WHERE exchange_id=$1 AND kind='level_acknowledged' ORDER BY created_at",[e.id])).rows;
+ // An entry step the workspace recorded for this person (for example a CDA already signed elsewhere) opens the level like a completed step.
+ const recorded=new Set((await tx.query("SELECT detail->>'level' AS level FROM exchange_events WHERE exchange_id=$1 AND kind='level_entry_recorded'",[e.id])).rows.map(r=>r.level));
  const files=(await tx.query('SELECT f.slot,f.created_at,a.version_id FROM exchange_files f LEFT JOIN exchange_file_acceptances a ON a.file_id=f.id WHERE f.exchange_id=$1 AND f.slot IS NOT NULL AND f.removed_at IS NULL',[e.id])).rows;
  return ((g.levels??[]) as any[]).map((l,order)=>{const ack=acks.find(x=>x.detail.level===l.key),slotFiles=files.filter(f=>f.slot===l.slot),accepted=slotFiles.some(f=>f.version_id);
-  const open=held.has(l.key)&&(l.entry==='none'||(l.entry==='click_through'&&!!ack)||(l.entry==='signed_document'&&accepted));
+  const open=held.has(l.key)&&(l.entry==='none'||recorded.has(l.key)||(l.entry==='click_through'&&!!ack)||(l.entry==='signed_document'&&accepted));
   return {key:l.key as string,name:l.name as string,order,entry:l.entry as string,text:l.entry==='click_through'?(l.text||''):'',slot:l.entry==='signed_document'?l.slot:null,held:held.has(l.key),open,acknowledged:ack?{name:ack.detail.name,at:ack.created_at}:null,slotStatus:l.entry==='signed_document'?(accepted?'accepted':slotFiles.length?'received':'requested'):null};});
 }
 /**
