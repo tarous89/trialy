@@ -282,3 +282,14 @@ Await exact-head predeploy, desktop/mobile artifact review, merge and live verif
 ### A8 merged release checkpoint — 13 November 2026
 
 PR #191 merged at 16:01 UTC (17:01 CET), release `c802b3207fa7eff1a301e8aba656a9c1e636d484`. Exact head `3141fab470702c8a5ae946cbd5f8741c2cce4584` passed predeploy run 43457306088: 282 tests, candidate snapshot, metadata/discovery and desktop/mobile/site regressions. Both article screenshots in artifact 14055560474 inspected; no layout blocker, standard accessible horizontal-scroll table on narrow screens. Initial HTTP 404 is automatic deployment pending, not an authentication fault. Live verification running; resume this release before A9 if interrupted.
+
+
+### A8 deployment wait exhausted — 13 November 2026, 17:16 CET
+
+**Merged; deployment pending/unverified. Do not mark Published or draft A9 yet.** PR #191 release `c802b3207fa7eff1a301e8aba656a9c1e636d484` merged at 16:01 UTC (17:01 CET). Repeated direct HTTP checks approximately every 30–60 seconds through 16:16 UTC (17:16 CET), covering the 15-minute wait budget, consistently returned **404** for https://trialagents.com/apps/runway-vs-jirav. Exact-head predeploy 43457306088 passed 282 tests and desktop/mobile/site checks; visual artifact 14055560474 inspected. Source head `3141fab470702c8a5ae946cbd5f8741c2cce4584` remains validated.
+
+Available merged-commit evidence: generic `production` check succeeded; it verifies homepage/footer, not this article. No Cloudflare Workers build check was exposed for this release in the observed check-runs responses, and the separate commit statuses list was empty. Neither observation establishes that deployment is absent or an authentication problem. No failed build, configuration fault or permission fault has been evidenced. No dashboard sign-in, manual deployment or tracking change attempted.
+
+Live article content/canonical/schema/responsive delivery, images/links/final CTA, discovery inclusion and homepage-identical analytics loader/client verification remain **unverified for this release** because the article is not served. Next run must first recheck this merged release and available build evidence; when HTTP 200 appears, complete all live checks before updating status. Fix only evidenced source failures through a new exact-head PR gate. Treat the delay as transient/pending, not a reason to disable the ongoing queue task.
+
+**Queue remains 11 published, 36 remaining (including this merged, unverified A8); 35 other topics await publication.**
