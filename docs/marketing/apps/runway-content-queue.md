@@ -13,7 +13,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | A3 | TrialAgents Runway vs cfo.ai (Formerly Runway): AI Financial Planning for Biotech Startups | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-cfo-ai) |
 | A4 | TrialAgents Runway vs LivePlan: startup financial planning for pre-revenue biotechs | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-liveplan) |
 | A5 | TrialAgents Runway vs Fathom: cash planning and financial reporting for biotech | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-fathom) |
-| A6 | TrialAgents Runway vs Puzzle: AI Accounting vs AI-Native Cash Runway Planning | Claimed — 13 November 2026 hourly run; research/source preparation | — |
+| A6 | TrialAgents Runway vs Puzzle: AI accounting and biotech cash planning | Source PR #189 — validation pending | [Source PR](https://github.com/tarous89/trialagents-public/pull/189) |
 | A7 | TrialAgents Runway vs Aleph: AI-Native FP&A for Lean Biotech Teams | Queued — verify and publish | — |
 | A8 | TrialAgents Runway vs Jirav: FP&A Software for Small Biotech Companies | Queued — verify and publish | — |
 | A9 | TrialAgents Runway vs Bob Finance (Formerly Mosaic): Financial and Workforce Planning | Queued — verify and publish | — |
@@ -150,3 +150,12 @@ Runway catalog 2.1.0 reread (blob `3bd4fdc73c5d2c36299b1569b05903900ba9689d`); g
 - Verified one expected H1, title/description, self-canonical, index/follow, matching Article/BreadcrumbList schema, all three genuine screenshots, internal/primary-source links and final Start with Runway CTA. /apps listing, one canonical sitemap.xml entry, llms.txt and llm.xml all include the article. HTTP headers permit ordinary HTML delivery without noindex.
 - Identical homepage loader `/_snapshot/query-assets/114933b27c521a75f333.js` and analytics dependency `/_snapshot/query-assets/c251da7b4969f7c85048.js` both return HTTP 200. Existing tracking scripts, configuration, consent and attribution unchanged; no synthetic production events sent.
 - This supersedes A5's pending source checkpoint. **9 published; 38 remaining. Next eligible: A6, Runway vs Puzzle**, subject to fresh queue/claim and release checks. Search indexing, rankings, real-user performance and assistant citations remain unverified.
+
+
+### A6 source checkpoint — 13 November 2026
+
+Claimed this hourly run; [public-site PR #189](https://github.com/tarous89/trialagents-public/pull/189), exact head `493e89f0894d641100f05108e942b4a5d20a9e7e`, prepares https://trialagents.com/apps/runway-vs-puzzle. Title: TrialAgents Runway vs Puzzle: AI accounting and biotech cash planning. Title refined to avoid suggesting AI access is exclusive to TrialAgents. Distinct intent: accounting close versus dated future program commitments; fictional evaluation brief, not an executed benchmark.
+
+Primary evidence: Puzzle's https://help.puzzle.io/en/articles/15331316-how-to-setup-your-puzzle-mcp (read-only default, optional beta writes, company/AI prerequisites); https://help.puzzle.io/en/articles/13623194-api-and-mcp-access-in-puzzle (self-serve MCP versus case-by-case partner API); https://help.puzzle.io/en/articles/9155896-faq-integrations (overnight sync and record-specific limits); https://help.puzzle.io/en/articles/8471491-can-i-do-projections-in-puzzle (custom burn assumption versus projections); https://help.puzzle.io/en/articles/8646694-the-monthly-checklist; https://puzzle.io/legal/faq and https://puzzle.io/solutions/startup. No native Puzzle-to-TrialAgents connection or independently tested host parity claimed. Current Runway life.cash-runway 2.1.0 catalog reviewed. Three approved genuine browser demo screenshots: 01-overview, 03-plan, 05-scenarios. No pricing or tracking changes.
+
+Status: source PR awaiting exact-head predeploy, desktop/mobile artifact review, merge and automatic CDN publication. Resume PR #189 before A7; do not mark Published until live checks pass.
