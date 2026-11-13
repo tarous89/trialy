@@ -9,7 +9,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | ID | Proposed title | Queue status | Covered by / published URL |
 | --- | --- | --- | --- |
 | A1 | TrialAgents Runway vs Excel: Biotech Cash Planning Compared | Already covered / published | [Live article](https://trialagents.com/apps/runway-vs-excel) |
-| A2 | TrialAgents Runway vs Float: Which Cash Flow Forecasting App Is Better for Biotech Startups? | Merged PR #184; blocked on Cloudflare deployment/sign-in — not published | [Draft PR](https://github.com/tarous89/trialagents-public/pull/184) |
+| A2 | TrialAgents Runway vs Float: Which Cash Flow Forecasting App Is Better for Biotech Startups? | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-float) |
 | A3 | TrialAgents Runway vs cfo.ai (Formerly Runway): AI Financial Planning for Biotech Startups | Queued — verify and publish | — |
 | A4 | TrialAgents Runway vs LivePlan: Startup Financial Planning for Pre-Revenue Biotechs | Queued — verify and publish | — |
 | A5 | TrialAgents Runway vs Fathom: Cash Runway Monitoring vs Financial Reporting | Queued — verify and publish | — |
@@ -68,7 +68,7 @@ All listed published pages were recorded as live in [Runway's app plan](runway.m
 
 ## Publication sequence and hourly worker contract
 
-1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. The first candidate is **A2: Runway vs Float**.
+1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2 is now published; the next candidate is **A3: Runway vs cfo.ai**, subject to current queue and live-state checks.
 2. Re-read the **current** shared playbook and [Runway plan](runway.md). Use the approved genuine screenshots, wide dark editorial shell, numbered green headings, platform advantage order, honest competitor treatment, one final "Start with Runway" CTA and standard shared header/footer.
 3. Research and verify vendor identities, capabilities, URL destinations, AI/Claude/ChatGPT host experiences separately, formulas and substantive claims. Keep the no-pricing-in-A/B rule; in other series, only discuss verified prices if explicitly appropriate and editorially approved. Real screenshots only, no invented interfaces or citations. Treat claims in tentative titles as hypotheses.
 4. Make the article genuinely distinct from existing Runway pages. Do not create weak "year-only", vendor-name-swapped or keyword-cannibalizing pages. If the subject is already answered on a live URL, mark it as covered, link it and advance to the next eligible item **within the same run**, without publishing duplicate content.
@@ -83,14 +83,22 @@ All listed published pages were recorded as live in [Runway's app plan](runway.m
 
 Owner requests an hourly **ChatGPT Work** execution with **Astra, medium thinking effort**, if that scheduling environment supports these settings. Task-system scheduling support and model/mode selection must be independently verified; a prompt preference is not proof of execution mode.
 
-### 13 November 2026 — A2 execution checkpoint
+### 13 November 2026 — A2 execution checkpoint (historical; superseded by live verification below)
 
 - Prepared A2 Runway vs Float HTML, integrated its canonical route into the public snapshot renderer, /apps index, sitemap/LLM discovery generation and source/browser/snapshot tests in [public-site PR #184](https://github.com/tarous89/trialagents-public/pull/184), head commit `805f576fbb758b072d54a995d8dd11be1ce8f894`.
 - **Status: NOT PUBLISHED.** No successful CI, merge, Cloudflare deployment, production article HTTP check or served analytics-chain verification was available in this run. GitHub commit status returned no checks. Do not mark A2 complete or move to A3 until the draft is reconciled, tests pass and production is verified.
 - Next execution: check PR #184 and current main for conflicts, run the full source and browser QA, inspect CI results, correct any failures, merge only when safe, verify the CDN and shared analytics assets, then update A2 to Published with the final live URL and release SHA.
 
-### 13 November 2026 — A2 resumed release checkpoint
+### 13 November 2026 — A2 resumed release checkpoint (historical; authentication diagnosis corrected below)
 
 - PR #184 merged at `c0ecfd43bb5a57adf58bd38d0ffc499e764cb5c3` after exact-head predeploy run 43404273315 passed: 282 tests, candidate snapshot, metadata/discovery checks and desktop/mobile browser checks. Reviewed A2 desktop/mobile screenshot artifacts; no layout blocker.
 - Rechecked Float product and QuickBooks primary materials; comparison remains consistent with documented accounting integration, scenarios and daily/weekly/monthly views. Existing analytics implementation was unchanged by this PR.
 - **NOT PUBLISHED:** production `https://trialagents.com/apps/runway-vs-float` still returned HTTP 404 after merge. The green production run 43405089814 checks homepage/footer only, not A2 publication. Cloudflare dashboard requires sign-in; no connected Cloudflare plugin was available. Next step is authenticated Cloudflare build/deployment of merged main, then article/assets/discovery/analytics HTTP verification. Do not advance to A3 before finishing A2.
+
+### 13 November 2026 — A2 published; deployment diagnosis corrected
+
+- **Published:** https://trialagents.com/apps/runway-vs-float; PR #184; merged release `c0ecfd43bb5a57adf58bd38d0ffc499e764cb5c3`. Existing GitHub-connected Cloudflare deployment published it automatically. No Cloudflare sign-in or manual deployment was needed. Earlier sign-in blocker statements were incorrect and are superseded.
+- Verified production HTTP 200 and expected H1/self-canonical, Article/BreadcrumbList schema, all three screenshots, final Start with Runway CTA, /apps index, sitemap.xml, llms.txt and llm.xml. Article and homepage use the same loader `/_snapshot/query-assets/114933b27c521a75f333.js`; it and its analytics dependency `/_snapshot/query-assets/c251da7b4969f7c85048.js` return HTTP 200. No analytics configuration changes or synthetic events.
+- Source QA remains predeploy run 43404273315: 282 tests, snapshot/discovery and desktop/mobile checks passed; visual artifacts reviewed.
+- Read the shared playbook's corrected GitHub-to-CDN release procedure. Early 404/stale content is deployment pending; wait and verify. Do not request Cloudflare access for routine publication.
+- **Queue totals: 6 published, 41 remaining. Next: A3**, after verifying its vendor identity and claims.
