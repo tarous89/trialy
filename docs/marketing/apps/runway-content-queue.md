@@ -15,7 +15,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | A5 | TrialAgents Runway vs Fathom: cash planning and financial reporting for biotech | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-fathom) |
 | A6 | TrialAgents Runway vs Puzzle: AI accounting and biotech cash planning | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-puzzle) |
 | A7 | TrialAgents Runway vs Aleph: a biotech planning app or connected FP&A? | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-aleph) |
-| A8 | TrialAgents Runway vs Jirav: cash planning and three-statement FP&A for biotech | Merged PR #191 — deployment pending/unverified | [Source PR](https://github.com/tarous89/trialagents-public/pull/191) |
+| A8 | TrialAgents Runway vs Jirav: cash planning and three-statement FP&A for biotech | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-jirav) |
 | A9 | TrialAgents Runway vs Bob Finance (Formerly Mosaic): Financial and Workforce Planning | Queued — verify and publish | — |
 | A10 | TrialAgents Runway vs Exigyn: AI-Powered Financial Operations for Life Sciences | Queued — verify and publish | — |
 | A11 | TrialAgents Runway vs Caladan: Clinical Trial Budgeting and Cash Runway | Queued — verify and publish | — |
@@ -68,7 +68,7 @@ All listed published pages were recorded as live in [Runway's app plan](runway.m
 
 ## Publication sequence and hourly worker contract
 
-1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2–A7 are published. **Resume A8: Runway vs Jirav, merged PR #191 but deployment pending/unverified, before drafting A9.** See the latest release checkpoint below.
+1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2–A8 are published. **Next eligible: A9, Runway vs Bob Finance (formerly Mosaic), subject to current vendor research and claim checks.** See the latest release checkpoint below.
 2. Re-read the **current** shared playbook and [Runway plan](runway.md). Use the approved genuine screenshots, wide dark editorial shell, numbered green headings, platform advantage order, honest competitor treatment, one final "Start with Runway" CTA and standard shared header/footer.
 3. Research and verify vendor identities, capabilities, URL destinations, AI/Claude/ChatGPT host experiences separately, formulas and substantive claims. Keep the no-pricing-in-A/B rule; in other series, only discuss verified prices if explicitly appropriate and editorially approved. Real screenshots only, no invented interfaces or citations. Treat claims in tentative titles as hypotheses.
 4. Make the article genuinely distinct from existing Runway pages. Do not create weak "year-only", vendor-name-swapped or keyword-cannibalizing pages. If the subject is already answered on a live URL, mark it as covered, link it and advance to the next eligible item **within the same run**, without publishing duplicate content.
@@ -244,3 +244,16 @@ Resumed the existing pending release, with no new article or source change. Repe
 ### A8 repair in progress — 13 November 2026, 19:22 CET
 
 Owner requested investigation and repair. Public-site [PR #192](https://github.com/tarous89/trialagents-public/pull/192), head `00f54801a2aad86fdd751153c92ca529d00f26ad`, fixes the evidenced monitoring gap: the old production check passed on an unchanged homepage without checking A8. New checks compare every app fragment/CSS with release source and verify canonical/discovery delivery, with a bounded 15-minute wait. The original Cloudflare trigger/build cause is not established. A8 remains unverified (HTTP 404). Resume this repair PR/release before other work; do not create another A8 PR or draft A9. Exact-head full predeploy is running; no deployment or tracking change is claimed yet.
+
+
+### A8 published and monitoring repaired — 13 November 2026, 19:33 CET
+
+**Published:** [TrialAgents Runway vs Jirav: cash planning and three-statement FP&A for biotech](https://trialagents.com/apps/runway-vs-jirav). This supersedes all A8 pending checkpoints above.
+
+- Source PR #191: exact head `3141fab470702c8a5ae946cbd5f8741c2cce4584`, merge `c802b3207fa7eff1a301e8aba656a9c1e636d484` at 17:01 CET. The site continued serving the older snapshot for over two hours. Cloudflare later reported a build starting 19:21:45 CET and succeeding 19:24:43 CET; direct article checks still returned 404 afterward. The precise original trigger/build delay was not established. No authentication fault was evidenced.
+- Evidenced process defect: the old green production check verified only an unchanged homepage/footer. [Repair PR #192](https://github.com/tarous89/trialagents-public/pull/192) adds source-matching app content/CSS, canonicals and all discovery surfaces to the existing production check, polling every 45 seconds for up to 15 minutes. Exact head `00f54801a2aad86fdd751153c92ca529d00f26ad` passed predeploy 43481960608: 290 tests, snapshot and browser regressions. Desktop/mobile Jirav screenshots in artifact 14066186131 inspected; no blocker.
+- Repair release `5f6860060c427c0c18168f2d15bb70b46407a443` merged through the existing gate. Its automatic Cloudflare build succeeded 19:31:18 CET. Production run 43483007011 initially detected stale /apps four times, then verified all 14 app pages and discovery at 19:31:56 CET. No manual Wrangler deployment, new token, dashboard sign-in or deployment integration was used.
+- Independent live verification passed: HTTP 200 expected article, exact reviewed source fragment/CSS, one H1, title/description, self-canonical, Article/BreadcrumbList schema, three genuine images, internal and primary-source links, one final CTA, /apps, one sitemap.xml canonical entry, llms.txt and llm.xml. Responsive rendering inspected in exact-head desktop/mobile artifacts; served fragment/CSS match them.
+- Homepage-identical loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js` both return HTTP 200. Tracking scripts/configuration/events/consent/collectors/attribution unchanged; no synthetic production events.
+
+**12 published; 35 remaining. Next eligible: A9**, subject to fresh claim, queue and vendor-evidence checks. No second article published in this repair run.
