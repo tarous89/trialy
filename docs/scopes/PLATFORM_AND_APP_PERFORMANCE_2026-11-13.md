@@ -290,4 +290,41 @@ Programs, Runway, Contracts, Fundraise, CRO Selection, Investor Updates and Data
 | N3 | No abort propagation (red flag 2). | *(Corrected after follow-up review.)* Do **not** use `req.on('close')`: in Node it also fires after a normal, completed request. Detect a response that closed early instead (`res.on('close')` while `!res.writableFinished`), and on the MCP path use the request's cancellation signal. Propagate it through both web and MCP paths into `execute()` and long Home reads. Stopping the sandbox does not cancel a database query already running, and it does not undo an action. So cancel only between read steps, and let an action or connector call that has already started finish and record its receipt. | **Medium**; **High under contention**. | **Medium**. |
 | N4 | Capability calls run one after another (see P07). | *(Corrected after follow-up review.)* Add a `records.readMany` batch capability with bounded subrequests. Every subrequest keeps the existing binding, permission and read-budget checks, and the existing pagination and completeness semantics stay the same. A `total` may be reused only for the identical authorized query (same table, filters, search, scope and access version) within one execution, not simply because `offset>0`. Optionally add an index on `records(workspace_id,type_id,created_at,id) WHERE state<>'archived'` (today only `(workspace_id,type_id)` exists); this is low priority at current data sizes. | **High** for custom apps. | **Medium**, plus per-template adoption. |
 
+## 7. Code review of PR #155 implementation
+
+*Added by code review (13 Nov 2026) of head `38696a9`; not part of the original recommendations. No high-severity defects found. Permission checks, revocation and save boundaries hold. Local options (`background`, `signal`) never reach REST bodies or MCP arguments. No stuck global-progress path was found.*
+
+### Defects to fix before release
+
+| ID | Area | Issue | Failure scenario | Recommendation | Severity |
+| --- | --- | --- | --- | --- | --- |
+| R1 | P02 | `refresh()` now calls `metadata.reload()` (`src/web/main.tsx:109`), which immediately sets `ready:false` (`src/web/useWorkspaceMetadata.ts:10`). The Data tab (`main.tsx:136`) and the `DatabaseAccess` dialog (`main.tsx:162`) render only while `metadata.ready` is true. | After an access save, the dialog unmounts and remounts, so "Access updated." never shows. If the table reload fails, it shows "Tables could not be loaded" although the save succeeded. Every record save, automation pause or document review blanks the Data tab, loses table state and scroll, and loads records twice. Before this PR, types were replaced in place. | Keep the previous `types`/`views` visible during a reload (stale-while-revalidate). Only clear them when the workspace or viewer key changes, or when access is revoked. | **Medium** (confirmed) |
+| R2 | P03/P06 | The idle revision check in `src/shared/useHomeData.ts:31-41` tests `pending.current` only before `await check()`. | A 30 s check is in flight when the user archives or duplicates an app. The check returns a changed revision, clears Home, and restarts the user's foreground read as a background read. Home drops to a skeleton and the progress bar disappears mid-action. | After the `await`, return early if `pending.current` is set. | **Low–medium** |
+| R3 | P03 | `loadMe()` (`src/web/main.tsx:97`) joins any pending `/api/me` read, including a background read that started before a write. | "Create workspace" runs `POST` then `loadMe()`, which joins the older read. The new workspace is selected but missing from `workspaces` for up to 30 s, and the foreground wait shows no progress. | After a write, force a fresh read (or don't join a pending read). | **Low** |
+
+### Risks and behavior changes to decide on
+
+| ID | Area | Issue | Recommendation |
+| --- | --- | --- | --- |
+| R4 | P03 | The Home revision (`src/workspace/home-revision.ts`) covers metadata only. Home cards still show three sample rows and a record total (`src/workspace/home.ts:44-55`). | A collaborator's record changes don't alter the revision. Cards stay stale on an idle tab until return-to-tab or a local change. Either document this as an accepted behavior change, or add a cheap per-table record version to the revision. |
+| R5 | P03 | The "metadata-only" check aggregates every row of `document_versions` (all historical versions) and `project_records` (including revoked links) across all of the user's workspaces. It runs on every idle check per open tab and on every full Home load (now 33 queries). | Profile it with large workspaces before declaring P03 complete. Consider `revoked_at IS NULL` on `project_records`, or per-table `count` plus `max(xmin)`-style digests instead of `jsonb_agg` over every row. |
+| R6 | N3 | `POST /api/account/home` (`src/server/app.ts`) uses the deprecated `req.on('aborted')` and checks `writableEnded`. N3 above prescribes `res.on('close')` while `!res.writableFinished`. | Align the implementation with N3 before reusing the pattern for MCP and `execute()`. |
+| R7 | P03 | `coordinatedRecheck` drops a `return` request that arrives while a check is running. Re-enabling `useAccessRecheck` can trigger a second full Home read shortly after activation. | Queue a pending `return` to run after the current check. Skip the activation `return` if a full read just completed. Both are minor: performance/flicker, not correctness. |
+
+### Notes on planned work
+
+- **P05 and red flag 6:** each Docker build ships only the current asset hashes, and `/assets` now returns a hard 404 for missing files. Tabs left open across a deploy will fail to load newly split chunks. P05 therefore requires a preload/chunk-error reload handler, or retention of the previous build's assets. Treat this as a release blocker for P05, not an option.
+- **P09:** the held cold standard-tracker tab response that overrides a later click back to a cached tab remains open.
+- **N1 / N3:** keep "never hold a transaction across a sandbox execution" and "never cancel a started action or connector call" as hard acceptance criteria.
+- **CS2 / DR2 / IU2:** label these as safety guardrails (no replay of sends, approvals or awards) so they are not dropped with deprioritized performance work.
+- **§2 app rows:** Runway, Programs and Contracts figures come from empty fixtures. Treat per-app gains as unmeasured until populated profiling (P14) is done.
+
+### Verified as sound
+
+- **N2 session writes:** they match connect-pg-simple 10's exact `touch` SQL and whole-second expiry rounding. Coalescing resets on any save, destroy or prune.
+- **P02 archive `summaryOnly`:** it keeps per-app access checks and returns no restore/delete inventory.
+- **P04 `/assets`:** it serves only Vite output with an explicit 4xx and `no-store`, and HTML revalidates.
+- **P06 progress:** progress slots are released on rejection and abort. A click that joins a prefetch shows progress without a duplicate request.
+- **P12 save receipts:** retries never re-confirm the write, `live` guards stop late responses from reopening abandoned views, and revocation keeps the receipt.
+
 This document consolidates recommendations and compatibility effects. It does not replace the governing access, write, template or integration contracts.
