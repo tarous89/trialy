@@ -4,6 +4,19 @@
 **Scope:** TrialAgents built-in apps (current and future). This is the shared A–E methodology; keep app-specific content plans in linked, separate Markdown files.  
 **Owner:** Marketing/content. **Review trigger:** material changes to product capabilities, competitors, assistant integrations, or search guidance.
 
+## GitHub-to-CDN release procedure — corrected 13 November 2026
+
+For `tarous89/trialagents-public`, the existing GitHub-connected Cloudflare build deploys merged `main` automatically. Routine blog publication does not require Cloudflare dashboard access, browser sign-in, a new token, manual Wrangler deployment, or a new deployment integration. This supersedes any wording that tells an author to execute a deployment in Cloudflare.
+
+1. Prepare the source PR and pass the existing predeploy validation on its exact head. Inspect relevant desktop/mobile artifacts. Merge the validated PR.
+2. Record the merged SHA and time, then allow the asynchronous full-site snapshot build and CDN propagation to finish. A 404 or old HTML immediately after merge means **deployment pending**, not missing credentials.
+3. Recheck the changed public URL at bounded intervals (about 30–60 seconds, for up to 15 minutes), while reporting progress. Inspect available GitHub check runs/statuses and build failures. An empty statuses list does not prove no deployment exists; Actions checks are separate. The current green `production` / `verify-live-platform` check covers homepage/footer routes, not every new article.
+4. Verify the article's expected content, canonical, metadata/schema, images, shared header/footer, discovery entries and the same served loader/client chain as the homepage. Preserve analytics exactly and send no synthetic production events. Mark Published only after these checks.
+5. If the wait budget expires, record **merged; deployment pending/unverified** with SHA, time, checks, HTTP results and the next verification step. Resume that release on the next run before drafting another topic. Only report a failed build when observed evidence supports it; diagnose and fix evidenced source failures through the same PR gate.
+6. Do not infer a Cloudflare authentication blocker from unavailable dashboard access, absent deployment-tool access, an empty status list, or a delayed URL. Do not ask the user to sign in for routine publication. Escalate only a concrete configuration/permission fault established by release evidence.
+
+Incident: A2 Runway vs Float was merged in PR #184 at `c0ecfd43bb5a57adf58bd38d0ffc499e764cb5c3`. An early 404 was incorrectly recorded as a Cloudflare sign-in blocker. The article subsequently returned HTTP 200 through the existing automatic deployment without dashboard authentication.
+
 ## Start here for any future app blog
 
 1. Read this shared playbook and the selected [app plan](apps/README.md); copy the [plan template](apps/_APP_CONTENT_PLAN_TEMPLATE.md) only for a newly selected app.
