@@ -1,4 +1,4 @@
-import {requestMetrics} from './metrics.js';
+import {requestMetrics,measureDatabaseQuery} from './metrics.js';
 import {databaseContext,databaseContextValues,setDatabaseContext} from './context.js';
 import pg from 'pg';
 import { readFile, readdir } from 'node:fs/promises';
@@ -11,6 +11,7 @@ export class Postgres implements Database {
   async transaction<T>(fn: (tx: Connection) => Promise<T>): Promise<T> {
     const metrics=requestMetrics(),waiting=performance.now();
     const c = await this.pool.connect();if(metrics)metrics.poolWaitMs+=performance.now()-waiting;
+    const driver:Connection={query:async<T=any>(sql:string,values?:any[])=>{const r=await measureDatabaseQuery(metrics,()=>c.query(sql,values));return {rows:r.rows as T[],rowCount:r.rowCount};}};
     // Capture each caller's scope before queueing. Context switches and their query must
     // stay together even when different actor scopes share a transaction concurrently.
     let tail:Promise<unknown>=Promise.resolve(),contextKey:string|undefined;
@@ -18,13 +19,13 @@ export class Postgres implements Database {
       const context=databaseContextValues(databaseContext()),key=JSON.stringify(context),rollback=/^\s*ROLLBACK\b/i.test(sql);
       const result=tail.then(async()=>{const started=performance.now();if(metrics)metrics.queryCount++;try{
         // An aborted transaction accepts only rollback, which also restores SET LOCAL values.
-        if(!rollback&&key!==contextKey){await setDatabaseContext(c,context);contextKey=key;}
-        const r=await c.query(sql,values);if(rollback)contextKey=undefined;return r as unknown as {rows:T[];rowCount:number|null};
+        if(!rollback&&key!==contextKey){if(metrics)metrics.contextSets++;await setDatabaseContext(driver,context);contextKey=key;}
+        const r=await driver.query(sql,values);if(rollback)contextKey=undefined;return r as unknown as {rows:T[];rowCount:number|null};
       }catch(e){contextKey=undefined;throw e;}finally{if(metrics)metrics.databaseMs+=performance.now()-started;}});
       tail=result.catch(()=>{});return result;
     }};
-    try { await c.query('BEGIN'); const result = await fn(measured); await tail; await c.query('COMMIT'); return result; }
-    catch (e) { await tail; await c.query('ROLLBACK'); throw e; } finally { c.release(); }
+    try { if(metrics)metrics.transactions++;await driver.query('BEGIN'); const result = await fn(measured); await tail; await driver.query('COMMIT'); return result; }
+    catch (e) { await tail; await driver.query('ROLLBACK'); throw e; } finally { c.release(); }
   }
   async close() { await this.pool.end(); }
 }

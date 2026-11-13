@@ -6,6 +6,7 @@ import {monitoringReceiptRuns} from '../app-services/monitoring-guard.js';
 import {appSections,sectionGrant,projectAppSections,validateSectionRevision} from '../domain/app-sections.js';
 import {openRuntimeView,assertRuntimeReadAccess,assertRuntimeScope,assertRuntimeWriteSchema,incompatible} from './runtime-view.js';
 import {withReadMetadata} from '../db/read-metadata.js';
+import {requestMetrics} from '../db/metrics.js';
 import {AppActions} from '../app-services/service.js';
 import {AppMonitoring} from '../app-services/monitoring.js';
 import {serviceJob} from '../app-services/jobs.js';
@@ -190,7 +191,8 @@ export class WorkspaceFoundation {
    return {boundEdit:true,proposal,state:request.state,html:'',css:''};
   }
   // Draft evaluation has its own bounded capacity and cannot occupy a published app slot.
-  const knownTracker=standardTracker(content.source),pool=request.componentId?activeFrontends:activeDraftFrontends,key=w+':'+a.userId+':'+(request.componentId??request.previewId);if(!knownTracker&&(pool.size>=(request.componentId?2:1)||pool.has(key)))fail(429,'runtime_busy','This interface is busy; try again shortly');if(!knownTracker)pool.add(key);
+  const knownTracker=standardTracker(content.source),pool=request.componentId?activeFrontends:activeDraftFrontends,key=w+':'+a.userId+':'+(request.componentId??request.previewId);
+  if(!knownTracker&&(pool.size>=(request.componentId?2:1)||pool.has(key))){const metrics=requestMetrics();if(metrics)metrics.runtimeBusy++;fail(429,'runtime_busy','This interface is busy; try again shortly');}if(!knownTracker)pool.add(key);
   const changes:any[]=[],invocations:any[]=[],connectorReviews:any[]=[];let layoutProposal:any=null,exchangeProposal:any=null;
   try{
    const currentPolicy=await access(this.db,a,w),accessStamp=request.componentId?await this.componentAccessStamp(a,w,content):undefined;

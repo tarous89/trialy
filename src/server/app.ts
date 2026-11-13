@@ -3,7 +3,7 @@ import {addSubscription} from './subscription.js';
 import {addPublicAppServices} from './app-services.js';
 import {bundledAppFont} from '../workspace/design-quality.js';
 import {appPublicUrl,oauthPublicUrl} from '../shared/public-url.js';
-import {withRequestMetrics} from '../db/metrics.js';
+import {createRequestMetrics,metricSummary,withRequestMetrics} from '../db/metrics.js';
 import {AccessGrid} from '../domain/access-grid.js';
 import {AccessManagement} from '../domain/access-management.js';
 import {accountCatalog} from '../workspace/catalog.js';
@@ -33,7 +33,16 @@ export function baseApp() {
   res.set('Cache-Control','public, max-age=0, must-revalidate');res.set('Cross-Origin-Resource-Policy','cross-origin');res.type('html').send(await frontendFrameDocument(bundledAppFont));
  });
  app.use(express.json({verify:(req,_res,buffer)=>{if(req.url==='/notifications/webhook')(req as any).rawBody=Buffer.from(buffer);},limit:'36mb'}));app.use(rateLimit({windowMs:60000,limit:180,standardHeaders:'draft-8',legacyHeaders:false,skip:req=>req.path===CLAUDE_MCP_PATH&&!!req.get('authorization')}));
- app.use((req,res,next)=>{const requestId=randomUUID(),started=performance.now(),metrics={queryCount:0,databaseMs:0,poolWaitMs:0,metadataHits:0};res.set('X-Request-ID',requestId);res.on('finish',()=>{if(process.env.NODE_ENV!=='test')console.log(JSON.stringify({requestId,method:req.method,path:req.path,...(req.path==='/mcp'&&['events/list','events/subscribe','events/unsubscribe'].includes(req.body?.method)?{mcpMethod:req.body.method}:{}),...(req.path==='/mcp'&&req.body?.method==='tools/call'&&['run_component_frontend','prepare_tool_layout','confirm_workspace_change','read_project_component','check_component_access'].includes(req.body.params?.name)?{tool:req.body.params.name}:{}),durationMs:Math.round(performance.now()-started),queryCount:metrics.queryCount,databaseMs:Math.round(metrics.databaseMs),poolWaitMs:Math.round(metrics.poolWaitMs),metadataHits:metrics.metadataHits,status:res.statusCode,time:new Date().toISOString()}));});withRequestMetrics(metrics,next);});
+ app.use((req,res,next)=>{
+  const requestId=randomUUID(),path=req.path,started=performance.now(),metrics=createRequestMetrics();res.set('X-Request-ID',requestId);
+  res.on('finish',()=>{if(process.env.NODE_ENV!=='test'){
+   const mcp=path==='/mcp'||path===CLAUDE_MCP_PATH;
+   console.log(JSON.stringify({requestId,method:req.method,path,
+    ...(mcp&&['events/list','events/subscribe','events/unsubscribe'].includes(req.body?.method)?{mcpMethod:req.body.method}:{}),
+    ...(mcp&&req.body?.method==='tools/call'&&['run_component_frontend','prepare_tool_layout','confirm_workspace_change','read_project_component','check_component_access'].includes(req.body.params?.name)?{tool:req.body.params.name}:{}),
+    durationMs:Math.round(performance.now()-started),...metricSummary(metrics),status:res.statusCode,time:new Date().toISOString()}));
+  }});withRequestMetrics(metrics,next);
+ });
  app.get('/health',(_req,res)=>res.json({status:'ok',service:'trialy'}));return app;
 }
 export function addApi(app:express.Express,s:Service,human:RequestHandler) {

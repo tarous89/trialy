@@ -12,6 +12,7 @@ process.on('message', async message => {
   const rt=module.newRuntime();rt.setMemoryLimit(16*1024*1024);rt.setMaxStackSize(256*1024);
   rt.setInterruptHandler(()=>Date.now()>message.deadline);
   const vm=rt.newContext();
+  process.send({kind:'ready'});
   const call=vm.newAsyncifiedFunction('__call',async handle=>{
    const raw=vm.getString(handle);if(raw.length>MAX)throw new Error('Request too large');
    const reply=await new Promise(resolve=>{pending=resolve;process.send({kind:'call',raw});});
