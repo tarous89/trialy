@@ -148,7 +148,7 @@ Customization as in [Runway §8](RUNWAY.md#8-customization-users-claude-and-chat
 | **Runway (01)** | Runway already binds `agreements` (core) and links plan lines by `agreement_id`. A future Runway version adds `contracts.obligations` (payments) as an integration. | Spend lines tied to the contract they come from; contracted payments proposed as Runway lines once linked. |
 | **Programs (02)** | Contracts binds `programs` (core) and `programs.plan_items` as an integration. A future Programs version can read `contracts.obligations` as an integration. | Milestone-triggered payments and obligations; "expires before milestone"; contractual deadlines on the program timeline. |
 | **Fundraise (03)** | Shares `organizations`; a future Fundraise version reads CDA status from `agreements` (type cda_nda) when connected, replacing its own CDA fields. | One CDA record per investor. |
-| **CRO Bids (05)** | Shares `organizations`; an award links to the resulting MSA/SOW in `agreements`. | From award to signed contract without retyping. |
+| **CRO Selection (05)** | Shares `organizations`; an award links to the resulting MSA/SOW in `agreements`. | From award to signed contract without retyping. |
 | **BD Pipeline (07)** | Shares `organizations` and `agreements` (CDAs, term sheets → licences). | Partnering CDAs and licences in one register. |
 | **Data Room (08)** | Data Room reads `agreements` (core): a signed CDA can be required before granting access, and key agreements feed the due-diligence index. | No access without a CDA; diligence index built from the register. |
 | **Trial Finance (11)** | Reads `agreements` and `contracts.obligations` (payments) for budgets vs invoices. | Contracted amounts and schedules as the budget baseline. |
