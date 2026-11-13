@@ -12,7 +12,8 @@ const call=async(name:string,args:any)=>{pageCalls.push(name);pageArgs.push({nam
  if(name==='read_account_schema')return{tables:Array.from({length:25},(_,i)=>({...table,id:i?'t'+i:'t',name:'Table '+i})),nextOffset:null};
  if(name==='read_database_table')return{table,canEdit:false,total:26,rows:Array.from({length:25},(_,i)=>({id:String(i),data:{name:'Record '+i+' · '+ 'Description '.repeat(12)}})),nextOffset:25};
  if(name==='read_workspace_activity')return{total:26,apps:[{id:'signals-app',name:'Signals tracker'}],projects:[],nextOffset:25,rows:Array.from({length:25},(_,i)=>({id:String(i),created_at:'2026-10-28T12:00:00Z',action:'record.created',resource_name:'Company',category:'data',outcome:'succeeded',actor_name:'Alex',actor_id:'a'}))};
- if(name==='read_account_home')return{total:21,projects:[],nextOffset:20,resources:Array.from({length:20},(_,i)=>({id:String(i),name:'Tool '+i,description:'',projectIds:[],kind:'tracker',updatedAt:'2026-10-28'}))};return{};
+ if(name==='check_account_home')return{revision:'fixture-home'};
+ if(name==='read_account_home')return{revision:'fixture-home',total:21,projects:[],nextOffset:20,resources:Array.from({length:20},(_,i)=>({id:String(i),name:'Tool '+i,description:'',projectIds:[],kind:'tracker',updatedAt:'2026-10-28'}))};return{};
 };
 const long=Array.from({length:140},(_,i)=>'Line '+i+' · read-only details').join('\n');
 const tableContent=<table><tbody>{Array.from({length:100},(_,i)=><tr key={i}><td style={{padding:14}}>Entry {i}</td><td>Details</td></tr>)}</tbody></table>;

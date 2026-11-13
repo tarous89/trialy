@@ -26,13 +26,15 @@ test('Access resolves its default subject once and refetches on deliberate selec
  await subject.selectOption('member');await expect.poll(count).toBe(2);
  await subject.selectOption('owner');await expect.poll(count).toBe(3);
 });
-for(const inactive of [true,false])test(`Tools polling respects page visibility: ${inactive?'hidden':'visible'}`,async({page})=>{
+for(const inactive of [true,false])test(`Home rechecks respect the active panel: ${inactive?'hidden':'visible'}`,async({page})=>{
  await page.clock.install();
  await page.goto('http://127.0.0.1:4180/tests/visual/scroll-fixture.html?view=tools'+(inactive?'&inactive':''));
- const count=()=>page.evaluate(()=>window.pageCalls.filter(n=>n==='read_account_home').length);
- await expect.poll(count).toBe(1);
- await page.clock.runFor(31000);
- await expect.poll(count).toBe(inactive?1:2);
+ await page.waitForFunction(()=>Array.isArray(window.pageCalls));await page.clock.runFor(200);
+ const count=name=>page.evaluate(name=>window.pageCalls.filter(n=>n===name).length,name);
+ await expect.poll(()=>count('read_account_home')).toBe(inactive?0:1);
+ await page.clock.fastForward(31000);await page.clock.runFor(200);
+ await expect.poll(()=>count('check_account_home')).toBe(inactive?0:1);
+ expect(await count('read_account_home')).toBe(inactive?0:1);
 });
 
 test('Projects show apps by default and apps expand into optional parts',async({page})=>{
