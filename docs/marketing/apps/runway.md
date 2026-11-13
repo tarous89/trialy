@@ -1,5 +1,7 @@
 # Runway — SEO and LLM content plan
 
+**Full Runway A–E editorial queue (47 titles, including 5 already covered):** [canonical publishing queue](runway-content-queue.md). The earlier A1/A2 sections below record detailed release history, not the full campaign inventory. New publishing work must use the linked 47-title queue and prevent duplicates.
+
 [All app plans](README.md) · [Shared TrialAgents Apps SEO & LLM Content Playbook](../TRIALAGENTS_APPS_SEO_AND_LLM_CONTENT_PLAYBOOK.md)
 
 **App:** Runway by TrialAgents · **Approved catalog:** life.cash-runway 2.1.0 · **Reviewed:** 12 November 2026.  
