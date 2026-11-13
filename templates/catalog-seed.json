@@ -80,7 +80,7 @@
     "version": "1.0.1"
   },
   "life.cro-selection": {
-    "schema": "templates/source/cro-selection/schema.example.json",
+    "schema": "templates/source/cro-selection/archive/1.0.1/schema.example.json",
     "version": "1.0.1"
   },
   "life.cro-sponsor-updates": {

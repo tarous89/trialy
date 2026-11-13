@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {readFile} from 'node:fs/promises';
 import {appTemplates} from '../src/workspace/app-templates.js';import {execute} from '../src/foundation/runtime.js';import {readCustomLayout} from '../src/shared/custom-layout.js';import {fieldSchema} from '../src/shared/schema.js';
-const entry=await appTemplates.read({templateId:'life.cro-selection'}),root='templates/source/cro-selection/';
+const entry=await appTemplates.read({templateId:'life.cro-selection',version:'1.0.1'}),root='templates/source/cro-selection/archive/1.0.1/';
 const schemas=JSON.parse(await readFile(root+'schema.example.json','utf8')),demo=Object.entries(JSON.parse(await readFile(root+'demo_data.json','utf8'))).flatMap(([role,records]:any)=>records.map((r:any)=>({...r,role})));
 const bindings=Object.entries(schemas).map(([role,s]:any)=>({typeId:role,fields:s.fields.map((f:any)=>f.key)}));
 const map=Object.fromEntries(Object.entries(schemas).map(([role,s]:any)=>[role,{typeId:role,fields:s.logicalFields,writableFields:Object.keys(s.logicalFields)}]));
