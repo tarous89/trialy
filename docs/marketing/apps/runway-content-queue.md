@@ -13,7 +13,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | A3 | TrialAgents Runway vs cfo.ai (Formerly Runway): AI Financial Planning for Biotech Startups | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-cfo-ai) |
 | A4 | TrialAgents Runway vs LivePlan: startup financial planning for pre-revenue biotechs | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-liveplan) |
 | A5 | TrialAgents Runway vs Fathom: cash planning and financial reporting for biotech | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-fathom) |
-| A6 | TrialAgents Runway vs Puzzle: AI accounting and biotech cash planning | Merged PR #189 — deployment pending/unverified | [Source PR](https://github.com/tarous89/trialagents-public/pull/189) |
+| A6 | TrialAgents Runway vs Puzzle: AI accounting and biotech cash planning | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-puzzle) |
 | A7 | TrialAgents Runway vs Aleph: AI-Native FP&A for Lean Biotech Teams | Queued — verify and publish | — |
 | A8 | TrialAgents Runway vs Jirav: FP&A Software for Small Biotech Companies | Queued — verify and publish | — |
 | A9 | TrialAgents Runway vs Bob Finance (Formerly Mosaic): Financial and Workforce Planning | Queued — verify and publish | — |
@@ -68,7 +68,7 @@ All listed published pages were recorded as live in [Runway's app plan](runway.m
 
 ## Publication sequence and hourly worker contract
 
-1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2–A5 are now published; the next candidate is **A6: Runway vs Puzzle**, subject to current queue and live-state checks.
+1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2–A6 are now published; the next candidate is **A7: Runway vs Aleph**, subject to current queue and live-state checks.
 2. Re-read the **current** shared playbook and [Runway plan](runway.md). Use the approved genuine screenshots, wide dark editorial shell, numbered green headings, platform advantage order, honest competitor treatment, one final "Start with Runway" CTA and standard shared header/footer.
 3. Research and verify vendor identities, capabilities, URL destinations, AI/Claude/ChatGPT host experiences separately, formulas and substantive claims. Keep the no-pricing-in-A/B rule; in other series, only discuss verified prices if explicitly appropriate and editorially approved. Real screenshots only, no invented interfaces or citations. Treat claims in tentative titles as hypotheses.
 4. Make the article genuinely distinct from existing Runway pages. Do not create weak "year-only", vendor-name-swapped or keyword-cannibalizing pages. If the subject is already answered on a live URL, mark it as covered, link it and advance to the next eligible item **within the same run**, without publishing duplicate content.
@@ -164,3 +164,13 @@ Status: source PR awaiting exact-head predeploy, desktop/mobile artifact review,
 ### A6 merged release checkpoint — 13 November 2026
 
 PR #189 merged at 14:07 UTC, release `730ec8d33dad332c44066926fd93235619bf5837`. Exact head `493e89f0894d641100f05108e942b4a5d20a9e7e` passed predeploy run 43438638202 (282 tests, snapshot/metadata/discovery, desktop/mobile and site regressions). Article desktop/mobile artifacts 14045736270 visually inspected; no layout blocker, standard accessible comparison-table horizontal scrolling on narrow screens. Initial article HTTP 404 at 14:07 UTC is automatic deployment pending, not an authentication fault. Live verification is running; resume this release before A7 if interrupted.
+
+
+### A6 publication verified — 13 November 2026
+
+- **Published:** [TrialAgents Runway vs Puzzle: AI accounting and biotech cash planning](https://trialagents.com/apps/runway-vs-puzzle). Source [PR #189](https://github.com/tarous89/trialagents-public/pull/189), exact head `493e89f0894d641100f05108e942b4a5d20a9e7e`; merged release `730ec8d33dad332c44066926fd93235619bf5837` at 14:07 UTC.
+- Exact-head predeploy run `43438638202` passed **282 tests**, snapshot, metadata/discovery, desktop/mobile and site regression checks. Inspected both article screenshots in artifact `14045736270`; no layout blocker. The standard comparison table uses an accessible horizontal-scroll region on narrow screens.
+- GitHub-connected Cloudflare Workers build succeeded automatically. Early 404s were deployment pending; expected HTTP 200 article verified by 14:11 UTC, without dashboard authentication or manual deployment. Served article fragment and CSS exactly match the source reviewed at desktop/mobile sizes.
+- Live checks passed: expected H1/title/description, self-canonical, no noindex directive, Article/BreadcrumbList schema, three genuine images, internal/primary-source links and final Start with Runway CTA. Twenty URLs checked; /apps listing, single canonical sitemap.xml entry, llms.txt and llm.xml inclusion confirmed. HTTP headers deliver HTML.
+- Article uses the homepage-identical loader `/_snapshot/query-assets/114933b27c521a75f333.js`; loader and dependency `/_snapshot/query-assets/c251da7b4969f7c85048.js` return HTTP 200. Existing tracking scripts, configuration, consent, events, attribution and collectors unchanged; no synthetic production events.
+- This supersedes A6's source and merged-pending checkpoints. **10 published; 37 remaining. Next eligible: A7, Runway vs Aleph**, subject to fresh queue/claim checks. Publication QA does not establish search indexing, rankings or assistant citations. Refresh this comparison when either vendor's documented capabilities or integration scope changes.
