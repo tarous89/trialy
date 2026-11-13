@@ -1,7 +1,7 @@
 import {PageBack} from './ui/PageNavigation.js';
 import React,{useEffect,useState} from 'react';
 type Call=(name:string,args:any)=>Promise<any>;
-const EMAIL_TYPES=['invitation','reminder','clarification','message','extended','revoked'];
+const EMAIL_TYPES=['invitation','reminder','clarification','message','extended','revoked'],ROOM_EMAIL_TYPES=['access_granted','access_changed','documents_updated','question_answered','answer_published','access_ending','access_revoked','extended'];
 const when=(d:string|null)=>d?new Date(d).toLocaleString():'—';
 /** Owner side of external exchanges: status per recipient, submissions, messages and the send review (docs/product/EXTERNAL_EXCHANGE.md). */
 export function ExchangesPanel({call,onBack,onPreview}:{call:Call;onBack:()=>void;onPreview:(p:any)=>void}){
@@ -12,6 +12,7 @@ export function ExchangesPanel({call,onBack,onPreview}:{call:Call;onBack:()=>voi
  const refresh=()=>act(async()=>{const p=await call('list_exchanges',{});setPage(p);if(!groupId&&p.groups[0])setGroupId(p.groups[0].id);});
  useEffect(()=>{void refresh();},[]);
  const group=page?.groups.find((g:any)=>g.id===groupId);
+ useEffect(()=>{if(group)setSend((s:any)=>({...s,emailType:group.kind==='room'?'access_granted':'invitation'}));},[group?.id]);
  useEffect(()=>{if(!group)return;if(view==='submissions')void act(async()=>setSubmissions((await call('list_exchange_submissions',{groupId:group.id})).submissions));if(view==='messages')void act(async()=>setMessages((await call('list_exchange_messages',{groupId:group.id,markRead:true})).messages));if(view==='send')void act(async()=>{const d=await call('read_exchange_email_default',{groupId:group.id,emailType:send.emailType});setDefaults(d);setSend((s:any)=>({...s,subject:d.subject,body:d.body,selected:group.exchanges.filter((e:any)=>!e.revokedAt).map((e:any)=>e.id)}));setBatch(null);});},[view,groupId,send.emailType]);
  const review=(operation:any)=>act(async()=>onPreview(await call('prepare_workspace_change',{operation})));
  if(!page)return <section><PageBack onClick={onBack}>← Collections</PageBack><h3>External exchanges</h3>{error?<p role="alert">{error}</p>:<p role="status">Loading…</p>}</section>;
@@ -29,7 +30,7 @@ export function ExchangesPanel({call,onBack,onPreview}:{call:Call;onBack:()=>voi
     <h4>Reply privately</h4>{group.exchanges.filter((e:any)=>!e.revokedAt).map((e:any)=><label key={e.id} style={{display:'block',marginBottom:8}}>{e.recipientName||e.recipientEmails[0]}<textarea value={reply[e.id]??''} onChange={ev=>setReply(r=>({...r,[e.id]:ev.target.value}))} rows={2} style={{display:'block',width:'100%'}}/><button type="button" className="ty-button" disabled={busy||!reply[e.id]?.trim()} onClick={()=>void review({kind:'reply_exchange',exchangeId:e.id,body:reply[e.id],notify:true})}>Review reply</button></label>)}
     <h4>Publish a clarification to every recipient</h4><label>Question (optional, shown as “A recipient asked”)<input value={clarification.question} onChange={e=>setClarification(c=>({...c,question:e.target.value}))} style={{display:'block',width:'100%'}}/></label><label>Answer or addendum<textarea value={clarification.body} onChange={e=>setClarification(c=>({...c,body:e.target.value}))} rows={3} style={{display:'block',width:'100%'}}/></label><button type="button" className="ty-button" disabled={busy||!clarification.body.trim()} onClick={()=>void review({kind:'publish_exchange_clarification',groupId:group.id,question:clarification.question,body:clarification.body,notify:true})}>Review publication</button></div>}
    {view==='send'&&<div><p>From <strong>no-reply@trialagents.com</strong>; replies go to you. The link, the sender identity and the footer are always included.</p>
-    <label>Email type <select value={send.emailType} onChange={e=>setSend((s:any)=>({...s,emailType:e.target.value}))}>{EMAIL_TYPES.map(t=><option key={t}>{t}</option>)}</select></label>
+    <label>Email type <select value={send.emailType} onChange={e=>setSend((s:any)=>({...s,emailType:e.target.value}))}>{(group.kind==='room'?ROOM_EMAIL_TYPES:EMAIL_TYPES).map(t=><option key={t}>{t}</option>)}</select></label>
     <label>Display name <select value={send.nameKind} onChange={e=>setSend((s:any)=>({...s,nameKind:e.target.value}))}><option value="organization">Organization at TrialAgents</option><option value="person">Your first name at TrialAgents</option><option value="custom">Custom … at TrialAgents</option></select></label>{send.nameKind==='custom'&&<label>Name part<input value={send.customName} maxLength={60} onChange={e=>setSend((s:any)=>({...s,customName:e.target.value}))}/> at TrialAgents</label>}
     {defaults&&<p><small>Default source: {defaults.source}. Placeholders: {defaults.placeholders.join(' ')}</small></p>}
     <label>Subject (everyone)<input value={send.subject} onChange={e=>setSend((s:any)=>({...s,subject:e.target.value}))} style={{display:'block',width:'100%'}}/></label><label>Body (everyone)<textarea rows={6} value={send.body} onChange={e=>setSend((s:any)=>({...s,body:e.target.value}))} style={{display:'block',width:'100%'}}/></label>

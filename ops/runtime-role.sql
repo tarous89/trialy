@@ -95,3 +95,7 @@ GRANT SELECT,INSERT,UPDATE ON role_writers TO trialy_runtime;
 GRANT SELECT,INSERT,UPDATE ON exchange_groups,exchanges,exchange_verifications,exchange_drafts,exchange_files,exchange_email_batches,exchange_emails,exchange_email_defaults,exchange_sender_preferences,exchange_notifications TO trialy_runtime;
 GRANT DELETE ON exchange_drafts,exchange_email_defaults TO trialy_runtime;
 GRANT SELECT,INSERT ON exchange_submissions,exchange_file_acceptances,exchange_acceptances,exchange_messages,exchange_message_reads,exchange_events TO trialy_runtime;
+
+-- Exchange rooms (migration 065): visits and viewer sessions accumulate; questions, answers and tracked-table bindings are append-only.
+GRANT SELECT,INSERT,UPDATE ON exchange_visits,exchange_views,exchange_tracked_records,exchange_tracking_state TO trialy_runtime;
+GRANT SELECT,INSERT ON exchange_questions,exchange_answers,exchange_tracked_tables TO trialy_runtime;

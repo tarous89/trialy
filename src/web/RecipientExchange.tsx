@@ -1,6 +1,7 @@
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {MultiValueInput} from '../shared/MultiValueInput.js';
 import {activeQuestions} from '../shared/questions.js';
+import {RecipientRoom} from './RecipientRoom.js';
 import './exchange.css';
 
 /** Recipient page for an external exchange: Brief · Documents · Your response · Messages (docs/product/EXTERNAL_EXCHANGE.md §2.7). */
@@ -40,12 +41,13 @@ export function RecipientExchange(){
  if(error&&!page)return <main className="xp"><div className="xp-wrap"><div className="xp-verify" role="alert"><h1 style={{fontSize:22}}>This page is unavailable</h1><p className="xp-muted" style={{marginTop:8}}>{error}</p></div></div></main>;
  if(!page)return <main className="xp"><div className="xp-wrap"><p className="xp-muted" style={{padding:40}} role="status">Loading…</p></div></main>;
  const header=<header className="xp-header"><div className="xp-wrap"><div className="xp-sender">{page.sender?.logo&&<img src={'/external-exchange/logo?'+encodeURIComponent(token.slice(0,8))} alt="" onError={e=>{(e.target as HTMLImageElement).style.display='none';}}/>}<div><div className="xp-sender-name">{page.sender?.company}</div><div className="xp-sender-sub">Sent by {page.sender?.name}</div></div></div>
-  <div className="xp-title"><h1>{page.title}</h1><div className={'xp-deadline'+(closed?' is-closed':'')} role="status"><strong>{countdown(page.deadline,closed)}</strong><span>{closed?'Closed on ':'Deadline '}{fmtDate(page.deadline)}</span></div></div></div></header>;
+  <div className="xp-title"><h1>{page.title}</h1>{page.mode==='room'?<div className="xp-deadline" role="status"><strong>{page.endsAt?'Access until '+fmtDate(page.endsAt):'Access until revoked'}</strong><span>Shared by {page.sender?.company}</span></div>:<div className={'xp-deadline'+(closed?' is-closed':'')} role="status"><strong>{countdown(page.deadline,closed)}</strong><span>{closed?'Closed on ':'Deadline '}{fmtDate(page.deadline)}</span></div>}</div></div></header>;
  const footer=<footer className="xp-footer xp-wrap"><p style={{flex:'1 1 320px'}}>{page.privacyNotice}</p><p><img src="/trialagents-mark-black.png" alt=""/>Powered by TrialAgents</p></footer>;
  if(page.verification?.required&&!page.verification?.verified)return <main className="xp"><a className="xp-skip" href="#verify">Skip to verification</a>{header}<div className="xp-wrap"><section className="xp-verify" id="verify" aria-labelledby="verify-title"><h2 id="verify-title" style={{fontSize:20,fontWeight:650}}>Verify your email address</h2><p className="xp-muted" style={{margin:'8px 0 16px'}}>Enter the address this page was sent to. We email you a one-time code; nothing else is sent.</p>
   {!verificationId?<form onSubmit={e=>{e.preventDefault();void act(async()=>{const r=await call('/verify','POST',{email:verifyEmail});setVerificationId(r.verificationId);setNotice('Code sent. Check your inbox.');});}}><label className="xp-field"><span>Email address</span><input type="email" required autoComplete="email" value={verifyEmail} onChange={e=>setVerifyEmail(e.target.value)}/></label><button className="xp-button is-primary" disabled={busy}>Send code</button></form>
   :<form onSubmit={e=>{e.preventDefault();void act(async()=>{const r=await call('/verify/confirm','POST',{verificationId,code});try{sessionStorage.setItem(sessionKey,r.session);}catch{}setSession(r.session);});}}><label className="xp-field"><span>6-digit code</span><small>Sent to {verifyEmail}. Valid for 15 minutes.</small><input className="xp-code" inputMode="numeric" pattern="\d{6}" maxLength={6} required value={code} onChange={e=>setCode(e.target.value.replace(/\D/g,''))}/></label><div className="xp-actions"><button className="xp-button is-primary" disabled={busy||code.length!==6}>Continue</button><button type="button" className="xp-button is-link" onClick={()=>{setVerificationId('');setCode('');}}>Use another address</button></div></form>}
   {notice&&<p className="xp-notice" role="status" style={{marginTop:16}}>{notice}</p>}{error&&<p className="xp-error" role="alert">{error}</p>}</section></div>{footer}</main>;
+ if(page.mode==='room')return <RecipientRoom page={page} headers={{'X-Trialy-Exchange':token,...(session?{'X-Trialy-Exchange-Session':session}:{})}} call={call} refresh={refresh} header={header} footer={footer}/>;
  const gate=page.gate,needsAck=gate.kind==='acknowledgement'&&!gate.acknowledged;
  const unreadCount=unread;
  return <main className="xp"><a className="xp-skip" href="#xp-content">Skip to content</a>{header}
