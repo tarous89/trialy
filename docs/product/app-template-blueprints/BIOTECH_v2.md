@@ -18,7 +18,7 @@
 | 01 Runway | [apps/RUNWAY.md](apps/RUNWAY.md) | `life.cash-runway` 2.1.0 published (#131) |
 | 02 Programs | [apps/PROGRAMS.md](apps/PROGRAMS.md) | `life.project-oversight` 2.1.0 published (#136), with manual cash forecast and Runway integration |
 | 03 Fundraise | [apps/FUNDRAISE.md](apps/FUNDRAISE.md) | Built in PR #137 (open) |
-| 08 Data Room | [apps/DATA_ROOM.md](apps/DATA_ROOM.md) | Scoped (13 Nov); hosted rooms on external exchange + room extension ([§5](../EXTERNAL_EXCHANGE.md#5-room-extension-for-data-room)); build as PR A (platform) then PR B (app); includes Diligence Q&A (12) |
+| 08 Data Room | [apps/DATA_ROOM.md](apps/DATA_ROOM.md) | Scope approved (13 Nov); hosted rooms (only) on external exchange + room extension ([§5](../EXTERNAL_EXCHANGE.md#5-room-extension-for-data-room)); build as PR A (platform) then PR B (app); includes Diligence Q&A (12) |
 | 04 Contracts | [apps/CONTRACTS.md](apps/CONTRACTS.md) | `life.contracts` 1.0.0 published (#141) |
 | 05 CRO Selection | [apps/CRO_SELECTION.md](apps/CRO_SELECTION.md) | Scoped (13 Nov); build after External exchange PR #147 is merged |
 
@@ -154,7 +154,7 @@ Format per app: users and job · reference app · scope (in / out) · records ·
 ### BT2-08 — Data Room (rank 8, Core)
 *Prepare, share and track data rooms for financing, licensing, partnering and M&A, with diligence Q&A.*  
 *Long name: Data Room & Diligence Q&A*
-- **Final scope:** [apps/DATA_ROOM.md](apps/DATA_ROOM.md) (13 Nov 2026). It supersedes the earlier index-only brief: rooms are hosted on the platform external exchange, with per-person links, Non-confidential / Confidential / custom levels, a CDA entry step, view and download tracking, structured Q&A and email notifications. An external-room option covers DocSend or ShareVault users. It writes `dataroom.v1` for Fundraise and BD Pipeline.
+- **Final scope:** [apps/DATA_ROOM.md](apps/DATA_ROOM.md) (13 Nov 2026). It supersedes the earlier index-only brief: rooms are hosted on the platform external exchange, with per-person links, Non-confidential / Confidential / custom levels, a CDA entry step, view and download tracking, structured Q&A and email notifications. It writes `dataroom.v1` for Fundraise and BD Pipeline.
 
 ### BT2-09 — Lab Inventory (rank 9, Core)
 *Reagents and consumables, requests and reorders.*  

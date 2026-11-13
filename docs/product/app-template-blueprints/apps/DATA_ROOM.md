@@ -2,15 +2,14 @@
 
 *Prepare, share and track data rooms for financing, licensing, partnering and M&A, with diligence Q&A built in.*
 
-**Status:** Final scope for build, 13 November 2026. Part of [Biotech apps v2](../BIOTECH_v2.md) (rank 8). New template `life.data-room` 1.0.0, display name **Data Room**. It also takes over the scope of **Diligence Q&A (BT2-12)**: Q&A belongs to the room, so BT2-12 is no longer a separate app. No existing users.
+**Status:** Final scope for build, approved 13 November 2026. Part of [Biotech apps v2](../BIOTECH_v2.md) (rank 8). New template `life.data-room` 1.0.0, display name **Data Room**. It also takes over the scope of **Diligence Q&A (BT2-12)**: Q&A belongs to the room, so BT2-12 is no longer a separate app. No existing users.
 
 **Depends on:** the platform [external exchange](../../EXTERNAL_EXCHANGE.md) (PR #147, guidance 1.3.22) **plus the room extension in [External exchange §5](../../EXTERNAL_EXCHANGE.md#5-room-extension-for-data-room)**. Build it as two PRs: **(A)** the platform room extension, **(B)** this app on top of it.
 
 **Governing contracts:** project context, template authoring and usage guidance (latest, all `nextOffset`s), shared build contract, interface rules, access control, write authorization, field capabilities, shared data, [modular apps and shared data](../../MODULAR_APPS_AND_SHARED_DATA.md) (core contract v1, archive first, role-based connections, the data access step, in-app integrations), platform documents inside apps, and the contract registry. They win on any conflict.
 
-**Decisions (13 Nov 2026):**
-- **Hosted rooms by default.** Parties open a private TrialAgents link and every open and download is recorded.
-- **External room option.** For teams already on DocSend, ShareVault or Drive, the room is an index, checklist and access list only, with engagement entered by hand or by the assistant from the provider's reports.
+**Decisions (13 Nov 2026, approved):**
+- **Hosted rooms only.** Parties open a private TrialAgents link and every open, view and download is recorded. There is no external-room mode; teams that keep using DocSend or ShareVault for a deal can log that engagement by hand in Fundraise, which keeps its own manual entries.
 - **Access levels.** Two standard levels, *Non-confidential* and *Confidential*, plus custom levels the owner adds (e.g. "Full diligence", "CMC").
 - **Q&A, no messages.** Q&A is part of the room; the recipient page has no free messages tab.
 - **All deal types.** One app covers financing, licensing, partnering/BD and M&A rooms.
@@ -23,7 +22,7 @@
 
 | # | Stage | What the app does |
 |---|---|---|
-| 1 | **Set up** | Room purpose (financing / licensing / partnering / M&A / other), linked program(s) or round, hosted or external, levels, entry step (click-through or signed CDA) |
+| 1 | **Set up** | Room purpose (financing / licensing / partnering / M&A / other), linked program(s) or round, levels, entry step (click-through or signed CDA) |
 | 2 | **Prepare** | Standard biotech index and checklist weighted for the purpose; owners and due dates per missing item; readiness score |
 | 3 | **Fill** | Attach platform documents to index items; set the level and view-only per document; new versions keep their place |
 | 4 | **Invite** | Pick parties (organizations and people); one private link per person; email from the default text (edited or personalised) in one confirmed send |
@@ -62,7 +61,7 @@ Sources read 13 November 2026: ShareVault (life-science pages, partnering guide,
 ## 3. Scope
 
 **In:**
-- hosted and external rooms for financing, licensing, partnering and M&A
+- hosted rooms for financing, licensing, partnering and M&A
 - standard biotech index templates with purpose weighting
 - readiness checklist with owners and due dates
 - documents from the platform document store (one set reused across rooms) with versions
@@ -98,10 +97,10 @@ Custom `frontend-js` app on the Vivid kit, theme **forest** (same as Fundraise, 
 | # | Screen (id) | Capabilities |
 |---|---|---|
 | 1 | **Overview** (`overview`) | (1) Rooms with purpose, status, readiness %, parties invited / active. (2) Activity today and this week: opens, new viewers, quiet parties. (3) Waiting on us: open questions, CDAs to accept, items due. (4) Recent changes and notifications sent. |
-| 2 | **Rooms** (`rooms`) | (1) New room: purpose, hosted or external (with the external link), linked program(s), Fundraise round or BD opportunity (when connected), index template. (2) Levels: Non-confidential, Confidential, plus custom; entry step per level (click-through text, signed CDA option). (3) Branding: room title, logo, welcome note, contact person. (4) Status: preparing / live / closed; archive. |
+| 2 | **Rooms** (`rooms`) | (1) New room: purpose, linked program(s), Fundraise round or BD opportunity (when connected), index template. (2) Levels: Non-confidential, Confidential, plus custom; entry step per level (click-through text, signed CDA option). (3) Branding: room title, logo, welcome note, contact person. (4) Status: preparing / live / closed; archive. |
 | 3 | **Index** (`index`) | (1) Numbered sections and items (add, reorder, rename). (2) Readiness per section: required items missing, in progress, ready, not applicable, with owner and due date. (3) Attach documents (`data-trialy-document="upload room_document"` or choose existing), level and view-only per document, version history, *Updated* flags. (4) Preview the room as a party at a chosen level. |
 | 4 | **Parties** (`parties`) | (1) Parties by organization with people, level, entry step status (CDA sent / signed / in place elsewhere), granted on, ends on, status. (2) Invite and level changes with email send review (default text, edit for all, personalise per person, display name) or copy link. (3) Revoke, extend, change end date. (4) Disclosure record per party. |
-| 5 | **Activity** (`activity`) | (1) Engagement grid: party × section, with views, downloads and last seen. (2) Per document: who opened which version, how often, roughly how long. (3) Quiet and hot parties, with thresholds from Settings. (4) What changed since each party's last visit; export for a deal call. External rooms show manual or assistant-entered engagement here. |
+| 5 | **Activity** (`activity`) | (1) Engagement grid: party × section, with views, downloads and last seen. (2) Per document: who opened which version, how often, roughly how long. (3) Quiet and hot parties, with thresholds from Settings. (4) What changed since each party's last visit; export for a deal call. |
 | 6 | **Q&A** (`qa`) | (1) Question log: party, section or document, category, asked on, assignee, due, status. (2) Draft the answer (the assistant can propose one from approved documents), then approve; the approver can be required per room. (3) Answer privately or publish to the room or a level (asker anonymised). (4) Library of approved answers and repeated-question suggestions. |
 | 7 | **Settings** (`settings`) | (1) Index templates and required items per purpose. (2) Email default texts per email type and room purpose. (3) Defaults: levels, entry step text, access length, view-only default, quiet-party days, Q&A approval required, notification choices. (4) Links to Access and Automations. |
 
@@ -130,11 +129,7 @@ Custom `frontend-js` app on the Vivid kit, theme **forest** (same as Fundraise, 
    - A party asks on their page (optionally pointing at a section or document); a question record is created and the team is notified.
    - The team assigns it and drafts the answer (the assistant may propose one), then approves it, if required.
    - The team sends it privately (email "your question was answered") or publishes it to the room or a level (asker anonymised; email to those parties).
-6. **External room:**
-   - Same index, readiness, parties and Q&A log, with the provider link stored.
-   - Engagement is entered manually or proposed by the assistant from DocSend or ShareVault exports (reviewed).
-   - Q&A answers are drafted here and sent outside.
-7. **Close:**
+6. **Close:**
    - Revoke all access or let it end. The disclosure record stays.
    - Archiving the room stops all links.
 
@@ -177,15 +172,15 @@ Principles as in [Runway §5](RUNWAY.md#5-data-model). Own tables use contract `
 |---|---|
 | `dataroom.settings` (one row) | default_access_days (number, 180; blank = until revoked), view_only_default (boolean, false), quiet_days (number, 10), qa_approval_required (boolean, true), notify_updates_default (boolean, false), entry_text (text), sender_display (select: organization / first_name) |
 | `dataroom.templates` | name (text*), purpose (select*: financing / licensing / partnering / m_and_a / other), content (text, JSON: sections, items, required, weight), archived (boolean) |
-| `dataroom.rooms` | name (text*), purpose (select*), mode (select*: hosted / external), external_url (text), status (select*: preparing / live / closed), program_ids (text), round_id (text), opportunity_ref (text), template_id (text), cda_option (select*: send_pdf / contracts / in_place / none), welcome_note (text), contact_person_id (text), notify_updates (boolean), exchange_group_id (text), owner (text), archived (boolean) |
+| `dataroom.rooms` | name (text*), purpose (select*), status (select*: preparing / live / closed), program_ids (text), round_id (text), opportunity_ref (text), template_id (text), cda_option (select*: send_pdf / contracts / in_place / none), welcome_note (text), contact_person_id (text), notify_updates (boolean), exchange_group_id (text), owner (text), archived (boolean) |
 | `dataroom.levels` | room_id (text*), name (text*), kind (select*: non_confidential / confidential / custom), order (number*), entry (select*: none / click_through / signed_cda) |
 | `dataroom.sections` | room_id (text*), number (text*, e.g. "4.2"), name (text*), parent_id (text), order (number*) |
 | `dataroom.items` | room_id (text*), section_id (text*), title (text*), required (boolean), status (select*: missing / in_progress / ready / not_applicable), owner (text), due (date), document_id (text), version_id (text), level_id (text*), view_only (boolean), updated_on (date), notes (text) |
 | `dataroom.access_grants` (output, `dataroom.v1`) | contract fields: room_id, room_name, room_purpose, organization_id, person_id, granted_on, expires_on, status (invited / active / revoked / expired), agreement_accepted_on, source (manual / tracked). App fields: level_ids (text), recipient_email (text*), exchange_id (text), cda_status (select: not_needed / sent / signed / in_place_elsewhere), cda_agreement_id (text), last_seen_on (date) |
 | `dataroom.engagement` (output, `dataroom.v1`) | contract fields: grant_id, organization_id, person_id, document_ref, document_title, first_viewed_on, last_viewed_on, view_count, seconds_viewed, downloads, source (manual / docsend / sharevault / tracked), as_of. App field: section_id (text) |
-| `dataroom.questions` | room_id (text*), grant_id (text), organization_id (text), person_id (text), asked_on (date*), category (select: corporate / financial / legal_ip / clinical / regulatory / cmc / commercial / other), section_id (text), item_id (text), question (text*), status (select*: new / assigned / drafting / in_review / answered / published / declined), assignee (text), due (date), answer (text), approved_by (text), answered_on (date), visibility (select: private / room / level), level_id (text), reused_from (text), document_ids (text), source (select*: hosted / external) |
+| `dataroom.questions` | room_id (text*), grant_id (text), organization_id (text), person_id (text), asked_on (date*), category (select: corporate / financial / legal_ip / clinical / regulatory / cmc / commercial / other), section_id (text), item_id (text), question (text*), status (select*: new / assigned / drafting / in_review / answered / published / declined), assignee (text), due (date), answer (text), approved_by (text), answered_on (date), visibility (select: private / room / level), level_id (text), reused_from (text), document_ids (text) |
 
-`*` = required. In hosted rooms the platform keeps `access_grants.status`, `last_seen_on` and all `engagement` rows current (R7, source `tracked`); these fields are read-only to people and assistants. In external rooms the same rows are entered manually or proposed by the assistant (source `manual` / `docsend` / `sharevault`).
+`*` = required. The platform keeps `access_grants.status`, `last_seen_on` and all `engagement` rows current (R7, source `tracked`); these fields are read-only to people and assistants. The contract's `manual` / `docsend` / `sharevault` source values stay in `dataroom.v1` for other writers (e.g. Fundraise's own manual entries); Data Room writes only `tracked`.
 
 **Registry change:** add the option `partnering` to `room_purpose` in `dataroom.v1` (`templates/contracts/outputs.json`). This is an additive change; readers treat unknown values as `other`. Set the writer to `life.data-room` for both outputs.
 
@@ -276,9 +271,8 @@ Data Room never writes another app's own tables; handoffs are proposals in the o
 3. **Levels:** a party never sees a document above their levels, including in search, "what changed" and published answers. Lowering a level hides those documents immediately.
 4. **Versions:** a new version keeps its place, shows *Updated* to parties with access, and appears in the daily digest when notifications are on.
 5. **Q&A:** question → assign → draft (assistant) → approve → private answer (email), and a second answer published to the room (asker anonymised, emails to that room's parties).
-6. **External room:** manual engagement and Q&A work, and Fundraise reads them the same way.
-7. **Assistants:** they draft but cannot send, grant, change levels, publish, accept or revoke; they never see links or documents without AI access.
-8. **Modularity and archiving:** the modularity test (rule 9) and archive-first checks pass. Archiving a room or the app stops all links; restoring re-enables only unexpired grants. Archiving the app leaves Fundraise working with "data unavailable".
-9. **Layout:** desktop 1440 and mobile 390, for both the app and the recipient room page.
+6. **Assistants:** they draft but cannot send, grant, change levels, publish, accept or revoke; they never see links or documents without AI access.
+7. **Modularity and archiving:** the modularity test (rule 9) and archive-first checks pass. Archiving a room or the app stops all links; restoring re-enables only unexpired grants. Archiving the app leaves Fundraise working with "data unavailable".
+8. **Layout:** desktop 1440 and mobile 390, for both the app and the recipient room page.
 
 **Open for design partners:** default required items per purpose and stage; whether view-only is wanted by default; quiet and hot thresholds.
