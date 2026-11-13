@@ -10,7 +10,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | --- | --- | --- | --- |
 | A1 | TrialAgents Runway vs Excel: Biotech Cash Planning Compared | Already covered / published | [Live article](https://trialagents.com/apps/runway-vs-excel) |
 | A2 | TrialAgents Runway vs Float: Which Cash Flow Forecasting App Is Better for Biotech Startups? | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/runway-vs-float) |
-| A3 | TrialAgents Runway vs cfo.ai (Formerly Runway): AI Financial Planning for Biotech Startups | Queued — verify and publish | — |
+| A3 | TrialAgents Runway vs cfo.ai (Formerly Runway): AI Financial Planning for Biotech Startups | In progress — 13 November 2026; source branch content/runway-a3-cfo-ai | — |
 | A4 | TrialAgents Runway vs LivePlan: Startup Financial Planning for Pre-Revenue Biotechs | Queued — verify and publish | — |
 | A5 | TrialAgents Runway vs Fathom: Cash Runway Monitoring vs Financial Reporting | Queued — verify and publish | — |
 | A6 | TrialAgents Runway vs Puzzle: AI Accounting vs AI-Native Cash Runway Planning | Queued — verify and publish | — |
