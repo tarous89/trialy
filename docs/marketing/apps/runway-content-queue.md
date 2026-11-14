@@ -528,3 +528,12 @@ This supersedes B8 source and merged-pending checkpoints. **22 published; 25 unf
 ### C1 execution claim — 14 November 2026
 
 Current main release is B8 `c141f6b7d490bc04cbf9ce7093d1604b1e3b08c6`; no open Runway source PRs found. C1 claimed for this run on branch `content/runway-c1-chatgpt-apps-20261114`. Candidate retitled to avoid an unsupported best ranking or universal embedded-UI claim. Distinct intent: compare documented host connection and action scope before adopting a forecasting app; existing C3 remains the Runway setup tutorial. Research current primary host/vendor evidence before publication. Totals remain 22 published, 25 unfinished.
+
+
+### C1 source checkpoint — 14 November 2026
+
+Title: **Cash runway apps in ChatGPT: compare the connection before the forecast**. Intended URL: https://trialagents.com/apps/cash-runway-apps-chatgpt. [Source PR #203](https://github.com/tarous89/trialagents-public/pull/203), head `5f5ce7374eb512bdcf866df11d81bc0f90b3a9b2`, predeploy run `43554197246` pending. Two genuine approved Runway 2.1 browser screenshots (03-plan, 02-cash-flow), clearly fictional demo data; no fabricated host UI. Distinct from canonical C3's setup tutorial: capability comparison plus bounded read/propose/review/save/reopen evaluation, not an executed host test.
+
+Primary evidence reviewed 14 November: current TrialAgents life.cash-runway 2.1.0 catalog and complete apps guide (digest `3023e0ac8382978d327978bb795ad134090814d88aed30289015a2b09520f996`); https://help.liveplan.com/using-the-liveplan-mcp-connector (early access, explicit ChatGPT section but primarily Claude-tested, account-access wording inconsistent so confirm rather than promise contributor availability); https://cfo.ai/agents and https://cfo.ai/skill.md (remote MCP/OAuth, model engine and member access; exact ChatGPT UI not freshly established); https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt (tools versus interactive UI, current workspace permissions; host instructions supersede older vendor setup screenshots). Competitor calls/UI were not tested. No pricing, background-runner promise or invented performance benchmark.
+
+Seven source files integrate renderer, listing, discovery and browser/snapshot checks. Existing shared shell, CSS and tracking unchanged. Await exact-head validation and artifact inspection, then merge and independently verify automatic deployment. Resume PR #203 before drafting another topic. Totals: 22 published, 25 unfinished, including deferred A9.
