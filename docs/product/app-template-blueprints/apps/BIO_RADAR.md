@@ -14,7 +14,7 @@
 - Funding Radar
 - Regulatory Radar
 
-**Depends on:** [app automations at install](../../RECOMMENDED_AUTOMATIONS.md) with E1–E4, shipped in #168 (recipes, install popup, summary and brief bindings, `after` email) and #169 (research saves results in the app database under grants approved with the install). The contract is `src/automations/recipes-schema.ts`; template guidance 1.3.27+. Offers appear only where `APP_AUTOMATION_RECIPES_ENABLED=true`; radar tests run with it on. **Also needs platform additions E5 (research + email in one automation) and E6 (fields resolved at run time), §6, in their own PR first.** Build order:
+**Depends on:** [app automations at install](../../RECOMMENDED_AUTOMATIONS.md) with E1–E4, shipped in #168 (recipes, install popup, summary and brief bindings, `after` email) and #169 (research saves results in the app database under grants approved with the install). The contract is `src/automations/recipes-schema.ts`; template guidance 1.3.27+. Offers appear only where `APP_AUTOMATION_RECIPES_ENABLED=true`; radar tests run with it on. Also uses platform additions E5 (research + email in one automation) and E6 (fields resolved at run time), §6, built in their own platform PR. Build order:
 1. **Radar kit + Trial Radar** (one PR; our edge with TrialAgents Intel)
 2. Pipeline, Literature, Deal and Funding Radar
 3. Patent, Market and Regulatory Radar
@@ -220,7 +220,7 @@ Readers use the in-app integration pattern ("Use data from Trial Radar"). Each f
 
 ## 6. Platform fit and the platform additions this needs
 
-The kit is built on the shipped platform (#168 recipes, install popup, summary and brief bindings, `after` email; #169 research saves in the app database under access approved with the install). Two small additions are needed first; they are platform work and get their own PR before the radar kit.
+The kit is built on the shipped platform (#168 recipes, install popup, summary and brief bindings, `after` email; #169 research saves in the app database under access approved with the install). Two small additions, E5 and E6, are built in their own platform PR before the radar kit (see [recommended automations §7](../../RECOMMENDED_AUTOMATIONS.md)). The kit declares the scan's read and write bindings with `fields: "all"` and `exceptFields` listing the user-owned fields in §2.2.
 
 | # | Addition | Why | Shape |
 |---|---|---|---|

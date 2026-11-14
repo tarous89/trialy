@@ -1,3 +1,5 @@
+Research + email and run-time fields (14 November 2026, E5/E6): a research automation may include its own email step and is shown, switched and edited as one automation. Research access declared with `fields:"all"` follows the app's current fields at each run (minus exclusions), so field edits need no re-approval.
+
 Research/drafting decision (14 November 2026): new automations must store output in the app database. The same install/setup approval includes required app-scoped write permission; no separate optional write opt-in. Missing write access means Needs setup. Completed production work requires verified saves; no-update and deliberate read-only tests remain distinct. Existing saved approvals are not silently expanded.
 
 # TrialAgents — current project context
