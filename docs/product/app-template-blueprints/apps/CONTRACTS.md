@@ -203,12 +203,12 @@ Contracts works alone; each connection follows the platform pattern (add-app dia
 | # | Decision |
 |---|---|
 | **C1** | Reading a contract and filling in its terms is never automatic. The user either asks the assistant in chat, or enters the details in the app (or leaves them blank). The scheduled "extraction of new documents" automation is removed, and there is no app button that calls the assistant. |
-| **C2** | The weekly digest is replaced by a plain email about completed and pending contracts, with no AI (§12.3). A user may add AI later; that is their own automation. |
+| **C2** | The weekly digest is replaced by a plain weekly email of actions needed, sent only when there are any, with no AI (§12.3). There is no "signed" email: Contracts tracks agreements, it doesn't sign them. A user may add AI later; that is their own automation. |
 | **C3** | Every read-only value that comes from another connected app, not only Programs milestones, is clearly labelled with the app it comes from. Built in the app. |
 | **C4** | Obligations get a **counterparty**. |
 | **C5** | The connected Claude or ChatGPT can change **everything** in Contracts, limited only by the access the user has given it. Built in the app. |
 | **C6** | Only calculations that the app shows or uses in its own features are done by the app. Other analysis an assistant does for the user in chat is up to the assistant. |
-| **C7** | A field added to a Contracts table appears in the app's forms and details with no code change. |
+| **C7** | New fields are added on request. The assistant adds the field to the table and the app in one change, so it appears straight away. Fields added later in Database are not picked up automatically. |
 | **C8** | An assistant can change any form and create new forms from scratch, adding them to the app's code. |
 
 ### 12.2 Getting a contract into Contracts (C1)
@@ -223,25 +223,27 @@ Two ways; neither needs an automation.
 
 If a document is not readable by AI, the assistant says so and points to Documents. It never guesses.
 
-### 12.3 Email summary (C2)
+### 12.3 Weekly "actions needed" email (C2)
 
-Email automations are already available. The difference is what an email can contain without extra code:
-- an email can carry the fields of **one record** when something happens to that record;
-- a single email **listing several contracts** needs a small summary function, and catalog apps cannot include one at install.
-
-**Built now, with no extra code:**
+Contracts only tracks agreements; signing happens elsewhere. So there is no "signed" email. The only email is a weekly reminder, sent **only when something needs action**.
 
 | Key | List | Kind | Trigger | Content |
 |---|---|---|---|---|
-| `contract_signed` | `recommendedAutomations` | email (no AI) | database, `role: agreements`, `status` becomes `active` | "Signed: *name* with *counterparty* (*type*), effective *effective_date*, expires *expiry_date*." Links to the agreement. |
+| `contract_actions` | `recommendedAutomations` | email (no AI) | calendar, weekly, Monday 08:00 Europe/Berlin (editable) | One email listing what needs action, grouped. Each line links to the record. **Nothing is sent when the list is empty.** |
 
-Pending contracts are shown on the Pipeline screen, with days in status.
+What counts as an action:
+- **Obligations:** open obligations that are overdue, or due in the next 7 days.
+- **Notice deadlines:** within the first reminder window (default 30 days). For example: "Cancel by 3 Mar or it renews for 12 months."
+- **Expiries:** active agreements that expire within 30 days and have no renewal.
+- **Stalled pipeline:** agreements in drafting, negotiation or out for signature for more than 14 days.
+- **Not yet checked:** terms or obligations that an assistant filled in and nobody has checked yet.
 
-**Weekly list of completed and pending contracts (owner to choose):**
-- **(a)** Keep only `contract_signed`.
-- **(b)** Add `contract_summary`, a weekly email listing contracts signed in the last 7 days and contracts still pending with days in status. It needs a summary function attached to the app after install, which takes one extra approval, and it shows **Needs setup** until then.
-
-Remove `digest_day` from Settings: timing lives in the automation.
+How it works:
+- The list is built by a small read-only summary function that ships with Contracts (E1). The email is plain, with no AI.
+- Each recipient's access is checked again at send time. The default recipient is the owner.
+- **Setup:** catalog apps cannot attach the summary function at install. So the row is shown switched on in the Add app dialog and becomes active after **one approval** that attaches the function. The user gives it in Automations, or the assistant asks for it right after install. Until then the row shows **Needs setup**, and the app works normally.
+- Remove `digest_day` from Settings: timing lives in the automation.
+- Adding AI to this email, or any other automation, is the user's choice later.
 
 ### 12.4 Values from other apps (C3), in the app
 
@@ -260,10 +262,7 @@ Remove `digest_day` from Settings: timing lives in the automation.
   - Read-only features (Overview, Families, CDA check, Due-diligence list, Obligations calendar) are described by the same rules, so an assistant can answer the same questions from the records.
 - **The app does its own calculations (C6).** Values the app shows or uses are always worked out by the app from the underlying fields when it displays them. Stored copies are refreshed on the next save. So an assistant's change gives exactly the same screen as a click. These values are: notice deadline, confidentiality end, family value and change-order share, earliest expiry and next notice, next due date, due soon and overdue, expires before milestone, and days in status.
 - **Checking proposals.** An assistant may mark a term or obligation as checked when the user asks, through the normal review. Remove the 1.0.0 advice to block assistants from the verification fields with column rules.
-- **New fields appear without code (C7).**
-  - Contracts shows every field it is connected to, including ones it doesn't know, under "Additional fields" in that table's form and details. They are shown by type and included in search, filters and CSV, and are never used in calculations.
-  - When an assistant adds a field, it adds the field to the table and connects it to Contracts in the same request.
-  - A field a person adds by hand in Database must also be connected to Contracts once ("Show in Contracts"). The app's Settings explains how.
+- **New fields (C7).** Fields are added on request. The user asks the assistant, and it adds the field to the table and to the app in one reviewed change, so the field appears in the app's forms and details straight away. Fields added later in Database are not picked up automatically. The user asks the assistant to add them to the app the same way.
 - **Forms (C8).**
   - Any form's layout (order, hidden, labels, defaults) can be changed through `prepare_tool_layout`, without code. Required fields cannot be hidden.
   - An assistant can build a new form from scratch, or rebuild one, and add it to the app's code through a reviewed app revision. Forms use the app's form format (fields, types, validation, where it appears, what it saves), so new forms get the same checks as built-in ones.
@@ -276,7 +275,7 @@ Remove `digest_day` from Settings: timing lives in the automation.
 
 ### 12.7 Documentation changes
 
-- Remove the 1.0.0 extraction automation from `AUTOMATION_RECIPES.md`, `documentation.tasks` and instructions step 8. Add `contract_signed` (and `contract_summary` if chosen).
+- Remove the 1.0.0 extraction automation from `AUTOMATION_RECIPES.md`, `documentation.tasks` and instructions step 8. Add `contract_actions`.
 - Instructions step 5 describes the two ways in (§12.2). Step 7 becomes "everything is changeable (§12.5)", with the per-button change list.
 - Remove the limitation "Assistants are told never to verify…". Add the limitation that a connected value is changed in the app that owns it.
 - Examples:
@@ -286,15 +285,15 @@ Remove `digest_day` from Settings: timing lives in the automation.
   - an assistant adds a field and it appears;
   - an assistant builds a new form;
   - a Programs milestone labelled "From Programs";
-  - the signed email.
+  - the weekly actions email, including a quiet week with no email.
 
 ### 12.8 Acceptance (in addition to §11)
 
 1. Both ways in work in Claude and ChatGPT. A document not readable by AI is reported, not guessed. No AI runs without the user asking.
 2. No scheduled AI job is installed with Contracts.
-3. The Add app dialog shows `contract_signed` switched on. Turning it off installs the app without it. The email is sent once when a contract becomes active and respects each recipient's access.
+3. The Add app dialog shows `contract_actions` switched on. Turning it off installs the app without it. After its one approval, the email lists exactly the actions in §12.3, sends nothing in a week without actions, and respects each recipient's access. Before that approval it shows Needs setup and the app works normally.
 4. Every read-only connected value shows "From *App*" and cannot be edited in Contracts.
 5. For every button, an assistant can make the same change with the documented records. The screen then looks the same as after a click. Hidden columns stay hidden from the assistant, and a viewer's assistant can only read.
-6. A field added and connected by an assistant appears in the form and details with no code change, at 1440 and 390 px.
+6. A field an assistant adds on request appears in the form and details at 1440 and 390 px.
 7. An assistant-built new form saves through review with the same checks as a built-in form.
 8. `counterparty_id` defaults from the agreement; Runway 2.2.0 and a v1 reader both connect.
