@@ -42,7 +42,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | D5 | Forecast CRO costs and vendor payments: reconcile what is still payable | Published — live verified 14 November 2026; PR #213, release `737d8dcafa887324da8ec275fcdc9493bff364e2` | https://trialagents.com/apps/cro-costs-vendor-payments-biotech-budget |
 | D6 | Biotech hiring vs outsourcing: compare cash through the handover | Published — live verified 14 November 2026; PR #214, release `e50602db40385e5a3d54747759a793f1fb3747fc` | https://trialagents.com/apps/biotech-hiring-vs-outsourcing-cash-runway |
 | D7 | Plan biotech runway around a funding round: find the gap before the cash arrives | Published — live verified 14 November 2026 UTC; PR #215, release `86345a49f823289757ef4990b06183ede4b2b487` | https://trialagents.com/apps/biotech-runway-next-funding-round |
-| D8 | Best Financial Planning Tools for Grant-Funded Biotech Startups | Queued — verify and publish | — |
+| D8 | Financial planning for grant-funded biotechs: separate award, claim and cash | Claimed — 15 November 2026; grant cash reconciliation example in preparation | — |
 | D9 | Cash Runway Planning for Biotechs with Multiple R&D Programs | Queued — verify and publish | — |
 | D10 | Biotech Board Reporting: How to Present Burn Rate, Runway, and Financial Risks | Queued — verify and publish | — |
 | D11 | How CRO Payment Timing Changes Biotech Cash Runway | Already covered / published | [Live article](https://trialagents.com/apps/cro-payment-timing-biotech-cash-runway) |
