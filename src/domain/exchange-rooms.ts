@@ -5,7 +5,7 @@ import {typeAccess,access} from './permissions.js';
 import {audit} from './evidence.js';
 import {exchangeAuthority,groupRow,exchangeRow,logExchange,documentRows} from './external-exchange.js';
 import {renderNotices,queueNotices,levelNames,type NoticeEmail} from '../app-services/exchange-email.js';
-import {ACCESS_TRACKED,ENGAGEMENT_FIELDS,TRACKED_FIELD_KIND,levelStates,roomView,changedSince,documentLines,gateState,roomEnded,titleOf,type RoomOperation,type RoomDocument} from './exchange-room-model.js';
+import {ACCESS_TRACKED,ENGAGEMENT_FIELDS,DELIVERY_FIELDS,DELIVERY_STATUS,RESPONSE_FIELDS,RESPONSE_CONTEXT,TRACKED_FIELD_KIND,levelStates,roomView,changedSince,documentLines,gateState,roomEnded,titleOf,type RoomOperation,type RoomDocument} from './exchange-room-model.js';
 
 /**
  * Room extension (docs/product/EXTERNAL_EXCHANGE.md §5): levels, documents replaced in place, room
@@ -35,19 +35,24 @@ export function documentsProblem(kind:string,levels:any[],documents:any[]){
  return null;
 }
 /** Bound output tables (R7): the access table needs status and last_seen_on, the engagement table document_ref and view_count; present fields must have compatible kinds. */
-export async function trackingReview(tx:Connection,a:Actor,w:string,tracking:{accessTypeId?:string;engagementTypeId?:string}|undefined){
+export async function trackingReview(tx:Connection,a:Actor,w:string,tracking:{accessTypeId?:string;engagementTypeId?:string;deliveryTypeId?:string;responsesTypeId?:string}|undefined){
  const result:any[]=[];if(!tracking)return result;
- const check=async(role:'access'|'engagement',typeId:string,required:string[],keys:string[])=>{
+ const check=async(role:'access'|'engagement'|'delivery'|'responses',typeId:string,required:string[],keys:string[])=>{
   const {type}=await typeAccess(tx,a,w,typeId,true),fields:any[]=type.fields;
   for(const k of required)if(!fields.some(f=>f.key===k))fail(400,'tracking_field',`The ${role} table needs a "${k}" field`);
   const present=keys.filter(k=>fields.some(f=>f.key===k));
   for(const k of present){const f=fields.find(x=>x.key===k),want=TRACKED_FIELD_KIND[k];const ok=want==='number'?['number','money'].includes(f.kind):want==='date'?['date','text'].includes(f.kind):['text','select'].includes(f.kind);if(!ok||f.multiple||f.formula||f.computed||f.lookup)fail(400,'tracking_field',`"${k}" in the ${role} table must be a single ${want} field`);
-   if(f.kind==='select'){const need=k==='status'?['invited','active','revoked','expired']:k==='source'?['tracked']:[];if(need.some(v=>!(f.options??[]).includes(v)))fail(400,'tracking_field',`"${k}" in the ${role} table needs the options ${need.join(', ')}`);}}
+   // A delivery record is created by the app before anything is sent, so the fields TrialAgents fills cannot be required.
+   if(role==='delivery'&&f.required)fail(400,'tracking_field',`"${k}" in the delivery table is filled by TrialAgents and cannot be required`);
+   if(f.kind==='select'){const need=k==='status'?(role==='delivery'?DELIVERY_STATUS:['invited','active','revoked','expired']):k==='source'?['tracked']:[];if(need.some(v=>!(f.options??[]).includes(v)))fail(400,'tracking_field',`"${k}" in the ${role} table needs the options ${need.join(', ')}`);}}
   result.push({role,typeId,name:type.name,fields:role==='engagement'?['*']:present,writes:present});
  };
  if(tracking.accessTypeId)await check('access',tracking.accessTypeId,['status','last_seen_on'],[...ACCESS_TRACKED]);
  if(tracking.engagementTypeId)await check('engagement',tracking.engagementTypeId,['document_ref','view_count'],Object.keys(ENGAGEMENT_FIELDS));
- if(tracking.accessTypeId&&tracking.accessTypeId===tracking.engagementTypeId)fail(400,'tracking_tables','Use separate access and engagement tables');
+ if(tracking.deliveryTypeId)await check('delivery',tracking.deliveryTypeId,['status','read_count'],Object.keys(DELIVERY_FIELDS));
+ if(tracking.responsesTypeId)await check('responses',tracking.responsesTypeId,['ask_key','responded_on'],[...Object.keys(RESPONSE_FIELDS),...RESPONSE_CONTEXT]);
+ if(tracking.accessTypeId&&tracking.deliveryTypeId)fail(400,'tracking_tables','Bind people to an access table (rooms) or a delivery table (updates), not both');
+ const ids=Object.values(tracking).filter(Boolean);if(new Set(ids).size!==ids.length)fail(400,'tracking_tables',tracking.accessTypeId&&tracking.accessTypeId===tracking.engagementTypeId?'Use separate access and engagement tables':'Use a separate table for each tracked role');
  return result;
 }
 const noticeRecipients=(emails:any[])=>emails.map(m=>({exchangeId:m.exchangeId,to:m.to,subject:m.subject,text:m.text,personalised:m.personalised}));
@@ -179,7 +184,7 @@ export async function listExchangeQuestions(db:Connection,a:Actor,w:string,q:{gr
  */
 export async function syncExchangeTracking(db:Database){
  const due=(await db.query(`SELECT e.id,e.workspace_id,m.marker FROM exchanges e JOIN exchange_groups g ON g.id=e.group_id
-  CROSS JOIN LATERAL (SELECT greatest((SELECT max(created_at) FROM exchange_events v WHERE v.exchange_id=e.id),(SELECT max(last_beat_at) FROM exchange_views x WHERE x.exchange_id=e.id),e.created_at,CASE WHEN e.expires_at<=now() THEN e.expires_at END) AS marker) m
+  CROSS JOIN LATERAL (SELECT greatest((SELECT max(created_at) FROM exchange_events v WHERE v.exchange_id=e.id),(SELECT max(last_beat_at) FROM exchange_views x WHERE x.exchange_id=e.id),(SELECT max(created_at) FROM exchange_ask_responses r WHERE r.exchange_id=e.id),(SELECT max(updated_at) FROM exchange_emails m WHERE m.exchange_id=e.id AND m.email_type='update'),e.created_at,CASE WHEN e.expires_at<=now() THEN e.expires_at END) AS marker) m
   WHERE g.kind='room' AND NOT g.archived AND EXISTS(SELECT 1 FROM exchange_tracked_tables t WHERE t.group_id=g.id)
   AND (g.app_id IS NULL OR NOT EXISTS(SELECT 1 FROM workspace_components c WHERE c.id=g.app_id AND (c.archived OR c.deleted_at IS NOT NULL)))
   AND m.marker>coalesce((SELECT synced_until FROM exchange_tracking_state s WHERE s.exchange_id=e.id),'-infinity'::timestamptz) ORDER BY m.marker LIMIT 50`)).rows;
@@ -191,16 +196,27 @@ async function trackExchange(tx:Connection,exchangeId:string,w:string){
  await tx.query("SELECT set_config('trialy.tracked_write','on',true),set_config('trialy.write_authorization',$1,true)",[J({kind:'tracked',origin:'tracked',actorId:g.owner_id,source:'exchange',groupId:g.id,exchangeId:e.id})]);
  const typeOf=async(typeId:string)=>(await tx.query('SELECT id,fields FROM entity_types WHERE id=$1',[typeId])).rows[0];
  const fit=(fields:any[],data:Record<string,any>)=>Object.fromEntries(Object.entries(data).filter(([k,v])=>{const f=fields.find(x=>x.key===k);return f&&(v===null||f.kind!=='select'||(f.options??[]).includes(v));}));
- const write=async(typeId:string,role:'access'|'engagement',ref:string,data:Record<string,any>,recordId?:string|null)=>{
+ const write=async(typeId:string,role:'access'|'engagement'|'delivery'|'responses',ref:string,data:Record<string,any>,recordId?:string|null,initial:Record<string,any>={})=>{
   const t=await typeOf(typeId);if(!t)return;const values=fit(t.fields,data);
   let id=recordId??(await tx.query('SELECT record_id FROM exchange_tracked_records WHERE exchange_id=$1 AND role=$2 AND document_ref=$3',[e.id,role,ref])).rows[0]?.record_id;
   const before=id?(await tx.query('SELECT * FROM records WHERE id=$1 AND type_id=$2',[id,typeId])).rows[0]:null;if(id&&!before)return;
   if(before){const next={...before.data,...values};if(J(next)===J(before.data))return;const version=before.version+1;await tx.query('UPDATE records SET data=$1,version=$2,updated_at=now() WHERE id=$3',[J(next),version,id]);await tx.query("INSERT INTO revisions(id,workspace_id,object_id,object_kind,version,snapshot,actor_id) VALUES($1,$2,$3,'record',$4,$5,$6)",[randomUUID(),w,id,version,J({data:next,state:before.state,source:'tracked'}),g.owner_id]);}
-  else{id=randomUUID();await tx.query('INSERT INTO records(id,type_id,workspace_id,data) VALUES($1,$2,$3,$4)',[id,typeId,w,J(values)]);await tx.query("INSERT INTO revisions(id,workspace_id,object_id,object_kind,version,snapshot,actor_id) VALUES($1,$2,$3,'record',0,$4,$5)",[randomUUID(),w,id,J({data:values,state:'draft',source:'tracked'}),g.owner_id]);}
+  else{id=randomUUID();const created={...fit(t.fields,initial),...values};await tx.query('INSERT INTO records(id,type_id,workspace_id,data) VALUES($1,$2,$3,$4)',[id,typeId,w,J(created)]);await tx.query("INSERT INTO revisions(id,workspace_id,object_id,object_kind,version,snapshot,actor_id) VALUES($1,$2,$3,'record',0,$4,$5)",[randomUUID(),w,id,J({data:created,state:'draft',source:'tracked'}),g.owner_id]);}
   await tx.query('INSERT INTO exchange_tracked_records(workspace_id,group_id,exchange_id,role,document_ref,record_id) VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT(exchange_id,role,document_ref) DO NOTHING',[w,g.id,e.id,role,ref,id]);
  };
  const lastOpen=(await tx.query("SELECT max(created_at) AS at FROM exchange_events WHERE exchange_id=$1 AND kind='opened'",[e.id])).rows[0].at;
- const accessTable=tables.find(t=>t.role==='access'),engagementTable=tables.find(t=>t.role==='engagement');
+ const accessTable=tables.find(t=>t.role==='access'),engagementTable=tables.find(t=>t.role==='engagement'),deliveryTable=tables.find(t=>t.role==='delivery'),responsesTable=tables.find(t=>t.role==='responses');
+ // Update extension (§6): the bound delivery record keeps the person's status and read facts; each "I can help" becomes one responses record.
+ let bound:any=null;
+ if(deliveryTable&&e.record_id){bound=(await tx.query('SELECT data FROM records WHERE id=$1 AND type_id=$2',[e.record_id,deliveryTable.type_id])).rows[0]?.data??null;
+  if(bound){const d=await deliveryFacts(tx,e);await write(deliveryTable.type_id,'delivery','',{status:d.status,sent_on:d.sentOn,first_read_on:d.firstReadOn,last_read_on:d.lastReadOn,read_count:d.readCount,exchange_id:e.id,source:'tracked'},e.record_id);}}
+ if(responsesTable){
+  const t=await typeOf(responsesTable.type_id),status=t?.fields.find((f:any)=>f.key==='status');
+  for(const r of (await tx.query('SELECT * FROM exchange_ask_responses WHERE exchange_id=$1 ORDER BY created_at',[e.id])).rows){
+   if((await tx.query('SELECT 1 FROM exchange_tracked_records WHERE exchange_id=$1 AND role=$2 AND document_ref=$3',[e.id,'responses',r.id])).rows.length)continue;
+   const context=Object.fromEntries(RESPONSE_CONTEXT.filter(k=>bound&&bound[k]!==undefined).map(k=>[k,bound[k]]));
+   await write(responsesTable.type_id,'responses',r.id,{...context,ask_key:r.ask_key,ask_text:r.ask_text,responded_on:day(r.created_at),message:r.note||null,delivery_id:e.record_id??null,exchange_id:e.id,response_id:r.id,source:'tracked'},null,status?.kind==='select'&&(status.options??[]).includes('new')?{status:'new'}:{});
+  }}
  let grant:any=null;
  if(accessTable&&e.record_id){grant=(await tx.query('SELECT data FROM records WHERE id=$1 AND type_id=$2',[e.record_id,accessTable.type_id])).rows[0]?.data??null;
   if(grant)await write(accessTable.type_id,'access','',{status:e.revoked_at?'revoked':roomEnded(e)?'expired':lastOpen?'active':'invited',last_seen_on:day(lastOpen),source:'tracked'},e.record_id);}
@@ -215,6 +231,14 @@ async function trackExchange(tx:Connection,exchangeId:string,w:string){
  await tx.query("SELECT set_config('trialy.tracked_write','',true)");
 }
 
+/** What the delivery record shows (§6): revoked, read (opened the page), sent (an update email was handed to the provider), bounced, or queued. */
+export async function deliveryFacts(tx:Connection,e:any){
+ const opened=(await tx.query("SELECT count(*)::int AS n,min(created_at) AS first,max(created_at) AS last FROM exchange_events WHERE exchange_id=$1 AND kind='opened'",[e.id])).rows[0];
+ const mails=(await tx.query("SELECT status,sent_at,created_at FROM exchange_emails WHERE exchange_id=$1 AND email_type='update' ORDER BY created_at",[e.id])).rows;
+ const delivered=mails.filter(m=>['sent','delivered'].includes(m.status)),bounced=mails.some(m=>['bounced','complained','failed'].includes(m.status));
+ const status=e.revoked_at?'revoked':opened.n?'read':delivered.length?'sent':bounced?'bounced':'queued';
+ return {status,sentOn:day(delivered[0]?.sent_at??delivered[0]?.created_at),firstReadOn:day(opened.first),lastReadOn:day(opened.last),readCount:Number(opened.n),bounced,emails:mails.map(m=>m.status)};
+}
 /** Daily digest (R8): sent automatically only for rooms whose owner approved the text; lists only documents the person can open. */
 export async function runExchangeDigests(db:Database){
  const rows=(await db.query(`SELECT e.id,e.workspace_id FROM exchanges e JOIN exchange_groups g ON g.id=e.group_id WHERE g.kind='room' AND g.digest IS NOT NULL AND NOT g.archived AND e.revoked_at IS NULL AND (e.expires_at IS NULL OR e.expires_at>now())

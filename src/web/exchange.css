@@ -45,3 +45,9 @@
 .xp-viewer{position:fixed;inset:0;z-index:10;background:#fff;display:flex;flex-direction:column}
 .xp-viewer-bar{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--x-border)}.xp-viewer-bar strong{flex:1;min-width:0;overflow-wrap:anywhere}
 .xp-viewer-frame{flex:1;border:0;width:100%}.xp-viewer-image{flex:1;min-height:0;object-fit:contain;max-width:100%;margin:auto;padding:16px}
+/* Update rooms (§6): the rendered content as the main page, "I can help" asks and the series archive. */
+.xp-content{overflow-wrap:anywhere}.xp-content>*+*{margin-top:14px}.xp-content :is(h1,h2,h3,h4){line-height:1.3;font-weight:650}.xp-content h1{font-size:24px}.xp-content h2{font-size:20px;margin-top:24px}.xp-content h3{font-size:17px;margin-top:18px}
+.xp-content :is(ul,ol){padding-left:24px}.xp-content li+li{margin-top:4px}.xp-content img{display:block;max-width:100%;height:auto}.xp-content blockquote{margin:0;padding:10px 14px;border-left:4px solid var(--x-border);background:var(--x-soft)}
+.xp-content table{width:100%;border-collapse:collapse;font-size:15px;display:block;overflow-x:auto}.xp-content :is(th,td){padding:6px 8px;border-bottom:1px solid var(--x-border);text-align:left;vertical-align:top}.xp-content :is(th,td,caption){color:var(--x-ink)}.xp-content th{font-weight:650}.xp-content pre{white-space:pre-wrap;background:var(--x-soft);padding:10px;border-radius:6px}.xp-content hr{border:0;border-top:1px solid var(--x-border);margin:20px 0}
+.xp-ask{margin:16px 0;padding:16px;border:1px solid var(--x-border);border-radius:10px;background:#fff}.xp-ask p{margin-bottom:10px}.xp-ask:target,.xp-ask.is-focus{border-color:var(--x-green);box-shadow:0 0 0 2px var(--x-soft)}
+.xp-archive{list-style:none;padding:0;margin:0}.xp-archive li{padding:12px 0;border-bottom:1px solid var(--x-border);display:flex;flex-wrap:wrap;gap:4px 16px;justify-content:space-between}

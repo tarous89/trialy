@@ -160,6 +160,48 @@ Remaining operational acceptance: share the existing web encryption key with the
 Current operational handoff and release status: [project context](../../CONTEXT.md), [operator activation steps](../OPERATIONS.md#shared-automation-activation) and [host metadata refresh](../CHATGPT_SETUP.md#current-connection-and-automation-setup). Historical release evidence is not proof of current connection readiness.
 
 
+## Recommended automations at install
+
+Full platform scope: [RECOMMENDED_AUTOMATIONS.md](RECOMMENDED_AUTOMATIONS.md).
+
+Decided 14 November 2026. Templates declare recommended automations in their catalog (name, purpose, trigger or schedule, steps, email template, default recipients, default on or off). The install dialog offers them next to data access and access ([Modular apps §7](MODULAR_APPS_AND_SHARED_DATA.md#install-dialog-data-access-and-automations)).
+
+**On install:**
+- Selected recommendations become ordinary automations linked to the app: owner-managed, on the chosen runner, under all rules on this page, including the email limits and the research → email chain.
+- Email templates are the automation's instructions or message and are edited here.
+- An app never owns or runs automations itself.
+
+**Research briefs.** Research automations for an app use a brief the app generates from its records: what to look for, since when, named sources in priority order (access route left to the assistant; web by default), rules, and a structured return format with a **source report**. The prompt references the brief, so the app's current records always drive the run.
+
+### Two kinds of email: user-triggered sends vs automations
+
+They are separate features and must never be mixed.
+
+| | **User-triggered send** | **Automation** |
+|---|---|---|
+| Started by | A person clicking send in an app (e.g. send an RFP to CROs, share a data room, send an investor update), after the exact send preview | A schedule or a database trigger |
+| Recipients | People outside the workspace (suppliers, investors, partners) | Workspace members only (owner by default) |
+| Lives in | The app plus the external exchange ([EXTERNAL_EXCHANGE.md](EXTERNAL_EXCHANGE.md)); follow-ups belonging to a send (deadline reminders, not-read reminders, documents-updated digests) are part of that send and pre-approved by the person at send time | Platform Automations, linked to the app, owner-managed |
+| Set up | In the app, each time | Offered in the install dialog as recommended automations, or added later in Automations |
+| Limits | Exchange rules (§2.3 of the exchange doc) | Email limits on this page |
+
+### Recommended automations per app (install dialog)
+
+Each template declares these in its catalog. **On** = default on in the install dialog. Research steps run on the runner the owner picks; email steps go to workspace members. User-triggered sends are listed only to show they are *not* automations.
+
+| App | Recommended automations (default) | Not automations (user-triggered sends and their follow-ups) |
+|---|---|---|
+| **Runway** (01) | Runway alert: trigger when `month_closes.runway_status` becomes `below_target` → email (**on**). Monthly exchange rates: research, 3rd business day (**off**) | — |
+| **Programs** (02) | Monthly update reminder: email on `update_day` (**on**). Slip notice: trigger on a new `slips` record for a key item → email (**on**). Monthly status draft: research after the update day (**off**) | — |
+| **Fundraise** (03) | Weekly round digest: email, Monday 08:00 (**on**). Signed commitment notice: trigger `interest` → `signed` → email (**on**). Investor research: research, monthly (**off**) | — |
+| **Contracts** (04) | Weekly contract digest: email on `digest_day` 08:00 (**on**). Extraction of new documents: research, daily (**on**) | — |
+| **CRO Selection** (05) | Request digest: email daily while a request is open (**on**). Proposal mapping: research on accepted proposal files (**off**) | Sending RFI/RFP invitations, clarifications, decision messages; supplier deadline reminders (pre-approved at send) |
+| **Investor Updates** (06) | Cadence reminder: email to the owner before the send-by date and when overdue (**on**). Ask response notice: trigger on a new response → email (**on**). **Scheduled draft:** research per scheduled update, created when the user saves a scheduled update (the install dialog offers none) | Sending an update; not-read reminders to contacts (pre-approved per template) |
+| **Partnerships** (07) | Partner research + digest: research → email, weekly Monday 07:00 (**on**). Meeting briefs: research, the day before linked meetings (**off**). Follow-up reminders: date trigger → email to the owner (**on**) | — (the app never emails partners) |
+| **Data Room** (08) | Room digest: email daily while a room is live (**on**). Answer drafts: research on new questions (**off**). Access ending: email to the owner 7 days before (**on**) | Invitations, level changes, answers; documents-updated digest and access-ending email to parties (pre-approved per room) |
+| **Lab Inventory** (09) | Inventory digest: email, weekly Monday 08:00 (**on**). Approval request: trigger on a new request → email to the approver (**on**). Requester status updates: trigger on status change → email (**off**; in-app always) | — |
+| **Landscape** (10) | Landscape scan + weekly digest: research → email, Monday 07:00 (**on**). High-impact alert: after each scan, email only for watched high-impact events (**on**). Quarterly review: research → report → email (**off**) | — |
+
 ## Simple email notifications
 
 Email automations have one delivery step, separate from ChatGPT/functions/connectors. Use daily/weekly/monthly calendar schedules (every N days/weeks/months), or entry creation/an explicit field transition. No subdaily email intervals or broad “any update” notifications. The backend waits two minutes after relevant changes, combines pending work, rechecks current state/access, and cancels obsolete notifications. It enforces one app email per normalized recipient per rolling hour across TrialAgents and 15 recipient deliveries per account per rolling 24 hours. Calendar email also has one slot per rule/recipient/local date. Extra work waits; only abnormal queue growth suspends a rule. Recipients must be explicitly selected registered team members with current app/data access; database address columns never authorize bulk mail. Research may run several times daily independently of email limits. Do not create report/digest modes, expose quota/retry controls, or use ChatGPT email tools/connectors to bypass these rules.

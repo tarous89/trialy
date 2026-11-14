@@ -43,6 +43,7 @@ import {access,typeAccess,visibleFields,projectData} from '../domain/permissions
 import {audit,revision,checksum} from '../domain/evidence.js';
 import {fail,type Actor} from '../shared/schema.js';
 import {maintenanceSchema,maintenanceBatch,workspaceOperation,type WorkspaceOperation} from './schema.js';
+import {redactExchangeLinks} from '../app-services/exchange-email.js';
 import {isExchangeOperation,exchangeReview as externalExchangeReview,commitExchangeOperation,appExchangeWrites,appExchangeReads,appExchangeRead,exchangeOperationApp,exchangeReachedOutside,preparationKinds} from '../domain/external-exchange.js';
 /** The app record changes an exchange operation carries, as the reviewed app record operation they are validated and committed as. */
 const exchangeRecords=(op:any)=>{const r=isExchangeOperation(op)?(op as any).records:null;return r?{kind:'apply_component_records' as const,componentId:r.componentId,expectedVersion:r.expectedVersion,...(r.viewId?{viewId:r.viewId}:{}),changes:r.changes}:null;};
@@ -254,7 +255,7 @@ export class WorkspaceFoundation {
     // External exchange (docs/product/EXTERNAL_EXCHANGE.md §2.6): reads are scoped to this app's groups; every write becomes one reviewed workspace change.
     if(name.startsWith('exchange.')){
      if(!request.componentId)fail(403,'preview_read_only','Save the app to use external exchanges');
-     if((appExchangeReads as readonly string[]).includes(name))return appExchangeRead(this.db,a,w,request.componentId,name,value);
+     if((appExchangeReads as readonly string[]).includes(name)){const result=await appExchangeRead(this.db,a,w,request.componentId,name,value);return a.origin==='ai'?redactExchangeLinks(result):result;}
      const kind=appExchangeWrites[name];if(!kind)fail(400,'unknown_capability','Unknown exchange capability');
      if(!['click','submit'].includes(request.event.kind))fail(403,'exchange_interaction','Request exchange changes from an explicit app control');
      if(exchangeProposal)fail(400,'exchange_limit','One exchange change per action');
