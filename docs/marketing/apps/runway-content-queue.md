@@ -28,7 +28,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | B6 | Fathom alternatives for biotech: reporting, consolidation or cash planning? | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/fathom-alternatives-biotech) |
 | B7 | AI-native FP&A software for startups: compare the actions, not the label | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/ai-native-fpa-software-startups) |
 | B8 | Excel and Google Sheets alternatives for biotech budgeting: what should you replace? | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/excel-google-sheets-alternatives-biotech) |
-| C1 | Best Cash Runway Management Apps That Work Inside ChatGPT | Queued — verify and publish | — |
+| C1 | Cash runway apps in ChatGPT: compare the connection before the forecast | In progress — research and source preparation | — |
 | C2 | Best Financial Planning Apps for Claude | Queued — verify and publish | — |
 | C3 | How to Manage Biotech Cash Runway Using ChatGPT | Already covered / published | [Live article](https://trialagents.com/apps/manage-biotech-cash-runway-chatgpt) |
 | C4 | How to Use Claude for Biotech Cash Flow Forecasting | Queued — verify and publish | — |
@@ -523,3 +523,8 @@ PR https://github.com/tarous89/trialagents-public/pull/202 merged as `c141f6b7d4
 - **Editorial scope:** first-party, conditional shortlist organized by which spreadsheet responsibility changes; Airtable, Aleph and Jirav claims linked to current primary documentation. Genuine Runway 2.1 media, no pricing, invented benchmarks or host tests, no automatic workbook conversion or standard 13-week feature claim.
 
 This supersedes B8 source and merged-pending checkpoints. **22 published; 25 unfinished**, including owner-deferred A9. **Next eligible: C1, Best Cash Runway Management Apps That Work Inside ChatGPT**, subject to fresh queue, claim, duplicate and primary-evidence checks. Only B8 was newly published in this run. Search indexing, rankings and assistant citations remain unverified.
+
+
+### C1 execution claim — 14 November 2026
+
+Current main release is B8 `c141f6b7d490bc04cbf9ce7093d1604b1e3b08c6`; no open Runway source PRs found. C1 claimed for this run on branch `content/runway-c1-chatgpt-apps-20261114`. Candidate retitled to avoid an unsupported best ranking or universal embedded-UI claim. Distinct intent: compare documented host connection and action scope before adopting a forecasting app; existing C3 remains the Runway setup tutorial. Research current primary host/vendor evidence before publication. Totals remain 22 published, 25 unfinished.
