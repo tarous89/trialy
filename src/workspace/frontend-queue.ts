@@ -38,6 +38,9 @@ export class FrontendQueue{
   while(this.active.size<this.capacity){
    const users=[...this.waiting.keys()],last=users.indexOf(this.lastUser??'');
    const ordered=last<0?users:[...users.slice(last+1),...users.slice(0,last+1)];
+   // Keep the rotation even when the selected user's last waiter is removed.
+   // Otherwise a busy user at the front can jump ahead after every empty turn.
+   this.waiting=new Map(ordered.map(user=>[user,this.waiting.get(user)!]));
    const entry=ordered.map(user=>this.waiting.get(user)![0]).find(entry=>!this.active.has(entry.key));
    if(!entry)return;
    this.remove(entry);entry.start();

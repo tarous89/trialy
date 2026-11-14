@@ -9,11 +9,13 @@ test('published capacity is bounded, same app serializes, users rotate and relea
  const a1=queue.acquire('a','a:app').then(release=>{order.push('a1');return release;});
  const a2=queue.acquire('a','a:other').then(release=>{order.push('a2');return release;});
  const b=queue.acquire('b','b:app').then(release=>{order.push('b');return release;});
+ const c=queue.acquire('c','c:app').then(release=>{order.push('c');return release;});
  first();const releaseB=await b;assert.deepEqual(order,['b']);
  first();await Promise.resolve();assert.deepEqual(order,['b']);
- releaseB();const releaseA1=await a1;assert.deepEqual(order,['b','a1']);
- releaseA1();await Promise.resolve();assert.deepEqual(order,['b','a1']); // a:other is still occupied
- second();(await a2)();assert.deepEqual(order,['b','a1','a2']);
+ releaseB();const releaseC=await c;assert.deepEqual(order,['b','c']);
+ releaseC();const releaseA1=await a1;assert.deepEqual(order,['b','c','a1']);
+ releaseA1();await Promise.resolve();assert.deepEqual(order,['b','c','a1']); // a:other is still occupied
+ second();(await a2)();assert.deepEqual(order,['b','c','a1','a2']);
  (await queue.acquire('c','c:app'))();
 });
 
