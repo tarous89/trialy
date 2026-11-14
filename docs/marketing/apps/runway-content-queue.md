@@ -810,3 +810,8 @@ Evidence: current approved life.cash-runway 2.1.0 catalog and authentic-media RE
 Decimal-verified fictional all-EUR example: 1.8m opening at 31 Dec 2026; twelve individual roles at75k annual each with20% loaded cost =>7.5k/role/month and90k total/month. Non-payroll lab45k/month and G&A15k/month; one-off April assay180k. January–June total540k+270k+90k+180k=1.08m; June closing720k. Duplicate payroll Plan line would add540k false spend. No other flows; six-month excerpt not complete annual budget or full runway. Owners review then app locks budget. App-level/salary-column access and withholding incomplete totals explained.
 
 Local syntax, Decimal arithmetic and article structure/anchors/final CTA pass. Seven source files; shell/CSS/tracking unchanged. Await exact-head full predeploy, desktop/mobile artifact inspection, merge and independent live checks. Resume PR #211 first. Totals30 published,17 unfinished. Refresh on catalog/model/permission changes.
+
+
+### D3 merged — deployment pending, 14 November 2026
+
+PR #211 merged as `408144201407538eaa67ba0473ca2460f5dd7062` at approximately 19:05:14 UTC / 20:05:14 CET. Exact head `306ebe920acaf0185b1ee887e616c54e9412722d` passed full predeploy run `43629314865` (validate and seo-container). Artifact `14127357850` matches that head; desktop1440px/mobile390px inspected across all sections, contained scrolling table, People/Plan images, captions, final CTA and shared shell. Initial HTTP404 is deployment pending. Await existing automatic GitHub-connected Cloudflare build and independent live QA at https://trialagents.com/apps/budgeting-software-small-biotech-teams. Resume this release before another draft. Totals30 published,17 unfinished.
