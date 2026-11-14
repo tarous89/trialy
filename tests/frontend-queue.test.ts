@@ -31,3 +31,12 @@ test('queue limits and deadlines return busy without running work; draft capacit
  });
  assert.equal(metrics.runtimeQueued,2);assert.equal(metrics.runtimeBusy,4);assert.ok(metrics.runtimeQueueMs>=30);
 });
+
+test('cancelled waiters are removed immediately and never consume a later slot',async()=>{
+ const queue=new FrontendQueue(1,1,1),release=await queue.acquire('a','one'),controller=new AbortController();
+ const cancelled=assert.rejects(queue.acquire('b','two',controller.signal),{name:'AbortError'});
+ controller.abort();await cancelled;
+ const next=queue.acquire('c','three');release();(await next)();
+ await assert.rejects(queue.acquire('b','two',controller.signal),{name:'AbortError'});
+ (await queue.acquire('b','two'))();
+});

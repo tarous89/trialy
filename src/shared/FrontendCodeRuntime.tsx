@@ -43,8 +43,12 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
  const localEditsRef=useRef(localEdits);localEditsRef.current=localEdits;
  const checking=useRef(false),eventQueue=useRef<any[]>([]),blocked=useRef(false),saveReceipt=useRef<any>(null),approvedAction=useRef<string|null>(null);
  const navigationReads=useRef(new FrontendReads());
+ const requests=useRef(new AbortController());
  // Track each foreground waiter, including a click joining an optional prefetch.
- const readFrontend=(request:any,options:WorkspaceRequestOptions={})=>withWorkspaceActivity(()=>navigationReads.current.run(request,request=>retryFrontendBusy(request,()=>call('run_component_frontend',{request},{background:true}),()=>live.current&&!options.signal?.aborted),!!output.current?.tracker),options);
+ const readFrontend=(request:any,options:WorkspaceRequestOptions={})=>{
+  const signal=options.signal??requests.current.signal;
+  return withWorkspaceActivity(()=>navigationReads.current.run(request,request=>retryFrontendBusy(request,()=>call('run_component_frontend',{request},{background:true,signal}),()=>live.current&&!signal.aborted),!!output.current?.tracker),options);
+ };
  function clearOutput(){cancelPrefetch();setSavedPhase(saveReceipt.current?.saved?'unavailable':null);setRecordReview(null);saveReceipt.current=null;approvedAction.current=null;setDetailsOpen(false);eventQueue.current=[];output.current=null;state.current=null;setFrameUrl('');setReady(false);setProposal(null);setFooter(null);setCustomDirty(false);blocked.current=false;navigationRef.current?.setDirty(false);}
  function revoke(){const saved=!!saveReceipt.current?.saved;clearOutput();setLoadFailed(true);if(!saved)onUnavailable?.('No app is available');}
  function viewRequest(c=current.current){return {componentId:c.id,expectedVersion:c.version,...(output.current?.viewId?{viewId:output.current.viewId}:{})};}
@@ -181,7 +185,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
   setSavedPhase(null);setAdding(false);blocked.current=false;saveReceipt.current=null;frame.current?.contentWindow?.postMessage({kind:'trialy.save-idle',channel:channel.current,blocked:false},'*');return true;
  }
  async function retrySaved(latest=false){if(busyRef.current)return;if(latest&&saveReceipt.current?.saved)saveReceipt.current.reloadLatest=true;busyRef.current=true;setBusy(true);try{await finishSave();}catch(e){actionError(e);}finally{busyRef.current=false;if(live.current)setBusy(false);}}
- useEffect(()=>{live.current=true;if(initialOutput){output.current=mergeTrackerSnapshot(null,initialOutput);state.current=initialOutput.state;setStandard(!!initialOutput.tracker);setFrameUrl(initialOutput.frameUrl);setProposal(initialOutput.proposal);onBusyChange?.(false);prefetch(output.current);}else void run();return()=>{live.current=false;cancelPrefetch();};},[]);
+ useEffect(()=>{live.current=true;if(requests.current.signal.aborted)requests.current=new AbortController();if(initialOutput){output.current=mergeTrackerSnapshot(null,initialOutput);state.current=initialOutput.state;setStandard(!!initialOutput.tracker);setFrameUrl(initialOutput.frameUrl);setProposal(initialOutput.proposal);onBusyChange?.(false);prefetch(output.current);}else void run();return()=>{live.current=false;cancelPrefetch();requests.current.abort();};},[]);
  const [integration,setIntegration]=useState<{role:string}|null>(null);
  const [upload,setUpload]=useState<{context:string}|null>(null);
  const routeKey=JSON.stringify([navigation?.route,navigation?.reset]),lastRoute=useRef(routeKey),lastReset=useRef(navigation?.reset);

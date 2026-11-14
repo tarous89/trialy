@@ -2,6 +2,7 @@ import {WorkspaceShell} from '../shared/ui/WorkspaceShell.js';
 import {AppUnavailable} from '../shared/AppUnavailable.js';
 import React,{useEffect,useState} from 'react';
 import {FrontendCodeRuntime} from '../shared/FrontendCodeRuntime.js';
+import type {WorkspaceRequestOptions} from '../shared/workspace-request.js';
 import {AppPlatform,AppNavigation,APP_BRAND} from '../shared/AppPlatform.js';
 import {ChangeSummary} from '../shared/ChangeSummary.js';
 import {Button} from '../shared/ui/Controls.js';
@@ -12,7 +13,7 @@ function takeToken(key:string){const raw=location.hash.slice(1);if(/^[A-Za-z0-9_
 export function PublicApp(){
  const [loadFailed,setLoadFailed]=useState(false);
  const [token]=useState(()=>takeToken('trialy.public-share')),[data,setData]=useState<any>(null),[error,setError]=useState(''),[proposal,setProposal]=useState<any>(null),[busy,setBusy]=useState(false),[revision,setRevision]=useState(0),[route,setRoute]=useState<AppRoute>(()=>{try{return appRoute.parse(JSON.parse(sessionStorage.getItem('trialy.public-route')??'{"path":"/"}'));}catch{return {path:'/'};}}),[dirty,setDirty]=useState(false);
- const call=async(name:string,args:any={})=>{const response=await fetch('/public-app/call',{method:'POST',credentials:'omit',headers:{'Content-Type':'application/json','X-TrialAgents-Share':token},body:JSON.stringify({name,args})}),body=await response.json();if(!response.ok)throw Object.assign(Error(body.message??'Shared app unavailable'),{status:response.status,code:body.error});return body;};
+ const call=async(name:string,args:any={},options?:WorkspaceRequestOptions)=>{const response=await fetch('/public-app/call',{signal:options?.signal,method:'POST',credentials:'omit',headers:{'Content-Type':'application/json','X-TrialAgents-Share':token},body:JSON.stringify({name,args})}),body=await response.json();if(!response.ok)throw Object.assign(Error(body.message??'Shared app unavailable'),{status:response.status,code:body.error});return body;};
  useEffect(()=>{let live=true;void call('open').then(r=>{if(live){setData(r);setLoadFailed(false);}}).catch(e=>{if(live){setLoadFailed(true);if([401,403,404].includes(e.status))setData(null);}});return()=>{live=false;};},[revision]);
  useEffect(()=>{const guard=(e:BeforeUnloadEvent)=>{if(dirty||proposal){e.preventDefault();e.returnValue='';}};window.addEventListener('beforeunload',guard);return()=>window.removeEventListener('beforeunload',guard);},[dirty,proposal]);
  const navigate=(href:string)=>{if(dirty||proposal){setError('Save or discard your changes before navigating.');return;}const target=resolveAppLink(href,{appId:data.component.id,workspaceId:data.workspaceId,source:'component',route},location.origin);if(!target){setError('Link unavailable.');return;}if(target.kind==='internal'){const parsed=parseAppUrl(target.href);if(!parsed||parsed.appId!==data.component.id){setError('This link opens an app outside this public share.');return;}setRoute(parsed.route);sessionStorage.setItem('trialy.public-route',JSON.stringify(parsed.route));return;}if(target.kind==='app')location.assign(target.href);else window.open(target.href,'_blank','noopener,noreferrer');};
