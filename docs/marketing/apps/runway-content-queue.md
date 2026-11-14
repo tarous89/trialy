@@ -595,3 +595,14 @@ This supersedes C2 source and merged-pending checkpoints. **24 published; 23 unf
 ### C4 execution claim — 14 November 2026
 
 C2 returned HTTP 200; public main is `3fe8e5ec60157a814aad7d2d2bdd8ca4dd5db11a`; no open Runway source PR found. Claim C4 on `content/runway-c4-claude-forecast-20261114`. Distinct scope: a documented Claude-assisted forecast review using a delayed grant, committed versus contingent financing and a reproducible monthly cash reconciliation; not another vendor shortlist or a host-name swap of the ChatGPT setup article. No fresh Claude acceptance test will be claimed. Totals remain 24 published, 23 unfinished.
+
+
+### C4 source checkpoint — 14 November 2026
+
+Title: **How to use Claude for biotech cash flow forecasting**. Intended URL https://trialagents.com/apps/biotech-cash-flow-forecasting-claude. [PR #205](https://github.com/tarous89/trialagents-public/pull/205), exact source head `4f63afdce1b49dfaa8b4e3091ae569af3680cf1b`. Seven source files integrate renderer, listing, discovery and existing browser/snapshot checks; shell, shared CSS and tracking unchanged.
+
+Primary evidence: current life.cash-runway 2.1.0 catalog, documentation and source, including move_cash_in preserving status and the engine's first-negative-month convention; https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities and https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp reviewed 14 November 2026. Documented recipe, not a completed Claude acceptance test. Genuine browser demo media 05-scenarios and 02-cash-flow clearly distinguished from the worked example. No fabricated interfaces or performance claims.
+
+Fictional arithmetic independently executed in Python: EUR 900k at 31 December 2026, EUR 150k committed monthly spend January–December, EUR 300k one-off committed March spend, EUR 600k contingent grant April versus July; no other positions, receipts, FX or reserve. January/February 750/600k in all cases; March–July base 150/0/-150/-300/-450k; April-grant 150/600/450/300/150k; July-grant 150/0/-150/-300/150k. First negative month May/September/May respectively. Later cash recovery does not erase an earlier shortfall. Only app-owned calculation outputs should be used operationally; no artificial example data written to a real workspace.
+
+Await exact-head predeploy, desktop/mobile visual review, merge and independent live verification. Resume PR #205 before drafting another topic. Totals remain 24 published, 23 unfinished including owner-deferred A9.
