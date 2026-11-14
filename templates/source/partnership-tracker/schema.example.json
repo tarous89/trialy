@@ -552,81 +552,13 @@
     "contract": "partnerships.v1",
     "fields": [
       {
-        "key": "digest_cadence",
-        "name": "Digest and research cadence",
-        "kind": "select",
-        "required": true,
-        "multiple": false,
-        "ai": true,
-        "options": [
-          "daily",
-          "weekly",
-          "monthly"
-        ],
-        "description": "Default weekly."
-      },
-      {
-        "key": "digest_day",
-        "name": "Digest day",
-        "kind": "select",
-        "required": false,
-        "multiple": false,
-        "ai": true,
-        "options": [
-          "mon",
-          "tue",
-          "wed",
-          "thu",
-          "fri",
-          "sat",
-          "sun"
-        ],
-        "description": "Weekly: the weekday; monthly: the first such weekday of the month. Default mon."
-      },
-      {
-        "key": "digest_time",
-        "name": "Digest time",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true,
-        "description": "HH:MM in the settings time zone. Default \"07:00\"."
-      },
-      {
-        "key": "time_zone",
-        "name": "Time zone",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true,
-        "description": "IANA time zone for the research and digest schedule (workspace time), e.g. Europe/Berlin."
-      },
-      {
-        "key": "digest_recipients",
-        "name": "Digest recipients",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true,
-        "description": "Comma-separated workspace members (names or registered emails). TrialAgents sends only to registered members with access to this app."
-      },
-      {
         "key": "digest_text",
         "name": "Digest email text",
         "kind": "text",
         "required": false,
         "multiple": false,
         "ai": true,
-        "description": "Intro line and section order override; blank uses the app default text."
-      },
-      {
-        "key": "research_enabled",
-        "name": "Research on",
-        "kind": "boolean",
-        "required": false,
-        "multiple": false,
-        "ai": true,
-        "description": "Default true."
+        "description": "Optional intro line the research worker puts at the top of the digest summary."
       },
       {
         "key": "stalled_days",
@@ -654,19 +586,63 @@
         "multiple": false,
         "ai": true,
         "description": "Comma-separated names of the people who own opportunities and follow-ups (plain text)."
+      },
+      {
+        "key": "team_members",
+        "name": "Team member IDs",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON object {\"Name\": \"workspace member UUID\"}. Follow-ups copy the owner's member ID so reminders reach that member; names without an ID go to the automation's recipients."
+      },
+      {
+        "key": "custom_fields",
+        "name": "Custom fields",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array [{table, key, label, kind, options, column, filter}]: fields added to an app or shared table that the app shows as optional columns, filters, drawer rows and editor inputs. table is one of opportunities, organizations, people, activities, follow_ups, conferences; kind is text, longtext, number, date, select or boolean."
+      },
+      {
+        "key": "option_lists",
+        "name": "Option lists",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON {\"activity_kinds\": {\"key\": \"Label\"}, \"deal_types\": {\"key\": \"Label\"}}: renamed or added values. A new activity kind also needs the option added to partnerships.activities.kind. Add \"hidden\": [keys] inside a list to hide values from new entries."
+      },
+      {
+        "key": "stage_config",
+        "name": "Stage configuration",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON {\"labels\": {\"stage\": \"Label\"}, \"hidden\": [stages], \"custom\": [{\"key\", \"label\", \"after\"}]}. Standard stage keys never change; a custom stage needs its option added to partnerships.opportunities.stage and counts in the funnel at the standard stage it follows."
+      },
+      {
+        "key": "preferences",
+        "name": "Preferences",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON {\"pipeline_layout\": \"board|list|funnel\", \"default_view\": \"view record ID\", \"page_size\": 10-50, \"overview_hidden\": [\"funnel_asset\",\"funnel_direction\",\"followups\",\"stalled\",\"upcoming\",\"signals\"]}."
       }
     ],
     "logicalFields": {
-      "digest_cadence": "digest_cadence",
-      "digest_day": "digest_day",
-      "digest_time": "digest_time",
-      "time_zone": "time_zone",
-      "digest_recipients": "digest_recipients",
       "digest_text": "digest_text",
-      "research_enabled": "research_enabled",
       "stalled_days": "stalled_days",
       "lost_reasons": "lost_reasons",
-      "team": "team"
+      "team": "team",
+      "team_members": "team_members",
+      "custom_fields": "custom_fields",
+      "option_lists": "option_lists",
+      "stage_config": "stage_config",
+      "preferences": "preferences"
     }
   },
   "partnerships.asset_profiles": {
@@ -1298,6 +1274,15 @@
         "required": false,
         "multiple": false,
         "ai": true
+      },
+      {
+        "key": "owner_member_id",
+        "name": "Owner member ID",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Workspace member UUID of the owner (from settings.team_members); follow-up reminders route to this member."
       }
     ],
     "logicalFields": {
@@ -1307,7 +1292,8 @@
       "owner": "owner",
       "due": "due",
       "status": "status",
-      "done_on": "done_on"
+      "done_on": "done_on",
+      "owner_member_id": "owner_member_id"
     }
   },
   "partnerships.conferences": {
@@ -1497,6 +1483,19 @@
         "required": true,
         "multiple": false,
         "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "draft",
+          "reviewed"
+        ],
+        "description": "Briefs written by the meeting-briefs automation are saved as draft; a person marks them reviewed."
       }
     ],
     "logicalFields": {
@@ -1507,7 +1506,8 @@
       "content": "content",
       "sources": "sources",
       "written_by": "written_by",
-      "written_on": "written_on"
+      "written_on": "written_on",
+      "status": "status"
     }
   },
   "partnerships.signals": {
@@ -1718,7 +1718,7 @@
         "required": true,
         "multiple": false,
         "ai": true,
-        "description": "JSON {tags:{category:[values]}, stage:[], program:[], direction:[], owner:[]}."
+        "description": "JSON {stage:[], program:[], direction:[], owner:[], priority:[], source:[], organization:[], tags:{category:[values]}, custom:{field_key:[values]}}."
       },
       {
         "key": "layout",
@@ -1756,6 +1756,24 @@
         "required": false,
         "multiple": false,
         "ai": true
+      },
+      {
+        "key": "columns",
+        "name": "Columns",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array of Pipeline list column IDs in order (name, partner, asset, direction, stage, owner, next, fit, tags, priority, source, next_date, or cf:<custom field key>). Blank uses the app layout."
+      },
+      {
+        "key": "sort",
+        "name": "Sort",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON {\"field\": column ID, \"dir\": \"asc\"|\"desc\"}. Blank sorts by stage, then next date."
       }
     ],
     "logicalFields": {
@@ -1764,7 +1782,112 @@
       "layout": "layout",
       "shared": "shared",
       "owner": "owner",
-      "archived": "archived"
+      "archived": "archived",
+      "columns": "columns",
+      "sort": "sort"
+    }
+  },
+  "partnerships.research_reports": {
+    "name": "Research reports",
+    "contract": "partnerships.v1",
+    "fields": [
+      {
+        "key": "run_on",
+        "name": "Run on",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "run_id",
+        "name": "Run ID",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "TrialAgents automation run ID."
+      },
+      {
+        "key": "cadence",
+        "name": "Cadence",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "daily",
+          "weekly",
+          "monthly"
+        ]
+      },
+      {
+        "key": "period",
+        "name": "Period",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "For example \"week of 16 Nov\"."
+      },
+      {
+        "key": "summary",
+        "name": "Summary",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "The digest summary for the period in the Partnerships digest format (the same text as run.summary)."
+      },
+      {
+        "key": "new_signals",
+        "name": "New signals",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "new_targets",
+        "name": "New target suggestions",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "sources",
+        "name": "Sources",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array [{title, url}]."
+      },
+      {
+        "key": "written_by",
+        "name": "Written by",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "claude",
+          "chatgpt",
+          "user"
+        ]
+      }
+    ],
+    "logicalFields": {
+      "run_on": "run_on",
+      "run_id": "run_id",
+      "cadence": "cadence",
+      "period": "period",
+      "summary": "summary",
+      "new_signals": "new_signals",
+      "new_targets": "new_targets",
+      "sources": "sources",
+      "written_by": "written_by"
     }
   }
 }

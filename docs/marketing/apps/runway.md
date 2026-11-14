@@ -36,6 +36,7 @@
 | Custom cash runway app with ChatGPT or Claude (C7) | https://trialagents.com/apps/custom-cash-runway-app-chatgpt-claude | Published; live verified 14 November 2026; PR #208; release `39af173ce6e7acb7ac95709f82eafa926f56b49e` |
 | Canonical queue D1 — Cash runway software for preclinical biotech: fund the next evidence package | https://trialagents.com/apps/preclinical-biotech-cash-runway | Published; live verified 14 November 2026; PR #209, release `11bb7a76844d024cd48f37bb377828256668186b` |
 | Canonical queue D2 — Financial planning for clinical-stage biotechs: explain the monthly cash variance | https://trialagents.com/apps/clinical-stage-biotech-financial-planning | Published; live verified 14 November 2026; PR #210, release `5f6a0d2fe2e923f9e29c4b6af75c55d58cac7eda` |
+| Canonical queue D3 — Budgeting software for biotechs under 20 employees: count each cost once | https://trialagents.com/apps/budgeting-software-small-biotech-teams | Published; live verified 14 November 2026; PR #211, release `408144201407538eaa67ba0473ca2460f5dd7062` |
 | App pages index | https://trialagents.com/apps | Published; production URL checked 12 November 2026 |
 
 These are intended canonical URLs. Do not assert that a URL is live until checked on the production CDN.
@@ -813,3 +814,27 @@ Local syntax, Decimal arithmetic and article structure/anchors/final CTA pass. S
 ### D3 merged — deployment pending, 14 November 2026
 
 PR #211 merged as `408144201407538eaa67ba0473ca2460f5dd7062` at approximately 19:05:14 UTC / 20:05:14 CET. Exact head `306ebe920acaf0185b1ee887e616c54e9412722d` passed full predeploy run `43629314865` (validate and seo-container). Artifact `14127357850` matches that head; desktop1440px/mobile390px inspected across all sections, contained scrolling table, People/Plan images, captions, final CTA and shared shell. Initial HTTP404 is deployment pending. Await existing automatic GitHub-connected Cloudflare build and independent live QA at https://trialagents.com/apps/budgeting-software-small-biotech-teams. Resume this release before another draft. Totals30 published,17 unfinished.
+
+
+### Canonical queue D3 published and live verified — 14 November 2026
+
+- **Title:** Budgeting software for biotechs under 20 employees: count each cost once.
+- **Live URL:** https://trialagents.com/apps/budgeting-software-small-biotech-teams
+- **Release:** [PR #211](https://github.com/tarous89/trialagents-public/pull/211), source head `306ebe920acaf0185b1ee887e616c54e9412722d`, merge `408144201407538eaa67ba0473ca2460f5dd7062` at approximately 19:05:14 UTC / 20:05:14 CET.
+- **Predeploy:** full exact-head run `43629314865` passed validate and seo-container. Artifact `14127357850` matches the head; desktop1440px/mobile390px visually inspected through all sections, contained scrolling table, genuine People/Plan images/captions, final CTA and shared shell. Local syntax, Decimal arithmetic and article structure/anchors/final CTA passed.
+- **Deployment:** existing automatic GitHub-connected Cloudflare build succeeded, check `132555382999`; production check `132554740093` passed. Early 404 resolved to200 in about two minutes. No dashboard authentication, manual deployment or integration change.
+- **Independent live QA:** served article fragment and shared inline CSS exactly match validated source; HTTP200 HTML, expected H1/title/description/self-canonical, Article/BreadcrumbList schema/date, no noindex, valid anchors, two genuine images and one final Start with Runway CTA. All nine checked internal/source/CTA/image/analytics URLs returned200. Header/footer match homepage. /apps, sitemap.xml, llms.txt and llm.xml return200 and contain the article; exactly one canonical sitemap entry; robots permits /apps.
+- **Tracking preserved:** identical homepage loader `/_snapshot/query-assets/114933b27c521a75f333.js` appears once and returns200; it references client `/_snapshot/query-assets/c251da7b4969f7c85048.js`, which returns200. Scripts, configuration, events, consent, collectors and attribution unchanged. HTTP reads and predeploy artifacts used; no synthetic production events.
+- **Evidence/calculation boundary:** approved Runway2.1 catalog and authentic capture provenance reviewed; SBA primary guidance supports monthly versus one-time expense distinction only. Fictional12-role calculation independently checked:75k annual each with20% uplift yields90k monthly total; plus45k lab and15k G&A, with180k April assay. Six-month spend1.08m; June closing720k from1.8m opening; duplicated payroll would add540k false spend. No salary benchmark, statutory uplift, departmental approval feature, full annual budget/runway, host parity or completed app test claimed. Salary access and incomplete totals limits explicit. Refresh on catalog/model/permission changes.
+
+This supersedes D3 claim/source/merged-pending checkpoints. **31 published; 16 unfinished**, including owner-deferred A9. **Next eligible: D4, How to Forecast Clinical Trial Delays and Their Impact on Cash Runway**, subject to fresh queue, claim, duplicate and primary-evidence checks. Only D3 newly published in this run. Search indexing, rankings and assistant citations remain unverified.
+
+
+### D4 source checkpoint — 14 November 2026 19:57 UTC
+
+D4 is claimed in source PR [#212](https://github.com/tarous89/trialagents-public/pull/212), exact head `a3b54d32a5b18eb3b705374fa95808d276beab53`. Title: **How to forecast a clinical trial delay: separate deferred payments from extra months**. Intended URL: https://trialagents.com/apps/clinical-trial-delays-cash-runway. Current approved Runway 2.1 catalog and FDA clinical-research primary source reviewed. Distinct ongoing-trial extension, not the existing D11 whole-program shift. Decimal-checked fictional monthly cash example and two genuine browser-demo screenshots. Await full exact-head predeploy gate and visual artifacts before merge; not published. Resume this PR before choosing another topic. Count unchanged: 31 published, 16 unfinished.
+
+
+### D4 merge checkpoint — 14 November 2026 20:05 UTC
+
+PR #212 merged as `511245f24749c7e3993f71c628c636bd7872be24` at 20:05 UTC after full predeploy run 43634845150 succeeded on exact head `a3b54d32a5b18eb3b705374fa95808d276beab53`. Artifact 14129573439 desktop (1440px) and mobile (390px) inspected throughout: shell, headings, scroll-contained tables, genuine images, captions and final CTA pass. Existing automatic GitHub-to-CDN release now pending; verify https://trialagents.com/apps/clinical-trial-delays-cash-runway before marking Published. Resume this release before drafting another article. No Cloudflare dashboard action is required.

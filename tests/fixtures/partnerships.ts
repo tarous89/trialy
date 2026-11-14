@@ -3,9 +3,9 @@ import {randomUUID} from 'node:crypto';
 import {execute} from '../../src/foundation/runtime.js';
 import {appTemplates} from '../../src/workspace/app-templates.js';
 
-/* Partnerships 2.0.0 unit harness: the catalog entry prepared exactly as AppTemplates.operation prepends configuration, executed in
+/* Partnerships 2.1.0 unit harness: the catalog entry prepared exactly as AppTemplates.operation prepends configuration, executed in
  * production QuickJS. Records are the fictional demo set (as of 14 Nov 2026); documents and integrations use the platform response shapes. */
-export const entry=await appTemplates.read({templateId:'life.partnership-tracker',version:'2.0.0'});
+export const entry=await appTemplates.read({templateId:'life.partnership-tracker',version:'2.1.0'});
 export const root='templates/source/partnership-tracker/';
 export const schema=JSON.parse(await readFile(root+'schema.example.json','utf8'));
 export const demo=JSON.parse(await readFile(root+'demo_data.json','utf8'));

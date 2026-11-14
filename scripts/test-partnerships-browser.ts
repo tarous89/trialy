@@ -3,7 +3,7 @@ import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import {partnershipsFixture} from '../tests/fixtures/partnerships.js';
 import {frontendFrameDocument} from '../src/shared/frontend-frame.js';
-/* Partnerships 2.0.0 in the production sanitized frame with a manifest attached (PARTNERSHIPS.md §13), at 1440 and 390 px:
+/* Partnerships 2.1.0 in the production sanitized frame with a manifest attached (PARTNERSHIPS.md §13), at 1440 and 390 px:
  * seven screens (no page overflow, no error banner) and every acceptance criterion through the real UI and the reviewed path:
  * 1 conference prep, view and after-event outcome; 2 after-meeting log; 3 gates; 4 research review and digest; 5 saved views;
  * 6 funnel and win/loss; 7 no outreach; 8 proposals only; 9 layout gear (archiving is covered by the integration test); 10 layout. */
@@ -103,9 +103,12 @@ try{
    const acc=(await rows('partnerships.opportunities')).filter((o:any)=>o.data.source==='research'&&o.data.stage==='identified'&&o.data.owner==='Sofia');assert.equal(acc.length,1);
    await go(fr,'settings');const subject=await fr.locator('#pt-digest-subject').textContent();assert.match(subject!,/^Partnerships · week of \d+ \w+: \d+ moved · \d+ due · \d+ new signals$/);
    const body=await fr.locator('#pt-digest').textContent();assert.ok((subject+' '+body).split(/\s+/).filter(w=>/[A-Za-z0-9]/.test(w)).length<=165);assert.match(body!,/Open Partnerships →$/);
-   await fr.getByText('Every Monday at 07:00 (Europe/Berlin)').first().waitFor();await pick(fr,'[name="digest_cadence"]','daily');await fr.getByText('Every day at 07:00 (Europe/Berlin)').first().waitFor();
-   await fr.getByRole('button',{name:'Save settings (reviewed)'}).click();await approve(page);assert.equal((await rows('partnerships.settings'))[0].data.digest_cadence,'daily');
-   assert.match((await fr.locator('#pt-schedule').textContent())!,/"frequency":"daily"/);
+   // Automations are listed, not configured here; customization through the Settings forms (stage label, reviewed).
+   await fr.getByText('Last research report: 9 Nov 2026.').first().waitFor();assert.equal(await fr.locator('[name="digest_cadence"],#pt-schedule').count(),0);
+   await fill(fr,'form[data-action="save-stages"] [name="label_cda"]','CDA signed');await fr.getByRole('button',{name:'Save stages (reviewed)'}).click();await approve(page);
+   assert.deepEqual(JSON.parse((await rows('partnerships.settings'))[0].data.stage_config).labels,{cda:'CDA signed'});
+   await go(fr,'pipeline');for(let i=0;i<50&&(await fr.locator('#pt-flt-stage option[value="cda"]').textContent())!=='CDA signed';i++)await page.waitForTimeout(100);assert.equal(await fr.locator('#pt-flt-stage option[value="cda"]').textContent(),'CDA signed');
+   await go(fr,'research');await fr.getByRole('button',{name:'Runs'}).click();await fr.getByRole('region',{name:'Research reports'}).getByText('week of 9 Nov').first().waitFor();
    // 9 The layout gear reaches the host as the native tracker:layout event; the Data Room integration offer is the platform hook.
    await fr.getByRole('button',{name:'App layout settings'}).click();for(let i=0;i<20&&!host.includes('tracker:layout');i++)await page.waitForTimeout(100);assert.ok(host.includes('tracker:layout'));
   }else{

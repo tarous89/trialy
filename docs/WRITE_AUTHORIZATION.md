@@ -1,6 +1,14 @@
 # Database write approval and change history
 
-Agreed 11 October 2026. This supersedes earlier automatic-maintenance defaults. The runtime now enforces default human approval, explicit type-scoped standing permission, field-delta logging and a shared Changes & permissions area. Remaining limits are listed below.
+General write contract agreed 11 October 2026, with the 14 November app-research and dynamic-field clarifications below. The runtime enforces reviewed authority, scoped standing permission, field-delta logging and a shared Changes & permissions area. Remaining limits are listed below.
+
+## App research and drafting: current setup approval
+
+For new app-linked research/drafting automations, the exact installation/setup approval includes required bounded, expiring create/update grants for app result storage. There is no separate write opt-in. Preparation alone creates no authority; confirmation saves the grants with the automation definition after the app installation has committed. Existing valid app write scopes may be reused. Missing writable storage leaves Needs setup; do not enable a proposal-only substitute. New production runs must save findings/reports and verify receipts before completing. Previously approved legacy monitors and explicit read-only test runs retain their supported behavior. See [recommended automations](product/RECOMMENDED_AUTOMATIONS.md).
+
+These grants never override current app bindings, database restrictions, protected/calculated fields or the selected assistant's access. With E6, an explicitly approved `fields:"all"` binding includes current and future app-bound fields of the same approved table, minus `exceptFields`, resolved against current access on every check. Explicit field lists keep exact-schema behavior. New tables, broader operations or revoked access do not inherit authority. These two specific clarifications supersede the generic separate-grant and fixed-field wording below for current app research only.
+
+Brief and email-summary bindings are read-only by their execution contract. This is not a global ban on write-capable helpers or connectors: other function/actions may write using their existing exact approval or scoped grant. App access is the outer boundary, not a substitute for the reviewed action's scope. Connector/external effects retain their own operation and recipient authorization. Generated code cannot grant itself rights, and allowing app edits does not automatically authorize every helper or external operation.
 
 ## Default: propose, review, approve, save
 

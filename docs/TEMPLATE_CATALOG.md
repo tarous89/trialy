@@ -10,7 +10,9 @@ CRO Selection (`life.cro-selection`) 2.0.0 was added on 13 November 2026 as a dr
 
 Data Room (`life.data-room`) 1.0.0 was added on 13 November 2026 as a draft, built on the exchange room extension (EXTERNAL_EXCHANGE.md §5). It is a new template, so nothing is retired. It writes the `dataroom.v1` outputs: in `templates/contracts/outputs.json` its writer is now `life.data-room`, and `room_purpose` gains `partnering` (an additive change). It is not in the seed until the owner approves it.
 
-When the owner approves 2.0.0, the publication change does four things:
+Partnerships (`life.partnership-tracker`) 2.1.0 was approved by the owner on 14 November 2026 in place of Partnership Tracker 1.1.1. The first build, 2.0.0 (#164), had already been imported as a draft, and a published row never changes, so the revision with the platform automation declarations and customization ships as 2.1.0. 2.0.0 stays a draft with its files under `templates/source/partnership-tracker/archive/2.0.0/`. The seed names 2.1.0, so the catalog sync that runs after migrations imports it approved. One-time migration 071 withdraws 1.1.1, and its gallery card and media were updated. Installed 1.1.1 apps keep their saved source and data.
+
+For CRO Selection, when the owner approves 2.0.0, the publication change does four things:
 - names 2.0.0 in the seed;
 - adds a one-time migration that approves the 2.0.0 draft row and sets both retired versions to `draft` (withdrawn);
 - removes the `life.sponsor-rfp-management` seed entry and gallery card;
