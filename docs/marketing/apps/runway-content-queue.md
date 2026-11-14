@@ -26,7 +26,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | B4 | Finmark alternatives after retirement: rebuild a forecast you can trust | Published — live verified 13 November 2026 UTC | [Live article](https://trialagents.com/apps/finmark-alternatives-biotech) |
 | B5 | LivePlan alternatives for biotech: choose the plan you need next | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/liveplan-alternatives-biotech) |
 | B6 | Fathom alternatives for biotech: reporting, consolidation or cash planning? | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/fathom-alternatives-biotech) |
-| B7 | AI-native FP&A software for startups: compare the actions, not the label | In progress — source preparation | — |
+| B7 | AI-native FP&A software for startups: compare the actions, not the label | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/ai-native-fpa-software-startups) |
 | B8 | Best Excel and Google Sheets Alternatives for Biotech Budgeting | Queued — verify and publish | — |
 | C1 | Best Cash Runway Management Apps That Work Inside ChatGPT | Queued — verify and publish | — |
 | C2 | Best Financial Planning Apps for Claude | Queued — verify and publish | — |
@@ -68,7 +68,7 @@ All listed published pages were recorded as live in [Runway's app plan](runway.m
 
 ## Publication sequence and hourly worker contract
 
-1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2–A8 are published. **Next eligible: B7, AI-native FP&A software, subject to evidence, duplicate and claim checks. A10–A12 and B2–B6 are published; A9 remains deferred by owner decision.** See the latest release checkpoint below.
+1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2–A8 are published. **Next eligible: B8, Excel and Google Sheets alternatives for biotech budgeting, subject to evidence, duplicate and claim checks. A10–A12 and B2–B7 are published; A9 remains deferred by owner decision.** See the latest release checkpoint below.
 2. Re-read the **current** shared playbook and [Runway plan](runway.md). Use the approved genuine screenshots, wide dark editorial shell, numbered green headings, platform advantage order, honest competitor treatment, one final "Start with Runway" CTA and standard shared header/footer.
 3. Research and verify vendor identities, capabilities, URL destinations, AI/Claude/ChatGPT host experiences separately, formulas and substantive claims. Keep the no-pricing-in-A/B rule; in other series, only discuss verified prices if explicitly appropriate and editorially approved. Real screenshots only, no invented interfaces or citations. Treat claims in tentative titles as hypotheses.
 4. Make the article genuinely distinct from existing Runway pages. Do not create weak "year-only", vendor-name-swapped or keyword-cannibalizing pages. If the subject is already answered on a live URL, mark it as covered, link it and advance to the next eligible item **within the same run**, without publishing duplicate content.
@@ -483,3 +483,14 @@ B6 rechecked HTTP 200; no open Runway PRs; public main `6496bc32f293ac9407d995a7
 
 
 - **B7 merged; deployment pending/unverified — 14 November 2026, 02:57 CET:** PR #201 merged as `c06d8d07ea083c2b4268095b9092d02b54506781` after exact head `334e14994bdd9da82396930d53be62848a584ea5` passed predeploy `43542933094`. Desktop 1440px/mobile 390px artifact `14092871669` inspected: readable layout, genuine screenshots, final CTA, shared chrome; mobile table uses its own scroll region. Await existing automatic build and verify https://trialagents.com/apps/ai-native-fpa-software-startups. Resume this release before another topic. Tracking unchanged; no synthetic production events.
+
+
+### B7 published and live verified — 14 November 2026, 03:00 CET
+
+- **Published:** [AI-native FP&A software for startups: compare the actions, not the label](https://trialagents.com/apps/ai-native-fpa-software-startups). Four options compared by supported action and evidence, with a fictional hiring-change demonstration brief. Retitled to avoid unsupported rankings; Runway's focused monthly cash scope and competitor AI capabilities are explicit.
+- **Release:** [PR #201](https://github.com/tarous89/trialagents-public/pull/201), exact head `334e14994bdd9da82396930d53be62848a584ea5`, merged release `c06d8d07ea083c2b4268095b9092d02b54506781` at 02:57 CET. Predeploy `43542933094` passed both jobs, tests, full snapshot, metadata/discovery and browser/site checks. Desktop 1440px/mobile 390px artifact `14092871669` inspected; genuine images, readable layout, final CTA and shared chrome; no page overflow or browser errors. Comparison table retains its own mobile scroll region.
+- **Deployment:** existing automatic GitHub-connected build succeeded (Workers `132289954489`); production check `132289330934` succeeded. Early 404s resolved within the bounded polling window. No dashboard authentication or manual deployment.
+- **Independent live QA:** HTTP 200 text/html, no noindex directive/header, robots allows crawling; exact reviewed fragment and shared CSS match. One H1, expected title/description, self-canonical, Article/BreadcrumbList schema and publication date verified. Shared header/footer match homepage; one final Start with Runway CTA. All 15 checked source/page/image/CTA/analytics URLs return 200. /apps listing, one sitemap.xml canonical entry, llms.txt and llm.xml verified.
+- **Tracking preserved:** identical homepage loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js`, both HTTP 200. No tracking scripts/configuration/events/consent/collectors/attribution changed; no synthetic production events sent.
+
+This supersedes B7 claim/source/pending checkpoints. **21 published; 26 unfinished**, including owner-deferred A9. **Next eligible: B8, Excel and Google Sheets alternatives for biotech budgeting**, subject to fresh evidence, queue, duplicate and claim checks. Only B7 was newly published in this run. Search indexing, rankings, real-user performance and assistant citations remain unverified.
