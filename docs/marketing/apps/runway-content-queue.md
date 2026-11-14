@@ -561,3 +561,12 @@ This supersedes C1 source and merged-pending checkpoints. **23 published; 24 unf
 ### C2 execution claim — 14 November 2026
 
 C1 live URL returned HTTP 200; current public main is `22661f0fc9e408f4fc6eb7fb2ab72d2bbfbd255e`, and no open Runway source PRs were found. Claim C2 on `content/runway-c2-claude-planning-20261114`. Retitle unsupported Best wording to Financial planning apps for Claude: choose where the plan lives. Distinct intent: select a Claude planning workflow by authoritative app/model/data ownership, with TrialAgents Runway, LivePlan and Aleph; not a host-name swap of C1 or the planned C4 forecasting tutorial. Fresh primary evidence and publication QA required. Totals remain 23 published, 24 unfinished.
+
+
+### C2 source checkpoint — 14 November 2026
+
+**Financial planning apps for Claude: choose where the plan lives**; intended URL https://trialagents.com/apps/financial-planning-apps-claude. [PR #204](https://github.com/tarous89/trialagents-public/pull/204), exact head `cdf0f35d03e2f81b1330833dcf8d331bf838dca4`. Distinct selection intent: authoritative model/data ownership and team funding-review handoff, rather than C1's connection test or C4's forecasting tutorial. Two approved genuine Runway 2.1 browser screenshots (05-scenarios, 06-actuals), fictional captions; no fabricated Claude UI or hands-on host test.
+
+Primary evidence reread 14 November: approved `templates/apps/life.cash-runway-2.1.0.json`; https://help.liveplan.com/using-the-liveplan-mcp-connector (Claude-designed/tested per vendor, early access, documented actions; conflicting contributor eligibility explicitly qualified); https://claude.com/marketplace/connectors/aleph (sign-in, connected finance analysis, Claude/Claude for Excel and read/write tool scope, not proof of every configured integration); https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities and https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp (permissions/action limits and interactive-interface distinction). No prices, untested numerical outcomes, host parity or unattended-runner claims.
+
+Seven source files integrate rendering, listing, discovery and browser/snapshot tests. Await full exact-head predeploy, visual artifact inspection, merge and independent live verification. Shared CSS, shell and tracking unchanged. Resume PR #204 before drafting another topic. Totals: 23 published, 24 unfinished, including deferred A9.
