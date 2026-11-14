@@ -18,8 +18,8 @@ const bool=(v:any)=>v===true||v==='true';
 const SCREENS=['overview','pipeline','partners','conferences','activity','research','settings'];
 
 test('package: catalog entry, seven screens, limits, build --check, installer, draft status, retirement of 1.1.1',async()=>{
- assert.equal(entry.id,'life.partnership-tracker');assert.equal(entry.version,'2.0.0');assert.equal(entry.name,'Partnerships');
- assert.ok(appTemplateEntry.safeParse(JSON.parse(await readFile('templates/apps/life.partnership-tracker-2.0.0.json','utf8'))).success);
+ assert.equal(entry.id,'life.partnership-tracker');assert.equal(entry.version,'2.1.0');assert.equal(entry.name,'Partnerships');
+ assert.ok(appTemplateEntry.safeParse(JSON.parse(await readFile('templates/apps/life.partnership-tracker-2.1.0.json','utf8'))).success);
  const layout=JSON.parse(/^const templateLayoutSchema=(.+);$/m.exec(await readFile(root+'partnerships.source.js','utf8'))![1]);
  assert.deepEqual(layout.screens.map((s:any)=>s.id),SCREENS);
  assert.ok(entry.source!.length<=180000,'source '+entry.source!.length);assert.ok(Buffer.byteLength(JSON.stringify(entry))<=300000);
@@ -27,10 +27,15 @@ test('package: catalog entry, seven screens, limits, build --check, installer, d
  assert.match(execFileSync('node',['scripts/build-partnerships-template.mjs','--check'],{encoding:'utf8'}),/verified/);
  assert.match(execFileSync('node',['scripts/build-partnership-template.mjs','--check'],{encoding:'utf8'}),/1\.1\.1: catalog and preview verified/);
  const installers=JSON.parse(await readFile('templates/catalog-installers.json','utf8'));
- assert.equal(installers['life.partnership-tracker@2.0.0'],root+'schema.example.json');assert.equal(installers['life.partnership-tracker@1.1.1'],root+'archive/1.1.1/schema_mapping.example.json');
- const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));assert.equal(seed['life.partnership-tracker'].version,'1.1.1','2.0.0 stays a draft until the owner approves it');
+ assert.equal(installers['life.partnership-tracker@2.1.0'],root+'schema.example.json');assert.equal(installers['life.partnership-tracker@2.0.0'],root+'archive/2.0.0/schema.example.json');assert.equal(installers['life.partnership-tracker@1.1.1'],root+'archive/1.1.1/schema_mapping.example.json');
+ // 2.0.0 was imported as a draft by an earlier deployment; catalog rows are immutable, so its files stay byte-identical in the archive.
+ const old=JSON.parse(await readFile('templates/apps/life.partnership-tracker-2.0.0.json','utf8'));assert.equal(old.version,'2.0.0');assert.equal(old.recommendedAutomations,undefined);
+ assert.equal(JSON.stringify(Object.keys(JSON.parse(await readFile(root+'archive/2.0.0/schema.example.json','utf8')))),JSON.stringify(Object.keys(schema).filter(k=>k!=='partnerships.research_reports')));
+ // Owner approval (14 Nov 2026): the seed names 2.1.0; migration 070 withdraws 1.1.1 once.
+ const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));assert.deepEqual(seed['life.partnership-tracker'],{schema:root+'schema.example.json',version:'2.1.0'});
+ assert.match(await readFile('migrations/070_approve_partnerships_2_1_0.sql','utf8'),/SET status='draft' WHERE template_id='life\.partnership-tracker' AND version='1\.1\.1' AND status='approved'/);
  const ret=JSON.parse(await readFile('templates/catalog-retirements.json','utf8')).retirements.find((r:any)=>r.templateId==='life.partnership-tracker');
- assert.deepEqual([ret.version,ret.replacedBy],['1.1.1','life.partnership-tracker@2.0.0']);
+ assert.deepEqual([ret.version,ret.replacedBy],['1.1.1','life.partnership-tracker@2.1.0']);
  const m=JSON.parse(await readFile(root+'catalog.metadata.json','utf8'));assert.equal(m.documentation.tasks.mode,'optional');
  assert.match(m.whenNotToUse,/Fundraise[\s\S]*Contracts[\s\S]*email campaigns|outreach/);
 });

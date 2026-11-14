@@ -2,11 +2,11 @@
 
 *Track out-licensing, in-licensing and collaboration deals by asset, from first contact to signature: conferences, follow-ups and partner news, with the assistant doing the research and the admin.*
 
-**Status:** Final scope for build, 14 November 2026. Part of [Biotech apps v2](../BIOTECH_v2.md) (rank 7, formerly "BD Pipeline"). It **replaces** `life.partnership-tracker` 1.1.1 as **2.0.0**, display name **Partnerships**. No existing users, so no data migration.
+**Status:** Published 14 November 2026 as **2.1.0** (owner approval). Part of [Biotech apps v2](../BIOTECH_v2.md) (rank 7, formerly "BD Pipeline"). It **replaces** `life.partnership-tracker` 1.1.1 (withdrawn by migration 070), display name **Partnerships**. No existing users, so no data migration.
 
-**Build (14 Nov 2026):** `templates/source/partnership-tracker/` → `templates/apps/life.partnership-tracker-2.0.0.json` (draft); results in its [QA.md](../../../../templates/source/partnership-tracker/QA.md).
+**Build (14 Nov 2026):** `templates/source/partnership-tracker/` → `templates/apps/life.partnership-tracker-2.1.0.json` (approved: the seed names it); results in its [QA.md](../../../../templates/source/partnership-tracker/QA.md). The first build, 2.0.0 (#164), was imported as a draft and is kept unchanged under `archive/2.0.0/`, because catalog versions are immutable.
 
-**Revision (14 Nov 2026, before approval):** aligned with the platform's app automation standard ([PR #168](https://github.com/tarous89/trialy/pull/168) default-on install recommendations; [PR #169](https://github.com/tarous89/trialy/pull/169) research must save to the app database) and made customizable by Claude and ChatGPT within the app's scope (§12a). Still 2.0.0 and still a draft; nothing was released before.
+**Revision (2.1.0):** aligned with the platform's app automation standard ([PR #168](https://github.com/tarous89/trialy/pull/168) default-on install recommendations; [PR #169](https://github.com/tarous89/trialy/pull/169) research must save to the app database) and made customizable by Claude and ChatGPT within the app's scope (§12a). The install recommendations appear in Add app once the platform flag `APP_AUTOMATION_RECIPES_ENABLED` is on; until then the same automations are set up in Automations or through Claude or ChatGPT.
 
 **Depends on:** nothing new in the platform. It uses TrialAgents Automations (research worker on the user's Claude or ChatGPT runner, and email to workspace members). It connects by role to Programs, Contracts and Data Room. **One PR.**
 
@@ -294,7 +294,7 @@ The user can ask either assistant to change how the app looks and works. Each ch
 ## 13. Package checklist and acceptance criteria
 
 **Package:**
-- template source under `templates/source/partnership-tracker/` updated to 2.0.0, and immutable `templates/apps/life.partnership-tracker-2.0.0.json` (draft until approved), display name **Partnerships**
+- template source under `templates/source/partnership-tracker/` at 2.1.0, and immutable `templates/apps/life.partnership-tracker-2.1.0.json` (approved), display name **Partnerships**; 2.0.0 archived unchanged as a draft
 - roles as in §7
 - standard tag categories (Conference, Channel, Asset group)
 - standard stages and lost reasons

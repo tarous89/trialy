@@ -1,0 +1,131 @@
+{
+  "id": "life.partnership-tracker",
+  "version": "2.0.0",
+  "name": "Partnerships",
+  "description": "Out-licensing, in-licensing, co-development, research, academic and platform deals by asset in one pipeline, from first contact to signature. Partnering profiles per asset, a stage board with stage history, funnel and win/loss, partners and contacts with the full history (who met whom, what was shared, any decline and why), conferences with goals, who to meet, requests, one-page briefs and next steps, activities, a materials log and follow-ups, tag categories (Conference, Channel, Asset group and your own) with private or shared saved views, and partner research (signals and target suggestions) reviewed in the app, with a concise digest email to members. Links CDAs, term sheets and agreements from Contracts and data room access from Data Room when they are there. Outreach stays personal: the app never emails partners.",
+  "tags": [
+    "biotech",
+    "business development",
+    "bd",
+    "partnering",
+    "licensing",
+    "out-licensing",
+    "in-licensing",
+    "collaboration",
+    "pipeline",
+    "conferences",
+    "cda",
+    "term sheet",
+    "partner research",
+    "crm"
+  ],
+  "whenToUse": "Licensing, partnering and collaboration deals for a biotech's assets: targets, conferences, meetings, follow-ups, CDA to signature, partner news and research, funnel and win/loss by asset and direction.",
+  "whenNotToUse": "Fundraising and investors (Fundraise), contract drafting or the agreement register itself (Contracts), data room sharing (Data Room), sending email campaigns or outreach, a sales CRM, lead databases or contact enrichment, valuation and deal-terms modelling, alliance management after signing.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "Partnerships",
+    "tableMap": "{}",
+    "pageSize": 25,
+    "layoutProfile": "{}",
+    "readOnly": false,
+    "demoLabel": false,
+    "asOfOverride": ""
+  },
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "App heading shown above every screen.",
+      "default": "Partnerships"
+    },
+    "tableMap": {
+      "type": "string",
+      "description": "JSON object keyed by stable role key: core data contract v1 roles organizations, people and programs (read/write) and agreements (optional, read-only, core fields; Contracts writes it); the dataroom.v1 integrations dataroom.access_grants and dataroom.engagement (optional; Partnerships' own manual table until the user links Data Room inside the app, then Data Room's output read-only); and app roles partnerships.settings, partnerships.asset_profiles, partnerships.opportunities, partnerships.stage_history, partnerships.activities, partnerships.follow_ups, partnerships.conferences, partnerships.briefs, partnerships.signals, partnerships.tag_categories, partnerships.views (contract partnerships.v1). Each value is {typeId:<authorized table UUID>, fields:{<logical key>:<real field key>}, writableFields:[<logical keys>]}. Real keys are lowercase snake_case. The installer writes it; never invent table IDs.",
+      "default": "{}"
+    },
+    "pageSize": {
+      "type": "number",
+      "description": "Rows per page in lists (10 to 50).",
+      "default": 25
+    },
+    "layoutProfile": {
+      "type": "string",
+      "description": "Stringified native layout profile (heading, tabs, cols, visible) written by the layout gear review. Do not edit by hand.",
+      "default": "{}"
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "Disable every write control in this copy.",
+      "default": false
+    },
+    "demoLabel": {
+      "type": "boolean",
+      "description": "Label the data as fictional (offline preview only).",
+      "default": false
+    },
+    "asOfOverride": {
+      "type": "string",
+      "description": "Pinned as-of date YYYY-MM-DD for previews and tests. Leave empty in real apps: the app uses today's date.",
+      "default": ""
+    }
+  },
+  "instructions": "Partnerships 2.0.0 (life.partnership-tracker) is a custom frontend-js app (Vivid kit, theme forest) for a biotech's licensing, partnering and collaboration deals in all directions. It replaces Partnership Tracker 1.1.1. Read read_app_template_guidance (usage, authoring and contracts, every nextOffset) and read_app_automation_guide before preparing it or its automations. Pin life.partnership-tracker 2.0.0 with its digest. Do not add login, accounts, outreach email, imports or file storage.\nINSTALL. Check list_archived_items (kind apps, templateId life.partnership-tracker) and offer to restore an archived app first. Use installs the app; the Use existing data? dialog connects existing organizations, people and programs tables by default (core.v1; reuse, never copy) and, when Contracts or Data Room are in the workspace, their agreements and dataroom.v1 tables. You may prefill the dialog with prepare_data_access; never confirm it. Agreements are read-only here and are not created when absent; without Contracts the CDA, term sheet and agreement fields hold manual references. Data room access and engagement are an integration: the app keeps its own table for access entered by hand, and shows \"Use Data Room's data\" once Data Room exists.\nFIRST STEPS. Settings: Add the standard categories (Conference, Channel, Asset group), add custom ones such as Region, check lost reasons, set the team, the digest and research cadence (weekly on Monday 07:00 workspace time by default), recipients (workspace members only) and the stalled threshold. Research: add a partnering profile per asset (directions, deal types, territories, target profile, current non-confidential materials, research focus, exclusions, sources).\nEVERYTHING COMES IN THROUGH YOU. When the user pastes conference requests (for example partneringONE), meeting notes, emails, business cards or a list: read the app's records first (list_tables/read_records on the bound tables, or open the app), check each organization's history (earlier opportunities with stage and lost_reason, activities, declines) and WARN before proposing a target that declined or is on hold. Then propose, with prepare_change, records the user reviews: organizations and people (if new; one review), then opportunities (stage identified, the right direction, asset, owner, source, tags JSON such as {\"Conference\":[\"BIO-Europe 2026\"],\"Channel\":[\"Conference\"]}), conference meetings as partnerships.activities (kind conference_meeting, conference_id, status requested or confirmed, occurred_on within the event). Records in one review cannot reference each other's new IDs: create parents first, then children with the receipt IDs. Never confirm a review yourself.\nAFTER A MEETING. From what the user tells you, propose in one review: one partnerships.activities row (summary, person_ids, team, materials JSON [{document_id,version_id,title,version}] with exact versions), a stage change (update opportunities.stage and stage_on AND create one partnerships.stage_history row: opportunity_id, from_stage, to_stage, changed_on, changed_by), and follow-ups (title, owner, due, status open). Every stage change writes stage_history. Lost and on_hold need lost_reason.\nBRIEFS. Before a meeting with a linked opportunity, write a one-page brief as partnerships.briefs (opportunity_id, activity_id, conference_id, meeting_on, content in Markdown-like plain text, sources JSON [{title,url}], written_by claude or chatgpt, written_on): their pipeline and recent deals, the people, our history and what was shared, what to ask, cautions (no CDA: non-confidential only). Propose it for review.\nGATES. CDA, term sheet and agreement: link agreements record IDs (cda_agreement_id, term_sheet_agreement_id, agreement_id) when Contracts is connected; new ones are proposed in Contracts (its reviewed path), never written by Partnerships. Data room: dataroom_room_id holds the Data Room room_id from dataroom.access_grants. Without the apps these are manual references.\nRESEARCH AND DIGEST. Recurring work is TrialAgents Automations, never a separate host task: one research worker on the user's own Claude or ChatGPT runner (prepare_automation_setup, then prepare_app_monitoring with the calendar trigger shown in Settings > Schedule, data-schedule), writing new partnerships.signals rows (status new; kinds deal, trial, pipeline, financing, people, news, target_suggestion; title, why, source_url, published_on, found_on, organization_id, opportunity_id, program_id, run_id) under a narrow create-only write scope, and one email action triggered by that research run becoming completed (database trigger on automation_runs) to the digest recipients who are registered members, with the text {{run.summary}}. The worker composes run.summary exactly like Settings > Digest preview (section rules in documentation.tasks). Optional: follow-up reminders (record_date on follow_ups.due) and meeting briefs (record_date on activities.occurred_on, one day before). Save the app first; verify with read_app_automation_readiness before claiming anything runs. If the user changes cadence, day or time in Settings, update the research trigger (the email follows the run).\nNEVER. Contact partners, send or schedule email to anyone outside the workspace, change stages or accept targets without review, put confidential deal terms in emails or signals, or give legal or valuation advice. Suggest outreach wording only when asked; the user sends it from their own mailbox.\nUPDATE AND RECOVERY. Revise a saved app with begin_app_update; keep its IDs, bindings and records. A stale record version is rejected with the draft kept; re-read and retry. Archiving the app pauses its automations; restoring brings them back disabled.",
+  "documentation": {
+    "quickStart": [
+      "Read the current usage, authoring and contracts guidance and this documentation; pin life.partnership-tracker 2.0.0 and its digest with one requestKey.",
+      "Offer to restore an archived Partnerships app first. Otherwise Use installs it; keep the defaults that connect existing organizations, people, programs (and agreements and Data Room outputs when present).",
+      "Settings: add the standard tag categories, any custom category (e.g. Region), the team, lost reasons, cadence (weekly Monday 07:00 by default), recipients and stalled days.",
+      "Research: add a partnering profile per asset; Partners and Pipeline: add or paste targets in chat; the assistant proposes partners, contacts and opportunities after a history check.",
+      "Conferences: create the event (its name becomes a Conference tag value), add requests and meetings, briefs the day before, then log outcomes and follow-ups.",
+      "Optionally set up the research worker and the digest in TrialAgents Automations (save the app first); the app works fully without them."
+    ],
+    "dataContract": "Stable role keys; every field scalar (multiple false), lowercase snake_case, relationships by record ID in text fields, JSON in text fields. Core data contract v1 (read/write): organizations (name*, org_type, country, website, archived) = partners; people (name*, organization_id, title, email, archived) = contacts (professional only); programs (name*, code, indication, modality, stage*, lead, status, archived) = assets. agreements (core.v1, optional, readOnly, core fields only): CDAs, term sheets, signed agreements written by Contracts; not created when absent. dataroom.access_grants and dataroom.engagement (dataroom.v1, optional integration): Data Room's outputs read-only once linked, otherwise this app's own table for access entered by hand (source manual). App tables (partnerships.v1): settings (one row: digest_cadence* daily/weekly/monthly default weekly, digest_day mon..sun default mon, digest_time default 07:00, time_zone IANA, digest_recipients, digest_text, research_enabled default true, stalled_days default 21, lost_reasons JSON, team); asset_profiles (program_id*, directions JSON, deal_types JSON license/co_development/option/research_collaboration/platform/acquisition/other, territories, target_profile, materials JSON, research_focus, research_exclusions, research_sources, status* active/paused/done); opportunities (name*, organization_id*, program_id*, direction* out_license/in_license/co_development/research_collaboration/academic/platform/other, stage* identified/contacted/non_confidential/cda/confidential_evaluation/term_sheet/exclusivity_diligence/signed/lost/on_hold, stage_on, owner*, priority, fit 1-5, fit_rationale, source research/conference/inbound/outbound/referral/other, contact_ids, next_step, next_date, lost_reason, cda_agreement_id, dataroom_room_id, term_sheet_agreement_id, agreement_id, tags JSON category->values, archived); stage_history (opportunity_id*, from_stage, to_stage*, changed_on*, changed_by, note), written with every stage change; activities (opportunity_id, organization_id*, kind* meeting/call/email/conference_meeting/material_shared/note, occurred_on*, person_ids, team, summary, materials JSON, conference_id, logged_by user/claude/chatgpt, tags, outcome, status requested/confirmed/held/declined/cancelled); follow_ups (opportunity_id, activity_id, title*, owner*, due*, status* open/done/cancelled, done_on); conferences (name*, starts_on*, ends_on, location, platform partneringone/bio_one_on_one/other/none, deadlines JSON [{label,date}], goals, team, status* planning/live/done, tag_value*); briefs (opportunity_id, conference_id, activity_id, meeting_on, content*, sources JSON, written_by, written_on*); signals (organization_id, opportunity_id, program_id, kind*, title*, why*, source_url*, published_on, found_on*, status* new/reviewed/dismissed/accepted, dismiss_reason, run_id); tag_categories (name*, values JSON, multiple, standard, archived); views (name*, filters* JSON {tags,stage,program,direction,owner}, layout* board/list/funnel, shared, owner*, archived). Additions beyond the scope: settings.time_zone and team, asset_profiles.research_sources, activities.outcome and status, briefs.activity_id, views.archived. Saved data only; the app reads bounded pages (8 x 100 rows per table) and disables changes and complete totals when a read is partial.",
+    "interactionContract": "Seven screens with stable IDs for the native layout gear: overview, pipeline, partners, conferences, activity, research, settings; column groups pipeline and partners. Overview: funnel by asset and by direction, follow-ups due and overdue, stalled opportunities, upcoming meetings and conferences, new signals. Pipeline: board by stage, list (paged) or funnel with win/loss by asset, direction and source and loss reasons; search and Filters (asset, direction, owner, stage, every tag category); saved views (private or shared; You are picks the owner); the opportunity side panel moves stages (reason for lost/on hold; stage history in the same review), links CDA, data room, term sheet and agreement, edits tags and contacts, shows activities, follow-ups, materials and the partner history; archive. Partners: partners and contacts (paged) with the full history per partner and contact and their signals. Conferences: picker, deadlines, goals, team, meetings and requests (with decline warnings), who to meet, briefs, Log outcome (status, outcome, next step, follow-up), and Open its pipeline view (the Conference tag). Activity: timeline, follow-ups (done/cancel), materials log, My week. Research: signals (mark reviewed or dismiss with a reason), target suggestions per asset (accept creates an opportunity at Identified, source research, after a history check), asset profiles, runs. Settings: stages and lost reasons, tag categories, digest and research (schedule and digest preview), links to Access and Automations. Every write is a records.propose batch shown in the TrialAgents review; Cancel or Close discards the form. Inputs carry data-ui-state and keep drafts across renders.",
+    "lifecycle": "A new preview shows empty or fictional data and never writes. Saved apps re-read their tables and configuration on every render. Record writes are records.propose batches (at most 50) confirmed by a person; editors and panels keep the record version from when they opened, so a concurrent change is rejected and the draft kept. Layout changes are reviewed presentation-only saves. Automations are separate TrialAgents definitions linked to the app: the app never reads their state, never waits for them and keeps working when they are off or failing. Archiving the app pauses them; restoring brings them back disabled. Released 1.1.1 apps keep their saved source; there is no migration.",
+    "limitations": [
+      "No outreach, email sending, bulk email, calendar or partneringONE integration: requests come in through the assistant as reviewed proposals.",
+      "Private saved views are hidden from other people's view pickers but are not a permission boundary: anyone with access to the app can read the views table in Database.",
+      "Stages are the standard list (select options); renaming them needs a schema change. Lost reasons and tag categories are editable.",
+      "Agreements are read-only and connect only at install; without Contracts the CDA, term sheet and agreement links are manual text. Data Room's outputs are linked inside the app (Use its data).",
+      "Records in one review cannot reference each other's new IDs, so new partners or contacts are saved before the opportunities or meetings that use them.",
+      "No valuation, deal-terms modelling, contract drafting or alliance management after signing (see Deal Comps and Contracts)."
+    ],
+    "examples": [
+      {
+        "prompt": "Here are our 10 partneringONE requests for BIO-Europe 2026 (pasted list). Add them.",
+        "expectedBehavior": "Reads Partnerships, checks each company's history and warns that one declined last year (with the reason). Proposes missing partners and contacts first, then opportunities tagged Conference: BIO-Europe 2026 and conference meetings (requested or confirmed). Nothing is saved until the user approves; nothing is sent."
+      },
+      {
+        "prompt": "We met Ironvale today: Liam liked the deck v3, they want the CMC summary; move them to CDA. Anna sends the CMC summary by Tuesday, Marc books a call next week.",
+        "expectedBehavior": "Proposes one review: an activity with materials (deck v3), the stage change to CDA with its stage history row, and two follow-ups with owners and dates."
+      },
+      {
+        "prompt": "Accept the Glenmoor target suggestion for NWB-101.",
+        "expectedBehavior": "Warns that Glenmoor declined NWB-202 in 2025 (no strategic fit) before proposing a new opportunity at Identified, source research, and the signal as accepted."
+      },
+      {
+        "prompt": "Set up weekly partner research and the digest for the team.",
+        "expectedBehavior": "Saves nothing in the app; uses TrialAgents Automations: research on the user's runner with the Settings schedule (weekly Monday 07:00), create-only signals, and a run-completed email to registered members with {{run.summary}}; verifies readiness before saying it is active."
+      },
+      {
+        "prompt": "Draft an outreach email to Maplecrest about NWB-101.",
+        "expectedBehavior": "Suggests wording in chat only because the user asked; does not send it or store it as sent. The user sends it from their own mailbox and may ask to log it as an email activity."
+      }
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "Four optional automations, all TrialAgents Automations linked to the app; the app never waits for them. (1) Partner research: one research worker on the user's own Claude or ChatGPT runner, calendar trigger from Settings (daily, weekly or monthly; default weekly Monday 07:00 workspace time). It reads asset profiles, open opportunities, partners and the previous run's signals, searches public sources (news, company pipelines and press releases, deal announcements, trial registries via TrialAgents Intel when connected) and writes partnerships.signals and target suggestions with status new for review in the Research screen. (2) Digest email: an email action on that research run becoming completed (includeEmpty true), to registered workspace members chosen in Settings, text {{run.summary}}. The worker writes run.summary in the digest format: a first line 'Partnerships · week of <date>: N moved · N due · N new signals', then the sections Moved, Due this week (with overdue count), Stalled, Coming up, New about your targets, Suggested targets; at most 3 items per section ('· N more'), about 150 words, empty sections left out, one line when nothing happened, no deal terms, notes, briefs or fit rationales; last line 'Open Partnerships →'. (3) Follow-up reminders: email action with a record_date trigger on partnerships.follow_ups.due at 08:00 (and +1 day for overdue), condition status open, to the members chosen. (4) Meeting briefs (optional): research with a record_date trigger on partnerships.activities.occurred_on, one day before, writing partnerships.briefs; the owner is notified by a run-completed email.",
+      "readRequirements": "partnerships.asset_profiles, opportunities, stage_history, follow_ups, conferences, activities (dates, kinds, statuses only), signals and tag_categories; organizations and programs names; public web sources. Never agreements values, briefs content in emails, or anything outside the bound tables.",
+      "outputContract": "Research writes only new partnerships.signals rows (create only, status new; dedup key: organization + kind + source_url, and title for target suggestions; skip anything matching a dismissed signal or the asset's exclusions) and, for briefs, new partnerships.briefs rows. It never changes opportunities, stages or other apps' tables and never contacts anyone. Completed with zero new signals still produces the digest (includeEmpty true).",
+      "promptExample": "Partner research for Partnerships. For each active asset profile: read its directions, territories, target profile, research focus, exclusions and sources, the open opportunities and their partners, and the signals of the previous runs (including dismissed ones and their reasons). Search public sources for deals, trial results, pipeline changes, financing and people moves at those partners, and for new companies that fit the target profile. Save each finding as a partnerships.signals row with status new: kind, title, a one-line why it matters for a named asset, source_url, published_on, found_on today, organization_id, opportunity_id and program_id when known, run_id. Save at most two target suggestions per asset (kind target_suggestion, title = company name) with the fit rationale and sources; never suggest a company that is excluded or that declined unless something material changed, and then say so. Do not repeat earlier signals. Never contact anyone, change opportunities or stages, or include confidential deal terms. Finish with a summary in the Partnerships digest format (Settings > Digest preview), at most about 150 words."
+    }
+  },
+  "examples": [
+    {
+      "configuration": {
+        "heading": "Partnerships",
+        "pageSize": 25
+      },
+      "description": "Default configuration; the installer writes tableMap."
+    }
+  ]
+}

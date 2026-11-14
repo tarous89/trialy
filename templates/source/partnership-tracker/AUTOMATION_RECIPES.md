@@ -1,4 +1,4 @@
-# Partnerships 2.0.0: automations
+# Partnerships 2.1.0: automations
 
 The platform runs these automations, not the app. The app never reads their state, never waits for one, and keeps working when an automation is off, failing, pending or missing. Schedules, recipients and on/off live on the automations in TrialAgents Automations; the app stores none of them. Before saying anything runs, check with `read_app_automation_readiness`.
 

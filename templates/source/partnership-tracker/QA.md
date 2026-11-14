@@ -1,8 +1,8 @@
-# Partnerships 2.0.0: QA against PARTNERSHIPS.md §13
+# Partnerships 2.1.0: QA against PARTNERSHIPS.md §13
 
 Run on 14 November 2026 with fictional data only: production QuickJS, disposable PGlite databases with every migration and the runtime role, the real catalog installer and Use existing data? step, the shared research runner and email action pipeline, and the production sanitized frame with a manifest attached. No deployed account, connected assistant or real email was used.
 
-**Revision run (14 November 2026, after platform PRs #168 and #169):** install recommendations with required app storage, removal of schedule settings, research reports, draft briefs, follow-up member routing and customization by Claude/ChatGPT (PARTNERSHIPS.md §10 and §12a). The tables below show the revision results.
+**Revision run for 2.1.0 (14 November 2026, after platform PRs #168 and #169; the first run below the line was for 2.0.0):** install recommendations with required app storage, removal of schedule settings, research reports, draft briefs, follow-up member routing and customization by Claude/ChatGPT (PARTNERSHIPS.md §10 and §12a). The tables below show the revision results.
 
 | Test | Result |
 |---|---|
@@ -18,7 +18,8 @@ Run on 14 November 2026 with fictional data only: production QuickJS, disposable
 
 | Item | Evidence |
 |---|---|
-| Source under `templates/source/partnership-tracker/` at 2.0.0; immutable `templates/apps/life.partnership-tracker-2.0.0.json`, a draft (seed keeps 1.1.1); display name Partnerships; 1.1.1 archived unchanged and listed in `catalog-retirements.json` | unit "package" |
+| Source under `templates/source/partnership-tracker/` at 2.1.0; immutable `templates/apps/life.partnership-tracker-2.1.0.json`, approved (seed names 2.1.0); 2.0.0 (imported as a draft by #164) kept byte-identical with its schema under `archive/2.0.0/`; 1.1.1 archived unchanged and withdrawn by migration 070 (`catalog-retirements.json`); display name Partnerships | unit "package" |
+| Deploy rehearsal: a database built from `main` (migrations and catalog sync, 1.1.1 approved and 2.0.0 draft) then this change's migrate and sync: no immutability error; 1.1.1 draft, 2.0.0 draft, 2.1.0 approved; a second run changes nothing | scripted PGlite rehearsal, 14 Nov 2026 |
 | Roles as in §7: organizations, people, programs core.v1 read/write; agreements core.v1 optional read-only (core fields); dataroom.v1 integrations; twelve `partnerships.*` tables (including `research_reports`) with the §7 fields, kinds, required flags and options; no schedule or recipient fields in settings | unit "roles"; integration "Acceptance 9" (17 tables at install, agreements not created) |
 | Standard tag categories, standard stages and lost reasons, digest default text | unit "acceptance 5", "stage moves", "acceptance 4 (app side)" |
 | `catalog.metadata.json` validates against the catalog schema (limits, documentation, tasks optional) | unit "package" |

@@ -1,4 +1,4 @@
-# Partnerships 2.0.0 (`life.partnership-tracker`)
+# Partnerships 2.1.0 (`life.partnership-tracker`)
 
 Out-licensing, in-licensing, co-development, research, academic and platform deals by asset, from first contact to signature: conferences, follow-ups and partner news, with the assistant doing the research and the admin. Scope: [PARTNERSHIPS.md](../../../docs/product/app-template-blueprints/apps/PARTNERSHIPS.md) (BT2-07). It replaces Partnership Tracker 1.1.1, whose released files are archived unchanged under [`archive/1.1.1/`](archive/1.1.1/) (built by `scripts/build-partnership-template.mjs`). There are no existing users, so there is no migration.
 
@@ -16,7 +16,7 @@ Out-licensing, in-licensing, co-development, research, academic and platform dea
 | `AUTOMATION_RECIPES.md` | The install recommendations and the chat-set-up reminders. |
 | `QA.md` | PARTNERSHIPS.md §13 results. |
 
-Build: `node scripts/build-partnerships-template.mjs` writes `templates/apps/life.partnership-tracker-2.0.0.json` and the preview. `--check` (part of `npm run build`) fails when either is stale. The version is a draft until the owner approves it; `templates/catalog-retirements.json` lists 1.1.1 for withdrawal on approval.
+Build: `node scripts/build-partnerships-template.mjs` writes `templates/apps/life.partnership-tracker-2.1.0.json` and the preview. `--check` (part of `npm run build`) fails when either is stale. 2.1.0 is approved (owner, 14 November 2026): the seed names it and migration 070 withdraws 1.1.1. The first build, 2.0.0, was imported as a draft by an earlier deployment; catalog versions are immutable, so its files stay unchanged under `archive/2.0.0/`.
 
 ## Roles
 

@@ -9,7 +9,7 @@ export const templateGallery:Record<string,{team:string;workflow:string;summary:
  'life.co-site-feasibility':{team:'Clinical operations',workflow:'Study delivery',summary:'Compare sites and coordinate feasibility and study startup.'},
  'life.experiment-notebook':{team:'Research',workflow:'Research',summary:'Connect protocols, bench observations, and reviewed findings.'},
  'life.sponsor-rfp-management':{team:'Clinical operations',workflow:'Procurement',summary:'Organize CRO requirements, proposals, and selection decisions.'},
- 'life.partnership-tracker':{team:'Biotech',workflow:'Relationships',summary:'Manage partnering opportunities, meetings, and deal milestones.'},
+ 'life.partnership-tracker':{team:'Biotech',workflow:'Relationships',summary:'Track licensing and collaboration deals by asset, with conferences, follow-ups and partner research.'},
  'life.client-signals-crm':{team:'CRO',workflow:'Relationships',summary:'Track biotech prospects, activity signals, and sales opportunities.'},
  'life.trial-regulatory-submission':{team:'Clinical operations',workflow:'Study delivery',summary:'Coordinate submission documents, reviews, and authority questions.'},
  'life.literature-radar':{team:'Research',workflow:'Research',summary:'Monitor publications and turn reading into reviewed evidence.'},

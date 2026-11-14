@@ -1,5 +1,5 @@
 {
-  "note": "Fictional, unsaved follow-up reminder actions for Partnerships 2.0.0, set up in chat (prepare_app_action) or in Automations because they need the condition status = open, which install recipes cannot express yet. Partner research, the digest and meeting briefs are install recommendations in catalog.metadata.json (recommendedAutomations). Substitute the saved app ID and table IDs returned by TrialAgents; recipients must be registered workspace members with access to the app. Nothing here is active.",
+  "note": "Fictional, unsaved follow-up reminder actions for Partnerships 2.1.0, set up in chat (prepare_app_action) or in Automations because they need the condition status = open, which install recipes cannot express yet. Partner research, the digest and meeting briefs are install recommendations in catalog.metadata.json (recommendedAutomations). Substitute the saved app ID and table IDs returned by TrialAgents; recipients must be registered workspace members with access to the app. Nothing here is active.",
   "reminderDue": {
     "name": "Partnerships follow-up due",
     "authoringKey": "partnerships_followup_due_v1",

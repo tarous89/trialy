@@ -36,10 +36,11 @@ async function suite(){
  await pg.query('INSERT INTO users(id,subject,email,name) VALUES($1::uuid,$1::text,$2,$3)',[human.userId,'anna@northwind.invalid','Anna (fictional)']);
  await pg.query("INSERT INTO oauth_tokens(hash,user_id,client_id,kind,family,expires_at) VALUES($1,$2,$3,'refresh',$4,$5)",[randomUUID(),human.userId,ai.clientId,ai.connectionFamily,Date.now()+86400000]);
  await syncTemplateCatalog(raw);
- // Partnerships 2.0.0, Contracts and Data Room are drafts in the repository catalog; they are approved only inside this disposable database.
- await pg.query("UPDATE app_template_catalog SET status='approved' WHERE (template_id='life.partnership-tracker' AND version='2.0.0') OR (template_id='life.contracts' AND version='1.0.0') OR (template_id='life.data-room' AND version='1.0.0')");
+ // Partnerships 2.1.0 is approved by the seed; Data Room is still a draft in the repository catalog and is approved only inside this disposable database.
+ assert.equal((await pg.query<any>("SELECT status FROM app_template_catalog WHERE template_id='life.partnership-tracker' AND version='2.1.0'")).rows[0].status,'approved');
+ await pg.query("UPDATE app_template_catalog SET status='approved' WHERE (template_id='life.partnership-tracker' AND version='2.1.0') OR (template_id='life.contracts' AND version='1.0.0') OR (template_id='life.data-room' AND version='1.0.0')");
  const f=new WorkspaceFoundation(db),s=new Service(db),catalog=new AppTemplates(undefined,db);
- const T={bd:await catalog.read({templateId:'life.partnership-tracker',version:'2.0.0'}),contracts:await catalog.read({templateId:'life.contracts',version:'1.0.0'}),room:await catalog.read({templateId:'life.data-room',version:'1.0.0'}),programs:await catalog.read({templateId:'life.project-oversight',version:'2.1.0'})};
+ const T={bd:await catalog.read({templateId:'life.partnership-tracker',version:'2.1.0'}),contracts:await catalog.read({templateId:'life.contracts',version:'1.0.0'}),room:await catalog.read({templateId:'life.data-room',version:'1.0.0'}),programs:await catalog.read({templateId:'life.project-oversight',version:'2.1.0'})};
  const install=async(w:string,t:any,name:string,connections:Record<string,string>={})=>{const target={install:{templateId:t.id,version:t.version,digest:t.digest,name,requestKey:randomUUID()}};const step=await dataAccessStep(f,human,w,target);
   return {step,receipt:step.needed?await confirmDataAccess(f,human,w,{...target,connections,stepDigest:step.digest,...(step.automations.length?{automations:step.automations.map((r:any)=>({key:r.key,enabled:true,settings:{}}))}:{})}):await installCatalogApp(f,human,w,target.install)};};
  const comp=async(w:string,id:string)=>(await f.readComponent(human,w,id)).component;

@@ -1,0 +1,1770 @@
+{
+  "organizations": {
+    "name": "Organizations",
+    "contract": "core.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "org_type",
+        "name": "Type",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "company",
+          "investor",
+          "cro",
+          "cdmo",
+          "site",
+          "funder",
+          "partner",
+          "agency",
+          "other"
+        ]
+      },
+      {
+        "key": "country",
+        "name": "Country",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "website",
+        "name": "Website",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "org_type": "org_type",
+      "country": "country",
+      "website": "website",
+      "archived": "archived"
+    }
+  },
+  "people": {
+    "name": "People",
+    "contract": "core.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "organization_id",
+        "name": "Organization",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an organizations record."
+      },
+      {
+        "key": "title",
+        "name": "Title",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "email",
+        "name": "Email",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "organization_id": "organization_id",
+      "title": "title",
+      "email": "email",
+      "archived": "archived"
+    }
+  },
+  "programs": {
+    "name": "Programs",
+    "contract": "core.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "code",
+        "name": "Code",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "indication",
+        "name": "Indication",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "modality",
+        "name": "Modality",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "small_molecule",
+          "biologic",
+          "antibody",
+          "cell_therapy",
+          "gene_therapy",
+          "rna",
+          "vaccine",
+          "device",
+          "other"
+        ]
+      },
+      {
+        "key": "stage",
+        "name": "Stage",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "discovery",
+          "preclinical",
+          "ind_enabling",
+          "phase_1",
+          "phase_2",
+          "phase_3",
+          "registration",
+          "approved"
+        ]
+      },
+      {
+        "key": "lead",
+        "name": "Lead",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "active",
+          "paused",
+          "stopped",
+          "partnered"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "code": "code",
+      "indication": "indication",
+      "modality": "modality",
+      "stage": "stage",
+      "lead": "lead",
+      "status": "status",
+      "archived": "archived"
+    }
+  },
+  "agreements": {
+    "name": "Agreements",
+    "contract": "core.v1",
+    "optional": true,
+    "readOnly": true,
+    "description": "CDAs, term sheets and signed agreements, read from Contracts' shared agreements table (core fields only) when it is connected at install. Partnerships never writes agreements: new ones are proposed in Contracts' reviewed path. Without it, the CDA, term sheet and agreement fields on an opportunity stay manual references.",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "counterparty_id",
+        "name": "Counterparty",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an organizations record."
+      },
+      {
+        "key": "agreement_type",
+        "name": "Agreement type",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "effective_date",
+        "name": "Effective date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "expiry_date",
+        "name": "Expiry date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "counterparty_id": "counterparty_id",
+      "agreement_type": "agreement_type",
+      "status": "status",
+      "effective_date": "effective_date",
+      "expiry_date": "expiry_date",
+      "archived": "archived"
+    }
+  },
+  "dataroom.access_grants": {
+    "name": "Data room access",
+    "contract": "dataroom.v1",
+    "optional": true,
+    "integration": true,
+    "description": "Integration: Data Room's access grants (read-only) once the user links Data Room inside Partnerships; otherwise Partnerships' own table for confidential access entered by hand (room, partner, status, dates; source manual).",
+    "fields": [
+      {
+        "key": "room_id",
+        "name": "Room",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "room_name",
+        "name": "Room name",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "room_purpose",
+        "name": "Room purpose",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "financing",
+          "licensing",
+          "partnering",
+          "m_and_a",
+          "other"
+        ],
+        "description": "Readers treat unknown values as other. partnering added 13 Nov 2026 (additive).",
+        "ai": true
+      },
+      {
+        "key": "organization_id",
+        "name": "Organization",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Record ID of an organizations record.",
+        "ai": true
+      },
+      {
+        "key": "person_id",
+        "name": "Person",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Record ID of a people record.",
+        "ai": true
+      },
+      {
+        "key": "granted_on",
+        "name": "Granted on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "expires_on",
+        "name": "Expires on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "invited",
+          "active",
+          "revoked",
+          "expired"
+        ],
+        "ai": true
+      },
+      {
+        "key": "agreement_accepted_on",
+        "name": "Agreement accepted on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source",
+        "name": "Source",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "manual",
+          "tracked"
+        ],
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "room_id": "room_id",
+      "room_name": "room_name",
+      "room_purpose": "room_purpose",
+      "organization_id": "organization_id",
+      "person_id": "person_id",
+      "granted_on": "granted_on",
+      "expires_on": "expires_on",
+      "status": "status",
+      "agreement_accepted_on": "agreement_accepted_on",
+      "source": "source"
+    }
+  },
+  "dataroom.engagement": {
+    "name": "Data room engagement",
+    "contract": "dataroom.v1",
+    "optional": true,
+    "integration": true,
+    "description": "Integration: Data Room's per-person, per-document engagement (read-only) once linked; otherwise Partnerships' own table, normally empty (engagement is only tracked by Data Room).",
+    "fields": [
+      {
+        "key": "grant_id",
+        "name": "Grant",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "organization_id",
+        "name": "Organization",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Record ID of an organizations record.",
+        "ai": true
+      },
+      {
+        "key": "person_id",
+        "name": "Person",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Record ID of a people record.",
+        "ai": true
+      },
+      {
+        "key": "document_ref",
+        "name": "Document reference",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "document_title",
+        "name": "Document title",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "first_viewed_on",
+        "name": "First viewed on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "last_viewed_on",
+        "name": "Last viewed on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "view_count",
+        "name": "Views",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "seconds_viewed",
+        "name": "Seconds viewed",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "downloads",
+        "name": "Downloads",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source",
+        "name": "Source",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "manual",
+          "docsend",
+          "sharevault",
+          "tracked"
+        ],
+        "ai": true
+      },
+      {
+        "key": "as_of",
+        "name": "As of",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "grant_id": "grant_id",
+      "organization_id": "organization_id",
+      "person_id": "person_id",
+      "document_ref": "document_ref",
+      "document_title": "document_title",
+      "first_viewed_on": "first_viewed_on",
+      "last_viewed_on": "last_viewed_on",
+      "view_count": "view_count",
+      "seconds_viewed": "seconds_viewed",
+      "downloads": "downloads",
+      "source": "source",
+      "as_of": "as_of"
+    }
+  },
+  "partnerships.settings": {
+    "name": "Partnerships settings",
+    "contract": "partnerships.v1",
+    "fields": [
+      {
+        "key": "digest_cadence",
+        "name": "Digest and research cadence",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "daily",
+          "weekly",
+          "monthly"
+        ],
+        "description": "Default weekly."
+      },
+      {
+        "key": "digest_day",
+        "name": "Digest day",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri",
+          "sat",
+          "sun"
+        ],
+        "description": "Weekly: the weekday; monthly: the first such weekday of the month. Default mon."
+      },
+      {
+        "key": "digest_time",
+        "name": "Digest time",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "HH:MM in the settings time zone. Default \"07:00\"."
+      },
+      {
+        "key": "time_zone",
+        "name": "Time zone",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "IANA time zone for the research and digest schedule (workspace time), e.g. Europe/Berlin."
+      },
+      {
+        "key": "digest_recipients",
+        "name": "Digest recipients",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Comma-separated workspace members (names or registered emails). TrialAgents sends only to registered members with access to this app."
+      },
+      {
+        "key": "digest_text",
+        "name": "Digest email text",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Intro line and section order override; blank uses the app default text."
+      },
+      {
+        "key": "research_enabled",
+        "name": "Research on",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Default true."
+      },
+      {
+        "key": "stalled_days",
+        "name": "Stalled after (days)",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Default 21."
+      },
+      {
+        "key": "lost_reasons",
+        "name": "Lost reasons",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array of reason labels. Blank uses the standard list."
+      },
+      {
+        "key": "team",
+        "name": "Team",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Comma-separated names of the people who own opportunities and follow-ups (plain text)."
+      }
+    ],
+    "logicalFields": {
+      "digest_cadence": "digest_cadence",
+      "digest_day": "digest_day",
+      "digest_time": "digest_time",
+      "time_zone": "time_zone",
+      "digest_recipients": "digest_recipients",
+      "digest_text": "digest_text",
+      "research_enabled": "research_enabled",
+      "stalled_days": "stalled_days",
+      "lost_reasons": "lost_reasons",
+      "team": "team"
+    }
+  },
+  "partnerships.asset_profiles": {
+    "name": "Asset profiles",
+    "contract": "partnerships.v1",
+    "fields": [
+      {
+        "key": "program_id",
+        "name": "Asset (program)",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a programs record."
+      },
+      {
+        "key": "directions",
+        "name": "Directions",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array of directions sought: out_license / in_license / co_development / research_collaboration / academic / platform / other."
+      },
+      {
+        "key": "deal_types",
+        "name": "Deal types",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array: license / co_development / option / research_collaboration / platform / acquisition / other."
+      },
+      {
+        "key": "territories",
+        "name": "Territories",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "target_profile",
+        "name": "Target profile",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "materials",
+        "name": "Materials",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array of {document_id, version_id, title, version} non-confidential materials."
+      },
+      {
+        "key": "research_focus",
+        "name": "Research focus",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "research_exclusions",
+        "name": "Research exclusions",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "research_sources",
+        "name": "Research sources",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Preferred public sources, one per line."
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "active",
+          "paused",
+          "done"
+        ]
+      }
+    ],
+    "logicalFields": {
+      "program_id": "program_id",
+      "directions": "directions",
+      "deal_types": "deal_types",
+      "territories": "territories",
+      "target_profile": "target_profile",
+      "materials": "materials",
+      "research_focus": "research_focus",
+      "research_exclusions": "research_exclusions",
+      "research_sources": "research_sources",
+      "status": "status"
+    }
+  },
+  "partnerships.opportunities": {
+    "name": "Opportunities",
+    "contract": "partnerships.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "organization_id",
+        "name": "Partner",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an organizations record."
+      },
+      {
+        "key": "program_id",
+        "name": "Asset (program)",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a programs record."
+      },
+      {
+        "key": "direction",
+        "name": "Direction",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "out_license",
+          "in_license",
+          "co_development",
+          "research_collaboration",
+          "academic",
+          "platform",
+          "other"
+        ]
+      },
+      {
+        "key": "stage",
+        "name": "Stage",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "identified",
+          "contacted",
+          "non_confidential",
+          "cda",
+          "confidential_evaluation",
+          "term_sheet",
+          "exclusivity_diligence",
+          "signed",
+          "lost",
+          "on_hold"
+        ]
+      },
+      {
+        "key": "stage_on",
+        "name": "Stage since",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "priority",
+        "name": "Priority",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "high",
+          "medium",
+          "low"
+        ]
+      },
+      {
+        "key": "fit",
+        "name": "Fit (1-5)",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "fit_rationale",
+        "name": "Fit rationale",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source",
+        "name": "Source",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "research",
+          "conference",
+          "inbound",
+          "outbound",
+          "referral",
+          "other"
+        ]
+      },
+      {
+        "key": "contact_ids",
+        "name": "Contacts",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Comma-separated record IDs of people records."
+      },
+      {
+        "key": "next_step",
+        "name": "Next step",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "next_date",
+        "name": "Next date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "lost_reason",
+        "name": "Lost or on-hold reason",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "cda_agreement_id",
+        "name": "CDA",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an agreements record (Contracts), or a manual reference when Contracts is not connected."
+      },
+      {
+        "key": "dataroom_room_id",
+        "name": "Data room",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Data Room room ID (from dataroom.access_grants room_id), or a manual reference."
+      },
+      {
+        "key": "term_sheet_agreement_id",
+        "name": "Term sheet",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an agreements record, or a manual reference."
+      },
+      {
+        "key": "agreement_id",
+        "name": "Signed agreement",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an agreements record, or a manual reference."
+      },
+      {
+        "key": "tags",
+        "name": "Tags",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON object: tag category name → array of values."
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "organization_id": "organization_id",
+      "program_id": "program_id",
+      "direction": "direction",
+      "stage": "stage",
+      "stage_on": "stage_on",
+      "owner": "owner",
+      "priority": "priority",
+      "fit": "fit",
+      "fit_rationale": "fit_rationale",
+      "source": "source",
+      "contact_ids": "contact_ids",
+      "next_step": "next_step",
+      "next_date": "next_date",
+      "lost_reason": "lost_reason",
+      "cda_agreement_id": "cda_agreement_id",
+      "dataroom_room_id": "dataroom_room_id",
+      "term_sheet_agreement_id": "term_sheet_agreement_id",
+      "agreement_id": "agreement_id",
+      "tags": "tags",
+      "archived": "archived"
+    }
+  },
+  "partnerships.stage_history": {
+    "name": "Stage history",
+    "contract": "partnerships.v1",
+    "fields": [
+      {
+        "key": "opportunity_id",
+        "name": "Opportunity",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a partnerships.opportunities record."
+      },
+      {
+        "key": "from_stage",
+        "name": "From stage",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "to_stage",
+        "name": "To stage",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "changed_on",
+        "name": "Changed on",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "changed_by",
+        "name": "Changed by",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "note",
+        "name": "Note",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "opportunity_id": "opportunity_id",
+      "from_stage": "from_stage",
+      "to_stage": "to_stage",
+      "changed_on": "changed_on",
+      "changed_by": "changed_by",
+      "note": "note"
+    }
+  },
+  "partnerships.activities": {
+    "name": "Activities",
+    "contract": "partnerships.v1",
+    "fields": [
+      {
+        "key": "opportunity_id",
+        "name": "Opportunity",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a partnerships.opportunities record."
+      },
+      {
+        "key": "organization_id",
+        "name": "Partner",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an organizations record."
+      },
+      {
+        "key": "kind",
+        "name": "Kind",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "meeting",
+          "call",
+          "email",
+          "conference_meeting",
+          "material_shared",
+          "note"
+        ]
+      },
+      {
+        "key": "occurred_on",
+        "name": "Date",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "person_ids",
+        "name": "Their people",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Comma-separated record IDs of people records."
+      },
+      {
+        "key": "team",
+        "name": "Our team",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "summary",
+        "name": "Summary",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "materials",
+        "name": "Materials shared",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array of {document_id, version_id, title, version}."
+      },
+      {
+        "key": "conference_id",
+        "name": "Conference",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a partnerships.conferences record."
+      },
+      {
+        "key": "logged_by",
+        "name": "Logged by",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "user",
+          "claude",
+          "chatgpt"
+        ]
+      },
+      {
+        "key": "tags",
+        "name": "Tags",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON object: tag category name → array of values."
+      },
+      {
+        "key": "outcome",
+        "name": "Outcome",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "After a conference meeting: what came out of it."
+      },
+      {
+        "key": "status",
+        "name": "Meeting status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "requested",
+          "confirmed",
+          "held",
+          "declined",
+          "cancelled"
+        ],
+        "description": "Conference meetings: request and schedule status."
+      }
+    ],
+    "logicalFields": {
+      "opportunity_id": "opportunity_id",
+      "organization_id": "organization_id",
+      "kind": "kind",
+      "occurred_on": "occurred_on",
+      "person_ids": "person_ids",
+      "team": "team",
+      "summary": "summary",
+      "materials": "materials",
+      "conference_id": "conference_id",
+      "logged_by": "logged_by",
+      "tags": "tags",
+      "outcome": "outcome",
+      "status": "status"
+    }
+  },
+  "partnerships.follow_ups": {
+    "name": "Follow-ups",
+    "contract": "partnerships.v1",
+    "fields": [
+      {
+        "key": "opportunity_id",
+        "name": "Opportunity",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a partnerships.opportunities record."
+      },
+      {
+        "key": "activity_id",
+        "name": "Activity",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a partnerships.activities record."
+      },
+      {
+        "key": "title",
+        "name": "Title",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "due",
+        "name": "Due",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "open",
+          "done",
+          "cancelled"
+        ]
+      },
+      {
+        "key": "done_on",
+        "name": "Done on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "opportunity_id": "opportunity_id",
+      "activity_id": "activity_id",
+      "title": "title",
+      "owner": "owner",
+      "due": "due",
+      "status": "status",
+      "done_on": "done_on"
+    }
+  },
+  "partnerships.conferences": {
+    "name": "Conferences",
+    "contract": "partnerships.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "starts_on",
+        "name": "Starts",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "ends_on",
+        "name": "Ends",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "location",
+        "name": "Location",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "platform",
+        "name": "Partnering platform",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "partneringone",
+          "bio_one_on_one",
+          "other",
+          "none"
+        ]
+      },
+      {
+        "key": "deadlines",
+        "name": "Deadlines",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array of {label, date}: profile, request rounds, meeting confirmation."
+      },
+      {
+        "key": "goals",
+        "name": "Goals",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "team",
+        "name": "Team",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "planning",
+          "live",
+          "done"
+        ]
+      },
+      {
+        "key": "tag_value",
+        "name": "Tag value",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Value of the standard Conference tag category, e.g. \"BIO-Europe 2026\"."
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "starts_on": "starts_on",
+      "ends_on": "ends_on",
+      "location": "location",
+      "platform": "platform",
+      "deadlines": "deadlines",
+      "goals": "goals",
+      "team": "team",
+      "status": "status",
+      "tag_value": "tag_value"
+    }
+  },
+  "partnerships.briefs": {
+    "name": "Briefs",
+    "contract": "partnerships.v1",
+    "fields": [
+      {
+        "key": "opportunity_id",
+        "name": "Opportunity",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a partnerships.opportunities record."
+      },
+      {
+        "key": "conference_id",
+        "name": "Conference",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a partnerships.conferences record."
+      },
+      {
+        "key": "activity_id",
+        "name": "Meeting",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of the partnerships.activities meeting it prepares."
+      },
+      {
+        "key": "meeting_on",
+        "name": "Meeting on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "content",
+        "name": "Brief",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "sources",
+        "name": "Sources",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array of {title, url}."
+      },
+      {
+        "key": "written_by",
+        "name": "Written by",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "claude",
+          "chatgpt",
+          "user"
+        ]
+      },
+      {
+        "key": "written_on",
+        "name": "Written on",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "opportunity_id": "opportunity_id",
+      "conference_id": "conference_id",
+      "activity_id": "activity_id",
+      "meeting_on": "meeting_on",
+      "content": "content",
+      "sources": "sources",
+      "written_by": "written_by",
+      "written_on": "written_on"
+    }
+  },
+  "partnerships.signals": {
+    "name": "Signals",
+    "contract": "partnerships.v1",
+    "fields": [
+      {
+        "key": "organization_id",
+        "name": "Partner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an organizations record."
+      },
+      {
+        "key": "opportunity_id",
+        "name": "Opportunity",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a partnerships.opportunities record."
+      },
+      {
+        "key": "program_id",
+        "name": "Asset (program)",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a programs record."
+      },
+      {
+        "key": "kind",
+        "name": "Kind",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "deal",
+          "trial",
+          "pipeline",
+          "financing",
+          "people",
+          "news",
+          "target_suggestion"
+        ]
+      },
+      {
+        "key": "title",
+        "name": "Title",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "For a target suggestion: the suggested company name."
+      },
+      {
+        "key": "why",
+        "name": "Why it matters",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source_url",
+        "name": "Source URL",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "published_on",
+        "name": "Published",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "found_on",
+        "name": "Found",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "new",
+          "reviewed",
+          "dismissed",
+          "accepted"
+        ]
+      },
+      {
+        "key": "dismiss_reason",
+        "name": "Dismiss reason",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "run_id",
+        "name": "Research run",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "organization_id": "organization_id",
+      "opportunity_id": "opportunity_id",
+      "program_id": "program_id",
+      "kind": "kind",
+      "title": "title",
+      "why": "why",
+      "source_url": "source_url",
+      "published_on": "published_on",
+      "found_on": "found_on",
+      "status": "status",
+      "dismiss_reason": "dismiss_reason",
+      "run_id": "run_id"
+    }
+  },
+  "partnerships.tag_categories": {
+    "name": "Tag categories",
+    "contract": "partnerships.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "values",
+        "name": "Values",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array of value labels."
+      },
+      {
+        "key": "multiple",
+        "name": "Several values",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "standard",
+        "name": "Standard",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "values": "values",
+      "multiple": "multiple",
+      "standard": "standard",
+      "archived": "archived"
+    }
+  },
+  "partnerships.views": {
+    "name": "Saved views",
+    "contract": "partnerships.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "filters",
+        "name": "Filters",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON {tags:{category:[values]}, stage:[], program:[], direction:[], owner:[]}."
+      },
+      {
+        "key": "layout",
+        "name": "Layout",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "board",
+          "list",
+          "funnel"
+        ]
+      },
+      {
+        "key": "shared",
+        "name": "Shared with the team",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "filters": "filters",
+      "layout": "layout",
+      "shared": "shared",
+      "owner": "owner",
+      "archived": "archived"
+    }
+  }
+}
