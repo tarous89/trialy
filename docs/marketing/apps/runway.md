@@ -27,6 +27,7 @@
 | LivePlan alternatives (B5) | https://trialagents.com/apps/liveplan-alternatives-biotech | Published via PR #199, release `9a808396e45a4a91c558d559a514499af4161149`; live verified 14 November 2026 01:14 CET. |
 | Fathom alternatives (B6) | https://trialagents.com/apps/fathom-alternatives-biotech | Published via PR #200, release `6496bc32f293ac9407d995a7cf6b602efdafeb4e`; live verified 14 November 2026 02:08 CET. |
 | AI-native FP&A software (B7) | https://trialagents.com/apps/ai-native-fpa-software-startups | Published via PR #201, release `c06d8d07ea083c2b4268095b9092d02b54506781`; live verified 14 November 2026 03:00 CET. |
+| Excel and Google Sheets alternatives for biotech budgeting (B8) | https://trialagents.com/apps/excel-google-sheets-alternatives-biotech | Published via PR #202, release `c141f6b7d490bc04cbf9ce7093d1604b1e3b08c6`; live verified 14 November 2026 04:02 CET. |
 | App pages index | https://trialagents.com/apps | Published; production URL checked 12 November 2026 |
 
 These are intended canonical URLs. Do not assert that a URL is live until checked on the production CDN.
@@ -543,3 +544,17 @@ This supersedes B7 claim/source/pending checkpoints. **21 published; 26 unfinish
 ### B8 merged — deployment pending, 14 November 2026 03:59 CET
 
 PR https://github.com/tarous89/trialagents-public/pull/202 merged as `c141f6b7d490bc04cbf9ce7093d1604b1e3b08c6` at approximately 02:59 UTC. Exact source head `6afc15ad11c1e9145a2de662ca25c6fa2e61b772` passed predeploy run `43548440527` (validate and seo-container). Desktop 1440px and mobile 390px screenshots in artifact `14094917561` were visually inspected: shell, text, genuine screenshots, contained comparison table, and final CTA render correctly. Automatic GitHub-connected CDN deployment is pending independent live verification at https://trialagents.com/apps/excel-google-sheets-alternatives-biotech. Do not draft another article until this release is reconciled. Tracking source remains unchanged; no synthetic events sent. Totals remain 21 published, 26 unfinished until verification.
+
+
+### B8 published and live verified — 14 November 2026, 04:02 CET
+
+- **Title:** Excel and Google Sheets alternatives for biotech budgeting: what should you replace?
+- **Live URL:** https://trialagents.com/apps/excel-google-sheets-alternatives-biotech
+- **Source/release:** [PR #202](https://github.com/tarous89/trialagents-public/pull/202), exact validated head `6afc15ad11c1e9145a2de662ca25c6fa2e61b772`, merged release `c141f6b7d490bc04cbf9ce7093d1604b1e3b08c6` at approximately 02:59 UTC.
+- **Predeploy and responsive QA:** run `43548440527` passed validate and seo-container; desktop 1440px and mobile 390px artifact `14094917561` visually inspected, including shell, contained comparison table, two genuine Runway screenshots, sources and last CTA. Live article fragment and shared CSS exactly match the validated source.
+- **Deployment:** automatic GitHub-connected Cloudflare build succeeded, check `132307956973`. Initial 404s resolved to HTTP 200 within approximately two minutes; no Cloudflare dashboard sign-in or manual deployment. Generic production check `132307503343` also passed but was not used as article-publication proof.
+- **Independent live checks:** HTTP 200 HTML, expected H1/title/description/self-canonical, Article and BreadcrumbList schema, publication date, no noindex, matching homepage header/footer, valid local anchors, four images (including embedded official Jirav SVG), one final Start with Runway CTA, and all 14 checked linked URLs/assets HTTP 200. /apps, sitemap.xml, llms.txt and llm.xml returned HTTP 200 and contain the article; sitemap contains one canonical entry; robots.txt does not block /apps.
+- **Tracking preserved:** article uses the identical homepage loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js`; both returned HTTP 200. Existing scripts, configuration, consent, events, collectors and attribution were not modified. Verification used HTTP retrieval and predeploy browser artifacts; no synthetic production events were sent.
+- **Editorial scope:** first-party, conditional shortlist organized by which spreadsheet responsibility changes; Airtable, Aleph and Jirav claims linked to current primary documentation. Genuine Runway 2.1 media, no pricing, invented benchmarks or host tests, no automatic workbook conversion or standard 13-week feature claim.
+
+This supersedes B8 source and merged-pending checkpoints. **22 published; 25 unfinished**, including owner-deferred A9. **Next eligible: C1, Best Cash Runway Management Apps That Work Inside ChatGPT**, subject to fresh queue, claim, duplicate and primary-evidence checks. Only B8 was newly published in this run. Search indexing, rankings and assistant citations remain unverified.
