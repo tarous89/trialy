@@ -775,3 +775,8 @@ Evidence: current life.cash-runway 2.1.0 catalog; genuine media README and 06-ac
 Fictional all-EUR two-month example independently checked with Decimal: opening 3m at 31 December 2026; Jan/Feb monthly Clinical300k/CMC80k/Research40k/G&A80k, inclusive of all people costs, no other flows. January actual Clinical180k; other categories match. Total actual380k vs budget500k; variance −120k; closing2.62m. Remaining120k confirmed due February; revised February620k closes at2m, equal to original two-month budget. No claim of permanent saving or full cash-out date. Genuine browser screenshots use separate fictional data.
 
 Local arithmetic, structure/anchors/final CTA and JS syntax pass. Seven source files; shared shell, CSS and analytics unchanged. Await full exact-head predeploy, visual artifacts, merge and independent live checks. Resume PR #210 before drafting another topic. 29 published, 18 unfinished. Refresh on catalog/calculation/permission changes.
+
+
+### D2 merged — deployment pending, 14 November 2026
+
+PR #210 merged as `5f6a0d2fe2e923f9e29c4b6af75c55d58cac7eda` at approximately 17:59:12 UTC / 18:59:12 CET. Exact source head `c74732431f1179d4a3ab157b98885cd4b378807d` passed full predeploy run `43623342839` (validate and seo-container). Artifact `14125755374` matches that head; desktop 1440px and mobile 390px inspected through every section, contained scrolling table, Actuals/Cash flow screenshots, captions, final CTA and shared shell. Initial HTTP 404 is deployment pending, not an authentication fault. Await existing automatic GitHub-connected build and independent live QA at https://trialagents.com/apps/clinical-stage-biotech-financial-planning. Resume this release before another draft. Totals remain 29 published, 18 unfinished.
