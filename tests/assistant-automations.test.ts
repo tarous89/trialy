@@ -33,6 +33,8 @@ test('ChatGPT and Claude each own their runner and automations; either can pause
   // The app itself is not under test; insert it directly so no code sandbox is needed.
   const app={id:randomUUID()};await pg.query("INSERT INTO workspace_components(id,workspace_id,name,format,source,source_access,created_by,project_id) VALUES($1,$2,'Tracker','frontend-js','return {html:\"<h1>Tracker</h1>\"};','bindings',$3,(SELECT id FROM workspace_nodes WHERE workspace_id=$2 ORDER BY created_at LIMIT 1))",[app.id,w.id,human.userId]);
 
+  const tp=await domain.preview(human,w.id,{kind:'create_type',name:'Findings',fields:[{key:'name',name:'Name',kind:'text'}]}),tid=(await domain.commit(human,tp.id,tp.digest)).objects[0].id;await pg.query('UPDATE workspace_components SET bindings=$2 WHERE id=$1',[app.id,JSON.stringify([{typeId:tid,fields:['name']}])]);
+
   // Separate runners per assistant.
   const pg1=await as(chatgpt,()=>s.prepare(chatgpt,w.id,{preferences:{time:'06:00',timeZone:'Europe/Berlin'}})),chatgptRunner=await s.confirm(human,w.id,pg1.id,pg1.digest);
   const pc1=await as(claude,()=>s.prepare(claude,w.id,{preferences:{time:'07:00',timeZone:'Europe/Berlin'}})),claudeRunner=await s.confirm(human,w.id,pc1.id,pc1.digest);

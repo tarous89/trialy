@@ -1,3 +1,5 @@
+Research/drafting decision (14 November 2026): new automations must store output in the app database. The same install/setup approval includes required app-scoped write permission; no separate optional write opt-in. Missing write access means Needs setup. Completed production work requires verified saves; no-update and deliberate read-only tests remain distinct. Existing saved approvals are not silently expanded.
+
 # TrialAgents — current project context
 
 Updated 14 November 2026 (Europe/Berlin). Read this before changing product behavior or authoring apps. Repository: `tarous89/trialy`; product: **TrialAgents**, not Trialy. Platform: https://platform.trialagents.com; MCP: https://platform.trialagents.com/mcp. Intel and CTIS are separate products.

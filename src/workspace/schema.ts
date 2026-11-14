@@ -11,6 +11,7 @@ import {id,recordWriteSchema,fieldsSchema,newFieldsSchema,dataConceptSchema} fro
 const text=z.string().trim().min(1).max(1000);
 export const maintenanceSchema=z.object({
  autoWrite:z.boolean().default(false),expiresAt:z.iso.datetime().optional(),
+ monitorId:id.optional(),
  projectId:id,purpose:text,inclusionCriteria:text,sourcePolicy:text,
  basis:z.enum(['multiple_entries','repeated_actions','tracking','expected_reuse']),
  bindings:z.array(z.object({typeId:id,fields:z.array(z.string().min(1).max(64)).min(1).max(100)}).strict()).min(1).max(100),

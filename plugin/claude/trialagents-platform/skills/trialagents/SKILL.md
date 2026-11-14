@@ -48,3 +48,5 @@ Each assistant owns the automations it created. From Claude you can read and **p
 ## Limits
 
 If a guide retrieval fails, retry once without creating new objects. If a required schema, runtime or review contract stays unavailable, keep the app or draft, explain the blocker and pause that dependent step. TrialAgents is not intended for patient-level data or regulated clinical decisions; make no regulatory certification claims.
+
+Research and drafting automations must save results in the app database. Include the required scoped write permissions in the same installation/setup approval; they are not an optional add-on. Follow automation guide 1.4.5 or later. Missing writable storage is Needs setup, never proposal-only activation. Save through the active run’s approved grants and verify receipts before reporting completion. App access limits and assistant-specific restrictions still apply.

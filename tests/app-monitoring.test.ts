@@ -95,6 +95,38 @@ test('monitoring is optional, independent of templates and guarded by production
    const expiryMonitor=await create({maxRunsPerDay:1}),first=await start(expiryMonitor.id);await m.finish(ai,w.id,{runId:first.id,status:'no_update',summary:'No update.'});await assert.rejects(start(expiryMonitor.id),/limit/);
    await pg.query("UPDATE app_monitors SET config=jsonb_set(config,'{expiresAt}',to_jsonb($2::text)) WHERE id=$1",[expiryMonitor.id,new Date(Date.now()-1000).toISOString()]);await assert.rejects(start(expiryMonitor.id),/expired/);
   });
+  await t.test('research and drafts require app storage, approved once and restricted to the active run',async()=>{
+   const resultApp=await change({kind:'save_component',projectId:project.id,content:{name:'Research and drafts',format:'frontend-js',sourceAccess:'bindings',source:'return {html:"<h1>Results</h1>"};',manifest:{version:1,scope:'project',fields:['name','url','notes'].map(field=>({id:field,typeId:table,field,kind:'text',schemaVersion:0,mode:'write'}))},bindings:[{typeId:table,fields:['name','url','notes']}]}});
+   const options=config({appId:resultApp.id,storeResults:true,inheritAppAccess:true,maxChangesPerRun:2});
+   const before=Number((await pg.query<any>('SELECT count(*) AS n FROM maintenance_scopes')).rows[0].n),draft=await m.prepare(owner,w.id,{config:options});
+   assert.equal(Number((await pg.query<any>('SELECT count(*) AS n FROM maintenance_scopes')).rows[0].n),before);
+   assert.equal(draft.body.storage.length,1);assert.deepEqual(draft.body.storage[0].body.bindings[0].fields,['name','url','notes']);
+   assert.equal(draft.body.storage[0].body.allowIdentityLinks,false);
+   const saved=await m.confirm(owner,w.id,draft.id,draft.digest);assert.deepEqual(await m.confirm(owner,w.id,draft.id,draft.digest),saved);
+   assert.equal(Number((await pg.query<any>('SELECT count(*) AS n FROM maintenance_scopes')).rows[0].n),before+1);
+   const read=await m.read(ai,w.id,saved.id),grant=read.config.writeScopes[0];assert.equal(read.config.storeResults,true);assert.equal(read.config.writeBindings,undefined);
+   const run=await start(saved.id),batch={scopeId:grant.scopeId,expectedScopeVersion:0,requestKey:randomUUID(),sourceLabel:'https://example.org/evidence',interpretation:'Source-backed research and draft',changes:[{kind:'create_record',typeId:table,data:{name:'Research result',url:'https://example.org/evidence',notes:'Draft text saved in the app'}}]};
+   await assert.rejects(m.finish(ai,w.id,{runId:run.id,status:'completed',summary:'Unsaved output'}),(e:any)=>e.code==='results_not_saved');
+   await assert.rejects(m.finish(ai,w.id,{runId:run.id,status:'no_update',summary:'Unsaved output',findings:[{title:'New finding',detail:'Relevant evidence',relevant:true}]}),(e:any)=>e.code==='results_not_saved');
+   await assert.rejects(withActor(ai,()=>f.maintain(ai,w.id,batch)),(e:any)=>e.code==='monitoring_write_scope');
+   await assert.rejects(m.prepare(owner,w.id,{config:{...options,writeScopes:[grant]}}),(e:any)=>e.code==='monitoring_write_scope','One automation cannot reuse another automation’s new grant');
+   await withActor(other,()=>assert.rejects(m.read(other,w.id,saved.id)));
+   const receipt=await withActor(ai,()=>f.maintain(ai,w.id,batch,undefined,false,run.id));assert.equal(receipt.status,'saved');
+   assert.deepEqual(await withActor(ai,()=>f.maintain(ai,w.id,batch,undefined,false,run.id)),receipt);
+   const record=await f.record(db,owner,w.id,receipt.recordIds[0]);assert.equal(record.data.notes,'Draft text saved in the app');assert.deepEqual((await m.records(ai,w.id,run.id,table)).rows.map((r:any)=>r.id),[record.id],'New output is visible through the app project boundary');assert.equal((await pg.query('SELECT id FROM project_records WHERE record_id=$1 AND project_id=$2',[record.id,project.id])).rows.length,1);
+   const update={...batch,requestKey:randomUUID(),changes:[{kind:'update_record',recordId:record.id,expectedVersion:record.version,data:{notes:'Revised draft'}}]};
+   await withActor(ai,()=>f.maintain(ai,w.id,update,undefined,false,run.id));assert.equal((await f.record(db,owner,w.id,record.id)).data.notes,'Revised draft');
+   const result=await m.finish(ai,w.id,{runId:run.id,status:'completed',summary:'Research and draft saved'});assert.equal(result.savedChanges,2);assert.deepEqual(result.recordIds,[record.id]);
+   const quiet=await start(saved.id);await m.finish(ai,w.id,{runId:quiet.id,status:'no_update',summary:'No new findings'});
+   const stale=await m.prepare(owner,w.id,{config:{...options,writeBindings:[{typeId:table,fields:['name'],allowCreate:true,allowUpdate:false}]}});
+   await pg.query('UPDATE workspaces SET permission_rules=$2 WHERE id=$1',[w.id,JSON.stringify([{subject:'chatgpt',kind:'column',resourceId:table,field:'name',read:'inherit',write:'deny'}])]);
+   await assert.rejects(m.confirm(owner,w.id,stale.id,stale.digest),(e:any)=>e.code==='result_storage_required');
+   assert.equal(Number((await pg.query<any>('SELECT count(*) AS n FROM maintenance_scopes')).rows[0].n),before+1);
+   await pg.query("UPDATE workspaces SET permission_rules='[]'::jsonb WHERE id=$1",[w.id]);
+   const copied=await change({kind:'copy_component',sourceComponentId:resultApp.id,expectedVersion:0,projectId:project.id,name:'Copied results app',copyAutomations:true}),copiedMonitor=(await pg.query<any>('SELECT * FROM app_monitors WHERE app_id=$1',[copied.id])).rows[0];assert.equal(copiedMonitor.enabled,false);assert.deepEqual(copiedMonitor.config.writeScopes,[]);await assert.rejects(m.control(owner,w.id,copiedMonitor.id,0,true),(e:any)=>e.code==='result_storage_required');
+   await f.revoke(owner,w.id,grant.scopeId);assert.equal((await m.read(ai,w.id,saved.id)).availability,'authorization_required');
+   await assert.rejects(m.prepare(owner,w.id,{config:config({storeResults:true})}),(e:any)=>e.code==='result_storage_required','No destination means needs setup, never proposal-only activation');
+  });
   await t.test('schema changes between preparation and approval cannot silently broaden monitoring',async()=>{
    const draft=await m.prepare(owner,w.id,{config:config({readBindings:[{typeId:table,fields:['name']}]})});
    await save({kind:'update_type',typeId:table,expectedVersion:0,name:'Evidence',fields:[{key:'name',name:'Reinterpreted field',kind:'text'},{key:'url',name:'Source',kind:'text'},{key:'notes',name:'Notes',kind:'text'},{key:'secret',name:'Private',kind:'text',ai:false}]});

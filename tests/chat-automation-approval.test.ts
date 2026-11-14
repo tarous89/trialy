@@ -41,7 +41,8 @@ test('ChatGPT confirms exact automation reviews under the real AI identity and r
  const w=await withActor(owner,()=>domain.createWorkspace(owner,'Chat approval tests'));
  await withActor(owner,()=>domain.setAi(owner,w.id,true));
  const app=await withActor(owner,async()=>{
-  const p=await f.preview(owner,w.id,{kind:'save_component',content:{name:'Approval fixture',format:'frontend-js',sourceAccess:'bindings',source:'return {html:"<h1>Fixture</h1>"};',bindings:[]}});
+  const tableDraft=await domain.preview(owner,w.id,{kind:'create_type',name:'Research results',fields:[{key:'name',name:'Name',kind:'text'}]});const table=(await domain.commit(owner,tableDraft.id,tableDraft.digest)).objects[0].id;
+  const p=await f.preview(owner,w.id,{kind:'save_component',content:{name:'Approval fixture',format:'frontend-js',sourceAccess:'bindings',source:'return {html:"<h1>Fixture</h1>"};',bindings:[{typeId:table,fields:['name']}]}});
   return f.confirm(owner,w.id,p.id,p.digest);
  });
  let current=ai;
@@ -71,9 +72,10 @@ test('ChatGPT confirms exact automation reviews under the real AI identity and r
   assert.equal((await pg.query<any>('SELECT count(*) AS n FROM automation_runners')).rows[0].n,1);
  });
  const config={appId:app.id,name:'Weekly public research',objective:'Find new public signals',instructions:'Research public primary sources; save only within existing write scopes.',sourcePolicy:'Primary public sources',schedule:{description:'Every Friday at 09:00',timeZone:'Europe/Berlin'},expiresAt:'2099-01-01T00:00:00Z',automation:{runnerId:'',trigger:{kind:'calendar',frequency:'weekly',weekdays:[5],time:'09:00',timeZone:'Europe/Berlin',anchor:'2026-11-02'}}};
- await t.test('research confirmation creates only the agreed schedule, without new data grants',async()=>{
+ await t.test('research confirmation includes reviewed app storage and creates no grant before approval',async()=>{
   config.automation.runnerId=runner.id;
   const p=await withActor(ai,()=>monitors.prepare(ai,w.id,{config}));
+  assert.equal((await pg.query<any>('SELECT count(*) AS n FROM maintenance_scopes')).rows[0].n,0);assert.equal(p.body.storage.length,1);
   await withActor(ai,()=>assert.rejects(monitors.confirm(ai,w.id,p.id,p.digest,p.review),/approve/));
   const beforeConnection=saved(await call('read_app_service_review',{reviewId:p.id}));assert.equal(beforeConnection.review,p.review);assert.equal(beforeConnection.preflight.researchReady,false);assert.equal(beforeConnection.preflight.runner.state,'awaiting_subscription');assert.equal(beforeConnection.preflight.nextSteps[0].kind,'connect_runner');
   assert.equal((await confirm(p)).structuredContent.code,'runner_not_ready');assert.equal((await pg.query<any>('SELECT count(*) AS n FROM app_monitors')).rows[0].n,0);
@@ -82,8 +84,8 @@ test('ChatGPT confirms exact automation reviews under the real AI identity and r
   const work=saved(await call('read_automation_agenda',{runnerId:runner.id})).rows[0],claim=saved(await call('claim_automation_work',{runnerId:runner.id,occurrenceId:work.id,requestKey:randomUUID()}));saved(await call('finish_automation_work',{occurrenceId:work.id,claimToken:claim.claimToken}));
   const afterConnection=saved(await call('read_app_service_review',{reviewId:p.id}));assert.equal(afterConnection.preflight.researchReady,true);assert.equal(afterConnection.digest,p.digest);assert.equal(afterConnection.review,p.review);
   monitor=saved(await confirm(p));assert.equal(monitor.scheduleManagedBy,'trialagents');assert.equal(monitor.taskCreated,false);assert.deepEqual(saved(await confirm(p)),monitor);
-  const row=(await pg.query<any>('SELECT config FROM app_monitors WHERE id=$1',[monitor.id])).rows[0];assert.deepEqual(row.config.writeScopes,[]);
-  assert.equal((await pg.query<any>('SELECT count(*) AS n FROM maintenance_scopes')).rows[0].n,0);
+  const row=(await pg.query<any>('SELECT config FROM app_monitors WHERE id=$1',[monitor.id])).rows[0];assert.equal(row.config.writeScopes.length,1);assert.equal(row.config.storeResults,true);
+  assert.equal((await pg.query<any>('SELECT count(*) AS n FROM maintenance_scopes')).rows[0].n,1);
  });
  await t.test('email action approval preserves recipients and never sends during confirmation',async()=>{
   const p=saved(await call('prepare_app_action',{config:{appId:app.id,appVersion:0,name:'Approved follow-up',trigger:{kind:'manual'},expiresAt:'2099-01-01T00:00:00Z',steps:[{id:'email',kind:'email',to:'account',subject:'Reviewed subject',text:'Reviewed message'}]}}));

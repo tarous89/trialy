@@ -34,7 +34,7 @@ async function liveDefinition(db:Database,row:any){
 export function installationRecipeIntent(recipe:AutomationRecipe,settings:z.infer<typeof recipeSettings>,step:any,templateDigest:string){
  const runners=step.automationRunners.filter((r:any)=>settings.runnerId===undefined||r.id===settings.runnerId);
  const runner=recipe.research&&settings.runnerId!==null&&runners.length===1?runners[0]:null;
- return {recipe,contextRecordId:null,installation:{templateDigest,settings:{...settings,runnerId:settings.runnerId??runner?.id??null,recipients:settings.recipients??[step.automationRecipient]},runnerVersion:runner?.version??null,runnerAssistant:runner?.assistant??null},expiresAt:new Date(Date.now()+recipe.lifetimeDays*86400000).toISOString()};
+ return {recipe,...(recipe.research?{resultStorage:'app'}:{}),contextRecordId:null,installation:{templateDigest,settings:{...settings,runnerId:settings.runnerId??runner?.id??null,recipients:settings.recipients??[step.automationRecipient]},runnerVersion:runner?.version??null,runnerAssistant:runner?.assistant??null},expiresAt:new Date(Date.now()+recipe.lifetimeDays*86400000).toISOString()};
 }
 
 export async function recipeSetupOptions(db:Database,a:Actor,w:string){
@@ -95,7 +95,7 @@ export async function recipeIntent(db:Database,a:Actor,w:string,c:any,recipe:Aut
  const installed=(await db.query("SELECT result FROM workspace_receipts WHERE workspace_id=$1 AND user_id=$2 AND result->>'appId'=$3 AND result ? 'templateId' LIMIT 1",[w,a.userId,c.id])).rows[0]?.result;
  const provenance=installed?{appId:c.id,templateId:installed.templateId,templateVersion:installed.templateVersion,templateDigest:installed.templateDigest}:{appId:c.id};
  const brief=r.research?.briefBinding?c.execution.find((x:any)=>x.name===r.research?.briefBinding):null;
- return {recipe:r,parent,brief:brief?{binding:brief.name,revisionId:brief.revisionId}:null,provenance,summary:summary?{binding:summary.name,revisionId:summary.revisionId}:null,roles,scope:scope(c),appVersion:c.version,contextRecordId:contextRecordId??null,contextLabel,runnerId:settings.runnerId??runner?.id??null,runnerVersion:runner?.version??null,runnerAssistant:runner?.assistant??null,recipients:settings.recipients??[account.email.toLowerCase()],expiresAt:new Date(Date.now()+r.lifetimeDays*86400000).toISOString()};
+ return {recipe:r,...(r.research?{resultStorage:'app'}:{}),parent,brief:brief?{binding:brief.name,revisionId:brief.revisionId}:null,provenance,summary:summary?{binding:summary.name,revisionId:summary.revisionId}:null,roles,scope:scope(c),appVersion:c.version,contextRecordId:contextRecordId??null,contextLabel,runnerId:settings.runnerId??runner?.id??null,runnerVersion:runner?.version??null,runnerAssistant:runner?.assistant??null,recipients:settings.recipients??[account.email.toLowerCase()],expiresAt:new Date(Date.now()+r.lifetimeDays*86400000).toISOString()};
 }
 
 export async function saveRecipeIntent(db:Database,a:Actor,w:string,appId:string,body:any){
@@ -142,6 +142,7 @@ export async function reconcileRecipeSetups(db:Database){
   try{await withActor(a,async()=>{
    const approval=(await tx.query('SELECT digest,body,assistant FROM automation_recipe_approvals WHERE setup_id=$1 AND revision=$2',[row.id,row.revision])).rows[0];
    if(!approval||approval.digest!==row.digest||approval.assistant!==row.assistant||recipeDigest(approval.body)!==row.digest||recipeDigest(approved)!==row.digest)fail(409,'review_changed','Stored approval changed');
+   if(r.research&&approved.resultStorage!=='app')fail(409,'result_storage_review_required','Review required app write permission before activating research or drafting');
    const c=await app(d,a,w,row.app_id);
    if(approved.installation){
     if(c.version!==0)fail(409,'scope_changed','App changed after installation; review automation setup');
@@ -162,7 +163,7 @@ export async function reconcileRecipeSetups(db:Database){
     if(!b.runnerId)fail(409,'runner_required','Choose a verified background connection');
     const runner=await new AutomationService(d).runner(a,w,b.runnerId);if(runner.version!==b.runnerVersion)fail(409,'runner_changed','Review setup after the background connection changed');
     await new AutomationService(d).requireReady(a,w,b.runnerId);
-    const s=new AppMonitoring(d),p=await s.prepare(a,w,{config:{name:r.name,appId:c.id,inheritAppAccess:true,...(b.brief?{brief:b.brief}:{}),objective:r.research.objective,instructions:r.research.instructions,sourcePolicy:r.research.sourcePolicy,readBindings:r.research.readBindings.map(x=>({typeId:type(x.role),fields:x.fields})),writeScopes:[],schedule:{description:r.description,timeZone:trigger.timeZone??'UTC'},automation:{runnerId:b.runnerId,trigger},authoringKey,expiresAt:b.expiresAt}});
+    const s=new AppMonitoring(d),p=await s.prepare(a,w,{config:{name:r.name,appId:c.id,inheritAppAccess:true,...(b.brief?{brief:b.brief}:{}),objective:r.research.objective,instructions:r.research.instructions,sourcePolicy:r.research.sourcePolicy,readBindings:r.research.readBindings.map(x=>({typeId:type(x.role),fields:x.fields})),...(r.research.writeBindings?{writeBindings:r.research.writeBindings.map(({role,...binding})=>({...binding,typeId:type(role)}))}:{}),schedule:{description:r.description,timeZone:trigger.timeZone??'UTC'},automation:{runnerId:b.runnerId,trigger},authoringKey,expiresAt:b.expiresAt}});
     saved=await s.confirm(a,w,p.id,p.digest,p.review);
    }else{
     if(r.email?.summaryBinding&&!b.summary)fail(409,'summary_binding','Bind the reviewed summary function first');
