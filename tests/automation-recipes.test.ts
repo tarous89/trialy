@@ -1,16 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
-import {readFile,readdir} from 'node:fs/promises';
+import {readFile,readdir,mkdtemp,writeFile,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
 import {AsyncLocalStorage} from 'node:async_hooks';
 import {PGlite} from '@electric-sql/pglite';
 import type {Database,Connection} from '../src/db/database.js';
 import {withActor,withDatabaseContext,setDatabaseContext,databaseContext} from '../src/db/context.js';
 import {Service} from '../src/domain/service.js';
 import {WorkspaceFoundation} from '../src/workspace/service.js';
-import {appTemplateEntry} from '../src/workspace/app-templates.js';
+import {appTemplateEntry,AppTemplates} from '../src/workspace/app-templates.js';
 import {dataAccessStep,confirmDataAccess} from '../src/workspace/data-access.js';
-import {automationRecipe,readRecipes} from '../src/automations/recipes-schema.js';
+import {automationRecipe,readRecipes,validateRecipeDeclarations} from '../src/automations/recipes-schema.js';
 import {readAppRecipes,reconcileRecipeSetups,prepareAppRecipe,confirmAppRecipe,cancelRecipeSetup,recipeDigest} from '../src/automations/recipes.js';
 import {schedule} from '../src/automations/schema.js';
 import {nextCalendar} from '../src/automations/schedules.js';
@@ -48,6 +50,19 @@ test('catch-up uses local dates across DST and meaningful results include unsave
  assert.equal(withinCatchUp(new Date('2026-10-23T22:30Z'),new Date('2026-11-01T22:00Z'),'Europe/Berlin',7),false);
  assert.equal(meaningfulRun({savedChanges:0,findings:[{relevant:true}]}),true);
  assert.equal(meaningfulRun({savedChanges:0,findings:[{relevant:false}]}),false);
+});
+
+test('an invalid optional bundled recipe leaves the gallery usable but cannot be published',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'recipe-catalog-'));
+ try{
+  const files=(await readdir('templates/apps')).filter(n=>n.endsWith('.json'));
+  const good=JSON.parse(await readFile('templates/apps/'+files[0],'utf8'));
+  const broken={...good,id:'test.bad-recipe',recommendedAutomations:[{...email,trigger:{kind:'unsupported'}}]};
+  await writeFile(join(root,'good.json'),JSON.stringify(good));await writeFile(join(root,'bad.json'),JSON.stringify(broken));
+  const catalog=new AppTemplates(root);assert.equal((await catalog.list()).total,2);
+  assert.equal(readRecipes(await catalog.read({templateId:broken.id})).recipes.length,0);
+  assert.throws(()=>validateRecipeDeclarations(broken));
+ }finally{await rm(root,{recursive:true,force:true});}
 });
 
 test('install approvals and optional reconciliation use real restricted roles',async t=>{
@@ -201,6 +216,46 @@ test('install approvals and optional reconciliation use real restricted roles',a
    for(let i=0;i<4;i++){await withDatabaseContext({service:'worker'},()=>reconcileRecipeSetups(db));if(i%2===1)await pg.query("UPDATE automation_recipe_setups SET available_at=now() WHERE app_id=$1 AND status='pending'",[changed.appId]);}
    assert.equal((await pg.query<any>("SELECT diagnostic FROM automation_recipe_setups WHERE app_id=$1 AND recipe_key='research'",[changed.appId])).rows[0].diagnostic,'runner_changed');
    assert.equal((await pg.query('SELECT id FROM app_monitors WHERE app_id=$1',[changed.appId])).rows.length,0);
+   // Both definition kinds can be recreated after deletion, retaining historical receipts.
+   for(const [key,table] of [['research','app_monitors'],['findings_email','app_actions']]){
+    const old=(await pg.query<any>('SELECT * FROM automation_recipe_setups WHERE app_id=$1 AND recipe_key=$2',[installed.appId,key])).rows[0];
+    await pg.query(`UPDATE ${table} SET deleted_at=now(),${table==='app_monitors'?'enabled=false':'paused=true'} WHERE id=$1`,[old.definition_id]);
+    const listed=(await readAppRecipes(db,a,w,installed.appId)).setups.find(x=>x.id===old.id);assert.equal(listed.status,'cancelled');assert.equal(listed.definition_id,null);
+    const review=await prepareAppRecipe(db,a,w,{appId:installed.appId,key}),saved=await confirmAppRecipe(db,a,w,review.id,review.digest);assert.equal(saved.status,'pending');
+    await withDatabaseContext({service:'worker'},()=>reconcileRecipeSetups(db));
+    const fresh=(await pg.query<any>('SELECT * FROM automation_recipe_setups WHERE id=$1',[old.id])).rows[0];assert.equal(fresh.status,'active',fresh.diagnostic);assert.notEqual(fresh.definition_id,old.definition_id);
+    assert.ok((await pg.query<any>(`SELECT deleted_at FROM ${table} WHERE id=$1`,[old.definition_id])).rows[0].deleted_at);
+   }
+  });
+  await t.test('optional resolution errors happen after install and leave a reviewable setup',async()=>{
+   const target={install:{templateId:payload.id,version:payload.version,digest,name:'Isolated optional failure',requestKey:randomUUID(),createNew:true}},step=await dataAccessStep(f,a,w,target);
+   // This is a valid trigger shape, but it changes this recipe's reviewed trigger scope.
+   const saved=await confirmDataAccess(f,a,w,{...target,connections:{},access:[],stepDigest:step.digest,automations:[{key:email.key,enabled:true,settings:{trigger:contextual.trigger}}]});
+   assert.equal((await f.readComponent(a,w,saved.appId)).component.name,target.install.name);
+   await withDatabaseContext({service:'worker'},()=>reconcileRecipeSetups(db));
+   assert.equal((await pg.query<any>('SELECT status FROM automation_recipe_setups WHERE app_id=$1',[saved.appId])).rows[0].status,'needs_setup');
+   assert.equal((await pg.query('SELECT id FROM app_actions WHERE app_id=$1',[saved.appId])).rows.length,0);
+   assert.equal((await f.readComponent(a,w,saved.appId)).component.name,target.install.name);
+   const omitted={install:{...target.install,name:'No reviewed choices',requestKey:randomUUID()}};
+   const omittedStep=await dataAccessStep(f,a,w,omitted),result=await confirmDataAccess(f,a,w,{...omitted,connections:{},access:[],stepDigest:omittedStep.digest});
+   assert.ok(result.automations.every((x:any)=>x.status==='not_reviewed'));
+   assert.equal((await pg.query('SELECT id FROM automation_recipe_setups WHERE app_id=$1',[result.appId])).rows.length,0);
+  });
+  await t.test('fresh approval replaces pending settings and copies preserve assistant ownership without activation',async()=>{
+   const installed=await install('Pending edits',[]),claude:Actor={...a,origin:'ai',assistant:'claude',actionConfirmed:true};
+   await withActor(claude,async()=>{
+    const setup=async(time:string)=>{const review=await prepareAppRecipe(db,claude,w,{appId:installed.receipt.appId,key:email.key,settings:{trigger:{...email.trigger,time}}});const saved=await confirmAppRecipe(db,claude,w,review.id,review.digest,review.review);assert.deepEqual(await confirmAppRecipe(db,claude,w,review.id,review.digest,review.review),saved);return saved;};
+    const first=await setup('10:30'),second=await setup('11:30');assert.equal(first.id,second.id);
+    const row=(await pg.query<any>('SELECT * FROM automation_recipe_setups WHERE id=$1',[first.id])).rows[0];assert.equal(row.revision,1);assert.equal(row.body.recipe.trigger.time,'11:30');
+    assert.equal((await pg.query('SELECT id FROM automation_recipe_approvals WHERE setup_id=$1',[first.id])).rows.length,2);
+   });
+   await withDatabaseContext({service:'worker'},()=>reconcileRecipeSetups(db));
+   const original=(await pg.query<any>('SELECT * FROM app_actions WHERE app_id=$1',[installed.receipt.appId])).rows[0];assert.equal(original.config.trigger.time,'11:30');assert.equal(original.assistant,'claude');
+   const c=(await f.readComponent(a,w,installed.receipt.appId)).component,p=await f.preview(a,w,{kind:'copy_component',sourceComponentId:c.id,expectedVersion:c.version,projectId:c.project_id,name:'Claude copy',copyAutomations:true}),copy=await f.confirm(a,w,p.id,p.digest);
+   const action=(await pg.query<any>('SELECT * FROM app_actions WHERE app_id=$1',[copy.id])).rows[0],setup=(await pg.query<any>('SELECT * FROM automation_recipe_setups WHERE app_id=$1',[copy.id])).rows[0];
+   assert.equal(action.assistant,'claude');assert.equal(action.paused,true);assert.equal(setup.assistant,'claude');assert.equal(setup.definition_id,action.id);
+   assert.equal((await pg.query('SELECT id FROM automation_recipe_approvals WHERE setup_id=$1',[setup.id])).rows.length,0);
+   await assert.rejects(withActor({...a,origin:'ai',actionConfirmed:true},()=>prepareAppRecipe(db,{...a,origin:'ai',actionConfirmed:true},w,{appId:copy.id,key:email.key}).then(p=>confirmAppRecipe(db,{...a,origin:'ai',actionConfirmed:true},w,p.id,p.digest,p.review))),/Claude|claude/);
   });
  });}finally{delete process.env.APP_AUTOMATION_RECIPES_ENABLED;await pg.close();}
 });

@@ -1,4 +1,4 @@
-import {recipeDeclarations,validateRecipeDeclarations} from '../automations/recipes-schema.js';
+import {recipeDeclarations} from '../automations/recipes-schema.js';
 import {contractRegistry} from './role-contracts.js';
 import type {Database} from '../db/database.js';
 import {readFile,readdir} from 'node:fs/promises';
@@ -35,7 +35,7 @@ export class AppTemplates{
   if(this.db){const rows=(await this.db.query("SELECT payload,digest FROM app_template_catalog WHERE status='approved' ORDER BY template_id,version")).rows;return rows.map(r=>({...appTemplateEntry.parse(r.payload),digest:r.digest}));}
   const names=(await readdir(this.root)).filter(n=>n.endsWith('.json')).sort();if(names.length>500)fail(500,'catalog_limit','Template catalog exceeds its bounded size');
   const entries=[];const seen=new Set<string>();
-  for(const name of names){const raw=await readFile(this.root instanceof URL?new URL(name,this.root):`${this.root}/${name}`,'utf8');if(Buffer.byteLength(raw)>300000)fail(500,'template_limit','Template too large');const input=JSON.parse(raw);validateRecipeDeclarations(input);const value=appTemplateEntry.parse(input);const identity=value.id+'@'+value.version;if(seen.has(identity))fail(500,'template_duplicate','Duplicate template version');seen.add(identity);entries.push({...value,digest:createHash('sha256').update(raw).digest('hex')});}
+  for(const name of names){const raw=await readFile(this.root instanceof URL?new URL(name,this.root):`${this.root}/${name}`,'utf8');if(Buffer.byteLength(raw)>300000)fail(500,'template_limit','Template too large');const input=JSON.parse(raw);const value=appTemplateEntry.parse(input);const identity=value.id+'@'+value.version;if(seen.has(identity))fail(500,'template_duplicate','Duplicate template version');seen.add(identity);entries.push({...value,digest:createHash('sha256').update(raw).digest('hex')});}
   return entries;
  }
  async list(input:unknown={}){

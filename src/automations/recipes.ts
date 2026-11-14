@@ -24,6 +24,19 @@ async function owner(db:Database,a:Actor,w:string){const p=await access(db,a,w,t
 async function app(db:Database,a:Actor,w:string,appId:string){await owner(db,a,w);const c=(await new WorkspaceFoundation(db).readComponent(a,w,appId)).component;if(c.archived||c.project_archived)fail(409,'app_archived','Restore the app before setting up automation');return c;}
 export function recipeRoles(c:any){return {...c.manifest?.automationRoles,...Object.fromEntries((c.manifest?.roles??[]).filter((r:any)=>r.typeId).map((r:any)=>[r.role,r.typeId]))};}
 
+async function liveDefinition(db:Database,row:any){
+ if(!row.definition_id)return false;
+ const table=row.definition_kind==='research'?'app_monitors':'app_actions';
+ return !!(await db.query(`SELECT id FROM ${table} WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND app_id=$4 AND deleted_at IS NULL`,[row.definition_id,row.workspace_id,row.user_id,row.app_id])).rows.length;
+}
+
+/** Persist reviewed inputs only. Optional resolution belongs to the post-install worker. */
+export function installationRecipeIntent(recipe:AutomationRecipe,settings:z.infer<typeof recipeSettings>,step:any,templateDigest:string){
+ const runners=step.automationRunners.filter((r:any)=>settings.runnerId===undefined||r.id===settings.runnerId);
+ const runner=recipe.research&&settings.runnerId!==null&&runners.length===1?runners[0]:null;
+ return {recipe,contextRecordId:null,installation:{templateDigest,settings:{...settings,runnerId:settings.runnerId??runner?.id??null,recipients:settings.recipients??[step.automationRecipient]},runnerVersion:runner?.version??null,runnerAssistant:runner?.assistant??null},expiresAt:new Date(Date.now()+recipe.lifetimeDays*86400000).toISOString()};
+}
+
 export async function recipeSetupOptions(db:Database,a:Actor,w:string){
  const runners=(await db.query('SELECT id,version,assistant,enabled FROM automation_runners WHERE workspace_id=$1 AND user_id=$2 ORDER BY assistant',[w,a.userId])).rows.filter(r=>a.origin!=='ai'||r.assistant===(a.assistant??'chatgpt'));
  const recipient=(await db.query('SELECT email FROM users WHERE id=$1',[a.userId])).rows[0]?.email;
@@ -34,7 +47,12 @@ export async function recipeSetupOptions(db:Database,a:Actor,w:string){
 export async function readAppRecipes(db:Database,a:Actor,w:string,appId:string){
  const c=await app(db,a,w,appId),declarations=readRecipes(c.manifest);
  if(!recipesEnabled())return {appId,recipes:[],setups:[],enabled:false};
- const setups=(await db.query('SELECT id,recipe_key,context_key,status,definition_id,definition_kind,diagnostic,assistant FROM automation_recipe_setups WHERE workspace_id=$1 AND user_id=$2 AND app_id=$3 ORDER BY created_at DESC LIMIT 100',[w,a.userId,appId])).rows;
+ const setups=(await db.query(`SELECT s.id,s.recipe_key,s.context_key,
+ CASE WHEN s.definition_id IS NOT NULL AND m.id IS NULL AND d.id IS NULL THEN 'cancelled' ELSE s.status END AS status,
+ CASE WHEN m.id IS NOT NULL OR d.id IS NOT NULL THEN s.definition_id END AS definition_id,s.definition_kind,s.diagnostic,s.assistant
+ FROM automation_recipe_setups s LEFT JOIN app_monitors m ON s.definition_kind='research' AND m.id=s.definition_id AND m.deleted_at IS NULL
+ LEFT JOIN app_actions d ON s.definition_kind='action' AND d.id=s.definition_id AND d.deleted_at IS NULL
+ WHERE s.workspace_id=$1 AND s.user_id=$2 AND s.app_id=$3 ORDER BY s.created_at DESC LIMIT 100`,[w,a.userId,appId])).rows;
  return {appId,...await recipeSetupOptions(db,a,w),recipes:declarations.recipes,unavailable:declarations.unavailable,setups:setups.map(s=>({...s,status:s.status==='active'?'configured':s.status})),enabled:true};
 }
 
@@ -47,7 +65,7 @@ export async function listRecipeSetups(db:Database,a:Actor,w:string,appId?:strin
 export async function cancelRecipeSetup(db:Database,a:Actor,w:string,setupId:string,revision:number){
  requireCurrentAction(a);return db.transaction(async tx=>{await owner(adapter(tx),a,w);await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);
  const row=(await tx.query('SELECT * FROM automation_recipe_setups WHERE id=$1 AND workspace_id=$2 AND user_id=$3 FOR UPDATE',[setupId,w,a.userId])).rows[0];
- if(!row||row.revision!==revision||row.definition_id)fail(409,'setup_changed','Reload setup; manage saved definitions from the automation list');
+ if(!row||row.revision!==revision||await liveDefinition(adapter(tx),row))fail(409,'setup_changed','Reload setup; manage saved definitions from the automation list');
  // Like pausing a saved automation, cancellation may stop either assistant's work.
  await tx.query("UPDATE automation_recipe_setups SET status='cancelled',revision=revision+1,diagnostic='owner_cancelled',updated_at=now() WHERE id=$1",[row.id]);return {id:row.id,status:'cancelled'};
  });
@@ -83,9 +101,9 @@ export async function recipeIntent(db:Database,a:Actor,w:string,c:any,recipe:Aut
 export async function saveRecipeIntent(db:Database,a:Actor,w:string,appId:string,body:any){
  requireCurrentAction(a);const p=await owner(db,a,w),digest=recipeDigest(body),context=body.contextRecordId??'';
  const prior=(await db.query('SELECT * FROM automation_recipe_setups WHERE workspace_id=$1 AND user_id=$2 AND app_id=$3 AND recipe_key=$4 AND context_key=$5 FOR UPDATE',[w,a.userId,appId,body.recipe.key,context])).rows[0];
- if(prior){requireAutomationOwner(a,prior.assistant);if(prior.definition_id||prior.status==='pending')return {id:prior.id,status:prior.definition_id?'existing':prior.status,definitionId:prior.definition_id,definitionKind:prior.definition_kind};}
+ if(prior){requireAutomationOwner(a,prior.assistant);const live=await liveDefinition(db,prior);if(live||prior.status==='pending'&&prior.digest===digest)return {id:prior.id,status:live?'existing':prior.status,definitionId:live?prior.definition_id:null,definitionKind:prior.definition_kind};}
  const setupId=prior?.id??randomUUID();
- if(prior)await db.query("UPDATE automation_recipe_setups SET body=$2,digest=$3,status='pending',attempts=0,diagnostic=NULL,revision=revision+1,available_at=now(),updated_at=now(),assistant=$4 WHERE id=$1",[setupId,JSON.stringify(body),digest,actorAssistant(a)]);
+ if(prior)await db.query("UPDATE automation_recipe_setups SET body=$2,digest=$3,status='pending',attempts=0,diagnostic=NULL,definition_id=NULL,definition_kind=NULL,definition_version=NULL,revision=revision+1,available_at=now(),updated_at=now(),assistant=$4 WHERE id=$1",[setupId,JSON.stringify(body),digest,actorAssistant(a)]);
  else await db.query('INSERT INTO automation_recipe_setups(id,workspace_id,user_id,app_id,recipe_key,context_key,assistant,body,digest) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',[setupId,w,a.userId,appId,body.recipe.key,context,actorAssistant(a),JSON.stringify(body),digest]);
  const saved=(await db.query('SELECT revision,assistant FROM automation_recipe_setups WHERE id=$1',[setupId])).rows[0];
  await db.query('INSERT INTO automation_recipe_approvals(id,setup_id,revision,workspace_id,user_id,assistant,body,digest) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',[randomUUID(),setupId,saved.revision,w,a.userId,saved.assistant,JSON.stringify(body),digest]);
@@ -117,19 +135,27 @@ export async function reconcileRecipeSetups(db:Database){
  await db.transaction(async tx=>{
   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[candidate.workspace_id]);
   const row=(await tx.query("SELECT * FROM automation_recipe_setups WHERE id=$1 AND status='pending' FOR UPDATE SKIP LOCKED",[candidate.id])).rows[0];if(!row)return;
-  const d=adapter(tx),b=row.body,r=b.recipe as AutomationRecipe,w=row.workspace_id;
+  const d=adapter(tx),approved=row.body,w=row.workspace_id;let b=approved,r=b.recipe as AutomationRecipe;
   // Authority is the exact durable owner approval above; the worker cannot invent or expand it.
   const a:Actor={userId:row.user_id,origin:row.assistant?'ai':'human',...(row.assistant?{assistant:row.assistant}:{}),actionConfirmed:true};
   await tx.query('SAVEPOINT recipe_setup');
   try{await withActor(a,async()=>{
    const approval=(await tx.query('SELECT digest,body,assistant FROM automation_recipe_approvals WHERE setup_id=$1 AND revision=$2',[row.id,row.revision])).rows[0];
-   if(!approval||approval.digest!==row.digest||approval.assistant!==row.assistant||recipeDigest(approval.body)!==row.digest||recipeDigest(b)!==row.digest)fail(409,'review_changed','Stored approval changed');
-   const c=await app(d,a,w,row.app_id);if(scope(c)!==b.scope)fail(409,'scope_changed','App scope changed');
+   if(!approval||approval.digest!==row.digest||approval.assistant!==row.assistant||recipeDigest(approval.body)!==row.digest||recipeDigest(approved)!==row.digest)fail(409,'review_changed','Stored approval changed');
+   const c=await app(d,a,w,row.app_id);
+   if(approved.installation){
+    if(c.version!==0)fail(409,'scope_changed','App changed after installation; review automation setup');
+    const settings=recipeSettings.parse(approved.installation.settings);
+    b={...await recipeIntent(d,a,w,c,r,settings),expiresAt:approved.expiresAt};r=b.recipe;
+    if(b.provenance.templateDigest!==approved.installation.templateDigest)fail(409,'scope_changed','Installed template changed');
+    if(b.runnerVersion!==approved.installation.runnerVersion||b.runnerAssistant!==approved.installation.runnerAssistant)fail(409,'runner_changed','Review setup after the background connection changed');
+   }else if(scope(c)!==b.scope)fail(409,'scope_changed','App scope changed');
    if(Date.parse(b.expiresAt)<=Date.now())fail(409,'approval_expired','Automation approval expired');
    const type=(role:string)=>{const t=b.roles[role];if(!t||!c.bindings.some((x:any)=>x.typeId===t))fail(409,'role_unavailable','The app feature needs a connected table');return t;};
    let trigger:any={...r.trigger};if(trigger.kind==='record_date')trigger.catchUpDays=7;if('role' in trigger){const {role,...rest}=trigger;trigger={...rest,typeId:type(role)};}
    if(r.contextRole&&b.contextRecordId)trigger.recordId=b.contextRecordId;
-   const authoringKey='recipe_'+row.id.replaceAll('-','');
+   // A fresh approval after deletion must not reuse a retired research authoring key.
+   const authoringKey='recipe_'+row.id.replaceAll('-','')+'_r'+row.revision;
    let saved:any;
    if(r.research){
     if(r.research.briefBinding&&!b.brief)fail(409,'brief_binding','Bind the reviewed research brief first');
@@ -141,7 +167,7 @@ export async function reconcileRecipeSetups(db:Database){
    }else{
     if(r.email?.summaryBinding&&!b.summary)fail(409,'summary_binding','Bind the reviewed summary function first');
     if(trigger.kind==='after'){
-     const parent=(await tx.query("SELECT * FROM automation_recipe_setups WHERE workspace_id=$1 AND user_id=$2 AND app_id=$3 AND recipe_key=$4 AND context_key=''",[w,a.userId,c.id,trigger.recipe])).rows[0];
+     const parent=(await tx.query("SELECT s.* FROM automation_recipe_setups s LEFT JOIN app_monitors m ON m.id=s.definition_id AND m.deleted_at IS NULL WHERE s.workspace_id=$1 AND s.user_id=$2 AND s.app_id=$3 AND s.recipe_key=$4 AND s.context_key='' AND (s.definition_id IS NULL OR m.id IS NOT NULL)",[w,a.userId,c.id,trigger.recipe])).rows[0];
      if(!b.parent&&parent?.status==='pending'){await tx.query("UPDATE automation_recipe_setups SET available_at=now()+interval '10 seconds',diagnostic='waiting_for_parent' WHERE id=$1",[row.id]);return;}
      if(!b.parent&&(!parent?.definition_id||parent.status!=='active'))fail(409,'parent_required','Enable the selected research feature first');
      trigger={kind:'database',source:'automation_runs',automationId:b.parent?.id??parent.definition_id,automationVersion:b.parent?.version??parent.definition_version,includeEmpty:trigger.when==='completed',meaningful:trigger.when==='meaningful',events:['updated'],fields:['status'],becomes:{field:'status',operator:'equals',value:'completed'}};

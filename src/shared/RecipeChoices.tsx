@@ -14,7 +14,7 @@ export function RecipeChoices({recipes,value,onChange,recipient,runners=[],disab
  {research&&<label className="ty-recipe-runner">Research connection<select aria-label="Research connection" value={selectedRunner} disabled={disabled} onChange={e=>onChange(value.map(x=>({...x,settings:{...x.settings,runnerId:e.target.value||null}})))}><option value="">Set up later</option>{runners.map(r=><option key={r.id} value={r.id}>{r.assistant==='claude'?'Claude':'ChatGPT'}{r.enabled?'':' (disabled)'}</option>)}</select></label>}
  <ul className="ty-data-access-list">{recipes.map(r=>{const choice=value.find(x=>x.key===r.key)??{key:r.key,enabled:true,settings:{}},trigger=choice.settings.trigger??r.trigger;
  const parent=r.trigger.kind==='after'?r.trigger.recipe:null,blocked=!!parent&&!value.some(x=>x.key===parent&&x.enabled);
- const timing=recipeTiming(trigger,recipes,zones.length===1);
+ const timing=recipeTiming(trigger,recipes,zones.length===1)+(trigger.kind==='record_date'?' · Includes overdue items from the past 7 days':'');
  const set=(key:string,v:any)=>update(r.key,{settings:{...choice.settings,trigger:{...trigger,[key]:v}}});
  return <li key={r.key} className="ty-recipe-row"><div className="ty-recipe-line"><label><input type="checkbox" aria-label={r.name} aria-describedby={labelId+r.key} checked={choice.enabled&&!blocked} disabled={disabled||blocked} onChange={e=>update(r.key,{enabled:e.target.checked})}/><span>{r.name}<small id={labelId+r.key}>{blocked?'Requires the research above':timing}</small></span></label><button type="button" className="ty-link" disabled={disabled} aria-expanded={editing===r.key} onClick={()=>setEditing(editing===r.key?null:r.key)}>Edit</button></div>
  {editing===r.key&&<div className="ty-recipe-editor"><p>{r.description}</p>

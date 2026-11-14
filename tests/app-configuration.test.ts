@@ -143,12 +143,15 @@ test('app duplication optionally copies disabled definitions, remaps follow-ups,
  const email={name:'Email report',authoringKey:'email',appId:app.id,appVersion:app.version,expiresAt:expiry,trigger:{kind:'manual'},steps:[{id:'notify',kind:'email',to:[a.userId+'@example.invalid'],subject:'Update',text:'Saved update'}]};
  const p=await actions.prepare(a,w,{config:email}),manual=await actions.confirm(a,w,p.id,p.digest);
  for(const [id,trigger] of [[completion,{kind:'manual'}],[followup,{kind:'database',source:'automation_runs',automationId:monitor,automationVersion:3,events:['updated'],fields:['status'],becomes:{field:'status',operator:'equals',value:'completed'}}]] as const){const config=actionConfig.parse({...email,authoringKey:id===completion?'completion':'followup',trigger});await db.query('INSERT INTO app_actions(id,workspace_id,user_id,app_id,version,config,scope_stamp,approved_by) VALUES($1,$2,$3,$4,4,$5,$6,$3)',[id,w,a.userId,app.id,JSON.stringify(config),'fixture']);}
+ await db.query("UPDATE app_monitors SET assistant='claude' WHERE app_id=$1",[app.id]);
+ await db.query("UPDATE app_actions SET assistant='claude' WHERE app_id=$1",[app.id]);
  const op={kind:'copy_component',sourceComponentId:app.id,expectedVersion:app.version,projectId:null,name:'Plain copy'};
  const plain=await change(op);assert.equal((await db.query('SELECT id FROM app_monitors WHERE app_id=$1',[plain.id])).rows.length,0);assert.equal((await db.query('SELECT id FROM app_actions WHERE app_id=$1',[plain.id])).rows.length,0);
  const f=new WorkspaceFoundation(db),draft=await f.preview(a,w,{...op,copyAutomations:true,name:'Workflow copy'});
  await db.query('UPDATE app_actions SET paused=true WHERE id=$1',[completion]);await assert.rejects(f.confirm(a,w,draft.id,draft.digest),/Copy contents changed/);
  const refreshed=await f.preview(a,w,{...op,copyAutomations:true,name:'Workflow copy'}),copied=await f.confirm(a,w,refreshed.id,refreshed.digest);assert.deepEqual(await f.confirm(a,w,refreshed.id,refreshed.digest),copied);
  const copies=(await db.query('SELECT * FROM app_monitors WHERE app_id=$1',[copied.id])).rows,actionCopies=(await db.query('SELECT * FROM app_actions WHERE app_id=$1',[copied.id])).rows;assert.equal(copies.length,1);assert.equal(actionCopies.length,3);
+ assert.equal(copies[0].assistant,'claude');assert.ok(actionCopies.every(r=>r.assistant==='claude'));
  const m=copies[0];assert.notEqual(m.id,monitor);assert.equal(m.version,0);assert.equal(m.enabled,false);assert.equal(m.task,null);assert.equal(m.coverage_through,null);assert.equal(m.config.appId,copied.id);assert.equal(m.config.automation.runnerId,runner.id);
  assert.ok(actionCopies.every(r=>r.paused&&r.version===0&&r.config.appId===copied.id&&r.config.appVersion===0));
  assert.equal(m.config.automation.completionActionId,actionCopies.find(r=>r.config.authoringKey==='completion').id);assert.equal(m.config.automation.completionActionVersion,0);

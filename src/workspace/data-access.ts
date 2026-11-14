@@ -1,5 +1,5 @@
 import {readRecipes,recipeChoices} from '../automations/recipes-schema.js';
-import {recipesEnabled,recipeIntent,saveRecipeIntent,recipeDigest,recipeSetupOptions} from '../automations/recipes.js';
+import {recipesEnabled,installationRecipeIntent,saveRecipeIntent,recipeDigest,recipeSetupOptions} from '../automations/recipes.js';
 import {createHash} from 'node:crypto';
 import {z} from 'zod';
 import type {Database,Connection} from '../db/database.js';
@@ -99,14 +99,13 @@ export async function confirmDataAccess(f:WorkspaceFoundation,a:Actor,w:string,i
   const selections=v.automations??[];
   if(selections.some(x=>!step.automations.some((r:any)=>r.key===x.key)))fail(409,'recipes_changed','Review the app automations again');
   const setups:any[]=[];if(selections.some(x=>x.enabled)){
-   const c=(await sf.readComponent(a,w,receipt.appId)).component;
    for(const choice of selections.filter(x=>x.enabled)){const recipe=step.automations.find((r:any)=>r.key===choice.key)!;
     // An opted-out parent leaves its follow-up unselected, never an independent email schedule.
     if(recipe.trigger.kind==='after'&&!selections.some(x=>x.enabled&&x.key===(recipe.trigger as any).recipe)){setups.push({key:recipe.key,status:'opted_out',reason:'parent_not_selected'});continue;}
-    setups.push({key:recipe.key,...await saveRecipeIntent(tx(t),a,w,c.id,await recipeIntent(tx(t),a,w,c,recipe,choice.settings))});
+    setups.push({key:recipe.key,...await saveRecipeIntent(tx(t),a,w,receipt.appId,installationRecipeIntent(recipe,choice.settings,step,i.digest!))});
    }
   }
-  for(const recipe of step.automations)if(!selections.some(x=>x.key===recipe.key&&x.enabled))setups.push({key:recipe.key,status:'opted_out'});
+  for(const recipe of step.automations)if(!selections.some(x=>x.key===recipe.key&&x.enabled))setups.push({key:recipe.key,status:v.automations===undefined?'not_reviewed':'opted_out'});
   const result={...receipt,dataAccessRequestKey:v.install.requestKey,automations:setups,automationStatus:setups.some(x=>x.status==='pending')?'pending':'none'};
   await t.query('INSERT INTO workspace_receipts(id,workspace_id,user_id,digest,result) VALUES(gen_random_uuid(),$1,$2,$3,$4)',[w,a.userId,requestDigest,JSON.stringify(result)]);
   return result;

@@ -31,5 +31,6 @@ for(const width of [1440,900,390])test(`App features use a selected entry and th
  await openPlatform(page,base+`/app-home?tab=automations&workspaceId=${f.workspaceId}`);await page.getByRole('button',{name:'Add automation',exact:true}).click();await page.getByRole('button',{name:'From app features',exact:true}).click();
  await page.getByLabel('App',{exact:true}).selectOption(f.appId);await page.getByLabel('Feature',{exact:true}).selectOption('draft_update');await expect(page.getByRole('button',{name:'Set up automation'})).toBeDisabled();
  await page.getByLabel('App entry',{exact:true}).selectOption(recordId);await expect(page.locator('body')).toHaveJSProperty('scrollWidth',width);await page.screenshot({path:`/tmp/trialy-recipes-feature-${width}.png`,fullPage:true});
- await page.getByRole('button',{name:'Set up automation'}).click();await expect(page.getByRole('heading',{name:'Automations',exact:true})).toBeVisible();expect(prepared.contextRecordId).toBe(recordId);expect(approved).toEqual({digest:'b'.repeat(64),confirmed:true});
+ const approval=page.waitForResponse(r=>r.url().endsWith('/app-services/reviews/feature-review/confirm')&&r.request().method()==='POST');
+ await page.getByRole('button',{name:'Set up automation'}).click();await approval;await expect(page.getByRole('heading',{name:'From app features',exact:true})).toHaveCount(0);expect(prepared.contextRecordId).toBe(recordId);expect(approved).toEqual({digest:'b'.repeat(64),confirmed:true});
 });
