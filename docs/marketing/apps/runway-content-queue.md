@@ -35,7 +35,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | C5 | AI CFO vs AI-native financial planning app: what does a biotech startup need? | Published — live verified 14 November 2026; PR #206, release `3a7efd4acfc5578784bccd3c21e344dcbfa13c67` | https://trialagents.com/apps/ai-cfo-vs-financial-planning-app-biotech |
 | C6 | MCP-connected financial planning software for biotech: check scope before writes | Published — live verified 14 November 2026; PR #207, release `e8ed31e7e198641c7bbd1e78b69db395735dfd29` | https://trialagents.com/apps/mcp-financial-planning-software-biotech |
 | C7 | Can you build a custom cash runway app with ChatGPT or Claude? | Published — live verified 14 November 2026; PR #208, release `39af173ce6e7acb7ac95709f82eafa926f56b49e` | https://trialagents.com/apps/custom-cash-runway-app-chatgpt-claude |
-| D1 | Best Cash Runway Software for Preclinical Biotech Startups | Queued — verify and publish | — |
+| D1 | Cash runway software for preclinical biotech: fund the next evidence package | Claimed — source preparation, 14 November 2026 | Preclinical milestone/reserve example; no unsupported best ranking |
 | D2 | Best Financial Planning Software for Clinical-Stage Biotechs | Queued — verify and publish | — |
 | D3 | Best Budgeting Software for Biotech Startups with Fewer Than 20 Employees | Queued — verify and publish | — |
 | D4 | How to Forecast Clinical Trial Delays and Their Impact on Cash Runway | Queued — verify and publish | — |
@@ -726,3 +726,8 @@ PR #208 merged as `39af173ce6e7acb7ac95709f82eafa926f56b49e` at approximately 16
 - **Editorial/evidence boundary:** documented customization workflow with a proposed read-only Funding review view, explicitly not a standard screen or completed implementation. Six-step acceptance procedure preserves inputs and compares unchanged calculated outputs. Genuine browser demos are labeled separately; no fabricated host UI, completed ChatGPT/Claude test, host parity, numerical benchmark or background Claude runner claim. Current catalog, product direction and primary public sources reviewed. Refresh on schema, model, permission or host changes.
 
 This supersedes C7 source and merged-pending checkpoints. **28 published; 19 unfinished**, including owner-deferred A9. **Next eligible: D1, Best Cash Runway Software for Preclinical Biotech Startups**, subject to fresh queue, evidence, duplicate and claim checks. Only C7 was newly published in this run. Search indexing, rankings and assistant citations remain unverified.
+
+
+### D1 claimed — 14 November 2026
+
+Current queue, app plan and shared playbook reread; C7 is live and public main is `39af173ce6e7acb7ac95709f82eafa926f56b49e`. Open source PRs checked; no unfinished Runway release or competing D1 claim. D1 will use a distinct preclinical evidence-package/reserve example rather than duplicate the B1 shortlist or claim an unsupported best ranking. Fictional assumptions and independently calculated monthly balances will be separated from genuine Runway browser demo images. No new article published yet; 28 published, 19 unfinished.
