@@ -1,6 +1,6 @@
 # Runway 2.2.0 (`life.cash-runway`)
 
-Cash, burn and runway by program, with what-if scenarios. Scope: [RUNWAY.md](../../../docs/product/app-template-blueprints/apps/RUNWAY.md) (2.2.0: [§14](../../../docs/product/app-template-blueprints/apps/RUNWAY.md#14-runway-220--assistant-control-integrations-and-automations)). It follows [modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md). The released catalog JSON for 1.2.2, 2.0.0 and 2.1.0 is unchanged, and their source packages are archived byte-for-byte under [`archive/`](archive/). 2.2.0 is a draft catalog version until the owner approves it. Saved apps are not migrated.
+Cash, burn and runway by program, with what-if scenarios. Scope: [RUNWAY.md](../../../docs/product/app-template-blueprints/apps/RUNWAY.md) (2.2.0: [§14](../../../docs/product/app-template-blueprints/apps/RUNWAY.md#14-runway-220--assistant-control-integrations-and-automations)). It follows [modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md). The released catalog JSON for 1.2.2, 2.0.0 and 2.1.0 is unchanged, and their source packages are archived byte-for-byte under [`archive/`](archive/). The owner approved 2.2.0 on 14 November 2026 (`templates/catalog-seed.json`). Saved apps are not migrated.
 
 ## Files
 

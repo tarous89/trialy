@@ -110,5 +110,9 @@
   "life.contracts@1.0.0": {
     "catalogDigest": "87c4b28ee46835b1d34d1d31a5b4d7e49e3600cee2b2a31e753fd2b2655d9ac7",
     "previewSha256": "085608c5b3e2b3d98a86a8a44e3c935300124bec0c62dc6ce89d1b4fbb664023"
+  },
+  "life.cash-runway@2.2.0": {
+    "catalogDigest": "23c27cf2839a91049c7f22fdef72163e5aac93da8616184008371e6ed94f71ac",
+    "previewSha256": "0d13adf1b9a6ca2f61d964f193833c1bda98dc3aa0542678d9a893de81a5dafa"
   }
 }
