@@ -111,7 +111,7 @@ Not used as roles: `agreements` (CDA/NDA status is two fields on opportunities: 
 
 `*` = required. Saving an activity also updates `last_activity_on` on its opportunity in the same reviewed save. `fundraise.tranches` is published as a read-only output for Runway (cash-in) and Investor Updates.
 
-**Data Room output contract `dataroom.v1`** (defined here so Fundraise, BD Pipeline and any custom app can read it; the Data Room app is its writer):
+**Data Room output contract `dataroom.v1`** (defined here so Fundraise, Partnerships and any custom app can read it; the Data Room app is its writer):
 
 | Role | Fields |
 |---|---|
@@ -165,7 +165,7 @@ Customization paths as in [Runway §8](RUNWAY.md#8-customization-users-claude-an
 | Programs (02) — `programs.plan_items` (integration) | Own milestone entries for tranches until linked to Programs. |
 | Runway (01) — reads `fundraise.tranches` (future Runway version, as an integration) | Tranches as contingent → committed cash-in. Until then, equity cash-in stays manual in Runway. |
 | Contracts (04) | CDA/NDA status kept as two fields on opportunities (no role). |
-| BD Pipeline (07) | Shares organizations and people; uses the same `dataroom.*` integration for licensing rooms. |
+| Partnerships (07) | Shares organizations and people; uses the same `dataroom.*` integration for licensing rooms. |
 | Investor Updates (06) | Later: holders from closed rounds, cap-table summary, post-round updates. |
 | Deal Comps (18) | Later: round benchmarks for terms. |
 

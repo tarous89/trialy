@@ -1,3 +1,4 @@
+import {cancellableReads} from '../db/cancellable-reads.js';
 import {homeRevisionForWorkspaces} from './home-revision.js';
 import {withReadMetadata} from '../db/read-metadata.js';
 import {standardTracker} from './standard-tracker.js';
@@ -11,7 +12,7 @@ import {assistantEnabled} from '../domain/effective-access.js';
 import {WorkspaceFoundation} from './service.js';
 import {Foundation} from '../foundation/service.js';
 export const homeQuery=z.object({offset:z.number().int().min(0).default(0),limit:z.number().int().min(1).max(100).default(20),query:z.string().max(200).default(''),projectId:z.string().default(''),kind:z.enum(['all','tracker','form','visualization','automation']).default('all'),sort:z.enum(['updated','name']).default('updated')});
-export async function workspaceHome(db:Database,a:Actor,w:string,input:unknown={},signal?:AbortSignal){signal?.throwIfAborted();return withReadMetadata(db,db=>workspaceHomeRead(db,a,w,input,signal));}
+export async function workspaceHome(db:Database,a:Actor,w:string,input:unknown={},signal?:AbortSignal){signal?.throwIfAborted();const result=await withReadMetadata(cancellableReads(db,signal),db=>workspaceHomeRead(db,a,w,input,signal));signal?.throwIfAborted();return result;}
 async function workspaceHomeRead(db:Database,a:Actor,w:string,input:unknown={},signal?:AbortSignal){
  const q=homeQuery.parse(input);
  const p=await access(db,a,w),f=new WorkspaceFoundation(db),engine=new Foundation(db);
@@ -63,7 +64,7 @@ async function workspaceHomeRead(db:Database,a:Actor,w:string,input:unknown={},s
 
 /** Account Home spans authorized storage containers; each item retains its scope. */
 export async function accountHome(db:Database,a:Actor,input:unknown={},signal?:AbortSignal){
- signal?.throwIfAborted();const home=await withReadMetadata(db,db=>accountHomeRead(db,a,input,signal));signal?.throwIfAborted();return home;
+ signal?.throwIfAborted();const home=await withReadMetadata(cancellableReads(db,signal),db=>accountHomeRead(db,a,input,signal));signal?.throwIfAborted();return home;
 }
 async function accountHomeRead(db:Database,a:Actor,input:unknown={},signal?:AbortSignal){
  const q=homeQuery.parse(input),spaces=await new Service(db).workspaces(a),projects:any[]=[],resources:any[]=[];
@@ -73,7 +74,8 @@ async function accountHomeRead(db:Database,a:Actor,input:unknown={},signal?:Abor
  for(const space of spaces){signal?.throwIfAborted();
   let offset=0;
   do{
-   const page=await workspaceHome(db,a,space.id,{...q,offset,limit:Math.min(100,q.offset+q.limit-offset)},signal);
+   // The account already owns cancellation and metadata reuse for this read.
+   const page=await workspaceHomeRead(db,a,space.id,{...q,offset,limit:Math.min(100,q.offset+q.limit-offset)},signal);
    if(offset===0){projects.push(...page.projects.map(p=>({...p,workspaceId:space.id})));total+=page.total;}
    resources.push(...page.resources.map(r=>({...r,workspaceId:space.id})));
    if(page.nextOffset===null||page.nextOffset>=q.offset+q.limit)break;

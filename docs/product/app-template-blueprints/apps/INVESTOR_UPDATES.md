@@ -23,7 +23,7 @@
 
 Visible, Cabal and Carta were built before assistants could write. They solve "help a person write the update" with KPI integrations, chart builders and copy-last-month editors. Reviewers praise ease of use and auto-filled charts, and complain about missing data integrations.
 
-Inside TrialAgents the assistant can already read Runway, Programs, Fundraise, BD Pipeline, documents and the chat. So:
+Inside TrialAgents the assistant can already read Runway, Programs, Fundraise, Partnerships, documents and the chat. So:
 
 | Existing tools | Investor Updates |
 |---|---|
@@ -189,7 +189,7 @@ Principles as in [Runway §5](RUNWAY.md#5-data-model). App tables use the `inves
 | `people` | core.v1 | read/write | Investor contacts (name, organization_id, title, email) |
 | `programs` | core.v1 | optional, read | Context for drafts |
 
-Draft sources are read by the assistant under the user's access, not connected as app tables: Runway, Programs, Fundraise, BD Pipeline, Data Room outputs and documents. The app records each source reference in the fact list.
+Draft sources are read by the assistant under the user's access, not connected as app tables: Runway, Programs, Fundraise, Partnerships, Data Room outputs and documents. The app records each source reference in the fact list.
 
 **Own tables (`investorupdates.*`)**
 
@@ -251,7 +251,7 @@ Draft sources are read by the assistant under the user's access, not connected a
 | **Runway (01)** | The assistant reads month closes and scenarios as a draft source | Cash, burn and runway with sources |
 | **Programs (02)** | The assistant reads milestones, reports and decisions | Milestones done, next and slipped |
 | **Fundraise (03)** | Shares `organizations` and `people`; the assistant proposes investors from committed or closed opportunities; round status as a source | Investor list from the closed round; round progress in updates |
-| **BD Pipeline (07), Data Room (08)** | Draft sources (deal stages, diligence activity) | Partnering progress |
+| **Partnerships (07), Data Room (08)** | Draft sources (deal stages, diligence activity) | Partnering progress |
 | **Board (14)** | Shares `organizations`/`people`; board update schedules can be reused | One investor list |
 
 Investor Updates never writes another app's own tables.

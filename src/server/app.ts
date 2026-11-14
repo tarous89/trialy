@@ -1,3 +1,4 @@
+import {withResponseCancellation} from './response-cancellation.js';
 import {homeRevision} from '../workspace/home-revision.js';
 import {CLAUDE_MCP_PATH} from './local-oauth.js';
 import {addSubscription} from './subscription.js';
@@ -64,10 +65,7 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  app.get('/api/workspaces/:workspaceId/access-grid',async(req,res)=>res.json(await new AccessGrid(s.db).read(req.actor!,id.parse(req.params.workspaceId),z.string().optional().parse(req.query.subject))));
  app.post('/api/workspaces/:workspaceId/access-grid',async(req,res)=>res.json(await new AccessGrid(s.db).save(req.actor!,id.parse(req.params.workspaceId),req.body)));
  app.get('/api/account/home/revision',async(req,res)=>res.json(await homeRevision(s.db,req.actor!)));
- app.post('/api/account/home',async(req,res)=>{
-  const controller=new AbortController(),cancel=()=>{if(!res.writableFinished)controller.abort();};res.on('close',cancel);
-  try{res.json(await accountHome(s.db,req.actor!,req.body,controller.signal));}catch(e){if(!controller.signal.aborted)throw e;}finally{res.off('close',cancel);}
- });
+ app.post('/api/account/home',async(req,res)=>withResponseCancellation(res,async signal=>res.json(await accountHome(s.db,req.actor!,req.body,signal))));
  app.post('/api/support',rateLimit({windowMs:3600000,limit:10}),async(req,res)=>{const input=z.object({subject:z.string().trim().min(1).max(160),message:z.string().trim().min(1).max(5000)}).strict().parse(req.body);const requestId=randomUUID();await s.db.query('INSERT INTO support_requests(id,user_id,subject,message) VALUES($1,$2,$3,$4)',[requestId,req.actor!.userId,input.subject,input.message]);res.status(201).json({id:requestId});});
  app.get('/api/me',async(req,res)=>{const u=(await s.db.query('SELECT id,name,email,first_name,last_name FROM users WHERE id=$1',[req.actor!.userId])).rows[0];res.json({user:u,csrf:req.session?.csrf,workspaces:await s.workspaces(req.actor!)});});
  app.post('/api/workspaces',async(req,res)=>res.status(201).json(await s.createWorkspace(req.actor!,z.string().trim().min(1).max(100).parse(req.body.name))));
