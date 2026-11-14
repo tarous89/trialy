@@ -11,6 +11,7 @@ Current: 9 November 2026. This is not an authorization to start every item. [Con
 ## External exchange (committed, 12 Nov 2026)
 
 - Build [external exchange](EXTERNAL_EXCHANGE.md): per-recipient links, brief and documents out, response form with drafts and resubmission, documents back (e.g. signed CDA), private messages and anonymised clarifications, confidentiality gate, outbound email from the TrialAgents domain (human-confirmed), notifications, app API. First consumer: CRO Selection; reused later by Data Room secure rooms, Diligence Q&A, Site Finder and Investor Updates.
+- Build [recommended automations at install](RECOMMENDED_AUTOMATIONS.md): templates declare recommended automations; the install dialog offers them next to data access and access; created as platform automations linked to the app; plus E1 summary-content email, E2 record-date email trigger, E3 `after` trigger. User-triggered external sends stay in the exchange.
 
 ## Modular apps and shared data (committed requirement)
 

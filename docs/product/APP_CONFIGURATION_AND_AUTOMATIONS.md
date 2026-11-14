@@ -162,6 +162,8 @@ Current operational handoff and release status: [project context](../../CONTEXT.
 
 ## Recommended automations at install
 
+Full platform scope: [RECOMMENDED_AUTOMATIONS.md](RECOMMENDED_AUTOMATIONS.md).
+
 Decided 14 November 2026. Templates declare recommended automations in their catalog (name, purpose, trigger or schedule, steps, email template, default recipients, default on or off). The install dialog offers them next to data access and access ([Modular apps §7](MODULAR_APPS_AND_SHARED_DATA.md#install-dialog-data-access-and-automations)).
 
 **On install:**
