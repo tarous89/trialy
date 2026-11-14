@@ -5,6 +5,7 @@ import {randomUUID} from 'node:crypto';
 import type {Database,Connection} from '../db/database.js';
 import {withActor} from '../db/context.js';
 import {access,typeAccess,visibleFields} from '../domain/permissions.js';
+import {assertWritable} from '../domain/effective-access.js';
 import {audit,checksum} from '../domain/evidence.js';
 import {requireHuman,requireCurrentAction} from '../domain/write-authorization.js';
 import {Service} from '../domain/service.js';
@@ -18,6 +19,7 @@ import {monitoringRun,monitoringReceiptRuns} from './monitoring-guard.js';
 import {automationPreflight} from '../automations/setup-contract.js';
 import {AutomationService,validateShared,syncDispatch} from '../automations/service.js';
 import {completionScope} from '../automations/completion-scope.js';
+import {prepareResultStorage,saveResultStorage,type StorageGrant} from './monitoring-storage.js';
 
 const J=JSON.stringify;
 const adapter=(tx:Connection):Database=>({query:tx.query.bind(tx),transaction:fn=>fn(tx),close:async()=>{}});
@@ -26,34 +28,45 @@ export class AppMonitoring {
  constructor(readonly db:Database){this.f=new WorkspaceFoundation(db);}
  async owner(a:Actor,w:string){const p=await access(this.db,a,w,true);if(p.role!=='owner')fail(403,'owner_required','Only the account owner can configure monitoring');return p;}
  async app(a:Actor,w:string,appId:string){const c=await this.f.component(this.db,a,w,appId);if(c.archived||c.project_archived)fail(409,'app_archived','Monitoring requires a saved, active app');return c;}
- async validate(a:Actor,w:string,config:MonitoringConfig,review=false):Promise<any>{
-  if(config.inheritAppAccess&&a.accessToolId!==config.appId)return withActor({...a,accessToolId:config.appId},()=>this.validate({...a,accessToolId:config.appId},w,config,review));
+ async validate(a:Actor,w:string,config:MonitoringConfig,review=false,storage:StorageGrant[]=[]):Promise<any>{
+  if(config.storeResults&&!config.inheritAppAccess&&a.accessToolId){const {accessToolId,...reader}=a;return withActor(reader,()=>this.validate(reader,w,config,review,storage));}
+  if(config.inheritAppAccess&&a.accessToolId!==config.appId)return withActor({...a,accessToolId:config.appId},()=>this.validate({...a,accessToolId:config.appId},w,config,review,storage));
   await this.owner(a,w);const c=await this.app(a,w,config.appId);
   const withinApp=(b:{typeId:string;fields:string[]})=>c.bindings.some((bound:any)=>bound.typeId===b.typeId&&b.fields.every(k=>bound.fields.includes(k)));
   if(config.inheritAppAccess&&config.readBindings.some(b=>!withinApp(b)))fail(403,'monitoring_fields','Monitoring must stay within the linked app access');
   if(config.brief){await validateSummary(this.db,a,w,c,config.brief);const revision=await new Foundation(this.db).revision(a,w,config.brief.revisionId);for(const typeId of revision.body.scope.typeIds){const binding=c.bindings.find((b:any)=>b.typeId===typeId),read=config.readBindings.find(b=>b.typeId===typeId);if(!read||binding.fields.some((f:string)=>!read.fields.includes(f)))fail(403,'brief_scope','Brief reads exceed the research read scope');}}
   await validateShared(this.db,a,w,config,review);
   if(Date.parse(config.expiresAt)<=Date.now())fail(403,'monitoring_expired','Monitoring authorization expired');
+  if(config.storeResults&&!config.writeScopes.length&&!(review&&storage.length))fail(409,'result_storage_required','Research and drafting require approved write access to the app database');
   const schemas=[];
   for(const b of config.readBindings){const {type,policy}=await typeAccess(this.db,a,w,b.typeId);const visible=visibleFields(type.fields,policy,a);if(b.fields.some(k=>!visible.some(f=>f.key===k)))fail(403,'monitoring_fields','Monitoring includes unavailable fields');schemas.push({id:type.id,name:type.name,version:type.version,fields:visible.filter(f=>b.fields.includes(f.key))});}
-  const scopes=[];
+  const scopes:{id:string;version:number;schemaStamp:string;body:ReturnType<typeof maintenanceSchema.parse>}[]=[];
   for(const b of config.writeScopes){const s=await this.f.scope(this.db,a,w,b.scopeId),body=maintenanceSchema.parse(s.body);if(config.inheritAppAccess&&(body.projectId!==c.project_id||!body.bindings.every(withinApp)))fail(403,'monitoring_write_scope','Write permission is outside the linked app');if(s.revoked_at||s.version!==b.version||!body.autoWrite||Date.parse(body.expiresAt??'')<=Date.now()||body.bindings.length!==1)fail(403,'monitoring_write_scope','Select a current, explicitly approved ongoing write permission');if(s.schema_stamp!==await this.f.scopeStamp(this.db,a,w,body))fail(409,'schema_changed','Review the write permission after schema changes');scopes.push({id:s.id,version:s.version,schemaStamp:s.schema_stamp,body});}
+  if(config.storeResults){const writer={...a,origin:'ai' as const,accessToolId:config.appId};await withActor(writer,async()=>{for(const scope of scopes){if(scope.body.projectId!==c.project_id||!scope.body.bindings.every(withinApp)||!scope.body.allowCreate&&!scope.body.allowUpdate)fail(403,'monitoring_write_scope','Result storage must write to the linked app');for(const b of scope.body.bindings){const {policy}=await typeAccess(this.db,writer,w,b.typeId,true);assertWritable(policy,b.fields);}}});}
   // App version/source are deliberately absent: publishing a compatible layout
   // does not change the separately approved research configuration.
-  return {app:{id:c.id,name:c.name,version:c.version},schemas,scopes,completionSource:completionScope(c.bindings,config.readBindings,scopes),stamp:checksum(J({...(config.brief?{brief:config.brief}:{}),schemas:schemas.map(s=>({id:s.id,version:s.version,fields:s.fields})),scopes:scopes.map(s=>({id:s.id,version:s.version,stamp:s.schemaStamp}))}))};
+  return {app:{id:c.id,name:c.name,version:c.version},schemas,scopes,completionSource:completionScope(c.bindings,config.readBindings,[...scopes,...storage]),stamp:checksum(J({...(config.brief?{brief:config.brief}:{}),schemas:schemas.map(s=>({id:s.id,version:s.version,fields:s.fields})),scopes:scopes.map(s=>({id:s.id,version:s.version,stamp:s.schemaStamp})),...(storage.length?{storage}:{})}))};
  }
  async row(a:Actor,w:string,monitorId:string){await this.owner(a,w);const row=(await this.db.query('SELECT * FROM app_monitors WHERE deleted_at IS NULL AND id=$1 AND workspace_id=$2 AND user_id=$3',[monitorId,w,a.userId])).rows[0];if(!row)fail(404,'not_found','Monitoring unavailable');await this.f.component(this.db,a,w,row.app_id);return row;}
  async runnerOf(w:string,a:Actor,config:MonitoringConfig){return config.automation?(await this.db.query('SELECT id,assistant FROM automation_runners WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[config.automation.runnerId,w,a.userId])).rows[0]??null:null;}
+ async validateReview(a:Actor,w:string,body:any){
+  const change=monitoringChange.parse(body.change),runner=await this.runnerOf(w,a,change.config),current=change.monitorId?await this.row(a,w,change.monitorId):null;
+  const exec=asOwner(a,runner?ownedBy(runner)??'chatgpt':current?ownedBy(current):actorAssistant(a));
+  const prepared=change.config.storeResults?await prepareResultStorage(this.db,exec,w,change.config,change.monitorId??body.proposedMonitorId):{config:change.config,grants:[]};
+  return withActor(exec,()=>this.validate(exec,w,prepared.config,true,prepared.grants));
+ }
  async prepare(a:Actor,w:string,input:unknown){
   const body=monitoringChange.parse(input);await this.owner(a,w);
   const current=body.monitorId?await this.row(a,w,body.monitorId):null;if(current)requireAutomationOwner(a,ownedBy(current));
   const runner=await this.runnerOf(w,a,body.config);if(runner)requireRunnerOwner(a,runner);
   const exec=asOwner(a,runner?ownedBy(runner)??'chatgpt':current?ownedBy(current):actorAssistant(a));
+  const proposedMonitorId=body.monitorId??randomUUID();let storage:StorageGrant[]=[];
+  if(body.config.automation||body.config.storeResults){const prepared=await prepareResultStorage(this.db,exec,w,body.config,proposedMonitorId);body.config=prepared.config;storage=prepared.grants;}
   if(body.config.automation?.completionActionId){const old=body.monitorId?await this.row(a,w,body.monitorId):null;if(old?.config.automation?.completionActionId!==body.config.automation.completionActionId||old?.config.automation?.completionActionVersion!==body.config.automation.completionActionVersion)fail(400,'completion_database_trigger','Save research first, then create a separate database-triggered action on research runs becoming completed');}
- const checked=await withActor(exec,()=>this.validate(exec,w,body.config,true));
+ const checked=await withActor(exec,()=>this.validate(exec,w,body.config,true,storage));
   if(!body.monitorId&&body.config.authoringKey){const existing=(await this.db.query("SELECT id FROM app_monitors WHERE deleted_at IS NULL AND workspace_id=$1 AND user_id=$2 AND app_id=$3 AND config->>'authoringKey'=$4",[w,a.userId,body.config.appId,body.config.authoringKey])).rows[0];if(existing)fail(409,'automation_exists','Read and revise the existing automation: '+existing.id);}
   if(body.monitorId){const old=await this.row(a,w,body.monitorId);if(old.version!==body.expectedVersion||old.app_id!==body.config.appId)fail(409,'monitoring_changed','Read the current monitoring configuration');if(!old.config.automation&&body.config.automation&&old.task)fail(409,'legacy_task_linked','Pause the existing ChatGPT task and detach its association before migrating');}
-  const reviewBody={change:body,scopeStamp:checked.stamp,schemas:checked.schemas,writeScopes:checked.scopes},reviewId=randomUUID(),digest=checksum(J(reviewBody));await this.db.query("INSERT INTO app_service_previews(id,workspace_id,user_id,kind,body,digest,assistant) VALUES($1,$2,$3,'monitoring',$4,$5,$6)",[reviewId,w,a.userId,J(reviewBody),digest,actorAssistant(a)]);
+  const reviewBody={change:body,proposedMonitorId,scopeStamp:checked.stamp,schemas:checked.schemas,writeScopes:checked.scopes,storage},reviewId=randomUUID(),digest=checksum(J(reviewBody));await this.db.query("INSERT INTO app_service_previews(id,workspace_id,user_id,kind,body,digest,assistant) VALUES($1,$2,$3,'monitoring',$4,$5,$6)",[reviewId,w,a.userId,J(reviewBody),digest,actorAssistant(a)]);
   return {id:reviewId,kind:'monitoring',digest,body:reviewBody,preflight:automationPreflight(w,checked,body.config.automation?await new AutomationService(this.db).setup(a,w,0,{runnerId:body.config.automation.runnerId}):null),completionSource:checked.completionSource,...chatServiceReview(w,reviewId,'monitoring',digest,reviewBody),status:'review_required',reviewUrl:appPublicUrl()+'/?tab=apps&workspaceId='+w+'&serviceReview='+reviewId};
  }
  async confirm(a:Actor,w:string,reviewId:string,digest:string,review?:string){requireCurrentAction(a);return this.db.transaction(async tx=>{
@@ -62,9 +75,12 @@ export class AppMonitoring {
   const v=monitoringChange.parse(r.body.change),current=v.monitorId?await s.row(a,w,v.monitorId):null,runner=await s.runnerOf(w,a,v.config);if(current)requireAutomationOwner(a,ownedBy(current));if(runner)requireRunnerOwner(a,runner);
   // Research belongs to its runner's assistant; other monitors keep their owner or take the preparing assistant.
   const owner:Assistant|null=runner?ownedBy(runner)??'chatgpt':current?ownedBy(current):ownedBy(r)??actorAssistant(a),exec=asOwner(a,owner);
-  const checked=await withActor(exec,()=>s.validate(exec,w,v.config,true)),monitorId=v.monitorId??randomUUID();let version=0;let previous:any;
+  const monitorId=v.monitorId??r.body.proposedMonitorId??randomUUID();let storage:StorageGrant[]=[];
+  if(v.config.storeResults){const prepared=await prepareResultStorage(adapter(tx),exec,w,v.config,monitorId);v.config=prepared.config;storage=prepared.grants;}
+  let checked=await withActor(exec,()=>s.validate(exec,w,v.config,true,storage));let version=0;let previous:any;
   if(checked.stamp!==r.body.scopeStamp)fail(409,'scope_changed','Monitoring fields or permissions changed after preparation');
   const prior=v.monitorId?await s.row(a,w,v.monitorId):null;if(v.config.automation&&(!prior||prior.enabled))await new AutomationService(adapter(tx)).requireReady(a,w,v.config.automation.runnerId);
+  if(storage.length){v.config.writeScopes=await saveResultStorage(adapter(tx),a,w,p,storage,reviewId);delete v.config.writeBindings;checked=await withActor(exec,()=>s.validate(exec,w,v.config));}
   if(v.monitorId){const old=await s.row(a,w,v.monitorId);previous=old;if(!old.config.automation&&v.config.automation&&old.task)fail(409,'legacy_task_linked','Detach the paused legacy task before migrating');if(old.version!==v.expectedVersion||old.app_id!==v.config.appId)fail(409,'monitoring_changed','Monitoring changed');version=old.version+1;await tx.query("UPDATE app_monitor_runs SET status='cancelled',finished_at=now() WHERE monitor_id=$1 AND status='running'",[monitorId]);await tx.query('UPDATE app_monitors SET version=$2,config=$3,scope_stamp=$4,coverage_through=CASE WHEN $5 THEN coverage_through ELSE NULL END,updated_at=now(),assistant=$6 WHERE id=$1',[monitorId,version,J(v.config),checked.stamp,!!v.config.automation&&['objective','instructions','sourcePolicy','readBindings','writeScopes'].every(k=>J(old.config[k])===J((v.config as any)[k])),owner]);}
   else {if(v.config.authoringKey&&(await tx.query("SELECT id FROM app_monitors WHERE deleted_at IS NULL AND workspace_id=$1 AND user_id=$2 AND app_id=$3 AND config->>'authoringKey'=$4",[w,a.userId,v.config.appId,v.config.authoringKey])).rows.length)fail(409,'automation_exists','An automation with this authoring key already exists');const n=Number((await tx.query('SELECT count(*) AS n FROM app_monitors WHERE deleted_at IS NULL AND workspace_id=$1 AND user_id=$2',[w,a.userId])).rows[0].n);if(n>=100)fail(409,'monitoring_limit','This account already has 100 monitoring configurations');await tx.query('INSERT INTO app_monitors(id,workspace_id,user_id,app_id,config,scope_stamp,assistant) VALUES($1,$2,$3,$4,$5,$6,$7)',[monitorId,w,a.userId,v.config.appId,J(v.config),checked.stamp,owner]);}
   await syncDispatch(tx,a,w,monitorId,version,v.config,previous);
@@ -111,6 +127,7 @@ export class AppMonitoring {
   const testRun=!!(await tx.query("SELECT id FROM automation_occurrences WHERE run_id=$1 AND reason='test_run'",[v.runId])).rows.length;
   const receiptRuns=await monitoringReceiptRuns(tx,v.runId,!!state.config.automation),receipts=(await tx.query("SELECT r.request_key,r.change_count,s.result->'recordIds' AS record_ids FROM app_monitor_receipts r JOIN workspace_receipts s ON s.id=r.request_key WHERE r.run_id=ANY($1::uuid[]) ORDER BY r.created_at,r.request_key",[receiptRuns])).rows,savedChanges=receipts.reduce((n,r)=>n+r.change_count,0);
   if(v.status==='no_update'&&savedChanges)fail(409,'monitoring_has_changes','A run with saved changes cannot report no update');
+  if(state.config.storeResults&&!testRun&&(v.status==='completed'&&!savedChanges||v.status==='no_update'&&v.findings?.some(f=>f.relevant)))fail(409,'results_not_saved','Save research findings and drafts in the app database before completing. Use no_update only when there are no new results, or report blocked/partial if saving failed.');
   if(v.coverage&&(Date.parse(v.coverage.through)>Date.now()||state.monitor.coverage_through&&Date.parse(v.coverage.through)<Date.parse(state.monitor.coverage_through)))fail(400,'coverage_range','Coverage must advance monotonically and cannot be in the future');
   const result={summary:v.summary,findings:v.findings??[],sources:v.sources,coverage:testRun?null:v.coverage??null,testRun,savedChanges,receiptIds:receipts.map(r=>r.request_key),recordIds:[...new Set(receipts.flatMap(r=>r.record_ids??[]))],evidence:'Sources and coverage are agent-reported; save receipts are verified by TrialAgents.'};
   await tx.query('UPDATE app_monitor_runs SET status=$2,result=$3,result_digest=$4,finished_at=now() WHERE id=$1',[v.runId,v.status,J(result),digest]);if(v.coverage&&!testRun)await tx.query('UPDATE app_monitors SET coverage_through=$2 WHERE id=$1',[state.monitor.id,v.coverage.through]);await audit(tx,actor,await access(tx,actor,w),testRun?'monitoring.test_finished':'monitoring.finished',v.runId,null,{monitorId:state.monitor.id,status:v.status,savedChanges,receiptIds:result.receiptIds});return {id:v.runId,status:v.status,...result,replayed:false};

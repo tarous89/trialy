@@ -1005,7 +1005,7 @@ export class WorkspaceFoundation {
   return this.maintain(a,w,batch,undefined,true);
  }
  async maintain(a:Actor,w:string,input:unknown,approval?:WriteAuthorization,previewOnly=false,monitorRunId?:string):Promise<any>{
-  if(monitorRunId){const state=await new AppMonitoring(this.db).active({...a,origin:'ai'},w,monitorRunId);if(state.config.inheritAppAccess&&a.accessToolId!==state.config.appId){const scoped={...a,accessToolId:state.config.appId};return withActor(scoped,()=>this.maintain(scoped,w,input,approval,previewOnly,monitorRunId));}}
+  if(monitorRunId){const state=await new AppMonitoring(this.db).active({...a,origin:'ai'},w,monitorRunId);if((state.config.inheritAppAccess||state.config.storeResults)&&a.accessToolId!==state.config.appId){const scoped={...a,accessToolId:state.config.appId};return withActor(scoped,()=>this.maintain(scoped,w,input,approval,previewOnly,monitorRunId));}}
   const v=maintenanceBatch.parse(input),digest=checksum(J(v));const actor:Actor={...a,origin:'ai'};
   return this.db.transaction(async tx=>{
    await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await this.policy(tx,actor,w,true);
@@ -1015,6 +1015,7 @@ export class WorkspaceFoundation {
    const receiptRuns=monitoring?await monitoringReceiptRuns(tx,monitorRunId!,!!monitoring.config.automation):[];
    if(monitoring){const existing=(await tx.query('SELECT run_id FROM app_monitor_receipts WHERE request_key=$1',[v.requestKey])).rows[0];if(existing&&!receiptRuns.includes(existing.run_id))fail(409,'monitoring_receipt','This request belongs to another monitoring occurrence');const n=Number((await tx.query('SELECT coalesce(sum(change_count),0) AS n FROM app_monitor_receipts WHERE run_id=ANY($1::uuid[])',[receiptRuns])).rows[0].n);if(!existing&&n+v.changes.length+v.links.length>monitoring.config.maxChangesPerRun)fail(429,'monitoring_change_limit','Approved change limit for this occurrence reached');}
    const s=await this.scope(tx,actor,w,v.scopeId);const body=maintenanceSchema.parse(s.body);
+   if(body.monitorId&&body.monitorId!==monitoring?.monitor.id)fail(403,'monitoring_write_scope','This permission can only save results through its active automation run');
    if(s.revoked_at||s.version!==v.expectedScopeVersion)fail(409,'scope_changed','Maintenance permission changed');
    if(s.schema_stamp!==await this.scopeStamp(tx,actor,w,body))fail(409,'schema_changed','Review maintenance scope for the changed schema');
    const prior=await this.replay(tx,actor,w,v.requestKey,digest);if(prior){if(monitorRunId&&!(await tx.query('SELECT 1 FROM app_monitor_receipts WHERE run_id=ANY($1::uuid[]) AND request_key=$2',[receiptRuns,v.requestKey])).rows.length)fail(409,'monitoring_receipt','This save was not made by the current monitoring run');return prior;}
@@ -1035,6 +1036,16 @@ export class WorkspaceFoundation {
    const authorization=approval??{kind:'maintenance_grant' as const,id:s.id,version:s.version,context:'type:'+body.bindings[0].typeId};
    if(monitorRunId)await tx.query("SELECT set_config('trialy.run_id',$1,true)",[monitorRunId]);
    if(v.changes.length){const draft=await service.preview(actor,w,{kind:'bulk_records',changes:v.changes});const receipt=await service.commit(actor,draft.id,draft.digest,authorization);ids.push(...receipt.objects.map((o:any)=>o.id));}
+   if(monitoring?.config.storeResults){
+    const app=await this.component(tx,actor,w,monitoring.config.appId);
+    // New output must be visible in a project-scoped app in the same transaction.
+    // Never attach pre-existing rows or move records from another project.
+    if(app.manifest?.scope==='project')for(let i=0;i<v.changes.length;i++)if(v.changes[i].kind==='create_record'){
+     const linkId=randomUUID(),reason='Save automation results in the app project',snapshot={projectId:app.project_id,recordId:ids[i],version:0,active:true,authorization};
+     await tx.query('INSERT INTO project_records(id,workspace_id,project_id,record_id,created_by,reason) VALUES($1,$2,$3,$4,$5,$6)',[linkId,w,app.project_id,ids[i],a.userId,reason]);
+     await revision(tx,actor,w,linkId,'project_record',0,snapshot);await audit(tx,actor,p,'workspace.link_project_records',linkId,null,snapshot,reason);
+    }
+   }
    const links=[];for(const l of v.links){await this.validate(tx,actor,w,l);links.push(await this.apply(tx,actor,w,p,l,authorization));}
    const result={workspaceId:w,workspaceFoundation:true,status:'saved',requestKey:v.requestKey,recordIds:ids,links};
    await tx.query('INSERT INTO workspace_receipts(id,workspace_id,user_id,digest,result) VALUES($1,$2,$3,$4,$5)',[v.requestKey,w,a.userId,digest,J(result)]);

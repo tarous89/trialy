@@ -16,7 +16,7 @@ export const recipeTrigger=z.union([
 export const automationRecipe=z.object({
  key,name:text(100),description:text(300),trigger:recipeTrigger,
  contextRole:roleKey.optional(),lifetimeDays:z.number().int().min(1).max(365).default(365),
- research:z.object({briefBinding:key.optional(),objective:text(2000),instructions:text(12000),sourcePolicy:text(4000),readBindings:z.array(binding).max(20).default([])}).strict().optional(),
+ research:z.object({briefBinding:key.optional(),objective:text(2000),instructions:text(12000),sourcePolicy:text(4000),readBindings:z.array(binding).max(20).default([]),writeBindings:z.array(binding.extend({allowCreate:z.boolean().default(true),allowUpdate:z.boolean().default(true)}).refine(b=>b.allowCreate||b.allowUpdate,'Result storage needs create or update permission')).min(1).max(20).optional()}).strict().optional(),
  email:z.object({memberField:key.optional(),summaryBinding:key.optional(),subject:text(200),text:text(20000),fields:z.array(key).max(100).default([])}).strict().optional()
 }).strict().superRefine((v,c)=>{
  if(!!v.research===!!v.email)c.addIssue({code:'custom',message:'Choose research or email; follow-up email is a separate recipe'});

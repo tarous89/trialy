@@ -13,7 +13,7 @@ import {WorkspaceFoundation} from '../src/workspace/service.js';
 import {appTemplateEntry,AppTemplates} from '../src/workspace/app-templates.js';
 import {dataAccessStep,confirmDataAccess} from '../src/workspace/data-access.js';
 import {automationRecipe,readRecipes,validateRecipeDeclarations} from '../src/automations/recipes-schema.js';
-import {readAppRecipes,reconcileRecipeSetups,prepareAppRecipe,confirmAppRecipe,cancelRecipeSetup,recipeDigest} from '../src/automations/recipes.js';
+import {readAppRecipes,reconcileRecipeSetups,prepareAppRecipe,confirmAppRecipe,cancelRecipeSetup,recipeDigest,saveRecipeIntent} from '../src/automations/recipes.js';
 import {schedule} from '../src/automations/schema.js';
 import {nextCalendar} from '../src/automations/schedules.js';
 import {withinCatchUp} from '../src/app-services/service.js';
@@ -28,7 +28,7 @@ import type {Actor} from '../src/shared/schema.js';
 
 const trigger={kind:'calendar',frequency:'weekly',anchor:'2026-11-01',time:'09:00',timeZone:'Europe/Berlin',weekdays:[1]};
 const email=automationRecipe.parse({key:'weekly_notice',name:'Weekly review',description:'Review the app each Monday.',trigger,email:{subject:'Weekly review',text:'Open the app to review your work.'}});
-const research=automationRecipe.parse({key:'research',name:'Research',description:'Review reliable sources weekly.',trigger,research:{objective:'Find meaningful updates.',instructions:'Propose relevant findings with citations.',sourcePolicy:'Use primary sources.',readBindings:[{role:'test.tasks',fields:['name']}]}});
+const research=automationRecipe.parse({key:'research',name:'Research',description:'Review reliable sources weekly.',trigger,research:{objective:'Find meaningful updates.',instructions:'Propose relevant findings with citations.',sourcePolicy:'Use primary sources.',readBindings:[{role:'test.tasks',fields:['name']}],writeBindings:[{role:'test.tasks',fields:['name'],allowCreate:true,allowUpdate:true}]}});
 const contextual=automationRecipe.parse({...email,key:'entry_reminder',contextRole:'test.tasks',trigger:{kind:'record_date',role:'test.tasks',field:'due',time:'09:00',timeZone:'Europe/Berlin'},email:{...email.email,fields:['name']}});
 
 test('portable recipe validation isolates bad optional declarations and duplicate keys',()=>{
@@ -212,6 +212,23 @@ test('install approvals and optional reconciliation use real restricted roles',a
    const definitions=(await pg.query<any>('SELECT * FROM automation_recipe_setups WHERE app_id=$1',[installed.appId])).rows;assert.ok(definitions.every(r=>r.status==='active'),JSON.stringify(definitions.map(r=>[r.recipe_key,r.status,r.diagnostic])));
    const monitor=definitions.find(r=>r.recipe_key==='research'),child=definitions.find(r=>r.recipe_key==='findings_email'),action=(await pg.query<any>('SELECT config FROM app_actions WHERE id=$1',[child.definition_id])).rows[0];
    assert.equal(action.config.trigger.automationId,monitor.definition_id);assert.equal(action.config.trigger.automationVersion,monitor.definition_version);assert.equal(action.config.trigger.meaningful,true);
+   const ai:Actor={...a,origin:'ai',connectionFamily:family,clientId:client},monitoring=new AppMonitoring(db),read=await monitoring.read(ai,w,monitor.definition_id),grant=read.config.writeScopes[0];
+   assert.equal(read.config.storeResults,true);assert.equal(read.config.writeScopes.length,1);assert.deepEqual(read.context.writeScopes[0].body.bindings[0].fields,['name']);
+   const occurrence=randomUUID();await pg.query("INSERT INTO automation_occurrences(id,workspace_id,user_id,runner_id,monitor_id,monitor_version,occurrence_key,due_at,reason) VALUES($1,$2,$3,$4,$5,0,$6,now(),'scheduled_due')",[occurrence,w,a.userId,runner.id,monitor.definition_id,randomUUID()]);
+   await withActor(ai,async()=>{const claimed:any=await automation.claim(ai,w,{runnerId:runner.id,occurrenceId:occurrence,requestKey:randomUUID()}),typeId=read.context.writeScopes[0].body.bindings[0].typeId;
+    const saved=await f.maintain(ai,w,{scopeId:grant.scopeId,expectedScopeVersion:0,requestKey:randomUUID(),sourceLabel:'https://example.org/evidence',interpretation:'Reviewed finding',changes:[{kind:'create_record',typeId,data:{name:'Stored recipe finding'}}]},undefined,false,claimed.runId);
+    assert.equal((await f.record(db,ai,w,saved.recordIds[0])).data.name,'Stored recipe finding');
+    const finished=await automation.finish(ai,w,{occurrenceId:occurrence,claimToken:claimed.claimToken,result:{status:'completed',summary:'Finding stored in app database'}});assert.equal(finished.result.savedChanges,1);
+   });
+   const blocked=await installChain('Write access blocked');
+   await pg.query('UPDATE workspaces SET permission_rules=$2 WHERE id=$1',[w,JSON.stringify([{subject:'chatgpt',kind:'tool',resourceId:blocked.appId,read:'inherit',write:'deny'}])]);
+   for(let i=0;i<4;i++)await withDatabaseContext({service:'worker'},()=>reconcileRecipeSetups(db));
+   assert.equal((await pg.query<any>("SELECT status FROM automation_recipe_setups WHERE app_id=$1 AND recipe_key='research'",[blocked.appId])).rows[0].status,'needs_setup');
+   assert.equal((await f.readComponent(a,w,blocked.appId)).component.name,'Write access blocked');assert.equal((await pg.query('SELECT id FROM app_monitors WHERE app_id=$1',[blocked.appId])).rows.length,0);
+   await pg.query("UPDATE workspaces SET permission_rules='[]'::jsonb WHERE id=$1",[w]);
+   const historical=await install('Historical proposal-only review',[]),oldReview=await prepareAppRecipe(db,a,w,{appId:historical.receipt.appId,key:'research'}),oldBody:any={...oldReview.body};delete oldBody.resultStorage;
+   const oldSetup=await db.transaction(tx=>saveRecipeIntent({...db,query:tx.query.bind(tx)},a,w,historical.receipt.appId,oldBody));await withDatabaseContext({service:'worker'},()=>reconcileRecipeSetups(db));
+   assert.equal((await pg.query<any>('SELECT diagnostic FROM automation_recipe_setups WHERE id=$1',[oldSetup.id])).rows[0].diagnostic,'result_storage_review_required','Deployment cannot turn an old proposal-only approval into write authority');
    const changed=await installChain('Changed runner');await automation.control(a,w,runner.id,false,0);await automation.control(a,w,runner.id,true,1);
    for(let i=0;i<4;i++){await withDatabaseContext({service:'worker'},()=>reconcileRecipeSetups(db));if(i%2===1)await pg.query("UPDATE automation_recipe_setups SET available_at=now() WHERE app_id=$1 AND status='pending'",[changed.appId]);}
    assert.equal((await pg.query<any>("SELECT diagnostic FROM automation_recipe_setups WHERE app_id=$1 AND recipe_key='research'",[changed.appId])).rows[0].diagnostic,'runner_changed');

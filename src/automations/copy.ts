@@ -25,6 +25,8 @@ export async function copyAppAutomations(tx:Connection,a:Actor,w:string,appId:st
  const linkedId=(old:string)=>{const id=ids.get(old);if(!id)fail(409,'automation_copy_link','An automation references a definition outside this app. Review the source automation before copying it.');return id;};
  for(const row of snapshot.research){
   const config=monitoringConfig.parse({...row.config,appId});
+  // Result grants belong to the original automation; copying never copies authority.
+  if(config.storeResults){config.writeScopes=[];delete config.writeBindings;}
   if(config.automation?.completionActionId){config.automation.completionActionId=linkedId(config.automation.completionActionId);config.automation.completionActionVersion=0;}
   const id=ids.get(row.id)!;
   await tx.query('INSERT INTO app_monitors(id,workspace_id,user_id,app_id,config,scope_stamp,enabled,assistant) VALUES($1,$2,$3,$4,$5,$6,false,$7)',[id,w,a.userId,appId,JSON.stringify(config),row.scope_stamp,row.assistant]);

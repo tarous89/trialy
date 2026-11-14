@@ -10,6 +10,7 @@ for(const width of [1440,900,390])test(`Concise recipe install approval preserve
  const card=page.getByRole('region',{name:'App templates'}).locator('article').filter({has:page.getByRole('heading',{name:'Runway',exact:true})});
  await card.getByRole('button',{name:'Use',exact:true}).click();const dialog=page.getByRole('dialog',{name:'Add Runway'});
  await expect(dialog.getByRole('checkbox',{name:/Research updates/})).toBeChecked();await expect(dialog.getByRole('checkbox',{name:/Email findings/})).toBeChecked();
+ await expect(dialog.getByText(/Research and drafts save to the app database/)).toBeVisible();
  await page.screenshot({path:`/tmp/trialy-recipes-install-default-${width}.png`,fullPage:true});
  await expect(dialog.getByText('Use primary sources.')).toHaveCount(0);await dialog.getByRole('button',{name:'Edit',exact:true}).first().click();await dialog.getByLabel('Time',{exact:true}).fill('10:30');
  await dialog.getByRole('button',{name:'Cancel',exact:true}).click();expect(confirmed).toBeNull();
