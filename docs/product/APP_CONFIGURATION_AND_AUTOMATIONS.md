@@ -200,7 +200,7 @@ Each template declares these in its catalog. **On** = default on in the install 
 | **Partnerships** (07) | Partner research + digest: research → email, weekly Monday 07:00 (**on**). Meeting briefs: research, the day before linked meetings (**off**). Follow-up reminders: date trigger → email to the owner (**on**) | — (the app never emails partners) |
 | **Data Room** (08) | Room digest: email daily while a room is live (**on**). Answer drafts: research on new questions (**off**). Access ending: email to the owner 7 days before (**on**) | Invitations, level changes, answers; documents-updated digest and access-ending email to parties (pre-approved per room) |
 | **Lab Inventory** (09) | Inventory digest: email, weekly Monday 08:00 (**on**). Approval request: trigger on a new request → email to the approver (**on**). Requester status updates: trigger on status change → email (**off**; in-app always) | — |
-| **Bio Radar** (10) | One scan + digest per radar type: research → email (pipeline weekly **on**; literature weekly, patents monthly, commercial monthly, funding & deals weekly, regulatory monthly: **off**). High-impact alert: after any scan, watched high-impact events only (**on**). Quarterly review: research → report → email (**off**). See [BIO_RADAR.md §8](app-template-blueprints/apps/BIO_RADAR.md) | — |
+| **Bio Radars** (10): Pipeline, Trial, Literature, Patent, Market, Deal, Funding, Regulatory Radar (separate apps) | Per radar: scan + digest, research → email at the radar's cadence (**on**); high-impact alert after the scan, watched high-impact events only (**on**). See [BIO_RADAR.md §2.4](app-template-blueprints/apps/BIO_RADAR.md) | — |
 
 ## Simple email notifications
 

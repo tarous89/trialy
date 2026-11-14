@@ -38,7 +38,7 @@ New optional catalog field `recommendedAutomations` (array). It is validated at 
 - Briefs and summary functions exist in the app, and summary functions are read-only.
 - Recipients are workspace members only (no external addresses).
 - Email triggers follow the email rules: no sub-daily intervals and no "any update" triggers.
-- At most 10 recommendations per template (raised from 6 on 14 Nov 2026 for Bio Radar).
+- At most 10 recommendations per template (raised from 6 on 14 Nov 2026).
 
 ---
 
