@@ -16,7 +16,7 @@ export async function materializeAppFunctions(db:Database,a:Actor,w:string,appId
  for(const d of definitions){
   const current=execution.find(b=>b.name===d.name),previous=old.find(x=>x.name===d.name);
   // Explicit binding removal stays removed. A later changed/new declaration is a new reviewed action.
-  if(before&&!current&&isDeepStrictEqual(previous,d)&&d.scope.roles.every(role=>functionRoles(before.manifest)[role]===roles[role]))continue;
+  if(before&&!current&&isDeepStrictEqual(previous,d)&&d.scope.roles.every(role=>functionRoles(before.manifest)[role]===roles[role]&&before.bindings.some((b:any)=>b.typeId===roles[role])))continue;
   const map=Object.fromEntries(d.scope.roles.filter(role=>roles[role]).map(role=>[role,roles[role]]));
   if(d.scope.roles.some(role=>!map[role]||!content.bindings.some((b:any)=>b.typeId===map[role]))){execution=execution.filter(b=>b.name!==d.name);continue;}
   const scope={capabilities:d.scope.capabilities,typeIds:[...new Set(Object.values(map))],documents:false,appId};
