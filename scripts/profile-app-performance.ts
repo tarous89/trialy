@@ -5,7 +5,7 @@ import {createRequestMetrics,metricSummary,withRequestMetrics} from '../src/db/m
 import {appTemplates} from '../src/workspace/app-templates.js';
 
 const apps=[
- {id:'life.cash-runway',version:'2.1.0',directory:'cash-runway',role:'runway.plan_lines'},
+ {id:'life.cash-runway',version:'2.1.0',directory:'cash-runway/archive/2.1.0',role:'runway.plan_lines'},
  {id:'life.project-oversight',version:'2.1.0',directory:'project-oversight',role:'programs.plan_items'},
  {id:'life.contracts',version:'1.0.0',directory:'contracts',role:'agreements'},
 ];

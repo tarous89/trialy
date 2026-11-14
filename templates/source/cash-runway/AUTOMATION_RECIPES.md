@@ -1,28 +1,33 @@
-# Runway optional automations
+# Runway automations (2.2.0)
 
-Zero automations is fully supported. The app loads, calculates and saves without any of these, and a failing or disabled automation never changes it. Save the app first, then configure automations in TrialAgents Automations with their own reviewed authorization. This metadata is a recommendation, not an active definition.
+Runway 2.2.0 declares four `recommendedAutomations` in its catalog entry. They are offered in the install dialog, all selected, while `APP_AUTOMATION_RECIPES_ENABLED` is on. Later they can be added from Automations → From app features, or by Claude or ChatGPT. Zero automations is fully supported: the app loads, calculates and saves without them, and a failing or disabled automation never changes it.
 
-## 1. Runway alert (TrialAgents email action)
+## 1. Runway alert (`runway_below_target`, email)
 
-- **Trigger:** a database transition: `runway.month_closes.runway_status` becomes `below_target` on a new or updated month close. There is no independent schedule.
-- **Recipients:** the account owner by default (`to:"account"`); add only explicitly approved, registered team members with current app access.
-- **Message (fixed text):** "The latest Runway close is below the runway target. Open Runway → Actuals → Snapshots for runway months, cash-out month and start-raise date."
-- **Limits:** platform email guardrails apply (two-minute settling, one app email per recipient per hour, 15 recipient deliveries per account per day).
-- **Disable or edit:** in Automations. Run history is in Logs.
+- **Trigger:** database: `runway.month_closes.runway_status` becomes `below_target` on a new or updated month close. There is no independent schedule.
+- **Recipients:** the account owner by default; add only registered, authorized members.
+- **Message:** fixed text pointing to Actuals → Snapshots, with the close's `month`, `runway_months` and `cash_out_month`.
 
-## 2. Monthly exchange rates (research on the Claude or ChatGPT runner)
+## 2. Month-close reminder (`month_close_reminder`, email)
 
-- **Schedule:** monthly, third business day, Europe/Berlin.
-- **Reads:** `runway.settings.enabled_currencies` and existing `runway.fx_rates` month/currency pairs.
-- **Source:** ECB euro foreign exchange reference rates for the previous calendar month.
-- **Output:** for each enabled currency other than EUR without a row for that month, one `runway.fx_rates` record: month = first day of the previous month; `rate_per_eur` = monthly average, units per 1 EUR, four decimals; `source = ecb`; `source_ref` = ECB page URL.
-- **Deduplication:** month + currency. Existing rows are never changed.
-- **No result or failure:** `no_update` when every row exists. When the ECB source is unavailable, report the failure and write nothing.
-- **Write scope:** only `runway.fx_rates`, through review or a narrow, expiring standing grant for that table.
-- **Manual fallback:** the owner enters rates in Settings, or asks the assistant in chat to look them up and propose them.
+- **Schedule:** monthly, 5th business day (Monday–Friday, no holiday calendar), 09:00 Europe/Berlin.
+- **Message:** fixed text: close last month in Actuals → Close month; ignore if it is already closed.
 
-There is no platform service that loads ECB rates without an assistant run; that would be a separate platform feature.
+## 3. Monthly exchange rates (`monthly_fx_rates`, research on the Claude or ChatGPT runner)
+
+- **Schedule:** monthly, 3rd business day, 07:00 Europe/Berlin.
+- **Reads:** `runway.settings.enabled_currencies` and `reporting_currency`; existing `runway.fx_rates` month/currency pairs.
+- **Source:** ECB euro foreign exchange reference rates for the previous calendar month only.
+- **Output:** for each enabled currency other than EUR without a row for that month, one new `runway.fx_rates` record: month = first day of the previous month; `rate_per_eur` = monthly average, units per 1 EUR, four decimals; `source = ecb`; `source_ref` = ECB page URL.
+- **Storage (PR #169):** the result is saved in the app database under the bounded write permission approved together with the automation: `writeBindings` create only, fields `month, currency, rate_per_eur, source, source_ref`, no updates and no other table. A run is `completed` only with verified save receipts.
+- **No result or failure:** `no_update` when every row exists; `blocked` when the ECB source is unavailable, with nothing written.
+- **Needs setup:** if the runner's assistant cannot write `runway.fx_rates` (for example it was set to Can read), the automation stays Needs setup and the app is unaffected.
+
+## 4. Monthly runway digest (`monthly_runway_digest`, email)
+
+- **Trigger:** database: a `runway.month_closes` record is created (a month is closed).
+- **Message:** fixed text with the closed month's frozen fields: `month`, `closing_balance`, `currency`, `runway_months`, `cash_out_month`, `runway_status` and `commentary`. Every figure comes from the snapshot the app froze; no summary function or assistant computes it.
 
 ## No automation
 
-Enter rates and close months manually. The runway status is still recorded at each close, and Overview shows it.
+Enter rates and close months manually, or ask Claude or ChatGPT to propose rates (`fx.save`) and close the month (`month.close`). The runway status is still recorded at each close, and Overview shows it.

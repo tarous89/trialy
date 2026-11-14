@@ -1,6 +1,16 @@
 # TrialAgents template authoring standard
 
-Version: 1.3.27
+Version: 1.3.28
+
+## App commands and Edit in App (1.3.28)
+
+Available when the deployment enables `APP_COMMANDS_ENABLED`. Reference: Runway 2.2.0 ([scope §14](../docs/product/app-template-blueprints/apps/RUNWAY.md#14-runway-220--assistant-control-integrations-and-automations)).
+
+- **Declare commands as data.** Put one single-line JSON array at the top level of the source: `const appCommands=[{"id":"summary.read","label":"Read the summary","mode":"read","input":{"type":"object","properties":{},"additionalProperties":false}}];`. Ids are lowercase dotted keys (at most 60 commands). `mode` is `read` (returns a result, writes nothing), `propose` (returns the click path's records.propose batch as a review) or `layout` (a presentation-only `layout.propose`). `input` is a JSON Schema subset: type, properties, required, additionalProperties, items, enum, minLength/maxLength, minimum/maximum, minItems/maxItems, pattern and format `date`, `month` or `uuid`. Saves reject an invalid declaration (`app_commands`); the host never executes it.
+- **Answer the command event.** The app runs with `input.event={kind:"command",action:<command id>,value:<JSON input text>}` and returns `state.command={ok,result?,error?}`; html can be empty. A read command must not propose. Results are bounded (64,000 serialized characters) and must respect column restrictions exactly like the screens.
+- **Parity rule.** A propose command replays the same events or calls the same function as its control, so the proposal is identical for the same input (test it). Buffer proposals inside a command and propose once at the end, so a failing step leaves no partial review. Commands cannot queue functions, call connectors, send or change exchanges, upload documents, choose integration sources or confirm data access.
+- **Custom layouts may extend forms.** `templateLayoutSchema.groups` can declare form groups (for example `line_form`) so the layout gear orders and hides optional form fields. The layout profile may carry `labels` and `defaults` keyed `group:field`; the app keeps required fields visible and validates defaults. `layout.propose` accepts a custom layout profile from a saved custom app.
+- **Read-only connected values.** `roles.list` and `integrations.list` add `writer:{appName,canOpen}` for roles the app reads from another app (never the writer's ID). Label such values "From *App*" and, when `canOpen`, render `<button type="button" data-trialy-open="<role> <recordId>">Edit in App</button>`; the host opens the writing app at that record, or Database. A write to such a role is refused with `role_read_only` and `details:{role,recordId,writerAppName}`.
 
 ## Optional app automation declarations (1.3.27)
 

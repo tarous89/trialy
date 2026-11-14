@@ -1,3 +1,5 @@
+App commands decision (14 November 2026): Claude and ChatGPT control any app action through app commands (`list_app_commands`, `run_app_command`, behind `APP_COMMANDS_ENABLED`): the app's own code runs as the assistant, read commands return the app's results, and propose/layout commands return the click path's exact review, confirmed only after the user agrees. Values read from another app are labelled and open in the writing app (`data-trialy-open`); writes to them are refused with `role_read_only`. Reference: Runway 2.2.0 ([RUNWAY.md §14](docs/product/app-template-blueprints/apps/RUNWAY.md#14-runway-220--assistant-control-integrations-and-automations)).
+
 Research/drafting decision (14 November 2026): new automations must store output in the app database. The same install/setup approval includes required app-scoped write permission; no separate optional write opt-in. Missing write access means Needs setup. Completed production work requires verified saves; no-update and deliberate read-only tests remain distinct. Existing saved approvals are not silently expanded.
 
 # TrialAgents — current project context
