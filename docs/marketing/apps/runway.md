@@ -24,6 +24,7 @@
 | Runway vs Jirav (A8) | https://trialagents.com/apps/runway-vs-jirav | Published; source PR #191, repair PR #192, release `5f6860060c427c0c18168f2d15bb70b46407a443`; live verified 13 November 2026. |
 | Runway vs Exigyn (A10) | https://trialagents.com/apps/runway-vs-exigyn | Published via PR #193, release `e552a878768a5df5daebea5302688713568588d1`; live verified 13 November 2026. |
 | Finmark alternatives (B4) | https://trialagents.com/apps/finmark-alternatives-biotech | Published via PR #198, release `36a19c75eb4cd1c17f75f6c405f2b4b73932fc7d`; live verified 13 November 2026 23:07 UTC. |
+| LivePlan alternatives (B5) | https://trialagents.com/apps/liveplan-alternatives-biotech | Published via PR #199, release `9a808396e45a4a91c558d559a514499af4161149`; live verified 14 November 2026 01:14 CET. |
 | App pages index | https://trialagents.com/apps | Published; production URL checked 12 November 2026 |
 
 These are intended canonical URLs. Do not assert that a URL is live until checked on the production CDN.
@@ -481,3 +482,14 @@ Runway approved catalog life.cash-runway 2.1.0 blob `3bd4fdc73c5d2c36299b1569b05
 
 
 - **B5 merged; deployment pending/unverified — 14 November 2026, 01:10 CET:** PR #199 merged as `9a808396e45a4a91c558d559a514499af4161149` after revised exact head `d6be6634357207ef6e2619d6fb256f6dba6c945d` passed predeploy `43531535676`. Desktop/mobile artifact `14086789652` inspected; ProjectionHub logo now has readable contrast, genuine screenshots and final CTA render correctly, mobile comparison table retains its own scroll region. Await the existing GitHub-connected automatic build and verify https://trialagents.com/apps/liveplan-alternatives-biotech. Resume this release before another topic if interrupted. No tracking changes or synthetic production events.
+
+
+### B5 published and live verified — 14 November 2026, 01:14 CET
+
+- **Published:** [LivePlan alternatives for biotech: choose the plan you need next](https://trialagents.com/apps/liveplan-alternatives-biotech). Four options distinguished by deliverable, with a fictional biotech board-review brief for narrative/forecast consistency. Candidate retitled to avoid an unsupported overall ranking; LivePlan AI/MCP capabilities acknowledged and no automatic migration or synchronization implied.
+- **Release:** [PR #199](https://github.com/tarous89/trialagents-public/pull/199), final exact head `d6be6634357207ef6e2619d6fb256f6dba6c945d`, merged release `9a808396e45a4a91c558d559a514499af4161149` at 01:10 CET. Predeploy `43531535676` passed both jobs, full tests, snapshot/metadata/discovery and browser/site regressions. Revised desktop 1440px/mobile 390px artifact `14086789652` inspected after correcting white ProjectionHub logo contrast. Genuine screenshots and logos decoded, final CTA and shared chrome checks passed, no page overflow or JS error; the comparison table uses its own narrow-screen scroll region.
+- **Deployment:** existing GitHub-connected build succeeded (Workers check `132253718770`) and production check `132252975488` succeeded. Early 404s resolved within the bounded polling window; no dashboard sign-in or manual deployment.
+- **Independent live QA:** HTTP 200 text/html, no noindex header/directive and robots allows crawling; exact reviewed article fragment and shared CSS; one H1, expected title/description, self-canonical, Article/BreadcrumbList schema and publication date. Shared header/footer match the homepage; one final Start with Runway CTA. All 19 checked page/image/source/CTA/analytics URLs returned 200. /apps listing, one canonical sitemap.xml entry, llms.txt and llm.xml verified.
+- **Tracking preserved:** identical homepage loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js`, both HTTP 200. No tracking scripts/configuration/events/consent/collectors/attribution changed; no synthetic production events sent.
+
+This supersedes all B5 claim/source/revision/pending checkpoints. **19 published; 28 unfinished**, including owner-deferred A9. **Next eligible: B6, Fathom alternatives**, subject to fresh queue, evidence, duplicate and claim checks. Only B5 was newly published in this run. Search indexing, rankings, real-user performance and assistant citations remain unverified.
