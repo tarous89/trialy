@@ -31,7 +31,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | C1 | Cash runway apps in ChatGPT: compare the connection before the forecast | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/cash-runway-apps-chatgpt) |
 | C2 | Financial planning apps for Claude: choose where the plan lives | Published — live verified 14 November 2026 | https://trialagents.com/apps/financial-planning-apps-claude |
 | C3 | How to Manage Biotech Cash Runway Using ChatGPT | Already covered / published | [Live article](https://trialagents.com/apps/manage-biotech-cash-runway-chatgpt) |
-| C4 | How to Use Claude for Biotech Cash Flow Forecasting | Queued — verify and publish | — |
+| C4 | How to Use Claude for Biotech Cash Flow Forecasting | In progress — research and source preparation | — |
 | C5 | AI CFO vs AI-Native Financial Planning App: What Does a Biotech Startup Need? | Queued — verify and publish | — |
 | C6 | Best MCP-Connected Financial Planning Software for Biotech Teams | Queued — verify and publish | — |
 | C7 | Can You Build a Custom Cash Runway App with ChatGPT or Claude? | Queued — verify and publish | — |
@@ -590,3 +590,8 @@ PR #204 merged as `3fe8e5ec60157a814aad7d2d2bdd8ca4dd5db11a` at approximately 04
 - **Evidence boundary:** primary-documentation comparison and a proposed funding-review exercise, not a completed Claude/competitor acceptance test. Two browser screenshots are labeled genuine demos with fictional data. No invented benchmarks, prices, host parity or standard 13-week forecasting claims.
 
 This supersedes C2 source and merged-pending checkpoints. **24 published; 23 unfinished**, including owner-deferred A9. **Next eligible: C4, How to Use Claude for Biotech Cash Flow Forecasting**, subject to fresh queue, claim, duplicate and primary-evidence checks. C3 is already covered. Only C2 was newly published in this run. Search indexing, rankings and assistant citations remain unverified.
+
+
+### C4 execution claim — 14 November 2026
+
+C2 returned HTTP 200; public main is `3fe8e5ec60157a814aad7d2d2bdd8ca4dd5db11a`; no open Runway source PR found. Claim C4 on `content/runway-c4-claude-forecast-20261114`. Distinct scope: a documented Claude-assisted forecast review using a delayed grant, committed versus contingent financing and a reproducible monthly cash reconciliation; not another vendor shortlist or a host-name swap of the ChatGPT setup article. No fresh Claude acceptance test will be claimed. Totals remain 24 published, 23 unfinished.
