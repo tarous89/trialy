@@ -1,0 +1,2291 @@
+{
+  "notice": "Fictional review only. Never seed to a customer workspace.",
+  "asOfDate": "2026-11-01",
+  "records": [
+    {
+      "id": "demo-locations-001",
+      "role": "locations",
+      "version": 1,
+      "data": {
+        "name": "Biology lab",
+        "archived": false,
+        "parent_id": "",
+        "kind": "Room",
+        "temperature": "Ambient",
+        "owner": "Lab operations",
+        "access_note": "Internal access only; restrictions configured in TrialAgents host"
+      }
+    },
+    {
+      "id": "demo-locations-002",
+      "role": "locations",
+      "version": 1,
+      "data": {
+        "name": "Cold room 4\u00b0C",
+        "archived": false,
+        "parent_id": "",
+        "kind": "Room",
+        "temperature": "2\u20138\u00b0C",
+        "owner": "Lab operations",
+        "access_note": "Internal access only; restrictions configured in TrialAgents host"
+      }
+    },
+    {
+      "id": "demo-locations-003",
+      "role": "locations",
+      "version": 1,
+      "data": {
+        "name": "Chemistry lab",
+        "archived": false,
+        "parent_id": "",
+        "kind": "Room",
+        "temperature": "Ambient",
+        "owner": "Lab operations",
+        "access_note": "Internal access only; restrictions configured in TrialAgents host"
+      }
+    },
+    {
+      "id": "demo-locations-004",
+      "role": "locations",
+      "version": 1,
+      "data": {
+        "name": "Freezer -20 / A",
+        "archived": false,
+        "parent_id": "demo-locations-001",
+        "kind": "Freezer",
+        "temperature": "-20\u00b0C",
+        "owner": "Lab operations",
+        "access_note": "Internal access only; restrictions configured in TrialAgents host"
+      }
+    },
+    {
+      "id": "demo-locations-005",
+      "role": "locations",
+      "version": 1,
+      "data": {
+        "name": "Flammables cabinet",
+        "archived": false,
+        "parent_id": "demo-locations-003",
+        "kind": "Cabinet",
+        "temperature": "Ambient",
+        "owner": "Lab operations",
+        "access_note": "Internal access only; restrictions configured in TrialAgents host"
+      }
+    },
+    {
+      "id": "demo-locations-006",
+      "role": "locations",
+      "version": 1,
+      "data": {
+        "name": "Stock shelf B3",
+        "archived": false,
+        "parent_id": "demo-locations-001",
+        "kind": "Shelf",
+        "temperature": "Ambient",
+        "owner": "Lab operations",
+        "access_note": "Internal access only; restrictions configured in TrialAgents host"
+      }
+    },
+    {
+      "id": "demo-items-001",
+      "role": "items",
+      "version": 1,
+      "data": {
+        "name": "Proteinase K",
+        "archived": false,
+        "sku": "PK-021",
+        "category": "Reagent",
+        "unit": "vials",
+        "reorder_point": 4,
+        "target_level": 15,
+        "supplier": "Sigma",
+        "lead_days": 12,
+        "owner": "Research",
+        "notes": "Fictional laboratory supply"
+      }
+    },
+    {
+      "id": "demo-lots-001",
+      "role": "lots",
+      "version": 1,
+      "data": {
+        "name": "Proteinase K \u00b7 PK-26100",
+        "archived": false,
+        "item_id": "demo-items-001",
+        "lot_code": "PK-26100",
+        "expiry": "2026-11-19",
+        "location_id": "demo-locations-002",
+        "received_date": "2026-04-10",
+        "storage_note": "Fictional lab location",
+        "stock_revision": 0
+      }
+    },
+    {
+      "id": "demo-movements-001",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "RCV-PK-021-1",
+        "archived": false,
+        "item_id": "demo-items-001",
+        "lot_id": "demo-lots-001",
+        "kind": "Receipt",
+        "quantity": 8,
+        "unit": "vials",
+        "from_location_id": "",
+        "to_location_id": "demo-locations-002",
+        "date": "2026-04-10",
+        "reason": "Fictional initial approved receipt"
+      }
+    },
+    {
+      "id": "demo-movements-002",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-PK-021-05-1",
+        "archived": false,
+        "item_id": "demo-items-001",
+        "lot_id": "demo-lots-001",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "vials",
+        "from_location_id": "demo-locations-002",
+        "to_location_id": "",
+        "date": "2026-05-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-003",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-PK-021-06-1",
+        "archived": false,
+        "item_id": "demo-items-001",
+        "lot_id": "demo-lots-001",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "vials",
+        "from_location_id": "demo-locations-002",
+        "to_location_id": "",
+        "date": "2026-06-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-004",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-PK-021-07-1",
+        "archived": false,
+        "item_id": "demo-items-001",
+        "lot_id": "demo-lots-001",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "vials",
+        "from_location_id": "demo-locations-002",
+        "to_location_id": "",
+        "date": "2026-07-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-005",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-PK-021-09-1",
+        "archived": false,
+        "item_id": "demo-items-001",
+        "lot_id": "demo-lots-001",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "vials",
+        "from_location_id": "demo-locations-002",
+        "to_location_id": "",
+        "date": "2026-09-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-006",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-PK-021-10-1",
+        "archived": false,
+        "item_id": "demo-items-001",
+        "lot_id": "demo-lots-001",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "vials",
+        "from_location_id": "demo-locations-002",
+        "to_location_id": "",
+        "date": "2026-10-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-lots-002",
+      "role": "lots",
+      "version": 1,
+      "data": {
+        "name": "Proteinase K \u00b7 PK-26200",
+        "archived": false,
+        "item_id": "demo-items-001",
+        "lot_code": "PK-26200",
+        "expiry": "2027-09-30",
+        "location_id": "demo-locations-002",
+        "received_date": "2026-04-10",
+        "storage_note": "Fictional lab location",
+        "stock_revision": 0
+      }
+    },
+    {
+      "id": "demo-movements-007",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "RCV-PK-021-2",
+        "archived": false,
+        "item_id": "demo-items-001",
+        "lot_id": "demo-lots-002",
+        "kind": "Receipt",
+        "quantity": 14,
+        "unit": "vials",
+        "from_location_id": "",
+        "to_location_id": "demo-locations-002",
+        "date": "2026-04-10",
+        "reason": "Fictional initial approved receipt"
+      }
+    },
+    {
+      "id": "demo-movements-008",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-PK-021-05-2",
+        "archived": false,
+        "item_id": "demo-items-001",
+        "lot_id": "demo-lots-002",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "vials",
+        "from_location_id": "demo-locations-002",
+        "to_location_id": "",
+        "date": "2026-05-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-009",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-PK-021-06-2",
+        "archived": false,
+        "item_id": "demo-items-001",
+        "lot_id": "demo-lots-002",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "vials",
+        "from_location_id": "demo-locations-002",
+        "to_location_id": "",
+        "date": "2026-06-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-010",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-PK-021-08-2",
+        "archived": false,
+        "item_id": "demo-items-001",
+        "lot_id": "demo-lots-002",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "vials",
+        "from_location_id": "demo-locations-002",
+        "to_location_id": "",
+        "date": "2026-08-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-011",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-PK-021-09-2",
+        "archived": false,
+        "item_id": "demo-items-001",
+        "lot_id": "demo-lots-002",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "vials",
+        "from_location_id": "demo-locations-002",
+        "to_location_id": "",
+        "date": "2026-09-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-012",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-PK-021-10-2",
+        "archived": false,
+        "item_id": "demo-items-001",
+        "lot_id": "demo-lots-002",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "vials",
+        "from_location_id": "demo-locations-002",
+        "to_location_id": "",
+        "date": "2026-10-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-items-002",
+      "role": "items",
+      "version": 1,
+      "data": {
+        "name": "Sterile pipette tips",
+        "archived": false,
+        "sku": "TIP-020",
+        "category": "Consumable",
+        "unit": "boxes",
+        "reorder_point": 5,
+        "target_level": 24,
+        "supplier": "Eppendorf",
+        "lead_days": 6,
+        "owner": "Lab operations",
+        "notes": "Fictional laboratory supply"
+      }
+    },
+    {
+      "id": "demo-lots-003",
+      "role": "lots",
+      "version": 1,
+      "data": {
+        "name": "Sterile pipette tips \u00b7 TIP-26101",
+        "archived": false,
+        "item_id": "demo-items-002",
+        "lot_code": "TIP-26101",
+        "expiry": "2027-05-21",
+        "location_id": "demo-locations-006",
+        "received_date": "2026-04-10",
+        "storage_note": "Fictional lab location",
+        "stock_revision": 0
+      }
+    },
+    {
+      "id": "demo-movements-013",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "RCV-TIP-020-1",
+        "archived": false,
+        "item_id": "demo-items-002",
+        "lot_id": "demo-lots-003",
+        "kind": "Receipt",
+        "quantity": 9,
+        "unit": "boxes",
+        "from_location_id": "",
+        "to_location_id": "demo-locations-006",
+        "date": "2026-04-10",
+        "reason": "Fictional initial approved receipt"
+      }
+    },
+    {
+      "id": "demo-movements-014",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-TIP-020-05-1",
+        "archived": false,
+        "item_id": "demo-items-002",
+        "lot_id": "demo-lots-003",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "boxes",
+        "from_location_id": "demo-locations-006",
+        "to_location_id": "",
+        "date": "2026-05-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-015",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-TIP-020-06-1",
+        "archived": false,
+        "item_id": "demo-items-002",
+        "lot_id": "demo-lots-003",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "boxes",
+        "from_location_id": "demo-locations-006",
+        "to_location_id": "",
+        "date": "2026-06-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-016",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-TIP-020-08-1",
+        "archived": false,
+        "item_id": "demo-items-002",
+        "lot_id": "demo-lots-003",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "boxes",
+        "from_location_id": "demo-locations-006",
+        "to_location_id": "",
+        "date": "2026-08-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-017",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-TIP-020-09-1",
+        "archived": false,
+        "item_id": "demo-items-002",
+        "lot_id": "demo-lots-003",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "boxes",
+        "from_location_id": "demo-locations-006",
+        "to_location_id": "",
+        "date": "2026-09-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-018",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-TIP-020-10-1",
+        "archived": false,
+        "item_id": "demo-items-002",
+        "lot_id": "demo-lots-003",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "boxes",
+        "from_location_id": "demo-locations-006",
+        "to_location_id": "",
+        "date": "2026-10-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-items-003",
+      "role": "items",
+      "version": 1,
+      "data": {
+        "name": "PBS tablets",
+        "archived": false,
+        "sku": "PBS-101",
+        "category": "Reagent",
+        "unit": "bottles",
+        "reorder_point": 3,
+        "target_level": 10,
+        "supplier": "Merck",
+        "lead_days": 9,
+        "owner": "Analytical",
+        "notes": "Fictional laboratory supply"
+      }
+    },
+    {
+      "id": "demo-lots-004",
+      "role": "lots",
+      "version": 1,
+      "data": {
+        "name": "PBS tablets \u00b7 PBS-26102",
+        "archived": false,
+        "item_id": "demo-items-003",
+        "lot_code": "PBS-26102",
+        "expiry": "2026-09-20",
+        "location_id": "demo-locations-002",
+        "received_date": "2026-04-10",
+        "storage_note": "Fictional lab location",
+        "stock_revision": 0
+      }
+    },
+    {
+      "id": "demo-movements-019",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "RCV-PBS-101-1",
+        "archived": false,
+        "item_id": "demo-items-003",
+        "lot_id": "demo-lots-004",
+        "kind": "Receipt",
+        "quantity": 10,
+        "unit": "bottles",
+        "from_location_id": "",
+        "to_location_id": "demo-locations-002",
+        "date": "2026-04-10",
+        "reason": "Fictional initial approved receipt"
+      }
+    },
+    {
+      "id": "demo-movements-020",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-PBS-101-05-1",
+        "archived": false,
+        "item_id": "demo-items-003",
+        "lot_id": "demo-lots-004",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "bottles",
+        "from_location_id": "demo-locations-002",
+        "to_location_id": "",
+        "date": "2026-05-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-021",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-PBS-101-07-1",
+        "archived": false,
+        "item_id": "demo-items-003",
+        "lot_id": "demo-lots-004",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "bottles",
+        "from_location_id": "demo-locations-002",
+        "to_location_id": "",
+        "date": "2026-07-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-022",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-PBS-101-08-1",
+        "archived": false,
+        "item_id": "demo-items-003",
+        "lot_id": "demo-lots-004",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "bottles",
+        "from_location_id": "demo-locations-002",
+        "to_location_id": "",
+        "date": "2026-08-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-023",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-PBS-101-09-1",
+        "archived": false,
+        "item_id": "demo-items-003",
+        "lot_id": "demo-lots-004",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "bottles",
+        "from_location_id": "demo-locations-002",
+        "to_location_id": "",
+        "date": "2026-09-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-items-004",
+      "role": "items",
+      "version": 1,
+      "data": {
+        "name": "Cryogenic tubes",
+        "archived": false,
+        "sku": "CRYO-48",
+        "category": "Consumable",
+        "unit": "boxes",
+        "reorder_point": 4,
+        "target_level": 16,
+        "supplier": "Thermo",
+        "lead_days": 14,
+        "owner": "Research",
+        "notes": "Fictional laboratory supply"
+      }
+    },
+    {
+      "id": "demo-lots-005",
+      "role": "lots",
+      "version": 1,
+      "data": {
+        "name": "Cryogenic tubes \u00b7 CRYO-26103",
+        "archived": false,
+        "item_id": "demo-items-004",
+        "lot_code": "CRYO-26103",
+        "expiry": "2027-05-21",
+        "location_id": "demo-locations-004",
+        "received_date": "2026-04-10",
+        "storage_note": "Fictional lab location",
+        "stock_revision": 0
+      }
+    },
+    {
+      "id": "demo-movements-024",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "RCV-CRYO-48-1",
+        "archived": false,
+        "item_id": "demo-items-004",
+        "lot_id": "demo-lots-005",
+        "kind": "Receipt",
+        "quantity": 11,
+        "unit": "boxes",
+        "from_location_id": "",
+        "to_location_id": "demo-locations-004",
+        "date": "2026-04-10",
+        "reason": "Fictional initial approved receipt"
+      }
+    },
+    {
+      "id": "demo-movements-025",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-CRYO-48-06-1",
+        "archived": false,
+        "item_id": "demo-items-004",
+        "lot_id": "demo-lots-005",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "boxes",
+        "from_location_id": "demo-locations-004",
+        "to_location_id": "",
+        "date": "2026-06-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-026",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-CRYO-48-07-1",
+        "archived": false,
+        "item_id": "demo-items-004",
+        "lot_id": "demo-lots-005",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "boxes",
+        "from_location_id": "demo-locations-004",
+        "to_location_id": "",
+        "date": "2026-07-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-027",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-CRYO-48-08-1",
+        "archived": false,
+        "item_id": "demo-items-004",
+        "lot_id": "demo-lots-005",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "boxes",
+        "from_location_id": "demo-locations-004",
+        "to_location_id": "",
+        "date": "2026-08-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-028",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-CRYO-48-10-1",
+        "archived": false,
+        "item_id": "demo-items-004",
+        "lot_id": "demo-lots-005",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "boxes",
+        "from_location_id": "demo-locations-004",
+        "to_location_id": "",
+        "date": "2026-10-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-lots-006",
+      "role": "lots",
+      "version": 1,
+      "data": {
+        "name": "Cryogenic tubes \u00b7 CRYO-26203",
+        "archived": false,
+        "item_id": "demo-items-004",
+        "lot_code": "CRYO-26203",
+        "expiry": "2027-09-30",
+        "location_id": "demo-locations-004",
+        "received_date": "2026-04-10",
+        "storage_note": "Fictional lab location",
+        "stock_revision": 0
+      }
+    },
+    {
+      "id": "demo-movements-029",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "RCV-CRYO-48-2",
+        "archived": false,
+        "item_id": "demo-items-004",
+        "lot_id": "demo-lots-006",
+        "kind": "Receipt",
+        "quantity": 17,
+        "unit": "boxes",
+        "from_location_id": "",
+        "to_location_id": "demo-locations-004",
+        "date": "2026-04-10",
+        "reason": "Fictional initial approved receipt"
+      }
+    },
+    {
+      "id": "demo-movements-030",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-CRYO-48-05-2",
+        "archived": false,
+        "item_id": "demo-items-004",
+        "lot_id": "demo-lots-006",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "boxes",
+        "from_location_id": "demo-locations-004",
+        "to_location_id": "",
+        "date": "2026-05-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-031",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-CRYO-48-06-2",
+        "archived": false,
+        "item_id": "demo-items-004",
+        "lot_id": "demo-lots-006",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "boxes",
+        "from_location_id": "demo-locations-004",
+        "to_location_id": "",
+        "date": "2026-06-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-032",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-CRYO-48-07-2",
+        "archived": false,
+        "item_id": "demo-items-004",
+        "lot_id": "demo-lots-006",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "boxes",
+        "from_location_id": "demo-locations-004",
+        "to_location_id": "",
+        "date": "2026-07-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-033",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-CRYO-48-09-2",
+        "archived": false,
+        "item_id": "demo-items-004",
+        "lot_id": "demo-lots-006",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "boxes",
+        "from_location_id": "demo-locations-004",
+        "to_location_id": "",
+        "date": "2026-09-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-034",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-CRYO-48-10-2",
+        "archived": false,
+        "item_id": "demo-items-004",
+        "lot_id": "demo-lots-006",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "boxes",
+        "from_location_id": "demo-locations-004",
+        "to_location_id": "",
+        "date": "2026-10-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-items-005",
+      "role": "items",
+      "version": 1,
+      "data": {
+        "name": "Nitrile gloves M",
+        "archived": false,
+        "sku": "PPE-013",
+        "category": "Consumable",
+        "unit": "boxes",
+        "reorder_point": 5,
+        "target_level": 30,
+        "supplier": "VWR",
+        "lead_days": 4,
+        "owner": "Lab operations",
+        "notes": "Fictional laboratory supply"
+      }
+    },
+    {
+      "id": "demo-lots-007",
+      "role": "lots",
+      "version": 1,
+      "data": {
+        "name": "Nitrile gloves M \u00b7 PPE-26104",
+        "archived": false,
+        "item_id": "demo-items-005",
+        "lot_code": "PPE-26104",
+        "expiry": "2027-05-21",
+        "location_id": "demo-locations-006",
+        "received_date": "2026-04-10",
+        "storage_note": "Fictional lab location",
+        "stock_revision": 0
+      }
+    },
+    {
+      "id": "demo-movements-035",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "RCV-PPE-013-1",
+        "archived": false,
+        "item_id": "demo-items-005",
+        "lot_id": "demo-lots-007",
+        "kind": "Receipt",
+        "quantity": 8,
+        "unit": "boxes",
+        "from_location_id": "",
+        "to_location_id": "demo-locations-006",
+        "date": "2026-04-10",
+        "reason": "Fictional initial approved receipt"
+      }
+    },
+    {
+      "id": "demo-movements-036",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-PPE-013-05-1",
+        "archived": false,
+        "item_id": "demo-items-005",
+        "lot_id": "demo-lots-007",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "boxes",
+        "from_location_id": "demo-locations-006",
+        "to_location_id": "",
+        "date": "2026-05-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-037",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-PPE-013-06-1",
+        "archived": false,
+        "item_id": "demo-items-005",
+        "lot_id": "demo-lots-007",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "boxes",
+        "from_location_id": "demo-locations-006",
+        "to_location_id": "",
+        "date": "2026-06-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-038",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-PPE-013-07-1",
+        "archived": false,
+        "item_id": "demo-items-005",
+        "lot_id": "demo-lots-007",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "boxes",
+        "from_location_id": "demo-locations-006",
+        "to_location_id": "",
+        "date": "2026-07-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-039",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-PPE-013-09-1",
+        "archived": false,
+        "item_id": "demo-items-005",
+        "lot_id": "demo-lots-007",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "boxes",
+        "from_location_id": "demo-locations-006",
+        "to_location_id": "",
+        "date": "2026-09-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-040",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-PPE-013-10-1",
+        "archived": false,
+        "item_id": "demo-items-005",
+        "lot_id": "demo-lots-007",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "boxes",
+        "from_location_id": "demo-locations-006",
+        "to_location_id": "",
+        "date": "2026-10-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-items-006",
+      "role": "items",
+      "version": 1,
+      "data": {
+        "name": "Ethanol 70%",
+        "archived": false,
+        "sku": "ETH-070",
+        "category": "Chemical",
+        "unit": "bottles",
+        "reorder_point": 3,
+        "target_level": 12,
+        "supplier": "Fisher",
+        "lead_days": 8,
+        "owner": "Analytical",
+        "notes": "Fictional laboratory supply"
+      }
+    },
+    {
+      "id": "demo-lots-008",
+      "role": "lots",
+      "version": 1,
+      "data": {
+        "name": "Ethanol 70% \u00b7 ETH-26105",
+        "archived": false,
+        "item_id": "demo-items-006",
+        "lot_code": "ETH-26105",
+        "expiry": "2027-05-21",
+        "location_id": "demo-locations-005",
+        "received_date": "2026-04-10",
+        "storage_note": "Fictional lab location",
+        "stock_revision": 0
+      }
+    },
+    {
+      "id": "demo-movements-041",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "RCV-ETH-070-1",
+        "archived": false,
+        "item_id": "demo-items-006",
+        "lot_id": "demo-lots-008",
+        "kind": "Receipt",
+        "quantity": 9,
+        "unit": "bottles",
+        "from_location_id": "",
+        "to_location_id": "demo-locations-005",
+        "date": "2026-04-10",
+        "reason": "Fictional initial approved receipt"
+      }
+    },
+    {
+      "id": "demo-movements-042",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-ETH-070-05-1",
+        "archived": false,
+        "item_id": "demo-items-006",
+        "lot_id": "demo-lots-008",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "bottles",
+        "from_location_id": "demo-locations-005",
+        "to_location_id": "",
+        "date": "2026-05-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-043",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-ETH-070-06-1",
+        "archived": false,
+        "item_id": "demo-items-006",
+        "lot_id": "demo-lots-008",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "bottles",
+        "from_location_id": "demo-locations-005",
+        "to_location_id": "",
+        "date": "2026-06-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-044",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-ETH-070-08-1",
+        "archived": false,
+        "item_id": "demo-items-006",
+        "lot_id": "demo-lots-008",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "bottles",
+        "from_location_id": "demo-locations-005",
+        "to_location_id": "",
+        "date": "2026-08-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-045",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-ETH-070-09-1",
+        "archived": false,
+        "item_id": "demo-items-006",
+        "lot_id": "demo-lots-008",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "bottles",
+        "from_location_id": "demo-locations-005",
+        "to_location_id": "",
+        "date": "2026-09-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-046",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-ETH-070-10-1",
+        "archived": false,
+        "item_id": "demo-items-006",
+        "lot_id": "demo-lots-008",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "bottles",
+        "from_location_id": "demo-locations-005",
+        "to_location_id": "",
+        "date": "2026-10-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-items-007",
+      "role": "items",
+      "version": 1,
+      "data": {
+        "name": "RNA extraction kit",
+        "archived": false,
+        "sku": "RNA-365",
+        "category": "Reagent",
+        "unit": "kits",
+        "reorder_point": 3,
+        "target_level": 10,
+        "supplier": "Qiagen",
+        "lead_days": 18,
+        "owner": "Research",
+        "notes": "Fictional laboratory supply"
+      }
+    },
+    {
+      "id": "demo-lots-009",
+      "role": "lots",
+      "version": 1,
+      "data": {
+        "name": "RNA extraction kit \u00b7 RNA-26106",
+        "archived": false,
+        "item_id": "demo-items-007",
+        "lot_code": "RNA-26106",
+        "expiry": "2026-11-19",
+        "location_id": "demo-locations-004",
+        "received_date": "2026-04-10",
+        "storage_note": "Fictional lab location",
+        "stock_revision": 0
+      }
+    },
+    {
+      "id": "demo-movements-047",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "RCV-RNA-365-1",
+        "archived": false,
+        "item_id": "demo-items-007",
+        "lot_id": "demo-lots-009",
+        "kind": "Receipt",
+        "quantity": 10,
+        "unit": "kits",
+        "from_location_id": "",
+        "to_location_id": "demo-locations-004",
+        "date": "2026-04-10",
+        "reason": "Fictional initial approved receipt"
+      }
+    },
+    {
+      "id": "demo-movements-048",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-RNA-365-05-1",
+        "archived": false,
+        "item_id": "demo-items-007",
+        "lot_id": "demo-lots-009",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "kits",
+        "from_location_id": "demo-locations-004",
+        "to_location_id": "",
+        "date": "2026-05-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-049",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-RNA-365-07-1",
+        "archived": false,
+        "item_id": "demo-items-007",
+        "lot_id": "demo-lots-009",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "kits",
+        "from_location_id": "demo-locations-004",
+        "to_location_id": "",
+        "date": "2026-07-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-050",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-RNA-365-08-1",
+        "archived": false,
+        "item_id": "demo-items-007",
+        "lot_id": "demo-lots-009",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "kits",
+        "from_location_id": "demo-locations-004",
+        "to_location_id": "",
+        "date": "2026-08-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-051",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-RNA-365-09-1",
+        "archived": false,
+        "item_id": "demo-items-007",
+        "lot_id": "demo-lots-009",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "kits",
+        "from_location_id": "demo-locations-004",
+        "to_location_id": "",
+        "date": "2026-09-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-lots-010",
+      "role": "lots",
+      "version": 1,
+      "data": {
+        "name": "RNA extraction kit \u00b7 RNA-26206",
+        "archived": false,
+        "item_id": "demo-items-007",
+        "lot_code": "RNA-26206",
+        "expiry": "2027-09-30",
+        "location_id": "demo-locations-004",
+        "received_date": "2026-04-10",
+        "storage_note": "Fictional lab location",
+        "stock_revision": 0
+      }
+    },
+    {
+      "id": "demo-movements-052",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "RCV-RNA-365-2",
+        "archived": false,
+        "item_id": "demo-items-007",
+        "lot_id": "demo-lots-010",
+        "kind": "Receipt",
+        "quantity": 16,
+        "unit": "kits",
+        "from_location_id": "",
+        "to_location_id": "demo-locations-004",
+        "date": "2026-04-10",
+        "reason": "Fictional initial approved receipt"
+      }
+    },
+    {
+      "id": "demo-movements-053",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-RNA-365-06-2",
+        "archived": false,
+        "item_id": "demo-items-007",
+        "lot_id": "demo-lots-010",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "kits",
+        "from_location_id": "demo-locations-004",
+        "to_location_id": "",
+        "date": "2026-06-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-054",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-RNA-365-07-2",
+        "archived": false,
+        "item_id": "demo-items-007",
+        "lot_id": "demo-lots-010",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "kits",
+        "from_location_id": "demo-locations-004",
+        "to_location_id": "",
+        "date": "2026-07-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-055",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-RNA-365-08-2",
+        "archived": false,
+        "item_id": "demo-items-007",
+        "lot_id": "demo-lots-010",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "kits",
+        "from_location_id": "demo-locations-004",
+        "to_location_id": "",
+        "date": "2026-08-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-056",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-RNA-365-10-2",
+        "archived": false,
+        "item_id": "demo-items-007",
+        "lot_id": "demo-lots-010",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "kits",
+        "from_location_id": "demo-locations-004",
+        "to_location_id": "",
+        "date": "2026-10-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-items-008",
+      "role": "items",
+      "version": 1,
+      "data": {
+        "name": "Microcentrifuge tubes",
+        "archived": false,
+        "sku": "MCT-500",
+        "category": "Consumable",
+        "unit": "bags",
+        "reorder_point": 4,
+        "target_level": 15,
+        "supplier": "VWR",
+        "lead_days": 6,
+        "owner": "Lab operations",
+        "notes": "Fictional laboratory supply"
+      }
+    },
+    {
+      "id": "demo-lots-011",
+      "role": "lots",
+      "version": 1,
+      "data": {
+        "name": "Microcentrifuge tubes \u00b7 MCT-26107",
+        "archived": false,
+        "item_id": "demo-items-008",
+        "lot_code": "MCT-26107",
+        "expiry": "2027-05-21",
+        "location_id": "demo-locations-006",
+        "received_date": "2026-04-10",
+        "storage_note": "Fictional lab location",
+        "stock_revision": 0
+      }
+    },
+    {
+      "id": "demo-movements-057",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "RCV-MCT-500-1",
+        "archived": false,
+        "item_id": "demo-items-008",
+        "lot_id": "demo-lots-011",
+        "kind": "Receipt",
+        "quantity": 11,
+        "unit": "bags",
+        "from_location_id": "",
+        "to_location_id": "demo-locations-006",
+        "date": "2026-04-10",
+        "reason": "Fictional initial approved receipt"
+      }
+    },
+    {
+      "id": "demo-movements-058",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-MCT-500-06-1",
+        "archived": false,
+        "item_id": "demo-items-008",
+        "lot_id": "demo-lots-011",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "bags",
+        "from_location_id": "demo-locations-006",
+        "to_location_id": "",
+        "date": "2026-06-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-059",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-MCT-500-07-1",
+        "archived": false,
+        "item_id": "demo-items-008",
+        "lot_id": "demo-lots-011",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "bags",
+        "from_location_id": "demo-locations-006",
+        "to_location_id": "",
+        "date": "2026-07-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-060",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-MCT-500-08-1",
+        "archived": false,
+        "item_id": "demo-items-008",
+        "lot_id": "demo-lots-011",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "bags",
+        "from_location_id": "demo-locations-006",
+        "to_location_id": "",
+        "date": "2026-08-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-061",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-MCT-500-10-1",
+        "archived": false,
+        "item_id": "demo-items-008",
+        "lot_id": "demo-lots-011",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "bags",
+        "from_location_id": "demo-locations-006",
+        "to_location_id": "",
+        "date": "2026-10-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-items-009",
+      "role": "items",
+      "version": 1,
+      "data": {
+        "name": "Taq polymerase",
+        "archived": false,
+        "sku": "TAQ-082",
+        "category": "Reagent",
+        "unit": "vials",
+        "reorder_point": 3,
+        "target_level": 12,
+        "supplier": "NEB",
+        "lead_days": 16,
+        "owner": "Analytical",
+        "notes": "Fictional laboratory supply"
+      }
+    },
+    {
+      "id": "demo-lots-012",
+      "role": "lots",
+      "version": 1,
+      "data": {
+        "name": "Taq polymerase \u00b7 TAQ-26108",
+        "archived": false,
+        "item_id": "demo-items-009",
+        "lot_code": "TAQ-26108",
+        "expiry": "2027-05-21",
+        "location_id": "demo-locations-004",
+        "received_date": "2026-04-10",
+        "storage_note": "Fictional lab location",
+        "stock_revision": 0
+      }
+    },
+    {
+      "id": "demo-movements-062",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "RCV-TAQ-082-1",
+        "archived": false,
+        "item_id": "demo-items-009",
+        "lot_id": "demo-lots-012",
+        "kind": "Receipt",
+        "quantity": 8,
+        "unit": "vials",
+        "from_location_id": "",
+        "to_location_id": "demo-locations-004",
+        "date": "2026-04-10",
+        "reason": "Fictional initial approved receipt"
+      }
+    },
+    {
+      "id": "demo-movements-063",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-TAQ-082-05-1",
+        "archived": false,
+        "item_id": "demo-items-009",
+        "lot_id": "demo-lots-012",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "vials",
+        "from_location_id": "demo-locations-004",
+        "to_location_id": "",
+        "date": "2026-05-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-064",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-TAQ-082-06-1",
+        "archived": false,
+        "item_id": "demo-items-009",
+        "lot_id": "demo-lots-012",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "vials",
+        "from_location_id": "demo-locations-004",
+        "to_location_id": "",
+        "date": "2026-06-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-065",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-TAQ-082-07-1",
+        "archived": false,
+        "item_id": "demo-items-009",
+        "lot_id": "demo-lots-012",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "vials",
+        "from_location_id": "demo-locations-004",
+        "to_location_id": "",
+        "date": "2026-07-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-066",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-TAQ-082-09-1",
+        "archived": false,
+        "item_id": "demo-items-009",
+        "lot_id": "demo-lots-012",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "vials",
+        "from_location_id": "demo-locations-004",
+        "to_location_id": "",
+        "date": "2026-09-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-067",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-TAQ-082-10-1",
+        "archived": false,
+        "item_id": "demo-items-009",
+        "lot_id": "demo-lots-012",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "vials",
+        "from_location_id": "demo-locations-004",
+        "to_location_id": "",
+        "date": "2026-10-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-items-010",
+      "role": "items",
+      "version": 1,
+      "data": {
+        "name": "Culture medium",
+        "archived": false,
+        "sku": "MED-042",
+        "category": "Reagent",
+        "unit": "bottles",
+        "reorder_point": 5,
+        "target_level": 20,
+        "supplier": "Gibco",
+        "lead_days": 11,
+        "owner": "Research",
+        "notes": "Fictional laboratory supply"
+      }
+    },
+    {
+      "id": "demo-lots-013",
+      "role": "lots",
+      "version": 1,
+      "data": {
+        "name": "Culture medium \u00b7 MED-26109",
+        "archived": false,
+        "item_id": "demo-items-010",
+        "lot_code": "MED-26109",
+        "expiry": "2026-11-19",
+        "location_id": "demo-locations-002",
+        "received_date": "2026-04-10",
+        "storage_note": "Fictional lab location",
+        "stock_revision": 0
+      }
+    },
+    {
+      "id": "demo-movements-068",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "RCV-MED-042-1",
+        "archived": false,
+        "item_id": "demo-items-010",
+        "lot_id": "demo-lots-013",
+        "kind": "Receipt",
+        "quantity": 9,
+        "unit": "bottles",
+        "from_location_id": "",
+        "to_location_id": "demo-locations-002",
+        "date": "2026-04-10",
+        "reason": "Fictional initial approved receipt"
+      }
+    },
+    {
+      "id": "demo-movements-069",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-MED-042-05-1",
+        "archived": false,
+        "item_id": "demo-items-010",
+        "lot_id": "demo-lots-013",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "bottles",
+        "from_location_id": "demo-locations-002",
+        "to_location_id": "",
+        "date": "2026-05-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-070",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-MED-042-06-1",
+        "archived": false,
+        "item_id": "demo-items-010",
+        "lot_id": "demo-lots-013",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "bottles",
+        "from_location_id": "demo-locations-002",
+        "to_location_id": "",
+        "date": "2026-06-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-071",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-MED-042-08-1",
+        "archived": false,
+        "item_id": "demo-items-010",
+        "lot_id": "demo-lots-013",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "bottles",
+        "from_location_id": "demo-locations-002",
+        "to_location_id": "",
+        "date": "2026-08-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-072",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-MED-042-09-1",
+        "archived": false,
+        "item_id": "demo-items-010",
+        "lot_id": "demo-lots-013",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "bottles",
+        "from_location_id": "demo-locations-002",
+        "to_location_id": "",
+        "date": "2026-09-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-073",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-MED-042-10-1",
+        "archived": false,
+        "item_id": "demo-items-010",
+        "lot_id": "demo-lots-013",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "bottles",
+        "from_location_id": "demo-locations-002",
+        "to_location_id": "",
+        "date": "2026-10-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-lots-014",
+      "role": "lots",
+      "version": 1,
+      "data": {
+        "name": "Culture medium \u00b7 MED-26209",
+        "archived": false,
+        "item_id": "demo-items-010",
+        "lot_code": "MED-26209",
+        "expiry": "2027-09-30",
+        "location_id": "demo-locations-002",
+        "received_date": "2026-04-10",
+        "storage_note": "Fictional lab location",
+        "stock_revision": 0
+      }
+    },
+    {
+      "id": "demo-movements-074",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "RCV-MED-042-2",
+        "archived": false,
+        "item_id": "demo-items-010",
+        "lot_id": "demo-lots-014",
+        "kind": "Receipt",
+        "quantity": 15,
+        "unit": "bottles",
+        "from_location_id": "",
+        "to_location_id": "demo-locations-002",
+        "date": "2026-04-10",
+        "reason": "Fictional initial approved receipt"
+      }
+    },
+    {
+      "id": "demo-movements-075",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-MED-042-05-2",
+        "archived": false,
+        "item_id": "demo-items-010",
+        "lot_id": "demo-lots-014",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "bottles",
+        "from_location_id": "demo-locations-002",
+        "to_location_id": "",
+        "date": "2026-05-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-076",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-MED-042-07-2",
+        "archived": false,
+        "item_id": "demo-items-010",
+        "lot_id": "demo-lots-014",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "bottles",
+        "from_location_id": "demo-locations-002",
+        "to_location_id": "",
+        "date": "2026-07-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-077",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-MED-042-08-2",
+        "archived": false,
+        "item_id": "demo-items-010",
+        "lot_id": "demo-lots-014",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "bottles",
+        "from_location_id": "demo-locations-002",
+        "to_location_id": "",
+        "date": "2026-08-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-078",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-MED-042-09-2",
+        "archived": false,
+        "item_id": "demo-items-010",
+        "lot_id": "demo-lots-014",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "bottles",
+        "from_location_id": "demo-locations-002",
+        "to_location_id": "",
+        "date": "2026-09-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-items-011",
+      "role": "items",
+      "version": 1,
+      "data": {
+        "name": "ELISA plates",
+        "archived": false,
+        "sku": "ELISA-70",
+        "category": "Consumable",
+        "unit": "packs",
+        "reorder_point": 3,
+        "target_level": 12,
+        "supplier": "Corning",
+        "lead_days": 8,
+        "owner": "Lab operations",
+        "notes": "Fictional laboratory supply"
+      }
+    },
+    {
+      "id": "demo-lots-015",
+      "role": "lots",
+      "version": 1,
+      "data": {
+        "name": "ELISA plates \u00b7 ELISA-26110",
+        "archived": false,
+        "item_id": "demo-items-011",
+        "lot_code": "ELISA-26110",
+        "expiry": "2027-05-21",
+        "location_id": "demo-locations-006",
+        "received_date": "2026-04-10",
+        "storage_note": "Fictional lab location",
+        "stock_revision": 0
+      }
+    },
+    {
+      "id": "demo-movements-079",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "RCV-ELISA-70-1",
+        "archived": false,
+        "item_id": "demo-items-011",
+        "lot_id": "demo-lots-015",
+        "kind": "Receipt",
+        "quantity": 10,
+        "unit": "packs",
+        "from_location_id": "",
+        "to_location_id": "demo-locations-006",
+        "date": "2026-04-10",
+        "reason": "Fictional initial approved receipt"
+      }
+    },
+    {
+      "id": "demo-movements-080",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-ELISA-70-05-1",
+        "archived": false,
+        "item_id": "demo-items-011",
+        "lot_id": "demo-lots-015",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "packs",
+        "from_location_id": "demo-locations-006",
+        "to_location_id": "",
+        "date": "2026-05-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-081",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-ELISA-70-07-1",
+        "archived": false,
+        "item_id": "demo-items-011",
+        "lot_id": "demo-lots-015",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "packs",
+        "from_location_id": "demo-locations-006",
+        "to_location_id": "",
+        "date": "2026-07-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-082",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-ELISA-70-08-1",
+        "archived": false,
+        "item_id": "demo-items-011",
+        "lot_id": "demo-lots-015",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "packs",
+        "from_location_id": "demo-locations-006",
+        "to_location_id": "",
+        "date": "2026-08-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-083",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-ELISA-70-09-1",
+        "archived": false,
+        "item_id": "demo-items-011",
+        "lot_id": "demo-lots-015",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "packs",
+        "from_location_id": "demo-locations-006",
+        "to_location_id": "",
+        "date": "2026-09-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-items-012",
+      "role": "items",
+      "version": 1,
+      "data": {
+        "name": "Lab labels",
+        "archived": false,
+        "sku": "LBL-200",
+        "category": "Consumable",
+        "unit": "rolls",
+        "reorder_point": 2,
+        "target_level": 10,
+        "supplier": "Brady",
+        "lead_days": 5,
+        "owner": "Analytical",
+        "notes": "Fictional laboratory supply"
+      }
+    },
+    {
+      "id": "demo-lots-016",
+      "role": "lots",
+      "version": 1,
+      "data": {
+        "name": "Lab labels \u00b7 LBL-26111",
+        "archived": false,
+        "item_id": "demo-items-012",
+        "lot_code": "LBL-26111",
+        "expiry": "2027-05-21",
+        "location_id": "demo-locations-006",
+        "received_date": "2026-04-10",
+        "storage_note": "Fictional lab location",
+        "stock_revision": 0
+      }
+    },
+    {
+      "id": "demo-movements-084",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "RCV-LBL-200-1",
+        "archived": false,
+        "item_id": "demo-items-012",
+        "lot_id": "demo-lots-016",
+        "kind": "Receipt",
+        "quantity": 11,
+        "unit": "rolls",
+        "from_location_id": "",
+        "to_location_id": "demo-locations-006",
+        "date": "2026-04-10",
+        "reason": "Fictional initial approved receipt"
+      }
+    },
+    {
+      "id": "demo-movements-085",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-LBL-200-06-1",
+        "archived": false,
+        "item_id": "demo-items-012",
+        "lot_id": "demo-lots-016",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "rolls",
+        "from_location_id": "demo-locations-006",
+        "to_location_id": "",
+        "date": "2026-06-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-086",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-LBL-200-07-1",
+        "archived": false,
+        "item_id": "demo-items-012",
+        "lot_id": "demo-lots-016",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "rolls",
+        "from_location_id": "demo-locations-006",
+        "to_location_id": "",
+        "date": "2026-07-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-087",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-LBL-200-08-1",
+        "archived": false,
+        "item_id": "demo-items-012",
+        "lot_id": "demo-lots-016",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "rolls",
+        "from_location_id": "demo-locations-006",
+        "to_location_id": "",
+        "date": "2026-08-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-088",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "USE-LBL-200-10-1",
+        "archived": false,
+        "item_id": "demo-items-012",
+        "lot_id": "demo-lots-016",
+        "kind": "Use",
+        "quantity": 1,
+        "unit": "rolls",
+        "from_location_id": "demo-locations-006",
+        "to_location_id": "",
+        "date": "2026-10-14",
+        "reason": "Fictional research consumption"
+      }
+    },
+    {
+      "id": "demo-movements-089",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "MOV-TIPS-STORAGE",
+        "archived": false,
+        "item_id": "demo-items-002",
+        "lot_id": "demo-lots-003",
+        "kind": "Transfer",
+        "quantity": 1,
+        "unit": "boxes",
+        "from_location_id": "demo-locations-006",
+        "to_location_id": "demo-locations-001",
+        "date": "2026-10-22",
+        "reason": "Move reserve supply to bench"
+      }
+    },
+    {
+      "id": "demo-requests-001",
+      "role": "requests",
+      "version": 1,
+      "data": {
+        "name": "Proteinase K replenishment",
+        "archived": false,
+        "item_id": "demo-items-001",
+        "quantity": 3,
+        "unit": "vials",
+        "status": "Requested",
+        "needed_by": "2026-11-08",
+        "estimated_cost": 150,
+        "currency": "EUR",
+        "owner": "Lab operations",
+        "notes": "Fictional internal request, not a supplier order"
+      }
+    },
+    {
+      "id": "demo-requests-002",
+      "role": "requests",
+      "version": 1,
+      "data": {
+        "name": "PBS tablets replenishment",
+        "archived": false,
+        "item_id": "demo-items-003",
+        "quantity": 3,
+        "unit": "bottles",
+        "status": "Reviewed",
+        "needed_by": "2026-11-11",
+        "estimated_cost": 194,
+        "currency": "EUR",
+        "owner": "Lab operations",
+        "notes": "Fictional internal request, not a supplier order"
+      }
+    },
+    {
+      "id": "demo-requests-003",
+      "role": "requests",
+      "version": 1,
+      "data": {
+        "name": "Nitrile gloves M replenishment",
+        "archived": false,
+        "item_id": "demo-items-005",
+        "quantity": 3,
+        "unit": "boxes",
+        "status": "Approved",
+        "needed_by": "2026-11-14",
+        "estimated_cost": 238,
+        "currency": "EUR",
+        "owner": "Lab operations",
+        "notes": "Fictional internal request, not a supplier order"
+      }
+    },
+    {
+      "id": "demo-requests-004",
+      "role": "requests",
+      "version": 1,
+      "data": {
+        "name": "RNA extraction kit replenishment",
+        "archived": false,
+        "item_id": "demo-items-007",
+        "quantity": 3,
+        "unit": "kits",
+        "status": "Ordered",
+        "needed_by": "2026-11-17",
+        "estimated_cost": 282,
+        "currency": "EUR",
+        "owner": "Lab operations",
+        "notes": "Fictional internal request, not a supplier order"
+      }
+    },
+    {
+      "id": "demo-requests-005",
+      "role": "requests",
+      "version": 1,
+      "data": {
+        "name": "Taq polymerase replenishment",
+        "archived": false,
+        "item_id": "demo-items-009",
+        "quantity": 3,
+        "unit": "vials",
+        "status": "Received",
+        "needed_by": "2026-11-20",
+        "estimated_cost": 326,
+        "currency": "EUR",
+        "owner": "Lab operations",
+        "notes": "Fictional internal request, not a supplier order"
+      }
+    },
+    {
+      "id": "demo-movements-090",
+      "role": "movements",
+      "version": 1,
+      "data": {
+        "name": "RCV-REQUEST-004",
+        "archived": false,
+        "item_id": "demo-items-009",
+        "lot_id": "demo-lots-012",
+        "kind": "Receipt",
+        "quantity": 3,
+        "unit": "vials",
+        "from_location_id": "",
+        "to_location_id": "demo-locations-004",
+        "date": "2026-10-31",
+        "reason": "Approved internal receiving",
+        "request_id": "demo-requests-005"
+      }
+    },
+    {
+      "id": "demo-requests-006",
+      "role": "requests",
+      "version": 1,
+      "data": {
+        "name": "ELISA plates replenishment",
+        "archived": false,
+        "item_id": "demo-items-011",
+        "quantity": 3,
+        "unit": "packs",
+        "status": "Declined",
+        "needed_by": "2026-11-23",
+        "estimated_cost": 370,
+        "currency": "EUR",
+        "owner": "Lab operations",
+        "notes": "Fictional internal request, not a supplier order"
+      }
+    }
+  ]
+}

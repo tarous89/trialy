@@ -1,6 +1,8 @@
 {
-  "items": {
-    "name": "items",
+  "organizations": {
+    "name": "Organizations",
+    "contract": "core.v1",
+    "description": "Suppliers are shared organizations (org_type other or partner). One table with Contracts and CRO Selection.",
     "fields": [
       {
         "key": "name",
@@ -11,79 +13,35 @@
         "ai": true
       },
       {
-        "key": "sku",
-        "name": "Sku",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "category",
-        "name": "Category",
+        "key": "org_type",
+        "name": "Type",
         "kind": "select",
         "required": false,
         "multiple": false,
         "ai": true,
         "options": [
-          "Reagent",
-          "Consumable",
-          "Equipment",
-          "Chemical",
-          "Other"
+          "company",
+          "investor",
+          "cro",
+          "cdmo",
+          "site",
+          "funder",
+          "partner",
+          "agency",
+          "other"
         ]
       },
       {
-        "key": "unit",
-        "name": "Unit",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "reorder_point",
-        "name": "Reorder Point",
-        "kind": "number",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "target_level",
-        "name": "Target Level",
-        "kind": "number",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "supplier",
-        "name": "Supplier",
+        "key": "country",
+        "name": "Country",
         "kind": "text",
         "required": false,
         "multiple": false,
         "ai": true
       },
       {
-        "key": "lead_days",
-        "name": "Lead Days",
-        "kind": "number",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "owner",
-        "name": "Owner",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "notes",
-        "name": "Notes",
+        "key": "website",
+        "name": "Website",
         "kind": "text",
         "required": false,
         "multiple": false,
@@ -100,20 +58,18 @@
     ],
     "logicalFields": {
       "name": "name",
-      "sku": "sku",
-      "category": "category",
-      "unit": "unit",
-      "reorder_point": "reorder_point",
-      "target_level": "target_level",
-      "supplier": "supplier",
-      "lead_days": "lead_days",
-      "owner": "owner",
-      "notes": "notes",
+      "org_type": "org_type",
+      "country": "country",
+      "website": "website",
       "archived": "archived"
     }
   },
-  "lots": {
-    "name": "lots",
+  "programs": {
+    "name": "Programs",
+    "contract": "core.v1",
+    "optional": true,
+    "readOnly": true,
+    "description": "Read only: requests and spend by program. Kept by Programs; not created when not connected.",
     "fields": [
       {
         "key": "name",
@@ -124,49 +80,114 @@
         "ai": true
       },
       {
-        "key": "item_id",
-        "name": "Item Id",
+        "key": "code",
+        "name": "Code",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "stage",
+        "name": "Stage",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "discovery",
+          "preclinical",
+          "ind_enabling",
+          "phase_1",
+          "phase_2",
+          "phase_3",
+          "registration",
+          "approved"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "active",
+          "paused",
+          "stopped",
+          "partnered"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "code": "code",
+      "stage": "stage",
+      "status": "status",
+      "archived": "archived"
+    }
+  },
+  "agreements": {
+    "name": "Agreements",
+    "contract": "core.v1",
+    "optional": true,
+    "readOnly": true,
+    "description": "Read only: supplier agreements and terms next to orders (Contracts). Not created when not connected.",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
         "kind": "text",
         "required": true,
         "multiple": false,
         "ai": true
       },
       {
-        "key": "lot_code",
-        "name": "Lot Code",
+        "key": "counterparty_id",
+        "name": "Counterparty",
         "kind": "text",
-        "required": true,
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an organizations record."
+      },
+      {
+        "key": "agreement_type",
+        "name": "Agreement type",
+        "kind": "text",
+        "required": false,
         "multiple": false,
         "ai": true
       },
       {
-        "key": "expiry",
-        "name": "Expiry",
+        "key": "status",
+        "name": "Status",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "effective_date",
+        "name": "Effective date",
         "kind": "date",
         "required": false,
         "multiple": false,
         "ai": true
       },
       {
-        "key": "location_id",
-        "name": "Location Id",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "received_date",
-        "name": "Received Date",
+        "key": "expiry_date",
+        "name": "Expiry date",
         "kind": "date",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "storage_note",
-        "name": "Storage Note",
-        "kind": "text",
         "required": false,
         "multiple": false,
         "ai": true
@@ -178,30 +199,185 @@
         "required": false,
         "multiple": false,
         "ai": true
-      },
-      {
-        "key": "stock_revision",
-        "name": "Stock posting counter",
-        "kind": "number",
-        "required": true,
-        "multiple": false,
-        "ai": true
       }
     ],
     "logicalFields": {
       "name": "name",
-      "item_id": "item_id",
-      "lot_code": "lot_code",
-      "expiry": "expiry",
-      "location_id": "location_id",
-      "received_date": "received_date",
-      "storage_note": "storage_note",
-      "archived": "archived",
-      "stock_revision": "stock_revision"
+      "counterparty_id": "counterparty_id",
+      "agreement_type": "agreement_type",
+      "status": "status",
+      "effective_date": "effective_date",
+      "expiry_date": "expiry_date",
+      "archived": "archived"
     }
   },
-  "movements": {
-    "name": "movements",
+  "labinventory.settings": {
+    "name": "Lab Inventory settings",
+    "contract": "labinventory.v1",
+    "fields": [
+      {
+        "key": "approver",
+        "name": "Approver",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Name of the default approver (the lab manager)."
+      },
+      {
+        "key": "second_approver",
+        "name": "Second approver",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Approves requests whose estimated amount is above the threshold."
+      },
+      {
+        "key": "threshold_amount",
+        "name": "Threshold amount",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Blank: one approval for every amount."
+      },
+      {
+        "key": "currency",
+        "name": "Currency",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "EUR",
+          "USD",
+          "GBP",
+          "CHF",
+          "DKK",
+          "SEK",
+          "NOK",
+          "JPY",
+          "CAD",
+          "AUD"
+        ],
+        "description": "Settings currency for amounts and reports. Default EUR."
+      },
+      {
+        "key": "program_approvers",
+        "name": "Program approvers",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON {\"<programs record ID>\":\"<approver name>\"}; replaces the default approver for that program."
+      },
+      {
+        "key": "expiry_window_days",
+        "name": "Expiry window (days)",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Default 30."
+      },
+      {
+        "key": "digest_cadence",
+        "name": "Digest cadence",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "daily",
+          "weekly",
+          "monthly"
+        ],
+        "description": "Default weekly."
+      },
+      {
+        "key": "digest_day",
+        "name": "Digest day",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri",
+          "sat",
+          "sun"
+        ],
+        "description": "Default mon."
+      },
+      {
+        "key": "digest_time",
+        "name": "Digest time",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "HH:MM, default 08:00."
+      },
+      {
+        "key": "digest_recipients",
+        "name": "Digest recipients",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Names of the workspace members who get the digest (the automation holds the actual recipients)."
+      },
+      {
+        "key": "digest_text",
+        "name": "Digest text",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Intro line of the digest email."
+      },
+      {
+        "key": "units",
+        "name": "Units",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Comma-separated units offered for items. Default: bottle, box, vial, pack, tube, kit, plate, flask, bag, each."
+      },
+      {
+        "key": "app_link",
+        "name": "App link for QR codes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "The app address (https://…/apps/<app id>?workspaceId=<id>) used to build QR codes for items and locations."
+      }
+    ],
+    "logicalFields": {
+      "approver": "approver",
+      "second_approver": "second_approver",
+      "threshold_amount": "threshold_amount",
+      "currency": "currency",
+      "program_approvers": "program_approvers",
+      "expiry_window_days": "expiry_window_days",
+      "digest_cadence": "digest_cadence",
+      "digest_day": "digest_day",
+      "digest_time": "digest_time",
+      "digest_recipients": "digest_recipients",
+      "digest_text": "digest_text",
+      "units": "units",
+      "app_link": "app_link"
+    }
+  },
+  "labinventory.categories": {
+    "name": "Lab Inventory categories",
+    "contract": "labinventory.v1",
     "fields": [
       {
         "key": "name",
@@ -212,97 +388,18 @@
         "ai": true
       },
       {
-        "key": "item_id",
-        "name": "Item Id",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "lot_id",
-        "name": "Lot Id",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "kind",
-        "name": "Kind",
-        "kind": "select",
-        "required": true,
+        "key": "standard",
+        "name": "Standard",
+        "kind": "boolean",
+        "required": false,
         "multiple": false,
         "ai": true,
-        "options": [
-          "Receipt",
-          "Use",
-          "Transfer",
-          "Disposal",
-          "Correction In",
-          "Correction Out"
-        ]
+        "description": "True for the six standard categories (Reagent, Consumable, Antibody, Cell line, Plasmid, Chemical)."
       },
       {
-        "key": "quantity",
-        "name": "Quantity",
-        "kind": "number",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "unit",
-        "name": "Unit",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "from_location_id",
-        "name": "From Location Id",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "to_location_id",
-        "name": "To Location Id",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "date",
-        "name": "Date",
-        "kind": "date",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "reason",
-        "name": "Reason",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "request_id",
-        "name": "Request Id",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "reversal_of",
-        "name": "Reversal Of",
-        "kind": "text",
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
         "required": false,
         "multiple": false,
         "ai": true
@@ -310,21 +407,13 @@
     ],
     "logicalFields": {
       "name": "name",
-      "item_id": "item_id",
-      "lot_id": "lot_id",
-      "kind": "kind",
-      "quantity": "quantity",
-      "unit": "unit",
-      "from_location_id": "from_location_id",
-      "to_location_id": "to_location_id",
-      "date": "date",
-      "reason": "reason",
-      "request_id": "request_id",
-      "reversal_of": "reversal_of"
+      "standard": "standard",
+      "archived": "archived"
     }
   },
-  "locations": {
-    "name": "locations",
+  "labinventory.locations": {
+    "name": "Lab Inventory locations",
+    "contract": "labinventory.v1",
     "fields": [
       {
         "key": "name",
@@ -336,25 +425,28 @@
       },
       {
         "key": "parent_id",
-        "name": "Parent Id",
+        "name": "Inside",
         "kind": "text",
         "required": false,
         "multiple": false,
-        "ai": true
+        "ai": true,
+        "description": "Record ID of the parent labinventory.locations record (room → storage unit → shelf or box)."
       },
       {
         "key": "kind",
         "name": "Kind",
         "kind": "select",
-        "required": false,
+        "required": true,
         "multiple": false,
         "ai": true,
         "options": [
-          "Room",
-          "Cabinet",
-          "Freezer",
-          "Shelf",
-          "Other"
+          "room",
+          "freezer",
+          "fridge",
+          "cabinet",
+          "shelf",
+          "box",
+          "other"
         ]
       },
       {
@@ -363,23 +455,8 @@
         "kind": "text",
         "required": false,
         "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "owner",
-        "name": "Owner",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "access_note",
-        "name": "Access Note",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
+        "ai": true,
+        "description": "For example -80 °C, 4 °C, room temperature."
       },
       {
         "key": "archived",
@@ -395,13 +472,12 @@
       "parent_id": "parent_id",
       "kind": "kind",
       "temperature": "temperature",
-      "owner": "owner",
-      "access_note": "access_note",
       "archived": "archived"
     }
   },
-  "requests": {
-    "name": "requests",
+  "labinventory.items": {
+    "name": "Lab Inventory items",
+    "contract": "labinventory.v1",
     "fields": [
       {
         "key": "name",
@@ -412,18 +488,28 @@
         "ai": true
       },
       {
-        "key": "item_id",
-        "name": "Item Id",
+        "key": "category_id",
+        "name": "Category",
         "kind": "text",
         "required": true,
         "multiple": false,
-        "ai": true
+        "ai": true,
+        "description": "Record ID of a labinventory.categories record."
       },
       {
-        "key": "quantity",
-        "name": "Quantity",
-        "kind": "number",
-        "required": true,
+        "key": "supplier_id",
+        "name": "Supplier",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an organizations record."
+      },
+      {
+        "key": "catalog_number",
+        "name": "Catalog number",
+        "kind": "text",
+        "required": false,
         "multiple": false,
         "ai": true
       },
@@ -433,35 +519,21 @@
         "kind": "text",
         "required": true,
         "multiple": false,
-        "ai": true
+        "ai": true,
+        "description": "bottle, box, vial…"
       },
       {
-        "key": "status",
-        "name": "Status",
-        "kind": "select",
-        "required": true,
+        "key": "unit_size",
+        "name": "Unit size",
+        "kind": "text",
+        "required": false,
         "multiple": false,
         "ai": true,
-        "options": [
-          "Requested",
-          "Reviewed",
-          "Approved",
-          "Ordered",
-          "Received",
-          "Declined"
-        ]
+        "description": "For example 500 mL or 96 tips."
       },
       {
-        "key": "needed_by",
-        "name": "Needed By",
-        "kind": "date",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "estimated_cost",
-        "name": "Estimated Cost",
+        "key": "last_price",
+        "name": "Last price per unit",
         "kind": "number",
         "required": false,
         "multiple": false,
@@ -470,10 +542,65 @@
       {
         "key": "currency",
         "name": "Currency",
-        "kind": "text",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "EUR",
+          "USD",
+          "GBP",
+          "CHF",
+          "DKK",
+          "SEK",
+          "NOK",
+          "JPY",
+          "CAD",
+          "AUD"
+        ]
+      },
+      {
+        "key": "reorder_point",
+        "name": "Reorder point",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Low stock when stock is at or below this."
+      },
+      {
+        "key": "reorder_quantity",
+        "name": "Usual order quantity",
+        "kind": "number",
         "required": false,
         "multiple": false,
         "ai": true
+      },
+      {
+        "key": "lead_time_days",
+        "name": "Lead time (days)",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "default_location_id",
+        "name": "Default location",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a labinventory.locations record."
+      },
+      {
+        "key": "program_id",
+        "name": "Program",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a programs record."
       },
       {
         "key": "owner",
@@ -502,16 +629,493 @@
     ],
     "logicalFields": {
       "name": "name",
-      "item_id": "item_id",
-      "quantity": "quantity",
+      "category_id": "category_id",
+      "supplier_id": "supplier_id",
+      "catalog_number": "catalog_number",
       "unit": "unit",
-      "status": "status",
-      "needed_by": "needed_by",
-      "estimated_cost": "estimated_cost",
+      "unit_size": "unit_size",
+      "last_price": "last_price",
       "currency": "currency",
+      "reorder_point": "reorder_point",
+      "reorder_quantity": "reorder_quantity",
+      "lead_time_days": "lead_time_days",
+      "default_location_id": "default_location_id",
+      "program_id": "program_id",
       "owner": "owner",
       "notes": "notes",
       "archived": "archived"
+    }
+  },
+  "labinventory.lots": {
+    "name": "Lab Inventory lots",
+    "contract": "labinventory.v1",
+    "fields": [
+      {
+        "key": "item_id",
+        "name": "Item",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a labinventory.items record."
+      },
+      {
+        "key": "lot_number",
+        "name": "Lot number",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "quantity",
+        "name": "Quantity",
+        "kind": "number",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Changed only together with a labinventory.movements record."
+      },
+      {
+        "key": "received_on",
+        "name": "Received on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "expires_on",
+        "name": "Expires on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "location_id",
+        "name": "Location",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a labinventory.locations record."
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "in_stock",
+          "used_up",
+          "expired",
+          "discarded"
+        ]
+      },
+      {
+        "key": "order_id",
+        "name": "Order",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of the labinventory.orders record it was received on."
+      }
+    ],
+    "logicalFields": {
+      "item_id": "item_id",
+      "lot_number": "lot_number",
+      "quantity": "quantity",
+      "received_on": "received_on",
+      "expires_on": "expires_on",
+      "location_id": "location_id",
+      "owner": "owner",
+      "status": "status",
+      "order_id": "order_id"
+    }
+  },
+  "labinventory.movements": {
+    "name": "Lab Inventory movements",
+    "contract": "labinventory.v1",
+    "fields": [
+      {
+        "key": "lot_id",
+        "name": "Lot",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a labinventory.lots record."
+      },
+      {
+        "key": "kind",
+        "name": "Kind",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "received",
+          "used",
+          "count",
+          "moved",
+          "discarded"
+        ]
+      },
+      {
+        "key": "quantity_change",
+        "name": "Quantity change",
+        "kind": "number",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Signed: + received, − used or discarded, ± count difference, 0 for a move."
+      },
+      {
+        "key": "occurred_on",
+        "name": "Occurred on",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "by",
+        "name": "By",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "via",
+        "name": "Via",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "app",
+          "qr",
+          "assistant"
+        ]
+      },
+      {
+        "key": "note",
+        "name": "Note",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "lot_id": "lot_id",
+      "kind": "kind",
+      "quantity_change": "quantity_change",
+      "occurred_on": "occurred_on",
+      "by": "by",
+      "via": "via",
+      "note": "note"
+    }
+  },
+  "labinventory.requests": {
+    "name": "Lab Inventory requests",
+    "contract": "labinventory.v1",
+    "fields": [
+      {
+        "key": "item_id",
+        "name": "Item",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a labinventory.items record; empty for a new item."
+      },
+      {
+        "key": "item_name",
+        "name": "Item name",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Item name at the time of the request (for lists and notification emails)."
+      },
+      {
+        "key": "new_item_name",
+        "name": "New item",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Free text for an item not yet in the catalog."
+      },
+      {
+        "key": "quantity",
+        "name": "Quantity",
+        "kind": "number",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "program_id",
+        "name": "Program",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a programs record."
+      },
+      {
+        "key": "urgency",
+        "name": "Urgency",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "normal",
+          "urgent"
+        ]
+      },
+      {
+        "key": "estimated_amount",
+        "name": "Estimated amount",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "requested_by",
+        "name": "Requested by",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "requested_on",
+        "name": "Requested on",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "requested",
+          "approved",
+          "rejected",
+          "ordered",
+          "received",
+          "cancelled"
+        ]
+      },
+      {
+        "key": "approved_1_by",
+        "name": "First approval by",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "approved_2_by",
+        "name": "Second approval by",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "decision_on",
+        "name": "Decision on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "reject_reason",
+        "name": "Reject reason",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "order_id",
+        "name": "Order",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of the labinventory.orders record (orders.request_ids is authoritative)."
+      },
+      {
+        "key": "note",
+        "name": "Note",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Requester note, then questions and answers, one per line."
+      }
+    ],
+    "logicalFields": {
+      "item_id": "item_id",
+      "item_name": "item_name",
+      "new_item_name": "new_item_name",
+      "quantity": "quantity",
+      "program_id": "program_id",
+      "urgency": "urgency",
+      "estimated_amount": "estimated_amount",
+      "requested_by": "requested_by",
+      "requested_on": "requested_on",
+      "status": "status",
+      "approved_1_by": "approved_1_by",
+      "approved_2_by": "approved_2_by",
+      "decision_on": "decision_on",
+      "reject_reason": "reject_reason",
+      "order_id": "order_id",
+      "note": "note"
+    }
+  },
+  "labinventory.orders": {
+    "name": "Lab Inventory orders",
+    "contract": "labinventory.v1",
+    "fields": [
+      {
+        "key": "supplier_id",
+        "name": "Supplier",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an organizations record."
+      },
+      {
+        "key": "order_number",
+        "name": "Order number",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "ordered_by",
+        "name": "Ordered by",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "ordered_on",
+        "name": "Ordered on",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "expected_on",
+        "name": "Expected on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "amount",
+        "name": "Amount",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "currency",
+        "name": "Currency",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "EUR",
+          "USD",
+          "GBP",
+          "CHF",
+          "DKK",
+          "SEK",
+          "NOK",
+          "JPY",
+          "CAD",
+          "AUD"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "ordered",
+          "partially_received",
+          "received",
+          "cancelled"
+        ]
+      },
+      {
+        "key": "request_ids",
+        "name": "Requests",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Comma-separated record IDs of the labinventory.requests in this order."
+      },
+      {
+        "key": "notes",
+        "name": "Notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "supplier_id": "supplier_id",
+      "order_number": "order_number",
+      "ordered_by": "ordered_by",
+      "ordered_on": "ordered_on",
+      "expected_on": "expected_on",
+      "amount": "amount",
+      "currency": "currency",
+      "status": "status",
+      "request_ids": "request_ids",
+      "notes": "notes"
     }
   }
 }

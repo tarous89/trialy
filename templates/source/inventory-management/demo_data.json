@@ -1,2291 +1,3818 @@
 {
-  "notice": "Fictional review only. Never seed to a customer workspace.",
-  "asOfDate": "2026-11-01",
-  "records": [
-    {
-      "id": "demo-locations-001",
-      "role": "locations",
-      "version": 1,
-      "data": {
-        "name": "Biology lab",
-        "archived": false,
-        "parent_id": "",
-        "kind": "Room",
-        "temperature": "Ambient",
-        "owner": "Lab operations",
-        "access_note": "Internal access only; restrictions configured in TrialAgents host"
-      }
-    },
-    {
-      "id": "demo-locations-002",
-      "role": "locations",
-      "version": 1,
-      "data": {
-        "name": "Cold room 4\u00b0C",
-        "archived": false,
-        "parent_id": "",
-        "kind": "Room",
-        "temperature": "2\u20138\u00b0C",
-        "owner": "Lab operations",
-        "access_note": "Internal access only; restrictions configured in TrialAgents host"
-      }
-    },
-    {
-      "id": "demo-locations-003",
-      "role": "locations",
-      "version": 1,
-      "data": {
-        "name": "Chemistry lab",
-        "archived": false,
-        "parent_id": "",
-        "kind": "Room",
-        "temperature": "Ambient",
-        "owner": "Lab operations",
-        "access_note": "Internal access only; restrictions configured in TrialAgents host"
-      }
-    },
-    {
-      "id": "demo-locations-004",
-      "role": "locations",
-      "version": 1,
-      "data": {
-        "name": "Freezer -20 / A",
-        "archived": false,
-        "parent_id": "demo-locations-001",
-        "kind": "Freezer",
-        "temperature": "-20\u00b0C",
-        "owner": "Lab operations",
-        "access_note": "Internal access only; restrictions configured in TrialAgents host"
-      }
-    },
-    {
-      "id": "demo-locations-005",
-      "role": "locations",
-      "version": 1,
-      "data": {
-        "name": "Flammables cabinet",
-        "archived": false,
-        "parent_id": "demo-locations-003",
-        "kind": "Cabinet",
-        "temperature": "Ambient",
-        "owner": "Lab operations",
-        "access_note": "Internal access only; restrictions configured in TrialAgents host"
-      }
-    },
-    {
-      "id": "demo-locations-006",
-      "role": "locations",
-      "version": 1,
-      "data": {
-        "name": "Stock shelf B3",
-        "archived": false,
-        "parent_id": "demo-locations-001",
-        "kind": "Shelf",
-        "temperature": "Ambient",
-        "owner": "Lab operations",
-        "access_note": "Internal access only; restrictions configured in TrialAgents host"
-      }
-    },
-    {
-      "id": "demo-items-001",
-      "role": "items",
-      "version": 1,
-      "data": {
-        "name": "Proteinase K",
-        "archived": false,
-        "sku": "PK-021",
-        "category": "Reagent",
-        "unit": "vials",
-        "reorder_point": 4,
-        "target_level": 15,
-        "supplier": "Sigma",
-        "lead_days": 12,
-        "owner": "Research",
-        "notes": "Fictional laboratory supply"
-      }
-    },
-    {
-      "id": "demo-lots-001",
-      "role": "lots",
-      "version": 1,
-      "data": {
-        "name": "Proteinase K \u00b7 PK-26100",
-        "archived": false,
-        "item_id": "demo-items-001",
-        "lot_code": "PK-26100",
-        "expiry": "2026-11-19",
-        "location_id": "demo-locations-002",
-        "received_date": "2026-04-10",
-        "storage_note": "Fictional lab location",
-        "stock_revision": 0
-      }
-    },
-    {
-      "id": "demo-movements-001",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "RCV-PK-021-1",
-        "archived": false,
-        "item_id": "demo-items-001",
-        "lot_id": "demo-lots-001",
-        "kind": "Receipt",
-        "quantity": 8,
-        "unit": "vials",
-        "from_location_id": "",
-        "to_location_id": "demo-locations-002",
-        "date": "2026-04-10",
-        "reason": "Fictional initial approved receipt"
-      }
-    },
-    {
-      "id": "demo-movements-002",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-PK-021-05-1",
-        "archived": false,
-        "item_id": "demo-items-001",
-        "lot_id": "demo-lots-001",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "vials",
-        "from_location_id": "demo-locations-002",
-        "to_location_id": "",
-        "date": "2026-05-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-003",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-PK-021-06-1",
-        "archived": false,
-        "item_id": "demo-items-001",
-        "lot_id": "demo-lots-001",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "vials",
-        "from_location_id": "demo-locations-002",
-        "to_location_id": "",
-        "date": "2026-06-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-004",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-PK-021-07-1",
-        "archived": false,
-        "item_id": "demo-items-001",
-        "lot_id": "demo-lots-001",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "vials",
-        "from_location_id": "demo-locations-002",
-        "to_location_id": "",
-        "date": "2026-07-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-005",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-PK-021-09-1",
-        "archived": false,
-        "item_id": "demo-items-001",
-        "lot_id": "demo-lots-001",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "vials",
-        "from_location_id": "demo-locations-002",
-        "to_location_id": "",
-        "date": "2026-09-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-006",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-PK-021-10-1",
-        "archived": false,
-        "item_id": "demo-items-001",
-        "lot_id": "demo-lots-001",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "vials",
-        "from_location_id": "demo-locations-002",
-        "to_location_id": "",
-        "date": "2026-10-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-lots-002",
-      "role": "lots",
-      "version": 1,
-      "data": {
-        "name": "Proteinase K \u00b7 PK-26200",
-        "archived": false,
-        "item_id": "demo-items-001",
-        "lot_code": "PK-26200",
-        "expiry": "2027-09-30",
-        "location_id": "demo-locations-002",
-        "received_date": "2026-04-10",
-        "storage_note": "Fictional lab location",
-        "stock_revision": 0
-      }
-    },
-    {
-      "id": "demo-movements-007",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "RCV-PK-021-2",
-        "archived": false,
-        "item_id": "demo-items-001",
-        "lot_id": "demo-lots-002",
-        "kind": "Receipt",
-        "quantity": 14,
-        "unit": "vials",
-        "from_location_id": "",
-        "to_location_id": "demo-locations-002",
-        "date": "2026-04-10",
-        "reason": "Fictional initial approved receipt"
-      }
-    },
-    {
-      "id": "demo-movements-008",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-PK-021-05-2",
-        "archived": false,
-        "item_id": "demo-items-001",
-        "lot_id": "demo-lots-002",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "vials",
-        "from_location_id": "demo-locations-002",
-        "to_location_id": "",
-        "date": "2026-05-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-009",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-PK-021-06-2",
-        "archived": false,
-        "item_id": "demo-items-001",
-        "lot_id": "demo-lots-002",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "vials",
-        "from_location_id": "demo-locations-002",
-        "to_location_id": "",
-        "date": "2026-06-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-010",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-PK-021-08-2",
-        "archived": false,
-        "item_id": "demo-items-001",
-        "lot_id": "demo-lots-002",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "vials",
-        "from_location_id": "demo-locations-002",
-        "to_location_id": "",
-        "date": "2026-08-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-011",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-PK-021-09-2",
-        "archived": false,
-        "item_id": "demo-items-001",
-        "lot_id": "demo-lots-002",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "vials",
-        "from_location_id": "demo-locations-002",
-        "to_location_id": "",
-        "date": "2026-09-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-012",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-PK-021-10-2",
-        "archived": false,
-        "item_id": "demo-items-001",
-        "lot_id": "demo-lots-002",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "vials",
-        "from_location_id": "demo-locations-002",
-        "to_location_id": "",
-        "date": "2026-10-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-items-002",
-      "role": "items",
-      "version": 1,
-      "data": {
-        "name": "Sterile pipette tips",
-        "archived": false,
-        "sku": "TIP-020",
-        "category": "Consumable",
-        "unit": "boxes",
-        "reorder_point": 5,
-        "target_level": 24,
-        "supplier": "Eppendorf",
-        "lead_days": 6,
-        "owner": "Lab operations",
-        "notes": "Fictional laboratory supply"
-      }
-    },
-    {
-      "id": "demo-lots-003",
-      "role": "lots",
-      "version": 1,
-      "data": {
-        "name": "Sterile pipette tips \u00b7 TIP-26101",
-        "archived": false,
-        "item_id": "demo-items-002",
-        "lot_code": "TIP-26101",
-        "expiry": "2027-05-21",
-        "location_id": "demo-locations-006",
-        "received_date": "2026-04-10",
-        "storage_note": "Fictional lab location",
-        "stock_revision": 0
-      }
-    },
-    {
-      "id": "demo-movements-013",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "RCV-TIP-020-1",
-        "archived": false,
-        "item_id": "demo-items-002",
-        "lot_id": "demo-lots-003",
-        "kind": "Receipt",
-        "quantity": 9,
-        "unit": "boxes",
-        "from_location_id": "",
-        "to_location_id": "demo-locations-006",
-        "date": "2026-04-10",
-        "reason": "Fictional initial approved receipt"
-      }
-    },
-    {
-      "id": "demo-movements-014",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-TIP-020-05-1",
-        "archived": false,
-        "item_id": "demo-items-002",
-        "lot_id": "demo-lots-003",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "boxes",
-        "from_location_id": "demo-locations-006",
-        "to_location_id": "",
-        "date": "2026-05-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-015",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-TIP-020-06-1",
-        "archived": false,
-        "item_id": "demo-items-002",
-        "lot_id": "demo-lots-003",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "boxes",
-        "from_location_id": "demo-locations-006",
-        "to_location_id": "",
-        "date": "2026-06-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-016",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-TIP-020-08-1",
-        "archived": false,
-        "item_id": "demo-items-002",
-        "lot_id": "demo-lots-003",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "boxes",
-        "from_location_id": "demo-locations-006",
-        "to_location_id": "",
-        "date": "2026-08-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-017",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-TIP-020-09-1",
-        "archived": false,
-        "item_id": "demo-items-002",
-        "lot_id": "demo-lots-003",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "boxes",
-        "from_location_id": "demo-locations-006",
-        "to_location_id": "",
-        "date": "2026-09-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-018",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-TIP-020-10-1",
-        "archived": false,
-        "item_id": "demo-items-002",
-        "lot_id": "demo-lots-003",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "boxes",
-        "from_location_id": "demo-locations-006",
-        "to_location_id": "",
-        "date": "2026-10-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-items-003",
-      "role": "items",
-      "version": 1,
-      "data": {
-        "name": "PBS tablets",
-        "archived": false,
-        "sku": "PBS-101",
-        "category": "Reagent",
-        "unit": "bottles",
-        "reorder_point": 3,
-        "target_level": 10,
-        "supplier": "Merck",
-        "lead_days": 9,
-        "owner": "Analytical",
-        "notes": "Fictional laboratory supply"
-      }
-    },
-    {
-      "id": "demo-lots-004",
-      "role": "lots",
-      "version": 1,
-      "data": {
-        "name": "PBS tablets \u00b7 PBS-26102",
-        "archived": false,
-        "item_id": "demo-items-003",
-        "lot_code": "PBS-26102",
-        "expiry": "2026-09-20",
-        "location_id": "demo-locations-002",
-        "received_date": "2026-04-10",
-        "storage_note": "Fictional lab location",
-        "stock_revision": 0
-      }
-    },
-    {
-      "id": "demo-movements-019",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "RCV-PBS-101-1",
-        "archived": false,
-        "item_id": "demo-items-003",
-        "lot_id": "demo-lots-004",
-        "kind": "Receipt",
-        "quantity": 10,
-        "unit": "bottles",
-        "from_location_id": "",
-        "to_location_id": "demo-locations-002",
-        "date": "2026-04-10",
-        "reason": "Fictional initial approved receipt"
-      }
-    },
-    {
-      "id": "demo-movements-020",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-PBS-101-05-1",
-        "archived": false,
-        "item_id": "demo-items-003",
-        "lot_id": "demo-lots-004",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "bottles",
-        "from_location_id": "demo-locations-002",
-        "to_location_id": "",
-        "date": "2026-05-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-021",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-PBS-101-07-1",
-        "archived": false,
-        "item_id": "demo-items-003",
-        "lot_id": "demo-lots-004",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "bottles",
-        "from_location_id": "demo-locations-002",
-        "to_location_id": "",
-        "date": "2026-07-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-022",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-PBS-101-08-1",
-        "archived": false,
-        "item_id": "demo-items-003",
-        "lot_id": "demo-lots-004",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "bottles",
-        "from_location_id": "demo-locations-002",
-        "to_location_id": "",
-        "date": "2026-08-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-023",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-PBS-101-09-1",
-        "archived": false,
-        "item_id": "demo-items-003",
-        "lot_id": "demo-lots-004",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "bottles",
-        "from_location_id": "demo-locations-002",
-        "to_location_id": "",
-        "date": "2026-09-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-items-004",
-      "role": "items",
-      "version": 1,
-      "data": {
-        "name": "Cryogenic tubes",
-        "archived": false,
-        "sku": "CRYO-48",
-        "category": "Consumable",
-        "unit": "boxes",
-        "reorder_point": 4,
-        "target_level": 16,
-        "supplier": "Thermo",
-        "lead_days": 14,
-        "owner": "Research",
-        "notes": "Fictional laboratory supply"
-      }
-    },
-    {
-      "id": "demo-lots-005",
-      "role": "lots",
-      "version": 1,
-      "data": {
-        "name": "Cryogenic tubes \u00b7 CRYO-26103",
-        "archived": false,
-        "item_id": "demo-items-004",
-        "lot_code": "CRYO-26103",
-        "expiry": "2027-05-21",
-        "location_id": "demo-locations-004",
-        "received_date": "2026-04-10",
-        "storage_note": "Fictional lab location",
-        "stock_revision": 0
-      }
-    },
-    {
-      "id": "demo-movements-024",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "RCV-CRYO-48-1",
-        "archived": false,
-        "item_id": "demo-items-004",
-        "lot_id": "demo-lots-005",
-        "kind": "Receipt",
-        "quantity": 11,
-        "unit": "boxes",
-        "from_location_id": "",
-        "to_location_id": "demo-locations-004",
-        "date": "2026-04-10",
-        "reason": "Fictional initial approved receipt"
-      }
-    },
-    {
-      "id": "demo-movements-025",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-CRYO-48-06-1",
-        "archived": false,
-        "item_id": "demo-items-004",
-        "lot_id": "demo-lots-005",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "boxes",
-        "from_location_id": "demo-locations-004",
-        "to_location_id": "",
-        "date": "2026-06-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-026",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-CRYO-48-07-1",
-        "archived": false,
-        "item_id": "demo-items-004",
-        "lot_id": "demo-lots-005",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "boxes",
-        "from_location_id": "demo-locations-004",
-        "to_location_id": "",
-        "date": "2026-07-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-027",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-CRYO-48-08-1",
-        "archived": false,
-        "item_id": "demo-items-004",
-        "lot_id": "demo-lots-005",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "boxes",
-        "from_location_id": "demo-locations-004",
-        "to_location_id": "",
-        "date": "2026-08-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-028",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-CRYO-48-10-1",
-        "archived": false,
-        "item_id": "demo-items-004",
-        "lot_id": "demo-lots-005",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "boxes",
-        "from_location_id": "demo-locations-004",
-        "to_location_id": "",
-        "date": "2026-10-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-lots-006",
-      "role": "lots",
-      "version": 1,
-      "data": {
-        "name": "Cryogenic tubes \u00b7 CRYO-26203",
-        "archived": false,
-        "item_id": "demo-items-004",
-        "lot_code": "CRYO-26203",
-        "expiry": "2027-09-30",
-        "location_id": "demo-locations-004",
-        "received_date": "2026-04-10",
-        "storage_note": "Fictional lab location",
-        "stock_revision": 0
-      }
-    },
-    {
-      "id": "demo-movements-029",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "RCV-CRYO-48-2",
-        "archived": false,
-        "item_id": "demo-items-004",
-        "lot_id": "demo-lots-006",
-        "kind": "Receipt",
-        "quantity": 17,
-        "unit": "boxes",
-        "from_location_id": "",
-        "to_location_id": "demo-locations-004",
-        "date": "2026-04-10",
-        "reason": "Fictional initial approved receipt"
-      }
-    },
-    {
-      "id": "demo-movements-030",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-CRYO-48-05-2",
-        "archived": false,
-        "item_id": "demo-items-004",
-        "lot_id": "demo-lots-006",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "boxes",
-        "from_location_id": "demo-locations-004",
-        "to_location_id": "",
-        "date": "2026-05-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-031",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-CRYO-48-06-2",
-        "archived": false,
-        "item_id": "demo-items-004",
-        "lot_id": "demo-lots-006",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "boxes",
-        "from_location_id": "demo-locations-004",
-        "to_location_id": "",
-        "date": "2026-06-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-032",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-CRYO-48-07-2",
-        "archived": false,
-        "item_id": "demo-items-004",
-        "lot_id": "demo-lots-006",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "boxes",
-        "from_location_id": "demo-locations-004",
-        "to_location_id": "",
-        "date": "2026-07-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-033",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-CRYO-48-09-2",
-        "archived": false,
-        "item_id": "demo-items-004",
-        "lot_id": "demo-lots-006",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "boxes",
-        "from_location_id": "demo-locations-004",
-        "to_location_id": "",
-        "date": "2026-09-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-034",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-CRYO-48-10-2",
-        "archived": false,
-        "item_id": "demo-items-004",
-        "lot_id": "demo-lots-006",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "boxes",
-        "from_location_id": "demo-locations-004",
-        "to_location_id": "",
-        "date": "2026-10-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-items-005",
-      "role": "items",
-      "version": 1,
-      "data": {
-        "name": "Nitrile gloves M",
-        "archived": false,
-        "sku": "PPE-013",
-        "category": "Consumable",
-        "unit": "boxes",
-        "reorder_point": 5,
-        "target_level": 30,
-        "supplier": "VWR",
-        "lead_days": 4,
-        "owner": "Lab operations",
-        "notes": "Fictional laboratory supply"
-      }
-    },
-    {
-      "id": "demo-lots-007",
-      "role": "lots",
-      "version": 1,
-      "data": {
-        "name": "Nitrile gloves M \u00b7 PPE-26104",
-        "archived": false,
-        "item_id": "demo-items-005",
-        "lot_code": "PPE-26104",
-        "expiry": "2027-05-21",
-        "location_id": "demo-locations-006",
-        "received_date": "2026-04-10",
-        "storage_note": "Fictional lab location",
-        "stock_revision": 0
-      }
-    },
-    {
-      "id": "demo-movements-035",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "RCV-PPE-013-1",
-        "archived": false,
-        "item_id": "demo-items-005",
-        "lot_id": "demo-lots-007",
-        "kind": "Receipt",
-        "quantity": 8,
-        "unit": "boxes",
-        "from_location_id": "",
-        "to_location_id": "demo-locations-006",
-        "date": "2026-04-10",
-        "reason": "Fictional initial approved receipt"
-      }
-    },
-    {
-      "id": "demo-movements-036",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-PPE-013-05-1",
-        "archived": false,
-        "item_id": "demo-items-005",
-        "lot_id": "demo-lots-007",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "boxes",
-        "from_location_id": "demo-locations-006",
-        "to_location_id": "",
-        "date": "2026-05-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-037",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-PPE-013-06-1",
-        "archived": false,
-        "item_id": "demo-items-005",
-        "lot_id": "demo-lots-007",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "boxes",
-        "from_location_id": "demo-locations-006",
-        "to_location_id": "",
-        "date": "2026-06-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-038",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-PPE-013-07-1",
-        "archived": false,
-        "item_id": "demo-items-005",
-        "lot_id": "demo-lots-007",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "boxes",
-        "from_location_id": "demo-locations-006",
-        "to_location_id": "",
-        "date": "2026-07-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-039",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-PPE-013-09-1",
-        "archived": false,
-        "item_id": "demo-items-005",
-        "lot_id": "demo-lots-007",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "boxes",
-        "from_location_id": "demo-locations-006",
-        "to_location_id": "",
-        "date": "2026-09-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-040",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-PPE-013-10-1",
-        "archived": false,
-        "item_id": "demo-items-005",
-        "lot_id": "demo-lots-007",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "boxes",
-        "from_location_id": "demo-locations-006",
-        "to_location_id": "",
-        "date": "2026-10-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-items-006",
-      "role": "items",
-      "version": 1,
-      "data": {
-        "name": "Ethanol 70%",
-        "archived": false,
-        "sku": "ETH-070",
-        "category": "Chemical",
-        "unit": "bottles",
-        "reorder_point": 3,
-        "target_level": 12,
-        "supplier": "Fisher",
-        "lead_days": 8,
-        "owner": "Analytical",
-        "notes": "Fictional laboratory supply"
-      }
-    },
-    {
-      "id": "demo-lots-008",
-      "role": "lots",
-      "version": 1,
-      "data": {
-        "name": "Ethanol 70% \u00b7 ETH-26105",
-        "archived": false,
-        "item_id": "demo-items-006",
-        "lot_code": "ETH-26105",
-        "expiry": "2027-05-21",
-        "location_id": "demo-locations-005",
-        "received_date": "2026-04-10",
-        "storage_note": "Fictional lab location",
-        "stock_revision": 0
-      }
-    },
-    {
-      "id": "demo-movements-041",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "RCV-ETH-070-1",
-        "archived": false,
-        "item_id": "demo-items-006",
-        "lot_id": "demo-lots-008",
-        "kind": "Receipt",
-        "quantity": 9,
-        "unit": "bottles",
-        "from_location_id": "",
-        "to_location_id": "demo-locations-005",
-        "date": "2026-04-10",
-        "reason": "Fictional initial approved receipt"
-      }
-    },
-    {
-      "id": "demo-movements-042",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-ETH-070-05-1",
-        "archived": false,
-        "item_id": "demo-items-006",
-        "lot_id": "demo-lots-008",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "bottles",
-        "from_location_id": "demo-locations-005",
-        "to_location_id": "",
-        "date": "2026-05-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-043",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-ETH-070-06-1",
-        "archived": false,
-        "item_id": "demo-items-006",
-        "lot_id": "demo-lots-008",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "bottles",
-        "from_location_id": "demo-locations-005",
-        "to_location_id": "",
-        "date": "2026-06-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-044",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-ETH-070-08-1",
-        "archived": false,
-        "item_id": "demo-items-006",
-        "lot_id": "demo-lots-008",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "bottles",
-        "from_location_id": "demo-locations-005",
-        "to_location_id": "",
-        "date": "2026-08-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-045",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-ETH-070-09-1",
-        "archived": false,
-        "item_id": "demo-items-006",
-        "lot_id": "demo-lots-008",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "bottles",
-        "from_location_id": "demo-locations-005",
-        "to_location_id": "",
-        "date": "2026-09-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-046",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-ETH-070-10-1",
-        "archived": false,
-        "item_id": "demo-items-006",
-        "lot_id": "demo-lots-008",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "bottles",
-        "from_location_id": "demo-locations-005",
-        "to_location_id": "",
-        "date": "2026-10-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-items-007",
-      "role": "items",
-      "version": 1,
-      "data": {
-        "name": "RNA extraction kit",
-        "archived": false,
-        "sku": "RNA-365",
-        "category": "Reagent",
-        "unit": "kits",
-        "reorder_point": 3,
-        "target_level": 10,
-        "supplier": "Qiagen",
-        "lead_days": 18,
-        "owner": "Research",
-        "notes": "Fictional laboratory supply"
-      }
-    },
-    {
-      "id": "demo-lots-009",
-      "role": "lots",
-      "version": 1,
-      "data": {
-        "name": "RNA extraction kit \u00b7 RNA-26106",
-        "archived": false,
-        "item_id": "demo-items-007",
-        "lot_code": "RNA-26106",
-        "expiry": "2026-11-19",
-        "location_id": "demo-locations-004",
-        "received_date": "2026-04-10",
-        "storage_note": "Fictional lab location",
-        "stock_revision": 0
-      }
-    },
-    {
-      "id": "demo-movements-047",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "RCV-RNA-365-1",
-        "archived": false,
-        "item_id": "demo-items-007",
-        "lot_id": "demo-lots-009",
-        "kind": "Receipt",
-        "quantity": 10,
-        "unit": "kits",
-        "from_location_id": "",
-        "to_location_id": "demo-locations-004",
-        "date": "2026-04-10",
-        "reason": "Fictional initial approved receipt"
-      }
-    },
-    {
-      "id": "demo-movements-048",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-RNA-365-05-1",
-        "archived": false,
-        "item_id": "demo-items-007",
-        "lot_id": "demo-lots-009",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "kits",
-        "from_location_id": "demo-locations-004",
-        "to_location_id": "",
-        "date": "2026-05-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-049",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-RNA-365-07-1",
-        "archived": false,
-        "item_id": "demo-items-007",
-        "lot_id": "demo-lots-009",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "kits",
-        "from_location_id": "demo-locations-004",
-        "to_location_id": "",
-        "date": "2026-07-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-050",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-RNA-365-08-1",
-        "archived": false,
-        "item_id": "demo-items-007",
-        "lot_id": "demo-lots-009",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "kits",
-        "from_location_id": "demo-locations-004",
-        "to_location_id": "",
-        "date": "2026-08-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-051",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-RNA-365-09-1",
-        "archived": false,
-        "item_id": "demo-items-007",
-        "lot_id": "demo-lots-009",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "kits",
-        "from_location_id": "demo-locations-004",
-        "to_location_id": "",
-        "date": "2026-09-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-lots-010",
-      "role": "lots",
-      "version": 1,
-      "data": {
-        "name": "RNA extraction kit \u00b7 RNA-26206",
-        "archived": false,
-        "item_id": "demo-items-007",
-        "lot_code": "RNA-26206",
-        "expiry": "2027-09-30",
-        "location_id": "demo-locations-004",
-        "received_date": "2026-04-10",
-        "storage_note": "Fictional lab location",
-        "stock_revision": 0
-      }
-    },
-    {
-      "id": "demo-movements-052",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "RCV-RNA-365-2",
-        "archived": false,
-        "item_id": "demo-items-007",
-        "lot_id": "demo-lots-010",
-        "kind": "Receipt",
-        "quantity": 16,
-        "unit": "kits",
-        "from_location_id": "",
-        "to_location_id": "demo-locations-004",
-        "date": "2026-04-10",
-        "reason": "Fictional initial approved receipt"
-      }
-    },
-    {
-      "id": "demo-movements-053",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-RNA-365-06-2",
-        "archived": false,
-        "item_id": "demo-items-007",
-        "lot_id": "demo-lots-010",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "kits",
-        "from_location_id": "demo-locations-004",
-        "to_location_id": "",
-        "date": "2026-06-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-054",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-RNA-365-07-2",
-        "archived": false,
-        "item_id": "demo-items-007",
-        "lot_id": "demo-lots-010",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "kits",
-        "from_location_id": "demo-locations-004",
-        "to_location_id": "",
-        "date": "2026-07-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-055",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-RNA-365-08-2",
-        "archived": false,
-        "item_id": "demo-items-007",
-        "lot_id": "demo-lots-010",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "kits",
-        "from_location_id": "demo-locations-004",
-        "to_location_id": "",
-        "date": "2026-08-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-056",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-RNA-365-10-2",
-        "archived": false,
-        "item_id": "demo-items-007",
-        "lot_id": "demo-lots-010",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "kits",
-        "from_location_id": "demo-locations-004",
-        "to_location_id": "",
-        "date": "2026-10-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-items-008",
-      "role": "items",
-      "version": 1,
-      "data": {
-        "name": "Microcentrifuge tubes",
-        "archived": false,
-        "sku": "MCT-500",
-        "category": "Consumable",
-        "unit": "bags",
-        "reorder_point": 4,
-        "target_level": 15,
-        "supplier": "VWR",
-        "lead_days": 6,
-        "owner": "Lab operations",
-        "notes": "Fictional laboratory supply"
-      }
-    },
-    {
-      "id": "demo-lots-011",
-      "role": "lots",
-      "version": 1,
-      "data": {
-        "name": "Microcentrifuge tubes \u00b7 MCT-26107",
-        "archived": false,
-        "item_id": "demo-items-008",
-        "lot_code": "MCT-26107",
-        "expiry": "2027-05-21",
-        "location_id": "demo-locations-006",
-        "received_date": "2026-04-10",
-        "storage_note": "Fictional lab location",
-        "stock_revision": 0
-      }
-    },
-    {
-      "id": "demo-movements-057",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "RCV-MCT-500-1",
-        "archived": false,
-        "item_id": "demo-items-008",
-        "lot_id": "demo-lots-011",
-        "kind": "Receipt",
-        "quantity": 11,
-        "unit": "bags",
-        "from_location_id": "",
-        "to_location_id": "demo-locations-006",
-        "date": "2026-04-10",
-        "reason": "Fictional initial approved receipt"
-      }
-    },
-    {
-      "id": "demo-movements-058",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-MCT-500-06-1",
-        "archived": false,
-        "item_id": "demo-items-008",
-        "lot_id": "demo-lots-011",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "bags",
-        "from_location_id": "demo-locations-006",
-        "to_location_id": "",
-        "date": "2026-06-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-059",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-MCT-500-07-1",
-        "archived": false,
-        "item_id": "demo-items-008",
-        "lot_id": "demo-lots-011",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "bags",
-        "from_location_id": "demo-locations-006",
-        "to_location_id": "",
-        "date": "2026-07-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-060",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-MCT-500-08-1",
-        "archived": false,
-        "item_id": "demo-items-008",
-        "lot_id": "demo-lots-011",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "bags",
-        "from_location_id": "demo-locations-006",
-        "to_location_id": "",
-        "date": "2026-08-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-061",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-MCT-500-10-1",
-        "archived": false,
-        "item_id": "demo-items-008",
-        "lot_id": "demo-lots-011",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "bags",
-        "from_location_id": "demo-locations-006",
-        "to_location_id": "",
-        "date": "2026-10-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-items-009",
-      "role": "items",
-      "version": 1,
-      "data": {
-        "name": "Taq polymerase",
-        "archived": false,
-        "sku": "TAQ-082",
-        "category": "Reagent",
-        "unit": "vials",
-        "reorder_point": 3,
-        "target_level": 12,
-        "supplier": "NEB",
-        "lead_days": 16,
-        "owner": "Analytical",
-        "notes": "Fictional laboratory supply"
-      }
-    },
-    {
-      "id": "demo-lots-012",
-      "role": "lots",
-      "version": 1,
-      "data": {
-        "name": "Taq polymerase \u00b7 TAQ-26108",
-        "archived": false,
-        "item_id": "demo-items-009",
-        "lot_code": "TAQ-26108",
-        "expiry": "2027-05-21",
-        "location_id": "demo-locations-004",
-        "received_date": "2026-04-10",
-        "storage_note": "Fictional lab location",
-        "stock_revision": 0
-      }
-    },
-    {
-      "id": "demo-movements-062",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "RCV-TAQ-082-1",
-        "archived": false,
-        "item_id": "demo-items-009",
-        "lot_id": "demo-lots-012",
-        "kind": "Receipt",
-        "quantity": 8,
-        "unit": "vials",
-        "from_location_id": "",
-        "to_location_id": "demo-locations-004",
-        "date": "2026-04-10",
-        "reason": "Fictional initial approved receipt"
-      }
-    },
-    {
-      "id": "demo-movements-063",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-TAQ-082-05-1",
-        "archived": false,
-        "item_id": "demo-items-009",
-        "lot_id": "demo-lots-012",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "vials",
-        "from_location_id": "demo-locations-004",
-        "to_location_id": "",
-        "date": "2026-05-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-064",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-TAQ-082-06-1",
-        "archived": false,
-        "item_id": "demo-items-009",
-        "lot_id": "demo-lots-012",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "vials",
-        "from_location_id": "demo-locations-004",
-        "to_location_id": "",
-        "date": "2026-06-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-065",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-TAQ-082-07-1",
-        "archived": false,
-        "item_id": "demo-items-009",
-        "lot_id": "demo-lots-012",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "vials",
-        "from_location_id": "demo-locations-004",
-        "to_location_id": "",
-        "date": "2026-07-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-066",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-TAQ-082-09-1",
-        "archived": false,
-        "item_id": "demo-items-009",
-        "lot_id": "demo-lots-012",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "vials",
-        "from_location_id": "demo-locations-004",
-        "to_location_id": "",
-        "date": "2026-09-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-067",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-TAQ-082-10-1",
-        "archived": false,
-        "item_id": "demo-items-009",
-        "lot_id": "demo-lots-012",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "vials",
-        "from_location_id": "demo-locations-004",
-        "to_location_id": "",
-        "date": "2026-10-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-items-010",
-      "role": "items",
-      "version": 1,
-      "data": {
-        "name": "Culture medium",
-        "archived": false,
-        "sku": "MED-042",
-        "category": "Reagent",
-        "unit": "bottles",
-        "reorder_point": 5,
-        "target_level": 20,
-        "supplier": "Gibco",
-        "lead_days": 11,
-        "owner": "Research",
-        "notes": "Fictional laboratory supply"
-      }
-    },
-    {
-      "id": "demo-lots-013",
-      "role": "lots",
-      "version": 1,
-      "data": {
-        "name": "Culture medium \u00b7 MED-26109",
-        "archived": false,
-        "item_id": "demo-items-010",
-        "lot_code": "MED-26109",
-        "expiry": "2026-11-19",
-        "location_id": "demo-locations-002",
-        "received_date": "2026-04-10",
-        "storage_note": "Fictional lab location",
-        "stock_revision": 0
-      }
-    },
-    {
-      "id": "demo-movements-068",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "RCV-MED-042-1",
-        "archived": false,
-        "item_id": "demo-items-010",
-        "lot_id": "demo-lots-013",
-        "kind": "Receipt",
-        "quantity": 9,
-        "unit": "bottles",
-        "from_location_id": "",
-        "to_location_id": "demo-locations-002",
-        "date": "2026-04-10",
-        "reason": "Fictional initial approved receipt"
-      }
-    },
-    {
-      "id": "demo-movements-069",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-MED-042-05-1",
-        "archived": false,
-        "item_id": "demo-items-010",
-        "lot_id": "demo-lots-013",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "bottles",
-        "from_location_id": "demo-locations-002",
-        "to_location_id": "",
-        "date": "2026-05-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-070",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-MED-042-06-1",
-        "archived": false,
-        "item_id": "demo-items-010",
-        "lot_id": "demo-lots-013",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "bottles",
-        "from_location_id": "demo-locations-002",
-        "to_location_id": "",
-        "date": "2026-06-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-071",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-MED-042-08-1",
-        "archived": false,
-        "item_id": "demo-items-010",
-        "lot_id": "demo-lots-013",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "bottles",
-        "from_location_id": "demo-locations-002",
-        "to_location_id": "",
-        "date": "2026-08-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-072",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-MED-042-09-1",
-        "archived": false,
-        "item_id": "demo-items-010",
-        "lot_id": "demo-lots-013",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "bottles",
-        "from_location_id": "demo-locations-002",
-        "to_location_id": "",
-        "date": "2026-09-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-073",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-MED-042-10-1",
-        "archived": false,
-        "item_id": "demo-items-010",
-        "lot_id": "demo-lots-013",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "bottles",
-        "from_location_id": "demo-locations-002",
-        "to_location_id": "",
-        "date": "2026-10-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-lots-014",
-      "role": "lots",
-      "version": 1,
-      "data": {
-        "name": "Culture medium \u00b7 MED-26209",
-        "archived": false,
-        "item_id": "demo-items-010",
-        "lot_code": "MED-26209",
-        "expiry": "2027-09-30",
-        "location_id": "demo-locations-002",
-        "received_date": "2026-04-10",
-        "storage_note": "Fictional lab location",
-        "stock_revision": 0
-      }
-    },
-    {
-      "id": "demo-movements-074",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "RCV-MED-042-2",
-        "archived": false,
-        "item_id": "demo-items-010",
-        "lot_id": "demo-lots-014",
-        "kind": "Receipt",
-        "quantity": 15,
-        "unit": "bottles",
-        "from_location_id": "",
-        "to_location_id": "demo-locations-002",
-        "date": "2026-04-10",
-        "reason": "Fictional initial approved receipt"
-      }
-    },
-    {
-      "id": "demo-movements-075",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-MED-042-05-2",
-        "archived": false,
-        "item_id": "demo-items-010",
-        "lot_id": "demo-lots-014",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "bottles",
-        "from_location_id": "demo-locations-002",
-        "to_location_id": "",
-        "date": "2026-05-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-076",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-MED-042-07-2",
-        "archived": false,
-        "item_id": "demo-items-010",
-        "lot_id": "demo-lots-014",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "bottles",
-        "from_location_id": "demo-locations-002",
-        "to_location_id": "",
-        "date": "2026-07-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-077",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-MED-042-08-2",
-        "archived": false,
-        "item_id": "demo-items-010",
-        "lot_id": "demo-lots-014",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "bottles",
-        "from_location_id": "demo-locations-002",
-        "to_location_id": "",
-        "date": "2026-08-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-078",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-MED-042-09-2",
-        "archived": false,
-        "item_id": "demo-items-010",
-        "lot_id": "demo-lots-014",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "bottles",
-        "from_location_id": "demo-locations-002",
-        "to_location_id": "",
-        "date": "2026-09-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-items-011",
-      "role": "items",
-      "version": 1,
-      "data": {
-        "name": "ELISA plates",
-        "archived": false,
-        "sku": "ELISA-70",
-        "category": "Consumable",
-        "unit": "packs",
-        "reorder_point": 3,
-        "target_level": 12,
-        "supplier": "Corning",
-        "lead_days": 8,
-        "owner": "Lab operations",
-        "notes": "Fictional laboratory supply"
-      }
-    },
-    {
-      "id": "demo-lots-015",
-      "role": "lots",
-      "version": 1,
-      "data": {
-        "name": "ELISA plates \u00b7 ELISA-26110",
-        "archived": false,
-        "item_id": "demo-items-011",
-        "lot_code": "ELISA-26110",
-        "expiry": "2027-05-21",
-        "location_id": "demo-locations-006",
-        "received_date": "2026-04-10",
-        "storage_note": "Fictional lab location",
-        "stock_revision": 0
-      }
-    },
-    {
-      "id": "demo-movements-079",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "RCV-ELISA-70-1",
-        "archived": false,
-        "item_id": "demo-items-011",
-        "lot_id": "demo-lots-015",
-        "kind": "Receipt",
-        "quantity": 10,
-        "unit": "packs",
-        "from_location_id": "",
-        "to_location_id": "demo-locations-006",
-        "date": "2026-04-10",
-        "reason": "Fictional initial approved receipt"
-      }
-    },
-    {
-      "id": "demo-movements-080",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-ELISA-70-05-1",
-        "archived": false,
-        "item_id": "demo-items-011",
-        "lot_id": "demo-lots-015",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "packs",
-        "from_location_id": "demo-locations-006",
-        "to_location_id": "",
-        "date": "2026-05-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-081",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-ELISA-70-07-1",
-        "archived": false,
-        "item_id": "demo-items-011",
-        "lot_id": "demo-lots-015",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "packs",
-        "from_location_id": "demo-locations-006",
-        "to_location_id": "",
-        "date": "2026-07-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-082",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-ELISA-70-08-1",
-        "archived": false,
-        "item_id": "demo-items-011",
-        "lot_id": "demo-lots-015",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "packs",
-        "from_location_id": "demo-locations-006",
-        "to_location_id": "",
-        "date": "2026-08-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-083",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-ELISA-70-09-1",
-        "archived": false,
-        "item_id": "demo-items-011",
-        "lot_id": "demo-lots-015",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "packs",
-        "from_location_id": "demo-locations-006",
-        "to_location_id": "",
-        "date": "2026-09-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-items-012",
-      "role": "items",
-      "version": 1,
-      "data": {
-        "name": "Lab labels",
-        "archived": false,
-        "sku": "LBL-200",
-        "category": "Consumable",
-        "unit": "rolls",
-        "reorder_point": 2,
-        "target_level": 10,
-        "supplier": "Brady",
-        "lead_days": 5,
-        "owner": "Analytical",
-        "notes": "Fictional laboratory supply"
-      }
-    },
-    {
-      "id": "demo-lots-016",
-      "role": "lots",
-      "version": 1,
-      "data": {
-        "name": "Lab labels \u00b7 LBL-26111",
-        "archived": false,
-        "item_id": "demo-items-012",
-        "lot_code": "LBL-26111",
-        "expiry": "2027-05-21",
-        "location_id": "demo-locations-006",
-        "received_date": "2026-04-10",
-        "storage_note": "Fictional lab location",
-        "stock_revision": 0
-      }
-    },
-    {
-      "id": "demo-movements-084",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "RCV-LBL-200-1",
-        "archived": false,
-        "item_id": "demo-items-012",
-        "lot_id": "demo-lots-016",
-        "kind": "Receipt",
-        "quantity": 11,
-        "unit": "rolls",
-        "from_location_id": "",
-        "to_location_id": "demo-locations-006",
-        "date": "2026-04-10",
-        "reason": "Fictional initial approved receipt"
-      }
-    },
-    {
-      "id": "demo-movements-085",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-LBL-200-06-1",
-        "archived": false,
-        "item_id": "demo-items-012",
-        "lot_id": "demo-lots-016",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "rolls",
-        "from_location_id": "demo-locations-006",
-        "to_location_id": "",
-        "date": "2026-06-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-086",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-LBL-200-07-1",
-        "archived": false,
-        "item_id": "demo-items-012",
-        "lot_id": "demo-lots-016",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "rolls",
-        "from_location_id": "demo-locations-006",
-        "to_location_id": "",
-        "date": "2026-07-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-087",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-LBL-200-08-1",
-        "archived": false,
-        "item_id": "demo-items-012",
-        "lot_id": "demo-lots-016",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "rolls",
-        "from_location_id": "demo-locations-006",
-        "to_location_id": "",
-        "date": "2026-08-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-088",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "USE-LBL-200-10-1",
-        "archived": false,
-        "item_id": "demo-items-012",
-        "lot_id": "demo-lots-016",
-        "kind": "Use",
-        "quantity": 1,
-        "unit": "rolls",
-        "from_location_id": "demo-locations-006",
-        "to_location_id": "",
-        "date": "2026-10-14",
-        "reason": "Fictional research consumption"
-      }
-    },
-    {
-      "id": "demo-movements-089",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "MOV-TIPS-STORAGE",
-        "archived": false,
-        "item_id": "demo-items-002",
-        "lot_id": "demo-lots-003",
-        "kind": "Transfer",
-        "quantity": 1,
-        "unit": "boxes",
-        "from_location_id": "demo-locations-006",
-        "to_location_id": "demo-locations-001",
-        "date": "2026-10-22",
-        "reason": "Move reserve supply to bench"
-      }
-    },
-    {
-      "id": "demo-requests-001",
-      "role": "requests",
-      "version": 1,
-      "data": {
-        "name": "Proteinase K replenishment",
-        "archived": false,
-        "item_id": "demo-items-001",
-        "quantity": 3,
-        "unit": "vials",
-        "status": "Requested",
-        "needed_by": "2026-11-08",
-        "estimated_cost": 150,
-        "currency": "EUR",
-        "owner": "Lab operations",
-        "notes": "Fictional internal request, not a supplier order"
-      }
-    },
-    {
-      "id": "demo-requests-002",
-      "role": "requests",
-      "version": 1,
-      "data": {
-        "name": "PBS tablets replenishment",
-        "archived": false,
-        "item_id": "demo-items-003",
-        "quantity": 3,
-        "unit": "bottles",
-        "status": "Reviewed",
-        "needed_by": "2026-11-11",
-        "estimated_cost": 194,
-        "currency": "EUR",
-        "owner": "Lab operations",
-        "notes": "Fictional internal request, not a supplier order"
-      }
-    },
-    {
-      "id": "demo-requests-003",
-      "role": "requests",
-      "version": 1,
-      "data": {
-        "name": "Nitrile gloves M replenishment",
-        "archived": false,
-        "item_id": "demo-items-005",
-        "quantity": 3,
-        "unit": "boxes",
-        "status": "Approved",
-        "needed_by": "2026-11-14",
-        "estimated_cost": 238,
-        "currency": "EUR",
-        "owner": "Lab operations",
-        "notes": "Fictional internal request, not a supplier order"
-      }
-    },
-    {
-      "id": "demo-requests-004",
-      "role": "requests",
-      "version": 1,
-      "data": {
-        "name": "RNA extraction kit replenishment",
-        "archived": false,
-        "item_id": "demo-items-007",
-        "quantity": 3,
-        "unit": "kits",
-        "status": "Ordered",
-        "needed_by": "2026-11-17",
-        "estimated_cost": 282,
-        "currency": "EUR",
-        "owner": "Lab operations",
-        "notes": "Fictional internal request, not a supplier order"
-      }
-    },
-    {
-      "id": "demo-requests-005",
-      "role": "requests",
-      "version": 1,
-      "data": {
-        "name": "Taq polymerase replenishment",
-        "archived": false,
-        "item_id": "demo-items-009",
-        "quantity": 3,
-        "unit": "vials",
-        "status": "Received",
-        "needed_by": "2026-11-20",
-        "estimated_cost": 326,
-        "currency": "EUR",
-        "owner": "Lab operations",
-        "notes": "Fictional internal request, not a supplier order"
-      }
-    },
-    {
-      "id": "demo-movements-090",
-      "role": "movements",
-      "version": 1,
-      "data": {
-        "name": "RCV-REQUEST-004",
-        "archived": false,
-        "item_id": "demo-items-009",
-        "lot_id": "demo-lots-012",
-        "kind": "Receipt",
-        "quantity": 3,
-        "unit": "vials",
-        "from_location_id": "",
-        "to_location_id": "demo-locations-004",
-        "date": "2026-10-31",
-        "reason": "Approved internal receiving",
-        "request_id": "demo-requests-005"
-      }
-    },
-    {
-      "id": "demo-requests-006",
-      "role": "requests",
-      "version": 1,
-      "data": {
-        "name": "ELISA plates replenishment",
-        "archived": false,
-        "item_id": "demo-items-011",
-        "quantity": 3,
-        "unit": "packs",
-        "status": "Declined",
-        "needed_by": "2026-11-23",
-        "estimated_cost": 370,
-        "currency": "EUR",
-        "owner": "Lab operations",
-        "notes": "Fictional internal request, not a supplier order"
-      }
-    }
-  ]
+ "note": "Fictional demo data for Lab Inventory 2.0.0, fixed as of 14 Nov 2026. Names, suppliers, prices, lots and programs are invented. Never save these as real records.",
+ "asOf": "2026-11-14",
+ "records": [
+  {
+   "id": "00000000-0000-4000-8001-000000000001",
+   "role": "labinventory.settings",
+   "version": 0,
+   "data": {
+    "approver": "Mia Novak",
+    "second_approver": "Sam Rivera",
+    "threshold_amount": 2000,
+    "currency": "EUR",
+    "program_approvers": "{\"00000000-0000-4000-8002-000000000002\": \"Lena Ortiz\"}",
+    "expiry_window_days": 30,
+    "digest_cadence": "weekly",
+    "digest_day": "mon",
+    "digest_time": "08:00",
+    "digest_recipients": "Mia Novak, Sam Rivera",
+    "digest_text": "Here is what needs attention in the lab. Open Lab Inventory to act on it.",
+    "units": "bottle, box, vial, pack, tube, kit, plate, flask, bag, each",
+    "app_link": "https://platform.trialagents.com/apps/00000000-0000-4000-8000-00000000a001?workspaceId=00000000-0000-4000-8000-00000000b001"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8002-000000000001",
+   "role": "programs",
+   "version": 0,
+   "data": {
+    "name": "NWB-101 (fictional)",
+    "code": "NWB-101",
+    "stage": "preclinical",
+    "status": "active",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8002-000000000002",
+   "role": "programs",
+   "version": 0,
+   "data": {
+    "name": "NWB-202 (fictional)",
+    "code": "NWB-202",
+    "stage": "discovery",
+    "status": "active",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8003-000000000001",
+   "role": "labinventory.categories",
+   "version": 0,
+   "data": {
+    "name": "Reagent",
+    "standard": true,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8003-000000000002",
+   "role": "labinventory.categories",
+   "version": 0,
+   "data": {
+    "name": "Consumable",
+    "standard": true,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8003-000000000003",
+   "role": "labinventory.categories",
+   "version": 0,
+   "data": {
+    "name": "Antibody",
+    "standard": true,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8003-000000000004",
+   "role": "labinventory.categories",
+   "version": 0,
+   "data": {
+    "name": "Cell line",
+    "standard": true,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8003-000000000005",
+   "role": "labinventory.categories",
+   "version": 0,
+   "data": {
+    "name": "Plasmid",
+    "standard": true,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8003-000000000006",
+   "role": "labinventory.categories",
+   "version": 0,
+   "data": {
+    "name": "Chemical",
+    "standard": true,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8003-000000000007",
+   "role": "labinventory.categories",
+   "version": 0,
+   "data": {
+    "name": "Media",
+    "standard": false,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8004-000000000001",
+   "role": "organizations",
+   "version": 0,
+   "data": {
+    "name": "Fictional Labware Co.",
+    "org_type": "other",
+    "country": null,
+    "website": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8004-000000000002",
+   "role": "organizations",
+   "version": 0,
+   "data": {
+    "name": "Example Reagents GmbH",
+    "org_type": "other",
+    "country": null,
+    "website": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8004-000000000003",
+   "role": "organizations",
+   "version": 0,
+   "data": {
+    "name": "Placeholder Bio Supply",
+    "org_type": "other",
+    "country": null,
+    "website": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8004-000000000004",
+   "role": "organizations",
+   "version": 0,
+   "data": {
+    "name": "Demo Antibody Labs",
+    "org_type": "other",
+    "country": null,
+    "website": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8004-000000000005",
+   "role": "organizations",
+   "version": 0,
+   "data": {
+    "name": "Sample Chemicals Ltd",
+    "org_type": "other",
+    "country": null,
+    "website": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8005-000000000001",
+   "role": "agreements",
+   "version": 0,
+   "data": {
+    "name": "Supply framework — Example Reagents (fictional)",
+    "counterparty_id": "00000000-0000-4000-8004-000000000002",
+    "agreement_type": "supply",
+    "status": "active",
+    "effective_date": "2026-01-01",
+    "expiry_date": "2027-12-31",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8006-000000000001",
+   "role": "labinventory.locations",
+   "version": 0,
+   "data": {
+    "name": "Lab 2.14",
+    "parent_id": null,
+    "kind": "room",
+    "temperature": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8006-000000000002",
+   "role": "labinventory.locations",
+   "version": 0,
+   "data": {
+    "name": "Freezer A",
+    "parent_id": "00000000-0000-4000-8006-000000000001",
+    "kind": "freezer",
+    "temperature": "-80 °C",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8006-000000000003",
+   "role": "labinventory.locations",
+   "version": 0,
+   "data": {
+    "name": "Shelf 1",
+    "parent_id": "00000000-0000-4000-8006-000000000002",
+    "kind": "shelf",
+    "temperature": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8006-000000000004",
+   "role": "labinventory.locations",
+   "version": 0,
+   "data": {
+    "name": "Box A3",
+    "parent_id": "00000000-0000-4000-8006-000000000003",
+    "kind": "box",
+    "temperature": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8006-000000000005",
+   "role": "labinventory.locations",
+   "version": 0,
+   "data": {
+    "name": "Freezer B",
+    "parent_id": "00000000-0000-4000-8006-000000000001",
+    "kind": "freezer",
+    "temperature": "-20 °C",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8006-000000000006",
+   "role": "labinventory.locations",
+   "version": 0,
+   "data": {
+    "name": "Shelf 2",
+    "parent_id": "00000000-0000-4000-8006-000000000005",
+    "kind": "shelf",
+    "temperature": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8006-000000000007",
+   "role": "labinventory.locations",
+   "version": 0,
+   "data": {
+    "name": "Fridge 1",
+    "parent_id": "00000000-0000-4000-8006-000000000001",
+    "kind": "fridge",
+    "temperature": "4 °C",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8006-000000000008",
+   "role": "labinventory.locations",
+   "version": 0,
+   "data": {
+    "name": "Shelf 1",
+    "parent_id": "00000000-0000-4000-8006-000000000007",
+    "kind": "shelf",
+    "temperature": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8006-000000000009",
+   "role": "labinventory.locations",
+   "version": 0,
+   "data": {
+    "name": "Cabinet C",
+    "parent_id": "00000000-0000-4000-8006-000000000001",
+    "kind": "cabinet",
+    "temperature": "Room temperature",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8006-000000000010",
+   "role": "labinventory.locations",
+   "version": 0,
+   "data": {
+    "name": "Top shelf",
+    "parent_id": "00000000-0000-4000-8006-000000000009",
+    "kind": "shelf",
+    "temperature": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8006-000000000011",
+   "role": "labinventory.locations",
+   "version": 0,
+   "data": {
+    "name": "Chemical store",
+    "parent_id": null,
+    "kind": "room",
+    "temperature": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8006-000000000012",
+   "role": "labinventory.locations",
+   "version": 0,
+   "data": {
+    "name": "Flammables cabinet",
+    "parent_id": "00000000-0000-4000-8006-000000000011",
+    "kind": "cabinet",
+    "temperature": "Room temperature",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000001",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Pipette tips 200 µL (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000002",
+    "supplier_id": "00000000-0000-4000-8004-000000000001",
+    "catalog_number": "FX-0101",
+    "unit": "box",
+    "unit_size": "96 tips",
+    "last_price": 6.5,
+    "currency": "EUR",
+    "reorder_point": 4,
+    "reorder_quantity": 10,
+    "lead_time_days": 5,
+    "default_location_id": "00000000-0000-4000-8006-000000000010",
+    "program_id": null,
+    "owner": "Lena Ortiz",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000002",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Pipette tips 1000 µL (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000002",
+    "supplier_id": "00000000-0000-4000-8004-000000000001",
+    "catalog_number": "FX-0102",
+    "unit": "box",
+    "unit_size": "96 tips",
+    "last_price": 7.2,
+    "currency": "EUR",
+    "reorder_point": 4,
+    "reorder_quantity": null,
+    "lead_time_days": 5,
+    "default_location_id": "00000000-0000-4000-8006-000000000010",
+    "program_id": null,
+    "owner": "Ana Silva",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000003",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Pipette tips 10 µL (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000002",
+    "supplier_id": "00000000-0000-4000-8004-000000000001",
+    "catalog_number": "FX-0103",
+    "unit": "box",
+    "unit_size": "96 tips",
+    "last_price": 6.9,
+    "currency": "EUR",
+    "reorder_point": 3,
+    "reorder_quantity": 8,
+    "lead_time_days": 5,
+    "default_location_id": "00000000-0000-4000-8006-000000000010",
+    "program_id": null,
+    "owner": "Ana Silva",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000004",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Nitrile gloves M (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000002",
+    "supplier_id": "00000000-0000-4000-8004-000000000001",
+    "catalog_number": "FX-0104",
+    "unit": "box",
+    "unit_size": "100 gloves",
+    "last_price": 8.0,
+    "currency": "EUR",
+    "reorder_point": 5,
+    "reorder_quantity": 20,
+    "lead_time_days": 3,
+    "default_location_id": "00000000-0000-4000-8006-000000000009",
+    "program_id": null,
+    "owner": "Jon Petersen",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000005",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Serological pipettes 10 mL (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000002",
+    "supplier_id": "00000000-0000-4000-8004-000000000001",
+    "catalog_number": "FX-0105",
+    "unit": "pack",
+    "unit_size": "50 pieces",
+    "last_price": 24.0,
+    "currency": "EUR",
+    "reorder_point": 2,
+    "reorder_quantity": null,
+    "lead_time_days": 7,
+    "default_location_id": "00000000-0000-4000-8006-000000000009",
+    "program_id": null,
+    "owner": "Jon Petersen",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000006",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Microcentrifuge tubes 1.5 mL (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000002",
+    "supplier_id": "00000000-0000-4000-8004-000000000001",
+    "catalog_number": "FX-0106",
+    "unit": "bag",
+    "unit_size": "500 tubes",
+    "last_price": 18.0,
+    "currency": "EUR",
+    "reorder_point": 2,
+    "reorder_quantity": 4,
+    "lead_time_days": 5,
+    "default_location_id": "00000000-0000-4000-8006-000000000009",
+    "program_id": null,
+    "owner": "Mia Novak",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000007",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "96-well plates, flat (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000002",
+    "supplier_id": "00000000-0000-4000-8004-000000000003",
+    "catalog_number": "FX-0107",
+    "unit": "pack",
+    "unit_size": "10 plates",
+    "last_price": 42.0,
+    "currency": "EUR",
+    "reorder_point": 2,
+    "reorder_quantity": null,
+    "lead_time_days": 10,
+    "default_location_id": "00000000-0000-4000-8006-000000000009",
+    "program_id": null,
+    "owner": "Ana Silva",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000008",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Cell culture flasks T75 (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000002",
+    "supplier_id": "00000000-0000-4000-8004-000000000003",
+    "catalog_number": "FX-0108",
+    "unit": "pack",
+    "unit_size": "5 flasks",
+    "last_price": 29.0,
+    "currency": "EUR",
+    "reorder_point": 3,
+    "reorder_quantity": null,
+    "lead_time_days": 10,
+    "default_location_id": "00000000-0000-4000-8006-000000000009",
+    "program_id": null,
+    "owner": "Lena Ortiz",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000009",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Cryovials 2 mL (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000002",
+    "supplier_id": "00000000-0000-4000-8004-000000000003",
+    "catalog_number": "FX-0109",
+    "unit": "pack",
+    "unit_size": "50 vials",
+    "last_price": 33.0,
+    "currency": "EUR",
+    "reorder_point": 1,
+    "reorder_quantity": 2,
+    "lead_time_days": 10,
+    "default_location_id": "00000000-0000-4000-8006-000000000009",
+    "program_id": null,
+    "owner": "Mia Novak",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000010",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Filter units 0.22 µm (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000002",
+    "supplier_id": "00000000-0000-4000-8004-000000000003",
+    "catalog_number": "FX-0110",
+    "unit": "box",
+    "unit_size": "12 units",
+    "last_price": 96.0,
+    "currency": "EUR",
+    "reorder_point": 0,
+    "reorder_quantity": null,
+    "lead_time_days": 14,
+    "default_location_id": "00000000-0000-4000-8006-000000000009",
+    "program_id": null,
+    "owner": "Ana Silva",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000011",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "DMEM high glucose (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000007",
+    "supplier_id": "00000000-0000-4000-8004-000000000002",
+    "catalog_number": "FX-0111",
+    "unit": "bottle",
+    "unit_size": "500 mL",
+    "last_price": 21.0,
+    "currency": "EUR",
+    "reorder_point": 4,
+    "reorder_quantity": null,
+    "lead_time_days": 7,
+    "default_location_id": "00000000-0000-4000-8006-000000000008",
+    "program_id": "00000000-0000-4000-8002-000000000001",
+    "owner": "Mia Novak",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000012",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "RPMI 1640 (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000007",
+    "supplier_id": "00000000-0000-4000-8004-000000000002",
+    "catalog_number": "FX-0112",
+    "unit": "bottle",
+    "unit_size": "500 mL",
+    "last_price": 19.5,
+    "currency": "EUR",
+    "reorder_point": 2,
+    "reorder_quantity": null,
+    "lead_time_days": 7,
+    "default_location_id": "00000000-0000-4000-8006-000000000008",
+    "program_id": "00000000-0000-4000-8002-000000000002",
+    "owner": "Lena Ortiz",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000013",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Fetal bovine serum (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000001",
+    "supplier_id": "00000000-0000-4000-8004-000000000002",
+    "catalog_number": "FX-0113",
+    "unit": "bottle",
+    "unit_size": "500 mL",
+    "last_price": 410.0,
+    "currency": "EUR",
+    "reorder_point": 1,
+    "reorder_quantity": 2,
+    "lead_time_days": 21,
+    "default_location_id": "00000000-0000-4000-8006-000000000006",
+    "program_id": "00000000-0000-4000-8002-000000000001",
+    "owner": "Jon Petersen",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000014",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Trypsin-EDTA 0.25% (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000001",
+    "supplier_id": "00000000-0000-4000-8004-000000000002",
+    "catalog_number": "FX-0114",
+    "unit": "bottle",
+    "unit_size": "100 mL",
+    "last_price": 14.0,
+    "currency": "EUR",
+    "reorder_point": 2,
+    "reorder_quantity": null,
+    "lead_time_days": 7,
+    "default_location_id": "00000000-0000-4000-8006-000000000006",
+    "program_id": null,
+    "owner": "Lena Ortiz",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000015",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "PBS 10× (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000001",
+    "supplier_id": "00000000-0000-4000-8004-000000000002",
+    "catalog_number": "FX-0115",
+    "unit": "bottle",
+    "unit_size": "1 L",
+    "last_price": 38.0,
+    "currency": "EUR",
+    "reorder_point": 2,
+    "reorder_quantity": null,
+    "lead_time_days": 7,
+    "default_location_id": "00000000-0000-4000-8006-000000000010",
+    "program_id": null,
+    "owner": "Lena Ortiz",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000016",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Penicillin-streptomycin (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000001",
+    "supplier_id": "00000000-0000-4000-8004-000000000002",
+    "catalog_number": "FX-0116",
+    "unit": "bottle",
+    "unit_size": "100 mL",
+    "last_price": 22.0,
+    "currency": "EUR",
+    "reorder_point": 0,
+    "reorder_quantity": null,
+    "lead_time_days": 7,
+    "default_location_id": "00000000-0000-4000-8006-000000000006",
+    "program_id": null,
+    "owner": "Jon Petersen",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000017",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Taq polymerase mix (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000001",
+    "supplier_id": "00000000-0000-4000-8004-000000000002",
+    "catalog_number": "FX-0117",
+    "unit": "kit",
+    "unit_size": "200 reactions",
+    "last_price": 185.0,
+    "currency": "EUR",
+    "reorder_point": 0,
+    "reorder_quantity": null,
+    "lead_time_days": 10,
+    "default_location_id": "00000000-0000-4000-8006-000000000006",
+    "program_id": "00000000-0000-4000-8002-000000000002",
+    "owner": "Jon Petersen",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000018",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "dNTP mix 10 mM (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000001",
+    "supplier_id": "00000000-0000-4000-8004-000000000002",
+    "catalog_number": "FX-0118",
+    "unit": "tube",
+    "unit_size": "1 mL",
+    "last_price": 64.0,
+    "currency": "EUR",
+    "reorder_point": 2,
+    "reorder_quantity": null,
+    "lead_time_days": 10,
+    "default_location_id": "00000000-0000-4000-8006-000000000006",
+    "program_id": "00000000-0000-4000-8002-000000000002",
+    "owner": "Jon Petersen",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000019",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Agarose (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000001",
+    "supplier_id": "00000000-0000-4000-8004-000000000002",
+    "catalog_number": "FX-0119",
+    "unit": "bottle",
+    "unit_size": "100 g",
+    "last_price": 88.0,
+    "currency": "EUR",
+    "reorder_point": 0,
+    "reorder_quantity": null,
+    "lead_time_days": 7,
+    "default_location_id": "00000000-0000-4000-8006-000000000010",
+    "program_id": null,
+    "owner": "Mia Novak",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000020",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "DNA ladder 1 kb (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000001",
+    "supplier_id": "00000000-0000-4000-8004-000000000002",
+    "catalog_number": "FX-0120",
+    "unit": "tube",
+    "unit_size": "250 µL",
+    "last_price": 97.0,
+    "currency": "EUR",
+    "reorder_point": 0,
+    "reorder_quantity": null,
+    "lead_time_days": 10,
+    "default_location_id": "00000000-0000-4000-8006-000000000006",
+    "program_id": null,
+    "owner": "Mia Novak",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000021",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "RNA extraction kit (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000001",
+    "supplier_id": "00000000-0000-4000-8004-000000000003",
+    "catalog_number": "FX-0121",
+    "unit": "kit",
+    "unit_size": "50 preps",
+    "last_price": 420.0,
+    "currency": "EUR",
+    "reorder_point": 0,
+    "reorder_quantity": null,
+    "lead_time_days": 14,
+    "default_location_id": "00000000-0000-4000-8006-000000000009",
+    "program_id": "00000000-0000-4000-8002-000000000001",
+    "owner": "Jon Petersen",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000022",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Plasmid miniprep kit (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000001",
+    "supplier_id": "00000000-0000-4000-8004-000000000003",
+    "catalog_number": "FX-0122",
+    "unit": "kit",
+    "unit_size": "250 preps",
+    "last_price": 360.0,
+    "currency": "EUR",
+    "reorder_point": 0,
+    "reorder_quantity": null,
+    "lead_time_days": 14,
+    "default_location_id": "00000000-0000-4000-8006-000000000009",
+    "program_id": null,
+    "owner": "Mia Novak",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000023",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "BCA protein assay kit (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000001",
+    "supplier_id": "00000000-0000-4000-8004-000000000003",
+    "catalog_number": "FX-0123",
+    "unit": "kit",
+    "unit_size": "500 assays",
+    "last_price": 310.0,
+    "currency": "EUR",
+    "reorder_point": 0,
+    "reorder_quantity": null,
+    "lead_time_days": 14,
+    "default_location_id": "00000000-0000-4000-8006-000000000009",
+    "program_id": null,
+    "owner": "Lena Ortiz",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000024",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "ELISA kit IL-6 (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000001",
+    "supplier_id": "00000000-0000-4000-8004-000000000003",
+    "catalog_number": "FX-0124",
+    "unit": "kit",
+    "unit_size": "96 tests",
+    "last_price": 640.0,
+    "currency": "EUR",
+    "reorder_point": 0,
+    "reorder_quantity": null,
+    "lead_time_days": 21,
+    "default_location_id": "00000000-0000-4000-8006-000000000008",
+    "program_id": "00000000-0000-4000-8002-000000000001",
+    "owner": "Mia Novak",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000025",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Anti-GAPDH antibody (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000003",
+    "supplier_id": "00000000-0000-4000-8004-000000000004",
+    "catalog_number": "FX-0125",
+    "unit": "vial",
+    "unit_size": "100 µg",
+    "last_price": 310.0,
+    "currency": "EUR",
+    "reorder_point": 0,
+    "reorder_quantity": null,
+    "lead_time_days": 14,
+    "default_location_id": "00000000-0000-4000-8006-000000000006",
+    "program_id": null,
+    "owner": "Ana Silva",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000026",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Anti-CD3 antibody (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000003",
+    "supplier_id": "00000000-0000-4000-8004-000000000004",
+    "catalog_number": "FX-0126",
+    "unit": "vial",
+    "unit_size": "100 µg",
+    "last_price": 350.0,
+    "currency": "EUR",
+    "reorder_point": 0,
+    "reorder_quantity": null,
+    "lead_time_days": 14,
+    "default_location_id": "00000000-0000-4000-8006-000000000006",
+    "program_id": "00000000-0000-4000-8002-000000000001",
+    "owner": "Jon Petersen",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000027",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Anti-CD8 antibody (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000003",
+    "supplier_id": "00000000-0000-4000-8004-000000000004",
+    "catalog_number": "FX-0127",
+    "unit": "vial",
+    "unit_size": "100 µg",
+    "last_price": 350.0,
+    "currency": "EUR",
+    "reorder_point": 0,
+    "reorder_quantity": null,
+    "lead_time_days": 14,
+    "default_location_id": "00000000-0000-4000-8006-000000000006",
+    "program_id": "00000000-0000-4000-8002-000000000001",
+    "owner": "Jon Petersen",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000028",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Goat anti-mouse HRP (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000003",
+    "supplier_id": "00000000-0000-4000-8004-000000000004",
+    "catalog_number": "FX-0128",
+    "unit": "vial",
+    "unit_size": "1 mg",
+    "last_price": 190.0,
+    "currency": "EUR",
+    "reorder_point": 0,
+    "reorder_quantity": null,
+    "lead_time_days": 14,
+    "default_location_id": "00000000-0000-4000-8006-000000000008",
+    "program_id": null,
+    "owner": "Lena Ortiz",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000029",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Anti-NWB target mAb (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000003",
+    "supplier_id": "00000000-0000-4000-8004-000000000004",
+    "catalog_number": "FX-0129",
+    "unit": "vial",
+    "unit_size": "50 µg",
+    "last_price": 520.0,
+    "currency": "EUR",
+    "reorder_point": 0,
+    "reorder_quantity": null,
+    "lead_time_days": 30,
+    "default_location_id": "00000000-0000-4000-8006-000000000003",
+    "program_id": "00000000-0000-4000-8002-000000000002",
+    "owner": "Mia Novak",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000030",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "HEK293 cells (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000004",
+    "supplier_id": "00000000-0000-4000-8004-000000000003",
+    "catalog_number": "FX-0130",
+    "unit": "vial",
+    "unit_size": "1 mL",
+    "last_price": 0.0,
+    "currency": "EUR",
+    "reorder_point": 2,
+    "reorder_quantity": null,
+    "lead_time_days": 30,
+    "default_location_id": "00000000-0000-4000-8006-000000000004",
+    "program_id": "00000000-0000-4000-8002-000000000001",
+    "owner": "Ana Silva",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000031",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "CHO-K1 cells (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000004",
+    "supplier_id": "00000000-0000-4000-8004-000000000003",
+    "catalog_number": "FX-0131",
+    "unit": "vial",
+    "unit_size": "1 mL",
+    "last_price": 0.0,
+    "currency": "EUR",
+    "reorder_point": 2,
+    "reorder_quantity": null,
+    "lead_time_days": 30,
+    "default_location_id": "00000000-0000-4000-8006-000000000004",
+    "program_id": "00000000-0000-4000-8002-000000000002",
+    "owner": "Jon Petersen",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000032",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Jurkat cells (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000004",
+    "supplier_id": "00000000-0000-4000-8004-000000000003",
+    "catalog_number": "FX-0132",
+    "unit": "vial",
+    "unit_size": "1 mL",
+    "last_price": 0.0,
+    "currency": "EUR",
+    "reorder_point": 1,
+    "reorder_quantity": null,
+    "lead_time_days": 30,
+    "default_location_id": "00000000-0000-4000-8006-000000000004",
+    "program_id": "00000000-0000-4000-8002-000000000001",
+    "owner": "Lena Ortiz",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000033",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "pNWB-GFP plasmid (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000005",
+    "supplier_id": null,
+    "catalog_number": null,
+    "unit": "tube",
+    "unit_size": "20 µL",
+    "last_price": null,
+    "currency": null,
+    "reorder_point": 0,
+    "reorder_quantity": null,
+    "lead_time_days": null,
+    "default_location_id": "00000000-0000-4000-8006-000000000004",
+    "program_id": "00000000-0000-4000-8002-000000000002",
+    "owner": "Ana Silva",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000034",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "pNWB-CAR plasmid (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000005",
+    "supplier_id": null,
+    "catalog_number": null,
+    "unit": "tube",
+    "unit_size": "20 µL",
+    "last_price": null,
+    "currency": null,
+    "reorder_point": 0,
+    "reorder_quantity": null,
+    "lead_time_days": null,
+    "default_location_id": "00000000-0000-4000-8006-000000000004",
+    "program_id": "00000000-0000-4000-8002-000000000001",
+    "owner": "Ana Silva",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000035",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "pLenti packaging mix (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000005",
+    "supplier_id": "00000000-0000-4000-8004-000000000003",
+    "catalog_number": "FX-0135",
+    "unit": "tube",
+    "unit_size": "50 µL",
+    "last_price": 280.0,
+    "currency": "EUR",
+    "reorder_point": 0,
+    "reorder_quantity": null,
+    "lead_time_days": 14,
+    "default_location_id": "00000000-0000-4000-8006-000000000004",
+    "program_id": "00000000-0000-4000-8002-000000000001",
+    "owner": "Mia Novak",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000036",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Ethanol 70% (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000006",
+    "supplier_id": "00000000-0000-4000-8004-000000000005",
+    "catalog_number": "FX-0136",
+    "unit": "bottle",
+    "unit_size": "1 L",
+    "last_price": 9.5,
+    "currency": "EUR",
+    "reorder_point": 3,
+    "reorder_quantity": 12,
+    "lead_time_days": 3,
+    "default_location_id": "00000000-0000-4000-8006-000000000012",
+    "program_id": null,
+    "owner": "Jon Petersen",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000037",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Isopropanol (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000006",
+    "supplier_id": "00000000-0000-4000-8004-000000000005",
+    "catalog_number": "FX-0137",
+    "unit": "bottle",
+    "unit_size": "1 L",
+    "last_price": 14.0,
+    "currency": "EUR",
+    "reorder_point": 2,
+    "reorder_quantity": null,
+    "lead_time_days": 3,
+    "default_location_id": "00000000-0000-4000-8006-000000000012",
+    "program_id": null,
+    "owner": "Mia Novak",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000038",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "DMSO cell culture grade (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000006",
+    "supplier_id": "00000000-0000-4000-8004-000000000005",
+    "catalog_number": "FX-0138",
+    "unit": "bottle",
+    "unit_size": "100 mL",
+    "last_price": 46.0,
+    "currency": "EUR",
+    "reorder_point": 0,
+    "reorder_quantity": null,
+    "lead_time_days": 7,
+    "default_location_id": "00000000-0000-4000-8006-000000000010",
+    "program_id": null,
+    "owner": "Lena Ortiz",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000039",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Sodium chloride (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000006",
+    "supplier_id": "00000000-0000-4000-8004-000000000005",
+    "catalog_number": "FX-0139",
+    "unit": "bottle",
+    "unit_size": "500 g",
+    "last_price": 18.0,
+    "currency": "EUR",
+    "reorder_point": 0,
+    "reorder_quantity": null,
+    "lead_time_days": 7,
+    "default_location_id": "00000000-0000-4000-8006-000000000011",
+    "program_id": null,
+    "owner": "Mia Novak",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8007-000000000040",
+   "role": "labinventory.items",
+   "version": 0,
+   "data": {
+    "name": "Tris base (fictional)",
+    "category_id": "00000000-0000-4000-8003-000000000006",
+    "supplier_id": "00000000-0000-4000-8004-000000000005",
+    "catalog_number": "FX-0140",
+    "unit": "bottle",
+    "unit_size": "500 g",
+    "last_price": 52.0,
+    "currency": "EUR",
+    "reorder_point": 0,
+    "reorder_quantity": null,
+    "lead_time_days": 7,
+    "default_location_id": "00000000-0000-4000-8006-000000000011",
+    "program_id": null,
+    "owner": "Lena Ortiz",
+    "notes": null,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8008-000000000001",
+   "role": "labinventory.requests",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000013",
+    "item_name": "Fetal bovine serum (fictional)",
+    "new_item_name": null,
+    "quantity": 2,
+    "program_id": "00000000-0000-4000-8002-000000000001",
+    "urgency": "normal",
+    "estimated_amount": 820.0,
+    "requested_by": "Ana Silva",
+    "requested_on": "2026-09-05",
+    "status": "received",
+    "approved_1_by": "Mia Novak",
+    "approved_2_by": null,
+    "decision_on": "2026-09-06",
+    "reject_reason": null,
+    "order_id": "00000000-0000-4000-8009-000000000001",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8008-000000000002",
+   "role": "labinventory.requests",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000011",
+    "item_name": "DMEM high glucose (fictional)",
+    "new_item_name": null,
+    "quantity": 6,
+    "program_id": "00000000-0000-4000-8002-000000000001",
+    "urgency": "normal",
+    "estimated_amount": 126.0,
+    "requested_by": "Ana Silva",
+    "requested_on": "2026-09-05",
+    "status": "received",
+    "approved_1_by": "Mia Novak",
+    "approved_2_by": null,
+    "decision_on": "2026-09-06",
+    "reject_reason": null,
+    "order_id": "00000000-0000-4000-8009-000000000001",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8009-000000000001",
+   "role": "labinventory.orders",
+   "version": 0,
+   "data": {
+    "supplier_id": "00000000-0000-4000-8004-000000000002",
+    "order_number": "ER-55102",
+    "ordered_by": "Jon Petersen",
+    "ordered_on": "2026-09-07",
+    "expected_on": "2026-09-14",
+    "amount": 946.0,
+    "currency": "EUR",
+    "status": "received",
+    "request_ids": "00000000-0000-4000-8008-000000000001,00000000-0000-4000-8008-000000000002",
+    "notes": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8008-000000000003",
+   "role": "labinventory.requests",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000001",
+    "item_name": "Pipette tips 200 µL (fictional)",
+    "new_item_name": null,
+    "quantity": 10,
+    "program_id": null,
+    "urgency": "normal",
+    "estimated_amount": 65.0,
+    "requested_by": "Jon Petersen",
+    "requested_on": "2026-09-30",
+    "status": "received",
+    "approved_1_by": "Mia Novak",
+    "approved_2_by": null,
+    "decision_on": "2026-09-30",
+    "reject_reason": null,
+    "order_id": "00000000-0000-4000-8009-000000000002",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8009-000000000002",
+   "role": "labinventory.orders",
+   "version": 0,
+   "data": {
+    "supplier_id": "00000000-0000-4000-8004-000000000001",
+    "order_number": "FL-88231",
+    "ordered_by": "Jon Petersen",
+    "ordered_on": "2026-10-01",
+    "expected_on": "2026-10-05",
+    "amount": 65.0,
+    "currency": "EUR",
+    "status": "received",
+    "request_ids": "00000000-0000-4000-8008-000000000003",
+    "notes": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8008-000000000004",
+   "role": "labinventory.requests",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000025",
+    "item_name": "Anti-GAPDH antibody (fictional)",
+    "new_item_name": null,
+    "quantity": 2,
+    "program_id": null,
+    "urgency": "normal",
+    "estimated_amount": 620.0,
+    "requested_by": "Lena Ortiz",
+    "requested_on": "2026-10-05",
+    "status": "received",
+    "approved_1_by": "Mia Novak",
+    "approved_2_by": null,
+    "decision_on": "2026-10-06",
+    "reject_reason": null,
+    "order_id": "00000000-0000-4000-8009-000000000003",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8009-000000000003",
+   "role": "labinventory.orders",
+   "version": 0,
+   "data": {
+    "supplier_id": "00000000-0000-4000-8004-000000000004",
+    "order_number": "DA-1203",
+    "ordered_by": "Jon Petersen",
+    "ordered_on": "2026-10-07",
+    "expected_on": "2026-10-21",
+    "amount": 620.0,
+    "currency": "EUR",
+    "status": "received",
+    "request_ids": "00000000-0000-4000-8008-000000000004",
+    "notes": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8008-000000000005",
+   "role": "labinventory.requests",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000036",
+    "item_name": "Ethanol 70% (fictional)",
+    "new_item_name": null,
+    "quantity": 12,
+    "program_id": null,
+    "urgency": "normal",
+    "estimated_amount": 114.0,
+    "requested_by": "Ana Silva",
+    "requested_on": "2026-10-15",
+    "status": "received",
+    "approved_1_by": "Mia Novak",
+    "approved_2_by": null,
+    "decision_on": "2026-10-15",
+    "reject_reason": null,
+    "order_id": "00000000-0000-4000-8009-000000000004",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8009-000000000004",
+   "role": "labinventory.orders",
+   "version": 0,
+   "data": {
+    "supplier_id": "00000000-0000-4000-8004-000000000005",
+    "order_number": "SC-7781",
+    "ordered_by": "Jon Petersen",
+    "ordered_on": "2026-10-16",
+    "expected_on": "2026-10-19",
+    "amount": 114.0,
+    "currency": "EUR",
+    "status": "received",
+    "request_ids": "00000000-0000-4000-8008-000000000005",
+    "notes": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8008-000000000006",
+   "role": "labinventory.requests",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000021",
+    "item_name": "RNA extraction kit (fictional)",
+    "new_item_name": null,
+    "quantity": 6,
+    "program_id": "00000000-0000-4000-8002-000000000001",
+    "urgency": "normal",
+    "estimated_amount": 2520.0,
+    "requested_by": "Jon Petersen",
+    "requested_on": "2026-10-10",
+    "status": "received",
+    "approved_1_by": "Mia Novak",
+    "approved_2_by": "Sam Rivera",
+    "decision_on": "2026-10-12",
+    "reject_reason": null,
+    "order_id": "00000000-0000-4000-8009-000000000005",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8009-000000000005",
+   "role": "labinventory.orders",
+   "version": 0,
+   "data": {
+    "supplier_id": "00000000-0000-4000-8004-000000000003",
+    "order_number": "PB-30017",
+    "ordered_by": "Jon Petersen",
+    "ordered_on": "2026-10-13",
+    "expected_on": "2026-10-27",
+    "amount": 2520.0,
+    "currency": "EUR",
+    "status": "received",
+    "request_ids": "00000000-0000-4000-8008-000000000006",
+    "notes": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8008-000000000007",
+   "role": "labinventory.requests",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000014",
+    "item_name": "Trypsin-EDTA 0.25% (fictional)",
+    "new_item_name": null,
+    "quantity": 4,
+    "program_id": null,
+    "urgency": "normal",
+    "estimated_amount": 56.0,
+    "requested_by": "Ana Silva",
+    "requested_on": "2026-11-02",
+    "status": "ordered",
+    "approved_1_by": "Mia Novak",
+    "approved_2_by": null,
+    "decision_on": "2026-11-02",
+    "reject_reason": null,
+    "order_id": "00000000-0000-4000-8009-000000000006",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8008-000000000008",
+   "role": "labinventory.requests",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000016",
+    "item_name": "Penicillin-streptomycin (fictional)",
+    "new_item_name": null,
+    "quantity": 2,
+    "program_id": null,
+    "urgency": "normal",
+    "estimated_amount": 44.0,
+    "requested_by": "Jon Petersen",
+    "requested_on": "2026-11-02",
+    "status": "ordered",
+    "approved_1_by": "Mia Novak",
+    "approved_2_by": null,
+    "decision_on": "2026-11-03",
+    "reject_reason": null,
+    "order_id": "00000000-0000-4000-8009-000000000006",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8009-000000000006",
+   "role": "labinventory.orders",
+   "version": 0,
+   "data": {
+    "supplier_id": "00000000-0000-4000-8004-000000000002",
+    "order_number": "ER-55990",
+    "ordered_by": "Jon Petersen",
+    "ordered_on": "2026-11-04",
+    "expected_on": "2026-11-11",
+    "amount": 100.0,
+    "currency": "EUR",
+    "status": "ordered",
+    "request_ids": "00000000-0000-4000-8008-000000000007,00000000-0000-4000-8008-000000000008",
+    "notes": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8008-000000000009",
+   "role": "labinventory.requests",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000007",
+    "item_name": "96-well plates, flat (fictional)",
+    "new_item_name": null,
+    "quantity": 4,
+    "program_id": null,
+    "urgency": "normal",
+    "estimated_amount": 168.0,
+    "requested_by": "Lena Ortiz",
+    "requested_on": "2026-11-05",
+    "status": "ordered",
+    "approved_1_by": "Mia Novak",
+    "approved_2_by": null,
+    "decision_on": "2026-11-05",
+    "reject_reason": null,
+    "order_id": "00000000-0000-4000-8009-000000000007",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8009-000000000007",
+   "role": "labinventory.orders",
+   "version": 0,
+   "data": {
+    "supplier_id": "00000000-0000-4000-8004-000000000003",
+    "order_number": "PB-30122",
+    "ordered_by": "Jon Petersen",
+    "ordered_on": "2026-11-06",
+    "expected_on": "2026-11-20",
+    "amount": 168.0,
+    "currency": "EUR",
+    "status": "partially_received",
+    "request_ids": "00000000-0000-4000-8008-000000000009",
+    "notes": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8008-000000000010",
+   "role": "labinventory.requests",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000002",
+    "item_name": "Pipette tips 1000 µL (fictional)",
+    "new_item_name": null,
+    "quantity": 8,
+    "program_id": null,
+    "urgency": "normal",
+    "estimated_amount": 57.6,
+    "requested_by": "Jon Petersen",
+    "requested_on": "2026-11-11",
+    "status": "ordered",
+    "approved_1_by": "Mia Novak",
+    "approved_2_by": null,
+    "decision_on": "2026-11-11",
+    "reject_reason": null,
+    "order_id": "00000000-0000-4000-8009-000000000008",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8009-000000000008",
+   "role": "labinventory.orders",
+   "version": 0,
+   "data": {
+    "supplier_id": "00000000-0000-4000-8004-000000000001",
+    "order_number": "FL-89002",
+    "ordered_by": "Jon Petersen",
+    "ordered_on": "2026-11-12",
+    "expected_on": "2026-11-18",
+    "amount": 57.6,
+    "currency": "EUR",
+    "status": "ordered",
+    "request_ids": "00000000-0000-4000-8008-000000000010",
+    "notes": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8008-000000000011",
+   "role": "labinventory.requests",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000004",
+    "item_name": "Nitrile gloves M (fictional)",
+    "new_item_name": null,
+    "quantity": 10,
+    "program_id": null,
+    "urgency": "normal",
+    "estimated_amount": 80.0,
+    "requested_by": "Ana Silva",
+    "requested_on": "2026-11-12",
+    "status": "requested",
+    "approved_1_by": null,
+    "approved_2_by": null,
+    "decision_on": null,
+    "reject_reason": null,
+    "order_id": null,
+    "note": "For the new starters."
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8008-000000000012",
+   "role": "labinventory.requests",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000024",
+    "item_name": "ELISA kit IL-6 (fictional)",
+    "new_item_name": null,
+    "quantity": 4,
+    "program_id": "00000000-0000-4000-8002-000000000001",
+    "urgency": "urgent",
+    "estimated_amount": 2560.0,
+    "requested_by": "Jon Petersen",
+    "requested_on": "2026-11-13",
+    "status": "requested",
+    "approved_1_by": "Mia Novak",
+    "approved_2_by": null,
+    "decision_on": null,
+    "reject_reason": null,
+    "order_id": null,
+    "note": "Four plates for the NWB-101 cytokine study."
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8008-000000000013",
+   "role": "labinventory.requests",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000031",
+    "item_name": "CHO-K1 cells (fictional)",
+    "new_item_name": null,
+    "quantity": 2,
+    "program_id": "00000000-0000-4000-8002-000000000002",
+    "urgency": "normal",
+    "estimated_amount": 0,
+    "requested_by": "Ana Silva",
+    "requested_on": "2026-11-13",
+    "status": "requested",
+    "approved_1_by": null,
+    "approved_2_by": null,
+    "decision_on": null,
+    "reject_reason": null,
+    "order_id": null,
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8008-000000000014",
+   "role": "labinventory.requests",
+   "version": 0,
+   "data": {
+    "item_id": null,
+    "item_name": "Primer set NWB-202 qPCR (fictional supplier)",
+    "new_item_name": "Primer set NWB-202 qPCR (fictional supplier)",
+    "quantity": 3,
+    "program_id": "00000000-0000-4000-8002-000000000002",
+    "urgency": "normal",
+    "estimated_amount": 120,
+    "requested_by": "Lena Ortiz",
+    "requested_on": "2026-11-14",
+    "status": "requested",
+    "approved_1_by": null,
+    "approved_2_by": null,
+    "decision_on": null,
+    "reject_reason": null,
+    "order_id": null,
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8008-000000000015",
+   "role": "labinventory.requests",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000017",
+    "item_name": "Taq polymerase mix (fictional)",
+    "new_item_name": null,
+    "quantity": 1,
+    "program_id": "00000000-0000-4000-8002-000000000002",
+    "urgency": "normal",
+    "estimated_amount": 185.0,
+    "requested_by": "Lena Ortiz",
+    "requested_on": "2026-11-10",
+    "status": "approved",
+    "approved_1_by": "Mia Novak",
+    "approved_2_by": null,
+    "decision_on": "2026-11-10",
+    "reject_reason": null,
+    "order_id": null,
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8008-000000000016",
+   "role": "labinventory.requests",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000010",
+    "item_name": "Filter units 0.22 µm (fictional)",
+    "new_item_name": null,
+    "quantity": 1,
+    "program_id": null,
+    "urgency": "normal",
+    "estimated_amount": 96.0,
+    "requested_by": "Ana Silva",
+    "requested_on": "2026-11-09",
+    "status": "approved",
+    "approved_1_by": "Mia Novak",
+    "approved_2_by": null,
+    "decision_on": "2026-11-09",
+    "reject_reason": null,
+    "order_id": null,
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8008-000000000017",
+   "role": "labinventory.requests",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000026",
+    "item_name": "Anti-CD3 antibody (fictional)",
+    "new_item_name": null,
+    "quantity": 3,
+    "program_id": "00000000-0000-4000-8002-000000000001",
+    "urgency": "normal",
+    "estimated_amount": 1050.0,
+    "requested_by": "Jon Petersen",
+    "requested_on": "2026-11-08",
+    "status": "rejected",
+    "approved_1_by": null,
+    "approved_2_by": null,
+    "decision_on": "2026-11-08",
+    "reject_reason": "Two vials are in Freezer B; use those first.",
+    "order_id": null,
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8008-000000000018",
+   "role": "labinventory.requests",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000008",
+    "item_name": "Cell culture flasks T75 (fictional)",
+    "new_item_name": null,
+    "quantity": 2,
+    "program_id": null,
+    "urgency": "normal",
+    "estimated_amount": 58.0,
+    "requested_by": "Ana Silva",
+    "requested_on": "2026-11-06",
+    "status": "cancelled",
+    "approved_1_by": null,
+    "approved_2_by": null,
+    "decision_on": "2026-11-07",
+    "reject_reason": null,
+    "order_id": null,
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000001",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000001",
+    "lot_number": "L74449",
+    "quantity": 2,
+    "received_on": "2026-10-01",
+    "expires_on": null,
+    "location_id": "00000000-0000-4000-8006-000000000010",
+    "owner": "Lena Ortiz",
+    "status": "in_stock",
+    "order_id": "00000000-0000-4000-8009-000000000002"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000002",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000001",
+    "lot_number": "L28237",
+    "quantity": 1,
+    "received_on": "2026-07-17",
+    "expires_on": null,
+    "location_id": "00000000-0000-4000-8006-000000000010",
+    "owner": "Lena Ortiz",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000003",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000002",
+    "lot_number": "L13077",
+    "quantity": 3,
+    "received_on": "2026-09-15",
+    "expires_on": null,
+    "location_id": "00000000-0000-4000-8006-000000000010",
+    "owner": "Ana Silva",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000004",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000003",
+    "lot_number": "L41029",
+    "quantity": 2,
+    "received_on": "2026-08-26",
+    "expires_on": null,
+    "location_id": "00000000-0000-4000-8006-000000000010",
+    "owner": "Ana Silva",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000005",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000004",
+    "lot_number": "L65669",
+    "quantity": 9,
+    "received_on": "2026-09-25",
+    "expires_on": null,
+    "location_id": "00000000-0000-4000-8006-000000000009",
+    "owner": "Jon Petersen",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000006",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000005",
+    "lot_number": "L24686",
+    "quantity": 3,
+    "received_on": "2026-08-16",
+    "expires_on": null,
+    "location_id": "00000000-0000-4000-8006-000000000009",
+    "owner": "Jon Petersen",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000007",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000006",
+    "lot_number": "L88229",
+    "quantity": 2,
+    "received_on": "2026-08-06",
+    "expires_on": null,
+    "location_id": "00000000-0000-4000-8006-000000000009",
+    "owner": "Mia Novak",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000008",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000007",
+    "lot_number": "L10507",
+    "quantity": 2,
+    "received_on": "2026-08-16",
+    "expires_on": "2027-12-19",
+    "location_id": "00000000-0000-4000-8006-000000000009",
+    "owner": "Ana Silva",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000009",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000007",
+    "lot_number": "L25890",
+    "quantity": 1,
+    "received_on": "2026-11-13",
+    "expires_on": "2028-01-08",
+    "location_id": "00000000-0000-4000-8006-000000000009",
+    "owner": "Ana Silva",
+    "status": "in_stock",
+    "order_id": "00000000-0000-4000-8009-000000000007"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000010",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000008",
+    "lot_number": "L85851",
+    "quantity": 4,
+    "received_on": "2026-09-05",
+    "expires_on": null,
+    "location_id": "00000000-0000-4000-8006-000000000009",
+    "owner": "Lena Ortiz",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000011",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000009",
+    "lot_number": "L35909",
+    "quantity": 2,
+    "received_on": "2026-07-17",
+    "expires_on": null,
+    "location_id": "00000000-0000-4000-8006-000000000009",
+    "owner": "Mia Novak",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000012",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000010",
+    "lot_number": "L36614",
+    "quantity": 1,
+    "received_on": "2026-09-15",
+    "expires_on": "2028-10-14",
+    "location_id": "00000000-0000-4000-8006-000000000009",
+    "owner": "Ana Silva",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000013",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000011",
+    "lot_number": "L53282",
+    "quantity": 1,
+    "received_on": "2026-09-07",
+    "expires_on": "2026-12-04",
+    "location_id": "00000000-0000-4000-8006-000000000008",
+    "owner": "Mia Novak",
+    "status": "in_stock",
+    "order_id": "00000000-0000-4000-8009-000000000001"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000014",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000011",
+    "lot_number": "L11081",
+    "quantity": 1,
+    "received_on": "2026-06-17",
+    "expires_on": "2026-11-04",
+    "location_id": "00000000-0000-4000-8006-000000000008",
+    "owner": "Mia Novak",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000015",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000012",
+    "lot_number": "L20944",
+    "quantity": 3,
+    "received_on": "2026-10-05",
+    "expires_on": "2027-04-13",
+    "location_id": "00000000-0000-4000-8006-000000000008",
+    "owner": "Lena Ortiz",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000016",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000013",
+    "lot_number": "L27456",
+    "quantity": 1,
+    "received_on": "2026-09-07",
+    "expires_on": "2027-07-22",
+    "location_id": "00000000-0000-4000-8006-000000000006",
+    "owner": "Jon Petersen",
+    "status": "in_stock",
+    "order_id": "00000000-0000-4000-8009-000000000001"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000017",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000013",
+    "lot_number": "L80748",
+    "quantity": 1,
+    "received_on": "2026-04-28",
+    "expires_on": "2026-11-22",
+    "location_id": "00000000-0000-4000-8006-000000000006",
+    "owner": "Jon Petersen",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000018",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000014",
+    "lot_number": "L12289",
+    "quantity": 1,
+    "received_on": "2026-07-17",
+    "expires_on": "2026-12-24",
+    "location_id": "00000000-0000-4000-8006-000000000006",
+    "owner": "Lena Ortiz",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000019",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000015",
+    "lot_number": "L75641",
+    "quantity": 3,
+    "received_on": "2026-09-15",
+    "expires_on": "2028-03-28",
+    "location_id": "00000000-0000-4000-8006-000000000010",
+    "owner": "Lena Ortiz",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000020",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000016",
+    "lot_number": "L21119",
+    "quantity": 1,
+    "received_on": "2026-06-17",
+    "expires_on": "2026-11-09",
+    "location_id": "00000000-0000-4000-8006-000000000006",
+    "owner": "Jon Petersen",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000021",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000017",
+    "lot_number": "L85101",
+    "quantity": 1,
+    "received_on": "2026-08-16",
+    "expires_on": "2027-06-02",
+    "location_id": "00000000-0000-4000-8006-000000000006",
+    "owner": "Jon Petersen",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000022",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000018",
+    "lot_number": "L75108",
+    "quantity": 2,
+    "received_on": "2026-08-16",
+    "expires_on": "2027-05-13",
+    "location_id": "00000000-0000-4000-8006-000000000006",
+    "owner": "Jon Petersen",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000023",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000019",
+    "lot_number": "L80462",
+    "quantity": 1,
+    "received_on": "2026-04-28",
+    "expires_on": "2029-05-02",
+    "location_id": "00000000-0000-4000-8006-000000000010",
+    "owner": "Mia Novak",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000024",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000020",
+    "lot_number": "L35975",
+    "quantity": 1,
+    "received_on": "2026-09-15",
+    "expires_on": "2027-09-10",
+    "location_id": "00000000-0000-4000-8006-000000000006",
+    "owner": "Mia Novak",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000025",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000021",
+    "lot_number": "L65064",
+    "quantity": 4,
+    "received_on": "2026-10-13",
+    "expires_on": "2027-07-12",
+    "location_id": "00000000-0000-4000-8006-000000000009",
+    "owner": "Jon Petersen",
+    "status": "in_stock",
+    "order_id": "00000000-0000-4000-8009-000000000005"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000026",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000022",
+    "lot_number": "L19020",
+    "quantity": 1,
+    "received_on": "2026-08-06",
+    "expires_on": "2027-12-19",
+    "location_id": "00000000-0000-4000-8006-000000000009",
+    "owner": "Mia Novak",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000027",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000023",
+    "lot_number": "L62184",
+    "quantity": 1,
+    "received_on": "2026-09-05",
+    "expires_on": "2026-12-09",
+    "location_id": "00000000-0000-4000-8006-000000000009",
+    "owner": "Lena Ortiz",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000028",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000024",
+    "lot_number": "L35187",
+    "quantity": 1,
+    "received_on": "2026-09-25",
+    "expires_on": "2027-02-12",
+    "location_id": "00000000-0000-4000-8006-000000000008",
+    "owner": "Mia Novak",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000029",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000025",
+    "lot_number": "L93717",
+    "quantity": 2,
+    "received_on": "2026-10-07",
+    "expires_on": "2027-11-14",
+    "location_id": "00000000-0000-4000-8006-000000000006",
+    "owner": "Ana Silva",
+    "status": "in_stock",
+    "order_id": "00000000-0000-4000-8009-000000000003"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000030",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000026",
+    "lot_number": "L22244",
+    "quantity": 2,
+    "received_on": "2026-08-26",
+    "expires_on": "2027-09-10",
+    "location_id": "00000000-0000-4000-8006-000000000006",
+    "owner": "Jon Petersen",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000031",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000027",
+    "lot_number": "L85995",
+    "quantity": 1,
+    "received_on": "2026-08-26",
+    "expires_on": "2026-11-26",
+    "location_id": "00000000-0000-4000-8006-000000000006",
+    "owner": "Jon Petersen",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000032",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000028",
+    "lot_number": "L29052",
+    "quantity": 1,
+    "received_on": "2026-09-15",
+    "expires_on": "2027-06-02",
+    "location_id": "00000000-0000-4000-8006-000000000008",
+    "owner": "Lena Ortiz",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000033",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000029",
+    "lot_number": "L32617",
+    "quantity": 1,
+    "received_on": "2026-07-17",
+    "expires_on": "2028-03-28",
+    "location_id": "00000000-0000-4000-8006-000000000003",
+    "owner": "Mia Novak",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000034",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000030",
+    "lot_number": "L89808",
+    "quantity": 6,
+    "received_on": "2026-01-18",
+    "expires_on": null,
+    "location_id": "00000000-0000-4000-8006-000000000004",
+    "owner": "Ana Silva",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000035",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000030",
+    "lot_number": "L15400",
+    "quantity": 4,
+    "received_on": "2026-06-17",
+    "expires_on": null,
+    "location_id": "00000000-0000-4000-8006-000000000004",
+    "owner": "Ana Silva",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000036",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000031",
+    "lot_number": "L17100",
+    "quantity": 5,
+    "received_on": "2026-04-28",
+    "expires_on": null,
+    "location_id": "00000000-0000-4000-8006-000000000004",
+    "owner": "Jon Petersen",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000037",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000032",
+    "lot_number": "L45388",
+    "quantity": 2,
+    "received_on": "2026-08-06",
+    "expires_on": null,
+    "location_id": "00000000-0000-4000-8006-000000000004",
+    "owner": "Lena Ortiz",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000038",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000033",
+    "lot_number": "L82752",
+    "quantity": 3,
+    "received_on": "2025-10-10",
+    "expires_on": null,
+    "location_id": "00000000-0000-4000-8006-000000000004",
+    "owner": "Ana Silva",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000039",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000034",
+    "lot_number": "L99551",
+    "quantity": 2,
+    "received_on": "2026-01-18",
+    "expires_on": null,
+    "location_id": "00000000-0000-4000-8006-000000000004",
+    "owner": "Ana Silva",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000040",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000035",
+    "lot_number": "L89479",
+    "quantity": 1,
+    "received_on": "2026-09-15",
+    "expires_on": "2027-02-22",
+    "location_id": "00000000-0000-4000-8006-000000000004",
+    "owner": "Mia Novak",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000041",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000036",
+    "lot_number": "L29569",
+    "quantity": 6,
+    "received_on": "2026-10-16",
+    "expires_on": "2028-10-14",
+    "location_id": "00000000-0000-4000-8006-000000000012",
+    "owner": "Jon Petersen",
+    "status": "in_stock",
+    "order_id": "00000000-0000-4000-8009-000000000004"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000042",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000036",
+    "lot_number": "L45168",
+    "quantity": 1,
+    "received_on": "2026-04-28",
+    "expires_on": "2026-10-15",
+    "location_id": "00000000-0000-4000-8006-000000000012",
+    "owner": "Jon Petersen",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000043",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000037",
+    "lot_number": "L85403",
+    "quantity": 2,
+    "received_on": "2026-09-15",
+    "expires_on": "2029-01-22",
+    "location_id": "00000000-0000-4000-8006-000000000012",
+    "owner": "Mia Novak",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000044",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000038",
+    "lot_number": "L14487",
+    "quantity": 1,
+    "received_on": "2026-04-28",
+    "expires_on": "2027-05-13",
+    "location_id": "00000000-0000-4000-8006-000000000010",
+    "owner": "Lena Ortiz",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000045",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000039",
+    "lot_number": "L25903",
+    "quantity": 1,
+    "received_on": "2026-01-18",
+    "expires_on": "2029-08-10",
+    "location_id": "00000000-0000-4000-8006-000000000011",
+    "owner": "Mia Novak",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000046",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000040",
+    "lot_number": "L62739",
+    "quantity": 1,
+    "received_on": "2026-01-18",
+    "expires_on": "2029-08-10",
+    "location_id": "00000000-0000-4000-8006-000000000011",
+    "owner": "Lena Ortiz",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000047",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000003",
+    "lot_number": "L41036",
+    "quantity": 1,
+    "received_on": "2026-04-28",
+    "expires_on": null,
+    "location_id": "00000000-0000-4000-8006-000000000010",
+    "owner": "Ana Silva",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000048",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000004",
+    "lot_number": "L31199",
+    "quantity": 4,
+    "received_on": "2026-06-17",
+    "expires_on": null,
+    "location_id": "00000000-0000-4000-8006-000000000009",
+    "owner": "Jon Petersen",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000049",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000014",
+    "lot_number": "L90101",
+    "quantity": 2,
+    "received_on": "2026-10-15",
+    "expires_on": "2027-03-14",
+    "location_id": "00000000-0000-4000-8006-000000000006",
+    "owner": "Lena Ortiz",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000050",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000015",
+    "lot_number": "L76179",
+    "quantity": 1,
+    "received_on": "2026-04-28",
+    "expires_on": "2026-11-12",
+    "location_id": "00000000-0000-4000-8006-000000000010",
+    "owner": "Lena Ortiz",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000051",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000018",
+    "lot_number": "L15640",
+    "quantity": 1,
+    "received_on": "2026-10-05",
+    "expires_on": "2027-07-22",
+    "location_id": "00000000-0000-4000-8006-000000000006",
+    "owner": "Jon Petersen",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000052",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000020",
+    "lot_number": "L57965",
+    "quantity": 1,
+    "received_on": "2026-04-28",
+    "expires_on": "2026-10-25",
+    "location_id": "00000000-0000-4000-8006-000000000006",
+    "owner": "Mia Novak",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000053",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000024",
+    "lot_number": "L98358",
+    "quantity": 1,
+    "received_on": "2026-11-04",
+    "expires_on": "2027-04-13",
+    "location_id": "00000000-0000-4000-8006-000000000008",
+    "owner": "Mia Novak",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000054",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000026",
+    "lot_number": "L78427",
+    "quantity": 1,
+    "received_on": "2026-04-28",
+    "expires_on": "2026-12-13",
+    "location_id": "00000000-0000-4000-8006-000000000006",
+    "owner": "Jon Petersen",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000055",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000027",
+    "lot_number": "L87366",
+    "quantity": 1,
+    "received_on": "2026-10-15",
+    "expires_on": "2027-09-30",
+    "location_id": "00000000-0000-4000-8006-000000000006",
+    "owner": "Jon Petersen",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000056",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000012",
+    "lot_number": "L84086",
+    "quantity": 1,
+    "received_on": "2026-04-28",
+    "expires_on": "2026-11-17",
+    "location_id": "00000000-0000-4000-8006-000000000008",
+    "owner": "Lena Ortiz",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000057",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000030",
+    "lot_number": "L21369",
+    "quantity": 2,
+    "received_on": "2026-09-25",
+    "expires_on": null,
+    "location_id": "00000000-0000-4000-8006-000000000004",
+    "owner": "Ana Silva",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000058",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000032",
+    "lot_number": "L55507",
+    "quantity": 1,
+    "received_on": "2026-10-05",
+    "expires_on": null,
+    "location_id": "00000000-0000-4000-8006-000000000004",
+    "owner": "Lena Ortiz",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000059",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000022",
+    "lot_number": "L24413",
+    "quantity": 1,
+    "received_on": "2026-10-15",
+    "expires_on": "2028-03-28",
+    "location_id": "00000000-0000-4000-8006-000000000009",
+    "owner": "Mia Novak",
+    "status": "in_stock",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000001",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000001",
+    "kind": "received",
+    "quantity_change": 9,
+    "occurred_on": "2026-10-01",
+    "by": "Lena Ortiz",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000002",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000002",
+    "kind": "received",
+    "quantity_change": 3,
+    "occurred_on": "2026-07-17",
+    "by": "Lena Ortiz",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000003",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000003",
+    "kind": "received",
+    "quantity_change": 12,
+    "occurred_on": "2026-09-15",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000004",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000004",
+    "kind": "received",
+    "quantity_change": 6,
+    "occurred_on": "2026-08-26",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000005",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000005",
+    "kind": "received",
+    "quantity_change": 11,
+    "occurred_on": "2026-09-25",
+    "by": "Jon Petersen",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000006",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000006",
+    "kind": "received",
+    "quantity_change": 3,
+    "occurred_on": "2026-08-16",
+    "by": "Jon Petersen",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000007",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000007",
+    "kind": "received",
+    "quantity_change": 2,
+    "occurred_on": "2026-08-06",
+    "by": "Mia Novak",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000008",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000008",
+    "kind": "received",
+    "quantity_change": 2,
+    "occurred_on": "2026-08-16",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000009",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000009",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-11-13",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000010",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000010",
+    "kind": "received",
+    "quantity_change": 4,
+    "occurred_on": "2026-09-05",
+    "by": "Lena Ortiz",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000011",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000011",
+    "kind": "received",
+    "quantity_change": 3,
+    "occurred_on": "2026-07-17",
+    "by": "Mia Novak",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000012",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000012",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-09-15",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000013",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000013",
+    "kind": "received",
+    "quantity_change": 4,
+    "occurred_on": "2026-09-07",
+    "by": "Mia Novak",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000014",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000014",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-06-17",
+    "by": "Mia Novak",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000015",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000015",
+    "kind": "received",
+    "quantity_change": 3,
+    "occurred_on": "2026-10-05",
+    "by": "Lena Ortiz",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000016",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000016",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-09-07",
+    "by": "Jon Petersen",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000017",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000017",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-04-28",
+    "by": "Jon Petersen",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000018",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000018",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-07-17",
+    "by": "Lena Ortiz",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000019",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000019",
+    "kind": "received",
+    "quantity_change": 3,
+    "occurred_on": "2026-09-15",
+    "by": "Lena Ortiz",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000020",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000020",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-06-17",
+    "by": "Jon Petersen",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000021",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000021",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-08-16",
+    "by": "Jon Petersen",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000022",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000022",
+    "kind": "received",
+    "quantity_change": 2,
+    "occurred_on": "2026-08-16",
+    "by": "Jon Petersen",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000023",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000023",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-04-28",
+    "by": "Mia Novak",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000024",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000024",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-09-15",
+    "by": "Mia Novak",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000025",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000025",
+    "kind": "received",
+    "quantity_change": 4,
+    "occurred_on": "2026-10-13",
+    "by": "Jon Petersen",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000026",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000026",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-08-06",
+    "by": "Mia Novak",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000027",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000027",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-09-05",
+    "by": "Lena Ortiz",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000028",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000028",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-09-25",
+    "by": "Mia Novak",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000029",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000029",
+    "kind": "received",
+    "quantity_change": 2,
+    "occurred_on": "2026-10-07",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000030",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000030",
+    "kind": "received",
+    "quantity_change": 2,
+    "occurred_on": "2026-08-26",
+    "by": "Jon Petersen",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000031",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000031",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-08-26",
+    "by": "Jon Petersen",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000032",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000032",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-09-15",
+    "by": "Lena Ortiz",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000033",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000033",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-07-17",
+    "by": "Mia Novak",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000034",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000034",
+    "kind": "received",
+    "quantity_change": 6,
+    "occurred_on": "2026-01-18",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000035",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000035",
+    "kind": "received",
+    "quantity_change": 4,
+    "occurred_on": "2026-06-17",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000036",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000036",
+    "kind": "received",
+    "quantity_change": 5,
+    "occurred_on": "2026-04-28",
+    "by": "Jon Petersen",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000037",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000037",
+    "kind": "received",
+    "quantity_change": 2,
+    "occurred_on": "2026-08-06",
+    "by": "Lena Ortiz",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000038",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000038",
+    "kind": "received",
+    "quantity_change": 3,
+    "occurred_on": "2025-10-10",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000039",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000039",
+    "kind": "received",
+    "quantity_change": 2,
+    "occurred_on": "2026-01-18",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000040",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000040",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-09-15",
+    "by": "Mia Novak",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000041",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000041",
+    "kind": "received",
+    "quantity_change": 12,
+    "occurred_on": "2026-10-16",
+    "by": "Jon Petersen",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000042",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000042",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-04-28",
+    "by": "Jon Petersen",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000043",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000043",
+    "kind": "received",
+    "quantity_change": 2,
+    "occurred_on": "2026-09-15",
+    "by": "Mia Novak",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000044",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000044",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-04-28",
+    "by": "Lena Ortiz",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000045",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000045",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-01-18",
+    "by": "Mia Novak",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000046",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000046",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-01-18",
+    "by": "Lena Ortiz",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000047",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000047",
+    "kind": "received",
+    "quantity_change": 2,
+    "occurred_on": "2026-04-28",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000048",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000048",
+    "kind": "received",
+    "quantity_change": 4,
+    "occurred_on": "2026-06-17",
+    "by": "Jon Petersen",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000049",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000049",
+    "kind": "received",
+    "quantity_change": 2,
+    "occurred_on": "2026-10-15",
+    "by": "Lena Ortiz",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000050",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000050",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-04-28",
+    "by": "Lena Ortiz",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000051",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000051",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-10-05",
+    "by": "Jon Petersen",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000052",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000052",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-04-28",
+    "by": "Mia Novak",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000053",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000053",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-11-04",
+    "by": "Mia Novak",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000054",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000054",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-04-28",
+    "by": "Jon Petersen",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000055",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000055",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-10-15",
+    "by": "Jon Petersen",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000056",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000056",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-04-28",
+    "by": "Lena Ortiz",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000057",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000057",
+    "kind": "received",
+    "quantity_change": 2,
+    "occurred_on": "2026-09-25",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000058",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000058",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-10-05",
+    "by": "Lena Ortiz",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000059",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000059",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-10-15",
+    "by": "Mia Novak",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000060",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000001",
+    "kind": "used",
+    "quantity_change": -4,
+    "occurred_on": "2026-10-25",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000061",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000001",
+    "kind": "used",
+    "quantity_change": -3,
+    "occurred_on": "2026-11-04",
+    "by": "Ana Silva",
+    "via": "qr",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000062",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000002",
+    "kind": "used",
+    "quantity_change": -1,
+    "occurred_on": "2026-09-15",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000063",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000002",
+    "kind": "used",
+    "quantity_change": -1,
+    "occurred_on": "2026-10-15",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000064",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000003",
+    "kind": "used",
+    "quantity_change": -5,
+    "occurred_on": "2026-09-25",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000065",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000003",
+    "kind": "used",
+    "quantity_change": -4,
+    "occurred_on": "2026-10-30",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000066",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000005",
+    "kind": "used",
+    "quantity_change": -2,
+    "occurred_on": "2026-10-30",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000067",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000011",
+    "kind": "used",
+    "quantity_change": -1,
+    "occurred_on": "2026-10-20",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000068",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000013",
+    "kind": "used",
+    "quantity_change": -3,
+    "occurred_on": "2026-10-05",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000069",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000041",
+    "kind": "used",
+    "quantity_change": -4,
+    "occurred_on": "2026-10-25",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000070",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000041",
+    "kind": "used",
+    "quantity_change": -2,
+    "occurred_on": "2026-11-06",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000071",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000004",
+    "kind": "used",
+    "quantity_change": -2,
+    "occurred_on": "2026-08-26",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000072",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000004",
+    "kind": "used",
+    "quantity_change": -2,
+    "occurred_on": "2026-10-05",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000073",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000047",
+    "kind": "used",
+    "quantity_change": -1,
+    "occurred_on": "2026-10-15",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800a-000000000060",
+   "role": "labinventory.lots",
+   "version": 0,
+   "data": {
+    "item_id": "00000000-0000-4000-8007-000000000014",
+    "lot_number": "L40411",
+    "quantity": 0,
+    "received_on": "2026-04-28",
+    "expires_on": "2026-11-08",
+    "location_id": "00000000-0000-4000-8006-000000000006",
+    "owner": "Ana Silva",
+    "status": "discarded",
+    "order_id": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000074",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000060",
+    "kind": "received",
+    "quantity_change": 1,
+    "occurred_on": "2026-04-28",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-800b-000000000075",
+   "role": "labinventory.movements",
+   "version": 0,
+   "data": {
+    "lot_id": "00000000-0000-4000-800a-000000000060",
+    "kind": "discarded",
+    "quantity_change": -1,
+    "occurred_on": "2026-11-09",
+    "by": "Ana Silva",
+    "via": "app",
+    "note": "Expired"
+   }
+  }
+ ]
 }

@@ -1,5 +1,6 @@
 import {readFile,writeFile} from 'node:fs/promises';
-const root=new URL('../templates/source/inventory-management/',import.meta.url),read=n=>readFile(new URL(n,root),'utf8');
+// Inventory Management (life.inventory-management) 1.0.2, released. Its files are archived unchanged under templates/source/inventory-management/archive/1.0.2/; 2.x (Lab Inventory) is built by build-lab-inventory-template.mjs.
+const root=new URL('../templates/source/inventory-management/archive/1.0.2/',import.meta.url),read=n=>readFile(new URL(n,root),'utf8');
 const [metadata,source,css,demo,schema,layout]=await Promise.all(['catalog.metadata.json','inventory.source.js','inventory.css','demo_data.json','schema.example.json','layout.schema.json'].map(read));
 const entry=JSON.parse(metadata);entry.source='const templateLayoutSchema='+JSON.stringify(JSON.parse(layout))+';\nconst INVENTORY_CSS='+JSON.stringify(css)+';\n'+source;
 const serialized=JSON.stringify(entry,null,2)+'\n';
@@ -13,4 +14,4 @@ function send(kind,target){const el=target.closest('[data-action]');if(!el)retur
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&!b.disabled&&b.type!=='submit')send('click',b);});document.addEventListener('change',e=>send('change',e.target));document.addEventListener('submit',e=>{e.preventDefault();send('submit',e.target);});dispatch({kind:'open'});
 </script></body></html>`;
 async function output(url,text){if(process.argv.includes('--check')){if(await readFile(url,'utf8')!==text)throw Error('Stale generated inventory file: '+url.pathname);}else await writeFile(url,text);}
-await output(new URL('../../apps/'+entry.id+'-'+entry.version+'.json',root),serialized);await output(new URL('inventory.preview.html',root),preview);console.log('Inventory '+entry.version+': '+(process.argv.includes('--check')?'verified':'built'));
+await output(new URL('../../../../apps/'+entry.id+'-'+entry.version+'.json',root),serialized);await output(new URL('inventory.preview.html',root),preview);console.log('Inventory '+entry.version+': '+(process.argv.includes('--check')?'verified':'built'));

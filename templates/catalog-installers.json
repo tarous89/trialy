@@ -2,7 +2,7 @@
   "life.cash-runway@1.2.2": "templates/source/cash-runway/archive/1.2.2/schema.example.json",
   "life.cash-runway@2.0.0": "templates/source/cash-runway/archive/2.0.0/schema.example.json",
   "life.cash-runway@2.1.0": "templates/source/cash-runway/schema.example.json",
-  "life.inventory-management@1.0.2": "templates/source/inventory-management/schema.example.json",
+  "life.inventory-management@1.0.2": "templates/source/inventory-management/archive/1.0.2/schema.example.json",
   "life.project-oversight@1.0.1": "templates/source/project-oversight/archive/1.0.1/schema.example.json",
   "life.project-oversight@2.0.0": "templates/source/project-oversight/archive/2.0.0/schema.example.json",
   "life.project-oversight@2.1.0": "templates/source/project-oversight/schema.example.json",
@@ -28,5 +28,6 @@
   "life.co-trial-monitoring-pv@1.1.1": "templates/source/co06-trial-monitoring-pv/schema.example.json",
   "life.contracts@1.0.0": "templates/source/contracts/schema.example.json",
   "life.cro-selection@2.0.0": "templates/source/cro-selection/schema.example.json",
-  "life.data-room@1.0.0": "templates/source/data-room/schema.example.json"
+  "life.data-room@1.0.0": "templates/source/data-room/schema.example.json",
+  "life.inventory-management@2.0.0": "templates/source/inventory-management/schema.example.json"
 }

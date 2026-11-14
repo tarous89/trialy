@@ -1,0 +1,517 @@
+{
+  "items": {
+    "name": "items",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "sku",
+        "name": "Sku",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "category",
+        "name": "Category",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Reagent",
+          "Consumable",
+          "Equipment",
+          "Chemical",
+          "Other"
+        ]
+      },
+      {
+        "key": "unit",
+        "name": "Unit",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "reorder_point",
+        "name": "Reorder Point",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "target_level",
+        "name": "Target Level",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "supplier",
+        "name": "Supplier",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "lead_days",
+        "name": "Lead Days",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "Notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "sku": "sku",
+      "category": "category",
+      "unit": "unit",
+      "reorder_point": "reorder_point",
+      "target_level": "target_level",
+      "supplier": "supplier",
+      "lead_days": "lead_days",
+      "owner": "owner",
+      "notes": "notes",
+      "archived": "archived"
+    }
+  },
+  "lots": {
+    "name": "lots",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "item_id",
+        "name": "Item Id",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "lot_code",
+        "name": "Lot Code",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "expiry",
+        "name": "Expiry",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "location_id",
+        "name": "Location Id",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "received_date",
+        "name": "Received Date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "storage_note",
+        "name": "Storage Note",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "stock_revision",
+        "name": "Stock posting counter",
+        "kind": "number",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "item_id": "item_id",
+      "lot_code": "lot_code",
+      "expiry": "expiry",
+      "location_id": "location_id",
+      "received_date": "received_date",
+      "storage_note": "storage_note",
+      "archived": "archived",
+      "stock_revision": "stock_revision"
+    }
+  },
+  "movements": {
+    "name": "movements",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "item_id",
+        "name": "Item Id",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "lot_id",
+        "name": "Lot Id",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "kind",
+        "name": "Kind",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Receipt",
+          "Use",
+          "Transfer",
+          "Disposal",
+          "Correction In",
+          "Correction Out"
+        ]
+      },
+      {
+        "key": "quantity",
+        "name": "Quantity",
+        "kind": "number",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "unit",
+        "name": "Unit",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "from_location_id",
+        "name": "From Location Id",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "to_location_id",
+        "name": "To Location Id",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "date",
+        "name": "Date",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "reason",
+        "name": "Reason",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "request_id",
+        "name": "Request Id",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "reversal_of",
+        "name": "Reversal Of",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "item_id": "item_id",
+      "lot_id": "lot_id",
+      "kind": "kind",
+      "quantity": "quantity",
+      "unit": "unit",
+      "from_location_id": "from_location_id",
+      "to_location_id": "to_location_id",
+      "date": "date",
+      "reason": "reason",
+      "request_id": "request_id",
+      "reversal_of": "reversal_of"
+    }
+  },
+  "locations": {
+    "name": "locations",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "parent_id",
+        "name": "Parent Id",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "kind",
+        "name": "Kind",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Room",
+          "Cabinet",
+          "Freezer",
+          "Shelf",
+          "Other"
+        ]
+      },
+      {
+        "key": "temperature",
+        "name": "Temperature",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "access_note",
+        "name": "Access Note",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "parent_id": "parent_id",
+      "kind": "kind",
+      "temperature": "temperature",
+      "owner": "owner",
+      "access_note": "access_note",
+      "archived": "archived"
+    }
+  },
+  "requests": {
+    "name": "requests",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "item_id",
+        "name": "Item Id",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "quantity",
+        "name": "Quantity",
+        "kind": "number",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "unit",
+        "name": "Unit",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "Requested",
+          "Reviewed",
+          "Approved",
+          "Ordered",
+          "Received",
+          "Declined"
+        ]
+      },
+      {
+        "key": "needed_by",
+        "name": "Needed By",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "estimated_cost",
+        "name": "Estimated Cost",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "currency",
+        "name": "Currency",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "Notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "item_id": "item_id",
+      "quantity": "quantity",
+      "unit": "unit",
+      "status": "status",
+      "needed_by": "needed_by",
+      "estimated_cost": "estimated_cost",
+      "currency": "currency",
+      "owner": "owner",
+      "notes": "notes",
+      "archived": "archived"
+    }
+  }
+}

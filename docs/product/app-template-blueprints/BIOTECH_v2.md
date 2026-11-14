@@ -18,7 +18,7 @@
 | 01 Runway | [apps/RUNWAY.md](apps/RUNWAY.md) | `life.cash-runway` 2.1.0 published (#131) |
 | 02 Programs | [apps/PROGRAMS.md](apps/PROGRAMS.md) | `life.project-oversight` 2.1.0 published (#136), with manual cash forecast and Runway integration |
 | 03 Fundraise | [apps/FUNDRAISE.md](apps/FUNDRAISE.md) | Built in PR #137 (open) |
-| 09 Lab Inventory | [apps/LAB_INVENTORY.md](apps/LAB_INVENTORY.md) | Scope approved (14 Nov); replaces `life.inventory-management` 1.0.2 as 2.0.0; no platform work (one PR) |
+| 09 Lab Inventory | [apps/LAB_INVENTORY.md](apps/LAB_INVENTORY.md) | `life.inventory-management` 2.0.0 built as a draft (14 Nov); replaces 1.0.2 on approval; no platform work |
 | 07 Partnerships | [apps/PARTNERSHIPS.md](apps/PARTNERSHIPS.md) | Scoped (14 Nov); replaces `life.partnership-tracker` 1.1.1 as 2.0.0; no platform work (one PR) |
 | 06 Investor Updates | [apps/INVESTOR_UPDATES.md](apps/INVESTOR_UPDATES.md) | Scoped (14 Nov); AI-native (assistant drafts on schedule, app approves, sends, tracks); build after Data Room PR A: PR A update extension ([§6](../EXTERNAL_EXCHANGE.md#6-update-extension-for-investor-updates)), PR B app |
 | 08 Data Room | [apps/DATA_ROOM.md](apps/DATA_ROOM.md) | Scope approved (13 Nov); hosted rooms (only) on external exchange + room extension ([§5](../EXTERNAL_EXCHANGE.md#5-room-extension-for-data-room)); build as PR A (platform) then PR B (app); includes Diligence Q&A (12) |
