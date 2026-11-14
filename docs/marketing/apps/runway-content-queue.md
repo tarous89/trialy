@@ -39,7 +39,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | D2 | Financial planning for clinical-stage biotechs: explain the monthly cash variance | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/clinical-stage-biotech-financial-planning) |
 | D3 | Budgeting software for biotechs under 20 employees: count each cost once | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/budgeting-software-small-biotech-teams) |
 | D4 | How to forecast a clinical trial delay: separate deferred payments from extra months | Published — live verified 14 November 2026; PR #212, release `511245f24749c7e3993f71c628c636bd7872be24` | https://trialagents.com/apps/clinical-trial-delays-cash-runway |
-| D5 | How to Forecast CRO Costs and Vendor Payments in a Biotech Budget | Queued — verify and publish | — |
+| D5 | How to Forecast CRO Costs and Vendor Payments in a Biotech Budget | In progress — claimed 14 November 2026; source preparation | Distinct contract-to-remaining-payment reconciliation; no PR yet. |
 | D6 | Biotech Hiring vs Outsourcing: How to Model the Impact on Cash Runway | Queued — verify and publish | — |
 | D7 | How to Plan Biotech Runway Around the Next Funding Round | Queued — verify and publish | — |
 | D8 | Best Financial Planning Tools for Grant-Funded Biotech Startups | Queued — verify and publish | — |
