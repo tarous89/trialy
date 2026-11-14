@@ -18,7 +18,7 @@
 | 01 Runway | [apps/RUNWAY.md](apps/RUNWAY.md) | `life.cash-runway` 2.1.0 published (#131) |
 | 02 Programs | [apps/PROGRAMS.md](apps/PROGRAMS.md) | `life.project-oversight` 2.1.0 published (#136), with manual cash forecast and Runway integration |
 | 03 Fundraise | [apps/FUNDRAISE.md](apps/FUNDRAISE.md) | Built in PR #137 (open) |
-| 10 Landscape | [apps/LANDSCAPE.md](apps/LANDSCAPE.md) | Scoped (14 Nov); assistant does the landscaping, the app stores and briefs; named sources (web default); research → email automations offered in the install dialog; PR A install-dialog automations (platform), PR B app; retires Literature Radar |
+| 10 Bio Radar | [apps/BIO_RADAR.md](apps/BIO_RADAR.md) | Scoped (14 Nov); replaces the Landscape scope; six radar types (pipeline, literature, patents, commercial, funding & deals, regulatory), each with tracker, collection template and recommended automation; one app PR after the recommended-automations platform PR; retires Literature Radar |
 | 09 Lab Inventory | [apps/LAB_INVENTORY.md](apps/LAB_INVENTORY.md) | Scope approved (14 Nov); replaces `life.inventory-management` 1.0.2 as 2.0.0; no platform work (one PR) |
 | 07 Partnerships | [apps/PARTNERSHIPS.md](apps/PARTNERSHIPS.md) | Scoped (14 Nov); replaces `life.partnership-tracker` 1.1.1 as 2.0.0; no platform work (one PR) |
 | 06 Investor Updates | [apps/INVESTOR_UPDATES.md](apps/INVESTOR_UPDATES.md) | Scoped (14 Nov); AI-native (assistant drafts on schedule, app approves, sends, tracks); build after Data Room PR A: PR A update extension ([§6](../EXTERNAL_EXCHANGE.md#6-update-extension-for-investor-updates)), PR B app |
@@ -41,7 +41,7 @@ All apps follow [modular apps and shared data](../MODULAR_APPS_AND_SHARED_DATA.m
 | 7 | BT2-07 | **Partnerships** | Out-licensing, in-licensing and collaboration deals by asset: conferences, follow-ups and partner research. | CEO, BD | Inova (domain) + partneringONE practice + HubSpot (mechanics) | Core | replaces `partnership-tracker` (2.0.0) |
 | 8 | BT2-08 | **Data Room** | Prepare, share and track data rooms for financing, licensing, partnering and M&A, with diligence Q&A. | CEO, CFO, BD | ShareVault (domain) + DocSend/Papermark (mechanics) + Ansarada (Q&A) | Core | **new** (includes BT2-12) |
 | 9 | BT2-09 | **Lab Inventory** | Reagents, consumables and research materials: stock, expiry, requests, approvals and reorders. | Lab managers, scientists | Quartzy | Core | replaces `inventory-management` (2.0.0) |
-| 10 | BT2-10 | **Landscape** | Competitor assets, trials, readouts and deals in your indications. | CEO, BD, CSO/CMO | Citeline Biomedtracker (alt. Evaluate) | Core · **TrialAgents edge** | **new** (absorbs `literature-radar` intent) |
+| 10 | BT2-10 | **Bio Radar** | Radars for your field: pipeline, papers, patents, commercial, funding & deals, regulatory. | CEO, BD, CSO/CMO | Citeline Biomedtracker / Evaluate (+ Patsnap, AlphaSense) | Core · **TrialAgents edge** | **new** (absorbs `literature-radar`) |
 | 11 | BT2-11 | **Trial Finance** | Clinical budgets vs invoices and monthly accrual estimates. | CFO, ClinOps | Condor | Extended | **new** |
 | 12 | BT2-12 | ~~Diligence Q&A~~ | **Merged into Data Room (08)** on 13 Nov 2026: Q&A belongs to the room. Slot open. | — | — | — | — |
 | 13 | BT2-13 | **Lab Records** | Experiments, protocols and results linked to programs and outsourced studies. | CSO, scientists | Benchling | Extended | adapt `experiment-notebook` |
@@ -155,10 +155,10 @@ Format per app: users and job · reference app · scope (in / out) · records ·
 *Long name: Lab Inventory & Ordering*
 - **Final scope:** [apps/LAB_INVENTORY.md](apps/LAB_INVENTORY.md) (14 Nov 2026). Orders are tracked only. Approvals take one approver plus an optional amount threshold for a second. Usage tracking is simple ("Used one" / QR / tell the assistant / quick count). Standard categories come with it and users add their own. The assistant handles receiving from confirmations or label photos, requests from chat and reorder suggestions. There is a weekly digest.
 
-### BT2-10 — Landscape (rank 10, Core · TrialAgents edge)
-*Competing assets, trials, readouts and deals for each of your programs.*  
-*Long name: Competitive & Pipeline Landscape*
-- **Final scope:** [apps/LANDSCAPE.md](apps/LANDSCAPE.md) (14 Nov 2026). Claude or ChatGPT does the landscaping. The app stores, structures (comparison, calendar, events with "so what") and tells the assistant what and when to search, through research briefs with named sources (web default) and a source report. Recommended automations (weekly scan + digest, high-impact alert, quarterly review) with analytical email templates are created from the install dialog. Literature Radar is absorbed.
+### BT2-10 — Bio Radar (rank 10, Core · TrialAgents edge; formerly "Landscape")
+*Radars for your field: pipeline, papers, patents, commercial, funding & deals, regulatory.*  
+*Long name: Bio Radar – competitive, scientific and market intelligence*
+- **Final scope:** [apps/BIO_RADAR.md](apps/BIO_RADAR.md) (14 Nov 2026). One app with six radar types. The user picks them (the install-dialog toggles are the choice), and each type has a tracker, a collection template for the assistant and a recommended scan + digest automation. Claude or ChatGPT searches through briefs with named sources (web default) and a source report; the app stores, structures and schedules. It writes `radar.events` and `radar.transactions` for other apps. Literature Radar is absorbed.
 
 **All apps (14 Nov 2026):** app automations are platform automations. Each template declares recommended automations, which the install dialog offers next to data access and access ([Modular apps §7](../MODULAR_APPS_AND_SHARED_DATA.md#install-dialog-data-access-and-automations)). This applies to the automations listed in every app scope.
 
