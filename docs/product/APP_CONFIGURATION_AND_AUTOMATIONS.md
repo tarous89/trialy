@@ -162,7 +162,7 @@ Current operational handoff and release status: [project context](../../CONTEXT.
 
 ## Recommended automations at install
 
-Full platform scope: [RECOMMENDED_AUTOMATIONS.md](RECOMMENDED_AUTOMATIONS.md). Build stages and acceptance gates: [implementation plan](RECOMMENDED_AUTOMATIONS_IMPLEMENTATION.md). These installation and app-feature extensions are implemented behind `APP_AUTOMATION_RECIPES_ENABLED` (default off pending live acceptance); existing automation services and authorized chat activation remain supported.
+Full platform scope: [RECOMMENDED_AUTOMATIONS.md](RECOMMENDED_AUTOMATIONS.md). Build stages and acceptance gates: [implementation plan](RECOMMENDED_AUTOMATIONS_IMPLEMENTATION.md). These installation and app-feature extensions are on by default since 14 November 2026 (owner decision; `APP_AUTOMATION_RECIPES_ENABLED=false` is the emergency off switch); existing automation services and authorized chat activation remain supported.
 
 Owner clarification, 14 November 2026. Templates declare pre-built automations in their catalog (name, purpose, trigger or schedule, steps, email template and default recipients). All install recommendations are selected by default; the user can opt out. Show concise rows next to data access and access ([Modular apps §7](MODULAR_APPS_AND_SHARED_DATA.md#install-dialog-data-access-and-automations)); do not expand full prompts or editor cards by default.
 
