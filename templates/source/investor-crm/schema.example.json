@@ -196,6 +196,33 @@
     "multiple": false,
     "ai": true,
     "description": "Comma list of development stages used for fit, for example discovery, preclinical, phase_1."
+   },
+   {
+    "key": "custom_fields",
+    "name": "Custom fields",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "JSON list of custom fields [{table,key,label,kind,options}]; table is opportunities, investor_profiles, rounds, activities, organizations or people; kind text, longtext, number, money, date, select or boolean. Changed through a reviewed change; the field must also exist on the table and be bound by the app."
+   },
+   {
+    "key": "stage_labels",
+    "name": "Stage labels",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "JSON object {stage:label} renaming pipeline stages. Stage keys never change."
+   },
+   {
+    "key": "preferences",
+    "name": "Preferences",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "JSON object {default_screen,page_size,overview_hidden}; overview_hidden lists funnel, stale_due or engagement."
    }
   ],
   "logicalFields": {
@@ -205,7 +232,10 @@
    "pass_reasons": "pass_reasons",
    "modalities": "modalities",
    "therapeutic_areas": "therapeutic_areas",
-   "dev_stages": "dev_stages"
+   "dev_stages": "dev_stages",
+   "custom_fields": "custom_fields",
+   "stage_labels": "stage_labels",
+   "preferences": "preferences"
   }
  },
  "fundraise.investor_profiles": {

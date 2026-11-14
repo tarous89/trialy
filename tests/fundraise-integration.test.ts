@@ -12,7 +12,7 @@ import {readCustomLayout} from '../src/shared/custom-layout.js';
 import {syncTemplateCatalog,installCatalogApp,readCatalogInstallation} from '../src/workspace/template-catalog.js';
 import {dataAccessStep,confirmDataAccess} from '../src/workspace/data-access.js';
 import {appIntegrations,readIntegration,chooseIntegrationSource} from '../src/workspace/integrations.js';
-import {contractRegistry} from '../src/workspace/role-contracts.js';
+import {contractRegistry,withTemplateBindings} from '../src/workspace/role-contracts.js';
 import {archivedItems} from '../src/workspace/archive.js';
 import type {Database,Connection} from '../src/db/database.js';
 import type {Actor} from '../src/shared/schema.js';
@@ -252,5 +252,47 @@ test('rule 9 modularity and archive first: alone, shared organizations and peopl
   // "Install a new copy" without a choice starts fresh; it never takes over the output writer of the first copy's tranches.
   const copy=await installCatalogApp(f,actor,w,{templateId:F.id,version:F.version,digest:F.digest,name:'Fundraise copy',requestKey:randomUUID(),createNew:true});
   assert.notEqual(x.mapOf(await x.comp(w,copy.appId))['fundraise.tranches'].typeId,map['fundraise.tranches'].typeId);
+ }finally{await x.pg.close();}
+});
+
+/* FUNDRAISE.md §8a end to end: what Claude or ChatGPT does to add a custom field, as three reviewed changes on the real platform:
+ * (1) the field on the opportunities table, (2) an app revision that binds it (table map, binding, manifest; no source change),
+ * (3) registering it in settings.custom_fields. Then a person edits it in the app through the reviewed path. */
+test('customization: a custom field added by an assistant through reviewed changes works without a source change',async()=>{
+ const x=await setup();const {f,actor,F}=x;
+ try{
+  const w=(await x.s.createWorkspace(actor,'Customized')).id;const fr=await x.install(w,F,'Fundraise');const id=fr.receipt.appId,map=x.mapOf(await x.comp(w,id));
+  const T=(r:string)=>map[r].typeId;
+  const round=await x.save(w,T('fundraise.rounds'),{name:'Seed',round_type:'seed',currency:'EUR',status:'active',archived:false});
+  const org=await x.save(w,T('organizations'),{name:'Quayside Ventures (fictional)',org_type:'investor',archived:false});
+  const opp=await x.save(w,T('fundraise.opportunities'),{round_id:round,organization_id:org,stage:'contacted',interest:'none',currency:'EUR',archived:false});
+  const settingsRow=await x.save(w,T('fundraise.settings'),{default_currency:'EUR',stale_days:14});
+  const body=(src:string)=>src.replace(/^const templateConfiguration=.+;\nconst templateBindings=.+;\n/,''),sourceBefore=body((await x.comp(w,id)).source);
+  // (1) Schema: one optional select field on the opportunities table.
+  const type=(await x.pg.query<any>('SELECT * FROM entity_types WHERE id=$1',[T('fundraise.opportunities')])).rows[0];
+  const field={key:'syndicate_role',name:'Syndicate role',kind:'select',required:false,multiple:false,ai:true,options:['Lead','Co-lead','Follower']};
+  {const pv=await x.s.preview(actor,w,{kind:'update_type',concept:type.concept??null,typeId:type.id,expectedVersion:type.version,name:type.name,fields:[...type.fields,field]} as any);await x.s.commit(actor,pv.id,pv.digest);}
+  const schemaVersion=(await x.pg.query<any>('SELECT version FROM entity_types WHERE id=$1',[type.id])).rows[0].version;
+  // (2) App revision: table map, binding and manifest gain the field; the app source is unchanged.
+  const c=await x.comp(w,id),m2=structuredClone(map);m2['fundraise.opportunities'].fields.syndicate_role='syndicate_role';m2['fundraise.opportunities'].writableFields.push('syndicate_role');
+  const bindings=c.bindings.map((b:any)=>b.typeId===type.id?{...b,fields:[...b.fields,'syndicate_role']}:b);
+  // Two configuration lines change (the table map and the template bindings); the app body below them does not.
+  const source=withTemplateBindings(c.source.replace(/^const templateConfiguration=(.+);\n/,(_:string,json:string)=>'const templateConfiguration='+JSON.stringify({...JSON.parse(json),tableMap:JSON.stringify(m2)})+';\n'),bindings);
+  const sample=c.manifest.fields.find((mf:any)=>mf.typeId===type.id);
+  const manifest={...c.manifest,fields:[...c.manifest.fields,{...sample,id:sample.id.replace(/[^_]+$/,'')+'syndicate_role',field:'syndicate_role',kind:'select',schemaVersion}]};
+  await x.change(w,{kind:'save_component',componentId:c.id,expectedVersion:c.version,projectId:c.project_id,content:{name:c.name,format:'frontend-js',source,sourceAccess:c.source_access??'workspace',bindings,manifest}});
+  const c2=await x.comp(w,id);assert.equal(body(c2.source),sourceBefore,'no change to the app body');
+  assert.deepEqual(c2.execution.map((b:any)=>b.name).sort(),c.execution.map((b:any)=>b.name).sort(),'installed helpers are kept by the revision');
+  // (3) Settings: register the field (a reviewed record change).
+  const sr=(await x.pg.query<any>('SELECT version FROM records WHERE id=$1',[settingsRow])).rows[0];
+  let p=await x.s.preview(actor,w,{kind:'update_record',recordId:settingsRow,expectedVersion:sr.version,data:{custom_fields:JSON.stringify([{table:'opportunities',key:'syndicate_role',label:'Syndicate role',kind:'select',options:['Lead','Co-lead','Follower']}]),stage_labels:JSON.stringify({first_meeting:'Intro call'})}});await x.s.commit(actor,p.id,p.digest);
+  const settings=text((await x.open(w,id,{section:'settings'})).html);assert.match(settings,/Syndicate role Opportunities · Select \(Lead, Co-lead, Follower\)/);assert.doesNotMatch(settings,/not bound to this app yet/);
+  assert.match(text((await x.open(w,id,{section:'pipeline'})).html),/Intro call 0/);
+  // A person edits the field through the app's reviewed save.
+  const run=(state:any,event:any)=>x.comp(w,id).then(cc=>f.runFrontend(actor,w,{componentId:cc.id,expectedVersion:cc.version,state,event}));
+  const ed=await run({section:'pipeline'},{kind:'click',action:'edit:opps:'+opp});assert.match(ed.html,/name="syndicate_role"/);
+  const sv:any=await run(ed.state,{kind:'submit',action:'save-record',form:{syndicate_role:'Lead'}});await f.confirm(actor,w,sv.proposal.id,sv.proposal.digest);
+  assert.equal((await x.pg.query<any>('SELECT data FROM records WHERE id=$1',[opp])).rows[0].data.syndicate_role,'Lead');
+  assert.match(text((await x.open(w,id,{section:'pipeline',detail:{role:'opps',id:opp}})).html),/Syndicate role Lead/);
  }finally{await x.pg.close();}
 });

@@ -278,3 +278,48 @@ test('production design inspector accepts all seven screens',async()=>{
  const o=await render(fresh(),{section:'pipeline'},{kind:'click',action:'details:opps:'+opp(fresh(),'Northlake Bio Ventures').id});frames.push({name:'opportunity-panel',html:o.html,css:o.output.css});
  const design=await inspectAppDesign(frames);assert.deepEqual(design.issues,[]);
 });
+
+/* AI-native customization (FUNDRAISE.md §8a): Claude or ChatGPT change settings.custom_fields, stage_labels and preferences
+ * through one reviewed change; the app honours them without a source change. Invalid entries are ignored, never fatal. */
+const customized=(patch:any,fieldRoles:Record<string,string[]>={})=>{
+ const rows=fresh();const s=rows.find(r=>r.role==='fundraise.settings')!;s.data={...s.data,...patch};
+ const map=structuredClone(fullMap),bindings=structuredClone(fullBindings);
+ for(const [role,keys] of Object.entries(fieldRoles)){for(const k of keys){map[role].fields[k]=k;map[role].writableFields.push(k);bindings.find((b:any)=>b.typeId===role)!.fields.push(k);}}
+ return {rows,opts:{config:cfgFor(map),bindings}};
+};
+test('customization: custom fields show in editors, details and Pipeline filters once bound; unbound or invalid ones are listed, not fatal',async()=>{
+ const fields=[{table:'opportunities',key:'syndicate_role',label:'Syndicate role',kind:'select',options:['Lead','Co-lead','Follower']},{table:'opportunities',key:'warm_intro',label:'Warm intro',kind:'boolean'},
+  {table:'investor_profiles',key:'esg_policy',label:'ESG policy',kind:'text'},{table:'rounds',key:'board_approval_on',label:'Board approval',kind:'date'},
+  {table:'opportunities',key:'stage',label:'Shadow',kind:'text'},{table:'nowhere',key:'x',kind:'text'},{table:'activities',key:'not_bound_yet',label:'Not bound yet',kind:'number'}];
+ const {rows,opts}=customized({custom_fields:JSON.stringify(fields)},{'fundraise.opportunities':['syndicate_role','warm_intro'],'fundraise.investor_profiles':['esg_policy'],'fundraise.rounds':['board_approval_on']});
+ const o=opp(rows,'Northlake Bio Ventures');o.data.syndicate_role='Lead';o.data.warm_intro=true;
+ const settings=text((await render(rows,{section:'settings'},undefined,opts)).html);
+ assert.match(settings,/Custom fields Syndicate role Opportunities · Select \(Lead, Co-lead, Follower\)/);assert.match(settings,/Not bound yet Activities · Number · not bound to this app yet/);
+ assert.match(settings,/Ignored \(invalid or duplicate\): stage, x/,'core fields are never replaced');
+ const details=text((await render(rows,{section:'pipeline',detail:{role:'opps',id:o.id}},undefined,opts)).html);assert.match(details,/Syndicate role Lead/);assert.match(details,/Warm intro Yes/);
+ // Pipeline filter by a custom select field.
+ const all=await render(rows,{section:'pipeline',filtersOpen:true},undefined,opts);assert.match(all.html,/data-action="filter:cf_syndicate_role"/);
+ const filtered=text((await render(rows,{...all.state,filters:{cf_syndicate_role:'Lead'}},undefined,opts)).html);assert.match(filtered,/Northlake Bio Ventures/);assert.doesNotMatch(filtered,/Fjordhaven Partners/);
+ // The editor offers the bound field, and a reviewed save writes it with the record.
+ const ed=await render(rows,{section:'pipeline'},{kind:'click',action:'edit:opps:'+o.id},opts);assert.match(ed.html,/name="syndicate_role"/);assert.match(ed.html,/Custom fields/);
+ const saved=await render(rows,ed.state,{kind:'submit',action:'save-record',form:{syndicate_role:'Co-lead'}},opts);
+ assert.equal(saved.changes.length,1);assert.equal(saved.changes[0].data.syndicate_role,'Co-lead');assert.equal(saved.changes[0].recordId,o.id);
+ const bad=await render(rows,ed.state,{kind:'submit',action:'save-record',form:{syndicate_role:'Observer'}},opts);assert.equal(bad.changes.length,0);assert.match(text(bad.html),/Choose a valid syndicate role/);
+ const rd=await render(rows,{section:'round'},{kind:'click',action:'edit:rounds:'+seed(rows).id},opts);assert.match(rd.html,/type="date" id="fr-f-board_approval_on" name="board_approval_on"/);
+ // Without the table map binding the field is not shown, and the generic settings editor never overwrites the JSON settings.
+ const plain=await render(rows,{section:'pipeline'},{kind:'click',action:'edit:opps:'+o.id});assert.doesNotMatch(plain.html,/syndicate_role/);
+ const se=await render(rows,{section:'settings'},{kind:'click',action:'edit-settings'},opts);const ss=await render(rows,se.state,{kind:'submit',action:'save-record',form:{stale_days:'21'}},opts);
+ assert.deepEqual(Object.keys(ss.changes[0].data),['stale_days']);
+});
+test('customization: stage labels rename stages everywhere and keep their keys; preferences set the opening screen, page size and Overview panels',async()=>{
+ const {rows,opts}=customized({stage_labels:JSON.stringify({due_diligence:'Diligence',term_sheet:'Terms received',unknown:'x'}),preferences:JSON.stringify({default_screen:'pipeline',page_size:10,overview_hidden:['funnel','engagement','nope']})});
+ const first=await render(rows,{},undefined,opts);assert.equal(first.state.section,'pipeline','opens on the preferred screen');
+ const t=text(first.html);assert.match(t,/Diligence \d/);assert.match(t,/Terms received \d/);assert.doesNotMatch(t,/Due diligence \d/);
+ const ov=text((await render(rows,{section:'overview'},undefined,opts)).html);assert.doesNotMatch(ov,/Funnel Opportunities by stage/);assert.doesNotMatch(ov,/Engagement highlights/);assert.match(ov,/Stale and due/);
+ const st=text((await render(rows,{section:'settings'},undefined,opts)).html);assert.match(st,/Stage labels Due diligence Diligence Term sheet Terms received/);assert.match(st,/Opens on Pipeline Rows per page 10 Overview panels Stale and due/);
+ const inv=text((await render(rows,{section:'investors'},undefined,opts)).html);assert.match(inv,/Showing 1–10 of/);
+ // A move to the renamed stage still stores the standard key.
+ const o=opp(rows,'Northlake Bio Ventures');const mv=await render(rows,{section:'pipeline'},{kind:'click',action:'move:'+o.id},opts);assert.match(mv.html,/Diligence/);
+ // Invalid JSON is ignored.
+ const broken=customized({stage_labels:'{oops',preferences:'[]',custom_fields:'not json'});const b=await render(broken.rows,{},undefined,broken.opts);assert.equal(b.state.section,'overview');assert.match(text(b.html),/Funnel/);
+});

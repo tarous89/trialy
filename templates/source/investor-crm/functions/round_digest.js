@@ -22,7 +22,10 @@ const rounds=readAll('fundraise.rounds'),active=rounds.rows.filter(r=>live(r)&&r
 if(!active.length)return {nonEmpty:false,text:'No active round.'};
 const opps=readAll('fundraise.opportunities'),acts=readAll('fundraise.activities'),orgs=readAll('organizations'),profiles=readAll('fundraise.investor_profiles'),settingsRows=readAll('fundraise.settings');
 const complete=[rounds,opps,acts,orgs,profiles,settingsRows].every(x=>x.complete);
-const settings=settingsRows.rows[0]||{},staleDays=Math.min(180,Math.max(1,Math.round(num(settings.stale_days)||14)));
+const settings=settingsRows.rows[0]||{};
+// Stage labels renamed in settings.stage_labels (keys never change), as in the app.
+try{const l=typeof settings.stage_labels==='string'&&settings.stage_labels.trim()?JSON.parse(settings.stage_labels):{};for(const k of Object.keys(LABEL))if(l&&typeof l[k]==='string'&&l[k].trim())LABEL[k]=l[k].trim().slice(0,40);}catch(e){}
+const staleDays=Math.min(180,Math.max(1,Math.round(num(settings.stale_days)||14)));
 const ORG={};for(const o of orgs.rows)ORG[o.id]=o;const STATUS={};for(const p of profiles.rows)if(live(p))STATUS[p.organization_id]=p.profile_status;
 const name=id=>ORG[id]&&ORG[id].name?String(ORG[id].name):'Unnamed investor';
 const inPipeline=o=>live(o)&&!['proposed','rejected'].includes(STATUS[o.organization_id]);
