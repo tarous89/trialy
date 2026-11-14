@@ -1,6 +1,6 @@
 # Recommended automations at install — platform scope
 
-**Status:** Scoped 14 November 2026, for build. Decisions come from the Landscape discussion ([apps/LANDSCAPE.md](app-template-blueprints/apps/LANDSCAPE.md)) and apply to every template. Related rules: [Modular apps §7](MODULAR_APPS_AND_SHARED_DATA.md#install-dialog-data-access-and-automations) and [Apps, access and automations](APP_CONFIGURATION_AND_AUTOMATIONS.md#recommended-automations-at-install) (including the per-app table and "Two kinds of email").
+**Status:** Scoped 14 November 2026, for build. Decisions come from the Landscape / Bio Radar discussion ([apps/BIO_RADAR.md](app-template-blueprints/apps/BIO_RADAR.md)) and apply to every template. Related rules: [Modular apps §7](MODULAR_APPS_AND_SHARED_DATA.md#install-dialog-data-access-and-automations) and [Apps, access and automations](APP_CONFIGURATION_AND_AUTOMATIONS.md#recommended-automations-at-install) (including the per-app table and "Two kinds of email").
 
 **Not in this scope:**
 - Changes to templates that are already deployed (adding declarations, removing app-side automation creation) are a separate retro scope.
@@ -38,7 +38,7 @@ New optional catalog field `recommendedAutomations` (array). It is validated at 
 - Briefs and summary functions exist in the app, and summary functions are read-only.
 - Recipients are workspace members only (no external addresses).
 - Email triggers follow the email rules: no sub-daily intervals and no "any update" triggers.
-- At most 6 recommendations per template.
+- At most 10 recommendations per template (raised from 6 on 14 Nov 2026).
 
 ---
 
@@ -92,7 +92,7 @@ A third section in the existing dialog (Modular apps §7), in the same style as 
 |---|---|---|
 | **E1** | **Summary-content email step.** An email step can fill its template from a read-only **app summary function**: a deterministic query returning the digest values, such as low stock, due follow-ups or open requests. It runs under the owner's access at send time and doesn't count as research. Empty results with `condition: nonEmpty` send nothing | Digests such as Lab Inventory, Contracts, Fundraise and room digests need computed content without an assistant run |
 | **E2** | **Record-date trigger for email.** A daily check sends an email for records whose date field equals today plus an offset (e.g. follow-up due today, access ends in 7 days, notice deadline in 30 days). It's grouped per recipient into one email, within the email limits | Reminders tied to dates in records |
-| **E3** | **`after` trigger across a template's recommendations.** An email can run after a research recommendation completes, with a condition on its output (e.g. only high-impact events) | Landscape high-impact alert; Partnerships digest after research |
+| **E3** | **`after` trigger across a template's recommendations.** An email can run after a research recommendation completes, with a condition on its output (e.g. only high-impact events) | Bio Radar high-impact alert; Partnerships digest after research |
 
 All three keep existing guarantees: email limits, re-checking current state and access before sending, workspace members only, and no sub-daily email.
 

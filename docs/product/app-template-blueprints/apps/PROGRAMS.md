@@ -169,7 +169,7 @@ Principles as in [Runway §5](RUNWAY.md#5-data-model): reuse shared records, sca
 | Runway (01) | Reuses `programs`; reads key milestones (`is_key`) for runway-to-milestone; Programs shows cash at milestones when the user can read Runway snapshots. |
 | Contracts (04), CRO Oversight (16) | Activities can reference the vendor or agreement in notes now; a typed link is a later addition. |
 | Investor Updates (06), Board (14) | Read saved `reports` and key milestone status. |
-| Landscape (10) | Competitor readouts can be shown alongside own milestones (later). |
+| Bio Radar (10) | Competitor readouts can be shown alongside own milestones (later). |
 | Regulatory (20) | Agency meetings and designations can create or move regulatory milestones (later). |
 
 All links optional; Programs works alone.
