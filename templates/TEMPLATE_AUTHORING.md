@@ -1,6 +1,12 @@
 # TrialAgents template authoring standard
 
-Version: 1.3.27
+Version: 1.3.28
+
+## Research + email in one automation, and run-time fields (1.3.28)
+
+**E5 — research then email.** A recipe may declare both `research` and `email`. It is one automation: one row in the install popup, one card in Automations with both connectors (the research runner, then Email), and one switch. The email step runs after each completed run of that research; `email.when` is `"meaningful"` (default: saved changes or relevant findings) or `"completed"`. It reports the run, so it cannot use `memberField` or record `fields`; use `summaryBinding` or `{{run.*}}` variables for content. Editing the research keeps the email step attached; a separate `{kind:"after"}` recipe (for example a high-impact alert) remains its own automation and still needs its own review after the research changes. Partial, failed and test runs send nothing; a failed email never reruns research.
+
+**E6 — fields that exist at run time.** In `readBindings` and `writeBindings`, `fields:"all"` approves every field the app binds on that table now or later, minus `exceptFields`. It is re-resolved at every run against the app's current binding and the assistant's current read/write access, so adding, renaming or hiding a field never needs re-approval and never pauses the automation. Calculated, read-only and excepted fields are never writable. Removing the whole table from the app, changing access, or the assistant's rights still blocks or retires the work as before. Put every user-owned field the research must never touch (notes, watches, dismissals, review status) in `exceptFields`. An email reporting a run keeps its approval across field edits too. Explicit field lists keep the exact-schema behavior.
 
 ## Optional app automation declarations (1.3.27)
 

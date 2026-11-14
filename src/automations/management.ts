@@ -54,7 +54,7 @@ export class AutomationManagement{
    FROM app_monitors m WHERE m.deleted_at IS NULL AND m.archived_with_app_at IS NULL
    UNION ALL
    SELECT a.id,a.app_id,a.workspace_id,a.user_id,a.version,'action','trialagents',a.config->>'name',NOT a.paused,a.config->>'expiresAt',a.config->'trigger',a.created_at,NULL,a.config->'steps',false,NULL,a.assistant
-   FROM app_actions a WHERE a.deleted_at IS NULL AND a.archived_with_app_at IS NULL
+   FROM app_actions a WHERE a.deleted_at IS NULL AND a.archived_with_app_at IS NULL AND a.follow_up_of IS NULL
   ) d JOIN workspace_components c ON c.id=d.app_id AND c.workspace_id=d.workspace_id
   WHERE d.workspace_id=$1 AND d.user_id=$2 AND ($3::uuid IS NULL OR d.app_id=$3)
    AND ($4='' OR position(lower($4) in lower(d.name||' '||c.name))>0)
@@ -66,8 +66,10 @@ export class AutomationManagement{
    let blockedReason=dependency?.blockedReason??null;
    if(connectionState&&connectionState!=='ready')blockedReason??=runnerOf(dependency)==='claude'?'The Claude runner is paused or not connected. Finish setup in Claude to run this automation.':'ChatGPT is disabled. Finish setup in Connectors to run this automation.';
    const prompt=row.kind==='research'?row.prompt:(steps??[]).map((s:any)=>s.kind==='email'?`Email: ${s.subject}\n${s.text}`:s.kind==='connector'?`Run connector operation: ${s.operation}`:`Run app action: ${s.binding}`).join('\n\n');
+   // E5: an email step is shown inside its research automation, with both connectors.
+   const followUps=row.kind==='research'?(await this.db.query("SELECT id,version,NOT paused AS enabled,config->>'name' AS name,config->'steps' AS steps FROM app_actions WHERE follow_up_of=$1 AND deleted_at IS NULL AND user_id=$2 ORDER BY created_at,id",[row.id,a.userId])).rows.map((s:any)=>({id:s.id,version:s.version,kind:'action',enabled:s.enabled,name:s.name,recipients:(s.steps??[]).flatMap((x:any)=>x.to??[])})):[];
    const lastTest=(await this.db.query("SELECT id,status,delivery_status,created_at FROM (SELECT id,status,NULL::text AS delivery_status,created_at FROM automation_occurrences WHERE monitor_id=$1 AND user_id=$2 AND reason='test_run' UNION ALL SELECT id,status,delivery_status,created_at FROM app_service_jobs WHERE user_id=$2 AND payload->'test'->>'automationId'=$1::text) t ORDER BY created_at DESC LIMIT 1",[row.id,a.userId])).rows[0]??null;
-   visible.push({...definition,canEdit:canEdit(a,ownedBy({assistant:row.owner})),lastTest,prompt,blockedReason,services:dependency?.services??[],effectiveEnabled:row.enabled&&!blockedReason&&!c.archived&&!c.project_archived,connectionState,externalSchedule:external_schedule,app_url:appUrl({workspaceId:w,appId:c.id}),app_archived:c.archived||c.project_archived});
+   visible.push({...definition,followUps,connectors:[row.executor,...(followUps.length?['email']:[])],canEdit:canEdit(a,ownedBy({assistant:row.owner})),lastTest,prompt,blockedReason,services:dependency?.services??[],effectiveEnabled:row.enabled&&!blockedReason&&!c.archived&&!c.project_archived,connectionState,externalSchedule:external_schedule,app_url:appUrl({workspaceId:w,appId:c.id}),app_archived:c.archived||c.project_archived});
   }catch(e){if(![403,404].includes((e as any).status))throw e;}}
   return {rows:visible,nextOffset:rows.length>20?v.offset+20:null};
  }
@@ -136,7 +138,13 @@ export class AutomationManagement{
  });}
  async control(a:Actor,w:string,kind:'research'|'action',automationId:string,version:number,enabled:boolean){requireCurrentAction(a);return this.db.transaction(async tx=>{
   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const db=adapter(tx),s=new AutomationManagement(db),r=await s.read(a,w,kind,automationId);if(r.version!==version)fail(409,'automation_changed','Reopen the current automation before changing it');if(enabled&&(r.archivedWithApp||r.app.archived))fail(409,'app_archived',`Restore ${r.app.name} first. Its automations come back switched off for review.`);
-  if(kind==='research')return new AppMonitoring(db).control(a,w,automationId,version,enabled);
+  if(kind==='research'){
+   const result=await new AppMonitoring(db).control(a,w,automationId,version,enabled);
+   // E5: research and its email step switch on and off as one automation.
+   const followUps=(await tx.query('SELECT id,paused FROM app_actions WHERE follow_up_of=$1 AND deleted_at IS NULL AND user_id=$2',[automationId,a.userId])).rows;
+   for(const step of followUps)if(step.paused===enabled)await new AppActions(db).control(a,w,step.id,!enabled);
+   return {...result,followUps:followUps.map(s=>s.id)};
+  }
   return new AppActions(db).control(a,w,automationId,!enabled);
  });}
  async history(a:Actor,w:string,kind:'research'|'action',automationId:string,offset=0){await this.read(a,w,kind,automationId);

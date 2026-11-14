@@ -16,7 +16,7 @@ Out-licensing, in-licensing, co-development, research, academic and platform dea
 | `AUTOMATION_RECIPES.md` | The install recommendations and the chat-set-up reminders. |
 | `QA.md` | PARTNERSHIPS.md §13 results. |
 
-Build: `node scripts/build-partnerships-template.mjs` writes `templates/apps/life.partnership-tracker-2.1.0.json` and the preview. `--check` (part of `npm run build`) fails when either is stale. 2.1.0 is approved (owner, 14 November 2026): the seed names it and migration 070 withdraws 1.1.1. The first build, 2.0.0, was imported as a draft by an earlier deployment; catalog versions are immutable, so its files stay unchanged under `archive/2.0.0/`.
+Build: `node scripts/build-partnerships-template.mjs` writes `templates/apps/life.partnership-tracker-2.1.0.json` and the preview. `--check` (part of `npm run build`) fails when either is stale. 2.1.0 is approved (owner, 14 November 2026): the seed names it and migration 071 withdraws 1.1.1. The first build, 2.0.0, was imported as a draft by an earlier deployment; catalog versions are immutable, so its files stay unchanged under `archive/2.0.0/`.
 
 ## Roles
 

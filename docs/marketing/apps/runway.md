@@ -35,6 +35,8 @@
 | MCP-connected financial planning software for biotech: check scope before writes (C6) | https://trialagents.com/apps/mcp-financial-planning-software-biotech | Published; live verified 14 November 2026; PR #207; release `e8ed31e7e198641c7bbd1e78b69db395735dfd29` |
 | Custom cash runway app with ChatGPT or Claude (C7) | https://trialagents.com/apps/custom-cash-runway-app-chatgpt-claude | Published; live verified 14 November 2026; PR #208; release `39af173ce6e7acb7ac95709f82eafa926f56b49e` |
 | Canonical queue D1 — Cash runway software for preclinical biotech: fund the next evidence package | https://trialagents.com/apps/preclinical-biotech-cash-runway | Published; live verified 14 November 2026; PR #209, release `11bb7a76844d024cd48f37bb377828256668186b` |
+| Canonical queue D2 — Financial planning for clinical-stage biotechs: explain the monthly cash variance | https://trialagents.com/apps/clinical-stage-biotech-financial-planning | Published; live verified 14 November 2026; PR #210, release `5f6a0d2fe2e923f9e29c4b6af75c55d58cac7eda` |
+| Canonical queue D3 — Budgeting software for biotechs under 20 employees: count each cost once | https://trialagents.com/apps/budgeting-software-small-biotech-teams | Published; live verified 14 November 2026; PR #211, release `408144201407538eaa67ba0473ca2460f5dd7062` |
 | App pages index | https://trialagents.com/apps | Published; production URL checked 12 November 2026 |
 
 These are intended canonical URLs. Do not assert that a URL is live until checked on the production CDN.
@@ -766,3 +768,63 @@ PR #209 merged as `11bb7a76844d024cd48f37bb377828256668186b` at approximately 17
 - **Evidence and calculation:** approved Runway 2.1 catalog and FDA primary preclinical source reviewed. Fictional independently calculated case: EUR 2.4m opening, EUR 120k monthly operating spend, EUR 600k March/EUR 300k May packages, September internal review, EUR 300k chosen reserve. A separate downside plan adds EUR 240k July repeat assay. September cash EUR 420k/180k, reserve headroom +120k/−120k; first negative January 2028/November 2027. No vendor-cost benchmark, regulatory outcome, fabricated scenario operation, app execution or host test claimed. Genuine browser demo screenshots contain separate fictional data. Refresh on catalog/model/permission changes.
 
 This supersedes D1 claim/source/merged-pending checkpoints. **29 published; 18 unfinished**, including owner-deferred A9. **Next eligible: D2, Best Financial Planning Software for Clinical-Stage Biotechs**, subject to fresh queue, claim, duplicate and primary-evidence checks. Only D1 was newly published in this run. Search indexing, rankings and assistant citations remain unverified.
+
+
+### Canonical queue D2 source checkpoint — 14 November 2026
+
+**Financial planning for clinical-stage biotechs: explain the monthly cash variance.** Target https://trialagents.com/apps/clinical-stage-biotech-financial-planning. [PR #210](https://github.com/tarous89/trialagents-public/pull/210), head `c74732431f1179d4a3ab157b98885cd4b378807d`. Distinct monthly close/budget/live forecast use case, replacing unsupported best-software headline and avoiding B1/D1/D4/D11 duplication.
+
+Evidence: current life.cash-runway 2.1.0 catalog; genuine media README and 06-actuals.jpg/02-cash-flow.jpg; https://www.fda.gov/patients/drug-development-process/step-3-clinical-research (protocol design context only). Product workflow: Plan lock budget, reviewed actuals and app-owned frozen close, future Plan revision, Cash flow reconciliation. No automatic bank feed/file parsing, accounting/AR/AP/three-statement model, host parity or completed app test claimed.
+
+Fictional all-EUR two-month example independently checked with Decimal: opening 3m at 31 December 2026; Jan/Feb monthly Clinical300k/CMC80k/Research40k/G&A80k, inclusive of all people costs, no other flows. January actual Clinical180k; other categories match. Total actual380k vs budget500k; variance −120k; closing2.62m. Remaining120k confirmed due February; revised February620k closes at2m, equal to original two-month budget. No claim of permanent saving or full cash-out date. Genuine browser screenshots use separate fictional data.
+
+Local arithmetic, structure/anchors/final CTA and JS syntax pass. Seven source files; shared shell, CSS and analytics unchanged. Await full exact-head predeploy, visual artifacts, merge and independent live checks. Resume PR #210 before drafting another topic. 29 published, 18 unfinished. Refresh on catalog/calculation/permission changes.
+
+
+### D2 merged — deployment pending, 14 November 2026
+
+PR #210 merged as `5f6a0d2fe2e923f9e29c4b6af75c55d58cac7eda` at approximately 17:59:12 UTC / 18:59:12 CET. Exact source head `c74732431f1179d4a3ab157b98885cd4b378807d` passed full predeploy run `43623342839` (validate and seo-container). Artifact `14125755374` matches that head; desktop 1440px and mobile 390px inspected through every section, contained scrolling table, Actuals/Cash flow screenshots, captions, final CTA and shared shell. Initial HTTP 404 is deployment pending, not an authentication fault. Await existing automatic GitHub-connected build and independent live QA at https://trialagents.com/apps/clinical-stage-biotech-financial-planning. Resume this release before another draft. Totals remain 29 published, 18 unfinished.
+
+
+### Canonical queue D2 published and live verified — 14 November 2026
+
+- **Title:** Financial planning for clinical-stage biotechs: explain the monthly cash variance.
+- **Live URL:** https://trialagents.com/apps/clinical-stage-biotech-financial-planning
+- **Release:** [PR #210](https://github.com/tarous89/trialagents-public/pull/210), source head `c74732431f1179d4a3ab157b98885cd4b378807d`, merge `5f6a0d2fe2e923f9e29c4b6af75c55d58cac7eda` at approximately 17:59:12 UTC / 18:59:12 CET.
+- **Predeploy:** exact-head run `43623342839` passed validate and seo-container. Artifact `14125755374` matches that head. Desktop 1440px and mobile 390px inspected through all sections: readable text, contained scrolling variance table, genuine Actuals/Cash flow images and captions, final CTA and shared shell. Local syntax, structure/anchors/final CTA and Decimal arithmetic passed.
+- **Deployment:** existing automatic GitHub-connected Cloudflare build succeeded, check `132536641293`; production check `132535853437` passed. Initial 404 resolved to 200 in about three minutes. No dashboard login, manual deployment or integration change.
+- **Independent live QA:** exact served article fragment and inline shared CSS match validated source; HTTP 200 HTML; expected title/description/H1/self-canonical, Article/BreadcrumbList schema/date, no noindex, valid anchors, two genuine images and one final Start with Runway CTA. All nine checked source/internal/CTA/image/analytics URLs returned 200. Header/footer match homepage. /apps, sitemap.xml, llms.txt and llm.xml return 200 and include the route; exactly one canonical sitemap entry; robots permits /apps.
+- **Tracking preserved:** identical homepage loader `/_snapshot/query-assets/114933b27c521a75f333.js` appears once and returns 200, references client `/_snapshot/query-assets/c251da7b4969f7c85048.js`, which returns 200. Tracking scripts, configuration, consent, events, collectors and attribution unchanged. HTTP reads and predeploy artifacts used; no synthetic production events.
+- **Editorial boundary:** approved Runway 2.1 documentation and genuine media provenance reviewed; FDA clinical-research source supports protocol-design context only. Fictional all-EUR cash reconciliation independently checked: 500k January budget vs 380k paid, −120k spend variance, 2.62m closing cash from 3m opening. The remaining 120k stays due; February spend620k closes at2m, equal to the original two-month budget. No permanent saving, full cash-out date, accounting recommendation, automated bank/file integration, fabricated interface or completed app/host test claimed. Frozen budget/close and future forecast edits remain distinct. Refresh on model/catalog/permission changes.
+
+This supersedes D2 claim/source/merged-pending checkpoints. **30 published; 17 unfinished**, including owner-deferred A9. **Next eligible: D3, Best Budgeting Software for Biotech Startups with Fewer Than 20 Employees**, subject to fresh queue, claim, duplicate and evidence checks. Only D2 newly published in this run. Search indexing, rankings and assistant citations remain unverified.
+
+
+### Canonical queue D3 source checkpoint — 14 November 2026
+
+**Budgeting software for biotechs under 20 employees: count each cost once.** Target https://trialagents.com/apps/budgeting-software-small-biotech-teams. [PR #211](https://github.com/tarous89/trialagents-public/pull/211), head `306ebe920acaf0185b1ee887e616c54e9412722d`. Distinct input-ownership and People/Plan double-counting workflow, replacing unsupported best ranking; D6 remains hiring-versus-outsourcing.
+
+Evidence: current approved life.cash-runway 2.1.0 catalog and authentic-media README; 04-people.jpg and 03-plan.jpg, labeled separate fictional demo data. SBA https://www.sba.gov/counseling/plan-your-business/ supports recurring versus one-time expenses only. No salary benchmark, statutory loaded-cost percentage, native departmental approval workflow, host parity or app execution claimed.
+
+Decimal-verified fictional all-EUR example: 1.8m opening at 31 Dec 2026; twelve individual roles at75k annual each with20% loaded cost =>7.5k/role/month and90k total/month. Non-payroll lab45k/month and G&A15k/month; one-off April assay180k. January–June total540k+270k+90k+180k=1.08m; June closing720k. Duplicate payroll Plan line would add540k false spend. No other flows; six-month excerpt not complete annual budget or full runway. Owners review then app locks budget. App-level/salary-column access and withholding incomplete totals explained.
+
+Local syntax, Decimal arithmetic and article structure/anchors/final CTA pass. Seven source files; shell/CSS/tracking unchanged. Await exact-head full predeploy, desktop/mobile artifact inspection, merge and independent live checks. Resume PR #211 first. Totals30 published,17 unfinished. Refresh on catalog/model/permission changes.
+
+
+### D3 merged — deployment pending, 14 November 2026
+
+PR #211 merged as `408144201407538eaa67ba0473ca2460f5dd7062` at approximately 19:05:14 UTC / 20:05:14 CET. Exact head `306ebe920acaf0185b1ee887e616c54e9412722d` passed full predeploy run `43629314865` (validate and seo-container). Artifact `14127357850` matches that head; desktop1440px/mobile390px inspected across all sections, contained scrolling table, People/Plan images, captions, final CTA and shared shell. Initial HTTP404 is deployment pending. Await existing automatic GitHub-connected Cloudflare build and independent live QA at https://trialagents.com/apps/budgeting-software-small-biotech-teams. Resume this release before another draft. Totals30 published,17 unfinished.
+
+
+### Canonical queue D3 published and live verified — 14 November 2026
+
+- **Title:** Budgeting software for biotechs under 20 employees: count each cost once.
+- **Live URL:** https://trialagents.com/apps/budgeting-software-small-biotech-teams
+- **Release:** [PR #211](https://github.com/tarous89/trialagents-public/pull/211), source head `306ebe920acaf0185b1ee887e616c54e9412722d`, merge `408144201407538eaa67ba0473ca2460f5dd7062` at approximately 19:05:14 UTC / 20:05:14 CET.
+- **Predeploy:** full exact-head run `43629314865` passed validate and seo-container. Artifact `14127357850` matches the head; desktop1440px/mobile390px visually inspected through all sections, contained scrolling table, genuine People/Plan images/captions, final CTA and shared shell. Local syntax, Decimal arithmetic and article structure/anchors/final CTA passed.
+- **Deployment:** existing automatic GitHub-connected Cloudflare build succeeded, check `132555382999`; production check `132554740093` passed. Early 404 resolved to200 in about two minutes. No dashboard authentication, manual deployment or integration change.
+- **Independent live QA:** served article fragment and shared inline CSS exactly match validated source; HTTP200 HTML, expected H1/title/description/self-canonical, Article/BreadcrumbList schema/date, no noindex, valid anchors, two genuine images and one final Start with Runway CTA. All nine checked internal/source/CTA/image/analytics URLs returned200. Header/footer match homepage. /apps, sitemap.xml, llms.txt and llm.xml return200 and contain the article; exactly one canonical sitemap entry; robots permits /apps.
+- **Tracking preserved:** identical homepage loader `/_snapshot/query-assets/114933b27c521a75f333.js` appears once and returns200; it references client `/_snapshot/query-assets/c251da7b4969f7c85048.js`, which returns200. Scripts, configuration, events, consent, collectors and attribution unchanged. HTTP reads and predeploy artifacts used; no synthetic production events.
+- **Evidence/calculation boundary:** approved Runway2.1 catalog and authentic capture provenance reviewed; SBA primary guidance supports monthly versus one-time expense distinction only. Fictional12-role calculation independently checked:75k annual each with20% uplift yields90k monthly total; plus45k lab and15k G&A, with180k April assay. Six-month spend1.08m; June closing720k from1.8m opening; duplicated payroll would add540k false spend. No salary benchmark, statutory uplift, departmental approval feature, full annual budget/runway, host parity or completed app test claimed. Salary access and incomplete totals limits explicit. Refresh on catalog/model/permission changes.
+
+This supersedes D3 claim/source/merged-pending checkpoints. **31 published; 16 unfinished**, including owner-deferred A9. **Next eligible: D4, How to Forecast Clinical Trial Delays and Their Impact on Cash Runway**, subject to fresh queue, claim, duplicate and primary-evidence checks. Only D3 newly published in this run. Search indexing, rankings and assistant citations remain unverified.

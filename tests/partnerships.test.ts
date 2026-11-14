@@ -31,9 +31,9 @@ test('package: catalog entry, seven screens, limits, build --check, installer, d
  // 2.0.0 was imported as a draft by an earlier deployment; catalog rows are immutable, so its files stay byte-identical in the archive.
  const old=JSON.parse(await readFile('templates/apps/life.partnership-tracker-2.0.0.json','utf8'));assert.equal(old.version,'2.0.0');assert.equal(old.recommendedAutomations,undefined);
  assert.equal(JSON.stringify(Object.keys(JSON.parse(await readFile(root+'archive/2.0.0/schema.example.json','utf8')))),JSON.stringify(Object.keys(schema).filter(k=>k!=='partnerships.research_reports')));
- // Owner approval (14 Nov 2026): the seed names 2.1.0; migration 070 withdraws 1.1.1 once.
+ // Owner approval (14 Nov 2026): the seed names 2.1.0; migration 071 withdraws 1.1.1 once.
  const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));assert.deepEqual(seed['life.partnership-tracker'],{schema:root+'schema.example.json',version:'2.1.0'});
- assert.match(await readFile('migrations/070_approve_partnerships_2_1_0.sql','utf8'),/SET status='draft' WHERE template_id='life\.partnership-tracker' AND version='1\.1\.1' AND status='approved'/);
+ assert.match(await readFile('migrations/071_approve_partnerships_2_1_0.sql','utf8'),/SET status='draft' WHERE template_id='life\.partnership-tracker' AND version='1\.1\.1' AND status='approved'/);
  const ret=JSON.parse(await readFile('templates/catalog-retirements.json','utf8')).retirements.find((r:any)=>r.templateId==='life.partnership-tracker');
  assert.deepEqual([ret.version,ret.replacedBy],['1.1.1','life.partnership-tracker@2.1.0']);
  const m=JSON.parse(await readFile(root+'catalog.metadata.json','utf8'));assert.equal(m.documentation.tasks.mode,'optional');

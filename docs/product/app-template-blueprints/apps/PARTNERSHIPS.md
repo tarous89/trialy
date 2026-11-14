@@ -2,7 +2,7 @@
 
 *Track out-licensing, in-licensing and collaboration deals by asset, from first contact to signature: conferences, follow-ups and partner news, with the assistant doing the research and the admin.*
 
-**Status:** Published 14 November 2026 as **2.1.0** (owner approval). Part of [Biotech apps v2](../BIOTECH_v2.md) (rank 7, formerly "BD Pipeline"). It **replaces** `life.partnership-tracker` 1.1.1 (withdrawn by migration 070), display name **Partnerships**. No existing users, so no data migration.
+**Status:** Published 14 November 2026 as **2.1.0** (owner approval). Part of [Biotech apps v2](../BIOTECH_v2.md) (rank 7, formerly "BD Pipeline"). It **replaces** `life.partnership-tracker` 1.1.1 (withdrawn by migration 071), display name **Partnerships**. No existing users, so no data migration.
 
 **Build (14 Nov 2026):** `templates/source/partnership-tracker/` → `templates/apps/life.partnership-tracker-2.1.0.json` (approved: the seed names it); results in its [QA.md](../../../../templates/source/partnership-tracker/QA.md). The first build, 2.0.0 (#164), was imported as a draft and is kept unchanged under `archive/2.0.0/`, because catalog versions are immutable.
 

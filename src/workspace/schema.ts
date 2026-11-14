@@ -14,10 +14,11 @@ export const maintenanceSchema=z.object({
  monitorId:id.optional(),
  projectId:id,purpose:text,inclusionCriteria:text,sourcePolicy:text,
  basis:z.enum(['multiple_entries','repeated_actions','tracking','expected_reuse']),
- bindings:z.array(z.object({typeId:id,fields:z.array(z.string().min(1).max(64)).min(1).max(100)}).strict()).min(1).max(100),
+ // dynamic (E6): fields are re-resolved at each automation run from the app's current binding, minus exceptFields.
+ bindings:z.array(z.object({typeId:id,fields:z.array(z.string().min(1).max(64)).min(1).max(100),dynamic:z.literal(true).optional(),exceptFields:z.array(z.string().min(1).max(64)).max(100).optional()}).strict()).min(1).max(100),
  allowCreate:z.boolean(),allowUpdate:z.boolean(),allowIdentityLinks:z.boolean().default(false),
  maxChanges:z.number().int().min(1).max(200).default(50)
-}).strict().refine(v=>new Set(v.bindings.map(b=>b.typeId)).size===v.bindings.length,'Duplicate table bindings').refine(v=>!v.autoWrite||(v.bindings.length===1&&!!v.expiresAt),'Longer-term permission requires exactly one data type and an expiry');
+}).strict().refine(v=>new Set(v.bindings.map(b=>b.typeId)).size===v.bindings.length,'Duplicate table bindings').refine(v=>!v.autoWrite||(v.bindings.length===1&&!!v.expiresAt),'Longer-term permission requires exactly one data type and an expiry').refine(v=>!v.bindings.some(b=>b.dynamic)||!!v.monitorId,'Run-time field resolution belongs to one research automation');
 export const componentContent=z.object({
  resourceKind:resourceKind.optional(),manifest:resourceManifest.nullable().optional(),
  name:z.string().trim().min(1).max(100),

@@ -50,7 +50,12 @@ export class AppActions{
     if(step.kind==='function'&&!c.execution.some((b:any)=>b.name===step.binding))fail(403,'function_binding','Function is not bound to the app');
     const text=J(step);for(const match of text.matchAll(/\{\{\s*run\.([\w.]+)\s*\}\}/g))if(!runTrigger(config)||!runFields.includes(match[1] as any))fail(400,'run_template','Run fields require a research-run database trigger');for(const match of text.matchAll(/\{\{\s*record\.([a-z][a-z0-9_]*)\s*\}\}/g))if(!config.fields.includes(match[1]))fail(403,'action_scope','Template refers to an undeclared field');
    }
-   const stamp=checksum(J({table,bindings:c.bindings,manifest:c.manifest,execution:c.execution}));
+   const legacy=checksum(J({table,bindings:c.bindings,manifest:c.manifest,execution:c.execution}));
+   // E6: an email reporting a research run has no record scope; its content comes from the run or a pinned
+   // summary binding, and recipients' access is rechecked at send. Field edits on the app's tables therefore
+   // don't change what it is approved to do. Definitions approved under the legacy stamp keep it unchanged.
+   const runEmail=!config.recordTypeId&&runTrigger(config)&&config.steps.every(s=>s.kind==='email');
+   const stamp=!runEmail||approvedScopeStamp===legacy?legacy:checksum(J({runEmail:true,tables:c.bindings.map((b:any)=>b.typeId).sort(),execution:c.execution}));
    // Email executes its approved message, not app code. Presentation revisions
    // may advance the app version without changing the authorized data scope.
    // New approvals still pin the current revision; executable actions stay exact.
