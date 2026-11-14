@@ -138,7 +138,10 @@ export async function reserveNotification(db:Database,tenant:string,email:string
  });
 }
 export async function authorizeSummaryRun(db:Database,runId:string){
- const b=(await db.query('SELECT * FROM app_notification_batches WHERE summary_run_id=$1',[runId])).rows[0];if(!b)return;const state=await currentBatch(db,b);if(!state.valid.length||state.changed)fail(409,'summary_changed','Notification scope changed');
+ const b=(await db.query('SELECT * FROM app_notification_batches WHERE summary_run_id=$1',[runId])).rows[0];if(!b)return;
+ // Re-check as the batch's owner, like dispatchNotificationBatch: a run-triggered email reads its research run (owner-scoped rows).
+ const assistant=(await db.query('SELECT assistant FROM app_actions WHERE id=$1',[b.action_id])).rows[0]?.assistant;
+ const state=await withActor({userId:b.user_id,origin:'ai',...(assistant==='claude'?{assistant:'claude' as const}:{})},()=>currentBatch(db,b));if(!state.valid.length||state.changed)fail(409,'summary_changed','Notification scope changed');
 }
 export async function authorizeNotificationJob(db:Database,j:any,reading=false){
  const n=j.payload.notification,b=(await db.query('SELECT * FROM app_notification_batches WHERE id=$1',[n.batchId])).rows[0];
