@@ -157,14 +157,24 @@ export async function reconcileRecipeSetups(db:Database){
    if(r.contextRole&&b.contextRecordId)trigger.recordId=b.contextRecordId;
    // A fresh approval after deletion must not reuse a retired research authoring key.
    const authoringKey='recipe_'+row.id.replaceAll('-','')+'_r'+row.revision;
-   let saved:any;
+   // E6: `fields:"all"` becomes a dynamic binding seeded with the app's current fields for that table.
+   const bind=(x:any)=>{const typeId=type(x.role);if(x.fields!=='all')return {typeId,fields:x.fields};const except=new Set(x.exceptFields??[]),fields=c.bindings.find((y:any)=>y.typeId===typeId).fields.filter((k:string)=>!except.has(k));if(!fields.length)fail(409,'role_unavailable','The app feature needs connected fields');return {typeId,fields,dynamic:true,...(x.exceptFields?{exceptFields:x.exceptFields}:{})};};
+   let saved:any,followUp:any=null;
    if(r.research){
     if(r.research.briefBinding&&!b.brief)fail(409,'brief_binding','Bind the reviewed research brief first');
     if(!b.runnerId)fail(409,'runner_required','Choose a verified background connection');
     const runner=await new AutomationService(d).runner(a,w,b.runnerId);if(runner.version!==b.runnerVersion)fail(409,'runner_changed','Review setup after the background connection changed');
     await new AutomationService(d).requireReady(a,w,b.runnerId);
-    const s=new AppMonitoring(d),p=await s.prepare(a,w,{config:{name:r.name,appId:c.id,inheritAppAccess:true,...(b.brief?{brief:b.brief}:{}),objective:r.research.objective,instructions:r.research.instructions,sourcePolicy:r.research.sourcePolicy,readBindings:r.research.readBindings.map(x=>({typeId:type(x.role),fields:x.fields})),...(r.research.writeBindings?{writeBindings:r.research.writeBindings.map(({role,...binding})=>({...binding,typeId:type(role)}))}:{}),schedule:{description:r.description,timeZone:trigger.timeZone??'UTC'},automation:{runnerId:b.runnerId,trigger},authoringKey,expiresAt:b.expiresAt}});
+    const s=new AppMonitoring(d),p=await s.prepare(a,w,{config:{name:r.name,appId:c.id,inheritAppAccess:true,...(b.brief?{brief:b.brief}:{}),objective:r.research.objective,instructions:r.research.instructions,sourcePolicy:r.research.sourcePolicy,readBindings:r.research.readBindings.map(bind),...(r.research.writeBindings?{writeBindings:r.research.writeBindings.map(({allowCreate,allowUpdate,...x})=>({...bind(x),allowCreate,allowUpdate}))}:{}),schedule:{description:r.description,timeZone:trigger.timeZone??'UTC'},automation:{runnerId:b.runnerId,trigger},authoringKey,expiresAt:b.expiresAt}});
     saved=await s.confirm(a,w,p.id,p.digest,p.review);
+    // E5: the email step of the same automation, bound to this exact research definition.
+    if(r.email){
+     if(r.email.summaryBinding&&!b.summary)fail(409,'summary_binding','Bind the reviewed summary function first');
+     const when=r.email.when??'meaningful',runs={kind:'database',source:'automation_runs',automationId:saved.id,automationVersion:saved.version,includeEmpty:when==='completed',meaningful:when==='meaningful',events:['updated'],fields:['status'],becomes:{field:'status',operator:'equals',value:'completed'}};
+     const actions=new AppActions(d),ap=await actions.prepare(a,w,{config:{name:r.name,appId:c.id,appVersion:c.version,trigger:runs,steps:[{id:'email',kind:'email',...(b.summary?{summary:b.summary}:{}),to:b.recipients,subject:r.email.subject,text:r.email.text}],authoringKey:authoringKey+'_email',expiresAt:b.expiresAt}});
+     followUp=await actions.confirm(a,w,ap.id,ap.digest,ap.review);
+     await tx.query('UPDATE app_actions SET follow_up_of=$2 WHERE id=$1',[followUp.id,saved.id]);
+    }
    }else{
     if(r.email?.summaryBinding&&!b.summary)fail(409,'summary_binding','Bind the reviewed summary function first');
     if(trigger.kind==='after'){
@@ -176,7 +186,7 @@ export async function reconcileRecipeSetups(db:Database){
     const s=new AppActions(d),p=await s.prepare(a,w,{config:{name:r.name,appId:c.id,appVersion:c.version,trigger,...(trigger.typeId?{recordTypeId:trigger.typeId,fields:[...new Set([...(r.email?.fields??[]),...(r.email?.memberField?[r.email.memberField]:[]),...(trigger.field?[trigger.field]:[]),...(trigger.fields??[]),...(trigger.becomes?[trigger.becomes.field]:[])])]}:{}),steps:[{id:'email',kind:'email',...(r.email?.memberField?{memberField:r.email.memberField}:{}),...(b.summary?{summary:b.summary}:{}),to:b.recipients,subject:r.email!.subject,text:r.email!.text}],authoringKey,expiresAt:b.expiresAt}});
     saved=await s.confirm(a,w,p.id,p.digest,p.review);
    }
-   await tx.query("UPDATE automation_recipe_setups SET status='active',definition_id=$2,definition_kind=$3,definition_version=$4,diagnostic=NULL,updated_at=now() WHERE id=$1",[row.id,saved.id,r.research?'research':'action',saved.version]);
+   await tx.query("UPDATE automation_recipe_setups SET status='active',definition_id=$2,definition_kind=$3,definition_version=$4,follow_up_id=$5,follow_up_version=$6,diagnostic=NULL,updated_at=now() WHERE id=$1",[row.id,saved.id,r.research?'research':'action',saved.version,followUp?.id??null,followUp?.version??null]);
   });await tx.query('RELEASE SAVEPOINT recipe_setup');
   }catch(e:any){await tx.query('ROLLBACK TO SAVEPOINT recipe_setup');const retry=['40001','40P01','53300','57P01','57014','08006'].includes(e.code)&&row.attempts<2;await tx.query("UPDATE automation_recipe_setups SET status=$2,attempts=attempts+1,diagnostic=$3,available_at=now()+interval '30 seconds',updated_at=now() WHERE id=$1",[row.id,retry?'pending':'needs_setup',typeof e.code==='string'?e.code.slice(0,100):'setup_unavailable']);}
  });return true;

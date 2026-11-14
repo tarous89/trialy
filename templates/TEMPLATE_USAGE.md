@@ -1,6 +1,10 @@
 # Using TrialAgents templates and optional tasks
 
-Version: 1.3.27
+Version: 1.3.28
+
+## One automation with research and email; fields added later (1.3.28)
+
+A recipe with research and email installs as one automation: one popup row ("Research, then email"), one card in Automations showing both connectors, and one Enable/Disable switch that covers both steps. Its email goes out after each completed run with new results (or every completed run, if declared). Research declared with `fields:"all"` keeps working when the user adds, renames or hides fields in the app: new fields are included at the next run without re-approval, excluded fields are never written, and removed fields are skipped. Tell the user this plainly; do not ask them to re-approve after field edits for such automations.
 
 ## Installing and adding app automations (1.3.27)
 

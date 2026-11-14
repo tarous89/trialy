@@ -5,7 +5,10 @@ import {roleKey} from '../workspace/role-contracts.js';
 
 const key=z.string().regex(/^[a-z][a-z0-9_]{0,63}$/);
 const text=(n:number)=>z.string().trim().min(1).max(n);
-const binding=z.object({role:roleKey,fields:z.array(key).min(1).max(100)}).strict();
+// E6: `fields:"all"` approves every field of the table the app binds now or later, minus exceptFields, resolved at each run.
+const bindingShape=z.object({role:roleKey,fields:z.union([z.array(key).min(1).max(100),z.literal('all')]),exceptFields:z.array(key).max(100).optional()}).strict();
+const exceptOnlyWithAll=(b:{fields:string[]|'all';exceptFields?:string[]})=>b.fields==='all'||!b.exceptFields;
+const binding=bindingShape.refine(exceptOnlyWithAll,'exceptFields requires fields:"all"');
 export const recipeTrigger=z.union([
  schedule.options[0],schedule.options[2],
  actionTrigger.options[4].omit({typeId:true,recordId:true,catchUpDays:true}).extend({role:roleKey}),
@@ -16,10 +19,13 @@ export const recipeTrigger=z.union([
 export const automationRecipe=z.object({
  key,name:text(100),description:text(300),trigger:recipeTrigger,
  contextRole:roleKey.optional(),lifetimeDays:z.number().int().min(1).max(365).default(365),
- research:z.object({briefBinding:key.optional(),objective:text(2000),instructions:text(12000),sourcePolicy:text(4000),readBindings:z.array(binding).max(20).default([]),writeBindings:z.array(binding.extend({allowCreate:z.boolean().default(true),allowUpdate:z.boolean().default(true)}).refine(b=>b.allowCreate||b.allowUpdate,'Result storage needs create or update permission')).min(1).max(20).optional()}).strict().optional(),
- email:z.object({memberField:key.optional(),summaryBinding:key.optional(),subject:text(200),text:text(20000),fields:z.array(key).max(100).default([])}).strict().optional()
+ research:z.object({briefBinding:key.optional(),objective:text(2000),instructions:text(12000),sourcePolicy:text(4000),readBindings:z.array(binding).max(20).default([]),writeBindings:z.array(bindingShape.extend({allowCreate:z.boolean().default(true),allowUpdate:z.boolean().default(true)}).refine(b=>b.allowCreate||b.allowUpdate,'Result storage needs create or update permission').refine(exceptOnlyWithAll,'exceptFields requires fields:"all"')).min(1).max(20).optional()}).strict().optional(),
+ email:z.object({memberField:key.optional(),summaryBinding:key.optional(),subject:text(200),text:text(20000),fields:z.array(key).max(100).default([]),when:z.enum(['completed','meaningful']).optional()}).strict().optional()
 }).strict().superRefine((v,c)=>{
- if(!!v.research===!!v.email)c.addIssue({code:'custom',message:'Choose research or email; follow-up email is a separate recipe'});
+ if(!v.research&&!v.email)c.addIssue({code:'custom',message:'Choose research, email, or research followed by email'});
+ // E5: research then email is one automation; its email reports that run, so it has no record scope.
+ if(v.research&&v.email&&(v.email.memberField||v.email.fields.length))c.addIssue({code:'custom',message:'An email step after research reports the run; it cannot use record fields or a member field'});
+ if(v.email?.when&&!v.research)c.addIssue({code:'custom',message:'email.when applies only to an email step after research'});
  if(v.research&&v.trigger.kind==='after')c.addIssue({code:'custom',message:'Only email recipes consume research completions'});
  if(v.contextRole&&(!('role' in v.trigger)||v.trigger.role!==v.contextRole))c.addIssue({code:'custom',message:'Context must match the trigger role'});
 });

@@ -6,7 +6,9 @@ import {sharedAutomation} from '../automations/schema.js';
 const text=(max:number)=>z.string().trim().min(1).max(max);
 const version=z.number().int().min(0);
 const zone=text(100).refine(v=>{try{new Intl.DateTimeFormat('en',{timeZone:v});return true;}catch{return false;}},'Use an IANA timezone');
-export const monitoringWriteBinding=z.object({typeId:id,fields:z.array(text(64)).min(1).max(100),allowCreate:z.boolean().default(true),allowUpdate:z.boolean().default(true)}).strict().refine(v=>v.allowCreate||v.allowUpdate,'Result storage needs create or update permission');
+// E6: dynamic bindings keep `fields` as the last resolution; validation re-resolves them from the app's current binding.
+const dynamicFields={dynamic:z.literal(true).optional(),exceptFields:z.array(text(64)).max(100).optional()};
+export const monitoringWriteBinding=z.object({typeId:id,fields:z.array(text(64)).min(1).max(100),...dynamicFields,allowCreate:z.boolean().default(true),allowUpdate:z.boolean().default(true)}).strict().refine(v=>v.allowCreate||v.allowUpdate,'Result storage needs create or update permission');
 export const monitoringConfig=z.object({
  inheritAppAccess:z.boolean().optional(),brief:summaryBinding.optional(),
  storeResults:z.literal(true).optional(),
@@ -15,7 +17,7 @@ export const monitoringConfig=z.object({
  name:text(100),appId:id,objective:text(2000),instructions:text(12000),sourcePolicy:text(4000),
  schedule:z.object({description:text(300),timeZone:zone}).strict(),
  notificationPolicy:text(1000).default('Report meaningful findings and blockers; remain quiet when there is no relevant update.'),
- readBindings:z.array(z.object({typeId:id,fields:z.array(text(64)).min(1).max(100)}).strict()).max(20).default([]),
+ readBindings:z.array(z.object({typeId:id,fields:z.array(text(64)).min(1).max(100),...dynamicFields}).strict()).max(20).default([]),
  writeScopes:z.array(z.object({scopeId:id,version}).strict()).max(20).default([]),
  maxRunsPerDay:z.number().int().min(1).max(24).default(24),maxChangesPerRun:z.number().int().min(1).max(1000).default(100),
  expiresAt:z.iso.datetime({offset:true}),automation:sharedAutomation.optional(),authoringKey:text(100).optional()

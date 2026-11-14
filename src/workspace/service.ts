@@ -44,7 +44,8 @@ import {audit,revision,checksum} from '../domain/evidence.js';
 import {fail,type Actor} from '../shared/schema.js';
 import {maintenanceSchema,maintenanceBatch,workspaceOperation,type WorkspaceOperation} from './schema.js';
 import {redactExchangeLinks} from '../app-services/exchange-email.js';
-import {isExchangeOperation,exchangeReview as externalExchangeReview,commitExchangeOperation,appExchangeWrites,appExchangeReads,appExchangeRead,exchangeOperationApp,exchangeReachedOutside,preparationKinds} from '../domain/external-exchange.js';
+import {isExchangeOperation,exchangeReview as externalExchangeReview,commitExchangeOperation,appExchangeWrites,appExchangeReads,appExchangeRead,exchangeOperationApp,exchangeReachedOutside,preparationKinds} from '../domain/external-exchange.js';import {dynamicStamp} from '../app-services/dynamic-fields.js';
+
 /** The app record changes an exchange operation carries, as the reviewed app record operation they are validated and committed as. */
 const exchangeRecords=(op:any)=>{const r=isExchangeOperation(op)?(op as any).records:null;return r?{kind:'apply_component_records' as const,componentId:r.componentId,expectedVersion:r.expectedVersion,...(r.viewId?{viewId:r.viewId}:{}),changes:r.changes}:null;};
 const withoutRecords=(op:any)=>{const {records,...rest}=op;return rest;};
@@ -531,7 +532,7 @@ export class WorkspaceFoundation {
  }
  async scopeStamp(tx:Connection,a:Actor,w:string,body:ReturnType<typeof maintenanceSchema.parse>,allowArchived=false){
   const chain=await (allowArchived?this.nodeAccess(tx,a,w,body.projectId):this.activeNode(tx,a,w,body.projectId));const project=chain[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');
-  const types=[];for(const b of body.bindings){const {type,policy}=await typeAccess(tx,a,w,b.typeId,true);const fields=visibleFields(type.fields,policy,a);if(new Set(b.fields).size!==b.fields.length||b.fields.some(k=>!fields.some(f=>f.key===k&&!derived(f))))fail(403,'field_scope','Scope includes unavailable or calculated fields');types.push({id:type.id,version:type.version,fields:type.fields});}
+  const types=[];for(const b of body.bindings){if(b.dynamic){await typeAccess(tx,a,w,b.typeId,true);types.push(dynamicStamp(b));continue;}const {type,policy}=await typeAccess(tx,a,w,b.typeId,true);const fields=visibleFields(type.fields,policy,a);if(new Set(b.fields).size!==b.fields.length||b.fields.some(k=>!fields.some(f=>f.key===k&&!derived(f))))fail(403,'field_scope','Scope includes unavailable or calculated fields');types.push({id:type.id,version:type.version,fields:type.fields});}
   const restricted=chain.filter(n=>n.allowed_users!==null||!n.ai_enabled);return checksum(J(restricted.length?{types,access:restricted.map(n=>({id:n.id,users:n.allowed_users,ai:n.ai_enabled}))}:types));
  }
  async recordFacts(a:Actor,w:string,recordId:string,offset=0){
@@ -1022,7 +1023,9 @@ export class WorkspaceFoundation {
    if(v.changes.length+v.links.length>body.maxChanges)fail(400,'batch_limit','Batch exceeds approved limit');
    const service=new Service(adapter(tx));const ids:string[]=[];
    // Validate complete batch before saving; transaction also rolls back any later failure.
-   for(const c of v.changes){const t=c.kind==='create_record'?c.typeId:(await this.record(tx,actor,w,c.recordId,true)).type_id;const b=body.bindings.find(b=>b.typeId===t);if(!b||Object.keys(c.data).some(k=>!b.fields.includes(k))||(c.kind==='create_record'?!body.allowCreate:!body.allowUpdate))fail(403,'maintenance_scope','Change exceeds approved fields or operations');}
+   // E6: a dynamic grant is checked against the fields its active automation run resolved now.
+   const fieldScope=body.bindings.some(b=>b.dynamic)?monitoring?.checked.scopes.find((x:any)=>x.id===s.id)?.body:body;if(!fieldScope)fail(403,'monitoring_write_scope','Run-time field permission needs its active automation run');
+   for(const c of v.changes){const t=c.kind==='create_record'?c.typeId:(await this.record(tx,actor,w,c.recordId,true)).type_id;const b=fieldScope.bindings.find((b:any)=>b.typeId===t);if(!b||Object.keys(c.data).some(k=>!b.fields.includes(k))||(c.kind==='create_record'?!body.allowCreate:!body.allowUpdate))fail(403,'maintenance_scope','Change exceeds approved fields or operations');}
    if(v.links.length&&!body.allowIdentityLinks)fail(403,'maintenance_scope','Identity links not authorized');
    for(const l of v.links){await this.validate(tx,actor,w,l);const r=await this.record(tx,actor,w,l.sourceRecordId);if(!body.bindings.some(b=>b.typeId===r.type_id))fail(403,'maintenance_scope','Identity outside scope');}
    if(v.changes.length)await service.validate(tx,actor,w,{kind:'bulk_records',changes:v.changes});
