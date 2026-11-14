@@ -606,3 +606,8 @@ Primary evidence: current life.cash-runway 2.1.0 catalog, documentation and sour
 Fictional arithmetic independently executed in Python: EUR 900k at 31 December 2026, EUR 150k committed monthly spend January–December, EUR 300k one-off committed March spend, EUR 600k contingent grant April versus July; no other positions, receipts, FX or reserve. January/February 750/600k in all cases; March–July base 150/0/-150/-300/-450k; April-grant 150/600/450/300/150k; July-grant 150/0/-150/-300/150k. First negative month May/September/May respectively. Later cash recovery does not erase an earlier shortfall. Only app-owned calculation outputs should be used operationally; no artificial example data written to a real workspace.
 
 Await exact-head predeploy, desktop/mobile visual review, merge and independent live verification. Resume PR #205 before drafting another topic. Totals remain 24 published, 23 unfinished including owner-deferred A9.
+
+
+### C4 merged — deployment pending, 14 November 2026 06:56 CET
+
+PR #205 merged as `0bb286174ad6c1a925fa427fb115de7640ef79f4` at approximately 05:56:43 UTC. Exact head `4f63afdce1b49dfaa8b4e3091ae569af3680cf1b` passed full predeploy run `43563321967` (validate and seo-container). Artifact `14101342259` matches that head; desktop 1440px and mobile 390px screenshots inspected through every section, including contained scrollable tables, genuine images, captions, shell and final CTA. Initial HTTP check of https://trialagents.com/apps/biotech-cash-flow-forecasting-claude returned 404: automatic deployment pending, not an authentication fault. Resume this release before another topic. Totals remain 24 published, 23 unfinished until independent live verification.
