@@ -39,6 +39,9 @@ for(const embedded of [true,false])test(`Move feedback floats without layout shi
  const root=embedded?page.frameLocator('#app'):page;
  await expect(root.locator('.ty-resource--app')).toHaveCount(1);
  const heading=root.getByRole('heading',{name:'Apps',exact:true}),before=await heading.boundingBox();
+ // install() still advances with wall time. Freeze before creating the notice so
+ // CI/browser assertion time cannot consume part of its three-second lifetime.
+ await page.clock.pauseAt(new Date(await page.evaluate(()=>Date.now())+10000));
  await root.getByRole('button',{name:'Actions for Feedback test app'}).click();await root.getByRole('menuitem',{name:'Move to',exact:true}).click();await root.getByRole('menuitem',{name:'Research project',exact:true}).click();
  const notice=root.getByRole('status').filter({hasText:'Moved to Research project'});await expect(notice).toBeVisible();
  expect((await heading.boundingBox()).y).toBe(before.y);await expect(root.locator('.ty-system-notices')).toHaveCSS('position','fixed');
