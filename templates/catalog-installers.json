@@ -26,7 +26,8 @@
   "life.cro-selection@1.0.1": "templates/source/cro-selection/archive/1.0.1/schema.example.json",
   "life.cro-sponsor-updates@1.0.1": "templates/source/cro-sponsor-updates/schema.example.json",
   "life.co-trial-monitoring-pv@1.1.1": "templates/source/co06-trial-monitoring-pv/schema.example.json",
-  "life.contracts@1.0.0": "templates/source/contracts/schema.example.json",
+  "life.contracts@1.0.0": "templates/source/contracts/archive/1.0.0/schema.example.json",
+  "life.contracts@1.1.0": "templates/source/contracts/schema.example.json",
   "life.cro-selection@2.0.0": "templates/source/cro-selection/schema.example.json",
   "life.data-room@1.0.0": "templates/source/data-room/schema.example.json",
   "life.partnership-tracker@2.0.0": "templates/source/partnership-tracker/schema.example.json"

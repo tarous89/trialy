@@ -36,7 +36,7 @@ export const SIGNED_CDA=[
  ['4. RETURN OF INFORMATION','Each Party shall return or destroy Confidential Information within thirty (30) days of a written request.','5. GOVERNING LAW','This Agreement is governed by the laws of Denmark.','Signed on 27 February 2025 by both Parties.'],
 ];
 
-/** A disposable database with the catalog synced; Contracts 1.0.0 is approved only inside it. Installs go through the real Add app step. */
+/** A disposable database with the catalog synced; Contracts 1.1.0 is approved only inside it. Installs go through the real Add app step. */
 export async function contractsSuite(){
  const pg=new PGlite();for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
  const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
@@ -44,9 +44,9 @@ export async function contractsSuite(){
  await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,'owner@example.invalid','Owner (fictional)']);
  const f=new WorkspaceFoundation(db),s=new Service(db);
  await syncTemplateCatalog(db);
- await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.contracts' AND version='1.0.0'");
+ await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.contracts' AND version='1.1.0'");
  const catalog=new AppTemplates(undefined,db);
- const C=await catalog.read({templateId:'life.contracts',version:'1.0.0'}),P=await catalog.read({templateId:'life.project-oversight',version:'2.1.0'}),R=await catalog.read({templateId:'life.cash-runway',version:'2.1.0'});
+ const C=await catalog.read({templateId:'life.contracts',version:'1.1.0'}),P=await catalog.read({templateId:'life.project-oversight',version:'2.1.0'}),R=await catalog.read({templateId:'life.cash-runway',version:'2.1.0'});
  const install=async(w:string,t:any,name:string,connections:Record<string,string>={},extra:any={})=>{
   const target={install:{templateId:t.id,version:t.version,digest:t.digest,name,requestKey:randomUUID(),...extra}};
   const step=await dataAccessStep(f,actor,w,target);
@@ -77,7 +77,7 @@ export async function contractsSuite(){
 }
 
 const REF_KEYS=['counterparty_id','parent_id','program_id','study_id','agreement_id','milestone_id','organization_id'];
-/** Contracts 1.0.0 on a disposable database: the documented schema created through reviewed writes, the fictional demo records
+/** Contracts 1.1.0 on a disposable database: the documented schema created through reviewed writes, the fictional demo records
  * saved with real receipt IDs substituted into every relationship, then the catalog app prepared with a manifest (as of 12 Nov 2026). */
 export async function contractsFixture(){
  const {manifestFieldId}=await import('../../src/workspace/template-catalog.js');
@@ -100,7 +100,7 @@ export async function contractsFixture(){
   const data=Object.fromEntries(Object.entries(r.data).filter(([,v])=>v!==null).map(([k,v])=>[k,REF_KEYS.includes(k)&&ids[v as string]?ids[v as string]:v]));
   ids[r.id]=(await save({kind:'create_record',typeId:map[r.role].typeId,data})).objects[0].id;
  }
- const entry=await appTemplates.read({templateId:'life.contracts',version:'1.0.0'});
+ const entry=await appTemplates.read({templateId:'life.contracts',version:'1.1.0'});
  const op=await appTemplates.operation(f,actor,w.id,{templateId:entry.id,version:entry.version,digest:entry.digest,name:'Contracts',configuration:{tableMap:JSON.stringify(map),asOfOverride:'2026-11-12'},bindings,manifest:{version:1,scope:'workspace',fields}});
  const p=await f.preview(actor,w.id,op),receipt=await f.confirm(actor,w.id,p.id,p.digest),component=(await f.readComponent(actor,w.id,receipt.id)).component;
  return {pg,db,actor,f,s,w,component,map,bindings,fields,save,ids,entry};

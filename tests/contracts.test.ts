@@ -7,9 +7,9 @@ import {appTemplates} from '../src/workspace/app-templates.js';
 import {readCustomLayout} from '../src/shared/custom-layout.js';
 import {fieldSchema} from '../src/shared/schema.js';
 
-/* Contracts 1.0.0: the catalog entry, prepared exactly as AppTemplates.operation prepends configuration, executed in production QuickJS.
+/* Contracts 1.1.0: the catalog entry, prepared exactly as AppTemplates.operation prepends configuration, executed in production QuickJS.
  * Fixtures are the fictional demo records; every date and total below was computed by hand (QA.md), not by the app's formulas. */
-const entry=await appTemplates.read({templateId:'life.contracts',version:'1.0.0'});
+const entry=await appTemplates.read({templateId:'life.contracts',version:'1.1.0'});
 const schema=JSON.parse(await readFile('templates/source/contracts/schema.example.json','utf8'));
 const contract=JSON.parse(await readFile('templates/core-contract/v1.json','utf8'));
 const registry=JSON.parse(await readFile('templates/contracts/outputs.json','utf8'));
@@ -42,7 +42,7 @@ const text=(html:string)=>html.replace(/<[^>]+>/g,' ').replace(/&amp;/g,'&').rep
 const terms=(rows:Row[],ag:string)=>rows.find(r=>r.role==='contracts.terms'&&r.data.agreement_id===ag)!;
 
 test('catalog entry, contract-shaped scalar schema, roles as in the scope and seven layout screens',async()=>{
- assert.equal(entry.version,'1.0.0');assert.equal(entry.name,'Contracts');assert.equal(entry.engine,'frontend-js');assert.ok(entry.source!.length<180000);
+ assert.equal(entry.version,'1.1.0');assert.equal(entry.name,'Contracts');assert.equal(entry.engine,'frontend-js');assert.ok(entry.source!.length<180000);
  for(const def of Object.values(schema) as any[])for(const f of def.fields){assert.ok(fieldSchema.safeParse(f).success,JSON.stringify(f));assert.equal(f.multiple,false);assert.match(f.key,/^[a-z][a-z0-9_]{0,63}$/);}
  // Core roles: the core contract v1 fields; Contracts owns the seven optional agreements fields; Programs-owned health fields are not bound.
  const strip=(fs:any[])=>fs.map(({owner,...f}:any)=>f);
@@ -53,14 +53,17 @@ test('catalog entry, contract-shaped scalar schema, roles as in the scope and se
  // Section 5: modes exactly as declared.
  const modes=Object.fromEntries(roles.map(r=>[r,[schema[r].contract,!!schema[r].optional,!!schema[r].integration,!!schema[r].readOnly]]));
  assert.deepEqual(modes,{agreements:['core.v1',false,false,false],organizations:['core.v1',false,false,false],people:['core.v1',true,false,false],programs:['core.v1',true,false,false],studies:['core.v1',true,false,false],
-  'programs.plan_items':['programs.v2',true,true,false],'contracts.settings':['contracts.v1',false,false,false],'contracts.terms':['contracts.v1',false,false,false],'contracts.obligations':['contracts.v1',false,false,false]});
+  'programs.plan_items':['programs.v2',true,true,false],'contracts.settings':['contracts.v1',false,false,false],'contracts.terms':['contracts.v1',false,false,false],'contracts.obligations':['contracts.v2',false,false,false]});
  // Integration binds name, program_id, item_type, end_date, status, is_key, identical to Programs' fields.
  const programsPlan=JSON.parse(await readFile('templates/source/project-oversight/schema.example.json','utf8'))['programs.plan_items'].fields;
  assert.deepEqual(schema['programs.plan_items'].fields.map((f:any)=>f.key),['name','program_id','item_type','end_date','status','is_key']);
  for(const f of schema['programs.plan_items'].fields)assert.deepEqual(f,programsPlan.find((x:any)=>x.key===f.key));
  // The output contract is published in the registry and the writer table provides every field of it.
  const out=registry.roles['contracts.obligations'];assert.equal(out.kind,'output');assert.equal(out.writer,'life.contracts');
- assert.deepEqual(schema['contracts.obligations'].fields.map(({ai,...f}:any)=>f),out.versions['contracts.v1'].fields);
+ assert.deepEqual(schema['contracts.obligations'].fields.map(({ai,...f}:any)=>f),out.versions['contracts.v2'].fields);
+ // contracts.v2 is contracts.v1 plus the optional counterparty_id, so v1 readers keep connecting (modular apps 7.5).
+ assert.deepEqual(out.versions['contracts.v2'].fields.filter((f:any)=>f.key!=='counterparty_id'),out.versions['contracts.v1'].fields);
+ assert.deepEqual(out.versions['contracts.v2'].fields.find((f:any)=>f.key==='counterparty_id')&&{kind:'text',required:false},{kind:'text',required:false});
  const prepared=`const templateConfiguration=${JSON.stringify({...entry.defaults,heading:'Contracts'})};\nconst templateBindings=[];\n${entry.source}`;
  assert.deepEqual(readCustomLayout(prepared)!.schema.screens.map(s=>s.id),['overview','register','families','obligations','cdas','pipeline','settings']);
  assert.equal(entry.documentation!.tasks.mode,'optional');for(const k of ['quickStart','dataContract','interactionContract','lifecycle','limitations','examples','tasks'])assert.ok((entry.documentation as any)[k],k);
@@ -246,4 +249,65 @@ test('production design inspector accepts all seven screens and the main panels'
  const frames:any[]=[];for(const s of ['overview','register','families','obligations','cdas','pipeline','settings']){const r=await render(fresh(),{section:s});frames.push({name:s,html:r.html,css:r.output.css});}
  for(const a of ['review:ag-corvane','details:agreements:ag-msa-helix']){const r=await render(fresh(),{},{kind:'click',action:a});frames.push({name:a,html:r.html,css:r.output.css});}
  const design=await inspectAppDesign(frames);assert.deepEqual(design.issues,[]);
+});
+
+/* ---------- 1.1.0 (scope §12) ---------- */
+test('1.1.0 C4: an obligation defaults to its agreement\'s counterparty and can name another party',async()=>{
+ const add=await render(fresh(),{section:'obligations'},{kind:'click',action:'add:obligations'});
+ const created=await render(fresh(),add.state,{kind:'submit',action:'save-record',form:{agreement_id:'ag-kestrel',title:'Board report',kind:'report',direction:'we_owe',status:'open',due_date:'2027-01-15'}});
+ assert.equal(created.changes[0].data.counterparty_id,'org-kestrel');
+ const other=await render(fresh(),add.state,{kind:'submit',action:'save-record',form:{agreement_id:'ag-sow1',counterparty_id:'org-corvane',title:'Pass-through payment',kind:'payment',direction:'we_owe',status:'open'}});
+ assert.equal(other.changes[0].data.counterparty_id,'org-corvane');
+ // Opened from an agreement, the form is prefilled with that agreement's counterparty.
+ const fromAg=await render(fresh(),{detail:{role:'agreements',id:'ag-corvane'}},{kind:'click',action:'add:obligations'});assert.equal(fromAg.state.editor.draft.counterparty_id,'org-corvane');
+ // Without a counterparty field (a table that predates 1.1.0) nothing is written for it.
+ const map=structuredClone(fullMap) as any;delete map['contracts.obligations'].fields.counterparty_id;map['contracts.obligations'].writableFields=map['contracts.obligations'].writableFields.filter((k:string)=>k!=='counterparty_id');
+ const b=fullBindings.map(x=>x.typeId==='contracts.obligations'?{...x,fields:x.fields.filter((k:any)=>k!=='counterparty_id')}:x);
+ const old=await render(fresh(),add.state,{kind:'submit',action:'save-record',form:{agreement_id:'ag-kestrel',title:'Board report',kind:'report',direction:'we_owe',status:'open'}},{config:cfgFor(map),bindings:b});
+ assert.equal(old.changes.length,1);assert.equal('counterparty_id' in old.changes[0].data,false);
+});
+
+test('1.1.0 C2/C6: no digest day; the app calculates the dates it shows, whoever stored them',async()=>{
+ const s=await render(fresh(),{section:'settings'});assert.doesNotMatch(text(s.html),/digest/i);
+ const ed=await render(fresh(),{section:'settings'},{kind:'click',action:'edit-settings'});assert.doesNotMatch(ed.html,/digest_day/);
+ // An assistant stored a wrong notice deadline: the app shows its own (31 Dec 2026 − 30 days = 1 Dec 2026).
+ const rows=fresh();terms(rows,'ag-brightwater').data.notice_deadline='2026-11-20';
+ const ov=text((await render(rows,{section:'overview'})).html);assert.match(ov,/1 Dec 2026/);assert.doesNotMatch(ov,/20 Nov 2026/);
+ // A deadline stored without a notice period is still shown.
+ const r2=fresh();Object.assign(terms(r2,'ag-sow1').data,{renewal:'automatic',notice_days:null,notice_deadline:'2026-12-05'});
+ const d2=text((await render(r2,{},{kind:'click',action:'details:agreements:ag-sow1'})).html);assert.match(d2,/5 Dec 2026/);
+});
+
+test('1.1.0 C3/C7: values from a connected app are labelled From <App>; unknown bound fields show as Additional fields',async()=>{
+ const rows=fresh(),ms=rows.find(r=>r.role==='programs.plan_items')!;
+ rows.find(r=>r.id==='ob-aurora-fih')!.data.milestone_id=ms.id;
+ const linked=await render(rows,{},{kind:'click',action:'details:obligations:ob-aurora-fih'},{integrations:[{role:'programs.plan_items',source:'linked',chosen:true,provider:'Programs',offer:null}]});
+ assert.match(linked.html,/class="ct-from"[^>]*>From Programs</);
+ const own=await render(rows,{},{kind:'click',action:'details:obligations:ob-aurora-fih'});assert.doesNotMatch(own.html,/ct-from/);
+ // A field added to the obligations table after install (bound, not in this version's forms) is shown read only.
+ const b=fullBindings.map(x=>x.typeId==='contracts.obligations'?{...x,fields:[...x.fields,'budget_code']}:x);
+ const r2=fresh();r2.find(r=>r.id==='ob-co2-fee')!.data.budget_code='BC-7';
+ const d=await render(r2,{},{kind:'click',action:'details:obligations:ob-co2-fee'},{bindings:b});assert.match(text(d.html),/Additional fields Budget code BC-7/);
+ const ed=await render(r2,{},{kind:'click',action:'edit:obligations:ob-co2-fee'},{bindings:b});assert.doesNotMatch(ed.html,/budget_code/);
+});
+
+test('1.1.0 weekly email: one declared recommendation, and a deterministic actions-needed summary',async()=>{
+ const {validateRecipeDeclarations,readRecipes}=await import('../src/automations/recipes-schema.js');
+ const raw=JSON.parse(await readFile('templates/apps/life.contracts-1.1.0.json','utf8'));validateRecipeDeclarations(raw);
+ const rec=readRecipes(raw).recommended;assert.deepEqual(rec.map(r=>[r.key,!!r.research,r.email?.summaryBinding,r.trigger.kind,(r.trigger as any).weekdays,(r.trigger as any).time]),[['contract_actions',false,'actions_summary','calendar',[1],'08:00']]);
+ assert.ok(!entry.instructions.includes('{{ACTIONS_SUMMARY_SOURCE}}'));assert.match(entry.instructions,/const TABLE_MAP=__TABLE_MAP__;/);
+ const body=entry.instructions.slice(entry.instructions.indexOf('const TABLE_MAP=__TABLE_MAP__;'));
+ const summary=(rows:Row[],map:any=fullMap)=>new Function('input','tools',body.replace('__TABLE_MAP__',JSON.stringify(map)))({asOf:'2026-11-12',records:[],run:null},{call:(name:string,v:any)=>{assert.equal(name,'records.read');const all=rows.filter(r=>r.role===v.typeId);return {rows:all.slice(v.offset,v.offset+v.limit),total:all.length};}});
+ // Hand-checked on the fictional demo as of 12 Nov 2026 (first reminder window 30 days):
+ const out=summary(fresh());assert.equal(out.nonEmpty,true);assert.equal(out.subject,'Contracts: 9 actions needed');
+ assert.equal(out.text,['Contracts that need action, as of 12 Nov 2026.','',
+  'Deadlines (2)','- SOW 2 — PX-101 bioanalysis (Helix Clinical Research): SOW 2 bioanalysis invoice — batch 3 overdue since 31 Oct 2026','- Data processing agreement — Brightwater Data Services: notice deadline 1 Dec 2026 (renews automatically for 12 months)','',
+  'Waiting for signature (3)','- CDA — Meridian Pharma KK (partnering 2026): Out for signature, since 30 Oct 2026 (13 days)','- Clinical trial agreement — St Aldric University Hospital (PX-101-001): Drafting, since 2 Nov 2026 (10 days)','- Sublicence — Meridian Pharma KK (PX-202 Japan): In negotiation, since 15 Sep 2026 (58 days)','',
+  'To check (4)','- Supply agreement — Corvane Biologics (PX-101 drug product): key terms not yet checked','- Supply agreement — Corvane Biologics (PX-101 drug product): obligation “Annual capacity reservation fee” not yet checked','- Supply agreement — Corvane Biologics (PX-101 drug product): obligation “Quarterly rolling forecast” not yet checked','- Supply agreement — Corvane Biologics (PX-101 drug product): obligation “Quality audit on 30 days notice” not yet checked','',
+  'Open Contracts in TrialAgents for details.'].join('\n'));
+ // Nothing needs action: no email.
+ const quiet=fresh().filter(r=>r.role!=='contracts.obligations'&&r.role!=='contracts.terms'&&!(r.role==='agreements'&&['drafting','in_negotiation','out_for_signature'].includes(r.data.status)));
+ assert.deepEqual(summary(quiet),{nonEmpty:false,text:''});
+ // A missing table is reported, never silently treated as empty.
+ const map={...fullMap} as any;delete map['contracts.terms'];assert.match(summary(fresh(),map).text,/may be incomplete/);
 });

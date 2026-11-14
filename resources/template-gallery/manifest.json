@@ -110,5 +110,9 @@
   "life.contracts@1.0.0": {
     "catalogDigest": "87c4b28ee46835b1d34d1d31a5b4d7e49e3600cee2b2a31e753fd2b2655d9ac7",
     "previewSha256": "085608c5b3e2b3d98a86a8a44e3c935300124bec0c62dc6ce89d1b4fbb664023"
+  },
+  "life.contracts@1.1.0": {
+    "catalogDigest": "da3ef95c3b8c47a965051924e991859a999d95645ba4c6e7cdb43805c23cf115",
+    "previewSha256": "6348da34d183281728d434021351535abed3e81c78c1eec418caffddff4730e9"
   }
 }

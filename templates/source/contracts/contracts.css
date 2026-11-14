@@ -74,3 +74,4 @@ button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}bu
 .ct-fieldset{border:1px solid var(--line);border-radius:10px;padding:8px 12px 10px;margin:0 0 12px;display:flex;flex-wrap:wrap;gap:6px 16px}.ct-fieldset legend{font-weight:700;font-size:13px;padding:0 4px}
 @media(max-width:900px){.ct-board{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:720px){.ct-family>details>summary{flex-wrap:wrap}.ct-tree-item{padding-left:calc(var(--depth,0) * 12px)}}
+.ct-from{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:#EAF1F8;color:#1D4A73;font-size:12px;font-weight:600;white-space:nowrap}

@@ -1,3 +1,21 @@
+## 14 November 2026 — Contracts 1.1.0 (draft)
+
+New immutable draft `life.contracts` 1.1.0 from the owner's decisions C1–C8 ([CONTRACTS.md §12](docs/product/app-template-blueprints/apps/CONTRACTS.md)). No platform change.
+- **No scheduled AI.** Contracts are filled in when the user asks Claude or ChatGPT, or typed in by hand (blank is fine). The extraction automation is removed.
+- **Weekly email.** One recommended automation, `contract_actions` ("Contracts: actions needed", Monday 08:00 Europe/Berlin), switched on in the Add app dialog. A deterministic read-only summary function lists agreements with deadlines, waiting for signature or not yet checked, and sends nothing when the list is empty. Catalog installs cannot attach functions, so it is Needs setup until the assistant binds `actions_summary` once (source embedded in the catalog instructions). `digest_day` is removed.
+- **Counterparty on obligations.** `contracts.obligations` is published as `contracts.v2`, a superset of v1, in `templates/contracts/outputs.json`.
+- **Assistant control.** Every button is documented as an exact record change; assistants may check proposals on the user's request.
+- **App behaviour.** The app calculates the dates it shows from the fields, whoever saved them. Values from connected apps are labelled "From *App*", and unknown bound fields show as "Additional fields".
+
+The 1.0.0 package is archived unchanged (`templates/source/contracts/archive/1.0.0/`; seed and installer paths updated). `templates/catalog-retirements.json` withdraws 1.0.0 when 1.1.0 is approved. The gallery media adds `life.contracts@1.1.0`. The draft is not in the seed: approval needs the owner, plus a seed entry and a one-time migration as for 1.0.0. New tests:
+- `tests/contracts.test.ts`: counterparty default, app-calculated dates, labels, additional fields, and the hand-checked summary;
+- `tests/contracts-automation.test.ts`: install with the email on → Needs setup → bind → active → one email, with restricted roles.
+
+Local checks:
+- `npm run build` and `tsc` pass.
+- The Contracts unit, integration, automation and browser tests pass.
+- `npm test`: 631 of 632 pass. The CO06 design-check failure also occurs without this change in this environment.
+
 ## 14 November 2026 — Research + email in one automation (E5) and run-time fields (E6)
 
 Platform additions required by the Bio Radars scope. **E5:** a recipe may declare research followed by email; it installs and is managed as one automation (one popup row, one Automations card with both connectors, one switch). The email step is an action row linked by `follow_up_of`, released once per completed run of its research version; research edits keep it attached, and copies keep it grouped and disabled. **E6:** `fields:"all"` with `exceptFields` approves every field the app binds on a table, re-resolved at each run within the app's current binding and the assistant's current access. Field additions, renames and hiding no longer require re-approval or retire the automation; removing the table or access still does. Run-reporting email approvals no longer depend on field lists; existing approvals keep their legacy stamps. Migration 070 adds `app_actions.follow_up_of` and setup follow-up columns, and narrows binding-removal retirement for dynamic bindings. Template guidance 1.3.28, automation guide 1.4.6, plugin versions bumped. The recipe rollout flag is unchanged.

@@ -192,7 +192,7 @@ Contracts works alone; each connection follows the platform pattern (add-app dia
 
 ## 12. Contracts 1.1.0: assistant control, connections and the email summary
 
-**Status:** Scope for build, 14 November 2026, from the owner's decisions C1–C8 (revised the same day: no platform changes, everything is built in the app). Not built. Delivered as a new immutable draft `life.contracts` 1.1.0. The published 1.0.0 package stays unchanged, saved apps are not migrated, and publishing 1.1.0 needs separate owner approval. Where this section conflicts with §4, §6, §7, §8 or §10, this section wins.
+**Status:** Built as a draft, 14 November 2026, from the owner's decisions C1–C8 (no platform changes; everything is built in the app). Package: `templates/source/contracts/` (README lists the changes); tests: `tests/contracts.test.ts`, `tests/contracts-automation.test.ts`. Delivered as a new immutable draft `life.contracts` 1.1.0. The published 1.0.0 package stays unchanged, saved apps are not migrated, and publishing 1.1.0 needs separate owner approval. Where this section conflicts with §4, §6, §7, §8 or §10, this section wins.
 
 **Rule for every app (owner):** an app does not need automations. If an app has one, it must follow the platform rules ([app automations](../../RECOMMENDED_AUTOMATIONS.md)): it is declared in the package, shown switched on in the Add app dialog, can be turned off, and the app works fully without it.
 
@@ -229,7 +229,7 @@ Contracts only tracks agreements; signing happens elsewhere. So there is no "sig
 
 | Key | List | Kind | Trigger | Content |
 |---|---|---|---|---|
-| `contract_actions` | `recommendedAutomations` | email (no AI) | calendar, weekly, Monday 08:00 Europe/Berlin (editable) | One email listing what needs action, grouped. Each line links to the record. **Nothing is sent when the list is empty.** |
+| `contract_actions` | `recommendedAutomations` | email (no AI) | calendar, weekly, Monday 08:00 Europe/Berlin (editable) | One plain email listing agreement names that need action, grouped (Deadlines, Waiting for signature, To check). Deterministic: no AI. **Nothing is sent when the list is empty.** |
 
 What counts as an action:
 - **Obligations:** open obligations that are overdue, or due in the next 7 days.

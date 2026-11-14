@@ -558,15 +558,6 @@
     "description": "Comma list of day windows, default 30,60,90."
    },
    {
-    "key": "digest_day",
-    "name": "Digest day",
-    "kind": "number",
-    "required": false,
-    "multiple": false,
-    "ai": true,
-    "description": "Weekday of the weekly digest, 1 = Monday … 7 = Sunday."
-   },
-   {
     "key": "agreement_types",
     "name": "Agreement types",
     "kind": "text",
@@ -588,7 +579,6 @@
   "logicalFields": {
    "default_currency": "default_currency",
    "reminder_days": "reminder_days",
-   "digest_day": "digest_day",
    "agreement_types": "agreement_types",
    "obligation_kinds": "obligation_kinds"
   }
@@ -797,7 +787,7 @@
  },
  "contracts.obligations": {
   "name": "Obligations",
-  "contract": "contracts.v1",
+  "contract": "contracts.v2",
   "fields": [
    {
     "key": "agreement_id",
@@ -806,6 +796,15 @@
     "required": true,
     "multiple": false,
     "description": "Record ID of an agreements record (core role agreements).",
+    "ai": true
+   },
+   {
+    "key": "counterparty_id",
+    "name": "Counterparty",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "description": "Record ID of an organizations record (core role organizations). Defaults to the agreement's counterparty; may differ, for example a payment to a third party.",
     "ai": true
    },
    {
@@ -987,6 +986,7 @@
   ],
   "logicalFields": {
    "agreement_id": "agreement_id",
+   "counterparty_id": "counterparty_id",
    "title": "title",
    "kind": "kind",
    "direction": "direction",
