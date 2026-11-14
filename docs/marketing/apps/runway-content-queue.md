@@ -698,3 +698,12 @@ This supersedes C6 source and merged-pending checkpoints. **27 published; 20 unf
 ### C7 execution claim — 14 November 2026
 
 C6 remains live (HTTP 200); public main is `e8ed31e7e198641c7bbd1e78b69db395735dfd29`; no unfinished Runway source PR found. Claim C7 on `content/runway-c7-custom-app-20261114`. Distinct intent: specify, review and verify a whole-app customization while preserving saved data and calculation semantics. This is not another host shortlist or forecast tutorial. No fresh host acceptance test will be claimed. Totals remain 27 published, 20 unfinished including deferred A9.
+
+
+### C7 source checkpoint — 14 November 2026
+
+**Can you build a custom cash runway app with ChatGPT or Claude?** Intended URL https://trialagents.com/apps/custom-cash-runway-app-chatgpt-claude. [PR #208](https://github.com/tarous89/trialagents-public/pull/208), exact head `b64b229487f2233dee17c9d2c0ba4970421062e0`. Distinct intent: choosing layout versus app versus schema versus model changes, writing a scoped customization brief, and verifying a saved revision without changing financial semantics.
+
+Primary evidence reviewed: approved life.cash-runway 2.1.0 catalog (blob `3bd4fdc73c5d2c36299b1569b05903900ba9689d`), current PRODUCT_DIRECTION.md and MODULAR_APPS_AND_SHARED_DATA.md; https://trialagents.com/ and https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities. Catalog quickStart still mentions 2.0.0; authoritative id/version and instructions identify 2.1.0. Current product direction limits scheduled research to ChatGPT; no Claude background runner claimed. Proposed Funding review view is explicitly not a standard screen or completed implementation. Genuine 03-plan.jpg and 02-cash-flow.jpg browser demo screenshots are labeled separately. No host parity or live acceptance test claimed.
+
+Six-step proposed acceptance workflow verifies unchanged records and calculated outputs for a view-only revision; no invented numerical result or production data write. Seven source files integrate renderer, listing, discovery and existing QA. JavaScript syntax passed; shell, shared CSS and analytics untouched. Await exact-head full predeploy, visual artifact review, merge and independent live checks. Resume PR #208 before another topic. Totals remain 27 published, 20 unfinished. Refresh on catalog, schema, calculation, permission or host changes.
