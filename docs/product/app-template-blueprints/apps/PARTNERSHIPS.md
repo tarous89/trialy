@@ -4,6 +4,8 @@
 
 **Status:** Final scope for build, 14 November 2026. Part of [Biotech apps v2](../BIOTECH_v2.md) (rank 7, formerly "BD Pipeline"). It **replaces** `life.partnership-tracker` 1.1.1 as **2.0.0**, display name **Partnerships**. No existing users, so no data migration.
 
+**Build (14 Nov 2026):** `templates/source/partnership-tracker/` → `templates/apps/life.partnership-tracker-2.0.0.json` (draft); results in its [QA.md](../../../../templates/source/partnership-tracker/QA.md).
+
 **Depends on:** nothing new in the platform. It uses TrialAgents Automations (research worker on the user's Claude or ChatGPT runner, and email to workspace members). It connects by role to Programs, Contracts and Data Room. **One PR.**
 
 **Governing contracts:** project context, template authoring and usage guidance (latest, all `nextOffset`s), shared build contract, interface rules, access control, write authorization, field capabilities, shared data, [modular apps and shared data](../../MODULAR_APPS_AND_SHARED_DATA.md), automations guidance, and the contract registry. They win on any conflict.

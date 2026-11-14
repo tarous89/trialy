@@ -1,0 +1,1091 @@
+{
+  "fictional": true,
+  "records": [
+    {
+      "role": "programs",
+      "id": "pr-rna",
+      "version": 1,
+      "data": {
+        "name": "RNA delivery platform",
+        "archived": false,
+        "modality": "Lipid nanoparticle platform",
+        "indication": "Nonconfidential therapeutic delivery",
+        "owner": "BD lead",
+        "brief": "Explore pharma R&D partners for licensed delivery technology; share only approved public capability statements."
+      }
+    },
+    {
+      "role": "programs",
+      "id": "pr-cell",
+      "version": 1,
+      "data": {
+        "name": "Cell therapy manufacturing",
+        "archived": false,
+        "modality": "Engineered T-cell process",
+        "indication": "Oncology R&D",
+        "owner": "CEO",
+        "brief": "Identify co-development partners with cell-therapy process scale-up capabilities."
+      }
+    },
+    {
+      "role": "programs",
+      "id": "pr-protein",
+      "version": 1,
+      "data": {
+        "name": "Protein engineering toolkit",
+        "archived": false,
+        "modality": "Protein engineering",
+        "indication": "Inflammation research",
+        "owner": "Head of science",
+        "brief": "Qualify collaborative assay-development and platform out-licensing organizations."
+      }
+    },
+    {
+      "role": "organizations",
+      "id": "og1",
+      "version": 1,
+      "data": {
+        "name": "HelixGate Pharma",
+        "archived": false,
+        "domain": "https://example.org/fictional-partner/og1",
+        "category": "Pharma",
+        "region": "Europe",
+        "focus": "RNA delivery",
+        "priority": "High",
+        "sourceUrl": "https://example.org/fictional-source/og1",
+        "verifiedAt": "2026-10-11",
+        "notes": "FICTIONAL PARTNER PROFILE: invented for UX testing, not a real company or commercial signal."
+      }
+    },
+    {
+      "role": "organizations",
+      "id": "og2",
+      "version": 1,
+      "data": {
+        "name": "Northstar Biologics",
+        "archived": false,
+        "domain": "https://example.org/fictional-partner/og2",
+        "category": "Biotech",
+        "region": "North America",
+        "focus": "LNP manufacturing",
+        "priority": "High",
+        "sourceUrl": "https://example.org/fictional-source/og2",
+        "verifiedAt": "2026-10-12",
+        "notes": "FICTIONAL PARTNER PROFILE: invented for UX testing, not a real company or commercial signal."
+      }
+    },
+    {
+      "role": "organizations",
+      "id": "og3",
+      "version": 1,
+      "data": {
+        "name": "Asterion Therapeutics",
+        "archived": false,
+        "domain": "https://example.org/fictional-partner/og3",
+        "category": "Pharma",
+        "region": "Europe",
+        "focus": "Cancer immunotherapy",
+        "priority": "Medium",
+        "sourceUrl": "https://example.org/fictional-source/og3",
+        "verifiedAt": "2026-10-13",
+        "notes": "FICTIONAL PARTNER PROFILE: invented for UX testing, not a real company or commercial signal."
+      }
+    },
+    {
+      "role": "organizations",
+      "id": "og4",
+      "version": 1,
+      "data": {
+        "name": "BlueCurrent Pharma",
+        "archived": false,
+        "domain": "https://example.org/fictional-partner/og4",
+        "category": "Pharma",
+        "region": "APAC",
+        "focus": "Rare disease platform",
+        "priority": "Medium",
+        "sourceUrl": "https://example.org/fictional-source/og4",
+        "verifiedAt": "2026-10-14",
+        "notes": "FICTIONAL PARTNER PROFILE: invented for UX testing, not a real company or commercial signal."
+      }
+    },
+    {
+      "role": "organizations",
+      "id": "og5",
+      "version": 1,
+      "data": {
+        "name": "Vireo Biopharma",
+        "archived": false,
+        "domain": "https://example.org/fictional-partner/og5",
+        "category": "Biotech",
+        "region": "North America",
+        "focus": "Protein engineering",
+        "priority": "High",
+        "sourceUrl": "https://example.org/fictional-source/og5",
+        "verifiedAt": "2026-10-15",
+        "notes": "FICTIONAL PARTNER PROFILE: invented for UX testing, not a real company or commercial signal."
+      }
+    },
+    {
+      "role": "organizations",
+      "id": "og6",
+      "version": 1,
+      "data": {
+        "name": "Meridian Innovation Labs",
+        "archived": false,
+        "domain": "https://example.org/fictional-partner/og6",
+        "category": "Academic",
+        "region": "Europe",
+        "focus": "Translational delivery",
+        "priority": "Low",
+        "sourceUrl": "https://example.org/fictional-source/og6",
+        "verifiedAt": "2026-10-16",
+        "notes": "FICTIONAL PARTNER PROFILE: invented for UX testing, not a real company or commercial signal."
+      }
+    },
+    {
+      "role": "organizations",
+      "id": "og7",
+      "version": 1,
+      "data": {
+        "name": "Caldera Biosciences",
+        "archived": false,
+        "domain": "https://example.org/fictional-partner/og7",
+        "category": "Biotech",
+        "region": "Europe",
+        "focus": "Cell therapy",
+        "priority": "High",
+        "sourceUrl": "https://example.org/fictional-source/og7",
+        "verifiedAt": "2026-10-17",
+        "notes": "FICTIONAL PARTNER PROFILE: invented for UX testing, not a real company or commercial signal."
+      }
+    },
+    {
+      "role": "organizations",
+      "id": "og8",
+      "version": 1,
+      "data": {
+        "name": "Foxtail Therapeutics",
+        "archived": false,
+        "domain": "https://example.org/fictional-partner/og8",
+        "category": "Biotech",
+        "region": "APAC",
+        "focus": "Assay analytics",
+        "priority": "Medium",
+        "sourceUrl": "https://example.org/fictional-source/og8",
+        "verifiedAt": "2026-10-18",
+        "notes": "FICTIONAL PARTNER PROFILE: invented for UX testing, not a real company or commercial signal."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "c1",
+      "version": 1,
+      "data": {
+        "name": "Fictional contact 1",
+        "archived": false,
+        "organizationId": "og1",
+        "title": "Business development director",
+        "team": "Business development",
+        "linkedin": "",
+        "lastContacted": "2026-10-18",
+        "notes": "Fictional professional example only; do not use for outreach."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "c2",
+      "version": 1,
+      "data": {
+        "name": "Fictional contact 2",
+        "archived": false,
+        "organizationId": "og1",
+        "title": "Alliance manager",
+        "team": "Business development",
+        "linkedin": "",
+        "lastContacted": "2026-10-18",
+        "notes": "Fictional professional example only; do not use for outreach."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "c3",
+      "version": 1,
+      "data": {
+        "name": "Fictional contact 3",
+        "archived": false,
+        "organizationId": "og2",
+        "title": "Head of collaborations",
+        "team": "Business development",
+        "linkedin": "",
+        "lastContacted": "2026-10-18",
+        "notes": "Fictional professional example only; do not use for outreach."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "c4",
+      "version": 1,
+      "data": {
+        "name": "Fictional contact 4",
+        "archived": false,
+        "organizationId": "og3",
+        "title": "Global partnering lead",
+        "team": "Business development",
+        "linkedin": "",
+        "lastContacted": "2026-10-18",
+        "notes": "Fictional professional example only; do not use for outreach."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "c5",
+      "version": 1,
+      "data": {
+        "name": "Fictional contact 5",
+        "archived": false,
+        "organizationId": "og4",
+        "title": "VP external innovation",
+        "team": "Business development",
+        "linkedin": "",
+        "lastContacted": "2026-10-18",
+        "notes": "Fictional professional example only; do not use for outreach."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "c6",
+      "version": 1,
+      "data": {
+        "name": "Fictional contact 6",
+        "archived": false,
+        "organizationId": "og5",
+        "title": "Chief business officer",
+        "team": "Business development",
+        "linkedin": "",
+        "lastContacted": "2026-10-18",
+        "notes": "Fictional professional example only; do not use for outreach."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "c7",
+      "version": 1,
+      "data": {
+        "name": "Fictional contact 7",
+        "archived": false,
+        "organizationId": "og6",
+        "title": "Technology transfer lead",
+        "team": "Business development",
+        "linkedin": "",
+        "lastContacted": "2026-10-18",
+        "notes": "Fictional professional example only; do not use for outreach."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "c8",
+      "version": 1,
+      "data": {
+        "name": "Fictional contact 8",
+        "archived": false,
+        "organizationId": "og7",
+        "title": "SVP corporate development",
+        "team": "Business development",
+        "linkedin": "",
+        "lastContacted": "2026-10-18",
+        "notes": "Fictional professional example only; do not use for outreach."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "c9",
+      "version": 1,
+      "data": {
+        "name": "Fictional contact 9",
+        "archived": false,
+        "organizationId": "og8",
+        "title": "Licensing director",
+        "team": "Business development",
+        "linkedin": "",
+        "lastContacted": "2026-10-18",
+        "notes": "Fictional professional example only; do not use for outreach."
+      }
+    },
+    {
+      "role": "contacts",
+      "id": "c10",
+      "version": 1,
+      "data": {
+        "name": "Fictional contact 10",
+        "archived": false,
+        "organizationId": "og2",
+        "title": "Head of platform alliances",
+        "team": "Business development",
+        "linkedin": "",
+        "lastContacted": "2026-10-18",
+        "notes": "Fictional professional example only; do not use for outreach."
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "d1",
+      "version": 1,
+      "data": {
+        "name": "RNA platform exploration",
+        "archived": false,
+        "organizationId": "og1",
+        "programId": "pr-rna",
+        "stage": "Negotiating",
+        "owner": "CEO",
+        "dealType": "Out-license",
+        "nextAction": "CDA review",
+        "nextDate": "2026-11-08",
+        "stageAt": "2026-10-24",
+        "stageNote": "Fictional logged internal stage rationale.",
+        "criteriaVersion": 1,
+        "valuation": ""
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "d2",
+      "version": 1,
+      "data": {
+        "name": "Delivery analytics collaboration",
+        "archived": false,
+        "organizationId": "og2",
+        "programId": "pr-rna",
+        "stage": "Discussing",
+        "owner": "Science lead",
+        "dealType": "Research collaboration",
+        "nextAction": "Technical briefing",
+        "nextDate": "2026-11-04",
+        "stageAt": "2026-10-24",
+        "stageNote": "Fictional logged internal stage rationale.",
+        "criteriaVersion": 2,
+        "valuation": ""
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "d3",
+      "version": 1,
+      "data": {
+        "name": "Delivery option proposal",
+        "archived": false,
+        "organizationId": "og4",
+        "programId": "pr-rna",
+        "stage": "Evaluating",
+        "owner": "BD director",
+        "dealType": "Platform",
+        "nextAction": "Clarify territories",
+        "nextDate": "2026-11-13",
+        "stageAt": "2026-10-24",
+        "stageNote": "Fictional logged internal stage rationale.",
+        "criteriaVersion": 1,
+        "valuation": ""
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "d4",
+      "version": 1,
+      "data": {
+        "name": "Nonclinical pilot evaluation",
+        "archived": false,
+        "organizationId": "og6",
+        "programId": "pr-rna",
+        "stage": "Qualified",
+        "owner": "CEO",
+        "dealType": "Research collaboration",
+        "nextAction": "Prepare public summary",
+        "nextDate": "2026-11-06",
+        "stageAt": "2026-10-24",
+        "stageNote": "Fictional logged internal stage rationale.",
+        "criteriaVersion": 1,
+        "valuation": ""
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "d5",
+      "version": 1,
+      "data": {
+        "name": "RNA formulation scout",
+        "archived": false,
+        "organizationId": "og5",
+        "programId": "pr-rna",
+        "stage": "Identified",
+        "owner": "Science lead",
+        "dealType": "Platform",
+        "nextAction": "Validate partner scope",
+        "nextDate": "2026-11-21",
+        "stageAt": "2026-10-24",
+        "stageNote": "Fictional logged internal stage rationale.",
+        "criteriaVersion": 1,
+        "valuation": ""
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "d6",
+      "version": 1,
+      "data": {
+        "name": "Scale-up partnership",
+        "archived": false,
+        "organizationId": "og7",
+        "programId": "pr-cell",
+        "stage": "Negotiating",
+        "owner": "BD director",
+        "dealType": "Co-development",
+        "nextAction": "Review term sheet",
+        "nextDate": "2026-11-02",
+        "stageAt": "2026-10-24",
+        "stageNote": "Fictional logged internal stage rationale.",
+        "criteriaVersion": 1,
+        "valuation": ""
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "d7",
+      "version": 1,
+      "data": {
+        "name": "Immunotherapy joint work",
+        "archived": false,
+        "organizationId": "og3",
+        "programId": "pr-cell",
+        "stage": "Evaluating",
+        "owner": "CEO",
+        "dealType": "Co-development",
+        "nextAction": "Get process scope",
+        "nextDate": "2026-11-15",
+        "stageAt": "2026-10-24",
+        "stageNote": "Fictional logged internal stage rationale.",
+        "criteriaVersion": 1,
+        "valuation": ""
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "d8",
+      "version": 1,
+      "data": {
+        "name": "Regional process discussion",
+        "archived": false,
+        "organizationId": "og4",
+        "programId": "pr-cell",
+        "stage": "Discussing",
+        "owner": "Science lead",
+        "dealType": "Platform",
+        "nextAction": "Partner update",
+        "nextDate": "2026-11-19",
+        "stageAt": "2026-10-24",
+        "stageNote": "Fictional logged internal stage rationale.",
+        "criteriaVersion": 1,
+        "valuation": ""
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "d9",
+      "version": 1,
+      "data": {
+        "name": "Proteomics co-development",
+        "archived": false,
+        "organizationId": "og5",
+        "programId": "pr-protein",
+        "stage": "Qualified",
+        "owner": "BD director",
+        "dealType": "Co-development",
+        "nextAction": "Scientific fit review",
+        "nextDate": "2026-11-11",
+        "stageAt": "2026-10-24",
+        "stageNote": "Fictional logged internal stage rationale.",
+        "criteriaVersion": 1,
+        "valuation": ""
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "d10",
+      "version": 1,
+      "data": {
+        "name": "Reagent collaboration",
+        "archived": false,
+        "organizationId": "og8",
+        "programId": "pr-protein",
+        "stage": "Identified",
+        "owner": "CEO",
+        "dealType": "Research collaboration",
+        "nextAction": "Initial introduction",
+        "nextDate": "2026-11-25",
+        "stageAt": "2026-10-24",
+        "stageNote": "Fictional logged internal stage rationale.",
+        "criteriaVersion": 1,
+        "valuation": ""
+      }
+    },
+    {
+      "role": "opportunities",
+      "id": "d11",
+      "version": 1,
+      "data": {
+        "name": "Legacy partner lead",
+        "archived": false,
+        "organizationId": "og2",
+        "programId": "pr-protein",
+        "stage": "Inactive",
+        "owner": "Science lead",
+        "dealType": "Other",
+        "nextAction": "No action",
+        "nextDate": "2026-09-14",
+        "stageAt": "2026-10-24",
+        "stageNote": "Fictional logged internal stage rationale.",
+        "criteriaVersion": 1,
+        "valuation": ""
+      }
+    },
+    {
+      "role": "evaluations",
+      "id": "e1",
+      "version": 1,
+      "data": {
+        "name": "Fit review d1",
+        "archived": false,
+        "opportunityId": "d1",
+        "status": "Reviewed",
+        "criteriaVersion": 1,
+        "reviewer": "Scientific BD reviewer",
+        "reviewedAt": "2026-10-30",
+        "rationale": "FICTIONAL reviewed assessment against program-specific criteria.",
+        "sourceUrl": "https://example.org/fictional-review/d1",
+        "science": 5,
+        "strategy": 5,
+        "commercial": 4,
+        "execution": 4
+      }
+    },
+    {
+      "role": "evaluations",
+      "id": "e2",
+      "version": 1,
+      "data": {
+        "name": "Fit review d2",
+        "archived": false,
+        "opportunityId": "d2",
+        "status": "Reviewed",
+        "criteriaVersion": 2,
+        "reviewer": "Scientific BD reviewer",
+        "reviewedAt": "2026-10-30",
+        "rationale": "FICTIONAL reviewed assessment against program-specific criteria.",
+        "sourceUrl": "https://example.org/fictional-review/d2",
+        "science": 4,
+        "strategy": 4,
+        "commercial": 3,
+        "execution": 5
+      }
+    },
+    {
+      "role": "evaluations",
+      "id": "e3",
+      "version": 1,
+      "data": {
+        "name": "Fit review d3",
+        "archived": false,
+        "opportunityId": "d3",
+        "status": "Draft",
+        "criteriaVersion": 1,
+        "reviewer": "",
+        "reviewedAt": null,
+        "rationale": "Evidence required.",
+        "sourceUrl": "",
+        "science": 3,
+        "strategy": 4,
+        "commercial": null,
+        "execution": null
+      }
+    },
+    {
+      "role": "evaluations",
+      "id": "e4",
+      "version": 1,
+      "data": {
+        "name": "Fit review d4",
+        "archived": false,
+        "opportunityId": "d4",
+        "status": "Reviewed",
+        "criteriaVersion": 1,
+        "reviewer": "Scientific BD reviewer",
+        "reviewedAt": "2026-10-30",
+        "rationale": "FICTIONAL reviewed assessment against program-specific criteria.",
+        "sourceUrl": "https://example.org/fictional-review/d4",
+        "science": 3,
+        "strategy": 4,
+        "commercial": 3,
+        "execution": 4
+      }
+    },
+    {
+      "role": "evaluations",
+      "id": "e5",
+      "version": 1,
+      "data": {
+        "name": "Fit review d6",
+        "archived": false,
+        "opportunityId": "d6",
+        "status": "Reviewed",
+        "criteriaVersion": 1,
+        "reviewer": "Scientific BD reviewer",
+        "reviewedAt": "2026-10-30",
+        "rationale": "FICTIONAL reviewed assessment against program-specific criteria.",
+        "sourceUrl": "https://example.org/fictional-review/d6",
+        "science": 5,
+        "strategy": 4,
+        "commercial": 4,
+        "execution": 4
+      }
+    },
+    {
+      "role": "evaluations",
+      "id": "e6",
+      "version": 1,
+      "data": {
+        "name": "Fit review d7",
+        "archived": false,
+        "opportunityId": "d7",
+        "status": "Draft",
+        "criteriaVersion": 1,
+        "reviewer": "",
+        "reviewedAt": null,
+        "rationale": "Evidence required.",
+        "sourceUrl": "",
+        "science": 4,
+        "strategy": null,
+        "commercial": null,
+        "execution": null
+      }
+    },
+    {
+      "role": "evaluations",
+      "id": "e7",
+      "version": 1,
+      "data": {
+        "name": "Fit review d9",
+        "archived": false,
+        "opportunityId": "d9",
+        "status": "Reviewed",
+        "criteriaVersion": 1,
+        "reviewer": "Scientific BD reviewer",
+        "reviewedAt": "2026-10-30",
+        "rationale": "FICTIONAL reviewed assessment against program-specific criteria.",
+        "sourceUrl": "https://example.org/fictional-review/d9",
+        "science": 3,
+        "strategy": 5,
+        "commercial": 4,
+        "execution": 3
+      }
+    },
+    {
+      "role": "meetings",
+      "id": "m1",
+      "version": 1,
+      "data": {
+        "name": "Alliance terms discussion",
+        "archived": false,
+        "opportunityId": "d1",
+        "heldAt": "2026-10-28",
+        "owner": "BD director",
+        "participants": "Authorized partner professionals",
+        "summary": "FICTIONAL discussion; only nonconfidential details shown.",
+        "nextAction": "Document agreed follow-up",
+        "nextDate": "2026-11-06"
+      }
+    },
+    {
+      "role": "meetings",
+      "id": "m2",
+      "version": 1,
+      "data": {
+        "name": "Technical introduction",
+        "archived": false,
+        "opportunityId": "d2",
+        "heldAt": "2026-10-30",
+        "owner": "BD director",
+        "participants": "Authorized partner professionals",
+        "summary": "FICTIONAL discussion; only nonconfidential details shown.",
+        "nextAction": "Document agreed follow-up",
+        "nextDate": "2026-11-06"
+      }
+    },
+    {
+      "role": "meetings",
+      "id": "m3",
+      "version": 1,
+      "data": {
+        "name": "Territory scoping",
+        "archived": false,
+        "opportunityId": "d3",
+        "heldAt": "2026-10-24",
+        "owner": "BD director",
+        "participants": "Authorized partner professionals",
+        "summary": "FICTIONAL discussion; only nonconfidential details shown.",
+        "nextAction": "Document agreed follow-up",
+        "nextDate": "2026-11-06"
+      }
+    },
+    {
+      "role": "meetings",
+      "id": "m4",
+      "version": 1,
+      "data": {
+        "name": "Scientific overview",
+        "archived": false,
+        "opportunityId": "d4",
+        "heldAt": "2026-10-17",
+        "owner": "BD director",
+        "participants": "Authorized partner professionals",
+        "summary": "FICTIONAL discussion; only nonconfidential details shown.",
+        "nextAction": "Document agreed follow-up",
+        "nextDate": "2026-11-06"
+      }
+    },
+    {
+      "role": "meetings",
+      "id": "m5",
+      "version": 1,
+      "data": {
+        "name": "Manufacturing workstream",
+        "archived": false,
+        "opportunityId": "d6",
+        "heldAt": "2026-10-26",
+        "owner": "BD director",
+        "participants": "Authorized partner professionals",
+        "summary": "FICTIONAL discussion; only nonconfidential details shown.",
+        "nextAction": "Document agreed follow-up",
+        "nextDate": "2026-11-06"
+      }
+    },
+    {
+      "role": "meetings",
+      "id": "m6",
+      "version": 1,
+      "data": {
+        "name": "Initial process review",
+        "archived": false,
+        "opportunityId": "d7",
+        "heldAt": "2026-10-21",
+        "owner": "BD director",
+        "participants": "Authorized partner professionals",
+        "summary": "FICTIONAL discussion; only nonconfidential details shown.",
+        "nextAction": "Document agreed follow-up",
+        "nextDate": "2026-11-06"
+      }
+    },
+    {
+      "role": "meetings",
+      "id": "m7",
+      "version": 1,
+      "data": {
+        "name": "Platform introduction",
+        "archived": false,
+        "opportunityId": "d9",
+        "heldAt": "2026-10-12",
+        "owner": "BD director",
+        "participants": "Authorized partner professionals",
+        "summary": "FICTIONAL discussion; only nonconfidential details shown.",
+        "nextAction": "Document agreed follow-up",
+        "nextDate": "2026-11-06"
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "a1",
+      "version": 1,
+      "data": {
+        "name": "CDA version 2 review",
+        "archived": false,
+        "opportunityId": "d1",
+        "kind": "CDA",
+        "status": "In progress",
+        "owner": "Alliance manager",
+        "due": "2026-10-30",
+        "actualAt": null,
+        "evidence": "",
+        "notes": "No signed document or actual legal execution is implied."
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "a2",
+      "version": 1,
+      "data": {
+        "name": "Term sheet proposal",
+        "archived": false,
+        "opportunityId": "d1",
+        "kind": "Term sheet",
+        "status": "Planned",
+        "owner": "Alliance manager",
+        "due": "2026-11-19",
+        "actualAt": null,
+        "evidence": "",
+        "notes": "No signed document or actual legal execution is implied."
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "a3",
+      "version": 1,
+      "data": {
+        "name": "Diligence scope agreed",
+        "archived": false,
+        "opportunityId": "d2",
+        "kind": "Diligence",
+        "status": "Done",
+        "owner": "Alliance manager",
+        "due": "2026-10-24",
+        "actualAt": "2026-10-23",
+        "evidence": "Fictional approved internal reference #3",
+        "notes": "No signed document or actual legal execution is implied."
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "a4",
+      "version": 1,
+      "data": {
+        "name": "Joint test plan",
+        "archived": false,
+        "opportunityId": "d2",
+        "kind": "Agreement",
+        "status": "Planned",
+        "owner": "Alliance manager",
+        "due": "2026-11-15",
+        "actualAt": null,
+        "evidence": "",
+        "notes": "No signed document or actual legal execution is implied."
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "a5",
+      "version": 1,
+      "data": {
+        "name": "CDA counterparty review",
+        "archived": false,
+        "opportunityId": "d3",
+        "kind": "CDA",
+        "status": "Planned",
+        "owner": "Alliance manager",
+        "due": "2026-11-23",
+        "actualAt": null,
+        "evidence": "",
+        "notes": "No signed document or actual legal execution is implied."
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "a6",
+      "version": 1,
+      "data": {
+        "name": "CDA final check",
+        "archived": false,
+        "opportunityId": "d6",
+        "kind": "CDA",
+        "status": "Done",
+        "owner": "Alliance manager",
+        "due": "2026-10-21",
+        "actualAt": "2026-10-23",
+        "evidence": "Fictional approved internal reference #6",
+        "notes": "No signed document or actual legal execution is implied."
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "a7",
+      "version": 1,
+      "data": {
+        "name": "Term sheet milestone",
+        "archived": false,
+        "opportunityId": "d6",
+        "kind": "Term sheet",
+        "status": "In progress",
+        "owner": "Alliance manager",
+        "due": "2026-11-08",
+        "actualAt": null,
+        "evidence": "",
+        "notes": "No signed document or actual legal execution is implied."
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "a8",
+      "version": 1,
+      "data": {
+        "name": "Diligence package",
+        "archived": false,
+        "opportunityId": "d7",
+        "kind": "Diligence",
+        "status": "Planned",
+        "owner": "Alliance manager",
+        "due": "2026-11-21",
+        "actualAt": null,
+        "evidence": "",
+        "notes": "No signed document or actual legal execution is implied."
+      }
+    },
+    {
+      "role": "milestones",
+      "id": "a9",
+      "version": 1,
+      "data": {
+        "name": "Collaboration outline",
+        "archived": false,
+        "opportunityId": "d9",
+        "kind": "Agreement",
+        "status": "Planned",
+        "owner": "Alliance manager",
+        "due": "2026-12-01",
+        "actualAt": null,
+        "evidence": "",
+        "notes": "No signed document or actual legal execution is implied."
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s1",
+      "version": 1,
+      "data": {
+        "name": "New partnering program announcement",
+        "archived": false,
+        "organizationId": "og1",
+        "publishedAt": "2026-10-31",
+        "sourceUrl": "https://example.org/fictional-public-signal/1",
+        "sourceLabel": "Fictional company press release",
+        "status": "New",
+        "rationale": "Fictional signal; no real announcement has been verified.",
+        "reviewer": "",
+        "reviewedAt": null
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s2",
+      "version": 1,
+      "data": {
+        "name": "Fictional collaboration research notice",
+        "archived": false,
+        "organizationId": "og3",
+        "publishedAt": "2026-10-21",
+        "sourceUrl": "https://example.org/fictional-public-signal/2",
+        "sourceLabel": "Fictional company press release",
+        "status": "New",
+        "rationale": "Fictional signal; no real announcement has been verified.",
+        "reviewer": "",
+        "reviewedAt": null
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s3",
+      "version": 1,
+      "data": {
+        "name": "New process R&D agreement signal",
+        "archived": false,
+        "organizationId": "og7",
+        "publishedAt": "2026-10-27",
+        "sourceUrl": "https://example.org/fictional-public-signal/3",
+        "sourceLabel": "Fictional company press release",
+        "status": "Reviewed",
+        "rationale": "Fictional signal; no real announcement has been verified.",
+        "reviewer": "BD team",
+        "reviewedAt": "2026-10-31"
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s4",
+      "version": 1,
+      "data": {
+        "name": "Fictional platform interest update",
+        "archived": false,
+        "organizationId": "og2",
+        "publishedAt": "2026-10-20",
+        "sourceUrl": "https://example.org/fictional-public-signal/4",
+        "sourceLabel": "Fictional company press release",
+        "status": "New",
+        "rationale": "Fictional signal; no real announcement has been verified.",
+        "reviewer": "",
+        "reviewedAt": null
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s5",
+      "version": 1,
+      "data": {
+        "name": "New nonclinical assay initiative",
+        "archived": false,
+        "organizationId": "og5",
+        "publishedAt": "2026-10-18",
+        "sourceUrl": "https://example.org/fictional-public-signal/5",
+        "sourceLabel": "Fictional company press release",
+        "status": "New",
+        "rationale": "Fictional signal; no real announcement has been verified.",
+        "reviewer": "",
+        "reviewedAt": null
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s6",
+      "version": 1,
+      "data": {
+        "name": "Regional platform partnering update",
+        "archived": false,
+        "organizationId": "og4",
+        "publishedAt": "2026-10-16",
+        "sourceUrl": "https://example.org/fictional-public-signal/6",
+        "sourceLabel": "Fictional company press release",
+        "status": "Reviewed",
+        "rationale": "Fictional signal; no real announcement has been verified.",
+        "reviewer": "BD team",
+        "reviewedAt": "2026-10-31"
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s7",
+      "version": 1,
+      "data": {
+        "name": "Scientific program announcement",
+        "archived": false,
+        "organizationId": "og8",
+        "publishedAt": "2026-10-13",
+        "sourceUrl": "https://example.org/fictional-public-signal/7",
+        "sourceLabel": "Fictional company press release",
+        "status": "New",
+        "rationale": "Fictional signal; no real announcement has been verified.",
+        "reviewer": "",
+        "reviewedAt": null
+      }
+    },
+    {
+      "role": "signals",
+      "id": "s8",
+      "version": 1,
+      "data": {
+        "name": "Technology transfer initiative",
+        "archived": false,
+        "organizationId": "og6",
+        "publishedAt": "2026-09-30",
+        "sourceUrl": "https://example.org/fictional-public-signal/8",
+        "sourceLabel": "Fictional company press release",
+        "status": "New",
+        "rationale": "Fictional signal; no real announcement has been verified.",
+        "reviewer": "",
+        "reviewedAt": null
+      }
+    }
+  ]
+}

@@ -1,25 +1,16 @@
-# Optional Partnership Tracker automation
+# Partnerships 2.0.0: optional automations
 
-Metadata describes possible work; nothing is active. Manual tracking and on-demand ChatGPT research require no runner, scheduler, mail action or external account. App loads and saves make no automation calls.
+None is required. The app never reads automation state, never waits for one and keeps working when an automation is off, failing or missing. Set them up only after the app is saved, in TrialAgents → Automations (or with `prepare_automation_setup`, `prepare_app_monitoring` and `prepare_app_action`), and verify with `read_app_automation_readiness` before saying anything runs. They are recipes, not active definitions; exact fictional configurations are in `automation.examples.json` and validated by `tests/partnerships.test.ts`.
 
-## Weekly public partner discovery
+| # | Automation | Worker | Trigger | Reads | Output |
+|---|---|---|---|---|---|
+| 1 | Partner research | Research on the user's own Claude or ChatGPT runner (one automation for the app) | Calendar from Settings → Schedule: daily, weekly (default, Monday 07:00 workspace time) or monthly (the 1st) | asset profiles, open opportunities, partners, previous signals (including dismissed ones and their reasons); public sources (news, company pipelines and press releases, deal announcements, trial registries via TrialAgents Intel when connected) | New `partnerships.signals` rows with status `new` (kinds deal, trial, pipeline, financing, people, news; at most two `target_suggestion` per asset), each with source URL, date, why it matters and links, under a create-only scope on `partnerships.signals`. Reviewed in Research: mark reviewed, dismiss with a reason, or accept a target (creates an opportunity at Identified, source research). Never changes opportunities or stages, never contacts anyone. Dedup: organization + kind + source URL (target: company name). |
+| 2 | Digest email | TrialAgents email action | Database trigger: research run (1) becomes completed, `includeEmpty: true` | `{{run.summary}}` | One email to the registered workspace members chosen in Settings (never partners; addresses in records do not authorize mail). The worker writes `run.summary` in the §6 format shown in Settings → Digest preview. Delivery limits: one app email per recipient per hour, 15 deliveries per account per day. |
+| 3 | Follow-up reminders | TrialAgents email actions | `record_date` on `partnerships.follow_ups.due` at 08:00 (due date) and +1 day (overdue), condition `status = open` | `{{record.title}}`, `{{record.owner}}` | Email to the chosen members; in-app the follow-up shows Today / Overdue. |
+| 4 | Meeting briefs (optional) | Research on the user's runner | `record_date` on `partnerships.activities.occurred_on`, one day before, 08:00 | the meeting's opportunity, stage history, activities, materials, contacts, signals; public sources | One `partnerships.briefs` row (create-only scope): their pipeline and recent deals, people, our history and what was shared, what to ask, cautions. No deal terms. A run-completed email (as 2) can notify the owner. |
 
-Stable authoringKey: partnership_discovery_v1. Save the app first, inspect current setup/automation guides and existing definitions, and reuse IDs on retry. Use the shared owner/workspace ChatGPT runner, never one ChatGPT Task per app. Suggest Monday 09:00 in the owner-confirmed IANA timezone with an approved anchor, expiry, source scope and limits. Use a 14-day overlapping research window and coalesce missed windows under the current platform contract. Prefer supported Work chat, high reasoning and the most capable available model, while distinguishing requested preferences from observed host settings.
+**Cadence change:** when Settings → cadence, day or time changes, update automation 1's trigger to the JSON shown under Settings → Schedule (the digest follows the run). The integration test does exactly this for daily and monthly.
 
-Prompt: Read the authorized organization, program, opportunity and signal records completely. Research official public pharma/corporate news, licensing announcements and registries for the selected nonconfidential program. Identify company legal identity, official URL and publication/verification date; distinguish source facts from tentative fit. Do not disclose confidential dossiers, private contacts, terms or patient information. Deduplicate company identity plus official source URL and publication date against saved records and the last successful coverage window. Propose new signals in New status. Save only with separately approved existing write scope, current grants and reconciled receipts; otherwise return the draft for human review. Never invent a saved record or advance coverage after partial failure.
+**Archiving:** archiving the app pauses all four; restoring brings them back switched off.
 
-Return searched sources, duplicates, new committed count, exact record IDs, coverage and known gaps. Complete empty results may use no_update only with an approved quiet policy. Denied, expired, partial or failed reads are blocked/partial; these never trigger completion mail. Ambiguous writes reuse/reconcile original receipts. Changes in configuration retain disabled state, scope and hidden settings; archive suspends work, restoring/copying does not activate it. Outcomes belong in Logs; no standalone Delete action.
-
-## Optional dependent email
-
-Stable authoringKey: partnership_discovery_email_v1. Use the inactive automation.example.json shape only after substituting the saved app UUID/current version, approved expiry and registered owner plus explicitly selected teammates with current app/data access. Confirm a separate single-step TrialAgents email action with a database trigger on the saved research automation ID/version and run status becoming completed. Do not add a second timer, database notification or ChatGPT email action.
-
-Subject: Partner discovery ready
-
-Body: Open https://platform.trialagents.com to review newly saved partner signals.
-
-Use fixed text. Send only for verified successful research with new committed signals and reconciled receipts under the owner's approved policy. No mail for no_update, partial/blocked/failed results, pending human review or missing receipts. Delivery failure does not rerun research. The platform enforces current access, recipient authorization and its existing delivery/coalescing limits. Never infer permission from contact fields or bypass limits. Actual delivery must be verified separately.
-
-## No-automation path
-
-Create and use all eight role tables and the six-screen app without any schedule or mail action. Enter companies, opportunities, evaluations, meetings and signals via reviewed forms. Use the Discovery prompt manually when desired. Setup failure or declined connection leaves this path fully usable.
+**No automation:** ask your assistant in chat ("Find news on our Partnerships targets and suggest two new targets for NWB-101", "Write the brief for tomorrow's Ironvale meeting") and review the proposals in the app; Overview shows what is due and stalled on demand.
