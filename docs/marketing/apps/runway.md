@@ -30,6 +30,7 @@
 | Excel and Google Sheets alternatives for biotech budgeting (B8) | https://trialagents.com/apps/excel-google-sheets-alternatives-biotech | Published via PR #202, release `c141f6b7d490bc04cbf9ce7093d1604b1e3b08c6`; live verified 14 November 2026 04:02 CET. |
 | Cash runway apps in ChatGPT (canonical queue C1) | https://trialagents.com/apps/cash-runway-apps-chatgpt | Published via PR #203, release `22661f0fc9e408f4fc6eb7fb2ab72d2bbfbd255e`; live verified 14 November 2026 05:10 CET. |
 | Financial planning apps for Claude (canonical queue C2) | https://trialagents.com/apps/financial-planning-apps-claude | Published via PR #204, release `3fe8e5ec60157a814aad7d2d2bdd8ca4dd5db11a`; live verified 14 November 2026 06:04 CET. |
+| Claude biotech cash flow forecasting (canonical queue C4) | https://trialagents.com/apps/biotech-cash-flow-forecasting-claude | Published via PR #205, release `0bb286174ad6c1a925fa427fb115de7640ef79f4`; live verified 14 November 2026 07:00 CET. |
 | App pages index | https://trialagents.com/apps | Published; production URL checked 12 November 2026 |
 
 These are intended canonical URLs. Do not assert that a URL is live until checked on the production CDN.
@@ -633,3 +634,17 @@ Await exact-head predeploy, desktop/mobile visual review, merge and independent 
 ### C4 merged — deployment pending, 14 November 2026 06:56 CET
 
 PR #205 merged as `0bb286174ad6c1a925fa427fb115de7640ef79f4` at approximately 05:56:43 UTC. Exact head `4f63afdce1b49dfaa8b4e3091ae569af3680cf1b` passed full predeploy run `43563321967` (validate and seo-container). Artifact `14101342259` matches that head; desktop 1440px and mobile 390px screenshots inspected through every section, including contained scrollable tables, genuine images, captions, shell and final CTA. Initial HTTP check of https://trialagents.com/apps/biotech-cash-flow-forecasting-claude returned 404: automatic deployment pending, not an authentication fault. Resume this release before another topic. Totals remain 24 published, 23 unfinished until independent live verification.
+
+
+### C4 published and live verified — 14 November 2026, 07:00 CET
+
+- **Title:** How to use Claude for biotech cash flow forecasting.
+- **Live URL:** https://trialagents.com/apps/biotech-cash-flow-forecasting-claude
+- **Release:** [PR #205](https://github.com/tarous89/trialagents-public/pull/205), validated source head `4f63afdce1b49dfaa8b4e3091ae569af3680cf1b`, merged SHA `0bb286174ad6c1a925fa427fb115de7640ef79f4` at approximately 05:56:43 UTC.
+- **Exact-head QA:** full predeploy run `43563321967` passed validate and seo-container. Artifact `14101342259` matches that head. Desktop 1440px and mobile 390px screenshots inspected through all sections: contained scrollable tables, readable text, genuine demo images and captions, standard shell and final CTA. Live article fragment and inline shared CSS exactly match this validated source.
+- **Deployment:** existing automatic GitHub-connected Cloudflare build succeeded, check `132353998896`; generic production check `132353470689` also passed but was not treated as article proof. Early 404s resolved to HTTP 200 within approximately three minutes. No dashboard sign-in, manual deployment or integration changes.
+- **Independent live checks:** HTTP 200 text/html, complete expected article, H1/title/description/self-canonical, Article/BreadcrumbList schema and publication date; no noindex; valid local anchors; two genuine images; exactly one final Start with Runway CTA. All 10 checked source/internal/CTA/image/analytics URLs return HTTP 200. Header/footer match homepage. /apps, sitemap.xml, llms.txt and llm.xml return 200 and include this route; sitemap has exactly one canonical entry; robots.txt permits /apps.
+- **Tracking preserved:** identical homepage loader `/_snapshot/query-assets/114933b27c521a75f333.js` appears once and returns 200; it references client `/_snapshot/query-assets/c251da7b4969f7c85048.js`, which also returns 200. Existing scripts, configuration, consent, events, collectors and attribution unchanged. Verification used HTTP retrieval and predeploy browser artifacts; no synthetic production events sent.
+- **Evidence boundary:** documented Claude-assisted delayed-grant review, not completed host acceptance testing. Fictional monthly cash arithmetic independently executed; genuine Runway browser demo images clearly separate from that example. Current primary Claude permissions/setup evidence linked inline. No invented interfaces, benchmarks or standard 13-week feature claims.
+
+This supersedes C4 source and merged-pending checkpoints. **25 published; 22 unfinished**, including owner-deferred A9. **Next eligible: C5, AI CFO vs AI-Native Financial Planning App: What Does a Biotech Startup Need?**, subject to fresh queue, evidence, duplicate and claim checks. Only C4 was newly published in this run. Search indexing, rankings and assistant citations remain unverified.
