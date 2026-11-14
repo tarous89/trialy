@@ -28,6 +28,7 @@
 | Fathom alternatives (B6) | https://trialagents.com/apps/fathom-alternatives-biotech | Published via PR #200, release `6496bc32f293ac9407d995a7cf6b602efdafeb4e`; live verified 14 November 2026 02:08 CET. |
 | AI-native FP&A software (B7) | https://trialagents.com/apps/ai-native-fpa-software-startups | Published via PR #201, release `c06d8d07ea083c2b4268095b9092d02b54506781`; live verified 14 November 2026 03:00 CET. |
 | Excel and Google Sheets alternatives for biotech budgeting (B8) | https://trialagents.com/apps/excel-google-sheets-alternatives-biotech | Published via PR #202, release `c141f6b7d490bc04cbf9ce7093d1604b1e3b08c6`; live verified 14 November 2026 04:02 CET. |
+| Cash runway apps in ChatGPT (canonical queue C1) | https://trialagents.com/apps/cash-runway-apps-chatgpt | Published via PR #203, release `22661f0fc9e408f4fc6eb7fb2ab72d2bbfbd255e`; live verified 14 November 2026 05:10 CET. |
 | App pages index | https://trialagents.com/apps | Published; production URL checked 12 November 2026 |
 
 These are intended canonical URLs. Do not assert that a URL is live until checked on the production CDN.
@@ -572,3 +573,17 @@ Seven source files integrate renderer, listing, discovery and browser/snapshot c
 ### C1 merged — deployment pending, 14 November 2026 05:05 CET
 
 PR #203 merged as `22661f0fc9e408f4fc6eb7fb2ab72d2bbfbd255e` at approximately 04:05 UTC. Exact head `5f5ce7374eb512bdcf866df11d81bc0f90b3a9b2` passed full predeploy run `43554197246` (validate and seo-container). Desktop 1440px/mobile 390px artifact `14097598095` was visually inspected: readable headings, contained comparison table, responsive workflow illustration, genuine screenshots and final CTA. Await automatic GitHub-connected deployment and independent HTTP verification at https://trialagents.com/apps/cash-runway-apps-chatgpt. Resume this release before drafting another article. Totals remain 22 published, 25 unfinished until live verification.
+
+
+### C1 published and live verified — 14 November 2026, 05:10 CET
+
+- **Title:** Cash runway apps in ChatGPT: compare the connection before the forecast.
+- **Live URL:** https://trialagents.com/apps/cash-runway-apps-chatgpt
+- **Release:** [PR #203](https://github.com/tarous89/trialagents-public/pull/203), validated source head `5f5ce7374eb512bdcf866df11d81bc0f90b3a9b2`, merged SHA `22661f0fc9e408f4fc6eb7fb2ab72d2bbfbd255e` at approximately 04:05 UTC.
+- **Exact-head QA:** full predeploy run `43554197246` passed validate and seo-container, including snapshot/discovery, browser and other required site checks. Artifact `14097598095` matches the exact source head; desktop 1440px and mobile 390px screenshots visually inspected. Responsive workflow illustration, contained comparison table, readable text, both genuine screenshots, shared chrome and last CTA passed review.
+- **Deployment:** existing automatic GitHub-connected Cloudflare build succeeded (check `132326073689`). Early 404s resolved to HTTP 200 in approximately three minutes. No dashboard sign-in, manual deployment or integration change.
+- **Independent live verification:** expected complete article fragment and shared CSS exactly match validated source; HTTP 200 HTML, H1/title/description/self-canonical, Article/BreadcrumbList and publication date pass; no noindex, valid local anchors, two genuine images, one final Start with Runway CTA, and all 14 linked source/internal/CTA/image/analytics URLs return HTTP 200. Shared header/footer match homepage. /apps, sitemap.xml, llms.txt and llm.xml return 200 and include this route; sitemap has one canonical entry, robots.txt does not block /apps.
+- **Tracking preserved:** identical homepage loader `/_snapshot/query-assets/114933b27c521a75f333.js` appears once and returns 200; its client `/_snapshot/query-assets/c251da7b4969f7c85048.js` also returns 200. No changes to tracking scripts, configuration, consent, events, collectors or attribution; no synthetic production events sent.
+- **Evidence boundary:** current primary documentation comparison and evaluation recipe, not executed competitor or end-to-end ChatGPT/Claude acceptance testing. Browser screenshots remain explicitly labeled. Refresh this article when host setup, supported actions or app catalog changes.
+
+This supersedes C1 source and merged-pending checkpoints. **23 published; 24 unfinished**, including owner-deferred A9. **Next eligible: C2, Best Financial Planning Apps for Claude**, subject to fresh queue, evidence, duplicate and claim checks. Only C1 was newly published in this run. Search indexing, rankings and assistant citations remain unverified.
