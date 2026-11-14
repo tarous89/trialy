@@ -192,79 +192,82 @@ Contracts works alone; each connection follows the platform pattern (add-app dia
 
 ## 12. Contracts 1.1.0: assistant control, connections and the email summary
 
-**Status:** Scope for build, 14 November 2026, from the owner's decisions C1–C8 below. Not built. Delivered as a new immutable draft `life.contracts` 1.1.0. The published 1.0.0 package stays unchanged, saved apps are not migrated, and publishing 1.1.0 needs separate owner approval. Where this section conflicts with §4, §6, §7, §8 or §10, this section wins.
+**Status:** Scope for build, 14 November 2026, from the owner's decisions C1–C8 (revised the same day: no platform changes, everything is built in the app). Not built. Delivered as a new immutable draft `life.contracts` 1.1.0. The published 1.0.0 package stays unchanged, saved apps are not migrated, and publishing 1.1.0 needs separate owner approval. Where this section conflicts with §4, §6, §7, §8 or §10, this section wins.
 
 **Rule for every app (owner):** an app does not need automations. If an app has one, it must follow the platform rules ([app automations](../../RECOMMENDED_AUTOMATIONS.md)): it is declared in the package, shown switched on in the Add app dialog, can be turned off, and the app works fully without it.
+
+**No platform changes.** Everything below uses what the platform already offers: reviewed record changes, layout changes, app revisions, documents, `integrations.list` and email automations.
 
 ### 12.1 Owner decisions (14 November 2026)
 
 | # | Decision |
 |---|---|
-| **C1** | Reading a contract and filling in its terms is **started by a person**, never on a schedule. The scheduled "extraction of new documents" automation is removed. |
-| **C2** | The weekly digest is replaced by a **plain email summary**: contracts completed and contracts still pending. No AI by default. A user may add AI to it later; that is their own automation. |
-| **C3** | Every read-only value that comes from another connected app, not only Programs milestones, is labelled "From *App*" and has an **Edit in *App*** button. |
+| **C1** | Reading a contract and filling in its terms is never automatic. The user either asks the assistant in chat, or enters the details in the app (or leaves them blank). The scheduled "extraction of new documents" automation is removed, and there is no app button that calls the assistant. |
+| **C2** | The weekly digest is replaced by a plain email about completed and pending contracts, with no AI (§12.3). A user may add AI later; that is their own automation. |
+| **C3** | Every read-only value that comes from another connected app, not only Programs milestones, is clearly labelled with the app it comes from. Built in the app. |
 | **C4** | Obligations get a **counterparty**. |
-| **C5** | The connected Claude or ChatGPT can change **everything** in Contracts, limited only by the access the user has given it. |
+| **C5** | The connected Claude or ChatGPT can change **everything** in Contracts, limited only by the access the user has given it. Built in the app. |
 | **C6** | Only calculations that the app shows or uses in its own features are done by the app. Other analysis an assistant does for the user in chat is up to the assistant. |
-| **C7** | A field added to a Contracts table appears in the app's forms and details **automatically**, with no code change. |
+| **C7** | A field added to a Contracts table appears in the app's forms and details with no code change. |
 | **C8** | An assistant can change any form and create new forms from scratch, adding them to the app's code. |
 
 ### 12.2 Getting a contract into Contracts (C1)
 
-Three ways, all equal; none needs an automation.
+Two ways; neither needs an automation.
 
-1. **Give it to the assistant in chat.** The user gives Claude or ChatGPT the contract. The assistant uploads it as a TrialAgents document (platform upload review) and stores the agreement, its terms and its obligations with source quotes and pages, as one reviewed change.
-2. **Upload in the app, then ask the assistant.** The user uploads the original in Contracts and presses **Fill in with Claude** or **Fill in with ChatGPT** (one button per connected assistant the user has access to). The assistant reads the document and fills in the terms and obligations, with quotes and pages, as one reviewed change. Status shows "Requested", then "Filled in, check it" or "Could not read" with the reason.
-3. **Upload in the app and enter it yourself**, or leave the fields blank. Blank terms are fine; nothing nags the user.
+1. **Ask the assistant.** The user gives Claude or ChatGPT the contract in chat, or points it to an original already uploaded in Contracts. The assistant:
+   - uploads the original as a TrialAgents document, if it isn't one yet (platform upload review);
+   - reads it, if it is readable by AI;
+   - stores the agreement, its terms and its obligations with source quotes and pages, as one reviewed change.
+2. **Enter it yourself.** The user uploads the original in Contracts and types in the details, or leaves them blank. Blank terms are fine; nothing nags the user.
 
-- The button only works on documents the user has made readable by AI. Otherwise it says so and links to Documents.
-- One request per document version. Pressing it again on the same version opens the existing result.
-- Proposals stay marked "not checked" until someone checks them (§12.5).
-
-**Platform need (P-C1): start the assistant from an app button.** Today an app cannot ask the user's assistant to do something. Add one platform action, `data-trialy-ask` (`<button data-trialy-ask="<requestId>">`), that the app fills with a fixed task, the record and the document version:
-- **Inside Claude or ChatGPT:** the app sends that task into the current chat as the user's message, so the user sees exactly what was asked.
-- **On the website:** it runs **once, now**, on the user's own connected Claude or ChatGPT background connection. This is a one-off job, not a schedule, and it saves into the app under the same bounded write permission rules as research (PR #169). If no connection exists, the button explains how to connect one.
-
-The request and its outcome are logged with who pressed it. This is the same capability for every app, not a Contracts feature.
+If a document is not readable by AI, the assistant says so and points to Documents. It never guesses.
 
 ### 12.3 Email summary (C2)
 
+Email automations are already available. The difference is what an email can contain without extra code:
+- an email can carry the fields of **one record** when something happens to that record;
+- a single email **listing several contracts** needs a small summary function, and catalog apps cannot include one at install.
+
+**Built now, with no extra code:**
+
 | Key | List | Kind | Trigger | Content |
 |---|---|---|---|---|
-| `contract_summary` | `recommendedAutomations` | email (no AI) | calendar, weekly, Monday 08:00 Europe/Berlin (editable at install) | **Completed:** agreements that became active (signed) in the last 7 days. **Still pending:** agreements in drafting, in negotiation or out for signature, with days in status. Each line has name, counterparty and type, and links to the agreement. Nothing is sent when both lists are empty. |
+| `contract_signed` | `recommendedAutomations` | email (no AI) | database, `role: agreements`, `status` becomes `active` | "Signed: *name* with *counterparty* (*type*), effective *effective_date*, expires *expiry_date*." Links to the agreement. |
 
-- The content is built by a read-only summary function shipped with the template (E1). Each recipient's access is checked again at send time. Default recipient: the owner.
-- **Platform need (P-C2): templates must be able to ship summary functions.** Catalog installs currently create apps with no bound functions (`src/workspace/app-templates.ts`, `execution: []`), so any recommended email that needs a summary would stay on **Needs setup**. Bio Radars needs the same thing.
-- Remove `digest_day` from Settings. The day and time live in the automation, edited in Automations.
-- Adding AI to the summary, or any other automation, is the user's choice later in Automations or in chat.
+Pending contracts are shown on the Pipeline screen, with days in status.
 
-### 12.4 Values from other apps (C3)
+**Weekly list of completed and pending contracts (owner to choose):**
+- **(a)** Keep only `contract_signed`.
+- **(b)** Add `contract_summary`, a weekly email listing contracts signed in the last 7 days and contracts still pending with days in status. It needs a summary function attached to the app after install, which takes one extra approval, and it shows **Needs setup** until then.
 
-- Every value Contracts reads read-only from another app is labelled "From *App*", using the writing app's name supplied by the platform. Today that means Programs milestones; it also covers any role connected read-only later.
-- Next to it, **Edit in *App*** opens the writing app at that record. Without access to that app, the user sees the record in Database if they can view the table, and otherwise just the label.
-- Contracts is also a writing app. When Partnerships, Data Room, Runway or a custom app sends a user to Contracts, Contracts opens at that agreement or obligation (route with `recordId`).
-- This uses the platform design in [Runway §14.7](RUNWAY.md#147-platform-open-the-writing-app-from-a-read-only-connected-field) (`data-trialy-open`, writer details in `integrations.list`, `role_read_only` for assistants). It applies to every read-only connected field in every app.
+Remove `digest_day` from Settings: timing lives in the automation.
 
-### 12.5 Assistants can change everything (C5, C6, C7, C8)
+### 12.4 Values from other apps (C3), in the app
 
-**What "everything" means.** Anything a person can do in Contracts, an assistant can do too: every form, button, screen, setting, field and the app's code. The only limits are the user's access and the access given to that assistant on the Access tab (including hidden columns). The platform's normal rule still applies: the user approves each change in the review. That is the platform, not a limit set by Contracts.
+- **Label.** Contracts uses `integrations.list` to know which roles come from another app and that app's name. Every such value is shown read-only, labelled "From *App*" (for example "From Programs"), with the hint "Change it in *App*". This applies to Programs milestones today and to any role connected read-only later.
+- **Editing.** The value can't be edited in Contracts. Its edit controls are hidden, and the agreement's own fields stay editable.
+- **Assistants.** The template documentation tells assistants to change such values in the app that owns them, never through Contracts.
+- **Limit.** Contracts cannot open the other app directly; that would need a platform change. The label says where to go.
 
-- **Checking proposals.** An assistant may mark a term or obligation as checked when the user asks. It goes through the normal review, and the record shows who approved it and that it was done through Claude or ChatGPT. Remove the 1.0.0 advice to block assistants from the verification fields with column rules.
-- **App actions as commands.** Using the platform's app commands ([Runway §14.3](RUNWAY.md#143-app-commands-platform-capability-runway-is-the-first-user)), Contracts declares one command for each button, using the same code as the click:
-  - **Read:** `schema.describe`, `overview.read`, `register.read`, `family.read`, `cda.check`, `dd.list`, `obligations.calendar`, `pipeline.read`.
-  - **Change:** `agreement.save`, `agreement.archive`, `terms.save`, `obligation.save`, `obligation.status`, `proposals.verify`, `pipeline.move`, `sign.complete`, `renewal.decide`, `cda.request`, `settings.save`, `fill_in.request`.
-- **Calculations (C6).** The app calculates what it shows or uses: notice deadline, confidentiality end, family value and change-order share, earliest expiry and next notice, next due date, due soon and overdue, expires before milestone, days in status. These are recalculated by the app when it saves, whoever made the change. Values typed in by an assistant are replaced by the app's own result. Anything else an assistant works out in chat is up to the assistant.
-- **New fields appear automatically (C7).** A field added to any Contracts table, whether in Database or by an assistant, shows in that table's form and details under "Additional fields". It is displayed by type and included in search, filters, CSV and commands, with no code change. New fields are never used in the app's calculations unless a code change says so. **Platform need (P-C3):** the app must see fields added after install without a new revision (a binding that follows the table's current fields, like E6 for automations).
+### 12.5 Assistants can change everything (C5–C8), in the app
+
+**What "everything" means.** Anything a person can do in Contracts, an assistant can do too: every form, button, screen, setting, field and the app's code. The only limits are the user's access and the access given to that assistant on the Access tab (including hidden columns). The platform's normal rule still applies: the user approves each change in the review.
+
+- **Every button is a documented change.**
+  - The template documentation lists, for each button, the exact records it creates or changes. Examples: Move status, Mark done, Sign, Renewal decision, New CDA, Verify, Archive, Settings.
+  - Assistants make the same change with `prepare_change`.
+  - Read-only features (Overview, Families, CDA check, Due-diligence list, Obligations calendar) are described by the same rules, so an assistant can answer the same questions from the records.
+- **The app does its own calculations (C6).** Values the app shows or uses are always worked out by the app from the underlying fields when it displays them. Stored copies are refreshed on the next save. So an assistant's change gives exactly the same screen as a click. These values are: notice deadline, confidentiality end, family value and change-order share, earliest expiry and next notice, next due date, due soon and overdue, expires before milestone, and days in status.
+- **Checking proposals.** An assistant may mark a term or obligation as checked when the user asks, through the normal review. Remove the 1.0.0 advice to block assistants from the verification fields with column rules.
+- **New fields appear without code (C7).**
+  - Contracts shows every field it is connected to, including ones it doesn't know, under "Additional fields" in that table's form and details. They are shown by type and included in search, filters and CSV, and are never used in calculations.
+  - When an assistant adds a field, it adds the field to the table and connects it to Contracts in the same request.
+  - A field a person adds by hand in Database must also be connected to Contracts once ("Show in Contracts"). The app's Settings explains how.
 - **Forms (C8).**
-  - Any form can be changed in layout (order, hide, labels, defaults) through `prepare_tool_layout`, without code. Required fields cannot be hidden.
-  - An assistant can create a new form from scratch, or rebuild an existing one, and add it to the app's code through a reviewed app revision. Forms are written in the app's form format (fields, types, validation, where it appears, which command saves it), so a new form gets the same validation, review and command as the built-in ones.
-- **Code changes.** Any change to screens, charts, theme or features goes through the reviewed app revision. The template documents the few things a revision must keep so other apps and saved data keep working:
-  - shared table roles and the `contracts.obligations` contract;
-  - the calculations above;
-  - command ids and their click/command parity;
-  - the "From *App*" and **Edit in *App*** behaviour.
-
-  A revision that changes one of these says so in the review.
+  - Any form's layout (order, hidden, labels, defaults) can be changed through `prepare_tool_layout`, without code. Required fields cannot be hidden.
+  - An assistant can build a new form from scratch, or rebuild one, and add it to the app's code through a reviewed app revision. Forms use the app's form format (fields, types, validation, where it appears, what it saves), so new forms get the same checks as built-in ones.
+- **Code changes.** Screens, charts, theme and features change through the reviewed app revision. The documentation lists what a revision must keep so other apps and saved data keep working: shared table roles, the `contracts.obligations` contract, the calculations above, and the "From *App*" labels. A revision that changes one of these says so in the review.
 
 ### 12.6 Counterparty on obligations (C4)
 
@@ -273,29 +276,25 @@ The request and its outcome are logged with who pressed it. This is the same cap
 
 ### 12.7 Documentation changes
 
-- Remove the 1.0.0 extraction automation from `AUTOMATION_RECIPES.md`, `documentation.tasks` and instructions step 8. Add `contract_summary` and describe the three ways in from §12.2.
-- Instructions step 5 becomes "use `fill_in.request` or the chat flow". Step 7 becomes "everything is changeable (§12.5)".
-- Remove the limitation "Assistants are told never to verify…". Update the limitation about other apps' integrations.
-- Examples: fill in from the app button; a manual entry with blanks; an assistant adds a field and it appears; an assistant builds a new form; **Edit in Programs**; the summary email.
+- Remove the 1.0.0 extraction automation from `AUTOMATION_RECIPES.md`, `documentation.tasks` and instructions step 8. Add `contract_signed` (and `contract_summary` if chosen).
+- Instructions step 5 describes the two ways in (§12.2). Step 7 becomes "everything is changeable (§12.5)", with the per-button change list.
+- Remove the limitation "Assistants are told never to verify…". Add the limitation that a connected value is changed in the app that owns it.
+- Examples:
+  - contract given in chat;
+  - uploaded original filled in on request;
+  - a manual entry with blanks;
+  - an assistant adds a field and it appears;
+  - an assistant builds a new form;
+  - a Programs milestone labelled "From Programs";
+  - the signed email.
 
 ### 12.8 Acceptance (in addition to §11)
 
-1. All three ways in work in Claude, ChatGPT and on the website. The app button sends the task into the chat inside a host and runs once on the background connection on the website. Without a connection, it explains what to do. A document not readable by AI is reported, not guessed. A second press on the same version opens the existing result.
+1. Both ways in work in Claude and ChatGPT. A document not readable by AI is reported, not guessed. No AI runs without the user asking.
 2. No scheduled AI job is installed with Contracts.
-3. The Add app dialog shows `contract_summary` switched on. Turning it off installs the app without it. The email lists completed and pending agreements correctly, sends nothing when both are empty, and respects each recipient's access.
-4. Every read-only connected value shows "From *App*". **Edit in *App*** opens the right record, or Database, or nothing, depending on access. Other apps can open Contracts at a record.
-5. For every button in the app, an assistant can do the same thing by command with an identical proposal. Hidden columns stay hidden from the assistant. A viewer's assistant can only read.
-6. The app's calculated values are the same whether a person or an assistant made the change.
-7. A field added in Database appears in the form and details with no code change, at 1440 and 390 px.
-8. An assistant-built new form saves through review with the same validation as a built-in form.
-9. `counterparty_id` defaults from the agreement; Runway 2.2.0 and a v1 reader both connect.
-
-### 12.9 Delivery order
-
-1. **Platform:**
-   - app commands and open-the-writing-app (with Runway P1);
-   - P-C1, start the assistant from an app button;
-   - P-C2, template-shipped summary functions;
-   - P-C3, fields added after install appear in the app.
-2. **Contracts 1.1.0 draft:** §12.2–§12.7.
-3. **Release:** acceptance in web, Claude and ChatGPT, then owner approval.
+3. The Add app dialog shows `contract_signed` switched on. Turning it off installs the app without it. The email is sent once when a contract becomes active and respects each recipient's access.
+4. Every read-only connected value shows "From *App*" and cannot be edited in Contracts.
+5. For every button, an assistant can make the same change with the documented records. The screen then looks the same as after a click. Hidden columns stay hidden from the assistant, and a viewer's assistant can only read.
+6. A field added and connected by an assistant appears in the form and details with no code change, at 1440 and 390 px.
+7. An assistant-built new form saves through review with the same checks as a built-in form.
+8. `counterparty_id` defaults from the agreement; Runway 2.2.0 and a v1 reader both connect.
