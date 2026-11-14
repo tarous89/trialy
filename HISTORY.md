@@ -1,3 +1,7 @@
+## 14 November 2026 — App automation recipes on by default
+
+Owner decision: install recommendations and app-feature setup are on without configuration. `recipesEnabled()` now returns true unless `APP_AUTOMATION_RECIPES_ENABLED=false`, which stays as an emergency off switch that stops new offers and setup reconciliation without a redeploy. Existing automations, installed apps and the exact review, ownership and write-grant checks are unchanged. Add app now offers the declared recommendations (for example, Partnerships research, digest and briefs) selected by default to the owner, and missing runners leave visible pending setup. No migration.
+
 ## 14 November 2026 — Partnerships 2.1.0 published
 
 Aligns Partnerships with the app automation platform changes (#168, #169) and makes it customizable by Claude and ChatGPT within its scope, then publishes it at the owner's request. The catalog entry declares `recommendedAutomations` for partner research (weekly, Monday 07:00; create-only writes to signals and the new `partnerships.research_reports`), the digest (after each completed research run) and meeting briefs (create-only draft briefs). Settings no longer store a schedule, recipients or on/off. Follow-up reminders remain a chat-set-up action because recipes cannot express `status = open`. Customization covers column groups for every list, saved views with their own columns and sort, custom fields, stage labels with hidden and custom stages, activity kinds and deal types, and preferences.

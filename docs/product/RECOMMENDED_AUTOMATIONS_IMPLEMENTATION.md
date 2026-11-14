@@ -1,6 +1,6 @@
 # App automations — platform implementation plan
 
-**Status:** Platform implementation prepared 14 November 2026 behind `APP_AUTOMATION_RECIPES_ENABLED` (default off). Live host acceptance and catalog approval remain release gates. Product authority: [App automations scope](RECOMMENDED_AUTOMATIONS.md). New installation offers and setup reconciliation remain disabled until the feature gate is enabled. Read [CONTEXT](../../CONTEXT.md) and [DEVELOPMENT](../../DEVELOPMENT.md) before implementation.
+**Status:** Platform implementation prepared 14 November 2026; on by default since the owner's decision the same day (`APP_AUTOMATION_RECIPES_ENABLED=false` is the emergency off switch). Live host acceptance and catalog approval remain release gates. Product authority: [App automations scope](RECOMMENDED_AUTOMATIONS.md). New installation offers and setup reconciliation remain disabled until the feature gate is enabled. Read [CONTEXT](../../CONTEXT.md) and [DEVELOPMENT](../../DEVELOPMENT.md) before implementation.
 
 ## Objective
 
