@@ -4,6 +4,8 @@ import {readFile,writeFile} from 'node:fs/promises';
 const root=new URL('../templates/source/investor-crm/',import.meta.url),read=n=>readFile(new URL(n,root),'utf8');
 const [metadata,source,css,demo,schema]=await Promise.all(['catalog.metadata.json','fundraise.source.js','fundraise.css','demo_data.json','schema.example.json'].map(read));
 const entry=JSON.parse(metadata);entry.source='const FUNDRAISE_CSS='+JSON.stringify(css)+';\n'+source;
+// E7 read-only helpers: source lives in functions/*.js and is inlined into the immutable catalog entry.
+entry.functions=await Promise.all((entry.functions??[]).map(async({sourceFile,...f})=>({...f,source:(await read(sourceFile)).trim()})));
 const serialized=JSON.stringify(entry,null,2)+'\n';
 if(Buffer.byteLength(serialized)>300000||entry.source.length>180000||css.length>50000)throw Error('Fundraise template exceeds catalog limits');
 const catalog=new URL('../../apps/'+entry.id+'-'+entry.version+'.json',root);
