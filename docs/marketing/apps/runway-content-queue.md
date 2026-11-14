@@ -29,7 +29,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | B7 | AI-native FP&A software for startups: compare the actions, not the label | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/ai-native-fpa-software-startups) |
 | B8 | Excel and Google Sheets alternatives for biotech budgeting: what should you replace? | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/excel-google-sheets-alternatives-biotech) |
 | C1 | Cash runway apps in ChatGPT: compare the connection before the forecast | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/cash-runway-apps-chatgpt) |
-| C2 | Best Financial Planning Apps for Claude | Queued — verify and publish | — |
+| C2 | Financial planning apps for Claude: choose where the plan lives | In progress — research and source preparation | — |
 | C3 | How to Manage Biotech Cash Runway Using ChatGPT | Already covered / published | [Live article](https://trialagents.com/apps/manage-biotech-cash-runway-chatgpt) |
 | C4 | How to Use Claude for Biotech Cash Flow Forecasting | Queued — verify and publish | — |
 | C5 | AI CFO vs AI-Native Financial Planning App: What Does a Biotech Startup Need? | Queued — verify and publish | — |
@@ -556,3 +556,8 @@ PR #203 merged as `22661f0fc9e408f4fc6eb7fb2ab72d2bbfbd255e` at approximately 04
 - **Evidence boundary:** current primary documentation comparison and evaluation recipe, not executed competitor or end-to-end ChatGPT/Claude acceptance testing. Browser screenshots remain explicitly labeled. Refresh this article when host setup, supported actions or app catalog changes.
 
 This supersedes C1 source and merged-pending checkpoints. **23 published; 24 unfinished**, including owner-deferred A9. **Next eligible: C2, Best Financial Planning Apps for Claude**, subject to fresh queue, evidence, duplicate and claim checks. Only C1 was newly published in this run. Search indexing, rankings and assistant citations remain unverified.
+
+
+### C2 execution claim — 14 November 2026
+
+C1 live URL returned HTTP 200; current public main is `22661f0fc9e408f4fc6eb7fb2ab72d2bbfbd255e`, and no open Runway source PRs were found. Claim C2 on `content/runway-c2-claude-planning-20261114`. Retitle unsupported Best wording to Financial planning apps for Claude: choose where the plan lives. Distinct intent: select a Claude planning workflow by authoritative app/model/data ownership, with TrialAgents Runway, LivePlan and Aleph; not a host-name swap of C1 or the planned C4 forecasting tutorial. Fresh primary evidence and publication QA required. Totals remain 23 published, 24 unfinished.
