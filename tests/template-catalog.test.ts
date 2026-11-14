@@ -102,17 +102,17 @@ test('migration 063 approves Contracts 1.0.0 once, if an earlier deployment impo
   await pg.exec(await readFile('migrations/'+last,'utf8'));await syncTemplateCatalog(db);
   const after=await status();assert.equal(after['life.contracts@1.0.0'],'approved');
   for(const [k,v] of Object.entries(before))if(k!=='life.contracts@1.0.0')assert.equal(after[k],v,k);
-  const catalog=new AppTemplates(undefined,db);assert.ok((await catalog.list({query:'contracts'})).templates.some((t:any)=>t.id==='life.contracts'));// the seed now names 1.1.0 (migration 072)
+  const catalog=new AppTemplates(undefined,db);assert.ok((await catalog.list({query:'contracts'})).templates.some((t:any)=>t.id==='life.contracts'));// the seed now names 1.1.0 (migration 073)
   // An operator withdrawal afterwards is not undone by later deployments.
   await pg.query("UPDATE app_template_catalog SET status='draft' WHERE template_id='life.contracts' AND version='1.0.0'");await syncTemplateCatalog(db);
   assert.equal((await status())['life.contracts@1.0.0'],'draft');
  }finally{await pg.close();}
 });
 
-test('migration 072 publishes Contracts 1.1.0 in place of 1.0.0, from the live catalog state, once',async()=>{
+test('migration 073 publishes Contracts 1.1.0 in place of 1.0.0, from the live catalog state, once',async()=>{
  const pg=new PGlite();
  try{
-  const files=(await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort(),last=files.find(f=>f.startsWith('072_approve_contracts'))!;
+  const files=(await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort(),last=files.find(f=>f.startsWith('073_approve_contracts'))!;
   for(const file of files.filter(f=>f<last))await pg.exec(await readFile('migrations/'+file,'utf8'));
   const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
   await syncTemplateCatalog(db);

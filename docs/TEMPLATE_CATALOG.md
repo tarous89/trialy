@@ -6,7 +6,7 @@ Migration 056 and `db:migrate` import repository versions once. `templates/catal
 
 Contracts (`life.contracts`) 1.0.0 was added on 12 November 2026 as a draft (#140) and approved the same day at the owner's request: the seed names 1.0.0 and migration 063 approves the draft row imported by that deployment, once. On 14 November 2026 the owner approved Contracts 1.1.0 in place of 1.0.0:
 - the seed names 1.1.0, so the sync after migrations imports it approved;
-- migration 072 withdraws 1.0.0 once (`templates/catalog-retirements.json`);
+- migration 073 withdraws 1.0.0 once (`templates/catalog-retirements.json`);
 - the 1.0.0 source is archived under `templates/source/contracts/archive/1.0.0/`, and its installer entry points there.
 
 Installed 1.0.0 apps keep working.
@@ -16,6 +16,8 @@ CRO Selection (`life.cro-selection`) 2.0.0 was added on 13 November 2026 as a dr
 Data Room (`life.data-room`) 1.0.0 was added on 13 November 2026 as a draft, built on the exchange room extension (EXTERNAL_EXCHANGE.md §5). It is a new template, so nothing is retired. It writes the `dataroom.v1` outputs: in `templates/contracts/outputs.json` its writer is now `life.data-room`, and `room_purpose` gains `partnering` (an additive change). It is not in the seed until the owner approves it.
 
 Partnerships (`life.partnership-tracker`) 2.1.0 was approved by the owner on 14 November 2026 in place of Partnership Tracker 1.1.1. The first build, 2.0.0 (#164), had already been imported as a draft, and a published row never changes, so the revision with the platform automation declarations and customization ships as 2.1.0. 2.0.0 stays a draft with its files under `templates/source/partnership-tracker/archive/2.0.0/`. The seed names 2.1.0, so the catalog sync that runs after migrations imports it approved. One-time migration 071 withdraws 1.1.1, and its gallery card and media were updated. Installed 1.1.1 apps keep their saved source and data.
+
+Fundraise (`life.investor-crm`) 2.0.0 was approved by the owner on 14 November 2026 in place of Investor CRM 1.0.1. 2.0.0 had never been imported (PR #137 was revised before merging), so the version stays 2.0.0: the seed names it, the catalog sync after migrations imports it approved, and migration 072 withdraws 1.0.1 once (listed in `catalog-retirements.json`). Installed 1.0.1 apps keep their saved source and data; the 1.0.1 JSON is unchanged and its package is archived under `templates/source/investor-crm/archive/1.0.1/`. Note that main has two migrations numbered 071 (`071_app_function_dependencies.sql`, `071_approve_partnerships_2_1_0.sql`); both run, in file-name order.
 
 For CRO Selection, when the owner approves 2.0.0, the publication change does four things:
 - names 2.0.0 in the seed;

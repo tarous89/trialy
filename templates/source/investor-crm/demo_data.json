@@ -1,3562 +1,1340 @@
 {
-  "notice": "All names, amounts, emails and source URLs are fabricated. No data is created in TrialAgents.",
-  "asOfDate": "2026-11-01",
-  "records": [
-    {
-      "role": "rounds",
-      "id": "demo-rounds-001",
-      "version": 1,
-      "data": {
-        "name": "Series A · 2027",
-        "archived": false,
-        "target_amount": 18000000,
-        "currency": "EUR",
-        "status": "Active",
-        "expected_close": "2027-07-01",
-        "owner": "CEO / CFO",
-        "notes": "Fictional financing scenario"
-      }
-    },
-    {
-      "role": "rounds",
-      "id": "demo-rounds-002",
-      "version": 1,
-      "data": {
-        "name": "Seed extension · 2025",
-        "archived": false,
-        "target_amount": 5500000,
-        "currency": "EUR",
-        "status": "Closed",
-        "expected_close": "2025-12-18",
-        "owner": "Founding team",
-        "notes": "Fictional historical round"
-      }
-    },
-    {
-      "role": "rounds",
-      "id": "demo-rounds-003",
-      "version": 1,
-      "data": {
-        "name": "Future strategic extension",
-        "archived": false,
-        "target_amount": null,
-        "currency": "EUR",
-        "status": "Planning",
-        "expected_close": "2027-11-15",
-        "owner": "CEO",
-        "notes": "No funding target approved yet"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-001",
-      "version": 1,
-      "data": {
-        "name": "Alder Ridge Ventures",
-        "archived": false,
-        "kind": "VC",
-        "geography": "Europe",
-        "focus": "oncology",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 300000,
-        "ticket_max": 1500000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/0",
-        "source": "https://example.invalid/research/investor-0",
-        "source_date": "2026-09-15",
-        "owner": "CEO",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-001",
-      "version": 1,
-      "data": {
-        "name": "Taylor Blake",
-        "archived": false,
-        "investor_id": "demo-investors-001",
-        "title": "Investment Director",
-        "channel": "LinkedIn",
-        "email": "fictional.contact.0.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/0-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-002",
-      "version": 1,
-      "data": {
-        "name": "Taylor Lane",
-        "archived": false,
-        "investor_id": "demo-investors-001",
-        "title": "Partner",
-        "channel": "LinkedIn",
-        "email": "fictional.contact.0.1@example.invalid",
-        "linkedin": "https://example.invalid/profiles/0-1",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-002",
-      "version": 1,
-      "data": {
-        "name": "Helix Frontier Capital",
-        "archived": false,
-        "kind": "VC",
-        "geography": "United States",
-        "focus": "rare disease",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 450000,
-        "ticket_max": 1850000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/1",
-        "source": "https://example.invalid/research/investor-1",
-        "source_date": "2026-09-15",
-        "owner": "CFO",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-003",
-      "version": 1,
-      "data": {
-        "name": "Morgan Lane",
-        "archived": false,
-        "investor_id": "demo-investors-002",
-        "title": "Investment Director",
-        "channel": "Email",
-        "email": "fictional.contact.1.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/1-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-003",
-      "version": 1,
-      "data": {
-        "name": "Cedar Bio Partners",
-        "archived": false,
-        "kind": "Corporate VC",
-        "geography": "Europe / US",
-        "focus": "RNA platforms",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 600000,
-        "ticket_max": 2200000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/2",
-        "source": "https://example.invalid/research/investor-2",
-        "source_date": "2026-09-15",
-        "owner": "BD lead",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-004",
-      "version": 1,
-      "data": {
-        "name": "Alex Stone",
-        "archived": false,
-        "investor_id": "demo-investors-003",
-        "title": "Investment Director",
-        "channel": "LinkedIn",
-        "email": "fictional.contact.2.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/2-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-004",
-      "version": 1,
-      "data": {
-        "name": "Northstar Life Sciences",
-        "archived": false,
-        "kind": "Family office",
-        "geography": "Germany",
-        "focus": "biotherapeutics",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 300000,
-        "ticket_max": 2550000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/3",
-        "source": "https://example.invalid/research/investor-3",
-        "source_date": "2026-09-15",
-        "owner": "CEO",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-005",
-      "version": 1,
-      "data": {
-        "name": "Jordan Reed",
-        "archived": false,
-        "investor_id": "demo-investors-004",
-        "title": "Investment Director",
-        "channel": "Email",
-        "email": "fictional.contact.3.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/3-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-006",
-      "version": 1,
-      "data": {
-        "name": "Jordan Brooks",
-        "archived": false,
-        "investor_id": "demo-investors-004",
-        "title": "Partner",
-        "channel": "Email",
-        "email": "fictional.contact.3.1@example.invalid",
-        "linkedin": "https://example.invalid/profiles/3-1",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-005",
-      "version": 1,
-      "data": {
-        "name": "Bluepoint Growth Fund",
-        "archived": false,
-        "kind": "VC",
-        "geography": "United Kingdom",
-        "focus": "precision medicine",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 450000,
-        "ticket_max": 2900000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/4",
-        "source": "https://example.invalid/research/investor-4",
-        "source_date": "2026-09-15",
-        "owner": "CFO",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-007",
-      "version": 1,
-      "data": {
-        "name": "Casey Brooks",
-        "archived": false,
-        "investor_id": "demo-investors-005",
-        "title": "Investment Director",
-        "channel": "LinkedIn",
-        "email": "fictional.contact.4.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/4-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-006",
-      "version": 1,
-      "data": {
-        "name": "Mariner Biotech Ventures",
-        "archived": false,
-        "kind": "Foundation",
-        "geography": "Nordics",
-        "focus": "neurology",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 600000,
-        "ticket_max": 1500000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/5",
-        "source": "https://example.invalid/research/investor-5",
-        "source_date": "2026-09-15",
-        "owner": "BD lead",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-008",
-      "version": 1,
-      "data": {
-        "name": "Riley Blake",
-        "archived": false,
-        "investor_id": "demo-investors-006",
-        "title": "Investment Director",
-        "channel": "Email",
-        "email": "fictional.contact.5.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/5-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-007",
-      "version": 1,
-      "data": {
-        "name": "Orchid Growth Partners",
-        "archived": false,
-        "kind": "VC",
-        "geography": "Europe",
-        "focus": "cell therapy",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 300000,
-        "ticket_max": 1850000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/6",
-        "source": "https://example.invalid/research/investor-6",
-        "source_date": "2026-09-15",
-        "owner": "CEO",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-009",
-      "version": 1,
-      "data": {
-        "name": "Sam Lane",
-        "archived": false,
-        "investor_id": "demo-investors-007",
-        "title": "Investment Director",
-        "channel": "LinkedIn",
-        "email": "fictional.contact.6.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/6-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-010",
-      "version": 1,
-      "data": {
-        "name": "Sam Stone",
-        "archived": false,
-        "investor_id": "demo-investors-007",
-        "title": "Partner",
-        "channel": "LinkedIn",
-        "email": "fictional.contact.6.1@example.invalid",
-        "linkedin": "https://example.invalid/profiles/6-1",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-008",
-      "version": 1,
-      "data": {
-        "name": "Solstice Therapeutics Capital",
-        "archived": false,
-        "kind": "VC",
-        "geography": "United States",
-        "focus": "platform biotech",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 450000,
-        "ticket_max": 2200000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/7",
-        "source": "https://example.invalid/research/investor-7",
-        "source_date": "2026-09-15",
-        "owner": "CFO",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-011",
-      "version": 1,
-      "data": {
-        "name": "Drew Stone",
-        "archived": false,
-        "investor_id": "demo-investors-008",
-        "title": "Investment Director",
-        "channel": "Email",
-        "email": "fictional.contact.7.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/7-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-009",
-      "version": 1,
-      "data": {
-        "name": "Foresight Bio Ventures",
-        "archived": false,
-        "kind": "Corporate VC",
-        "geography": "Europe / US",
-        "focus": "oncology",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 600000,
-        "ticket_max": 2550000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/8",
-        "source": "https://example.invalid/research/investor-8",
-        "source_date": "2026-09-15",
-        "owner": "BD lead",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-012",
-      "version": 1,
-      "data": {
-        "name": "Taylor Reed",
-        "archived": false,
-        "investor_id": "demo-investors-009",
-        "title": "Investment Director",
-        "channel": "LinkedIn",
-        "email": "fictional.contact.8.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/8-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-010",
-      "version": 1,
-      "data": {
-        "name": "Harborfront Life Sciences",
-        "archived": false,
-        "kind": "Family office",
-        "geography": "Germany",
-        "focus": "rare disease",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 300000,
-        "ticket_max": 2900000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/9",
-        "source": "https://example.invalid/research/investor-9",
-        "source_date": "2026-09-15",
-        "owner": "CEO",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-013",
-      "version": 1,
-      "data": {
-        "name": "Morgan Brooks",
-        "archived": false,
-        "investor_id": "demo-investors-010",
-        "title": "Investment Director",
-        "channel": "Email",
-        "email": "fictional.contact.9.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/9-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-014",
-      "version": 1,
-      "data": {
-        "name": "Morgan Blake",
-        "archived": false,
-        "investor_id": "demo-investors-010",
-        "title": "Partner",
-        "channel": "Email",
-        "email": "fictional.contact.9.1@example.invalid",
-        "linkedin": "https://example.invalid/profiles/9-1",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-011",
-      "version": 1,
-      "data": {
-        "name": "BrightPeak Health Capital",
-        "archived": false,
-        "kind": "VC",
-        "geography": "United Kingdom",
-        "focus": "RNA platforms",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 450000,
-        "ticket_max": 1500000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/10",
-        "source": "https://example.invalid/research/investor-10",
-        "source_date": "2026-09-15",
-        "owner": "CFO",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-015",
-      "version": 1,
-      "data": {
-        "name": "Alex Blake",
-        "archived": false,
-        "investor_id": "demo-investors-011",
-        "title": "Investment Director",
-        "channel": "LinkedIn",
-        "email": "fictional.contact.10.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/10-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-012",
-      "version": 1,
-      "data": {
-        "name": "Horizon Medicines Ventures",
-        "archived": false,
-        "kind": "Foundation",
-        "geography": "Nordics",
-        "focus": "biotherapeutics",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 600000,
-        "ticket_max": 1850000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/11",
-        "source": "https://example.invalid/research/investor-11",
-        "source_date": "2026-09-15",
-        "owner": "BD lead",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-016",
-      "version": 1,
-      "data": {
-        "name": "Jordan Lane",
-        "archived": false,
-        "investor_id": "demo-investors-012",
-        "title": "Investment Director",
-        "channel": "Email",
-        "email": "fictional.contact.11.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/11-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-013",
-      "version": 1,
-      "data": {
-        "name": "Emerald Scientific Partners",
-        "archived": false,
-        "kind": "VC",
-        "geography": "Europe",
-        "focus": "precision medicine",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 300000,
-        "ticket_max": 2200000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/12",
-        "source": "https://example.invalid/research/investor-12",
-        "source_date": "2026-09-15",
-        "owner": "CEO",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-017",
-      "version": 1,
-      "data": {
-        "name": "Casey Stone",
-        "archived": false,
-        "investor_id": "demo-investors-013",
-        "title": "Investment Director",
-        "channel": "LinkedIn",
-        "email": "fictional.contact.12.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/12-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-018",
-      "version": 1,
-      "data": {
-        "name": "Casey Reed",
-        "archived": false,
-        "investor_id": "demo-investors-013",
-        "title": "Partner",
-        "channel": "LinkedIn",
-        "email": "fictional.contact.12.1@example.invalid",
-        "linkedin": "https://example.invalid/profiles/12-1",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-014",
-      "version": 1,
-      "data": {
-        "name": "Borealis Health Investors",
-        "archived": false,
-        "kind": "VC",
-        "geography": "United States",
-        "focus": "neurology",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 450000,
-        "ticket_max": 2550000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/13",
-        "source": "https://example.invalid/research/investor-13",
-        "source_date": "2026-09-15",
-        "owner": "CFO",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-019",
-      "version": 1,
-      "data": {
-        "name": "Riley Reed",
-        "archived": false,
-        "investor_id": "demo-investors-014",
-        "title": "Investment Director",
-        "channel": "Email",
-        "email": "fictional.contact.13.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/13-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-015",
-      "version": 1,
-      "data": {
-        "name": "Beacon Bay Ventures",
-        "archived": false,
-        "kind": "Corporate VC",
-        "geography": "Europe / US",
-        "focus": "cell therapy",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 600000,
-        "ticket_max": 2900000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/14",
-        "source": "https://example.invalid/research/investor-14",
-        "source_date": "2026-09-15",
-        "owner": "BD lead",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-020",
-      "version": 1,
-      "data": {
-        "name": "Sam Brooks",
-        "archived": false,
-        "investor_id": "demo-investors-015",
-        "title": "Investment Director",
-        "channel": "LinkedIn",
-        "email": "fictional.contact.14.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/14-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-016",
-      "version": 1,
-      "data": {
-        "name": "Willow Tree Growth",
-        "archived": false,
-        "kind": "Family office",
-        "geography": "Germany",
-        "focus": "platform biotech",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 300000,
-        "ticket_max": 1500000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/15",
-        "source": "https://example.invalid/research/investor-15",
-        "source_date": "2026-09-15",
-        "owner": "CEO",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-021",
-      "version": 1,
-      "data": {
-        "name": "Drew Blake",
-        "archived": false,
-        "investor_id": "demo-investors-016",
-        "title": "Investment Director",
-        "channel": "Email",
-        "email": "fictional.contact.15.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/15-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-022",
-      "version": 1,
-      "data": {
-        "name": "Drew Lane",
-        "archived": false,
-        "investor_id": "demo-investors-016",
-        "title": "Partner",
-        "channel": "Email",
-        "email": "fictional.contact.15.1@example.invalid",
-        "linkedin": "https://example.invalid/profiles/15-1",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-017",
-      "version": 1,
-      "data": {
-        "name": "Kinetic Bio Partners",
-        "archived": false,
-        "kind": "VC",
-        "geography": "United Kingdom",
-        "focus": "oncology",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 450000,
-        "ticket_max": 1850000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/16",
-        "source": "https://example.invalid/research/investor-16",
-        "source_date": "2026-09-15",
-        "owner": "CFO",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-023",
-      "version": 1,
-      "data": {
-        "name": "Taylor Lane",
-        "archived": false,
-        "investor_id": "demo-investors-017",
-        "title": "Investment Director",
-        "channel": "LinkedIn",
-        "email": "fictional.contact.16.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/16-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-018",
-      "version": 1,
-      "data": {
-        "name": "Atlas Vale Capital",
-        "archived": false,
-        "kind": "Foundation",
-        "geography": "Nordics",
-        "focus": "rare disease",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 600000,
-        "ticket_max": 2200000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/17",
-        "source": "https://example.invalid/research/investor-17",
-        "source_date": "2026-09-15",
-        "owner": "BD lead",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-024",
-      "version": 1,
-      "data": {
-        "name": "Morgan Stone",
-        "archived": false,
-        "investor_id": "demo-investors-018",
-        "title": "Investment Director",
-        "channel": "Email",
-        "email": "fictional.contact.17.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/17-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-019",
-      "version": 1,
-      "data": {
-        "name": "Hearthside Seed Ventures",
-        "archived": false,
-        "kind": "VC",
-        "geography": "Europe",
-        "focus": "RNA platforms",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 300000,
-        "ticket_max": 2550000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/18",
-        "source": "https://example.invalid/research/investor-18",
-        "source_date": "2026-09-15",
-        "owner": "CEO",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-025",
-      "version": 1,
-      "data": {
-        "name": "Alex Reed",
-        "archived": false,
-        "investor_id": "demo-investors-019",
-        "title": "Investment Director",
-        "channel": "LinkedIn",
-        "email": "fictional.contact.18.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/18-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-026",
-      "version": 1,
-      "data": {
-        "name": "Alex Brooks",
-        "archived": false,
-        "investor_id": "demo-investors-019",
-        "title": "Partner",
-        "channel": "LinkedIn",
-        "email": "fictional.contact.18.1@example.invalid",
-        "linkedin": "https://example.invalid/profiles/18-1",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-020",
-      "version": 1,
-      "data": {
-        "name": "Caldera Growth Fund",
-        "archived": false,
-        "kind": "VC",
-        "geography": "United States",
-        "focus": "biotherapeutics",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 450000,
-        "ticket_max": 2900000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/19",
-        "source": "https://example.invalid/research/investor-19",
-        "source_date": "2026-09-15",
-        "owner": "CFO",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-027",
-      "version": 1,
-      "data": {
-        "name": "Jordan Brooks",
-        "archived": false,
-        "investor_id": "demo-investors-020",
-        "title": "Investment Director",
-        "channel": "Email",
-        "email": "fictional.contact.19.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/19-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-021",
-      "version": 1,
-      "data": {
-        "name": "Lakeshore Biotech Group",
-        "archived": false,
-        "kind": "Corporate VC",
-        "geography": "Europe / US",
-        "focus": "precision medicine",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 600000,
-        "ticket_max": 1500000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/20",
-        "source": "https://example.invalid/research/investor-20",
-        "source_date": "2026-09-15",
-        "owner": "BD lead",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-028",
-      "version": 1,
-      "data": {
-        "name": "Casey Blake",
-        "archived": false,
-        "investor_id": "demo-investors-021",
-        "title": "Investment Director",
-        "channel": "LinkedIn",
-        "email": "fictional.contact.20.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/20-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-022",
-      "version": 1,
-      "data": {
-        "name": "Summit Tide Ventures",
-        "archived": false,
-        "kind": "Family office",
-        "geography": "Germany",
-        "focus": "neurology",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 300000,
-        "ticket_max": 1850000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/21",
-        "source": "https://example.invalid/research/investor-21",
-        "source_date": "2026-09-15",
-        "owner": "CEO",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-029",
-      "version": 1,
-      "data": {
-        "name": "Riley Lane",
-        "archived": false,
-        "investor_id": "demo-investors-022",
-        "title": "Investment Director",
-        "channel": "Email",
-        "email": "fictional.contact.21.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/21-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-030",
-      "version": 1,
-      "data": {
-        "name": "Riley Stone",
-        "archived": false,
-        "investor_id": "demo-investors-022",
-        "title": "Partner",
-        "channel": "Email",
-        "email": "fictional.contact.21.1@example.invalid",
-        "linkedin": "https://example.invalid/profiles/21-1",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-023",
-      "version": 1,
-      "data": {
-        "name": "Arcwell Therapeutics Fund",
-        "archived": false,
-        "kind": "VC",
-        "geography": "United Kingdom",
-        "focus": "cell therapy",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 450000,
-        "ticket_max": 2200000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/22",
-        "source": "https://example.invalid/research/investor-22",
-        "source_date": "2026-09-15",
-        "owner": "CFO",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-031",
-      "version": 1,
-      "data": {
-        "name": "Sam Stone",
-        "archived": false,
-        "investor_id": "demo-investors-023",
-        "title": "Investment Director",
-        "channel": "LinkedIn",
-        "email": "fictional.contact.22.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/22-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "investors",
-      "id": "demo-investors-024",
-      "version": 1,
-      "data": {
-        "name": "Mosaic Oncology Capital",
-        "archived": false,
-        "kind": "Foundation",
-        "geography": "Nordics",
-        "focus": "platform biotech",
-        "stage_focus": "Seed–Series B",
-        "ticket_min": 600000,
-        "ticket_max": 2550000,
-        "currency": "EUR",
-        "website": "https://example.invalid/investors/23",
-        "source": "https://example.invalid/research/investor-23",
-        "source_date": "2026-09-15",
-        "owner": "BD lead",
-        "notes": "Entirely fictional investor used for interface demonstration"
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "demo-contacts-032",
-      "version": 1,
-      "data": {
-        "name": "Drew Reed",
-        "archived": false,
-        "investor_id": "demo-investors-024",
-        "title": "Investment Director",
-        "channel": "Email",
-        "email": "fictional.contact.23.0@example.invalid",
-        "linkedin": "https://example.invalid/profiles/23-0",
-        "notes": "Fictional example; never use for outreach"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-001",
-      "version": 1,
-      "data": {
-        "name": "Alder Ridge Ventures · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-001",
-        "round_id": "demo-rounds-001",
-        "stage": "Identified",
-        "indicative_amount": 750000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "CEO",
-        "next_step": "Send deck",
-        "next_due": "2026-11-01",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-03",
-        "priority": "High",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-002",
-      "version": 1,
-      "data": {
-        "name": "Helix Frontier Capital · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-002",
-        "round_id": "demo-rounds-001",
-        "stage": "Committed",
-        "indicative_amount": 1075000,
-        "committed_amount": 1300000,
-        "commitment_status": "Signed",
-        "currency": "EUR",
-        "commitment_date": "2026-10-14",
-        "evidence_ref": "SIGNED-DEMO-REF-01",
-        "owner": "CFO",
-        "next_step": "Discuss science",
-        "next_due": "2026-11-02",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-04",
-        "priority": "Medium",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-003",
-      "version": 1,
-      "data": {
-        "name": "Cedar Bio Partners · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-003",
-        "round_id": "demo-rounds-001",
-        "stage": "Identified",
-        "indicative_amount": 1400000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "BD lead",
-        "next_step": "Share milestones",
-        "next_due": "2026-11-03",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-05",
-        "priority": "Low",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-004",
-      "version": 1,
-      "data": {
-        "name": "Northstar Life Sciences · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-004",
-        "round_id": "demo-rounds-001",
-        "stage": "Due diligence",
-        "indicative_amount": 1725000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "CEO",
-        "next_step": "Schedule diligence",
-        "next_due": "2026-11-04",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-06",
-        "priority": "High",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-005",
-      "version": 1,
-      "data": {
-        "name": "Bluepoint Growth Fund · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-005",
-        "round_id": "demo-rounds-001",
-        "stage": "Qualified",
-        "indicative_amount": 2050000,
-        "committed_amount": null,
-        "commitment_status": "Verbal",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "CFO",
-        "next_step": "Send deck",
-        "next_due": "2026-11-05",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-07",
-        "priority": "Medium",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-006",
-      "version": 1,
-      "data": {
-        "name": "Mariner Biotech Ventures · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-006",
-        "round_id": "demo-rounds-001",
-        "stage": "Due diligence",
-        "indicative_amount": 750000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "BD lead",
-        "next_step": "Discuss science",
-        "next_due": "2026-11-06",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-08",
-        "priority": "Low",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-007",
-      "version": 1,
-      "data": {
-        "name": "Orchid Growth Partners · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-007",
-        "round_id": "demo-rounds-001",
-        "stage": "Committed",
-        "indicative_amount": 1075000,
-        "committed_amount": 2150000,
-        "commitment_status": "Signed",
-        "currency": "EUR",
-        "commitment_date": "2026-10-19",
-        "evidence_ref": "SIGNED-DEMO-REF-06",
-        "owner": "CEO",
-        "next_step": "Share milestones",
-        "next_due": "2026-11-07",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-09",
-        "priority": "High",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-008",
-      "version": 1,
-      "data": {
-        "name": "Solstice Therapeutics Capital · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-008",
-        "round_id": "demo-rounds-001",
-        "stage": "Declined",
-        "indicative_amount": 1400000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "CFO",
-        "next_step": "Schedule diligence",
-        "next_due": "2026-11-08",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-10",
-        "priority": "Medium",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-009",
-      "version": 1,
-      "data": {
-        "name": "Foresight Bio Ventures · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-009",
-        "round_id": "demo-rounds-001",
-        "stage": "Contacted",
-        "indicative_amount": 1725000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "BD lead",
-        "next_step": "Send deck",
-        "next_due": "2026-11-09",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-11",
-        "priority": "Low",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-010",
-      "version": 1,
-      "data": {
-        "name": "Harborfront Life Sciences · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-010",
-        "round_id": "demo-rounds-001",
-        "stage": "Identified",
-        "indicative_amount": 2050000,
-        "committed_amount": null,
-        "commitment_status": "Verbal",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "CEO",
-        "next_step": "Discuss science",
-        "next_due": "2026-11-10",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-12",
-        "priority": "High",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-011",
-      "version": 1,
-      "data": {
-        "name": "BrightPeak Health Capital · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-011",
-        "round_id": "demo-rounds-001",
-        "stage": "Due diligence",
-        "indicative_amount": 750000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "CFO",
-        "next_step": "Share milestones",
-        "next_due": "2026-11-11",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-13",
-        "priority": "Medium",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-012",
-      "version": 1,
-      "data": {
-        "name": "Horizon Medicines Ventures · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-012",
-        "round_id": "demo-rounds-001",
-        "stage": "Identified",
-        "indicative_amount": 1075000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "BD lead",
-        "next_step": "Schedule diligence",
-        "next_due": "2026-11-12",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-14",
-        "priority": "Low",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-013",
-      "version": 1,
-      "data": {
-        "name": "Emerald Scientific Partners · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-013",
-        "round_id": "demo-rounds-001",
-        "stage": "Due diligence",
-        "indicative_amount": 1400000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "CEO",
-        "next_step": "Send deck",
-        "next_due": "2026-11-13",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-15",
-        "priority": "High",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-014",
-      "version": 1,
-      "data": {
-        "name": "Borealis Health Investors · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-014",
-        "round_id": "demo-rounds-001",
-        "stage": "Committed",
-        "indicative_amount": 1725000,
-        "committed_amount": 980000,
-        "commitment_status": "Signed",
-        "currency": "EUR",
-        "commitment_date": "2026-10-26",
-        "evidence_ref": "SIGNED-DEMO-REF-13",
-        "owner": "CFO",
-        "next_step": "Discuss science",
-        "next_due": "2026-11-14",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-16",
-        "priority": "Medium",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-015",
-      "version": 1,
-      "data": {
-        "name": "Beacon Bay Ventures · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-015",
-        "round_id": "demo-rounds-001",
-        "stage": "Due diligence",
-        "indicative_amount": 2050000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "BD lead",
-        "next_step": "Share milestones",
-        "next_due": "2026-11-15",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-17",
-        "priority": "Low",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-016",
-      "version": 1,
-      "data": {
-        "name": "Willow Tree Growth · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-016",
-        "round_id": "demo-rounds-001",
-        "stage": "Contacted",
-        "indicative_amount": 750000,
-        "committed_amount": null,
-        "commitment_status": "Verbal",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "CEO",
-        "next_step": "Schedule diligence",
-        "next_due": "2026-11-16",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-18",
-        "priority": "High",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-017",
-      "version": 1,
-      "data": {
-        "name": "Kinetic Bio Partners · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-017",
-        "round_id": "demo-rounds-001",
-        "stage": "Declined",
-        "indicative_amount": 1075000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "CFO",
-        "next_step": "Send deck",
-        "next_due": "2026-11-17",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-19",
-        "priority": "Medium",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-018",
-      "version": 1,
-      "data": {
-        "name": "Atlas Vale Capital · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-018",
-        "round_id": "demo-rounds-001",
-        "stage": "Contacted",
-        "indicative_amount": 1400000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "BD lead",
-        "next_step": "Discuss science",
-        "next_due": "2026-11-18",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-20",
-        "priority": "Low",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-019",
-      "version": 1,
-      "data": {
-        "name": "Hearthside Seed Ventures · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-019",
-        "round_id": "demo-rounds-001",
-        "stage": "Identified",
-        "indicative_amount": 1725000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "CEO",
-        "next_step": "Share milestones",
-        "next_due": "2026-11-19",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-21",
-        "priority": "High",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-020",
-      "version": 1,
-      "data": {
-        "name": "Caldera Growth Fund · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-020",
-        "round_id": "demo-rounds-001",
-        "stage": "Committed",
-        "indicative_amount": 2050000,
-        "committed_amount": null,
-        "commitment_status": "Verbal",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "CFO",
-        "next_step": "Schedule diligence",
-        "next_due": "2026-11-20",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-22",
-        "priority": "Medium",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-021",
-      "version": 1,
-      "data": {
-        "name": "Lakeshore Biotech Group · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-021",
-        "round_id": "demo-rounds-001",
-        "stage": "Identified",
-        "indicative_amount": 750000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "BD lead",
-        "next_step": "Send deck",
-        "next_due": "2026-11-21",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-23",
-        "priority": "Low",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-022",
-      "version": 1,
-      "data": {
-        "name": "Summit Tide Ventures · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-022",
-        "round_id": "demo-rounds-001",
-        "stage": "Due diligence",
-        "indicative_amount": 1075000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "CEO",
-        "next_step": "Discuss science",
-        "next_due": "2026-11-22",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-24",
-        "priority": "High",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-023",
-      "version": 1,
-      "data": {
-        "name": "Arcwell Therapeutics Fund · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-023",
-        "round_id": "demo-rounds-001",
-        "stage": "Qualified",
-        "indicative_amount": 1400000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "CFO",
-        "next_step": "Share milestones",
-        "next_due": "2026-11-01",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-25",
-        "priority": "Medium",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-024",
-      "version": 1,
-      "data": {
-        "name": "Mosaic Oncology Capital · Series A",
-        "archived": false,
-        "investor_id": "demo-investors-024",
-        "round_id": "demo-rounds-001",
-        "stage": "Due diligence",
-        "indicative_amount": 1725000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "BD lead",
-        "next_step": "Schedule diligence",
-        "next_due": "2026-11-02",
-        "expected_close": "2027-06-30",
-        "last_contact": "2026-10-26",
-        "priority": "Low",
-        "notes": "Fictional investor intent, not a real commitment"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-025",
-      "version": 1,
-      "data": {
-        "name": "Solstice Therapeutics Capital · Seed",
-        "archived": false,
-        "investor_id": "demo-investors-008",
-        "round_id": "demo-rounds-002",
-        "stage": "Declined",
-        "indicative_amount": 400000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "Founding team",
-        "next_step": "Historical note",
-        "next_due": "2025-12-05",
-        "expected_close": "2025-12-18",
-        "last_contact": "2025-11-14",
-        "priority": "Low",
-        "notes": "Historical fictional interaction"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-026",
-      "version": 1,
-      "data": {
-        "name": "Foresight Bio Ventures · Seed",
-        "archived": false,
-        "investor_id": "demo-investors-009",
-        "round_id": "demo-rounds-002",
-        "stage": "Contacted",
-        "indicative_amount": 495000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "Founding team",
-        "next_step": "Historical note",
-        "next_due": "2025-12-05",
-        "expected_close": "2025-12-18",
-        "last_contact": "2025-11-14",
-        "priority": "Low",
-        "notes": "Historical fictional interaction"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-027",
-      "version": 1,
-      "data": {
-        "name": "Harborfront Life Sciences · Seed",
-        "archived": false,
-        "investor_id": "demo-investors-010",
-        "round_id": "demo-rounds-002",
-        "stage": "Contacted",
-        "indicative_amount": 590000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "Founding team",
-        "next_step": "Historical note",
-        "next_due": "2025-12-05",
-        "expected_close": "2025-12-18",
-        "last_contact": "2025-11-14",
-        "priority": "Low",
-        "notes": "Historical fictional interaction"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-028",
-      "version": 1,
-      "data": {
-        "name": "BrightPeak Health Capital · Seed",
-        "archived": false,
-        "investor_id": "demo-investors-011",
-        "round_id": "demo-rounds-002",
-        "stage": "Declined",
-        "indicative_amount": 685000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "Founding team",
-        "next_step": "Historical note",
-        "next_due": "2025-12-05",
-        "expected_close": "2025-12-18",
-        "last_contact": "2025-11-14",
-        "priority": "Low",
-        "notes": "Historical fictional interaction"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-029",
-      "version": 1,
-      "data": {
-        "name": "Horizon Medicines Ventures · Seed",
-        "archived": false,
-        "investor_id": "demo-investors-012",
-        "round_id": "demo-rounds-002",
-        "stage": "Contacted",
-        "indicative_amount": 400000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "Founding team",
-        "next_step": "Historical note",
-        "next_due": "2025-12-05",
-        "expected_close": "2025-12-18",
-        "last_contact": "2025-11-14",
-        "priority": "Low",
-        "notes": "Historical fictional interaction"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-030",
-      "version": 1,
-      "data": {
-        "name": "Emerald Scientific Partners · Seed",
-        "archived": false,
-        "investor_id": "demo-investors-013",
-        "round_id": "demo-rounds-002",
-        "stage": "Contacted",
-        "indicative_amount": 495000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "Founding team",
-        "next_step": "Historical note",
-        "next_due": "2025-12-05",
-        "expected_close": "2025-12-18",
-        "last_contact": "2025-11-14",
-        "priority": "Low",
-        "notes": "Historical fictional interaction"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-031",
-      "version": 1,
-      "data": {
-        "name": "Borealis Health Investors · Seed",
-        "archived": false,
-        "investor_id": "demo-investors-014",
-        "round_id": "demo-rounds-002",
-        "stage": "Declined",
-        "indicative_amount": 590000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "Founding team",
-        "next_step": "Historical note",
-        "next_due": "2025-12-05",
-        "expected_close": "2025-12-18",
-        "last_contact": "2025-11-14",
-        "priority": "Low",
-        "notes": "Historical fictional interaction"
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "demo-opportunities-032",
-      "version": 1,
-      "data": {
-        "name": "Beacon Bay Ventures · Seed",
-        "archived": false,
-        "investor_id": "demo-investors-015",
-        "round_id": "demo-rounds-002",
-        "stage": "Contacted",
-        "indicative_amount": 685000,
-        "committed_amount": null,
-        "commitment_status": "None",
-        "currency": "EUR",
-        "commitment_date": null,
-        "evidence_ref": null,
-        "owner": "Founding team",
-        "next_step": "Historical note",
-        "next_due": "2025-12-05",
-        "expected_close": "2025-12-18",
-        "last_contact": "2025-11-14",
-        "priority": "Low",
-        "notes": "Historical fictional interaction"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-001",
-      "version": 1,
-      "data": {
-        "name": "Scientific overview · Alder Ridge Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-001",
-        "contact_id": "demo-contacts-001",
-        "date": "2026-10-01",
-        "channel": "Meeting",
-        "outcome": "Positive",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-000",
-        "owner": "CEO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-002",
-      "version": 1,
-      "data": {
-        "name": "Fundraising update · Helix Frontier Capital",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-002",
-        "contact_id": "demo-contacts-003",
-        "date": "2026-10-02",
-        "channel": "Call",
-        "outcome": "Neutral",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-001",
-        "owner": "CFO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-003",
-      "version": 1,
-      "data": {
-        "name": "Partner discussion · Cedar Bio Partners",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-003",
-        "contact_id": "demo-contacts-004",
-        "date": "2026-10-03",
-        "channel": "Email",
-        "outcome": "No response",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-002",
-        "owner": "BD lead"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-004",
-      "version": 1,
-      "data": {
-        "name": "Warm introduction · Northstar Life Sciences",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-004",
-        "contact_id": "demo-contacts-005",
-        "date": "2026-10-04",
-        "channel": "Warm intro",
-        "outcome": "Positive",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-003",
-        "owner": "CEO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-005",
-      "version": 1,
-      "data": {
-        "name": "Data review · Bluepoint Growth Fund",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-005",
-        "contact_id": "demo-contacts-007",
-        "date": "2026-10-05",
-        "channel": "Meeting",
-        "outcome": "Neutral",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-004",
-        "owner": "CFO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-006",
-      "version": 1,
-      "data": {
-        "name": "Scientific overview · Mariner Biotech Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-006",
-        "contact_id": "demo-contacts-008",
-        "date": "2026-10-06",
-        "channel": "Call",
-        "outcome": "No response",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-005",
-        "owner": "BD lead"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-007",
-      "version": 1,
-      "data": {
-        "name": "Fundraising update · Orchid Growth Partners",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-007",
-        "contact_id": "demo-contacts-009",
-        "date": "2026-10-07",
-        "channel": "Email",
-        "outcome": "Positive",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-006",
-        "owner": "CEO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-008",
-      "version": 1,
-      "data": {
-        "name": "Partner discussion · Solstice Therapeutics Capital",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-008",
-        "contact_id": "demo-contacts-011",
-        "date": "2026-10-08",
-        "channel": "Warm intro",
-        "outcome": "Neutral",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-007",
-        "owner": "CFO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-009",
-      "version": 1,
-      "data": {
-        "name": "Warm introduction · Foresight Bio Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-009",
-        "contact_id": "demo-contacts-012",
-        "date": "2026-10-09",
-        "channel": "Meeting",
-        "outcome": "No response",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-008",
-        "owner": "BD lead"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-010",
-      "version": 1,
-      "data": {
-        "name": "Data review · Harborfront Life Sciences",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-010",
-        "contact_id": "demo-contacts-013",
-        "date": "2026-10-10",
-        "channel": "Call",
-        "outcome": "Positive",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-009",
-        "owner": "CEO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-011",
-      "version": 1,
-      "data": {
-        "name": "Scientific overview · BrightPeak Health Capital",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-011",
-        "contact_id": "demo-contacts-015",
-        "date": "2026-10-11",
-        "channel": "Email",
-        "outcome": "Neutral",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-010",
-        "owner": "CFO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-012",
-      "version": 1,
-      "data": {
-        "name": "Fundraising update · Horizon Medicines Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-012",
-        "contact_id": "demo-contacts-016",
-        "date": "2026-10-12",
-        "channel": "Warm intro",
-        "outcome": "No response",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-011",
-        "owner": "BD lead"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-013",
-      "version": 1,
-      "data": {
-        "name": "Partner discussion · Emerald Scientific Partners",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-013",
-        "contact_id": "demo-contacts-017",
-        "date": "2026-10-13",
-        "channel": "Meeting",
-        "outcome": "Positive",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-012",
-        "owner": "CEO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-014",
-      "version": 1,
-      "data": {
-        "name": "Warm introduction · Borealis Health Investors",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-014",
-        "contact_id": "demo-contacts-019",
-        "date": "2026-10-14",
-        "channel": "Call",
-        "outcome": "Neutral",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-013",
-        "owner": "CFO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-015",
-      "version": 1,
-      "data": {
-        "name": "Data review · Beacon Bay Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-015",
-        "contact_id": "demo-contacts-020",
-        "date": "2026-10-15",
-        "channel": "Email",
-        "outcome": "No response",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-014",
-        "owner": "BD lead"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-016",
-      "version": 1,
-      "data": {
-        "name": "Scientific overview · Willow Tree Growth",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-016",
-        "contact_id": "demo-contacts-021",
-        "date": "2026-10-16",
-        "channel": "Warm intro",
-        "outcome": "Positive",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-015",
-        "owner": "CEO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-017",
-      "version": 1,
-      "data": {
-        "name": "Fundraising update · Kinetic Bio Partners",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-017",
-        "contact_id": "demo-contacts-023",
-        "date": "2026-10-17",
-        "channel": "Meeting",
-        "outcome": "Neutral",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-016",
-        "owner": "CFO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-018",
-      "version": 1,
-      "data": {
-        "name": "Partner discussion · Atlas Vale Capital",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-018",
-        "contact_id": "demo-contacts-024",
-        "date": "2026-10-18",
-        "channel": "Call",
-        "outcome": "No response",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-017",
-        "owner": "BD lead"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-019",
-      "version": 1,
-      "data": {
-        "name": "Warm introduction · Hearthside Seed Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-019",
-        "contact_id": "demo-contacts-025",
-        "date": "2026-10-19",
-        "channel": "Email",
-        "outcome": "Positive",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-018",
-        "owner": "CEO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-020",
-      "version": 1,
-      "data": {
-        "name": "Data review · Caldera Growth Fund",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-020",
-        "contact_id": "demo-contacts-027",
-        "date": "2026-10-20",
-        "channel": "Warm intro",
-        "outcome": "Neutral",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-019",
-        "owner": "CFO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-021",
-      "version": 1,
-      "data": {
-        "name": "Scientific overview · Lakeshore Biotech Group",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-021",
-        "contact_id": "demo-contacts-028",
-        "date": "2026-10-21",
-        "channel": "Meeting",
-        "outcome": "No response",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-020",
-        "owner": "BD lead"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-022",
-      "version": 1,
-      "data": {
-        "name": "Fundraising update · Summit Tide Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-022",
-        "contact_id": "demo-contacts-029",
-        "date": "2026-10-22",
-        "channel": "Call",
-        "outcome": "Positive",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-021",
-        "owner": "CEO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-023",
-      "version": 1,
-      "data": {
-        "name": "Partner discussion · Arcwell Therapeutics Fund",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-023",
-        "contact_id": "demo-contacts-031",
-        "date": "2026-10-23",
-        "channel": "Email",
-        "outcome": "Neutral",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-022",
-        "owner": "CFO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-024",
-      "version": 1,
-      "data": {
-        "name": "Warm introduction · Mosaic Oncology Capital",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-024",
-        "contact_id": "demo-contacts-032",
-        "date": "2026-10-24",
-        "channel": "Warm intro",
-        "outcome": "No response",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-023",
-        "owner": "BD lead"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-025",
-      "version": 1,
-      "data": {
-        "name": "Data review · Alder Ridge Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-001",
-        "contact_id": "demo-contacts-001",
-        "date": "2026-10-25",
-        "channel": "Meeting",
-        "outcome": "Positive",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-024",
-        "owner": "CEO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-026",
-      "version": 1,
-      "data": {
-        "name": "Scientific overview · Helix Frontier Capital",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-002",
-        "contact_id": "demo-contacts-003",
-        "date": "2026-10-26",
-        "channel": "Call",
-        "outcome": "Neutral",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-025",
-        "owner": "CFO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-027",
-      "version": 1,
-      "data": {
-        "name": "Fundraising update · Cedar Bio Partners",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-003",
-        "contact_id": "demo-contacts-004",
-        "date": "2026-10-01",
-        "channel": "Email",
-        "outcome": "No response",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-026",
-        "owner": "BD lead"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-028",
-      "version": 1,
-      "data": {
-        "name": "Partner discussion · Northstar Life Sciences",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-004",
-        "contact_id": "demo-contacts-005",
-        "date": "2026-10-02",
-        "channel": "Warm intro",
-        "outcome": "Positive",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-027",
-        "owner": "CEO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-029",
-      "version": 1,
-      "data": {
-        "name": "Warm introduction · Bluepoint Growth Fund",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-005",
-        "contact_id": "demo-contacts-007",
-        "date": "2026-10-03",
-        "channel": "Meeting",
-        "outcome": "Neutral",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-028",
-        "owner": "CFO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-030",
-      "version": 1,
-      "data": {
-        "name": "Data review · Mariner Biotech Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-006",
-        "contact_id": "demo-contacts-008",
-        "date": "2026-10-04",
-        "channel": "Call",
-        "outcome": "No response",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-029",
-        "owner": "BD lead"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-031",
-      "version": 1,
-      "data": {
-        "name": "Scientific overview · Orchid Growth Partners",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-007",
-        "contact_id": "demo-contacts-009",
-        "date": "2026-10-05",
-        "channel": "Email",
-        "outcome": "Positive",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-030",
-        "owner": "CEO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-032",
-      "version": 1,
-      "data": {
-        "name": "Fundraising update · Solstice Therapeutics Capital",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-008",
-        "contact_id": "demo-contacts-011",
-        "date": "2026-10-06",
-        "channel": "Warm intro",
-        "outcome": "Neutral",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-031",
-        "owner": "CFO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-033",
-      "version": 1,
-      "data": {
-        "name": "Partner discussion · Foresight Bio Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-009",
-        "contact_id": "demo-contacts-012",
-        "date": "2026-10-07",
-        "channel": "Meeting",
-        "outcome": "No response",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-032",
-        "owner": "BD lead"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-034",
-      "version": 1,
-      "data": {
-        "name": "Warm introduction · Harborfront Life Sciences",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-010",
-        "contact_id": "demo-contacts-013",
-        "date": "2026-10-08",
-        "channel": "Call",
-        "outcome": "Positive",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-033",
-        "owner": "CEO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-035",
-      "version": 1,
-      "data": {
-        "name": "Data review · BrightPeak Health Capital",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-011",
-        "contact_id": "demo-contacts-015",
-        "date": "2026-10-09",
-        "channel": "Email",
-        "outcome": "Neutral",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-034",
-        "owner": "CFO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-036",
-      "version": 1,
-      "data": {
-        "name": "Scientific overview · Horizon Medicines Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-012",
-        "contact_id": "demo-contacts-016",
-        "date": "2026-10-10",
-        "channel": "Warm intro",
-        "outcome": "No response",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-035",
-        "owner": "BD lead"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-037",
-      "version": 1,
-      "data": {
-        "name": "Fundraising update · Emerald Scientific Partners",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-013",
-        "contact_id": "demo-contacts-017",
-        "date": "2026-10-11",
-        "channel": "Meeting",
-        "outcome": "Positive",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-036",
-        "owner": "CEO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-038",
-      "version": 1,
-      "data": {
-        "name": "Partner discussion · Borealis Health Investors",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-014",
-        "contact_id": "demo-contacts-019",
-        "date": "2026-10-12",
-        "channel": "Call",
-        "outcome": "Neutral",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-037",
-        "owner": "CFO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-039",
-      "version": 1,
-      "data": {
-        "name": "Warm introduction · Beacon Bay Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-015",
-        "contact_id": "demo-contacts-020",
-        "date": "2026-10-13",
-        "channel": "Email",
-        "outcome": "No response",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-038",
-        "owner": "BD lead"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-040",
-      "version": 1,
-      "data": {
-        "name": "Data review · Willow Tree Growth",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-016",
-        "contact_id": "demo-contacts-021",
-        "date": "2026-10-14",
-        "channel": "Warm intro",
-        "outcome": "Positive",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-039",
-        "owner": "CEO"
-      }
-    },
-    {
-      "role": "interactions",
-      "id": "demo-interactions-041",
-      "version": 1,
-      "data": {
-        "name": "Scientific overview · Kinetic Bio Partners",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-017",
-        "contact_id": "demo-contacts-023",
-        "date": "2026-10-15",
-        "channel": "Meeting",
-        "outcome": "Neutral",
-        "summary": "Discussed platform development, clinical milestones and next investor steps. Fictional example.",
-        "source": "INTERNAL-NOTES-040",
-        "owner": "CFO"
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-001",
-      "version": 1,
-      "data": {
-        "name": "Follow up on diligence · Alder Ridge Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-001",
-        "owner": "CEO",
-        "due": "2026-10-05",
-        "status": "Done",
-        "outcome": "Fictional completion log"
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-002",
-      "version": 1,
-      "data": {
-        "name": "Share program update · Helix Frontier Capital",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-002",
-        "owner": "CFO",
-        "due": "2026-11-02",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-003",
-      "version": 1,
-      "data": {
-        "name": "Schedule partner call · Cedar Bio Partners",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-003",
-        "owner": "BD lead",
-        "due": "2026-11-03",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-004",
-      "version": 1,
-      "data": {
-        "name": "Review deck feedback · Northstar Life Sciences",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-004",
-        "owner": "CEO",
-        "due": "2026-11-04",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-005",
-      "version": 1,
-      "data": {
-        "name": "Follow up on diligence · Bluepoint Growth Fund",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-005",
-        "owner": "CFO",
-        "due": "2026-10-09",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-006",
-      "version": 1,
-      "data": {
-        "name": "Share program update · Mariner Biotech Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-006",
-        "owner": "BD lead",
-        "due": "2026-11-06",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-007",
-      "version": 1,
-      "data": {
-        "name": "Schedule partner call · Orchid Growth Partners",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-007",
-        "owner": "CEO",
-        "due": "2026-11-07",
-        "status": "Done",
-        "outcome": "Fictional completion log"
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-008",
-      "version": 1,
-      "data": {
-        "name": "Review deck feedback · Solstice Therapeutics Capital",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-008",
-        "owner": "CFO",
-        "due": "2026-11-08",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-009",
-      "version": 1,
-      "data": {
-        "name": "Follow up on diligence · Foresight Bio Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-009",
-        "owner": "BD lead",
-        "due": "2026-10-13",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-010",
-      "version": 1,
-      "data": {
-        "name": "Share program update · Harborfront Life Sciences",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-010",
-        "owner": "CEO",
-        "due": "2026-11-10",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-011",
-      "version": 1,
-      "data": {
-        "name": "Schedule partner call · BrightPeak Health Capital",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-011",
-        "owner": "CFO",
-        "due": "2026-11-11",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-012",
-      "version": 1,
-      "data": {
-        "name": "Review deck feedback · Horizon Medicines Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-012",
-        "owner": "BD lead",
-        "due": "2026-11-12",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-013",
-      "version": 1,
-      "data": {
-        "name": "Follow up on diligence · Emerald Scientific Partners",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-013",
-        "owner": "CEO",
-        "due": "2026-10-17",
-        "status": "Done",
-        "outcome": "Fictional completion log"
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-014",
-      "version": 1,
-      "data": {
-        "name": "Share program update · Borealis Health Investors",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-014",
-        "owner": "CFO",
-        "due": "2026-11-14",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-015",
-      "version": 1,
-      "data": {
-        "name": "Schedule partner call · Beacon Bay Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-015",
-        "owner": "BD lead",
-        "due": "2026-11-15",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-016",
-      "version": 1,
-      "data": {
-        "name": "Review deck feedback · Willow Tree Growth",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-016",
-        "owner": "CEO",
-        "due": "2026-11-16",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-017",
-      "version": 1,
-      "data": {
-        "name": "Follow up on diligence · Kinetic Bio Partners",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-017",
-        "owner": "CFO",
-        "due": "2026-10-21",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-018",
-      "version": 1,
-      "data": {
-        "name": "Share program update · Atlas Vale Capital",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-018",
-        "owner": "BD lead",
-        "due": "2026-11-18",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-019",
-      "version": 1,
-      "data": {
-        "name": "Schedule partner call · Hearthside Seed Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-019",
-        "owner": "CEO",
-        "due": "2026-11-19",
-        "status": "Done",
-        "outcome": "Fictional completion log"
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-020",
-      "version": 1,
-      "data": {
-        "name": "Review deck feedback · Caldera Growth Fund",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-020",
-        "owner": "CFO",
-        "due": "2026-11-20",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-021",
-      "version": 1,
-      "data": {
-        "name": "Follow up on diligence · Lakeshore Biotech Group",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-021",
-        "owner": "BD lead",
-        "due": "2026-10-25",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-022",
-      "version": 1,
-      "data": {
-        "name": "Share program update · Summit Tide Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-022",
-        "owner": "CEO",
-        "due": "2026-11-22",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-023",
-      "version": 1,
-      "data": {
-        "name": "Schedule partner call · Arcwell Therapeutics Fund",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-023",
-        "owner": "CFO",
-        "due": "2026-11-23",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-024",
-      "version": 1,
-      "data": {
-        "name": "Review deck feedback · Mosaic Oncology Capital",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-024",
-        "owner": "BD lead",
-        "due": "2026-11-24",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-025",
-      "version": 1,
-      "data": {
-        "name": "Follow up on diligence · Alder Ridge Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-001",
-        "owner": "CEO",
-        "due": "2026-10-29",
-        "status": "Done",
-        "outcome": "Fictional completion log"
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-026",
-      "version": 1,
-      "data": {
-        "name": "Share program update · Helix Frontier Capital",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-002",
-        "owner": "CFO",
-        "due": "2026-11-26",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-027",
-      "version": 1,
-      "data": {
-        "name": "Schedule partner call · Cedar Bio Partners",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-003",
-        "owner": "BD lead",
-        "due": "2026-11-27",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-028",
-      "version": 1,
-      "data": {
-        "name": "Review deck feedback · Northstar Life Sciences",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-004",
-        "owner": "CEO",
-        "due": "2026-11-28",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-029",
-      "version": 1,
-      "data": {
-        "name": "Follow up on diligence · Bluepoint Growth Fund",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-005",
-        "owner": "CFO",
-        "due": "2026-10-08",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-030",
-      "version": 1,
-      "data": {
-        "name": "Share program update · Mariner Biotech Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-006",
-        "owner": "BD lead",
-        "due": "2026-11-02",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-031",
-      "version": 1,
-      "data": {
-        "name": "Schedule partner call · Orchid Growth Partners",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-007",
-        "owner": "CEO",
-        "due": "2026-11-03",
-        "status": "Done",
-        "outcome": "Fictional completion log"
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-032",
-      "version": 1,
-      "data": {
-        "name": "Review deck feedback · Solstice Therapeutics Capital",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-008",
-        "owner": "CFO",
-        "due": "2026-11-04",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-033",
-      "version": 1,
-      "data": {
-        "name": "Follow up on diligence · Foresight Bio Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-009",
-        "owner": "BD lead",
-        "due": "2026-10-12",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-034",
-      "version": 1,
-      "data": {
-        "name": "Share program update · Harborfront Life Sciences",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-010",
-        "owner": "CEO",
-        "due": "2026-11-06",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-035",
-      "version": 1,
-      "data": {
-        "name": "Schedule partner call · BrightPeak Health Capital",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-011",
-        "owner": "CFO",
-        "due": "2026-11-07",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-036",
-      "version": 1,
-      "data": {
-        "name": "Review deck feedback · Horizon Medicines Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-012",
-        "owner": "BD lead",
-        "due": "2026-11-08",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-037",
-      "version": 1,
-      "data": {
-        "name": "Follow up on diligence · Emerald Scientific Partners",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-013",
-        "owner": "CEO",
-        "due": "2026-10-16",
-        "status": "Done",
-        "outcome": "Fictional completion log"
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-038",
-      "version": 1,
-      "data": {
-        "name": "Share program update · Borealis Health Investors",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-014",
-        "owner": "CFO",
-        "due": "2026-11-10",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-039",
-      "version": 1,
-      "data": {
-        "name": "Schedule partner call · Beacon Bay Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-015",
-        "owner": "BD lead",
-        "due": "2026-11-11",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-040",
-      "version": 1,
-      "data": {
-        "name": "Review deck feedback · Willow Tree Growth",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-016",
-        "owner": "CEO",
-        "due": "2026-11-12",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-041",
-      "version": 1,
-      "data": {
-        "name": "Follow up on diligence · Kinetic Bio Partners",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-017",
-        "owner": "CFO",
-        "due": "2026-10-20",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-042",
-      "version": 1,
-      "data": {
-        "name": "Share program update · Atlas Vale Capital",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-018",
-        "owner": "BD lead",
-        "due": "2026-11-14",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-043",
-      "version": 1,
-      "data": {
-        "name": "Schedule partner call · Hearthside Seed Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-019",
-        "owner": "CEO",
-        "due": "2026-11-15",
-        "status": "Done",
-        "outcome": "Fictional completion log"
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-044",
-      "version": 1,
-      "data": {
-        "name": "Review deck feedback · Caldera Growth Fund",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-020",
-        "owner": "CFO",
-        "due": "2026-11-16",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-045",
-      "version": 1,
-      "data": {
-        "name": "Follow up on diligence · Lakeshore Biotech Group",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-021",
-        "owner": "BD lead",
-        "due": "2026-10-24",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-046",
-      "version": 1,
-      "data": {
-        "name": "Share program update · Summit Tide Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-022",
-        "owner": "CEO",
-        "due": "2026-11-18",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-047",
-      "version": 1,
-      "data": {
-        "name": "Schedule partner call · Arcwell Therapeutics Fund",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-023",
-        "owner": "CFO",
-        "due": "2026-11-19",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-048",
-      "version": 1,
-      "data": {
-        "name": "Review deck feedback · Mosaic Oncology Capital",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-024",
-        "owner": "BD lead",
-        "due": "2026-11-20",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-049",
-      "version": 1,
-      "data": {
-        "name": "Follow up on diligence · Alder Ridge Ventures",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-001",
-        "owner": "CEO",
-        "due": "2026-10-28",
-        "status": "Done",
-        "outcome": "Fictional completion log"
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-050",
-      "version": 1,
-      "data": {
-        "name": "Share program update · Helix Frontier Capital",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-002",
-        "owner": "CFO",
-        "due": "2026-11-22",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-051",
-      "version": 1,
-      "data": {
-        "name": "Schedule partner call · Cedar Bio Partners",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-003",
-        "owner": "BD lead",
-        "due": "2026-11-23",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-052",
-      "version": 1,
-      "data": {
-        "name": "Review deck feedback · Northstar Life Sciences",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-004",
-        "owner": "CEO",
-        "due": "2026-11-24",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "tasks",
-      "id": "demo-tasks-053",
-      "version": 1,
-      "data": {
-        "name": "Follow up on diligence · Bluepoint Growth Fund",
-        "archived": false,
-        "opportunity_id": "demo-opportunities-005",
-        "owner": "CFO",
-        "due": "2026-10-07",
-        "status": "Open",
-        "outcome": ""
-      }
-    },
-    {
-      "role": "briefs",
-      "id": "demo-briefs-001",
-      "version": 1,
-      "data": {
-        "name": "European oncology growth funds",
-        "archived": false,
-        "sector": "Oncology / precision medicine",
-        "geography": "Europe / UK",
-        "stage_focus": "Series A",
-        "ticket": "EUR 1-3m",
-        "exclusions": "Avoid firms focused only on devices",
-        "notes": "Use primary fund pages and dated announcements; find new fits rather than re-proposing existing records.",
-        "owner": "CEO"
-      }
-    },
-    {
-      "role": "briefs",
-      "id": "demo-briefs-002",
-      "version": 1,
-      "data": {
-        "name": "CVCs and platform biology",
-        "archived": false,
-        "sector": "RNA and platform therapeutics",
-        "geography": "US / Europe",
-        "stage_focus": "Series A / B",
-        "ticket": "EUR 0.5-2m",
-        "exclusions": "Exclude non-therapeutic service investors",
-        "notes": "Manual initial prospect research.",
-        "owner": "CFO"
-      }
-    },
-    {
-      "role": "findings",
-      "id": "demo-findings-001",
-      "version": 1,
-      "data": {
-        "name": "New focus statement · Alder Ridge Ventures",
-        "archived": false,
-        "brief_id": "demo-briefs-001",
-        "investor_id": "demo-investors-001",
-        "topic": "Fund focus",
-        "observed_date": "2026-10-02",
-        "source_url": "https://example.invalid/research/source-000",
-        "relevance": "Fictional source to demonstrate owner review. Replace with a verified primary URL for actual research.",
-        "status": "Candidate"
-      }
-    },
-    {
-      "role": "findings",
-      "id": "demo-findings-002",
-      "version": 1,
-      "data": {
-        "name": "Recent life-sciences allocation · Helix Frontier Capital",
-        "archived": false,
-        "brief_id": "demo-briefs-002",
-        "investor_id": null,
-        "topic": "Investment activity",
-        "observed_date": "2026-10-03",
-        "source_url": "https://example.invalid/research/source-001",
-        "relevance": "Fictional source to demonstrate owner review. Replace with a verified primary URL for actual research.",
-        "status": "Approved"
-      }
-    },
-    {
-      "role": "findings",
-      "id": "demo-findings-003",
-      "version": 1,
-      "data": {
-        "name": "Partner hiring signal · Cedar Bio Partners",
-        "archived": false,
-        "brief_id": "demo-briefs-001",
-        "investor_id": "demo-investors-003",
-        "topic": "Hiring / team",
-        "observed_date": "2026-10-04",
-        "source_url": "https://example.invalid/research/source-002",
-        "relevance": "Fictional source to demonstrate owner review. Replace with a verified primary URL for actual research.",
-        "status": "Excluded"
-      }
-    },
-    {
-      "role": "findings",
-      "id": "demo-findings-004",
-      "version": 1,
-      "data": {
-        "name": "Therapeutics investment · Northstar Life Sciences",
-        "archived": false,
-        "brief_id": "demo-briefs-002",
-        "investor_id": "demo-investors-004",
-        "topic": "New funding",
-        "observed_date": "2026-10-05",
-        "source_url": "https://example.invalid/research/source-003",
-        "relevance": "Fictional source to demonstrate owner review. Replace with a verified primary URL for actual research.",
-        "status": "Candidate"
-      }
-    },
-    {
-      "role": "findings",
-      "id": "demo-findings-005",
-      "version": 1,
-      "data": {
-        "name": "New focus statement · Bluepoint Growth Fund",
-        "archived": false,
-        "brief_id": "demo-briefs-001",
-        "investor_id": null,
-        "topic": "Fund focus",
-        "observed_date": "2026-10-06",
-        "source_url": "https://example.invalid/research/source-004",
-        "relevance": "Fictional source to demonstrate owner review. Replace with a verified primary URL for actual research.",
-        "status": "Approved"
-      }
-    },
-    {
-      "role": "findings",
-      "id": "demo-findings-006",
-      "version": 1,
-      "data": {
-        "name": "Recent life-sciences allocation · Mariner Biotech Ventures",
-        "archived": false,
-        "brief_id": "demo-briefs-002",
-        "investor_id": "demo-investors-006",
-        "topic": "Investment activity",
-        "observed_date": "2026-10-07",
-        "source_url": "https://example.invalid/research/source-005",
-        "relevance": "Fictional source to demonstrate owner review. Replace with a verified primary URL for actual research.",
-        "status": "Excluded"
-      }
-    },
-    {
-      "role": "findings",
-      "id": "demo-findings-007",
-      "version": 1,
-      "data": {
-        "name": "Partner hiring signal · Orchid Growth Partners",
-        "archived": false,
-        "brief_id": "demo-briefs-001",
-        "investor_id": "demo-investors-007",
-        "topic": "Hiring / team",
-        "observed_date": "2026-10-08",
-        "source_url": "https://example.invalid/research/source-006",
-        "relevance": "Fictional source to demonstrate owner review. Replace with a verified primary URL for actual research.",
-        "status": "Candidate"
-      }
-    },
-    {
-      "role": "findings",
-      "id": "demo-findings-008",
-      "version": 1,
-      "data": {
-        "name": "Therapeutics investment · Solstice Therapeutics Capital",
-        "archived": false,
-        "brief_id": "demo-briefs-002",
-        "investor_id": null,
-        "topic": "New funding",
-        "observed_date": "2026-10-09",
-        "source_url": "https://example.invalid/research/source-007",
-        "relevance": "Fictional source to demonstrate owner review. Replace with a verified primary URL for actual research.",
-        "status": "Approved"
-      }
-    },
-    {
-      "role": "findings",
-      "id": "demo-findings-009",
-      "version": 1,
-      "data": {
-        "name": "New focus statement · Foresight Bio Ventures",
-        "archived": false,
-        "brief_id": "demo-briefs-001",
-        "investor_id": "demo-investors-009",
-        "topic": "Fund focus",
-        "observed_date": "2026-10-10",
-        "source_url": "https://example.invalid/research/source-008",
-        "relevance": "Fictional source to demonstrate owner review. Replace with a verified primary URL for actual research.",
-        "status": "Excluded"
-      }
-    },
-    {
-      "role": "findings",
-      "id": "demo-findings-010",
-      "version": 1,
-      "data": {
-        "name": "Recent life-sciences allocation · Harborfront Life Sciences",
-        "archived": false,
-        "brief_id": "demo-briefs-002",
-        "investor_id": "demo-investors-010",
-        "topic": "Investment activity",
-        "observed_date": "2026-10-11",
-        "source_url": "https://example.invalid/research/source-009",
-        "relevance": "Fictional source to demonstrate owner review. Replace with a verified primary URL for actual research.",
-        "status": "Candidate"
-      }
-    },
-    {
-      "role": "findings",
-      "id": "demo-findings-011",
-      "version": 1,
-      "data": {
-        "name": "Partner hiring signal · BrightPeak Health Capital",
-        "archived": false,
-        "brief_id": "demo-briefs-001",
-        "investor_id": null,
-        "topic": "Hiring / team",
-        "observed_date": "2026-10-12",
-        "source_url": "https://example.invalid/research/source-010",
-        "relevance": "Fictional source to demonstrate owner review. Replace with a verified primary URL for actual research.",
-        "status": "Approved"
-      }
-    },
-    {
-      "role": "findings",
-      "id": "demo-findings-012",
-      "version": 1,
-      "data": {
-        "name": "Therapeutics investment · Horizon Medicines Ventures",
-        "archived": false,
-        "brief_id": "demo-briefs-002",
-        "investor_id": "demo-investors-012",
-        "topic": "New funding",
-        "observed_date": "2026-10-13",
-        "source_url": "https://example.invalid/research/source-011",
-        "relevance": "Fictional source to demonstrate owner review. Replace with a verified primary URL for actual research.",
-        "status": "Excluded"
-      }
-    },
-    {
-      "role": "findings",
-      "id": "demo-findings-013",
-      "version": 1,
-      "data": {
-        "name": "New focus statement · Emerald Scientific Partners",
-        "archived": false,
-        "brief_id": "demo-briefs-001",
-        "investor_id": "demo-investors-013",
-        "topic": "Fund focus",
-        "observed_date": "2026-10-14",
-        "source_url": "https://example.invalid/research/source-012",
-        "relevance": "Fictional source to demonstrate owner review. Replace with a verified primary URL for actual research.",
-        "status": "Candidate"
-      }
-    },
-    {
-      "role": "findings",
-      "id": "demo-findings-014",
-      "version": 1,
-      "data": {
-        "name": "Recent life-sciences allocation · Borealis Health Investors",
-        "archived": false,
-        "brief_id": "demo-briefs-002",
-        "investor_id": null,
-        "topic": "Investment activity",
-        "observed_date": "2026-10-15",
-        "source_url": "https://example.invalid/research/source-013",
-        "relevance": "Fictional source to demonstrate owner review. Replace with a verified primary URL for actual research.",
-        "status": "Approved"
-      }
-    },
-    {
-      "role": "findings",
-      "id": "demo-findings-015",
-      "version": 1,
-      "data": {
-        "name": "Partner hiring signal · Beacon Bay Ventures",
-        "archived": false,
-        "brief_id": "demo-briefs-001",
-        "investor_id": "demo-investors-015",
-        "topic": "Hiring / team",
-        "observed_date": "2026-10-16",
-        "source_url": "https://example.invalid/research/source-014",
-        "relevance": "Fictional source to demonstrate owner review. Replace with a verified primary URL for actual research.",
-        "status": "Excluded"
-      }
-    },
-    {
-      "role": "findings",
-      "id": "demo-findings-016",
-      "version": 1,
-      "data": {
-        "name": "Therapeutics investment · Willow Tree Growth",
-        "archived": false,
-        "brief_id": "demo-briefs-002",
-        "investor_id": "demo-investors-016",
-        "topic": "New funding",
-        "observed_date": "2026-10-17",
-        "source_url": "https://example.invalid/research/source-015",
-        "relevance": "Fictional source to demonstrate owner review. Replace with a verified primary URL for actual research.",
-        "status": "Candidate"
-      }
-    }
-  ]
+ "note": "Fictional demo data for the Fundraise preview and tests, fixed as of 11 Nov 2026. Never seed into a workspace.",
+ "records": [
+  {
+   "id": "00000000-0000-4000-9000-000000000001",
+   "version": 0,
+   "role": "fundraise.settings",
+   "data": {
+    "default_currency": "EUR",
+    "stale_days": 14,
+    "stages": "target, contacted, first_meeting, partner_meeting, due_diligence, term_sheet, committed, closed, passed",
+    "pass_reasons": "too_early, want_in_vivo_data, want_clinical_data, outside_mandate, cheque_size, valuation, team, competition, timing, other",
+    "modalities": "small_molecule, antibody, cell_therapy",
+    "therapeutic_areas": "oncology, immunology, fibrosis",
+    "dev_stages": "discovery, preclinical, phase_1"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000002",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Northlake Bio Ventures",
+    "org_type": "investor",
+    "country": "US",
+    "website": "https://northlakebioventur.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000003",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Calder Life Sciences Fund",
+    "org_type": "investor",
+    "country": "UK",
+    "website": "https://calderlifesciences.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000004",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Harbourline Capital",
+    "org_type": "investor",
+    "country": "DE",
+    "website": "https://harbourlinecapital.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000005",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Meridian Pharma Ventures",
+    "org_type": "investor",
+    "country": "CH",
+    "website": "https://meridianpharmavent.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000006",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Fjordhaven Partners",
+    "org_type": "investor",
+    "country": "NO",
+    "website": "https://fjordhavenpartners.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000007",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Alder Family Office",
+    "org_type": "investor",
+    "country": "DE",
+    "website": "https://alderfamilyoffice.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000008",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Brightwater Growth",
+    "org_type": "investor",
+    "country": "US",
+    "website": "https://brightwatergrowth.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000009",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Silverpine Angels",
+    "org_type": "investor",
+    "country": "US",
+    "website": "https://silverpineangels.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000010",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Kestrel Public Equity",
+    "org_type": "investor",
+    "country": "UK",
+    "website": "https://kestrelpublicequit.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000011",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Oakmere Capital",
+    "org_type": "investor",
+    "country": "FR",
+    "website": "https://oakmerecapital.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000012",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Thornbury Ventures",
+    "org_type": "investor",
+    "country": "UK",
+    "website": "https://thornburyventures.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000013",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Greywell Investors",
+    "org_type": "investor",
+    "country": "NL",
+    "website": "https://greywellinvestors.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000014",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Ashgrove Strategic",
+    "org_type": "investor",
+    "country": "DE",
+    "website": "https://ashgrovestrategic.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000015",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Larchmont Bio Fund",
+    "org_type": "investor",
+    "country": "US",
+    "website": "https://larchmontbiofund.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000016",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Quarry Hill Ventures",
+    "org_type": "investor",
+    "country": "US",
+    "website": "https://quarryhillventures.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000017",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Redfern Capital",
+    "org_type": "investor",
+    "country": "UK",
+    "website": "https://redferncapital.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000018",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Fictional Therapeutics (us)",
+    "org_type": "company",
+    "country": "DE",
+    "website": "https://fictional-therapeutics.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000019",
+   "version": 0,
+   "role": "people",
+   "data": {
+    "name": "Dana Whitfield",
+    "organization_id": "00000000-0000-4000-9000-000000000002",
+    "title": "Partner",
+    "email": "dana.whitfield@example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000020",
+   "version": 0,
+   "role": "people",
+   "data": {
+    "name": "Priya Raman",
+    "organization_id": "00000000-0000-4000-9000-000000000003",
+    "title": "Principal",
+    "email": "priya.raman@example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000021",
+   "version": 0,
+   "role": "people",
+   "data": {
+    "name": "Tomas Lind",
+    "organization_id": "00000000-0000-4000-9000-000000000004",
+    "title": "Managing partner",
+    "email": "tomas.lind@example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000022",
+   "version": 0,
+   "role": "people",
+   "data": {
+    "name": "Elena Ruiz",
+    "organization_id": "00000000-0000-4000-9000-000000000005",
+    "title": "Director",
+    "email": "elena.ruiz@example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000023",
+   "version": 0,
+   "role": "people",
+   "data": {
+    "name": "Marc Olsen",
+    "organization_id": "00000000-0000-4000-9000-000000000006",
+    "title": "Partner",
+    "email": "marc.olsen@example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000024",
+   "version": 0,
+   "role": "people",
+   "data": {
+    "name": "Greta Hoff",
+    "organization_id": "00000000-0000-4000-9000-000000000007",
+    "title": "Investment manager",
+    "email": "greta.hoff@example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000025",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000002",
+    "investor_type": "specialist_ls_vc",
+    "tier": "a",
+    "profile_status": "accepted",
+    "modalities": "small_molecule, antibody",
+    "therapeutic_areas": "oncology",
+    "dev_stages": "preclinical, phase_1",
+    "check_min": 3000000,
+    "check_max": 10000000,
+    "currency": "EUR",
+    "leads_rounds": "yes",
+    "fund_vintage_year": 2024,
+    "intro_path": "Board member Anna (former colleague)",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000026",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000003",
+    "investor_type": "specialist_ls_vc",
+    "tier": "a",
+    "profile_status": "accepted",
+    "modalities": "small_molecule",
+    "therapeutic_areas": "oncology, fibrosis",
+    "dev_stages": "preclinical",
+    "check_min": 2000000,
+    "check_max": 8000000,
+    "currency": "EUR",
+    "leads_rounds": "yes",
+    "fund_vintage_year": 2023,
+    "intro_path": "Via Harbourline (Tomas Lind)",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000027",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000004",
+    "investor_type": "specialist_ls_vc",
+    "tier": "a",
+    "profile_status": "accepted",
+    "modalities": "small_molecule, cell_therapy",
+    "therapeutic_areas": "oncology",
+    "dev_stages": "discovery, preclinical",
+    "check_min": 1000000,
+    "check_max": 4000000,
+    "currency": "EUR",
+    "leads_rounds": "sometimes",
+    "fund_vintage_year": 2021,
+    "intro_path": "Existing investor",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000028",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000005",
+    "investor_type": "pharma_cvc",
+    "tier": "b",
+    "profile_status": "accepted",
+    "modalities": "antibody",
+    "therapeutic_areas": "immunology, oncology",
+    "dev_stages": "preclinical, phase_1",
+    "check_min": 1000000,
+    "check_max": 3000000,
+    "currency": "EUR",
+    "leads_rounds": "no",
+    "intro_path": "Scientific advisory board",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000029",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000006",
+    "investor_type": "specialist_ls_vc",
+    "tier": "b",
+    "profile_status": "accepted",
+    "modalities": "small_molecule",
+    "therapeutic_areas": "oncology",
+    "dev_stages": "preclinical",
+    "check_min": 500000,
+    "check_max": 2000000,
+    "currency": "EUR",
+    "leads_rounds": "sometimes",
+    "fund_vintage_year": 2022,
+    "intro_path": "Conference intro (BIO-Europe)",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000030",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000007",
+    "investor_type": "family_office",
+    "tier": "c",
+    "profile_status": "accepted",
+    "check_min": 250000,
+    "check_max": 1000000,
+    "currency": "EUR",
+    "leads_rounds": "no",
+    "intro_path": "CFO network",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000031",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000008",
+    "investor_type": "generalist_vc",
+    "tier": "b",
+    "profile_status": "accepted",
+    "therapeutic_areas": "oncology",
+    "dev_stages": "phase_1",
+    "check_min": 2000000,
+    "check_max": 6000000,
+    "currency": "EUR",
+    "leads_rounds": "sometimes",
+    "fund_vintage_year": 2025,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000032",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000009",
+    "investor_type": "angel",
+    "tier": "c",
+    "profile_status": "accepted",
+    "check_min": 50000,
+    "check_max": 300000,
+    "currency": "EUR",
+    "leads_rounds": "no",
+    "intro_path": "Pre-seed investor",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000033",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000010",
+    "investor_type": "public_fund",
+    "tier": "c",
+    "profile_status": "accepted",
+    "modalities": "small_molecule",
+    "therapeutic_areas": "oncology",
+    "dev_stages": "phase_1",
+    "check_min": 5000000,
+    "check_max": 20000000,
+    "currency": "EUR",
+    "leads_rounds": "no",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000034",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000011",
+    "investor_type": "specialist_ls_vc",
+    "tier": "b",
+    "profile_status": "accepted",
+    "modalities": "small_molecule",
+    "therapeutic_areas": "oncology",
+    "dev_stages": "preclinical",
+    "check_min": 1000000,
+    "check_max": 5000000,
+    "currency": "EUR",
+    "leads_rounds": "yes",
+    "fund_vintage_year": 2023,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000035",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000012",
+    "investor_type": "specialist_ls_vc",
+    "tier": "b",
+    "profile_status": "accepted",
+    "modalities": "antibody",
+    "therapeutic_areas": "immunology",
+    "dev_stages": "preclinical",
+    "check_min": 1000000,
+    "check_max": 4000000,
+    "currency": "EUR",
+    "leads_rounds": "sometimes",
+    "fund_vintage_year": 2022,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000036",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000013",
+    "investor_type": "generalist_vc",
+    "tier": "c",
+    "profile_status": "accepted",
+    "check_min": 1000000,
+    "check_max": 3000000,
+    "currency": "EUR",
+    "leads_rounds": "no",
+    "fund_vintage_year": 2020,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000037",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000014",
+    "investor_type": "strategic",
+    "tier": "b",
+    "profile_status": "accepted",
+    "modalities": "small_molecule",
+    "therapeutic_areas": "oncology",
+    "dev_stages": "preclinical",
+    "leads_rounds": "no",
+    "intro_path": "Partnering contact",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000038",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000015",
+    "investor_type": "specialist_ls_vc",
+    "profile_status": "proposed",
+    "modalities": "small_molecule",
+    "therapeutic_areas": "oncology",
+    "dev_stages": "preclinical",
+    "leads_rounds": "yes",
+    "source": "https://news.example/larchmont-bio-fund (fictional)",
+    "source_date": "2026-11-02",
+    "notes": "Proposed by the assistant from public sources.",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000039",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000016",
+    "investor_type": "specialist_ls_vc",
+    "profile_status": "proposed",
+    "modalities": "cell_therapy",
+    "therapeutic_areas": "oncology",
+    "dev_stages": "discovery, preclinical",
+    "leads_rounds": "sometimes",
+    "source": "https://news.example/quarry-hill-ventures (fictional)",
+    "source_date": "2026-11-02",
+    "notes": "Proposed by the assistant from public sources.",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000040",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000017",
+    "investor_type": "generalist_vc",
+    "profile_status": "rejected",
+    "leads_rounds": "no",
+    "source": "https://news.example/redfern-capital (fictional)",
+    "source_date": "2026-11-02",
+    "notes": "Proposed by the assistant from public sources.",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000041",
+   "version": 0,
+   "role": "fundraise.rounds",
+   "data": {
+    "name": "Pre-seed 2025",
+    "round_type": "pre_seed",
+    "target_amount": 2000000,
+    "currency": "EUR",
+    "status": "closed",
+    "opened_on": "2025-02-01",
+    "target_close": "2025-06-30",
+    "closed_on": "2025-07-15",
+    "lead_org_id": "00000000-0000-4000-9000-000000000004",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000042",
+   "version": 0,
+   "role": "fundraise.rounds",
+   "data": {
+    "name": "Seed 2026",
+    "round_type": "seed",
+    "target_amount": 15000000,
+    "currency": "EUR",
+    "status": "active",
+    "opened_on": "2026-09-01",
+    "target_close": "2027-03-31",
+    "lead_org_id": "00000000-0000-4000-9000-000000000002",
+    "notes": "Lead first, then syndicate. Tranched on milestones.",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000043",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000041",
+    "organization_id": "00000000-0000-4000-9000-000000000004",
+    "stage": "closed",
+    "interest": "signed",
+    "currency": "EUR",
+    "is_lead": true,
+    "archived": false,
+    "amount_committed": 1200000,
+    "last_activity_on": "2025-07-10",
+    "owner": "Lea (CEO)"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000044",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000041",
+    "organization_id": "00000000-0000-4000-9000-000000000009",
+    "stage": "closed",
+    "interest": "signed",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "amount_committed": 300000,
+    "last_activity_on": "2025-07-01",
+    "owner": "Lea (CEO)"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000045",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000041",
+    "organization_id": "00000000-0000-4000-9000-000000000010",
+    "stage": "passed",
+    "interest": "none",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "pass_reason": "too_early",
+    "pass_detail": "Public fund; revisit at Phase 1",
+    "last_activity_on": "2025-04-02",
+    "owner": "Lea (CEO)"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000046",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000002",
+    "stage": "term_sheet",
+    "interest": "verbal",
+    "currency": "EUR",
+    "is_lead": true,
+    "archived": false,
+    "amount_indicated": 6000000,
+    "owner": "Lea (CEO)",
+    "primary_contact_id": "00000000-0000-4000-9000-000000000019",
+    "next_step": "Return marked-up term sheet",
+    "next_due": "2026-11-12",
+    "last_activity_on": "2026-11-06",
+    "offer_received_on": "2026-10-30",
+    "offer_amount": 6000000,
+    "offer_pre_money": 24000000,
+    "offer_instrument": "priced",
+    "offer_board_seat": true,
+    "offer_expires_on": "2026-11-30",
+    "offer_status": "received",
+    "offer_notes": "Two tranches: 50% at close, 50% at lead candidate nomination.",
+    "cda_status": "signed",
+    "cda_signed_on": "2026-10-02"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000047",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000003",
+    "stage": "due_diligence",
+    "interest": "verbal",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "amount_indicated": 2500000,
+    "owner": "Jonas (CFO)",
+    "primary_contact_id": "00000000-0000-4000-9000-000000000020",
+    "next_step": "Send CMC package",
+    "next_due": "2026-11-20",
+    "last_activity_on": "2026-11-09",
+    "offer_received_on": "2026-11-05",
+    "offer_amount": 5000000,
+    "offer_pre_money": 20000000,
+    "offer_instrument": "convertible",
+    "offer_board_seat": false,
+    "offer_expires_on": "2026-11-25",
+    "offer_status": "negotiating",
+    "cda_status": "signed",
+    "cda_signed_on": "2026-10-28"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000048",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000004",
+    "stage": "committed",
+    "interest": "signed",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "amount_indicated": 3000000,
+    "amount_committed": 3000000,
+    "owner": "Lea (CEO)",
+    "primary_contact_id": "00000000-0000-4000-9000-000000000021",
+    "last_activity_on": "2026-11-03",
+    "cda_status": "signed",
+    "cda_signed_on": "2026-09-10"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000049",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000005",
+    "stage": "committed",
+    "interest": "signed",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "amount_committed": 2000000,
+    "owner": "Jonas (CFO)",
+    "primary_contact_id": "00000000-0000-4000-9000-000000000022",
+    "last_activity_on": "2026-10-20"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000050",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000009",
+    "stage": "committed",
+    "interest": "signed",
+    "currency": "USD",
+    "is_lead": false,
+    "archived": false,
+    "amount_committed": 250000,
+    "owner": "Jonas (CFO)",
+    "last_activity_on": "2026-10-25"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000051",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000007",
+    "stage": "partner_meeting",
+    "interest": "soft",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "amount_indicated": 500000,
+    "owner": "Jonas (CFO)",
+    "primary_contact_id": "00000000-0000-4000-9000-000000000024",
+    "next_step": "Share updated model",
+    "next_due": "2026-11-05",
+    "last_activity_on": "2026-10-10"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000052",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000006",
+    "stage": "first_meeting",
+    "interest": "soft",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "amount_indicated": 1000000,
+    "owner": "Lea (CEO)",
+    "primary_contact_id": "00000000-0000-4000-9000-000000000023",
+    "next_step": "Partner meeting date",
+    "next_due": "2026-11-14",
+    "last_activity_on": "2026-10-27"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000053",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000008",
+    "stage": "contacted",
+    "interest": "none",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "owner": "Jonas (CFO)"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000054",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000014",
+    "stage": "target",
+    "interest": "none",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "owner": "Lea (CEO)"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000055",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000010",
+    "stage": "passed",
+    "interest": "none",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "pass_reason": "too_early",
+    "pass_detail": "Wants clinical proof of concept",
+    "last_activity_on": "2026-09-30",
+    "owner": "Lea (CEO)"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000056",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000011",
+    "stage": "passed",
+    "interest": "none",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "pass_reason": "want_in_vivo_data",
+    "pass_detail": "Wants in-vivo efficacy in a second model",
+    "last_activity_on": "2026-10-08",
+    "owner": "Lea (CEO)"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000057",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000012",
+    "stage": "passed",
+    "interest": "none",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "pass_reason": "too_early",
+    "last_activity_on": "2026-10-14",
+    "owner": "Jonas (CFO)"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000058",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000013",
+    "stage": "passed",
+    "interest": "none",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "pass_reason": "outside_mandate",
+    "last_activity_on": "2026-09-22",
+    "owner": "Jonas (CFO)"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000059",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000017",
+    "stage": "contacted",
+    "interest": "soft",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "amount_indicated": 400000,
+    "owner": "Jonas (CFO)",
+    "last_activity_on": "2026-10-01"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000060",
+   "version": 0,
+   "role": "fundraise.activities",
+   "data": {
+    "opportunity_id": "00000000-0000-4000-9000-000000000043",
+    "activity_on": "2025-07-10",
+    "kind": "meeting",
+    "summary": "Signing call for the pre-seed",
+    "source": "manual",
+    "outcome": "Signed"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000061",
+   "version": 0,
+   "role": "fundraise.activities",
+   "data": {
+    "opportunity_id": "00000000-0000-4000-9000-000000000048",
+    "activity_on": "2026-10-15",
+    "kind": "call",
+    "summary": "Pro-rata discussion",
+    "source": "manual",
+    "outcome": "Will take full pro-rata",
+    "follow_up_due": "2026-10-22",
+    "contact_id": "00000000-0000-4000-9000-000000000021"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000062",
+   "version": 0,
+   "role": "fundraise.activities",
+   "data": {
+    "opportunity_id": "00000000-0000-4000-9000-000000000048",
+    "activity_on": "2026-11-03",
+    "kind": "email",
+    "summary": "Signed commitment letter received",
+    "source": "manual",
+    "outcome": "Signed EUR 3.0M",
+    "contact_id": "00000000-0000-4000-9000-000000000021"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000063",
+   "version": 0,
+   "role": "fundraise.activities",
+   "data": {
+    "opportunity_id": "00000000-0000-4000-9000-000000000046",
+    "activity_on": "2026-10-20",
+    "kind": "meeting",
+    "summary": "Partner meeting",
+    "source": "manual",
+    "outcome": "Moving to term sheet",
+    "contact_id": "00000000-0000-4000-9000-000000000019"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000064",
+   "version": 0,
+   "role": "fundraise.activities",
+   "data": {
+    "opportunity_id": "00000000-0000-4000-9000-000000000046",
+    "activity_on": "2026-11-06",
+    "kind": "call",
+    "summary": "Term sheet walkthrough",
+    "source": "manual",
+    "outcome": "Board seat and two tranches",
+    "contact_id": "00000000-0000-4000-9000-000000000019"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000065",
+   "version": 0,
+   "role": "fundraise.activities",
+   "data": {
+    "opportunity_id": "00000000-0000-4000-9000-000000000047",
+    "activity_on": "2026-11-09",
+    "kind": "meeting",
+    "summary": "Diligence session on CMC",
+    "source": "assistant",
+    "outcome": "Asked for the CMC package",
+    "follow_up_due": "2026-11-13",
+    "contact_id": "00000000-0000-4000-9000-000000000020"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000066",
+   "version": 0,
+   "role": "fundraise.activities",
+   "data": {
+    "opportunity_id": "00000000-0000-4000-9000-000000000049",
+    "activity_on": "2026-10-20",
+    "kind": "email",
+    "summary": "Commitment confirmed by the investment committee",
+    "source": "manual",
+    "contact_id": "00000000-0000-4000-9000-000000000022"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000067",
+   "version": 0,
+   "role": "fundraise.activities",
+   "data": {
+    "opportunity_id": "00000000-0000-4000-9000-000000000051",
+    "activity_on": "2026-10-10",
+    "kind": "meeting",
+    "summary": "First partner meeting",
+    "source": "manual",
+    "outcome": "Interested, wants model update",
+    "contact_id": "00000000-0000-4000-9000-000000000024"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000068",
+   "version": 0,
+   "role": "fundraise.activities",
+   "data": {
+    "opportunity_id": "00000000-0000-4000-9000-000000000052",
+    "activity_on": "2026-10-27",
+    "kind": "meeting",
+    "summary": "Intro meeting at BIO-Europe",
+    "source": "manual",
+    "outcome": "Soft interest",
+    "contact_id": "00000000-0000-4000-9000-000000000023"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000069",
+   "version": 0,
+   "role": "fundraise.activities",
+   "data": {
+    "opportunity_id": "00000000-0000-4000-9000-000000000056",
+    "activity_on": "2026-10-08",
+    "kind": "email",
+    "summary": "Pass email",
+    "source": "manual",
+    "outcome": "Passed: in-vivo data"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000070",
+   "version": 0,
+   "role": "programs.plan_items",
+   "data": {
+    "name": "Lead candidate nomination",
+    "program_id": "PX-101",
+    "item_type": "milestone",
+    "end_date": "2027-06-30",
+    "status": "planned",
+    "is_key": true
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000071",
+   "version": 0,
+   "role": "programs.plan_items",
+   "data": {
+    "name": "GLP tox readout",
+    "program_id": "PX-101",
+    "item_type": "milestone",
+    "end_date": "2027-09-30",
+    "status": "at_risk",
+    "is_key": true
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000072",
+   "version": 0,
+   "role": "programs.plan_items",
+   "data": {
+    "name": "Pilot tox complete",
+    "program_id": "PX-101",
+    "item_type": "milestone",
+    "end_date": "2026-10-15",
+    "status": "done",
+    "is_key": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000073",
+   "version": 0,
+   "role": "fundraise.tranches",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "tranche_no": 1,
+    "amount": 6000000,
+    "currency": "EUR",
+    "condition": "First close",
+    "expected_on": "2026-12-15",
+    "status": "expected"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000074",
+   "version": 0,
+   "role": "fundraise.tranches",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "tranche_no": 2,
+    "amount": 5000000,
+    "currency": "EUR",
+    "condition": "Lead candidate nominated",
+    "milestone_id": "00000000-0000-4000-9000-000000000070",
+    "expected_on": "2027-07-31",
+    "status": "expected"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000075",
+   "version": 0,
+   "role": "fundraise.tranches",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "tranche_no": 3,
+    "amount": 4000000,
+    "currency": "EUR",
+    "condition": "IND-enabling tox data",
+    "milestone_id": "00000000-0000-4000-9000-000000000071",
+    "expected_on": "2027-10-31",
+    "status": "expected"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000076",
+   "version": 0,
+   "role": "dataroom.access_grants",
+   "data": {
+    "room_id": "room-seed-2026",
+    "room_name": "Seed 2026 data room",
+    "room_purpose": "financing",
+    "organization_id": "00000000-0000-4000-9000-000000000002",
+    "granted_on": "2026-10-20",
+    "status": "active",
+    "source": "manual",
+    "agreement_accepted_on": "2026-10-20",
+    "person_id": "00000000-0000-4000-9000-000000000019"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000077",
+   "version": 0,
+   "role": "dataroom.access_grants",
+   "data": {
+    "room_id": "room-seed-2026",
+    "room_name": "Seed 2026 data room",
+    "room_purpose": "financing",
+    "organization_id": "00000000-0000-4000-9000-000000000004",
+    "granted_on": "2026-09-25",
+    "status": "active",
+    "source": "manual",
+    "agreement_accepted_on": "2026-09-25",
+    "person_id": "00000000-0000-4000-9000-000000000021"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000078",
+   "version": 0,
+   "role": "dataroom.access_grants",
+   "data": {
+    "room_id": "room-seed-2026",
+    "room_name": "Seed 2026 data room",
+    "room_purpose": "financing",
+    "organization_id": "00000000-0000-4000-9000-000000000003",
+    "granted_on": "2026-11-01",
+    "status": "active",
+    "source": "manual",
+    "agreement_accepted_on": "2026-11-01",
+    "person_id": "00000000-0000-4000-9000-000000000020"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000079",
+   "version": 0,
+   "role": "dataroom.access_grants",
+   "data": {
+    "room_id": "room-seed-2026",
+    "room_name": "Seed 2026 data room",
+    "room_purpose": "financing",
+    "organization_id": "00000000-0000-4000-9000-000000000006",
+    "granted_on": "2026-11-04",
+    "status": "active",
+    "source": "manual",
+    "agreement_accepted_on": "2026-11-04",
+    "person_id": "00000000-0000-4000-9000-000000000023"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000080",
+   "version": 0,
+   "role": "dataroom.access_grants",
+   "data": {
+    "room_id": "room-seed-2026",
+    "room_name": "Seed 2026 data room",
+    "room_purpose": "financing",
+    "organization_id": "00000000-0000-4000-9000-000000000007",
+    "granted_on": "2026-11-08",
+    "status": "invited",
+    "source": "manual",
+    "person_id": "00000000-0000-4000-9000-000000000024"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000081",
+   "version": 0,
+   "role": "dataroom.engagement",
+   "data": {
+    "grant_id": "00000000-0000-4000-9000-000000000076",
+    "organization_id": "00000000-0000-4000-9000-000000000002",
+    "document_ref": "deck-v3",
+    "document_title": "Company deck",
+    "first_viewed_on": "2026-10-21",
+    "last_viewed_on": "2026-11-09",
+    "view_count": 4,
+    "source": "docsend",
+    "as_of": "2026-11-10",
+    "seconds_viewed": 1260
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000082",
+   "version": 0,
+   "role": "dataroom.engagement",
+   "data": {
+    "grant_id": "00000000-0000-4000-9000-000000000076",
+    "organization_id": "00000000-0000-4000-9000-000000000002",
+    "document_ref": "tox-summary",
+    "document_title": "Tox summary",
+    "first_viewed_on": "2026-11-07",
+    "last_viewed_on": "2026-11-07",
+    "view_count": 2,
+    "source": "docsend",
+    "as_of": "2026-11-10",
+    "seconds_viewed": 540
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000083",
+   "version": 0,
+   "role": "dataroom.engagement",
+   "data": {
+    "grant_id": "00000000-0000-4000-9000-000000000077",
+    "organization_id": "00000000-0000-4000-9000-000000000004",
+    "document_ref": "fin-model",
+    "document_title": "Financial model",
+    "first_viewed_on": "2026-09-26",
+    "last_viewed_on": "2026-10-05",
+    "view_count": 3,
+    "source": "docsend",
+    "as_of": "2026-11-10",
+    "seconds_viewed": 900
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000084",
+   "version": 0,
+   "role": "dataroom.engagement",
+   "data": {
+    "grant_id": "00000000-0000-4000-9000-000000000077",
+    "organization_id": "00000000-0000-4000-9000-000000000004",
+    "document_ref": "cap-table",
+    "document_title": "Cap table draft",
+    "first_viewed_on": "2026-11-08",
+    "last_viewed_on": "2026-11-08",
+    "view_count": 1,
+    "source": "docsend",
+    "as_of": "2026-11-10",
+    "seconds_viewed": 120
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000085",
+   "version": 0,
+   "role": "dataroom.engagement",
+   "data": {
+    "grant_id": "00000000-0000-4000-9000-000000000078",
+    "organization_id": "00000000-0000-4000-9000-000000000003",
+    "document_ref": "mgmt-pres",
+    "document_title": "Management presentation",
+    "first_viewed_on": "2026-11-02",
+    "last_viewed_on": "2026-11-10",
+    "view_count": 2,
+    "source": "docsend",
+    "as_of": "2026-11-10",
+    "seconds_viewed": 1500
+   }
+  }
+ ]
 }

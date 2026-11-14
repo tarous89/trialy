@@ -11,13 +11,19 @@ What changes in the app:
 
 Publication:
 - The 1.0.0 package is archived unchanged under `templates/source/contracts/archive/1.0.0/`, and its installer entry points there.
-- `templates/catalog-seed.json` names 1.1.0, so the sync after migrations imports it approved. Migration 072 withdraws 1.0.0 once, as listed in `templates/catalog-retirements.json`.
+- `templates/catalog-seed.json` names 1.1.0, so the sync after migrations imports it approved. Migration 073 withdraws 1.0.0 once, as listed in `templates/catalog-retirements.json`.
 - Installed 1.0.0 apps keep their source and data.
 - The gallery media adds `life.contracts@1.1.0`.
 
 Tests:
 - `tests/contracts.test.ts` covers the new behaviour.
 - `tests/template-catalog.test.ts` rehearses the deployment from the live catalog state.
+
+## 14 November 2026 — Fundraise 2.0.0 published
+
+**Published** at the owner's request: the seed names 2.0.0 (imported approved by the catalog sync after migrations), migration 072 withdraws Investor CRM 1.0.1 once, and the gallery has the 2.0.0 screenshot, manifest entry and a new card summary. Installed 1.0.1 apps keep working.
+
+PR #137 (Fundraise 2.0.0, 12 November) was rebased onto `main` and revised; 2.0.0 was never imported into the catalog, so the version stays 2.0.0. **Compatibility:** Fundraise's own `dataroom.access_grants` now matches `dataroom.v1` including the additive `room_purpose` option `partnering` (install and connect had failed the contract check). **Automations (#168, #169, E6, E7; owner decisions of 14 November):** two install recommendations, on by default: weekly investor research on the user's runner (Mondays 07:00), which saves proposed investors and one research report per run in the app with create-only grants and a brief from the helper `research_brief` (read bindings `fields:"all"`, so the brief scope check passes); and one weekly digest email (Mondays 09:00) whose text is written by the installed read-only helper `round_digest`: round progress plus this week's research. No signed-commitment notice (interest is set by the user). Fundraise is the first catalog template to ship E7 helpers. A single research-then-email automation (E5) was tried and does not deliver on the current platform when an app helper writes the email (background check without the owner's database identity, then about 3 s of re-validation per helper read); see the package AUTOMATION_RECIPES.md. **Customization:** `settings.custom_fields`, `stage_labels` and `preferences`, changed by Claude or ChatGPT through reviewed changes without a change to the app body. Tests: `tests/fundraise-automations.test.ts` (new) and customization cases in the unit and integration tests. See [FUNDRAISE.md](docs/product/app-template-blueprints/apps/FUNDRAISE.md) §8, §8a and the package [QA](templates/source/investor-crm/QA.md).
 
 ## 14 November 2026 — App commands on by default
 
@@ -148,6 +154,9 @@ The owner approved Contracts (`life.contracts`) 1.0.0 for app templates. As for 
 ## 12 November 2026 — Contracts 1.0.0 (draft) and documents inside apps
 
 New template `life.contracts` 1.0.0 (“Contracts”, scope [CONTRACTS.md](docs/product/app-template-blueprints/apps/CONTRACTS.md)), a draft until the owner approves it: register on the shared `agreements` table, families with value per currency, key terms with stored notice deadline and confidentiality end, obligations (published output `contracts.obligations`, contracts.v1, writer `life.contracts`), CDA check, pre-signature pipeline, due-diligence list, Programs milestones as an in-app integration. The seven Contracts-owned optional `agreements` fields are in `templates/core-contract/v1.json`. Platform: saved `frontend-js` apps can call `documents.list`, `documents.search`, `documents.text` and `documents.quote` with the user's own document permissions, and a sanitized `data-trialy-document="upload …"` button opens the platform upload review in the host (`DocumentUploadDialog`) and returns the new version to the app. Assistant extraction (Claude or ChatGPT, each through its own connection) proposes unverified records with quotes and pages; a person verifies in the app; Database column rules can deny assistant writes to the verification fields. Template guidance 1.3.21. Tests: `tests/contracts.test.ts`, `tests/contracts-integration.test.ts`, `scripts/test-contracts-browser.ts`; results in `templates/source/contracts/QA.md`.
+## 12 November 2026 — Fundraise 2.0.0 template (draft)
+
+Built `life.investor-crm` 2.0.0, display name Fundraise, from the final scope in [FUNDRAISE.md](docs/product/app-template-blueprints/apps/FUNDRAISE.md) against template guidance 1.3.20 and the contract registry: seven screens (Overview, Pipeline, Investors, Round, Activity, Engagement, Settings), investors and contacts on the shared `organizations` and `people` tables (core v1), five `fundraise.*` app tables and the published output `fundraise.tranches` (fundraise.v1, exactly the registry entry). `dataroom.access_grants`, `dataroom.engagement` (dataroom.v1) and `programs.plan_items` (programs.v2, six fields) are `optional` + `integration` roles: Fundraise's own tables for manual entry, read-only provider data once the user chooses it with the in-app `data-trialy-integration` line. Only signed commitments count as raised; other-currency amounts are flagged and excluded. The 1.0.1 catalog JSON is unchanged; its source package moved byte-for-byte to `templates/source/investor-crm/archive/1.0.1/`, and its installer, seed schema and test paths follow. 2.0.0 is a draft catalog version until the owner approves it. Evidence: [Fundraise QA](templates/source/investor-crm/QA.md).
 
 ## 12 November 2026 — Programs 2.1.0 approved
 

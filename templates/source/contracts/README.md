@@ -1,6 +1,6 @@
 # Contracts 1.1.0 (`life.contracts`)
 
-Register of CDAs, MSAs, SOWs and other agreements with key dates and obligations. Scope: [CONTRACTS.md](../../../docs/product/app-template-blueprints/apps/CONTRACTS.md) (BT2-04; 1.1.0 is §12). It follows [modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md), template guidance 1.3.28. 1.1.0 is **published** in place of 1.0.0 (owner approval, 14 November 2026; seed entry and migration 072 withdrawing 1.0.0); the released 1.0.0 package is kept unchanged under `archive/1.0.0/` and installed 1.0.0 apps are not migrated.
+Register of CDAs, MSAs, SOWs and other agreements with key dates and obligations. Scope: [CONTRACTS.md](../../../docs/product/app-template-blueprints/apps/CONTRACTS.md) (BT2-04; 1.1.0 is §12). It follows [modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md), template guidance 1.3.28. 1.1.0 is **published** in place of 1.0.0 (owner approval, 14 November 2026; seed entry and migration 073 withdrawing 1.0.0); the released 1.0.0 package is kept unchanged under `archive/1.0.0/` and installed 1.0.0 apps are not migrated.
 
 **What 1.1.0 changes (owner decisions C1–C8, 14 November 2026):**
 - **Two ways in, no scheduled AI.** The user gives a contract to Claude or ChatGPT to store with its terms and obligations, or types the details in the app (blank is fine). The scheduled extraction automation is gone.

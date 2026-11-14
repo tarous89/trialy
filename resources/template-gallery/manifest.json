@@ -122,5 +122,9 @@
   "life.contracts@1.1.0": {
     "catalogDigest": "9f37aefd7909e58e13b6f2f524340e2f850f026bfbf944d478ad489276481fde",
     "previewSha256": "99603b44761f934c1dc67e882bb0e9263c522cee689bbf13492fa98b6e8a9948"
+  },
+  "life.investor-crm@2.0.0": {
+    "catalogDigest": "97a232ae640935ff851665cb69d02b013725929beaf30028fc173cc882a34362",
+    "previewSha256": "4e70760128dfe71df83a05981e48f63db40f5bac7395ff8a7fc0b275601da483"
   }
 }
