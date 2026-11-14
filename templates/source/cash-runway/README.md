@@ -1,29 +1,38 @@
-# Runway 2.1.0 (`life.cash-runway`)
+# Runway 2.2.0 (`life.cash-runway`)
 
-Cash, burn and runway by program, with what-if scenarios. Scope: [RUNWAY.md](../../../docs/product/app-template-blueprints/apps/RUNWAY.md). It follows [modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md). The released catalog JSON for 1.2.2 and 2.0.0 is unchanged, and their source packages are archived byte-for-byte under [`archive/`](archive/). Saved apps are not migrated.
+Cash, burn and runway by program, with what-if scenarios. Scope: [RUNWAY.md](../../../docs/product/app-template-blueprints/apps/RUNWAY.md) (2.2.0: [§14](../../../docs/product/app-template-blueprints/apps/RUNWAY.md#14-runway-220--assistant-control-integrations-and-automations)). It follows [modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md). The released catalog JSON for 1.2.2, 2.0.0 and 2.1.0 is unchanged, and their source packages are archived byte-for-byte under [`archive/`](archive/). 2.2.0 is a draft catalog version until the owner approves it. Saved apps are not migrated.
 
 ## Files
 
 | File | Purpose |
 | --- | --- |
-| `cash-runway.source.js` | The `frontend-js` renderer: seven screens, deterministic calculation engine, reviewed `records.propose` writes. It starts with the single-line `templateLayoutSchema` declaration. |
+| `cash-runway.source.js` | The `frontend-js` renderer: seven screens, deterministic calculation engine, reviewed `records.propose` writes. It starts with the single-line `templateLayoutSchema` and `appCommands` declarations. |
 | `cash-runway.css` | Vivid ocean theme (`#175B94`), light canvas, one page scroll, responsive at 390–1440 px. |
 | `catalog.metadata.json` | Catalog fields: options, instructions and the MCP-served documentation (data and interaction contracts, lifecycle, limitations, examples, tasks). |
-| `schema.example.json` | Installer schema: 13 role-keyed tables with scalar fields and logical-to-real key maps. Registered in `templates/catalog-installers.json`. |
+| `schema.example.json` | Installer schema: 15 role-keyed tables (eight `runway.*`, three core, four integrations) with scalar fields and logical-to-real key maps. Registered in `templates/catalog-installers.json`. |
 | `demo_data.json` | Fictional preview records only. The budget, both month closes and the saved scenario were written by the app's own actions. Never seed this file into a workspace. |
 | `cash-runway.preview.html` | Generated offline preview (gallery screenshot source). |
 | `QA_AND_ACCEPTANCE.md` | Commands, results, the hand reconciliation and unverified boundaries. |
 | `AUTOMATION_RECIPES.md` | The two optional automations and the no-automation path. |
 
-Edit the source, CSS and metadata, then run `node scripts/build-cash-runway-template.mjs`. This regenerates `templates/apps/life.cash-runway-2.1.0.json` and the preview; `--check` runs in `npm run build`. Do not edit a released version: publish a new version instead, and archive the previous package first if its schema or preview would change. After a catalog or preview change, regenerate the gallery screenshot and manifest entry (`node scripts/build-template-screenshots.mjs`).
+Edit the source, CSS and metadata, then run `node scripts/build-cash-runway-template.mjs`. This regenerates `templates/apps/life.cash-runway-2.2.0.json` and the preview; `--check` runs in `npm run build`. Do not edit a released version: publish a new version instead, and archive the previous package first if its schema or preview would change. After a catalog or preview change, regenerate the gallery screenshot and manifest entry (`node scripts/build-template-screenshots.mjs`).
+
+## 2.2.0: assistant control, integrations and automations
+
+- **App commands.** `appCommands` declares 37 commands (10 read, 26 propose, 1 layout). Every command replays the events of the matching control, or calls the same function the control calls, inside one `handle(event)` function. The proposal is therefore identical to the click path for the same input, which `tests/cash-runway-commands.test.ts` checks. Proposals made inside a command are buffered and sent once, so a failing step leaves no partial review. Read commands (`summary.read`, `cashflow.read`, `cashflow.drill`, `export.csv`, `bridge.read`, `variance.read`, `scenario.evaluate`, `scenario.compare`, `sources.read`, `schema.describe`) return the engine's figures and follow the salary restriction exactly like the screens.
+- **Scenarios.** One `runway.scenarios` record per scenario with `changes_json`, saved in one review and stamped with the forecast fingerprint. `draft` scenarios (left by an assistant) are never Outdated, open as a preview with **Open draft**, and are stamped when saved. Seven new change kinds: `add_line`, `stop_line`, `shift_line`, `scale_line`, `scale_category` (splits a monthly line at the start month), `shift_position`, `change_salary`. Adoption creates new lines and updates salaries as needed.
+- **Customization.** `settings.categories` lists the shown categories; names beyond the base seven are custom (their select option is added by the reviewed schema change that `category.add` returns). Form groups `line_form`, `position_form`, `milestone_form`, `actual_form` and `settings_form` in `templateLayoutSchema` let the layout gear order and hide optional form fields; `layout.save` also sets `labels` and `defaults`. `tableMap` `extraFields` and `writableExtra` show added fields in forms and Details and include them in proposals; calculations ignore them.
+- **Integrations.** `programs.plan_items` is Runway's own milestone list on new installs, or the Programs app's key milestones (read only) once the user links Programs inside Runway. `croselection.awards`, `contracts.obligations` and `fundraise.tranches` are Runway's own entries or the provider's records. **Add to plan** copies a source into a plan line with `source_role`, `source_record_id` and `source_version`; a later source change shows **Source changed** and **Update line** proposes the new values. Linked values are labelled "From *App*" with **Edit in *App*** (`data-trialy-open`).
+- **Automations.** Four `recommendedAutomations`: `runway_below_target`, `month_close_reminder`, `monthly_fx_rates` (create-only `writeBindings` on `runway.fx_rates`) and `monthly_runway_digest` (frozen snapshot fields). See [AUTOMATION_RECIPES.md](AUTOMATION_RECIPES.md).
+- **New installs** create no `runway.milestones` or `runway.scenario_changes` tables; 2.0/2.1 role keys are still read when bound.
 
 ## Roles, shared data and modularity
 
 `tableMap` uses stable role keys (rule 5):
 
-- **This app's tables:** `runway.settings` (one row), `runway.plan_lines`, `runway.positions`, `runway.milestones`, `runway.actuals`, `runway.budgets`, `runway.scenarios`, `runway.scenario_changes`, `runway.fx_rates`. Also `runway.month_closes`, an **app output** whose frozen snapshots other apps, such as Investor Updates and Board, may read.
+- **This app's tables:** `runway.settings` (one row), `runway.plan_lines`, `runway.positions`, `runway.actuals`, `runway.budgets`, `runway.scenarios`, `runway.fx_rates`. Also `runway.month_closes`, an **app output** whose frozen snapshots other apps, such as Investor Updates and Board, may read.
 - **Core shared tables** (core data contract v1, [`templates/core-contract/v1.json`](../../core-contract/v1.json)): `programs`, `organizations`, `agreements`. Runway's schema copies the contract fields exactly, and a test enforces it. Runway never writes fields another app owns, such as the Programs `health` fields.
-- **Partner output, read only:** `programs.plan_items`, the Programs app's milestones. Runway uses key milestones (`item_type = milestone`, `is_key`, not cancelled). A Runway milestone with `source_milestone_id` follows that Programs date. Runway never proposes a change to Programs data.
+- **Integrations:** `programs.plan_items` (Runway's milestone list, or the Programs app's key milestones once linked: `item_type = milestone`, `is_key`, not cancelled), `croselection.awards`, `contracts.obligations`, `fundraise.tranches`. Linked data is never written by Runway.
 - **2.0.0 compatibility:** the short 2.0.0 role keys (`settings`, `lines` and so on) are still read.
 
 Runway works alone; rule 3 degradation:
@@ -40,7 +49,7 @@ Platform behaviour this relies on, with Runway's rule 9 test covering each:
 - **Removing a binding** unbinds it; re-adding it reconnects the same table.
 - **Reinstalling** offers to restore the archived app first; "install a new copy" starts fresh and leaves the old data untouched.
 
-The Use installer still creates new tables for every role. Reusing existing core tables or the Programs output is done by an assistant-prepared app with explicit bindings until platform install detection ships (modular apps §5, items 1–2).
+The Use existing data? dialog connects existing core tables at install; integrations are connected later inside the app (modular apps §7.1).
 
 ## Calculation contract
 

@@ -1,10 +1,14 @@
 # Using TrialAgents templates and optional tasks
 
-Version: 1.3.28
+Version: 1.3.29
 
 ## One automation with research and email; fields added later (1.3.28)
 
 A recipe with research and email installs as one automation: one popup row ("Research, then email"), one card in Automations showing both connectors, and one Enable/Disable switch that covers both steps. Its email goes out after each completed run with new results (or every completed run, if declared). Research declared with `fields:"all"` keeps working when the user adds, renames or hides fields in the app: new fields are included at the next run without re-approval, excluded fields are never written, and removed fields are skipped. Tell the user this plainly; do not ask them to re-approve after field edits for such automations.
+
+## App commands (1.3.29)
+
+When `list_app_commands` returns commands for a saved app, use them to do anything a person can do by clicking: `run_app_command` with the app's current version, the command id, its input and a stable `requestKey`. Read commands return the app's own calculated results; report those and never compute them yourself. Propose and layout commands return the exact review a click would create: show the user what it changes and confirm with `confirm_workspace_change` only after they agree. A retry with the same requestKey returns the same review. A viewer's assistant sees read commands only. When a value is read from another app, a write is refused with `role_read_only` naming the app that writes it: prepare the change in that app instead and tell the user where it will be made.
 
 ## Installing and adding app automations (1.3.27)
 

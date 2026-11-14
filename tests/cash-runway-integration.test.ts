@@ -98,7 +98,7 @@ test('rule 9 modularity: alone, with Programs, Programs deleted, binding removed
   const tx1=await save(w2.id,programs,{name:'TX-1',stage:'phase_1',status:'active',health:'green',archived:false});
   await save(w2.id,planItems,{name:'IND filing',program_id:tx1,item_type:'milestone',end_date:'2027-06-20',status:'planned',is_key:true,archived:false});
   // Reuse, never copy: Runway binds the existing programs table and reads plan_items; it creates only its own tables.
-  const schemas=JSON.parse(await readFile('templates/source/cash-runway/schema.example.json','utf8')),map:any={},bindings:any[]=[],fields:any[]=[];
+  const schemas=JSON.parse(await readFile('templates/source/cash-runway/archive/2.1.0/schema.example.json','utf8')),map:any={},bindings:any[]=[],fields:any[]=[];
   for(const [role,def] of Object.entries(schemas) as [string,any][]){
    const typeId=role==='programs'?programs:await table(w2.id,'Runway · '+def.name,def.fields),keys=def.fields.map((f:any)=>f.key);
    map[role]={typeId,fields:def.logicalFields,writableFields:Object.keys(def.logicalFields)};bindings.push({typeId,fields:keys});
