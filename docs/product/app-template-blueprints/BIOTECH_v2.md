@@ -138,7 +138,7 @@ Format per app: users and job · reference app · scope (in / out) · records ·
 *Long name: Investor Updates & Reporting*
 - **Final scope:** [apps/INVESTOR_UPDATES.md](apps/INVESTOR_UPDATES.md) (14 Nov 2026). It supersedes the earlier brief (KPI series, no email). It is AI-native: a scheduled update (template + data sources + contacts + frequency) asks Claude or ChatGPT to draft and design each update. The app holds the investor list (firms with contacts), previews the draft with a fact panel, gets approval, sends from TrialAgents and tracks reads and "I can help" responses. The cap table is a later app.
 
-### BT2-07 — Partnerships (rank 7, Core; formerly "Partnerships")
+### BT2-07 — Partnerships (rank 7, Core; formerly "BD Pipeline")
 *Out-licensing, in-licensing and collaboration deals by asset: conferences, follow-ups and partner research.*  
 *Long name: Partnerships & BD*
 - **Final scope:** [apps/PARTNERSHIPS.md](apps/PARTNERSHIPS.md) (14 Nov 2026). It covers all directions in one pipeline. Outreach stays personal: the app tracks, reminds and structures, and never sends outreach. Everything comes in through the assistant (no special imports). Tags and saved views work by conference, asset, channel or custom category. A partner research worker runs daily, weekly or monthly (weekly default) with a concise digest email. It links to Contracts (CDA, term sheet, agreement) and Data Room.

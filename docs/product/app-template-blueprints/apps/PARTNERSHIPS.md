@@ -2,7 +2,7 @@
 
 *Track out-licensing, in-licensing and collaboration deals by asset, from first contact to signature: conferences, follow-ups and partner news, with the assistant doing the research and the admin.*
 
-**Status:** Final scope for build, 14 November 2026. Part of [Biotech apps v2](../BIOTECH_v2.md) (rank 7, formerly "Partnerships"). It **replaces** `life.partnership-tracker` 1.1.1 as **2.0.0**, display name **Partnerships**. No existing users, so no data migration.
+**Status:** Final scope for build, 14 November 2026. Part of [Biotech apps v2](../BIOTECH_v2.md) (rank 7, formerly "BD Pipeline"). It **replaces** `life.partnership-tracker` 1.1.1 as **2.0.0**, display name **Partnerships**. No existing users, so no data migration.
 
 **Depends on:** nothing new in the platform. It uses TrialAgents Automations (research worker on the user's Claude or ChatGPT runner, and email to workspace members). It connects by role to Programs, Contracts and Data Room. **One PR.**
 
