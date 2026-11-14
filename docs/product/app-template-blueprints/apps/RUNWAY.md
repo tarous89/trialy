@@ -2,7 +2,7 @@
 
 *Cash, burn and runway by program, with what-if scenarios.*
 
-**Status:** Final scope for build, 10 November 2026. Part of [Biotech apps v2](../BIOTECH_v2.md) (rank 1). Replaces the v1 `cash-runway` 1.2.2 package as a new major version (`life.cash-runway` 2.0.0; display name **Runway**). There are no existing users, so no compatibility or migration with v1 data is required.
+**Status:** Final scope for build, 10 November 2026. Part of [Biotech apps v2](../BIOTECH_v2.md) (rank 1). Replaces the v1 `cash-runway` 1.2.2 package as a new major version (`life.cash-runway` 2.0.0; display name **Runway**). There are no existing users, so no compatibility or migration with v1 data is required. **2.2.0 scope (assistant control, integrations, automations):** see [§14](#14-runway-220--assistant-control-integrations-and-automations).
 
 **Governing contracts (this scope follows them; they win on any conflict):** [project context](../../../../CONTEXT.md) · [template authoring](../../../../templates/TEMPLATE_AUTHORING.md) and [usage](../../../../templates/TEMPLATE_USAGE.md) guidance (read the hosted version through every `nextOffset` before building) · [shared build contract](../DESIGN_AND_BUILD_CONTRACT.md) · [interface rules](../../../INTERFACE_RULES.md) · [access control](../../../ACCESS_CONTROL.md) and [app/tab access](../../APP_CONFIGURATION_AND_AUTOMATIONS.md#app-and-tab-access) · [write authorization](../../../WRITE_AUTHORIZATION.md) · [field capabilities](../../../FIELD_CAPABILITIES.md) · [shared data](../../../SHARED_DATA.md).
 
@@ -219,3 +219,201 @@ Shared contract checks (desktop 1440 / mobile 390, keyboard, contrast, one scrol
 ## 13. Open after design-partner review
 
 Confirm with 5–10 biotech CEOs/CFOs: the 18-month default target; whether program-coded actuals are realistic; whether monthly granularity is enough (vs a 13-week view); whether anything in §2 "Out" is needed at least monthly.
+
+---
+
+## 14. Runway 2.2.0 — assistant control, integrations and automations
+
+**Status:** Scope for build, 14 November 2026. Not built. Delivered as a new immutable draft `life.cash-runway` 2.2.0. The 2.1.0 package and catalog JSON stay unchanged, saved apps are not migrated, and publishing 2.2.0 needs separate owner approval. Automation declarations stay inactive until `APP_AUTOMATION_RECIPES_ENABLED` is on. §1–§13 still apply unless this section changes them.
+
+### 14.1 Requirement and boundaries
+
+**Owner requirement:** Claude and ChatGPT can control and change everything in Runway: every form and action, every scenario, and the template itself (layout, forms, fields, categories, screens, code).
+
+**What "control" means:** anything a person can do by clicking in Runway, an assistant can do by naming the same action with the same inputs. It gets the same validation, the same calculation and the same exact proposal for review. There is no assistant-only shortcut and no hidden capability, and every result an assistant reports comes from Runway's own engine.
+
+**Platform rules this keeps (unchanged):**
+- Assistants prepare and a person confirms every write in the trusted review. The only exception is a valid, narrow standing grant.
+- Results (runway, snapshots, budgets, bridge) are computed only by the app's engine. The assistant asks the app for them; it never computes them itself.
+- App-only human actions stay human: `confirm_data_access`, `choose_integration_source`, access changes and automation activation follow their existing owner rules.
+- Database column restrictions apply to the assistant principal. With `positions.annual_salary` restricted, commands return "restricted" for live people cost and runway, never values.
+- No permanent deletion by assistants. Archive and restore only.
+
+### 14.2 Coverage: every Runway action has an assistant path
+
+Paths: **R** = reviewed record proposal on a bound table (`prepare_change`, works today). **C** = app command (§14.3, new). **L** = layout (`prepare_tool_layout`). **S** = reviewed schema change. **T** = reviewed app revision (`begin_app_update` → `finalize_app_preview` → human confirmation).
+
+| Screen | Action | 2.1.0 for assistants | 2.2.0 |
+|---|---|---|---|
+| Overview | Runway sentence, months, cash-out, start-raise, cash at milestones, bridge, exceptions | Not available (must not compute) | C `summary.read`, `bridge.read` |
+| Cash flow | Table by source (forecast, preview, scenario, budget), contingent toggle, drill-down, CSV | Not available | C `cashflow.read`, `cashflow.drill`, `export.csv` |
+| Plan | Add, edit, duplicate, archive a line | R (no version capture or form validation) | C `line.save`, `line.duplicate`, `line.archive` (R still allowed) |
+| Plan | Payment schedule | R, line by line | C `schedule.create` |
+| Plan | Milestones | R | C `milestone.save`, `milestone.archive` |
+| Plan | Lock as budget | **App only** | C `budget.lock` |
+| People | Add, move, remove a hire, with runway effect | R, without the effect | C `position.save`, `position.archive` (both return the effect) |
+| Scenarios | Build a preview | **Not possible** | C `scenario.evaluate`; drafts (§14.4) |
+| Scenarios | Save | Two reviews, and shows Outdated at once | C `scenario.save` (one review, fingerprinted) |
+| Scenarios | Copy, compare, adopt, archive | Adopt is **app only** | C `scenario.copy`, `scenario.compare`, `scenario.adopt`, `scenario.archive` |
+| Actuals | Enter actuals | R | C `actuals.save` |
+| Actuals | Close month (frozen snapshot) | **App only** | C `month.close` |
+| Actuals | Variance; commentary | R for commentary | C `variance.read`, `commentary.save` |
+| Settings | Settings row, FX rates, programs, organizations | R | C `settings.save`, `fx.save`, `program.save`, `organization.save` |
+| Settings | Categories | S + T | C `category.add`, `category.hide` (§14.5) |
+| Any | Screens, form fields, labels, order | L (screens only) | L, extended to forms (§14.5) |
+| Any | Theme, charts, new screens, code | T | T, with the revision contract (§14.5) |
+| Any | Discover forms, fields, options, kinds, commands | Docs only | C `schema.describe` and `list_app_commands` |
+
+### 14.3 App commands (platform capability; Runway is the first user)
+
+**Gap:** the tool that runs an app's own code, `run_component_frontend`, is registered as app-only (`src/server/workspace-foundation.ts`, `ui.visibility:['app']`). So an assistant cannot drive a `frontend-js` app's forms or ask it for results. Function bindings (`invoke_component_function`) are not the main answer: they are added after save, are cleared on copy, and would duplicate the engine in separate code.
+
+**Platform design (gated by `APP_COMMANDS_ENABLED`, default off):**
+- **Declaration.** Any app manifest (template or custom) may declare `commands: [{id, label, mode: "read"|"propose", input: <JSON Schema subset>, screen?}]`, up to 60. Ids are lowercase dotted keys. The server validates declarations strictly at publication and reads them tolerantly at runtime.
+- **Discovery.** New MCP tool `list_app_commands({workspaceId, appId})` returns the declared commands of the current saved version, filtered by the caller's access. Read-only commands are still listed to viewers; propose commands are listed only when the caller can edit.
+- **Execution.** New MCP tool `run_app_command({workspaceId, appId, expectedVersion, command, input, requestKey})`:
+  - It runs the saved source in the existing isolated engine as the assistant principal, with `input.event = {type:"command", command, input}` and the app's saved layout and configuration.
+  - Reads, permissions, column restrictions and limits are exactly as for `run_component_frontend`.
+  - The app returns `state.command = {ok, result?, error?, proposal?}`. `result` is bounded JSON (≤ 64,000 serialized characters). `proposal` is the same `records.propose` batch a click would create.
+  - The platform turns `proposal` into a standard review (preview ID and digest) that a person confirms in the host. It never commits.
+  - Unsaved previews and drafts are read-only. A stale `expectedVersion` is rejected. The same `requestKey` returns the same review.
+- **Limits and safety.**
+  - Commands cannot call app-only confirmations, exchange sends, uploads, integration choices or data-access confirmation.
+  - Every command run is logged with the principal and command id.
+  - Exchange links stay redacted as in every MCP result.
+- **Parity rule for apps.** Each propose command must go through the same handler as its form submit, so a click and a command produce byte-identical proposals for the same input. Runway's tests enforce this per command.
+- **Guidance.** Add an "App commands" section to both template guidance copies, raise `templateGuidance.version`, and update the MCP descriptions.
+
+**Runway commands (2.2.0):**
+
+| Command | Mode | Input (summary) | Result |
+|---|---|---|---|
+| `schema.describe` | read | — | Forms, fields, required fields, options, enabled categories, scenario change kinds, command list |
+| `summary.read` | read | `includeContingent?` | Runway sentence, runway months (base and with contingent), cash-out, start-raise, cash and cushion per milestone, exceptions, partial and restricted flags |
+| `cashflow.read` | read | `source` (forecast, budget id, scenario id, draft changes), `from`, `to`, `includeContingent`, `byProgram` | Monthly rows: opening, cash in, spend by category, net burn, closing |
+| `cashflow.drill` | read | `month`, `category`, `program_id?`, `source` | Lines behind the cell with original amount, rate and converted amount |
+| `export.csv` | read | `source` | CSV text (same as the screen) |
+| `bridge.read` | read | — | Bridge parts since the last snapshot; the parts add up to the total |
+| `variance.read` | read | `month` or `year` | Actual vs budget by category (and program) |
+| `scenario.evaluate` | read | `changes[]` or `scenarioId` | Same as `summary.read` plus the difference from the base, with no write |
+| `scenario.compare` | read | 2–4 `scenarioId`s or change sets | Side-by-side runway, cash-out, cash at each milestone, total burn |
+| `settings.save` | propose | Settings fields | One settings create or update |
+| `line.save` / `line.duplicate` / `line.archive` | propose | Line fields (+ `id`) | Line write with the version captured at command time |
+| `schedule.create` | propose | Total or instalments, months, counterparty, agreement | One-off lines sharing a `schedule_group` |
+| `milestone.save` / `milestone.archive` | propose | Milestone fields | Milestone write |
+| `position.save` / `position.archive` | propose | Position fields | Write plus runway effect (months and cash-out, before and after) |
+| `actuals.save` | propose | `month`, rows (category, program, direction, amount, currency, note) | Actual records |
+| `month.close` | propose | `month`, `closing_balance`, `actuals?`, `commentary?` | Actuals plus one `month_closes` record whose snapshot the app computes and freezes; months must be closed in order |
+| `commentary.save` | propose | `month`, text | Commentary update (the only editable field on a close) |
+| `budget.lock` | propose | `year`, `name` | One frozen budget record computed by the app |
+| `scenario.save` | propose | `name`, `changes[]`, `status` (`draft` or `saved`) | One scenario record with `changes_json` and the current fingerprint (§14.4) |
+| `scenario.copy` / `scenario.archive` | propose | `scenarioId` (+ `name`) | New draft, or archived scenario |
+| `scenario.adopt` | propose | `scenarioId` | Writes to the affected lines and positions (≤ 50 per review), scenario status `adopted`; rejected if Outdated |
+| `fx.save` / `program.save` / `organization.save` | propose | Record fields | Record write (core fields only on shared tables) |
+| `category.add` / `category.hide` | propose | `name` | Settings update; `category.add` also returns the schema change to prepare (§14.5) |
+
+### 14.4 Scenarios: assistant-built, one review, adoptable
+
+- **One record per scenario.** Add `changes_json` (text: the frozen list of up to 50 changes, each validated by the app) to `runway.scenarios`, and add the status option `draft`. 2.2.0 writes only `changes_json`. It still reads 2.0/2.1 scenarios from `runway.scenario_changes`; that table remains bound for reading and is not created on new installs. Saving becomes one review.
+- **Fingerprint stamped by the app.** `scenario.save` runs in the app, so it stamps `based_on_close` and `based_on_version` from the app's own fingerprint. Scenarios saved by assistants are therefore current and can be adopted. A scenario written directly with `prepare_change` should use `status: draft`. Drafts have no fingerprint, are never Outdated, cannot be adopted, and show a live preview when opened. **Save** (by a click or `scenario.save`) stamps them.
+- **Drafts in the app.** Scenarios lists drafts first, labelled "Draft", with who proposed them (from record history). Opening one shows its preview overlay exactly like a locally built preview.
+- **More change kinds** (additive options; `changes_json` carries their parameters):
+
+| Kind | Parameters | Effect | Adopt writes |
+|---|---|---|---|
+| `add_line` | All plan-line fields (spend or cash in) | Adds a line to the forecast | Creates the line |
+| `stop_line` | `target_id`, `from_month` | Ends a line before `from_month` | Sets `end_month` (one-offs after it are archived) |
+| `shift_line` | `target_id`, `months` | Moves one line | Updates its start and end months |
+| `scale_line` | `target_id`, `pct` | Scales one line's amount | Updates the amount |
+| `scale_category` | `category`, `pct`, `program_id?`, `from_month?` | Scales matching spend lines | Updates each matching line |
+| `shift_position` | `target_id`, `months` | Moves a hire's start (and end) | Updates the position |
+| `change_salary` | `target_id`, `pct` or `amount` | Changes one salary (needs salary read access) | Updates `annual_salary` |
+| *(existing)* | `shift_program`, `scale_program`, `stop_program`, `add_position`, `remove_position`, `move_cash_in`, `resize_cash_in`, `fx_shift` | Unchanged | Unchanged; `fx_shift` is never adopted |
+
+- **Using a scenario as a starting point.** Any saved or adopted scenario can be copied into a new draft (`scenario.copy`) and changed. Changes that point to archived or missing records show as "unavailable" and are skipped with a note, never guessed.
+- **Chat behaviour.** For "what if…", the assistant calls `scenario.evaluate` and reports the app's figures. It saves a draft or a scenario only when asked, and adopts only on an explicit request, through the review.
+
+### 14.5 Changing the template and its forms
+
+Most customization becomes a reviewed settings or layout change instead of code.
+
+- **Categories.** `settings.categories` is the source of truth for which spend categories show and in what order. `category.add` returns two things in one answer: the settings update, and the additive schema change that adds the option to `plan_lines.category` and `actuals.category`. The assistant prepares that schema change with `prepare_change`, which needs the owner's schema rights. `category.hide` only hides a category; select options are never removed or renamed, so history stays readable.
+- **Extra fields on any form.** Fields added to a Runway table through a reviewed schema change and listed in the binding's `extraFields` are shown by the app in that table's form and Details under "Additional fields". They are rendered by kind (text, number, money, date, select, boolean) and included in proposals and CSV. No code revision is needed. Extra fields are never used in calculations.
+- **Form layout.** Extend `layoutProfile` with `forms: {<formId>: {order: [], hidden: [], labels: {}, defaults: {}}}`. It is written only through `prepare_tool_layout` (presentation only). Required fields cannot be hidden, and defaults go through the same validation. `schema.describe` lists form ids and fields.
+- **Screens.** The existing layout gear (reorder, rename, hide), now also through `prepare_tool_layout` by assistants.
+- **Code-level changes** (theme, charts, new screens, new calculations) use a reviewed app revision (T). The template documentation adds a **revision contract** that assistants must keep:
+  - role keys and contracts (`runway.month_closes` stays `runway.v2` and a superset for Programs);
+  - the calculation rules in §6;
+  - frozen fields written only by the app;
+  - `data-ui-state` and stable `data-action` on inputs;
+  - command ids and their parity rule;
+  - bounded reads.
+
+  The platform design inspector runs at finalize. A revision that drops a declared command must say so in the review.
+- **Custom copies.** `prepare_app_from_existing` keeps role and command declarations. Because of the one-writer rule, a copy binds `runway.month_closes` read-only unless the owner chooses a writer takeover.
+
+### 14.6 Integrations (modular apps §7)
+
+| Role | Contract | 2.2.0 declaration | In the app |
+|---|---|---|---|
+| `programs.plan_items` | programs.v2 | `optional`, `integration` (name, program_id, item_type, end_date, status, is_key) | On new installs this own table is Runway's milestone list. If Programs is connected, Runway uses its key milestones read-only. Plan → Milestones shows "Works with Programs. **Add Programs**" or "Programs is in your workspace. **Use its milestones**" (`integrations.list`, `data-trialy-integration`), following Contracts 1.0.0. `runway.milestones` is still read for 2.0/2.1 data. |
+| `croselection.awards` | croselection.v1 | `optional`, `readOnly`, integration (see D1) | Plan shows awarded contracts not yet in the plan, with **Add to plan**, which creates a reviewed spend line with `source_role` and `source_record_id`. |
+| `contracts.obligations` | contracts.v1 | Same | Payment obligations (kind payment, verified only) not yet in the plan, with **Add to plan**, which creates a payment schedule. |
+| `fundraise.tranches` | fundraise.v1 | Same | Expected tranches with **Add to plan**, which creates equity cash-in lines (contingent until committed). |
+
+- Add `source_role` and `source_record_id` (text) to `runway.plan_lines` so each suggestion is offered once and linked lines show their source. If the source record is later archived or unreadable, the line shows "Source unavailable" and keeps its own values.
+- Rule 3 still applies: with no connection, each suggestion panel is hidden with a one-line note and totals are unaffected.
+- Commands expose the suggestions to assistants: `suggestions.read` (read) and `suggestion.add` (propose).
+- `runway.month_closes` (runway.v2) stays unchanged as Runway's output for Programs, Investor Updates and Board.
+
+### 14.7 Automations (app automations, RA1–RA5)
+
+Declared in the catalog entry. All install recommendations start selected; the user can opt out at install, and nothing breaks the app.
+
+| Key | List | Kind | Trigger | Content |
+|---|---|---|---|---|
+| `runway_below_target` | `recommendedAutomations` | email | database, `role: runway.month_closes`, field `runway_status` becomes `below_target` | Fixed text from `AUTOMATION_RECIPES.md` §1 plus fields `month`, `runway_months`, `cash_out_month` |
+| `month_close_reminder` | `recommendedAutomations` | email | calendar, monthly, 5th Monday–Friday business day, 09:00 Europe/Berlin | "Last month is not closed yet. Open Runway → Actuals → Close month." |
+| `monthly_fx_rates` | `recommendedAutomations` | research | calendar, monthly, 3rd business day, Europe/Berlin | Objective and instructions from `AUTOMATION_RECIPES.md` §2. `readBindings`: `runway.settings` (`enabled_currencies`), `runway.fx_rates` (`month`, `currency`). **Proposal-only**; the standing-grant wording is removed. |
+| `monthly_runway_digest` | `automationFeatures` | email | after a month close (database, `runway.month_closes` created) | Uses `summaryBinding` if a reviewed read-only summary binding exists. Otherwise it stays Needs setup and is never offered at install. |
+
+Assistants manage these through the existing tools (`read_app_automation_features`, `prepare_app_automation_feature`, `prepare_app_monitoring`, `prepare_app_action`, `confirm_app_service_review`) under the existing ownership rules. Update `AUTOMATION_RECIPES.md` and `documentation.tasks` to match, and change `tasks.mode` to describe "recommended at install; zero automations is supported".
+
+### 14.8 Documentation and catalog text
+
+- `instructions`:
+  - steps 2 and 9 describe the install dialog (`prepare_data_access` prefill, never confirm) and install-time automations;
+  - step 6 becomes `scenario.evaluate` → `scenario.save` (draft or saved) → `scenario.adopt` on request;
+  - add a commands step: discover with `list_app_commands`, read results only through read commands, propose through propose commands.
+- `quickStart`: pin 2.2.0. `limitations`: remove the "Use installer creates new tables for every role" item and the two-review scenario item.
+- `examples`: add evaluate → save draft → adopt; close a month by command; add a category; add a field to the actuals form; hide a form field; add a CRO award to the plan.
+- README, QA and the browser test are updated for every new command, kind and integration.
+
+### 14.9 Acceptance criteria (in addition to §12)
+
+1. For every row in §14.2 an assistant can complete the action in Claude and in ChatGPT, and the proposal matches the click path byte for byte for the same input.
+2. `summary.read`, `scenario.evaluate` and `cashflow.read` return exactly the figures the screens show (hand reconciliation dataset in §12.11).
+3. An assistant-saved scenario is not Outdated, adopts after review, and becomes Outdated after a later forecast change.
+4. A direct `prepare_change` draft scenario previews in the app and cannot be adopted until saved.
+5. Each new change kind previews, compares and adopts correctly, and archived targets are skipped with a note.
+6. `month.close` and `budget.lock` by command freeze the same snapshot and budget as the UI, and closing out of order is rejected.
+7. With `annual_salary` restricted for the assistant, no command result contains a salary or live people cost.
+8. A viewer's assistant can run read commands only; propose commands are not listed and are refused.
+9. No command commits without a person's confirmation; stale versions are rejected; replaying a `requestKey` creates no duplicate review.
+10. Adding a category, an extra field and a form layout change through an assistant shows correctly at 1440 and 390 px, with no code revision.
+11. Integrations: install alone; connect Programs inside the app; add a CRO award, an obligation and a tranche to the plan; archive the source; delete a partner app. Runway keeps working, and every state is labelled.
+12. Install with all automations selected, with some opted out, and with no runner: the app is saved in every case, and states show active, opted out or Needs setup.
+13. The modular-apps rule 9 test passes, and Programs 2.1.0 still reads 2.2.0 snapshots.
+
+### 14.10 Delivery order and decisions
+
+1. **P1 platform: app commands** (§14.3) behind `APP_COMMANDS_ENABLED`, with tests, guidance and MCP descriptions.
+2. **R1 Runway 2.2.0 draft:** commands, scenarios (§14.4) and customization (§14.5).
+3. **R2:** integrations (§14.6).
+4. **R3:** automation declarations (§14.7) and documentation (§14.8).
+5. **Release:** cross-host acceptance (§14.9) in web, Claude and ChatGPT; then owner approval of the catalog version, and each feature switch enabled separately.
+
+**Owner decisions needed:**
+- **D1 — Integrations without an own table.** Integration roles today always create the app's own table. For awards, obligations and tranches, Runway's own data is its plan lines, so an own table would be empty and confusing. *Recommendation:* add a platform option `integration: {own: false}` (link-only: no table until the user connects it; the in-app offer still shows). *Fallback:* accept three small, hidden own tables.
+- **D2 — App commands as a platform-wide capability** (any app can declare them) rather than a Runway-only feature. *Recommendation:* platform-wide, because every custom app has the same gap.
+- **D3 — Digest summary binding.** Ship `monthly_runway_digest` as a later feature only, until catalog templates can ship a reviewed summary binding.
