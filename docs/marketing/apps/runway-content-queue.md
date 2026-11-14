@@ -39,7 +39,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | D2 | Financial planning for clinical-stage biotechs: explain the monthly cash variance | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/clinical-stage-biotech-financial-planning) |
 | D3 | Budgeting software for biotechs under 20 employees: count each cost once | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/budgeting-software-small-biotech-teams) |
 | D4 | How to forecast a clinical trial delay: separate deferred payments from extra months | Published — live verified 14 November 2026; PR #212, release `511245f24749c7e3993f71c628c636bd7872be24` | https://trialagents.com/apps/clinical-trial-delays-cash-runway |
-| D5 | How to Forecast CRO Costs and Vendor Payments in a Biotech Budget | In progress — claimed 14 November 2026; source preparation | Distinct contract-to-remaining-payment reconciliation; no PR yet. |
+| D5 | Forecast CRO costs and vendor payments: reconcile what is still payable | Merged — deployment pending/unverified | PR #213; release `737d8dcafa887324da8ec275fcdc9493bff364e2`; 14 November 2026 21:59 CET. |
 | D6 | Biotech Hiring vs Outsourcing: How to Model the Impact on Cash Runway | Queued — verify and publish | — |
 | D7 | How to Plan Biotech Runway Around the Next Funding Round | Queued — verify and publish | — |
 | D8 | Best Financial Planning Tools for Grant-Funded Biotech Startups | Queued — verify and publish | — |
@@ -857,3 +857,8 @@ PR #212 merged as `511245f24749c7e3993f71c628c636bd7872be24` at 20:05 UTC after 
 ### D5 source checkpoint — 14 November 2026 21:51 CET
 
 D5 claimed in [public-site PR #213](https://github.com/tarous89/trialagents-public/pull/213), exact head `b5e6ad6d5344e5431745af2d7e7d20dc79409ebe`. **Forecast CRO costs and vendor payments: reconcile what is still payable**, intended URL https://trialagents.com/apps/cro-costs-vendor-payments-biotech-budget. Distinct reconciliation of contract value, paid-before-opening amounts, remaining instalments and separately identified costs; not D11 payment shifts or D4 trial extension. Current approved Runway 2.1 catalog and ICON September 2026 issuer filing reviewed. Decimal calculations verified; two genuine demo screenshots; no executed app/host test claimed. Await exact-head full gate and desktop/mobile artifacts before merge, then full live verification. Resume PR #213 before selecting another subject. Count unchanged: 32 published, 15 unfinished.
+
+
+### D5 merged; live verification pending — 14 November 2026 21:59 CET
+
+PR #213 merged as `737d8dcafa887324da8ec275fcdc9493bff364e2` after full exact-head predeploy run `43639631213` succeeded on `b5e6ad6d5344e5431745af2d7e7d20dc79409ebe`. Artifact `14131552638` inspected throughout at desktop 1440px and mobile 390px: shell, readable content, scroll-contained tables, images/captions and final CTA passed. Existing GitHub-connected CDN build pending. Verify https://trialagents.com/apps/cro-costs-vendor-payments-biotech-budget before marking Published; resume this release before another subject. No manual deploy or Cloudflare sign-in required.
