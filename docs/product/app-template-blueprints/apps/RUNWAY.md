@@ -268,7 +268,7 @@ Paths: **R** = reviewed record proposal on a bound table (`prepare_change`, work
 
 **Gap:** the tool that runs an app's own code, `run_component_frontend`, is registered as app-only (`src/server/workspace-foundation.ts`, `ui.visibility:['app']`). So an assistant cannot drive a `frontend-js` app's forms or ask it for results. Function bindings (`invoke_component_function`) are not the main answer: they are added after save, are cleared on copy, and would duplicate the engine in separate code.
 
-**Platform design (gated by `APP_COMMANDS_ENABLED`, default off):**
+**Platform design (on by default since 14 November 2026; `APP_COMMANDS_ENABLED=false` turns it off):**
 - **Declaration.** Any app manifest (template or custom) may declare `commands: [{id, label, mode: "read"|"propose", input: <JSON Schema subset>, screen?}]`, up to 60. Ids are lowercase dotted keys. The server validates declarations strictly at publication and reads them tolerantly at runtime.
 - **Discovery.** New MCP tool `list_app_commands({workspaceId, appId})` returns the declared commands of the current saved version, filtered by the caller's access. Read-only commands are still listed to viewers; propose commands are listed only when the caller can edit.
 - **Execution.** New MCP tool `run_app_command({workspaceId, appId, expectedVersion, command, input, requestKey})`:
@@ -379,7 +379,7 @@ Most customization becomes a reviewed settings or layout change instead of code.
 
 **Gap:** a role connected read-only can't be changed in the reading app. The server refuses the write (`role_writer`, §7.4), but the platform gives the app no way to send the user to where the field can be changed. Users see a field they can't edit, with no explanation.
 
-**Design (platform-wide, behind `APP_COMMANDS_ENABLED` together with §14.3):**
+**Design (platform-wide, with the same switch as §14.3):**
 - **Writer details in `integrations.list` and `roles.list`.** Each connected read-only role also returns `writer: {appName, canOpen}`, where `canOpen` is true only when the viewer can open the writing app. The writer app's ID is never exposed to the reading app.
 - **Open button.** Apps render `<button data-trialy-open="<role> <recordId>">Edit in <App></button>`. The frame posts `trialy.open` and the host resolves the target:
   1. the app that writes the table bound to that role, opened at the record (the existing app route with `recordId`), when the viewer can open it;
@@ -456,7 +456,7 @@ Assistants manage these through the existing tools (`read_app_automation_feature
 
 ### 14.12 Implementation record (14 November 2026)
 
-**Platform (behind `APP_COMMANDS_ENABLED`, default off):**
+**Platform (on by default since 14 November 2026; `APP_COMMANDS_ENABLED=false` is the emergency off switch):**
 - `src/workspace/app-commands.ts`: the `appCommands` declaration (read as data, strict on every app save), the input schema subset, and `list_app_commands`, `run_app_command` (MCP and web). A command runs the saved app with `{kind:"command"}` as the caller; propose and layout commands become ordinary reviews confirmed with `confirm_workspace_change`. The same `requestKey` returns the same review. Every run is audited (`app.command`).
 - `src/workspace/service.ts`: commands cannot queue functions, call connectors or reach exchanges; `layout.propose` accepts a custom layout profile; `roles.list` and `integrations.list` add `writer:{appName,canOpen}`; writes to a read-only or linked role are refused with `role_read_only` and `details:{role,recordId,writerAppName}`.
 - `resolve_app_open` and `data-trialy-open` (frame, `FrontendCodeRuntime`): Edit in App opens the writing app at the record, or Database.
@@ -471,4 +471,4 @@ Assistants manage these through the existing tools (`read_app_automation_feature
 
 **Catalog approval:** the owner approved 2.2.0 for production on 14 November 2026; `templates/catalog-seed.json` names 2.2.0.
 
-**Still open:** acceptance criteria 1 and 10–12 in web, Claude and ChatGPT on real hosts; enabling `APP_COMMANDS_ENABLED` (the recommended automations are offered at install, since recipes are on by default after #176); a verified unattended rates cycle before relying on that automation.
+**Still open:** acceptance criteria 1 and 10–12 in web, Claude and ChatGPT on real hosts; (app commands and the recommended automations are on by default); a verified unattended rates cycle before relying on that automation.

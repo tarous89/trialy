@@ -11,7 +11,7 @@ import type {Database,Connection} from '../src/db/database.js';
 import type {Actor} from '../src/shared/schema.js';
 
 /* App commands and "Edit in App" (Runway scope §14.3 and §14.7), on the real runtime and review path. */
-process.env.APP_COMMANDS_ENABLED='true';
+delete process.env.APP_COMMANDS_ENABLED; // On by default: no configuration needed.
 async function setup(){
  const pg=new PGlite();for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
  const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
@@ -80,7 +80,7 @@ test('commands are declared as data, listed, validated and run through the same 
   // Commands are not a way around the gate.
   process.env.APP_COMMANDS_ENABLED='false';
   await assert.rejects(listAppCommands(f,actor,w,{appId}),/not enabled/);
-  process.env.APP_COMMANDS_ENABLED='true';
+  delete process.env.APP_COMMANDS_ENABLED;
  }finally{await x.pg.close();}
 });
 

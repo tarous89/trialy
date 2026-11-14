@@ -14,7 +14,7 @@ import type {Database,Connection} from '../src/db/database.js';
 import type {Actor} from '../src/shared/schema.js';
 
 /* Runway 2.2.0 on the real installer, runtime and review path: app commands, integrations and recommended automations. */
-process.env.APP_COMMANDS_ENABLED='true';
+delete process.env.APP_COMMANDS_ENABLED; // On by default.
 async function setup(){
  const pg=new PGlite();for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
  const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};

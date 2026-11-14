@@ -167,7 +167,7 @@ export class WorkspaceFoundation {
  /** Writer name of each role an app reads from another app, and whether this person may open it (§14.7). No IDs. */
  async roleWriters(a:Actor,w:string,roles:any[]){
   const out:Record<string,{appName:string;canOpen:boolean}>={};
-  if(process.env.APP_COMMANDS_ENABLED!=='true')return out;
+  if(process.env.APP_COMMANDS_ENABLED==='false')return out;
   for(const r of roles)if(r.typeId&&(r.readOnly||r.linked)){const info=await roleWriterInfo(this,a,w,r.typeId,r.role);if(info)out[r.role]={appName:info.appName,canOpen:info.canOpen};}
   return out;
  }
