@@ -18,6 +18,7 @@
 | 01 Runway | [apps/RUNWAY.md](apps/RUNWAY.md) | `life.cash-runway` 2.1.0 published (#131) |
 | 02 Programs | [apps/PROGRAMS.md](apps/PROGRAMS.md) | `life.project-oversight` 2.1.0 published (#136), with manual cash forecast and Runway integration |
 | 03 Fundraise | [apps/FUNDRAISE.md](apps/FUNDRAISE.md) | Built in PR #137 (open) |
+| 07 Partnerships | [apps/PARTNERSHIPS.md](apps/PARTNERSHIPS.md) | Scoped (14 Nov); replaces `life.partnership-tracker` 1.1.1 as 2.0.0; no platform work (one PR) |
 | 06 Investor Updates | [apps/INVESTOR_UPDATES.md](apps/INVESTOR_UPDATES.md) | Scoped (14 Nov); AI-native (assistant drafts on schedule, app approves, sends, tracks); build after Data Room PR A: PR A update extension ([§6](../EXTERNAL_EXCHANGE.md#6-update-extension-for-investor-updates)), PR B app |
 | 08 Data Room | [apps/DATA_ROOM.md](apps/DATA_ROOM.md) | Scope approved (13 Nov); hosted rooms (only) on external exchange + room extension ([§5](../EXTERNAL_EXCHANGE.md#5-room-extension-for-data-room)); build as PR A (platform) then PR B (app); includes Diligence Q&A (12) |
 | 04 Contracts | [apps/CONTRACTS.md](apps/CONTRACTS.md) | `life.contracts` 1.0.0 published (#141) |
@@ -35,7 +36,7 @@ All apps follow [modular apps and shared data](../MODULAR_APPS_AND_SHARED_DATA.m
 | 4 | BT2-04 | **Contracts** | Register of CDAs, MSAs, SOWs and other agreements with key dates and obligations. | CEO, BD, ClinOps, finance | ContractSafe/ContractWorks (size) + Gatekeeper/Contract Logix (biotech) + Ironclad (AI extraction) | Core | **new** |
 | 5 | BT2-05 | **CRO Selection** | Choose CROs, CDMOs and labs: from the need to a signed award and handover. | ClinOps, R&D leads | Scientist.com (+ Science Exchange; ClinAI / bid-grid practice) | Core | merge `cro-selection` + `sponsor-rfp-management` |
 | 6 | BT2-06 | **Investor Updates** | AI-drafted investor updates on a schedule: approve, send to the right contacts, track reads and asks. | CEO, CFO | Visible (+ Cabal for asks) | Core | **new** (split from Investor CRM) |
-| 7 | BT2-07 | **BD Pipeline** | Partnering targets, conference meetings and licensing deals by stage. | CEO, BD | Inova Partnering (Inpart) | Core | adapt `partnership-tracker` |
+| 7 | BT2-07 | **Partnerships** | Out-licensing, in-licensing and collaboration deals by asset: conferences, follow-ups and partner research. | CEO, BD | Inova (domain) + partneringONE practice + HubSpot (mechanics) | Core | replaces `partnership-tracker` (2.0.0) |
 | 8 | BT2-08 | **Data Room** | Prepare, share and track data rooms for financing, licensing, partnering and M&A, with diligence Q&A. | CEO, CFO, BD | ShareVault (domain) + DocSend/Papermark (mechanics) + Ansarada (Q&A) | Core | **new** (includes BT2-12) |
 | 9 | BT2-09 | **Lab Inventory** | Reagents and consumables, requests and reorders. | Lab managers, scientists | Quartzy | Core | adapt `inventory-management` |
 | 10 | BT2-10 | **Landscape** | Competitor assets, trials, readouts and deals in your indications. | CEO, BD, CSO/CMO | Citeline Biomedtracker (alt. Evaluate) | Core · **TrialAgents edge** | **new** (absorbs `literature-radar` intent) |
@@ -59,7 +60,7 @@ All apps follow [modular apps and shared data](../MODULAR_APPS_AND_SHARED_DATA.m
 The apps are separate, but several share records and form natural packs (all over the shared Organization / Person / Program records):
 
 - **Finance pack:** Runway (01) ← Trial Finance (11) → Investor Updates (06) → Board (14). Accruals feed the runway; the runway feeds updates and board packs.
-- **Deal pack** (fundraising *and* licensing follow the same path: targets → outreach → CDA → non-confidential deck → data room → diligence → term sheet): Fundraise (03), BD Pipeline (07), Contracts (04), Data Room (08, includes Diligence Q&A), Deal Comps (18).
+- **Deal pack** (fundraising *and* licensing follow the same path: targets → outreach → CDA → non-confidential deck → data room → diligence → term sheet): Fundraise (03), Partnerships (07), Contracts (04), Data Room (08, includes Diligence Q&A), Deal Comps (18).
 - **Outsourcing pack:** CRO Selection (05) → Contracts (04) → CRO Oversight (16) → Trial Finance (11).
 - **Clinical pack:** Landscape (10), Site Finder (17), Regulatory (20), CRO Oversight (16).
 - **Science pack:** Lab Records (13), Lab Inventory (09), IP Portfolio (15).
@@ -137,20 +138,15 @@ Format per app: users and job · reference app · scope (in / out) · records ·
 *Long name: Investor Updates & Reporting*
 - **Final scope:** [apps/INVESTOR_UPDATES.md](apps/INVESTOR_UPDATES.md) (14 Nov 2026). It supersedes the earlier brief (KPI series, no email). It is AI-native: a scheduled update (template + data sources + contacts + frequency) asks Claude or ChatGPT to draft and design each update. The app holds the investor list (firms with contacts), previews the draft with a fact panel, gets approval, sends from TrialAgents and tracks reads and "I can help" responses. The cap table is a later app.
 
-### BT2-07 — BD Pipeline (rank 7, Core)
-*Partnering targets, conference meetings and licensing deals by stage.*  
-*Long name: BD & Partnering CRM*
-- **Users / job:** manage out- and in-licensing targets, academic collaborations and conference meetings from first contact to term sheet.
-- **Reference app:** Inova Partnering (Inpart) — life-science partnering pipeline and partnering meetings.
-- **In scope:** partner companies and contacts, opportunities by stage, conference meetings (e.g. BIO, BIO-Europe), CDA status (linked to 04), non-confidential materials sent, follow-ups. **Out:** deal rooms (see 08), contract drafting.
-- **Records:** Partnering opportunity; Meeting; Material sent; Follow-up. Shared: Organization, Person, Program/Asset, Agreement.
-- **Screens:** BD overview · Partner directory · Opportunity pipeline · Conference meetings · Follow-ups.
-- **Assistant angle:** research partner pipelines and deal history; prepare one-page meeting briefs before conferences.
+### BT2-07 — Partnerships (rank 7, Core; formerly "BD Pipeline")
+*Out-licensing, in-licensing and collaboration deals by asset: conferences, follow-ups and partner research.*  
+*Long name: Partnerships & BD*
+- **Final scope:** [apps/PARTNERSHIPS.md](apps/PARTNERSHIPS.md) (14 Nov 2026). It covers all directions in one pipeline. Outreach stays personal: the app tracks, reminds and structures, and never sends outreach. Everything comes in through the assistant (no special imports). Tags and saved views work by conference, asset, channel or custom category. A partner research worker runs daily, weekly or monthly (weekly default) with a concise digest email. It links to Contracts (CDA, term sheet, agreement) and Data Room.
 
 ### BT2-08 — Data Room (rank 8, Core)
 *Prepare, share and track data rooms for financing, licensing, partnering and M&A, with diligence Q&A.*  
 *Long name: Data Room & Diligence Q&A*
-- **Final scope:** [apps/DATA_ROOM.md](apps/DATA_ROOM.md) (13 Nov 2026). It supersedes the earlier index-only brief: rooms are hosted on the platform external exchange, with per-person links, Non-confidential / Confidential / custom levels, a CDA entry step, view and download tracking, structured Q&A and email notifications. It writes `dataroom.v1` for Fundraise and BD Pipeline.
+- **Final scope:** [apps/DATA_ROOM.md](apps/DATA_ROOM.md) (13 Nov 2026). It supersedes the earlier index-only brief: rooms are hosted on the platform external exchange, with per-person links, Non-confidential / Confidential / custom levels, a CDA entry step, view and download tracking, structured Q&A and email notifications. It writes `dataroom.v1` for Fundraise and Partnerships.
 
 ### BT2-09 — Lab Inventory (rank 9, Core)
 *Reagents and consumables, requests and reorders.*  
