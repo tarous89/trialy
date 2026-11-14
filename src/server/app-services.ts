@@ -1,3 +1,4 @@
+import {withResponseCancellation} from './response-cancellation.js';
 import {AutomationManagement} from '../automations/management.js';
 import express,{type Express,type RequestHandler} from 'express';
 import {rateLimit} from 'express-rate-limit';
@@ -26,7 +27,7 @@ export function addPublicAppServices(app:Express,db:Database,human:RequestHandle
   const result=await withActor(a,async()=>{const w=s.workspace_id;
    if(v.name==='open')return {component:c,workspaceId:w,mode:s.config.mode};
    if(args.componentId&&args.componentId!==c.id)fail(403,'share_scope','App is outside this link');
-   if(v.name==='run_component_frontend'){if(args.request?.componentId!==c.id||args.request?.previewId)fail(403,'share_scope','App is outside this link');return f.runFrontend(a,w,args.request);}
+   if(v.name==='run_component_frontend'){if(args.request?.componentId!==c.id||args.request?.previewId)fail(403,'share_scope','App is outside this link');return withResponseCancellation(res,signal=>f.runFrontend(a,w,args.request,signal));}
    if(v.name==='check_component_access')return f.checkComponentAccess(a,w,c.id,args.viewId?id.parse(args.viewId):undefined);
    if(v.name==='read_project_component')return f.readComponent(a,w,c.id,false);
    if(v.name==='list_tool_tables')return f.toolTables(a,w,c.id);

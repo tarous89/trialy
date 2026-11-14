@@ -8,6 +8,7 @@ import {AppPlatform,AppNavigation} from './AppPlatform.js';
 import {ConnectorReview} from './ConnectorsPanel.js';
 import {mergeTrackerSnapshot,SNAPSHOT_TTL} from './tracker-cache.js';
 import {FrontendReads} from './frontend-reads.js';
+import {retryFrontendBusy} from './frontend-retry.js';
 import {ChangeSummary} from './ChangeSummary.js';
 import {EmbeddedNavigation} from './ui/PageNavigation.js';
 import {TrackerRecordForm} from './TrackerRecordForm.js';
@@ -42,8 +43,12 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
  const localEditsRef=useRef(localEdits);localEditsRef.current=localEdits;
  const checking=useRef(false),eventQueue=useRef<any[]>([]),blocked=useRef(false),saveReceipt=useRef<any>(null),approvedAction=useRef<string|null>(null);
  const navigationReads=useRef(new FrontendReads());
+ const requests=useRef(new AbortController());
  // Track each foreground waiter, including a click joining an optional prefetch.
- const readFrontend=(request:any,options:WorkspaceRequestOptions={})=>withWorkspaceActivity(()=>navigationReads.current.run(request,request=>call('run_component_frontend',{request},{background:true}),!!output.current?.tracker),options);
+ const readFrontend=(request:any,options:WorkspaceRequestOptions={})=>{
+  const signal=options.signal??requests.current.signal;
+  return withWorkspaceActivity(()=>navigationReads.current.run(request,request=>retryFrontendBusy(request,()=>call('run_component_frontend',{request},{background:true,signal}),()=>live.current&&!signal.aborted),!!output.current?.tracker),options);
+ };
  function clearOutput(){cancelPrefetch();setSavedPhase(saveReceipt.current?.saved?'unavailable':null);setRecordReview(null);saveReceipt.current=null;approvedAction.current=null;setDetailsOpen(false);eventQueue.current=[];output.current=null;state.current=null;setFrameUrl('');setReady(false);setProposal(null);setFooter(null);setCustomDirty(false);blocked.current=false;navigationRef.current?.setDirty(false);}
  function revoke(){const saved=!!saveReceipt.current?.saved;clearOutput();setLoadFailed(true);if(!saved)onUnavailable?.('No app is available');}
  function viewRequest(c=current.current){return {componentId:c.id,expectedVersion:c.version,...(output.current?.viewId?{viewId:output.current.viewId}:{})};}
@@ -55,7 +60,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
   cancelPrefetch();busyRef.current=true;setBusy(true);
   try{
    const read=await call('read_project_component',{componentId:current.current.id}),next=read.component;
-   const result=await call('run_component_frontend',{request:{componentId:next.id,expectedVersion:next.version,event:{kind:'open'},...(navigationRef.current?{route:navigationRef.current.route}:{})}});
+   const result=await readFrontend({componentId:next.id,expectedVersion:next.version,event:{kind:'open'},...(navigationRef.current?{route:navigationRef.current.route}:{})});
    if(!live.current||afterSave&&saveReceipt.current!==receipt)return false;
    current.current=next;output.current=mergeTrackerSnapshot(null,result);state.current=result.state;setStandard(!!result.tracker);setFrameUrl(result.frameUrl);setProposal(result.proposal);setConnectorReviews(result.connectorReviews??[]);setFooter(null);setRecordReview(null);setCustomDirty(false);saveReceipt.current=null;setSavedPhase(null);blocked.current=!!result.proposal;eventQueue.current=[];setPublishedUpdate(false);setConfirmUpdate(false);setReviewProposal(false);setError('');setRetryEvent(null);setLoadFailed(false);setSchemaChanged(false);send();prefetch(result);onUpdated?.(next);return true;
   }catch(e){if(afterSave)throw e;if(live.current){setConfirmUpdate(false);setSchemaChanged((e as any)?.code==='manifest_stale');if(unavailable(e)){revoke();}else {setLoadFailed(!output.current);setError((e as Error).message||'The latest version could not load. Your work is still here.');}}}
@@ -139,7 +144,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
    if(result.proposal){blocked.current=true;eventQueue.current=[];}send();prefetch(result);
   }catch(e){if(live.current){setSchemaChanged((e as any)?.code==='manifest_stale');if(navigationRead(event)){
    if(unavailable(e)){clearOutput();setLoadFailed(true);onUnavailable?.('No app is available');}
-   else if(!output.current&&current.current)await loadPublished();
+   else if(!output.current&&current.current&&(e as any)?.code!=='runtime_busy')await loadPublished();
    else {setLoadFailed(!output.current);if(['app_view_expired','component_changed','app_view_incompatible'].includes((e as any)?.code))setPublishedUpdate(true);else {actionError(e);setRetryEvent(event);}}
   }else {actionError(e);if(event.action==='bound-batch'&&!saveReceipt.current)setRetryEvent(event);}}}finally{busyRef.current=false;onBusyChange?.(false);if(live.current){setBusy(false);frame.current?.contentWindow?.postMessage({kind:'trialy.save-idle',channel:channel.current,blocked:!!saveReceipt.current||!!proposal},'*');if(eventQueue.current.length&&!blocked.current)void run(eventQueue.current.shift());}}
  }
@@ -162,12 +167,12 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
    else{
     receipt.reloadRequest??={...viewRequest(),...(navigationRef.current?{route:navigationRef.current.route}:{}),state:{...state.current,settings:false,layoutDraft:null,detail:null,newRow:null},event:{kind:'open'}};
     let result;
-    try{result=await call('run_component_frontend',{request:receipt.reloadRequest});}catch(e){
+    try{result=await readFrontend(receipt.reloadRequest);}catch(e){
      // Renew an expired read lease without replaying the acknowledged action or
      // changing the loaded app version. Other failures retain the retry notice.
      if(!receipt.reloadRequest.viewId||!['app_view_expired','app_view_incompatible'].includes((e as any)?.code))throw e;
      const {viewId,...renewed}=receipt.reloadRequest;receipt.reloadRequest=renewed;
-     result=await call('run_component_frontend',{request:renewed});
+     result=await readFrontend(renewed);
     }
     if(!live.current||saveReceipt.current!==receipt)return false;
     result=mergeTrackerSnapshot(null,result);output.current=result;state.current=result.state;setFrameUrl(result.frameUrl);setSchemaChanged(false);send();prefetch(result);
@@ -180,7 +185,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
   setSavedPhase(null);setAdding(false);blocked.current=false;saveReceipt.current=null;frame.current?.contentWindow?.postMessage({kind:'trialy.save-idle',channel:channel.current,blocked:false},'*');return true;
  }
  async function retrySaved(latest=false){if(busyRef.current)return;if(latest&&saveReceipt.current?.saved)saveReceipt.current.reloadLatest=true;busyRef.current=true;setBusy(true);try{await finishSave();}catch(e){actionError(e);}finally{busyRef.current=false;if(live.current)setBusy(false);}}
- useEffect(()=>{live.current=true;if(initialOutput){output.current=mergeTrackerSnapshot(null,initialOutput);state.current=initialOutput.state;setStandard(!!initialOutput.tracker);setFrameUrl(initialOutput.frameUrl);setProposal(initialOutput.proposal);onBusyChange?.(false);prefetch(output.current);}else void run();return()=>{live.current=false;cancelPrefetch();};},[]);
+ useEffect(()=>{live.current=true;if(requests.current.signal.aborted)requests.current=new AbortController();if(initialOutput){output.current=mergeTrackerSnapshot(null,initialOutput);state.current=initialOutput.state;setStandard(!!initialOutput.tracker);setFrameUrl(initialOutput.frameUrl);setProposal(initialOutput.proposal);onBusyChange?.(false);prefetch(output.current);}else void run();return()=>{live.current=false;cancelPrefetch();requests.current.abort();};},[]);
  const [integration,setIntegration]=useState<{role:string}|null>(null);
  const [upload,setUpload]=useState<{context:string}|null>(null);
  const routeKey=JSON.stringify([navigation?.route,navigation?.reset]),lastRoute=useRef(routeKey),lastReset=useRef(navigation?.reset);

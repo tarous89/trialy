@@ -70,7 +70,7 @@ function expandWorkspace(){void bridge.requestDisplayMode({mode:'fullscreen'}).c
 // Present only in the Claude resource: Claude blocks nested frames from the platform origin, so apps render with srcdoc.
 function inlineFrameDocument(){try{const text=document.getElementById('trialy-frame-document')?.textContent;const value=text?JSON.parse(text):undefined;return typeof value==='string'?value:undefined;}catch{return undefined;}}
 function unwrap(result:any){if(result.isError)throw Object.assign(new Error(result.content?.find((c:any)=>c.type==='text')?.text??'The action could not complete.'),result.structuredContent?.error??{});return result.structuredContent?.result;}
-async function call(name:string,args:Record<string,unknown>={},options?:WorkspaceRequestOptions){return unwrap(await withWorkspaceActivity(()=>bridge.callServerTool({name,arguments:args}),workspaceRequestOptions(name,args,options)));}
+async function call(name:string,args:Record<string,unknown>={},options?:WorkspaceRequestOptions){return unwrap(await withWorkspaceActivity(()=>bridge.callServerTool({name,arguments:args},{signal:options?.signal}),workspaceRequestOptions(name,args,options)));}
 function Workspace(){
  const [trackerRoute,setTrackerRoute]=useState<AppRoute>({path:'/'});
  const [platform,setPlatform]=useState<{enabled:boolean;origin:string;frameDocument?:string}>(()=>({enabled:true,origin:__TRIALY_APP_URL__,frameDocument:inlineFrameDocument()}));
