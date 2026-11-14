@@ -17,7 +17,7 @@ export const guestBundle=z.object({
  name:z.string().trim().min(1).max(100),
  tables:z.array(z.object({id,name:z.string().min(1).max(100),fields:fieldsSchema,
  rows:z.array(z.object({id,data:draftValues}).strict()).max(200).default([])}).strict()).max(10).default([]),
- components:z.array(componentContent).min(1).max(10)
+ components:z.array(componentContent.extend({execution:componentContent.shape.execution.default([])})).min(1).max(10)
 }).strict().superRefine((v,ctx)=>{
  const ids=v.tables.flatMap(t=>[t.id,...t.rows.map(r=>r.id)]);
  if(new Set(ids).size!==ids.length)ctx.addIssue({code:'custom',message:'Use distinct draft table and record IDs'});

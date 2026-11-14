@@ -1,3 +1,4 @@
+import {withActor} from '../db/context.js';
 import {authorizeAppFunction} from '../app-services/service.js';
 import {requireWorkflow} from '../domain/effective-access.js';
 import {WorkspaceFoundation} from '../workspace/service.js';
@@ -33,16 +34,33 @@ export class Foundation {
   if(c.archived||c.project_archived||c.version!==context.version)fail(409,'component_changed','Component changed or was archived; review its execution binding again');
   const binding=c.execution.find((b:any)=>b.name===context.binding);
   if(!binding||binding.revisionId!==revisionId||(binding.grantId??null)!==(grantId??null))fail(403,'component_binding','Function or permission differs from reviewed component binding');
-  const r=await this.revision(a,w,binding.revisionId);if(c.source_access==='bindings'&&r.body.scope.documents)fail(403,'component_binding','Function document reads exceed component bindings');for(const typeId of r.body.scope.typeIds){const {type,policy}=await typeAccess(this.db,ai(a),w,typeId);const declared=c.bindings.find((b:any)=>b.typeId===typeId);if(!declared||visibleFields(type.fields,policy,ai(a)).some(f=>!declared.fields.includes(f.key)))fail(403,'component_binding','Function reads exceed current component bindings');}
+  const r=await this.revision(a,w,binding.revisionId);if(r.body.scope.appId&&r.body.scope.appId!==c.id)fail(403,'component_binding','Helper belongs to another app');if(c.source_access==='bindings'&&r.body.scope.documents)fail(403,'component_binding','Function document reads exceed component bindings');for(const typeId of r.body.scope.typeIds){const reader=r.body.scope.appId?{...ai(a),accessToolId:c.id}:ai(a);if(r.body.scope.appId&&r.body.scope.appId!==c.id)fail(403,'component_binding','Helper belongs to another app');const {type,policy}=await typeAccess(this.db,reader,w,typeId);const declared=c.bindings.find((b:any)=>b.typeId===typeId);if(!declared||visibleFields(type.fields,policy,reader).some(f=>!declared.fields.includes(f.key)))fail(403,'component_binding','Function reads exceed current component bindings');}
 
  }
  async validatePlanScope(a:Actor,w:string,scope:Scope){
   await this.policy(a,w);for(const typeId of scope.typeIds)if(!(await this.db.query('SELECT id FROM entity_types WHERE id=$1 AND workspace_id=$2',[typeId,w])).rows.length)fail(404,'not_found','Schema table unavailable');
  }
- async validateScope(a:Actor,w:string,scope:Scope){await this.policy(a,w);for(const t of scope.typeIds)await typeAccess(this.db,ai(a),w,t);}
+ async validateScope(a:Actor,w:string,scope:Scope){
+  if(scope.appId){const scoped={...ai(a),accessToolId:scope.appId};return withActor(scoped,async()=>{await this.policy(scoped,w);const c=await new WorkspaceFoundation(this.db).component(this.db,scoped,w,scope.appId!);if(c.archived||c.project_archived)fail(409,'app_archived','Restore the app before using its helpers');for(const t of scope.typeIds){if(!c.bindings.some((b:any)=>b.typeId===t))fail(403,'component_binding','Helper table is no longer bound to the app');await typeAccess(this.db,scoped,w,t);}});}
+  await this.policy(a,w);for(const t of scope.typeIds)await typeAccess(this.db,ai(a),w,t);
+ }
+ /** Internal app-save path: save immutable, read-only code under the SAME app approval. No execution or grant. */
+ async saveAppFunction(a:Actor,w:string,input:unknown,bindings:{typeId:string;fields:string[]}[]){
+  requireCurrentAction(a);const body=functionSchema.parse(input);if(!body.scope.appId||body.functionId||body.planningOnly)fail(400,'app_function','Use a new executable app-scoped read-only helper');
+  const p=await access(this.db,a,w,true);for(const typeId of body.scope.typeIds){if(!bindings.some(b=>b.typeId===typeId))fail(403,'function_binding','Helper table must be bound to this app');await typeAccess(this.db,a,w,typeId);}
+  const functionId=randomUUID(),revisionId=randomUUID(),digest=checksum(J({body,runtime:RUNTIME}));
+  await this.db.query('INSERT INTO foundation_functions(id,workspace_id,user_id,name) VALUES($1,$2,$3,$4)',[functionId,w,a.userId,body.name]);
+  await this.db.query('INSERT INTO foundation_revisions(id,function_id,version,body,digest,runtime) VALUES($1,$2,0,$3,$4,$5)',[revisionId,functionId,J(body),digest,RUNTIME]);
+  await audit(this.db,a,p,'function.saved',functionId,null,{functionId,revisionId,version:0,digest,appId:body.scope.appId});return {functionId,revisionId};
+ }
+ /** Inspect read-only app code for a human save/copy even when assistant execution is disabled. */
+ async appFunctionRevision(a:Actor,w:string,revisionId:string,appId:string){
+  await access(this.db,a,w);const r=(await this.db.query('SELECT r.* FROM foundation_revisions r JOIN foundation_functions f ON f.id=r.function_id WHERE r.id=$1 AND f.workspace_id=$2 AND f.user_id=$3',[revisionId,w,a.userId])).rows[0];
+  if(!r||r.body.scope?.appId!==appId)fail(403,'app_function','Not a helper owned by this app');await requireWorkflow(this.db,a,w,r.function_id);functionSchema.parse(r.body);return r;
+ }
  async enqueue(a:Actor,w:string,input:unknown,requestKey:string,revisionId?:string,scheduleId?:string,grantId?:string,componentContext?:{id:string;version:number;binding:string}){
   await this.checkComponent(a,w,componentContext,revisionId,grantId);if(revisionId){const rev=await this.revision(a,w,revisionId);await requireWorkflow(this.db,ai(a),w,rev.function_id,true);}
-  id.parse(requestKey);const program=programSchema.parse(input);await this.validateScope(a,w,program.scope);
+  id.parse(requestKey);const program=programSchema.parse(input);if(program.scope.appId&&(!revisionId||componentContext?.id!==program.scope.appId||grantId))fail(403,'component_binding','App helpers require their exact app binding without a grant');await this.validateScope(a,w,program.scope);
   const digest=checksum(J({program,revisionId:revisionId??null,grantId:grantId??null,componentContext:componentContext??null}));
   const existing=(await this.db.query('SELECT id,source_digest FROM foundation_runs WHERE user_id=$1 AND request_key=$2',[a.userId,requestKey])).rows[0];
   if(existing){if(existing.source_digest!==digest)fail(409,'request_conflict','Request ID already used for a different program');return {id:existing.id,workspaceId:w,status:'accepted'};}

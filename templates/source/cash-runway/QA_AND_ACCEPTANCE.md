@@ -2,7 +2,7 @@
 
 Validated against the repository host on 14 November 2026 with disposable PGlite databases and fictional data, not a deployed account. Scope: [RUNWAY.md §14](../../../docs/product/app-template-blueprints/apps/RUNWAY.md#14-runway-220--assistant-control-integrations-and-automations). The 2.1.0 validation is archived in [`archive/2.1.0/QA_AND_ACCEPTANCE.md`](archive/2.1.0/QA_AND_ACCEPTANCE.md); its tests still run against the archived 2.1.0 package.
 
-**Catalog status:** the owner approved 2.2.0 on 14 November 2026. `templates/catalog-seed.json` names 2.2.0, so the pre-deploy catalog sync inserts it as approved, and new installs get 2.2.0. Installed 2.1.0 apps are not migrated. App commands and Edit in App also need `APP_COMMANDS_ENABLED=true`; the recommended automations need `APP_AUTOMATION_RECIPES_ENABLED=true`.
+**Catalog status:** the owner approved 2.2.0 on 14 November 2026. `templates/catalog-seed.json` names 2.2.0, so the pre-deploy catalog sync inserts it as approved, and new installs get 2.2.0. Installed 2.1.0 apps are not migrated. App commands and Edit in App also need `APP_COMMANDS_ENABLED=true`; the recommended automations are offered at install (recipes are on by default since #176).
 
 ## Commands and outcomes
 

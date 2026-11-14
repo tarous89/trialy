@@ -1,3 +1,4 @@
+import {functionDeclarations} from './app-functions-schema.js';
 import {recipeDeclarations} from '../automations/recipes-schema.js';
 import {z} from 'zod';
 import {id,fail,type Actor} from '../shared/schema.js';
@@ -7,7 +8,7 @@ import {derived} from '../shared/formulas.js';
 import {isDeepStrictEqual} from 'node:util';
 import {roleDeclaration,roleKey} from './role-contracts.js';
 export const resourceKind=z.enum(['generic','tracker','form','visualization']);
-export const resourceManifest=z.object({...recipeDeclarations,automationRoles:z.record(roleKey,id).optional(),version:z.literal(1),scope:z.enum(['project','workspace']).default('project'),fields:z.array(z.object({id:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),typeId:id,field:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),schemaVersion:z.number().int().min(0),kind:z.string().min(1).max(30),mode:z.enum(['read','write']),label:z.string().min(1).max(100).optional()}).strict()).max(200),
+export const resourceManifest=z.object({...recipeDeclarations,...functionDeclarations,automationRoles:z.record(roleKey,id).optional(),version:z.literal(1),scope:z.enum(['project','workspace']).default('project'),fields:z.array(z.object({id:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),typeId:id,field:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),schemaVersion:z.number().int().min(0),kind:z.string().min(1).max(30),mode:z.enum(['read','write']),label:z.string().min(1).max(100).optional()}).strict()).max(200),
  /** Role keys with a versioned contract (modular apps §7.2). Same rules as template installer roles. */
  roles:z.array(roleDeclaration).max(50).optional()}).strict();
 export type Manifest=z.infer<typeof resourceManifest>;

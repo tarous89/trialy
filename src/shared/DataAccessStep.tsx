@@ -27,6 +27,7 @@ export function DataAccessDialog({step,onSave,onCancel}:{step:any;onSave:(choice
    </div></li>;})}</ul>}
   {subjects.length>0&&<><h3 className="ty-data-access-subhead">Who can use it</h3>
   <ul className="ty-data-access-list">{subjects.map((x:any)=><li key={x.id}><span>{x.name}</span><select aria-label={'Access for '+x.name} value={levels[x.id]} disabled={busy} onChange={e=>setLevels({...levels,[x.id]:e.target.value})}>{x.levels.map((l:string)=><option key={l} value={l}>{levelLabel[l]}</option>)}</select></li>)}</ul></>}
+  {!!step.functions?.length&&<details className="ty-app-functions"><summary>Includes {step.functions.length} read-only {step.functions.length===1?'function':'functions'} for app briefs and summaries</summary><ul>{step.functions.map((f:any)=><li key={f.name}>{f.purpose}</li>)}</ul><p>They can read this app’s permitted data. You control access in Access.</p></details>}
   {!!step.automations?.length&&<RecipeChoices recipes={step.automations} value={automations} onChange={setAutomations} recipient={step.automationRecipient} runners={step.automationRunners} disabled={busy}/>}
   {error&&<p role="alert">{error}</p>}
   <div className="ty-actions"><Button disabled={busy} onClick={onCancel}>Cancel</Button><Button variant="primary" disabled={busy} onClick={()=>void save()}>{busy?'Adding…':'Add app'}</Button></div>

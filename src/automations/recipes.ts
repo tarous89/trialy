@@ -15,7 +15,8 @@ import {AutomationService,adapter} from './service.js';
 import {actorAssistant,requireAutomationOwner} from './ownership.js';
 import {readRecipes,configuredRecipe,recipeSettings,type AutomationRecipe} from './recipes-schema.js';
 
-export const recipesEnabled=()=>process.env.APP_AUTOMATION_RECIPES_ENABLED==='true';
+/** On by default (owner decision, 14 Nov 2026); set APP_AUTOMATION_RECIPES_ENABLED=false only as an emergency off switch. */
+export const recipesEnabled=()=>process.env.APP_AUTOMATION_RECIPES_ENABLED!=='false';
 const canonical=(v:any):any=>Array.isArray(v)?v.map(canonical):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,canonical(v[k])])):v;
 export const recipeDigest=(v:unknown)=>checksum(JSON.stringify(canonical(v)));
 export const recipePreparation=z.object({appId:id,key:z.string().max(64),contextRecordId:id.optional(),settings:recipeSettings.default({})}).strict();

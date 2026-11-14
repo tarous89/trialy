@@ -1,3 +1,4 @@
+import {validateAppFunctions} from './app-functions-schema.js';
 import {validateRecipeDeclarations} from '../automations/recipes-schema.js';
 import {archivedTemplateApps} from './archive.js';
 import {requireCurrentAction} from '../domain/write-authorization.js';
@@ -20,6 +21,7 @@ export async function syncTemplateCatalog(db:Database){
  for(const file of (await readdir('templates/apps')).filter(n=>n.endsWith('.json'))){
   const raw=await readFile('templates/apps/'+file,'utf8'),input=JSON.parse(raw);validateRecipeDeclarations(input);const payload=appTemplateEntry.parse(input),digest=createHash('sha256').update(raw).digest('hex');
   const initial=seed[payload.id],schemaFile=installers[payload.id+'@'+payload.version],schema=schemaFile?JSON.parse(await readFile(schemaFile,'utf8')):{};
+  if(Buffer.byteLength(raw)>300000)throw Error('Template exceeds the 300,000-byte file budget: '+file);validateAppFunctions(input,Object.keys(schema));
   const status=initial?.version===payload.version?'approved':'draft';
   const old=(await db.query('SELECT digest,install_schema FROM app_template_catalog WHERE template_id=$1 AND version=$2',[payload.id,payload.version])).rows[0];
   if(old&&(old.digest!==digest||JSON.stringify(canonical(old.install_schema))!==JSON.stringify(canonical(schema))))throw Error('Published template versions are immutable: '+payload.id+'@'+payload.version);
@@ -84,7 +86,7 @@ export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,i
    roles.push(roleLabel(role,def,typeId));
   }
   if(new Set(fields.map(x=>x.id)).size!==fields.length)fail(500,'template_schema','Installer field identities collide');
-  const catalog=new AppTemplates(undefined,db),template=await catalog.read({templateId:v.templateId,version:v.version});
+  const catalog=new AppTemplates(undefined,db),template=await catalog.read({templateId:v.templateId,version:v.version,includeFunctionSource:true});
   const configuration:any={};
   if(template.options.tableMap)configuration.tableMap=JSON.stringify(map);
   const today=new Date().toISOString().slice(0,10);
@@ -92,7 +94,7 @@ export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,i
   if(template.options.planMonth)configuration.planMonth=today.slice(0,7);
   // createNew and sharedTables only steer installation above; the strict preparation schema accepts neither.
   const {createNew:_createNew,sharedTables:_sharedTables,...request}=v;
-  const operation=await catalog.operation(scoped,a,w,{...request,configuration,bindings,manifest:fields.length||template.recommendedAutomations||template.automationFeatures?{version:1,scope:'workspace',fields,...(template.recommendedAutomations?{recommendedAutomations:template.recommendedAutomations}:{}),...(template.automationFeatures?{automationFeatures:template.automationFeatures}:{}),...((template.recommendedAutomations||template.automationFeatures)?{automationRoles:Object.fromEntries(Object.entries(map).filter(([key])=>roleKey.safeParse(key).success).map(([key,value]:any)=>[key,value.typeId]))}:{}),...(roles.some(Boolean)?{roles:roles.filter(Boolean)}:{})}:undefined});
+  const operation=await catalog.operation(scoped,a,w,{...request,configuration,bindings,manifest:fields.length||template.functions.length||template.recommendedAutomations||template.automationFeatures?{version:1,scope:'workspace',fields,...(template.recommendedAutomations?{recommendedAutomations:template.recommendedAutomations}:{}),...(template.automationFeatures?{automationFeatures:template.automationFeatures}:{}),...((template.functions.length||template.recommendedAutomations||template.automationFeatures)?{automationRoles:Object.fromEntries(Object.entries(map).filter(([key])=>roleKey.safeParse(key).success).map(([key,value]:any)=>[key,value.typeId]))}:{}),...(roles.some(Boolean)?{roles:roles.filter(Boolean)}:{})}:undefined});
   // Approved immutable publisher source has already been reviewed; normal validation still runs.
   const draft=await scoped.preview(a,w,operation,true),preview=draft.reviewState==='draft'?(await scoped.finalizeAppPreview(a,w,draft.id,draft.digest)).preview:draft,saved=await scoped.confirm(a,w,preview.id,preview.digest);
   const result={appId:saved.id,workspaceId:w,url:appUrl({appId:saved.id,workspaceId:w,source:'component'}),templateRequestKey:v.requestKey,templateId:v.templateId,templateVersion:v.version,templateDigest:v.digest,name:v.name};

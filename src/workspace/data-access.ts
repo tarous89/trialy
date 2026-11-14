@@ -1,3 +1,4 @@
+import {readAppFunctions} from './app-functions-schema.js';
 import {readRecipes,recipeChoices} from '../automations/recipes-schema.js';
 import {recipesEnabled,installationRecipeIntent,saveRecipeIntent,recipeDigest,recipeSetupOptions} from '../automations/recipes.js';
 import {createHash} from 'node:crypto';
@@ -50,6 +51,7 @@ export async function dataAccessStep(f:WorkspaceFoundation,a:Actor,w:string,inpu
  const tables=(await sharedTableCandidates(f.db,a,w,row.install_schema)).map((r:any)=>({role:r.role,name:r.name,readOnly:r.readOnly,
   // Another app's read-only output cannot be created by this app; its second option is to not use it.
   alternative:r.readOnly?'skip':'new',candidates:r.candidates.map((c:any)=>({typeId:c.typeId,name:c.name,records:c.records,apps:c.apps})),choice:r.candidates[0].typeId}));
+ const functions=readAppFunctions(row.payload,Object.keys(row.install_schema??{})).functions.map(({name,purpose,scope})=>({name,purpose,scope}));
  const accessRows=await accessSection(f.db,a,w);
  const canAutomate=recipesEnabled()&&(await access(f.db,a,w)).role==='owner';
  const offers=canAutomate?readRecipes(row.payload):{recommended:[],unavailable:[]};
@@ -57,7 +59,7 @@ export async function dataAccessStep(f:WorkspaceFoundation,a:Actor,w:string,inpu
  const setupOptions=offers.recommended.length?await recipeSetupOptions(f.db,a,w):{runners:[]};
  const identity={runners:setupOptions.runners,automationRecipes:offers.recommended,templateDigest:row.digest,recipient:account?.email??null,install:{templateId:v.install.templateId,version:v.install.version},tables:tables.map(t=>[t.role,t.candidates.map((c:any)=>c.typeId)]),access:[accessRows.version,...[...accessRows.people,...accessRows.assistants].map((x:any)=>[x.id,x.level])]};
  // Shown when there are tables to connect, or when the signed-in owner can decide access before the app exists.
- return {app:v.install.name??row.payload?.name??v.install.templateId,needed:tables.length>0||accessRows.canChange||offers.recommended.length>0,automations:offers.recommended,automationRunners:setupOptions.runners,automationRecipient:account?.email??null,automationUnavailable:offers.unavailable,tables,access:accessRows,digest:createHash('sha256').update(JSON.stringify(identity)).digest('hex')};
+ return {app:v.install.name??row.payload?.name??v.install.templateId,functions,needed:functions.length>0||tables.length>0||accessRows.canChange||offers.recommended.length>0,automations:offers.recommended,automationRunners:setupOptions.runners,automationRecipient:account?.email??null,automationUnavailable:offers.unavailable,tables,access:accessRows,digest:createHash('sha256').update(JSON.stringify(identity)).digest('hex')};
 }
 
 function validate(step:any,choices:Record<string,string>){

@@ -1,6 +1,6 @@
 # Runway automations (2.2.0)
 
-Runway 2.2.0 declares four `recommendedAutomations` in its catalog entry. They are offered in the install dialog, all selected, while `APP_AUTOMATION_RECIPES_ENABLED` is on. Later they can be added from Automations → From app features, or by Claude or ChatGPT. Zero automations is fully supported: the app loads, calculates and saves without them, and a failing or disabled automation never changes it.
+Runway 2.2.0 declares four `recommendedAutomations` in its catalog entry. They are offered in the install dialog, all selected, unless an operator turned app automation recipes off (`APP_AUTOMATION_RECIPES_ENABLED=false`; on by default since #176). Later they can be added from Automations → From app features, or by Claude or ChatGPT. Zero automations is fully supported: the app loads, calculates and saves without them, and a failing or disabled automation never changes it.
 
 ## 1. Runway alert (`runway_below_target`, email)
 
