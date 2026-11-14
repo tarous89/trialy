@@ -116,7 +116,7 @@ Custom `frontend-js` app on the Vivid kit, theme **forest** (deal pack), declare
 1. **Set up:**
    - Add investor firms and contacts, or ask the assistant to propose them from Fundraise or a shareholder document.
    - Create a scheduled update: pick the template, sources, contacts and frequency.
-   - Saving creates the draft automation (the user confirms it once, as for every automation).
+   - Save the schedule record, then configure **Scheduled draft** in Automations → From app features, or through ChatGPT/Claude. The app may open that same platform editor. One exact approval enables the eligible automation; saving business data alone does not activate it, and setup failure does not roll back the schedule or break the app.
 2. **Scheduled draft:**
    - On the draft date the automation runs on the user's Claude or ChatGPT runner.
    - It reads the brief (template + rules), the allowed sources as of the period end, the previous sent update and its engagement.
@@ -230,14 +230,14 @@ Draft sources are read by the assistant under the user's access, not connected a
 
 - **App-level access as usual.** Updates are confidential. Sending needs the Access right "Send to people outside the workspace". Approvers are named per schedule.
 - **Claude and ChatGPT** (each user's connection) draft, design and revise updates; propose investors, contacts, templates and schedules; and summarise engagement. They read only what the user may read, and only the sources the schedule allows. They never approve, send, unsubscribe someone or see recipient links.
-- **Scheduled drafts.** They run as a TrialAgents automation on the runner of the assistant that created the schedule (Claude runner or ChatGPT). Each assistant owns its automations, per platform rules.
+- **Scheduled drafts.** They run as platform automations on the selected ready Claude or ChatGPT runner. Set up and activate them from Automations, ChatGPT or Claude under the [app automation scope](../../RECOMMENDED_AUTOMATIONS.md); existing owner and assistant ownership checks apply. Neither path grants authority to send an investor update.
 - **Recipients** see only their own page, the updates of that series sent to them, and their own ask responses.
 
 ---
 
 ## 11. Automations
 
-1. **Scheduled draft** (one per scheduled update, research worker on the user's Claude or ChatGPT runner): writes the draft for the period from the brief and sources and notifies the owner. Required for automatic drafts; created on schedule save and confirmed once.
+1. **Scheduled draft** (one per scheduled update, research worker on the user's Claude or ChatGPT runner): reusable `automationFeatures` recipe that drafts the period from the brief/sources and notifies the owner. Required for automatic drafts; configure and approve from Automations → From app features, ChatGPT or Claude after selecting the schedule record. The app can open the same editor. Deduplicate by installed app + feature + schedule record; missing runner or setup failure leaves the record usable and the automation pending. The saved platform automation is authoritative for execution timing; app schedule controls must use its versioned update flow, not a second scheduler.
 2. **Cadence reminder** (email to the owner, only if the template's `cadence_reminder` is on): no approved draft `cadence_reminder_days` before the send-by date, and again when overdue.
 3. **Not-read reminder** (only if the template's `not_read_reminder` is on): `not_read_after_days` after send, a list of non-readers is prepared. The reminder email is sent after confirmation, or automatically when `not_read_auto_send` is on (the owner pre-approves the text when turning it on).
 4. **Ask responses** (email to the owner, only if the app setting `asks_enabled` is on and the update has an asks section): an immediate notice per new "I can help".
@@ -283,7 +283,7 @@ Investor Updates never writes another app's own tables.
 - build `--check` and browser test
 
 **Acceptance (beyond the shared contract and exchange tests):**
-1. **Set up:** 3 firms with 5 contacts; a monthly board schedule with template, sources, contacts and frequency. Saving creates the draft automation after one confirmation.
+1. **Set up:** 3 firms with 5 contacts; a monthly board schedule with template, sources, contacts and frequency. Save the schedule and create/activate its draft automation through Automations → From app features; repeat through authorized ChatGPT/Claude setup. One exact approval activates eligible work; repeat setup reuses the definition and optional failure never loses the schedule record.
 2. **Scheduled draft:** the automation produces a draft with blocks, facts and asks on the draft date, and the owner is notified. "Draft now" from chat produces the same.
 3. **Fact panel:** a record-sourced number changed after the draft is flagged with both values. A number without a fact reference blocks approval. Unverified facts need the approver's tick.
 4. **Two-step approval, then send:** the preview is identical to the email received. Board and shareholder versions differ only by their hidden sections. A confirmed send creates one link per contact. The update locks and the PDF is filed.
@@ -292,7 +292,7 @@ Investor Updates never writes another app's own tables.
 7. **Unsubscribe** excludes the contact from the next send.
 8. **Settings and toggles:** the "I can help" button appears only in updates with an asks section. With the app setting off, no button or link appears and no responses are possible. With the not-read reminder off, no follow-up is prepared. With it on and auto-send on, the reminder goes out on day N with the pre-approved text. With the cadence reminder off, the owner gets no reminder.
 9. **Assistants** draft but cannot approve, send or see links; they read only the allowed sources.
-10. **Modularity and archiving:** the modularity test (rule 9) and archive-first checks pass. Archiving the app pauses its automations and stops the online links. Restoring re-enables them.
+10. **Modularity and archiving:** the modularity test (rule 9) and archive-first checks pass. Archiving the app pauses its automations and stops the online links. Restoring makes unexpired exchange links available again, but automations return disabled and require explicit resume.
 11. **Layout:** desktop 1440 and mobile 390, for both the app and the recipient page; the email renders in common clients (Gmail, Outlook, Apple Mail).
 
 **Open for design partners:** default templates and sections; whether boards want two-step approval; whether investors use "I can help".
