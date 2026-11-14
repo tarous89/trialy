@@ -34,7 +34,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | C4 | How to Use Claude for Biotech Cash Flow Forecasting | Published — live verified 14 November 2026; PR #205, release `0bb286174ad6c1a925fa427fb115de7640ef79f4` | https://trialagents.com/apps/biotech-cash-flow-forecasting-claude |
 | C5 | AI CFO vs AI-native financial planning app: what does a biotech startup need? | Published — live verified 14 November 2026; PR #206, release `3a7efd4acfc5578784bccd3c21e344dcbfa13c67` | https://trialagents.com/apps/ai-cfo-vs-financial-planning-app-biotech |
 | C6 | MCP-connected financial planning software for biotech: check scope before writes | Published — live verified 14 November 2026; PR #207, release `e8ed31e7e198641c7bbd1e78b69db395735dfd29` | https://trialagents.com/apps/mcp-financial-planning-software-biotech |
-| C7 | Can You Build a Custom Cash Runway App with ChatGPT or Claude? | Queued — verify and publish | — |
+| C7 | Can You Build a Custom Cash Runway App with ChatGPT or Claude? | In progress — scope and source preparation | — |
 | D1 | Best Cash Runway Software for Preclinical Biotech Startups | Queued — verify and publish | — |
 | D2 | Best Financial Planning Software for Clinical-Stage Biotechs | Queued — verify and publish | — |
 | D3 | Best Budgeting Software for Biotech Startups with Fewer Than 20 Employees | Queued — verify and publish | — |
@@ -693,3 +693,8 @@ PR #207 merged as `e8ed31e7e198641c7bbd1e78b69db395735dfd29` at approximately 07
 - **Evidence boundary:** primary-documentation comparison and proposed six-step workspace/write/recovery exercise, not an executed vendor or host acceptance test. Fictional EUR 40k payment timing arithmetic independently checked; genuine browser demo media is explicitly separate. Current MCP architecture, cfo.ai and LivePlan sources linked inline. No invented interfaces, benchmarks, host parity or standard 13-week feature claims. Refresh when catalog, host or vendor scope changes.
 
 This supersedes C6 source and merged-pending checkpoints. **27 published; 20 unfinished**, including owner-deferred A9. **Next eligible: C7, Can You Build a Custom Cash Runway App with ChatGPT or Claude?**, subject to fresh queue, evidence, duplicate and claim checks. Only C6 was newly published in this run. Search indexing, rankings and assistant citations remain unverified.
+
+
+### C7 execution claim — 14 November 2026
+
+C6 remains live (HTTP 200); public main is `e8ed31e7e198641c7bbd1e78b69db395735dfd29`; no unfinished Runway source PR found. Claim C7 on `content/runway-c7-custom-app-20261114`. Distinct intent: specify, review and verify a whole-app customization while preserving saved data and calculation semantics. This is not another host shortlist or forecast tutorial. No fresh host acceptance test will be claimed. Totals remain 27 published, 20 unfinished including deferred A9.
