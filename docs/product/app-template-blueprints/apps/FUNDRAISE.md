@@ -2,13 +2,13 @@
 
 *Investor pipeline for a round, from first contact to signed commitment.*
 
-**Status:** Final scope for build, 11 November 2026. Part of [Biotech apps v2](../BIOTECH_v2.md) (rank 3). Replaces the v1 `investor-crm` package as a new major version (`life.investor-crm` 2.0.0; display name **Fundraise**). No existing users; no migration needed.
+**Status:** Published 14 November 2026 as `life.investor-crm` 2.0.0 (display name **Fundraise**), replacing Investor CRM 1.0.1 (withdrawn by migration 072; installed 1.0.1 apps keep working). Final scope 11 November 2026, part of [Biotech apps v2](../BIOTECH_v2.md) (rank 3).
 
 **Governing contracts:** as for [Runway](RUNWAY.md) and [Programs](PROGRAMS.md), plus [modular apps and shared data](../../MODULAR_APPS_AND_SHARED_DATA.md) — in particular §4 core contract, §6 archive first and **§7 role-based connections**. They win on any conflict.
 
 **Update 12 Nov 2026 (platform PR #134, integrations):** connections to other apps use the **integration** pattern: Fundraise keeps its own tables for that data so users can enter it by hand, and offers one subtle line ("Works with Data Room. **Add Data Room**" / "Data Room is in your workspace. **Use its data**") rendered as a `data-trialy-integration` button; the platform opens the dialog. There is no "not connected" state. Build against guidance 1.3.20 or later and the contract registry (`read_app_template_guidance(resource:"contracts")`). If #134 is not merged when building, stop and ask.
 
-**Update 14 Nov 2026 (platform #168, #169, E5–E7; Partnerships 2.1.0 pattern):** the automations in §8 are install recommendations, on by default; research is weekly and stores its results in the app (proposed investors and a report, create only); one weekly digest email written by the app's read-only helper covers progress and research; no signed-commitment notice. Claude and ChatGPT can customize the app within fundraising (§8a). `dataroom.v1` gained `room_purpose` `partnering`. Built in [PR #137](https://github.com/tarous89/trialy/pull/137) and revised on this branch; 2.0.0 is still a draft (never imported, so the version stays 2.0.0).
+**Update 14 Nov 2026 (platform #168, #169, E5–E7; Partnerships 2.1.0 pattern):** the automations in §8 are install recommendations, on by default; research is weekly and stores its results in the app (proposed investors and a report, create only); one weekly digest email written by the app's read-only helper covers progress and research; no signed-commitment notice. Claude and ChatGPT can customize the app within fundraising (§8a). `dataroom.v1` gained `room_purpose` `partnering`. Built in [PR #137](https://github.com/tarous89/trialy/pull/137) and revised and **published on 14 Nov 2026** (owner approval; never imported before, so the version stays 2.0.0; migration 072 withdraws 1.0.1).
 
 **Decisions (11 Nov 2026):** no built-in investor database (own list + assistant research); light term-sheet fields for comparing offers; strategic/pharma investors and public equity funds are investor types (grants stay in Grants, 19); no email integration (assistants log from the user's own connected mail/calendar for review); several rounds over time with shared investor history; **Data Room connection by role, not by install bundle**; cap table summary and post-round investor updates belong to Investor Updates (06).
 
@@ -213,7 +213,7 @@ Integrations follow the platform pattern: own data first, one subtle `data-trial
 
 ## 12. Package checklist and acceptance criteria
 
-**Package:** new immutable `templates/apps/life.investor-crm-2.0.0.json` (draft until approved); installer schema with roles, `contract`, `optional`, `integration` as in §5, and `fundraise.tranches` matching the registry entry in `templates/contracts/outputs.json`; full `catalog.metadata.json` documentation (including the `dataroom.v1` contract it reads and the `fundraise.tranches` output it publishes); fictional `demo_data.json`; `templateLayoutSchema` with the seven ids; reviewed draft forms; build `--check`; browser test.
+**Package:** new immutable `templates/apps/life.investor-crm-2.0.0.json` (published 14 Nov 2026); installer schema with roles, `contract`, `optional`, `integration` as in §5, and `fundraise.tranches` matching the registry entry in `templates/contracts/outputs.json`; full `catalog.metadata.json` documentation (including the `dataroom.v1` contract it reads and the `fundraise.tranches` output it publishes); fictional `demo_data.json`; `templateLayoutSchema` with the seven ids; reviewed draft forms; build `--check`; browser test.
 
 **Acceptance (beyond the shared contract):**
 1. Only signed commitments count as raised; verbal and soft are shown separately; the sum reconciles with a hand-checked fictional round.

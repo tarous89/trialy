@@ -118,5 +118,9 @@
   "life.partnership-tracker@2.1.0": {
     "catalogDigest": "a521df7dbb933b4353ea75fddbadfb6bbad28aaa195b2fbe74b211c7989f85d5",
     "previewSha256": "981d8777bd4672e3beb09062e2f1b8924b68071e5b9e338cb203afb92a58e77a"
+  },
+  "life.investor-crm@2.0.0": {
+    "catalogDigest": "97a232ae640935ff851665cb69d02b013725929beaf30028fc173cc882a34362",
+    "previewSha256": "4e70760128dfe71df83a05981e48f63db40f5bac7395ff8a7fc0b275601da483"
   }
 }

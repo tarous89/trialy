@@ -12,6 +12,8 @@ Data Room (`life.data-room`) 1.0.0 was added on 13 November 2026 as a draft, bui
 
 Partnerships (`life.partnership-tracker`) 2.1.0 was approved by the owner on 14 November 2026 in place of Partnership Tracker 1.1.1. The first build, 2.0.0 (#164), had already been imported as a draft, and a published row never changes, so the revision with the platform automation declarations and customization ships as 2.1.0. 2.0.0 stays a draft with its files under `templates/source/partnership-tracker/archive/2.0.0/`. The seed names 2.1.0, so the catalog sync that runs after migrations imports it approved. One-time migration 071 withdraws 1.1.1, and its gallery card and media were updated. Installed 1.1.1 apps keep their saved source and data.
 
+Fundraise (`life.investor-crm`) 2.0.0 was approved by the owner on 14 November 2026 in place of Investor CRM 1.0.1. 2.0.0 had never been imported (PR #137 was revised before merging), so the version stays 2.0.0: the seed names it, the catalog sync after migrations imports it approved, and migration 072 withdraws 1.0.1 once (listed in `catalog-retirements.json`). Installed 1.0.1 apps keep their saved source and data; the 1.0.1 JSON is unchanged and its package is archived under `templates/source/investor-crm/archive/1.0.1/`. Note that main has two migrations numbered 071 (`071_app_function_dependencies.sql`, `071_approve_partnerships_2_1_0.sql`); both run, in file-name order.
+
 For CRO Selection, when the owner approves 2.0.0, the publication change does four things:
 - names 2.0.0 in the seed;
 - adds a one-time migration that approves the 2.0.0 draft row and sets both retired versions to `draft` (withdrawn);

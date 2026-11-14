@@ -64,8 +64,8 @@
     "version": "1.0.2"
   },
   "life.investor-crm": {
-    "schema": "templates/source/investor-crm/archive/1.0.1/schema.example.json",
-    "version": "1.0.1"
+    "schema": "templates/source/investor-crm/schema.example.json",
+    "version": "2.0.0"
   },
   "life.cro-rfp-management": {
     "schema": "templates/source/cro-rfp-management/schema.example.json",

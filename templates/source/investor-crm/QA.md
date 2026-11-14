@@ -2,7 +2,7 @@
 
 Validated on 12 November 2026 against the repository host with disposable PGlite databases and fictional data, not a deployed account. Guidance: `read_app_template_guidance` reports version **1.3.20** (authoring, including "Role-based connections and existing data" → Integrations) and the contract registry `resource:"contracts"` (registry version 2026-11-11, sha256 `375b056c…`), identical to `templates/TEMPLATE_AUTHORING.md` and `templates/contracts/outputs.json` on `main` after PR #134.
 
-**Catalog status:** 2.0.0 is a **draft** catalog version until the owner approves it. `templates/catalog-seed.json` still names 1.0.1 (its schema path now points at `archive/1.0.1/`, same bytes), so the catalog sync inserts 2.0.0 as draft. The 1.0.1 catalog JSON and digest are unchanged; its source package is archived byte-for-byte under `archive/1.0.1/`, and its installer, seed and test paths point there. Tests approve 2.0.0 only inside their own databases.
+**Catalog status:** **published** (owner approval, 14 November 2026). `templates/catalog-seed.json` names 2.0.0, so the catalog sync after migrations imports it approved; migration 072 withdraws Investor CRM 1.0.1 once. The 1.0.1 JSON and digest are unchanged and its package is archived under `archive/1.0.1/`; installed 1.0.1 apps keep working. Gallery: `resources/template-gallery/life.investor-crm@2.0.0.jpg` and its manifest entry.
 
 ## Revision of 14 November 2026 (current platform)
 

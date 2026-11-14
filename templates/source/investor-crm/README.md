@@ -2,7 +2,7 @@
 
 Investor pipeline for a round, from first contact to signed commitment. Scope: [FUNDRAISE.md](../../../docs/product/app-template-blueprints/apps/FUNDRAISE.md). It follows [modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md) (§4 core contract, §6 archive first, §7 role-based connections and in-app integrations) and template guidance 1.3.20, revised on 14 November 2026 for 1.3.27–1.3.30 (install recommendations, results saved in the app, run-time fields, installed app helpers) and AI-native customization. It replaces Investor CRM 1.0.1 as a new major version; the released 1.0.1 catalog JSON is unchanged and its source package is archived byte-for-byte under [`archive/1.0.1/`](archive/1.0.1/). Saved 1.0.1 apps are not migrated.
 
-**Catalog status:** 2.0.0 is a **draft** catalog version until the owner approves it. `templates/catalog-seed.json` still names 1.0.1, so galleries and `list_app_templates` keep showing 1.0.1; tests approve 2.0.0 only inside their disposable databases.
+**Catalog status:** **published** (owner approval, 14 November 2026). `templates/catalog-seed.json` names 2.0.0, so the catalog sync after migrations imports it approved; migration 072 withdraws Investor CRM 1.0.1 once. The 1.0.1 JSON and digest are unchanged and its package is archived under `archive/1.0.1/`; installed 1.0.1 apps keep working. Gallery: `resources/template-gallery/life.investor-crm@2.0.0.jpg` and its manifest entry.
 
 ## Files
 

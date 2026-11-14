@@ -40,7 +40,7 @@ async function suite(){
  await pg.query('INSERT INTO users(id,subject,email,name) VALUES($1::uuid,$1::text,$2,$3)',[human.userId,'cfo@northwind.invalid','CFO (fictional)']);
  await pg.query("INSERT INTO oauth_tokens(hash,user_id,client_id,kind,family,expires_at) VALUES($1,$2,$3,'refresh',$4,$5)",[randomUUID(),human.userId,ai.clientId,ai.connectionFamily,Date.now()+86400000]);
  await syncTemplateCatalog(raw);
- // Fundraise 2.0.0 is a draft in the repository catalog; it is approved only inside this disposable database.
+ // Fundraise 2.0.0 is approved by the seed (owner approval, 14 Nov 2026); the update keeps this setup independent of it.
  await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.investor-crm' AND version='2.0.0'");
  const f=new WorkspaceFoundation(db),s=new Service(db),F=await new AppTemplates(undefined,db).read({templateId:'life.investor-crm',version:'2.0.0'});
  const install=async(w:string,name:string,choose=true)=>{const target={install:{templateId:F.id,version:F.version,digest:F.digest,name,requestKey:randomUUID()}};const step=await dataAccessStep(f,human,w,target);
