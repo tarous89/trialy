@@ -41,6 +41,12 @@ Add optional `recommendedAutomations` to the catalog for complete install recomm
 - Validate new declarations during build and catalog approval/load. Existing catalog entries without declarations remain valid. A bad optional declaration is localized to that template's automation offer; it must not crash the gallery or prevent an otherwise valid app from being installed without automations. Do not claim invalid recommendations were approved or activated.
 - New immutable template versions carry new declarations; do not rewrite deployed payloads, approvals or existing user automations.
 
+### Helper and connector permissions
+
+Owner clarification, 14 November 2026: app-level access is the outer boundary, with ultimate user control through Access and the existing database/assistant/connector controls. Each helper/action declares the capabilities it needs, and its actual authority is limited to those reviewed capabilities, the app's bound data, current actor access and the applicable exact approval or scoped grant. Denials and revocation remain authoritative. App edit access is not blanket consent to arbitrary external writes or background execution; the same setup approval may include the exact displayed action and required app result-write grants.
+
+Generic helpers and connectors need not be read-only. Existing write-capable functions/actions and connector operations remain supported through their established authorization paths. `research.briefBinding` and `email.summaryBinding` specifically stay read-only because they prepare context and format results; use a distinct approved write action for mutations. The proposed E7 catalog-function installation must not turn this specific contract into a platform-wide read-only restriction. E7 and any broader catalog write-helper support remain unimplemented until separately shipped; this clarification changes no installed app, existing grant or recipient authorization.
+
 ## 3. Concise install popup
 
 Use the existing shared install dialog with a compact **Automations** section below data and access. Show it whenever install recommendations exist, including when there are no existing tables to connect. Omit it for apps without recommendations.

@@ -18,3 +18,9 @@ TrialAgents apps should work inside ChatGPT, inside Claude and standalone on the
 Platform tabs use native page controls near the top, kept visible while scrolling where practical, following Database and Access. Do not add floating Save footers to ordinary platform or app editing pages. The exception is first publication of a new preview: the host shows a dark floating footer with Save app and Discard app, in both the website and ChatGPT extension.
 
 Apps own their save behavior. Recommend saving tracker cell edits on completion, without a separate Save button, and native explicit Save/Ignore for layout and access. These are template recommendations, not platform-enforced UI. Custom apps can choose an appropriate interaction. First-time app publication uses that trusted preview approval footer; later app revisions retain native review controls. Preserve exact backend proposals, confirmation or authorized grants, optimistic versions, permissions and audit logs; a failed save retains the draft and supports safe retry.
+
+## App actions and automations
+
+Read current template and automation guidance before adding services. Research/drafting automations must save results in the app database; the required scoped writes are included in the same exact install/setup approval, with no separate write opt-in. Missing writable storage leaves Needs setup while the app remains usable. A research automation may include an email step; email failure never reruns research.
+
+The owner controls app access, with database, assistant, connector and approved-action restrictions still enforced. Helpers may use existing approved write-function/action paths when needed; app edit access alone is not blanket execution authority. Brief and email-summary bindings specifically stay read-only. Do not claim proposed catalog helper installation is available before it ships, or change existing grants/paused states through a documentation update.
