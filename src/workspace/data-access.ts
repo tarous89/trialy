@@ -1,3 +1,5 @@
+import {readRecipes,recipeChoices} from '../automations/recipes-schema.js';
+import {recipesEnabled,installationRecipeIntent,saveRecipeIntent,recipeDigest,recipeSetupOptions} from '../automations/recipes.js';
 import {createHash} from 'node:crypto';
 import {z} from 'zod';
 import type {Database,Connection} from '../db/database.js';
@@ -24,7 +26,7 @@ const connections=z.record(roleKey,z.union([id,z.literal('new')])).default({});
 const accessLevels=z.array(z.object({subject:z.union([id,z.literal('chatgpt'),z.literal('claude')]),level:z.enum(['none','view','edit','read','propose'])}).strict()).max(500).default([]);
 export const dataAccessTarget=z.object({install}).strict();
 export const dataAccessPrepareShape={install,connections};
-export const dataAccessCommitShape={install,connections,access:accessLevels,stepDigest:digest64};
+export const dataAccessCommitShape={install,connections,access:accessLevels,automations:recipeChoices.optional(),stepDigest:digest64};
 const prepareInput=z.object(dataAccessPrepareShape).strict(),commitInput=z.object(dataAccessCommitShape).strict();
 const tx=(db:Connection):Database=>({query:db.query.bind(db) as any,transaction:fn=>fn(db),close:async()=>{}});
 
@@ -43,15 +45,19 @@ async function accessSection(db:Connection,a:Actor,w:string){
 /** The existing tables an installation can connect to (one row per role) and who can use the app. Skipped when there is nothing to decide. */
 export async function dataAccessStep(f:WorkspaceFoundation,a:Actor,w:string,input:unknown){
  const v=dataAccessTarget.parse(input);
- const row=(await f.db.query("SELECT install_schema,payload FROM app_template_catalog WHERE template_id=$1 AND version=$2 AND status='approved'",[v.install.templateId,v.install.version])).rows[0];
+ const row=(await f.db.query("SELECT install_schema,payload,digest FROM app_template_catalog WHERE template_id=$1 AND version=$2 AND status='approved'",[v.install.templateId,v.install.version])).rows[0];
  if(!row)fail(404,'not_found','Template unavailable');
  const tables=(await sharedTableCandidates(f.db,a,w,row.install_schema)).map((r:any)=>({role:r.role,name:r.name,readOnly:r.readOnly,
   // Another app's read-only output cannot be created by this app; its second option is to not use it.
   alternative:r.readOnly?'skip':'new',candidates:r.candidates.map((c:any)=>({typeId:c.typeId,name:c.name,records:c.records,apps:c.apps})),choice:r.candidates[0].typeId}));
  const accessRows=await accessSection(f.db,a,w);
- const identity={install:{templateId:v.install.templateId,version:v.install.version},tables:tables.map(t=>[t.role,t.candidates.map((c:any)=>c.typeId)]),access:[accessRows.version,...[...accessRows.people,...accessRows.assistants].map((x:any)=>[x.id,x.level])]};
+ const canAutomate=recipesEnabled()&&(await access(f.db,a,w)).role==='owner';
+ const offers=canAutomate?readRecipes(row.payload):{recommended:[],unavailable:[]};
+ const account=offers.recommended.length?(await f.db.query('SELECT email FROM users WHERE id=$1',[a.userId])).rows[0]:null;
+ const setupOptions=offers.recommended.length?await recipeSetupOptions(f.db,a,w):{runners:[]};
+ const identity={runners:setupOptions.runners,automationRecipes:offers.recommended,templateDigest:row.digest,recipient:account?.email??null,install:{templateId:v.install.templateId,version:v.install.version},tables:tables.map(t=>[t.role,t.candidates.map((c:any)=>c.typeId)]),access:[accessRows.version,...[...accessRows.people,...accessRows.assistants].map((x:any)=>[x.id,x.level])]};
  // Shown when there are tables to connect, or when the signed-in owner can decide access before the app exists.
- return {app:v.install.name??row.payload?.name??v.install.templateId,needed:tables.length>0||accessRows.canChange,tables,access:accessRows,digest:createHash('sha256').update(JSON.stringify(identity)).digest('hex')};
+ return {app:v.install.name??row.payload?.name??v.install.templateId,needed:tables.length>0||accessRows.canChange||offers.recommended.length>0,automations:offers.recommended,automationRunners:setupOptions.runners,automationRecipient:account?.email??null,automationUnavailable:offers.unavailable,tables,access:accessRows,digest:createHash('sha256').update(JSON.stringify(identity)).digest('hex')};
 }
 
 function validate(step:any,choices:Record<string,string>){
@@ -75,6 +81,9 @@ export async function confirmDataAccess(f:WorkspaceFoundation,a:Actor,w:string,i
  const v=commitInput.parse(input);
  if(!v.install.digest||!v.install.requestKey||!v.install.name)fail(400,'install_request','Installation needs the template digest, name and request key');
  return f.db.transaction(async t=>{
+  await access(t,a,w,true);await t.query('SELECT pg_advisory_xact_lock(hashtext($1))',[a.userId+':'+w+':'+v.install.requestKey]);
+  const requestDigest=recipeDigest(v),replay=(await t.query("SELECT digest,result FROM workspace_receipts WHERE workspace_id=$1 AND user_id=$2 AND result->>'dataAccessRequestKey'=$3",[w,a.userId,v.install.requestKey])).rows[0];
+  if(replay){if(replay.digest!==requestDigest)fail(409,'receipt_conflict','Request differs from its saved installation');return replay.result;}
   const sf=new WorkspaceFoundation(tx(t)),step=await dataAccessStep(sf,a,w,{install:v.install});
   if(step.digest!==v.stepDigest)fail(409,'data_access_changed','Your tables changed. Review the choice again.');
   validate(step,v.connections);
@@ -87,6 +96,18 @@ export async function confirmDataAccess(f:WorkspaceFoundation,a:Actor,w:string,i
   if(changes.length){if(!step.access.canChange)fail(403,'human_required','Change access in your signed-in owner session on the TrialAgents website.');await new AccessGrid(tx(t)).save(a,w,{expectedVersion:(await access(t,a,w)).access_version,changes});}
   await audit(t,a,await access(t,a,w),'workspace.data_access_step',receipt.appId,null,{tables:sharedTables,access:changes.map(c=>({subject:c.subject,read:c.read,write:c.write}))});
   await t.query("DELETE FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND body->'operation'->>'kind'='data_access_step'",[w,a.userId]);
-  return receipt;
+  const selections=v.automations??[];
+  if(selections.some(x=>!step.automations.some((r:any)=>r.key===x.key)))fail(409,'recipes_changed','Review the app automations again');
+  const setups:any[]=[];if(selections.some(x=>x.enabled)){
+   for(const choice of selections.filter(x=>x.enabled)){const recipe=step.automations.find((r:any)=>r.key===choice.key)!;
+    // An opted-out parent leaves its follow-up unselected, never an independent email schedule.
+    if(recipe.trigger.kind==='after'&&!selections.some(x=>x.enabled&&x.key===(recipe.trigger as any).recipe)){setups.push({key:recipe.key,status:'opted_out',reason:'parent_not_selected'});continue;}
+    setups.push({key:recipe.key,...await saveRecipeIntent(tx(t),a,w,receipt.appId,installationRecipeIntent(recipe,choice.settings,step,i.digest!))});
+   }
+  }
+  for(const recipe of step.automations)if(!selections.some(x=>x.key===recipe.key&&x.enabled))setups.push({key:recipe.key,status:v.automations===undefined?'not_reviewed':'opted_out'});
+  const result={...receipt,dataAccessRequestKey:v.install.requestKey,automations:setups,automationStatus:setups.some(x=>x.status==='pending')?'pending':'none'};
+  await t.query('INSERT INTO workspace_receipts(id,workspace_id,user_id,digest,result) VALUES(gen_random_uuid(),$1,$2,$3,$4)',[w,a.userId,requestDigest,JSON.stringify(result)]);
+  return result;
  });
 }

@@ -1,3 +1,4 @@
+import {validateRecipeDeclarations} from '../automations/recipes-schema.js';
 import {archivedTemplateApps} from './archive.js';
 import {requireCurrentAction} from '../domain/write-authorization.js';
 import {randomUUID,createHash} from 'node:crypto';
@@ -10,14 +11,14 @@ import {Service} from '../domain/service.js';
 import {WorkspaceFoundation} from './service.js';
 import {AppTemplates,appTemplateEntry} from './app-templates.js';
 import {appUrl} from '../shared/app-route.js';
-import {contractRegistry,readerAccepts,roleTables,outputWriter} from './role-contracts.js';
+import {contractRegistry,readerAccepts,roleTables,outputWriter,roleKey} from './role-contracts.js';
 
 /** Migration/operator connection only. Existing status is never reset on deploy. */
 export async function syncTemplateCatalog(db:Database){
  const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));
  const installers=JSON.parse(await readFile('templates/catalog-installers.json','utf8'));
  for(const file of (await readdir('templates/apps')).filter(n=>n.endsWith('.json'))){
-  const raw=await readFile('templates/apps/'+file,'utf8'),payload=appTemplateEntry.parse(JSON.parse(raw)),digest=createHash('sha256').update(raw).digest('hex');
+  const raw=await readFile('templates/apps/'+file,'utf8'),input=JSON.parse(raw);validateRecipeDeclarations(input);const payload=appTemplateEntry.parse(input),digest=createHash('sha256').update(raw).digest('hex');
   const initial=seed[payload.id],schemaFile=installers[payload.id+'@'+payload.version],schema=schemaFile?JSON.parse(await readFile(schemaFile,'utf8')):{};
   const status=initial?.version===payload.version?'approved':'draft';
   const old=(await db.query('SELECT digest,install_schema FROM app_template_catalog WHERE template_id=$1 AND version=$2',[payload.id,payload.version])).rows[0];
@@ -91,7 +92,7 @@ export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,i
   if(template.options.planMonth)configuration.planMonth=today.slice(0,7);
   // createNew and sharedTables only steer installation above; the strict preparation schema accepts neither.
   const {createNew:_createNew,sharedTables:_sharedTables,...request}=v;
-  const operation=await catalog.operation(scoped,a,w,{...request,configuration,bindings,manifest:fields.length?{version:1,scope:'workspace',fields,...(roles.some(Boolean)?{roles:roles.filter(Boolean)}:{})}:undefined});
+  const operation=await catalog.operation(scoped,a,w,{...request,configuration,bindings,manifest:fields.length||template.recommendedAutomations||template.automationFeatures?{version:1,scope:'workspace',fields,...(template.recommendedAutomations?{recommendedAutomations:template.recommendedAutomations}:{}),...(template.automationFeatures?{automationFeatures:template.automationFeatures}:{}),...((template.recommendedAutomations||template.automationFeatures)?{automationRoles:Object.fromEntries(Object.entries(map).filter(([key])=>roleKey.safeParse(key).success).map(([key,value]:any)=>[key,value.typeId]))}:{}),...(roles.some(Boolean)?{roles:roles.filter(Boolean)}:{})}:undefined});
   // Approved immutable publisher source has already been reviewed; normal validation still runs.
   const draft=await scoped.preview(a,w,operation,true),preview=draft.reviewState==='draft'?(await scoped.finalizeAppPreview(a,w,draft.id,draft.digest)).preview:draft,saved=await scoped.confirm(a,w,preview.id,preview.digest);
   const result={appId:saved.id,workspaceId:w,url:appUrl({appId:saved.id,workspaceId:w,source:'component'}),templateRequestKey:v.requestKey,templateId:v.templateId,templateVersion:v.version,templateDigest:v.digest,name:v.name};

@@ -16,3 +16,20 @@
 .ty-integration-options input{width:auto!important;margin:3px 0 0!important;flex-shrink:0}
 .ty-integration-options span{display:flex;flex-direction:column;gap:2px;min-width:0}
 .ty-integration-options small{color:#5d6b63;font-size:12px;overflow-wrap:anywhere}
+
+.ty-recipe-choices{min-width:0}.ty-data-access-list>li.ty-recipe-row{display:block}.ty-recipe-line{display:flex;align-items:center;gap:12px;justify-content:space-between}.ty-recipe-line>label{display:flex;align-items:flex-start;gap:10px;min-width:0}.ty-recipe-line input[type=checkbox]{width:16px;height:16px;flex-shrink:0;margin-top:3px}.ty-recipe-line small{display:block;font-size:12px;font-weight:400;opacity:.75;overflow-wrap:anywhere}.ty-recipe-editor{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0 0 26px}.ty-recipe-editor p{flex-basis:100%;margin:0}.ty-recipe-editor label{display:flex;flex-direction:column;gap:4px;max-width:100%;min-width:0}.ty-recipe-editor input,.ty-recipe-editor select{max-width:100%;box-sizing:border-box}.ty-recipe-line button{flex-shrink:0}.ty-data-access{max-height:calc(100dvh - 40px);overflow-y:auto}@media(max-width:480px){.ty-recipe-editor{margin-left:0}.ty-recipe-editor label{flex:1 1 130px}}
+/* Keep the install choice compact inside the platform's general form styles. */
+.ty-workspace .ty-recipe-choices{padding:0;border:0;background:transparent;margin:0}
+.ty-workspace .ty-recipe-choices .ty-recipe-line>label:not(.ty-search){flex-direction:row;align-items:flex-start;gap:10px;margin:0;padding:0;font-size:14px;line-height:1.4;cursor:pointer}
+.ty-workspace .ty-recipe-choices .ty-recipe-line input[type=checkbox]{width:16px;height:16px;padding:0;margin:2px 0 0;accent-color:#087b50}
+.ty-workspace .ty-recipe-choices .ty-recipe-line button{border:0;background:transparent;min-height:32px;padding:4px 0 4px 8px;box-shadow:none;font-size:13px}
+.ty-workspace .ty-recipe-choices .ty-recipe-row{padding:8px 0}
+.ty-workspace .ty-recipe-choices .ty-automation-help{font-size:12px;line-height:1.5;margin:8px 0 12px}
+.ty-workspace .ty-recipe-choices .ty-recipe-editor>label:not(.ty-search){margin:0;gap:5px;font-size:12px}
+.ty-workspace .ty-recipe-editor>p{margin:0 0 4px;font-size:13px}
+.ty-workspace .ty-recipe-choices label.ty-recipe-runner:not(.ty-search){margin:12px 0;font-size:12px;gap:5px}
+.ty-workspace .ty-app-automation-feature>h1,.ty-workspace .ty-app-automation-feature>p,.ty-workspace .ty-app-automation-feature>.ty-recipe-choices,.ty-workspace .ty-app-automation-feature>.ty-actions{grid-column:1/-1}
+.ty-workspace .ty-app-automation-feature>.ty-button{justify-self:start}
+.ty-workspace .ty-recipe-review{display:block}.ty-workspace .ty-recipe-review details{margin:16px 0}
+
+.ty-workspace .ty-app-automation-feature>label{display:flex;flex-direction:column;gap:6px;margin:8px 0;min-width:0}.ty-workspace .ty-app-automation-feature>label select{width:100%}

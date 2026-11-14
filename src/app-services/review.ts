@@ -1,6 +1,6 @@
 import {fail,assistantOf,ASSISTANT_NAMES,type Actor,type Assistant} from '../shared/schema.js';
 
-export type ServiceReviewKind='automation_setup'|'monitoring'|'action'|'automation_control';
+export type ServiceReviewKind='automation_setup'|'monitoring'|'action'|'automation_control'|'automation_recipe';
 const canonical=(value:any):any=>Array.isArray(value)?value.map(canonical):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(k=>[k,canonical(value[k])])):value;
 
 // Stable across JSONB's key ordering; includes the exact scope and destination.

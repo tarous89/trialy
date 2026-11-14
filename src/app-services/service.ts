@@ -1,3 +1,6 @@
+import {validateSummary} from '../automations/summary.js';
+import {meaningfulRun} from '../automations/run-data.js';
+import {localDay} from '../shared/schedules.js';
 import {chatServiceReview,checkServiceReview} from './review.js';
 import {randomUUID} from 'node:crypto';
 import {z} from 'zod';
@@ -26,6 +29,7 @@ export function nextAction(config:ActionConfig,after=new Date()):Date|null{
  const t=config.trigger;if(t.kind==='manual')return null;if(t.kind==='once')return new Date(t.at);if(t.kind==='interval')return new Date(after.getTime()+t.minutes*60000);
  if(t.kind==='calendar'){if(t.frequency)return nextCalendar({...t,frequency:t.frequency,anchor:t.anchor!},after);let n=after;for(let i=0;i<8;i++){n=nextDaily(t,n);const weekday=new Intl.DateTimeFormat('en-US',{weekday:'short',timeZone:t.timeZone}).format(n);if(t.weekdays.includes(['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].indexOf(weekday)))return n;}throw Error('invalid_calendar');}return after;
 }
+export function withinCatchUp(due:Date,now:Date,zone:string,days:number){return due<=now&&Date.parse(localDay(due,zone))>=Date.parse(localDay(now,zone))-days*86400000;}
 export function recordDue(value:unknown,t:Extract<ActionConfig['trigger'],{kind:'record_date'}>){
  if(typeof value!=='string')return null;let date:Date;
  if(/^\d{4}-\d{2}-\d{2}$/.test(value)){const from=new Date(value+'T00:00:00Z');date=nextDaily(t,new Date(from.getTime()-36*3600000));for(let i=0;i<4;i++){const local=new Intl.DateTimeFormat('en-CA',{timeZone:t.timeZone,year:'numeric',month:'2-digit',day:'2-digit'}).format(date);if(local===value)break;date=nextDaily(t,date);} }else date=new Date(value);
@@ -41,6 +45,7 @@ export class AppActions{
    if(Date.parse(config.expiresAt)<=Date.now())fail(403,'action_expired','Action authorization expired');
    let table:any=null;if(config.recordTypeId){const b=c.bindings.find((b:any)=>b.typeId===config.recordTypeId);const {type,policy}=await typeAccess(this.db,scoped,w,config.recordTypeId);const fields=visibleFields(type.fields,policy,scoped);if(!b||config.fields.some(k=>!b.fields.includes(k)||!fields.some(f=>f.key===k)))fail(403,'action_scope','Action fields exceed app access');table={id:type.id,version:type.version,fields:type.fields};}
    for(const step of config.steps){
+    if(step.kind==='email'&&step.summary)await validateSummary(this.db,scoped,w,c,step.summary);
     if(step.kind==='connector'){const row=(await this.db.query('SELECT * FROM connectors WHERE id=$1 AND workspace_id=$2',[step.connectionId,w])).rows[0];if(!row||row.removed_at||row.version!==step.connectionVersion)fail(409,'connector_changed','Review the current connector configuration');const cn=connectorConfig.parse(row.config),op=cn.operations.find(o=>o.id===step.operation);if(!cn.enabled||!op||!op.apps.includes(c.id)||!op.users.includes(a.userId)||a.origin==='ai'&&!op.aiEnabled)fail(403,'connector_use','Connector action is not allowed');}
     if(step.kind==='function'&&!c.execution.some((b:any)=>b.name===step.binding))fail(403,'function_binding','Function is not bound to the app');
     const text=J(step);for(const match of text.matchAll(/\{\{\s*run\.([\w.]+)\s*\}\}/g))if(!runTrigger(config)||!runFields.includes(match[1] as any))fail(400,'run_template','Run fields require a research-run database trigger');for(const match of text.matchAll(/\{\{\s*record\.([a-z][a-z0-9_]*)\s*\}\}/g))if(!config.fields.includes(match[1]))fail(403,'action_scope','Template refers to an undeclared field');
@@ -70,7 +75,7 @@ export class AppActions{
   });}
  async row(a:Actor,w:string,actionId:string){await access(this.db,a,w);const r=(await this.db.query('SELECT * FROM app_actions WHERE deleted_at IS NULL AND id=$1 AND workspace_id=$2',[actionId,w])).rows[0];if(!r||r.user_id!==a.userId&&!r.config.users.includes(a.userId))fail(404,'not_found','Action unavailable');return r;}
  async list(a:Actor,w:string,appId?:string,offset=0){await access(this.db,a,w);const rows=(await this.db.query('SELECT * FROM app_actions WHERE deleted_at IS NULL AND archived_with_app_at IS NULL AND workspace_id=$1 AND (user_id=$2 OR config->\'users\' ? $2::text) AND ($3::uuid IS NULL OR app_id=$3) ORDER BY created_at,id LIMIT 21 OFFSET $4',[w,a.userId,appId??null,offset])).rows;const visible=[];for(const row of rows.slice(0,20)){try{await this.f.component(this.db,{...a,accessToolId:row.app_id},w,row.app_id);visible.push(row);}catch{}}return {rows:visible,nextOffset:rows.length>20?offset+20:null};}
- async record(a:Actor,w:string,config:ActionConfig,recordId?:string){if(!config.recordTypeId){if(recordId)fail(400,'record_scope','This action has no record input');return null;}if(!recordId)fail(400,'record_required','Select a record');return withActor({...a,accessToolId:config.appId},async()=>{const r=await this.f.record(this.db,{...a,accessToolId:config.appId},w,recordId);if(r.type_id!==config.recordTypeId||config.trigger.kind!=='database'&&r.state==='archived')fail(403,'record_scope','Record unavailable');return {id:r.id,version:r.version,data:Object.fromEntries(config.fields.map(k=>{if(!r.fields.some((f:any)=>f.key===k))fail(403,'field_scope','Field unavailable');return [k,r.data[k]??null];}))};});}
+ async record(a:Actor,w:string,config:ActionConfig,recordId?:string){if(!config.recordTypeId){if(recordId)fail(400,'record_scope','This action has no record input');return null;}if(!recordId)fail(400,'record_required','Select a record');return withActor({...a,accessToolId:config.appId},async()=>{const r=await this.f.record(this.db,{...a,accessToolId:config.appId},w,recordId);if(('recordId' in config.trigger&&config.trigger.recordId&&config.trigger.recordId!==r.id)||r.type_id!==config.recordTypeId||config.trigger.kind!=='database'&&r.state==='archived')fail(403,'record_scope','Record unavailable');return {id:r.id,version:r.version,data:Object.fromEntries(config.fields.map(k=>{if(!r.fields.some((f:any)=>f.key===k))fail(403,'field_scope','Field unavailable');return [k,r.data[k]??null];}))};});}
  async enqueue(a:Actor,w:string,actionId:string,occurrence:string,recordId?:string,causalChain:string[]=[],notificationContext:any={}){return this.db.transaction(async tx=>{const service=new AppActions(adapter(tx));await tx.query('SELECT id FROM app_actions WHERE deleted_at IS NULL AND id=$1 FOR UPDATE',[actionId]);const row=await service.row(a,w,actionId),config=actionConfig.parse(row.config);if(row.paused)fail(403,'action_paused','Action is paused');const checked=await service.validate(a,w,config,row.scope_stamp);if(checked.stamp!==row.scope_stamp)fail(409,'action_scope_changed','Action scope changed');const record=await service.record(a,w,config,recordId);
    if(runTrigger(config)){const run=await readRunData(adapter(tx),a,w,config,occurrence);notificationContext={run,research:run};}
    if(notificationEmail(config)){if(causalChain.includes(actionId)||causalChain.length>=8)fail(409,'action_loop','Automation cycle stopped');return enqueueNotification(adapter(tx),a,w,row,config,occurrence,recordId,notificationContext);}
@@ -103,19 +108,19 @@ export async function dispatchAppActions(db:Database,now=new Date()){
     // A cursor per consumer permits fan-out and retries without rerunning research.
     const events=(await tx.query("SELECT e.event_sequence,e.object_id,r.result FROM audit_events e JOIN app_monitor_runs r ON r.id=e.object_id WHERE e.workspace_id=$1 AND e.event_sequence>$2 AND e.action='monitoring.finished' AND r.monitor_id=$3 AND r.monitor_version=$4 AND r.status='completed' ORDER BY e.event_sequence LIMIT 100",[row.workspace_id,cursor,trigger.automationId,trigger.automationVersion])).rows;
     for(const e of events){
-     if(trigger.includeEmpty!==false||e.result?.savedChanges)await service.enqueue(a,row.workspace_id,row.id,'run:'+e.object_id);
+     if(trigger.meaningful?meaningfulRun(e.result):trigger.includeEmpty!==false||e.result?.savedChanges)await service.enqueue(a,row.workspace_id,row.id,'run:'+e.object_id);
      cursor=e.event_sequence;
     }next=new Date(now.getTime()+1000);
    }else if(trigger.kind==='database'){
     const events=(await tx.query('SELECT e.*,r.type_id FROM audit_events e LEFT JOIN records r ON r.id=e.object_id WHERE e.workspace_id=$1 AND e.event_sequence>$2 ORDER BY e.event_sequence LIMIT 100',[row.workspace_id,cursor])).rows;
-    for(const e of events){cursor=e.event_sequence;if(e.type_id!==trigger.typeId)continue;const kind=e.action==='record.created'?'created':['record.deleted','record.archived','record.creation_archived'].includes(e.action)?'deleted':e.action.startsWith('record.')?'updated':null;if(!kind||!trigger.events.includes(kind))continue;
+    for(const e of events){cursor=e.event_sequence;if(e.type_id!==trigger.typeId||trigger.recordId&&e.object_id!==trigger.recordId)continue;const kind=e.action==='record.created'?'created':['record.deleted','record.archived','record.creation_archived'].includes(e.action)?'deleted':e.action.startsWith('record.')?'updated':null;if(!kind||!trigger.events.includes(kind))continue;
      const before=e.before_value?.data??{},after=e.after_value?.data??{};if(trigger.fields.length&&!trigger.fields.some(f=>J(before[f])!==J(after[f])))continue;if(trigger.becomes&&(!matches(after,[trigger.becomes])||matches(before,[trigger.becomes])))continue;
      let chain:string[]=[];if(e.source_run_id){const cause=(await tx.query('SELECT r.causal_chain FROM app_action_effects x JOIN app_action_runs r ON r.id=x.run_id WHERE x.job_id=$1',[e.source_run_id])).rows[0];chain=cause?.causal_chain??[];}
      try{await service.enqueue(a,row.workspace_id,row.id,'event:'+e.event_sequence,e.object_id,chain);}catch(e:any){if(![403,404,409].includes(e.status))throw e;}
     }next=new Date(now.getTime()+1000);
    }else if(trigger.kind==='record_date'){
     const records=(await tx.query("SELECT id FROM records WHERE workspace_id=$1 AND type_id=$2 AND state<>'archived' AND ($3::uuid IS NULL OR id>$3) ORDER BY id LIMIT 100",[row.workspace_id,trigger.typeId,scan])).rows;
-    for(const item of records){try{const r=await service.record(a,row.workspace_id,config,item.id),due=recordDue(r?.data[trigger.field],trigger);if(due&&due<=now&&due>=new Date(row.approved_at))await service.enqueue(a,row.workspace_id,row.id,'date:'+item.id+':'+due.toISOString(),item.id);}catch(e:any){if(![403,404,409].includes(e.status))throw e;}}
+    for(const item of records){if(trigger.recordId&&item.id!==trigger.recordId)continue;try{const r=await service.record(a,row.workspace_id,config,item.id),due=recordDue(r?.data[trigger.field],trigger);if(due&&due<=now&&(trigger.catchUpDays?withinCatchUp(due,now,trigger.timeZone,trigger.catchUpDays):due>=new Date(row.approved_at)))await service.enqueue(a,row.workspace_id,row.id,'date:'+item.id+':'+due.toISOString(),item.id);}catch(e:any){if(![403,404,409].includes(e.status))throw e;}}
     scan=records.length===100?records.at(-1)!.id:null;next=new Date(now.getTime()+(scan?1000:30000));
    }else{await service.enqueue(a,row.workspace_id,row.id,'time:'+new Date(row.next_at).toISOString());next=trigger.kind==='once'?null:nextAction(config,now);}
    await tx.query('UPDATE app_actions SET next_at=$2,event_cursor=$3,scan_cursor=$4,last_error=NULL WHERE id=$1',[row.id,next,cursor,scan]);});await tx.query('RELEASE SAVEPOINT action_dispatch');
@@ -142,7 +147,13 @@ export async function processAppAction(db:Database){
 }
 
 export async function authorizeAppFunction(db:Database,jobId:string,lock=false){
- const link=(await db.query('SELECT r.id,r.action_id FROM app_action_effects e JOIN app_action_runs r ON r.id=e.run_id WHERE e.job_id=$1',[jobId])).rows[0];if(!link)return;
+ // One indexed lookup for all three existing-queue consumers; ordinary function
+ // calls do not add separate optional-service round trips.
+ const link=(await db.query(`SELECT r.id,r.action_id,'action' AS kind,NULL::uuid AS workspace_id,NULL::uuid AS user_id,NULL::text AS assistant FROM app_action_effects e JOIN app_action_runs r ON r.id=e.run_id WHERE e.job_id=$1
+  UNION ALL SELECT b.id,b.action_id,'summary',b.workspace_id,b.user_id,NULL FROM app_notification_batches b WHERE b.summary_run_id=$1
+  UNION ALL SELECT r.id,r.monitor_id,'brief',r.workspace_id,r.user_id,m.assistant FROM app_monitor_runs r JOIN app_monitors m ON m.id=r.monitor_id WHERE r.brief_run_id=$1`,[jobId])).rows[0];if(!link)return;
+ if(link.kind==='summary'){await (await import('./notifications.js')).authorizeSummaryRun(db,jobId);return;}
+ if(link.kind==='brief'){const {AppMonitoring}=await import('./monitoring.js');await new AppMonitoring(db).active({userId:link.user_id,origin:'ai',...(link.assistant==='claude'?{assistant:'claude' as const}:{})},link.workspace_id,link.id);return;}
  if(lock){await db.query('SELECT id FROM app_actions WHERE deleted_at IS NULL AND id=$1 FOR SHARE',[link.action_id]);await db.query('SELECT id FROM app_action_runs WHERE id=$1 FOR SHARE',[link.id]);}
  await new AppActions(db).authorizeRun(link.id);
 }

@@ -28,13 +28,14 @@ jobs:
       - run: npx playwright install --with-deps chromium --only-shell
       - run: sudo apt-get install -y fonts-dejavu-core
       - name: Check automation and settings screens
-        run: npx playwright test tests/visual/account-settings.spec.cjs tests/visual/automation-management.spec.cjs tests/visual/automation-standards.spec.cjs tests/visual/extension-automations.spec.cjs tests/visual/chatgpt-connector.spec.cjs tests/visual/settings.spec.cjs
+        run: npx playwright test tests/visual/automation-recipes.spec.cjs tests/visual/account-settings.spec.cjs tests/visual/automation-management.spec.cjs tests/visual/automation-standards.spec.cjs tests/visual/extension-automations.spec.cjs tests/visual/chatgpt-connector.spec.cjs tests/visual/settings.spec.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: automation-settings-ui
           path: |
             test-results/
+            /tmp/trialy-recipes-*.png
             /tmp/trialy-standard-edit-*.png
             /tmp/trialy-settings-aligned-*.png
             /tmp/trialy-automation-compact-*.png

@@ -1,3 +1,4 @@
+import {summaryBinding} from '../automations/summary.js';
 import {z} from 'zod';
 import {id} from '../shared/schema.js';
 import {sharedAutomation} from '../automations/schema.js';
@@ -6,7 +7,7 @@ const text=(max:number)=>z.string().trim().min(1).max(max);
 const version=z.number().int().min(0);
 const zone=text(100).refine(v=>{try{new Intl.DateTimeFormat('en',{timeZone:v});return true;}catch{return false;}},'Use an IANA timezone');
 export const monitoringConfig=z.object({
- inheritAppAccess:z.boolean().optional(),
+ inheritAppAccess:z.boolean().optional(),brief:summaryBinding.optional(),
  name:text(100),appId:id,objective:text(2000),instructions:text(12000),sourcePolicy:text(4000),
  schedule:z.object({description:text(300),timeZone:zone}).strict(),
  notificationPolicy:text(1000).default('Report meaningful findings and blockers; remain quiet when there is no relevant update.'),
@@ -20,5 +21,5 @@ export const monitoringConfig=z.object({
 export const monitoringChange=z.object({monitorId:id.optional(),expectedVersion:version.optional(),config:monitoringConfig}).strict().refine(v=>!v.monitorId||v.expectedVersion!==undefined,'An update needs the current monitoring version');
 export const monitoringTask=z.object({monitorId:id,expectedVersion:version,taskId:text(200),schedule:text(4000),timeZone:zone,timingMode:z.enum(['exact_schedule','flexible_schedule','condition_watch'])}).strict();
 export const monitoringStart=z.object({monitorId:id,expectedVersion:version,occurrenceKey:text(200)}).strict();
-export const monitoringFinish=z.object({runId:id,status:z.enum(['completed','no_update','partial','blocked','failed']),summary:text(12000),coverage:z.object({through:z.iso.datetime({offset:true}),notes:text(2000)}).strict().optional(),sources:z.array(z.object({url:z.url().refine(v=>/^https?:\/\//.test(v),'Use an HTTP source URL'),title:text(300)}).strict()).max(100).default([])}).strict().refine(v=>!v.coverage||['completed','no_update'].includes(v.status),'Partial or failed work cannot advance coverage');
+export const monitoringFinish=z.object({runId:id,status:z.enum(['completed','no_update','partial','blocked','failed']),summary:text(12000),findings:z.array(z.object({title:text(300),detail:text(2000),relevant:z.boolean()}).strict()).max(50).optional(),coverage:z.object({through:z.iso.datetime({offset:true}),notes:text(2000)}).strict().optional(),sources:z.array(z.object({url:z.url().refine(v=>/^https?:\/\//.test(v),'Use an HTTP source URL'),title:text(300)}).strict()).max(100).default([])}).strict().refine(v=>!v.coverage||['completed','no_update'].includes(v.status),'Partial or failed work cannot advance coverage');
 export type MonitoringConfig=z.infer<typeof monitoringConfig>;

@@ -52,7 +52,7 @@ export class Foundation {
    const quota=(await tx.query("SELECT count(*) AS n,coalesce(sum(octet_length(program::text)+coalesce(octet_length(result::text),0)+coalesce(octet_length(proposal::text),0)),0) AS bytes FROM foundation_runs WHERE user_id=$1 AND created_at>now()-interval '24 hours'",[a.userId])).rows[0];if(Number(quota.n)>=200||Number(quota.bytes)>=50*1024*1024)fail(429,'experiment_quota','Daily experiment limit reached');
    const count=Number((await tx.query("SELECT count(*) AS n FROM foundation_runs WHERE user_id=$1 AND status IN ('queued','running')",[a.userId])).rows[0].n);
    if(count>=5)fail(429,'run_limit','At most five pending runs per user');
-   const runId=randomUUID();await tx.query(`INSERT INTO foundation_runs(id,workspace_id,user_id,revision_id,schedule_id,grant_id,request_key,program,source_digest,status,component_context) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,'queued',$10)`,[runId,w,a.userId,revisionId??null,scheduleId??null,grantId??null,requestKey,J(program),digest,componentContext?J(componentContext):null]);return {id:runId,workspaceId:w,status:'queued'};
+   const runId=randomUUID();await tx.query(`INSERT INTO foundation_runs(id,workspace_id,user_id,revision_id,schedule_id,grant_id,request_key,program,source_digest,status,component_context,assistant) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,'queued',$10,$11)`,[runId,w,a.userId,revisionId??null,scheduleId??null,grantId??null,requestKey,J(program),digest,componentContext?J(componentContext):null,a.assistant??'chatgpt']);return {id:runId,workspaceId:w,status:'queued'};
   });return row;
  }
  async run(a:Actor,w:string,runId:string){

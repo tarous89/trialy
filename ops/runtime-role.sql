@@ -3,6 +3,8 @@
 DO $$ BEGIN
  IF NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname='trialy_runtime') THEN CREATE ROLE trialy_runtime NOLOGIN; END IF;
 END $$;
+GRANT SELECT,INSERT,UPDATE ON automation_recipe_setups TO trialy_runtime;
+GRANT SELECT,INSERT ON automation_recipe_approvals TO trialy_runtime;
 GRANT USAGE ON SCHEMA public TO trialy_runtime;
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO trialy_runtime;
 GRANT INSERT ON users,tenants,memberships,workspaces,workspace_access,entity_types,records,document_versions,document_payloads,extractions,revisions,audit_events,commit_receipts,jobs,action_grants,saved_views,approvals,session,automations,automation_runs,local_accounts,oauth_data,oauth_tokens,document_controls,acknowledgements,account_acceptances,account_security_events,document_access,external_links,form_submissions,submission_acceptances,template_installations,folder_access,workspace_invitations,submission_files,submission_file_acceptances,record_review_requests,record_review_decisions,inbox_reminders,inbox_read_receipts TO trialy_runtime;

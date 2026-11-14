@@ -3,7 +3,7 @@ import {randomUUID} from 'node:crypto';
 import type {Database,Connection} from '../db/database.js';
 import {withActor} from '../db/context.js';
 import {AppMonitoring} from '../app-services/monitoring.js';
-import {AppActions,recordDue} from '../app-services/service.js';
+import {AppActions,recordDue,withinCatchUp} from '../app-services/service.js';
 import {matches} from '../app-services/schema.js';
 import {monitoringConfig} from '../app-services/monitoring-schema.js';
 import {localDay} from '../shared/schedules.js';
@@ -39,13 +39,13 @@ export async function dispatchDue(db:Database,now=new Date()){
    const t=c.automation.trigger,coverageFrom=row.coverage_through??new Date(now.getTime()-c.automation.initialLookbackDays*86400000).toISOString();let next:Date|null=null,cursor=d.event_cursor,scan=d.scan_cursor;
    if(t.kind==='database'){
     const events=(await tx.query('SELECT e.*,r.type_id FROM audit_events e LEFT JOIN records r ON r.id=e.object_id WHERE e.workspace_id=$1 AND e.event_sequence>$2 ORDER BY e.event_sequence LIMIT $3',[d.workspace_id,cursor,capacity])).rows;
-    for(const e of events){cursor=e.event_sequence;if(e.type_id!==t.typeId||e.source_run_id)continue;const kind=e.action==='record.created'?'created':['record.deleted','record.archived','record.creation_archived'].includes(e.action)?'deleted':e.action.startsWith('record.')?'updated':null;if(!kind||!t.events.includes(kind))continue;
+    for(const e of events){cursor=e.event_sequence;if(e.type_id!==t.typeId||t.recordId&&e.object_id!==t.recordId||e.source_run_id)continue;const kind=e.action==='record.created'?'created':['record.deleted','record.archived','record.creation_archived'].includes(e.action)?'deleted':e.action.startsWith('record.')?'updated':null;if(!kind||!t.events.includes(kind))continue;
      const before=e.before_value?.data??{},after=e.after_value?.data??{};if(t.fields.length&&!t.fields.some(f=>J(before[f])!==J(after[f])))continue;if(t.becomes&&(!matches(after,[t.becomes])||matches(before,[t.becomes])))continue;
      await occurrence(tx,d,`${d.monitor_id}:${d.monitor_version}:event:${e.event_sequence}`,'database_trigger',new Date(e.created_at),{recordId:e.object_id,eventSequence:e.event_sequence,event:kind,coverageFrom,coverageThrough:now.toISOString()},c);
     }next=new Date(now.getTime()+30000);
    }else if(t.kind==='record_date'){
     const rows=(await tx.query("SELECT id,data FROM records WHERE workspace_id=$1 AND type_id=$2 AND state<>'archived' AND ($3::uuid IS NULL OR id>$3) ORDER BY id LIMIT $4",[d.workspace_id,t.typeId,scan,capacity])).rows;
-    for(const r of rows){const due=recordDue(r.data[t.field],t);if(due&&due<=now&&due>=new Date(d.activated_at))await occurrence(tx,d,`${d.monitor_id}:${d.monitor_version}:date:${r.id}:${due.toISOString()}`,'scheduled_due',due,{recordId:r.id,coverageFrom,coverageThrough:now.toISOString()},c);}
+    for(const r of rows){if(t.recordId&&r.id!==t.recordId)continue;const due=recordDue(r.data[t.field],t);if(due&&due<=now&&(t.catchUpDays?withinCatchUp(due,now,t.timeZone,t.catchUpDays):due>=new Date(d.activated_at)))await occurrence(tx,d,`${d.monitor_id}:${d.monitor_version}:date:${r.id}:${due.toISOString()}`,'scheduled_due',due,{recordId:r.id,coverageFrom,coverageThrough:now.toISOString()},c);}
     scan=rows.length===capacity?rows.at(-1)!.id:null;next=new Date(now.getTime()+(scan?1000:30000));
    }else{
     const due=new Date(d.next_at);await occurrence(tx,d,`${d.monitor_id}:${d.monitor_version}:time:${due.toISOString()}`,'scheduled_due',due,{coverageFrom,coverageThrough:c.automation.catchUp==='replay'?due.toISOString():now.toISOString(),catchUp:c.automation.catchUp},c);

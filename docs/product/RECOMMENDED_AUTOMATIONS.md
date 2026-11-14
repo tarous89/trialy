@@ -1,123 +1,145 @@
-# Recommended automations at install — platform scope
+# App automations — installation and later setup
 
-**Status:** Scoped 14 November 2026, for build. Decisions come from the Landscape / Bio Radar discussion ([apps/BIO_RADAR.md](app-template-blueprints/apps/BIO_RADAR.md)) and apply to every template. Related rules: [Modular apps §7](MODULAR_APPS_AND_SHARED_DATA.md#install-dialog-data-access-and-automations) and [Apps, access and automations](APP_CONFIGURATION_AND_AUTOMATIONS.md#recommended-automations-at-install) (including the per-app table and "Two kinds of email").
+**Status:** Owner-approved scope, revised 14 November 2026 after review of PR #165; platform implementation is gated pending live acceptance, not a deployment claim. This revision supersedes the earlier default-off choices, blanket prohibition on assistant activation, workspace/template-wide deduplication and all-or-nothing app/automation installation in that PR. Build sequence: [implementation plan](RECOMMENDED_AUTOMATIONS_IMPLEMENTATION.md).
 
-**Not in this scope:**
-- Changes to templates that are already deployed (adding declarations, removing app-side automation creation) are a separate retro scope.
-- User-triggered sends to people outside the workspace (external exchange) are out of scope.
+Applies to catalog templates and supported custom apps across the website, ChatGPT and Claude. Related contracts: [Modular apps §7](MODULAR_APPS_AND_SHARED_DATA.md#install-dialog-data-access-and-automations), [Apps, access and automations](APP_CONFIGURATION_AND_AUTOMATIONS.md#recommended-automations-at-install), [write authorization](../WRITE_AUTHORIZATION.md) and [notification guardrails](../scopes/NOTIFICATION_GUARDRAILS_2026-11-01.md).
 
----
+## 1. Confirmed decisions
 
-## 1. Decisions
+1. **Platform ownership and execution.** Automations are ordinary TrialAgents definitions linked to a saved app. The platform stores, validates, schedules and runs them using existing research runners and action/email workers. Apps may declare automation features and initiate the platform's authorized setup flow; they never operate a separate scheduler or grant themselves permissions.
+2. **Pre-built automations are selected by default.** If an app includes install recommendations, show them concisely in the install popup with every toggle on. **Add app** approves the displayed selection and activates eligible automations. The user may opt out of any row. Nothing activates merely from opening a preview, reading a catalog, or receiving an assistant proposal.
+3. **Add and activate later from any supported surface.** The authorized owner can create, edit and activate automations at any time through the platform Automations tab, ChatGPT or Claude, including automations based on an existing app feature. Preserve exact reviewed authorization and existing assistant ownership boundaries. The install dialog remains a user-confirmed action; this does not prohibit authorized activation through chat.
+4. **Apps remain independently usable.** Missing runners, optional setup errors, quota exhaustion and failed background runs must not prevent installation, opening, ordinary saves, navigation or data use. Genuine app/data permission failures still apply.
+5. **External sends remain separate.** User-triggered sends to suppliers, investors and other people outside the workspace, including their pre-approved follow-ups, remain in the external exchange. Automation email goes only to authorized workspace members under existing limits.
+6. **Defaults do not override an existing choice.** Default-on applies to new install recommendations only. Edits, reconnects, app restores, copies and later template releases do not silently resume paused work or activate declined/new recommendations.
 
-1. **Automations belong to the platform.** An app never owns, creates or runs automations itself. Its automations are normal TrialAgents Automations **linked to the app**: listed, edited, paused and deleted in Automations, and managed by the owner.
-2. **Templates recommend; the install dialog offers.** A template declares *recommended automations* in its catalog. The install dialog shows them as a third section, **Automations**, under data and access, so one confirmation sets up tables, access and automations.
-3. **Keep the two kinds of email apart.** User-triggered sends (an RFP, a data room share, an investor update) and their pre-approved follow-ups stay in the app and the external exchange. Automations send only to **workspace members**, on a schedule or trigger, under the existing email limits.
-4. **Research briefs.** A research step uses a brief the app generates from its records (what to look for, since when, named sources in priority order with the web as default, rules, return format, and a source report). The automation prompt references the brief, so it never goes stale.
-5. **The app works without its automations.** A declined, disabled or failing automation never breaks the app.
+## 2. Declarations and reusable app features
 
----
+Add optional `recommendedAutomations` to the catalog for complete install recommendations. Add optional `automationFeatures` for reusable setup recipes exposed in Automations, including features requiring a record or other user selection (for example, an Investor Updates schedule). Both use one shared validated recipe schema and resolver; no duplicated scheduler or independently implemented UI/MCP schema. Custom apps may declare equivalent reviewed features in their manifest under the same capability and permission checks.
 
-## 2. Declaration in the template catalog
-
-New optional catalog field `recommendedAutomations` (array). It is validated at build (`--check`) and at catalog load, and documented in MCP and the catalog.
-
-| Field | Meaning |
+| Field | Contract |
 |---|---|
-| `key` | Stable id, unique within the template (e.g. `weekly-digest`). Used to match and update later |
-| `name`, `purpose` | Shown in the dialog (name ≤ 60 characters, purpose ≤ 120 characters) |
-| `defaultOn` | Toggle default in the dialog |
-| `trigger` | One of: **schedule** (daily / weekly / monthly, every N, weekday or day or business day of month, time, workspace time zone); **record** (role table, `created` or `field_changed` with field and optional target value); **record date** (role table, date field, offset in days, time; see E2); **after** (runs after another recommendation of the same template completes, e.g. an alert after a scan) |
-| `steps` | Ordered list of up to 2 steps: **research** (runner chosen at install; `brief`: name of the app's brief function; `writes`: proposals only, or a narrow grant listing tables and fields), **platform action** (an existing typed action), **email** (see below) |
-| `email` | `subject` and `body` template with named variables; `content`: `static`, `summary` (filled by a read-only app summary function, see E1) or `research` (filled from the research step's output); `condition` (e.g. send only if there's something to report); `recipients`: `owner`, `chosen_members`, or `record_member` (a member field on the record, e.g. approver or follow-up owner) |
-| `editableAtInstall` | Which settings the dialog row lets the owner change: cadence, day, time, recipients |
+| `key` | Stable recipe key, unique across both declaration lists within the app/template |
+| `name`, `purpose` | Concise user-facing labels; name ≤ 60 characters, purpose ≤ 120 |
+| Install selection | Every `recommendedAutomations` entry starts selected. Remove configurable `defaultOn: false`; if a compatibility field is retained it must be literal `true`. Later setup recipes do not activate until approved |
+| `context` | Optional typed selection required by a feature, such as an authorized schedule record. Resolve a stable instance key from the selected record; never trust caller-supplied table or recipient IDs as authorization |
+| `trigger` | Calendar schedule; specific record creation/field transition; record-date offset; or `after` a successful research recommendation of the same installed app |
+| `steps` | Research, an existing typed platform action, and/or email. Compile to existing executor definitions and explicit dependencies. Email remains a separate action; this is not a general workflow designer |
+| Research brief | Bound read-only function plus input/output contracts. Resolve current authorized app records at execution; pin the reviewed function revision, permitted sources and write scope |
+| Research writes | Proposals by default. Direct writes require an explicit, narrow, expiring grant with allowed operations, tables, fields and limits shown in the review; a selected toggle does not implicitly expand database authority |
+| `email` | Subject/body with named variables; static, deterministic summary or research content; a typed condition; owner, selected members, or a record member resolved to a registered member identity |
+| `editableAtInstall` | Cadence, day, time and recipients through the shared editor; expose full instructions and scope in expanded details |
 
-**Validation:**
-- Keys are unique.
-- Triggers reference roles the template declares.
-- Briefs and summary functions exist in the app, and summary functions are read-only.
-- Recipients are workspace members only (no external addresses).
-- Email triggers follow the email rules: no sub-daily intervals and no "any update" triggers.
-- At most 10 recommendations per template (raised from 6 on 14 Nov 2026).
+**Validation and compatibility:**
 
----
+- An install recommendation must be complete without choosing a business record. Incomplete or per-record features belong in `automationFeatures` and are available after installation.
+- Validate known roles, fields, typed schedules, action capabilities, brief/summary functions and their read-only scopes. Bound functions execute through the existing isolated runtime, never by evaluating arbitrary client code on the server.
+- Validate email recipients against current app/data access as well as workspace membership, including `record_member`. No external email columns or arbitrary address substitution.
+- Require explicit field transitions for update-triggered email; retain daily-or-slower calendar email and existing event-email limits.
+- Validate `after` references, reject missing/self/cyclic dependencies, and bind them to the exact parent definition/version in the same app. An opted-out or unavailable parent leaves its dependent recommendation waiting, never independently active.
+- At most ten install recommendations. Other reusable features are available through the normal paginated Automations setup flow.
+- Validate new declarations during build and catalog approval/load. Existing catalog entries without declarations remain valid. A bad optional declaration is localized to that template's automation offer; it must not crash the gallery or prevent an otherwise valid app from being installed without automations. Do not claim invalid recommendations were approved or activated.
+- New immutable template versions carry new declarations; do not rewrite deployed payloads, approvals or existing user automations.
 
-## 3. Install dialog
+## 3. Concise install popup
 
-A third section in the existing dialog (Modular apps §7), in the same style as the platform's confirm dialogs.
+Use the existing shared install dialog with a compact **Automations** section below data and access. Show it whenever install recommendations exist, including when there are no existing tables to connect. Omit it for apps without recommendations.
 
-- **Heading "Automations"** and one line: "*App* recommends these. You can change them any time in Automations."
-- **One row per recommendation:**
-  - name, purpose, and a readable trigger ("Weekly, Monday 07:00", "When a request is created", "7 days before access ends")
-  - a toggle, defaulting to `defaultOn`
-  - **Edit** opens the normal automation editor, prefilled; saving returns to the dialog
-- **Runner** (shown only when a row has a research step): **Claude** or **ChatGPT**, whichever the owner has connected, with the first connected preselected. If neither is connected, the note is "Research automations will be created switched off. Connect Claude or ChatGPT to activate."
-- **Recipients** (shown only when a row has email): workspace members, owner by default. `record_member` rows show "the [approver / follow-up owner] on each record".
-- **Add app** creates the app, tables, access choices and the selected automations in **one transaction**, through normal automation validation. The dialog is the review: it shows exactly what will run, when, on which runner, which records it may propose or write, and who gets email.
-- **Cancel** installs nothing.
-- **Who sees it:**
-  - only the signed-in **owner** sees and confirms this section
-  - for any other installer the section is hidden, and the owner gets a notice: "3 recommended automations for *App* are waiting"
-  - assistants may prefill the section (`prepare_data_access`) but never confirm it
-- The dialog appears **only at install**, the same on the web and in the Claude and ChatGPT plugins. Saves, copies and restores show no dialog.
+- One line under the heading: **“Included with this app. Turn off anything you don’t need.”**
+- One compact row per automation: an on-by-default toggle, name, readable schedule/trigger, and a quiet **Edit** action. Example: **Weekly digest · Mon 07:00 · Email to you**. Use a short second line only when needed to explain the effect or a blocker.
+- Show shared defaults once: selected **Claude / ChatGPT** runner where research is involved, and **Email to you** where appropriate. Respect an existing owner preference; otherwise preselect an eligible ready runner. Never reactivate a deliberately paused runner. Per-row exceptions and record-assigned recipients remain visible.
+- Do not expand prompts, technical IDs, full editor cards or configuration fields by default. Details must be accessible by keyboard and touch. Any direct-write effect must have a visible plain-language scope summary, not be hidden only in a tooltip.
+- **Edit** opens the shared automation editor in draft mode. Saving returns the edited draft to the popup; it does not persist or activate an automation before Add app. Cancel discards the entire unsubmitted installation draft.
+- A short line by **Add app** states **“Adding this app also enables the selected automations.”** Show a specific pending note instead for rows that cannot activate, such as **“Connect Claude or ChatGPT to activate research.”** Display the effective timezone once and preserve it in the receipt.
+- Add app is the single approval for the exact displayed app/data/access choices and eligible automation configuration. No second approval is required for the same unchanged configuration. Preserve choices on validation failure and never report an uncommitted save as successful.
+- Only an authorized owner may approve automation setup. Other installers can install the app normally; their choices cannot authorize work for the owner. The owner can later configure available recommendations from Automations.
+- Embedded confirmation must prove the authenticated owner's actual UI action through the supported app-only action, without relabeling arbitrary assistant calls as human. If the host cannot provide that supported confirmation, install without automation activation and retain a clear setup path through Automations or authorized chat.
+- Saves, copies and restores do not reopen this installation popup. Restore may offer a separate, explicit resume action.
 
----
+## 4. Installation, activation and failure isolation
 
-## 4. After install
+**One user approval, separate commit boundaries.** Keep app, tables and access choices atomic under the existing install receipt. Never call runner setup, providers, automation activation or optional automation validation inside that mandatory transaction.
 
-- **Linked automations.** Each created automation stores `source = {templateId, templateVersion, recommendationKey}` and the app id. Automations shows them under the app with a small "Recommended by *App*" label.
-- **"Recommended, not set up" panel.** In Automations, filtered by app, recommendations that were turned off or are waiting for the owner are listed with **Set up**, which opens the editor prefilled. This is also where future template versions will offer new or changed recommendations (retro scope).
-- **Runner connected later.** Automations created switched off because no runner was connected stay off. The owner gets a notice offering to switch them on; they are never switched on automatically.
-- **Editing.** Once created, an automation is the owner's: edits follow normal Automations rules (versioning, review, history). A later template version never silently overwrites it.
+Persist an exact authorized setup intent with the install request key and reviewed digest so a lost response or crash cannot lose the selection or create duplicates. Its durable storage may be part of the core install receipt, but resolving/validating/materializing optional automations happens only after the app commits. A core database/receipt failure can fail installation; an optional automation error cannot undo it.
 
----
+After commit, resolve the final app/table IDs and create/activate selected definitions through the normal automation services. Independent recommendations settle independently. A failed research recommendation holds only its dependent email, not unrelated reminders. Bound this work so the app opens promptly; use existing background infrastructure for unfinished setup reconciliation, not a second scheduler. Never run provider calls or research during the installation request.
 
-## 5. Lifecycle
-
-| Event | Effect |
+| Outcome | Required behavior |
 |---|---|
-| Archive the app | Linked automations are paused (state remembered) |
-| Restore the app | The owner is offered to resume the automations that were on before archiving |
-| Delete the app (from archive) | Linked automations are archived, never deleted silently; app data rules unchanged |
-| Reinstall the app | The dialog shows the recommendations again, except those whose `source.recommendationKey` already has an active or paused automation for this workspace and template; those show "Already set up" |
-| Copy the app | Follows existing rules: copied automation drafts stay disabled until reviewed |
-| Delete an automation | Never touches app data; the recommendation reappears in the "Recommended, not set up" panel |
-| Disconnect a runner | Existing rule: research stops; dependent email steps respect the chain |
+| Selected, valid, ready | Save and enable automatically under the install approval; schedule its first eligible occurrence without rerunning past work |
+| User opted out | Create no active definition; show the recipe as available later |
+| No ready runner / missing required input or authority | Save a disabled draft where supported, otherwise retain the setup intent; show **Needs setup**, never an active badge |
+| Transient setup failure after approval | App remains saved and usable; show **Setup pending** and retry the same reviewed intent with bounded backoff and stable identities |
+| Scope/recipient/version changed since approval | Retain a disabled draft or failed intent with the reason; require renewed approval of the changed configuration |
+| User pauses, opts out or revokes permission during reconciliation | Fence pending setup/activation; an old retry or receipt replay must not reverse the newer choice |
 
----
+Connecting or restoring a runner that was absent, unverified or deliberately paused does not silently activate pending definitions. Offer Enable through Automations or accept the existing supported exact chat authorization. This is distinct from retrying an unchanged, previously ready installation setup after a transient technical failure.
 
-## 6. Small platform additions needed
+The installation result reports the app receipt and per-recommendation active/pending/opted-out states separately. Open the saved app even when some setup is pending; use a brief non-blocking status with a link to Automations. Logs hold details. Never replace the app with an automation error page or force a refresh that discards input.
 
-| # | Addition | Why |
+## 5. Automations tab and chat after installation
+
+- **Add automation** offers **From app features** after an app is selected, alongside the existing custom setup. Show available recommendations and reusable features with concise descriptions; obtain required context and open the normal editor prefilled.
+- For Investor Updates, select the scheduled-update record and configure its draft automation here. An app's **Set up automation** action can open this same platform editor; saving app business data alone does not create an active background job. If one app action combines data save and automation approval, it must show the exact review and use the same failure-isolated platform flow.
+- ChatGPT and Claude may discover these same features, prepare and add new automations, edit existing ones and activate authorized definitions using the existing `confirm_app_service_review` path. Preserve owner checks, current permissions, expected versions, reviewed content and assistant ownership. Neither assistant may resume the other assistant's work through a new bypass.
+- Existing automations retain IDs, revisions, grants, run history and deliberate pauses. A recipe is a starting point; user edits remain authoritative. Editing an app feature or its record must not silently expand an approved automation's instructions, recipients or data scope.
+- Show **Available**, **Needs setup**, **Setup pending**, **Enabled** or **Disabled** truthfully. A saved definition, verified runner and completed background run are separate facts. A recommendation with an existing disabled definition opens that definition, rather than creating another.
+
+## 6. Identity and lifecycle
+
+Store the app ID and provenance, including template ID/version (when applicable), recipe key, source kind and optional feature instance key. Idempotency is scoped to **workspace + authorizing owner + installed app ID + recipe key + feature instance key**, with the installation request key for retries. Template version is provenance, not a reason to duplicate an existing setup.
+
+| Event | Required effect |
+|---|---|
+| Repeat Add app / replay install receipt | Return the same app and reconcile the same setup; never duplicate or undo a later pause |
+| Install another copy of the same template | New app identity and separately resolved bindings; its own recommendations start selected even if another copy has active/paused automations |
+| Set up an existing recommendation/record feature again | Open/reconcile that app's existing definition; allow separate instances only through explicitly distinct context |
+| Archive app | Suspend linked automation setup and execution; preserve definitions/history and stop uncommitted effects |
+| Restore app | Restore definitions disabled; offer explicit resume under current scope/readiness checks |
+| Permanently delete archived app | Retire its attached definitions under existing lifecycle/retention rules; cancel setup intents and preserve required audit/run receipts and shared app data |
+| Copy app | Copied automation drafts stay disabled, with dependencies remapped to the new app; no copied active grants or execution history |
+| Remove an automation through a supported management flow | Never remove app records; its recipe may be offered again only through a fresh explicit setup |
+| Template update / runner reconnect | Do not overwrite edits or activate declined/paused/new work |
+| Change/remove app bindings or execution capability | Apply existing revocation and compatibility checks; block only affected automation work; layout-only updates must not disable valid work |
+
+## 7. Execution additions and existing engine reuse
+
+| ID | Scope | Required behavior |
 |---|---|---|
-| **E1** | **Summary-content email step.** An email step can fill its template from a read-only **app summary function**: a deterministic query returning the digest values, such as low stock, due follow-ups or open requests. It runs under the owner's access at send time and doesn't count as research. Empty results with `condition: nonEmpty` send nothing | Digests such as Lab Inventory, Contracts, Fundraise and room digests need computed content without an assistant run |
-| **E2** | **Record-date trigger for email.** A daily check sends an email for records whose date field equals today plus an offset (e.g. follow-up due today, access ends in 7 days, notice deadline in 30 days). It's grouped per recipient into one email, within the email limits | Reminders tied to dates in records |
-| **E3** | **`after` trigger across a template's recommendations.** An email can run after a research recommendation completes, with a condition on its output (e.g. only high-impact events) | Bio Radar high-impact alert; Partnerships digest after research |
+| **E1** | Deterministic summary email | Evaluate a reviewed, bound read-only summary function within approved app/data scope. Recheck each recipient's current access to included data; owner access alone is insufficient. Empty `nonEmpty` output sends nothing. Pin executable revision/contracts, bound execution and result size, and preserve isolated runtime/queue limits |
+| **E2** | Record-date reminders | Extend/reuse the existing record-date executor, occurrence ledger and notification batching. Compute due time in the approved IANA timezone; select **due and not processed**, not date equality with today. Default new reminder catch-up to at most seven local calendar days, coalesced into one current reminder per recipient; record older occurrences as skipped. Recheck record date, relevance, assignment and access before delivery; date changes invalidate obsolete queued work. Do not change legacy policies silently |
+| **E3** | After-research email | Compile `after` into existing immutable completed-run dependencies (`automation_runs`), not a second schedule. Deliver once per eligible parent run/version and child definition. Preserve current blocking on parent pause, archive, permission or version change; skip tests, failed and partial runs. Conditions must support relevant proposals even when `savedChanges` is zero; do not equate no committed writes with no findings |
+| **E4** | Calendar recipe support | Reuse current calendar schedules and add only missing typed forms: nth weekday and nth business day of a month. Define business day as Monday–Friday in the schedule timezone (holiday calendars out of scope). Every N months covers quarterly/half-yearly/yearly; retain one-time triggers. Define anchors, absent-day handling and DST behavior through the shared scheduler and editor |
 
-All three keep existing guarantees: email limits, re-checking current state and access before sending, workspace members only, and no sub-daily email.
+Email remains a separate delivery action and never reruns research after delivery failure. A research → saved report → email recipe uses the research step's existing reviewed report output and a separate email dependency; it must not imply a new unrestricted multi-step workflow engine. Unsupported recipe sequences fail validation clearly.
 
----
+`record_member` delivery resolves a current registered member from the authorized record and batches only that member's eligible records. Reassignment cancels the old recipient's queued notification and re-evaluates the current recipient, without bypassing quota or deduplication. All summaries and research outputs obey recipient data access, not just membership.
 
-## 7. MCP and plugin
+Keep two-minute settling, cancellation of obsolete work, one email per normalized recipient per rolling hour across TrialAgents, 15 recipient deliveries per account per rolling 24 hours, calendar per-rule/recipient/local-date limits, suppression handling and ambiguous-provider-outcome reconciliation. Calendar email is daily or slower; explicit record/run events retain the existing hourly/daily limits rather than a new blanket one-email-per-day rule.
 
-- `read_app_template`: returns `recommendedAutomations`.
-- `prepare_data_access`: accepts proposed toggles, runner and recipients per recommendation (prefill only).
-- `list_app_automations`: shows `source` and the "recommended, not set up" items.
-- Assistants can explain and prefill, but cannot confirm the install dialog or enable automations.
-- Template guidance gets a version bump describing how to declare recommendations, briefs and summary functions.
+## 8. MCP, guidance and rollout
 
----
+- `read_app_template` returns supported declarations. Add a bounded saved-app feature read path shared by Automations and both assistants; discover saved/custom app features without requiring a catalog install.
+- `prepare_data_access` accepts proposed selections, runner and recipients as draft-only inputs. The server recomputes the exact review/digest; only the supported owner UI action confirms installation choices.
+- `list_app_automations` preserves existing definitions and exposes provenance/setup states with bounded pagination. Available recipes must not fabricate enabled automation IDs or be counted as running jobs.
+- Reuse current prepare/read/`confirm_app_service_review` tools for later chat creation and activation. The install restriction must not remove those capabilities.
+- At implementation release, update and version dynamic/bundled authoring and usage guidance together; describe only capabilities actually shipped. This scope update does not advertise unimplemented MCP fields as available today.
+- Roll out behind an additive feature gate. Existing apps, monitors, actions, IDs, schedules and installed template versions remain unchanged. Publish new declarations in separately reviewed immutable template versions; retrofitting deployed templates is separate work. Disabling the new offers must not disable already approved existing automations or ordinary app use.
+- No new provider, billing system, global scheduler, cross-owner delegation or external-send automation is authorized by this scope.
 
-## 8. Acceptance criteria
+## 9. Acceptance criteria
 
-1. **Defaults:** installing a template with 3 recommendations as the owner shows all 3 with their defaults. Add app creates the app and the selected automations in one transaction; Automations lists them linked to the app with "Recommended by *App*".
-2. **Changes in the dialog:** turning one off, changing a weekly digest to Thursday 09:00 and adding a recipient are stored exactly. The turned-off one appears under "Recommended, not set up".
-3. **No runner:** research recommendations are created switched off with the "connect to activate" note. Connecting a runner later offers to switch them on and never does it automatically.
-4. **Non-owner installer:** the section is hidden, the owner gets the notice, and **Set up** works from the panel.
-5. **Lifecycle:** archive pauses the automations, restore offers to resume them, and reinstall shows "Already set up" for existing ones and creates no duplicates.
-6. **Email rules:** E1 sends nothing when the summary is empty with `nonEmpty`. E2 groups same-day reminders into one email per recipient. E3 alerts only when the research output meets the condition. All respect the per-recipient hourly and per-account daily limits.
-7. **Separation:** no automation can send to an address outside the workspace, and external-exchange sends never appear in Automations.
-8. **Validation:** a declaration with an unknown role, a missing brief or summary function, an external recipient or a sub-daily email fails build and catalog load with a clear error.
-9. **Assistants:** they can prefill but not confirm or enable.
-10. **App independence:** an app installed with all recommendations off works fully.
-11. **Layout:** the dialog at desktop 1440 and mobile 390, on the web and in the plugin.
+1. Install an app with three recommendations: all three toggles are on; opt one out; one Add app approval installs the app and enables the two eligible definitions with the exact displayed timing, recipient and scope.
+2. Install an app with no shareable existing tables: the automation section still appears. No recommendations means no empty section. Verify compact layout, keyboard/touch access and no horizontal overflow at 1440, approximately 900 (embedded), and 390 pixels.
+3. Edit in the popup then cancel: no app, automation or effect is created. Add app retries and lost responses return the same receipt and definitions. A later pause defeats stale retry/confirmation.
+4. Inject runner, validation, quota and post-commit setup failures: the app still opens and saves normally; pending setup is visible and recoverable. No orphan work runs for a failed/unsaved installation.
+5. Missing/unverified/paused runner: research and dependent email stay inactive; unrelated ready email can enable. Connecting later offers explicit enable; it never silently reverses a pause.
+6. Install two copies with separate data and identical recipe keys: each has correctly bound independent automations. Archive/restore/copy/delete follows §6, preserving records and required history.
+7. Add and enable from Automations → From app features, ChatGPT and Claude after installation, including one Investor Updates draft per schedule record. Repeat setup does not duplicate. Keep existing chat authorization, ownership and revocation regression tests passing.
+8. Non-owner/public/forged assistant confirmation cannot activate work for the owner or broaden access. Genuine authorized owner confirmation works on each supported host; unsupported UI confirmation has an honest fallback.
+9. Miss a reminder day, recover within the catch-up window: one current reminder sends, never zero due only to date equality and never twice. Verify expired window, changed date, reassignment, DST and stale/irrelevant records.
+10. Summary email and research follow-ups honor current recipient field/record access, empty results, budgets and delivery receipts. A completed proposal-only run with relevant output can notify; test/failed/partial runs cannot.
+11. Parent opted out, paused, edited or removed: dependent email stays blocked with a reason. Independent recommendations continue. Retries never repeat completed research or resend an uncertain provider delivery blindly.
+12. Catalog recipes with unknown roles/functions, unsupported triggers, invalid dependencies or external recipients fail declaration validation locally; legacy entries and the rest of the gallery stay usable. No template update overwrites user edits.
+
+Production enablement requires the implementation gates in the [build plan](RECOMMENDED_AUTOMATIONS_IMPLEMENTATION.md), including observed host behavior. A green unit suite or a saved recipe alone is not proof of unattended delivery.
