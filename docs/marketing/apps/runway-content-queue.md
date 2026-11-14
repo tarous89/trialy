@@ -731,3 +731,12 @@ This supersedes C7 source and merged-pending checkpoints. **28 published; 19 unf
 ### D1 claimed — 14 November 2026
 
 Current queue, app plan and shared playbook reread; C7 is live and public main is `39af173ce6e7acb7ac95709f82eafa926f56b49e`. Open source PRs checked; no unfinished Runway release or competing D1 claim. D1 will use a distinct preclinical evidence-package/reserve example rather than duplicate the B1 shortlist or claim an unsupported best ranking. Fictional assumptions and independently calculated monthly balances will be separated from genuine Runway browser demo images. No new article published yet; 28 published, 19 unfinished.
+
+
+### Canonical queue D1 source prepared — 14 November 2026
+
+Title: Cash runway software for preclinical biotech: fund the next evidence package. Target: https://trialagents.com/apps/preclinical-biotech-cash-runway. [PR #209](https://github.com/tarous89/trialagents-public/pull/209), exact head `f8499ded88df3428821e23dd642dd3e28b2bebce`. Retitled from the candidate best-software headline to keep Series D an app-centered use case, avoid an unsupported ranking and differentiate B1 and the existing CRO timing example (queue D11).
+
+Approved Runway 2.1 catalog and FDA preclinical primary source reviewed: https://www.fda.gov/patients/drug-development-process/step-2-preclinical-research. Fictional all-EUR example: opening 2.4m at 31 Dec 2026; monthly 120k Jan 2027–Jan 2028 includes all people costs; one-off 600k March and 300k May; no receipts/other flows; September internal review; chosen 300k reserve. Separate downside plan adds 240k July repeat assay. Decimal-recalculated September balances 420k/180k; reserve headroom +120k/−120k; first negative January 2028/November 2027. Not regulatory readiness, industry cost benchmark, probability, app execution or host acceptance test. Genuine Plan/Cash flow browser demo images are explicitly separate fictional data. No fabricated scenario control, bank feed or intramonth forecast.
+
+Local arithmetic, article structure/anchors/final CTA and JS syntax passed. Existing shell, CSS and tracking unchanged. Await full exact-head predeploy, desktop/mobile artifact inspection, merge and independent live checks. Resume PR #209 before another topic. Totals remain 28 published, 19 unfinished.
