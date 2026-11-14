@@ -8,7 +8,7 @@ import {readCustomLayout,updateCustomLayout} from '../src/shared/custom-layout.j
 
 /* Runway 2.0.0: the catalog entry, prepared exactly as AppTemplates.operation prepends configuration, executed in production QuickJS. */
 const entry=await appTemplates.read({templateId:'life.cash-runway',version:'2.1.0'});
-const schema=JSON.parse(await readFile('templates/source/cash-runway/schema.example.json','utf8'));
+const schema=JSON.parse(await readFile('templates/source/cash-runway/archive/2.1.0/schema.example.json','utf8'));
 const roles=Object.keys(schema);
 const map=Object.fromEntries(roles.map(r=>[r,{typeId:r,fields:schema[r].logicalFields,writableFields:Object.keys(schema[r].logicalFields)}]));
 const bindings=roles.map(r=>({typeId:r,fields:Object.values(schema[r].logicalFields)}));
@@ -64,7 +64,8 @@ async function reconciled(){
 test('catalog entry is a new immutable major version that keeps 1.2.2 discoverable',async()=>{
  assert.equal(entry.version,'2.1.0');assert.equal(entry.name,'Runway');assert.equal(entry.engine,'frontend-js');
  assert.doesNotMatch(entry.source!,/const templateConfiguration=|const templateBindings=/);
- assert.equal((await appTemplates.read({templateId:'life.cash-runway'})).version,'2.1.0');assert.equal((await appTemplates.read({templateId:'life.cash-runway',version:'2.0.0'})).version,'2.0.0');
+ // The newest file in the repository catalog is the 2.2.0 draft; 2.1.0 stays readable by version.
+ assert.equal((await appTemplates.read({templateId:'life.cash-runway'})).version,'2.2.0');assert.equal((await appTemplates.read({templateId:'life.cash-runway',version:'2.0.0'})).version,'2.0.0');
  assert.equal((await appTemplates.read({templateId:'life.cash-runway',version:'1.2.2'})).version,'1.2.2');
  assert.equal(roles.length,13);for(const r of roles)for(const f of schema[r].fields){assert.equal(f.multiple,false);assert.match(f.key,/^[a-z][a-z0-9_]{0,63}$/);}
  assert.deepEqual(readCustomLayout(source())!.schema.screens.map(s=>s.id),['overview','cash_flow','plan','people','scenarios','actuals','settings']);
@@ -186,7 +187,7 @@ test('drafts survive re-renders and failed proposals; edits carry the version ca
 });
 
 test('every screen renders the fictional demo within frame and state limits',async()=>{
- const demo=JSON.parse(await readFile('templates/source/cash-runway/demo_data.json','utf8')).records;
+ const demo=JSON.parse(await readFile('templates/source/cash-runway/archive/2.1.0/demo_data.json','utf8')).records;
  for(const section of ['overview','cash_flow','plan','people','scenarios','actuals','settings']){const r=await render(demo,{section});assert.doesNotMatch(r.html,/could not be calculated|rw-banner bad/,section);assert.ok(r.html.length<200000);assert.ok(Buffer.byteLength(JSON.stringify(r.state))<100000);}
 });
 
@@ -202,7 +203,7 @@ test('custom layout changes only configuration and rejects invalid scope',()=>{
 
 test('production design inspector accepts all seven screens and the scenario builder',async()=>{
  const {inspectAppDesign}=await import('../src/workspace/design-quality.js');
- const demo=JSON.parse(await readFile('templates/source/cash-runway/demo_data.json','utf8')).records;
+ const demo=JSON.parse(await readFile('templates/source/cash-runway/archive/2.1.0/demo_data.json','utf8')).records;
  const frames:any[]=[];
  for(const section of ['overview','cash_flow','plan','people','scenarios','actuals','settings']){const r=await render(demo,{section});frames.push({name:section,html:r.html,css:r.output.css});}
  // The scenario builder is inline; drawers scroll inside their own body, which this inspector reads as overlap, so they are checked in the browser test.

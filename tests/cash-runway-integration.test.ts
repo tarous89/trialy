@@ -41,11 +41,14 @@ test('installed Runway uses the real manifest, reviewed writes and versioned nat
   await assert.rejects(f.runFrontend(actor,w.id,{componentId:saved.id,expectedVersion:saved.version,state:edit.state,event:{kind:'submit',action:'save-record',form:{name:'Stale edit'}}}),/changed|version/i);
  }finally{await x.pg.close();}
 });
-test('the approved 2.1.0 catalog entry replaces 2.0.0 and 1.2.2 and its installer creates thirteen empty tables and an app that opens with no automation',async()=>{
+test('the 2.1.0 catalog entry (approved in deployed catalogs) replaces 2.0.0 and 1.2.2 and its installer creates thirteen empty tables and an app that opens with no automation',async()=>{
  const x=await cashFixture();
  try{
-  await syncTemplateCatalog(x.db);const row=(await x.db.query("SELECT status,install_schema FROM app_template_catalog WHERE template_id='life.cash-runway' AND version='2.1.0'")).rows[0];
-  // Owner-approved replacement: a fresh catalog approves 2.1.0 and lists it instead of 2.0.0 and 1.2.2.
+  await syncTemplateCatalog(x.db);
+  // Since 14 November 2026 the seed names 2.2.0: a fresh catalog approves 2.2.0. Existing catalogs keep 2.1.0 approved (status is never reset on deploy).
+  assert.equal((await x.db.query("SELECT status FROM app_template_catalog WHERE template_id='life.cash-runway' AND version='2.2.0'")).rows[0].status,'approved');
+  await x.db.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.cash-runway' AND version='2.1.0'");await x.db.query("UPDATE app_template_catalog SET status='draft' WHERE template_id='life.cash-runway' AND version='2.2.0'");
+  const row=(await x.db.query("SELECT status,install_schema FROM app_template_catalog WHERE template_id='life.cash-runway' AND version='2.1.0'")).rows[0];
   assert.equal(row.status,'approved');assert.equal(Object.keys(row.install_schema).length,13);
   for(const old of ['1.2.2','2.0.0'])assert.equal((await x.db.query("SELECT status FROM app_template_catalog WHERE template_id='life.cash-runway' AND version=$1",[old])).rows[0].status,'draft');
   const catalog=new AppTemplates(undefined,x.db),listed=(await catalog.list({query:'runway'})).templates.find(t=>t.id==='life.cash-runway');assert.equal(listed?.version,'2.1.0');assert.equal(listed?.name,'Runway');
@@ -71,7 +74,7 @@ test('the approved 2.1.0 catalog entry replaces 2.0.0 and 1.2.2 and its installe
 test('rule 9 modularity: alone, with Programs, Programs deleted, binding removed, reinstall',async()=>{
  const x=await cashFixture();const {pg,db,f,s,actor}=x;
  try{
-  await syncTemplateCatalog(db);
+  await syncTemplateCatalog(db);await db.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.cash-runway' AND version='2.1.0'");
   const t=await new AppTemplates(undefined,db).read({templateId:'life.cash-runway',version:'2.1.0'});
   const contract=JSON.parse(await readFile('templates/core-contract/v1.json','utf8'));
   const open=async(w:string,id:string)=>{const c=(await f.readComponent(actor,w,id)).component;return f.runFrontend(actor,w,{componentId:c.id,expectedVersion:c.version,event:{kind:'open'}});};
@@ -98,7 +101,7 @@ test('rule 9 modularity: alone, with Programs, Programs deleted, binding removed
   const tx1=await save(w2.id,programs,{name:'TX-1',stage:'phase_1',status:'active',health:'green',archived:false});
   await save(w2.id,planItems,{name:'IND filing',program_id:tx1,item_type:'milestone',end_date:'2027-06-20',status:'planned',is_key:true,archived:false});
   // Reuse, never copy: Runway binds the existing programs table and reads plan_items; it creates only its own tables.
-  const schemas=JSON.parse(await readFile('templates/source/cash-runway/schema.example.json','utf8')),map:any={},bindings:any[]=[],fields:any[]=[];
+  const schemas=JSON.parse(await readFile('templates/source/cash-runway/archive/2.1.0/schema.example.json','utf8')),map:any={},bindings:any[]=[],fields:any[]=[];
   for(const [role,def] of Object.entries(schemas) as [string,any][]){
    const typeId=role==='programs'?programs:await table(w2.id,'Runway · '+def.name,def.fields),keys=def.fields.map((f:any)=>f.key);
    map[role]={typeId,fields:def.logicalFields,writableFields:Object.keys(def.logicalFields)};bindings.push({typeId,fields:keys});

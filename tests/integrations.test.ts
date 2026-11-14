@@ -21,6 +21,7 @@ async function setup(){
  await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,'owner@example.invalid','Owner']);
  const f=new WorkspaceFoundation(db),s=new Service(db);
  await syncTemplateCatalog(db);
+ await db.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.cash-runway' AND version='2.1.0'");
  // 2.1.0 is a draft in the catalog; it is approved only inside this test database.
  await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.project-oversight' AND version='2.1.0'");
  const catalog=new AppTemplates(undefined,db);
