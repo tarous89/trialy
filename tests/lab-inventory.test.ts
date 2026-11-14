@@ -30,6 +30,11 @@ test('catalog entry: 2.0.0 Lab Inventory, valid schema, limits, layout with six 
  const req=(r:string)=>(schema[r].fields as any[]).filter(f=>f.required).map(f=>f.key);
  assert.deepEqual(req('labinventory.lots'),['item_id','quantity','location_id','status']);assert.deepEqual(req('labinventory.movements'),['lot_id','kind','quantity_change','occurred_on']);
  assert.deepEqual(req('labinventory.requests'),['quantity','requested_by','requested_on','status']);assert.deepEqual(req('labinventory.orders'),['supplier_id','ordered_by','ordered_on','status']);
+ // Draft: the seed still names 1.0.2 (archived unchanged); 1.0.2 is marked for retirement on approval.
+ const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8')),inst=JSON.parse(await readFile('templates/catalog-installers.json','utf8')),ret=JSON.parse(await readFile('templates/catalog-retirements.json','utf8')).retirements;
+ assert.deepEqual([seed['life.inventory-management'].version,seed['life.inventory-management'].schema],['1.0.2','templates/source/inventory-management/archive/1.0.2/schema.example.json']);
+ assert.equal(inst['life.inventory-management@2.0.0'],'templates/source/inventory-management/schema.example.json');assert.equal(inst['life.inventory-management@1.0.2'],'templates/source/inventory-management/archive/1.0.2/schema.example.json');
+ assert.deepEqual(ret.filter((r:any)=>r.templateId==='life.inventory-management').map((r:any)=>[r.version,r.replacedBy]),[['1.0.2','life.inventory-management@2.0.0']]);
  // §12 demo: 40 items across categories, 60 lots, 12 locations, requests in every status, 8 orders; all fictional.
  const rows=fresh(),n=(r:string)=>byRole(rows,r).length;
  assert.deepEqual([n('labinventory.items'),n('labinventory.lots'),n('labinventory.locations'),n('labinventory.orders')],[40,60,12,8]);

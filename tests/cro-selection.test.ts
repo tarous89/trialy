@@ -30,7 +30,7 @@ test('catalog entry, scalar schema, roles as in scope §7, croselection.awards i
  const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8')),installers=JSON.parse(await readFile('templates/catalog-installers.json','utf8')),ret=JSON.parse(await readFile('templates/catalog-retirements.json','utf8')).retirements;
  assert.equal(seed['life.cro-selection'].version,'1.0.1');assert.equal(installers['life.cro-selection@2.0.0'],'templates/source/cro-selection/schema.example.json');assert.equal(installers['life.cro-selection@1.0.1'],'templates/source/cro-selection/archive/1.0.1/schema.example.json');
  const old=await appTemplates.read({templateId:'life.cro-selection',version:'1.0.1'});assert.equal(old.version,'1.0.1');
- assert.deepEqual(ret.map((r:any)=>[r.templateId,r.version,r.replacedBy]),[['life.cro-selection','1.0.1','life.cro-selection@2.0.0'],['life.sponsor-rfp-management','1.0.1','life.cro-selection@2.0.0']]);
+ assert.deepEqual(ret.filter((r:any)=>r.replacedBy==='life.cro-selection@2.0.0').map((r:any)=>[r.templateId,r.version,r.replacedBy]),[['life.cro-selection','1.0.1','life.cro-selection@2.0.0'],['life.sponsor-rfp-management','1.0.1','life.cro-selection@2.0.0']]);
  for(const r of ret)assert.ok(await appTemplates.read({templateId:r.templateId,version:r.version}),r.templateId);
 });
 
