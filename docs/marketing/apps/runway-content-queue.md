@@ -764,3 +764,14 @@ This supersedes D1 claim/source/merged-pending checkpoints. **29 published; 18 u
 ### D2 execution claim — 14 November 2026
 
 D1 rechecked HTTP 200; public main `11bb7a76844d024cd48f37bb377828256668186b`; open PRs reconciled, no unfinished Runway release or competing claim. D2 retitled to a concrete clinical-stage monthly-close/variance workflow, avoiding unsupported best ranking and duplication of B1/D1/D4/D11. Demonstrate a fictional cash variance that reverses next month because a payment remains due; preserve budget and close snapshots, revise future inputs through review. No accounting advice or completed app/host test. 29 published, 18 unfinished until live verification.
+
+
+### Canonical queue D2 source checkpoint — 14 November 2026
+
+**Financial planning for clinical-stage biotechs: explain the monthly cash variance.** Target https://trialagents.com/apps/clinical-stage-biotech-financial-planning. [PR #210](https://github.com/tarous89/trialagents-public/pull/210), head `c74732431f1179d4a3ab157b98885cd4b378807d`. Distinct monthly close/budget/live forecast use case, replacing unsupported best-software headline and avoiding B1/D1/D4/D11 duplication.
+
+Evidence: current life.cash-runway 2.1.0 catalog; genuine media README and 06-actuals.jpg/02-cash-flow.jpg; https://www.fda.gov/patients/drug-development-process/step-3-clinical-research (protocol design context only). Product workflow: Plan lock budget, reviewed actuals and app-owned frozen close, future Plan revision, Cash flow reconciliation. No automatic bank feed/file parsing, accounting/AR/AP/three-statement model, host parity or completed app test claimed.
+
+Fictional all-EUR two-month example independently checked with Decimal: opening 3m at 31 December 2026; Jan/Feb monthly Clinical300k/CMC80k/Research40k/G&A80k, inclusive of all people costs, no other flows. January actual Clinical180k; other categories match. Total actual380k vs budget500k; variance −120k; closing2.62m. Remaining120k confirmed due February; revised February620k closes at2m, equal to original two-month budget. No claim of permanent saving or full cash-out date. Genuine browser screenshots use separate fictional data.
+
+Local arithmetic, structure/anchors/final CTA and JS syntax pass. Seven source files; shared shell, CSS and analytics unchanged. Await full exact-head predeploy, visual artifacts, merge and independent live checks. Resume PR #210 before drafting another topic. 29 published, 18 unfinished. Refresh on catalog/calculation/permission changes.
