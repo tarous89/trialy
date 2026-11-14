@@ -40,7 +40,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | D3 | Budgeting software for biotechs under 20 employees: count each cost once | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/budgeting-software-small-biotech-teams) |
 | D4 | How to forecast a clinical trial delay: separate deferred payments from extra months | Published — live verified 14 November 2026; PR #212, release `511245f24749c7e3993f71c628c636bd7872be24` | https://trialagents.com/apps/clinical-trial-delays-cash-runway |
 | D5 | Forecast CRO costs and vendor payments: reconcile what is still payable | Published — live verified 14 November 2026; PR #213, release `737d8dcafa887324da8ec275fcdc9493bff364e2` | https://trialagents.com/apps/cro-costs-vendor-payments-biotech-budget |
-| D6 | Biotech Hiring vs Outsourcing: How to Model the Impact on Cash Runway | In progress — claimed 14 November 2026; source preparation | Same-period People/Plan comparison with hiring-delay sensitivity; no PR yet. |
+| D6 | Biotech hiring vs outsourcing: compare cash through the handover | Merged — deployment pending/unverified | PR #214; release `e50602db40385e5a3d54747759a793f1fb3747fc`; 14 November 2026 23:02 CET. |
 | D7 | How to Plan Biotech Runway Around the Next Funding Round | Queued — verify and publish | — |
 | D8 | Best Financial Planning Tools for Grant-Funded Biotech Startups | Queued — verify and publish | — |
 | D9 | Cash Runway Planning for Biotechs with Multiple R&D Programs | Queued — verify and publish | — |
@@ -880,3 +880,8 @@ PR #213 merged as `737d8dcafa887324da8ec275fcdc9493bff364e2` after full exact-he
 ### D6 source checkpoint — 14 November 2026 22:54 CET
 
 D6 claimed in [PR #214](https://github.com/tarous89/trialagents-public/pull/214), exact head `249cc6178430c2f86b542839509e8f3031c691cf`. Title: **Biotech hiring vs outsourcing: compare cash through the handover**. Intended URL: https://trialagents.com/apps/biotech-hiring-vs-outsourcing-cash-runway. Three fictional same-period cases (retain vendor, hire April, hire July) distinguish salary loading, recruitment and bridge support without claiming equivalent capacity. Current approved Runway 2.1 catalog and BLS compensation framework reviewed; 36 monthly balances independently checked with Decimal. Genuine People/Cash flow demo screenshots, no executed app/host test claimed. Local structure/syntax passed. Await full exact-head predeploy and visual review before merge, then independent live verification. Resume this PR before another topic. Count unchanged: 33 published, 14 unfinished.
+
+
+### D6 merged; live verification pending — 14 November 2026 23:02 CET
+
+PR #214 merged as `e50602db40385e5a3d54747759a793f1fb3747fc` after exact-head predeploy run `43645186316` passed both jobs on `249cc6178430c2f86b542839509e8f3031c691cf`. Artifact `14133642081` inspected throughout at 1440px and 390px: shared shell, numbered headings, scroll-contained tables, genuine images/captions and final CTA passed. Automatic GitHub-to-CDN build pending. Verify https://trialagents.com/apps/biotech-hiring-vs-outsourcing-cash-runway before marking Published. Resume this release before a new topic. No Cloudflare dashboard action required.
