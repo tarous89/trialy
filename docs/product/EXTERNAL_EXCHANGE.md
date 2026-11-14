@@ -131,3 +131,22 @@ Recipient accounts or portals; e-signature (signed PDFs are uploaded back); wate
 6. Bound tables update without review and cannot be edited by people or assistants.
 7. Q&A: a private answer reaches only the asker; a published answer reaches the room or level without naming the asker; each triggers the matching email.
 8. Every new email type is shown exactly as sent and is human-confirmed, or pre-approved for the digest; assistants can draft but not send.
+
+## 6. Update extension (for Investor Updates)
+
+**Status:** scoped 14 November 2026 for [Investor Updates](app-template-blueprints/apps/INVESTOR_UPDATES.md) (BT2-06). It builds on the room extension (§5), so build it after Data Room PR A. Everything in §2 and §5 still applies.
+
+| # | Addition | What it does |
+|---|---|---|
+| U1 | **Rich content page** | A room-mode group can carry rendered content (sanitised HTML produced by the app's block renderer, with images from platform documents) shown as the main page. Documents are optional. |
+| U2 | **Rich email body** | Email type *update*: the body is the rendered content (email-safe HTML with a plain-text part), plus the personal link and the confidentiality footer. It follows the existing rules: shown exactly as sent, human-confirmed, Reply-To the sender, bounces recorded, rate limit. A one-click unsubscribe per series is recorded per recipient and honoured by later sends. |
+| U3 | **Ask buttons** | Content can declare asks (key and text). The online page shows "I can help" with an optional note; each response is an event bound to the exchange and written to the app's bound responses table (as R7). The email links to the same action. |
+| U4 | **Series archive** | Groups can share a `series` key; a recipient's page lists earlier updates of that series sent to the same email, newest first. Revoking one exchange hides only that update. |
+
+**Acceptance (update extension):**
+1. The email body and the online page show the same content.
+2. The email passes common-client rendering checks and includes a plain-text part.
+3. Unsubscribe excludes that recipient from later sends of the series.
+4. Ask responses arrive once per click with the note, and the asker is visible only to the workspace.
+5. A recipient's archive shows only updates sent to them.
+6. Assistants cannot send or see links.
