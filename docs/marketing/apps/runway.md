@@ -31,6 +31,7 @@
 | Cash runway apps in ChatGPT (canonical queue C1) | https://trialagents.com/apps/cash-runway-apps-chatgpt | Published via PR #203, release `22661f0fc9e408f4fc6eb7fb2ab72d2bbfbd255e`; live verified 14 November 2026 05:10 CET. |
 | Financial planning apps for Claude (canonical queue C2) | https://trialagents.com/apps/financial-planning-apps-claude | Published via PR #204, release `3fe8e5ec60157a814aad7d2d2bdd8ca4dd5db11a`; live verified 14 November 2026 06:04 CET. |
 | Claude biotech cash flow forecasting (canonical queue C4) | https://trialagents.com/apps/biotech-cash-flow-forecasting-claude | Published via PR #205, release `0bb286174ad6c1a925fa427fb115de7640ef79f4`; live verified 14 November 2026 07:00 CET. |
+| AI CFO vs AI-native financial planning app (canonical queue C5) | https://trialagents.com/apps/ai-cfo-vs-financial-planning-app-biotech | Published via PR #206, release `3a7efd4acfc5578784bccd3c21e344dcbfa13c67`; live verified 14 November 2026 08:10 CET. |
 | App pages index | https://trialagents.com/apps | Published; production URL checked 12 November 2026 |
 
 These are intended canonical URLs. Do not assert that a URL is live until checked on the production CDN.
@@ -664,3 +665,17 @@ C5 predeploy checkpoint: final CTA aligned with the standard last article sectio
 ### C5 merged — deployment pending, 14 November 2026 08:05 CET
 
 PR #206 merged as `3a7efd4acfc5578784bccd3c21e344dcbfa13c67` at approximately 07:05:38 UTC. Revised exact head `368758c7b7c5f6799c7145b8139c6f0b467f5146` passed full predeploy run `43568822826` (validate and seo-container). Artifact `14102584979` matches that head; desktop 1440px and mobile 390px screenshots inspected through all sections, including contained scrollable tables, genuine images, captions, final CTA and shared chrome. Await automatic GitHub-connected deployment and independent live verification at https://trialagents.com/apps/ai-cfo-vs-financial-planning-app-biotech. Resume this release before drafting another topic. Totals remain 25 published, 22 unfinished until verification.
+
+
+### C5 published and live verified — 14 November 2026, 08:10 CET
+
+- **Title:** AI CFO vs AI-native financial planning app: what does a biotech startup need?
+- **Live URL:** https://trialagents.com/apps/ai-cfo-vs-financial-planning-app-biotech
+- **Release:** [PR #206](https://github.com/tarous89/trialagents-public/pull/206), validated source head `368758c7b7c5f6799c7145b8139c6f0b467f5146`, merge `3a7efd4acfc5578784bccd3c21e344dcbfa13c67` at approximately 07:05:38 UTC.
+- **Predeploy:** full exact-head run `43568822826` passed validate and seo-container. Artifact `14102584979` matches that head; desktop 1440px/mobile 390px screenshots visually inspected through all sections, including contained tables, both genuine demo images, captions, final CTA and shared shell. Live article fragment and shared inline CSS exactly match validated source.
+- **Deployment:** automatic GitHub-connected Cloudflare build succeeded, check `132370997526`; production check `132370394778` also passed. Initial 404s resolved to HTTP 200 within approximately three minutes; no dashboard sign-in or manual deployment.
+- **Independent live checks:** HTTP 200 HTML, expected H1/title/description/self-canonical, Article/BreadcrumbList schema and publication date, no noindex, valid anchors, two genuine images and one final Start with Runway CTA. All 10 checked source/internal/CTA/image/analytics URLs returned HTTP 200. Header/footer match homepage; /apps, sitemap.xml, llms.txt and llm.xml returned 200 and contain this route; exactly one canonical sitemap entry; robots.txt permits /apps.
+- **Tracking preserved:** homepage-identical loader `/_snapshot/query-assets/114933b27c521a75f333.js` appears once and returns 200; its referenced client `/_snapshot/query-assets/c251da7b4969f7c85048.js` returns 200. No change to scripts, configuration, consent, events, collectors or attribution. HTTP retrieval and predeploy artifacts used; no synthetic production events sent.
+- **Editorial/evidence:** distinct finance-responsibility decision framework, documented host boundaries and six-step hiring review. Python Decimal verified the fictional EUR 12k monthly people cost and displayed closing balances. Current primary cfo.ai and Claude sources linked inline. Genuine browser media is clearly separate from the exercise; no completed host/vendor test claimed. Refresh on vendor/host/catalog changes.
+
+This supersedes C5 source and merged-pending checkpoints. **26 published; 21 unfinished**, including owner-deferred A9. **Next eligible: C6, Best MCP-Connected Financial Planning Software for Biotech Teams**, subject to fresh evidence, duplicate and claim checks. Only C5 was newly published in this run. Search indexing, rankings and assistant citations remain unverified.
