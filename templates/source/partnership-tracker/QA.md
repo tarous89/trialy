@@ -9,7 +9,8 @@ Run on 14 November 2026 with fictional data only: production QuickJS, disposable
 | `tests/partnership-template.test.ts`, `tests/partnership-integration.test.ts` (released 1.1.1, archived source) | pass |
 | `scripts/test-partnerships-browser.ts` (production frame, 1440 and 390 px) | pass |
 | `node scripts/build-partnerships-template.mjs --check` and `node scripts/build-partnership-template.mjs --check` (both in `npm run build`) | verified |
-| `npm run check`, `npm run build`, `npm test` | pass |
+| `npm run check`, `npm run build` | pass |
+| `npm test` (597 tests) | 595 pass. `cro-selection.test.ts` asserted the whole retirements list; it is now scoped to its own entries and passes. `monitoring-pv-integration.test.ts` (CO06 design gate at 390 px) fails identically on unmodified `main` in this container, whose Chromium build differs from CI's; not affected by this change. |
 
 ## Package checklist
 
