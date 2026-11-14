@@ -32,6 +32,7 @@
 | Financial planning apps for Claude (canonical queue C2) | https://trialagents.com/apps/financial-planning-apps-claude | Published via PR #204, release `3fe8e5ec60157a814aad7d2d2bdd8ca4dd5db11a`; live verified 14 November 2026 06:04 CET. |
 | Claude biotech cash flow forecasting (canonical queue C4) | https://trialagents.com/apps/biotech-cash-flow-forecasting-claude | Published via PR #205, release `0bb286174ad6c1a925fa427fb115de7640ef79f4`; live verified 14 November 2026 07:00 CET. |
 | AI CFO vs AI-native financial planning app (canonical queue C5) | https://trialagents.com/apps/ai-cfo-vs-financial-planning-app-biotech | Published via PR #206, release `3a7efd4acfc5578784bccd3c21e344dcbfa13c67`; live verified 14 November 2026 08:10 CET. |
+| MCP-connected financial planning software for biotech: check scope before writes (C6) | https://trialagents.com/apps/mcp-financial-planning-software-biotech | Published; live verified 14 November 2026; PR #207; release `e8ed31e7e198641c7bbd1e78b69db395735dfd29` |
 | App pages index | https://trialagents.com/apps | Published; production URL checked 12 November 2026 |
 
 These are intended canonical URLs. Do not assert that a URL is live until checked on the production CDN.
@@ -693,3 +694,17 @@ Six-step fictional demo: identify Demo Biotech A and one committed EUR 40k one-o
 ### C6 merged — deployment pending, 14 November 2026 08:58 CET
 
 PR #207 merged as `e8ed31e7e198641c7bbd1e78b69db395735dfd29` at approximately 07:58:30 UTC. Exact head `6dff70ea0b00fd978dd8261a841bef2f6688ca24` passed full predeploy run `43572862232` (validate and seo-container). Artifact `14105172975` matches that head; desktop 1440px/mobile 390px screenshots visually inspected through every section, contained scrollable tables, two genuine images, captions, final CTA and shared shell. Await existing automatic GitHub-connected deployment and independent live verification at https://trialagents.com/apps/mcp-financial-planning-software-biotech. Resume this release before another topic. Totals remain 26 published, 21 unfinished until live verification.
+
+
+### C6 published and live verified — 14 November 2026, 09:02 CET
+
+- **Title:** MCP-connected financial planning software for biotech: check scope before writes.
+- **Live URL:** https://trialagents.com/apps/mcp-financial-planning-software-biotech
+- **Release:** [PR #207](https://github.com/tarous89/trialagents-public/pull/207), validated head `6dff70ea0b00fd978dd8261a841bef2f6688ca24`, merge `e8ed31e7e198641c7bbd1e78b69db395735dfd29` at approximately 07:58:30 UTC.
+- **Predeploy:** exact-head run `43572862232` passed validate and seo-container. Artifact `14105172975` matches that head; desktop 1440px/mobile 390px screenshots visually inspected through every section: contained scrollable tables, readable text, both genuine demo images, captions, final CTA and shared shell. Served article fragment and inline shared CSS match validated source exactly.
+- **Deployment:** existing automatic GitHub-connected Cloudflare build check `132383566911` succeeded; generic production check `132382896055` passed. Early curl HTTP 404s resolved to 200 within approximately two minutes. A Python urllib request returned 403 while curl retrieved the pending page; no authentication fault inferred. No dashboard login, manual deployment or integration change.
+- **Independent live checks completed 08:02:32 UTC:** HTTP 200 text/html, complete expected content, H1/title/description/self-canonical, Article/BreadcrumbList schema and publication date, no noindex, valid local anchors, two genuine images and one final Start with Runway CTA. All 11 checked source/internal/CTA/image/analytics URLs returned HTTP 200. Shared header/footer match homepage. /apps, sitemap.xml, llms.txt and llm.xml return 200 and contain the article; exactly one canonical sitemap entry; robots.txt permits /apps.
+- **Tracking preserved:** identical homepage loader `/_snapshot/query-assets/114933b27c521a75f333.js` appears once and returns 200; its referenced client `/_snapshot/query-assets/c251da7b4969f7c85048.js` returns 200. No changes to tracking scripts, configuration, events, consent, collectors or attribution. Verification used HTTP retrieval and predeploy browser artifacts; no synthetic production events sent.
+- **Evidence boundary:** primary-documentation comparison and proposed six-step workspace/write/recovery exercise, not an executed vendor or host acceptance test. Fictional EUR 40k payment timing arithmetic independently checked; genuine browser demo media is explicitly separate. Current MCP architecture, cfo.ai and LivePlan sources linked inline. No invented interfaces, benchmarks, host parity or standard 13-week feature claims. Refresh when catalog, host or vendor scope changes.
+
+This supersedes C6 source and merged-pending checkpoints. **27 published; 20 unfinished**, including owner-deferred A9. **Next eligible: C7, Can You Build a Custom Cash Runway App with ChatGPT or Claude?**, subject to fresh queue, evidence, duplicate and claim checks. Only C6 was newly published in this run. Search indexing, rankings and assistant citations remain unverified.
