@@ -17,7 +17,7 @@
 |---|---|---|
 | 01 Runway | [apps/RUNWAY.md](apps/RUNWAY.md) | `life.cash-runway` 2.1.0 published (#131) |
 | 02 Programs | [apps/PROGRAMS.md](apps/PROGRAMS.md) | `life.project-oversight` 2.1.0 published (#136), with manual cash forecast and Runway integration |
-| 03 Fundraise | [apps/FUNDRAISE.md](apps/FUNDRAISE.md) | Built in PR #137 (open) |
+| 03 Fundraise | [apps/FUNDRAISE.md](apps/FUNDRAISE.md) | `life.investor-crm` 2.0.0 built in PR #137 and revised 14 Nov for default-on automations (#168/#169, helpers E7) and AI-native customization; draft until approved |
 | 10 Bio Radars | [apps/BIO_RADAR.md](apps/BIO_RADAR.md) | Scoped (14 Nov); family of 8 small apps (Pipeline, Trial, Literature 2.0.0, Patent, Market, Deal, Funding, Regulatory Radar) on one radar kit; automations on by default; editable tracker and research template; build kit + Trial Radar first (on #168 and #169, plus platform additions E5 and E6 first) |
 | 09 Lab Inventory | [apps/LAB_INVENTORY.md](apps/LAB_INVENTORY.md) | Scope approved (14 Nov); replaces `life.inventory-management` 1.0.2 as 2.0.0; no platform work (one PR) |
 | 07 Partnerships | [apps/PARTNERSHIPS.md](apps/PARTNERSHIPS.md) | `life.partnership-tracker` 2.0.0 built (draft until approved; replaces 1.1.1, listed in `catalog-retirements.json`); source `templates/source/partnership-tracker/` |

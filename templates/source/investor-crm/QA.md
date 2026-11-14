@@ -4,6 +4,20 @@ Validated on 12 November 2026 against the repository host with disposable PGlite
 
 **Catalog status:** 2.0.0 is a **draft** catalog version until the owner approves it. `templates/catalog-seed.json` still names 1.0.1 (its schema path now points at `archive/1.0.1/`, same bytes), so the catalog sync inserts 2.0.0 as draft. The 1.0.1 catalog JSON and digest are unchanged; its source package is archived byte-for-byte under `archive/1.0.1/`, and its installer, seed and test paths point there. Tests approve 2.0.0 only inside their own databases.
 
+## Revision of 14 November 2026 (current platform)
+
+Rebased onto `main` at `eaf9446` (59 commits after the original base) and revised against template guidance **1.3.30** (`templates/TEMPLATE_AUTHORING.md`: installed app functions E7 1.3.30, app permissions and result storage 1.3.29, research + email and run-time fields 1.3.28, automation declarations 1.3.27) and contract registry 2026-11-13. Same environment notes as below (disposable PGlite, fictional data, `PLAYWRIGHT_BROWSERS_PATH` mapping for this container's Chromium).
+
+| Finding on the rebased draft | Change |
+| --- | --- |
+| 7 Fundraise tests failed: install and connect rejected "Data room access does not match dataroom.v1: room_purpose lacks contract options" | Own `dataroom.access_grants.room_purpose` gains the additive `partnering` option and the contract description; the app's select offers it. |
+| The provider-engagement test used fixed November dates for "hot" (≥ 3 views in 7 days), so it expired | Dates relative to today. |
+| No automation declarations; Settings described automations as "configure later" | `recommendedAutomations` round_digest, signed_commitment, investor_research; two E7 helpers; Settings names the automations and where they live. |
+| Research reading 4 tables through the brief helper was refused at setup (`brief_scope`: brief reads exceed the read scope) | Research read bindings use `fields:"all"` (E6). Found by the new end-to-end test. |
+| Customization limited to the layout gear and settings lists | `custom_fields`, `stage_labels`, `preferences` (§8a). |
+
+RESULTS_PLACEHOLDER
+
 ## Commands and outcomes
 
 | Command | Result |
@@ -72,5 +86,6 @@ Seed 2026, EUR, target 15,000,000.
 ## Not verified here
 
 - A live Claude or ChatGPT session, a deployed install, and real write restrictions on a deployed account.
-- Automation setup or delivery: no digest, notice or research automation was configured, and no email was sent.
-- Gallery screenshot and manifest entry: added at publication, as for Programs.
+- Automation setup and delivery on a deployed host: recipes were installed, activated and delivered only against the repository host with `APP_AUTOMATION_RECIPES_ENABLED=true`, a synthetic verified runner and a captured email transport. No real Claude or ChatGPT unattended cycle and no real email.
+- The Add app dialog's automation rows were not rendered in a browser for Fundraise (the shared dialog is covered by `tests/visual/automation-recipes.spec.cjs`).
+- Gallery screenshot and manifest entry: added at publication, as for Programs and Partnerships.

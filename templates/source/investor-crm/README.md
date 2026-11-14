@@ -1,6 +1,6 @@
 # Fundraise 2.0.0 (`life.investor-crm`)
 
-Investor pipeline for a round, from first contact to signed commitment. Scope: [FUNDRAISE.md](../../../docs/product/app-template-blueprints/apps/FUNDRAISE.md). It follows [modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md) (§4 core contract, §6 archive first, §7 role-based connections and in-app integrations) and template guidance 1.3.20. It replaces Investor CRM 1.0.1 as a new major version; the released 1.0.1 catalog JSON is unchanged and its source package is archived byte-for-byte under [`archive/1.0.1/`](archive/1.0.1/). Saved 1.0.1 apps are not migrated.
+Investor pipeline for a round, from first contact to signed commitment. Scope: [FUNDRAISE.md](../../../docs/product/app-template-blueprints/apps/FUNDRAISE.md). It follows [modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md) (§4 core contract, §6 archive first, §7 role-based connections and in-app integrations) and template guidance 1.3.20, revised on 14 November 2026 for 1.3.27–1.3.30 (install recommendations, results saved in the app, run-time fields, installed app helpers) and AI-native customization. It replaces Investor CRM 1.0.1 as a new major version; the released 1.0.1 catalog JSON is unchanged and its source package is archived byte-for-byte under [`archive/1.0.1/`](archive/1.0.1/). Saved 1.0.1 apps are not migrated.
 
 **Catalog status:** 2.0.0 is a **draft** catalog version until the owner approves it. `templates/catalog-seed.json` still names 1.0.1, so galleries and `list_app_templates` keep showing 1.0.1; tests approve 2.0.0 only inside their disposable databases.
 
@@ -15,9 +15,10 @@ Investor pipeline for a round, from first contact to signed commitment. Scope: [
 | `demo_data.json` | Fictional preview records only (also the hand-checked dataset in the tests). Never seed it into a workspace. |
 | `fundraise.preview.html` | Generated offline preview, fixed as of 11 Nov 2026. |
 | `QA.md` | Commands, results, hand calculations, acceptance criteria and unverified boundaries. |
-| `AUTOMATION_RECIPES.md` | The three optional automations and the no-automation path. |
+| `functions/round_digest.js`, `functions/research_brief.js` | Read-only app helpers (E7) inlined into the catalog entry by the build: the weekly digest text and the investor research brief. |
+| `AUTOMATION_RECIPES.md` | The three install recommendations and the no-automation path. |
 
-Edit the source, CSS and metadata, then run `node scripts/build-investor-template.mjs`. This regenerates `templates/apps/life.investor-crm-2.0.0.json` and the preview; `--check` runs in `npm run build`. Do not edit a released version: publish a new version and archive the previous package first.
+Edit the source, CSS, helpers and metadata, then run `node scripts/build-investor-template.mjs`. This regenerates `templates/apps/life.investor-crm-2.0.0.json` and the preview; `--check` runs in `npm run build`. Do not edit a released version: publish a new version and archive the previous package first.
 
 ## Roles (installer schema, section 5 of the scope)
 
@@ -34,7 +35,7 @@ Installed alone: 11 tables. With a Data Room provider and Programs already in th
 
 ## Integrations
 
-Engagement shows one subtle line, rendered as `<button data-trialy-integration="install|connect <role>">`, only when `integrations.list` returns an offer: "Works with Data Room. **Add Data Room**" or "Data Room is in your workspace. **Use its data**" (access first, then "Use its view data"). The Round screen shows "Works with Programs. **Add Programs**" / "Programs is in your workspace. **Use its milestones**". The platform opens the dialog; once linked, the data is read-only, own entries stay in Database and nothing is merged. "Add Data Room" appears only once a Data Room template is approved in the catalog (the registry writer is the planned Data Room app); until then a custom app providing `dataroom.v1` can be linked with "Use its data".
+Engagement shows one subtle line, rendered as `<button data-trialy-integration="install|connect <role>">`, only when `integrations.list` returns an offer: "Works with Data Room. **Add Data Room**" or "Data Room is in your workspace. **Use its data**" (access first, then "Use its view data"). The Round screen shows "Works with Programs. **Add Programs**" / "Programs is in your workspace. **Use its milestones**". The platform opens the dialog; once linked, the data is read-only, own entries stay in Database and nothing is merged. "Add Data Room" appears only once the Data Room template (`life.data-room` 1.0.0, currently a draft) is approved in the catalog; until then any app providing `dataroom.v1` can be linked with "Use its data". `dataroom.v1` gained the additive `room_purpose` option `partnering` on 13 November; Fundraise's own table matches it.
 
 ## Calculation contract
 
@@ -48,3 +49,19 @@ Engagement shows one subtle line, rendered as `<button data-trialy-integration="
 - **Engagement:** hot = ≥ 3 views (sum of `view_count` on rows last viewed) in the last 7 days; never opened = active grant without views; re-opened = latest view date ≥ 14 days after the previous one, within the last 14 days; depth = distinct documents viewed.
 - **Tranche on track** = its milestone's status: done → met candidate; at risk or cancelled → flagged; milestone after the expected date → flagged; no milestone → "No milestone".
 - **As-of date:** today's date from the app runtime; `asOfOverride` only in previews and tests. Bounds: 800 rows per table, 80 reads per render; partial reads disable totals and say so.
+
+## Automations
+
+Three install recommendations, selected by default in Add app: the weekly round digest (written by the helper `round_digest`), the signed commitment notice and monthly investor research that saves proposed investors in the app. Details in [AUTOMATION_RECIPES.md](AUTOMATION_RECIPES.md). Settings stores none of their schedules or recipients.
+
+## Customization by Claude and ChatGPT
+
+Each change is one reviewed proposal; records, IDs, bindings and access are kept, and the app body does not change.
+
+| What | How |
+| --- | --- |
+| Screens and columns | Layout gear (`tracker:layout` → `prepare_tool_layout`): order, labels and visibility of the seven screens and the investors and activity columns. |
+| Business settings | Reviewed update of the `fundraise.settings` row: stages, pass reasons, fit vocabularies, stale threshold, default currency. |
+| Stage labels | `settings.stage_labels` JSON `{stage:label}`; stored keys never change. |
+| Preferences | `settings.preferences` JSON `{default_screen, page_size, overview_hidden}` (`funnel`, `stale_due`, `engagement`). |
+| Custom fields | (a) schema change adds the field to opportunities, investor profiles, rounds, activities, organizations or people; (b) app revision adds it to the role's table map (`fields`, `writableFields`), the `templateBindings` line, the binding and the manifest, keeping execution and helpers; (c) register it in `settings.custom_fields` as `{table,key,label,kind,options}`. It then shows in editors and details; select and yes/no fields on opportunities filter the Pipeline. Core and contract fields can never be shadowed. |

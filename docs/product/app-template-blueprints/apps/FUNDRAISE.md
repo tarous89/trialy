@@ -8,6 +8,8 @@
 
 **Update 12 Nov 2026 (platform PR #134, integrations):** connections to other apps use the **integration** pattern: Fundraise keeps its own tables for that data so users can enter it by hand, and offers one subtle line ("Works with Data Room. **Add Data Room**" / "Data Room is in your workspace. **Use its data**") rendered as a `data-trialy-integration` button; the platform opens the dialog. There is no "not connected" state. Build against guidance 1.3.20 or later and the contract registry (`read_app_template_guidance(resource:"contracts")`). If #134 is not merged when building, stop and ask.
 
+**Update 14 Nov 2026 (platform #168, #169, E5–E7; Partnerships 2.1.0 pattern):** the three automations in §8 are install recommendations, selected by default in Add app; research stores its results in the app (proposed investors, create only); the digest text is the app's read-only helper. Claude and ChatGPT can customize the app within fundraising (§8a). `dataroom.v1` gained `room_purpose` `partnering`. Built in [PR #137](https://github.com/tarous89/trialy/pull/137) and revised on this branch; 2.0.0 is still a draft (never imported, so the version stays 2.0.0).
+
 **Decisions (11 Nov 2026):** no built-in investor database (own list + assistant research); light term-sheet fields for comparing offers; strategic/pharma investors and public equity funds are investor types (grants stay in Grants, 19); no email integration (assistants log from the user's own connected mail/calendar for review); several rounds over time with shared investor history; **Data Room connection by role, not by install bundle**; cap table summary and post-round investor updates belong to Investor Updates (06).
 
 ---
@@ -102,7 +104,7 @@ Not used as roles: `agreements` (CDA/NDA status is two fields on opportunities: 
 
 | Table | Key fields (kind) |
 |---|---|
-| `fundraise.settings` (one row) | default_currency (select), stale_days (number, 14), stages (text list), pass_reasons (text list), modalities (text list), therapeutic_areas (text list), dev_stages (text list) |
+| `fundraise.settings` (one row) | default_currency (select), stale_days (number, 14), stages (text list), pass_reasons (text list), modalities (text list), therapeutic_areas (text list), dev_stages (text list), custom_fields, stage_labels, preferences (JSON text, §8a) |
 | `fundraise.investor_profiles` | organization_id (text*, UUID→organizations), investor_type (select*: specialist_ls_vc / generalist_vc / pharma_cvc / strategic / family_office / angel / public_fund / other), tier (select: a / b / c), profile_status (select*: proposed / accepted / rejected), modalities (text), therapeutic_areas (text), dev_stages (text), check_min (money), check_max (money), currency (select), leads_rounds (select: yes / no / sometimes), fund_vintage_year (number), intro_path (text), source (text), source_date (date), notes (text), archived (boolean) |
 | `fundraise.rounds` | name (text*), round_type (select*: pre_seed / seed / bridge / series_a / series_b / series_c / other), target_amount (money), currency (select*), status (select*: planning / active / closed / abandoned), opened_on (date), target_close (date), closed_on (date), lead_org_id (text), notes (text), archived (boolean) |
 | `fundraise.opportunities` | round_id (text*), organization_id (text*), primary_contact_id (text), stage (select*: target / contacted / first_meeting / partner_meeting / due_diligence / term_sheet / committed / closed / passed), interest (select*: none / soft / verbal / signed), amount_indicated (money), amount_committed (money), currency (select*), is_lead (boolean), owner (text), next_step (text), next_due (date), last_activity_on (date), pass_reason (select), pass_detail (text), offer_received_on (date), offer_amount (money), offer_pre_money (money), offer_instrument (select: priced / safe / convertible / other), offer_board_seat (boolean), offer_expires_on (date), offer_status (select: received / negotiating / accepted / declined / expired), offer_notes (text), cda_status (select: none / sent / signed), cda_signed_on (date), archived (boolean) |
@@ -146,16 +148,27 @@ Fundraise's own `dataroom.*` tables hold manual entries (typed in, or proposed b
 
 ---
 
-## 8. Customization and automations
+## 8. Automations
 
-Customization paths as in [Runway §8](RUNWAY.md#8-customization-users-claude-and-chatgpt): layout gear for screens; Settings (reviewed write to `fundraise.settings`) for stages, pass reasons, fit vocabularies, stale threshold; assistant for extra fields and theme (reviewed revisions).
+Declared in `catalog.metadata.json` per the [app automations scope](../../RECOMMENDED_AUTOMATIONS.md). The three install recommendations are selected by default in the Add app dialog; the owner can opt out. Add app approves them once, with research's write permission, and they are enabled after the app is saved; a missing runner or write access leaves research at Needs setup without affecting the app. Later changes happen in Automations (From app features) or through Claude or ChatGPT with the exact review. The app stores no schedules, recipients or on/off settings; Settings names the automations and where they live.
 
-**Optional automations (none is fully supported):**
-1. **Weekly round digest (email, TrialAgents):** Mondays 08:00 Europe/Berlin to the owner: raised / verbal / soft vs target, lead status, stale and due items, engagement highlights when connected.
-2. **Signed commitment notice (email):** trigger when `opportunities.interest` becomes `signed`; to the owner.
-3. **Investor research (Claude or ChatGPT runner):** monthly or on request; from the round's fit criteria, proposes new investors (organizations + `investor_profiles` with `profile_status = proposed`, source and date); dedup by organization name and website; writes only those roles under a narrow grant, or proposes for review.
+| Key | What | Trigger | Saves / sends |
+|---|---|---|---|
+| `round_digest` | Weekly round digest email | Calendar, Monday 08:00 Europe/Berlin | Email to the owner. Text from the installed read-only helper `round_digest` (§6 rules: signed only as raised, verbal and soft separate, other currencies excluded, lead, due this week, stale, proposed investors waiting). Partial reads withhold totals; no active round sends nothing. Engagement is not in the email (the data-room roles are optional integrations, so they stay out of the helper's scope). |
+| `signed_commitment` | Signed commitment notice | `fundraise.opportunities.interest` becomes `signed` (update or creation) | Email to the owner to check amount, currency, date and evidence |
+| `investor_research` | Investor research | Calendar, first Monday of each month, 07:00 | New `organizations` (org_type investor) and `fundraise.investor_profiles` with `profile_status = proposed`, source and date (create only, at most 10 per run); brief from the helper `research_brief` (fit criteria, rounds, every known investor including rejected); `no_update` when nothing fits |
 
----
+## 8a. Customization by Claude and ChatGPT (AI-native, within scope)
+
+The user can ask either assistant to change how the app looks and works. Each change is one reviewed proposal; IDs, bindings, access and records are kept and the app body is unchanged. No features outside fundraising are added.
+
+| What | How |
+|---|---|
+| Screens and columns | Layout gear or `prepare_tool_layout`: order, labels and visibility of the seven screens and of the investors and activity columns. |
+| Business settings | `fundraise.settings`: stages (ordered subset), pass reasons, modalities, therapeutic areas, development stages, stale threshold, default currency. |
+| Stage labels | `settings.stage_labels` `{stage:label}`; standard stage keys never change, so totals, the digest and other apps keep working. |
+| Preferences | `settings.preferences`: opening screen, rows per page, hidden Overview panels (funnel, stale and due, engagement). |
+| Custom fields | Added to the table (opportunities, investor profiles, rounds, activities, organizations, people) by a reviewed schema change, bound with an app revision (table map, template bindings, manifest), and registered in `settings.custom_fields`. The app shows them in editors and detail panels, and select or yes/no fields on opportunities as Pipeline filters. Core and contract fields are never renamed, retyped or shadowed. |
 
 ## 9. Fit with other apps (all by role, any install order)
 
@@ -210,5 +223,7 @@ Integrations follow the platform pattern: own data first, one subtle `data-trial
 7. A tranche's milestone status comes from own entries, or from Programs once linked; with no milestone it shows "no milestone".
 8. Modularity test (rule 9) and archive-first checks pass.
 9. Desktop 1440 / mobile 390; pipeline board scrolls horizontally inside its card.
+10. **Automations:** Add app offers the three recommendations selected; after saving they are active with a ready runner; research can only create organizations and proposed profiles; the delivered digest shows the same raised/verbal/soft as Overview; the notice fires once per transition to signed; opting out or having no runner leaves the app fully usable; archiving the app pauses all three.
+11. **Customization:** a custom field added through the three reviewed changes appears in the editor and details and can be saved through the app, without a change to the app body; renamed stages show everywhere and keys stay standard; preferences set the opening screen, page size and Overview panels; invalid entries are ignored, never fatal.
 
 **Open for design partners:** stage list; whether offer fields suffice or a separate term-sheet record is needed; whether investor tiers A/B/C are how founders actually rank.

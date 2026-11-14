@@ -63,8 +63,8 @@ test('declarations: three install recommendations, two read-only helpers bound b
  assert.deepEqual(fns.map(f=>f.name),['round_digest','research_brief']);
  for(const f of fns){assert.deepEqual(f.scope.capabilities,['records.read'],'helpers only read');assert.equal(f.scope.documents,false);assert.ok(!f.scope.roles.some(r=>r.startsWith('dataroom.')||r==='programs.plan_items'),'optional integration roles stay out of helper scope');}
  const research=readRecipes(entry).recommended.find(r=>r.key==='investor_research')!.research!;
- assert.deepEqual(research.writeBindings.map(b=>[b.role,b.allowCreate,b.allowUpdate]),[['organizations',true,false],['fundraise.investor_profiles',true,false]],'research only creates');
- const profileFields=research.writeBindings[1].fields as string[];for(const k of ['tier','intro_path','archived'])assert.ok(!profileFields.includes(k),k+' is the user\'s');
+ assert.deepEqual(research.writeBindings!.map(b=>[b.role,b.allowCreate,b.allowUpdate]),[['organizations',true,false],['fundraise.investor_profiles',true,false]],'research only creates');
+ const profileFields=research.writeBindings![1].fields as string[];for(const k of ['tier','intro_path','archived'])assert.ok(!profileFields.includes(k),k+' is the user\'s');
  assert.match(research.instructions,/profile_status proposed/);assert.match(research.instructions,/never contact anyone/);
  // Settings stores no schedule, recipient or on/off: those live on the automation.
  const settings=JSON.parse(await readFile('templates/source/investor-crm/schema.example.json','utf8'))['fundraise.settings'].fields.map((x:any)=>x.key);
