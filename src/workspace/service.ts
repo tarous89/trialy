@@ -712,7 +712,7 @@ export class WorkspaceFoundation {
    const source=await this.component(tx,a,w,op.reuseOrigin.componentId);
    if(source.archived||source.project_archived)fail(404,'not_found','Source app unavailable');
    if(source.version!==op.reuseOrigin.version)fail(409,'stale_version','Source app changed; prepare a new preview');
-   if(op.componentId||op.content.execution.length||op.content.assets.length)fail(400,'reuse_scope','Reuse creates a new app without file or execution grants');
+   if(op.componentId||op.content.execution?.length||op.content.assets.length)fail(400,'reuse_scope','Reuse creates a new app without file or execution grants');
    if(op.reuseOrigin.mode==='separate_data'&&op.content.bindings.some(b=>source.bindings.some((old:any)=>old.typeId===b.typeId)))fail(400,'reuse_data','Separate data must not bind the original tables');
   }
   if(op.kind==='create_automation_template'){const built=await trackerOperation(new WorkspaceFoundation(adapter(tx)),a,w,op.setup);automationTemplate(op.setup,op.report,built.content);}
@@ -758,7 +758,7 @@ export class WorkspaceFoundation {
     await this.componentBindings(tx,a,w,op.content.bindings,true);await this.restoreRights(tx,a,w,op.content.bindings);
     const previous=op.componentId?await this.component(tx,a,w,op.componentId):null;
     validateSectionRevision(await access(tx,a,w),previous,op.content);
-    if(previous&&op.content.manifest===undefined&&!op.content.execution.length)op.content.execution=await safeAppHelpers(adapter(tx),a,w,previous);
+    op.content.execution??=previous?await safeAppHelpers(adapter(tx),a,w,previous):[];
     if(previous?.manifest&&op.content.manifest===null)fail(400,'manifest_required','Connected apps must retain their data contract when changing presentation.');
     await validateResource(tx,a,w,{...op.content,resourceKind:op.content.resourceKind??previous?.resource_kind??'generic',manifest:op.content.manifest===undefined?previous?.manifest:op.content.manifest});await this.componentAssets(tx,a,w,op.content.assets);
     // Role and contract labels (modular apps §7.2–7.5): compatibility, one writer per output role, contract versions.

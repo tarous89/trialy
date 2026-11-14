@@ -228,6 +228,7 @@ test('E5 and E6 end to end on restricted roles',async t=>{
    let c=(await f.readComponent(a,w,installed.appId)).component;
    const p=await f.preview(a,w,{kind:'save_component',componentId:c.id,expectedVersion:c.version,projectId:c.project_id,content:{name:'Renamed Signals',format:c.format,source:c.source,bindings:c.bindings}});await f.confirm(a,w,p.id,p.digest);
    c=(await f.readComponent(a,w,c.id)).component;assert.deepEqual(c.execution,installedApp.execution);
+   const full=await f.preview(a,w,{kind:'save_component',componentId:c.id,expectedVersion:c.version,projectId:c.project_id,content:{name:c.name,format:c.format,source:c.source,bindings:c.bindings,manifest:c.manifest}});await f.confirm(a,w,full.id,full.digest);c=(await f.readComponent(a,w,c.id)).component;assert.deepEqual(c.execution,installedApp.execution);
    const r=await f.preview(a,w,{kind:'restore_component',componentId:c.id,expectedVersion:c.version,revisionVersion:0});await f.confirm(a,w,r.id,r.digest);
    c=(await f.readComponent(a,w,c.id)).component;assert.deepEqual(c.execution,installedApp.execution);
    const q=await f.preview(a,w,{kind:'save_component',componentId:c.id,expectedVersion:c.version,projectId:c.project_id,content:{name:c.name,format:c.format,source:c.source,bindings:c.bindings,manifest:c.manifest,execution:[]}});await f.confirm(a,w,q.id,q.digest);
