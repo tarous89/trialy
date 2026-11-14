@@ -6,7 +6,7 @@
 
 **Build (14 Nov 2026):** `templates/source/partnership-tracker/` → `templates/apps/life.partnership-tracker-2.1.0.json` (approved: the seed names it); results in its [QA.md](../../../../templates/source/partnership-tracker/QA.md). The first build, 2.0.0 (#164), was imported as a draft and is kept unchanged under `archive/2.0.0/`, because catalog versions are immutable.
 
-**Revision (2.1.0):** aligned with the platform's app automation standard ([PR #168](https://github.com/tarous89/trialy/pull/168) default-on install recommendations; [PR #169](https://github.com/tarous89/trialy/pull/169) research must save to the app database) and made customizable by Claude and ChatGPT within the app's scope (§12a). The install recommendations appear in Add app once the platform flag `APP_AUTOMATION_RECIPES_ENABLED` is on; until then the same automations are set up in Automations or through Claude or ChatGPT.
+**Revision (2.1.0):** aligned with the platform's app automation standard ([PR #168](https://github.com/tarous89/trialy/pull/168) default-on install recommendations; [PR #169](https://github.com/tarous89/trialy/pull/169) research must save to the app database) and made customizable by Claude and ChatGPT within the app's scope (§12a). Add app offers the install recommendations, selected by default.
 
 **Depends on:** nothing new in the platform. It uses TrialAgents Automations (research worker on the user's Claude or ChatGPT runner, and email to workspace members). It connects by role to Programs, Contracts and Data Room. **One PR.**
 
