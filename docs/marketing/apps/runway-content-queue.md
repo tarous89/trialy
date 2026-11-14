@@ -27,7 +27,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | B5 | LivePlan alternatives for biotech: choose the plan you need next | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/liveplan-alternatives-biotech) |
 | B6 | Fathom alternatives for biotech: reporting, consolidation or cash planning? | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/fathom-alternatives-biotech) |
 | B7 | AI-native FP&A software for startups: compare the actions, not the label | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/ai-native-fpa-software-startups) |
-| B8 | Best Excel and Google Sheets Alternatives for Biotech Budgeting | Queued — verify and publish | — |
+| B8 | Excel and Google Sheets alternatives for biotech budgeting: what should you replace? | In progress — source preparation | — |
 | C1 | Best Cash Runway Management Apps That Work Inside ChatGPT | Queued — verify and publish | — |
 | C2 | Best Financial Planning Apps for Claude | Queued — verify and publish | — |
 | C3 | How to Manage Biotech Cash Runway Using ChatGPT | Already covered / published | [Live article](https://trialagents.com/apps/manage-biotech-cash-runway-chatgpt) |
@@ -494,3 +494,8 @@ B6 rechecked HTTP 200; no open Runway PRs; public main `6496bc32f293ac9407d995a7
 - **Tracking preserved:** identical homepage loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js`, both HTTP 200. No tracking scripts/configuration/events/consent/collectors/attribution changed; no synthetic production events sent.
 
 This supersedes B7 claim/source/pending checkpoints. **21 published; 26 unfinished**, including owner-deferred A9. **Next eligible: B8, Excel and Google Sheets alternatives for biotech budgeting**, subject to fresh evidence, queue, duplicate and claim checks. Only B7 was newly published in this run. Search indexing, rankings, real-user performance and assistant citations remain unverified.
+
+
+### 14 November 2026 — B8 execution claim
+
+B7 rechecked HTTP 200; no open Runway source PRs; public main `c06d8d07ea083c2b4268095b9092d02b54506781`. B8 claimed on `content/runway-b8-spreadsheet-alternatives-20261114`. Distinct intent: choose whether to replace collection, the operating cash model or financial planning; four options Runway, Airtable, Aleph and Jirav, including spreadsheet-connected rather than replacement-only workflows. Not another migration tutorial or A1 head-to-head. Retitled to avoid unsupported rankings. No publication claimed; 21 published, 26 unfinished.
