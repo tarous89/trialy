@@ -25,7 +25,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | B3 | cfo.ai (Runway Financial) alternatives: choose who owns the model | Published — live verified 13 November 2026 | [Live article](https://trialagents.com/apps/cfo-ai-alternatives-startups) |
 | B4 | Finmark alternatives after retirement: rebuild a forecast you can trust | Published — live verified 13 November 2026 UTC | [Live article](https://trialagents.com/apps/finmark-alternatives-biotech) |
 | B5 | LivePlan alternatives for biotech: choose the plan you need next | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/liveplan-alternatives-biotech) |
-| B6 | Best Fathom Alternatives for Biotech Financial Reporting and Forecasting | Queued — verify and publish | — |
+| B6 | Fathom alternatives for biotech: reporting, consolidation or cash planning? | In progress — source preparation | — |
 | B7 | Best AI-Native FP&A Software for Startups | Queued — verify and publish | — |
 | B8 | Best Excel and Google Sheets Alternatives for Biotech Budgeting | Queued — verify and publish | — |
 | C1 | Best Cash Runway Management Apps That Work Inside ChatGPT | Queued — verify and publish | — |
@@ -446,3 +446,8 @@ Runway approved catalog life.cash-runway 2.1.0 blob `3bd4fdc73c5d2c36299b1569b05
 - **Tracking preserved:** identical homepage loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js`, both HTTP 200. No tracking scripts/configuration/events/consent/collectors/attribution changed; no synthetic production events sent.
 
 This supersedes all B5 claim/source/revision/pending checkpoints. **19 published; 28 unfinished**, including owner-deferred A9. **Next eligible: B6, Fathom alternatives**, subject to fresh queue, evidence, duplicate and claim checks. Only B5 was newly published in this run. Search indexing, rankings, real-user performance and assistant citations remain unverified.
+
+
+### 14 November 2026 — B6 execution claim
+
+B5 rechecked live HTTP 200; no open Runway source PRs; public main `9a808396e45a4a91c558d559a514499af4161149`. B6 claimed on `content/runway-b6-fathom-alternatives-20261114`. Four alternatives organized by reporting, consolidation and operating cash planning, with entity/period scope and actuals-to-forecast handoff checks. Candidate retitled to avoid unsupported rankings. Joiin forecasting is now out of beta; Spotlight's documented integration imports P&L budgets from Forecasting to Reporting, not a blanket two-way synchronization. No publication claimed; 19 published, 28 unfinished.
