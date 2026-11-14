@@ -32,7 +32,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | C2 | Financial planning apps for Claude: choose where the plan lives | Published — live verified 14 November 2026 | https://trialagents.com/apps/financial-planning-apps-claude |
 | C3 | How to Manage Biotech Cash Runway Using ChatGPT | Already covered / published | [Live article](https://trialagents.com/apps/manage-biotech-cash-runway-chatgpt) |
 | C4 | How to Use Claude for Biotech Cash Flow Forecasting | Published — live verified 14 November 2026; PR #205, release `0bb286174ad6c1a925fa427fb115de7640ef79f4` | https://trialagents.com/apps/biotech-cash-flow-forecasting-claude |
-| C5 | AI CFO vs AI-Native Financial Planning App: What Does a Biotech Startup Need? | Queued — verify and publish | — |
+| C5 | AI CFO vs AI-Native Financial Planning App: What Does a Biotech Startup Need? | In progress — evidence and source preparation | — |
 | C6 | Best MCP-Connected Financial Planning Software for Biotech Teams | Queued — verify and publish | — |
 | C7 | Can You Build a Custom Cash Runway App with ChatGPT or Claude? | Queued — verify and publish | — |
 | D1 | Best Cash Runway Software for Preclinical Biotech Startups | Queued — verify and publish | — |
@@ -625,3 +625,8 @@ PR #205 merged as `0bb286174ad6c1a925fa427fb115de7640ef79f4` at approximately 05
 - **Evidence boundary:** documented Claude-assisted delayed-grant review, not completed host acceptance testing. Fictional monthly cash arithmetic independently executed; genuine Runway browser demo images clearly separate from that example. Current primary Claude permissions/setup evidence linked inline. No invented interfaces, benchmarks or standard 13-week feature claims.
 
 This supersedes C4 source and merged-pending checkpoints. **25 published; 22 unfinished**, including owner-deferred A9. **Next eligible: C5, AI CFO vs AI-Native Financial Planning App: What Does a Biotech Startup Need?**, subject to fresh queue, evidence, duplicate and claim checks. Only C4 was newly published in this run. Search indexing, rankings and assistant citations remain unverified.
+
+
+### C5 execution claim — 14 November 2026
+
+C4 remains live (HTTP 200), public main is `0bb286174ad6c1a925fa427fb115de7640ef79f4`, and no unfinished Runway source PRs were found. Claim C5 on `content/runway-c5-ai-cfo-20261114`. Distinct intent: decide which finance responsibilities can be assisted by software and who owns the assumptions, review and decision; not another vendor shortlist. Research current primary evidence and include a reproducible acceptance exercise, without invented host testing. Totals remain 25 published, 22 unfinished.
