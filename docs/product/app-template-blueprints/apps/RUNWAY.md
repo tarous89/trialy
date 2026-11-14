@@ -224,7 +224,7 @@ Confirm with 5–10 biotech CEOs/CFOs: the 18-month default target; whether prog
 
 ## 14. Runway 2.2.0 — assistant control, integrations and automations
 
-**Status:** Scope for build, 14 November 2026. Not built. Delivered as a new immutable draft `life.cash-runway` 2.2.0. The 2.1.0 package and catalog JSON stay unchanged, saved apps are not migrated, and publishing 2.2.0 needs separate owner approval. Automation declarations stay inactive until `APP_AUTOMATION_RECIPES_ENABLED` is on. §1–§13 still apply unless this section changes them.
+**Status:** Scope for build, 14 November 2026; revised after PR #169 (required app storage for research and drafting) and the owner's decisions D1–D3. Not built. Delivered as a new immutable draft `life.cash-runway` 2.2.0. The 2.1.0 package and catalog JSON stay unchanged, saved apps are not migrated, and publishing 2.2.0 needs separate owner approval. Automation declarations stay inactive until `APP_AUTOMATION_RECIPES_ENABLED` is on. §1–§13 still apply unless this section changes them.
 
 ### 14.1 Requirement and boundaries
 
@@ -233,7 +233,7 @@ Confirm with 5–10 biotech CEOs/CFOs: the 18-month default target; whether prog
 **What "control" means:** anything a person can do by clicking in Runway, an assistant can do by naming the same action with the same inputs. It gets the same validation, the same calculation and the same exact proposal for review. There is no assistant-only shortcut and no hidden capability, and every result an assistant reports comes from Runway's own engine.
 
 **Platform rules this keeps (unchanged):**
-- Assistants prepare and a person confirms every write in the trusted review. The only exception is a valid, narrow standing grant.
+- Assistants prepare and a person confirms every write in the trusted review. The only exceptions are a valid, narrow standing grant, and the bounded result-storage grant that an owner approves together with a research automation (PR #169, §14.7).
 - Results (runway, snapshots, budgets, bridge) are computed only by the app's engine. The assistant asks the app for them; it never computes them itself.
 - App-only human actions stay human: `confirm_data_access`, `choose_integration_source`, access changes and automation activation follow their existing owner rules.
 - Database column restrictions apply to the assistant principal. With `positions.annual_salary` restricted, commands return "restricted" for live people cost and runway, never values.
@@ -354,16 +354,24 @@ Most customization becomes a reviewed settings or layout change instead of code.
 
 ### 14.6 Integrations (modular apps §7)
 
-| Role | Contract | 2.2.0 declaration | In the app |
-|---|---|---|---|
-| `programs.plan_items` | programs.v2 | `optional`, `integration` (name, program_id, item_type, end_date, status, is_key) | On new installs this own table is Runway's milestone list. If Programs is connected, Runway uses its key milestones read-only. Plan → Milestones shows "Works with Programs. **Add Programs**" or "Programs is in your workspace. **Use its milestones**" (`integrations.list`, `data-trialy-integration`), following Contracts 1.0.0. `runway.milestones` is still read for 2.0/2.1 data. |
-| `croselection.awards` | croselection.v1 | `optional`, `readOnly`, integration (see D1) | Plan shows awarded contracts not yet in the plan, with **Add to plan**, which creates a reviewed spend line with `source_role` and `source_record_id`. |
-| `contracts.obligations` | contracts.v1 | Same | Payment obligations (kind payment, verified only) not yet in the plan, with **Add to plan**, which creates a payment schedule. |
-| `fundraise.tranches` | fundraise.v1 | Same | Expected tranches with **Add to plan**, which creates equity cash-in lines (contingent until committed). |
+**Decision D1 (owner, 14 November 2026):** connections must stay flexible for customization, so Runway uses the platform's standard model and creates its own tables. It does not depend directly on another app's table:
 
-- Add `source_role` and `source_record_id` (text) to `runway.plan_lines` so each suggestion is offered once and linked lines show their source. If the source record is later archived or unreadable, the line shows "Source unavailable" and keeps its own values.
-- Rule 3 still applies: with no connection, each suggestion panel is hidden with a one-line note and totals are unaffected.
-- Commands expose the suggestions to assistants: `suggestions.read` (read) and `suggestion.add` (propose).
+- **Own table first.** Every integration role gets Runway's own table at install (the existing §7.1 behaviour; no platform change). Runway works fully from its own entries, and the user or an assistant can customize that table (extra fields, form layout) like any other Runway table.
+- **Connecting is optional and read-only.** Inside Runway the user may later choose **Use its data** (platform dialog, `choose_integration_source`, human only). The role is then rebound read-only to the provider's table. The platform checks contract compatibility when connecting (`role_incompatible` refuses a mismatch), and Runway binds only the contract fields it needs. Custom fields on either side are ignored, so customizing either app never breaks the connection. The app's own entries stay in Database and nothing is merged.
+- **Amounts are copied, never live-linked.** Runway's figures come only from its own plan lines. **Add to plan** copies a source row (own or provider) into a Runway plan line, keeping `source_role`, `source_record_id` and `source_version`. If the source later changes, the line shows "Source changed" and offers a reviewed update. Nothing is ever applied automatically. If the source is archived, unreadable or becomes incompatible, the line shows "Source unavailable" and keeps its values. Runway totals therefore never change because of an edit in another app.
+- **If a provider becomes unavailable** (archived, access removed, contract changed), the suggestions panel says so in one line, the user can switch back to Runway's own entries in the same platform dialog, and existing plan lines are untouched.
+
+| Role (own table at install) | Contract | Runway's own entries | Provider when connected | In the app |
+|---|---|---|---|---|
+| `programs.plan_items` | programs.v2 (name, program_id, item_type, end_date, status, is_key) | Runway's milestone list on new installs | Programs key milestones (read-only) | Plan → Milestones. Hint: "Works with Programs. **Add Programs**" / "Programs is in your workspace. **Use its milestones**" (`integrations.list`, `data-trialy-integration`), as in Contracts 1.0.0. `runway.milestones` is still read for 2.0/2.1 data. Milestones are references, not amounts, so these are read directly (no copy). |
+| `croselection.awards` | croselection.v1 (contract fields used: supplier, program, study, awarded total, currency, start, duration, decision date) | "CRO and vendor commitments" entered in Runway | CRO Selection awards | Plan → **From other sources**: commitments not yet in the plan, with **Add to plan** (spend line or spread over the duration). |
+| `contracts.obligations` | contracts.v1 (payment obligations: amount, currency, due date, counterparty, agreement, verified) | "Contract payments" entered in Runway | Contracts obligations (only `verified` rows are offered) | **Add to plan** creates a payment schedule (one-off lines sharing a `schedule_group`). |
+| `fundraise.tranches` | fundraise.v1 | "Expected financing" entered in Runway | Fundraise (Investor CRM) tranches | **Add to plan** creates an equity cash-in line, contingent until committed. |
+
+- Add `source_role`, `source_record_id` and `source_version` (text) to `runway.plan_lines`. Each source row is offered once.
+- Exact field lists for awards, obligations and tranches follow `templates/contracts/outputs.json` at build time. Runway binds only fields present in the registry contract.
+- Rule 3 still applies: with nothing entered or connected, the **From other sources** panel shows a one-line hint, and totals are unaffected.
+- Commands expose all of this to assistants: `sources.read` (own or linked rows, with "in plan", "changed" and "unavailable" states), `source.add_to_plan` and `source.update_line` (propose), and own-entry saves through the normal `record.save` path.
 - `runway.month_closes` (runway.v2) stays unchanged as Runway's output for Programs, Investor Updates and Board.
 
 ### 14.7 Automations (app automations, RA1–RA5)
@@ -374,8 +382,16 @@ Declared in the catalog entry. All install recommendations start selected; the u
 |---|---|---|---|---|
 | `runway_below_target` | `recommendedAutomations` | email | database, `role: runway.month_closes`, field `runway_status` becomes `below_target` | Fixed text from `AUTOMATION_RECIPES.md` §1 plus fields `month`, `runway_months`, `cash_out_month` |
 | `month_close_reminder` | `recommendedAutomations` | email | calendar, monthly, 5th Monday–Friday business day, 09:00 Europe/Berlin | "Last month is not closed yet. Open Runway → Actuals → Close month." |
-| `monthly_fx_rates` | `recommendedAutomations` | research | calendar, monthly, 3rd business day, Europe/Berlin | Objective and instructions from `AUTOMATION_RECIPES.md` §2. `readBindings`: `runway.settings` (`enabled_currencies`), `runway.fx_rates` (`month`, `currency`). **Proposal-only**; the standing-grant wording is removed. |
-| `monthly_runway_digest` | `automationFeatures` | email | after a month close (database, `runway.month_closes` created) | Uses `summaryBinding` if a reviewed read-only summary binding exists. Otherwise it stays Needs setup and is never offered at install. |
+| `monthly_fx_rates` | `recommendedAutomations` | research | calendar, monthly, 3rd business day, Europe/Berlin | Objective and instructions from `AUTOMATION_RECIPES.md` §2. `readBindings`: `runway.settings` (`enabled_currencies`), `runway.fx_rates` (`month`, `currency`). `writeBindings` (required by PR #169): `[{role: runway.fx_rates, fields: [month, currency, rate_per_eur, source, source_ref], allowCreate: true, allowUpdate: false}]`. Results are saved, never proposal-only (see below). |
+| `monthly_runway_digest` | `recommendedAutomations` | email | database, `role: runway.month_closes`, event `created` | **Built-in (owner decision D3).** No summary function is needed: the email uses the closed month's own frozen fields (`month`, `closing_balance`, `currency`, `runway_months`, `cash_out_month`, `runway_status`, `commentary`) and links to Actuals → Snapshots. Figures come from the snapshot the app froze, never from the assistant. |
+
+**Effect of PR #169 (required app storage):**
+- Research automations must save their results in the app database, and the write permission is part of the same install or setup approval. There is no proposal-only mode for new automations.
+- `monthly_fx_rates` therefore declares its `writeBindings` explicitly. Without them, the platform would default to every writable field in Runway. The binding is limited to creating `runway.fx_rates` rows: `allowUpdate: false` keeps the rule that existing rates are never changed.
+- A run is `completed` only with verified save receipts. When every rate already exists the result is `no_update`, and when the ECB source is unavailable it is `blocked`. Nothing is written in either case.
+- If the runner's assistant cannot write `runway.fx_rates` (for example, it was set to "Can read" in the install dialog), the automation shows **Needs setup** and the app is unaffected. The install dialog should show this next to the automation row.
+- Replace the "for review or under a narrow standing grant" wording in §4 step 7, §7, §8 and `AUTOMATION_RECIPES.md` with "saved under the bounded write permission approved with the automation".
+- The three email recipes are not affected.
 
 Assistants manage these through the existing tools (`read_app_automation_features`, `prepare_app_automation_feature`, `prepare_app_monitoring`, `prepare_app_action`, `confirm_app_service_review`) under the existing ownership rules. Update `AUTOMATION_RECIPES.md` and `documentation.tasks` to match, and change `tasks.mode` to describe "recommended at install; zero automations is supported".
 
@@ -401,8 +417,8 @@ Assistants manage these through the existing tools (`read_app_automation_feature
 8. A viewer's assistant can run read commands only; propose commands are not listed and are refused.
 9. No command commits without a person's confirmation; stale versions are rejected; replaying a `requestKey` creates no duplicate review.
 10. Adding a category, an extra field and a form layout change through an assistant shows correctly at 1440 and 390 px, with no code revision.
-11. Integrations: install alone; connect Programs inside the app; add a CRO award, an obligation and a tranche to the plan; archive the source; delete a partner app. Runway keeps working, and every state is labelled.
-12. Install with all automations selected, with some opted out, and with no runner: the app is saved in every case, and states show active, opted out or Needs setup.
+11. Integrations: install alone and use only own entries; connect Programs inside the app; add a CRO award, an obligation and a tranche to the plan; edit the source (the line shows "Source changed" and nothing changes until a reviewed update); add custom fields to both Runway's own table and the provider's table (the connection keeps working); archive the source; delete a partner app; switch back to own entries. Runway keeps working, totals change only through Runway's own reviewed writes, and every state is labelled.
+12. Install with all automations selected, with some opted out, and with no runner: the app is saved in every case, and states show active, opted out or Needs setup. `monthly_fx_rates` creates only new `runway.fx_rates` rows with verified receipts, never updates an existing rate, writes no other table, and shows Needs setup when the assistant cannot write that table. `monthly_runway_digest` sends the frozen snapshot figures of the closed month.
 13. The modular-apps rule 9 test passes, and Programs 2.1.0 still reads 2.2.0 snapshots.
 
 ### 14.10 Delivery order and decisions
@@ -413,7 +429,7 @@ Assistants manage these through the existing tools (`read_app_automation_feature
 4. **R3:** automation declarations (§14.7) and documentation (§14.8).
 5. **Release:** cross-host acceptance (§14.9) in web, Claude and ChatGPT; then owner approval of the catalog version, and each feature switch enabled separately.
 
-**Owner decisions needed:**
-- **D1 — Integrations without an own table.** Integration roles today always create the app's own table. For awards, obligations and tranches, Runway's own data is its plan lines, so an own table would be empty and confusing. *Recommendation:* add a platform option `integration: {own: false}` (link-only: no table until the user connects it; the in-app offer still shows). *Fallback:* accept three small, hidden own tables.
-- **D2 — App commands as a platform-wide capability** (any app can declare them) rather than a Runway-only feature. *Recommendation:* platform-wide, because every custom app has the same gap.
-- **D3 — Digest summary binding.** Ship `monthly_runway_digest` as a later feature only, until catalog templates can ship a reviewed summary binding.
+**Owner decisions (14 November 2026):**
+- **D1 — Own tables, optional read-only connection, copied amounts.** Accepted with the owner's condition that connections stay flexible for customization: see §14.6. No platform change is needed.
+- **D2 — App commands are a platform-wide capability.** Accepted: any app can declare commands; Runway is the first user.
+- **D3 — The monthly digest is a built-in automation.** Accepted: it is offered at install and built from the frozen snapshot fields, with no summary function (§14.7).
