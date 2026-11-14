@@ -36,7 +36,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | C6 | MCP-connected financial planning software for biotech: check scope before writes | Published — live verified 14 November 2026; PR #207, release `e8ed31e7e198641c7bbd1e78b69db395735dfd29` | https://trialagents.com/apps/mcp-financial-planning-software-biotech |
 | C7 | Can you build a custom cash runway app with ChatGPT or Claude? | Published — live verified 14 November 2026; PR #208, release `39af173ce6e7acb7ac95709f82eafa926f56b49e` | https://trialagents.com/apps/custom-cash-runway-app-chatgpt-claude |
 | D1 | Cash runway software for preclinical biotech: fund the next evidence package | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/preclinical-biotech-cash-runway) |
-| D2 | Best Financial Planning Software for Clinical-Stage Biotechs | Queued — verify and publish | — |
+| D2 | Financial planning for clinical-stage biotechs: explain the monthly cash variance | Claimed — source preparation, 14 November 2026 | Monthly close, locked budget and remaining commitments |
 | D3 | Best Budgeting Software for Biotech Startups with Fewer Than 20 Employees | Queued — verify and publish | — |
 | D4 | How to Forecast Clinical Trial Delays and Their Impact on Cash Runway | Queued — verify and publish | — |
 | D5 | How to Forecast CRO Costs and Vendor Payments in a Biotech Budget | Queued — verify and publish | — |
@@ -759,3 +759,8 @@ PR #209 merged as `11bb7a76844d024cd48f37bb377828256668186b` at approximately 17
 - **Evidence and calculation:** approved Runway 2.1 catalog and FDA primary preclinical source reviewed. Fictional independently calculated case: EUR 2.4m opening, EUR 120k monthly operating spend, EUR 600k March/EUR 300k May packages, September internal review, EUR 300k chosen reserve. A separate downside plan adds EUR 240k July repeat assay. September cash EUR 420k/180k, reserve headroom +120k/−120k; first negative January 2028/November 2027. No vendor-cost benchmark, regulatory outcome, fabricated scenario operation, app execution or host test claimed. Genuine browser demo screenshots contain separate fictional data. Refresh on catalog/model/permission changes.
 
 This supersedes D1 claim/source/merged-pending checkpoints. **29 published; 18 unfinished**, including owner-deferred A9. **Next eligible: D2, Best Financial Planning Software for Clinical-Stage Biotechs**, subject to fresh queue, claim, duplicate and primary-evidence checks. Only D1 was newly published in this run. Search indexing, rankings and assistant citations remain unverified.
+
+
+### D2 execution claim — 14 November 2026
+
+D1 rechecked HTTP 200; public main `11bb7a76844d024cd48f37bb377828256668186b`; open PRs reconciled, no unfinished Runway release or competing claim. D2 retitled to a concrete clinical-stage monthly-close/variance workflow, avoiding unsupported best ranking and duplication of B1/D1/D4/D11. Demonstrate a fictional cash variance that reverses next month because a payment remains due; preserve budget and close snapshots, revise future inputs through review. No accounting advice or completed app/host test. 29 published, 18 unfinished until live verification.
