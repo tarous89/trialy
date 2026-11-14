@@ -192,7 +192,7 @@ Contracts works alone; each connection follows the platform pattern (add-app dia
 
 ## 12. Contracts 1.1.0: assistant control, connections and the email summary
 
-**Status:** Built as a draft, 14 November 2026, from the owner's decisions C1–C8 (no platform changes; everything is built in the app). Package: `templates/source/contracts/` (README lists the changes); tests: `tests/contracts.test.ts`, `tests/contracts-automation.test.ts`. Delivered as a new immutable draft `life.contracts` 1.1.0. The published 1.0.0 package stays unchanged, saved apps are not migrated, and publishing 1.1.0 needs separate owner approval. Where this section conflicts with §4, §6, §7, §8 or §10, this section wins.
+**Status:** Built as a draft, 14 November 2026, from the owner's decisions C1–C8 (no platform changes; everything is built in the app). Package: `templates/source/contracts/` (README lists the changes); tests: `tests/contracts.test.ts`, `tests/contracts-integration.test.ts`. Delivered as a new immutable draft `life.contracts` 1.1.0. The published 1.0.0 package stays unchanged, saved apps are not migrated, and publishing 1.1.0 needs separate owner approval. Where this section conflicts with §4, §6, §7, §8 or §10, this section wins.
 
 **Rule for every app (owner):** an app does not need automations. If an app has one, it must follow the platform rules ([app automations](../../RECOMMENDED_AUTOMATIONS.md)): it is declared in the package, shown switched on in the Add app dialog, can be turned off, and the app works fully without it.
 
@@ -223,27 +223,9 @@ Two ways; neither needs an automation.
 
 If a document is not readable by AI, the assistant says so and points to Documents. It never guesses.
 
-### 12.3 Weekly "actions needed" email (C2)
+### 12.3 No automations (C2, revised)
 
-Contracts only tracks agreements; signing happens elsewhere. So there is no "signed" email. The only email is a weekly reminder, sent **only when something needs action**.
-
-| Key | List | Kind | Trigger | Content |
-|---|---|---|---|---|
-| `contract_actions` | `recommendedAutomations` | email (no AI) | calendar, weekly, Monday 08:00 Europe/Berlin (editable) | One plain email listing agreement names that need action, grouped (Deadlines, Waiting for signature, To check). Deterministic: no AI. **Nothing is sent when the list is empty.** |
-
-What counts as an action:
-- **Obligations:** open obligations that are overdue, or due in the next 7 days.
-- **Notice deadlines:** within the first reminder window (default 30 days). For example: "Cancel by 3 Mar or it renews for 12 months."
-- **Expiries:** active agreements that expire within 30 days and have no renewal.
-- **Stalled pipeline:** agreements in drafting, negotiation or out for signature for more than 14 days.
-- **Not yet checked:** terms or obligations that an assistant filled in and nobody has checked yet.
-
-How it works:
-- The list is built by a small read-only summary function that ships with Contracts (E1). The email is plain, with no AI.
-- Each recipient's access is checked again at send time. The default recipient is the owner.
-- **Setup:** catalog apps cannot attach the summary function at install. So the row is shown switched on in the Add app dialog and becomes active after **one approval** that attaches the function. The user gives it in Automations, or the assistant asks for it right after install. Until then the row shows **Needs setup**, and the app works normally.
-- Remove `digest_day` from Settings: timing lives in the automation.
-- Adding AI to this email, or any other automation, is the user's choice later.
+**Owner decision (14 November 2026):** Contracts declares no automations. The weekly email was first planned as a deterministic summary, then as research + email; both were dropped. There are no install recommendations, no scheduled AI and no emails. Overview, Obligations, CDAs and Pipeline show deadlines and pending agreements on demand, and users may add their own automations later. `digest_day` is removed from Settings.
 
 ### 12.4 Values from other apps (C3), in the app
 
@@ -275,7 +257,7 @@ How it works:
 
 ### 12.7 Documentation changes
 
-- Remove the 1.0.0 extraction automation from `AUTOMATION_RECIPES.md`, `documentation.tasks` and instructions step 8. Add `contract_actions`.
+- Remove both 1.0.0 automations from `AUTOMATION_RECIPES.md`, `documentation.tasks` (mode `none`) and instructions step 8.
 - Instructions step 5 describes the two ways in (§12.2). Step 7 becomes "everything is changeable (§12.5)", with the per-button change list.
 - Remove the limitation "Assistants are told never to verify…". Add the limitation that a connected value is changed in the app that owns it.
 - Examples:
@@ -285,13 +267,12 @@ How it works:
   - an assistant adds a field and it appears;
   - an assistant builds a new form;
   - a Programs milestone labelled "From Programs";
-  - the weekly actions email, including a quiet week with no email.
 
 ### 12.8 Acceptance (in addition to §11)
 
 1. Both ways in work in Claude and ChatGPT. A document not readable by AI is reported, not guessed. No AI runs without the user asking.
 2. No scheduled AI job is installed with Contracts.
-3. The Add app dialog shows `contract_actions` switched on. Turning it off installs the app without it. After its one approval, the email lists exactly the actions in §12.3, sends nothing in a week without actions, and respects each recipient's access. Before that approval it shows Needs setup and the app works normally.
+3. No automation is declared or offered at install.
 4. Every read-only connected value shows "From *App*" and cannot be edited in Contracts.
 5. For every button, an assistant can make the same change with the documented records. The screen then looks the same as after a click. Hidden columns stay hidden from the assistant, and a viewer's assistant can only read.
 6. A field an assistant adds on request appears in the form and details at 1440 and 390 px.

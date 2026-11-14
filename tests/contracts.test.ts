@@ -291,23 +291,9 @@ test('1.1.0 C3/C7: values from a connected app are labelled From <App>; unknown 
  const ed=await render(r2,{},{kind:'click',action:'edit:obligations:ob-co2-fee'},{bindings:b});assert.doesNotMatch(ed.html,/budget_code/);
 });
 
-test('1.1.0 weekly email: one declared recommendation, and a deterministic actions-needed summary',async()=>{
- const {validateRecipeDeclarations,readRecipes}=await import('../src/automations/recipes-schema.js');
- const raw=JSON.parse(await readFile('templates/apps/life.contracts-1.1.0.json','utf8'));validateRecipeDeclarations(raw);
- const rec=readRecipes(raw).recommended;assert.deepEqual(rec.map(r=>[r.key,!!r.research,r.email?.summaryBinding,r.trigger.kind,(r.trigger as any).weekdays,(r.trigger as any).time]),[['contract_actions',false,'actions_summary','calendar',[1],'08:00']]);
- assert.ok(!entry.instructions.includes('{{ACTIONS_SUMMARY_SOURCE}}'));assert.match(entry.instructions,/const TABLE_MAP=__TABLE_MAP__;/);
- const body=entry.instructions.slice(entry.instructions.indexOf('const TABLE_MAP=__TABLE_MAP__;'));
- const summary=(rows:Row[],map:any=fullMap)=>new Function('input','tools',body.replace('__TABLE_MAP__',JSON.stringify(map)))({asOf:'2026-11-12',records:[],run:null},{call:(name:string,v:any)=>{assert.equal(name,'records.read');const all=rows.filter(r=>r.role===v.typeId);return {rows:all.slice(v.offset,v.offset+v.limit),total:all.length};}});
- // Hand-checked on the fictional demo as of 12 Nov 2026 (first reminder window 30 days):
- const out=summary(fresh());assert.equal(out.nonEmpty,true);assert.equal(out.subject,'Contracts: 9 actions needed');
- assert.equal(out.text,['Contracts that need action, as of 12 Nov 2026.','',
-  'Deadlines (2)','- SOW 2 — PX-101 bioanalysis (Helix Clinical Research): SOW 2 bioanalysis invoice — batch 3 overdue since 31 Oct 2026','- Data processing agreement — Brightwater Data Services: notice deadline 1 Dec 2026 (renews automatically for 12 months)','',
-  'Waiting for signature (3)','- CDA — Meridian Pharma KK (partnering 2026): Out for signature, since 30 Oct 2026 (13 days)','- Clinical trial agreement — St Aldric University Hospital (PX-101-001): Drafting, since 2 Nov 2026 (10 days)','- Sublicence — Meridian Pharma KK (PX-202 Japan): In negotiation, since 15 Sep 2026 (58 days)','',
-  'To check (4)','- Supply agreement — Corvane Biologics (PX-101 drug product): key terms not yet checked','- Supply agreement — Corvane Biologics (PX-101 drug product): obligation “Annual capacity reservation fee” not yet checked','- Supply agreement — Corvane Biologics (PX-101 drug product): obligation “Quarterly rolling forecast” not yet checked','- Supply agreement — Corvane Biologics (PX-101 drug product): obligation “Quality audit on 30 days notice” not yet checked','',
-  'Open Contracts in TrialAgents for details.'].join('\n'));
- // Nothing needs action: no email.
- const quiet=fresh().filter(r=>r.role!=='contracts.obligations'&&r.role!=='contracts.terms'&&!(r.role==='agreements'&&['drafting','in_negotiation','out_for_signature'].includes(r.data.status)));
- assert.deepEqual(summary(quiet),{nonEmpty:false,text:''});
- // A missing table is reported, never silently treated as empty.
- const map={...fullMap} as any;delete map['contracts.terms'];assert.match(summary(fresh(),map).text,/may be incomplete/);
+test('1.1.0: no automations are declared and no setting refers to one',async()=>{
+ const raw=JSON.parse(await readFile('templates/apps/life.contracts-1.1.0.json','utf8'));
+ assert.equal(raw.recommendedAutomations,undefined);assert.equal(raw.automationFeatures,undefined);assert.equal(raw.documentation.tasks.mode,'none');
+ assert.doesNotMatch(raw.instructions,/summaryBinding|actions_summary|digest_day/);
+ const s=text((await render(fresh(),{section:'settings'})).html);assert.match(s,/Contracts needs none/);
 });

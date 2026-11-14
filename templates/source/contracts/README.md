@@ -1,10 +1,10 @@
 # Contracts 1.1.0 (`life.contracts`)
 
-Register of CDAs, MSAs, SOWs and other agreements with key dates and obligations. Scope: [CONTRACTS.md](../../../docs/product/app-template-blueprints/apps/CONTRACTS.md) (BT2-04; 1.1.0 is §12). It follows [modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md), template guidance 1.3.28 and the [app automations](../../../docs/product/RECOMMENDED_AUTOMATIONS.md) rules. 1.1.0 is a **draft** that replaces 1.0.0 on the owner's approval; the released 1.0.0 package is kept unchanged under `archive/1.0.0/` and installed 1.0.0 apps are not migrated.
+Register of CDAs, MSAs, SOWs and other agreements with key dates and obligations. Scope: [CONTRACTS.md](../../../docs/product/app-template-blueprints/apps/CONTRACTS.md) (BT2-04; 1.1.0 is §12). It follows [modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md), template guidance 1.3.28. 1.1.0 is a **draft** that replaces 1.0.0 on the owner's approval; the released 1.0.0 package is kept unchanged under `archive/1.0.0/` and installed 1.0.0 apps are not migrated.
 
 **What 1.1.0 changes (owner decisions C1–C8, 14 November 2026):**
 - **Two ways in, no scheduled AI.** The user gives a contract to Claude or ChatGPT to store with its terms and obligations, or types the details in the app (blank is fine). The scheduled extraction automation is gone.
-- **Weekly "Contracts: actions needed" email** (`recommendedAutomations` → `contract_actions`, Monday 08:00 Europe/Berlin, owner): a deterministic list, no AI, of agreement names with deadlines, waiting for signature, or not yet checked. Nothing is sent when the list is empty. The list comes from the read-only summary function `contracts.actions-summary.js` (binding `actions_summary`). Catalog installs cannot attach functions, so the automation shows **Needs setup** until the assistant binds it once after install (instructions step 8). The `digest_day` setting is removed: timing lives in the automation.
+- **No automations.** Contracts declares none and needs none; the 1.0.0 optional digest and extraction automations and the `digest_day` setting are removed. Users may add their own later.
 - **Counterparty on obligations** (`counterparty_id`, default the agreement's counterparty). `contracts.obligations` is now `contracts.v2`, a superset of `contracts.v1`, so v1 readers keep connecting.
 - **Assistants can change everything** within their access, through the review: every button is documented as an exact record change (instructions step 6), checking proposals on the user's request included. The 1.0.0 advice to block assistants from the verification fields is removed.
 - **The app calculates what it shows** (notice deadline, confidentiality end and the rest of the calculation contract) from the fields, whoever saved them; stored copies are used only when the inputs are missing.
@@ -15,7 +15,6 @@ Register of CDAs, MSAs, SOWs and other agreements with key dates and obligations
 
 | File | Purpose |
 | --- | --- |
-| `contracts.actions-summary.js` | Read-only summary function for the weekly email (`actions_summary`): deterministic list, `{nonEmpty, subject, text}`. The build embeds it, without its header comment, in the catalog instructions so assistants can bind it after install. |
 | `contracts.source.js` | The `frontend-js` renderer: seven screens (Overview, Register, Families, Obligations, CDAs, Pipeline, Settings), calculations, verification review, documents and reviewed `records.propose` writes. It starts with the single-line `templateLayoutSchema` declaration. |
 | `contracts.css` | Vivid kit, graphite rail (`#2B3546`) with ocean accent (`#175B94`), derived from the Programs theme; one page scroll; responsive 390–1440 px. |
 | `catalog.metadata.json` | Catalog fields: options, instructions (including the assistant extraction contract) and the MCP-served documentation. |
@@ -23,7 +22,7 @@ Register of CDAs, MSAs, SOWs and other agreements with key dates and obligations
 | `demo_data.json` | Fictional records only (fictional organizations, “(fictional)” owners). Also the hand-checked set for the tests. Never seed it into a workspace. |
 | `contracts.preview.html` | Generated offline preview, fixed as of 12 Nov 2026. Documents and assistant extraction need the TrialAgents host. |
 | `QA.md` | Commands, results, hand calculations, acceptance criteria 1–10 and unverified boundaries. |
-| `AUTOMATION_RECIPES.md` | The weekly actions email, its setup and the no-automation path. |
+| `AUTOMATION_RECIPES.md` | Why Contracts has no automations. |
 | `archive/1.0.0/` | The released 1.0.0 package, unchanged (its catalog JSON stays `templates/apps/life.contracts-1.0.0.json`). |
 
 Edit the source, CSS and metadata, then run `node scripts/build-contracts-template.mjs`. This regenerates `templates/apps/life.contracts-1.1.0.json` and the preview; `--check` runs in `npm run build`. Do not edit a released version: publish a new version and archive the previous package first. After a preview change, regenerate the gallery screenshot and manifest entry (`node scripts/build-template-screenshots.mjs`); the 1.1.0 screenshot is `resources/template-gallery/life.contracts@1.1.0.jpg`.

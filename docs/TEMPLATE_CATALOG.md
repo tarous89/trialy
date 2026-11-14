@@ -6,8 +6,6 @@ Migration 056 and `db:migrate` import repository versions once. `templates/catal
 
 Contracts (`life.contracts`) 1.0.0 was added on 12 November 2026 as a draft (#140) and approved the same day at the owner's request: the seed names 1.0.0 and migration 063 approves the draft row imported by that deployment, once.
 
-Contracts 1.1.0 was added on 14 November 2026 as a draft (CONTRACTS.md §12). The 1.0.0 source is archived under `templates/source/contracts/archive/1.0.0/`, and the seed and installer entries for 1.0.0 point there; `templates/catalog-retirements.json` withdraws 1.0.0 on approval. When the owner approves 1.1.0, the publication change names 1.1.0 in the seed and adds a one-time migration that approves the 1.1.0 draft row and sets 1.0.0 to `draft` (withdrawn). Installed 1.0.0 apps keep working.
-
 CRO Selection (`life.cro-selection`) 2.0.0 was added on 13 November 2026 as a draft. It replaces CRO Selection 1.0.1 and Sponsor RFP Management (`life.sponsor-rfp-management`) 1.0.1. Versions to withdraw on a replacement's approval are listed in `templates/catalog-retirements.json`; deployment does not act on that file.
 
 Data Room (`life.data-room`) 1.0.0 was added on 13 November 2026 as a draft, built on the exchange room extension (EXTERNAL_EXCHANGE.md §5). It is a new template, so nothing is retired. It writes the `dataroom.v1` outputs: in `templates/contracts/outputs.json` its writer is now `life.data-room`, and `room_purpose` gains `partnering` (an additive change). It is not in the seed until the owner approves it.
