@@ -6,7 +6,7 @@ import {monitoringReceiptRuns} from '../app-services/monitoring-guard.js';
 import {appSections,sectionGrant,projectAppSections,validateSectionRevision} from '../domain/app-sections.js';
 import {openRuntimeView,assertRuntimeReadAccess,assertRuntimeScope,assertRuntimeWriteSchema,incompatible} from './runtime-view.js';
 import {withReadMetadata} from '../db/read-metadata.js';
-import {requestMetrics} from '../db/metrics.js';
+import {FrontendQueue} from './frontend-queue.js';
 import {AppActions} from '../app-services/service.js';
 import {AppMonitoring} from '../app-services/monitoring.js';
 import {serviceJob} from '../app-services/jobs.js';
@@ -48,7 +48,7 @@ import {isExchangeOperation,exchangeReview as externalExchangeReview,commitExcha
 const exchangeRecords=(op:any)=>{const r=isExchangeOperation(op)?(op as any).records:null;return r?{kind:'apply_component_records' as const,componentId:r.componentId,expectedVersion:r.expectedVersion,...(r.viewId?{viewId:r.viewId}:{}),changes:r.changes}:null;};
 const withoutRecords=(op:any)=>{const {records,...rest}=op;return rest;};
 const J=JSON.stringify;
-const activeFrontends=new Set<string>(),activeDraftFrontends=new Set<string>();
+const activeFrontends=new FrontendQueue(2),activeDraftFrontends=new FrontendQueue(1,8);
 const adapter=(tx:Connection):Database=>({query:tx.query.bind(tx),transaction:fn=>fn(tx),close:async()=>{}});
 export class WorkspaceFoundation {
  constructor(public db:Database,private frontendSession=false){}
@@ -195,9 +195,14 @@ export class WorkspaceFoundation {
   }
   // Draft evaluation has its own bounded capacity and cannot occupy a published app slot.
   const knownTracker=standardTracker(content.source),pool=request.componentId?activeFrontends:activeDraftFrontends,key=w+':'+a.userId+':'+(request.componentId??request.previewId);
-  if(!knownTracker&&(pool.size>=(request.componentId?2:1)||pool.has(key))){const metrics=requestMetrics();if(metrics)metrics.runtimeBusy++;fail(429,'runtime_busy','This interface is busy; try again shortly');}if(!knownTracker)pool.add(key);
+  const release=knownTracker?undefined:await pool.acquire(a.userId,key);
   const changes:any[]=[],invocations:any[]=[],connectorReviews:any[]=[];let layoutProposal:any=null,exchangeProposal:any=null;
   try{
+   // Admission may wait: revalidate before executing any source/capability.
+   if(!knownTracker){
+    if(request.componentId){const runtime=await this.runtimeComponent(this.db,a,w,request.componentId,version,viewId);assertRuntimeScope(runtime.latest,content);}
+    else {const draft=(await this.db.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[request.previewId,w,a.userId])).rows[0];if(!draft)fail(409,'preview_expired','Preview unavailable');await this.validate(this.db,a,w,draft.body.operation);}
+   }
    const currentPolicy=await access(this.db,a,w),accessStamp=request.componentId?await this.componentAccessStamp(a,w,content):undefined;
    const tracker=knownTracker,pages:any[]=[];
    const tableCache=new Map<string,Promise<any>>(),pageRecords=new Map<string,any>(),resolvedPages=new Map<string,any>();
@@ -364,7 +369,7 @@ export class WorkspaceFoundation {
     const queued=[];for(const v of invocations){const latest=await f.component(tx,a,w,request.componentId!);if(!isDeepStrictEqual(content.execution.find((b:any)=>b.name===v.binding),latest.execution.find((b:any)=>b.name===v.binding)))incompatible();queued.push(await f.invokeComponent(a,w,{...v,componentId:request.componentId,expectedVersion:latest.version}));}return {proposal,queued};
    });
    return {queued,...(connectorReviews.length?{connectorReviews}:{}),viewId,runtime:'trialy-frontend-js-v1',frameUrl:new URL('/frontend/frame',appPublicUrl()).toString(),...output,css:runtimeCss+output.css,accessVersion:currentPolicy.access_version,accessStamp,controls,connected:!!content.manifest,proposal,temporary:!request.componentId,...(tracker?{tracker:{config:tracker.config,theme:tracker.theme,pages,saved:!!request.componentId,writable}}:{})};
-  }finally{if(!knownTracker)pool.delete(key);}
+  }finally{release?.();}
  }
  private parseInterface(content:any){
   let spec;try{spec=interfaceSchema.parse(JSON.parse(content.source));}catch{fail(400,'invalid_interface','Use a valid legacy TrialAgents interface description');}

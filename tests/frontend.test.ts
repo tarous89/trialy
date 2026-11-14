@@ -7,6 +7,7 @@ import type {Database,Connection} from '../src/db/database.js';
 import {Service} from '../src/domain/service.js';
 import {WorkspaceFoundation} from '../src/workspace/service.js';
 import type {Actor} from '../src/shared/schema.js';
+import {createRequestMetrics,withRequestMetrics} from '../src/db/metrics.js';
 test('Frontend code: read-only drafts, bound reads, reviewed atomic writes, stale versions and access revocation',async()=>{
  const pg=new PGlite();for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
  const db:Database={query:(s,v)=>pg.query(s,v) as any,transaction:f=>pg.transaction(tx=>f(tx as Connection)),close:()=>pg.close()};
@@ -39,7 +40,19 @@ test('Frontend code: read-only drafts, bound reads, reviewed atomic writes, stal
  const before=(await f.pending(ai,w.id)).length;await assert.rejects(f.runFrontend(ai,w.id,{...request,event:{kind:'click',action:'fail'}}));assert.equal((await f.pending(ai,w.id)).length,before);
  await assert.rejects(f.runFrontend(ai,w.id,{...request,expectedVersion:1}),(e:any)=>e.code==='component_changed');
  const stale=await f.runFrontend(ai,w.id,request);assert.ok(stale.proposal);const staleProposal=stale.proposal;await save({kind:'update_record',recordId:record,expectedVersion:1,data:{name:'Concurrent update'}});await assert.rejects(f.confirm(a,w.id,staleProposal.id,staleProposal.digest),/changed/);
- await change({kind:'set_project_access',nodeId:project.id,expectedVersion:0,allowedUsers:null,ai:false});await assert.rejects(f.runFrontend(ai,w.id,request));
+ // Hold admission before the source starts, queue the same actor/app, then revoke.
+ const runtime=(f as any).runtimeComponent.bind(f);let checks=0,release!:()=>void,entered!:()=>void;
+ const held=new Promise<void>(resolve=>{release=resolve;}),started=new Promise<void>(resolve=>{entered=resolve;});
+ (f as any).runtimeComponent=async(...args:any[])=>{if(++checks===2){entered();await held;}return runtime(...args);};
+ const firstMetrics=createRequestMetrics(),waitingMetrics=createRequestMetrics();
+ const first=assert.rejects(withRequestMetrics(firstMetrics,()=>f.runFrontend(ai,w.id,request)));
+ await started;
+ const waiting=assert.rejects(withRequestMetrics(waitingMetrics,()=>f.runFrontend(ai,w.id,request)));
+ const deadline=Date.now()+1000;while(!waitingMetrics.runtimeQueued&&Date.now()<deadline)await new Promise(resolve=>setImmediate(resolve));
+ try{assert.equal(waitingMetrics.runtimeQueued,1);await change({kind:'set_project_access',nodeId:project.id,expectedVersion:0,allowedUsers:null,ai:false});}finally{release();}
+ await Promise.all([first,waiting]);(f as any).runtimeComponent=runtime;
+ assert.equal(firstMetrics.sandboxRuns,0);assert.equal(waitingMetrics.sandboxRuns,0);
+ await assert.rejects(f.runFrontend(ai,w.id,request));
  const final=await f.runFrontend(a,w.id,{componentId:saved.id,expectedVersion:0});assert.equal((final.state as any).data.name,'Concurrent update');
  }finally{await db.close();}
 });

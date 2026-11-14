@@ -18,7 +18,8 @@ The existing request log retains `durationMs`, `queryCount`, `databaseMs`, `pool
 | `sandboxRuns`, `sandboxMs` | Custom sandbox executions and total elapsed execution time, including startup and capability waits. Failed executions count too. |
 | `sandboxStartupMs` | Fork-to-ready elapsed time, including child loading, WASM/runtime/context initialization and notification delivery. A failure before ready has no ready duration. |
 | `capabilityCalls`, `capabilityMs`, `capabilityBytes` | Host capability calls, handler/serialization time and serialized result bytes attempted. No contents or capability arguments are recorded. |
-| `runtimeBusy` | Published/draft custom runtime admission rejections for this request. |
+| `runtimeBusy` | Published/draft custom runtime admission rejections (queue full/per-user limit/wait expired) for this request. |
+| `runtimeQueued`, `runtimeQueueMs` | Requests that waited for admission and their wait duration, including expired waits; separate from sandbox time. No actor/app identifiers are recorded. |
 
 Timings overlap and must not be added together. Startup is part of sandbox time; database work may occur inside a capability. These counters do not isolate IPC time, pure calculation time, CPU throttling or browser rendering. Logs describe completed HTTP responses; host cancellations and transport timing require separate tracing. Compare distributions on the same workload rather than a single request.
 
