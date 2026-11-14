@@ -14,7 +14,7 @@
 - Funding Radar
 - Regulatory Radar
 
-**Depends on:** [app automations at install](../../RECOMMENDED_AUTOMATIONS.md) with E1–E4, shipped in #168 (recipes, install popup, summary and brief bindings, `after` email) and #169 (research saves results in the app database under grants approved with the install). The contract is `src/automations/recipes-schema.ts`; template guidance 1.3.27+. Offers appear only where `APP_AUTOMATION_RECIPES_ENABLED=true`; radar tests run with it on. Build order:
+**Depends on:** [app automations at install](../../RECOMMENDED_AUTOMATIONS.md) with E1–E4, shipped in #168 (recipes, install popup, summary and brief bindings, `after` email) and #169 (research saves results in the app database under grants approved with the install). The contract is `src/automations/recipes-schema.ts`; template guidance 1.3.27+. Offers appear only where `APP_AUTOMATION_RECIPES_ENABLED=true`; radar tests run with it on. **Also needs platform additions E5 (research + email in one automation) and E6 (fields resolved at run time), §6, in their own PR first.** Build order:
 1. **Radar kit + Trial Radar** (one PR; our edge with TrialAgents Intel)
 2. Pipeline, Literature, Deal and Funding Radar
 3. Patent, Market and Regulatory Radar
@@ -25,9 +25,10 @@ Each radar after the first is a small PR on the kit.
 
 **Decisions (14 Nov 2026):**
 - **Separate apps.** Users install only what they need. Each radar is small (4 screens) and versioned on its own.
-- **Automation on by default.** Each radar recommends a **scan**, a **digest** after the scan and a **high-impact alert** after the scan (§2.4), all selected in the install popup. The owner can opt out there, or set them up later in Automations → From app features.
+- **Automation on by default.** Each radar recommends a **scan + digest** (one automation: Claude or ChatGPT research, then email) and a **high-impact alert** after the scan (§2.4), both selected in the install popup. The owner can opt out there, or set them up later in Automations → From app features.
 - **Users can edit everything.** The tracker (fields and layout) and the research template are editable by users and by their assistant. Defaults can always be restored.
 - **The assistant does the searching.** Claude or ChatGPT searches and reads; the radar stores, structures and schedules, and tells the assistant what and when through a research brief. Sources are named, not connected: the assistant decides how to reach them (its own connector or the web), **web is the default**, and every run returns a source report.
+- **Research updates the radar directly.** Each scan adds and updates tracker rows and events itself, with sources; there is no approval per run or per item. Users see what each run changed, can correct or dismiss anything, and every change keeps its history.
 - **No cross-radar app in v1.** A cross-radar review is an on-request assistant task that reads all installed radars. A combined "Radar Overview" app comes only if design partners ask for it.
 - **Literature Radar** becomes `life.literature-radar` **2.0.0** on the kit; earlier versions stay installable.
 
@@ -58,9 +59,9 @@ Custom `frontend-js` on the Vivid kit, theme **graphite**, declared in `template
 
 | # | Screen (id) | Capabilities |
 |---|---|---|
-| 1 | **Overview** (`overview`) | (1) High-impact items to review. (2) Coming dates in 90 days (estimates marked "est."). (3) What changed since the last run. (4) Last run and source report, with any gaps. |
-| 2 | **Tracker** (`tracker`, label per radar: Assets / Trials / Publications / Patents / Products / Deals / Financings / Items) | (1) The radar's table, with filters, grouping, saved views and export. (2) Detail panel: fields with sources, history, "changed since confirmation". (3) Confirm, edit or dismiss proposals. (4) Watch an item. |
-| 3 | **Events** (`events`) | (1) Review queue: proposed events with source, date and the assistant's "so what"; confirm, edit, dismiss with a reason. (2) Confirmed feed with filters. (3) Calendar view of dated events. (4) Duplicates merged. |
+| 1 | **Overview** (`overview`) | (1) High-impact items from recent runs. (2) Coming dates in 90 days (estimates marked "est."). (3) What changed since the last run. (4) Last run and source report, with any gaps. |
+| 2 | **Tracker** (`tracker`, label per radar: Assets / Trials / Publications / Patents / Products / Deals / Financings / Items) | (1) The radar's table, with filters, grouping, saved views and export. (2) Detail panel: fields with sources, history (which run changed what), "changed in last run". (3) Edit, mark seen or dismiss. (4) Watch an item. |
+| 3 | **Events** (`events`) | (1) New since last run: events with source, date and the assistant's "so what"; mark reviewed, edit, or dismiss with a reason. (2) Feed with filters. (3) Calendar view of dated events. (4) Duplicates merged. |
 | 4 | **Setup** (`setup`) | (1) **Scopes:** one or more per radar (e.g. one per program), each with its definition fields, named sources (name, covers, priority, notes) and watchlist. (2) **Research template:** the editable collection template (see 2.3), with version history and "Restore default". (3) **Tracker fields:** add, hide or rename fields (platform field customization); new fields are added to the research template's return format automatically. (4) Links to Automations (schedule, recipients, email text) and Access, plus "Build now" / "Refresh now" (on request in chat). |
 
 ### 2.2 Common data (`<radar>.*` prefix per app, e.g. `trialradar.*`)
@@ -69,23 +70,23 @@ Custom `frontend-js` on the Vivid kit, theme **graphite**, declared in `template
 |---|---|
 | `<radar>.settings` (one row) | lookback_days (number, 90), impact_scale (text, JSON), research_template (text*, the workspace's current template), research_template_version (number), language (text) |
 | `<radar>.scopes` | name (text*), program_id (text), definition (text*, JSON; fields per radar, §3), sources (text*, JSON: name, covers, priority, notes), watchlist (text, JSON), include_notes (text), exclude_notes (text), status (select*: active / paused), archived (boolean). `last_run_on` is derived (latest completed run covering the scope), not stored |
-| `<radar>.<tracker>` | Radar-specific fields (§3), plus natural_key (text*), scope_id (text*), sources (text*, JSON), custom_values (text, JSON), last_verified_on (date), run_id (text), watched (boolean), review_status (select: *blank = proposed* / confirmed / dismissed), confirmed_by (text) |
-| `<radar>.events` (output) | scope_id (text*), program_id (text), organization_id (text), item_id (text), natural_key (text*), kind (select*: per radar, §3), title (text*), summary (text), occurred_on (date), expected (boolean), expected_window (text), impact (select*: high / medium / low / none), direction (select: threat / opportunity / neutral), so_what (text), proposed_changes (text, JSON: tracker field → new value), sources (text*, JSON), run_id (text), status (select: *blank = proposed* / confirmed / dismissed), dismiss_reason (text), confirmed_by (text) |
-| `<radar>.runs` | run_id (text*, the platform run id), scope_ids (text*), kind (select*: build / refresh), run_on (date*), assistant (select: claude / chatgpt), automation_id (text), research_template_version (number), sources_report (text*, JSON per scope), proposals (number), status (select*: completed / partial / failed) |
+| `<radar>.<tracker>` | Radar-specific fields (§3), plus natural_key (text*), scope_id (text*), sources (text*, JSON), last_verified_on (date), last_changed_run_id (text), changed_fields (text, JSON: fields the last run changed), seen (boolean), watched (boolean), dismissed (boolean), user_notes (text) |
+| `<radar>.events` (output) | scope_id (text*), program_id (text), organization_id (text), item_id (text), natural_key (text*), kind (select*: per radar, §3), title (text*), summary (text), occurred_on (date), expected (boolean), expected_window (text), impact (select*: high / medium / low / none), direction (select: threat / opportunity / neutral), so_what (text), sources (text*, JSON), run_id (text), status (select*: new / reviewed / dismissed; research writes `new`), dismiss_reason (text), reviewed_by (text) |
+| `<radar>.runs` | run_id (text*, the platform run id), scope_ids (text*), kind (select*: build / refresh), run_on (date*), assistant (select: claude / chatgpt), automation_id (text), research_template_version (number), sources_report (text*, JSON per scope), items_added (number), items_updated (number), events_added (number), status (select*: completed / partial / failed) |
 
-**Who writes what.** Scans and chat runs only **add** rows: tracker rows and events with a blank status (= proposed), and one runs row per run. They never update or delete existing rows. Changes to a tracked item arrive as an event whose `proposed_changes` lists the new values; confirming the event applies them to the tracker row. Review fields (`status` / `review_status`, `confirmed_by`, `dismiss_reason`, `watched`) are outside every assistant grant, so a blank status is the only status an assistant can produce. Values for custom tracker fields go in `custom_values` and are copied into the real fields on confirmation (§2.3).
+**Who writes what.** Scans and chat research runs write the radar directly, with no approval per run or item: they create and update tracker rows and events (always with sources), set `changed_fields` and `last_changed_run_id` on the rows they change, and save one runs row per run. They never delete rows and leave user-owned fields alone: `seen`, `watched`, `dismissed`, `user_notes`, an event's `status` once it's `reviewed` or `dismissed`, `dismiss_reason` and `reviewed_by`. A dismissed item is not recreated: the natural key matches it, and the run only adds sources. The platform's per-field history shows every change by run, so a user can see and revert anything.
 
 **Shared roles:** `programs` (core.v1, optional, read), `organizations` (core.v1, read/write; companies, investors, agencies).
 
-**Outputs:** each radar writes its own events output in one common contract, `radar.v1`: `pipelineradar.events`, `trialradar.events`, `literatureradar.events`, `patentradar.events`, `marketradar.events`, `dealradar.events`, `fundingradar.events`, `regulatoryradar.events`. Deal Radar and Funding Radar also output their trackers as `dealradar.deals` and `fundingradar.financings`. This keeps one writer per output. Only confirmed rows are readable by other apps.
+**Outputs:** each radar writes its own events output in one common contract, `radar.v1`: `pipelineradar.events`, `trialradar.events`, `literatureradar.events`, `patentradar.events`, `marketradar.events`, `dealradar.events`, `fundingradar.events`, `regulatoryradar.events`. Deal Radar and Funding Radar also output their trackers as `dealradar.deals` and `fundingradar.financings`. This keeps one writer per output. Rows that are not dismissed are readable by other apps; dismissed rows are not.
 
 ### 2.3 Research template and brief
 
-Every radar ships a **default research template**: an instruction plus a structured return format. Users (or their assistant, as a reviewed proposal) can edit it in Setup. It's stored in `<radar>.settings` (record data, so editing it never needs automation re-approval). It's versioned; "Restore default" brings back the template's version, and each run records which version it used.
+Every radar ships a **default research template**: an instruction plus a structured return format. Users can edit it in Setup, or ask their assistant to (a normal reviewed app change, not research). It's stored in `<radar>.settings` (record data, so editing it never needs automation re-approval). It's versioned; "Restore default" brings back the template's version, and each run records which version it used.
 
-At run time the radar builds a **brief**: research template + each active scope's definition, sources, watchlist, exclusions + `last_run_on` + the tracker's current fields (including custom ones, returned via `custom_values`) + the natural keys of items and open proposals already in the radar (so the assistant doesn't propose them again). The brief is the app's read-only execution binding `brief`, declared as the scan's `research.briefBinding`. It returns `{context}` of at most 64,000 characters, pages the key lists past that budget (the assistant reads the rest through its read bindings), and reads only the scan's declared read fields. Automations call it through `read_app_monitor_brief`; on-request chat runs call the same binding, so both use the same brief.
+At run time the radar builds a **brief**: research template + each active scope's definition, sources, watchlist, exclusions + `last_run_on` + the tracker's current fields, including custom ones + the natural keys of items and events already in the radar, including dismissed ones (so the assistant updates instead of duplicating). The brief is the app's read-only execution binding `brief`, declared as the scan's `research.briefBinding`. It returns `{context}` of at most 64,000 characters, pages the key lists past that budget (the assistant reads the rest through its read bindings), and reads only the scan's declared read fields. Automations call it through `read_app_monitor_brief`; on-request chat runs call the same binding, so both use the same brief.
 
-The automation's fixed `objective`, `instructions` and `sourcePolicy` only say: read the brief, follow its research template, save proposals and the runs row, and finish with typed `findings`. Everything a user can edit lives in the brief, so editing the template or scopes never changes the approved automation.
+The automation's fixed `objective`, `instructions` and `sourcePolicy` only say: read the brief, follow its research template, save tracker rows, events and the runs row, and finish with typed `findings`. Everything a user can edit lives in the brief, so editing the template or scopes never changes the approved automation.
 
 **Rules in every default template (users may add rules but not remove these):**
 - every fact needs a source URL or reference and a date
@@ -97,21 +98,21 @@ The automation's fixed `objective`, `instructions` and `sourcePolicy` only say: 
 - reach each named source however you can (connector if available, otherwise the web); report sources you can't reach and continue
 - return a **source report**
 
-### 2.4 Recommended automations (per radar, all selected)
+### 2.4 Recommended automations (per radar, both selected)
 
-Under the shipped contract a recipe is **either** research **or** email, so the scan and its digest are two recipes. All three are `recommendedAutomations` (well under the limit of 10); there is no `defaultOn` field, since every install recommendation starts selected.
+Two `recommendedAutomations` (well under the limit of 10), both selected in the install popup.
 
-| Key | Name | Trigger | Recipe |
+| Key | Name | Trigger | Steps |
 |---|---|---|---|
-| `scan` | {Radar} scan | `calendar` at the radar's cadence (§1), 07:00 workspace time zone: weekly on Monday; monthly with `monthRule: {kind: "weekday", nth: 1, weekday: 1}` (first Monday) | **Research.** `briefBinding: "brief"`; `readBindings`: settings, scopes, tracker, events, runs (fields the brief reads); `writeBindings` (create only, no update): tracker and events without the review fields (§2.2), runs |
-| `digest` | {Radar} digest | `{kind: "after", recipe: "scan", when: "meaningful"}` | **Email.** `summaryBinding: "digest_summary"` composes §2.5 from the run's rows (`run_id`); returns `nonEmpty: false` when the run added no proposals, so nothing is sent |
-| `alert` | {Radar} high-impact alert | `{kind: "after", recipe: "scan", when: "meaningful"}` | **Email.** `summaryBinding: "alert_summary"` returns `nonEmpty: true` only if the run proposed a high-impact event on a watched item; all such events go in one email per run |
+| `scan` | {Radar} scan + digest | `calendar` at the radar's cadence (§1), 07:00 workspace time zone: weekly on Monday; monthly with `monthRule: {kind: "weekday", nth: 1, weekday: 1}` (first Monday) | **1. Research** on the chosen runner (Claude or ChatGPT): `briefBinding: "brief"`; reads settings, scopes, tracker, events and runs; writes tracker and events (create and update, except the user-owned fields in §2.2) and runs (create). **2. Email:** `summaryBinding: "digest_summary"` writes §2.5 from the run's rows; `nonEmpty: false` when the run changed nothing, so nothing is sent |
+| `alert` | {Radar} high-impact alert | `{kind: "after", recipe: "scan", when: "meaningful"}` | **Email:** `summaryBinding: "alert_summary"` returns `nonEmpty: true` only if the run added or changed a high-impact event on a watched item; all such events go in one email per run |
 
-- **Install popup.** One Add app approves the app, its tables and access, the three automations, and the scan's write grants. The popup describes the grants in plain language: "Adds proposed {items}, events and run reports to {Radar}. Never confirms, changes or deletes your rows." Recipients default to the owner (`editableAtInstall`: cadence, day, time, recipients).
-- **No runner.** With no ready Claude or ChatGPT runner, the scan shows **Needs setup** ("Connect Claude or ChatGPT to activate research") and the digest and alert wait on it. Connecting a runner later offers **Enable**; it never switches on by itself.
-- **Opt-outs.** Opting out of the scan leaves the digest and alert waiting, never active on their own. The owner can set any of them up later from Automations → From app features.
-- **Empty runs.** With no active scope, the brief says so; the scan saves its runs row and finishes `no_update`, so no email is sent. A run that adds no proposals still saves its runs row; the digest summary then returns `nonEmpty: false`.
-- **Run status.** Per the platform, `partial`, `failed` and test runs never trigger the digest or alert. An unreachable named source with a successful fallback is still a `completed` platform run; the source report records the gap (§2.6).
+- **One automation, two steps.** The scan and its digest are one row in the install popup and one automation in Automations, shown with both connectors (Claude/ChatGPT and Email). They pause, edit and delete together. Internally the email still runs only after the research has saved, and a failed email never reruns the research (platform addition **E5**, §6).
+- **Install popup.** One Add app approves the app, its tables and access, both automations and the scan's write access. The popup states it in plain language: "Updates {items} and events in {Radar} from each scan. Doesn't delete rows or change your notes, watches or dismissals." Recipients default to the owner (`editableAtInstall`: cadence, day, time, recipients).
+- **No runner.** With no ready Claude or ChatGPT runner, the scan shows **Needs setup** ("Connect Claude or ChatGPT to activate research") and the alert waits on it. Connecting a runner later offers **Enable**; it never switches on by itself.
+- **Opt-outs.** Opting out of the scan leaves the alert waiting, never active on its own. The owner can set either up later from Automations → From app features.
+- **Empty runs.** With no active scope, the brief says so; the scan saves its runs row and finishes `no_update`, so no email is sent. A run that changes nothing still saves its runs row; the digest summary then returns `nonEmpty: false`.
+- **Run status.** Partial, failed and test runs never send the digest or alert. An unreachable named source with a successful fallback is still a `completed` platform run; the source report records the gap (§2.6).
 
 ### 2.5 Email templates (summary functions, editable)
 
@@ -127,7 +128,7 @@ All emails follow the same rules: about 200 words maximum, empty sections omitte
 > **{Radar section}** (max 3; §3)
 > **Coming up (90 days):** dated items, with estimates marked "est."
 > **Coverage:** sources used · not reachable (only if any)
-> Review {n} proposals →
+> Open {n} new items →
 
 **Alert:**
 > **Subject:** {Radar} alert · {item}: {headline}
@@ -135,22 +136,23 @@ All emails follow the same rules: about 200 words maximum, empty sections omitte
 > **What happened:** one sentence with date and source.
 > **Why it matters for {program}:** one or two sentences.
 > **Check next:** one or two concrete follow-ups.
-> Confirm in {Radar} →
+> Open in {Radar} →
 
 ### 2.6 Common rules
 
 - **Estimates** (registry completion dates, expected decision dates, patent expiry estimates) show "est." everywhere.
 - **Duplicates** with the same natural key (§3) are merged and their sources combined.
-- **Changed since confirmation:** a confirmed tracker row with an open event carrying `proposed_changes` highlights those fields until the event is confirmed (values applied) or dismissed.
-- **Unsourced proposals** can't be confirmed.
+- **Changed in last run:** fields a run changed (`changed_fields`) are highlighted until the user marks the row seen; the detail panel shows old value, new value, run and source.
+- **No unsourced data:** `sources` is required, so a run can't save a row or event without one.
 - **Source report:** each named source is used / not reachable / not relevant per scope and run. A source not reachable in 3 consecutive runs shows a hint on Overview.
 - **Cross-radar review** (on request: "review all radars for Program X"): the assistant reads the events outputs of every installed radar it can access and writes a report document. No app or automation is needed.
 
 ### 2.7 Access and AI
 
 - App-level access as usual; radar data is internal.
-- Claude and ChatGPT read briefs and the records the user can read. They propose tracker rows, events, summaries and research-template edits, and never confirm.
-- Scheduled scans propose by **adding** rows under the create-only grants in §2.4. Chat runs use the same rows through the normal reviewed save. Research-template edits from an assistant are reviewed changes to the settings row, never applied silently.
+- Claude and ChatGPT read briefs and the records the user can read.
+- **Research writes directly.** Scheduled scans write under the access approved at install (§2.4), with no approval per run. A "Build now" or "Refresh now" in chat writes the same way under that same access, using the same brief.
+- **Everything else stays reviewed.** Research-template edits, scope changes, tracker field changes and other edits from an assistant are normal reviewed app changes. Research never touches user-owned fields (§2.2).
 - Automations follow platform rules. The app creates, enables and schedules none itself; Setup only links to Automations.
 
 ---
@@ -189,23 +191,23 @@ Readers use the in-app integration pattern ("Use data from Trial Radar"). Each f
 ## 5. Package checklist and acceptance criteria
 
 **Kit package:**
-- `templates/source/radar-kit/` with screens, common tables, the `brief` binding, the `digest_summary` and `alert_summary` bindings, research-template editor with versions, source report, and the three recommended-automation recipes (§2.4) validated by `validateRecipeDeclarations`
+- `templates/source/radar-kit/` with screens, common tables, the `brief` binding, the `digest_summary` and `alert_summary` bindings, research-template editor with versions, source report, and the two recommended-automation recipes (§2.4) validated by `validateRecipeDeclarations`
 - a generator that builds each radar's immutable `templates/apps/life.<radar>-<version>.json` from the kit plus the radar definition
 - `radar.v1` registry entries for every output
 
 **Per radar:** definition (scope fields, tracker fields, natural key, event kinds, standard sources, default research template, digest section, cadence), `catalog.metadata.json` with `whenToUse` and `whenNotToUse`, fictional `demo_data.json`, build `--check` and browser test.
 
 **Acceptance (kit, tested with Trial Radar first, then each radar):**
-1. **Install:** the install popup shows the radar's 3 recommendations (scan, digest, alert), all selected, with the plain-language write summary. Add app creates them linked to the app on the chosen runner, with the scan's create-only grants. With no runner the scan shows Needs setup and the digest and alert wait. Opting out of the scan leaves the digest and alert waiting.
-2. **Scope and build:** creating a scope prefills definition fields and sources. "Build now" in chat returns tracker and event proposals with sources and a source report. Unsourced proposals can't be confirmed.
-3. **Scheduled scan:** it uses the refresh brief for all active scopes, records the run (with research template version and source report), and sends the digest within the word limit, and only if there's something to report. With no active scope, it does nothing.
+1. **Install:** the install popup shows the radar's 2 recommendations (scan + digest, alert), both selected, with the plain-language write summary. Add app creates them linked to the app on the chosen runner, with the scan's write access. Scan + digest is one automation with both connectors. With no runner the scan shows Needs setup and the alert waits. Opting out of the scan leaves the alert waiting.
+2. **Scope and build:** creating a scope prefills definition fields and sources. "Build now" in chat fills the tracker and events directly, with sources, and saves a runs row with the source report. A row without sources can't be saved.
+3. **Scheduled scan + digest:** one automation; it uses the refresh brief for all active scopes, records the run (with research template version and source report), and sends the digest within the word limit, and only if there's something to report. With no active scope, it does nothing.
 4. **Alert:** one email per run, only for watched high-impact events, within email limits; none for partial, failed or test runs.
 5. **Edit the research template:** a user edit is used by the next run; the version is recorded; "Restore default" works; required rules can't be removed.
-6. **Edit the tracker:** a new custom field appears in the table and in the brief's return format (filled via `custom_values` and copied on confirmation); hiding a field hides it in the table only. Because a field change changes the table's schema, the scan shows "needs review" and Setup links to Automations to re-approve it (§6).
+6. **Edit the tracker:** a new custom field appears in the table and in the brief's return format, and the next scan fills it without re-approval (E6); hiding a field hides it in the table only. Removing a field makes the next scan skip it without failing.
 7. **Unreachable source** is reported and the run continues on the web; after 3 runs a hint appears.
 8. **Estimates** show "est." in the tracker, calendar and emails.
-9. **Outputs:** confirmed rows are readable by the connected apps; proposed and dismissed ones are not.
-10. **Assistants** propose only: a scan's attempt to update an existing row or to set any review field is refused by its grant, and a run cannot complete with unsaved proposals.
+9. **Outputs:** rows that are not dismissed are readable by connected apps; dismissed ones are not.
+10. **Direct writes, kept in bounds:** a scan creates and updates rows and events with no per-run approval; its attempts to delete rows or change user-owned fields are refused by its access; a dismissed item is not recreated; every change shows in field history with its run. Template, scope and field edits from an assistant stay reviewed.
 11. **Modularity and archiving:** the modularity test (rule 9) and archive-first checks pass; archive pauses linked automations.
 12. **Performance:** 5,000 events and 2,000 tracker rows stay responsive (paged).
 13. **Layout:** desktop 1440 and mobile 390.
@@ -216,18 +218,15 @@ Readers use the in-app integration pattern ("Use data from Trial Radar"). Each f
 
 ---
 
-## 6. Platform fit (revised 14 Nov 2026 after #168 and #169)
+## 6. Platform fit and the platform additions this needs
 
-What changed from the first version of this scope, and why:
+The kit is built on the shipped platform (#168 recipes, install popup, summary and brief bindings, `after` email; #169 research saves in the app database under access approved with the install). Two small additions are needed first; they are platform work and get their own PR before the radar kit.
 
-| Topic | First version | Now (shipped platform) |
-|---|---|---|
-| Scan + digest | One recommendation, research → email | Two recipes, `scan` (research) and `digest` (email after `scan`): a recipe is research **or** email |
-| Defaults | `defaultOn: true` | No such field; every install recommendation starts selected |
-| Research output | "Proposals" | Research must save results in the app database (#169), so proposals are **rows** with a blank status, written under create-only grants approved by the same Add app. Review fields are never granted |
-| Digest and alert content | "Research content" with a condition | Summary bindings (E1) read the run's rows and return `nonEmpty`, so "only if there's something to report" and "only watched high-impact events" are decided by the app's read-only code |
-| Brief | App builds a brief | A read-only `brief` execution binding (≤64,000 characters), read by the runner with `read_app_monitor_brief` |
-| `last_run_on` | Stored on scopes | Derived from runs, so the scan needs no update grant |
-| No runner | "Created switched off" | Needs setup; never auto-enabled when a runner connects |
+| # | Addition | Why | Shape |
+|---|---|---|---|
+| **E5** | **Research + email in one automation** | Scan + digest should be one automation with two connectors (Claude/ChatGPT, then Email), not two linked ones | A recipe (and an automation) may have a `research` step followed by an `email` step. It shows as one row in the install popup and one automation in Automations, with both connectors, and pauses, edits and deletes as one. Internally it reuses the E3 machinery: the email runs only after a completed, saved research run, once per run; a failed email never reruns research; partial, failed and test runs send nothing. Same email limits and recipient checks. Separate `after` recipes (like `alert`) stay supported |
+| **E6** | **Work with the fields that exist at run time** | Adding, renaming or hiding a tracker field shouldn't stop the scan or need re-approval | Approve research access **per table, not per field list**: "this app's tables X, Y, all fields the assistant may write, except Z" (`fields: "all"` plus `exceptFields`). At each run, the platform resolves the current writable fields of those tables: new fields are included, removed fields are skipped, calculated and read-only fields and the excepted fields are never writable. The approval's stamp covers the tables, the app binding and access settings, not the field list. So field edits keep the automation running, while moving a table out of the app, changing access or the assistant's rights still needs review. The brief and read bindings resolve the same way |
 
-**Known limit (platform follow-up, not in this build).** An automation's approval is stamped with the full schema of each table it reads or writes. Adding, renaming or hiding a tracker field changes that schema, so the scan needs review again before its next run. The radar handles this honestly: Setup shows "Tracker fields changed: review the scan" with a link to the existing definition in Automations, and the app keeps working. A platform change that stamps only the bound fields would remove the step; until then it is acceptance criterion 6.
+**What's unchanged.** Writes stay within the app's own tables and the user's current access; the grant expires and can be revoked; every write has a receipt and field history; a field the user marks "assistant can't write" is never written. Template, scope and field edits by an assistant remain reviewed app changes.
+
+**Changes from the first version of this scope:** research updates the radar directly, so there is no proposed / confirmed queue; scan + digest is one automation (E5); custom fields work without re-approval (E6); there's no `defaultOn` field, since every install recommendation starts selected; the digest and alert are read-only summary bindings; the brief is a read-only binding; `last_run_on` is worked out from the runs table; and with no runner the scan shows Needs setup.

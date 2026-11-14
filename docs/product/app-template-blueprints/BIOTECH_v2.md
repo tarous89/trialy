@@ -18,7 +18,7 @@
 | 01 Runway | [apps/RUNWAY.md](apps/RUNWAY.md) | `life.cash-runway` 2.1.0 published (#131) |
 | 02 Programs | [apps/PROGRAMS.md](apps/PROGRAMS.md) | `life.project-oversight` 2.1.0 published (#136), with manual cash forecast and Runway integration |
 | 03 Fundraise | [apps/FUNDRAISE.md](apps/FUNDRAISE.md) | Built in PR #137 (open) |
-| 10 Bio Radars | [apps/BIO_RADAR.md](apps/BIO_RADAR.md) | Scoped (14 Nov); family of 8 small apps (Pipeline, Trial, Literature 2.0.0, Patent, Market, Deal, Funding, Regulatory Radar) on one radar kit; automations on by default; editable tracker and research template; build kit + Trial Radar first (platform automations shipped in #168 and #169; scope revised to fit) |
+| 10 Bio Radars | [apps/BIO_RADAR.md](apps/BIO_RADAR.md) | Scoped (14 Nov); family of 8 small apps (Pipeline, Trial, Literature 2.0.0, Patent, Market, Deal, Funding, Regulatory Radar) on one radar kit; automations on by default; editable tracker and research template; build kit + Trial Radar first (on #168 and #169, plus platform additions E5 and E6 first) |
 | 09 Lab Inventory | [apps/LAB_INVENTORY.md](apps/LAB_INVENTORY.md) | Scope approved (14 Nov); replaces `life.inventory-management` 1.0.2 as 2.0.0; no platform work (one PR) |
 | 07 Partnerships | [apps/PARTNERSHIPS.md](apps/PARTNERSHIPS.md) | `life.partnership-tracker` 2.0.0 built (draft until approved; replaces 1.1.1, listed in `catalog-retirements.json`); source `templates/source/partnership-tracker/` |
 | 06 Investor Updates | [apps/INVESTOR_UPDATES.md](apps/INVESTOR_UPDATES.md) | Scoped (14 Nov); AI-native (assistant drafts on schedule, app approves, sends, tracks); build after Data Room PR A: PR A update extension ([§6](../EXTERNAL_EXCHANGE.md#6-update-extension-for-investor-updates)), PR B app |
@@ -157,7 +157,7 @@ Format per app: users and job · reference app · scope (in / out) · records ·
 
 ### BT2-10 — Bio Radars (rank 10, Core · TrialAgents edge; formerly "Landscape")
 *Eight small radar apps: Pipeline, Trial, Literature, Patent, Market, Deal, Funding, Regulatory. Install only what you need.*
-- **Final scope:** [apps/BIO_RADAR.md](apps/BIO_RADAR.md) (14 Nov 2026). Built on one shared radar kit: 4 screens, scopes with named sources (web default), an editable research template and tracker, and a source report. Each radar's scan, digest and high-impact alert are selected by default in the install popup. Each radar writes its own events output (`radar.v1`). Deal and Funding Radar also output their deals and financings. Build kit + Trial Radar first.
+- **Final scope:** [apps/BIO_RADAR.md](apps/BIO_RADAR.md) (14 Nov 2026). Built on one shared radar kit: 4 screens, scopes with named sources (web default), an editable research template and tracker, and a source report. Each radar's scan + digest (one automation) and high-impact alert are selected by default in the install popup; research updates the radar directly. Each radar writes its own events output (`radar.v1`). Deal and Funding Radar also output their deals and financings. Build kit + Trial Radar first.
 
 **All apps (14 Nov 2026):** app automations are platform automations. Each template declares recommended automations, which the install dialog offers next to data access and access ([Modular apps §7](../MODULAR_APPS_AND_SHARED_DATA.md#install-dialog-data-access-and-automations)). This applies to the automations listed in every app scope.
 
