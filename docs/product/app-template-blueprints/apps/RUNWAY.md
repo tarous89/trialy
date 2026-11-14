@@ -67,7 +67,7 @@ Custom `frontend-js` app on the Vivid design kit, theme **ocean** (`#175B94`), I
 4. **What-if.** Ask the assistant ("what if the Series A closes four months later and we pause program B?") or use Scenarios. A **preview** appears as an overlay; nothing is stored. Save it to keep it; adopt it to make its changes part of the forecast (reviewed write of the affected lines).
 5. **Board and investor pack.** Use the latest snapshot in Investor Updates (06) or Board (14), or export it. Viewers without salary access see snapshots, not live people detail.
 6. **Optional: runway alert.** Email to the owner when a close sets `runway_status` to `below_target` (see §8).
-7. **Optional: monthly exchange rates.** Automation that adds last month's ECB rates for review or under a narrow standing grant (see §6 and §8).
+7. **Optional: monthly exchange rates.** Automation that saves last month's ECB rates under the bounded write permission approved with it (see §6, §8 and §14.8).
 
 ---
 
@@ -131,7 +131,7 @@ Runway uses the existing TrialAgents account, roles and Access page; it adds no 
 - **Tabs:** Runway is a custom `frontend-js` app, so per-tab restrictions are **not** advertised in v2.0 (current platform rule: custom source keeps app-level access until a proven section boundary exists). Do not hide tabs as a security measure.
 - **Sensitive data: salaries.** Protect `positions.annual_salary` with the existing **database column restriction** for anyone who should not see pay (e.g. board viewers, program leads). The app must handle a restricted salary column gracefully: People shows titles, dates and headcount; live people cost and live runway show "restricted"; **snapshots** (`month_closes.metrics`, frozen by an authorized owner at close) still give viewers the approved runway, burn and variance.
 - **Read-only sharing:** share the app with an explicit write restriction for board members and investors.
-- **AI principals:** each user's Claude and ChatGPT connections are separate rows in Access that inherit that user's rights and can only be narrowed. Recommended defaults: AI may read Runway tables and propose changes; every AI write needs the user's review; AI read access to `positions.annual_salary` can be switched off independently if wanted. A narrow, expiring standing write grant is recommended only for `fx_rates` (if the rates automation is used).
+- **AI principals:** each user's Claude and ChatGPT connections are separate rows in Access that inherit that user's rights and can only be narrowed. Recommended defaults: AI may read Runway tables and propose changes; every AI write needs the user's review; AI read access to `positions.annual_salary` can be switched off independently if wanted. The rates automation (if used) saves only new `fx_rates` rows, under the bounded create-only permission approved together with it (§14.8).
 - **Revocation:** access changes clear cached app output immediately, as everywhere in TrialAgents.
 
 ---
@@ -224,7 +224,7 @@ Confirm with 5–10 biotech CEOs/CFOs: the 18-month default target; whether prog
 
 ## 14. Runway 2.2.0 — assistant control, integrations and automations
 
-**Status:** Scope for build, 14 November 2026; revised after PR #169 (required app storage for research and drafting) and the owner's decisions D1–D3. Not built. Delivered as a new immutable draft `life.cash-runway` 2.2.0. The 2.1.0 package and catalog JSON stay unchanged, saved apps are not migrated, and publishing 2.2.0 needs separate owner approval. Automation declarations stay inactive until `APP_AUTOMATION_RECIPES_ENABLED` is on. §1–§13 still apply unless this section changes them.
+**Status:** Scope, 14 November 2026; revised after PR #169 (required app storage for research and drafting) and the owner's decisions D1–D3. **Built as catalog version 2.2.0 (owner-approved for production on 14 November 2026) and the platform items behind `APP_COMMANDS_ENABLED`** (see §14.12); real-host acceptance and enabling the switches are still open. Delivered as a new immutable draft `life.cash-runway` 2.2.0. The 2.1.0 package and catalog JSON stay unchanged, saved apps are not migrated, and publishing 2.2.0 needs separate owner approval. Automation declarations are offered at install while app automation recipes are enabled (the default since #176). §1–§13 still apply unless this section changes them.
 
 ### 14.1 Requirement and boundaries
 
@@ -268,7 +268,7 @@ Paths: **R** = reviewed record proposal on a bound table (`prepare_change`, work
 
 **Gap:** the tool that runs an app's own code, `run_component_frontend`, is registered as app-only (`src/server/workspace-foundation.ts`, `ui.visibility:['app']`). So an assistant cannot drive a `frontend-js` app's forms or ask it for results. Function bindings (`invoke_component_function`) are not the main answer: they are added after save, are cleared on copy, and would duplicate the engine in separate code.
 
-**Platform design (gated by `APP_COMMANDS_ENABLED`, default off):**
+**Platform design (on by default since 14 November 2026; `APP_COMMANDS_ENABLED=false` turns it off):**
 - **Declaration.** Any app manifest (template or custom) may declare `commands: [{id, label, mode: "read"|"propose", input: <JSON Schema subset>, screen?}]`, up to 60. Ids are lowercase dotted keys. The server validates declarations strictly at publication and reads them tolerantly at runtime.
 - **Discovery.** New MCP tool `list_app_commands({workspaceId, appId})` returns the declared commands of the current saved version, filtered by the caller's access. Read-only commands are still listed to viewers; propose commands are listed only when the caller can edit.
 - **Execution.** New MCP tool `run_app_command({workspaceId, appId, expectedVersion, command, input, requestKey})`:
@@ -379,7 +379,7 @@ Most customization becomes a reviewed settings or layout change instead of code.
 
 **Gap:** a role connected read-only can't be changed in the reading app. The server refuses the write (`role_writer`, §7.4), but the platform gives the app no way to send the user to where the field can be changed. Users see a field they can't edit, with no explanation.
 
-**Design (platform-wide, behind `APP_COMMANDS_ENABLED` together with §14.3):**
+**Design (platform-wide, with the same switch as §14.3):**
 - **Writer details in `integrations.list` and `roles.list`.** Each connected read-only role also returns `writer: {appName, canOpen}`, where `canOpen` is true only when the viewer can open the writing app. The writer app's ID is never exposed to the reading app.
 - **Open button.** Apps render `<button data-trialy-open="<role> <recordId>">Edit in <App></button>`. The frame posts `trialy.open` and the host resolves the target:
   1. the app that writes the table bound to that role, opened at the record (the existing app route with `recordId`), when the viewer can open it;
@@ -453,3 +453,22 @@ Assistants manage these through the existing tools (`read_app_automation_feature
 - **D1 — Own tables, optional read-only connection, copied amounts.** Accepted with the owner's condition that connections stay flexible for customization: see §14.6. No platform change is needed.
 - **D2 — App commands are a platform-wide capability.** Accepted: any app can declare commands; Runway is the first user.
 - **D3 — The monthly digest is a built-in automation.** Accepted: it is offered at install and built from the frozen snapshot fields, with no summary function (§14.8).
+
+### 14.12 Implementation record (14 November 2026)
+
+**Platform (on by default since 14 November 2026; `APP_COMMANDS_ENABLED=false` is the emergency off switch):**
+- `src/workspace/app-commands.ts`: the `appCommands` declaration (read as data, strict on every app save), the input schema subset, and `list_app_commands`, `run_app_command` (MCP and web). A command runs the saved app with `{kind:"command"}` as the caller; propose and layout commands become ordinary reviews confirmed with `confirm_workspace_change`. The same `requestKey` returns the same review. Every run is audited (`app.command`).
+- `src/workspace/service.ts`: commands cannot queue functions, call connectors or reach exchanges; `layout.propose` accepts a custom layout profile; `roles.list` and `integrations.list` add `writer:{appName,canOpen}`; writes to a read-only or linked role are refused with `role_read_only` and `details:{role,recordId,writerAppName}`.
+- `resolve_app_open` and `data-trialy-open` (frame, `FrontendCodeRuntime`): Edit in App opens the writing app at the record, or Database.
+- `src/shared/custom-layout.ts`: layout profiles may carry `labels` and `defaults` keyed `group:field`.
+- `AppError` details reach MCP results (`structuredContent.error.details`) and the web API.
+- Size limits raised so the new version fits: template entry source 180,000 → 240,000 characters, catalog file 300,000 → 380,000 bytes, saved component source 200,000 → 260,000.
+- Template guidance 1.3.31 (both guidance files).
+
+**Runway 2.2.0 (draft):** new package in `templates/source/cash-runway/`. 2.1.0 is archived byte-for-byte under `archive/2.1.0/` and still installs from there. `templates/apps/life.cash-runway-2.2.0.json` is generated by `scripts/build-cash-runway-template.mjs`. Everything in §14.2–§14.9 is built, including the four recommended automations.
+
+**Tests:** `tests/app-commands.test.ts` (platform), `tests/cash-runway-commands.test.ts` (QuickJS: every command, click-path parity, read results against the screens, scenarios and the new change kinds, close/lock/commentary, salary and read-only rules, customization, integrations, production design inspector), and `tests/cash-runway-commands-integration.test.ts` (real installer and review path; Programs linked inside Runway with `role_read_only` and Edit in Programs).
+
+**Catalog approval:** the owner approved 2.2.0 for production on 14 November 2026; `templates/catalog-seed.json` names 2.2.0.
+
+**Still open:** acceptance criteria 1 and 10–12 in web, Claude and ChatGPT on real hosts; (app commands and the recommended automations are on by default); a verified unattended rates cycle before relying on that automation.

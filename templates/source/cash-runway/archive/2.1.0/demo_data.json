@@ -1,0 +1,758 @@
+{
+  "status": "Fictional preview only; never seed into a workspace",
+  "records": [
+    {
+      "id": "d0000000-0000-4000-8000-000000000001",
+      "version": 1,
+      "role": "runway.settings",
+      "data": {
+        "reporting_currency": "EUR",
+        "enabled_currencies": "EUR, USD, GBP",
+        "runway_target_months": 18,
+        "trailing_window_months": 3,
+        "min_cash_reserve": 500000,
+        "loaded_cost_pct": 22,
+        "opening_balance": 9800000,
+        "opening_date": "2026-08-31",
+        "categories": "Clinical, CMC, Research, People, G&A, Facilities, Other"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000002",
+      "version": 1,
+      "role": "programs",
+      "data": {
+        "name": "FB-101 (oncology)",
+        "code": "FB-101",
+        "archived": false,
+        "stage": "phase_1",
+        "modality": "antibody",
+        "indication": "Solid tumours",
+        "status": "active"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000003",
+      "version": 1,
+      "role": "programs",
+      "data": {
+        "name": "FB-202 (fibrosis)",
+        "code": "FB-202",
+        "archived": false,
+        "stage": "ind_enabling",
+        "modality": "small_molecule",
+        "indication": "Pulmonary fibrosis",
+        "status": "active"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000004",
+      "version": 1,
+      "role": "programs",
+      "data": {
+        "name": "Platform",
+        "code": "PLAT",
+        "archived": false,
+        "stage": "discovery",
+        "modality": "other",
+        "indication": "Platform",
+        "status": "active"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000005",
+      "version": 1,
+      "role": "organizations",
+      "data": {
+        "name": "Fictional CRO Ltd",
+        "org_type": "cro",
+        "archived": false
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000006",
+      "version": 1,
+      "role": "organizations",
+      "data": {
+        "name": "Example Ventures",
+        "org_type": "investor",
+        "archived": false
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000007",
+      "version": 1,
+      "role": "organizations",
+      "data": {
+        "name": "Sample Health Foundation",
+        "org_type": "funder",
+        "archived": false
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000008",
+      "version": 1,
+      "role": "runway.fx_rates",
+      "data": {
+        "month": "2026-08-01",
+        "currency": "USD",
+        "rate_per_eur": 1.165,
+        "source": "manual",
+        "source_ref": "Fictional demo rate"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000009",
+      "version": 1,
+      "role": "runway.fx_rates",
+      "data": {
+        "month": "2026-08-01",
+        "currency": "GBP",
+        "rate_per_eur": 0.861,
+        "source": "manual",
+        "source_ref": "Fictional demo rate"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000010",
+      "version": 1,
+      "role": "runway.fx_rates",
+      "data": {
+        "month": "2026-09-01",
+        "currency": "USD",
+        "rate_per_eur": 1.172,
+        "source": "manual",
+        "source_ref": "Fictional demo rate"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000011",
+      "version": 1,
+      "role": "runway.fx_rates",
+      "data": {
+        "month": "2026-09-01",
+        "currency": "GBP",
+        "rate_per_eur": 0.866,
+        "source": "manual",
+        "source_ref": "Fictional demo rate"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000012",
+      "version": 1,
+      "role": "runway.fx_rates",
+      "data": {
+        "month": "2026-10-01",
+        "currency": "USD",
+        "rate_per_eur": 1.158,
+        "source": "manual",
+        "source_ref": "Fictional demo rate"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000013",
+      "version": 1,
+      "role": "runway.fx_rates",
+      "data": {
+        "month": "2026-10-01",
+        "currency": "GBP",
+        "rate_per_eur": 0.872,
+        "source": "manual",
+        "source_ref": "Fictional demo rate"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000014",
+      "version": 1,
+      "role": "runway.plan_lines",
+      "data": {
+        "name": "FB-101 Phase 1 CRO services",
+        "status": "committed",
+        "currency": "USD",
+        "archived": false,
+        "direction": "spend",
+        "category": "Clinical",
+        "program_id": "d0000000-0000-4000-8000-000000000002",
+        "counterparty_id": "d0000000-0000-4000-8000-000000000005",
+        "driver": "monthly",
+        "amount": 265000,
+        "start_month": "2026-09-01",
+        "end_month": "2028-03-01"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000015",
+      "version": 1,
+      "role": "runway.plan_lines",
+      "data": {
+        "name": "FB-101 site and patient costs",
+        "status": "committed",
+        "currency": "EUR",
+        "archived": false,
+        "direction": "spend",
+        "category": "Clinical",
+        "program_id": "d0000000-0000-4000-8000-000000000002",
+        "driver": "spread",
+        "amount": 4800000,
+        "start_month": "2027-01-01",
+        "end_month": "2028-06-01"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000016",
+      "version": 1,
+      "role": "runway.plan_lines",
+      "data": {
+        "name": "FB-101 drug product manufacturing",
+        "status": "committed",
+        "currency": "EUR",
+        "archived": false,
+        "direction": "spend",
+        "category": "CMC",
+        "program_id": "d0000000-0000-4000-8000-000000000002",
+        "driver": "one_off",
+        "amount": 420000,
+        "start_month": "2026-11-01",
+        "schedule_group": "FB-101 GMP batch"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000017",
+      "version": 1,
+      "role": "runway.plan_lines",
+      "data": {
+        "name": "FB-101 drug product release",
+        "status": "committed",
+        "currency": "EUR",
+        "archived": false,
+        "direction": "spend",
+        "category": "CMC",
+        "program_id": "d0000000-0000-4000-8000-000000000002",
+        "driver": "one_off",
+        "amount": 180000,
+        "start_month": "2027-02-01",
+        "schedule_group": "FB-101 GMP batch"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000018",
+      "version": 1,
+      "role": "runway.plan_lines",
+      "data": {
+        "name": "FB-202 IND-enabling tox (UK CRO)",
+        "status": "committed",
+        "currency": "GBP",
+        "archived": false,
+        "direction": "spend",
+        "category": "Research",
+        "program_id": "d0000000-0000-4000-8000-000000000003",
+        "driver": "one_off",
+        "amount": 350000,
+        "start_month": "2027-01-01",
+        "schedule_group": "FB-202 tox"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000019",
+      "version": 1,
+      "role": "runway.plan_lines",
+      "data": {
+        "name": "FB-202 IND-enabling tox (UK CRO) final",
+        "status": "committed",
+        "currency": "GBP",
+        "archived": false,
+        "direction": "spend",
+        "category": "Research",
+        "program_id": "d0000000-0000-4000-8000-000000000003",
+        "driver": "one_off",
+        "amount": 250000,
+        "start_month": "2027-06-01",
+        "schedule_group": "FB-202 tox"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000020",
+      "version": 1,
+      "role": "runway.plan_lines",
+      "data": {
+        "name": "FB-202 discovery chemistry",
+        "status": "discretionary",
+        "currency": "EUR",
+        "archived": false,
+        "direction": "spend",
+        "category": "Research",
+        "program_id": "d0000000-0000-4000-8000-000000000003",
+        "driver": "monthly",
+        "amount": 85000,
+        "start_month": "2026-09-01",
+        "end_month": "2027-12-01"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000021",
+      "version": 1,
+      "role": "runway.plan_lines",
+      "data": {
+        "name": "Platform screening consumables",
+        "status": "committed",
+        "currency": "EUR",
+        "archived": false,
+        "direction": "spend",
+        "category": "Research",
+        "program_id": "d0000000-0000-4000-8000-000000000004",
+        "driver": "monthly",
+        "amount": 40000,
+        "start_month": "2026-09-01"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000022",
+      "version": 1,
+      "role": "runway.plan_lines",
+      "data": {
+        "name": "Lab and office lease",
+        "status": "committed",
+        "currency": "EUR",
+        "archived": false,
+        "direction": "spend",
+        "category": "Facilities",
+        "driver": "monthly",
+        "amount": 62000,
+        "start_month": "2026-09-01"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000023",
+      "version": 1,
+      "role": "runway.plan_lines",
+      "data": {
+        "name": "Finance, legal and insurance",
+        "status": "committed",
+        "currency": "EUR",
+        "archived": false,
+        "direction": "spend",
+        "category": "G&A",
+        "driver": "monthly",
+        "amount": 55000,
+        "start_month": "2026-09-01"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000024",
+      "version": 1,
+      "role": "runway.plan_lines",
+      "data": {
+        "name": "Series A second tranche",
+        "status": "committed",
+        "currency": "EUR",
+        "archived": false,
+        "direction": "cash_in",
+        "category": "Other",
+        "counterparty_id": "d0000000-0000-4000-8000-000000000006",
+        "driver": "one_off",
+        "amount": 6000000,
+        "start_month": "2027-06-01",
+        "cash_in_type": "equity"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000025",
+      "version": 1,
+      "role": "runway.plan_lines",
+      "data": {
+        "name": "Foundation research grant",
+        "status": "contingent",
+        "currency": "USD",
+        "archived": false,
+        "direction": "cash_in",
+        "category": "Other",
+        "program_id": "d0000000-0000-4000-8000-000000000003",
+        "counterparty_id": "d0000000-0000-4000-8000-000000000007",
+        "driver": "one_off",
+        "amount": 1500000,
+        "start_month": "2027-04-01",
+        "cash_in_type": "grant"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000026",
+      "version": 1,
+      "role": "runway.plan_lines",
+      "data": {
+        "name": "R&D tax credit",
+        "status": "committed",
+        "currency": "EUR",
+        "archived": false,
+        "direction": "cash_in",
+        "category": "Other",
+        "driver": "one_off",
+        "amount": 380000,
+        "start_month": "2027-05-01",
+        "cash_in_type": "tax_credit"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000027",
+      "version": 1,
+      "role": "runway.positions",
+      "data": {
+        "title": "Chief executive officer",
+        "currency": "EUR",
+        "archived": false,
+        "program_id": "",
+        "start_month": "2024-01-01",
+        "annual_salary": 240000,
+        "status": "current"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000028",
+      "version": 1,
+      "role": "runway.positions",
+      "data": {
+        "title": "Chief medical officer",
+        "currency": "EUR",
+        "archived": false,
+        "program_id": "d0000000-0000-4000-8000-000000000002",
+        "start_month": "2025-03-01",
+        "annual_salary": 230000,
+        "status": "current"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000029",
+      "version": 1,
+      "role": "runway.positions",
+      "data": {
+        "title": "Head of CMC",
+        "currency": "EUR",
+        "archived": false,
+        "program_id": "d0000000-0000-4000-8000-000000000002",
+        "start_month": "2025-06-01",
+        "annual_salary": 150000,
+        "status": "current"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000030",
+      "version": 1,
+      "role": "runway.positions",
+      "data": {
+        "title": "Senior scientist",
+        "currency": "EUR",
+        "archived": false,
+        "program_id": "d0000000-0000-4000-8000-000000000003",
+        "start_month": "2025-01-01",
+        "annual_salary": 105000,
+        "status": "current"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000031",
+      "version": 1,
+      "role": "runway.positions",
+      "data": {
+        "title": "Scientist",
+        "currency": "EUR",
+        "archived": false,
+        "program_id": "d0000000-0000-4000-8000-000000000004",
+        "start_month": "2025-09-01",
+        "annual_salary": 82000,
+        "status": "current"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000032",
+      "version": 1,
+      "role": "runway.positions",
+      "data": {
+        "title": "Finance and operations lead",
+        "currency": "EUR",
+        "archived": false,
+        "program_id": "",
+        "start_month": "2025-02-01",
+        "annual_salary": 120000,
+        "status": "current"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000033",
+      "version": 1,
+      "role": "runway.positions",
+      "data": {
+        "title": "Clinical operations manager (US)",
+        "currency": "USD",
+        "archived": false,
+        "program_id": "d0000000-0000-4000-8000-000000000002",
+        "start_month": "2027-01-01",
+        "annual_salary": 165000,
+        "status": "planned"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000034",
+      "version": 1,
+      "role": "runway.positions",
+      "data": {
+        "title": "Toxicologist",
+        "currency": "EUR",
+        "archived": false,
+        "program_id": "d0000000-0000-4000-8000-000000000003",
+        "start_month": "2027-03-01",
+        "annual_salary": 110000,
+        "status": "planned"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000035",
+      "version": 1,
+      "role": "runway.milestones",
+      "data": {
+        "name": "FB-101 first patient dosed",
+        "archived": false,
+        "program_id": "d0000000-0000-4000-8000-000000000002",
+        "target_month": "2027-02-01"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000036",
+      "version": 1,
+      "role": "runway.milestones",
+      "data": {
+        "name": "FB-202 IND filing",
+        "archived": false,
+        "program_id": "d0000000-0000-4000-8000-000000000003",
+        "target_month": "2027-10-01"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000037",
+      "version": 1,
+      "role": "runway.milestones",
+      "data": {
+        "name": "FB-101 Phase 1 readout",
+        "archived": false,
+        "program_id": "d0000000-0000-4000-8000-000000000002",
+        "target_month": "2028-05-01"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000038",
+      "version": 1,
+      "role": "runway.budgets",
+      "data": {
+        "name": "Budget 2026",
+        "year": 2026,
+        "locked_on": "2026-08-01",
+        "currency": "EUR",
+        "totals": "{\"v\":2,\"year\":\"2026\",\"currency\":\"EUR\",\"months\":{\"2026-01\":{\"spend\":{\"People\":94245},\"prog\":{\"d0000000-0000-4000-8000-000000000002\":{\"People\":38633.33},\"d0000000-0000-4000-8000-000000000003\":{\"People\":10675},\"d0000000-0000-4000-8000-000000000004\":{\"People\":8336.67}},\"cashIn\":0,\"contingent\":0,\"opIn\":0},\"2026-02\":{\"spend\":{\"People\":94245},\"prog\":{\"d0000000-0000-4000-8000-000000000002\":{\"People\":38633.33},\"d0000000-0000-4000-8000-000000000003\":{\"People\":10675},\"d0000000-0000-4000-8000-000000000004\":{\"People\":8336.67}},\"cashIn\":0,\"contingent\":0,\"opIn\":0},\"2026-03\":{\"spend\":{\"People\":94245},\"prog\":{\"d0000000-0000-4000-8000-000000000002\":{\"People\":38633.33},\"d0000000-0000-4000-8000-000000000003\":{\"People\":10675},\"d0000000-0000-4000-8000-000000000004\":{\"People\":8336.67}},\"cashIn\":0,\"contingent\":0,\"opIn\":0},\"2026-04\":{\"spend\":{\"People\":94245},\"prog\":{\"d0000000-0000-4000-8000-000000000002\":{\"People\":38633.33},\"d0000000-0000-4000-8000-000000000003\":{\"People\":10675},\"d0000000-0000-4000-8000-000000000004\":{\"People\":8336.67}},\"cashIn\":0,\"contingent\":0,\"opIn\":0},\"2026-05\":{\"spend\":{\"People\":94245},\"prog\":{\"d0000000-0000-4000-8000-000000000002\":{\"People\":38633.33},\"d0000000-0000-4000-8000-000000000003\":{\"People\":10675},\"d0000000-0000-4000-8000-000000000004\":{\"People\":8336.67}},\"cashIn\":0,\"contingent\":0,\"opIn\":0},\"2026-06\":{\"spend\":{\"People\":94245},\"prog\":{\"d0000000-0000-4000-8000-000000000002\":{\"People\":38633.33},\"d0000000-0000-4000-8000-000000000003\":{\"People\":10675},\"d0000000-0000-4000-8000-000000000004\":{\"People\":8336.67}},\"cashIn\":0,\"contingent\":0,\"opIn\":0},\"2026-07\":{\"spend\":{\"People\":94245},\"prog\":{\"d0000000-0000-4000-8000-000000000002\":{\"People\":38633.33},\"d0000000-0000-4000-8000-000000000003\":{\"People\":10675},\"d0000000-0000-4000-8000-000000000004\":{\"People\":8336.67}},\"cashIn\":0,\"contingent\":0,\"opIn\":0},\"2026-08\":{\"spend\":{\"People\":94245},\"prog\":{\"d0000000-0000-4000-8000-000000000002\":{\"People\":38633.33},\"d0000000-0000-4000-8000-000000000003\":{\"People\":10675},\"d0000000-0000-4000-8000-000000000004\":{\"People\":8336.67}},\"cashIn\":0,\"contingent\":0,\"opIn\":0},\"2026-09\":{\"spend\":{\"Clinical\":226109.22,\"Research\":125000,\"Facilities\":62000,\"G&A\":55000,\"People\":94245},\"prog\":{\"d0000000-0000-4000-8000-000000000002\":{\"Clinical\":226109.22,\"People\":38633.33},\"d0000000-0000-4000-8000-000000000003\":{\"Research\":85000,\"People\":10675},\"d0000000-0000-4000-8000-000000000004\":{\"Research\":40000,\"People\":8336.67}},\"cashIn\":0,\"contingent\":0,\"opIn\":0},\"2026-10\":{\"spend\":{\"Clinical\":228842.83,\"Research\":125000,\"Facilities\":62000,\"G&A\":55000,\"People\":94245},\"prog\":{\"d0000000-0000-4000-8000-000000000002\":{\"Clinical\":228842.83,\"People\":38633.33},\"d0000000-0000-4000-8000-000000000003\":{\"Research\":85000,\"People\":10675},\"d0000000-0000-4000-8000-000000000004\":{\"Research\":40000,\"People\":8336.67}},\"cashIn\":0,\"contingent\":0,\"opIn\":0},\"2026-11\":{\"spend\":{\"Clinical\":228842.83,\"CMC\":420000,\"Research\":125000,\"Facilities\":62000,\"G&A\":55000,\"People\":94245},\"prog\":{\"d0000000-0000-4000-8000-000000000002\":{\"Clinical\":228842.83,\"CMC\":420000,\"People\":38633.33},\"d0000000-0000-4000-8000-000000000003\":{\"Research\":85000,\"People\":10675},\"d0000000-0000-4000-8000-000000000004\":{\"Research\":40000,\"People\":8336.67}},\"cashIn\":0,\"contingent\":0,\"opIn\":0},\"2026-12\":{\"spend\":{\"Clinical\":228842.83,\"Research\":125000,\"Facilities\":62000,\"G&A\":55000,\"People\":94245},\"prog\":{\"d0000000-0000-4000-8000-000000000002\":{\"Clinical\":228842.83,\"People\":38633.33},\"d0000000-0000-4000-8000-000000000003\":{\"Research\":85000,\"People\":10675},\"d0000000-0000-4000-8000-000000000004\":{\"Research\":40000,\"People\":8336.67}},\"cashIn\":0,\"contingent\":0,\"opIn\":0}}}",
+        "rates_used": "{\"USD\":{\"2026-08\":1.165,\"2026-09\":1.172,\"2026-10\":1.158},\"GBP\":{\"2026-08\":0.861,\"2026-09\":0.866,\"2026-10\":0.872}}",
+        "notes": "Locked from the live forecast as of Aug 2026."
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000039",
+      "version": 1,
+      "role": "runway.actuals",
+      "data": {
+        "month": "2026-09-01",
+        "category": "Clinical",
+        "direction": "spend",
+        "amount": 228000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000040",
+      "version": 1,
+      "role": "runway.actuals",
+      "data": {
+        "month": "2026-09-01",
+        "category": "CMC",
+        "direction": "spend",
+        "amount": 0,
+        "currency": "EUR"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000041",
+      "version": 1,
+      "role": "runway.actuals",
+      "data": {
+        "month": "2026-09-01",
+        "category": "Research",
+        "direction": "spend",
+        "amount": 131000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000042",
+      "version": 1,
+      "role": "runway.actuals",
+      "data": {
+        "month": "2026-09-01",
+        "category": "People",
+        "direction": "spend",
+        "amount": 95000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000043",
+      "version": 1,
+      "role": "runway.actuals",
+      "data": {
+        "month": "2026-09-01",
+        "category": "G&A",
+        "direction": "spend",
+        "amount": 58000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000044",
+      "version": 1,
+      "role": "runway.actuals",
+      "data": {
+        "month": "2026-09-01",
+        "category": "Facilities",
+        "direction": "spend",
+        "amount": 62000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000045",
+      "version": 1,
+      "role": "runway.month_closes",
+      "data": {
+        "month": "2026-09-01",
+        "closing_balance": 9226000,
+        "currency": "EUR",
+        "closed": true,
+        "commentary": "September in line with plan. FB-101 CRO start-up invoiced; research slightly above plan on platform consumables.",
+        "runway_months": 18,
+        "cash_out_month": "2028-04-01",
+        "runway_status": "ok",
+        "metrics": "{\"v\":2,\"asOf\":\"2026-09\",\"currency\":\"EUR\",\"start\":9226000,\"horizon\":60,\"runway\":{\"months\":18,\"beyond\":false,\"lastsUntil\":\"2028-03\",\"cashOut\":\"2028-04\",\"startRaise\":\"2026-10\"},\"runwayContingent\":{\"months\":20,\"beyond\":false,\"cashOut\":\"2028-06\"},\"target\":18,\"burn\":{\"spend\":{\"Clinical\":228000,\"CMC\":0,\"Research\":131000,\"People\":95000,\"G&A\":58000,\"Facilities\":62000},\"spendTotal\":574000,\"opIn\":0,\"net\":574000},\"trailing\":null,\"variance\":{\"budget\":\"Budget 2026\",\"rows\":[{\"cat\":\"Clinical\",\"budget\":226109.22,\"actual\":228000},{\"cat\":\"Research\",\"budget\":125000,\"actual\":131000},{\"cat\":\"People\",\"budget\":94245,\"actual\":95000},{\"cat\":\"G&A\",\"budget\":55000,\"actual\":58000},{\"cat\":\"Facilities\",\"budget\":62000,\"actual\":62000}]},\"milestones\":[{\"name\":\"FB-101 first patient dosed\",\"m\":\"2027-02\",\"cash\":4836878.99,\"cushion\":12,\"beyond\":false},{\"name\":\"FB-202 IND filing\",\"m\":\"2027-10\",\"cash\":4070789.62,\"cushion\":4,\"beyond\":false},{\"name\":\"FB-101 Phase 1 readout\",\"m\":\"2028-05\",\"cash\":-1048492.82,\"cushion\":-3,\"beyond\":false}],\"months\":[{\"m\":\"2026-10\",\"l\":470842.83,\"p\":94245,\"c\":0,\"k\":0},{\"m\":\"2026-11\",\"l\":890842.83,\"p\":94245,\"c\":0,\"k\":0},{\"m\":\"2026-12\",\"l\":470842.83,\"p\":94245,\"c\":0,\"k\":0},{\"m\":\"2027-01\",\"l\":1138885.65,\"p\":108731.18,\"c\":0,\"k\":0},{\"m\":\"2027-02\",\"l\":917509.5,\"p\":108731.18,\"c\":0,\"k\":0},{\"m\":\"2027-03\",\"l\":737509.5,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2027-04\",\"l\":737509.5,\"p\":119914.52,\"c\":0,\"k\":1295336.79},{\"m\":\"2027-05\",\"l\":737509.5,\"p\":119914.52,\"c\":380000,\"k\":0},{\"m\":\"2027-06\",\"l\":1024206.75,\"p\":119914.52,\"c\":6000000,\"k\":0},{\"m\":\"2027-07\",\"l\":737509.5,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2027-08\",\"l\":737509.5,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2027-09\",\"l\":737509.5,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2027-10\",\"l\":737509.5,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2027-11\",\"l\":737509.5,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2027-12\",\"l\":737509.5,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-01\",\"l\":652509.5,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-02\",\"l\":652509.5,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-03\",\"l\":652509.5,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-04\",\"l\":423666.67,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-05\",\"l\":423666.67,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-06\",\"l\":423666.67,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-07\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-08\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-09\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-10\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-11\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-12\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-01\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-02\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-03\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-04\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-05\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-06\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-07\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-08\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-09\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-10\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-11\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-12\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-01\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-02\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-03\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-04\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-05\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-06\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-07\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-08\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-09\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-10\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-11\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-12\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2031-01\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2031-02\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2031-03\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2031-04\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2031-05\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2031-06\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2031-07\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2031-08\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2031-09\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0}],\"warnings\":[]}",
+        "rates_used": "{\"USD\":{\"2026-09\":1.172,\"2026-10\":1.158},\"GBP\":{\"2026-09\":0.866,\"2026-10\":0.872}}",
+        "closed_at": "2026-09-30"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000046",
+      "version": 1,
+      "role": "runway.actuals",
+      "data": {
+        "month": "2026-10-01",
+        "category": "Clinical",
+        "direction": "spend",
+        "amount": 236000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000047",
+      "version": 1,
+      "role": "runway.actuals",
+      "data": {
+        "month": "2026-10-01",
+        "category": "CMC",
+        "direction": "spend",
+        "amount": 12000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000048",
+      "version": 1,
+      "role": "runway.actuals",
+      "data": {
+        "month": "2026-10-01",
+        "category": "Research",
+        "direction": "spend",
+        "amount": 118000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000049",
+      "version": 1,
+      "role": "runway.actuals",
+      "data": {
+        "month": "2026-10-01",
+        "category": "People",
+        "direction": "spend",
+        "amount": 96000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000050",
+      "version": 1,
+      "role": "runway.actuals",
+      "data": {
+        "month": "2026-10-01",
+        "category": "G&A",
+        "direction": "spend",
+        "amount": 71000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000051",
+      "version": 1,
+      "role": "runway.actuals",
+      "data": {
+        "month": "2026-10-01",
+        "category": "Facilities",
+        "direction": "spend",
+        "amount": 62000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000052",
+      "version": 1,
+      "role": "runway.month_closes",
+      "data": {
+        "month": "2026-10-01",
+        "closing_balance": 8631000,
+        "currency": "EUR",
+        "closed": true,
+        "commentary": "October: G&A above budget (audit preparation). Runway unchanged versus plan.",
+        "runway_months": 17,
+        "cash_out_month": "2028-04-01",
+        "runway_status": "below_target",
+        "metrics": "{\"v\":2,\"asOf\":\"2026-10\",\"currency\":\"EUR\",\"start\":8631000,\"horizon\":60,\"runway\":{\"months\":17,\"beyond\":false,\"lastsUntil\":\"2028-03\",\"cashOut\":\"2028-04\",\"startRaise\":\"2026-10\"},\"runwayContingent\":{\"months\":19,\"beyond\":false,\"cashOut\":\"2028-06\"},\"target\":18,\"burn\":{\"spend\":{\"Clinical\":236000,\"CMC\":12000,\"Research\":118000,\"People\":96000,\"G&A\":71000,\"Facilities\":62000},\"spendTotal\":595000,\"opIn\":0,\"net\":595000},\"trailing\":null,\"variance\":{\"budget\":\"Budget 2026\",\"rows\":[{\"cat\":\"Clinical\",\"budget\":228842.83,\"actual\":236000},{\"cat\":\"CMC\",\"budget\":0,\"actual\":12000},{\"cat\":\"Research\",\"budget\":125000,\"actual\":118000},{\"cat\":\"People\",\"budget\":94245,\"actual\":96000},{\"cat\":\"G&A\",\"budget\":55000,\"actual\":71000},{\"cat\":\"Facilities\",\"budget\":62000,\"actual\":62000}]},\"milestones\":[{\"name\":\"FB-101 first patient dosed\",\"m\":\"2027-02\",\"cash\":4806966.82,\"cushion\":12,\"beyond\":false},{\"name\":\"FB-202 IND filing\",\"m\":\"2027-10\",\"cash\":4040877.45,\"cushion\":4,\"beyond\":false},{\"name\":\"FB-101 Phase 1 readout\",\"m\":\"2028-05\",\"cash\":-1078404.99,\"cushion\":-3,\"beyond\":false}],\"months\":[{\"m\":\"2026-11\",\"l\":890842.83,\"p\":94245,\"c\":0,\"k\":0},{\"m\":\"2026-12\",\"l\":470842.83,\"p\":94245,\"c\":0,\"k\":0},{\"m\":\"2027-01\",\"l\":1138885.65,\"p\":108731.18,\"c\":0,\"k\":0},{\"m\":\"2027-02\",\"l\":917509.5,\"p\":108731.18,\"c\":0,\"k\":0},{\"m\":\"2027-03\",\"l\":737509.5,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2027-04\",\"l\":737509.5,\"p\":119914.52,\"c\":0,\"k\":1295336.79},{\"m\":\"2027-05\",\"l\":737509.5,\"p\":119914.52,\"c\":380000,\"k\":0},{\"m\":\"2027-06\",\"l\":1024206.75,\"p\":119914.52,\"c\":6000000,\"k\":0},{\"m\":\"2027-07\",\"l\":737509.5,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2027-08\",\"l\":737509.5,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2027-09\",\"l\":737509.5,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2027-10\",\"l\":737509.5,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2027-11\",\"l\":737509.5,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2027-12\",\"l\":737509.5,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-01\",\"l\":652509.5,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-02\",\"l\":652509.5,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-03\",\"l\":652509.5,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-04\",\"l\":423666.67,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-05\",\"l\":423666.67,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-06\",\"l\":423666.67,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-07\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-08\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-09\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-10\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-11\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2028-12\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-01\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-02\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-03\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-04\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-05\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-06\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-07\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-08\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-09\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-10\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-11\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2029-12\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-01\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-02\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-03\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-04\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-05\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-06\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-07\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-08\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-09\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-10\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-11\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2030-12\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2031-01\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2031-02\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2031-03\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2031-04\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2031-05\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2031-06\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2031-07\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2031-08\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2031-09\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0},{\"m\":\"2031-10\",\"l\":157000,\"p\":119914.52,\"c\":0,\"k\":0}],\"warnings\":[]}",
+        "rates_used": "{\"USD\":{\"2026-10\":1.158},\"GBP\":{\"2026-10\":0.872}}",
+        "closed_at": "2026-10-31"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000053",
+      "version": 1,
+      "role": "runway.scenarios",
+      "data": {
+        "name": "Series A tranche slips 4 months",
+        "status": "saved",
+        "based_on_close": "2026-10-01",
+        "based_on_version": "3911e8e0",
+        "created_on": "2026-10-01",
+        "summary": "Move \u201cSeries A second tranche\u201d by +4 months"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000054",
+      "version": 1,
+      "role": "runway.scenario_changes",
+      "data": {
+        "kind": "move_cash_in",
+        "target_id": "d0000000-0000-4000-8000-000000000024",
+        "months": 4,
+        "scenario_id": "d0000000-0000-4000-8000-000000000053"
+      }
+    }
+  ]
+}
