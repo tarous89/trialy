@@ -14,7 +14,7 @@
 - **Q&A, no messages.** Q&A is part of the room; the recipient page has no free messages tab.
 - **All deal types.** One app covers financing, licensing, partnering/BD and M&A rooms.
 - **Built-in email.** Sharing with external investors, partners and shareholders by email, and email notifications, are built in. Emails come from `no-reply@trialagents.com` under the display name "<Organization> at TrialAgents" or "<First name> at TrialAgents" (editable), using default texts that users and assistants can edit and personalise.
-- **Data room writes `dataroom.v1`.** The data room is the writer of the `dataroom.access_grants` and `dataroom.engagement` outputs that Fundraise and BD Pipeline read.
+- **Data room writes `dataroom.v1`.** The data room is the writer of the `dataroom.access_grants` and `dataroom.engagement` outputs that Fundraise and Partnerships read.
 
 ---
 
@@ -53,7 +53,7 @@ Sources read 13 November 2026: ShareVault (life-science pages, partnering guide,
 |---|---|
 | **ShareVault** (domain) | Life-science room structure, staged access, partnering and licensing practice |
 | **DocSend / Papermark / Peony** (mechanics) | Link per party, NDA gate, per-document engagement, updated documents keep their links |
-| **Visible** (connection) | Data room linked to the investor pipeline: in our case Fundraise and BD Pipeline through `dataroom.v1` |
+| **Visible** (connection) | Data room linked to the investor pipeline: in our case Fundraise and Partnerships through `dataroom.v1` |
 | **Ansarada** (Q&A) | Question log, assignment, approval, disclosure record |
 
 ---
@@ -114,7 +114,7 @@ Custom `frontend-js` app on the Vivid kit, theme **forest** (same as Fundraise, 
    - Invite investors from Fundraise opportunities; the entry step is click-through for Non-confidential and a signed CDA or click-through for Confidential, as chosen.
    - Activity flows to Fundraise through `dataroom.v1`.
 2. **Licensing or partnering room:**
-   - New room (licensing or partnering) linked to the asset (program) and BD Pipeline opportunities; apply the licensing template (clinical, regulatory and CMC weighted).
+   - New room (licensing or partnering) linked to the asset (program) and Partnerships opportunities; apply the licensing template (clinical, regulatory and CMC weighted).
    - The partner starts at Non-confidential. Once the CDA is in place, move them to Confidential. Add a custom level "CMC" late in diligence.
    - Q&A runs per partner; answers are published to the room only when the answer applies to everyone.
 3. **CDA options (per room):**
@@ -231,7 +231,7 @@ Customization paths are as in [Runway §8](RUNWAY.md#8-customization-users-claud
 | App | How | What the user gets |
 |---|---|---|
 | **Fundraise (03)** | Reads `dataroom.access_grants` and `dataroom.engagement` as an integration ("Use its data"). Data Room can pick parties from Fundraise opportunities when connected, and a room can link a round | Investor pipeline with who has access, what they viewed and how often |
-| **BD Pipeline (07)** | Reads the same outputs for licensing and partnering rooms; parties can be picked from BD opportunities | Partner pipeline with diligence engagement |
+| **Partnerships (07)** | Reads the same outputs for licensing and partnering rooms; parties can be picked from BD opportunities | Partner pipeline with diligence engagement |
 | **Contracts (04)** | Shares `organizations` and `agreements`; CDA option "Use Contracts" files or reuses the signed CDA through Contracts' reviewed path | One register of CDAs; access unlocked from it |
 | **Programs (02)** | Shares `programs`; rooms are linked to assets | Rooms per asset |
 | **Runway (01), Investor Updates (06)** | Documents such as cash forecasts or updates can be attached as normal documents | Up-to-date financials in the room |

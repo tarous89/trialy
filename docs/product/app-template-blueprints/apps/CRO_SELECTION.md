@@ -193,7 +193,7 @@ Customization paths as in [Runway §8](RUNWAY.md#8-customization-users-claude-an
 | **Programs (02)** | Handoff proposes study-start milestones (Programs writes them) | Award → timeline |
 | **CRO Oversight (16)** | Reads `croselection.awards` (vendor, scope, baseline, delivery team) | Oversight starts from the awarded baseline |
 | **Trial Finance (11)** | Reads awards and proposal lines as budget baseline (later) | Budget vs invoices from day one |
-| **Fundraise (03), BD Pipeline (07)** | Share `organizations` | One record per company |
+| **Fundraise (03), Partnerships (07)** | Share `organizations` | One record per company |
 
 CRO Selection never writes another app's own tables; handoffs are proposals in the owning app's reviewed path.
 
