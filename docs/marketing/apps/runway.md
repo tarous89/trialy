@@ -25,6 +25,7 @@
 | Runway vs Exigyn (A10) | https://trialagents.com/apps/runway-vs-exigyn | Published via PR #193, release `e552a878768a5df5daebea5302688713568588d1`; live verified 13 November 2026. |
 | Finmark alternatives (B4) | https://trialagents.com/apps/finmark-alternatives-biotech | Published via PR #198, release `36a19c75eb4cd1c17f75f6c405f2b4b73932fc7d`; live verified 13 November 2026 23:07 UTC. |
 | LivePlan alternatives (B5) | https://trialagents.com/apps/liveplan-alternatives-biotech | Published via PR #199, release `9a808396e45a4a91c558d559a514499af4161149`; live verified 14 November 2026 01:14 CET. |
+| Fathom alternatives (B6) | https://trialagents.com/apps/fathom-alternatives-biotech | Published via PR #200, release `6496bc32f293ac9407d995a7cf6b602efdafeb4e`; live verified 14 November 2026 02:08 CET. |
 | App pages index | https://trialagents.com/apps | Published; production URL checked 12 November 2026 |
 
 These are intended canonical URLs. Do not assert that a URL is live until checked on the production CDN.
@@ -501,3 +502,14 @@ This supersedes all B5 claim/source/revision/pending checkpoints. **19 published
 
 
 - **B6 merged; deployment pending/unverified — 14 November 2026, 02:04 CET:** PR #200 merged as `6496bc32f293ac9407d995a7cf6b602efdafeb4e` after exact head `ca966b30a509d7f08abeb0a3385f558f816bc9e9` passed predeploy `43537508810`. Desktop 1440px/mobile 390px artifact `14090736682` inspected; readable layout, genuine images, identifying logos and final CTA; mobile table retains its own scroll region. Await existing automatic GitHub-to-CDN build and verify https://trialagents.com/apps/fathom-alternatives-biotech. Resume this release before another topic. No tracking changes or synthetic production events.
+
+
+### B6 published and live verified — 14 November 2026, 02:08 CET
+
+- **Published:** [Fathom alternatives for biotech: reporting, consolidation or cash planning?](https://trialagents.com/apps/fathom-alternatives-biotech). Four conditional alternatives and a monthly reporting handoff brief distinguish B6 from the A5 comparison and prior shortlists. Candidate retitled to avoid unsupported rankings. Current Joiin forecasting/elimination limits and Spotlight directional budget import documented inline.
+- **Release:** [PR #200](https://github.com/tarous89/trialagents-public/pull/200), exact head `ca966b30a509d7f08abeb0a3385f558f816bc9e9`, merged release `6496bc32f293ac9407d995a7cf6b602efdafeb4e` at 02:04 CET. Predeploy `43537508810` passed both jobs, tests, full snapshot/metadata/discovery and browser/site regressions. Desktop 1440px/mobile 390px artifact `14090736682` inspected: readable layout, genuine screenshots and identifying logos, final CTA and shared chrome; no page overflow or browser errors. Mobile table uses its own horizontal scroll region.
+- **Deployment:** existing GitHub-connected automatic build succeeded (Workers check `132273122656`); production check `132272481901` succeeded. Early 404s resolved within the bounded polling window, with no dashboard authentication or manual deployment.
+- **Independent live QA:** HTTP 200 text/html, no noindex header/directive and robots permits crawling; exact reviewed article fragment and shared CSS. One H1, expected title/description, self-canonical, Article/BreadcrumbList schema and publication date verified. Shared header/footer match the homepage; one final Start with Runway CTA. All 16 checked page/image/source/CTA/analytics URLs returned 200. /apps listing, one canonical sitemap.xml entry, llms.txt and llm.xml verified.
+- **Tracking preserved:** identical homepage loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js`, both HTTP 200. No tracking scripts/configuration/events/consent/collectors/attribution changed; no synthetic production events sent.
+
+This supersedes B6 claim/source/pending checkpoints. **20 published; 27 unfinished**, including owner-deferred A9. **Next eligible: B7, AI-native FP&A software**, subject to fresh queue, evidence, duplicate and claim checks. Only B6 was newly published in this run. Search indexing, rankings, real-user performance and assistant citations remain unverified.
