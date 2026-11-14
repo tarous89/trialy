@@ -64,7 +64,7 @@ The apps are separate, but several share records and form natural packs (all ove
 - **Finance pack:** Runway (01) ← Trial Finance (11) → Investor Updates (06) → Board (14). Accruals feed the runway; the runway feeds updates and board packs.
 - **Deal pack** (fundraising *and* licensing follow the same path: targets → outreach → CDA → non-confidential deck → data room → diligence → term sheet): Fundraise (03), Partnerships (07), Contracts (04), Data Room (08, includes Diligence Q&A), Deal Comps (18).
 - **Outsourcing pack:** CRO Selection (05) → Contracts (04) → CRO Oversight (16) → Trial Finance (11).
-- **Clinical pack:** Landscape (10), Site Finder (17), Regulatory (20), CRO Oversight (16).
+- **Clinical pack:** Bio Radar (10), Site Finder (17), Regulatory (20), CRO Oversight (16).
 - **Science pack:** Lab Records (13), Lab Inventory (09), IP Portfolio (15).
 
 ### Shared record types (shared by default)
