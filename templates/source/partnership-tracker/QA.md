@@ -1,34 +1,47 @@
-# Partnership Tracker 1.1.1 release evidence
+# Partnerships 2.0.0: QA against PARTNERSHIPS.md §13
 
-App 14 was reviewed against template authoring/usage guidance 1.3.9 and the actual catalog, database, runtime, sanitizer, design and native-layout contracts. Fixtures use only synthetic isolated data. No customer records, automations or outgoing messages were created.
+Run on 14 November 2026 with fictional data only: production QuickJS, disposable PGlite databases with every migration and the runtime role, the real catalog installer and Use existing data? step, the shared research runner and email action pipeline, and the production sanitized frame with a manifest attached. No deployed account, connected assistant or real email was used.
 
-## Critical fixes
+| Test | Result |
+|---|---|
+| `tests/partnerships.test.ts` (16 tests: package, roles, demo data, screens, funnel, stage history, after-meeting log, history checks, acceptance 1, 3, 4, 5, 7, 8, recipes, partial reads) | pass |
+| `tests/partnerships-integration.test.ts` (3 end-to-end tests through the real installer, runtime, reviews, runner, email action and archive) | pass |
+| `tests/partnership-template.test.ts`, `tests/partnership-integration.test.ts` (released 1.1.1, archived source) | pass |
+| `scripts/test-partnerships-browser.ts` (production frame, 1440 and 390 px) | pass |
+| `node scripts/build-partnerships-template.mjs --check` and `node scripts/build-partnership-template.mjs --check` (both in `npm run build`) | verified |
+| `npm run check`, `npm run build` | pass |
+| `npm test` (597 tests) | 595 pass. `cro-selection.test.ts` asserted the whole retirements list; it is now scoped to its own entries and passes. `monitoring-pv-integration.test.ts` (CO06 design gate at 390 px) fails identically on unmodified `main` in this container, whose Chromium build differs from CI's; not affected by this change. |
 
-- Updates/archives use recordId and the original optimistic version, including zero. Stale and revoked changes fail without discarding the draft.
-- A partner change requires complete reads of evaluations, meetings and milestones and no linked evidence. Linked company identity and program scope cannot silently reinterpret existing evidence. Criteria versions cannot roll backward into old approvals. Copies clear original identity and reviewed state.
-- Complete field mapping and scalar values are required. Incomplete, denied, unknown-total, short-page, invalid and over-budget data cannot establish authoritative scores or absence of dependent evidence.
-- Dialog errors remain visible, proposals retain drafts until host confirmation, and forms submit through the real frame contract. Native field order/visibility applies to tables or editors; Additional fields preserves access to required hidden inputs.
-- The reference date defaults to current UTC, explicit dates render consistently in QuickJS, saved programs have a reachable register, and source links open through the trusted host adapter. Add contact uses the organization actually shown after filtering.
-- Font sizes, contrast and narrow Discovery controls pass production checks. The original six-screen relationship-workbench design is retained. No permission, manifest, sandbox or design enforcement was weakened.
-- MCP-returned documentation includes complete scalar schema/mapping rules, recovery behavior, stable automation keys, fixed completion-email content and a typed inactive example. It never implies that optional background work is active.
-- Canonical source, style, metadata, fictional data/preview, mappings, instructions and release tests are registered in the repository. The main build checks deterministic catalog/preview output.
+## Package checklist
 
-## Validation
+| Item | Evidence |
+|---|---|
+| Source under `templates/source/partnership-tracker/` at 2.0.0; immutable `templates/apps/life.partnership-tracker-2.0.0.json`, a draft (seed keeps 1.1.1); display name Partnerships; 1.1.1 archived unchanged and listed in `catalog-retirements.json` | unit "package" |
+| Roles as in §7: organizations, people, programs core.v1 read/write; agreements core.v1 optional read-only (core fields); dataroom.v1 integrations; eleven `partnerships.*` tables with the §7 fields, kinds, required flags and options | unit "roles"; integration "Acceptance 9" (16 tables at install, agreements not created) |
+| Standard tag categories, standard stages and lost reasons, digest default text | unit "acceptance 5", "stage moves", "acceptance 4 (app side)" |
+| `catalog.metadata.json` validates against the catalog schema (limits, documentation, tasks optional) | unit "package" |
+| Fictional `demo_data.json`: 3 assets, 12 partners, 20 contacts, 18 opportunities in all seven directions, 1 upcoming conference with 6 briefs, signals and 3 target suggestions; `.invalid` emails | unit "fictional demo data" |
+| `templateLayoutSchema` with seven screen IDs (overview, pipeline, partners, conferences, activity, research, settings); layout profile reorders and hides screens and columns | unit "package", "seven screens" |
+| Design gate (contrast, overlap, overflow) at 1440 and 390 | integration "Acceptance 9": `inspectAppDesign` returns no issues |
 
-`node --import tsx --test tests/partnership-template.test.ts tests/partnership-integration.test.ts`: 11 tests pass. Includes all six QuickJS screens, complete/missing/denied/array/short/unknown/over-budget reads, score 93.0% from independently specified 5/5/4/4 dimensions, stale/revoked edits, version-zero updates, empty creation, archive identity/conflicts, partner-change dependency coverage, copied approvals, criteria revision, filtered company selection, hidden fields, comparison paging and typed database-triggered completion-email validation.
+## Acceptance
 
-The integration fixture creates all eight documented schemas and records through normal reviewed database operations after applying real migrations to PGlite. Child references use committed parent receipt UUIDs. It saves/reopens the actual catalog app, inspects six screens with the production design gate, confirms real creates/updates/archives, blocks evidence-changing partner reassignment, saves copied evaluations as Draft, and persists native layout without modifying the manifest. Stale layout updates fail.
+| # | Criterion | Result and evidence |
+|---|---|---|
+| 1 | Conference through chat: requests become contacts, opportunities and meetings tagged "BIO-Europe 2026"; a warning about a partner that declined last year; the saved view shows prep before and next steps after. | **Pass (app side).** The assistant's part is a set of reviewed `prepare_change` proposals described in the catalog instructions; the app shows them as soon as they are approved. Unit "history checks": Glenmoor's 2025 decline is shown on a new opportunity, contact, target acceptance and its conference request. Unit "acceptance 1" and the browser test: "Open its pipeline view" filters by the Conference tag (only BIO-Europe 2026 deals), it is saved as a shared view, and Log outcome writes outcome, next step and a follow-up in one review; After the event lists them. A live assistant session pasting real partneringONE requests was not run. |
+| 2 | After-meeting log: one message creates an activity with materials and versions, a stage change (stage history) and two follow-ups, all reviewed. | **Pass.** Unit and integration "Acceptance 2": one proposal with 5 changes; nothing is written before a person approves; an assistant cannot confirm it. Browser: the log form in the sanitized frame (document version, contact, stage, two follow-ups), approved; the stage history row exists. |
+| 3 | Gates: a Contracts CDA and a Data Room room show status and engagement; without either, fields stay manual and nothing breaks. | **Pass.** Integration "Acceptance 9": installed after Contracts and Data Room, agreements and dataroom.v1 connect read-only at install and the panel shows "Signed, active", access and engagement. Installed alone: no agreements table, manual references, all seven screens clean. Unit "acceptance 3": manual entries, the own Data Room table and the "Use Data Room's data" offer. |
+| 4 | Research: weekly worker runs; signals and two targets appear; one accepted; the digest arrives in the §6 format within the word limit; daily or monthly changes the schedule. | **Pass (synthetic runner).** Integration "Acceptance 4": a verified runner, the research monitor with the Settings trigger (next run Monday 07:00 Europe/Berlin), a create-only signals scope (an attempt to create an opportunity is refused), three signals and two targets saved by the run, the run finished with the app's digest text, the run-completed email action delivers once to the member (a partner address is refused at setup), one target accepted in the app (Identified, source research), daily and monthly triggers saved and dispatch times checked. Unit: subject, section order, ≤ 3 items, ≤ 150 words, empty sections left out, no deal terms. A real Claude or ChatGPT scheduled run and real email delivery were not exercised. |
+| 5 | Saved views: custom category Region; a shared Region + stage view visible to the team, a private one not. | **Pass.** Unit and browser: Region added in Settings, shared view visible to Marc, Anna's private view hidden from him; only the owner can change or remove a view. Private views are a picker preference, not a permission boundary (documented). |
+| 6 | Funnel and win/loss match the stage history. | **Pass.** Unit: an independent fixture with skipped stages, lost and on hold; overview funnels equal a count computed in the test from the demo history. Integration and browser: funnel numbers after real reviewed stage moves. |
+| 7 | No screen or automation sends email to partners. | **Pass.** Unit: across screens, panels and actions the app calls only `records.read`, `records.propose`, `documents.list` and `integrations.list`; no mail links. Browser: no requests leave the host. Recipes: email only to registered members; integration: a partner address is refused. |
+| 8 | Assistants propose only; digest recipients are members only; no deal terms in email. | **Pass.** Integration: assistant confirmations refused for app proposals; research cannot write outside its create-only scope; recipients validated as members. Unit: digest excludes rationales, briefs, notes and agreement names. |
+| 9 | Modularity (rule 9) and archive first; archiving the app pauses research and digest. | **Pass.** Integration "Acceptance 9": alone, with partner apps later, Contracts archived, a tab hidden, app archived (reinstall offers the restore), restored with records intact. Integration "Acceptance 4": archiving marks the research and email automations archived with the app and readiness becomes false. |
+| 10 | Layout: desktop 1440 and mobile 390. | **Pass.** Browser test: seven screens at both widths with no page overflow and no error banner; opportunity drawer and follow-up form on mobile; design gate clean. |
 
-`node --import tsx scripts/test-partnership-browser.ts`: passes using the production sanitized frame with manifest attached and the real backend fixture. Exercises six screens at 320/390/768/1100/1440px, text/textarea/number/date/select forms, visible errors and retained values, trusted review confirmations and database receipts, native screen/field reordering and reload. Desktop/mobile and mobile form screenshots were visually inspected locally. The discovered 320px Discovery overflow was fixed before the passing run.
+## Decisions and limits
 
-`APP_DESIGN_CHECKS=off node --import tsx --test --test-concurrency=2 tests/app-templates.test.ts tests/frontend.test.ts tests/frontend-reads.test.ts tests/shared-automations.test.ts tests/notification-guardrails.test.ts`: 36 shared regression tests pass. Includes catalog discovery/digest, reviewed writes/access revocation, shared-runner failure isolation, retry/deduplication and notification burst/delivery guardrails with mocked mail. Design checking is bypassed only for unrelated shared fixtures; app-specific design, integration and browser checks run with production validation enabled.
-
-`node scripts/build-partnership-template.mjs --check` and `npm run build`: pass generated-file checks, TypeScript, production web and embed builds. Final catalog tests and build include the concurrently published Investor CRM package without changing it.
-
-## Release boundaries
-
-The repository package is ready for the existing deployment path. Repository publication does not verify that a deployed MCP server has loaded this version or that cached ChatGPT tools have refreshed. Live MCP discovery, connected ChatGPT acceptance, scheduled research and actual delivered email remain separate checks; none is claimed here.
-
-Reads are bounded to 800 rows per role (at most 64 read calls and one proposal within the 100-call runtime budget). Larger datasets require narrowed authorized scope or a separate backend paging implementation. Partial results cannot establish completeness. asOf is a reference date, not a historical snapshot. Scalar references and app guards are not database-wide foreign keys and do not prevent independent Database edits; reconcile those before relying on reviewed evidence.
-
-No migration, service, credential or environment change is required. Existing saved apps retain their published source until explicitly revised. No automation is enabled by installing this template.
+- The sanitized frame strips `open` from `<details>` and custom `data-*` attributes, so filters and panel forms are inline sections and the digest and schedule carry ids.
+- Records in one review cannot reference each other's new IDs: a new opportunity's first stage is its current stage (stage history records changes), and new partners are saved before the opportunities that use them.
+- Document versions are shown as the platform numbers them (a first upload is v0), as in Data Room.
+- Local browser runs used the container's Chromium build linked to the path the pinned Playwright 1.51.1 expects; CI installs its own browsers.

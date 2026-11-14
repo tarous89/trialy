@@ -1,1091 +1,2668 @@
 {
-  "fictional": true,
-  "records": [
-    {
-      "role": "programs",
-      "id": "pr-rna",
-      "version": 1,
-      "data": {
-        "name": "RNA delivery platform",
-        "archived": false,
-        "modality": "Lipid nanoparticle platform",
-        "indication": "Nonconfidential therapeutic delivery",
-        "owner": "BD lead",
-        "brief": "Explore pharma R&D partners for licensed delivery technology; share only approved public capability statements."
-      }
-    },
-    {
-      "role": "programs",
-      "id": "pr-cell",
-      "version": 1,
-      "data": {
-        "name": "Cell therapy manufacturing",
-        "archived": false,
-        "modality": "Engineered T-cell process",
-        "indication": "Oncology R&D",
-        "owner": "CEO",
-        "brief": "Identify co-development partners with cell-therapy process scale-up capabilities."
-      }
-    },
-    {
-      "role": "programs",
-      "id": "pr-protein",
-      "version": 1,
-      "data": {
-        "name": "Protein engineering toolkit",
-        "archived": false,
-        "modality": "Protein engineering",
-        "indication": "Inflammation research",
-        "owner": "Head of science",
-        "brief": "Qualify collaborative assay-development and platform out-licensing organizations."
-      }
-    },
-    {
-      "role": "organizations",
-      "id": "og1",
-      "version": 1,
-      "data": {
-        "name": "HelixGate Pharma",
-        "archived": false,
-        "domain": "https://example.org/fictional-partner/og1",
-        "category": "Pharma",
-        "region": "Europe",
-        "focus": "RNA delivery",
-        "priority": "High",
-        "sourceUrl": "https://example.org/fictional-source/og1",
-        "verifiedAt": "2026-10-11",
-        "notes": "FICTIONAL PARTNER PROFILE: invented for UX testing, not a real company or commercial signal."
-      }
-    },
-    {
-      "role": "organizations",
-      "id": "og2",
-      "version": 1,
-      "data": {
-        "name": "Northstar Biologics",
-        "archived": false,
-        "domain": "https://example.org/fictional-partner/og2",
-        "category": "Biotech",
-        "region": "North America",
-        "focus": "LNP manufacturing",
-        "priority": "High",
-        "sourceUrl": "https://example.org/fictional-source/og2",
-        "verifiedAt": "2026-10-12",
-        "notes": "FICTIONAL PARTNER PROFILE: invented for UX testing, not a real company or commercial signal."
-      }
-    },
-    {
-      "role": "organizations",
-      "id": "og3",
-      "version": 1,
-      "data": {
-        "name": "Asterion Therapeutics",
-        "archived": false,
-        "domain": "https://example.org/fictional-partner/og3",
-        "category": "Pharma",
-        "region": "Europe",
-        "focus": "Cancer immunotherapy",
-        "priority": "Medium",
-        "sourceUrl": "https://example.org/fictional-source/og3",
-        "verifiedAt": "2026-10-13",
-        "notes": "FICTIONAL PARTNER PROFILE: invented for UX testing, not a real company or commercial signal."
-      }
-    },
-    {
-      "role": "organizations",
-      "id": "og4",
-      "version": 1,
-      "data": {
-        "name": "BlueCurrent Pharma",
-        "archived": false,
-        "domain": "https://example.org/fictional-partner/og4",
-        "category": "Pharma",
-        "region": "APAC",
-        "focus": "Rare disease platform",
-        "priority": "Medium",
-        "sourceUrl": "https://example.org/fictional-source/og4",
-        "verifiedAt": "2026-10-14",
-        "notes": "FICTIONAL PARTNER PROFILE: invented for UX testing, not a real company or commercial signal."
-      }
-    },
-    {
-      "role": "organizations",
-      "id": "og5",
-      "version": 1,
-      "data": {
-        "name": "Vireo Biopharma",
-        "archived": false,
-        "domain": "https://example.org/fictional-partner/og5",
-        "category": "Biotech",
-        "region": "North America",
-        "focus": "Protein engineering",
-        "priority": "High",
-        "sourceUrl": "https://example.org/fictional-source/og5",
-        "verifiedAt": "2026-10-15",
-        "notes": "FICTIONAL PARTNER PROFILE: invented for UX testing, not a real company or commercial signal."
-      }
-    },
-    {
-      "role": "organizations",
-      "id": "og6",
-      "version": 1,
-      "data": {
-        "name": "Meridian Innovation Labs",
-        "archived": false,
-        "domain": "https://example.org/fictional-partner/og6",
-        "category": "Academic",
-        "region": "Europe",
-        "focus": "Translational delivery",
-        "priority": "Low",
-        "sourceUrl": "https://example.org/fictional-source/og6",
-        "verifiedAt": "2026-10-16",
-        "notes": "FICTIONAL PARTNER PROFILE: invented for UX testing, not a real company or commercial signal."
-      }
-    },
-    {
-      "role": "organizations",
-      "id": "og7",
-      "version": 1,
-      "data": {
-        "name": "Caldera Biosciences",
-        "archived": false,
-        "domain": "https://example.org/fictional-partner/og7",
-        "category": "Biotech",
-        "region": "Europe",
-        "focus": "Cell therapy",
-        "priority": "High",
-        "sourceUrl": "https://example.org/fictional-source/og7",
-        "verifiedAt": "2026-10-17",
-        "notes": "FICTIONAL PARTNER PROFILE: invented for UX testing, not a real company or commercial signal."
-      }
-    },
-    {
-      "role": "organizations",
-      "id": "og8",
-      "version": 1,
-      "data": {
-        "name": "Foxtail Therapeutics",
-        "archived": false,
-        "domain": "https://example.org/fictional-partner/og8",
-        "category": "Biotech",
-        "region": "APAC",
-        "focus": "Assay analytics",
-        "priority": "Medium",
-        "sourceUrl": "https://example.org/fictional-source/og8",
-        "verifiedAt": "2026-10-18",
-        "notes": "FICTIONAL PARTNER PROFILE: invented for UX testing, not a real company or commercial signal."
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "c1",
-      "version": 1,
-      "data": {
-        "name": "Fictional contact 1",
-        "archived": false,
-        "organizationId": "og1",
-        "title": "Business development director",
-        "team": "Business development",
-        "linkedin": "",
-        "lastContacted": "2026-10-18",
-        "notes": "Fictional professional example only; do not use for outreach."
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "c2",
-      "version": 1,
-      "data": {
-        "name": "Fictional contact 2",
-        "archived": false,
-        "organizationId": "og1",
-        "title": "Alliance manager",
-        "team": "Business development",
-        "linkedin": "",
-        "lastContacted": "2026-10-18",
-        "notes": "Fictional professional example only; do not use for outreach."
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "c3",
-      "version": 1,
-      "data": {
-        "name": "Fictional contact 3",
-        "archived": false,
-        "organizationId": "og2",
-        "title": "Head of collaborations",
-        "team": "Business development",
-        "linkedin": "",
-        "lastContacted": "2026-10-18",
-        "notes": "Fictional professional example only; do not use for outreach."
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "c4",
-      "version": 1,
-      "data": {
-        "name": "Fictional contact 4",
-        "archived": false,
-        "organizationId": "og3",
-        "title": "Global partnering lead",
-        "team": "Business development",
-        "linkedin": "",
-        "lastContacted": "2026-10-18",
-        "notes": "Fictional professional example only; do not use for outreach."
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "c5",
-      "version": 1,
-      "data": {
-        "name": "Fictional contact 5",
-        "archived": false,
-        "organizationId": "og4",
-        "title": "VP external innovation",
-        "team": "Business development",
-        "linkedin": "",
-        "lastContacted": "2026-10-18",
-        "notes": "Fictional professional example only; do not use for outreach."
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "c6",
-      "version": 1,
-      "data": {
-        "name": "Fictional contact 6",
-        "archived": false,
-        "organizationId": "og5",
-        "title": "Chief business officer",
-        "team": "Business development",
-        "linkedin": "",
-        "lastContacted": "2026-10-18",
-        "notes": "Fictional professional example only; do not use for outreach."
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "c7",
-      "version": 1,
-      "data": {
-        "name": "Fictional contact 7",
-        "archived": false,
-        "organizationId": "og6",
-        "title": "Technology transfer lead",
-        "team": "Business development",
-        "linkedin": "",
-        "lastContacted": "2026-10-18",
-        "notes": "Fictional professional example only; do not use for outreach."
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "c8",
-      "version": 1,
-      "data": {
-        "name": "Fictional contact 8",
-        "archived": false,
-        "organizationId": "og7",
-        "title": "SVP corporate development",
-        "team": "Business development",
-        "linkedin": "",
-        "lastContacted": "2026-10-18",
-        "notes": "Fictional professional example only; do not use for outreach."
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "c9",
-      "version": 1,
-      "data": {
-        "name": "Fictional contact 9",
-        "archived": false,
-        "organizationId": "og8",
-        "title": "Licensing director",
-        "team": "Business development",
-        "linkedin": "",
-        "lastContacted": "2026-10-18",
-        "notes": "Fictional professional example only; do not use for outreach."
-      }
-    },
-    {
-      "role": "contacts",
-      "id": "c10",
-      "version": 1,
-      "data": {
-        "name": "Fictional contact 10",
-        "archived": false,
-        "organizationId": "og2",
-        "title": "Head of platform alliances",
-        "team": "Business development",
-        "linkedin": "",
-        "lastContacted": "2026-10-18",
-        "notes": "Fictional professional example only; do not use for outreach."
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "d1",
-      "version": 1,
-      "data": {
-        "name": "RNA platform exploration",
-        "archived": false,
-        "organizationId": "og1",
-        "programId": "pr-rna",
-        "stage": "Negotiating",
-        "owner": "CEO",
-        "dealType": "Out-license",
-        "nextAction": "CDA review",
-        "nextDate": "2026-11-08",
-        "stageAt": "2026-10-24",
-        "stageNote": "Fictional logged internal stage rationale.",
-        "criteriaVersion": 1,
-        "valuation": ""
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "d2",
-      "version": 1,
-      "data": {
-        "name": "Delivery analytics collaboration",
-        "archived": false,
-        "organizationId": "og2",
-        "programId": "pr-rna",
-        "stage": "Discussing",
-        "owner": "Science lead",
-        "dealType": "Research collaboration",
-        "nextAction": "Technical briefing",
-        "nextDate": "2026-11-04",
-        "stageAt": "2026-10-24",
-        "stageNote": "Fictional logged internal stage rationale.",
-        "criteriaVersion": 2,
-        "valuation": ""
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "d3",
-      "version": 1,
-      "data": {
-        "name": "Delivery option proposal",
-        "archived": false,
-        "organizationId": "og4",
-        "programId": "pr-rna",
-        "stage": "Evaluating",
-        "owner": "BD director",
-        "dealType": "Platform",
-        "nextAction": "Clarify territories",
-        "nextDate": "2026-11-13",
-        "stageAt": "2026-10-24",
-        "stageNote": "Fictional logged internal stage rationale.",
-        "criteriaVersion": 1,
-        "valuation": ""
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "d4",
-      "version": 1,
-      "data": {
-        "name": "Nonclinical pilot evaluation",
-        "archived": false,
-        "organizationId": "og6",
-        "programId": "pr-rna",
-        "stage": "Qualified",
-        "owner": "CEO",
-        "dealType": "Research collaboration",
-        "nextAction": "Prepare public summary",
-        "nextDate": "2026-11-06",
-        "stageAt": "2026-10-24",
-        "stageNote": "Fictional logged internal stage rationale.",
-        "criteriaVersion": 1,
-        "valuation": ""
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "d5",
-      "version": 1,
-      "data": {
-        "name": "RNA formulation scout",
-        "archived": false,
-        "organizationId": "og5",
-        "programId": "pr-rna",
-        "stage": "Identified",
-        "owner": "Science lead",
-        "dealType": "Platform",
-        "nextAction": "Validate partner scope",
-        "nextDate": "2026-11-21",
-        "stageAt": "2026-10-24",
-        "stageNote": "Fictional logged internal stage rationale.",
-        "criteriaVersion": 1,
-        "valuation": ""
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "d6",
-      "version": 1,
-      "data": {
-        "name": "Scale-up partnership",
-        "archived": false,
-        "organizationId": "og7",
-        "programId": "pr-cell",
-        "stage": "Negotiating",
-        "owner": "BD director",
-        "dealType": "Co-development",
-        "nextAction": "Review term sheet",
-        "nextDate": "2026-11-02",
-        "stageAt": "2026-10-24",
-        "stageNote": "Fictional logged internal stage rationale.",
-        "criteriaVersion": 1,
-        "valuation": ""
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "d7",
-      "version": 1,
-      "data": {
-        "name": "Immunotherapy joint work",
-        "archived": false,
-        "organizationId": "og3",
-        "programId": "pr-cell",
-        "stage": "Evaluating",
-        "owner": "CEO",
-        "dealType": "Co-development",
-        "nextAction": "Get process scope",
-        "nextDate": "2026-11-15",
-        "stageAt": "2026-10-24",
-        "stageNote": "Fictional logged internal stage rationale.",
-        "criteriaVersion": 1,
-        "valuation": ""
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "d8",
-      "version": 1,
-      "data": {
-        "name": "Regional process discussion",
-        "archived": false,
-        "organizationId": "og4",
-        "programId": "pr-cell",
-        "stage": "Discussing",
-        "owner": "Science lead",
-        "dealType": "Platform",
-        "nextAction": "Partner update",
-        "nextDate": "2026-11-19",
-        "stageAt": "2026-10-24",
-        "stageNote": "Fictional logged internal stage rationale.",
-        "criteriaVersion": 1,
-        "valuation": ""
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "d9",
-      "version": 1,
-      "data": {
-        "name": "Proteomics co-development",
-        "archived": false,
-        "organizationId": "og5",
-        "programId": "pr-protein",
-        "stage": "Qualified",
-        "owner": "BD director",
-        "dealType": "Co-development",
-        "nextAction": "Scientific fit review",
-        "nextDate": "2026-11-11",
-        "stageAt": "2026-10-24",
-        "stageNote": "Fictional logged internal stage rationale.",
-        "criteriaVersion": 1,
-        "valuation": ""
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "d10",
-      "version": 1,
-      "data": {
-        "name": "Reagent collaboration",
-        "archived": false,
-        "organizationId": "og8",
-        "programId": "pr-protein",
-        "stage": "Identified",
-        "owner": "CEO",
-        "dealType": "Research collaboration",
-        "nextAction": "Initial introduction",
-        "nextDate": "2026-11-25",
-        "stageAt": "2026-10-24",
-        "stageNote": "Fictional logged internal stage rationale.",
-        "criteriaVersion": 1,
-        "valuation": ""
-      }
-    },
-    {
-      "role": "opportunities",
-      "id": "d11",
-      "version": 1,
-      "data": {
-        "name": "Legacy partner lead",
-        "archived": false,
-        "organizationId": "og2",
-        "programId": "pr-protein",
-        "stage": "Inactive",
-        "owner": "Science lead",
-        "dealType": "Other",
-        "nextAction": "No action",
-        "nextDate": "2026-09-14",
-        "stageAt": "2026-10-24",
-        "stageNote": "Fictional logged internal stage rationale.",
-        "criteriaVersion": 1,
-        "valuation": ""
-      }
-    },
-    {
-      "role": "evaluations",
-      "id": "e1",
-      "version": 1,
-      "data": {
-        "name": "Fit review d1",
-        "archived": false,
-        "opportunityId": "d1",
-        "status": "Reviewed",
-        "criteriaVersion": 1,
-        "reviewer": "Scientific BD reviewer",
-        "reviewedAt": "2026-10-30",
-        "rationale": "FICTIONAL reviewed assessment against program-specific criteria.",
-        "sourceUrl": "https://example.org/fictional-review/d1",
-        "science": 5,
-        "strategy": 5,
-        "commercial": 4,
-        "execution": 4
-      }
-    },
-    {
-      "role": "evaluations",
-      "id": "e2",
-      "version": 1,
-      "data": {
-        "name": "Fit review d2",
-        "archived": false,
-        "opportunityId": "d2",
-        "status": "Reviewed",
-        "criteriaVersion": 2,
-        "reviewer": "Scientific BD reviewer",
-        "reviewedAt": "2026-10-30",
-        "rationale": "FICTIONAL reviewed assessment against program-specific criteria.",
-        "sourceUrl": "https://example.org/fictional-review/d2",
-        "science": 4,
-        "strategy": 4,
-        "commercial": 3,
-        "execution": 5
-      }
-    },
-    {
-      "role": "evaluations",
-      "id": "e3",
-      "version": 1,
-      "data": {
-        "name": "Fit review d3",
-        "archived": false,
-        "opportunityId": "d3",
-        "status": "Draft",
-        "criteriaVersion": 1,
-        "reviewer": "",
-        "reviewedAt": null,
-        "rationale": "Evidence required.",
-        "sourceUrl": "",
-        "science": 3,
-        "strategy": 4,
-        "commercial": null,
-        "execution": null
-      }
-    },
-    {
-      "role": "evaluations",
-      "id": "e4",
-      "version": 1,
-      "data": {
-        "name": "Fit review d4",
-        "archived": false,
-        "opportunityId": "d4",
-        "status": "Reviewed",
-        "criteriaVersion": 1,
-        "reviewer": "Scientific BD reviewer",
-        "reviewedAt": "2026-10-30",
-        "rationale": "FICTIONAL reviewed assessment against program-specific criteria.",
-        "sourceUrl": "https://example.org/fictional-review/d4",
-        "science": 3,
-        "strategy": 4,
-        "commercial": 3,
-        "execution": 4
-      }
-    },
-    {
-      "role": "evaluations",
-      "id": "e5",
-      "version": 1,
-      "data": {
-        "name": "Fit review d6",
-        "archived": false,
-        "opportunityId": "d6",
-        "status": "Reviewed",
-        "criteriaVersion": 1,
-        "reviewer": "Scientific BD reviewer",
-        "reviewedAt": "2026-10-30",
-        "rationale": "FICTIONAL reviewed assessment against program-specific criteria.",
-        "sourceUrl": "https://example.org/fictional-review/d6",
-        "science": 5,
-        "strategy": 4,
-        "commercial": 4,
-        "execution": 4
-      }
-    },
-    {
-      "role": "evaluations",
-      "id": "e6",
-      "version": 1,
-      "data": {
-        "name": "Fit review d7",
-        "archived": false,
-        "opportunityId": "d7",
-        "status": "Draft",
-        "criteriaVersion": 1,
-        "reviewer": "",
-        "reviewedAt": null,
-        "rationale": "Evidence required.",
-        "sourceUrl": "",
-        "science": 4,
-        "strategy": null,
-        "commercial": null,
-        "execution": null
-      }
-    },
-    {
-      "role": "evaluations",
-      "id": "e7",
-      "version": 1,
-      "data": {
-        "name": "Fit review d9",
-        "archived": false,
-        "opportunityId": "d9",
-        "status": "Reviewed",
-        "criteriaVersion": 1,
-        "reviewer": "Scientific BD reviewer",
-        "reviewedAt": "2026-10-30",
-        "rationale": "FICTIONAL reviewed assessment against program-specific criteria.",
-        "sourceUrl": "https://example.org/fictional-review/d9",
-        "science": 3,
-        "strategy": 5,
-        "commercial": 4,
-        "execution": 3
-      }
-    },
-    {
-      "role": "meetings",
-      "id": "m1",
-      "version": 1,
-      "data": {
-        "name": "Alliance terms discussion",
-        "archived": false,
-        "opportunityId": "d1",
-        "heldAt": "2026-10-28",
-        "owner": "BD director",
-        "participants": "Authorized partner professionals",
-        "summary": "FICTIONAL discussion; only nonconfidential details shown.",
-        "nextAction": "Document agreed follow-up",
-        "nextDate": "2026-11-06"
-      }
-    },
-    {
-      "role": "meetings",
-      "id": "m2",
-      "version": 1,
-      "data": {
-        "name": "Technical introduction",
-        "archived": false,
-        "opportunityId": "d2",
-        "heldAt": "2026-10-30",
-        "owner": "BD director",
-        "participants": "Authorized partner professionals",
-        "summary": "FICTIONAL discussion; only nonconfidential details shown.",
-        "nextAction": "Document agreed follow-up",
-        "nextDate": "2026-11-06"
-      }
-    },
-    {
-      "role": "meetings",
-      "id": "m3",
-      "version": 1,
-      "data": {
-        "name": "Territory scoping",
-        "archived": false,
-        "opportunityId": "d3",
-        "heldAt": "2026-10-24",
-        "owner": "BD director",
-        "participants": "Authorized partner professionals",
-        "summary": "FICTIONAL discussion; only nonconfidential details shown.",
-        "nextAction": "Document agreed follow-up",
-        "nextDate": "2026-11-06"
-      }
-    },
-    {
-      "role": "meetings",
-      "id": "m4",
-      "version": 1,
-      "data": {
-        "name": "Scientific overview",
-        "archived": false,
-        "opportunityId": "d4",
-        "heldAt": "2026-10-17",
-        "owner": "BD director",
-        "participants": "Authorized partner professionals",
-        "summary": "FICTIONAL discussion; only nonconfidential details shown.",
-        "nextAction": "Document agreed follow-up",
-        "nextDate": "2026-11-06"
-      }
-    },
-    {
-      "role": "meetings",
-      "id": "m5",
-      "version": 1,
-      "data": {
-        "name": "Manufacturing workstream",
-        "archived": false,
-        "opportunityId": "d6",
-        "heldAt": "2026-10-26",
-        "owner": "BD director",
-        "participants": "Authorized partner professionals",
-        "summary": "FICTIONAL discussion; only nonconfidential details shown.",
-        "nextAction": "Document agreed follow-up",
-        "nextDate": "2026-11-06"
-      }
-    },
-    {
-      "role": "meetings",
-      "id": "m6",
-      "version": 1,
-      "data": {
-        "name": "Initial process review",
-        "archived": false,
-        "opportunityId": "d7",
-        "heldAt": "2026-10-21",
-        "owner": "BD director",
-        "participants": "Authorized partner professionals",
-        "summary": "FICTIONAL discussion; only nonconfidential details shown.",
-        "nextAction": "Document agreed follow-up",
-        "nextDate": "2026-11-06"
-      }
-    },
-    {
-      "role": "meetings",
-      "id": "m7",
-      "version": 1,
-      "data": {
-        "name": "Platform introduction",
-        "archived": false,
-        "opportunityId": "d9",
-        "heldAt": "2026-10-12",
-        "owner": "BD director",
-        "participants": "Authorized partner professionals",
-        "summary": "FICTIONAL discussion; only nonconfidential details shown.",
-        "nextAction": "Document agreed follow-up",
-        "nextDate": "2026-11-06"
-      }
-    },
-    {
-      "role": "milestones",
-      "id": "a1",
-      "version": 1,
-      "data": {
-        "name": "CDA version 2 review",
-        "archived": false,
-        "opportunityId": "d1",
-        "kind": "CDA",
-        "status": "In progress",
-        "owner": "Alliance manager",
-        "due": "2026-10-30",
-        "actualAt": null,
-        "evidence": "",
-        "notes": "No signed document or actual legal execution is implied."
-      }
-    },
-    {
-      "role": "milestones",
-      "id": "a2",
-      "version": 1,
-      "data": {
-        "name": "Term sheet proposal",
-        "archived": false,
-        "opportunityId": "d1",
-        "kind": "Term sheet",
-        "status": "Planned",
-        "owner": "Alliance manager",
-        "due": "2026-11-19",
-        "actualAt": null,
-        "evidence": "",
-        "notes": "No signed document or actual legal execution is implied."
-      }
-    },
-    {
-      "role": "milestones",
-      "id": "a3",
-      "version": 1,
-      "data": {
-        "name": "Diligence scope agreed",
-        "archived": false,
-        "opportunityId": "d2",
-        "kind": "Diligence",
-        "status": "Done",
-        "owner": "Alliance manager",
-        "due": "2026-10-24",
-        "actualAt": "2026-10-23",
-        "evidence": "Fictional approved internal reference #3",
-        "notes": "No signed document or actual legal execution is implied."
-      }
-    },
-    {
-      "role": "milestones",
-      "id": "a4",
-      "version": 1,
-      "data": {
-        "name": "Joint test plan",
-        "archived": false,
-        "opportunityId": "d2",
-        "kind": "Agreement",
-        "status": "Planned",
-        "owner": "Alliance manager",
-        "due": "2026-11-15",
-        "actualAt": null,
-        "evidence": "",
-        "notes": "No signed document or actual legal execution is implied."
-      }
-    },
-    {
-      "role": "milestones",
-      "id": "a5",
-      "version": 1,
-      "data": {
-        "name": "CDA counterparty review",
-        "archived": false,
-        "opportunityId": "d3",
-        "kind": "CDA",
-        "status": "Planned",
-        "owner": "Alliance manager",
-        "due": "2026-11-23",
-        "actualAt": null,
-        "evidence": "",
-        "notes": "No signed document or actual legal execution is implied."
-      }
-    },
-    {
-      "role": "milestones",
-      "id": "a6",
-      "version": 1,
-      "data": {
-        "name": "CDA final check",
-        "archived": false,
-        "opportunityId": "d6",
-        "kind": "CDA",
-        "status": "Done",
-        "owner": "Alliance manager",
-        "due": "2026-10-21",
-        "actualAt": "2026-10-23",
-        "evidence": "Fictional approved internal reference #6",
-        "notes": "No signed document or actual legal execution is implied."
-      }
-    },
-    {
-      "role": "milestones",
-      "id": "a7",
-      "version": 1,
-      "data": {
-        "name": "Term sheet milestone",
-        "archived": false,
-        "opportunityId": "d6",
-        "kind": "Term sheet",
-        "status": "In progress",
-        "owner": "Alliance manager",
-        "due": "2026-11-08",
-        "actualAt": null,
-        "evidence": "",
-        "notes": "No signed document or actual legal execution is implied."
-      }
-    },
-    {
-      "role": "milestones",
-      "id": "a8",
-      "version": 1,
-      "data": {
-        "name": "Diligence package",
-        "archived": false,
-        "opportunityId": "d7",
-        "kind": "Diligence",
-        "status": "Planned",
-        "owner": "Alliance manager",
-        "due": "2026-11-21",
-        "actualAt": null,
-        "evidence": "",
-        "notes": "No signed document or actual legal execution is implied."
-      }
-    },
-    {
-      "role": "milestones",
-      "id": "a9",
-      "version": 1,
-      "data": {
-        "name": "Collaboration outline",
-        "archived": false,
-        "opportunityId": "d9",
-        "kind": "Agreement",
-        "status": "Planned",
-        "owner": "Alliance manager",
-        "due": "2026-12-01",
-        "actualAt": null,
-        "evidence": "",
-        "notes": "No signed document or actual legal execution is implied."
-      }
-    },
-    {
-      "role": "signals",
-      "id": "s1",
-      "version": 1,
-      "data": {
-        "name": "New partnering program announcement",
-        "archived": false,
-        "organizationId": "og1",
-        "publishedAt": "2026-10-31",
-        "sourceUrl": "https://example.org/fictional-public-signal/1",
-        "sourceLabel": "Fictional company press release",
-        "status": "New",
-        "rationale": "Fictional signal; no real announcement has been verified.",
-        "reviewer": "",
-        "reviewedAt": null
-      }
-    },
-    {
-      "role": "signals",
-      "id": "s2",
-      "version": 1,
-      "data": {
-        "name": "Fictional collaboration research notice",
-        "archived": false,
-        "organizationId": "og3",
-        "publishedAt": "2026-10-21",
-        "sourceUrl": "https://example.org/fictional-public-signal/2",
-        "sourceLabel": "Fictional company press release",
-        "status": "New",
-        "rationale": "Fictional signal; no real announcement has been verified.",
-        "reviewer": "",
-        "reviewedAt": null
-      }
-    },
-    {
-      "role": "signals",
-      "id": "s3",
-      "version": 1,
-      "data": {
-        "name": "New process R&D agreement signal",
-        "archived": false,
-        "organizationId": "og7",
-        "publishedAt": "2026-10-27",
-        "sourceUrl": "https://example.org/fictional-public-signal/3",
-        "sourceLabel": "Fictional company press release",
-        "status": "Reviewed",
-        "rationale": "Fictional signal; no real announcement has been verified.",
-        "reviewer": "BD team",
-        "reviewedAt": "2026-10-31"
-      }
-    },
-    {
-      "role": "signals",
-      "id": "s4",
-      "version": 1,
-      "data": {
-        "name": "Fictional platform interest update",
-        "archived": false,
-        "organizationId": "og2",
-        "publishedAt": "2026-10-20",
-        "sourceUrl": "https://example.org/fictional-public-signal/4",
-        "sourceLabel": "Fictional company press release",
-        "status": "New",
-        "rationale": "Fictional signal; no real announcement has been verified.",
-        "reviewer": "",
-        "reviewedAt": null
-      }
-    },
-    {
-      "role": "signals",
-      "id": "s5",
-      "version": 1,
-      "data": {
-        "name": "New nonclinical assay initiative",
-        "archived": false,
-        "organizationId": "og5",
-        "publishedAt": "2026-10-18",
-        "sourceUrl": "https://example.org/fictional-public-signal/5",
-        "sourceLabel": "Fictional company press release",
-        "status": "New",
-        "rationale": "Fictional signal; no real announcement has been verified.",
-        "reviewer": "",
-        "reviewedAt": null
-      }
-    },
-    {
-      "role": "signals",
-      "id": "s6",
-      "version": 1,
-      "data": {
-        "name": "Regional platform partnering update",
-        "archived": false,
-        "organizationId": "og4",
-        "publishedAt": "2026-10-16",
-        "sourceUrl": "https://example.org/fictional-public-signal/6",
-        "sourceLabel": "Fictional company press release",
-        "status": "Reviewed",
-        "rationale": "Fictional signal; no real announcement has been verified.",
-        "reviewer": "BD team",
-        "reviewedAt": "2026-10-31"
-      }
-    },
-    {
-      "role": "signals",
-      "id": "s7",
-      "version": 1,
-      "data": {
-        "name": "Scientific program announcement",
-        "archived": false,
-        "organizationId": "og8",
-        "publishedAt": "2026-10-13",
-        "sourceUrl": "https://example.org/fictional-public-signal/7",
-        "sourceLabel": "Fictional company press release",
-        "status": "New",
-        "rationale": "Fictional signal; no real announcement has been verified.",
-        "reviewer": "",
-        "reviewedAt": null
-      }
-    },
-    {
-      "role": "signals",
-      "id": "s8",
-      "version": 1,
-      "data": {
-        "name": "Technology transfer initiative",
-        "archived": false,
-        "organizationId": "og6",
-        "publishedAt": "2026-09-30",
-        "sourceUrl": "https://example.org/fictional-public-signal/8",
-        "sourceLabel": "Fictional company press release",
-        "status": "New",
-        "rationale": "Fictional signal; no real announcement has been verified.",
-        "reviewer": "",
-        "reviewedAt": null
-      }
-    }
-  ]
+ "asOf": "2026-11-14",
+ "note": "Fictional companies, people, deals and conference meetings for previews and tests (Northwind Bio, as of 14 Nov 2026). Emails use .invalid domains; agreements and data room rows stand in for Contracts and Data Room.",
+ "records": [
+  {
+   "role": "programs",
+   "id": "00000000-0000-4000-8000-000000000501",
+   "version": 0,
+   "data": {
+    "name": "NWB-101 (fibrosis)",
+    "code": "NWB-101",
+    "indication": "Idiopathic pulmonary fibrosis",
+    "modality": "small_molecule",
+    "stage": "phase_1",
+    "lead": "Marc",
+    "status": "active"
+   }
+  },
+  {
+   "role": "programs",
+   "id": "00000000-0000-4000-8000-000000000502",
+   "version": 0,
+   "data": {
+    "name": "NWB-202 (solid tumours)",
+    "code": "NWB-202",
+    "indication": "HER3-positive solid tumours",
+    "modality": "antibody",
+    "stage": "preclinical",
+    "lead": "Sofia",
+    "status": "active"
+   }
+  },
+  {
+   "role": "programs",
+   "id": "00000000-0000-4000-8000-000000000503",
+   "version": 0,
+   "data": {
+    "name": "NWB-PLAT (RNA delivery platform)",
+    "code": "NWB-PLAT",
+    "indication": "Platform: lung-targeted RNA delivery",
+    "modality": "rna",
+    "stage": "discovery",
+    "lead": "Anna",
+    "status": "active"
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "00000000-0000-4000-8000-000000000504",
+   "version": 0,
+   "data": {
+    "name": "Cedarline Pharma",
+    "org_type": "partner",
+    "country": "Switzerland",
+    "website": "https://cedarline.invalid"
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "00000000-0000-4000-8000-000000000505",
+   "version": 0,
+   "data": {
+    "name": "Fernbrook Therapeutics",
+    "org_type": "company",
+    "country": "United States",
+    "website": "https://fernbrook.invalid"
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "00000000-0000-4000-8000-000000000506",
+   "version": 0,
+   "data": {
+    "name": "Glenmoor Biologics",
+    "org_type": "company",
+    "country": "Germany",
+    "website": "https://glenmoor.invalid"
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "00000000-0000-4000-8000-000000000507",
+   "version": 0,
+   "data": {
+    "name": "Hollowmere University",
+    "org_type": "other",
+    "country": "United Kingdom",
+    "website": "https://hollowmere.invalid"
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "00000000-0000-4000-8000-000000000508",
+   "version": 0,
+   "data": {
+    "name": "Ironvale Pharma",
+    "org_type": "partner",
+    "country": "Japan",
+    "website": "https://ironvale.invalid"
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "00000000-0000-4000-8000-000000000509",
+   "version": 0,
+   "data": {
+    "name": "Juniperra Oncology",
+    "org_type": "company",
+    "country": "United States",
+    "website": "https://juniperra.invalid"
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "00000000-0000-4000-8000-000000000510",
+   "version": 0,
+   "data": {
+    "name": "Kestrelwood Bio",
+    "org_type": "company",
+    "country": "Denmark",
+    "website": "https://kestrelwood.invalid"
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "00000000-0000-4000-8000-000000000511",
+   "version": 0,
+   "data": {
+    "name": "Larchfield Institute",
+    "org_type": "other",
+    "country": "France",
+    "website": "https://larchfield.invalid"
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "00000000-0000-4000-8000-000000000512",
+   "version": 0,
+   "data": {
+    "name": "Maplecrest Pharma",
+    "org_type": "partner",
+    "country": "United States",
+    "website": "https://maplecrest.invalid"
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "00000000-0000-4000-8000-000000000513",
+   "version": 0,
+   "data": {
+    "name": "Oakvane Therapeutics",
+    "org_type": "company",
+    "country": "Netherlands",
+    "website": "https://oakvane.invalid"
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "00000000-0000-4000-8000-000000000514",
+   "version": 0,
+   "data": {
+    "name": "Pinehollow Pharma",
+    "org_type": "partner",
+    "country": "South Korea",
+    "website": "https://pinehollow.invalid"
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "00000000-0000-4000-8000-000000000515",
+   "version": 0,
+   "data": {
+    "name": "Quillmont Bio",
+    "org_type": "company",
+    "country": "Sweden",
+    "website": "https://quillmont.invalid"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000516",
+   "version": 0,
+   "data": {
+    "name": "Chloe Sample",
+    "organization_id": "00000000-0000-4000-8000-000000000504",
+    "title": "BD Director",
+    "email": "chloe@cedarline.invalid"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000517",
+   "version": 0,
+   "data": {
+    "name": "Elena Mock",
+    "organization_id": "00000000-0000-4000-8000-000000000504",
+    "title": "Head of Search & Evaluation",
+    "email": "elena@cedarline.invalid"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000518",
+   "version": 0,
+   "data": {
+    "name": "Farid Test",
+    "organization_id": "00000000-0000-4000-8000-000000000505",
+    "title": "VP Business Development",
+    "email": "farid@fernbrook.invalid"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000519",
+   "version": 0,
+   "data": {
+    "name": "Greta Proxy",
+    "organization_id": "00000000-0000-4000-8000-000000000505",
+    "title": "CSO",
+    "email": "greta@fernbrook.invalid"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000520",
+   "version": 0,
+   "data": {
+    "name": "Hugo Dummy",
+    "organization_id": "00000000-0000-4000-8000-000000000506",
+    "title": "Director, Licensing",
+    "email": "hugo@glenmoor.invalid"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000521",
+   "version": 0,
+   "data": {
+    "name": "Ines Model",
+    "organization_id": "00000000-0000-4000-8000-000000000507",
+    "title": "Technology Transfer Manager",
+    "email": "ines@hollowmere.invalid"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000522",
+   "version": 0,
+   "data": {
+    "name": "Jonas Draft",
+    "organization_id": "00000000-0000-4000-8000-000000000507",
+    "title": "Professor of Pulmonology",
+    "email": "jonas@hollowmere.invalid"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000523",
+   "version": 0,
+   "data": {
+    "name": "Kira Notreal",
+    "organization_id": "00000000-0000-4000-8000-000000000508",
+    "title": "Senior Manager, Alliances",
+    "email": "kira@ironvale.invalid"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000524",
+   "version": 0,
+   "data": {
+    "name": "Liam Stand",
+    "organization_id": "00000000-0000-4000-8000-000000000508",
+    "title": "Head of External Innovation Europe",
+    "email": "liam@ironvale.invalid"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000525",
+   "version": 0,
+   "data": {
+    "name": "Mara Specimen",
+    "organization_id": "00000000-0000-4000-8000-000000000509",
+    "title": "Director, Oncology BD",
+    "email": "mara@juniperra.invalid"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000526",
+   "version": 0,
+   "data": {
+    "name": "Nils Instance",
+    "organization_id": "00000000-0000-4000-8000-000000000510",
+    "title": "CEO",
+    "email": "nils@kestrelwood.invalid"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000527",
+   "version": 0,
+   "data": {
+    "name": "Olga Template",
+    "organization_id": "00000000-0000-4000-8000-000000000510",
+    "title": "Head of Platform Partnerships",
+    "email": "olga@kestrelwood.invalid"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000528",
+   "version": 0,
+   "data": {
+    "name": "Pavel Fixture",
+    "organization_id": "00000000-0000-4000-8000-000000000511",
+    "title": "Director of Partnerships",
+    "email": "pavel@larchfield.invalid"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000529",
+   "version": 0,
+   "data": {
+    "name": "Rosa Sketch",
+    "organization_id": "00000000-0000-4000-8000-000000000512",
+    "title": "Search & Evaluation Lead, Fibrosis",
+    "email": "rosa@maplecrest.invalid"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000530",
+   "version": 0,
+   "data": {
+    "name": "Sven Mockup",
+    "organization_id": "00000000-0000-4000-8000-000000000512",
+    "title": "VP Transactions",
+    "email": "sven@maplecrest.invalid"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000531",
+   "version": 0,
+   "data": {
+    "name": "Tara Pretend",
+    "organization_id": "00000000-0000-4000-8000-000000000513",
+    "title": "CBO",
+    "email": "tara@oakvane.invalid"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000532",
+   "version": 0,
+   "data": {
+    "name": "Uma Schema",
+    "organization_id": "00000000-0000-4000-8000-000000000514",
+    "title": "Licensing Manager",
+    "email": "uma@pinehollow.invalid"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000533",
+   "version": 0,
+   "data": {
+    "name": "Viktor Stub",
+    "organization_id": "00000000-0000-4000-8000-000000000514",
+    "title": "Head of Europe BD",
+    "email": "viktor@pinehollow.invalid"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000534",
+   "version": 0,
+   "data": {
+    "name": "Wen Sample",
+    "organization_id": "00000000-0000-4000-8000-000000000515",
+    "title": "CEO",
+    "email": "wen@quillmont.invalid"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000535",
+   "version": 0,
+   "data": {
+    "name": "Yara Imaginary",
+    "organization_id": "00000000-0000-4000-8000-000000000515",
+    "title": "CSO",
+    "email": "yara@quillmont.invalid"
+   }
+  },
+  {
+   "role": "agreements",
+   "id": "00000000-0000-4000-8000-000000000536",
+   "version": 0,
+   "data": {
+    "name": "CDA: Cedarline Pharma (mutual)",
+    "counterparty_id": "00000000-0000-4000-8000-000000000504",
+    "agreement_type": "cda_nda",
+    "status": "active",
+    "effective_date": "2026-09-20",
+    "expiry_date": "2028-09-19"
+   }
+  },
+  {
+   "role": "agreements",
+   "id": "00000000-0000-4000-8000-000000000537",
+   "version": 0,
+   "data": {
+    "name": "CDA: Maplecrest Pharma (mutual)",
+    "counterparty_id": "00000000-0000-4000-8000-000000000512",
+    "agreement_type": "cda_nda",
+    "status": "out_for_signature"
+   }
+  },
+  {
+   "role": "agreements",
+   "id": "00000000-0000-4000-8000-000000000538",
+   "version": 0,
+   "data": {
+    "name": "Term sheet: Fernbrook Therapeutics NWB-202 licence",
+    "counterparty_id": "00000000-0000-4000-8000-000000000505",
+    "agreement_type": "licence_out",
+    "status": "in_negotiation"
+   }
+  },
+  {
+   "role": "agreements",
+   "id": "00000000-0000-4000-8000-000000000539",
+   "version": 0,
+   "data": {
+    "name": "Research collaboration: Kestrelwood Bio platform",
+    "counterparty_id": "00000000-0000-4000-8000-000000000510",
+    "agreement_type": "research_collaboration",
+    "status": "active",
+    "effective_date": "2026-07-01",
+    "expiry_date": "2028-06-30"
+   }
+  },
+  {
+   "role": "agreements",
+   "id": "00000000-0000-4000-8000-000000000540",
+   "version": 0,
+   "data": {
+    "name": "CDA: Fernbrook Therapeutics",
+    "counterparty_id": "00000000-0000-4000-8000-000000000505",
+    "agreement_type": "cda_nda",
+    "status": "active",
+    "effective_date": "2026-06-02",
+    "expiry_date": "2028-06-01"
+   }
+  },
+  {
+   "role": "dataroom.access_grants",
+   "id": "00000000-0000-4000-8000-000000000541",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000101",
+    "room_name": "NWB-101 licensing room",
+    "room_purpose": "licensing",
+    "organization_id": "00000000-0000-4000-8000-000000000504",
+    "person_id": "00000000-0000-4000-8000-000000000516",
+    "granted_on": "2026-10-02",
+    "status": "active",
+    "agreement_accepted_on": "2026-10-03",
+    "source": "tracked"
+   }
+  },
+  {
+   "role": "dataroom.access_grants",
+   "id": "00000000-0000-4000-8000-000000000542",
+   "version": 0,
+   "data": {
+    "room_id": "00000000-0000-4000-8000-000000000101",
+    "room_name": "NWB-101 licensing room",
+    "room_purpose": "licensing",
+    "organization_id": "00000000-0000-4000-8000-000000000504",
+    "person_id": "00000000-0000-4000-8000-000000000517",
+    "granted_on": "2026-10-20",
+    "status": "invited",
+    "source": "tracked"
+   }
+  },
+  {
+   "role": "dataroom.engagement",
+   "id": "00000000-0000-4000-8000-000000000543",
+   "version": 0,
+   "data": {
+    "grant_id": "00000000-0000-4000-8000-000000000541",
+    "organization_id": "00000000-0000-4000-8000-000000000504",
+    "person_id": "00000000-0000-4000-8000-000000000516",
+    "document_ref": "doc-e1",
+    "document_title": "Key data package",
+    "first_viewed_on": "2026-10-05",
+    "last_viewed_on": "2026-11-11",
+    "view_count": 6,
+    "seconds_viewed": 1420,
+    "downloads": 0,
+    "source": "tracked",
+    "as_of": "2026-11-13"
+   }
+  },
+  {
+   "role": "dataroom.engagement",
+   "id": "00000000-0000-4000-8000-000000000544",
+   "version": 0,
+   "data": {
+    "grant_id": "00000000-0000-4000-8000-000000000541",
+    "organization_id": "00000000-0000-4000-8000-000000000504",
+    "person_id": "00000000-0000-4000-8000-000000000516",
+    "document_ref": "doc-e2",
+    "document_title": "Development plan",
+    "first_viewed_on": "2026-10-05",
+    "last_viewed_on": "2026-11-09",
+    "view_count": 3,
+    "seconds_viewed": 610,
+    "downloads": 0,
+    "source": "tracked",
+    "as_of": "2026-11-13"
+   }
+  },
+  {
+   "role": "dataroom.engagement",
+   "id": "00000000-0000-4000-8000-000000000545",
+   "version": 0,
+   "data": {
+    "grant_id": "00000000-0000-4000-8000-000000000541",
+    "organization_id": "00000000-0000-4000-8000-000000000504",
+    "person_id": "00000000-0000-4000-8000-000000000516",
+    "document_ref": "doc-e3",
+    "document_title": "CMC overview and supply chain",
+    "first_viewed_on": "2026-10-05",
+    "last_viewed_on": "2026-11-12",
+    "view_count": 2,
+    "seconds_viewed": 300,
+    "downloads": 0,
+    "source": "tracked",
+    "as_of": "2026-11-13"
+   }
+  },
+  {
+   "role": "partnerships.settings",
+   "id": "00000000-0000-4000-8000-000000000546",
+   "version": 0,
+   "data": {
+    "digest_cadence": "weekly",
+    "digest_day": "mon",
+    "digest_time": "07:00",
+    "time_zone": "Europe/Berlin",
+    "digest_recipients": "Anna, Marc, Sofia",
+    "research_enabled": true,
+    "stalled_days": 21,
+    "team": "Anna, Marc, Sofia"
+   }
+  },
+  {
+   "role": "partnerships.tag_categories",
+   "id": "00000000-0000-4000-8000-000000000547",
+   "version": 0,
+   "data": {
+    "name": "Conference",
+    "values": "[\"BIO-Europe 2026\", \"BIO-Europe Spring 2026\", \"JPM 2027\"]",
+    "multiple": true,
+    "standard": true
+   }
+  },
+  {
+   "role": "partnerships.tag_categories",
+   "id": "00000000-0000-4000-8000-000000000548",
+   "version": 0,
+   "data": {
+    "name": "Channel",
+    "values": "[\"Conference\", \"Outbound\", \"Inbound\", \"Referral\", \"Research\"]",
+    "multiple": false,
+    "standard": true
+   }
+  },
+  {
+   "role": "partnerships.tag_categories",
+   "id": "00000000-0000-4000-8000-000000000549",
+   "version": 0,
+   "data": {
+    "name": "Asset group",
+    "values": "[\"Fibrosis\", \"Oncology\", \"Platform\"]",
+    "multiple": false,
+    "standard": true
+   }
+  },
+  {
+   "role": "partnerships.tag_categories",
+   "id": "00000000-0000-4000-8000-000000000550",
+   "version": 0,
+   "data": {
+    "name": "Region",
+    "values": "[\"Europe\", \"North America\", \"Asia-Pacific\"]",
+    "multiple": false,
+    "standard": false
+   }
+  },
+  {
+   "role": "partnerships.opportunities",
+   "id": "00000000-0000-4000-8000-000000000551",
+   "version": 0,
+   "data": {
+    "name": "Cedarline: NWB-101 licence",
+    "organization_id": "00000000-0000-4000-8000-000000000504",
+    "program_id": "00000000-0000-4000-8000-000000000501",
+    "direction": "out_license",
+    "stage": "confidential_evaluation",
+    "stage_on": "2026-10-27",
+    "owner": "Anna",
+    "priority": "high",
+    "fit": 5,
+    "fit_rationale": "Fictional rationale: partner has an active fibrosis or oncology franchise and the territory we offer",
+    "source": "conference",
+    "tags": "{\"Conference\": [\"BIO-Europe Spring 2026\"], \"Channel\": [\"Conference\"], \"Asset group\": [\"Fibrosis\"], \"Region\": [\"Europe\"]}",
+    "cda_agreement_id": "00000000-0000-4000-8000-000000000536",
+    "dataroom_room_id": "00000000-0000-4000-8000-000000000101",
+    "contact_ids": "00000000-0000-4000-8000-000000000516,00000000-0000-4000-8000-000000000517",
+    "next_step": "Answer CMC questions from the data room",
+    "next_date": "2026-11-17"
+   }
+  },
+  {
+   "role": "partnerships.opportunities",
+   "id": "00000000-0000-4000-8000-000000000552",
+   "version": 0,
+   "data": {
+    "name": "Maplecrest: NWB-101 regional licence",
+    "organization_id": "00000000-0000-4000-8000-000000000512",
+    "program_id": "00000000-0000-4000-8000-000000000501",
+    "direction": "out_license",
+    "stage": "cda",
+    "stage_on": "2026-11-10",
+    "owner": "Anna",
+    "priority": "high",
+    "fit": 4,
+    "fit_rationale": "Fictional rationale: partner has an active fibrosis or oncology franchise and the territory we offer",
+    "source": "outbound",
+    "tags": "{\"Channel\": [\"Outbound\"], \"Asset group\": [\"Fibrosis\"], \"Region\": [\"North America\"], \"Conference\": [\"BIO-Europe 2026\"]}",
+    "cda_agreement_id": "00000000-0000-4000-8000-000000000537",
+    "contact_ids": "00000000-0000-4000-8000-000000000529,00000000-0000-4000-8000-000000000530",
+    "next_step": "Chase CDA signature",
+    "next_date": "2026-11-15"
+   }
+  },
+  {
+   "role": "partnerships.opportunities",
+   "id": "00000000-0000-4000-8000-000000000553",
+   "version": 0,
+   "data": {
+    "name": "Fernbrook: NWB-202 licence",
+    "organization_id": "00000000-0000-4000-8000-000000000505",
+    "program_id": "00000000-0000-4000-8000-000000000502",
+    "direction": "out_license",
+    "stage": "term_sheet",
+    "stage_on": "2026-11-05",
+    "owner": "Sofia",
+    "priority": "high",
+    "fit": 5,
+    "fit_rationale": "Fictional rationale: partner has an active fibrosis or oncology franchise and the territory we offer",
+    "source": "inbound",
+    "tags": "{\"Channel\": [\"Inbound\"], \"Asset group\": [\"Oncology\"], \"Region\": [\"North America\"]}",
+    "cda_agreement_id": "00000000-0000-4000-8000-000000000540",
+    "term_sheet_agreement_id": "00000000-0000-4000-8000-000000000538",
+    "contact_ids": "00000000-0000-4000-8000-000000000518,00000000-0000-4000-8000-000000000519",
+    "next_step": "Second turn of term sheet",
+    "next_date": "2026-11-19"
+   }
+  },
+  {
+   "role": "partnerships.opportunities",
+   "id": "00000000-0000-4000-8000-000000000554",
+   "version": 0,
+   "data": {
+    "name": "Ironvale: NWB-101 Japan rights",
+    "organization_id": "00000000-0000-4000-8000-000000000508",
+    "program_id": "00000000-0000-4000-8000-000000000501",
+    "direction": "out_license",
+    "stage": "non_confidential",
+    "stage_on": "2026-11-08",
+    "owner": "Marc",
+    "priority": "medium",
+    "fit": 4,
+    "fit_rationale": "Fictional rationale: partner has an active fibrosis or oncology franchise and the territory we offer",
+    "source": "conference",
+    "tags": "{\"Conference\": [\"BIO-Europe 2026\"], \"Channel\": [\"Conference\"], \"Asset group\": [\"Fibrosis\"], \"Region\": [\"Asia-Pacific\"]}",
+    "contact_ids": "00000000-0000-4000-8000-000000000523,00000000-0000-4000-8000-000000000524",
+    "next_step": "Meet at BIO-Europe",
+    "next_date": "2026-11-17"
+   }
+  },
+  {
+   "role": "partnerships.opportunities",
+   "id": "00000000-0000-4000-8000-000000000555",
+   "version": 0,
+   "data": {
+    "name": "Pinehollow: NWB-101 Korea licence",
+    "organization_id": "00000000-0000-4000-8000-000000000514",
+    "program_id": "00000000-0000-4000-8000-000000000501",
+    "direction": "out_license",
+    "stage": "contacted",
+    "stage_on": "2026-11-04",
+    "owner": "Marc",
+    "priority": "medium",
+    "fit": 3,
+    "fit_rationale": "Fictional rationale: partner has an active fibrosis or oncology franchise and the territory we offer",
+    "source": "conference",
+    "tags": "{\"Conference\": [\"BIO-Europe 2026\"], \"Channel\": [\"Conference\"], \"Asset group\": [\"Fibrosis\"], \"Region\": [\"Asia-Pacific\"]}",
+    "contact_ids": "00000000-0000-4000-8000-000000000532,00000000-0000-4000-8000-000000000533",
+    "next_step": "Meet at BIO-Europe",
+    "next_date": "2026-11-18"
+   }
+  },
+  {
+   "role": "partnerships.opportunities",
+   "id": "00000000-0000-4000-8000-000000000556",
+   "version": 0,
+   "data": {
+    "name": "Oakvane: NWB-202 co-development",
+    "organization_id": "00000000-0000-4000-8000-000000000513",
+    "program_id": "00000000-0000-4000-8000-000000000502",
+    "direction": "co_development",
+    "stage": "confidential_evaluation",
+    "stage_on": "2026-10-05",
+    "owner": "Sofia",
+    "priority": "medium",
+    "fit": 4,
+    "fit_rationale": "Fictional rationale: shares development cost and brings formulation capability",
+    "source": "referral",
+    "tags": "{\"Channel\": [\"Referral\"], \"Asset group\": [\"Oncology\"], \"Region\": [\"Europe\"]}",
+    "contact_ids": "00000000-0000-4000-8000-000000000531",
+    "next_step": "Ask for evaluation feedback",
+    "next_date": "2026-11-09"
+   }
+  },
+  {
+   "role": "partnerships.opportunities",
+   "id": "00000000-0000-4000-8000-000000000557",
+   "version": 0,
+   "data": {
+    "name": "Kestrelwood: platform collaboration",
+    "organization_id": "00000000-0000-4000-8000-000000000510",
+    "program_id": "00000000-0000-4000-8000-000000000503",
+    "direction": "platform",
+    "stage": "signed",
+    "stage_on": "2026-07-07",
+    "owner": "Anna",
+    "priority": "high",
+    "fit": 5,
+    "fit_rationale": "Fictional rationale: needs lung-targeted delivery for its RNA pipeline",
+    "source": "outbound",
+    "tags": "{\"Channel\": [\"Outbound\"], \"Asset group\": [\"Platform\"], \"Region\": [\"Europe\"]}",
+    "agreement_id": "00000000-0000-4000-8000-000000000539",
+    "contact_ids": "00000000-0000-4000-8000-000000000526,00000000-0000-4000-8000-000000000527"
+   }
+  },
+  {
+   "role": "partnerships.opportunities",
+   "id": "00000000-0000-4000-8000-000000000558",
+   "version": 0,
+   "data": {
+    "name": "Hollowmere Univ: fibrosis biomarkers",
+    "organization_id": "00000000-0000-4000-8000-000000000507",
+    "program_id": "00000000-0000-4000-8000-000000000501",
+    "direction": "academic",
+    "stage": "non_confidential",
+    "stage_on": "2026-10-25",
+    "owner": "Marc",
+    "priority": "low",
+    "fit": 3,
+    "fit_rationale": "Fictional rationale: access to patient cohorts and biomarker expertise",
+    "source": "referral",
+    "tags": "{\"Channel\": [\"Referral\"], \"Asset group\": [\"Fibrosis\"], \"Region\": [\"Europe\"]}",
+    "contact_ids": "00000000-0000-4000-8000-000000000521,00000000-0000-4000-8000-000000000522",
+    "next_step": "Draft research plan",
+    "next_date": "2026-11-24"
+   }
+  },
+  {
+   "role": "partnerships.opportunities",
+   "id": "00000000-0000-4000-8000-000000000559",
+   "version": 0,
+   "data": {
+    "name": "Larchfield: delivery research collaboration",
+    "organization_id": "00000000-0000-4000-8000-000000000511",
+    "program_id": "00000000-0000-4000-8000-000000000503",
+    "direction": "research_collaboration",
+    "stage": "cda",
+    "stage_on": "2026-11-11",
+    "owner": "Anna",
+    "priority": "medium",
+    "fit": 3,
+    "fit_rationale": "Fictional rationale: brings complementary delivery science",
+    "source": "conference",
+    "tags": "{\"Conference\": [\"BIO-Europe 2026\"], \"Channel\": [\"Conference\"], \"Asset group\": [\"Platform\"], \"Region\": [\"Europe\"]}",
+    "contact_ids": "00000000-0000-4000-8000-000000000528",
+    "next_step": "Agree CDA scope",
+    "next_date": "2026-11-16"
+   }
+  },
+  {
+   "role": "partnerships.opportunities",
+   "id": "00000000-0000-4000-8000-000000000560",
+   "version": 0,
+   "data": {
+    "name": "Juniperra: in-license HER3 combination",
+    "organization_id": "00000000-0000-4000-8000-000000000509",
+    "program_id": "00000000-0000-4000-8000-000000000502",
+    "direction": "in_license",
+    "stage": "contacted",
+    "stage_on": "2026-11-06",
+    "owner": "Sofia",
+    "priority": "medium",
+    "fit": 3,
+    "fit_rationale": "Fictional rationale: complements NWB-202 in combination",
+    "source": "research",
+    "tags": "{\"Channel\": [\"Research\"], \"Asset group\": [\"Oncology\"], \"Region\": [\"North America\"], \"Conference\": [\"BIO-Europe 2026\"]}",
+    "contact_ids": "00000000-0000-4000-8000-000000000525",
+    "next_step": "Meet at BIO-Europe",
+    "next_date": "2026-11-18"
+   }
+  },
+  {
+   "role": "partnerships.opportunities",
+   "id": "00000000-0000-4000-8000-000000000561",
+   "version": 0,
+   "data": {
+    "name": "Quillmont: platform option deal",
+    "organization_id": "00000000-0000-4000-8000-000000000515",
+    "program_id": "00000000-0000-4000-8000-000000000503",
+    "direction": "platform",
+    "stage": "identified",
+    "stage_on": "2026-11-10",
+    "owner": "Anna",
+    "priority": "low",
+    "fit": 3,
+    "fit_rationale": "Fictional rationale: needs lung-targeted delivery for its RNA pipeline",
+    "source": "research",
+    "tags": "{\"Channel\": [\"Research\"], \"Asset group\": [\"Platform\"], \"Region\": [\"Europe\"], \"Conference\": [\"BIO-Europe 2026\"]}",
+    "contact_ids": "00000000-0000-4000-8000-000000000534,00000000-0000-4000-8000-000000000535"
+   }
+  },
+  {
+   "role": "partnerships.opportunities",
+   "id": "00000000-0000-4000-8000-000000000562",
+   "version": 0,
+   "data": {
+    "name": "Glenmoor: NWB-202 licence (2025)",
+    "organization_id": "00000000-0000-4000-8000-000000000506",
+    "program_id": "00000000-0000-4000-8000-000000000502",
+    "direction": "out_license",
+    "stage": "lost",
+    "stage_on": "2025-12-19",
+    "owner": "Sofia",
+    "priority": "medium",
+    "fit": 3,
+    "fit_rationale": "Fictional rationale: partner has an active fibrosis or oncology franchise and the territory we offer",
+    "source": "conference",
+    "tags": "{\"Conference\": [\"BIO-Europe Spring 2026\"], \"Channel\": [\"Conference\"], \"Asset group\": [\"Oncology\"], \"Region\": [\"Europe\"]}",
+    "lost_reason": "No strategic fit: portfolio deprioritised oncology antibodies",
+    "contact_ids": "00000000-0000-4000-8000-000000000520"
+   }
+  },
+  {
+   "role": "partnerships.opportunities",
+   "id": "00000000-0000-4000-8000-000000000563",
+   "version": 0,
+   "data": {
+    "name": "Maplecrest: NWB-202 option",
+    "organization_id": "00000000-0000-4000-8000-000000000512",
+    "program_id": "00000000-0000-4000-8000-000000000502",
+    "direction": "other",
+    "stage": "on_hold",
+    "stage_on": "2026-09-15",
+    "owner": "Sofia",
+    "priority": "low",
+    "fit": 2,
+    "fit_rationale": "Fictional rationale: option structure fits their budget cycle",
+    "source": "outbound",
+    "tags": "{\"Channel\": [\"Outbound\"], \"Asset group\": [\"Oncology\"], \"Region\": [\"North America\"]}",
+    "lost_reason": "Partner reorganising; revisit Q2 2027",
+    "contact_ids": "00000000-0000-4000-8000-000000000530"
+   }
+  },
+  {
+   "role": "partnerships.opportunities",
+   "id": "00000000-0000-4000-8000-000000000564",
+   "version": 0,
+   "data": {
+    "name": "Ironvale: platform co-development",
+    "organization_id": "00000000-0000-4000-8000-000000000508",
+    "program_id": "00000000-0000-4000-8000-000000000503",
+    "direction": "co_development",
+    "stage": "lost",
+    "stage_on": "2026-04-28",
+    "owner": "Marc",
+    "priority": "low",
+    "fit": 2,
+    "fit_rationale": "Fictional rationale: shares development cost and brings formulation capability",
+    "source": "conference",
+    "tags": "{\"Channel\": [\"Conference\"], \"Asset group\": [\"Platform\"], \"Region\": [\"Asia-Pacific\"]}",
+    "lost_reason": "Too early: needs in vivo data",
+    "contact_ids": "00000000-0000-4000-8000-000000000524"
+   }
+  },
+  {
+   "role": "partnerships.opportunities",
+   "id": "00000000-0000-4000-8000-000000000565",
+   "version": 0,
+   "data": {
+    "name": "Hollowmere Univ: NWB-PLAT academic licence",
+    "organization_id": "00000000-0000-4000-8000-000000000507",
+    "program_id": "00000000-0000-4000-8000-000000000503",
+    "direction": "academic",
+    "stage": "identified",
+    "stage_on": "2026-11-11",
+    "owner": "Anna",
+    "priority": "low",
+    "fit": 2,
+    "fit_rationale": "Fictional rationale: access to patient cohorts and biomarker expertise",
+    "source": "inbound",
+    "tags": "{\"Channel\": [\"Inbound\"], \"Asset group\": [\"Platform\"], \"Region\": [\"Europe\"]}",
+    "contact_ids": "00000000-0000-4000-8000-000000000521"
+   }
+  },
+  {
+   "role": "partnerships.opportunities",
+   "id": "00000000-0000-4000-8000-000000000566",
+   "version": 0,
+   "data": {
+    "name": "Oakvane: in-license fibrosis biomarker",
+    "organization_id": "00000000-0000-4000-8000-000000000513",
+    "program_id": "00000000-0000-4000-8000-000000000501",
+    "direction": "in_license",
+    "stage": "lost",
+    "stage_on": "2026-08-16",
+    "owner": "Marc",
+    "priority": "low",
+    "fit": 2,
+    "fit_rationale": "Fictional rationale: complements NWB-202 in combination",
+    "source": "research",
+    "tags": "{\"Channel\": [\"Research\"], \"Asset group\": [\"Fibrosis\"], \"Region\": [\"Europe\"]}",
+    "lost_reason": "Terms: upfront too high",
+    "contact_ids": "00000000-0000-4000-8000-000000000531"
+   }
+  },
+  {
+   "role": "partnerships.opportunities",
+   "id": "00000000-0000-4000-8000-000000000567",
+   "version": 0,
+   "data": {
+    "name": "Cedarline: NWB-PLAT research collaboration",
+    "organization_id": "00000000-0000-4000-8000-000000000504",
+    "program_id": "00000000-0000-4000-8000-000000000503",
+    "direction": "research_collaboration",
+    "stage": "contacted",
+    "stage_on": "2026-10-31",
+    "owner": "Anna",
+    "priority": "medium",
+    "fit": 3,
+    "fit_rationale": "Fictional rationale: brings complementary delivery science",
+    "source": "conference",
+    "tags": "{\"Channel\": [\"Conference\"], \"Asset group\": [\"Platform\"], \"Region\": [\"Europe\"], \"Conference\": [\"BIO-Europe 2026\"]}",
+    "contact_ids": "00000000-0000-4000-8000-000000000517",
+    "next_step": "Meet at BIO-Europe",
+    "next_date": "2026-11-17"
+   }
+  },
+  {
+   "role": "partnerships.opportunities",
+   "id": "00000000-0000-4000-8000-000000000568",
+   "version": 0,
+   "data": {
+    "name": "Kestrelwood: NWB-101 inhaled formulation",
+    "organization_id": "00000000-0000-4000-8000-000000000510",
+    "program_id": "00000000-0000-4000-8000-000000000501",
+    "direction": "co_development",
+    "stage": "exclusivity_diligence",
+    "stage_on": "2026-11-11",
+    "owner": "Anna",
+    "priority": "high",
+    "fit": 4,
+    "fit_rationale": "Fictional rationale: shares development cost and brings formulation capability",
+    "source": "outbound",
+    "tags": "{\"Channel\": [\"Outbound\"], \"Asset group\": [\"Fibrosis\"], \"Region\": [\"Europe\"]}",
+    "contact_ids": "00000000-0000-4000-8000-000000000526",
+    "next_step": "Close diligence questions",
+    "next_date": "2026-11-20"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000569",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000551",
+    "to_stage": "identified",
+    "changed_on": "2026-09-01",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000570",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000551",
+    "from_stage": "identified",
+    "to_stage": "contacted",
+    "changed_on": "2026-09-15",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000571",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000551",
+    "from_stage": "contacted",
+    "to_stage": "non_confidential",
+    "changed_on": "2026-09-29",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000572",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000551",
+    "from_stage": "non_confidential",
+    "to_stage": "cda",
+    "changed_on": "2026-10-13",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000573",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000551",
+    "from_stage": "cda",
+    "to_stage": "confidential_evaluation",
+    "changed_on": "2026-10-27",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000574",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000552",
+    "to_stage": "identified",
+    "changed_on": "2026-09-29",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000575",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000552",
+    "from_stage": "identified",
+    "to_stage": "contacted",
+    "changed_on": "2026-10-13",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000576",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000552",
+    "from_stage": "contacted",
+    "to_stage": "non_confidential",
+    "changed_on": "2026-10-27",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000577",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000552",
+    "from_stage": "non_confidential",
+    "to_stage": "cda",
+    "changed_on": "2026-11-10",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000578",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000553",
+    "to_stage": "identified",
+    "changed_on": "2026-08-27",
+    "changed_by": "Sofia"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000579",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000553",
+    "from_stage": "identified",
+    "to_stage": "contacted",
+    "changed_on": "2026-09-10",
+    "changed_by": "Sofia"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000580",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000553",
+    "from_stage": "contacted",
+    "to_stage": "non_confidential",
+    "changed_on": "2026-09-24",
+    "changed_by": "Sofia"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000581",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000553",
+    "from_stage": "non_confidential",
+    "to_stage": "cda",
+    "changed_on": "2026-10-08",
+    "changed_by": "Sofia"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000582",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000553",
+    "from_stage": "cda",
+    "to_stage": "confidential_evaluation",
+    "changed_on": "2026-10-22",
+    "changed_by": "Sofia"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000583",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000553",
+    "from_stage": "confidential_evaluation",
+    "to_stage": "term_sheet",
+    "changed_on": "2026-11-05",
+    "changed_by": "Sofia"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000584",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000554",
+    "to_stage": "identified",
+    "changed_on": "2026-10-11",
+    "changed_by": "Marc"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000585",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000554",
+    "from_stage": "identified",
+    "to_stage": "contacted",
+    "changed_on": "2026-10-25",
+    "changed_by": "Marc"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000586",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000554",
+    "from_stage": "contacted",
+    "to_stage": "non_confidential",
+    "changed_on": "2026-11-08",
+    "changed_by": "Marc"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000587",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000555",
+    "to_stage": "identified",
+    "changed_on": "2026-10-21",
+    "changed_by": "Marc"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000588",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000555",
+    "from_stage": "identified",
+    "to_stage": "contacted",
+    "changed_on": "2026-11-04",
+    "changed_by": "Marc"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000589",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000556",
+    "to_stage": "identified",
+    "changed_on": "2026-08-10",
+    "changed_by": "Sofia"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000590",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000556",
+    "from_stage": "identified",
+    "to_stage": "contacted",
+    "changed_on": "2026-08-24",
+    "changed_by": "Sofia"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000591",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000556",
+    "from_stage": "contacted",
+    "to_stage": "non_confidential",
+    "changed_on": "2026-09-07",
+    "changed_by": "Sofia"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000592",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000556",
+    "from_stage": "non_confidential",
+    "to_stage": "cda",
+    "changed_on": "2026-09-21",
+    "changed_by": "Sofia"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000593",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000556",
+    "from_stage": "cda",
+    "to_stage": "confidential_evaluation",
+    "changed_on": "2026-10-05",
+    "changed_by": "Sofia"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000594",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000557",
+    "to_stage": "identified",
+    "changed_on": "2026-03-31",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000595",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000557",
+    "from_stage": "identified",
+    "to_stage": "contacted",
+    "changed_on": "2026-04-14",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000596",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000557",
+    "from_stage": "contacted",
+    "to_stage": "non_confidential",
+    "changed_on": "2026-04-28",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000597",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000557",
+    "from_stage": "non_confidential",
+    "to_stage": "cda",
+    "changed_on": "2026-05-12",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000598",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000557",
+    "from_stage": "cda",
+    "to_stage": "confidential_evaluation",
+    "changed_on": "2026-05-26",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000599",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000557",
+    "from_stage": "confidential_evaluation",
+    "to_stage": "term_sheet",
+    "changed_on": "2026-06-09",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000600",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000557",
+    "from_stage": "term_sheet",
+    "to_stage": "exclusivity_diligence",
+    "changed_on": "2026-06-23",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000601",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000557",
+    "from_stage": "exclusivity_diligence",
+    "to_stage": "signed",
+    "changed_on": "2026-07-07",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000602",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000558",
+    "to_stage": "identified",
+    "changed_on": "2026-09-27",
+    "changed_by": "Marc"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000603",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000558",
+    "from_stage": "identified",
+    "to_stage": "contacted",
+    "changed_on": "2026-10-11",
+    "changed_by": "Marc"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000604",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000558",
+    "from_stage": "contacted",
+    "to_stage": "non_confidential",
+    "changed_on": "2026-10-25",
+    "changed_by": "Marc"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000605",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000559",
+    "to_stage": "identified",
+    "changed_on": "2026-09-30",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000606",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000559",
+    "from_stage": "identified",
+    "to_stage": "contacted",
+    "changed_on": "2026-10-14",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000607",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000559",
+    "from_stage": "contacted",
+    "to_stage": "non_confidential",
+    "changed_on": "2026-10-28",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000608",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000559",
+    "from_stage": "non_confidential",
+    "to_stage": "cda",
+    "changed_on": "2026-11-11",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000609",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000560",
+    "to_stage": "identified",
+    "changed_on": "2026-10-23",
+    "changed_by": "Sofia"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000610",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000560",
+    "from_stage": "identified",
+    "to_stage": "contacted",
+    "changed_on": "2026-11-06",
+    "changed_by": "Sofia"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000611",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000561",
+    "to_stage": "identified",
+    "changed_on": "2026-11-10",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000612",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000562",
+    "to_stage": "identified",
+    "changed_on": "2025-10-24",
+    "changed_by": "Sofia"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000613",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000562",
+    "from_stage": "identified",
+    "to_stage": "contacted",
+    "changed_on": "2025-11-07",
+    "changed_by": "Sofia"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000614",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000562",
+    "from_stage": "contacted",
+    "to_stage": "non_confidential",
+    "changed_on": "2025-11-21",
+    "changed_by": "Sofia"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000615",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000562",
+    "from_stage": "non_confidential",
+    "to_stage": "cda",
+    "changed_on": "2025-12-05",
+    "changed_by": "Sofia"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000616",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000562",
+    "from_stage": "cda",
+    "to_stage": "lost",
+    "changed_on": "2025-12-19",
+    "changed_by": "Sofia"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000617",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000563",
+    "to_stage": "identified",
+    "changed_on": "2026-08-04",
+    "changed_by": "Sofia"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000618",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000563",
+    "from_stage": "identified",
+    "to_stage": "contacted",
+    "changed_on": "2026-08-18",
+    "changed_by": "Sofia"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000619",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000563",
+    "from_stage": "contacted",
+    "to_stage": "non_confidential",
+    "changed_on": "2026-09-01",
+    "changed_by": "Sofia"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000620",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000563",
+    "from_stage": "non_confidential",
+    "to_stage": "on_hold",
+    "changed_on": "2026-09-15",
+    "changed_by": "Sofia"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000621",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000564",
+    "to_stage": "identified",
+    "changed_on": "2026-03-17",
+    "changed_by": "Marc"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000622",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000564",
+    "from_stage": "identified",
+    "to_stage": "contacted",
+    "changed_on": "2026-03-31",
+    "changed_by": "Marc"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000623",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000564",
+    "from_stage": "contacted",
+    "to_stage": "non_confidential",
+    "changed_on": "2026-04-14",
+    "changed_by": "Marc"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000624",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000564",
+    "from_stage": "non_confidential",
+    "to_stage": "lost",
+    "changed_on": "2026-04-28",
+    "changed_by": "Marc"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000625",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000565",
+    "to_stage": "identified",
+    "changed_on": "2026-11-11",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000626",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000566",
+    "to_stage": "identified",
+    "changed_on": "2026-06-07",
+    "changed_by": "Marc"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000627",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000566",
+    "from_stage": "identified",
+    "to_stage": "contacted",
+    "changed_on": "2026-06-21",
+    "changed_by": "Marc"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000628",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000566",
+    "from_stage": "contacted",
+    "to_stage": "non_confidential",
+    "changed_on": "2026-07-05",
+    "changed_by": "Marc"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000629",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000566",
+    "from_stage": "non_confidential",
+    "to_stage": "cda",
+    "changed_on": "2026-07-19",
+    "changed_by": "Marc"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000630",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000566",
+    "from_stage": "cda",
+    "to_stage": "confidential_evaluation",
+    "changed_on": "2026-08-02",
+    "changed_by": "Marc"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000631",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000566",
+    "from_stage": "confidential_evaluation",
+    "to_stage": "lost",
+    "changed_on": "2026-08-16",
+    "changed_by": "Marc"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000632",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000567",
+    "to_stage": "identified",
+    "changed_on": "2026-10-17",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000633",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000567",
+    "from_stage": "identified",
+    "to_stage": "contacted",
+    "changed_on": "2026-10-31",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000634",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000568",
+    "to_stage": "identified",
+    "changed_on": "2026-08-19",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000635",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000568",
+    "from_stage": "identified",
+    "to_stage": "contacted",
+    "changed_on": "2026-09-02",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000636",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000568",
+    "from_stage": "contacted",
+    "to_stage": "non_confidential",
+    "changed_on": "2026-09-16",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000637",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000568",
+    "from_stage": "non_confidential",
+    "to_stage": "cda",
+    "changed_on": "2026-09-30",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000638",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000568",
+    "from_stage": "cda",
+    "to_stage": "confidential_evaluation",
+    "changed_on": "2026-10-14",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000639",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000568",
+    "from_stage": "confidential_evaluation",
+    "to_stage": "term_sheet",
+    "changed_on": "2026-10-28",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.stage_history",
+   "id": "00000000-0000-4000-8000-000000000640",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000568",
+    "from_stage": "term_sheet",
+    "to_stage": "exclusivity_diligence",
+    "changed_on": "2026-11-11",
+    "changed_by": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.conferences",
+   "id": "00000000-0000-4000-8000-000000000641",
+   "version": 0,
+   "data": {
+    "name": "BIO-Europe 2026",
+    "starts_on": "2026-11-17",
+    "ends_on": "2026-11-19",
+    "location": "Munich",
+    "platform": "partneringone",
+    "deadlines": "[{\"label\": \"Partnering profile live\", \"date\": \"2026-10-01\"}, {\"label\": \"Meeting requests round 1\", \"date\": \"2026-10-27\"}, {\"label\": \"Meeting requests round 2\", \"date\": \"2026-11-10\"}, {\"label\": \"Meeting schedule final\", \"date\": \"2026-11-15\"}]",
+    "goals": "Five qualified NWB-101 conversations in Asia-Pacific and North America; two platform leads; book CDA for Maplecrest.",
+    "team": "Anna, Marc",
+    "status": "planning",
+    "tag_value": "BIO-Europe 2026"
+   }
+  },
+  {
+   "role": "partnerships.conferences",
+   "id": "00000000-0000-4000-8000-000000000642",
+   "version": 0,
+   "data": {
+    "name": "BIO-Europe Spring 2026",
+    "starts_on": "2026-03-23",
+    "ends_on": "2026-03-25",
+    "location": "Lisbon",
+    "platform": "partneringone",
+    "goals": "NWB-101 and NWB-202 first partner meetings.",
+    "team": "Anna, Sofia",
+    "status": "done",
+    "tag_value": "BIO-Europe Spring 2026"
+   }
+  },
+  {
+   "role": "partnerships.activities",
+   "id": "00000000-0000-4000-8000-000000000643",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000554",
+    "organization_id": "00000000-0000-4000-8000-000000000508",
+    "kind": "conference_meeting",
+    "occurred_on": "2026-11-17",
+    "person_ids": "00000000-0000-4000-8000-000000000523,00000000-0000-4000-8000-000000000524",
+    "team": "Anna, Marc",
+    "summary": "Slot 09:00 at the partnering area (fictional).",
+    "conference_id": "00000000-0000-4000-8000-000000000641",
+    "logged_by": "claude",
+    "tags": "{\"Conference\": [\"BIO-Europe 2026\"]}",
+    "status": "confirmed"
+   }
+  },
+  {
+   "role": "partnerships.activities",
+   "id": "00000000-0000-4000-8000-000000000644",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000555",
+    "organization_id": "00000000-0000-4000-8000-000000000514",
+    "kind": "conference_meeting",
+    "occurred_on": "2026-11-17",
+    "person_ids": "00000000-0000-4000-8000-000000000532",
+    "team": "Anna, Marc",
+    "summary": "Slot 11:30 at the partnering area (fictional).",
+    "conference_id": "00000000-0000-4000-8000-000000000641",
+    "logged_by": "claude",
+    "tags": "{\"Conference\": [\"BIO-Europe 2026\"]}",
+    "status": "confirmed"
+   }
+  },
+  {
+   "role": "partnerships.activities",
+   "id": "00000000-0000-4000-8000-000000000645",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000552",
+    "organization_id": "00000000-0000-4000-8000-000000000512",
+    "kind": "conference_meeting",
+    "occurred_on": "2026-11-17",
+    "person_ids": "00000000-0000-4000-8000-000000000529",
+    "team": "Anna, Marc",
+    "summary": "Slot 15:00 at the partnering area (fictional).",
+    "conference_id": "00000000-0000-4000-8000-000000000641",
+    "logged_by": "claude",
+    "tags": "{\"Conference\": [\"BIO-Europe 2026\"]}",
+    "status": "confirmed"
+   }
+  },
+  {
+   "role": "partnerships.activities",
+   "id": "00000000-0000-4000-8000-000000000646",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000560",
+    "organization_id": "00000000-0000-4000-8000-000000000509",
+    "kind": "conference_meeting",
+    "occurred_on": "2026-11-18",
+    "person_ids": "00000000-0000-4000-8000-000000000525",
+    "team": "Anna, Marc",
+    "summary": "Slot 10:00 at the partnering area (fictional).",
+    "conference_id": "00000000-0000-4000-8000-000000000641",
+    "logged_by": "claude",
+    "tags": "{\"Conference\": [\"BIO-Europe 2026\"]}",
+    "status": "confirmed"
+   }
+  },
+  {
+   "role": "partnerships.activities",
+   "id": "00000000-0000-4000-8000-000000000647",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000559",
+    "organization_id": "00000000-0000-4000-8000-000000000511",
+    "kind": "conference_meeting",
+    "occurred_on": "2026-11-18",
+    "person_ids": "00000000-0000-4000-8000-000000000528",
+    "team": "Anna, Marc",
+    "summary": "Slot 14:00 at the partnering area (fictional).",
+    "conference_id": "00000000-0000-4000-8000-000000000641",
+    "logged_by": "claude",
+    "tags": "{\"Conference\": [\"BIO-Europe 2026\"]}",
+    "status": "confirmed"
+   }
+  },
+  {
+   "role": "partnerships.activities",
+   "id": "00000000-0000-4000-8000-000000000648",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000567",
+    "organization_id": "00000000-0000-4000-8000-000000000504",
+    "kind": "conference_meeting",
+    "occurred_on": "2026-11-18",
+    "person_ids": "00000000-0000-4000-8000-000000000517",
+    "team": "Anna, Marc",
+    "summary": "Slot 16:30 at the partnering area (fictional).",
+    "conference_id": "00000000-0000-4000-8000-000000000641",
+    "logged_by": "claude",
+    "tags": "{\"Conference\": [\"BIO-Europe 2026\"]}",
+    "status": "confirmed"
+   }
+  },
+  {
+   "role": "partnerships.activities",
+   "id": "00000000-0000-4000-8000-000000000649",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000561",
+    "organization_id": "00000000-0000-4000-8000-000000000515",
+    "kind": "conference_meeting",
+    "occurred_on": "2026-11-19",
+    "person_ids": "00000000-0000-4000-8000-000000000534",
+    "team": "Anna, Marc",
+    "summary": "Slot 09:30 at the partnering area (fictional).",
+    "conference_id": "00000000-0000-4000-8000-000000000641",
+    "logged_by": "claude",
+    "tags": "{\"Conference\": [\"BIO-Europe 2026\"]}",
+    "status": "requested"
+   }
+  },
+  {
+   "role": "partnerships.activities",
+   "id": "00000000-0000-4000-8000-000000000650",
+   "version": 0,
+   "data": {
+    "organization_id": "00000000-0000-4000-8000-000000000506",
+    "kind": "conference_meeting",
+    "occurred_on": "2026-11-19",
+    "person_ids": "00000000-0000-4000-8000-000000000520",
+    "team": "Anna, Marc",
+    "summary": "Slot 11:00 at the partnering area (fictional).",
+    "conference_id": "00000000-0000-4000-8000-000000000641",
+    "logged_by": "claude",
+    "tags": "{\"Conference\": [\"BIO-Europe 2026\"]}",
+    "status": "requested"
+   }
+  },
+  {
+   "role": "partnerships.briefs",
+   "id": "00000000-0000-4000-8000-000000000651",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000554",
+    "conference_id": "00000000-0000-4000-8000-000000000641",
+    "activity_id": "00000000-0000-4000-8000-000000000643",
+    "meeting_on": "2026-11-17",
+    "content": "## Ironvale Pharma (fictional brief)\n**Their pipeline:** fictional summary of fibrosis, oncology and delivery programmes.\n**Recent deals:** none relevant in the last 12 months (fictional).\n**People:** see contacts.\n**Our history:** CDA not in place: non-confidential only.\n**What to ask:** territory interest, decision process, timing.\n**Cautions:** no deal terms in writing.",
+    "sources": "[{\"title\": \"Company pipeline page (fictional)\", \"url\": \"https://example.invalid/pipeline\"}]",
+    "written_by": "claude",
+    "written_on": "2026-11-14"
+   }
+  },
+  {
+   "role": "partnerships.briefs",
+   "id": "00000000-0000-4000-8000-000000000652",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000555",
+    "conference_id": "00000000-0000-4000-8000-000000000641",
+    "activity_id": "00000000-0000-4000-8000-000000000644",
+    "meeting_on": "2026-11-17",
+    "content": "## Pinehollow Pharma (fictional brief)\n**Their pipeline:** fictional summary of fibrosis, oncology and delivery programmes.\n**Recent deals:** none relevant in the last 12 months (fictional).\n**People:** see contacts.\n**Our history:** CDA not in place: non-confidential only.\n**What to ask:** territory interest, decision process, timing.\n**Cautions:** no deal terms in writing.",
+    "sources": "[{\"title\": \"Company pipeline page (fictional)\", \"url\": \"https://example.invalid/pipeline\"}]",
+    "written_by": "claude",
+    "written_on": "2026-11-14"
+   }
+  },
+  {
+   "role": "partnerships.briefs",
+   "id": "00000000-0000-4000-8000-000000000653",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000552",
+    "conference_id": "00000000-0000-4000-8000-000000000641",
+    "activity_id": "00000000-0000-4000-8000-000000000645",
+    "meeting_on": "2026-11-17",
+    "content": "## Maplecrest Pharma (fictional brief)\n**Their pipeline:** fictional summary of fibrosis, oncology and delivery programmes.\n**Recent deals:** none relevant in the last 12 months (fictional).\n**People:** see contacts.\n**Our history:** CDA in place.\n**What to ask:** territory interest, decision process, timing.\n**Cautions:** no deal terms in writing.",
+    "sources": "[{\"title\": \"Company pipeline page (fictional)\", \"url\": \"https://example.invalid/pipeline\"}]",
+    "written_by": "claude",
+    "written_on": "2026-11-14"
+   }
+  },
+  {
+   "role": "partnerships.briefs",
+   "id": "00000000-0000-4000-8000-000000000654",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000560",
+    "conference_id": "00000000-0000-4000-8000-000000000641",
+    "activity_id": "00000000-0000-4000-8000-000000000646",
+    "meeting_on": "2026-11-18",
+    "content": "## Juniperra Oncology (fictional brief)\n**Their pipeline:** fictional summary of fibrosis, oncology and delivery programmes.\n**Recent deals:** none relevant in the last 12 months (fictional).\n**People:** see contacts.\n**Our history:** CDA not in place: non-confidential only.\n**What to ask:** territory interest, decision process, timing.\n**Cautions:** no deal terms in writing.",
+    "sources": "[{\"title\": \"Company pipeline page (fictional)\", \"url\": \"https://example.invalid/pipeline\"}]",
+    "written_by": "claude",
+    "written_on": "2026-11-14"
+   }
+  },
+  {
+   "role": "partnerships.briefs",
+   "id": "00000000-0000-4000-8000-000000000655",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000559",
+    "conference_id": "00000000-0000-4000-8000-000000000641",
+    "activity_id": "00000000-0000-4000-8000-000000000647",
+    "meeting_on": "2026-11-18",
+    "content": "## Larchfield Institute (fictional brief)\n**Their pipeline:** fictional summary of fibrosis, oncology and delivery programmes.\n**Recent deals:** none relevant in the last 12 months (fictional).\n**People:** see contacts.\n**Our history:** CDA in place.\n**What to ask:** territory interest, decision process, timing.\n**Cautions:** no deal terms in writing.",
+    "sources": "[{\"title\": \"Company pipeline page (fictional)\", \"url\": \"https://example.invalid/pipeline\"}]",
+    "written_by": "claude",
+    "written_on": "2026-11-14"
+   }
+  },
+  {
+   "role": "partnerships.briefs",
+   "id": "00000000-0000-4000-8000-000000000656",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000567",
+    "conference_id": "00000000-0000-4000-8000-000000000641",
+    "activity_id": "00000000-0000-4000-8000-000000000648",
+    "meeting_on": "2026-11-18",
+    "content": "## Cedarline Pharma (fictional brief)\n**Their pipeline:** fictional summary of fibrosis, oncology and delivery programmes.\n**Recent deals:** none relevant in the last 12 months (fictional).\n**People:** see contacts.\n**Our history:** CDA not in place: non-confidential only.\n**What to ask:** territory interest, decision process, timing.\n**Cautions:** no deal terms in writing.",
+    "sources": "[{\"title\": \"Company pipeline page (fictional)\", \"url\": \"https://example.invalid/pipeline\"}]",
+    "written_by": "claude",
+    "written_on": "2026-11-14"
+   }
+  },
+  {
+   "role": "partnerships.activities",
+   "id": "00000000-0000-4000-8000-000000000657",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000551",
+    "organization_id": "00000000-0000-4000-8000-000000000504",
+    "kind": "meeting",
+    "occurred_on": "2026-10-15",
+    "person_ids": "00000000-0000-4000-8000-000000000516",
+    "team": "Anna",
+    "summary": "Non-confidential deck walk-through; strong interest in EU rights.",
+    "materials": "[{\"document_id\": \"00000000-0000-4000-9100-000000000533\", \"version_id\": null, \"title\": \"NWB-101 non-confidential deck\", \"version\": \"v3\"}]",
+    "logged_by": "user"
+   }
+  },
+  {
+   "role": "partnerships.activities",
+   "id": "00000000-0000-4000-8000-000000000658",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000551",
+    "organization_id": "00000000-0000-4000-8000-000000000504",
+    "kind": "material_shared",
+    "occurred_on": "2026-10-21",
+    "person_ids": "00000000-0000-4000-8000-000000000516,00000000-0000-4000-8000-000000000517",
+    "team": "Anna",
+    "summary": "Shared development plan in the data room after CDA.",
+    "materials": "[{\"document_id\": \"00000000-0000-4000-9100-000000000100\", \"version_id\": null, \"title\": \"NWB-101 development plan\", \"version\": \"v2\"}]",
+    "logged_by": "user"
+   }
+  },
+  {
+   "role": "partnerships.activities",
+   "id": "00000000-0000-4000-8000-000000000659",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000551",
+    "organization_id": "00000000-0000-4000-8000-000000000504",
+    "kind": "call",
+    "occurred_on": "2026-10-27",
+    "person_ids": "00000000-0000-4000-8000-000000000517",
+    "team": "Anna, Marc",
+    "summary": "Evaluation kick-off call; CMC questions to follow.",
+    "logged_by": "claude"
+   }
+  },
+  {
+   "role": "partnerships.activities",
+   "id": "00000000-0000-4000-8000-000000000660",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000553",
+    "organization_id": "00000000-0000-4000-8000-000000000505",
+    "kind": "meeting",
+    "occurred_on": "2026-10-25",
+    "person_ids": "00000000-0000-4000-8000-000000000518,00000000-0000-4000-8000-000000000519",
+    "team": "Sofia",
+    "summary": "Term sheet principles discussed; second turn expected.",
+    "logged_by": "claude"
+   }
+  },
+  {
+   "role": "partnerships.activities",
+   "id": "00000000-0000-4000-8000-000000000661",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000553",
+    "organization_id": "00000000-0000-4000-8000-000000000505",
+    "kind": "email",
+    "occurred_on": "2026-11-05",
+    "person_ids": "00000000-0000-4000-8000-000000000518",
+    "team": "Sofia",
+    "summary": "Received first term sheet draft (terms kept in Contracts).",
+    "logged_by": "claude"
+   }
+  },
+  {
+   "role": "partnerships.activities",
+   "id": "00000000-0000-4000-8000-000000000662",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000552",
+    "organization_id": "00000000-0000-4000-8000-000000000512",
+    "kind": "call",
+    "occurred_on": "2026-10-31",
+    "person_ids": "00000000-0000-4000-8000-000000000529",
+    "team": "Anna",
+    "summary": "Intro call; agreed to sign CDA before data.",
+    "materials": "[{\"document_id\": \"00000000-0000-4000-9100-000000000348\", \"version_id\": null, \"title\": \"NWB-101 one-pager\", \"version\": \"v4\"}]",
+    "logged_by": "claude"
+   }
+  },
+  {
+   "role": "partnerships.activities",
+   "id": "00000000-0000-4000-8000-000000000663",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000556",
+    "organization_id": "00000000-0000-4000-8000-000000000513",
+    "kind": "meeting",
+    "occurred_on": "2026-10-22",
+    "person_ids": "00000000-0000-4000-8000-000000000531",
+    "team": "Sofia",
+    "summary": "Shared confidential package; waiting on evaluation.",
+    "materials": "[{\"document_id\": \"00000000-0000-4000-9100-000000000680\", \"version_id\": null, \"title\": \"NWB-202 data summary\", \"version\": \"v1\"}]",
+    "logged_by": "user"
+   }
+  },
+  {
+   "role": "partnerships.activities",
+   "id": "00000000-0000-4000-8000-000000000664",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000557",
+    "organization_id": "00000000-0000-4000-8000-000000000510",
+    "kind": "meeting",
+    "occurred_on": "2026-06-27",
+    "person_ids": "00000000-0000-4000-8000-000000000526,00000000-0000-4000-8000-000000000527",
+    "team": "Anna",
+    "summary": "Final negotiation meeting before signature.",
+    "logged_by": "user"
+   }
+  },
+  {
+   "role": "partnerships.activities",
+   "id": "00000000-0000-4000-8000-000000000665",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000568",
+    "organization_id": "00000000-0000-4000-8000-000000000510",
+    "kind": "call",
+    "occurred_on": "2026-11-03",
+    "person_ids": "00000000-0000-4000-8000-000000000526",
+    "team": "Anna",
+    "summary": "Diligence list agreed.",
+    "logged_by": "claude"
+   }
+  },
+  {
+   "role": "partnerships.activities",
+   "id": "00000000-0000-4000-8000-000000000666",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000562",
+    "organization_id": "00000000-0000-4000-8000-000000000506",
+    "kind": "conference_meeting",
+    "occurred_on": "2026-03-23",
+    "person_ids": "00000000-0000-4000-8000-000000000520",
+    "team": "Sofia",
+    "summary": "BIO-Europe Spring 2026: declined, no strategic fit.",
+    "logged_by": "user",
+    "status": "held",
+    "conference_id": "00000000-0000-4000-8000-000000000642",
+    "tags": "{\"Conference\": [\"BIO-Europe Spring 2026\"]}"
+   }
+  },
+  {
+   "role": "partnerships.activities",
+   "id": "00000000-0000-4000-8000-000000000667",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000558",
+    "organization_id": "00000000-0000-4000-8000-000000000507",
+    "kind": "meeting",
+    "occurred_on": "2026-10-25",
+    "person_ids": "00000000-0000-4000-8000-000000000522",
+    "team": "Marc",
+    "summary": "Biomarker cohort discussion.",
+    "logged_by": "claude"
+   }
+  },
+  {
+   "role": "partnerships.activities",
+   "id": "00000000-0000-4000-8000-000000000668",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000559",
+    "organization_id": "00000000-0000-4000-8000-000000000511",
+    "kind": "email",
+    "occurred_on": "2026-10-30",
+    "person_ids": "00000000-0000-4000-8000-000000000528",
+    "team": "Anna",
+    "summary": "Sent CDA template request.",
+    "logged_by": "claude"
+   }
+  },
+  {
+   "role": "partnerships.activities",
+   "id": "00000000-0000-4000-8000-000000000669",
+   "version": 0,
+   "data": {
+    "organization_id": "00000000-0000-4000-8000-000000000515",
+    "kind": "note",
+    "occurred_on": "2026-11-10",
+    "team": "Anna",
+    "summary": "Research suggested Quillmont as a platform target.",
+    "logged_by": "claude"
+   }
+  },
+  {
+   "role": "partnerships.follow_ups",
+   "id": "00000000-0000-4000-8000-000000000670",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000551",
+    "title": "Send CMC summary to Cedarline",
+    "owner": "Anna",
+    "due": "2026-11-16",
+    "status": "open"
+   }
+  },
+  {
+   "role": "partnerships.follow_ups",
+   "id": "00000000-0000-4000-8000-000000000671",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000552",
+    "title": "Chase Maplecrest CDA signature",
+    "owner": "Anna",
+    "due": "2026-11-12",
+    "status": "open"
+   }
+  },
+  {
+   "role": "partnerships.follow_ups",
+   "id": "00000000-0000-4000-8000-000000000672",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000553",
+    "title": "Return term sheet comments",
+    "owner": "Sofia",
+    "due": "2026-11-19",
+    "status": "open"
+   }
+  },
+  {
+   "role": "partnerships.follow_ups",
+   "id": "00000000-0000-4000-8000-000000000673",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000556",
+    "title": "Ask Oakvane for evaluation feedback",
+    "owner": "Sofia",
+    "due": "2026-11-09",
+    "status": "open"
+   }
+  },
+  {
+   "role": "partnerships.follow_ups",
+   "id": "00000000-0000-4000-8000-000000000674",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000558",
+    "title": "Draft research plan for Hollowmere",
+    "owner": "Marc",
+    "due": "2026-11-24",
+    "status": "open"
+   }
+  },
+  {
+   "role": "partnerships.follow_ups",
+   "id": "00000000-0000-4000-8000-000000000675",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000568",
+    "title": "Answer diligence questions",
+    "owner": "Anna",
+    "due": "2026-11-20",
+    "status": "open"
+   }
+  },
+  {
+   "role": "partnerships.follow_ups",
+   "id": "00000000-0000-4000-8000-000000000676",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000551",
+    "title": "Book evaluation call",
+    "owner": "Anna",
+    "due": "2026-10-26",
+    "status": "done",
+    "done_on": "2026-10-27"
+   }
+  },
+  {
+   "role": "partnerships.follow_ups",
+   "id": "00000000-0000-4000-8000-000000000677",
+   "version": 0,
+   "data": {
+    "opportunity_id": "00000000-0000-4000-8000-000000000559",
+    "title": "Send CDA template to Larchfield",
+    "owner": "Anna",
+    "due": "2026-10-31",
+    "status": "done",
+    "done_on": "2026-10-30"
+   }
+  },
+  {
+   "role": "partnerships.asset_profiles",
+   "id": "00000000-0000-4000-8000-000000000678",
+   "version": 0,
+   "data": {
+    "program_id": "00000000-0000-4000-8000-000000000501",
+    "directions": "[\"out_license\", \"co_development\"]",
+    "deal_types": "[\"license\", \"co_development\"]",
+    "territories": "Ex-US first; Japan and Korea separately",
+    "target_profile": "Mid-size pharma with a respiratory franchise and Phase 2 capability",
+    "materials": "[{\"document_id\": \"00000000-0000-4000-9100-000000000001\", \"version_id\": \"00000000-0000-4000-9200-000000000013\", \"title\": \"NWB-101 non-confidential deck\", \"version\": 3}]",
+    "research_focus": "Respiratory and fibrosis deals, licensing appetite in Asia-Pacific",
+    "research_exclusions": "Generic manufacturers",
+    "status": "active"
+   }
+  },
+  {
+   "role": "partnerships.asset_profiles",
+   "id": "00000000-0000-4000-8000-000000000679",
+   "version": 0,
+   "data": {
+    "program_id": "00000000-0000-4000-8000-000000000502",
+    "directions": "[\"out_license\", \"co_development\", \"in_license\"]",
+    "deal_types": "[\"license\", \"option\", \"co_development\"]",
+    "territories": "Global",
+    "target_profile": "Oncology players with HER3 or ADC interest",
+    "research_focus": "HER3 deals, ADC combinations",
+    "status": "active"
+   }
+  },
+  {
+   "role": "partnerships.asset_profiles",
+   "id": "00000000-0000-4000-8000-000000000680",
+   "version": 0,
+   "data": {
+    "program_id": "00000000-0000-4000-8000-000000000503",
+    "directions": "[\"platform\", \"research_collaboration\", \"academic\"]",
+    "deal_types": "[\"platform\", \"research_collaboration\"]",
+    "territories": "Field-limited",
+    "target_profile": "RNA companies needing lung delivery",
+    "research_focus": "RNA medicine pipelines in lung disease",
+    "status": "active"
+   }
+  },
+  {
+   "role": "partnerships.signals",
+   "id": "00000000-0000-4000-8000-000000000681",
+   "version": 0,
+   "data": {
+    "organization_id": "00000000-0000-4000-8000-000000000512",
+    "opportunity_id": "00000000-0000-4000-8000-000000000552",
+    "program_id": "00000000-0000-4000-8000-000000000501",
+    "kind": "deal",
+    "title": "Maplecrest Pharma licensed a fibrosis asset from a fictional biotech",
+    "why": "Shows active in-licensing in fibrosis; overlaps NWB-101 territory ask.",
+    "source_url": "https://news.example.invalid/sg1",
+    "published_on": "2026-11-11",
+    "found_on": "2026-11-12",
+    "status": "new",
+    "run_id": "00000000-0000-4000-8000-000000000901"
+   }
+  },
+  {
+   "role": "partnerships.signals",
+   "id": "00000000-0000-4000-8000-000000000682",
+   "version": 0,
+   "data": {
+    "organization_id": "00000000-0000-4000-8000-000000000508",
+    "opportunity_id": "00000000-0000-4000-8000-000000000554",
+    "program_id": "00000000-0000-4000-8000-000000000501",
+    "kind": "pipeline",
+    "title": "Ironvale Pharma dropped an internal IPF programme",
+    "why": "Creates a gap NWB-101 could fill; raise at BIO-Europe.",
+    "source_url": "https://news.example.invalid/sg2",
+    "published_on": "2026-11-08",
+    "found_on": "2026-11-09",
+    "status": "new",
+    "run_id": "00000000-0000-4000-8000-000000000901"
+   }
+  },
+  {
+   "role": "partnerships.signals",
+   "id": "00000000-0000-4000-8000-000000000683",
+   "version": 0,
+   "data": {
+    "organization_id": "00000000-0000-4000-8000-000000000505",
+    "opportunity_id": "00000000-0000-4000-8000-000000000553",
+    "program_id": "00000000-0000-4000-8000-000000000502",
+    "kind": "financing",
+    "title": "Fernbrook Therapeutics raised a fictional Series C",
+    "why": "Funds the NWB-202 licence; supports the term-sheet timeline.",
+    "source_url": "https://news.example.invalid/sg3",
+    "published_on": "2026-11-07",
+    "found_on": "2026-11-08",
+    "status": "new",
+    "run_id": "00000000-0000-4000-8000-000000000901"
+   }
+  },
+  {
+   "role": "partnerships.signals",
+   "id": "00000000-0000-4000-8000-000000000684",
+   "version": 0,
+   "data": {
+    "organization_id": "00000000-0000-4000-8000-000000000513",
+    "opportunity_id": "00000000-0000-4000-8000-000000000556",
+    "program_id": "00000000-0000-4000-8000-000000000502",
+    "kind": "people",
+    "title": "Oakvane Therapeutics appointed a new CSO",
+    "why": "Evaluation may be delayed; ask who decides now.",
+    "source_url": "https://news.example.invalid/sg4",
+    "published_on": "2026-11-04",
+    "found_on": "2026-10-31",
+    "status": "reviewed",
+    "run_id": "00000000-0000-4000-8000-000000000900"
+   }
+  },
+  {
+   "role": "partnerships.signals",
+   "id": "00000000-0000-4000-8000-000000000685",
+   "version": 0,
+   "data": {
+    "organization_id": "00000000-0000-4000-8000-000000000504",
+    "opportunity_id": "00000000-0000-4000-8000-000000000551",
+    "program_id": "00000000-0000-4000-8000-000000000501",
+    "kind": "trial",
+    "title": "Cedarline Pharma started a fictional Phase 2 in lung disease",
+    "why": "Confirms the respiratory focus; useful in the evaluation.",
+    "source_url": "https://news.example.invalid/sg5",
+    "published_on": "2026-11-10",
+    "found_on": "2026-11-11",
+    "status": "new",
+    "run_id": "00000000-0000-4000-8000-000000000901"
+   }
+  },
+  {
+   "role": "partnerships.signals",
+   "id": "00000000-0000-4000-8000-000000000686",
+   "version": 0,
+   "data": {
+    "organization_id": "00000000-0000-4000-8000-000000000506",
+    "program_id": "00000000-0000-4000-8000-000000000501",
+    "kind": "target_suggestion",
+    "title": "Glenmoor Biologics",
+    "why": "Building a respiratory franchise; fictional press release names IPF as a priority.",
+    "source_url": "https://news.example.invalid/sg6",
+    "published_on": "2026-11-10",
+    "found_on": "2026-11-09",
+    "status": "new",
+    "run_id": "00000000-0000-4000-8000-000000000901"
+   }
+  },
+  {
+   "role": "partnerships.signals",
+   "id": "00000000-0000-4000-8000-000000000687",
+   "version": 0,
+   "data": {
+    "organization_id": "00000000-0000-4000-8000-000000000515",
+    "program_id": "00000000-0000-4000-8000-000000000501",
+    "kind": "target_suggestion",
+    "title": "Quillmont Bio",
+    "why": "Inhaled formulation know-how complements NWB-101.",
+    "source_url": "https://news.example.invalid/sg7",
+    "published_on": "2026-11-10",
+    "found_on": "2026-11-09",
+    "status": "new",
+    "run_id": "00000000-0000-4000-8000-000000000901"
+   }
+  },
+  {
+   "role": "partnerships.signals",
+   "id": "00000000-0000-4000-8000-000000000688",
+   "version": 0,
+   "data": {
+    "program_id": "00000000-0000-4000-8000-000000000502",
+    "kind": "target_suggestion",
+    "title": "Rivermint Oncology (fictional)",
+    "why": "HER3 combination interest stated in a fictional pipeline update.",
+    "source_url": "https://news.example.invalid/sg8",
+    "published_on": "2026-11-10",
+    "found_on": "2026-11-09",
+    "status": "new",
+    "run_id": "00000000-0000-4000-8000-000000000901"
+   }
+  },
+  {
+   "role": "partnerships.views",
+   "id": "00000000-0000-4000-8000-000000000689",
+   "version": 0,
+   "data": {
+    "name": "BIO-Europe 2026",
+    "filters": "{\"tags\": {\"Conference\": [\"BIO-Europe 2026\"]}}",
+    "layout": "list",
+    "shared": true,
+    "owner": "Anna"
+   }
+  },
+  {
+   "role": "partnerships.views",
+   "id": "00000000-0000-4000-8000-000000000690",
+   "version": 0,
+   "data": {
+    "name": "NWB-101 – out-licensing",
+    "filters": "{\"program\": [\"00000000-0000-4000-8000-000000000501\"], \"direction\": [\"out_license\"]}",
+    "layout": "board",
+    "shared": true,
+    "owner": "Marc"
+   }
+  },
+  {
+   "role": "partnerships.views",
+   "id": "00000000-0000-4000-8000-000000000691",
+   "version": 0,
+   "data": {
+    "name": "Anna – my CDAs",
+    "filters": "{\"stage\": [\"cda\"], \"owner\": [\"Anna\"]}",
+    "layout": "list",
+    "shared": false,
+    "owner": "Anna"
+   }
+  }
+ ],
+ "documents": [
+  {
+   "documentId": "00000000-0000-4000-9100-000000000001",
+   "versionId": "00000000-0000-4000-9200-000000000013",
+   "version": 3,
+   "latest": true,
+   "filename": "NWB-101 non-confidential deck.pdf",
+   "aiReadable": true,
+   "uploadedOn": "2026-10-01"
+  },
+  {
+   "documentId": "00000000-0000-4000-9100-000000000002",
+   "versionId": "00000000-0000-4000-9200-000000000021",
+   "version": 1,
+   "latest": true,
+   "filename": "NWB-101 CMC summary.pdf",
+   "aiReadable": false,
+   "uploadedOn": "2026-11-10"
+  },
+  {
+   "documentId": "00000000-0000-4000-9100-000000000003",
+   "versionId": "00000000-0000-4000-9200-000000000032",
+   "version": 2,
+   "latest": true,
+   "filename": "NWB-202 one-pager.pdf",
+   "aiReadable": true,
+   "uploadedOn": "2026-09-15"
+  },
+  {
+   "documentId": "00000000-0000-4000-9100-000000000004",
+   "versionId": "00000000-0000-4000-9200-000000000041",
+   "version": 1,
+   "latest": true,
+   "filename": "NWB-PLAT platform overview.pdf",
+   "aiReadable": true,
+   "uploadedOn": "2026-08-20"
+  }
+ ]
 }

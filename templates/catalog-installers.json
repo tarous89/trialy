@@ -11,7 +11,7 @@
   "life.co-site-feasibility@1.1.1": "templates/source/co-site-feasibility/schema.example.json",
   "life.experiment-notebook@1.2.2": "templates/source/experiment-notebook/schema_mapping.example.json",
   "life.sponsor-rfp-management@1.0.1": "templates/source/sponsor-rfp-management/schema_mapping.example.json",
-  "life.partnership-tracker@1.1.1": "templates/source/partnership-tracker/schema_mapping.example.json",
+  "life.partnership-tracker@1.1.1": "templates/source/partnership-tracker/archive/1.1.1/schema_mapping.example.json",
   "life.client-signals-crm@1.0.1": "templates/source/client-signals-crm/schema_mapping.example.json",
   "life.trial-regulatory-submission@1.0.1": "templates/source/trial-regulatory-submission/schema_mapping.example.json",
   "life.literature-radar@1.2.2": "templates/source/literature-radar/schema_mapping.example.json",
@@ -28,5 +28,6 @@
   "life.co-trial-monitoring-pv@1.1.1": "templates/source/co06-trial-monitoring-pv/schema.example.json",
   "life.contracts@1.0.0": "templates/source/contracts/schema.example.json",
   "life.cro-selection@2.0.0": "templates/source/cro-selection/schema.example.json",
-  "life.data-room@1.0.0": "templates/source/data-room/schema.example.json"
+  "life.data-room@1.0.0": "templates/source/data-room/schema.example.json",
+  "life.partnership-tracker@2.0.0": "templates/source/partnership-tracker/schema.example.json"
 }
