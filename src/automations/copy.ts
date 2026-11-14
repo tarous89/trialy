@@ -19,12 +19,12 @@ export async function appAutomationCopies(tx:Connection,a:Actor,w:string,appId:s
  return {research,actions};
 }
 
-export async function copyAppAutomations(tx:Connection,a:Actor,w:string,appId:string,snapshot:Awaited<ReturnType<typeof appAutomationCopies>>){
+export async function copyAppAutomations(tx:Connection,a:Actor,w:string,appId:string,snapshot:Awaited<ReturnType<typeof appAutomationCopies>>,execution:{name:string;revisionId:string}[]=[]) {
  const policy=await access(tx,a,w,true);
  const ids=new Map([...snapshot.research,...snapshot.actions].map(row=>[row.id,randomUUID()]));
  const linkedId=(old:string)=>{const id=ids.get(old);if(!id)fail(409,'automation_copy_link','An automation references a definition outside this app. Review the source automation before copying it.');return id;};
  for(const row of snapshot.research){
-  const config=monitoringConfig.parse({...row.config,appId});
+  const config=monitoringConfig.parse({...row.config,appId});if(config.brief){const b=execution.find(b=>b.name===config.brief!.binding);if(b)config.brief={binding:b.name,revisionId:b.revisionId};}
   // Result grants belong to the original automation; copying never copies authority.
   if(config.storeResults){config.writeScopes=[];delete config.writeBindings;}
   if(config.automation?.completionActionId){config.automation.completionActionId=linkedId(config.automation.completionActionId);config.automation.completionActionVersion=0;}
@@ -35,7 +35,7 @@ export async function copyAppAutomations(tx:Connection,a:Actor,w:string,appId:st
   await audit(tx,a,policy,'monitoring.copied',id,null,{...config,version:0,enabled:false,copiedFrom:{id:row.id,version:row.version}});
  }
  for(const row of snapshot.actions){
-  const config=actionConfig.parse({...row.config,appId,appVersion:0});
+  const config=actionConfig.parse({...row.config,appId,appVersion:0});for(const s of config.steps)if(s.kind==='email'&&s.summary){const b=execution.find(b=>b.name===s.summary!.binding);if(b)s.summary={binding:b.name,revisionId:b.revisionId};}
   if(config.trigger.kind==='database'&&config.trigger.source==='automation_runs'){config.trigger.automationId=linkedId(config.trigger.automationId!);config.trigger.automationVersion=0;}
   await tx.query(`INSERT INTO app_actions(id,workspace_id,user_id,app_id,config,scope_stamp,paused,next_at,approved_by,event_cursor,assistant,follow_up_of)
    VALUES($1,$2,$3,$4,$5,$6,true,$7,$3,(SELECT coalesce(max(event_sequence),0) FROM audit_events WHERE workspace_id=$2),$8,$9)`,[ids.get(row.id),w,a.userId,appId,JSON.stringify(config),row.scope_stamp,nextAction(config),row.assistant,row.follow_up_of?linkedId(row.follow_up_of):null]);

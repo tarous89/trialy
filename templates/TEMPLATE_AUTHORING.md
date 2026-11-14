@@ -1,6 +1,25 @@
 # TrialAgents template authoring standard
 
-Version: 1.3.29
+Version: 1.3.30
+
+## Installed app functions (E7, 1.3.30)
+
+Catalog entries and custom app manifests may declare up to 10 `functions`. Each declares `name` (`^[a-z][a-z0-9_]{0,63}$`, unique), `purpose` (1–200 characters), `source` (JavaScript function body, at most 90,000 characters), `inputContract`, `outputContract` and `scope`. All code counts within the catalog file’s existing 300,000-byte budget. Contracts use the existing foundation format `{type, required}`: `type` is `object`, `array`, `string`, `number`, `boolean`, `null` or `any`; `required` lists required object keys. Arbitrary JSON Schema keywords are not supported. Brief/summary output is also checked by its consumer.
+
+`scope` declares `capabilities`, `roles` and `documents:false`. Allowed capabilities are `tables.list`, `entities.read`, `entities.search`, `entities.facts`, `records.read`, `records.aggregate` and `views.list`. Role keys resolve against installer roles or the custom manifest’s `automationRoles`/bound `roles`. Never hard-code installation table IDs. The runtime injects a frozen `appRoles` map; for example:
+
+```js
+const rows = tools.call('records.read', {typeId: appRoles['radar.events'], limit: 100});
+return {context: JSON.stringify(rows)};
+```
+
+Use synchronous `tools.call`, no imports, network, documents or proposals. A brief returns `{context}` within 64,000 characters. An email summary returns `{nonEmpty, text, subject?}`; `nonEmpty:false` suppresses delivery. Paginate reads within runtime limits. Choose what to include in app code, not assistant fallback prose. A function’s table scope must fit the recipe’s read bindings; `fields:"all"` follows current app fields, subject to current access. A brief cannot read excluded fields through a broader helper scope.
+
+Every catalog recipe’s `briefBinding`/`summaryBinding` must name a declared function. Custom apps may instead name an existing reviewed execution binding. Build and catalog approval reject unsafe declarations, duplicates, unknown roles and missing bindings. Runtime discovery isolates corrupt optional declarations; an unavailable optional role or helper leaves the app usable and dependent automation at Needs setup.
+
+One Add app approval includes the displayed helper purposes. The transaction creates immutable revisions and pins their execution bindings without grants. A persistence failure rolls back the installation; runner readiness and automation setup remain outside that core transaction. Disabling an assistant does not prevent saving inert app code. Current Access controls still apply when it runs. Assistants cannot confirm Add app.
+
+Layout and app revisions retain helper declarations and execution bindings. When editing the full manifest, retain both unless deliberately removing them. Omitting `execution` on an app revision preserves its installed read-only helpers. To remove a binding, send an explicit revised execution list; dependent automations retire. Copies retain only these read-only app helpers, create fresh revisions and remap copied brief/summary references; copied automations remain disabled and do not inherit result-write grants. Source restore retains safe helper revisions only. Reinstallation creates fresh revisions, and later catalog versions never replace installed code. Existing generic write functions/connectors retain their established reviewed action and grant paths; E7 does not install write helpers.
 
 ## App permissions, result storage and helper roles (1.3.29)
 
@@ -8,7 +27,7 @@ App-level access is the outer permission boundary for app work. The owner contro
 
 Research and drafting automations must store their results in the app database. The same install/setup approval includes the required scoped create/update grants; do not add a separate write opt-in or activate proposal-only research as a substitute. Missing writable storage leaves the automation at Needs setup while the app remains usable. Save through the active run's approved scopes and verify receipts before reporting completion. Existing legacy monitors and explicit read-only test runs retain their supported behavior.
 
-`research.briefBinding` and `email.summaryBinding` are specifically read-only interfaces: they prepare context and format saved results. Even in a writable app they cannot mutate records, read documents or attach a grant. A helper that changes records belongs in an explicitly approved write action using existing APIs, not inside brief preparation or email formatting. Catalog installation of declared functions (E7) is still proposed; do not advertise a catalog `functions` field until it ships. This restriction does not remove existing write-capable function or connector features.
+`research.briefBinding` and `email.summaryBinding` are specifically read-only interfaces: they prepare context and format saved results. Even in a writable app they cannot mutate records, read documents or attach a grant. A helper that changes records belongs in an explicitly approved write action using existing APIs, not inside brief preparation or email formatting. Catalog templates and custom manifests can declare read-only app functions under E7 (below). This restriction does not remove existing write-capable function or connector features.
 
 ## Research + email in one automation, and run-time fields (1.3.28)
 
@@ -180,13 +199,13 @@ Compose independent automations from typed triggers and operations; these exampl
 - **No automation:** a static checklist or calculator opens and works with app-level access, no runner, connector or database if not needed. Never add a token recurring task just to satisfy an example.
 - **Research:** save the app, reuse the owner/workspace runner, prepare one app-linked monitor with an explicit daily/weekly/monthly, one-time, after-success, record-date or database-change trigger supported by its schema. Define authoritative sources, inclusion/exclusion, evidence dates/links, deduplication, authorized destination and completion conditions. A schedule's due time is not a promised completion time.
 - **Standalone email:** prepare one separately approved email action on a daily-or-slower calendar schedule, on entry creation, or on an explicit database field transition. The backend dispatches it without a ChatGPT send decision. Select the owner by default and add only explicitly approved registered team members with current app/data access. An address stored in a record is not recipient permission.
-- **Research plus email:** save the research monitor, then a separately approved action with `trigger.kind:"database"`, `source:"automation_runs"`, the saved producer ID/version, and status becoming completed (see the shared automation guide for the exact schema). The platform emits this committed run transition after research saves; company row updates are not batch completion. A report with no new findings may still be `completed`; `no_update` permits silence only when the reviewed notification policy allows it. Do not give email a second independent schedule, rerun successful research after delivery failure, or send through ChatGPT email tools.
+- **Research plus email:** declare both steps in one recipe (E5) and approve them together. The platform creates a follow-up action with `trigger.kind:"database"`, `source:"automation_runs"`, the saved producer ID/version, and status becoming completed (see the shared automation guide for the exact schema). The platform emits this committed run transition after research saves; company row updates are not batch completion. A report with no new findings may still be `completed`; `no_update` permits silence only when the reviewed notification policy allows it. Do not give email a second independent schedule, rerun successful research after delivery failure, or send through ChatGPT email tools.
 
 Use these examples when they fit the requested app:
 
 | User intent | Template authoring expectation |
 | --- | --- |
-| New lead signals, email at most daily | Schedule ChatGPT research daily, save authorized findings with stable signal identities, and use `no_update` when the approved policy permits silence. Create a separately approved database-triggered email on that research run becoming completed. Do not give that email an independent schedule. |
+| New lead signals, email at most daily | Schedule ChatGPT research daily, save authorized findings with stable signal identities, and use `no_update` when the approved policy permits silence. Declare the email step in the same research recipe, or a distinct `after` recipe for a separate alert, consuming that research run becoming completed. Do not give that email an independent schedule. |
 | An existing app update every two days | Use one email action with a calendar schedule every two days and fixed approved recipients. Email templates do not implicitly scan a table or perform research; add separately approved processing if current analysis is needed. |
 | A new entry needs processing, then another person must review it | Trigger ChatGPT processing from the entry and save its authorized result plus an explicit status transition such as `review_status: pending → ready`. Configure the separate email rule to fire on that transition. Processing can run multiple times daily; delivery limits apply independently. Do not also attach a completion email for the same handoff. |
 | No ongoing work is needed | Save a fully usable app with no automation. Do not invent a schedule or recipient list to satisfy the template. |

@@ -46,7 +46,7 @@ export async function runFoundation(db:Database){
   if(r.attempts>=2){await tx.query("UPDATE foundation_runs SET status='failed',diagnostic='attempt_limit',finished_at=now() WHERE id=$1",[r.id]);return null;}
   await tx.query("UPDATE foundation_runs SET status='running',attempts=attempts+1,lease_token=$2,lease_until=now()+interval '30 seconds' WHERE id=$1",[r.id,token]);return r;
  });if(!row)return false;
- const actor:Actor={userId:row.user_id,origin:'ai',assistant:row.assistant},controller=new AbortController();let checking=false;
+ const actor:Actor={userId:row.user_id,origin:'ai',assistant:row.assistant,...(row.program?.scope?.appId?{accessToolId:row.program.scope.appId}:{})},controller=new AbortController();let checking=false;
  const poll=setInterval(()=>{if(checking)return;checking=true;void db.query('SELECT status,lease_token,cancel_requested FROM foundation_runs WHERE id=$1',[row.id]).then(({rows})=>{const r=rows[0];if(!r||r.status!=='running'||r.lease_token!==token||r.cancel_requested)controller.abort();}).catch(()=>controller.abort()).finally(()=>{checking=false;});},250);
  try{
   await authorizeAppFunction(db,row.id);const program=programSchema.parse(row.program);await f.checkComponent(actor,row.workspace_id,row.component_context,row.revision_id,row.grant_id);await f.validateScope(actor,row.workspace_id,program.scope);const before=await f.stamps(actor,row.workspace_id);

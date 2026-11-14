@@ -33,3 +33,5 @@
 .ty-workspace .ty-recipe-review{display:block}.ty-workspace .ty-recipe-review details{margin:16px 0}
 
 .ty-workspace .ty-app-automation-feature>label{display:flex;flex-direction:column;gap:6px;margin:8px 0;min-width:0}.ty-workspace .ty-app-automation-feature>label select{width:100%}
+
+.ty-app-functions{margin:16px 0;min-width:0;overflow-wrap:anywhere;font-size:13px;line-height:1.5}.ty-app-functions summary{cursor:pointer}.ty-app-functions ul{padding-left:20px}.ty-app-functions p{font-size:inherit}

@@ -1,3 +1,5 @@
+import {materializeAppFunctions,safeAppHelpers,appHelpersOnly,retainHelperManifest} from './app-functions.js';
+import {validateAppFunctions,declaredFunctionRoles,readAppFunctions} from './app-functions-schema.js';
 import {cleanupRemovedAppFields} from './app-cleanup.js';
 import {bindingRestores,restoreBoundSchema,typeAccessIncludingArchived} from '../domain/archive.js';
 import {appRevisionReview} from './app-review.js';
@@ -596,7 +598,8 @@ export class WorkspaceFoundation {
   if(source.format==='trialy-ui')fail(400,'legacy_format','Create frontend-js code instead of copying the legacy renderer');
   if(op.projectId){const project=(await this.activeNode(tx,a,w,op.projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');}else if(source.manifest?.scope==='project')fail(400,'project_required','Keep a project-scoped app in a project');
   const keep=await this.moveRestrictions(tx,a,w,source.project_id,source);
-  return {name:op.name,format:source.format,source:source.source,resource_kind:source.resource_kind,manifest:source.manifest,bindings:source.bindings,assets:source.assets??[],source_access:source.source_access,execution:[],allowed_users:[a.userId],ai_enabled:keep.ai,archived:false,copiedFrom:{componentId:source.id,version:source.version},...(op.copyAutomations?{automations:await appAutomationCopies(tx,a,w,source.id)}:{})};
+  const helpers=await safeAppHelpers(adapter(tx),a,w,source),manifest=source.manifest?.functions?{...source.manifest,functions:readAppFunctions(source.manifest).functions.filter(d=>helpers.some(b=>b.name===d.name))}:source.manifest;
+  return {name:op.name,format:source.format,source:source.source,resource_kind:source.resource_kind,manifest,bindings:source.bindings,assets:source.assets??[],source_access:source.source_access,execution:helpers,allowed_users:[a.userId],ai_enabled:keep.ai,archived:false,copiedFrom:{componentId:source.id,version:source.version},...(op.copyAutomations?{automations:await appAutomationCopies(tx,a,w,source.id)}:{})};
  }
  async projectRelationships(a:Actor,w:string,projectId:string,offset=0,typeIds?:string[]){
   await this.nodeAccess(this.db,a,w,projectId);
@@ -709,16 +712,17 @@ export class WorkspaceFoundation {
    const source=await this.component(tx,a,w,op.reuseOrigin.componentId);
    if(source.archived||source.project_archived)fail(404,'not_found','Source app unavailable');
    if(source.version!==op.reuseOrigin.version)fail(409,'stale_version','Source app changed; prepare a new preview');
-   if(op.componentId||op.content.execution.length||op.content.assets.length)fail(400,'reuse_scope','Reuse creates a new app without file or execution grants');
+   if(op.componentId||op.content.execution?.length||op.content.assets.length)fail(400,'reuse_scope','Reuse creates a new app without file or execution grants');
    if(op.reuseOrigin.mode==='separate_data'&&op.content.bindings.some(b=>source.bindings.some((old:any)=>old.typeId===b.typeId)))fail(400,'reuse_data','Separate data must not bind the original tables');
   }
   if(op.kind==='create_automation_template'){const built=await trackerOperation(new WorkspaceFoundation(adapter(tx)),a,w,op.setup);automationTemplate(op.setup,op.report,built.content);}
   if(op.kind==='create_tracker'){
    await this.componentSourcePolicy(tx,a,w);
-   if(op.componentId){const previous=await this.component(tx,a,w,op.componentId);if(previous.version!==op.expectedVersion)fail(409,'stale_version','App changed; reload its configuration');if(!standardTracker(previous.source))fail(400,'custom_tool','Custom apps require a custom source review');if(previous.project_id!==op.setup.projectId||previous.resource_kind!==op.setup.resourceKind||previous.execution?.length)fail(400,'revision_scope','Keep the project, app kind, and custom execution bindings unchanged');}
+   if(op.componentId){const previous=await this.component(tx,a,w,op.componentId);if(previous.version!==op.expectedVersion)fail(409,'stale_version','App changed; reload its configuration');if(!standardTracker(previous.source))fail(400,'custom_tool','Custom apps require a custom source review');if(previous.project_id!==op.setup.projectId||previous.resource_kind!==op.setup.resourceKind||!await appHelpersOnly(adapter(tx),a,w,previous))fail(400,'revision_scope','Keep the project, app kind, and custom execution bindings unchanged');}
    if(op.setup.projectId){const project=(await this.activeNode(tx,a,w,op.setup.projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');}
    validateSectionRevision(await access(tx,a,w),op.componentId?await this.component(tx,a,w,op.componentId):null,op.content);
    const generated=await trackerOperation(new WorkspaceFoundation(adapter(tx)),a,w,op.setup);
+   if(op.content.manifest?.functions!==undefined){validateAppFunctions(op.content.manifest,declaredFunctionRoles(op.content.manifest),[],!op.catalogOrigin);generated.content.manifest=retainHelperManifest(op.content.manifest,generated.content.manifest);}
    const parsed=workspaceOperation.parse(generated),expected=workspaceOperation.parse(op);if(parsed.kind!=='save_component'||expected.kind!=='create_tracker'||!isDeepStrictEqual(parsed.content,expected.content))fail(409,'tracker_changed','Tracker fields or template changed; prepare the preview again');
   }
   if(op.kind==='create_collection_link'||op.kind==='revoke_collection_link')await this.collectionReview(tx,a,w,op);
@@ -754,13 +758,19 @@ export class WorkspaceFoundation {
     await this.componentBindings(tx,a,w,op.content.bindings,true);await this.restoreRights(tx,a,w,op.content.bindings);
     const previous=op.componentId?await this.component(tx,a,w,op.componentId):null;
     validateSectionRevision(await access(tx,a,w),previous,op.content);
+    op.content.execution??=previous?await safeAppHelpers(adapter(tx),a,w,previous):[];
     if(previous?.manifest&&op.content.manifest===null)fail(400,'manifest_required','Connected apps must retain their data contract when changing presentation.');
     await validateResource(tx,a,w,{...op.content,resourceKind:op.content.resourceKind??previous?.resource_kind??'generic',manifest:op.content.manifest===undefined?previous?.manifest:op.content.manifest});await this.componentAssets(tx,a,w,op.content.assets);
     // Role and contract labels (modular apps §7.2–7.5): compatibility, one writer per output role, contract versions.
     await validateAppRoles(tx,a,w,{id:op.componentId??null,name:op.content.name,manifest:op.content.manifest===undefined?previous?.manifest:op.content.manifest,bindings:op.content.bindings},{takeover:op.roleWriterTakeover});
+    if(op.content.manifest?.functions!==undefined)validateAppFunctions(op.content.manifest,op.catalogOrigin?undefined:declaredFunctionRoles(op.content.manifest),op.content.execution.map(e=>e.name),!op.catalogOrigin);
     if(new Set(op.content.execution.map(e=>e.name)).size!==op.content.execution.length)fail(400,'duplicate_binding','Function binding names must be unique');
     const foundation=new Foundation(adapter(tx));
-    for(const e of op.content.execution){const r=await foundation.revision(a,w,e.revisionId);if(op.content.sourceAccess==='bindings'&&r.body.scope.documents)fail(403,'function_binding','Bound-audience components cannot attach functions with workspace-wide document access');for(const typeId of r.body.scope.typeIds){const {type,policy}=await typeAccess(tx,{...a,origin:'ai'},w,typeId);const binding=op.content.bindings.find(b=>b.typeId===typeId);if(!binding||visibleFields(type.fields,policy,{...a,origin:'ai'}).some(f=>!binding.fields.includes(f.key)))fail(403,'function_binding','Function execution needs explicit bindings for every readable field of its declared tables');}if(e.grantId){const g=(await foundation.grants(a,w)).find(g=>g.id===e.grantId);if(!g||g.authorization_version!==1||g.revoked_at||new Date(g.expires_at).getTime()<=Date.now()||g.revision_id!==e.revisionId)fail(403,'grant_unavailable','Choose a current permission for this function revision');}}
+    for(const e of op.content.execution){
+     // App helpers are validated as inert code at save time; disabling an assistant must not block app/layout saves.
+     if(op.componentId&&!e.grantId){let helper:any;try{helper=await foundation.appFunctionRevision(a,w,e.revisionId,op.componentId);}catch(error:any){if(![403,404].includes(error.status))throw error;}
+      if(helper){const declared=readAppFunctions(previous?.manifest).functions.some(d=>d.name===e.name);if(!declared&&helper.body.scope.typeIds.some((id:string)=>!op.content.bindings.some(b=>b.typeId===id)))fail(403,'function_binding','Remove or revise helpers when removing their tables');continue;}}
+     const r=await foundation.revision(a,w,e.revisionId);if(op.content.sourceAccess==='bindings'&&r.body.scope.documents)fail(403,'function_binding','Bound-audience components cannot attach functions with workspace-wide document access');for(const typeId of r.body.scope.typeIds){const {type,policy}=await typeAccess(tx,{...a,origin:'ai'},w,typeId);const binding=op.content.bindings.find(b=>b.typeId===typeId);if(!binding||visibleFields(type.fields,policy,{...a,origin:'ai'}).some(f=>!binding.fields.includes(f.key)))fail(403,'function_binding','Function execution needs explicit bindings for every readable field of its declared tables');}if(e.grantId){const g=(await foundation.grants(a,w)).find(g=>g.id===e.grantId);if(!g||g.authorization_version!==1||g.revoked_at||new Date(g.expires_at).getTime()<=Date.now()||g.revision_id!==e.revisionId)fail(403,'grant_unavailable','Choose a current permission for this function revision');}}
 
     if(op.content.format==='json'){try{JSON.parse(op.content.source);}catch{fail(400,'invalid_json','Component source must be valid JSON');}}
    }
@@ -874,8 +884,9 @@ export class WorkspaceFoundation {
    const prepared=standardTracker(op.content.source)!;
    const setup={...op.setup,newTables:[],extendTables:[],tabs:op.setup.tabs.map((t,i)=>({...t,typeId:ids.get(t.typeId)??t.typeId,columns:prepared.config.tabs[i].columns.map(({field,label,visible,editable,display}:any)=>({field,label,visible,editable,...(display?{display}:{})}))}))};
    const built=await trackerOperation(new WorkspaceFoundation(adapter(tx)),a,w,setup);
+   if(op.content.manifest?.functions!==undefined){const manifest=retainHelperManifest(op.content.manifest,built.content.manifest);if(manifest.automationRoles)manifest.automationRoles=Object.fromEntries(Object.entries(manifest.automationRoles).map(([role,id])=>[role,ids.get(id as string)??id]));built.content.manifest=manifest;}
    const previous=op.componentId?await this.component(tx,a,w,op.componentId):null;
-   const operation=workspaceOperation.parse({...built,catalogOrigin:op.catalogOrigin,reuseOrigin:op.reuseOrigin,designOrigin:op.designOrigin,...(previous?{componentId:previous.id,expectedVersion:op.expectedVersion,content:{...built.content,sourceAccess:previous.source_access,assets:previous.assets??[],execution:previous.execution??[]}}:{})});
+   const operation=workspaceOperation.parse({...built,catalogOrigin:op.catalogOrigin,reuseOrigin:op.reuseOrigin,designOrigin:op.designOrigin,...(previous?{componentId:previous.id,expectedVersion:op.expectedVersion,content:{...built.content,manifest:retainHelperManifest(previous.manifest,built.content.manifest),sourceAccess:previous.source_access,assets:previous.assets??[],execution:previous.execution??[]}}:{})});
    await this.validate(tx,a,w,operation);return this.apply(tx,a,w,p,operation,authorization);
   }
   if(op.kind==='link_cross_table_identity'||op.kind==='unlink_cross_table_identity'){
@@ -956,10 +967,10 @@ export class WorkspaceFoundation {
   else if(op.kind==='create_node'){after={id:objectId,kind:op.nodeKind,name:op.name,description:op.description,parent_id:op.parentId,version};await tx.query('INSERT INTO workspace_nodes(id,workspace_id,kind,name,parent_id,description) VALUES($1,$2,$3,$4,$5,$6)',[objectId,w,op.nodeKind,op.name,op.parentId,op.description]);if(op.initialAccess){const restrictions=op.initialAccess.rules.filter(r=>!r.read||!r.write).map(r=>({subject:r.subject,kind:'project',resourceId:objectId,read:r.read?'inherit':'deny',write:r.write?'inherit':'deny'}));await tx.query('UPDATE workspaces SET permission_rules=permission_rules||$2::jsonb,access_version=access_version+1 WHERE id=$1',[w,J(restrictions)]);after={...after,initialAccess:op.initialAccess};}}
 
   else if(op.kind==='copy_component'){
-   const content=await this.componentCopy(tx,a,w,op);after={...content,id:objectId,workspace_id:w,project_id:op.projectId,version};
-   await tx.query('INSERT INTO workspace_components(id,workspace_id,project_id,name,format,source,bindings,created_by,execution,allowed_users,ai_enabled,assets,source_access) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)',[objectId,w,op.projectId,content.name,content.format,content.source,J(content.bindings),a.userId,J([]),content.allowed_users===null?null:J(content.allowed_users),content.ai_enabled,J(content.assets),content.source_access]);
+   const content=await this.componentCopy(tx,a,w,op);content.execution=await materializeAppFunctions(adapter(tx),a,w,objectId,{...content,execution:[]});after={...content,id:objectId,workspace_id:w,project_id:op.projectId,version};
+   await tx.query('INSERT INTO workspace_components(id,workspace_id,project_id,name,format,source,bindings,created_by,execution,allowed_users,ai_enabled,assets,source_access) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)',[objectId,w,op.projectId,content.name,content.format,content.source,J(content.bindings),a.userId,J(content.execution),content.allowed_users===null?null:J(content.allowed_users),content.ai_enabled,J(content.assets),content.source_access]);
    await tx.query('UPDATE workspace_components SET resource_kind=$1,manifest=$2 WHERE id=$3',[content.resource_kind??'generic',content.manifest?J(content.manifest):null,objectId]);
-   if(content.automations){after={...after,automations:await copyAppAutomations(tx,a,w,objectId,content.automations)};}
+   if(content.automations){after={...after,automations:await copyAppAutomations(tx,a,w,objectId,content.automations,content.execution)};}
   }
   else if(op.kind==='set_project_access'||op.kind==='set_component_access'){
    const table=op.kind==='set_project_access'?'workspace_nodes':'workspace_components';objectId=op.kind==='set_project_access'?op.nodeId:op.componentId;
@@ -974,9 +985,10 @@ export class WorkspaceFoundation {
    else if(op.kind==='archive_component'){after={...before,archived:op.archived,version};
     // Restore: drop bindings to permanently deleted items (listed in the review), avoid name clashes.
     if(!op.archived){const review=await this.archiveReview(tx,a,w,op) as any;after={...after,name:review?.name??before.name,bindings:await this.availableBindings(tx,w,before.bindings)};}}
-   else {const old=await this.componentRevision(tx,w,objectId,op.revisionVersion);after={...before,name:old.name,format:old.format,source:old.source,bindings:old.bindings,assets:old.assets??[],source_access:before.source_access==='bindings'&&old.source_access==='bindings'?'bindings':'workspace',execution:[],resource_kind:old.resource_kind??'generic',manifest:old.manifest??null,version};}
+   else {const old=await this.componentRevision(tx,w,objectId,op.revisionVersion);after={...before,name:old.name,format:old.format,source:old.source,bindings:old.bindings,assets:old.assets??[],source_access:before.source_access==='bindings'&&old.source_access==='bindings'?'bindings':'workspace',execution:await safeAppHelpers(adapter(tx),a,w,{...old,id:objectId}),resource_kind:old.resource_kind??'generic',manifest:old.manifest??null,version};}
    // A reviewed save that binds archived fields or tables restores them first.
    if(op.kind==='save_component'||op.kind==='restore_component'||op.kind==='archive_component'&&!op.archived)await restoreBoundSchema(tx,a,w,p,after.bindings??[],objectId,after.name);
+   if(op.kind==='save_component')after.execution=await materializeAppFunctions(adapter(tx),a,w,objectId,after,before);
    if(before)await tx.query('UPDATE workspace_components SET project_id=$1,name=$2,format=$3,source=$4,bindings=$5,version=$6,archived=$7,allowed_users=$9,ai_enabled=$10,execution=$11,assets=$12,source_access=$13 WHERE id=$8',[after.project_id,after.name,after.format,after.source,J(after.bindings),version,after.archived,objectId,after.allowed_users==null?null:J(after.allowed_users),after.ai_enabled??true,J(after.execution??[]),J(after.assets??[]),after.source_access??'workspace']);
    else await tx.query('INSERT INTO workspace_components(id,workspace_id,project_id,name,format,source,bindings,created_by,execution,assets,source_access) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',[objectId,w,after.project_id,after.name,after.format,after.source,J(after.bindings),a.userId,J(after.execution??[]),J(after.assets??[]),after.source_access??'workspace']);
    if(op.kind==='save_component'&&op.reuseOrigin&&!before){after.allowed_users=[a.userId];after.ai_enabled=a.origin==='ai';await tx.query('UPDATE workspace_components SET allowed_users=$1,ai_enabled=$3 WHERE id=$2',[J([a.userId]),objectId,after.ai_enabled]);}

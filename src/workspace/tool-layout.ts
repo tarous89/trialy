@@ -1,3 +1,4 @@
+import {appHelpersOnly,retainHelperManifest} from './app-functions.js';
 import {customLayoutProfile,updateCustomLayout} from '../shared/custom-layout.js';
 import {isDeepStrictEqual} from 'node:util';
 import {standardSource} from '../shared/standard-tool.js';
@@ -37,10 +38,10 @@ async function prepareLayout(f:WorkspaceFoundation,a:Actor,w:string,input:unknow
  const indices=v.tabs.flatMap(t=>t.originalIndex===undefined?[]:[t.originalIndex]);
  if(new Set(indices).size!==indices.length||indices.some(i=>!old.tabs[i])||!v.tabs.some(t=>t.visible))fail(400,'layout_scope','Use distinct existing tabs and keep at least one visible tab.');
  const remapped=v.tabs.length!==old.tabs.length||v.tabs.some(t=>{const prev=old.tabs[t.originalIndex??-1];return !prev||prev.typeId!==t.typeId||prev.columns.length!==t.columns.length||t.columns.some(col=>!prev.columns.some((x:any)=>x.fieldId===col.fieldId&&x.field===col.field));});
- if((remapped||v.newTables.length||v.extendTables.length)&&c.execution?.length)fail(400,'execution_mapping','Update custom actions and their bindings together in ChatGPT before changing sources.');
+ if((remapped||v.newTables.length||v.extendTables.length)&&c.execution?.length&&(!await appHelpersOnly(f.db,a,w,c)||v.newTables.length||v.tabs.some(t=>!old.tabs.some((p:any)=>p.typeId===t.typeId))))fail(400,'execution_mapping','Update custom actions and their bindings together in ChatGPT before changing sources.');
  const overview=old.overview?{...old.overview,nextSteps:old.overview.nextSteps.flatMap((p:any)=>{const i=v.tabs.findIndex(t=>t.originalIndex===p.tabIndex);return i>=0&&[p.titleField,p.textField].every(field=>v.tabs[i].columns.some(c=>c.field===field))?[{...p,tabIndex:i}]:[]})}:undefined;
  const setup=trackerSetup.parse({theme:v.theme??old.theme,overview,name:v.name,description:v.description,pageSize:old.pageSize??25,projectId:c.project_id,scope:c.manifest?.scope??'workspace',resourceKind:c.resource_kind,allowEdits:old.tabs.some((t:any)=>t.columns.some((col:any)=>col.editable)),newTables:v.newTables,extendTables:v.extendTables,tabs:v.tabs.map(t=>{const prev=old.tabs[t.originalIndex??-1];return {name:t.name,icon:prev?.icon,iconPath:prev?.iconPath,typeId:t.typeId,visible:t.visible,filterMode:prev?.filterMode,...(!remapped&&prev?.example?{example:prev.example}:{}),filters:(prev?.filters??[]).filter((field:string)=>t.columns.some(col=>col.field===field)),columns:t.columns.map(col=>{const original=prev?.columns.find((x:any)=>x.fieldId===col.fieldId&&x.field===col.field);return {field:col.field,label:col.label,visible:col.visible,display:col.display??original?.display,editable:original?.editable??true};})};}),showExample:old.showExample,example:remapped?undefined:old.example,omitSource:true});
  const operation=await trackerOperation(f,a,w,setup);
  if(v.newTables.length||v.extendTables.length)return f.preview(a,w,{kind:'create_tracker',componentId:c.id,expectedVersion:c.version,setup,content:operation.content});
- return f.preview(a,w,{...operation,componentId:c.id,expectedVersion:c.version,content:{...operation.content,sourceAccess:c.source_access,assets:c.assets??[],execution:c.execution??[]}});
+ return f.preview(a,w,{...operation,componentId:c.id,expectedVersion:c.version,content:{...operation.content,manifest:retainHelperManifest(c.manifest,operation.content.manifest),sourceAccess:c.source_access,assets:c.assets??[],execution:c.execution??[]}});
 }

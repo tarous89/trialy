@@ -26,7 +26,7 @@ export const componentContent=z.object({
  format:z.enum(['text','markdown','json','javascript','html','trialy-ui','frontend-js']),
  source:z.string().max(200000),
  assets:z.array(z.object({name:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),versionId:id}).strict()).max(20).default([]),
- execution:z.array(z.object({name:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),revisionId:id,grantId:id.optional()}).strict()).max(20).default([]),
+ execution:z.array(z.object({name:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),revisionId:id,grantId:id.optional()}).strict()).max(20).optional(),
  bindings:z.array(z.object({typeId:id,fields:z.array(z.string().min(1).max(64)).min(1).max(100)}).strict()).max(100).default([])
 }).strict();
 export const fieldPairsSchema=z.array(z.object({sourceField:z.string().min(1).max(64),preferredField:z.string().min(1).max(64)}).strict()).min(1).max(100);
