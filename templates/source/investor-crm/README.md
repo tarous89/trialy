@@ -16,7 +16,7 @@ Investor pipeline for a round, from first contact to signed commitment. Scope: [
 | `fundraise.preview.html` | Generated offline preview, fixed as of 11 Nov 2026. |
 | `QA.md` | Commands, results, hand calculations, acceptance criteria and unverified boundaries. |
 | `functions/round_digest.js`, `functions/research_brief.js` | Read-only app helpers (E7) inlined into the catalog entry by the build: the weekly digest text and the investor research brief. |
-| `AUTOMATION_RECIPES.md` | The three install recommendations and the no-automation path. |
+| `AUTOMATION_RECIPES.md` | The two install recommendations, why there are two, and the no-automation path. |
 
 Edit the source, CSS, helpers and metadata, then run `node scripts/build-investor-template.mjs`. This regenerates `templates/apps/life.investor-crm-2.0.0.json` and the preview; `--check` runs in `npm run build`. Do not edit a released version: publish a new version and archive the previous package first.
 
@@ -27,11 +27,12 @@ Edit the source, CSS, helpers and metadata, then run `node scripts/build-investo
 | `organizations` | core.v1 | read/write; investors are `org_type` investor |
 | `people` | core.v1 | read/write; investor contacts |
 | `fundraise.settings`, `fundraise.investor_profiles`, `fundraise.rounds`, `fundraise.opportunities`, `fundraise.activities` | fundraise.v1 | Fundraise's own tables |
+| `fundraise.research_reports` | fundraise.v1 | Own table written only by weekly investor research (create only); read-only in the app (Investors → Proposed → Research runs) |
 | `fundraise.tranches` | fundraise.v1 | **output**, exactly the registry entry in `templates/contracts/outputs.json`; Fundraise is its single writer; read by Runway and Investor Updates |
 | `dataroom.access_grants`, `dataroom.engagement` | dataroom.v1 | `optional` + `integration`: own table for manual entry; the provider's table read-only once linked |
 | `programs.plan_items` | programs.v2 | `optional` + `integration`, binds only `name`, `program_id`, `item_type`, `end_date`, `status`, `is_key`: own milestone entries until linked to Programs |
 
-Installed alone: 11 tables. With a Data Room provider and Programs already in the workspace, the "Use existing data?" dialog connects their tables (Connect is the default) read-only and no own tables are created for them.
+Installed alone: 12 tables. With a Data Room provider and Programs already in the workspace, the "Use existing data?" dialog connects their tables (Connect is the default) read-only and no own tables are created for them.
 
 ## Integrations
 
@@ -52,7 +53,7 @@ Engagement shows one subtle line, rendered as `<button data-trialy-integration="
 
 ## Automations
 
-Three install recommendations, selected by default in Add app: the weekly round digest (written by the helper `round_digest`), the signed commitment notice and monthly investor research that saves proposed investors in the app. Details in [AUTOMATION_RECIPES.md](AUTOMATION_RECIPES.md). Settings stores none of their schedules or recipients.
+Two install recommendations, on by default in Add app: weekly investor research (Mondays 07:00, saves proposed investors and a report in the app) and one weekly digest email (Mondays 09:00, written by the helper `round_digest`: round progress and this week's research). Details in [AUTOMATION_RECIPES.md](AUTOMATION_RECIPES.md). Settings stores none of their schedules or recipients.
 
 ## Customization by Claude and ChatGPT
 

@@ -12,11 +12,18 @@ Rebased onto `main` at `eaf9446` (59 commits after the original base) and revise
 | --- | --- |
 | 7 Fundraise tests failed: install and connect rejected "Data room access does not match dataroom.v1: room_purpose lacks contract options" | Own `dataroom.access_grants.room_purpose` gains the additive `partnering` option and the contract description; the app's select offers it. |
 | The provider-engagement test used fixed November dates for "hot" (≥ 3 views in 7 days), so it expired | Dates relative to today. |
-| No automation declarations; Settings described automations as "configure later" | `recommendedAutomations` round_digest, signed_commitment, investor_research; two E7 helpers; Settings names the automations and where they live. |
+| No automation declarations; Settings described automations as "configure later" | `recommendedAutomations` investor_research (weekly, saves proposed investors and a `fundraise.research_reports` row) and weekly_digest (Monday 09:00 email written by the helper `round_digest`); two E7 helpers; Settings names the automations and where they live. No signed-commitment notice (owner decision). |
+| One research-then-email automation (E5) with the helper writing the email never delivered (`summary_unavailable`) | Not used: the background check reads the research automation without the owner's database identity, and after a local fix each helper read cost about 3 s of re-validation (over the 15 s limit). Reported for the platform; the digest is a 09:00 calendar email instead. |
 | Research reading 4 tables through the brief helper was refused at setup (`brief_scope`: brief reads exceed the read scope) | Research read bindings use `fields:"all"` (E6). Found by the new end-to-end test. |
 | Customization limited to the layout gear and settings lists | `custom_fields`, `stage_labels`, `preferences` (§8a). |
 
-RESULTS_PLACEHOLDER
+| Command (14 November 2026, rebased on `main` at `2364170`) | Result |
+| --- | --- |
+| `npm run build` | Passed (includes `check-app-functions`, every template `--check`, `tsc --noEmit`, vite and embed builds) |
+| `tests/fundraise.test.ts`, `tests/fundraise-integration.test.ts`, `tests/fundraise-automations.test.ts`, `tests/investor-template.test.ts` | 32/32 passed |
+| `scripts/test-fundraise-browser.ts` | Passed (production frame, 1440 and 390 px) |
+| `app-templates`, `template-catalog`, `automation-recipes`, `automation-steps-and-fields`, `partnerships` tests | 62/62 passed |
+| `npm test` (full suite, before the weekly-automation change) | 649 of 665 passed. All 14 failures (auth, Claude connector, contracts acceptance 3, core shared backend, guest drafts, CO06 monitoring-pv, plugin release, runtime transports, tracker experience) fail the same way on unmodified `origin/main` in this container. |
 
 ## Commands and outcomes
 

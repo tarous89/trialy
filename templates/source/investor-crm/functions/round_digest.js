@@ -1,7 +1,8 @@
-// Weekly round digest (email.summaryBinding). Read-only: records.read on Fundraise's own roles only.
+// Weekly Fundraise digest (email.summaryBinding; Monday 09:00, two hours after the weekly investor research). Read-only: records.read on Fundraise's own roles only.
 // Same rules as the app: only signed counts as raised; verbal and soft are separate; another currency is flagged
 // and excluded; stale = active stage with no activity for more than stale_days; due = next step or open
-// follow-up due within 7 days. Partial reads withhold totals. No active round sends nothing (nonEmpty:false).
+// follow-up due within 7 days. Partial reads withhold totals. Then this week's research: the saved report and the investors
+// waiting for review. Nothing to report (no active round and no research this week) sends nothing (nonEmpty:false).
 const MAX_PAGES=8;
 function readAll(role){const typeId=appRoles[role];if(!typeId)return {rows:[],complete:false};let rows=[],total=0;
  for(let page=0;page<MAX_PAGES;page++){const r=tools.call('records.read',{typeId,limit:100,offset:page*100});const got=r&&Array.isArray(r.rows)?r.rows:[];
@@ -19,7 +20,8 @@ const ACTIVE=['contacted','first_meeting','partner_meeting','due_diligence','ter
 const LABEL={target:'Target',contacted:'Contacted',first_meeting:'First meeting',partner_meeting:'Partner meeting',due_diligence:'Due diligence',term_sheet:'Term sheet',committed:'Committed',closed:'Closed',passed:'Passed'};
 
 const rounds=readAll('fundraise.rounds'),active=rounds.rows.filter(r=>live(r)&&r.status==='active').sort((a,b)=>String(a.opened_on||'').localeCompare(String(b.opened_on||'')));
-if(!active.length)return {nonEmpty:false,text:'No active round.'};
+const reports=readAll('fundraise.research_reports'),weekAgo=addDays(today,-6),report=reports.rows.filter(r=>typeof r.run_on==='string'&&r.run_on>=weekAgo&&r.run_on<=today).sort((a,b)=>b.run_on.localeCompare(a.run_on))[0]||null;
+if(!active.length&&!report)return {nonEmpty:false,text:'No active round and no research this week.'};
 const opps=readAll('fundraise.opportunities'),acts=readAll('fundraise.activities'),orgs=readAll('organizations'),profiles=readAll('fundraise.investor_profiles'),settingsRows=readAll('fundraise.settings');
 const complete=[rounds,opps,acts,orgs,profiles,settingsRows].every(x=>x.complete);
 const settings=settingsRows.rows[0]||{};
@@ -52,8 +54,14 @@ for(const round of active.slice(0,3)){
  if(stale.length){lines.push('Stale, no activity for more than '+staleDays+' days ('+stale.length+'):');for(const s of stale.slice(0,5))lines.push('· '+s);if(stale.length>5)lines.push('· '+(stale.length-5)+' more');}
  if(flagged.length)lines.push(flagged.length+' amount'+(flagged.length>1?'s':'')+' in another currency than '+c+' excluded from totals.');
  if(missing.length)lines.push(missing.length+' signed commitment'+(missing.length>1?'s have':' has')+' no amount yet.');
- const proposed=profiles.rows.filter(p=>live(p)&&p.profile_status==='proposed').length;if(proposed&&round===active[0])lines.push(proposed+' proposed investor'+(proposed>1?'s':'')+' waiting for review in Investors.');
 }
 if(active.length>3)lines.push('','· '+(active.length-3)+' more active rounds');
+if(!active.length)lines.push('','No active round.');
+// This week's research: counts from the saved report, names from the proposed profiles (never the runner's prose alone).
+const waiting=profiles.rows.filter(p=>live(p)&&p.profile_status==='proposed');
+lines.push('');
+if(report){const n=Math.max(0,Math.round(num(report.new_investors)||0));lines.push('Research this week: '+(n?n+' new investor'+(n>1?'s':'')+' proposed':'no new investors'));}
+else lines.push('Research this week: no report saved yet (research runs Mondays 07:00 on your Claude or ChatGPT connection).');
+if(waiting.length){lines.push(waiting.length+' proposed investor'+(waiting.length>1?'s':'')+' waiting for review in Investors:');for(const p of waiting.slice(0,5))lines.push('· '+name(p.organization_id)+(p.investor_type?' ('+String(p.investor_type).replace(/_/g,' ')+')':''));if(waiting.length>5)lines.push('· '+(waiting.length-5)+' more');}
 lines.push('','Open Fundraise →');
 return {nonEmpty:true,subject:'Fundraise · week of '+day(today),text:lines.join('\n').slice(0,20000)};

@@ -97,7 +97,7 @@ test('integration test, Fundraise first: manual engagement and milestones, then 
   const w=(await x.s.createWorkspace(actor,'Fundraise first')).id;
   const fr=await x.install(w,F,'Fundraise');assert.deepEqual(fr.step.tables,[],'nothing to connect: no dialog rows');
   const id=fr.receipt.appId,map=x.mapOf(await x.comp(w,id));
-  assert.equal(await x.tables(w),11,'organizations, people, six Fundraise tables and three own integration tables');
+  assert.equal(await x.tables(w),12,'organizations, people, seven Fundraise tables and three own integration tables');
   for(const role of ['dataroom.access_grants','dataroom.engagement','programs.plan_items']){assert.ok(map[role].typeId,role);assert.ok(map[role].writableFields.length>0,role+' is writable (own entries)');}
   let o=await x.offers(w,id);
   assert.deepEqual([o['dataroom.access_grants'].source,o['dataroom.engagement'].source,o['programs.plan_items'].source],['own','own','own']);
@@ -188,7 +188,7 @@ test('integration test, providers first: Fundraise connects the Data Room provid
   assert.equal(map['dataroom.access_grants'].typeId,room['dataroom.access_grants']);assert.equal(map['dataroom.engagement'].typeId,room['dataroom.engagement']);assert.equal(map['programs.plan_items'].typeId,pmap['programs.plan_items'].typeId);
   for(const role of ['dataroom.access_grants','dataroom.engagement','programs.plan_items'])assert.deepEqual(map[role].writableFields,[],role+' is read-only');
   assert.equal(map.people.typeId,pmap.people.typeId,'one shared people table');
-  assert.equal(await x.tables(w)-before,7,'organizations and six Fundraise tables; no own data-room or milestone tables');
+  assert.equal(await x.tables(w)-before,8,'organizations and seven Fundraise tables; no own data-room or milestone tables');
   const o=await x.offers(w,fr.receipt.appId);for(const role of ['dataroom.access_grants','dataroom.engagement','programs.plan_items']){assert.equal(o[role].source,'linked',role);assert.equal(o[role].offer,null);}
   // The provider writes; Fundraise reads.
   const org=await x.save(w,map.organizations.typeId,{name:'Calder Life Sciences Fund',org_type:'investor',archived:false});

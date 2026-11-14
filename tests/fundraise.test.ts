@@ -51,7 +51,7 @@ test('catalog entry, contract-exact roles, the fundraise.tranches output and sev
  const pi=schema['programs.plan_items'];assert.deepEqual([pi.contract,pi.optional,pi.integration,pi.readOnly],['programs.v2',true,true,undefined]);
  assert.deepEqual(pi.fields.map((f:any)=>f.key),['name','program_id','item_type','end_date','status','is_key'],'binds only the six fields');
  for(const f of pi.fields){const c=registry['programs.plan_items'].versions['programs.v2'].fields.find((x:any)=>x.key===f.key);const {description:_a,...mine}=strip(f),{description:_b,...theirs}=c;assert.deepEqual(mine,theirs,f.key);}
- const app=roles.filter(r=>r.startsWith('fundraise.'));assert.deepEqual(app,['fundraise.settings','fundraise.investor_profiles','fundraise.rounds','fundraise.opportunities','fundraise.activities','fundraise.tranches']);
+ const app=roles.filter(r=>r.startsWith('fundraise.'));assert.deepEqual(app,['fundraise.settings','fundraise.investor_profiles','fundraise.rounds','fundraise.opportunities','fundraise.activities','fundraise.research_reports','fundraise.tranches']);
  for(const r of app)assert.equal(schema[r].contract,'fundraise.v1',r);
  const prepared=`const templateConfiguration=${JSON.stringify({...entry.defaults,heading:'Fundraise'})};\nconst templateBindings=[];\n${entry.source}`;
  const layout=readCustomLayout(prepared)!;assert.deepEqual(layout.schema.screens.map(s=>s.id),['overview','pipeline','investors','round','activity','engagement','settings']);

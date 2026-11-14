@@ -984,6 +984,88 @@
    "source": "source"
   }
  },
+ "fundraise.research_reports": {
+  "name": "Research reports",
+  "description": "One row per weekly research run, written by the Fundraise update automation (create only); read-only in the app.",
+  "contract": "fundraise.v1",
+  "fields": [
+   {
+    "key": "run_on",
+    "name": "Run on",
+    "kind": "date",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "description": "Date of the research run."
+   },
+   {
+    "key": "run_id",
+    "name": "Run",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Automation run ID."
+   },
+   {
+    "key": "period",
+    "name": "Period",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "For example \"week of 16 Nov\"."
+   },
+   {
+    "key": "summary",
+    "name": "Summary",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Plain-text summary of the run: proposed investors and why they fit."
+   },
+   {
+    "key": "new_investors",
+    "name": "New investors",
+    "kind": "number",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Investors proposed in this run."
+   },
+   {
+    "key": "sources",
+    "name": "Sources",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "JSON list [{title,url}]."
+   },
+   {
+    "key": "written_by",
+    "name": "Written by",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "claude",
+     "chatgpt"
+    ]
+   }
+  ],
+  "logicalFields": {
+   "run_on": "run_on",
+   "run_id": "run_id",
+   "period": "period",
+   "summary": "summary",
+   "new_investors": "new_investors",
+   "sources": "sources",
+   "written_by": "written_by"
+  }
+ },
  "fundraise.tranches": {
   "name": "Tranches",
   "description": "App output (fundraise.tranches fundraise.v1): read-only for Runway (cash-in) and Investor Updates. Fundraise is its single writer.",
