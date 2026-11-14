@@ -160,6 +160,17 @@ Remaining operational acceptance: share the existing web encryption key with the
 Current operational handoff and release status: [project context](../../CONTEXT.md), [operator activation steps](../OPERATIONS.md#shared-automation-activation) and [host metadata refresh](../CHATGPT_SETUP.md#current-connection-and-automation-setup). Historical release evidence is not proof of current connection readiness.
 
 
+## Recommended automations at install
+
+Decided 14 November 2026. Templates declare recommended automations in their catalog (name, purpose, trigger or schedule, steps, email template, default recipients, default on or off). The install dialog offers them next to data access and access ([Modular apps §7](MODULAR_APPS_AND_SHARED_DATA.md#install-dialog-data-access-and-automations)).
+
+**On install:**
+- Selected recommendations become ordinary automations linked to the app: owner-managed, on the chosen runner, under all rules on this page, including the email limits and the research → email chain.
+- Email templates are the automation's instructions or message and are edited here.
+- An app never owns or runs automations itself.
+
+**Research briefs.** Research automations for an app use a brief the app generates from its records: what to look for, since when, named sources in priority order (access route left to the assistant; web by default), rules, and a structured return format with a **source report**. The prompt references the brief, so the app's current records always drive the run.
+
 ## Simple email notifications
 
 Email automations have one delivery step, separate from ChatGPT/functions/connectors. Use daily/weekly/monthly calendar schedules (every N days/weeks/months), or entry creation/an explicit field transition. No subdaily email intervals or broad “any update” notifications. The backend waits two minutes after relevant changes, combines pending work, rechecks current state/access, and cancels obsolete notifications. It enforces one app email per normalized recipient per rolling hour across TrialAgents and 15 recipient deliveries per account per rolling 24 hours. Calendar email also has one slot per rule/recipient/local date. Extra work waits; only abnormal queue growth suspends a rule. Recipients must be explicitly selected registered team members with current app/data access; database address columns never authorize bulk mail. Research may run several times daily independently of email limits. Do not create report/digest modes, expose quota/retry controls, or use ChatGPT email tools/connectors to bypass these rules.

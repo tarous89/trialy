@@ -18,6 +18,7 @@
 | 01 Runway | [apps/RUNWAY.md](apps/RUNWAY.md) | `life.cash-runway` 2.1.0 published (#131) |
 | 02 Programs | [apps/PROGRAMS.md](apps/PROGRAMS.md) | `life.project-oversight` 2.1.0 published (#136), with manual cash forecast and Runway integration |
 | 03 Fundraise | [apps/FUNDRAISE.md](apps/FUNDRAISE.md) | Built in PR #137 (open) |
+| 10 Landscape | [apps/LANDSCAPE.md](apps/LANDSCAPE.md) | Scoped (14 Nov); assistant does the landscaping, the app stores and briefs; named sources (web default); research → email automations offered in the install dialog; PR A install-dialog automations (platform), PR B app; retires Literature Radar |
 | 09 Lab Inventory | [apps/LAB_INVENTORY.md](apps/LAB_INVENTORY.md) | Scope approved (14 Nov); replaces `life.inventory-management` 1.0.2 as 2.0.0; no platform work (one PR) |
 | 07 Partnerships | [apps/PARTNERSHIPS.md](apps/PARTNERSHIPS.md) | Scoped (14 Nov); replaces `life.partnership-tracker` 1.1.1 as 2.0.0; no platform work (one PR) |
 | 06 Investor Updates | [apps/INVESTOR_UPDATES.md](apps/INVESTOR_UPDATES.md) | Scoped (14 Nov); AI-native (assistant drafts on schedule, app approves, sends, tracks); build after Data Room PR A: PR A update extension ([§6](../EXTERNAL_EXCHANGE.md#6-update-extension-for-investor-updates)), PR B app |
@@ -155,14 +156,11 @@ Format per app: users and job · reference app · scope (in / out) · records ·
 - **Final scope:** [apps/LAB_INVENTORY.md](apps/LAB_INVENTORY.md) (14 Nov 2026). Orders are tracked only. Approvals take one approver plus an optional amount threshold for a second. Usage tracking is simple ("Used one" / QR / tell the assistant / quick count). Standard categories come with it and users add their own. The assistant handles receiving from confirmations or label photos, requests from chat and reorder suggestions. There is a weekly digest.
 
 ### BT2-10 — Landscape (rank 10, Core · TrialAgents edge)
-*Competitor assets, trials, readouts and deals in your indications.*  
+*Competing assets, trials, readouts and deals for each of your programs.*  
 *Long name: Competitive & Pipeline Landscape*
-- **Users / job:** know which competitor assets target the same indication or mechanism, their trial status and upcoming readouts, and recent deals.
-- **Reference app:** Citeline Biomedtracker (alternative: Evaluate) — competitor pipeline and event tracking.
-- **In scope:** competitor assets, linked trials, stage, expected readouts, events (readouts, approvals, deals, financings), relevance notes; scientific publications as a finding type (absorbs v1 Literature Radar intent). **Out:** forecasts, market sizing, paid-database data.
-- **Records:** Competitor asset; Event; Finding (source, date, relevance). Shared: Organization, Program (own asset for comparison), Study.
-- **Screens:** Landscape overview (by indication / mechanism) · Competitor assets · Trial & readout calendar · Events feed · Watchlist & findings.
-- **Assistant / data angle:** pre-fill trials and sponsors from TrialAgents Intel; scheduled research proposes new findings for human review.
+- **Final scope:** [apps/LANDSCAPE.md](apps/LANDSCAPE.md) (14 Nov 2026). Claude or ChatGPT does the landscaping. The app stores, structures (comparison, calendar, events with "so what") and tells the assistant what and when to search, through research briefs with named sources (web default) and a source report. Recommended automations (weekly scan + digest, high-impact alert, quarterly review) with analytical email templates are created from the install dialog. Literature Radar is absorbed.
+
+**All apps (14 Nov 2026):** app automations are platform automations. Each template declares recommended automations, which the install dialog offers next to data access and access ([Modular apps §7](../MODULAR_APPS_AND_SHARED_DATA.md#install-dialog-data-access-and-automations)). This applies to the automations listed in every app scope.
 
 ### BT2-11 — Trial Finance (rank 11, Extended)
 *Clinical budgets vs invoices and monthly accrual estimates.*  

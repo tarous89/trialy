@@ -138,7 +138,9 @@ PR #117 retires automations whose data bindings were removed and, in the same ap
 - **7.4 One writer per output role:** migration 061 adds `role_writers`. The first app that binds an output table writable becomes its writer; another live app is refused (`role_writer_exists`) and may bind it read-only. When the writer is archived or permanently deleted, a replacement takes over only with `roleWriterTakeover:[role]` on its save, by a workspace owner (`role_writer_takeover`). App writes to an output table from any other app are refused (`role_writer`), so a restored former writer reads but does not write. People editing in Database are unaffected. Core roles and `kind:"app"` roles stay multi-writer.
 - **7.5 Contract versions:** apps declare `contract` (and optionally `reads`, the versions they read). A reader connects to a table whose writer uses a version it reads, or a newer version that is a superset (every field of the read version, same kind, cardinality and options). A writer moving to a version that is not a superset of what its readers read is refused (`contract_breaks_readers`).
 
-### Data access step (at install only)
+### Install dialog: data access and automations
+
+<a id="data-access-step-at-install-only"></a>
 
 **Decision (12 November 2026, replaces the earlier three-section design).** One small dialog in the style of the platform's other confirm dialogs, shown when an app is installed. It lists existing tables only when some can serve the app's roles; otherwise the app gets new tables. The signed-in owner also decides who can use the app before it exists.
 
@@ -151,3 +153,12 @@ PR #117 retires automations whose data bindings were removed and, in the same ap
 There is no "not connected" state: an installed app always has its tables. Integrations with other apps are offered later from inside the app (7.1), never all at once at the start. Later access changes happen in the Access tab. Saves, copies and restores show no dialog. Inside ChatGPT and Claude the same dialog is shown in the plugin; assistants may propose choices with `prepare_data_access` (prefilling the dialog) but cannot confirm it (`confirm_data_access` is the app-only Add app action; the web endpoint requires a signed-in human).
 
 Every app keeps rule 3: when another app's output is not available or not readable, the feature that uses it hides itself with a short note.
+
+**Recommended automations (decision 14 November 2026).** Automations belong to the platform, not to the app: they are normal TrialAgents Automations linked to the app, and are listed, edited, paused and deleted in Automations. A template may declare **recommended automations** in its catalog: name, purpose, trigger or schedule, steps (research brief → email, platform action, email only), email template, default recipients, and default on or off. The install dialog shows them as a third section under data and access:
+
+- **Title "Automations"** and one row per recommendation: name, one-line purpose, readable schedule (e.g. "Weekly, Monday 07:00"), a toggle (default from the template), and an edit link that opens the normal automation editor prefilled. Below the rows: runner choice (**Claude** or **ChatGPT**, whichever the owner has connected; the first connected is preselected) and email recipients (workspace members, defaulting to the owner).
+- **Add app** creates the selected automations in the same transaction as the app, linked to it, using the platform's normal automation validation and review. A recommendation that needs a runner that isn't connected is created **disabled**, with the note "Connect Claude or ChatGPT to activate"; the app works without it.
+- **Only the owner, signed in, sees and confirms this section** (automation management is owner-only). For other installers the section is skipped and the owner gets a notice ("3 recommended automations for *App* are waiting").
+- **Archiving the app pauses its linked automations; restoring offers to resume them.** Deleting an automation never touches app data. Reinstalling the app shows the recommendations again, unless matching automations already exist.
+
+Assistants can prefill this section with `prepare_data_access`, like the rest of the dialog, but cannot confirm it.
