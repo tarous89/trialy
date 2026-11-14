@@ -29,7 +29,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | B7 | AI-native FP&A software for startups: compare the actions, not the label | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/ai-native-fpa-software-startups) |
 | B8 | Excel and Google Sheets alternatives for biotech budgeting: what should you replace? | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/excel-google-sheets-alternatives-biotech) |
 | C1 | Cash runway apps in ChatGPT: compare the connection before the forecast | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/cash-runway-apps-chatgpt) |
-| C2 | Financial planning apps for Claude: choose where the plan lives | In progress — research and source preparation | — |
+| C2 | Financial planning apps for Claude: choose where the plan lives | Published — live verified 14 November 2026 | https://trialagents.com/apps/financial-planning-apps-claude |
 | C3 | How to Manage Biotech Cash Runway Using ChatGPT | Already covered / published | [Live article](https://trialagents.com/apps/manage-biotech-cash-runway-chatgpt) |
 | C4 | How to Use Claude for Biotech Cash Flow Forecasting | Queued — verify and publish | — |
 | C5 | AI CFO vs AI-Native Financial Planning App: What Does a Biotech Startup Need? | Queued — verify and publish | — |
@@ -68,7 +68,7 @@ All listed published pages were recorded as live in [Runway's app plan](runway.m
 
 ## Publication sequence and hourly worker contract
 
-1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2–A8 are published. **Next eligible: C2, Best Financial Planning Apps for Claude, subject to evidence, duplicate and claim checks. A10–A12, B2–B8 and C1 are published; A9 remains deferred by owner decision.** See the latest release checkpoint below.
+1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2–A8 are published. **Next eligible: C4, How to Use Claude for Biotech Cash Flow Forecasting, subject to evidence, duplicate and claim checks. A10–A12, B2–B8 and C1–C2 are published; C3 is already covered; A9 remains deferred by owner decision.** See the latest release checkpoint below.
 2. Re-read the **current** shared playbook and [Runway plan](runway.md). Use the approved genuine screenshots, wide dark editorial shell, numbered green headings, platform advantage order, honest competitor treatment, one final "Start with Runway" CTA and standard shared header/footer.
 3. Research and verify vendor identities, capabilities, URL destinations, AI/Claude/ChatGPT host experiences separately, formulas and substantive claims. Keep the no-pricing-in-A/B rule; in other series, only discuss verified prices if explicitly appropriate and editorially approved. Real screenshots only, no invented interfaces or citations. Treat claims in tentative titles as hypotheses.
 4. Make the article genuinely distinct from existing Runway pages. Do not create weak "year-only", vendor-name-swapped or keyword-cannibalizing pages. If the subject is already answered on a live URL, mark it as covered, link it and advance to the next eligible item **within the same run**, without publishing duplicate content.
@@ -575,3 +575,18 @@ Seven source files integrate rendering, listing, discovery and browser/snapshot 
 ### C2 merged — deployment pending, 14 November 2026 05:59 CET
 
 PR #204 merged as `3fe8e5ec60157a814aad7d2d2bdd8ca4dd5db11a` at approximately 04:59:49 UTC. Exact source head `cdf0f35d03e2f81b1330833dcf8d331bf838dca4` passed full predeploy run `43558675422` (validate and seo-container). Artifact `14100056341` matches that head; desktop 1440px and mobile 390px screenshots visually inspected, including all sections, contained comparison table, genuine images, shared chrome and final CTA. Await existing automatic GitHub-connected deployment and independent live verification at https://trialagents.com/apps/financial-planning-apps-claude. Resume this release before drafting another topic. Totals remain 23 published, 24 unfinished until verified live.
+
+
+
+### C2 published and live verified — 14 November 2026, 06:04 CET
+
+- **Title:** Financial planning apps for Claude: choose where the plan lives.
+- **Live URL:** https://trialagents.com/apps/financial-planning-apps-claude
+- **Release:** [PR #204](https://github.com/tarous89/trialagents-public/pull/204), validated source head `cdf0f35d03e2f81b1330833dcf8d331bf838dca4`, merged SHA `3fe8e5ec60157a814aad7d2d2bdd8ca4dd5db11a` at approximately 04:59:49 UTC.
+- **Exact-head QA:** full predeploy run `43558675422` passed validate and seo-container. Artifact `14100056341` matches that head; desktop 1440px and mobile 390px screenshots visually inspected through every section, including contained comparison table, two genuine screenshots, shared chrome and final CTA.
+- **Deployment:** existing automatic GitHub-connected Cloudflare build succeeded, check `132339794465`; production check `132339286333` passed. Early 404s resolved to HTTP 200 approximately two minutes after merge, without dashboard sign-in or manual deployment.
+- **Independent live checks:** complete expected article fragment and inline shared CSS exactly match validated source. HTTP 200 text/html, H1/title/description/self-canonical, Article/BreadcrumbList graph and publication date pass; no noindex; local anchors valid; two genuine images and one final Start with Runway CTA. All 12 checked source/internal/CTA/image/analytics URLs return HTTP 200. Shared header/footer match homepage. /apps, sitemap.xml, llms.txt and llm.xml return 200 and include the article; sitemap contains exactly one canonical entry; robots.txt permits /apps.
+- **Tracking preserved:** identical homepage loader `/_snapshot/query-assets/114933b27c521a75f333.js` appears once and returns 200; the client it loads, `/_snapshot/query-assets/c251da7b4969f7c85048.js`, returns 200. No changes to tracking scripts, configuration, consent, events, collectors or attribution. HTTP verification and predeploy browser artifacts were used; no synthetic production events sent.
+- **Evidence boundary:** primary-documentation comparison and a proposed funding-review exercise, not a completed Claude/competitor acceptance test. Two browser screenshots are labeled genuine demos with fictional data. No invented benchmarks, prices, host parity or standard 13-week forecasting claims.
+
+This supersedes C2 source and merged-pending checkpoints. **24 published; 23 unfinished**, including owner-deferred A9. **Next eligible: C4, How to Use Claude for Biotech Cash Flow Forecasting**, subject to fresh queue, claim, duplicate and primary-evidence checks. C3 is already covered. Only C2 was newly published in this run. Search indexing, rankings and assistant citations remain unverified.
