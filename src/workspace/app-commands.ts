@@ -93,7 +93,9 @@ export function checkInput(s:any,v:any,path='input'):void{
 
 export const commandsList=z.object({appId:id}).strict();
 export const commandRun=z.object({appId:id,expectedVersion:z.number().int().min(0),command:commandId,input:z.record(z.string(),z.unknown()).default({}),requestKey:id}).strict();
-const enabled=()=>process.env.APP_COMMANDS_ENABLED==='true';
+/** On by default (owner decision, 14 November 2026); APP_COMMANDS_ENABLED=false is the emergency off switch. */
+export const appCommandsEnabled=()=>process.env.APP_COMMANDS_ENABLED!=='false';
+const enabled=appCommandsEnabled;
 const RESULT_LIMIT=64000;
 
 async function openApp(f:WorkspaceFoundation,a:Actor,w:string,appId:string){

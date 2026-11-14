@@ -37,7 +37,7 @@ Research and drafting automations must store their results in the app database. 
 
 ## App commands and Edit in App (1.3.31)
 
-Available when the deployment enables `APP_COMMANDS_ENABLED`. Reference: Runway 2.2.0 ([scope §14](../docs/product/app-template-blueprints/apps/RUNWAY.md#14-runway-220--assistant-control-integrations-and-automations)).
+On by default; an operator can turn them off with `APP_COMMANDS_ENABLED=false`. Reference: Runway 2.2.0 ([scope §14](../docs/product/app-template-blueprints/apps/RUNWAY.md#14-runway-220--assistant-control-integrations-and-automations)).
 
 - **Declare commands as data.** Put one single-line JSON array at the top level of the source: `const appCommands=[{"id":"summary.read","label":"Read the summary","mode":"read","input":{"type":"object","properties":{},"additionalProperties":false}}];`. Ids are lowercase dotted keys (at most 60 commands). `mode` is `read` (returns a result, writes nothing), `propose` (returns the click path's records.propose batch as a review) or `layout` (a presentation-only `layout.propose`). `input` is a JSON Schema subset: type, properties, required, additionalProperties, items, enum, minLength/maxLength, minimum/maximum, minItems/maxItems, pattern and format `date`, `month` or `uuid`. Saves reject an invalid declaration (`app_commands`); the host never executes it.
 - **Answer the command event.** The app runs with `input.event={kind:"command",action:<command id>,value:<JSON input text>}` and returns `state.command={ok,result?,error?}`; html can be empty. A read command must not propose. Results are bounded (64,000 serialized characters) and must respect column restrictions exactly like the screens.
