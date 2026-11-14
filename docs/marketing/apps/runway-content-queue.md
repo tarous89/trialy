@@ -26,7 +26,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | B4 | Finmark alternatives after retirement: rebuild a forecast you can trust | Published — live verified 13 November 2026 UTC | [Live article](https://trialagents.com/apps/finmark-alternatives-biotech) |
 | B5 | LivePlan alternatives for biotech: choose the plan you need next | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/liveplan-alternatives-biotech) |
 | B6 | Fathom alternatives for biotech: reporting, consolidation or cash planning? | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/fathom-alternatives-biotech) |
-| B7 | Best AI-Native FP&A Software for Startups | Queued — verify and publish | — |
+| B7 | AI-native FP&A software for startups: compare the actions, not the label | In progress — source preparation | — |
 | B8 | Best Excel and Google Sheets Alternatives for Biotech Budgeting | Queued — verify and publish | — |
 | C1 | Best Cash Runway Management Apps That Work Inside ChatGPT | Queued — verify and publish | — |
 | C2 | Best Financial Planning Apps for Claude | Queued — verify and publish | — |
@@ -470,3 +470,8 @@ B5 rechecked live HTTP 200; no open Runway source PRs; public main `9a808396e45a
 - **Tracking preserved:** identical homepage loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js`, both HTTP 200. No tracking scripts/configuration/events/consent/collectors/attribution changed; no synthetic production events sent.
 
 This supersedes B6 claim/source/pending checkpoints. **20 published; 27 unfinished**, including owner-deferred A9. **Next eligible: B7, AI-native FP&A software**, subject to fresh queue, evidence, duplicate and claim checks. Only B6 was newly published in this run. Search indexing, rankings, real-user performance and assistant citations remain unverified.
+
+
+### 14 November 2026 — B7 execution claim
+
+B6 rechecked HTTP 200; no open Runway PRs; public main `6496bc32f293ac9407d995a7cf6b602efdafeb4e`. B7 claimed on `content/runway-b7-ai-fpa-20261114`. Distinct category-selection intent: compare explanation, model changes, calculations and review evidence across Runway, cfo.ai, Aleph and Abacum, rather than repeat B3 model ownership. Retitled to avoid unsupported rankings and treating AI-native as a standardized certification. No publication claimed; 20 published, 27 unfinished.
