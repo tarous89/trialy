@@ -1,3 +1,5 @@
+import {homeRevision} from '../../src/workspace/home-revision.js';
+import {archivedItems} from '../../src/workspace/archive.js';
 import {AppTemplates} from '../../src/workspace/app-templates.js';
 import {addAppMcp} from '../../src/server/apps.js';
 import {moveTool} from '../../src/workspace/tool-placement.js';
@@ -32,7 +34,8 @@ export async function fixture(){
   if(name==='open_app')return openApp(f,actor,v);
   if(name==='open_workspace')return {screen:'home',uiBuild:'acceptance',viewerId:actor.userId,workspaces:[w],workspaceId:w.id,types:await s.types(actor,w.id)};
   if(name==='read_connected_account')return {connected:true};
-  if(name==='read_account_home'){const home=await workspaceHome(db,{...actor,origin:'ai'},w.id,v);return {...home,resources:[{id:preview.id,workspaceId:w.id,name:'Saved preview card',kind:'tracker',source:'preview',projectIds:[],status:'Preview',updatedAt:new Date().toISOString()},...home.resources],total:home.total+1};}
+  if(name==='check_account_home')return homeRevision(db,{...actor,origin:'ai'});
+  if(name==='read_account_home'){const stamp=await homeRevision(db,{...actor,origin:'ai'});const home=await workspaceHome(db,{...actor,origin:'ai'},w.id,v);return {...home,...stamp,resources:[{id:preview.id,workspaceId:w.id,name:'Saved preview card',kind:'tracker',source:'preview',projectIds:[],status:'Preview',updatedAt:new Date().toISOString()},...home.resources],total:home.total+1};}
   if(name==='prepare_ai_revision')return f.prepareRenderedTracker({...actor,origin:'ai'},w.id,v.operation);
   if(name==='begin_app_update')return f.beginAppUpdate({...actor,origin:'ai'},w.id,v.componentId,v.expectedVersion);
   if(name==='finalize_app_preview')return f.finalizeAppPreview({...actor,origin:'ai'},w.id,v.previewId,v.digest);
@@ -40,6 +43,7 @@ export async function fixture(){
   if(name==='initialize_account')return {viewerId:actor.userId,workspaceId:w.id,workspaces:[w],types:await s.types(actor,w.id)};
   if(name==='list_project_sharing_members')return [];
   if(name==='list_workspace_projects')return f.nodes(actor,w.id);
+  if(name==='list_archived_items'){const {workspaceId,...query}=v;return archivedItems(f,actor,workspaceId??w.id,query);}
   if(name==='list_views')return [];
   if(name==='read_access_grid')return new AccessGrid(db).read(actor,w.id,v.subject);
   if(name==='prepare_tool_layout'){const {workspaceId,...request}=v;return prepareToolLayout(f,actor,w.id,request);}

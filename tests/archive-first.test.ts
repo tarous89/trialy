@@ -49,6 +49,7 @@ test('archive then restore keeps every field and brings automations back switche
  // Archived items are listed only for restore; default automation lists hide them.
  const apps=await run(()=>archivedItems(f,a,w.id,{kind:'apps'}));assert.equal(apps.count,1);assert.equal(apps.items[0].canDelete,true);assert.deepEqual(apps.items[0].keeps.tables.map((x:any)=>x.id),[table]);
  const automations=await run(()=>archivedItems(f,a,w.id,{kind:'automations'}));assert.deepEqual(automations.items.map((x:any)=>x.id).sort(),[monitor,action].sort());assert.ok(automations.items.every((x:any)=>!x.canDelete&&x.restoreVia.id===app));
+ for(const kind of ['apps','automations']){const summary=await run(()=>archivedItems(f,a,w.id,{kind,summaryOnly:true}));assert.equal(summary.count,kind==='apps'?1:2);assert.deepEqual(summary.items,[]);}
  const ai=await run(()=>archivedItems(f,{...a,origin:'ai'},w.id,{kind:'apps'}));assert.equal(ai.items[0].canDelete,false);
  // A live app with the same name makes the restored app "(restored)".
  await rawApp('Runway',[]);
@@ -171,6 +172,8 @@ test('installing a template whose app is archived offers restore before creating
  assert.match(path,/[?&]templateId=life\.test-runway(&|$)/);
  const web=express();web.use((req:any,_res,next)=>{req.actor=a;withActor(a,()=>next());});addWorkspaceApi(web,f);
  const listed=await request(web).get(path).expect(200);assert.deepEqual(listed.body.items.map((x:any)=>x.id),[app]);
+ await foundationClient(async(p:string)=>{path=p;return {};})('list_archived_items',{workspaceId:w.id,kind:'apps',templateId:'life.test-runway',summaryOnly:true});
+ const summary=await request(web).get(path).expect(200);assert.equal(summary.body.count,1);assert.deepEqual(summary.body.items,[]);assert.equal(summary.body.summaryOnly,true);
  await assert.rejects(()=>run(()=>installCatalogApp(f,a,w.id,{templateId:'life.test-runway',version:'1.0.0',digest,requestKey:randomUUID(),name:'Runway'})),/Restore your archived Runway app/);
 });
 
@@ -201,4 +204,41 @@ test('migration 060 recovers fields removed and automations deleted by app archi
  const s=(await pg.query<any>('SELECT enabled,deleted_at,archived_with_app_at FROM app_monitors WHERE id=$1',[suspended])).rows[0];
  assert.equal(s.enabled,false);assert.equal(s.deleted_at,null);assert.ok(s.archived_with_app_at);
  assert.ok((await pg.query<any>('SELECT deleted_at FROM app_monitors WHERE id=$1',[retired])).rows[0].deleted_at,'retired before archive stays retired');
+});
+
+test('archive summaries preserve owner, creator, ancestor, assistant and tenant visibility without inventories',async t=>{
+ const {pg,db,a,f,w,project,run,createTable,rawApp}=await fixture(t);
+ const table=await createTable('Counted table',['name']);
+ await pg.query("INSERT INTO records(id,type_id,workspace_id,data) VALUES($1,$2,$3,'{\"name\":\"Private value\"}')",[randomUUID(),table,w.id]);
+ const first=await rawApp('First private app',[{typeId:table,fields:['name']}],true),second=await rawApp('Second private app',[],true);
+ const queries:string[]=[],original=db.query.bind(db);db.query=async(q,v)=>{queries.push(q);return original(q,v);};
+ const compare=async(actor:any,kind:string,extra:any={})=>withActor(actor,async()=>{
+  queries.length=0;const detailed=await archivedItems(f,actor,w.id,{kind,...extra}),full=queries.length;
+  queries.length=0;const summary=await archivedItems(f,actor,w.id,{kind,...extra,summaryOnly:true}),count=queries.length;
+  assert.equal(summary.count,detailed.count);assert.deepEqual(summary.items,[]);
+  assert.doesNotMatch(JSON.stringify(summary),/Private value|First private app|Second private app|canDelete|keeps/);
+  assert.ok(!queries.some(q=>q.includes('archived_item_usage')||q.includes('count(*)::int FROM records')||q.includes('count(*) FROM app_monitors')));
+  return {full,count,total:summary.count};
+ });
+ const measured=await compare(a,'apps');assert.equal(measured.total,2);assert.equal(measured.full-measured.count,4);console.log('ARCHIVE_SUMMARY_PERFORMANCE',JSON.stringify(measured));
+ const empty=await createTable('Archived empty table',['gone']);await pg.query("UPDATE entity_types SET fields='[]',archived_at=now(),archived_fields=$2 WHERE id=$1",[empty,JSON.stringify([{field:{key:'gone',name:'Gone',kind:'text',ai:true},archivedAt:new Date().toISOString(),archivedBy:a.userId}])]);
+ assert.equal((await compare(a,'tables')).total,1);assert.equal((await compare(a,'fields',{typeId:empty})).total,1);
+ const creator={userId:randomUUID(),origin:'human' as const};
+ await pg.query('INSERT INTO users(id,subject,email,name) VALUES($1::uuid,$1::text,$2,$3)',[creator.userId,'creator@example.invalid','Creator']);
+ const tenant=(await pg.query<any>('SELECT tenant_id FROM workspaces WHERE id=$1',[w.id])).rows[0].tenant_id;
+ await pg.query("INSERT INTO memberships(tenant_id,user_id,role) VALUES($1,$2,'editor')",[tenant,creator.userId]);
+ await pg.query("INSERT INTO workspace_access(workspace_id,user_id,role,ai_enabled) VALUES($1,$2,'editor',true)",[w.id,creator.userId]);
+ await pg.query('UPDATE workspace_components SET created_by=$2 WHERE id=$1',[first,creator.userId]);
+ assert.equal((await compare(creator,'apps')).total,1);assert.equal((await compare(creator,'tables')).total,0);assert.equal((await compare(creator,'fields',{typeId:empty})).total,0);
+ await pg.query('UPDATE workspace_nodes SET allowed_users=$2 WHERE id=$1',[project,JSON.stringify([a.userId])]);assert.equal((await compare(creator,'apps')).total,0);
+ await pg.query('UPDATE workspace_nodes SET allowed_users=NULL WHERE id=$1',[project]);
+ await pg.query('UPDATE workspace_components SET allowed_users=$2 WHERE id=$1',[first,JSON.stringify([a.userId])]);assert.equal((await compare(creator,'apps')).total,0);
+ await pg.query('UPDATE workspace_components SET allowed_users=NULL WHERE id=$1',[first]);
+ await pg.query('UPDATE workspaces SET permission_rules=$2,ai_enabled=true,claude_enabled=true WHERE id=$1',[w.id,JSON.stringify([{subject:a.userId,kind:'tool',resourceId:second,read:'deny',write:'inherit'}])]);
+ assert.equal((await compare(a,'apps')).total,1);
+ await pg.query('UPDATE workspace_components SET ai_enabled=false WHERE id=$1',[first]);
+ assert.equal((await compare({...a,origin:'ai'},'apps')).total,0);
+ assert.equal((await compare({...a,origin:'ai',assistant:'claude'},'apps')).total,0);
+ await assert.rejects(()=>run(()=>archivedItems(f,a,randomUUID(),{kind:'apps',summaryOnly:true})),/Workspace not found/);
+ const outsider={userId:randomUUID(),origin:'human' as const};await assert.rejects(()=>withActor(outsider,()=>archivedItems(f,outsider,w.id,{kind:'apps',summaryOnly:true})),/Workspace not found/);
 });

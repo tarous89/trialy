@@ -16,10 +16,12 @@ const remember=(key:string,open:boolean)=>{try{sessionStorage.setItem(key,open?'
 /** layout follows the page's own list: Apps grid → muted cards in the same columns; the narrow Database table tree → compact. */
 export function ArchivedItems({call,kind,typeId,refreshKey,onChanged,layout='list'}:{call:Call;kind:Kind;typeId?:string;refreshKey?:unknown;onChanged?:()=>void;layout?:'list'|'grid'|'compact'}){
  const storageKey='trialy-archived:'+kind,listId=useId();
- const [data,setData]=useState<any>(null),[open,setOpen]=useState(()=>remembered(storageKey)),[busy,setBusy]=useState(''),[error,setError]=useState(''),[confirming,setConfirming]=useState<{item:any;action:'restore'|'delete';review?:any}|null>(null),[reload,setReload]=useState(0);
- useEffect(()=>{let live=true;call('list_archived_items',{kind,...(typeId?{typeId}:{})}).then(r=>{if(live)setData(r);}).catch(()=>{if(live)setData(null);});return()=>{live=false;};},[kind,typeId,refreshKey,reload]);
+ const [data,setData]=useState<any>(null),[open,setOpen]=useState(()=>remembered(storageKey)),[loading,setLoading]=useState(false),[readError,setReadError]=useState(''),[busy,setBusy]=useState(''),[error,setError]=useState(''),[confirming,setConfirming]=useState<{item:any;action:'restore'|'delete';review?:any}|null>(null),[reload,setReload]=useState(0);
+ useEffect(()=>{let live=true;setLoading(true);setReadError('');setConfirming(null);setData((old:any)=>old?{...old,items:[]}:null);
+  call('list_archived_items',{kind,...(typeId?{typeId}:{}),...(!open?{summaryOnly:true}:{})}).then(r=>{if(live)setData(r);}).catch(()=>{if(live){setData(null);setReadError('Archived '+LABEL[kind]+' could not be loaded.');}}).finally(()=>{if(live)setLoading(false);});return()=>{live=false;};},[kind,typeId,refreshKey,reload,open]);
  const items:any[]=data?.items??[];
- if(!items.length)return null;
+ if(!data?.count&&!readError&&!open)return null;
+ if(data?.count===0&&!loading&&!readError)return null;
  const label=LABEL[kind];
  function toggle(){const next=!open;setOpen(next);remember(storageKey,next);}
  const done=()=>{setConfirming(null);setReload(n=>n+1);onChanged?.();};
@@ -46,7 +48,9 @@ export function ArchivedItems({call,kind,typeId,refreshKey,onChanged,layout='lis
  const keeps=(item:any)=>{const tables=item.keeps?.tables??[],records=tables.reduce((n:number,t:any)=>n+Number(t.records??0),0);return `Deleting this app keeps its ${plural(tables.length,'table')} and ${plural(records,'record')} in Database.`;};
  const meta=(item:any)=>[item.archivedAt&&`Archived ${date(item.archivedAt)}`,item.kind==='app'&&item.keeps&&plural(item.keeps.tables.length,'table'),item.kind==='automation'&&`App: ${item.appName}`,item.kind==='table'&&`${plural(item.records??0,'record')} · ${plural(item.fields??0,'archived field')}`,item.kind==='field'&&item.fieldKind].filter(Boolean).join(' · ');
  return <section className={`ty-archived ty-archived--${layout}`} aria-label={`Archived ${label}`}>
-  <button type="button" className="ty-archived-toggle" aria-expanded={open} aria-controls={listId} onClick={toggle}>{open?`Hide archived ${label}`:`Show archived ${label} (${items.length})`}</button>
+  {(data?.count>0||open)&&<button type="button" className="ty-archived-toggle" aria-expanded={open} aria-controls={listId} onClick={toggle}>{open?`Hide archived ${label}`:`Show archived ${label} (${data.count})`}</button>}
+  {readError&&<p role="alert" className="ty-archived-error">{readError} <button type="button" onClick={()=>setReload(n=>n+1)}>Retry</button></p>}
+  {open&&loading&&<p role="status">Loading archived {label}…</p>}
   {error&&<p role="alert" className="ty-archived-error">{error}</p>}
   {open&&<ul id={listId} className="ty-archived-list">{items.map(item=>{const key=item.key??item.id,reasonId=listId+'-'+key;return <li key={key} className="ty-archived-item">
    <div className="ty-archived-body"><strong className="ty-archived-name">{item.name}</strong> <span className="ty-archived-badge">Archived</span>

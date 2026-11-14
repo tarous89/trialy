@@ -1,4 +1,6 @@
 import {accountPage as page} from './account-page.js';
+import {measuredSessionPool} from './session-metrics.js';
+import {sessionWritePool} from './session-writes.js';
 import {appSignInReturn} from '../shared/app-route.js';
 import {appPublicUrl,oauthPublicUrl} from '../shared/public-url.js';
 import {withActor} from '../db/context.js';
@@ -26,7 +28,7 @@ export function configureAuth(app:Express,db:Postgres,env:NodeJS.ProcessEnv){
  appPublicUrl(env);
  const production=env.NODE_ENV==='production',base=oauthPublicUrl(env);
  if(production&&!base.startsWith('https://'))throw new Error('Production requires HTTPS');if(!env.SESSION_SECRET||env.SESSION_SECRET.length<32)throw new Error('SESSION_SECRET must have 32 characters');if(production)app.set('trust proxy',1);
- const Store=connectPg(session);app.use(session({name:'trialy_session',secret:env.SESSION_SECRET,store:new Store({pool:db.pool,tableName:'session'}),resave:false,saveUninitialized:false,rolling:true,cookie:{httpOnly:true,secure:production,sameSite:'lax',maxAge:30*24*3600000}}));
+ const Store=connectPg(session);app.use(session({name:'trialy_session',secret:env.SESSION_SECRET,store:new Store({pool:sessionWritePool(measuredSessionPool(db.pool)),tableName:'session'}),resave:false,saveUninitialized:false,rolling:true,cookie:{httpOnly:true,secure:production,sameSite:'lax',maxAge:30*24*3600000}}));
  return addLocalAuth(app,db,base,env.MFA_ENCRYPTION_KEY??env.SESSION_SECRET,env.LEGACY_MCP_RESOURCE_URL);
 }
 // Sessions may be injected by focused tests; production always uses PostgreSQL above.

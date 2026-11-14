@@ -1,4 +1,5 @@
-export function foundationClient(api:(path:string,method?:string,body?:unknown)=>Promise<any>){return async(name:string,v:Record<string,any>)=>{
+import {workspaceRequestOptions,type WorkspaceRequestOptions} from '../shared/workspace-request.js';
+export function foundationClient(api:(path:string,method?:string,body?:unknown,options?:WorkspaceRequestOptions)=>Promise<any>){return async(name:string,v:Record<string,any>,options?:WorkspaceRequestOptions)=>{
  const b=`/api/workspaces/${v.workspaceId}/foundation`;
  const o=`/api/workspaces/${v.workspaceId}/organization`;
  const c=`/api/workspaces/${v.workspaceId}/connectors`;
@@ -69,8 +70,9 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown)=
  read_effective_access:[`/api/workspaces/${v.workspaceId}/effective-access`],
  explain_effective_access:[`/api/workspaces/${v.workspaceId}/effective-access/${v.subject}`],
  update_effective_access:[`/api/workspaces/${v.workspaceId}/effective-access`,'POST',v.change],
- list_archived_items:[`${o}/archived?kind=${encodeURIComponent(v.kind)}${v.typeId?'&typeId='+encodeURIComponent(v.typeId):''}${v.templateId?'&templateId='+encodeURIComponent(v.templateId):''}`],
+ list_archived_items:[`${o}/archived?kind=${encodeURIComponent(v.kind)}${v.typeId?'&typeId='+encodeURIComponent(v.typeId):''}${v.templateId?'&templateId='+encodeURIComponent(v.templateId):''}${v.summaryOnly===undefined?'':'&summaryOnly='+String(v.summaryOnly)}`],
  delete_archived_item:[`${o}/archived/delete`,'POST',clean],
+ check_account_home:['/api/account/home/revision'],
  read_account_home:['/api/account/home','POST',Object.fromEntries(Object.entries(v).filter(([k])=>k!=='workspaceId'))],
  read_account_schema:['/api/account/schema','POST',{offset:v.offset??0,limit:v.limit??25}],
  reference_options:[`/api/workspaces/${v.workspaceId}/types/${v.typeId}/references/${encodeURIComponent(v.field)}?q=${encodeURIComponent(v.query??'')}&offset=${v.offset??0}`],
@@ -95,6 +97,6 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown)=
  run_code:[`${b}/runs`,'POST',{program:v.program,requestKey:v.requestKey}],list_code_runs:[`${b}/runs`],inspect_code_run:[`${b}/runs/${v.runId}`],cancel_code_run:[`${b}/runs/${v.runId}/cancel`,'POST',{}],confirm_code_changes:[`${b}/runs/${v.runId}/commit`,'POST',{digest:v.digest,confirmed:v.confirmed}],
  list_functions:[`${b}/functions`],read_function_revision:[`${b}/revisions/${v.revisionId}`],preview_function:[`${b}/functions/preview`,'POST',v.function],confirm_function:[`${b}/functions/${v.previewId}/save`,'POST',{digest:v.digest,confirmed:v.confirmed}],invoke_function:[`${b}/invoke`,'POST',{invocation:v.invocation,requestKey:v.requestKey}],
  list_execution_grants:[`${b}/grants`],confirm_execution_grant:[`${b}/grants`,'POST',{...v.grant,confirmed:v.confirmed}],revoke_execution_grant:[`${b}/grants/${v.grantId}`,'DELETE'],list_code_schedules:[`${b}/schedules`],confirm_code_schedule:[`${b}/schedules`,'POST',{schedule:v.schedule,confirmed:v.confirmed}],pause_code_schedule:[`${b}/schedules/${v.scheduleId}/pause`,'POST',{paused:v.paused}]
- };const route=routes[name];if(!route)throw new Error('Unknown foundation action');return api(...route);
+ };const route=routes[name];if(!route)throw new Error('Unknown foundation action');return api(route[0],route[1],route[2],workspaceRequestOptions(name,v,options));
 };}
 

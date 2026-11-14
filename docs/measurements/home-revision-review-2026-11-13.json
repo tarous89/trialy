@@ -1,0 +1,511 @@
+{
+  "baselineCommit": "38696a9873084327c59a192d0c48d1a499a6ea88",
+  "variant": "count-XOR-SHA256; UUID text tuples; active project memberships only",
+  "environment": "Node 24.22.1, PGlite 0.5.8 / PostgreSQL WASM; runtime role and RLS; local synthetic fixtures",
+  "samples": "Six calls per case; discard warm-up; median and observed maximum of five. Explain follows timing.",
+  "scope": "Aggregate query and transaction/context setup; authorized workspace IDs supplied. Excludes HTTP/session/workspace directory/network.",
+  "results": [
+    {
+      "version": "before",
+      "workspaceCount": 1,
+      "documents": 10000,
+      "projectMemberships": 10000,
+      "activeMemberships": 10000,
+      "medianMs": 518.2,
+      "maxMs": 581.6,
+      "replyBytes": 1811,
+      "sortNodes": [
+        {
+          "rows": 18,
+          "method": "quicksort",
+          "spaceKb": 18
+        },
+        {
+          "rows": 1,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 1,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 10000,
+          "method": "quicksort",
+          "spaceKb": 647
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 10000,
+          "method": "quicksort",
+          "spaceKb": 647
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 1,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 1,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        }
+      ]
+    },
+    {
+      "version": "after",
+      "workspaceCount": 1,
+      "documents": 10000,
+      "projectMemberships": 10000,
+      "activeMemberships": 10000,
+      "medianMs": 528.4,
+      "maxMs": 577.4,
+      "replyBytes": 1811,
+      "sortNodes": [
+        {
+          "rows": 18,
+          "method": "quicksort",
+          "spaceKb": 18
+        }
+      ]
+    },
+    {
+      "version": "before",
+      "workspaceCount": 3,
+      "documents": 30000,
+      "projectMemberships": 30000,
+      "activeMemberships": 30000,
+      "medianMs": 1697.5,
+      "maxMs": 1712.6,
+      "replyBytes": 1811,
+      "sortNodes": [
+        {
+          "rows": 18,
+          "method": "quicksort",
+          "spaceKb": 18
+        },
+        {
+          "rows": 3,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 3,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 30000,
+          "method": "quicksort",
+          "spaceKb": 1684
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 30000,
+          "method": "quicksort",
+          "spaceKb": 1684
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 3,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 1,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        }
+      ]
+    },
+    {
+      "version": "after",
+      "workspaceCount": 3,
+      "documents": 30000,
+      "projectMemberships": 30000,
+      "activeMemberships": 30000,
+      "medianMs": 1634.1,
+      "maxMs": 1697.5,
+      "replyBytes": 1811,
+      "sortNodes": [
+        {
+          "rows": 18,
+          "method": "quicksort",
+          "spaceKb": 18
+        }
+      ]
+    },
+    {
+      "version": "before",
+      "workspaceCount": 1,
+      "documents": 50000,
+      "projectMemberships": 50000,
+      "activeMemberships": 5000,
+      "medianMs": 2687.4,
+      "maxMs": 2731.6,
+      "replyBytes": 1811,
+      "sortNodes": [
+        {
+          "rows": 18,
+          "method": "quicksort",
+          "spaceKb": 18
+        },
+        {
+          "rows": 1,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 1,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 50000,
+          "method": "quicksort",
+          "spaceKb": 2978
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 50000,
+          "method": "quicksort",
+          "spaceKb": 2978
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 1,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 1,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        }
+      ]
+    },
+    {
+      "version": "after",
+      "workspaceCount": 1,
+      "documents": 50000,
+      "projectMemberships": 50000,
+      "activeMemberships": 5000,
+      "medianMs": 1536.3,
+      "maxMs": 1572.6,
+      "replyBytes": 1811,
+      "sortNodes": [
+        {
+          "rows": 18,
+          "method": "quicksort",
+          "spaceKb": 18
+        }
+      ]
+    },
+    {
+      "version": "before",
+      "workspaceCount": 3,
+      "documents": 150000,
+      "projectMemberships": 150000,
+      "activeMemberships": 15000,
+      "medianMs": 8124.4,
+      "maxMs": 8206.8,
+      "replyBytes": 1811,
+      "sortNodes": [
+        {
+          "rows": 18,
+          "method": "quicksort",
+          "spaceKb": 18
+        },
+        {
+          "rows": 3,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 3,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 150000,
+          "method": "external merge",
+          "spaceKb": 4416
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 150000,
+          "method": "external merge",
+          "spaceKb": 4416
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 3,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 1,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        },
+        {
+          "rows": 0,
+          "method": "quicksort",
+          "spaceKb": 17
+        }
+      ]
+    },
+    {
+      "version": "after",
+      "workspaceCount": 3,
+      "documents": 150000,
+      "projectMemberships": 150000,
+      "activeMemberships": 15000,
+      "medianMs": 4519.7,
+      "maxMs": 4627.1,
+      "replyBytes": 1811,
+      "sortNodes": [
+        {
+          "rows": 18,
+          "method": "quicksort",
+          "spaceKb": 18
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Synthetic WASM timings are not native PostgreSQL or production latency.",
+    "Five samples do not establish reliable tail latency.",
+    "Metadata scans and RLS work still grow with row count.",
+    "All-active control is roughly parity, not a universal speed gain."
+  ]
+}

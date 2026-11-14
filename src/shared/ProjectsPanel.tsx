@@ -1,3 +1,4 @@
+import type {WorkspaceRequestOptions} from './workspace-request.js';
 import {PageBack} from './ui/PageNavigation.js';
 import {continueCreationInChat} from './creation.js';
 import {ChangeSummary} from './ChangeSummary.js';
@@ -8,7 +9,7 @@ import {FrontendCodeRuntime} from './FrontendCodeRuntime.js';
 import {ProjectSharing} from './ProjectSharing.js';
 import {ComponentEditor} from './ComponentEditor.js';
 import React,{useEffect,useState} from 'react';
-type Call=(name:string,args:Record<string,unknown>)=>Promise<any>;
+type Call=(name:string,args:Record<string,unknown>,options?:WorkspaceRequestOptions)=>Promise<any>;
 export function ProjectsPanel({workspaceId,types,call,incoming,creationInChat=false}:{creationInChat?:boolean;workspaceId:string;types:any[];call:Call;incoming?:any}){
  const [collections,setCollections]=useState(false);
  const [shareUrl,setShareUrl]=useState(''),[operations,setOperations]=useState<any>(null);
@@ -25,7 +26,7 @@ export function ProjectsPanel({workspaceId,types,call,incoming,creationInChat=fa
  const [autoWrite,setAutoWrite]=useState(false),[expiresAt,setExpiresAt]=useState('');
  const [purpose,setPurpose]=useState(''),[criteria,setCriteria]=useState(''),[sourcePolicy,setSourcePolicy]=useState('Information supplied through authorized work on this project'),[basis,setBasis]=useState('tracking');
  const [fieldKeys,setFieldKeys]=useState<string[]>([]),[create,setCreate]=useState(true),[update,setUpdate]=useState(true),[links,setLinks]=useState(false);
- const invoke=(tool:string,args:Record<string,unknown>={})=>call(tool,{workspaceId,...args});
+ const invoke=(tool:string,args:Record<string,unknown>={},options?:WorkspaceRequestOptions)=>call(tool,{workspaceId,...args},options);
  async function refresh(){const [n,s,c]=await Promise.all([invoke('list_workspace_projects'),invoke('list_maintenance_scopes'),invoke('list_project_components',{includeArchived:true}).catch((e:Error)=>{setNotice('Components unavailable: '+e.message);return [];})]);setComponents(c);setNodes(n.nodes);setScopes(s);}
  async function act(fn:()=>Promise<void>){setError('');setNotice('');setBusy(true);try{await fn();}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
  useEffect(()=>{void act(refresh);},[workspaceId]);

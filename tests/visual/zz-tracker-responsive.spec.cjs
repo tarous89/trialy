@@ -59,10 +59,13 @@ for(const surface of ['plugin','app']){
   await page.route('**/*',async route=>{const r=requestBody(route.request());if(r?.event?.action==='tab:0'){seen++;await gate;}await route.continue();});
   const {host,tracker}=await open(page,surface);
   await expect.poll(()=>seen).toBe(1);
+  const progress=host.getByRole('progressbar',{name:'Working',exact:true});
+  await page.waitForTimeout(250);await expect(progress).toHaveCount(0);
   await tracker.getByRole('button',{name:'Tab 0',exact:true}).click();
+  await expect(progress).toBeVisible();
   // Hold the server result while the foreground click is handled.
   await page.waitForTimeout(200);expect(seen).toBe(1);release();
-  await expect(tracker.locator('tbody tr')).toHaveCount(17);
+  await expect(tracker.locator('tbody tr')).toHaveCount(17);await expect(progress).toHaveCount(0);
   await page.unroute('**/*');
   for(const i of [1,2,3]){await tracker.getByRole('button',{name:'Tab '+i,exact:true}).click();await expect(tracker.locator('tbody tr').first()).toContainText('Tab '+i+' value');}
   // All four pages are authorized and warm. A navigation read would now fail.

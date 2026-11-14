@@ -1,14 +1,15 @@
+import type {WorkspaceRequestOptions} from './workspace-request.js';
 import {ChangeSummary} from './ChangeSummary.js';
 import React,{useEffect,useState} from 'react';
 import {ComponentEditor} from './ComponentEditor.js';
 import {CollectionsPanel} from './CollectionsPanel.js';
 import {QuestionEditor} from '../web/QuestionEditor.js';
 import type {Question} from './questions.js';
-type Call=(name:string,args:any)=>Promise<any>;
+type Call=(name:string,args:any,options?:WorkspaceRequestOptions)=>Promise<any>;
 export function ResourcesPanel({workspaceId,kind,projectId='',types,call}:{workspaceId:string;kind:'tracker'|'form'|'visualization';projectId?:string;types:any[];call:Call}){
  const [items,setItems]=useState<any[]>([]),[projects,setProjects]=useState<any[]>([]),[selected,setSelected]=useState<any>(null),[preview,setPreview]=useState<any>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),[url,setUrl]=useState('');
  const [collections,setCollections]=useState(false),[newForm,setNewForm]=useState(false),[name,setName]=useState(''),[typeId,setTypeId]=useState(''),[keys,setKeys]=useState<string[]>([]),[questions,setQuestions]=useState<Question[]>([]),[days,setDays]=useState(30);
- const invoke=(name:string,args:any={})=>call(name,{workspaceId,...args});
+ const invoke=(name:string,args:any={},options?:WorkspaceRequestOptions)=>call(name,{workspaceId,...args},options);
  async function act(fn:()=>Promise<void>){setBusy(true);setError('');try{await fn();}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
  async function refresh(){const [rows,nodes]=await Promise.all([invoke('list_project_components',projectId?{projectId,includeArchived:true}:{includeArchived:true}),invoke('list_workspace_projects')]);setItems(rows);setProjects(nodes.nodes.filter((p:any)=>p.kind==='project'));}
  useEffect(()=>{setSelected(null);setPreview(null);setNewForm(false);setCollections(false);},[workspaceId,kind]);

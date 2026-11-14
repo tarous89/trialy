@@ -1,9 +1,10 @@
+import {homeRevision} from '../workspace/home-revision.js';
 import {CLAUDE_MCP_PATH} from './local-oauth.js';
 import {addSubscription} from './subscription.js';
 import {addPublicAppServices} from './app-services.js';
 import {bundledAppFont} from '../workspace/design-quality.js';
 import {appPublicUrl,oauthPublicUrl} from '../shared/public-url.js';
-import {withRequestMetrics} from '../db/metrics.js';
+import {createRequestMetrics,metricSummary,withRequestMetrics} from '../db/metrics.js';
 import {AccessGrid} from '../domain/access-grid.js';
 import {AccessManagement} from '../domain/access-management.js';
 import {accountCatalog} from '../workspace/catalog.js';
@@ -33,7 +34,16 @@ export function baseApp() {
   res.set('Cache-Control','public, max-age=0, must-revalidate');res.set('Cross-Origin-Resource-Policy','cross-origin');res.type('html').send(await frontendFrameDocument(bundledAppFont));
  });
  app.use(express.json({verify:(req,_res,buffer)=>{if(req.url==='/notifications/webhook')(req as any).rawBody=Buffer.from(buffer);},limit:'36mb'}));app.use(rateLimit({windowMs:60000,limit:180,standardHeaders:'draft-8',legacyHeaders:false,skip:req=>req.path===CLAUDE_MCP_PATH&&!!req.get('authorization')}));
- app.use((req,res,next)=>{const requestId=randomUUID(),started=performance.now(),metrics={queryCount:0,databaseMs:0,poolWaitMs:0,metadataHits:0};res.set('X-Request-ID',requestId);res.on('finish',()=>{if(process.env.NODE_ENV!=='test')console.log(JSON.stringify({requestId,method:req.method,path:req.path,...(req.path==='/mcp'&&['events/list','events/subscribe','events/unsubscribe'].includes(req.body?.method)?{mcpMethod:req.body.method}:{}),...(req.path==='/mcp'&&req.body?.method==='tools/call'&&['run_component_frontend','prepare_tool_layout','confirm_workspace_change','read_project_component','check_component_access'].includes(req.body.params?.name)?{tool:req.body.params.name}:{}),durationMs:Math.round(performance.now()-started),queryCount:metrics.queryCount,databaseMs:Math.round(metrics.databaseMs),poolWaitMs:Math.round(metrics.poolWaitMs),metadataHits:metrics.metadataHits,status:res.statusCode,time:new Date().toISOString()}));});withRequestMetrics(metrics,next);});
+ app.use((req,res,next)=>{
+  const requestId=randomUUID(),path=req.path,started=performance.now(),metrics=createRequestMetrics();res.set('X-Request-ID',requestId);
+  res.on('finish',()=>{if(process.env.NODE_ENV!=='test'){
+   const mcp=path==='/mcp'||path===CLAUDE_MCP_PATH;
+   console.log(JSON.stringify({requestId,method:req.method,path,
+    ...(mcp&&['events/list','events/subscribe','events/unsubscribe'].includes(req.body?.method)?{mcpMethod:req.body.method}:{}),
+    ...(mcp&&req.body?.method==='tools/call'&&['run_component_frontend','prepare_tool_layout','confirm_workspace_change','read_project_component','check_component_access','read_account_home','check_account_home'].includes(req.body.params?.name)?{tool:req.body.params.name}:{}),
+    durationMs:Math.round(performance.now()-started),...metricSummary(metrics),status:res.statusCode,time:new Date().toISOString()}));
+  }});withRequestMetrics(metrics,next);
+ });
  app.get('/health',(_req,res)=>res.json({status:'ok',service:'trialy'}));return app;
 }
 export function addApi(app:express.Express,s:Service,human:RequestHandler) {
@@ -53,7 +63,11 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  app.get('/api/workspaces/:workspaceId/access-grid/reviews/:reviewId',async(req,res)=>res.json(await new AccessGrid(s.db).draft(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.reviewId))));
  app.get('/api/workspaces/:workspaceId/access-grid',async(req,res)=>res.json(await new AccessGrid(s.db).read(req.actor!,id.parse(req.params.workspaceId),z.string().optional().parse(req.query.subject))));
  app.post('/api/workspaces/:workspaceId/access-grid',async(req,res)=>res.json(await new AccessGrid(s.db).save(req.actor!,id.parse(req.params.workspaceId),req.body)));
- app.post('/api/account/home',async(req,res)=>res.json(await accountHome(s.db,req.actor!,req.body)));
+ app.get('/api/account/home/revision',async(req,res)=>res.json(await homeRevision(s.db,req.actor!)));
+ app.post('/api/account/home',async(req,res)=>{
+  const controller=new AbortController(),cancel=()=>{if(!res.writableFinished)controller.abort();};res.on('close',cancel);
+  try{res.json(await accountHome(s.db,req.actor!,req.body,controller.signal));}catch(e){if(!controller.signal.aborted)throw e;}finally{res.off('close',cancel);}
+ });
  app.post('/api/support',rateLimit({windowMs:3600000,limit:10}),async(req,res)=>{const input=z.object({subject:z.string().trim().min(1).max(160),message:z.string().trim().min(1).max(5000)}).strict().parse(req.body);const requestId=randomUUID();await s.db.query('INSERT INTO support_requests(id,user_id,subject,message) VALUES($1,$2,$3,$4)',[requestId,req.actor!.userId,input.subject,input.message]);res.status(201).json({id:requestId});});
  app.get('/api/me',async(req,res)=>{const u=(await s.db.query('SELECT id,name,email,first_name,last_name FROM users WHERE id=$1',[req.actor!.userId])).rows[0];res.json({user:u,csrf:req.session?.csrf,workspaces:await s.workspaces(req.actor!)});});
  app.post('/api/workspaces',async(req,res)=>res.status(201).json(await s.createWorkspace(req.actor!,z.string().trim().min(1).max(100).parse(req.body.name))));
