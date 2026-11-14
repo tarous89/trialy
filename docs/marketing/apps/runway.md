@@ -26,6 +26,7 @@
 | Finmark alternatives (B4) | https://trialagents.com/apps/finmark-alternatives-biotech | Published via PR #198, release `36a19c75eb4cd1c17f75f6c405f2b4b73932fc7d`; live verified 13 November 2026 23:07 UTC. |
 | LivePlan alternatives (B5) | https://trialagents.com/apps/liveplan-alternatives-biotech | Published via PR #199, release `9a808396e45a4a91c558d559a514499af4161149`; live verified 14 November 2026 01:14 CET. |
 | Fathom alternatives (B6) | https://trialagents.com/apps/fathom-alternatives-biotech | Published via PR #200, release `6496bc32f293ac9407d995a7cf6b602efdafeb4e`; live verified 14 November 2026 02:08 CET. |
+| AI-native FP&A software (B7) | https://trialagents.com/apps/ai-native-fpa-software-startups | Published via PR #201, release `c06d8d07ea083c2b4268095b9092d02b54506781`; live verified 14 November 2026 03:00 CET. |
 | App pages index | https://trialagents.com/apps | Published; production URL checked 12 November 2026 |
 
 These are intended canonical URLs. Do not assert that a URL is live until checked on the production CDN.
@@ -521,3 +522,14 @@ This supersedes B6 claim/source/pending checkpoints. **20 published; 27 unfinish
 
 
 - **B7 merged; deployment pending/unverified — 14 November 2026, 02:57 CET:** PR #201 merged as `c06d8d07ea083c2b4268095b9092d02b54506781` after exact head `334e14994bdd9da82396930d53be62848a584ea5` passed predeploy `43542933094`. Desktop 1440px/mobile 390px artifact `14092871669` inspected: readable layout, genuine screenshots, final CTA, shared chrome; mobile table uses its own scroll region. Await existing automatic build and verify https://trialagents.com/apps/ai-native-fpa-software-startups. Resume this release before another topic. Tracking unchanged; no synthetic production events.
+
+
+### B7 published and live verified — 14 November 2026, 03:00 CET
+
+- **Published:** [AI-native FP&A software for startups: compare the actions, not the label](https://trialagents.com/apps/ai-native-fpa-software-startups). Four options compared by supported action and evidence, with a fictional hiring-change demonstration brief. Retitled to avoid unsupported rankings; Runway's focused monthly cash scope and competitor AI capabilities are explicit.
+- **Release:** [PR #201](https://github.com/tarous89/trialagents-public/pull/201), exact head `334e14994bdd9da82396930d53be62848a584ea5`, merged release `c06d8d07ea083c2b4268095b9092d02b54506781` at 02:57 CET. Predeploy `43542933094` passed both jobs, tests, full snapshot, metadata/discovery and browser/site checks. Desktop 1440px/mobile 390px artifact `14092871669` inspected; genuine images, readable layout, final CTA and shared chrome; no page overflow or browser errors. Comparison table retains its own mobile scroll region.
+- **Deployment:** existing automatic GitHub-connected build succeeded (Workers `132289954489`); production check `132289330934` succeeded. Early 404s resolved within the bounded polling window. No dashboard authentication or manual deployment.
+- **Independent live QA:** HTTP 200 text/html, no noindex directive/header, robots allows crawling; exact reviewed fragment and shared CSS match. One H1, expected title/description, self-canonical, Article/BreadcrumbList schema and publication date verified. Shared header/footer match homepage; one final Start with Runway CTA. All 15 checked source/page/image/CTA/analytics URLs return 200. /apps listing, one sitemap.xml canonical entry, llms.txt and llm.xml verified.
+- **Tracking preserved:** identical homepage loader `/_snapshot/query-assets/114933b27c521a75f333.js` and client `/_snapshot/query-assets/c251da7b4969f7c85048.js`, both HTTP 200. No tracking scripts/configuration/events/consent/collectors/attribution changed; no synthetic production events sent.
+
+This supersedes B7 claim/source/pending checkpoints. **21 published; 26 unfinished**, including owner-deferred A9. **Next eligible: B8, Excel and Google Sheets alternatives for biotech budgeting**, subject to fresh evidence, queue, duplicate and claim checks. Only B7 was newly published in this run. Search indexing, rankings, real-user performance and assistant citations remain unverified.
