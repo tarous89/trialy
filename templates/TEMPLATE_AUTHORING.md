@@ -1,6 +1,20 @@
 # TrialAgents template authoring standard
 
-Version: 1.3.26
+Version: 1.3.27
+
+## Optional app automation declarations (1.3.27)
+
+The platform contract is `src/automations/recipes-schema.ts`. Catalog entries and custom app manifests may declare `recommendedAutomations` (at most ten complete install offers) and `automationFeatures` (at most thirty later setup features). These are available only when `APP_AUTOMATION_RECIPES_ENABLED=true`. Do not change an approved template version or silently enable existing installations; publish a new draft version for separate approval.
+
+Each recipe has a unique `key` across both lists, `name`, concise `description`, `trigger`, and exactly one of `research` or `email`. `lifetimeDays` is 1–365 (default 365). Portable triggers are calendar, once, record_date with `role` instead of `typeId`, database with `role`, or `{kind:"after",recipe:"research_key",when:"meaningful"}` for a separate email. Research declares `objective`, `instructions`, `sourcePolicy` and `readBindings:[{role,fields}]`. Email declares `subject`, `text`, and optional per-record `fields`. Neither declaration contains another installation's table or automation IDs. Install resolves final roles; a custom manifest can supply `automationRoles:{role:tableId}` within its app bindings. A record-specific feature also declares `contextRole`, matching its trigger role; it belongs in `automationFeatures`, never install recommendations.
+
+Research defaults to proposals, with no implicit write grants. Use existing separately reviewed custom automation/maintenance APIs for direct writes. Follow-up email consumes the exact same app's parent definition/version. `when:"meaningful"` includes verified writes or a completed run's typed `findings:[{title,detail,relevant:true}]`; `when:"completed"` includes completed reports with no changes. No-update, failed and test runs cannot trigger ordinary follow-up email.
+
+Optional `email.summaryBinding` or `research.briefBinding` names an existing reviewed app execution binding. Approval pins its immutable revision and rejects write/proposal capabilities, document reads or an attached grant. A summary returns `{nonEmpty:boolean,text:string,subject?:string}` (text ≤20,000 characters); empty output sends nothing. A brief returns `{context:...}` (≤64,000 serialized characters); all reads must fit the research's declared fields. Both execute through the existing isolated function queue and retain its execution/time/output limits. Do not insert or evaluate source code in record fields. Missing bindings leave setup pending/blocked without failing the app.
+
+Optional `email.memberField` references a declared field containing a registered workspace member UUID. It routes to that current member; blank uses the selected recipients (owner by default). It never treats an arbitrary record email address as permission to send. Access is rechecked at delivery; unsent collecting reminders can be rerouted after reassignment. Date recipes catch up over seven local calendar days and reuse the occurrence ledger. Monthly calendars accept `monthRule:{kind:"weekday",nth:1..5,weekday:0..6}` or `{kind:"business_day",nth:1..5}`; business days mean Monday–Friday, without a holiday calendar. Absent fifth weekdays are skipped.
+
+App buttons can navigate to Automations → From app features. A business-data save is not automation consent. Installation shows concise default-on rows, and Add app approves the unchanged selection. Do not add a second app-local scheduler, enable calls on render/save, or a mandatory second confirmation. ChatGPT/Claude discover with `read_app_automation_features`, select a contextual record with `read_app_automation_feature_contexts`, prepare with `prepare_app_automation_feature`, and use the exact `confirm_app_service_review` route. Inspect setup and readiness before claiming anything is active. Examples and integration fixtures live in `tests/automation-recipes.test.ts`.
 
 This is the living engineering contract for templates served by TrialAgents. Update it when a verified renderer, lifecycle or host-integration lesson changes. Retrieve the current copy with `read_app_template_guidance(resource:"authoring")`; follow `nextOffset` to the end. The response includes a version and content hash. Packaged plugin examples are not the catalog.
 

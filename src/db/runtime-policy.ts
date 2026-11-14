@@ -8,7 +8,7 @@ export async function runtimeRoleAudit(db:Connection){
  has_table_privilege(current_user,c.oid,'DELETE') AS can_delete
  FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind='r'`)).rows;
  const schema=(await db.query("SELECT has_schema_privilege(current_user,'public','CREATE') AS can_create")).rows[0];
- const immutable=new Set(['document_versions','document_payloads','revisions','audit_events','approvals','commit_receipts','submission_acceptances','foundation_revisions','foundation_receipts','workspace_receipts']);
+ const immutable=new Set(['document_versions','document_payloads','revisions','audit_events','approvals','commit_receipts','submission_acceptances','foundation_revisions','foundation_receipts','workspace_receipts','automation_recipe_approvals']);
  const failures:string[]=[];
  if(!role)failures.push('role_missing');
  if(role?.rolsuper||role?.rolbypassrls||role?.rolcreaterole||role?.rolcreatedb)failures.push('elevated_role');

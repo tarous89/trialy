@@ -1,3 +1,4 @@
+import {AppAutomationFeatures,PendingRecipeSetups} from './AppAutomationFeatures.js';
 import {useWorkspaceView} from './WorkspaceView.js';
 import {ArchivedItems} from './ArchivedItems.js';
 import React,{useEffect,useRef,useState} from 'react';
@@ -27,6 +28,7 @@ export function AutomationsPage({call,appId}:{call:Call;appId?:string}){
  {data?.rows.length===0&&<p className="ty-automation-empty">{filtered?'No matching automations.':'No automations configured.'}</p>}
  {!!data?.rows.length&&<div className="ty-automation-list">{data.rows.map((r:any)=><AutomationBoundary key={r.kind+r.id}><AutomationRow call={call} row={r} onEdit={()=>navigate({id:r.id,kind:r.kind})} onChanged={()=>void load()}/></AutomationBoundary>)}</div>}
  {data&&(offset>0||data.nextOffset!==null)&&<nav className="ty-page-pagination" aria-label="Pagination"><Button disabled={busy||offset===0} onClick={()=>void load(Math.max(0,offset-20))}>Previous page</Button><span>Page {Math.floor(offset/20)+1}</span><Button disabled={busy||data.nextOffset===null} onClick={()=>void load(data.nextOffset)}>Next page</Button></nav>}
+ <PendingRecipeSetups call={call} appId={filterApp} refreshKey={data} onConfigure={id=>{setFilterApp(id);navigate(null,true);}}/>
  <ArchivedItems call={call} kind="automations" refreshKey={data} onChanged={()=>void load(0)}/>
  </section>;
 }
@@ -63,7 +65,8 @@ function initialConfig(appId:string,kind:string){
  return kind==='research'?{...common,inheritAppAccess:true,objective:'',instructions:'',sourcePolicy:'Use reliable primary sources, retain citations and dates, and distinguish evidence from inference.',notificationPolicy:'Report meaningful findings; remain quiet when there is no relevant update.',readBindings:[],writeScopes:[],maxChangesPerRun:100,schedule:{description:scheduleLabel(trigger),timeZone:zone},automation:{trigger,initialLookbackDays:7,catchUp:'coalesce'}}:{...common,appVersion:0,trigger,steps:[{id:'notify',kind:'email',to:[],subject:'',text:''}],fields:[],conditions:[],users:[]};
 }
 function AutomationCreation({call,appId,onClose,onSaved}:{call:Call;appId?:string;onClose:()=>void;onSaved:()=>void}){
- return <section className="ty-page ty-automations-page"><AutomationForm call={call} appId={appId} onClose={onClose} onSaved={onSaved}/></section>;
+ const [mode,setMode]=useState(appId?'features':'custom');
+ return <section className="ty-page ty-automations-page"><div className="ty-actions" role="group" aria-label="Automation source"><Button onClick={()=>setMode('custom')} aria-pressed={mode==='custom'}>Custom automation</Button><Button onClick={()=>setMode('features')} aria-pressed={mode==='features'}>From app features</Button></div>{mode==='features'?<AppAutomationFeatures call={call} appId={appId} onSaved={onSaved}/>:<AutomationForm call={call} appId={appId} onClose={onClose} onSaved={onSaved}/>}</section>;
 }
 function AutomationForm({call,definition:d,appId,onClose,onSaved}:{call:Call;definition?:any;appId?:string;onClose:()=>void;onSaved:()=>void}){
  const [worker,setWorker]=useState(d?.kind==='action'?(d.config.steps.some((s:any)=>s.kind==='email')?'email':d.config.steps.some((s:any)=>s.kind==='connector')?'connector':'function'):(d?.executor??'chatgpt'));const kind=worker==='chatgpt'||worker==='claude'?'research':'action',workerName=worker==='claude'?'Claude':worker==='chatgpt'?'ChatGPT':worker==='email'?'Email':worker==='function'?'App function':'API connector';const [selected,setSelected]=useState(d?.config.appId??appId??''),[apps,setApps]=useState<any[]>([]),[setup,setSetup]=useState<any>(null),[options,setOptions]=useState<any>(null),[loading,setLoading]=useState(false),[retry,setRetry]=useState(0);

@@ -4,6 +4,7 @@ import {access} from '../domain/permissions.js';
 import {audit} from '../domain/evidence.js';
 import {fail,type Actor} from '../shared/schema.js';
 import {syncDispatch} from './service.js';
+import {recipeDigest} from './recipes.js';
 import {nextAction} from '../app-services/service.js';
 import {monitoringConfig} from '../app-services/monitoring-schema.js';
 import {actionConfig} from '../app-services/schema.js';
@@ -38,5 +39,6 @@ export async function copyAppAutomations(tx:Connection,a:Actor,w:string,appId:st
    VALUES($1,$2,$3,$4,$5,$6,true,$7,$3,(SELECT coalesce(max(event_sequence),0) FROM audit_events WHERE workspace_id=$2))`,[ids.get(row.id),w,a.userId,appId,JSON.stringify(config),row.scope_stamp,nextAction(config)]);
   await audit(tx,a,policy,'app_action.copied',ids.get(row.id)!,null,{...config,version:0,paused:true,copiedFrom:{id:row.id,version:row.version}});
  }
+ for(const [oldId,newId] of ids){const setups=(await tx.query('SELECT * FROM automation_recipe_setups WHERE workspace_id=$1 AND user_id=$2 AND definition_id=$3',[w,a.userId,oldId])).rows;for(const setup of setups){const body={...setup.body,copiedFrom:{appId:setup.app_id,setupId:setup.id}};await tx.query("INSERT INTO automation_recipe_setups(id,workspace_id,user_id,app_id,recipe_key,context_key,body,digest,status,definition_id,definition_kind,definition_version,diagnostic) VALUES($1,$2,$3,$4,$5,$6,$7,$8,'active',$9,$10,0,'copied_disabled')",[randomUUID(),w,a.userId,appId,setup.recipe_key,setup.context_key,JSON.stringify(body),recipeDigest(body),newId,setup.definition_kind]);}}
  return {research:snapshot.research.length,actions:snapshot.actions.length,enabled:false};
 }

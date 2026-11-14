@@ -40,13 +40,13 @@ export async function runFoundation(db:Database){
  const f=new Foundation(db);
  // A crash after computation or a lost response cannot duplicate a committed write.
  const pending=(await db.query("SELECT r.* FROM foundation_runs r LEFT JOIN foundation_receipts c ON c.id=r.id WHERE r.status='succeeded' AND r.grant_id IS NOT NULL AND r.proposal IS NOT NULL AND r.diagnostic IS NULL AND r.expires_at>now() AND c.id IS NULL ORDER BY r.created_at LIMIT 1")).rows[0];
- if(pending){try{await f.commit({userId:pending.user_id,origin:'ai'},pending.workspace_id,pending.id,pending.proposal_digest,pending.grant_id);}catch{await db.query("UPDATE foundation_runs SET diagnostic='automatic_commit_unavailable' WHERE id=$1",[pending.id]);}return true;}
+ if(pending){try{await f.commit({userId:pending.user_id,origin:'ai',assistant:pending.assistant},pending.workspace_id,pending.id,pending.proposal_digest,pending.grant_id);}catch{await db.query("UPDATE foundation_runs SET diagnostic='automatic_commit_unavailable' WHERE id=$1",[pending.id]);}return true;}
  const token=randomUUID();const row=await db.transaction(async tx=>{
   const r=(await tx.query("SELECT * FROM foundation_runs WHERE NOT cancel_requested AND expires_at>now() AND (status='queued' OR (status='running' AND lease_until<now())) ORDER BY created_at FOR UPDATE SKIP LOCKED LIMIT 1")).rows[0];if(!r)return null;
   if(r.attempts>=2){await tx.query("UPDATE foundation_runs SET status='failed',diagnostic='attempt_limit',finished_at=now() WHERE id=$1",[r.id]);return null;}
   await tx.query("UPDATE foundation_runs SET status='running',attempts=attempts+1,lease_token=$2,lease_until=now()+interval '30 seconds' WHERE id=$1",[r.id,token]);return r;
  });if(!row)return false;
- const actor:Actor={userId:row.user_id,origin:'ai'},controller=new AbortController();let checking=false;
+ const actor:Actor={userId:row.user_id,origin:'ai',assistant:row.assistant},controller=new AbortController();let checking=false;
  const poll=setInterval(()=>{if(checking)return;checking=true;void db.query('SELECT status,lease_token,cancel_requested FROM foundation_runs WHERE id=$1',[row.id]).then(({rows})=>{const r=rows[0];if(!r||r.status!=='running'||r.lease_token!==token||r.cancel_requested)controller.abort();}).catch(()=>controller.abort()).finally(()=>{checking=false;});},250);
  try{
   await authorizeAppFunction(db,row.id);const program=programSchema.parse(row.program);await f.checkComponent(actor,row.workspace_id,row.component_context,row.revision_id,row.grant_id);await f.validateScope(actor,row.workspace_id,program.scope);const before=await f.stamps(actor,row.workspace_id);

@@ -19,6 +19,8 @@ export function StandaloneApp({signedIn,loading=false,call,api,accountName='Acco
  const [url,setUrl]=useState(location.pathname+location.search),current=useMemo(()=>parseAppUrl(url),[url]);
  const [reset,setReset]=useState(0),[loadFailed,setLoadFailed]=useState(false),[loadStatus,setLoadStatus]=useState(0);
  const [loaded,setLoaded]=useState<any>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),[proposal,setProposal]=useState<any>(null),[pending,setPending]=useState<string|null>(null),[reload,setReload]=useState(0);
+ const [automationNotice,setAutomationNotice]=useState(false);
+ useEffect(()=>{if(!loaded||!current)return;try{const key='trialy:automation-install:'+current.appId;if(sessionStorage.getItem(key)){sessionStorage.removeItem(key);setAutomationNotice(true);}}catch{}},[loaded,current?.appId]);
  const dirty=useRef(false),activeUrl=useRef(url);const setDirty=useCallback((value:boolean)=>{dirty.current=value;},[]);
  const assign=(next:string,replace=false)=>{if(replace)history.replaceState(null,'',next);else history.pushState(null,'',next);activeUrl.current=next;setUrl(next);};
  const navigate=(href:string)=>{if(!current)return;const target=resolveAppLink(href,current,location.origin);if(!target){setError('This link is not available.');return;}if(target.kind==='external'){window.open(target.href,'_blank','noopener,noreferrer');return;}if(dirty.current||proposal){setPending(target.href);return;}assign(target.href);};
@@ -31,6 +33,7 @@ export function StandaloneApp({signedIn,loading=false,call,api,accountName='Acco
 
  return <AppPlatform.Provider value={{enabled:true,origin:location.origin}}><WorkspaceShell headerActions={component?<AssistantLinks iconsOnly prompt={'Customize my TrialAgents app '+component.name+' at '+location.href+'. Read the saved app before making changes.'}/>:undefined} appView selected="home" accountName={accountName} accountEmail={accountEmail} onNavigate={platformNavigate} onNew={kind=>platformNavigate("create",kind)}><AppNavigation.Provider value={current?{route:current.route,reset,navigate,setDirty}:null}>
  {!current?<AppUnavailable onHome={goHome}/>:loading?<div aria-busy="true" aria-label="Loading app"/>:!signedIn?<section className="ty-empty"><h1>Sign in to open this app</h1><a className="ty-button ty-button--primary" href={'/auth/login?returnTo='+encodeURIComponent(appUrl(current))}>Sign in</a></section>:<>
+ {automationNotice&&<SystemNotice message="App added. Automation setup continues in the background." onDismiss={()=>setAutomationNotice(false)}><button onClick={()=>platformNavigate('automations')}>View Automations</button></SystemNotice>}
  {error&&<SystemNotice error message={error} onDismiss={()=>setError('')}/>}{!loaded&&(loadFailed?<AppUnavailable onHome={goHome} reason={[401,403,404].includes(loadStatus)?'missing':'load'} onRetry={()=>setReload(n=>n+1)}/>:<div aria-busy="true" aria-label="Loading app"/>)}
  {component&&<ComponentEditor key={component.id+':'+loaded.loadedRevision} component={component} projects={[]} call={invoke} onBack={goHome} onPreview={setProposal}/>}
  {!component&&loaded?.preview?.preview&&<TrackerDraft preview={loaded.preview.preview} call={invoke} onSaved={c=>{setDirty(false);assign(appUrl({...current,appId:c.id,source:'component'}),true);}} onDiscard={goHome} onProposal={setProposal}/>}

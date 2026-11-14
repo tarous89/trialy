@@ -1,3 +1,4 @@
+import {confirmAppRecipe} from '../automations/recipes.js';
 import {withResponseCancellation} from './response-cancellation.js';
 import {AutomationManagement} from '../automations/management.js';
 import express,{type Express,type RequestHandler} from 'express';
@@ -48,7 +49,7 @@ export function addAppServicesApi(app:Express,f:WorkspaceFoundation){
  app.get(`${b}/sharing/:appId`,async(req,res)=>{const {a,w}=context(req);res.json(await sharing.list(a,w,id.parse(req.params.appId)));});
  app.post(`${b}/sharing/:shareId/revoke`,async(req,res)=>{const {a,w}=context(req);res.json(await sharing.revoke(a,w,id.parse(req.params.shareId)));});
  app.get(`${b}/reviews/:reviewId`,async(req,res)=>{const {a,w}=context(req);res.json(await actions.preview(a,w,id.parse(req.params.reviewId)));});
- app.post(`${b}/reviews/:reviewId/confirm`,async(req,res)=>{const {a,w}=context(req),v=z.object({digest:z.string().length(64),confirmed:z.literal(true)}).strict().parse(req.body),r=await actions.preview(a,w,id.parse(req.params.reviewId));res.json(r.kind==='automation_control'?await new AutomationManagement(f.db).confirmControl(a,w,r.id,v.digest):r.kind==='automation_setup'?await new AutomationService(f.db).confirm(a,w,r.id,v.digest):r.kind==='monitoring'?await new AppMonitoring(f.db).confirm(a,w,r.id,v.digest):r.kind==='sharing'?await sharing.confirm(a,w,r.id,v.digest):await actions.confirm(a,w,r.id,v.digest));});
+ app.post(`${b}/reviews/:reviewId/confirm`,async(req,res)=>{const {a,w}=context(req),v=z.object({digest:z.string().length(64),confirmed:z.literal(true)}).strict().parse(req.body),r=await actions.preview(a,w,id.parse(req.params.reviewId));res.json(r.kind==='automation_recipe'?await confirmAppRecipe(f.db,a,w,r.id,v.digest):r.kind==='automation_control'?await new AutomationManagement(f.db).confirmControl(a,w,r.id,v.digest):r.kind==='automation_setup'?await new AutomationService(f.db).confirm(a,w,r.id,v.digest):r.kind==='monitoring'?await new AppMonitoring(f.db).confirm(a,w,r.id,v.digest):r.kind==='sharing'?await sharing.confirm(a,w,r.id,v.digest):await actions.confirm(a,w,r.id,v.digest));});
  app.post(`${b}/actions/:actionId/run`,async(req,res)=>{const {a,w}=context(req),v=z.object({requestKey:id,recordId:id.optional()}).strict().parse(req.body);res.json(await actions.runNow(a,w,id.parse(req.params.actionId),v.requestKey,v.recordId));});
  app.post(`${b}/actions/:actionId/pause`,async(req,res)=>{const {a,w}=context(req);res.json(await actions.control(a,w,id.parse(req.params.actionId),z.boolean().parse(req.body.paused)));});
  app.get(`${b}/runs`,async(req,res)=>{const {a,w}=context(req);res.json(await actions.runs(a,w,req.query.appId?id.parse(req.query.appId):undefined,z.coerce.number().int().min(0).default(0).parse(req.query.offset)));});

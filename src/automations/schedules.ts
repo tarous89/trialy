@@ -20,7 +20,12 @@ export function nextCalendar(s:Extract<AutomationSchedule,{kind:'calendar'}>,aft
   const elapsed=Math.round((d.getTime()-anchor.getTime())/86400000),weekStart=anchor.getTime()-((anchor.getUTCDay()+6)%7)*86400000;
   const months=(d.getUTCFullYear()-anchor.getUTCFullYear())*12+d.getUTCMonth()-anchor.getUTCMonth();
   const last=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,0)).getUTCDate();
-  const eligible=s.frequency==='daily'?elapsed%s.interval===0:s.frequency==='weekly'?Math.floor((d.getTime()-weekStart)/604800000)%s.interval===0&&s.weekdays.includes(d.getUTCDay()):months%s.interval===0&&d.getUTCDate()===(s.monthEnd==='last_day'?Math.min(last,s.monthDay):s.monthDay);
+  let monthDate=s.monthEnd==='last_day'?Math.min(last,s.monthDay):s.monthDay;
+  if(s.monthRule){const rule=s.monthRule,firstDay=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),1)).getUTCDay();
+   if(rule.kind==='weekday')monthDate=1+((rule.weekday!-firstDay+7)%7)+(rule.nth-1)*7;
+   else {let count=0;for(monthDate=1;monthDate<=last;monthDate++){const weekday=(firstDay+monthDate-1)%7;if(weekday>0&&weekday<6&&++count===rule.nth)break;}}
+  }
+  const eligible=s.frequency==='daily'?elapsed%s.interval===0:s.frequency==='weekly'?Math.floor((d.getTime()-weekStart)/604800000)%s.interval===0&&s.weekdays.includes(d.getUTCDay()):months%s.interval===0&&d.getUTCDate()===monthDate;
   if(eligible){const at=localInstant(day,s.time,s.timeZone);if(at>after)return at;}
  }
  throw Error('Schedule exceeds supported horizon');

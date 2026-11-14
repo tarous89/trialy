@@ -1,3 +1,4 @@
+import {RecipeApprovalReview} from './AppAutomationFeatures.js';
 import React,{useEffect,useState} from 'react';
 import {scheduleLabel} from './AutomationScheduleEditor.js';
 import {Button} from './ui/Controls.js';
@@ -14,6 +15,7 @@ export function AppServicesPanel({call,reviewId,appId,onAutomations}:{call:Call;
  const body=review?.body,c=body?.config;
  if(review?.kind==='automation_setup')return <AutomationBoundary><AutomationSetupReview call={call} review={review}/></AutomationBoundary>;
  if(!reviewId&&!appId)return <p>Manage the ChatGPT connection from Connectors.</p>;
+ if(review?.kind==='automation_recipe')return <AutomationBoundary><RecipeApprovalReview call={call} review={review} onDone={onAutomations}/></AutomationBoundary>;
  if(review?.kind==='monitoring')return <AppMonitoringReview call={call} review={review}/>;
  return <section aria-label="App sharing and actions"><div className="ty-page-heading"><h1>{review?'Review '+(review.kind==='sharing'?'sharing':c?.name??'action'):app?.name??'App settings'}</h1>{!review&&<Button disabled={busy} onClick={()=>void run(load)}>Refresh</Button>}</div>{error&&<p role="alert">{error}</p>}
  {result?<div role="status"><h2>{result.url?'Public link ready':result.kind==='email'?'Invitation queued':'Action enabled'}</h2>{result.url&&<p><a href={result.url} target="_blank" rel="noopener noreferrer">{result.url}</a></p>}{result.email&&<p>Queued through TrialAgents for {result.email}. Delivery status is recorded separately.</p>}<Button onClick={()=>{setResult(null);setReview(null);void run(load);}}>Done</Button></div>:review?<>
