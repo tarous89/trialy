@@ -134,7 +134,7 @@ Recipient accounts or portals; e-signature (signed PDFs are uploaded back); wate
 
 ## 6. Update extension (for Investor Updates)
 
-**Status:** scoped 14 November 2026 for [Investor Updates](app-template-blueprints/apps/INVESTOR_UPDATES.md) (BT2-06). It builds on the room extension (§5), so build it after Data Room PR A. Everything in §2 and §5 still applies.
+**Status:** scoped 14 November 2026 for [Investor Updates](app-template-blueprints/apps/INVESTOR_UPDATES.md) (BT2-06); implemented as its own PR on the room extension, before the Investor Updates app (migration 068, `src/domain/exchange-update-content.ts`, update view in `src/web/RecipientRoom.tsx`; template guidance 1.3.26; tests `tests/exchange-updates.test.ts` and `tests/visual/exchange-update.spec.cjs`). Everything in §2 and §5 still applies.
 
 | # | Addition | What it does |
 |---|---|---|
@@ -142,6 +142,13 @@ Recipient accounts or portals; e-signature (signed PDFs are uploaded back); wate
 | U2 | **Rich email body** | Email type *update*: the body is the rendered content (email-safe HTML with a plain-text part), plus the personal link and the confidentiality footer. It follows the existing rules: shown exactly as sent, human-confirmed, Reply-To the sender, bounces recorded, rate limit. A one-click unsubscribe per series is recorded per recipient and honoured by later sends. |
 | U3 | **Ask buttons** | Content can declare asks (key and text). The online page shows "I can help" with an optional note; each response is an event bound to the exchange and written to the app's bound responses table (as R7). The email links to the same action. |
 | U4 | **Series archive** | Groups can share a `series` key; a recipient's page lists earlier updates of that series sent to the same email, newest first. Revoking one exchange hides only that update. |
+
+**Implementation notes (14 November 2026, guidance 1.3.26):**
+- Content is the app's HTML rebuilt from an allowlist (headings, paragraphs, lists, tables, quotes, figures, https and mailto links, safe inline styles); scripts, styles, frames, forms, SVG, handlers and outside images are removed and listed in the review. Images are PNG, JPEG or GIF platform documents (`<img src="doc:<versionId>">`), sized for a 600 px email and served from one address per update that names no recipient and records nothing. Asks are placed with a top-level `<div data-ask="key">` marker. `update_exchange_content` replaces the content; once people have seen the room it is reviewed. Update pages have no Q&A.
+- The update email is one 600 px table layout (Outlook fallback table, inline styles, light colour scheme) with a plain-text part. Every prepared email carries `clientChecks` for Gmail, Outlook, Apple Mail and the text part.
+- Every email of a series group carries List-Unsubscribe and List-Unsubscribe-Post headers and a footer link. Opening the link shows a confirmation; the one-click POST records it. Unsubscribed addresses are excluded when preparing (listed under `excluded`), suppressed when queueing and re-checked before delivery. Nobody in the workspace can unsubscribe someone.
+- Bound tables add two roles: **delivery** (the record each exchange is bound to: status queued / sent / bounced / read / revoked, `sent_on`, `first_read_on`, `last_read_on`, `read_count`) and **responses** (one record per "I can help", with context copied from the delivery record). Both are kept current as source `tracked`.
+- Recipient links, ask links, unsubscribe links and image addresses reach assistants only as placeholders (workspace MCP results and app reads made by an assistant); people still see every email exactly as sent.
 
 **Acceptance (update extension):**
 1. The email body and the online page show the same content.

@@ -14,7 +14,7 @@ export const levelSchema=z.object({key:levelKey,name:z.string().trim().min(1).ma
 export const sectionSchema=z.object({number:z.string().trim().regex(/^[0-9A-Za-z]{1,6}(\.[0-9A-Za-z]{1,6}){0,4}$/,'Use section numbers like 4 or 4.2'),title:z.string().trim().min(1).max(160)}).strict();
 export const documentItemSchema=z.object({versionId:id,title:z.string().trim().min(1).max(200).optional(),section:sectionSchema.optional(),order:z.number().int().min(0).max(100000).optional(),level:levelKey.optional(),viewOnly:z.boolean().optional(),toSign:z.boolean().optional()}).strict();
 export const documentPlacementSchema=documentItemSchema.omit({versionId:true}).extend({versionId:id}).strict();
-export const trackingSchema=z.object({accessTypeId:id.optional(),engagementTypeId:id.optional()}).strict();
+export const trackingSchema=z.object({accessTypeId:id.optional(),engagementTypeId:id.optional(),deliveryTypeId:id.optional(),responsesTypeId:id.optional()}).strict();
 export const roomDays=z.number().int().min(1).max(730);
 const expectedVersion=z.number().int().min(1);
 /** App record changes a reviewed room operation carries (for example the grant's levels), committed in the same transaction (guidance 1.3.24). */
@@ -34,7 +34,13 @@ export const roomOperationKinds=roomOperations.map(s=>s.shape.kind.value) as str
 /** Access table fields the platform owns, and every engagement field it writes (the engagement table is platform-only). */
 export const ACCESS_TRACKED=['status','last_seen_on','source'] as const;
 export const ENGAGEMENT_FIELDS:Record<string,'text'|'number'|'date'>={grant_id:'text',organization_id:'text',person_id:'text',document_ref:'text',document_title:'text',first_viewed_on:'date',last_viewed_on:'date',view_count:'number',seconds_viewed:'number',downloads:'number',source:'text',as_of:'date',section_id:'text'};
-export const TRACKED_FIELD_KIND:Record<string,'text'|'number'|'date'>={status:'text',last_seen_on:'date',source:'text',...ENGAGEMENT_FIELDS};
+/** Update extension (§6): the delivery table holds one record per person and update (each exchange is bound to it); TrialAgents keeps its status and read facts. */
+export const DELIVERY_FIELDS:Record<string,'text'|'number'|'date'>={status:'text',sent_on:'date',first_read_on:'date',last_read_on:'date',read_count:'number',exchange_id:'text',source:'text'};
+export const DELIVERY_STATUS=['queued','sent','bounced','read','revoked'];
+/** The responses table gets one record per "I can help" (U3). These fields, and the context copied from the bound record, are TrialAgents's; any other field (status, owner, follow-up) stays the workspace's. */
+export const RESPONSE_FIELDS:Record<string,'text'|'number'|'date'>={ask_key:'text',ask_text:'text',responded_on:'date',message:'text',delivery_id:'text',exchange_id:'text',response_id:'text',source:'text'};
+export const RESPONSE_CONTEXT=['update_id','contact_id','investor_id','organization_id','person_id','version'] as const;
+export const TRACKED_FIELD_KIND:Record<string,'text'|'number'|'date'>={status:'text',last_seen_on:'date',source:'text',...ENGAGEMENT_FIELDS,...DELIVERY_FIELDS,...RESPONSE_FIELDS,...Object.fromEntries(RESPONSE_CONTEXT.map(k=>[k,'text']))};
 
 /** Friendly refusal before the database trigger refuses the same write. */
 export async function assertUntracked(tx:Connection,typeId:string,data:Record<string,unknown>,existing?:{data:Record<string,unknown>}|null,state=false){

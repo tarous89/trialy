@@ -11,6 +11,7 @@ import {id,fail,type Actor} from '../shared/schema.js';
 import {logExchange} from '../domain/external-exchange.js';
 import {roomView,visibleAnswers,gateState as groupGate,titleOf,viewable} from '../domain/exchange-room-model.js';
 import {queueEmail,displayName,emailLimits} from '../app-services/exchange-email.js';
+import {pageSegments,escapeText,type StoredContent} from '../domain/exchange-update-content.js';
 
 /**
  * Recipient side of external exchanges (docs/product/EXTERNAL_EXCHANGE.md §2.7).
@@ -24,6 +25,21 @@ const scoped=(tx:Connection):Database=>({query:(q,v)=>tx.query(q,v),transaction:
 const token=z.string().regex(/^[A-Za-z0-9_-]{43}$/);
 export function addExternalExchange(app:Express,s:Service){
  const limited=rateLimit({windowMs:15*60000,limit:240,standardHeaders:true,legacyHeaders:false});
+ // Update images (U1/U2): one address per update that names no recipient and records nothing, so it can never act as an open pixel.
+ app.get('/exchange-content/:imageToken/:versionId',limited,async(req,res)=>{const imageToken=token.parse(req.params.imageToken),versionId=id.parse(req.params.versionId);
+  const d=(await s.db.transaction(tx=>tx.query('SELECT * FROM trialy_security.exchange_content_image($1,$2)',[imageToken,versionId]))).rows[0];if(!d)fail(404,'not_found','Image unavailable');
+  const bytes=Buffer.from(d.bytes);if(checksum(bytes)!==d.checksum)fail(500,'integrity_failure','Image integrity check failed');
+  res.set('Content-Type',d.mime);res.set('Cache-Control','private, max-age=3600');res.set('Cross-Origin-Resource-Policy','cross-origin');res.set('X-Content-Type-Options','nosniff');res.set('Content-Security-Policy',"default-src 'none'; sandbox");res.send(bytes);});
+ // One-click unsubscribe per series (U2, RFC 8058). GET shows a confirmation (link scanners never unsubscribe anyone); POST, from the page or the mail client, records it.
+ const unsubscribePage=(title:string,body:string)=>`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>${escapeText(title)}</title></head><body style="margin:0;background:#f3f4f6;font:16px/1.5 Helvetica,Arial,sans-serif;color:#1f2937"><main style="max-width:520px;margin:48px auto;padding:24px;background:#fff;border:1px solid #e5e7eb"><h1 style="font-size:22px;line-height:1.3;margin:0 0 12px;color:#111827">${escapeText(title)}</h1>${body}<p style="margin:24px 0 0;font-size:13px;color:#4b5563">Powered by TrialAgents</p></main></body></html>`;
+ const unsubscribe=async(req:any,res:any,apply:boolean)=>{res.set('Cache-Control','no-store');res.set('Referrer-Policy','no-referrer');const emailId=id.safeParse(req.params.emailId);
+  const r=emailId.success?(await s.db.transaction(tx=>tx.query('SELECT * FROM trialy_security.exchange_unsubscribe($1,$2)',[emailId.data,apply]))).rows[0]:null;
+  if(!r){res.status(404).type('html').send(unsubscribePage('This link is not valid','<p>Use the unsubscribe link of a recent email, or reply to that email.</p>'));return;}
+  const what=`<strong>${escapeText(r.series_label)}</strong> from ${escapeText(r.sender_company)}`;
+  if(r.unsubscribed_at){res.type('html').send(unsubscribePage('You are unsubscribed',`<p>${escapeText(r.email)} will not receive ${what} any more. The sender can see that you unsubscribed.</p>`));return;}
+  res.type('html').send(unsubscribePage('Unsubscribe?',`<p>Stop sending ${what} to ${escapeText(r.email)}?</p><form method="post"><button type="submit" style="font:inherit;font-weight:700;padding:10px 18px;border:0;border-radius:4px;background:#0f5132;color:#fff;cursor:pointer">Unsubscribe</button></form>`));};
+ app.get('/exchange-unsubscribe/:emailId',limited,(req,res)=>unsubscribe(req,res,false));
+ app.post('/exchange-unsubscribe/:emailId',limited,(req,res)=>unsubscribe(req,res,true));
  app.use('/external-exchange',limited,(req,res,next)=>{res.set('Cache-Control','no-store');res.set('Referrer-Policy','no-referrer');const raw=token.parse(req.get('x-trialy-exchange'));withDatabaseContext({exchangeHash:checksum(raw)},next);});
  type Loaded=Awaited<ReturnType<typeof load>>;
  async function load(tx:Connection,req:any){
@@ -76,7 +92,15 @@ export function addExternalExchange(app:Express,s:Service){
    levels:view.levels.filter(l=>l.held).map(l=>({key:l.key,name:l.name,entry:l.entry,text:l.text,open:l.open,acknowledged:l.acknowledged,slot:l.slot,slotStatus:l.slotStatus})),lockedLevels:view.lockedByLevel,
    index:view.index.map(sec=>({number:sec.number,title:sec.title,count:sec.count,locked:sec.locked,documents:sec.documents.map(docShape)})),changes:view.changes.map(docShape),lastVisit:view.since,documentCount:view.open.length,slots,
    questions:own.map(q=>{const doc=q.document_id?view.open.find(d=>d.documentId===q.document_id):null;return {id:q.id,body:q.body,section:q.section&&sections.has(q.section)?{number:q.section,title:sections.get(q.section)}:null,document:doc?{documentId:doc.documentId,title:titleOf(doc)}:null,askedAt:q.created_at,answers:answers.filter(a=>a.questionId===q.id).map(a=>({id:a.id,body:a.body,visibility:a.visibility,edited:a.edited,createdAt:a.createdAt}))};}),
-   published:answers.filter(a=>a.visibility!=='private'),poweredBy:'TrialAgents'};
+    published:answers.filter(a=>a.visibility!=='private'),...(x.g.content?await updateModel(tx,x):{qa:true}),poweredBy:'TrialAgents'};
+ }
+  /** Update rooms (§6): the content is the main page, with this person's "I can help" responses and the earlier updates of the series sent to them. */
+  async function updateModel(tx:Connection,x:Loaded){
+   const content=x.g.content as StoredContent,own=(await tx.query('SELECT id,ask_key,note,created_at FROM exchange_ask_responses WHERE exchange_id=$1 ORDER BY created_at',[x.e.id])).rows;
+   const archive=x.g.series?(await tx.query('SELECT * FROM trialy_security.exchange_series_items($1)',[x.e.token_hash])).rows.map(r=>({title:r.title,sentAt:r.sent_at,link:'/exchange#'+r.link_token})):[];
+   return {qa:false,update:{segments:pageSegments(content,v=>`/exchange-content/${x.g.image_token}/${v}`),updatedAt:content.updatedAt??null,confidentiality:content.confidentiality.replace(/\{recipient_name\}/g,x.e.recipient_name||'you'),
+    asks:content.asks.map(a=>({key:a.key,text:a.text,responses:own.filter(r=>r.ask_key===a.key).map(r=>({id:r.id,note:r.note,respondedAt:r.created_at}))}))},
+    series:x.g.series?{name:x.g.series_name??null,archive}:null};
  }
  app.get('/external-exchange',async(req,res)=>res.json(await s.db.transaction(async tx=>{const x=await load(tx,req);if(x.needsVerification)return {mode:x.g.kind,endsAt:x.e.expires_at,verification:{required:true,verified:false},title:x.g.title,sender:{name:x.g.sender_name,company:x.g.sender_company,logo:!!x.g.logo_version_id},deadline:x.e.expires_at,closed:x.closed,privacyNotice:x.g.privacy_notice,poweredBy:'TrialAgents'};await opened(tx,x);return x.g.kind==='room'?roomModel(tx,x):model(tx,x);})));
  app.post('/external-exchange/verify',async(req,res)=>{
@@ -135,7 +159,13 @@ export function addExternalExchange(app:Express,s:Service){
   const hit=(...t:(string|null|undefined)[])=>t.some(v=>v&&v.toLowerCase().includes(q));
   return {documents:view.open.filter(d=>hit(titleOf(d),d.filename,d.section?.number,d.section?.title)).map(docShape),answers:answers.filter(a=>hit(a.question,a.body)).map(a=>({id:a.id,question:a.question,body:a.body,visibility:a.visibility,createdAt:a.createdAt}))};}));});
  // Room Q&A (R6): questions with an optional reference to a section or document the person can see.
- app.post('/external-exchange/questions',async(req,res)=>{const input=z.object({body:z.string().trim().min(1).max(5000),section:z.string().max(40).optional(),documentId:id.optional()}).parse(req.body);res.json(await s.db.transaction(async tx=>{const x=await load(tx,req);requireVerified(x);roomOnly(x);const view=await roomView(tx,x.g,x.e,(await gateState(tx,x)).unlocked);
+  // "I can help" (U3): one response per confirmed click with an optional note; the page's nonce makes a retried click count once.
+  app.post('/external-exchange/asks',async(req,res)=>{const input=z.object({askKey:z.string().max(40),note:z.string().trim().max(2000).default(''),nonce:id}).parse(req.body);res.json(await s.db.transaction(async tx=>{const x=await load(tx,req);requireVerified(x);roomOnly(x);
+   const ask=((x.g.content?.asks??[]) as {key:string;text:string}[]).find(a=>a.key===input.askKey);if(!ask)fail(404,'not_found','This ask is not part of the update');
+   const prior=(await tx.query('SELECT id,created_at FROM exchange_ask_responses WHERE exchange_id=$1 AND nonce=$2',[x.e.id,input.nonce])).rows[0];if(prior)return {id:prior.id,respondedAt:prior.created_at,repeated:true};
+   const responseId=randomUUID();await tx.query('INSERT INTO exchange_ask_responses(id,workspace_id,group_id,exchange_id,ask_key,ask_text,note,nonce) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',[responseId,x.e.workspace_id,x.g.id,x.e.id,ask.key,ask.text,input.note,input.nonce]);
+   await logExchange(tx,x.e,'ask_response',{responseId,askKey:ask.key,askText:ask.text,withNote:!!input.note});return {id:responseId,respondedAt:new Date().toISOString(),repeated:false};}));});
+  app.post('/external-exchange/questions',async(req,res)=>{const input=z.object({body:z.string().trim().min(1).max(5000),section:z.string().max(40).optional(),documentId:id.optional()}).parse(req.body);res.json(await s.db.transaction(async tx=>{const x=await load(tx,req);requireVerified(x);roomOnly(x);if(x.g.content)fail(400,'no_questions','Reply to the update email to reach the sender');const view=await roomView(tx,x.g,x.e,(await gateState(tx,x)).unlocked);
   if(input.documentId&&!view.open.some(d=>d.documentId===input.documentId))fail(404,'not_found','Document unavailable');if(input.section&&!view.open.some(d=>d.section?.number===input.section))fail(404,'not_found','Section unavailable');
   const questionId=randomUUID();await tx.query('INSERT INTO exchange_questions(id,workspace_id,group_id,exchange_id,body,section,document_id) VALUES($1,$2,$3,$4,$5,$6,$7)',[questionId,x.e.workspace_id,x.g.id,x.e.id,input.body,input.section??null,input.documentId??null]);
   await logExchange(tx,x.e,'question',{questionId,section:input.section??null,documentId:input.documentId??null});return {id:questionId,askedAt:new Date().toISOString()};}));});
