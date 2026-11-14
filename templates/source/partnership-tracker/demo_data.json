@@ -550,14 +550,9 @@
    "id": "00000000-0000-4000-8000-000000000546",
    "version": 0,
    "data": {
-    "digest_cadence": "weekly",
-    "digest_day": "mon",
-    "digest_time": "07:00",
-    "time_zone": "Europe/Berlin",
-    "digest_recipients": "Anna, Marc, Sofia",
-    "research_enabled": true,
     "stalled_days": 21,
-    "team": "Anna, Marc, Sofia"
+    "team": "Anna, Marc, Sofia",
+    "team_members": "{\"Anna\": \"00000000-0000-4000-a000-000000000001\", \"Marc\": \"00000000-0000-4000-a000-000000000002\", \"Sofia\": \"00000000-0000-4000-a000-000000000003\"}"
    }
   },
   {
@@ -2030,7 +2025,8 @@
     "content": "## Ironvale Pharma (fictional brief)\n**Their pipeline:** fictional summary of fibrosis, oncology and delivery programmes.\n**Recent deals:** none relevant in the last 12 months (fictional).\n**People:** see contacts.\n**Our history:** CDA not in place: non-confidential only.\n**What to ask:** territory interest, decision process, timing.\n**Cautions:** no deal terms in writing.",
     "sources": "[{\"title\": \"Company pipeline page (fictional)\", \"url\": \"https://example.invalid/pipeline\"}]",
     "written_by": "claude",
-    "written_on": "2026-11-14"
+    "written_on": "2026-11-14",
+    "status": "reviewed"
    }
   },
   {
@@ -2045,7 +2041,8 @@
     "content": "## Pinehollow Pharma (fictional brief)\n**Their pipeline:** fictional summary of fibrosis, oncology and delivery programmes.\n**Recent deals:** none relevant in the last 12 months (fictional).\n**People:** see contacts.\n**Our history:** CDA not in place: non-confidential only.\n**What to ask:** territory interest, decision process, timing.\n**Cautions:** no deal terms in writing.",
     "sources": "[{\"title\": \"Company pipeline page (fictional)\", \"url\": \"https://example.invalid/pipeline\"}]",
     "written_by": "claude",
-    "written_on": "2026-11-14"
+    "written_on": "2026-11-14",
+    "status": "reviewed"
    }
   },
   {
@@ -2060,7 +2057,8 @@
     "content": "## Maplecrest Pharma (fictional brief)\n**Their pipeline:** fictional summary of fibrosis, oncology and delivery programmes.\n**Recent deals:** none relevant in the last 12 months (fictional).\n**People:** see contacts.\n**Our history:** CDA in place.\n**What to ask:** territory interest, decision process, timing.\n**Cautions:** no deal terms in writing.",
     "sources": "[{\"title\": \"Company pipeline page (fictional)\", \"url\": \"https://example.invalid/pipeline\"}]",
     "written_by": "claude",
-    "written_on": "2026-11-14"
+    "written_on": "2026-11-14",
+    "status": "reviewed"
    }
   },
   {
@@ -2075,7 +2073,8 @@
     "content": "## Juniperra Oncology (fictional brief)\n**Their pipeline:** fictional summary of fibrosis, oncology and delivery programmes.\n**Recent deals:** none relevant in the last 12 months (fictional).\n**People:** see contacts.\n**Our history:** CDA not in place: non-confidential only.\n**What to ask:** territory interest, decision process, timing.\n**Cautions:** no deal terms in writing.",
     "sources": "[{\"title\": \"Company pipeline page (fictional)\", \"url\": \"https://example.invalid/pipeline\"}]",
     "written_by": "claude",
-    "written_on": "2026-11-14"
+    "written_on": "2026-11-14",
+    "status": "reviewed"
    }
   },
   {
@@ -2090,7 +2089,8 @@
     "content": "## Larchfield Institute (fictional brief)\n**Their pipeline:** fictional summary of fibrosis, oncology and delivery programmes.\n**Recent deals:** none relevant in the last 12 months (fictional).\n**People:** see contacts.\n**Our history:** CDA in place.\n**What to ask:** territory interest, decision process, timing.\n**Cautions:** no deal terms in writing.",
     "sources": "[{\"title\": \"Company pipeline page (fictional)\", \"url\": \"https://example.invalid/pipeline\"}]",
     "written_by": "claude",
-    "written_on": "2026-11-14"
+    "written_on": "2026-11-14",
+    "status": "reviewed"
    }
   },
   {
@@ -2105,7 +2105,8 @@
     "content": "## Cedarline Pharma (fictional brief)\n**Their pipeline:** fictional summary of fibrosis, oncology and delivery programmes.\n**Recent deals:** none relevant in the last 12 months (fictional).\n**People:** see contacts.\n**Our history:** CDA not in place: non-confidential only.\n**What to ask:** territory interest, decision process, timing.\n**Cautions:** no deal terms in writing.",
     "sources": "[{\"title\": \"Company pipeline page (fictional)\", \"url\": \"https://example.invalid/pipeline\"}]",
     "written_by": "claude",
-    "written_on": "2026-11-14"
+    "written_on": "2026-11-14",
+    "status": "draft"
    }
   },
   {
@@ -2317,7 +2318,8 @@
     "title": "Send CMC summary to Cedarline",
     "owner": "Anna",
     "due": "2026-11-16",
-    "status": "open"
+    "status": "open",
+    "owner_member_id": "00000000-0000-4000-a000-000000000001"
    }
   },
   {
@@ -2329,7 +2331,8 @@
     "title": "Chase Maplecrest CDA signature",
     "owner": "Anna",
     "due": "2026-11-12",
-    "status": "open"
+    "status": "open",
+    "owner_member_id": "00000000-0000-4000-a000-000000000001"
    }
   },
   {
@@ -2341,7 +2344,8 @@
     "title": "Return term sheet comments",
     "owner": "Sofia",
     "due": "2026-11-19",
-    "status": "open"
+    "status": "open",
+    "owner_member_id": "00000000-0000-4000-a000-000000000003"
    }
   },
   {
@@ -2353,7 +2357,8 @@
     "title": "Ask Oakvane for evaluation feedback",
     "owner": "Sofia",
     "due": "2026-11-09",
-    "status": "open"
+    "status": "open",
+    "owner_member_id": "00000000-0000-4000-a000-000000000003"
    }
   },
   {
@@ -2365,7 +2370,8 @@
     "title": "Draft research plan for Hollowmere",
     "owner": "Marc",
     "due": "2026-11-24",
-    "status": "open"
+    "status": "open",
+    "owner_member_id": "00000000-0000-4000-a000-000000000002"
    }
   },
   {
@@ -2377,7 +2383,8 @@
     "title": "Answer diligence questions",
     "owner": "Anna",
     "due": "2026-11-20",
-    "status": "open"
+    "status": "open",
+    "owner_member_id": "00000000-0000-4000-a000-000000000001"
    }
   },
   {
@@ -2390,7 +2397,8 @@
     "owner": "Anna",
     "due": "2026-10-26",
     "status": "done",
-    "done_on": "2026-10-27"
+    "done_on": "2026-10-27",
+    "owner_member_id": "00000000-0000-4000-a000-000000000001"
    }
   },
   {
@@ -2403,7 +2411,8 @@
     "owner": "Anna",
     "due": "2026-10-31",
     "status": "done",
-    "done_on": "2026-10-30"
+    "done_on": "2026-10-30",
+    "owner_member_id": "00000000-0000-4000-a000-000000000001"
    }
   },
   {
@@ -2588,6 +2597,38 @@
     "found_on": "2026-11-09",
     "status": "new",
     "run_id": "00000000-0000-4000-8000-000000000901"
+   }
+  },
+  {
+   "role": "partnerships.research_reports",
+   "id": "00000000-0000-4000-8000-000000000692",
+   "version": 0,
+   "data": {
+    "run_on": "2026-11-02",
+    "run_id": "00000000-0000-4000-8000-000000000900",
+    "cadence": "weekly",
+    "period": "week of 2 Nov",
+    "summary": "Partnerships · week of 2 Nov: 2 moved · 3 due · 1 new signal\nNew about your targets: Ashgrove Therapeutics hired a new head of BD (fictional) — new decision-maker for NWB-101\n\nOpen Partnerships →",
+    "new_signals": 1,
+    "new_targets": 0,
+    "sources": "[{\"title\": \"Fictional people-move note\", \"url\": \"https://news.example.invalid/pm1\"}]",
+    "written_by": "claude"
+   }
+  },
+  {
+   "role": "partnerships.research_reports",
+   "id": "00000000-0000-4000-8000-000000000693",
+   "version": 0,
+   "data": {
+    "run_on": "2026-11-09",
+    "run_id": "00000000-0000-4000-8000-000000000901",
+    "cadence": "weekly",
+    "period": "week of 9 Nov",
+    "summary": "Partnerships · week of 9 Nov: 3 moved · 4 due · 4 new signals\nNew about your targets: Maplecrest Pharma licensed a fibrosis asset (fictional) — active in-licensing in fibrosis\nSuggested targets: 3 for review\n\nOpen Partnerships →",
+    "new_signals": 4,
+    "new_targets": 3,
+    "sources": "[{\"title\": \"Fictional deal note\", \"url\": \"https://news.example.invalid/sg1\"}]",
+    "written_by": "claude"
    }
   },
   {

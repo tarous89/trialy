@@ -15,6 +15,8 @@ import {AppMonitoring} from '../src/app-services/monitoring.js';
 import {AutomationService} from '../src/automations/service.js';
 import {AutomationEvents} from '../src/automations/events.js';
 import {AutomationManagement} from '../src/automations/management.js';
+import {reconcileRecipeSetups} from '../src/automations/recipes.js';
+import {readRecipes} from '../src/automations/recipes-schema.js';
 import {dispatchDue} from '../src/automations/worker.js';
 import {nextCalendar} from '../src/automations/schedules.js';
 import {AppActions,dispatchAppActions} from '../src/app-services/service.js';
@@ -39,7 +41,7 @@ async function suite(){
  const f=new WorkspaceFoundation(db),s=new Service(db),catalog=new AppTemplates(undefined,db);
  const T={bd:await catalog.read({templateId:'life.partnership-tracker',version:'2.0.0'}),contracts:await catalog.read({templateId:'life.contracts',version:'1.0.0'}),room:await catalog.read({templateId:'life.data-room',version:'1.0.0'}),programs:await catalog.read({templateId:'life.project-oversight',version:'2.1.0'})};
  const install=async(w:string,t:any,name:string,connections:Record<string,string>={})=>{const target={install:{templateId:t.id,version:t.version,digest:t.digest,name,requestKey:randomUUID()}};const step=await dataAccessStep(f,human,w,target);
-  return {step,receipt:step.needed?await confirmDataAccess(f,human,w,{...target,connections,stepDigest:step.digest}):await installCatalogApp(f,human,w,target.install)};};
+  return {step,receipt:step.needed?await confirmDataAccess(f,human,w,{...target,connections,stepDigest:step.digest,...(step.automations.length?{automations:step.automations.map((r:any)=>({key:r.key,enabled:true,settings:{}}))}:{})}):await installCatalogApp(f,human,w,target.install)};};
  const comp=async(w:string,id:string)=>(await f.readComponent(human,w,id)).component;
  const mapOf=(c:any)=>JSON.parse(JSON.parse(/^const templateConfiguration=(.+);\n/.exec(c.source)![1]).tableMap);
  const app=(w:string,id:string,who:Actor=human)=>{let state:any={};const v:any={html:'',last:null,state:()=>state,
@@ -58,7 +60,7 @@ test('Acceptance 9 and package: install alone, with Contracts and Data Room (any
  try{await withActor(x.human,async()=>{
   // Alone: shared roles and its own tables; agreements (read-only) is not created; Data Room data gets the app's own manual tables.
   const w=await x.workspace('Partnerships alone');const {receipt}=await x.install(w,x.T.bd,'Partnerships');const id=receipt.appId,c=await x.comp(w,id),map=x.mapOf(c);
-  assert.equal(Object.keys(map).length,16);assert.ok(!map.agreements,'Contracts output is only connected, never created');assert.ok(map['dataroom.access_grants']&&map['dataroom.access_grants'].writableFields.length>0,'own manual table');
+  assert.equal(Object.keys(map).length,17);assert.ok(!map.agreements,'Contracts output is only connected, never created');assert.ok(map['dataroom.access_grants']&&map['dataroom.access_grants'].writableFields.length>0,'own manual table');
   assert.deepEqual((c.manifest.roles??[]).filter((r:any)=>r.role==='agreements').map((r:any)=>[r.optional,r.readOnly,r.typeId??null]),[[true,true,null]]);
   const ui=x.app(w,id),frames:any[]=[];for(const section of SCREENS){const out=await ui.open({section,panel:null});assert.doesNotMatch(text(out.html),/could not be shown|Partial data/,section);frames.push({name:section,html:out.html,css:out.css});}
   assert.deepEqual((await inspectAppDesign(frames)).issues,[]);
@@ -131,52 +133,56 @@ test('Acceptance 2, 6 and 8: after-meeting log with stage history through the re
  });}finally{await x.pg.close();}
 });
 
-test('Acceptance 4, 7, 8 and 9: weekly research on the runner writes signals and two targets; one accepted; the digest email reaches members only; cadence change; archive pauses',async()=>{
- const x=await suite();const oldKey=process.env.CONNECTOR_ENCRYPTION_KEY;process.env.CONNECTOR_ENCRYPTION_KEY=randomBytes(32).toString('base64');
+test('Acceptance 4, 7, 8 and 9: Add app selects research, digest and briefs; research saves signals, targets and a report; the digest reaches members only; schedule changes on the automation; archive pauses',async()=>{
+ const x=await suite();const oldKey=process.env.CONNECTOR_ENCRYPTION_KEY;process.env.CONNECTOR_ENCRYPTION_KEY=randomBytes(32).toString('base64');process.env.APP_AUTOMATION_RECIPES_ENABLED='true';
  const transport=async(req:any)=>{const body=JSON.parse(req.body);return {status:200,body:body.type==='verification'?JSON.stringify({challenge:body.challenge}):'{}',bytes:2,durationMs:1};};
+ const reconcile=async(appId:string)=>{for(let i=0;i<4;i++){while(await withDatabaseContext({service:'worker'},()=>reconcileRecipeSetups(x.db)));await x.pg.query("UPDATE automation_recipe_setups SET available_at=now() WHERE app_id=$1 AND status='pending'",[appId]);}
+  return (await x.pg.query<any>('SELECT recipe_key,status,diagnostic,definition_id,definition_version FROM automation_recipe_setups WHERE app_id=$1 ORDER BY recipe_key',[appId])).rows;};
  try{await withActor(x.human,async()=>{
-  const w=await x.workspace('Research');const {receipt}=await x.install(w,x.T.bd,'Partnerships');const id=receipt.appId,map=x.mapOf(await x.comp(w,id)),T=(r:string)=>map[r].typeId;
-  const prog=await x.save(w,T('programs'),{name:'NWB-101 (fictional)',code:'NWB-101',stage:'phase_1',archived:false});
-  const maple=await x.save(w,T('organizations'),{name:'Maplecrest Pharma (fictional)',org_type:'partner',archived:false}),quill=await x.save(w,T('organizations'),{name:'Quillmont Bio (fictional)',org_type:'company',archived:false});
-  await x.save(w,T('partnerships.opportunities'),{name:'Maplecrest: NWB-101',organization_id:maple,program_id:prog,direction:'out_license',stage:'cda',stage_on:'2026-11-10',owner:'Anna',archived:false});
-  await x.save(w,T('partnerships.asset_profiles'),{program_id:prog,directions:'["out_license"]',research_focus:'Fibrosis deals',status:'active'});
-  const ui=x.app(w,id);await ui.open({section:'settings'});
-  await ui.submit('save-settings',{digest_cadence:'weekly',digest_day:'mon',digest_time:'07:00',time_zone:'Europe/Berlin',stalled_days:'21',research_enabled:'on',digest_recipients:'anna@northwind.invalid',team:'Anna, Marc'});await ui.approve();
-  const trigger=()=>JSON.parse(/id="pt-schedule">([^<]*)</.exec(ui.html)![1].replace(/&quot;/g,'"'));
-  await ui.open({section:'settings'});const weekly=trigger();assert.deepEqual([weekly.frequency,weekly.weekdays,weekly.time,weekly.timeZone],['weekly',[1],'07:00','Europe/Berlin']);
-  // The user's runner (connected and verified once), then one research worker for the app with the Settings schedule and a create-only signals scope.
-  const s=new AutomationService(x.db),m=new AppMonitoring(x.db),actions=new AppActions(x.db),manage=new AutomationManagement(x.db);
+  const w=await x.workspace('Research');
+  // The user's runner (connected and verified once), before the app is added.
+  const s=new AutomationService(x.db),m=new AppMonitoring(x.db),manage=new AutomationManagement(x.db);
   const rp=await s.prepare(x.ai,w,{preferences:{time:'06:00',timeZone:'Europe/Berlin'}});const runner=await s.confirm(x.human,w,rp.id,rp.digest);
   await new AutomationEvents(x.db,transport).subscribe(x.ai,{name:'automation.ready',arguments:{workspaceId:w,runnerId:runner.id},delivery:{mode:'webhook',url:'https://callbacks.example.org/events',secret:'whsec_'+randomBytes(32).toString('base64')}} as any);
   const verify=(await s.agenda(x.ai,w,runner.id)).rows[0],vc:any=await s.claim(x.ai,w,{runnerId:runner.id,occurrenceId:verify.id,requestKey:randomUUID()});
   const [ready]=await Promise.all([s.setup(x.human,w,1),new Promise<void>((res,rej)=>setTimeout(()=>{void s.finish(x.ai,w,{occurrenceId:verify.id,claimToken:vc.claimToken}).then(()=>res(),rej);},25))]);assert.equal(ready.state,'ready');
-  const expiry=new Date(Date.now()+30*86400000).toISOString();
-  const projectDraft=await x.f.preview(x.human,w,{kind:'create_node',nodeKind:'project',name:'Partner research'} as any),project=await x.f.confirm(x.human,w,projectDraft.id,projectDraft.digest);
-  const sigFields=['organization_id','opportunity_id','program_id','kind','title','why','source_url','published_on','found_on','status','run_id'];
-  const scopeDraft=await x.f.preview(x.human,w,{kind:'save_scope',scope:{projectId:project.id,autoWrite:true,expiresAt:expiry,purpose:'Partner signals',inclusionCriteria:'New public signals for active assets',sourcePolicy:'Public sources',basis:'tracking',bindings:[{typeId:T('partnerships.signals'),fields:sigFields}],allowCreate:true,allowUpdate:false,maxChanges:20}} as any),scope=await x.f.confirm(x.human,w,scopeDraft.id,scopeDraft.digest);
-  const X=JSON.parse(await readFile('templates/source/partnership-tracker/automation.examples.json','utf8'));
-  const config={...X.research,appId:id,expiresAt:expiry,readBindings:[{typeId:T('partnerships.signals'),fields:sigFields},{typeId:T('partnerships.opportunities'),fields:['name','organization_id','program_id','stage','owner']}],writeScopes:[{scopeId:scope.id,version:0}],automation:{runnerId:runner.id,trigger:weekly,initialLookbackDays:30,catchUp:'coalesce'}};
-  const mp=await m.prepare(x.ai,w,{config});const mon=await m.confirm(x.human,w,mp.id,mp.digest);
-  const due=(await x.pg.query<any>('SELECT next_at FROM automation_dispatch WHERE monitor_id=$1',[mon.id])).rows[0]?.next_at;
+  // Add app: the three install recommendations are offered selected; one approval installs the app and enables them after commit.
+  const {step,receipt}=await x.install(w,x.T.bd,'Partnerships');assert.deepEqual(step.automations.map((r:any)=>r.key),['partner_research','partner_digest','meeting_briefs']);
+  const id=receipt.appId,map=x.mapOf(await x.comp(w,id)),T=(r:string)=>map[r].typeId;assert.ok(T('partnerships.research_reports'));
+  const setups=await reconcile(id);assert.deepEqual(setups.map((r:any)=>[r.recipe_key,r.status]),[['meeting_briefs','active'],['partner_digest','active'],['partner_research','active']],JSON.stringify(setups));
+  const S=(k:string)=>setups.find((r:any)=>r.recipe_key===k),mon={id:S('partner_research').definition_id,version:S('partner_research').definition_version};
+  // Research must store its results: one create-only grant on signals and one on research reports, nothing else; briefs only on briefs.
+  const scopes=async(monitorId:string)=>{const r=await m.read(x.ai,w,monitorId);assert.equal(r.config.storeResults,true);return r.context.writeScopes.map((g:any,i:number)=>({scopeId:r.config.writeScopes[i].scopeId,typeId:g.body.bindings[0].typeId,create:g.body.allowCreate,update:g.body.allowUpdate}));};
+  const rs=await scopes(mon.id);assert.deepEqual(rs.map((g:any)=>[g.typeId,g.create,g.update]).sort(),[[T('partnerships.research_reports'),true,false],[T('partnerships.signals'),true,false]].sort());
+  assert.deepEqual((await scopes(S('meeting_briefs').definition_id)).map((g:any)=>[g.typeId,g.create,g.update]),[[T('partnerships.briefs'),true,false]]);
+  const digest=(await x.pg.query<any>('SELECT id,config FROM app_actions WHERE id=$1',[S('partner_digest').definition_id])).rows[0];assert.equal(digest.config.trigger.automationId,mon.id);assert.deepEqual(digest.config.steps[0].to,['anna@northwind.invalid']);
+  const weekly=(readRecipes(x.T.bd).recommended[0] as any).trigger,due=(await x.pg.query<any>('SELECT next_at FROM automation_dispatch WHERE monitor_id=$1',[mon.id])).rows[0]?.next_at;
   assert.equal(new Date(due).toISOString(),nextCalendar(weekly,new Date()).toISOString(),'weekly on Monday at 07:00 Europe/Berlin');assert.equal(new Date(due).getUTCDay(),1);
-  // The digest: an email action on that research run becoming completed, to members only. A partner's address is refused.
-  const appVersion=(await x.comp(w,id)).version,dg={...X.digest,appId:id,appVersion,expiresAt:expiry,trigger:{...X.digest.trigger,automationId:mon.id,automationVersion:0},steps:[{...X.digest.steps[0],to:['anna@northwind.invalid']}]};
-  const create=async(c:any)=>{const d=await actions.prepare(x.human,w,{config:c});return actions.confirm(x.human,w,d.id,d.digest);};
-  await assert.rejects(()=>create({...dg,name:'To a partner',steps:[{...dg.steps[0],to:['chloe@cedarline.invalid']}]}),/registered team member/);
-  const action=await create(dg);assert.equal((await manage.readiness(x.human,w,mon.id,[action.id])).ready,true);
-  // A run is due: claim, save three signals and two target suggestions under the scope (no other table), finish with the digest summary.
-  await x.pg.query("INSERT INTO automation_occurrences(id,workspace_id,user_id,runner_id,monitor_id,monitor_version,occurrence_key,due_at,reason) VALUES($1,$2,$3,$4,$5,0,$6,now(),'scheduled_due')",[randomUUID(),w,x.human.userId,runner.id,mon.id,'weekly-'+randomUUID()]);
+  assert.equal((await manage.readiness(x.human,w,mon.id,[digest.id])).ready,true);
+  const prog=await x.save(w,T('programs'),{name:'NWB-101 (fictional)',code:'NWB-101',stage:'phase_1',archived:false});
+  const maple=await x.save(w,T('organizations'),{name:'Maplecrest Pharma (fictional)',org_type:'partner',archived:false}),quill=await x.save(w,T('organizations'),{name:'Quillmont Bio (fictional)',org_type:'company',archived:false});
+  await x.save(w,T('partnerships.opportunities'),{name:'Maplecrest: NWB-101',organization_id:maple,program_id:prog,direction:'out_license',stage:'cda',stage_on:'2026-11-10',owner:'Anna',archived:false});
+  await x.save(w,T('partnerships.asset_profiles'),{program_id:prog,directions:'["out_license"]',research_focus:'Fibrosis deals',status:'active'});
+  const ui=x.app(w,id);await ui.open({section:'settings'});assert.doesNotMatch(ui.html,/digest_cadence|pt-schedule/);assert.match(text(ui.html),/No research report yet/);
+  // A run is due: claim, save three signals and two target suggestions, then the report (also required when nothing is found), finish with its summary.
+  await x.pg.query("INSERT INTO automation_occurrences(id,workspace_id,user_id,runner_id,monitor_id,monitor_version,occurrence_key,due_at,reason) VALUES($1,$2,$3,$4,$5,$6,$7,now(),'scheduled_due')",[randomUUID(),w,x.human.userId,runner.id,mon.id,mon.version,'weekly-'+randomUUID()]);
   const occ=(await s.agenda(x.ai,w,runner.id)).rows.find((r:any)=>r.monitor_id===mon.id)!,c:any=await s.claim(x.ai,w,{runnerId:runner.id,occurrenceId:occ.id,requestKey:randomUUID()});
+  const sigScope=rs.find((g:any)=>g.typeId===T('partnerships.signals'))!.scopeId,repScope=rs.find((g:any)=>g.typeId===T('partnerships.research_reports'))!.scopeId;
   const today=new Date().toISOString().slice(0,10),sig=(kind:string,title:string,org:string|null,why:string)=>({kind:'create_record',typeId:T('partnerships.signals'),data:{kind,title,why,source_url:'https://news.example.invalid/'+encodeURIComponent(title),found_on:today,status:'new',program_id:prog,organization_id:org,run_id:c.runId}});
-  const batch={scopeId:scope.id,expectedScopeVersion:0,requestKey:randomUUID(),sourceLabel:'https://news.example.invalid',interpretation:'Public partner signals (fictional)',changes:[
+  const batch={scopeId:sigScope,expectedScopeVersion:0,requestKey:randomUUID(),sourceLabel:'https://news.example.invalid',interpretation:'Public partner signals (fictional)',changes:[
    sig('deal','Maplecrest licensed a fibrosis asset (fictional)',maple,'Active in fibrosis; overlaps NWB-101.'),sig('financing','Maplecrest raised a fictional bond',maple,'Budget for in-licensing.'),sig('people','Maplecrest named a new CSO (fictional)',maple,'New decision maker.'),
    sig('target_suggestion','Quillmont Bio (fictional)',quill,'Inhaled formulation know-how fits NWB-101.'),sig('target_suggestion','Rivermint Oncology (fictional)',null,'Lung franchise build-out.')]};
   await withActor(x.ai,()=>x.f.maintain(x.ai,w,batch as any,undefined,false,c.runId));
   await assert.rejects(()=>withActor(x.ai,()=>x.f.maintain(x.ai,w,{...batch,requestKey:randomUUID(),changes:[{kind:'create_record',typeId:T('partnerships.opportunities'),data:{name:'Self-created',organization_id:quill,program_id:prog,direction:'out_license',stage:'identified',owner:'Bot'}}]} as any,undefined,false,c.runId)),'research cannot create opportunities');
+  const firstSig=(await x.rows(T('partnerships.signals')))[0];
+  await assert.rejects(()=>withActor(x.ai,()=>x.f.maintain(x.ai,w,{...batch,requestKey:randomUUID(),changes:[{kind:'update_record',recordId:firstSig.id,expectedVersion:firstSig.version,data:{status:'accepted'}}]} as any,undefined,false,c.runId)),'research cannot change or accept signals');
   await ui.open({section:'research',rsub:'targets'});{const tt=text(ui.html);assert.match(tt,/Quillmont Bio \(fictional\)/);assert.match(tt,/Rivermint Oncology \(fictional\)/);}
   await ui.open({section:'settings'});const summary=/id="pt-digest-subject">([^<]*)</.exec(ui.html)![1]+'\n'+/id="pt-digest">([\s\S]*?)<\/pre>/.exec(ui.html)![1].replace(/&#39;/g,"'").replace(/&amp;/g,'&');
+  await withActor(x.ai,()=>x.f.maintain(x.ai,w,{scopeId:repScope,expectedScopeVersion:0,requestKey:randomUUID(),sourceLabel:'https://news.example.invalid',interpretation:'Weekly research report (fictional)',changes:[{kind:'create_record',typeId:T('partnerships.research_reports'),data:{run_on:today,run_id:c.runId,cadence:'weekly',period:'this week',summary,new_signals:3,new_targets:2,sources:JSON.stringify([{title:'Fictional deal note',url:'https://news.example.invalid/x'}]),written_by:'claude'}}]} as any,undefined,false,c.runId));
   await s.finish(x.ai,w,{occurrenceId:occ.id,claimToken:c.claimToken,result:{status:'completed',summary}});
-  // The email action fires once on the completed run; the delivered text is the digest (§6 format, about 150 words, members only).
+  await ui.open({section:'research',rsub:'runs'});assert.match(text(ui.html),/this week 3 2 Partnerships · /);
+  // The digest fires once on the completed run; the delivered text is the digest (§6 format, about 150 words, members only).
+  const action={id:digest.id};
   const {dispatchNotificationBatch}=await import('../src/app-services/notifications.js');const {processServiceJob}=await import('../src/app-services/jobs.js');
   await x.pg.query("UPDATE app_actions SET next_at=now()-interval '1 day' WHERE id=$1",[action.id]);await withDatabaseContext({service:'worker'},()=>dispatchAppActions(x.db));
   const batches=(await x.pg.query<any>('SELECT id FROM app_notification_batches WHERE action_id=$1',[action.id])).rows;assert.equal(batches.length,1);
@@ -184,24 +190,35 @@ test('Acceptance 4, 7, 8 and 9: weekly research on the runner writes signals and
   const sent:any[]=[];await x.pg.query("UPDATE app_service_jobs SET available_at=now()-interval '1 minute'");await withDatabaseContext({service:'worker'},()=>processServiceJob(x.db,{email:async(p:any)=>{sent.push(p);return {id:'provider-1'};}}));
   assert.equal(sent.length,1);const mail=JSON.stringify(sent[0]);assert.match(mail,/anna@northwind\.invalid/);assert.doesNotMatch(mail,/cedarline|maplecrest\.invalid|quillmont\.invalid/i);
   const body=String(sent[0].text??sent[0].message?.text??JSON.parse(mail).text??'');const txt=body||mail;
-  assert.match(txt,/Partnerships · week of \d+ \w+: 0 moved · 0 due · 3 new signals/);assert.match(txt,/New about your targets: .*· 0 more|New about your targets: [^\n]*/);assert.match(txt,/Suggested targets: 2 for NWB-101 \(review\)/);
+  assert.match(txt,/Partnerships · week of \d+ \w+: 0 moved · 0 due · 3 new signals/);assert.match(txt,/Suggested targets: 2 for NWB-101 \(review\)/);
   assert.ok(summary.split(/\s+/).filter(w=>/[A-Za-z0-9]/.test(w)).length<=150);assert.doesNotMatch(summary,/Moved:|Due this week:|Stalled:/,'empty sections are left out');
   // One suggestion is accepted in the app (reviewed): an opportunity at Identified, source research.
   const sugg=(await x.rows(T('partnerships.signals'))).find((r:any)=>r.data.title==='Quillmont Bio (fictional)');
   await ui.open({section:'research'});await ui.click('panel:accept:'+sugg.id);await ui.submit('accept-signal',{organization_id:quill,program_id:prog,direction:'co_development',owner:'Anna',priority:'medium'});await ui.approve();
   const created=(await x.rows(T('partnerships.opportunities'))).find((r:any)=>r.data.organization_id===quill);assert.deepEqual([created.data.stage,created.data.source],['identified','research']);
   assert.equal((await x.rows(T('partnerships.signals'))).find((r:any)=>r.id===sugg.id).data.status,'accepted');
-  // Switching to daily (and monthly) in Settings changes the schedule the research worker uses.
-  await ui.open({section:'settings'});await ui.submit('save-settings',{digest_cadence:'daily',digest_time:'07:00',time_zone:'Europe/Berlin',stalled_days:'21',research_enabled:'on'});await ui.approve();await ui.open({section:'settings'});const daily=trigger();assert.equal(daily.frequency,'daily');
-  const mp2=await m.prepare(x.ai,w,{monitorId:mon.id,expectedVersion:0,config:{...config,automation:{...config.automation,trigger:daily}}});await m.confirm(x.human,w,mp2.id,mp2.digest);
-  const due2=(await x.pg.query<any>('SELECT next_at FROM automation_dispatch WHERE monitor_id=$1',[mon.id])).rows[0].next_at;assert.equal(new Date(due2).toISOString(),nextCalendar(daily,new Date()).toISOString());
-  await ui.submit('save-settings',{digest_cadence:'monthly',digest_time:'07:00',time_zone:'Europe/Berlin',stalled_days:'21',research_enabled:'on'});await ui.approve();await ui.open({section:'settings'});const monthly=trigger();
-  const mp3=await m.prepare(x.ai,w,{monitorId:mon.id,expectedVersion:1,config:{...config,automation:{...config.automation,trigger:monthly}}});await m.confirm(x.human,w,mp3.id,mp3.digest);
-  const due3=new Date((await x.pg.query<any>('SELECT next_at FROM automation_dispatch WHERE monitor_id=$1',[mon.id])).rows[0].next_at);assert.equal(due3.toISOString(),nextCalendar(monthly,new Date()).toISOString());
-  // Archiving the app pauses the research and digest automations; restoring brings them back switched off.
+  // The schedule is changed on the automation (the app stores none): daily, then monthly, through the exact review.
+  for(const trig of [{...weekly,frequency:'daily',weekdays:undefined},{...weekly,frequency:'monthly',weekdays:undefined,monthDay:1,anchor:'2026-11-01'}]){const cur=await m.read(x.ai,w,mon.id),t2=JSON.parse(JSON.stringify(trig));
+   const p2=await m.prepare(x.ai,w,{monitorId:mon.id,expectedVersion:cur.version,config:{...cur.config,automation:{...cur.config.automation,trigger:t2}}});await m.confirm(x.human,w,p2.id,p2.digest);
+   const next=(await x.pg.query<any>('SELECT next_at FROM automation_dispatch WHERE monitor_id=$1',[mon.id])).rows[0].next_at;assert.equal(new Date(next).toISOString(),nextCalendar((await m.read(x.ai,w,mon.id)).config.automation.trigger,new Date()).toISOString());}
+  // Archiving the app pauses research, briefs and the digest; restoring brings them back switched off.
   const change=async(op:any)=>{const pv=await x.f.preview(x.human,w,op);return x.f.confirm(x.human,w,pv.id,pv.digest);};
   await change({kind:'archive_component',componentId:id,expectedVersion:(await x.comp(w,id)).version,archived:true});
-  assert.ok((await x.pg.query<any>('SELECT archived_with_app_at FROM app_monitors WHERE id=$1',[mon.id])).rows[0].archived_with_app_at);assert.ok((await x.pg.query<any>('SELECT archived_with_app_at FROM app_actions WHERE id=$1',[action.id])).rows[0].archived_with_app_at);
+  for(const k of ['partner_research','meeting_briefs'])assert.ok((await x.pg.query<any>('SELECT archived_with_app_at FROM app_monitors WHERE id=$1',[S(k).definition_id])).rows[0].archived_with_app_at,k);
+  assert.ok((await x.pg.query<any>('SELECT archived_with_app_at FROM app_actions WHERE id=$1',[action.id])).rows[0].archived_with_app_at);
   assert.equal((await manage.readiness(x.human,w,mon.id,[action.id])).ready,false);
- });}finally{process.env.CONNECTOR_ENCRYPTION_KEY=oldKey;await x.pg.close();}
+ });}finally{process.env.CONNECTOR_ENCRYPTION_KEY=oldKey;delete process.env.APP_AUTOMATION_RECIPES_ENABLED;await x.pg.close();}
+});
+
+test('Recipes: without a ready background runner nothing is activated, setup stays visible and every screen works',async()=>{
+ const x=await suite();process.env.APP_AUTOMATION_RECIPES_ENABLED='true';
+ try{await withActor(x.human,async()=>{
+  const w=await x.workspace('Blocked');
+  const {receipt}=await x.install(w,x.T.bd,'Partnerships');
+  for(let i=0;i<4;i++)await withDatabaseContext({service:'worker'},()=>reconcileRecipeSetups(x.db));
+  const rows=(await x.pg.query<any>('SELECT recipe_key,status FROM automation_recipe_setups WHERE app_id=$1 ORDER BY recipe_key',[receipt.appId])).rows;
+  assert.deepEqual(rows.map((r:any)=>r.recipe_key),['meeting_briefs','partner_digest','partner_research']);assert.ok(rows.every((r:any)=>r.status!=='active'),'no runner yet: nothing is active');
+  assert.equal((await x.pg.query('SELECT id FROM app_monitors WHERE app_id=$1',[receipt.appId])).rows.length,0);
+  const ui=x.app(w,receipt.appId);for(const section of SCREENS){await ui.open({section});assert.doesNotMatch(ui.html,/could not be shown|pt-banner bad/,section);}
+ });}finally{delete process.env.APP_AUTOMATION_RECIPES_ENABLED;await x.pg.close();}
 });

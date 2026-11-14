@@ -8,11 +8,13 @@ import {actionConfig} from '../src/app-services/schema.js';
 import {monitoringConfig} from '../src/app-services/monitoring-schema.js';
 import {schedule} from '../src/automations/schema.js';
 import {nextCalendar} from '../src/automations/schedules.js';
-import {entry,schema,demo,fullMap,cfgFor,fresh,render,approve,text,session,id,without,root,type Row} from './fixtures/partnerships.js';
+import {readRecipes} from '../src/automations/recipes-schema.js';
+import {entry,schema,demo,fullMap,fullBindings,cfgFor,fresh,render,approve,text,session,id,without,root,type Row} from './fixtures/partnerships.js';
 
 /* PARTNERSHIPS.md §13: package checklist and app behaviour on the fictional demo set (production QuickJS, platform response shapes). */
 const rowsOf=(role:string)=>(demo.records as Row[]).filter(r=>r.role===role);
 const ORG=(name:string)=>id('organizations',d=>d.name===name),OPP=(name:string)=>id('partnerships.opportunities',d=>d.name===name);
+const bool=(v:any)=>v===true||v==='true';
 const SCREENS=['overview','pipeline','partners','conferences','activity','research','settings'];
 
 test('package: catalog entry, seven screens, limits, build --check, installer, draft status, retirement of 1.1.1',async()=>{
@@ -42,25 +44,27 @@ test('roles as in §7: shared core roles, Contracts agreements read-only, dataro
  for(const r of ['dataroom.access_grants','dataroom.engagement']){assert.deepEqual([schema[r].contract,schema[r].optional,schema[r].integration],['dataroom.v1',true,true]);assert.equal(reg[r].writer,'life.data-room');
   for(const f of schema[r].fields){const c=reg[r].versions['dataroom.v1'].fields.find((x:any)=>x.key===f.key);assert.ok(c,r+'.'+f.key);assert.equal(f.kind,c.kind);assert.deepEqual(f.options??null,c.options??null);}}
  const own=Object.keys(schema).filter(r=>r.startsWith('partnerships.'));
- assert.deepEqual(own.sort(),['activities','asset_profiles','briefs','conferences','follow_ups','opportunities','settings','signals','stage_history','tag_categories','views'].map(x=>'partnerships.'+x).sort());
+ assert.deepEqual(own.sort(),['activities','asset_profiles','briefs','conferences','follow_ups','opportunities','research_reports','settings','signals','stage_history','tag_categories','views'].map(x=>'partnerships.'+x).sort());
  for(const r of own)assert.equal(schema[r].contract,'partnerships.v1');
  const F=(r:string)=>Object.fromEntries(schema[r].fields.map((f:any)=>[f.key,f]));
  // §7 fields, kinds, required flags and options.
- const spec:Record<string,string>={'partnerships.settings':'digest_cadence:select*,digest_day:select,digest_time:text,digest_recipients:text,digest_text:text,research_enabled:boolean,stalled_days:number,lost_reasons:text',
+ const spec:Record<string,string>={'partnerships.settings':'digest_text:text,stalled_days:number,lost_reasons:text,team:text,team_members:text,custom_fields:text,option_lists:text,stage_config:text,preferences:text',
   'partnerships.asset_profiles':'program_id:text*,directions:text,deal_types:text,territories:text,target_profile:text,materials:text,research_focus:text,research_exclusions:text,status:select*',
   'partnerships.opportunities':'name:text*,organization_id:text*,program_id:text*,direction:select*,stage:select*,stage_on:date,owner:text*,priority:select,fit:number,fit_rationale:text,source:select,contact_ids:text,next_step:text,next_date:date,lost_reason:text,cda_agreement_id:text,dataroom_room_id:text,term_sheet_agreement_id:text,agreement_id:text,tags:text,archived:boolean',
   'partnerships.stage_history':'opportunity_id:text*,from_stage:text,to_stage:text*,changed_on:date*,changed_by:text,note:text',
   'partnerships.activities':'opportunity_id:text,organization_id:text*,kind:select*,occurred_on:date*,person_ids:text,team:text,summary:text,materials:text,conference_id:text,logged_by:select,tags:text',
-  'partnerships.follow_ups':'opportunity_id:text,activity_id:text,title:text*,owner:text*,due:date*,status:select*,done_on:date',
+  'partnerships.follow_ups':'opportunity_id:text,activity_id:text,title:text*,owner:text*,due:date*,status:select*,done_on:date,owner_member_id:text',
   'partnerships.conferences':'name:text*,starts_on:date*,ends_on:date,location:text,platform:select,deadlines:text,goals:text,team:text,status:select*,tag_value:text*',
-  'partnerships.briefs':'opportunity_id:text,conference_id:text,meeting_on:date,content:text*,sources:text,written_by:select,written_on:date*',
+  'partnerships.briefs':'opportunity_id:text,conference_id:text,meeting_on:date,content:text*,sources:text,written_by:select,written_on:date*,status:select',
+  'partnerships.research_reports':'run_on:date*,run_id:text,cadence:select,period:text,summary:text*,new_signals:number,new_targets:number,sources:text,written_by:select',
   'partnerships.signals':'organization_id:text,opportunity_id:text,program_id:text,kind:select*,title:text*,why:text*,source_url:text*,published_on:date,found_on:date*,status:select*,dismiss_reason:text,run_id:text',
   'partnerships.tag_categories':'name:text*,values:text,multiple:boolean,standard:boolean,archived:boolean',
-  'partnerships.views':'name:text*,filters:text*,layout:select*,shared:boolean,owner:text*'};
+  'partnerships.views':'name:text*,filters:text*,layout:select*,columns:text,sort:text,shared:boolean,owner:text*'};
  for(const [r,s] of Object.entries(spec))for(const x of s.split(',')){const [k,kind]=x.split(':'),f=F(r)[k];assert.ok(f,r+'.'+k);assert.equal(f.kind,kind.replace('*',''),r+'.'+k);assert.equal(f.required,kind.endsWith('*'),r+'.'+k+' required');assert.equal(f.multiple,false);}
  assert.deepEqual(F('partnerships.opportunities').stage.options,['identified','contacted','non_confidential','cda','confidential_evaluation','term_sheet','exclusivity_diligence','signed','lost','on_hold']);
  assert.deepEqual(F('partnerships.opportunities').direction.options,['out_license','in_license','co_development','research_collaboration','academic','platform','other']);
- assert.deepEqual(F('partnerships.settings').digest_cadence.options,['daily','weekly','monthly']);assert.deepEqual(F('partnerships.settings').digest_day.options,['mon','tue','wed','thu','fri','sat','sun']);
+ assert.deepEqual(F('partnerships.briefs').status.options,['draft','reviewed']);assert.deepEqual(F('partnerships.research_reports').cadence.options,['daily','weekly','monthly']);
+ for(const k of ['digest_cadence','digest_day','digest_time','time_zone','digest_recipients','research_enabled'])assert.equal(F('partnerships.settings')[k],undefined,'schedules and recipients live in the automations, not in settings: '+k);
  assert.deepEqual(F('partnerships.signals').kind.options,['deal','trial','pipeline','financing','people','news','target_suggestion']);
  for(const [r,d] of Object.entries(schema) as any)for(const f of d.fields)assert.match(f.key,/^[a-z][a-z0-9_]{0,63}$/,r+'.'+f.key);
 });
@@ -168,7 +172,7 @@ test('acceptance 5: custom category Region; a shared view (Region + stage) is vi
  await s.change('flt:stage','');await s.click('panel:saveview');await s.submit('save-view',{name:'Anna APAC (private)'});await s.approve();
  const ben=session(rows);await ben.open({section:'pipeline'});await ben.change('me','Marc');const opts=[...ben.html.matchAll(/<option value="[^"]+"[^>]*>([^<]*· (?:shared|private))<\/option>/g)].map(m=>m[1]);
  assert.deepEqual(opts,['APAC contacted · shared']);
- const view=rows.find(r=>r.role==='partnerships.views'&&r.data.name==='APAC contacted')!;await ben.change('pick-view',view.id);assert.deepEqual(ben.state.flt,{stage:['contacted'],program:[],direction:[],owner:[],tags:{Region:['Asia-Pacific']}});
+ const view=rows.find(r=>r.role==='partnerships.views'&&r.data.name==='APAC contacted')!;await ben.change('pick-view',view.id);assert.deepEqual(ben.state.flt,{stage:['contacted'],program:[],direction:[],owner:[],priority:[],source:[],organization:[],tags:{Region:['Asia-Pacific']},custom:{}});
  assert.match(text(ben.html),/Pinehollow: NWB-101 Korea licence/);assert.doesNotMatch(text(ben.html),/Ironvale: NWB-101 Japan rights/);
  const priv=rows.find(r=>r.role==='partnerships.views'&&r.data.name==='Anna APAC (private)')!;await ben.change('pick-view',priv.id);assert.equal(ben.state.viewId,'','Marc cannot open Anna\'s private view');
  const anna=session(rows);await anna.open({section:'pipeline'});await anna.change('me','Anna');assert.match(anna.html,/Anna APAC \(private\) · private/);
@@ -216,29 +220,103 @@ test('acceptance 4 (app side): target suggestions accepted into an opportunity, 
  const q=/id="pt-digest">([\s\S]*?)<\/pre>/.exec((await render(quiet,{section:'settings'})).html)![1];assert.equal(q,'Nothing moved, nothing is due and there are no new signals this week.\n\nOpen Partnerships →');
 });
 
-test('acceptance 4 (schedule): weekly Monday 07:00 by default; switching to daily or monthly changes the schedule',async()=>{
- const sched=async(rows:Row[],st:any={})=>JSON.parse(/id="pt-schedule">([^<]*)</.exec((await render(rows,{section:'settings',...st})).html)![1].replace(/&quot;/g,'"'));
- const empty=fresh().filter(r=>r.role!=='partnerships.settings');const w=schedule.parse(await sched(empty)) as any;
- assert.deepEqual([w.frequency,w.weekdays,w.time,w.timeZone],['weekly',[1],'07:00','Europe/Berlin']);assert.equal(nextCalendar(w,new Date('2026-11-14T12:00:00Z')).toISOString(),'2026-11-16T06:00:00.000Z');
- const rows=fresh(),s=session(rows);await s.open({section:'settings'});await s.change('f:settings:digest_cadence','daily');assert.equal((await sched(rows,s.state)).frequency,'daily');
- await s.submit('save-settings',{digest_cadence:'daily',digest_time:'07:00',time_zone:'Europe/Berlin',stalled_days:'21',research_enabled:'on',digest_recipients:'Anna, Marc',team:'Anna, Marc, Sofia'});assert.equal(s.changes[0].data.digest_cadence,'daily');await s.approve();
- const d=schedule.parse(await sched(rows)) as any;assert.equal(d.frequency,'daily');assert.equal(nextCalendar(d,new Date('2026-11-14T12:00:00Z')).toISOString(),'2026-11-15T06:00:00.000Z');
- assert.match(text((await render(rows,{section:'settings'})).html),/Partnerships · 14 Nov:/);
- await s.submit('save-settings',{digest_cadence:'monthly',digest_time:'06:30',time_zone:'Europe/Berlin',stalled_days:'21',research_enabled:'on'});await s.approve();
- const m=schedule.parse(await sched(rows)) as any;assert.deepEqual([m.frequency,m.monthDay,m.time],['monthly',1,'06:30']);assert.equal(nextCalendar(m,new Date('2026-11-14T12:00:00Z')).toISOString(),'2026-12-01T05:30:00.000Z');
- await s.submit('save-settings',{digest_cadence:'weekly',digest_day:'mon',digest_time:'25:00'});assert.equal(s.changes.length,0);assert.match(s.state.notice,/HH:MM/);
+test('acceptance 4 (automations): research, digest and briefs are install recipes; research saves to the app; settings hold no schedule',async()=>{
+ const recipes=readRecipes(entry);assert.deepEqual(recipes.unavailable,[]);assert.deepEqual(recipes.recommended.map(r=>r.key),['partner_research','partner_digest','meeting_briefs']);
+ const [res,dig,brief]=recipes.recommended as any[];
+ const w=schedule.parse(res.trigger) as any;assert.deepEqual([w.frequency,w.weekdays,w.time,w.timeZone],['weekly',[1],'07:00','Europe/Berlin']);assert.equal(nextCalendar(w,new Date('2026-11-14T12:00:00Z')).toISOString(),'2026-11-16T06:00:00.000Z');
+ // Research must store its results: create-only signals and one report per run, nothing else (no opportunities, stages or other apps).
+ assert.deepEqual(res.research.writeBindings.map((b:any)=>[b.role,b.allowCreate,b.allowUpdate]),[['partnerships.signals',true,false],['partnerships.research_reports',true,false]]);
+ assert.deepEqual(brief.research.writeBindings.map((b:any)=>[b.role,b.allowCreate,b.allowUpdate]),[['partnerships.briefs',true,false]]);
+ for(const r of [res,brief])for(const b of [...r.research.readBindings,...r.research.writeBindings])for(const k of b.fields)assert.ok(schema[b.role].logicalFields[k],b.role+'.'+k);
+ assert.match(res.research.instructions,/Every run, also when nothing new was found, save one partnerships\.research_reports row/);
+ assert.match(res.research.instructions,/at most 3 items per section[\s\S]*150 words[\s\S]*empty sections left out[\s\S]*no deal terms/);
+ assert.deepEqual(dig.trigger,{kind:'after',recipe:'partner_research',when:'completed'});assert.match(dig.email.text,/\{\{run\.summary\}\}/);
+ assert.deepEqual([brief.trigger.kind,brief.trigger.role,brief.trigger.field,brief.trigger.offsetMinutes],['record_date','partnerships.activities','occurred_on',-1440]);assert.match(brief.research.instructions,/status draft/);
+ // The app holds no schedule or recipients and shows the automations it is linked to, plus each run's saved report.
+ const rows=fresh(),st=await render(rows,{section:'settings'}),t=text(st.html);
+ assert.doesNotMatch(st.html,/pt-schedule|digest_cadence|digest_recipients|research_enabled/);
+ assert.match(t,/Partner research Weekly, Monday 07:00[\s\S]*Digest email After each research run[\s\S]*Meeting briefs The day before linked meetings[\s\S]*Last research report: 9 Nov 2026/);
+ assert.match(st.html,/href="https:\/\/platform\.trialagents\.com\/automations"/);
+ const runs=text((await render(rows,{section:'research',rsub:'runs'})).html);assert.match(runs,/9 Nov 2026 week of 9 Nov 4 3 Partnerships · week of 9 Nov/);assert.match(runs,/2 Nov 2026 week of 2 Nov 1 0/);
+ // The digest preview uses the cadence of the latest report (weekly here), and still renders before any report exists.
+ assert.match(t,/Partnerships · week of 16 Nov:/);assert.match(text((await render(rows.filter(r=>r.role!=='partnerships.research_reports'),{section:'settings'})).html),/No research report yet/);
 });
 
-test('automation recipes validate: research and briefs on the user\'s runner, digest on research completion, reminders on follow-up dates',async()=>{
+test('follow-up reminders (chat path) route to the owner\'s member ID; draft briefs from the automation are marked reviewed',async()=>{
  const X=JSON.parse(await readFile(root+'automation.examples.json','utf8')),sub=(v:any):any=>typeof v==='string'?(/^REPLACE_MEMBER_EMAIL$/.test(v)?'member@example.invalid':/^REPLACE_/.test(v)?randomUUID():v):Array.isArray(v)?v.map(sub):v&&typeof v==='object'?Object.fromEntries(Object.entries(v).map(([k,x])=>[k,sub(x)])):v;
- const fixIds=(c:any)=>{const t=c.trigger;if(t?.typeId&&c.recordTypeId)c.recordTypeId=t.typeId;return c;};
- const research=monitoringConfig.parse(sub(X.research));assert.equal((research.automation!.trigger as any).frequency,'weekly');assert.deepEqual((research.automation!.trigger as any).weekdays,[1]);assert.equal(research.writeScopes.length,1);
- monitoringConfig.parse(sub(X.briefs));
- const digest=actionConfig.parse(fixIds(sub(X.digest)));assert.equal((digest.trigger as any).source,'automation_runs');assert.equal(digest.steps.length,1);assert.match((digest.steps[0] as any).text,/\{\{run\.summary\}\}/);
- for(const k of ['reminderDue','reminderOverdue']){const a=actionConfig.parse(fixIds(sub(X[k])));assert.equal(a.trigger.kind,'record_date');assert.deepEqual(a.conditions,[{field:'status',operator:'equals',value:'open'}]);}
- // Recipients are members only (placeholders) and no recipe writes to anyone outside the workspace.
- assert.doesNotMatch(JSON.stringify(X),/@(?!example)/);
- const m=JSON.parse(await readFile(root+'catalog.metadata.json','utf8'));assert.match(m.documentation.tasks.whenUseful,/weekly Monday 07:00/);assert.match(m.documentation.tasks.whenUseful,/at most 3 items per section[\s\S]*150 words[\s\S]*empty sections left out[\s\S]*no deal terms/);
+ assert.deepEqual(Object.keys(X).sort(),['note','reminderDue','reminderOverdue']);
+ for(const k of ['reminderDue','reminderOverdue']){const c=sub(X[k]);c.recordTypeId=c.trigger.typeId;const a=actionConfig.parse(c);assert.equal(a.trigger.kind,'record_date');assert.deepEqual(a.conditions,[{field:'status',operator:'equals',value:'open'}]);assert.equal((a.steps[0] as any).memberField,'owner_member_id');}
+ assert.equal(sub(X.reminderOverdue).trigger.offsetMinutes,1440);assert.doesNotMatch(JSON.stringify(X),/@(?!example)/);
+ const rows=fresh(),s=session(rows),o=OPP('Ironvale: NWB-101 Japan rights');await s.click('open:opp:'+o);await s.click('panel:fu:'+o);await s.submit('save-fu',{title:'Send the CMC summary',owner:'Marc',due:'2026-11-18'});
+ assert.equal(s.changes[0].data.owner_member_id,'00000000-0000-4000-a000-000000000002');await s.approve();
+ await s.open({section:'settings',panel:null});await s.submit('save-settings',{team:'Anna, Marc, Sofia',team_members:'Anna | not-a-member',stalled_days:'21'});assert.equal(s.changes.length,0);assert.match(s.state.notice,/member ID/);
+ const draft=rows.find(r=>r.role==='partnerships.briefs'&&r.data.status==='draft')!;await s.click('open:brief:'+draft.id);assert.match(text(s.html),/Draft Written by Claude/);
+ await s.click('brief-reviewed:'+draft.id);assert.deepEqual(s.changes[0].data,{status:'reviewed'});await s.approve();assert.equal(draft.data.status,'reviewed');
+ const meet=rows.find(r=>r.role==='partnerships.activities'&&['meeting','call','conference_meeting'].includes(r.data.kind)&&r.data.opportunity_id&&!rows.some(b=>b.role==='partnerships.briefs'&&b.data.activity_id===r.id))!;
+ await s.click('add:briefs:'+meet.id);await s.submit('save-record',{content:'One page'});assert.equal(s.changes[0].data.status,'reviewed','a brief a person writes is reviewed');
+});
+
+/* Customization: what Claude or ChatGPT (or a person) can change through reviewed proposals, within the app's scope. */
+const CF_MAP=()=>{const m=structuredClone(fullMap);m['partnerships.opportunities'].fields.milestone_value='milestone_value';m['partnerships.opportunities'].fields.region_priority='region_priority';m['partnerships.opportunities'].writableFields.push('milestone_value','region_priority');return m;};
+const CF_BIND=()=>fullBindings.map((b:any)=>b.typeId==='partnerships.opportunities'?{...b,fields:[...b.fields,'milestone_value','region_priority']}:b);
+const withCustom=(rows:Row[])=>{const st=rows.find(r=>r.role==='partnerships.settings')!;st.data={...st.data,custom_fields:JSON.stringify([{table:'opportunities',key:'milestone_value',label:'Milestone value (USD m)',kind:'number',column:true},{table:'opportunities',key:'region_priority',label:'Region priority',kind:'select',options:['Tier 1','Tier 2'],column:false,filter:true},{table:'opportunities',key:'not_bound',label:'Unbound',kind:'text'}])};
+ for(const [name,v,p] of [['Ironvale: NWB-101 Japan rights',40,'Tier 1'],['Pinehollow: NWB-101 Korea licence',12,'Tier 2'],['Maplecrest: NWB-101 regional licence',75,'Tier 1']] as const){const o=rows.find(r=>r.role==='partnerships.opportunities'&&r.data.name===name)!;o.data={...o.data,milestone_value:v,region_priority:p};}return rows;};
+
+test('customization: a registered custom field is a column, a sortable value, a filter, a drawer row and an editor input; unbound fields stay out',async()=>{
+ const rows=withCustom(fresh()),opts={config:cfgFor(CF_MAP()),bindings:CF_BIND()},s=session(rows,opts);
+ await s.open({section:'pipeline',mode:'list'});const head=[...s.html.matchAll(/<th scope="col"[^>]*>([^<]*)<\/th>/g)].map(m=>m[1]);
+ assert.deepEqual(head,['Opportunity','Partner','Asset','Direction','Stage','Owner','Next step','Fit','Tags','Milestone value (USD m)']);assert.doesNotMatch(s.html,/Unbound|Region priority<\/th>/);
+ await s.change('sort','cf:milestone_value|desc');const names=[...text(s.html).matchAll(/(Maplecrest: NWB-101 regional licence|Ironvale: NWB-101 Japan rights|Pinehollow: NWB-101 Korea licence)/g)].map(m=>m[1]);assert.deepEqual(names.slice(0,3),['Maplecrest: NWB-101 regional licence','Ironvale: NWB-101 Japan rights','Pinehollow: NWB-101 Korea licence']);
+ assert.match(s.html,/<label class="pt-field" for="pt-flt-cf_region_priority">Region priority/);await s.change('flt:cf:region_priority','Tier 2');assert.match(text(s.html),/Pinehollow: NWB-101 Korea licence/);assert.doesNotMatch(text(s.html),/Ironvale: NWB-101 Japan rights/);
+ const o=rows.find(r=>r.role==='partnerships.opportunities'&&r.data.name==='Ironvale: NWB-101 Japan rights')!;await s.click('open:opp:'+o.id);assert.match(text(s.html),/Milestone value \(USD m\) 40/);
+ await s.click('edit:opps:'+o.id);assert.match(s.html,/name="milestone_value"/);assert.match(s.html,/name="region_priority"/);
+ await s.submit('save-record',{milestone_value:'55'});assert.deepEqual(s.changes[0].data,{milestone_value:55});
+ await s.click('edit:opps:'+o.id);await s.submit('save-record',{milestone_value:'55',region_priority:'Tier 9'});assert.match(s.state.notice,/valid region priority/i);
+ // Without the binding the app ignores the registration (the field must be on the table and in the app first).
+ assert.doesNotMatch((await render(withCustom(fresh()),{section:'pipeline',mode:'list'})).html,/Milestone value/);
+});
+
+test('customization: saved views keep their own columns and sort; filters on priority, source and partner; layout gear covers every list',async()=>{
+ const rows=withCustom(fresh()),opts={config:cfgFor(CF_MAP()),bindings:CF_BIND()},s=session(rows,opts);
+ await s.open({section:'pipeline',mode:'list'});await s.change('me','Anna');await s.change('flt:direction','out_license');await s.change('sort','fit|desc');
+ const cols=['name','partner','cf:milestone_value','stage'];await s.click('panel:saveview');s.state.viewCols=cols;await s.submit('save-view',{name:'Out-licensing by fit',shared:'on'});
+ assert.deepEqual([JSON.parse(s.changes[0].data.sort),JSON.parse(s.changes[0].data.columns)],[{field:'fit',dir:'desc'},cols]);await s.approve();
+ const view=rows.find(r=>r.role==='partnerships.views'&&r.data.name==='Out-licensing by fit')!;const m=session(rows,opts);await m.open({section:'pipeline',mode:'list'});await m.change('pick-view',view.id);
+ assert.deepEqual([...m.html.matchAll(/<th scope="col"[^>]*>([^<]*)<\/th>/g)].map(x=>x[1]),['Opportunity','Partner','Milestone value (USD m)','Stage']);assert.deepEqual(m.state.sort,{field:'fit',dir:'desc'});
+ // A view written by an assistant with unknown columns or sort keeps only what the app knows.
+ rows.push({id:randomUUID(),version:0,role:'partnerships.views',data:{name:'Assistant view',filters:JSON.stringify({priority:['high'],source:['conference'],organization:[ORG('Cedarline Pharma')]}),layout:'list',columns:JSON.stringify(['name','bogus','priority']),sort:JSON.stringify({field:'nope'}),shared:true,owner:'Anna'}});
+ const a=session(rows,opts);await a.open({section:'pipeline'});await a.change('pick-view',rows[rows.length-1].id);assert.deepEqual(a.state.viewCols,['name','priority']);assert.equal(a.state.sort,null);assert.equal(a.state.mode,'list');
+ assert.match(text(a.html),/Cedarline: NWB-101 licence/);for(const r of rows.filter(r=>r.role==='partnerships.opportunities'&&!bool(r.data.archived)&&a.html.includes('open:opp:'+r.id)))assert.ok(r.data.priority==='high'&&r.data.source==='conference'&&r.data.organization_id===ORG('Cedarline Pharma'));
+ // Layout: every list has a column group; reorder and hide through the layout profile; newer columns start hidden.
+ const layout=JSON.parse(/^const templateLayoutSchema=(.+);$/m.exec(await readFile(root+'partnerships.source.js','utf8'))![1]);assert.deepEqual(Object.keys(layout.groups),['pipeline','partners','contacts','activity','followups','meetings']);
+ const prof={cols:{activity:['summary','date']},visible:{'activity.logged_by':false,'contacts.email':true}},r2=await render(fresh(),{section:'activity'},undefined,{config:cfgFor(fullMap,{layoutProfile:JSON.stringify(prof)})});
+ assert.deepEqual([...r2.html.matchAll(/<th scope="col"[^>]*>([^<]*)<\/th>/g)].map(x=>x[1]),['Summary','Date','Kind','Partner','Opportunity']);
+ const r3=await render(fresh(),{section:'partners'},undefined,{config:cfgFor(fullMap,{layoutProfile:JSON.stringify(prof)})});assert.match(r3.html,/>Professional email<\/th>/);assert.doesNotMatch((await render(fresh(),{section:'partners'})).html,/>Professional email<\/th>/);
+});
+
+test('customization: stage labels, hidden and custom stages, activity kinds and deal types, and preferences',async()=>{
+ const rows=fresh(),s=session(rows);const k=rows.find(r=>r.role==='partnerships.opportunities'&&r.data.stage==='exclusivity_diligence')!;k.data={...k.data,stage:'term_sheet'};await s.open({section:'settings'});
+ await s.submit('save-stages',{label_cda:'CDA signed',hide_exclusivity_diligence:'on',...Object.fromEntries(['identified','contacted','non_confidential','confidential_evaluation','term_sheet','signed','lost','on_hold'].map(k=>['label_'+k,'']))});
+ const cfg=JSON.parse(s.changes[0].data.stage_config);assert.deepEqual(cfg.labels,{cda:'CDA signed'});assert.deepEqual(cfg.hidden,['exclusivity_diligence']);await s.approve();
+ await s.open({section:'pipeline',mode:'board'});assert.match(text(s.html),/CDA signed/);
+ const open=rows.find(r=>r.role==='partnerships.opportunities'&&r.data.stage==='term_sheet')!;await s.click('open:opp:'+open.id);assert.doesNotMatch(s.html,/<option value="exclusivity_diligence"/);
+ await s.open({section:'settings',panel:null});await s.submit('save-stages',{hide_term_sheet:'on'});assert.equal(s.changes.length,0);assert.match(s.state.notice,/open opportunities/);
+ // A custom stage (added to the stage options by a reviewed table change, then registered) sits after its anchor and counts in the funnel there.
+ const st=rows.find(r=>r.role==='partnerships.settings')!;st.data.stage_config=JSON.stringify({custom:[{key:'board_approval',label:'Board approval',after:'term_sheet'}]});open.data={...open.data,stage:'board_approval'};
+ const b=await render(rows,{section:'pipeline',mode:'board'});const order=[...b.html.matchAll(/<section class="pt-col[^"]*" aria-label="([^"]+)"/g)].map(m=>m[1]);assert.deepEqual(order.slice(5,8),['Term sheet','Board approval','Exclusivity and diligence']);
+ const f=await render(rows,{section:'pipeline',mode:'funnel'});assert.ok(text(f.html).includes('Term sheet'));
+ // Lists: rename and hide activity kinds (a new kind needs a table change first); add a deal type.
+ const l=session(rows);await l.open({section:'settings'});await l.submit('save-lists',{activity_kinds:'meeting | In-person meeting\nnote | Note | hidden\nwebinar | Webinar',deal_types:'license | Licence'});assert.equal(l.changes.length,0);assert.match(l.state.notice,/table change/);
+ await l.submit('save-lists',{activity_kinds:'meeting | In-person meeting\nnote | Note | hidden',deal_types:'license | Licence\nnewco | NewCo spin-out'});const ol=JSON.parse(l.changes[0].data.option_lists);assert.deepEqual(ol,{activity_kinds:{meeting:'In-person meeting',note:'Note',hidden:['note']},deal_types:{license:'Licence',newco:'NewCo spin-out'}});await l.approve();
+ await l.click('panel:log');assert.match(l.html,/In-person meeting/);assert.doesNotMatch(l.html,/<option value="note"/);
+ const pf=rows.find(r=>r.role==='partnerships.asset_profiles')!;await l.click('edit:profiles:'+pf.id);assert.match(l.html,/NewCo spin-out/);
+ // Preferences: the pipeline opens as a list with a shared default view and 10 rows per page; hidden overview panels.
+ const view=rows.find(r=>r.role==='partnerships.views'&&r.data.shared===true)!;const p=session(rows);await p.open({section:'settings'});
+ await p.submit('save-prefs',{pipeline_layout:'list',default_view:view.id,page_size:'10',ov_funnel_asset:'on',ov_followups:'on',ov_stalled:'on',ov_upcoming:'on',ov_signals:'on'});
+ assert.deepEqual(JSON.parse(p.changes[0].data.preferences),{pipeline_layout:'list',default_view:view.id,page_size:10,overview_hidden:['funnel_direction']});await p.approve();
+ const fresh2=session(rows);await fresh2.open({section:'pipeline'});assert.equal(fresh2.state.mode,view.data.layout||'list');assert.equal(fresh2.state.viewId,view.id);
+ const ov=text((await render(rows,{section:'overview'})).html);assert.match(ov,/Funnel by asset/);assert.doesNotMatch(ov,/Funnel by direction/);
+ await p.submit('save-prefs',{page_size:'500'});assert.match(p.state.notice,/10 to 50/);
 });
 
 test('acceptance 7 and 8: no screen or action sends email or contacts partners; every write is a reviewed proposal',async()=>{
