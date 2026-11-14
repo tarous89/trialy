@@ -799,3 +799,14 @@ This supersedes D2 claim/source/merged-pending checkpoints. **30 published; 17 u
 ### D3 execution claim — 14 November 2026
 
 D2 rechecked HTTP 200; public main `5f6a0d2fe2e923f9e29c4b6af75c55d58cac7eda`; open PRs reconciled, no unfinished Runway release or competing D3 claim. Retitle D3 to Budgeting software for biotechs under 20 employees: count each cost once. Distinct 12-person budget ownership/People-versus-Plan reconciliation use case, avoiding unsupported best ranking and hiring-versus-outsourcing comparison reserved for D6. No salary benchmark, host test or real app execution. 30 published, 17 unfinished until live QA.
+
+
+### Canonical queue D3 source checkpoint — 14 November 2026
+
+**Budgeting software for biotechs under 20 employees: count each cost once.** Target https://trialagents.com/apps/budgeting-software-small-biotech-teams. [PR #211](https://github.com/tarous89/trialagents-public/pull/211), head `306ebe920acaf0185b1ee887e616c54e9412722d`. Distinct input-ownership and People/Plan double-counting workflow, replacing unsupported best ranking; D6 remains hiring-versus-outsourcing.
+
+Evidence: current approved life.cash-runway 2.1.0 catalog and authentic-media README; 04-people.jpg and 03-plan.jpg, labeled separate fictional demo data. SBA https://www.sba.gov/counseling/plan-your-business/ supports recurring versus one-time expenses only. No salary benchmark, statutory loaded-cost percentage, native departmental approval workflow, host parity or app execution claimed.
+
+Decimal-verified fictional all-EUR example: 1.8m opening at 31 Dec 2026; twelve individual roles at75k annual each with20% loaded cost =>7.5k/role/month and90k total/month. Non-payroll lab45k/month and G&A15k/month; one-off April assay180k. January–June total540k+270k+90k+180k=1.08m; June closing720k. Duplicate payroll Plan line would add540k false spend. No other flows; six-month excerpt not complete annual budget or full runway. Owners review then app locks budget. App-level/salary-column access and withholding incomplete totals explained.
+
+Local syntax, Decimal arithmetic and article structure/anchors/final CTA pass. Seven source files; shell/CSS/tracking unchanged. Await exact-head full predeploy, desktop/mobile artifact inspection, merge and independent live checks. Resume PR #211 first. Totals30 published,17 unfinished. Refresh on catalog/model/permission changes.
