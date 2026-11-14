@@ -907,3 +907,9 @@ PR #214 merged as `e50602db40385e5a3d54747759a793f1fb3747fc` after exact-head pr
 - Claimed after reconciling D6 live HTTP 200, merged public main `e50602db40385e5a3d54747759a793f1fb3747fc` and five unrelated open PRs. No unfinished Runway source release found.
 - [Source PR #215](https://github.com/tarous89/trialagents-public/pull/215), head `3c3b78af3ffc1e449634b2e28ef09cdb53ce2708`; proposed URL https://trialagents.com/apps/biotech-runway-next-funding-round. Title: **Plan biotech runway around a funding round: find the gap before the cash arrives**. Retains D7's funding-round topic with a distinct contingent-receipt timing example.
 - Not published. Exact-head predeploy, desktop/mobile artifact review, merge and independent live QA remain required. Resume this PR before selecting another topic.
+
+
+### D7 merged checkpoint — 2026-11-14 23:08:16 UTC
+
+- PR #215 merged as `86345a49f823289757ef4990b06183ede4b2b487` after exact-head predeploy run 43650862985 passed both jobs. Desktop 1440px and mobile 390px screenshots from artifact 14136231978 were inspected; no layout blocker. Tables use contained horizontal scrolling on mobile.
+- Existing GitHub-to-CDN automatic deployment pending. Not yet Published. Poll https://trialagents.com/apps/biotech-runway-next-funding-round every 30–60 seconds for up to 15 minutes and complete independent content/schema/discovery/assets/analytics checks. Resume this release before any new draft if interrupted.
