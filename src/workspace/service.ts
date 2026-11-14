@@ -49,9 +49,10 @@ const exchangeRecords=(op:any)=>{const r=isExchangeOperation(op)?(op as any).rec
 const withoutRecords=(op:any)=>{const {records,...rest}=op;return rest;};
 const J=JSON.stringify;
 const activeFrontends=new FrontendQueue(2),activeDraftFrontends=new FrontendQueue(1,8);
+const customFrontendSession=Symbol('custom frontend needs independent capability transactions');
 const adapter=(tx:Connection):Database=>({query:tx.query.bind(tx),transaction:fn=>fn(tx),close:async()=>{}});
 export class WorkspaceFoundation {
- constructor(public db:Database,private frontendSession=false){}
+ constructor(public db:Database,private frontendSession:boolean|'custom'=false){}
  // Project-level sharing comes later. Avoid leaking project/scope metadata to partial-access members.
  async policy(tx:Connection,a:Actor,w:string,write=false){
   const p=await access(tx,a,w,write);
@@ -164,12 +165,18 @@ export class WorkspaceFoundation {
   // installed once; READ COMMITTED rechecks still see revocations before release.
   if(!this.frontendSession){
    const row=request.componentId?(await this.db.query('SELECT source FROM workspace_components WHERE id=$1 AND workspace_id=$2',[request.componentId,w])).rows[0]:(await this.db.query("SELECT body->'operation'->'content'->>'source' AS source FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()",[request.previewId,w,a.userId])).rows[0];
-   if(row?.source&&standardTracker(row.source))return this.db.transaction(tx=>withReadMetadata(adapter(tx),db=>new WorkspaceFoundation(db,true).runFrontend(a,w,request,signal)));
+   if(row?.source&&standardTracker(row.source))try{return await this.db.transaction(tx=>withReadMetadata(adapter(tx),db=>new WorkspaceFoundation(db,true).runFrontend(a,w,request,signal)));}catch(error){
+    if(error!==customFrontendSession)throw error;
+    // An older authorized view can still contain custom source after a native
+    // publication. End the native transaction before queuing/executing that view.
+    return new WorkspaceFoundation(this.db,'custom').runFrontend(a,w,request,signal);
+   }
   }
   let content:any,version:number|undefined,viewId=request.viewId;let draftTables:string[]=[];let draftSchema=false;
   if(request.componentId){const runtime=await this.runtimeComponent(this.db,a,w,request.componentId,request.expectedVersion,viewId);assertRuntimeScope(runtime.latest,runtime.c);content=runtime.c;version=content.version;viewId=runtime.view.id;}
   else {const draft=(await this.db.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[request.previewId,w,a.userId])).rows[0];if(!draft||!['save_component','create_tracker'].includes(draft.body.operation.kind)||draft.body.operation.content.format!=='frontend-js')fail(404,'not_found','Code preview unavailable');await this.validate(this.db,a,w,draft.body.operation);content={...draft.body.operation.content,project_id:draft.body.operation.setup?.projectId??draft.body.operation.projectId};draftTables=(draft.body.operation.setup?.newTables??[]).map((t:any)=>t.id);draftSchema=!!(draftTables.length||draft.body.operation.setup?.extendTables?.length);}
   signal?.throwIfAborted();
+  if(this.frontendSession===true&&!standardTracker(content.source))throw customFrontendSession;
   if(content.sectionsEmpty)return {html:'<p>No sections are shared with you.</p>',css:'',state:{},version,viewId,accessVersion:(await access(this.db,a,w)).access_version,accessStamp:await this.componentAccessStamp(a,w,content)};
   if(!draftSchema&&!request.viewId)await validateResource(this.db,a,w,content,true); // create_tracker validation checks generated bindings, including virtual tables.
   if(request.event.action.startsWith('bound:')||request.event.action==='bound-batch'){
@@ -204,10 +211,10 @@ export class WorkspaceFoundation {
   const changes:any[]=[],invocations:any[]=[],connectorReviews:any[]=[];let layoutProposal:any=null,exchangeProposal:any=null;
   try{
    signal?.throwIfAborted();
-   // Admission may wait: revalidate before executing any source/capability.
-   if(!knownTracker){
+   // Only queued admission needs to repeat the checks made just above.
+   if(release?.waited){
     if(request.componentId){const runtime=await this.runtimeComponent(this.db,a,w,request.componentId,version,viewId);assertRuntimeScope(runtime.latest,content);}
-    else {const draft=(await this.db.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[request.previewId,w,a.userId])).rows[0];if(!draft)fail(409,'preview_expired','Preview unavailable');await this.validate(this.db,a,w,draft.body.operation);}
+    else {const draft=(await this.db.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[request.previewId,w,a.userId])).rows[0];if(!draft)fail(404,'not_found','Code preview unavailable');await this.validate(this.db,a,w,draft.body.operation);}
    }
    const currentPolicy=await access(this.db,a,w),accessStamp=request.componentId?await this.componentAccessStamp(a,w,content):undefined;
    const tracker=knownTracker,pages:any[]=[];
@@ -336,7 +343,7 @@ export class WorkspaceFoundation {
     fail(403,'capability_unavailable','This interface capability is unavailable');
    };
    signal?.throwIfAborted();
-   const output=frontendOutput.parse(await (tracker?((_:string,input:any,call:any)=>renderStandard(tracker.config,tracker.theme,input,call)):execute)(content.source,{state:request.state,event:request.event,saved:!!request.componentId,writable,...(request.route?{route:request.route}:{})},async(name,value)=>{const result=await handler(name,value);if(tracker&&name==='records.read')pages.push({request:value,result});return result;},signal));
+   const output=frontendOutput.parse(await (tracker?((_:string,input:any,call:any)=>renderStandard(tracker.config,tracker.theme,input,call)):execute)(content.source,{state:request.state,event:request.event,saved:!!request.componentId,writable,...(request.route?{route:request.route}:{})},async(name,value)=>{const result=await handler(name,value);if(tracker&&name==='records.read')pages.push({request:value,result});return result;},signal,release?.detachUntil));
    signal?.throwIfAborted();
    if(!tracker&&(output.controls?.length??0)>100)fail(400,'control_limit','Custom interfaces support at most 100 controls');
    if(Buffer.byteLength(J(output.state))>100000)fail(400,'state_limit','Interface state is too large');

@@ -8,7 +8,9 @@ import {Service} from '../src/domain/service.js';
 import {WorkspaceFoundation} from '../src/workspace/service.js';
 import type {Actor} from '../src/shared/schema.js';
 import {createRequestMetrics,withRequestMetrics} from '../src/db/metrics.js';
-test('Frontend code: read-only drafts, bound reads, reviewed atomic writes, stale versions and access revocation',async()=>{
+import {FrontendQueue} from '../src/workspace/frontend-queue.js';
+import {trackerOperation} from '../src/workspace/tracker-template.js';
+test('Frontend code: read-only drafts, bound reads, reviewed atomic writes, stale versions and access revocation',async t=>{
  const pg=new PGlite();for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
  const db:Database={query:(s,v)=>pg.query(s,v) as any,transaction:f=>pg.transaction(tx=>f(tx as Connection)),close:()=>pg.close()};
  try{
@@ -30,6 +32,9 @@ test('Frontend code: read-only drafts, bound reads, reviewed atomic writes, stal
  const draft=await f.preview(a,w.id,{kind:'save_component',projectId:project.id,content});
  await assert.rejects(f.runFrontend(a,w.id,{previewId:draft.id,viewId:randomUUID()}),/Runtime views belong to saved apps/);
  const initial=await f.runFrontend(a,w.id,{previewId:draft.id});assert.deepEqual((initial.state as any).data,{name:'Original'});assert.equal((initial.state as any).host,'undefined/undefined/undefined');assert.equal(initial.proposal,null);assert.equal((await f.components(ai,w.id)).length,0);
+ const expiring=await f.preview(a,w.id,{kind:'save_component',projectId:project.id,content:{...content,name:'Expiring draft'}}),draftMetrics=createRequestMetrics(),originalAcquire=FrontendQueue.prototype.acquire;
+ const expireAfterAdmission=t.mock.method(FrontendQueue.prototype,'acquire',async function(this:FrontendQueue,...args:Parameters<FrontendQueue['acquire']>){const lease=await originalAcquire.apply(this,args);lease.waited=true;await db.query("UPDATE workspace_previews SET expires_at=now()-interval '1 second' WHERE id=$1",[expiring.id]);return lease;});
+ try{await assert.rejects(withRequestMetrics(draftMetrics,()=>f.runFrontend(a,w.id,{previewId:expiring.id})),(e:any)=>e.status===404&&e.code==='not_found');assert.equal(draftMetrics.sandboxRuns,0);}finally{expireAfterAdmission.mock.restore();}
  await assert.rejects(f.runFrontend(a,w.id,{previewId:draft.id,event:{kind:'submit',action:'rename'}}));
  const saved=await f.confirm(a,w.id,draft.id,draft.digest);
  const request={componentId:saved.id,expectedVersion:0,event:{kind:'submit',action:'rename'}};
@@ -41,19 +46,28 @@ test('Frontend code: read-only drafts, bound reads, reviewed atomic writes, stal
  await assert.rejects(f.runFrontend(ai,w.id,{...request,expectedVersion:1}),(e:any)=>e.code==='component_changed');
  const stale=await f.runFrontend(ai,w.id,request);assert.ok(stale.proposal);const staleProposal=stale.proposal;await save({kind:'update_record',recordId:record,expectedVersion:1,data:{name:'Concurrent update'}});await assert.rejects(f.confirm(a,w.id,staleProposal.id,staleProposal.digest),/changed/);
  // Hold admission before the source starts, queue the same actor/app, then revoke.
- const runtime=(f as any).runtimeComponent.bind(f);let checks=0,release!:()=>void,entered!:()=>void;
+ const acquire=FrontendQueue.prototype.acquire;let admissions=0,release!:()=>void,entered!:()=>void;
  const held=new Promise<void>(resolve=>{release=resolve;}),started=new Promise<void>(resolve=>{entered=resolve;});
- (f as any).runtimeComponent=async(...args:any[])=>{if(++checks===2){entered();await held;}return runtime(...args);};
+ const admission=t.mock.method(FrontendQueue.prototype,'acquire',async function(this:FrontendQueue,...args:Parameters<FrontendQueue['acquire']>){const lease=await acquire.apply(this,args);if(++admissions===1){lease.waited=true;entered();await held;}return lease;});
  const firstMetrics=createRequestMetrics(),waitingMetrics=createRequestMetrics();
  const first=assert.rejects(withRequestMetrics(firstMetrics,()=>f.runFrontend(ai,w.id,request)));
  await started;
  const waiting=assert.rejects(withRequestMetrics(waitingMetrics,()=>f.runFrontend(ai,w.id,request)));
  const deadline=Date.now()+1000;while(!waitingMetrics.runtimeQueued&&Date.now()<deadline)await new Promise(resolve=>setImmediate(resolve));
  try{assert.equal(waitingMetrics.runtimeQueued,1);await change({kind:'set_project_access',nodeId:project.id,expectedVersion:0,allowedUsers:null,ai:false});}finally{release();}
- await Promise.all([first,waiting]);(f as any).runtimeComponent=runtime;
+ await Promise.all([first,waiting]);admission.mock.restore();
  assert.equal(firstMetrics.sandboxRuns,0);assert.equal(waitingMetrics.sandboxRuns,0);
  await assert.rejects(f.runFrontend(ai,w.id,request));
+ const runtime=(f as any).runtimeComponent.bind(f);let checks=0;(f as any).runtimeComponent=async(...args:any[])=>{checks++;return runtime(...args);};
  const final=await f.runFrontend(a,w.id,{componentId:saved.id,expectedVersion:0});assert.equal((final.state as any).data.name,'Concurrent update');
+ assert.equal(checks,4); // initial authorization, records.read, and two final freshness checks; no immediate-admission repeat
+ // The current publication can be native while an authorized older view is
+ // custom. Never queue that old view inside the native renderer's transaction.
+ const native=await trackerOperation(f,a,w.id,{name:'Native publication',description:'Fixture',omitSource:true,showExample:false,tabs:[{name:'Contacts',typeId:table,columns:[{field:'name'}]}]});
+ await db.query('UPDATE workspace_components SET source=$1,version=version+1 WHERE id=$2',[native.content.source,saved.id]);
+ let depth=0,customAdmissions=0;const guardedDb:Database={...db,transaction:fn=>db.transaction(async tx=>{depth++;try{return await fn(tx);}finally{depth--;}})};
+ const outsideTransaction=t.mock.method(FrontendQueue.prototype,'acquire',async function(this:FrontendQueue,...args:Parameters<FrontendQueue['acquire']>){customAdmissions++;assert.equal(depth,0);return acquire.apply(this,args);});
+ try{const pinned=await new WorkspaceFoundation(guardedDb).runFrontend(a,w.id,{componentId:saved.id,expectedVersion:0,viewId:final.viewId});assert.equal(pinned.state.data.name,'Concurrent update');assert.equal(customAdmissions,1);}finally{outsideTransaction.mock.restore();}
  }finally{await db.close();}
 });
 

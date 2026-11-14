@@ -6,17 +6,30 @@ import {createRequestMetrics,withRequestMetrics} from '../src/db/metrics.js';
 test('published capacity is bounded, same app serializes, users rotate and release is idempotent',async()=>{
  const queue=new FrontendQueue(2),order:string[]=[];
  const first=await queue.acquire('a','a:app'),second=await queue.acquire('a','a:other');
+ assert.equal(first.waited,false);assert.equal(second.waited,false);
  const a1=queue.acquire('a','a:app').then(release=>{order.push('a1');return release;});
  const a2=queue.acquire('a','a:other').then(release=>{order.push('a2');return release;});
  const b=queue.acquire('b','b:app').then(release=>{order.push('b');return release;});
  const c=queue.acquire('c','c:app').then(release=>{order.push('c');return release;});
  first();const releaseB=await b;assert.deepEqual(order,['b']);
+ assert.equal(releaseB.waited,true);
  first();await Promise.resolve();assert.deepEqual(order,['b']);
  releaseB();const releaseC=await c;assert.deepEqual(order,['b','c']);
  releaseC();const releaseA1=await a1;assert.deepEqual(order,['b','c','a1']);
  releaseA1();await Promise.resolve();assert.deepEqual(order,['b','c','a1']); // a:other is still occupied
  second();(await a2)();assert.deepEqual(order,['b','c','a1','a2']);
  (await queue.acquire('c','c:app'))();
+});
+
+test('detached host work frees capacity but keeps its app key locked until settlement',async()=>{
+ const queue=new FrontendQueue(1,4,2,1000),release=await queue.acquire('a','app');
+ let finish!:()=>void;const settled=new Promise<void>(resolve=>{finish=resolve;});
+ release.detachUntil(settled);release();release.detachUntil(Promise.resolve());
+ let sameStarted=false;const same=queue.acquire('a','app').then(release=>{sameStarted=true;return release;});
+ const other=await queue.acquire('b','other');assert.equal(sameStarted,false);other();
+ await Promise.resolve();assert.equal(sameStarted,false);
+ finish();(await same)();assert.equal(sameStarted,true);
+ (await queue.acquire('a','app'))();
 });
 
 test('queue limits and deadlines return busy without running work; draft capacity is independent',async()=>{
