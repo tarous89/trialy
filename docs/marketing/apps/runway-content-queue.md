@@ -41,7 +41,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | D4 | How to forecast a clinical trial delay: separate deferred payments from extra months | Published — live verified 14 November 2026; PR #212, release `511245f24749c7e3993f71c628c636bd7872be24` | https://trialagents.com/apps/clinical-trial-delays-cash-runway |
 | D5 | Forecast CRO costs and vendor payments: reconcile what is still payable | Published — live verified 14 November 2026; PR #213, release `737d8dcafa887324da8ec275fcdc9493bff364e2` | https://trialagents.com/apps/cro-costs-vendor-payments-biotech-budget |
 | D6 | Biotech hiring vs outsourcing: compare cash through the handover | Published — live verified 14 November 2026; PR #214, release `e50602db40385e5a3d54747759a793f1fb3747fc` | https://trialagents.com/apps/biotech-hiring-vs-outsourcing-cash-runway |
-| D7 | How to Plan Biotech Runway Around the Next Funding Round | Queued — verify and publish | — |
+| D7 | How to Plan Biotech Runway Around the Next Funding Round | Claimed — 14 November 2026 22:57 UTC; funding-round timing example in preparation | — |
 | D8 | Best Financial Planning Tools for Grant-Funded Biotech Startups | Queued — verify and publish | — |
 | D9 | Cash Runway Planning for Biotechs with Multiple R&D Programs | Queued — verify and publish | — |
 | D10 | Biotech Board Reporting: How to Present Burn Rate, Runway, and Financial Risks | Queued — verify and publish | — |
