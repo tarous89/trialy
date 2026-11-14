@@ -38,7 +38,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | D1 | Cash runway software for preclinical biotech: fund the next evidence package | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/preclinical-biotech-cash-runway) |
 | D2 | Financial planning for clinical-stage biotechs: explain the monthly cash variance | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/clinical-stage-biotech-financial-planning) |
 | D3 | Budgeting software for biotechs under 20 employees: count each cost once | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/budgeting-software-small-biotech-teams) |
-| D4 | How to Forecast Clinical Trial Delays and Their Impact on Cash Runway | Queued — verify and publish | — |
+| D4 | How to Forecast Clinical Trial Delays and Their Impact on Cash Runway | In progress — claimed 14 Nov 2026 19:55 UTC; source preparation | Distinct ongoing-trial extension versus payment deferral; no source PR yet. |
 | D5 | How to Forecast CRO Costs and Vendor Payments in a Biotech Budget | Queued — verify and publish | — |
 | D6 | Biotech Hiring vs Outsourcing: How to Model the Impact on Cash Runway | Queued — verify and publish | — |
 | D7 | How to Plan Biotech Runway Around the Next Funding Round | Queued — verify and publish | — |
