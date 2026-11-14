@@ -14,6 +14,8 @@ Validated against the repository host on 14 November 2026 with disposable PGlite
 | `APP_DESIGN_CHECKS=off node --import tsx --test tests/cash-runway-commands.test.ts` | 9/9 passed, including the production design inspector on the new screens at 390 and 1440 px |
 | `APP_DESIGN_CHECKS=off node --import tsx --test tests/cash-runway-commands-integration.test.ts` | 2/2 passed (real installer, real runtime and review path, Programs linked inside Runway) |
 | `APP_DESIGN_CHECKS=off node --import tsx --test tests/cash-runway.test.ts tests/cash-runway-integration.test.ts` | 2.1.0 suites unchanged against the archived package: passed |
+| `npm run build` (every template drift check, `tsc --noEmit`, `vite build`, embed build) | Passed |
+| `npm test` (full suite, 631 tests, then the build-dependent files re-run after `npm run build`) | All pass except `tests/monitoring-pv-integration.test.ts` (CO06 layout at 390 px). That test is unrelated and already fails on unmodified `main` in this container (see the 2.1.0 notes). |
 
 The browser checks used this container's Chromium through a `PLAYWRIGHT_BROWSERS_PATH` that maps the pinned Playwright 1.51.1 browser names to the installed build.
 
