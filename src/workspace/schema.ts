@@ -23,7 +23,7 @@ export const componentContent=z.object({
  name:z.string().trim().min(1).max(100),
  sourceAccess:z.enum(['workspace','bindings']).default('workspace'),
  format:z.enum(['text','markdown','json','javascript','html','trialy-ui','frontend-js']),
- source:z.string().max(200000),
+ source:z.string().max(260000),
  assets:z.array(z.object({name:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),versionId:id}).strict()).max(20).default([]),
  execution:z.array(z.object({name:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),revisionId:id,grantId:id.optional()}).strict()).max(20).default([]),
  bindings:z.array(z.object({typeId:id,fields:z.array(z.string().min(1).max(64)).min(1).max(100)}).strict()).max(100).default([])

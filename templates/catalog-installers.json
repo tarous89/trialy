@@ -1,7 +1,8 @@
 {
   "life.cash-runway@1.2.2": "templates/source/cash-runway/archive/1.2.2/schema.example.json",
   "life.cash-runway@2.0.0": "templates/source/cash-runway/archive/2.0.0/schema.example.json",
-  "life.cash-runway@2.1.0": "templates/source/cash-runway/schema.example.json",
+  "life.cash-runway@2.1.0": "templates/source/cash-runway/archive/2.1.0/schema.example.json",
+  "life.cash-runway@2.2.0": "templates/source/cash-runway/schema.example.json",
   "life.inventory-management@1.0.2": "templates/source/inventory-management/schema.example.json",
   "life.project-oversight@1.0.1": "templates/source/project-oversight/archive/1.0.1/schema.example.json",
   "life.project-oversight@2.0.0": "templates/source/project-oversight/archive/2.0.0/schema.example.json",

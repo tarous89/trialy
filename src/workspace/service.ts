@@ -22,7 +22,9 @@ import {standardTracker,renderStandard} from './standard-tracker.js';
 import {isDeepStrictEqual} from 'node:util';
 import {applyTrackerLayout,trackerOperation} from './tracker-template.js';
 import {validateResource,requireManifestWrite} from './resource-contract.js';
-import {validateAppRoles,requireRoleWriter,appRoles} from './role-contracts.js';
+import {validateAppRoles,requireRoleWriter,appRoles,outputWriter} from './role-contracts.js';
+import {validateAppCommands,roleWriterInfo} from './app-commands.js';
+import {readCustomLayout,updateCustomLayout,customLayoutProfile} from '../shared/custom-layout.js';
 import {appIntegrations} from './integrations.js';
 import {appDocuments,documentCapabilities} from './app-documents.js';
 import {DerivedReader} from '../domain/derived-fields.js';
@@ -41,7 +43,7 @@ import type {Database,Connection} from '../db/database.js';
 import {Service} from '../domain/service.js';
 import {access,typeAccess,visibleFields,projectData} from '../domain/permissions.js';
 import {audit,revision,checksum} from '../domain/evidence.js';
-import {fail,type Actor} from '../shared/schema.js';
+import {fail,failWith,type Actor} from '../shared/schema.js';
 import {maintenanceSchema,maintenanceBatch,workspaceOperation,type WorkspaceOperation} from './schema.js';
 import {redactExchangeLinks} from '../app-services/exchange-email.js';
 import {isExchangeOperation,exchangeReview as externalExchangeReview,commitExchangeOperation,appExchangeWrites,appExchangeReads,appExchangeRead,exchangeOperationApp,exchangeReachedOutside,preparationKinds} from '../domain/external-exchange.js';
@@ -159,6 +161,13 @@ export class WorkspaceFoundation {
   const c=await this.component(this.db,a,w,v.componentId);await validateResource(this.db,a,w,c);const binding=c.execution.find((b:any)=>b.name===v.binding);if(!binding||c.archived||c.project_archived||c.version!==v.expectedVersion)fail(409,'component_changed','Open the current component and function binding');
   return new Foundation(this.db).invoke(a,w,{revisionId:binding.revisionId,input:v.input,...(binding.grantId?{grantId:binding.grantId}:{}),componentContext:{id:c.id,version:c.version,binding:binding.name}},v.requestKey);
  }
+ /** Writer name of each role an app reads from another app, and whether this person may open it (§14.7). No IDs. */
+ async roleWriters(a:Actor,w:string,roles:any[]){
+  const out:Record<string,{appName:string;canOpen:boolean}>={};
+  if(process.env.APP_COMMANDS_ENABLED!=='true')return out;
+  for(const r of roles)if(r.typeId&&(r.readOnly||r.linked)){const info=await roleWriterInfo(this,a,w,r.typeId,r.role);if(info)out[r.role]={appName:info.appName,canOpen:info.canOpen};}
+  return out;
+ }
  async runFrontend(a:Actor,w:string,input:unknown,signal?:AbortSignal):Promise<any>{
   signal?.throwIfAborted();
   const request=frontendRequest.parse(input);if(request.componentId&&a.accessToolId!==request.componentId)return withActor({...a,accessToolId:request.componentId},()=>this.runFrontend({...a,accessToolId:request.componentId},w,input,signal));if(Buffer.byteLength(J(request))>150000)fail(400,'input_limit','Interface input is too large');
@@ -236,6 +245,7 @@ export class WorkspaceFoundation {
      const v=z.object({actionId:id,requestKey:id,recordId:id.optional()}).strict().parse(value),action=await actions.row(a,w,v.actionId);if(action.app_id!==request.componentId)fail(403,'action_scope','Action is not bound to this app');signal?.throwIfAborted();return actions.runNow(a,w,v.actionId,v.requestKey,v.recordId);
     }
     if(name==='connectors.call'&&process.env.SIMPLE_APPS_ENABLED==='true'){
+     if(request.event.kind==='command')fail(403,'command_scope','App commands cannot call external connectors');
      if(!request.componentId)fail(403,'preview_read_only','Unsaved app previews cannot use external connectors');
      const v=z.object({connectionId:id,operation:z.string().max(64),requestKey:id,parameters:z.record(z.string(),z.unknown()).optional(),records:z.record(z.string(),id).optional()}).strict().parse(value);
      if(connectorReviews.length>=3)fail(429,'connector_reviews','Review existing connector requests before creating more');const latest=(await this.runtimeComponent(this.db,a,w,request.componentId,version,viewId)).latest;signal?.throwIfAborted();const result=await new Connectors(this.db,(tx,actor,workspaceId,appId)=>this.component(tx,actor,workspaceId,appId)).call(a,w,{...v,appId:request.componentId,appVersion:latest.version},true);if(result.status==='review_required')connectorReviews.push(result);return result;
@@ -249,9 +259,9 @@ export class WorkspaceFoundation {
      const page=await this.projectRelationships(a,w,projectId,v.offset,typeIds);return {projectId,relationships:page.relationships.filter(r=>content.bindings.find((b:any)=>b.typeId===r.source.typeId)?.fields.includes(r.field)).map(r=>({field:r.field,label:r.label,source:projectRecord(r.source),target:projectRecord(r.target)})),nextOffset:page.nextOffset};
     }
     // Role-based connections: which declared roles are connected, to which bound table (modular apps §7). No records.
-    if(name==='roles.list'){const roles=await appRoles(this.db,w,{...content,id:request.componentId??null});return {roles:roles.map(r=>({role:r.role,name:r.name,contract:r.contract,connected:!!r.typeId,typeId:r.typeId??null,optional:!!r.optional,readOnly:!!r.readOnly,writable:r.writable,fields:(content.manifest?.fields??[]).filter((f:any)=>f.typeId===r.typeId).map((f:any)=>({id:f.id,field:f.field,mode:f.mode}))}))};}
+    if(name==='roles.list'){const roles=await appRoles(this.db,w,{...content,id:request.componentId??null}),writers=await this.roleWriters(a,w,roles);return {roles:roles.map(r=>({...(writers[r.role]?{writer:writers[r.role]}:{}),role:r.role,name:r.name,contract:r.contract,connected:!!r.typeId,typeId:r.typeId??null,optional:!!r.optional,readOnly:!!r.readOnly,writable:r.writable,fields:(content.manifest?.fields??[]).filter((f:any)=>f.typeId===r.typeId).map((f:any)=>({id:f.id,field:f.field,mode:f.mode}))}))};}
     // In-app integrations: where each integration's data comes from and the subtle offer to show (install, connect or none).
-    if(name==='integrations.list')return {integrations:await appIntegrations(this.db,a,w,{...content,id:request.componentId??null})};
+    if(name==='integrations.list'){const app={...content,id:request.componentId??null},writers=await this.roleWriters(a,w,await appRoles(this.db,w,app));return {integrations:(await appIntegrations(this.db,a,w,app)).map((x:any)=>writers[x.role]?{...x,writer:writers[x.role]}:x)};}
     // External exchange (docs/product/EXTERNAL_EXCHANGE.md §2.6): reads are scoped to this app's groups; every write becomes one reviewed workspace change.
     if(name.startsWith('exchange.')){
      if(!request.componentId)fail(403,'preview_read_only','Save the app to use external exchanges');
@@ -284,6 +294,7 @@ export class WorkspaceFoundation {
      if(!raster)fail(400,'asset_format','File does not match its raster image type');return {name:v.name,versionId:asset.versionId,checksum:file.checksum,dataUrl:'data:'+file.mime+';base64,'+b.toString('base64')};
     }
     if(name==='functions.invoke'){
+     if(request.event.kind==='command')fail(403,'command_scope','App commands cannot queue functions');
 
      if(!request.componentId)fail(403,'preview_read_only','Unsaved interfaces cannot queue functions');
      const v=z.object({binding:z.string().min(1).max(64),input:z.unknown().default(null),requestKey:id}).strict().parse(value);
@@ -332,6 +343,8 @@ export class WorkspaceFoundation {
     if(name==='layout.propose'){
      if(!request.componentId)fail(403,'preview_read_only','Save the tracker before changing its layout');
      if(layoutProposal)fail(400,'layout_limit','One layout proposal per action');
+     // Custom apps with a declared layout (templateLayoutSchema): the same presentation-only update the layout gear makes.
+     if(!standardTracker(content.source)&&readCustomLayout(content.source)){let source:string;try{source=updateCustomLayout(content.source,value);}catch(e){fail(400,'custom_layout',(e as Error).message);}const profile=customLayoutProfile.parse(value);layoutProposal={kind:'save_component',componentId:request.componentId,expectedVersion:version,projectId:content.project_id,content:{name:profile.heading,source,format:content.format,sourceAccess:content.source_access,resourceKind:content.resource_kind,manifest:content.manifest,bindings:content.bindings,assets:content.assets??[],execution:content.execution??[]}};return {status:'proposed'};}
      const update=applyTrackerLayout(content,value);
      layoutProposal={kind:'save_component',componentId:request.componentId,expectedVersion:version,projectId:content.project_id,content:{name:update.name,source:update.source,format:content.format,sourceAccess:content.source_access,resourceKind:content.resource_kind,manifest:update.manifest,bindings:content.bindings,assets:content.assets??[],execution:content.execution??[]}};
      return {status:'proposed'};
@@ -756,6 +769,7 @@ export class WorkspaceFoundation {
     if(previous?.manifest&&op.content.manifest===null)fail(400,'manifest_required','Connected apps must retain their data contract when changing presentation.');
     await validateResource(tx,a,w,{...op.content,resourceKind:op.content.resourceKind??previous?.resource_kind??'generic',manifest:op.content.manifest===undefined?previous?.manifest:op.content.manifest});await this.componentAssets(tx,a,w,op.content.assets);
     // Role and contract labels (modular apps §7.2–7.5): compatibility, one writer per output role, contract versions.
+    validateAppCommands(op.content.source);
     await validateAppRoles(tx,a,w,{id:op.componentId??null,name:op.content.name,manifest:op.content.manifest===undefined?previous?.manifest:op.content.manifest,bindings:op.content.bindings},{takeover:op.roleWriterTakeover});
     if(new Set(op.content.execution.map(e=>e.name)).size!==op.content.execution.length)fail(400,'duplicate_binding','Function binding names must be unique');
     const foundation=new Foundation(adapter(tx));
@@ -767,8 +781,13 @@ export class WorkspaceFoundation {
   }
   if(op.kind==='apply_component_records'){
    const runtime=op.viewId?await this.runtimeComponent(tx,a,w,op.componentId,op.expectedVersion,op.viewId):null,c=runtime?.c??await this.component(tx,a,w,op.componentId);if(runtime)assertRuntimeScope(runtime.latest,c);else await validateResource(tx,a,w,c,true);if(c.archived||c.project_archived||c.format!=='frontend-js'||c.version!==op.expectedVersion)fail(409,'component_changed','Interface changed');
-   const writerCache=new Map<string,any>();
+   const writerCache=new Map<string,any>(),readRoles=(await appRoles(tx,w,c,writerCache)).filter(r=>r.typeId&&(r.readOnly||r.linked));
    for(const change of op.changes){
+    // A value this app reads from another app (a read-only or linked role) is changed in the app that writes it (§14.7).
+    if(readRoles.length){
+     const target=change.kind==='create_record'?change.typeId:(await this.record(tx,a,w,change.recordId).catch(()=>null))?.type_id;
+     const readRole=readRoles.find(r=>r.typeId===target);if(readRole){const writer=await outputWriter(tx,w,target,readRole.role,writerCache),name=writer&&!writer.deleted?writer.name:null;failWith(403,'role_read_only',`${c.name} reads ${readRole.name}${name?' from '+name:''}; it cannot change it. ${name?'Make this change in '+name+'.':'Make this change where that data is kept.'}`,{role:readRole.role,recordId:change.kind==='update_record'?change.recordId:null,writerAppName:name});}
+    }
     const record=change.kind==='update_record'?await this.record(tx,a,w,change.recordId,true):null;
     if(record&&change.kind==='update_record'&&record.version!==change.expectedVersion)fail(409,'stale_version','Record changed');
     const typeId=change.kind==='create_record'?change.typeId:record!.type_id;

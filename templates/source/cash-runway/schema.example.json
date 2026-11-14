@@ -277,6 +277,33 @@
         "ai": true
       },
       {
+        "key": "source_role",
+        "name": "Source",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Role key of the record this line was added from (Add to plan)."
+      },
+      {
+        "key": "source_record_id",
+        "name": "Source record",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of that record."
+      },
+      {
+        "key": "source_version",
+        "name": "Source version",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Version of that record when the line was added or last updated."
+      },
+      {
         "key": "archived",
         "name": "Archived",
         "kind": "boolean",
@@ -301,6 +328,9 @@
       "status": "status",
       "cash_in_type": "cash_in_type",
       "notes": "notes",
+      "source_role": "source_role",
+      "source_record_id": "source_record_id",
+      "source_version": "source_version",
       "archived": "archived"
     }
   },
@@ -412,62 +442,6 @@
       "currency": "currency",
       "status": "status",
       "person_id": "person_id",
-      "archived": "archived"
-    }
-  },
-  "runway.milestones": {
-    "name": "Runway milestones",
-    "contract": "runway.v2",
-    "fields": [
-      {
-        "key": "name",
-        "name": "Milestone",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "program_id",
-        "name": "Program",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true,
-        "description": "Record ID of a programs record (core role programs)."
-      },
-      {
-        "key": "target_month",
-        "name": "Target month",
-        "kind": "date",
-        "required": true,
-        "multiple": false,
-        "ai": true,
-        "description": "Stored as the first day of the month."
-      },
-      {
-        "key": "source_milestone_id",
-        "name": "Programs app milestone ID",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true,
-        "description": "Record ID of a Programs app plan_items milestone (role programs.plan_items); its date is used while it is readable."
-      },
-      {
-        "key": "archived",
-        "name": "Archived",
-        "kind": "boolean",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      }
-    ],
-    "logicalFields": {
-      "name": "name",
-      "program_id": "program_id",
-      "target_month": "target_month",
-      "source_milestone_id": "source_milestone_id",
       "archived": "archived"
     }
   },
@@ -822,10 +796,20 @@
         "multiple": false,
         "ai": true,
         "options": [
+          "draft",
           "saved",
           "adopted",
           "archived"
         ]
+      },
+      {
+        "key": "changes_json",
+        "name": "Changes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "The scenario's changes as JSON, written by the app."
       },
       {
         "key": "based_on_close",
@@ -863,125 +847,11 @@
     "logicalFields": {
       "name": "name",
       "status": "status",
+      "changes_json": "changes_json",
       "based_on_close": "based_on_close",
       "based_on_version": "based_on_version",
       "created_on": "created_on",
       "summary": "summary"
-    }
-  },
-  "runway.scenario_changes": {
-    "name": "Runway scenario changes",
-    "contract": "runway.v2",
-    "fields": [
-      {
-        "key": "scenario_id",
-        "name": "Scenario",
-        "kind": "text",
-        "required": true,
-        "multiple": false,
-        "ai": true,
-        "description": "Record ID of the parent runway.scenarios record."
-      },
-      {
-        "key": "kind",
-        "name": "Change",
-        "kind": "select",
-        "required": true,
-        "multiple": false,
-        "ai": true,
-        "options": [
-          "shift_program",
-          "scale_program",
-          "stop_program",
-          "add_position",
-          "remove_position",
-          "move_cash_in",
-          "resize_cash_in",
-          "fx_shift"
-        ]
-      },
-      {
-        "key": "target_id",
-        "name": "Target record",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true,
-        "description": "Record ID the change applies to: a program, position or cash-in plan line."
-      },
-      {
-        "key": "months",
-        "name": "Months",
-        "kind": "number",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "pct",
-        "name": "Percent",
-        "kind": "number",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "amount",
-        "name": "Amount",
-        "kind": "money",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "currency",
-        "name": "Currency",
-        "kind": "select",
-        "required": false,
-        "multiple": false,
-        "ai": true,
-        "options": [
-          "USD",
-          "EUR",
-          "GBP",
-          "CHF",
-          "CAD",
-          "AUD",
-          "JPY",
-          "CNY",
-          "SEK",
-          "DKK",
-          "NOK",
-          "INR"
-        ]
-      },
-      {
-        "key": "from_month",
-        "name": "From month",
-        "kind": "date",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
-        "key": "label",
-        "name": "Label",
-        "kind": "text",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      }
-    ],
-    "logicalFields": {
-      "scenario_id": "scenario_id",
-      "kind": "kind",
-      "target_id": "target_id",
-      "months": "months",
-      "pct": "pct",
-      "amount": "amount",
-      "currency": "currency",
-      "from_month": "from_month",
-      "label": "label"
     }
   },
   "runway.fx_rates": {
@@ -1298,6 +1168,448 @@
       "effective_date": "effective_date",
       "expiry_date": "expiry_date",
       "archived": "archived"
+    }
+  },
+  "programs.plan_items": {
+    "name": "Milestones",
+    "contract": "programs.v2",
+    "optional": true,
+    "integration": true,
+    "description": "Integration: Runway's own milestone list (name, program, date, status, key), or the Programs app's plan items read only once the user links Programs inside Runway.",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Milestone",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "program_id",
+        "name": "Program",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a programs record."
+      },
+      {
+        "key": "item_type",
+        "name": "Item type",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "milestone",
+          "activity"
+        ]
+      },
+      {
+        "key": "end_date",
+        "name": "Target date",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "First day of the target month."
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "planned",
+          "in_progress",
+          "done",
+          "at_risk",
+          "cancelled"
+        ]
+      },
+      {
+        "key": "is_key",
+        "name": "Key milestone",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "program_id": "program_id",
+      "item_type": "item_type",
+      "end_date": "end_date",
+      "status": "status",
+      "is_key": "is_key",
+      "archived": "archived"
+    }
+  },
+  "croselection.awards": {
+    "name": "CRO and vendor commitments",
+    "contract": "croselection.v1",
+    "optional": true,
+    "integration": true,
+    "description": "Integration: commitments entered in Runway, or CRO Selection awards read only once linked. Add to plan copies them into plan lines.",
+    "fields": [
+      {
+        "key": "organization_id",
+        "name": "Supplier",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an organizations record."
+      },
+      {
+        "key": "service_type",
+        "name": "Service",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "clinical_study",
+          "preclinical_study",
+          "cmc",
+          "bioanalytical",
+          "other"
+        ]
+      },
+      {
+        "key": "program_id",
+        "name": "Program",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a programs record."
+      },
+      {
+        "key": "total",
+        "name": "Awarded total",
+        "kind": "money",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "currency",
+        "name": "Currency",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "USD",
+          "EUR",
+          "GBP",
+          "CHF",
+          "CAD",
+          "AUD",
+          "JPY",
+          "CNY",
+          "SEK",
+          "DKK",
+          "NOK",
+          "INR"
+        ]
+      },
+      {
+        "key": "start_date",
+        "name": "Start",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "duration_months",
+        "name": "Duration (months)",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "decided_on",
+        "name": "Decided on",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "agreement_id",
+        "name": "Agreement",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an agreements record."
+      }
+    ],
+    "logicalFields": {
+      "organization_id": "organization_id",
+      "service_type": "service_type",
+      "program_id": "program_id",
+      "total": "total",
+      "currency": "currency",
+      "start_date": "start_date",
+      "duration_months": "duration_months",
+      "decided_on": "decided_on",
+      "agreement_id": "agreement_id"
+    }
+  },
+  "contracts.obligations": {
+    "name": "Contract payments",
+    "contract": "contracts.v1",
+    "optional": true,
+    "integration": true,
+    "description": "Integration: contract payments entered in Runway, or Contracts obligations read only once linked (only verified payment obligations are offered). Add to plan copies them into plan lines.",
+    "fields": [
+      {
+        "key": "title",
+        "name": "Payment",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "agreement_id",
+        "name": "Agreement",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an agreements record."
+      },
+      {
+        "key": "kind",
+        "name": "Kind",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "payment",
+          "report",
+          "diligence_milestone",
+          "notice",
+          "delivery",
+          "publication_review",
+          "audit",
+          "insurance",
+          "royalty",
+          "other"
+        ]
+      },
+      {
+        "key": "direction",
+        "name": "Direction",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "we_owe",
+          "they_owe"
+        ]
+      },
+      {
+        "key": "due_date",
+        "name": "Due",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "recurrence",
+        "name": "Recurrence",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "none",
+          "monthly",
+          "quarterly",
+          "annual"
+        ]
+      },
+      {
+        "key": "amount",
+        "name": "Amount",
+        "kind": "money",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "currency",
+        "name": "Currency",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "USD",
+          "EUR",
+          "GBP",
+          "CHF",
+          "CAD",
+          "AUD",
+          "JPY",
+          "CNY",
+          "SEK",
+          "DKK",
+          "NOK",
+          "INR"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "open",
+          "done",
+          "waived",
+          "missed"
+        ]
+      },
+      {
+        "key": "verified",
+        "name": "Verified",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "title": "title",
+      "agreement_id": "agreement_id",
+      "kind": "kind",
+      "direction": "direction",
+      "due_date": "due_date",
+      "recurrence": "recurrence",
+      "amount": "amount",
+      "currency": "currency",
+      "status": "status",
+      "verified": "verified",
+      "archived": "archived"
+    }
+  },
+  "fundraise.tranches": {
+    "name": "Expected financing",
+    "contract": "fundraise.v1",
+    "optional": true,
+    "integration": true,
+    "description": "Integration: financing tranches entered in Runway, or Fundraise tranches read only once linked. Add to plan copies them into cash-in lines (contingent until met or released).",
+    "fields": [
+      {
+        "key": "tranche_no",
+        "name": "Tranche",
+        "kind": "number",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "amount",
+        "name": "Amount",
+        "kind": "money",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "currency",
+        "name": "Currency",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "USD",
+          "EUR",
+          "GBP",
+          "CHF",
+          "CAD",
+          "AUD",
+          "JPY",
+          "CNY",
+          "SEK",
+          "DKK",
+          "NOK",
+          "INR"
+        ]
+      },
+      {
+        "key": "condition",
+        "name": "Condition",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "expected_on",
+        "name": "Expected",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "expected",
+          "met",
+          "released",
+          "waived",
+          "missed"
+        ]
+      }
+    ],
+    "logicalFields": {
+      "tranche_no": "tranche_no",
+      "amount": "amount",
+      "currency": "currency",
+      "condition": "condition",
+      "expected_on": "expected_on",
+      "status": "status"
     }
   }
 }

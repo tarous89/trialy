@@ -2,7 +2,10 @@ import {z} from 'zod';
 const key=z.string().regex(/^[a-z][a-zA-Z0-9_-]{0,63}$/);
 const item=z.object({id:key,label:z.string().min(1).max(100)}).strict();
 export const customLayoutSchema=z.object({screens:z.array(item).min(1).max(8),groups:z.record(key,z.array(item).min(1).max(100))}).strict();
-export const customLayoutProfile=z.object({heading:z.string().trim().min(1).max(100),tabs:z.array(key).min(1).max(8),cols:z.record(key,z.array(key).min(1).max(100)),visible:z.record(z.string().max(130),z.boolean())}).strict();
+export const customLayoutProfile=z.object({heading:z.string().trim().min(1).max(100),tabs:z.array(key).min(1).max(8),cols:z.record(key,z.array(key).min(1).max(100)),visible:z.record(z.string().max(130),z.boolean()),
+ /** Optional field labels and form defaults keyed "group:field" (presentation only; the app keeps required fields visible and validates defaults). */
+ labels:z.record(z.string().max(130),z.string().trim().min(1).max(100)).optional(),
+ defaults:z.record(z.string().max(130),z.string().max(200)).optional()}).strict();
 // Read JSON declarations only. Never execute app source in the host.
 export function readCustomLayout(source:string){
  try{
@@ -23,6 +26,9 @@ export function validateCustomLayout(schema:z.infer<typeof customLayoutSchema>,p
  for(const [group,fields]of Object.entries(schema.groups))if(!same(profile.cols[group],fields.map(f=>f.id)))throw Error('Keep the declared field identities.');
  const allowed=new Set([...profile.tabs,...Object.entries(schema.groups).flatMap(([g,fs])=>fs.map(f=>g+':'+f.id))]);
  if(Object.keys(profile.visible).some(k=>!allowed.has(k)))throw Error('Unknown layout visibility key.');
+ const fieldKeys=new Set(Object.entries(schema.groups).flatMap(([g,fs])=>fs.map(f=>g+':'+f.id)));
+ if(Object.keys(profile.labels??{}).some(k=>!fieldKeys.has(k))||Object.keys(profile.defaults??{}).some(k=>!fieldKeys.has(k)))throw Error('Labels and defaults name declared fields (group:field).');
+ if(Object.keys(profile.labels??{}).length>200||Object.keys(profile.defaults??{}).length>100)throw Error('Too many labels or defaults.');
 }
 export function updateCustomLayout(source:string,input:unknown){
  const current=readCustomLayout(source);if(!current)throw Error('This app has no supported layout declaration.');

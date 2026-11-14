@@ -506,34 +506,43 @@
     {
       "id": "d0000000-0000-4000-8000-000000000035",
       "version": 1,
-      "role": "runway.milestones",
+      "role": "programs.plan_items",
       "data": {
         "name": "FB-101 first patient dosed",
-        "archived": false,
         "program_id": "d0000000-0000-4000-8000-000000000002",
-        "target_month": "2027-02-01"
+        "item_type": "milestone",
+        "end_date": "2027-02-01",
+        "status": "planned",
+        "is_key": true,
+        "archived": false
       }
     },
     {
       "id": "d0000000-0000-4000-8000-000000000036",
       "version": 1,
-      "role": "runway.milestones",
+      "role": "programs.plan_items",
       "data": {
         "name": "FB-202 IND filing",
-        "archived": false,
         "program_id": "d0000000-0000-4000-8000-000000000003",
-        "target_month": "2027-10-01"
+        "item_type": "milestone",
+        "end_date": "2027-10-01",
+        "status": "planned",
+        "is_key": true,
+        "archived": false
       }
     },
     {
       "id": "d0000000-0000-4000-8000-000000000037",
       "version": 1,
-      "role": "runway.milestones",
+      "role": "programs.plan_items",
       "data": {
         "name": "FB-101 Phase 1 readout",
-        "archived": false,
         "program_id": "d0000000-0000-4000-8000-000000000002",
-        "target_month": "2028-05-01"
+        "item_type": "milestone",
+        "end_date": "2028-05-01",
+        "status": "planned",
+        "is_key": true,
+        "archived": false
       }
     },
     {
@@ -738,20 +747,38 @@
         "name": "Series A tranche slips 4 months",
         "status": "saved",
         "based_on_close": "2026-10-01",
-        "based_on_version": "3911e8e0",
+        "based_on_version": "f66fb87c",
         "created_on": "2026-10-01",
-        "summary": "Move \u201cSeries A second tranche\u201d by +4 months"
+        "summary": "Move “Series A second tranche” by +4 months",
+        "changes_json": "[{\"kind\": \"move_cash_in\", \"target_id\": \"d0000000-0000-4000-8000-000000000024\", \"months\": 4}]"
       }
     },
     {
-      "id": "d0000000-0000-4000-8000-000000000054",
-      "version": 1,
-      "role": "runway.scenario_changes",
+      "id": "d0000000-0000-4000-8000-000000000071",
+      "version": 0,
+      "role": "croselection.awards",
       "data": {
-        "kind": "move_cash_in",
-        "target_id": "d0000000-0000-4000-8000-000000000024",
-        "months": 4,
-        "scenario_id": "d0000000-0000-4000-8000-000000000053"
+        "organization_id": "d0000000-0000-4000-8000-000000000005",
+        "service_type": "clinical_study",
+        "program_id": "d0000000-0000-4000-8000-000000000002",
+        "total": 1800000,
+        "currency": "EUR",
+        "start_date": "2027-03-01",
+        "duration_months": 18,
+        "decided_on": "2026-10-15"
+      }
+    },
+    {
+      "id": "d0000000-0000-4000-8000-000000000072",
+      "version": 0,
+      "role": "fundraise.tranches",
+      "data": {
+        "tranche_no": 3,
+        "amount": 6000000,
+        "currency": "EUR",
+        "condition": "Phase 1 readout",
+        "expected_on": "2028-06-01",
+        "status": "expected"
       }
     }
   ]

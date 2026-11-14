@@ -119,7 +119,7 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
 }
 export const errors:ErrorRequestHandler=(error,_req,res,_next)=>{
  if(error instanceof ZodError){res.status(400).json({error:'invalid_input',message:error.issues.map(i=>`${i.path.join('.')}: ${i.message}`).join('; ')});return;}
- if(error instanceof AppError){res.status(error.status).json({error:error.code,message:error.message});return;}
+ if(error instanceof AppError){res.status(error.status).json({error:error.code,message:error.message,...(error.details?{details:error.details}:{})});return;}
  if(error?.code==='23505'){res.status(409).json({error:'conflict',message:'This already exists. Refresh and choose a different name.'});return;}
  if(error?.type==='entity.too.large'){res.status(413).json({error:'too_large',message:'Upload exceeds the configured limit.'});return;}
  console.error(JSON.stringify({event:'request_failed',code:error?.code??'unknown'}));res.status(500).json({error:'unavailable',message:'This action was not confirmed. Refresh its status before retrying.'});
