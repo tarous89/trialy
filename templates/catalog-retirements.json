@@ -21,6 +21,13 @@
       "replacedBy": "life.partnership-tracker@2.1.0",
       "reason": "Partnerships 2.1.0 (PARTNERSHIPS.md, BT2-07) is the new major version of the same app; withdrawn on approval by migration 071.",
       "decided": "2026-11-14"
+    },
+    {
+      "templateId": "life.contracts",
+      "version": "1.0.0",
+      "replacedBy": "life.contracts@1.1.0",
+      "reason": "Contracts 1.1.0 (CONTRACTS.md §12) replaces 1.0.0: no scheduled AI, weekly actions email, counterparty on obligations, full assistant control.",
+      "decided": "2026-11-14"
     }
   ]
 }

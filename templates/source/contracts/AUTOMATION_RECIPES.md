@@ -1,12 +1,19 @@
-# Contracts 1.0.0: optional automations
+# Contracts 1.1.0: automations
 
-None is required. The app never reads automation state and keeps working when an automation is off, failing or missing. Configure them only after the app is saved, in TrialAgents → Automations (or with `prepare_app_action` / `prepare_automation_setup`). They are recipes, not active definitions.
+Contracts has **one** recommended automation and no scheduled AI work. It is shown switched on in the Add app dialog and can be turned off; the app never reads automation state and works fully without it.
 
-| # | Automation | Worker | Trigger | Reads | Output |
-| --- | --- | --- | --- | --- | --- |
-| 1 | Weekly contract digest | TrialAgents email | Calendar, weekly on `contracts.settings.digest_day` (1 = Monday) at 08:00 Europe/Berlin | agreements (name, status, expiry_date, counterparty_id), contracts.terms (notice_deadline, confidentiality_end, extraction_status), contracts.obligations (title, due_date, recurrence, status, verified, amount, currency), contracts.settings (reminder_days), organizations (name) | One email to the owner (and only explicitly approved registered members with app access): notice deadlines and expiries in the reminder windows, verified obligations due and overdue, CDA confidentiality ends; unverified extractions listed separately and never counted. Silent only when nothing is in the windows and the quiet policy allows it. |
-| 2 | Extraction of new originals | Research on the user's own Claude or ChatGPT runner | Calendar, daily 07:00 Europe/Berlin | contracts.terms (agreement_id, document_version_id, extraction_status none), agreements, AI-readable document text | Per agreement at most one terms update (none → proposed, `source_quotes`) and new obligations with `verified: false`, exact `source_quote`, `source_page`, `source_document_version_id`; deduplicated by agreement + title + due date; writes only `contracts.terms` and `contracts.obligations` under a narrow expiring grant, or prepares them for review. Never sets `verified`, `verified_by` or `verified_on`. Originals not AI-readable or not yet extracted are reported and skipped. |
+| Key | Automation | Worker | Trigger | Content |
+| --- | --- | --- | --- | --- |
+| `contract_actions` | Contracts: actions needed | TrialAgents email (no AI) | Calendar, weekly, Monday 08:00 Europe/Berlin (editable) | One email to the owner, built by the read-only summary function `actions_summary` (`contracts.actions-summary.js`). Lists agreement names in three groups: **Deadlines** (notice deadlines within the first reminder window, default 30 days; active agreements without renewal expiring within 30 days; open obligations overdue or due within 7 days), **Waiting for signature** (drafting, in negotiation, out for signature, with days in status) and **To check** (terms or obligations an assistant filled in that nobody has checked). Nothing is sent when all groups are empty. |
 
-**No automation:** Overview, Obligations and CDAs show the same information on demand; extraction is requested in chat (“Read the new original and propose its terms and obligations for Contracts”), and a person verifies in the app.
+**Setup after install.** Catalog installs cannot attach functions, so the row is **Needs setup** after Add app. To turn it on (an assistant does this on request, catalog instructions step 8):
+1. Replace `__TABLE_MAP__` in the function source with the saved app's `tableMap` configuration.
+2. Prepare it as a read-only function: `scope.capabilities ["records.read"]`, `scope.typeIds` the agreements, organizations, contracts.settings, contracts.terms and contracts.obligations tables from that map, `documents: false`.
+3. Bind it to the app as `actions_summary` in a reviewed app revision.
+4. Set up `contract_actions` from Automations → From app features, or with `prepare_app_automation_feature` and `confirm_app_service_review`.
 
-Prompt example for recipe 2 is in `catalog.metadata.json` → `documentation.tasks.promptExample`.
+Verified end to end in `tests/contracts-automation.test.ts`.
+
+**Removed in 1.1.0:** the scheduled "extraction of new originals" research automation (owner decision C1: filling in a contract is something the user asks for) and the `digest_day` setting.
+
+**No automation:** Overview, Obligations, CDAs and Pipeline show the same information on demand. Users may add their own automations, including AI ones, later.

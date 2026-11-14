@@ -1,12 +1,17 @@
 import {readFile,writeFile} from 'node:fs/promises';
 // Contracts (life.contracts) 1.x: catalog JSON and the offline fictional preview, generated from templates/source/contracts/.
+// Released versions are archived unchanged under templates/source/contracts/archive/. The weekly email's read-only summary function
+// (contracts.actions-summary.js, header comment removed) is embedded in the instructions so assistants can bind it after install.
 const root=new URL('../templates/source/contracts/',import.meta.url),read=n=>readFile(new URL(n,root),'utf8');
-const [metadata,source,css,demo,schema]=await Promise.all(['catalog.metadata.json','contracts.source.js','contracts.css','demo_data.json','schema.example.json'].map(read));
-const entry=JSON.parse(metadata);entry.source='const CONTRACTS_CSS='+JSON.stringify(css)+';\n'+source;
+const [metadata,source,css,demo,schema,summary]=await Promise.all(['catalog.metadata.json','contracts.source.js','contracts.css','demo_data.json','schema.example.json','contracts.actions-summary.js'].map(read));
+const entry=JSON.parse(metadata);
+const summaryBody=summary.replace(/^\/\*[\s\S]*?\*\/\n/,'').trim();
+if(!entry.instructions.includes('{{ACTIONS_SUMMARY_SOURCE}}'))throw Error('Instructions need the summary placeholder');
+entry.instructions=entry.instructions.replace('{{ACTIONS_SUMMARY_SOURCE}}',summaryBody);entry.source='const CONTRACTS_CSS='+JSON.stringify(css)+';\n'+source;
 const serialized=JSON.stringify(entry,null,2)+'\n';
 if(Buffer.byteLength(serialized)>300000||entry.source.length>180000||css.length>50000)throw Error('Contracts template exceeds catalog limits');
 const catalog=new URL('../../apps/'+entry.id+'-'+entry.version+'.json',root);
-const preview=`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Contracts fictional preview</title><style>${css}</style><body><div style="padding:10px 16px;background:#fff;border-bottom:1px solid #E1DDE8;font:13px Inter,Arial,sans-serif;color:#3D3550">Fictional local demo, fixed as of 12 Nov 2026. Documents, assistant extraction, Database review, permissions and persistent layout use the TrialAgents host.</div><div id="surface"></div><script>
+const preview=`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Contracts fictional preview</title><style>${css}</style><body><div style="padding:10px 16px;background:#fff;border-bottom:1px solid #E1DDE8;font:13px Inter,Arial,sans-serif;color:#3D3550">Fictional local demo, fixed as of 12 Nov 2026. Documents, Claude and ChatGPT, the weekly email, Database review, permissions and persistent layout use the TrialAgents host.</div><div id="surface"></div><script>
 const source=${JSON.stringify(entry.source).replaceAll('</','<\/')};
 const demo=${demo};const metadata=${metadata};const schema=${schema};
 const roles=Object.keys(schema);

@@ -1,4 +1,42 @@
-# Contracts 1.0.0 validation
+# Contracts 1.1.0 validation
+
+Validated on 14 November 2026 against the repository host using disposable PGlite databases and fictional data only. This was not a deployed account. The 1.0.0 record follows below unchanged, and it is also archived at `archive/1.0.0/QA.md`.
+
+**Catalog status:** draft. 1.1.0 is not in `templates/catalog-seed.json`. Approval needs the owner, then a seed entry and a one-time migration that approves 1.1.0 and withdraws 1.0.0 (`templates/catalog-retirements.json`). Gallery screenshot: `resources/template-gallery/life.contracts@1.1.0.jpg`.
+
+## Commands and outcomes (1.1.0)
+
+| Command | Outcome |
+| --- | --- |
+| `node scripts/build-contracts-template.mjs --check` (in `npm run build`) | Passes; the catalog JSON and preview are current. |
+| `npx tsc --noEmit` | Passes. |
+| `tests/contracts.test.ts` | 16/16. The 1.0.0 cases, plus: counterparty default and override, a pre-1.1.0 table without the field, no digest day, app-calculated dates over wrong stored values, From Programs labels, Additional fields, recipe declaration, and the hand-checked summary. |
+| `tests/contracts-integration.test.ts` | 5/5 on 1.1.0, including a custom app reading `contracts.obligations` as `contracts.v1` (the superset rule). |
+| `tests/contracts-automation.test.ts` | 1/1 with restricted roles. Add app shows `contract_actions` switched on → Needs setup → function bound in a reviewed revision → set up → active → one email: "Contracts: 2 actions needed", with Deadlines and Waiting for signature. |
+| `scripts/test-contracts-browser.ts` | Passes: seven screens at 1440 and 390 px in the production frame, reviewed saves, upload hook and native layout. |
+| `npm test` | 631 of 632 pass. The one failure, `tests/monitoring-pv-integration.test.ts` (CO06 design check, `overlapping_controls`), also fails without this change in this environment, which uses a newer local Chromium build. It is unrelated to Contracts. |
+
+## Hand check of the weekly summary (demo, as of 12 Nov 2026, first reminder window 30 days)
+
+- **Deadlines (2):**
+  - SOW 2 batch 3 invoice: due 31 Oct, open, so overdue.
+  - Brightwater DPA notice: 31 Dec − 30 days = 1 Dec, within 30 days, renews automatically for 12 months.
+  - Kestrel's notice on 1 Jan is outside the window. No obligation falls due by 19 Nov: the monthly ones next fall on 28 Nov, and the US transfer fee is due 15 Dec.
+- **Waiting for signature (3):**
+  - Meridian partnering CDA, out for signature since 30 Oct: 13 days.
+  - St Aldric CTA, drafting since 2 Nov: 10 days.
+  - Meridian sublicence, in negotiation since 15 Sep: 58 days.
+- **To check (4):** Corvane key terms (proposed) and its 3 unverified obligations.
+- **Total:** 9. The quiet case (nothing pending, no terms or obligations) sends nothing.
+
+## Not verified here (1.1.0)
+
+- Delivery through the real email provider and a real Claude or ChatGPT session binding the function. The repository test drives the same services.
+- That the catalog `instructions` (13.5k characters, within the 20k limit) are enough for an assistant to bind the function without help. This needs a host check before approval.
+
+---
+
+# Contracts 1.0.0 validation (record)
 
 Validated against the repository host on 12 November 2026 with disposable PGlite databases, the real catalog sync, installer, Add app step, in-app integration dialog, reviewed write path, document upload, the text-extraction worker and the real MCP endpoints, using fictional data only. Not a deployed account.
 
