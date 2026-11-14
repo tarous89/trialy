@@ -114,5 +114,9 @@
   "life.partnership-tracker@2.1.0": {
     "catalogDigest": "a521df7dbb933b4353ea75fddbadfb6bbad28aaa195b2fbe74b211c7989f85d5",
     "previewSha256": "981d8777bd4672e3beb09062e2f1b8924b68071e5b9e338cb203afb92a58e77a"
+  },
+  "life.contracts@1.1.0": {
+    "catalogDigest": "9f37aefd7909e58e13b6f2f524340e2f850f026bfbf944d478ad489276481fde",
+    "previewSha256": "99603b44761f934c1dc67e882bb0e9263c522cee689bbf13492fa98b6e8a9948"
   }
 }

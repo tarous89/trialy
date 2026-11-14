@@ -2,7 +2,7 @@
 
 Validated on 14 November 2026 against the repository host using disposable PGlite databases and fictional data only. This was not a deployed account. The 1.0.0 record follows below unchanged, and it is also archived at `archive/1.0.0/QA.md`.
 
-**Catalog status:** draft. 1.1.0 is not in `templates/catalog-seed.json`. Approval needs the owner, then a seed entry and a one-time migration that approves 1.1.0 and withdraws 1.0.0 (`templates/catalog-retirements.json`). Gallery screenshot: `resources/template-gallery/life.contracts@1.1.0.jpg`.
+**Catalog status:** published at the owner's request on 14 November 2026. `templates/catalog-seed.json` names 1.1.0, and migration 072 withdraws 1.0.0 once (`templates/catalog-retirements.json`). The deployment is rehearsed in `tests/template-catalog.test.ts`. Gallery screenshot: `resources/template-gallery/life.contracts@1.1.0.jpg`.
 
 ## Commands and outcomes (1.1.0)
 

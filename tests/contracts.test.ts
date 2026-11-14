@@ -66,7 +66,7 @@ test('catalog entry, contract-shaped scalar schema, roles as in the scope and se
  assert.deepEqual(out.versions['contracts.v2'].fields.find((f:any)=>f.key==='counterparty_id')&&{kind:'text',required:false},{kind:'text',required:false});
  const prepared=`const templateConfiguration=${JSON.stringify({...entry.defaults,heading:'Contracts'})};\nconst templateBindings=[];\n${entry.source}`;
  assert.deepEqual(readCustomLayout(prepared)!.schema.screens.map(s=>s.id),['overview','register','families','obligations','cdas','pipeline','settings']);
- assert.equal(entry.documentation!.tasks.mode,'optional');for(const k of ['quickStart','dataContract','interactionContract','lifecycle','limitations','examples','tasks'])assert.ok((entry.documentation as any)[k],k);
+ assert.equal(entry.documentation!.tasks.mode,'none');for(const k of ['quickStart','dataContract','interactionContract','lifecycle','limitations','examples','tasks'])assert.ok((entry.documentation as any)[k],k);
 });
 
 test('acceptance 1: notice deadline and confidentiality end match the hand-checked set and are stored on save',async()=>{

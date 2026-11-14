@@ -192,7 +192,7 @@ Contracts works alone; each connection follows the platform pattern (add-app dia
 
 ## 12. Contracts 1.1.0: assistant control, connections and the email summary
 
-**Status:** Built as a draft, 14 November 2026, from the owner's decisions C1–C8 (no platform changes; everything is built in the app). Package: `templates/source/contracts/` (README lists the changes); tests: `tests/contracts.test.ts`, `tests/contracts-integration.test.ts`. Delivered as a new immutable draft `life.contracts` 1.1.0. The published 1.0.0 package stays unchanged, saved apps are not migrated, and publishing 1.1.0 needs separate owner approval. Where this section conflicts with §4, §6, §7, §8 or §10, this section wins.
+**Status:** Built and published in place of 1.0.0 (owner approval), 14 November 2026, from the owner's decisions C1–C8 (no platform changes; everything is built in the app). Package: `templates/source/contracts/` (README lists the changes); tests: `tests/contracts.test.ts`, `tests/contracts-integration.test.ts`. Delivered as a new immutable draft `life.contracts` 1.1.0. The published 1.0.0 package stays unchanged, saved apps are not migrated, and publishing 1.1.0 needs separate owner approval. Where this section conflicts with §4, §6, §7, §8 or §10, this section wins.
 
 **Rule for every app (owner):** an app does not need automations. If an app has one, it must follow the platform rules ([app automations](../../RECOMMENDED_AUTOMATIONS.md)): it is declared in the package, shown switched on in the Add app dialog, can be turned off, and the app works fully without it.
 

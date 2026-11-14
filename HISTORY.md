@@ -1,3 +1,24 @@
+## 14 November 2026 — Contracts 1.1.0 published
+
+Contracts 1.1.0 (`life.contracts`) is published at the owner's request in place of 1.0.0. It implements decisions C1–C8 in [CONTRACTS.md §12](docs/product/app-template-blueprints/apps/CONTRACTS.md), with no platform change.
+
+What changes in the app:
+- **Getting contracts in.** A contract is filled in when the user asks Claude or ChatGPT, or typed in by hand (blank is fine).
+- **No automations.** Contracts declares none: the 1.0.0 optional digest and extraction automations and the `digest_day` setting are removed.
+- **Counterparty on obligations.** `counterparty_id` defaults to the agreement's counterparty. `contracts.obligations` is now published as `contracts.v2`, a superset of v1, in `templates/contracts/outputs.json`.
+- **Assistant control.** Every button is documented as an exact record change, and assistants may check proposals on the user's request through the review.
+- **App behaviour.** The app calculates the dates it shows from the fields, whoever saved them. Values from connected apps are labelled "From *App*", and bound fields this version doesn't know show as "Additional fields".
+
+Publication:
+- The 1.0.0 package is archived unchanged under `templates/source/contracts/archive/1.0.0/`, and its installer entry points there.
+- `templates/catalog-seed.json` names 1.1.0, so the sync after migrations imports it approved. Migration 072 withdraws 1.0.0 once, as listed in `templates/catalog-retirements.json`.
+- Installed 1.0.0 apps keep their source and data.
+- The gallery media adds `life.contracts@1.1.0`.
+
+Tests:
+- `tests/contracts.test.ts` covers the new behaviour.
+- `tests/template-catalog.test.ts` rehearses the deployment from the live catalog state.
+
 ## 14 November 2026 — Partnerships 2.1.0 published
 
 Aligns Partnerships with the app automation platform changes (#168, #169) and makes it customizable by Claude and ChatGPT within its scope, then publishes it at the owner's request. The catalog entry declares `recommendedAutomations` for partner research (weekly, Monday 07:00; create-only writes to signals and the new `partnerships.research_reports`), the digest (after each completed research run) and meeting briefs (create-only draft briefs). Settings no longer store a schedule, recipients or on/off. Follow-up reminders remain a chat-set-up action because recipes cannot express `status = open`. Customization covers column groups for every list, saved views with their own columns and sort, custom fields, stage labels with hidden and custom stages, activity kinds and deal types, and preferences.

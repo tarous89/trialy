@@ -4,7 +4,12 @@ The website and MCP read approved versions from `app_template_catalog`. The cata
 
 Migration 056 and `db:migrate` import repository versions once. `templates/catalog-seed.json` approves the existing 23 life-science versions requested for launch. Do not extend this bootstrap approval list for future releases. Owner-approved exceptions: on 11 November 2026, `life.cash-runway` was moved from 1.2.2 to Runway 2.0.0, then to Runway 2.1.0, and `life.project-oversight` was moved from Project Oversight 1.0.1 to Programs 2.0.0. On 12 November 2026 the owner approved Programs 2.1.0: the seed names it for new databases, and one-time migration 062 approves the draft row an earlier deployment had imported (a later withdrawal is not undone). Existing statuses and payloads are never overwritten by deployment. New versions default to draft; older approved versions remain available until replaced or withdrawn.
 
-Contracts (`life.contracts`) 1.0.0 was added on 12 November 2026 as a draft (#140) and approved the same day at the owner's request: the seed names 1.0.0 and migration 063 approves the draft row imported by that deployment, once.
+Contracts (`life.contracts`) 1.0.0 was added on 12 November 2026 as a draft (#140) and approved the same day at the owner's request: the seed names 1.0.0 and migration 063 approves the draft row imported by that deployment, once. On 14 November 2026 the owner approved Contracts 1.1.0 in place of 1.0.0:
+- the seed names 1.1.0, so the sync after migrations imports it approved;
+- migration 072 withdraws 1.0.0 once (`templates/catalog-retirements.json`);
+- the 1.0.0 source is archived under `templates/source/contracts/archive/1.0.0/`, and its installer entry points there.
+
+Installed 1.0.0 apps keep working.
 
 CRO Selection (`life.cro-selection`) 2.0.0 was added on 13 November 2026 as a draft. It replaces CRO Selection 1.0.1 and Sponsor RFP Management (`life.sponsor-rfp-management`) 1.0.1. Versions to withdraw on a replacement's approval are listed in `templates/catalog-retirements.json`; deployment does not act on that file.
 

@@ -26,7 +26,7 @@
       "templateId": "life.contracts",
       "version": "1.0.0",
       "replacedBy": "life.contracts@1.1.0",
-      "reason": "Contracts 1.1.0 (CONTRACTS.md §12) replaces 1.0.0: no scheduled AI, weekly actions email, counterparty on obligations, full assistant control.",
+      "reason": "Contracts 1.1.0 (CONTRACTS.md §12) replaces 1.0.0: counterparty on obligations, full assistant control, no automations; withdrawn on approval by migration 072.",
       "decided": "2026-11-14"
     }
   ]
