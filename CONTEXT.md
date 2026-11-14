@@ -1,6 +1,6 @@
 # TrialAgents — current project context
 
-Updated 13 November 2026 (Europe/Berlin). Read this before changing product behavior or authoring apps. Repository: `tarous89/trialy`; product: **TrialAgents**, not Trialy. Platform: https://platform.trialagents.com; MCP: https://platform.trialagents.com/mcp. Intel and CTIS are separate products.
+Updated 14 November 2026 (Europe/Berlin). Read this before changing product behavior or authoring apps. Repository: `tarous89/trialy`; product: **TrialAgents**, not Trialy. Platform: https://platform.trialagents.com; MCP: https://platform.trialagents.com/mcp. Intel and CTIS are separate products.
 
 ## Direction and precedence
 
@@ -39,6 +39,8 @@ Preparation that nobody outside has seen yet (group, links, and documents, brief
 **Updates** (§6, migration 068, `src/domain/exchange-update-content.ts`): a room can carry content as its main page. The app's HTML is rebuilt by TrialAgents from an allowlist, images are PNG, JPEG or GIF platform documents served from a per-update address that names no recipient, and asks are placed by marker. Email type `update` carries the same content as email-safe HTML with a plain-text part, checked for Gmail, Outlook and Apple Mail. Groups sharing a `series` key give each person an archive of the earlier updates sent to their address and a one-click unsubscribe per series, recorded per address and honoured by every later send. "I can help" responses and per-person delivery facts are written to bound responses and delivery tables (source "tracked"). Assistants receive every recipient link as a placeholder. Template guidance 1.3.26.
 
 ## Automation boundaries
+
+**Approved next platform work, not yet implemented:** [App automations scope](docs/product/RECOMMENDED_AUTOMATIONS.md), [RA1–RA5 build plan](docs/product/RECOMMENDED_AUTOMATIONS_IMPLEMENTATION.md), owner clarification 14 November 2026. Pre-built install recommendations appear as concise rows, all selected by default; Add app is the single approval and enables eligible work. Save app/data/access atomically, then validate/create/activate optional automations separately; failure leaves the app usable with visible pending setup. Later setup is available from Automations → From app features and authorized ChatGPT/Claude flows. Preserve existing `confirm_app_service_review` activation, current owner/assistant permissions, per-installed-app/feature identity, date-reminder catch-up and deliberate pauses. New defaults never reactivate existing definitions or rewrite deployed templates. Implementation must ship shared UI, backend and guidance together; do not advertise future fields as supported today.
 
 Automation list cards use a compact title/status row, app/trigger/service metadata and a clipped prompt preview, with actions aligned separately. New automation setup omits the empty “Not configured” badge and “More trigger options”; existing advanced trigger configuration remains editable.
 

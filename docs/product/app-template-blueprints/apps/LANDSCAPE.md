@@ -8,14 +8,14 @@
 - TrialAgents Automations (research → email chain on the user's Claude or ChatGPT runner)
 - the platform change **"Recommended automations in the install dialog"** ([Modular apps §7](../../MODULAR_APPS_AND_SHARED_DATA.md#install-dialog-data-access-and-automations), [Automations](../../APP_CONFIGURATION_AND_AUTOMATIONS.md#recommended-automations-at-install))
 
-Build as two PRs: **(A)** the install-dialog automations change (platform, benefits every app), **(B)** this app.
+Build the platform through the [RA1–RA5 implementation plan](../../RECOMMENDED_AUTOMATIONS_IMPLEMENTATION.md), then this app in a separate PR. Do not treat the install popup alone as sufficient platform support.
 
 **Governing contracts:** project context, template authoring and usage guidance (latest, all `nextOffset`s), shared build contract, interface rules, access control, write authorization, field capabilities, shared data, [modular apps and shared data](../../MODULAR_APPS_AND_SHARED_DATA.md), [apps, access and automations](../../APP_CONFIGURATION_AND_AUTOMATIONS.md) (including email limits), and the contract registry. They win on any conflict.
 
 **Decisions (14 Nov 2026):**
 - **The assistant does the landscaping.** Claude or ChatGPT searches, reads, extracts and judges. The app only stores the results, structures insights (comparison, calendar, events, impact), and tells the assistant **what** to look for and **when**, through its research briefs.
 - **Sources are named, not connected.** Each landscape lists sources by name (e.g. "TrialAgents Intel – EU trials", "ClinicalTrials.gov", "PubMed", "company press releases", or a paid source the user has). The assistant decides how to reach each one: a connector the user has added, or the web. **Web is the default.** The app never connects to data sources itself.
-- **Automations belong to the platform.** Research runs and emails are normal TrialAgents Automations linked to the app (research → email chain). The app only ships recommended automations; the platform creates them from the **install dialog**, next to data access and access.
+- **Automations belong to the platform.** Research runs and emails are normal TrialAgents Automations linked to the app (research → email chain). The app ships pre-built recommendations selected by default in the concise **install dialog**; Add app approves and enables eligible work. The owner can also add and activate these features later from Automations, ChatGPT or Claude, through normal platform authorization. Optional setup failures never block the app.
 - **Analytical email templates.** The emails are concise, analytical templates that live in the automation definitions (editable in Automations), not in the app.
 
 ---
@@ -131,13 +131,13 @@ The assistant's results are saved as reviewed proposals (platform write review).
 
 ## 6. Recommended automations and email templates
 
-These are platform automations linked to the app. They are offered in the install dialog (defaults below); afterwards they are edited, paused or deleted in Automations. Each one runs on the runner of the assistant the owner chooses (Claude or ChatGPT), and the email step respects the platform email limits: one app email per recipient per rolling hour, and the daily account cap.
+These are platform automations linked to the app. They are offered concisely in the install dialog, all selected by default unless the user opts out; Add app activates eligible work. Afterwards they are managed in Automations and through authorized chat. Reuse the [platform automation scope](../../RECOMMENDED_AUTOMATIONS.md), including independent app availability and later setup from app features. Each one runs on the runner of the assistant the owner chooses (Claude or ChatGPT), and the email step respects the platform email limits: one app email per recipient per rolling hour, and the daily account cap.
 
 | Automation | Default | Schedule | Steps |
 |---|---|---|---|
 | **Landscape scan + weekly digest** | On | Weekly, Monday 07:00 (daily or monthly selectable) | Research (refresh brief, all landscapes) → email to chosen members |
 | **High-impact alert** | On | After each scan | Email only when a watched asset has a high-impact proposed event (readout, approval or rejection, trial stop, major deal); grouped into one email per run |
-| **Quarterly landscape review** | Off | First Monday of each quarter | Research (review brief) → report saved to Reviews → email summary |
+| **Quarterly landscape review** | On | First Monday of each quarter | Research (review brief) → report saved to Reviews → email summary |
 
 **Email templates** (stored in the automation; editable; the assistant fills them from the run; about 200 words maximum; empty sections omitted; every item links to its event in the app):
 
@@ -261,7 +261,7 @@ Landscape never writes another app's own tables.
 - Literature Radar hidden from the catalog
 
 **Acceptance (beyond the shared contract):**
-1. **Install:** the install dialog shows the three recommended automations with defaults. The owner keeps two and turns one off; they appear in Automations linked to the app, with the chosen runner and recipients.
+1. **Install:** the install dialog shows three concise automation rows, all selected. The owner keeps two and turns one off; Add app enables the eligible two, linked to this app with the chosen runner and recipients. Missing setup is shown separately and never prevents app use. The opted-out recipe remains available later in Automations and chat.
 2. **Build on request:** "build the landscape for Program X" produces asset, trial and event proposals with sources and a source report. Proposals without sources cannot be confirmed.
 3. **Scheduled refresh:** the weekly run uses the refresh brief (changes since the last run), proposes events with impact notes, records the run with its source report, and sends the digest in the template format within the word limit. Changing the cadence in Automations changes the next run.
 4. **Unreachable source:** a named source the assistant cannot reach is reported, and the run continues on the web. After 3 runs a hint appears.

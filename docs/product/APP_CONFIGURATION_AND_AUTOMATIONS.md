@@ -105,7 +105,7 @@ Apply this workflow to every template and custom app. Automation remains optiona
 3. Preserve the backend app-level access boundary; configure requested sharing and supported optional tab restrictions. Validate permissions and data/connector boundaries independently of visual design.
 4. Reuse/configure only required connectors. Decide ongoing work: none, ChatGPT research, platform action, or a linked research-to-platform-email chain.
 5. Propose useful automation with concrete timing, prompt/action, sources, outputs, limits and permissions. Existing user intent can authorize preparation; template recommendations alone cannot activate it.
-6. Save the reviewed app and data configuration through existing safeguards. Then persist/reconcile approved automations against that saved app with stable authoring keys. Automation preparation/activation failure cannot roll back a successfully saved app or block its use. Never dispatch from an unsaved preview.
+6. Save the reviewed app and data configuration through existing safeguards. Then persist/reconcile approved automations against that saved app with stable authoring keys scoped to that installed app and any selected feature record. Installation can capture the exact automation approval in the same user action, but automation validation/activation happens after the app commits. Failures cannot roll back the saved app or block its use. Never dispatch from an unsaved preview.
 7. Check shared connection setup on every app creation; complete or resume missing setup if authorized and supported, respecting deliberate pauses and declined setup. Reuse the runner for every later app. Platform-only actions do not depend on ChatGPT readiness.
 8. Verify app save, permission configuration, automation definition, enabled/readiness state and next occurrence separately. Link the user to the app and its filtered Automations view; report partial setup honestly.
 
@@ -162,14 +162,15 @@ Current operational handoff and release status: [project context](../../CONTEXT.
 
 ## Recommended automations at install
 
-Full platform scope: [RECOMMENDED_AUTOMATIONS.md](RECOMMENDED_AUTOMATIONS.md).
+Full platform scope: [RECOMMENDED_AUTOMATIONS.md](RECOMMENDED_AUTOMATIONS.md). Build stages and acceptance gates: [implementation plan](RECOMMENDED_AUTOMATIONS_IMPLEMENTATION.md). These installation and app-feature extensions are scoped for build; existing automation services and authorized chat activation remain supported.
 
-Decided 14 November 2026. Templates declare recommended automations in their catalog (name, purpose, trigger or schedule, steps, email template, default recipients, default on or off). The install dialog offers them next to data access and access ([Modular apps §7](MODULAR_APPS_AND_SHARED_DATA.md#install-dialog-data-access-and-automations)).
+Owner clarification, 14 November 2026. Templates declare pre-built automations in their catalog (name, purpose, trigger or schedule, steps, email template and default recipients). All install recommendations are selected by default; the user can opt out. Show concise rows next to data access and access ([Modular apps §7](MODULAR_APPS_AND_SHARED_DATA.md#install-dialog-data-access-and-automations)); do not expand full prompts or editor cards by default.
 
 **On install:**
-- Selected recommendations become ordinary automations linked to the app: owner-managed, on the chosen runner, under all rules on this page, including the email limits and the research → email chain.
+- Add app approves the displayed selection once and enables eligible ordinary automations linked to the installed app, on the chosen runner, under the existing email limits and research → email chain. App/data/access commit first; optional automation setup failure leaves a usable app and visible pending setup.
 - Email templates are the automation's instructions or message and are edited here.
-- An app never owns or runs automations itself.
+- The platform owns and runs automations. Apps may declare reusable features and open the normal authorized setup flow. Automations → From app features, ChatGPT and Claude may create and activate automations later; preserve `confirm_app_service_review`, current permissions and assistant ownership.
+- New default-on selection never reactivates existing paused work, copied drafts, declined recommendations or automations after reconnect/restore. Retry identity includes the installed app and feature context; a separate copy of a template gets independent definitions.
 
 **Research briefs.** Research automations for an app use a brief the app generates from its records: what to look for, since when, named sources in priority order (access route left to the assistant; web by default), rules, and a structured return format with a **source report**. The prompt references the brief, so the app's current records always drive the run.
 
@@ -187,20 +188,20 @@ They are separate features and must never be mixed.
 
 ### Recommended automations per app (install dialog)
 
-Each template declares these in its catalog. **On** = default on in the install dialog. Research steps run on the runner the owner picks; email steps go to workspace members. User-triggered sends are listed only to show they are *not* automations.
+Each template declares these in its catalog. **On** = selected by default in the concise install dialog and enabled by Add app when eligible, unless the owner opts out. This owner clarification supersedes earlier off-by-default recommendations. Research steps use the chosen ready runner; missing prerequisites leave visible pending setup. Email goes to authorized workspace members. Record-specific features remain available later in Automations and chat. User-triggered sends are listed only to show they are *not* automations.
 
 | App | Recommended automations (default) | Not automations (user-triggered sends and their follow-ups) |
 |---|---|---|
-| **Runway** (01) | Runway alert: trigger when `month_closes.runway_status` becomes `below_target` → email (**on**). Monthly exchange rates: research, 3rd business day (**off**) | — |
-| **Programs** (02) | Monthly update reminder: email on `update_day` (**on**). Slip notice: trigger on a new `slips` record for a key item → email (**on**). Monthly status draft: research after the update day (**off**) | — |
-| **Fundraise** (03) | Weekly round digest: email, Monday 08:00 (**on**). Signed commitment notice: trigger `interest` → `signed` → email (**on**). Investor research: research, monthly (**off**) | — |
+| **Runway** (01) | Runway alert: trigger when `month_closes.runway_status` becomes `below_target` → email (**on**). Monthly exchange rates: research, 3rd business day (**on**) | — |
+| **Programs** (02) | Monthly update reminder: email on `update_day` (**on**). Slip notice: trigger on a new `slips` record for a key item → email (**on**). Monthly status draft: research after the update day (**on**) | — |
+| **Fundraise** (03) | Weekly round digest: email, Monday 08:00 (**on**). Signed commitment notice: trigger `interest` → `signed` → email (**on**). Investor research: research, monthly (**on**) | — |
 | **Contracts** (04) | Weekly contract digest: email on `digest_day` 08:00 (**on**). Extraction of new documents: research, daily (**on**) | — |
-| **CRO Selection** (05) | Request digest: email daily while a request is open (**on**). Proposal mapping: research on accepted proposal files (**off**) | Sending RFI/RFP invitations, clarifications, decision messages; supplier deadline reminders (pre-approved at send) |
-| **Investor Updates** (06) | Cadence reminder: email to the owner before the send-by date and when overdue (**on**). Ask response notice: trigger on a new response → email (**on**). **Scheduled draft:** research per scheduled update, created when the user saves a scheduled update (the install dialog offers none) | Sending an update; not-read reminders to contacts (pre-approved per template) |
-| **Partnerships** (07) | Partner research + digest: research → email, weekly Monday 07:00 (**on**). Meeting briefs: research, the day before linked meetings (**off**). Follow-up reminders: date trigger → email to the owner (**on**) | — (the app never emails partners) |
-| **Data Room** (08) | Room digest: email daily while a room is live (**on**). Answer drafts: research on new questions (**off**). Access ending: email to the owner 7 days before (**on**) | Invitations, level changes, answers; documents-updated digest and access-ending email to parties (pre-approved per room) |
+| **CRO Selection** (05) | Request digest: email daily while a request is open (**on**). Proposal mapping: research on accepted proposal files (**on**) | Sending RFI/RFP invitations, clarifications, decision messages; supplier deadline reminders (pre-approved at send) |
+| **Investor Updates** (06) | Cadence reminder: email to the owner before the send-by date and when overdue (**on**). Ask response notice: trigger on a new response → email (**on**). **Scheduled draft:** reusable app feature, one per schedule record; set up and activate later from Automations, ChatGPT or Claude (no record exists at install) | Sending an update; not-read reminders to contacts (pre-approved per template) |
+| **Partnerships** (07) | Partner research + digest: research → email, weekly Monday 07:00 (**on**). Meeting briefs: research, the day before linked meetings (**on**). Follow-up reminders: date trigger → email to the owner (**on**) | — (the app never emails partners) |
+| **Data Room** (08) | Room digest: email daily while a room is live (**on**). Answer drafts: research on new questions (**on**). Access ending: email to the owner 7 days before (**on**) | Invitations, level changes, answers; documents-updated digest and access-ending email to parties (pre-approved per room) |
 | **Lab Inventory** (09) | Inventory digest: email, weekly Monday 08:00 (**on**). Approval request: trigger on a new request → email to the approver (**on**). Requester status updates: trigger on status change → email (**off**; in-app always) | — |
-| **Landscape** (10) | Landscape scan + weekly digest: research → email, Monday 07:00 (**on**). High-impact alert: after each scan, email only for watched high-impact events (**on**). Quarterly review: research → report → email (**off**) | — |
+| **Landscape** (10) | Landscape scan + weekly digest: research → email, Monday 07:00 (**on**). High-impact alert: after each scan, email only for watched high-impact events (**on**). Quarterly review: research → report → email (**on**) | — |
 
 ## Simple email notifications
 
