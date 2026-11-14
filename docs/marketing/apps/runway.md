@@ -33,6 +33,7 @@
 | Claude biotech cash flow forecasting (canonical queue C4) | https://trialagents.com/apps/biotech-cash-flow-forecasting-claude | Published via PR #205, release `0bb286174ad6c1a925fa427fb115de7640ef79f4`; live verified 14 November 2026 07:00 CET. |
 | AI CFO vs AI-native financial planning app (canonical queue C5) | https://trialagents.com/apps/ai-cfo-vs-financial-planning-app-biotech | Published via PR #206, release `3a7efd4acfc5578784bccd3c21e344dcbfa13c67`; live verified 14 November 2026 08:10 CET. |
 | MCP-connected financial planning software for biotech: check scope before writes (C6) | https://trialagents.com/apps/mcp-financial-planning-software-biotech | Published; live verified 14 November 2026; PR #207; release `e8ed31e7e198641c7bbd1e78b69db395735dfd29` |
+| Custom cash runway app with ChatGPT or Claude (C7) | https://trialagents.com/apps/custom-cash-runway-app-chatgpt-claude | Published; live verified 14 November 2026; PR #208; release `39af173ce6e7acb7ac95709f82eafa926f56b49e` |
 | App pages index | https://trialagents.com/apps | Published; production URL checked 12 November 2026 |
 
 These are intended canonical URLs. Do not assert that a URL is live until checked on the production CDN.
@@ -722,3 +723,17 @@ Six-step proposed acceptance workflow verifies unchanged records and calculated 
 ### C7 merged — deployment pending, 14 November 2026 17:00 CET
 
 PR #208 merged as `39af173ce6e7acb7ac95709f82eafa926f56b49e` at approximately 16:00:55 UTC. Exact head `b64b229487f2233dee17c9d2c0ba4970421062e0` passed full predeploy run `43612546153` (validate and seo-container). Artifact `14121051913` matches that head; desktop 1440px/mobile 390px screenshots inspected through all sections, scrollable contained table, genuine images, captions, final CTA and shared shell. Await automatic GitHub-connected deployment and independent live verification at https://trialagents.com/apps/custom-cash-runway-app-chatgpt-claude. Resume this release before another topic. Totals remain 27 published, 20 unfinished until verified.
+
+
+### C7 published and live verified — 14 November 2026
+
+- **Title:** Can you build a custom cash runway app with ChatGPT or Claude?
+- **Live URL:** https://trialagents.com/apps/custom-cash-runway-app-chatgpt-claude
+- **Release:** [PR #208](https://github.com/tarous89/trialagents-public/pull/208), validated source head `b64b229487f2233dee17c9d2c0ba4970421062e0`, merge `39af173ce6e7acb7ac95709f82eafa926f56b49e` at approximately 16:00:55 UTC / 17:00:55 CET.
+- **Predeploy:** full exact-head run `43612546153` passed validate and seo-container. Artifact `14121051913` matches that head. Desktop 1440px and mobile 390px screenshots visually inspected through all sections: contained scrollable table, readable prompt/checklist, two genuine demo images, captions, final CTA and shared shell. Local article structure/anchors/final CTA and JavaScript syntax passed.
+- **Deployment:** existing automatic GitHub-connected Cloudflare build succeeded, check `132503461736`; production check `132502695138` passed. Early HTTP 404s resolved to 200 within approximately three minutes. No dashboard login, manual deployment or integration changes.
+- **Independent live verification:** complete served article fragment and shared inline CSS match validated source exactly. HTTP 200 HTML; expected H1/title/description/self-canonical, Article/BreadcrumbList schema and date; no noindex; valid local anchors; two genuine images and one final Start with Runway CTA. All 10 checked source/internal/CTA/image/analytics URLs return HTTP 200. Shared header/footer match homepage. /apps, sitemap.xml, llms.txt and llm.xml return 200 and include the article; exactly one canonical sitemap entry; robots.txt permits /apps.
+- **Tracking preserved:** homepage-identical loader `/_snapshot/query-assets/114933b27c521a75f333.js` appears once and returns 200; its referenced client `/_snapshot/query-assets/c251da7b4969f7c85048.js` returns 200. Existing tracking scripts, configuration, events, consent, collectors and attribution unchanged. HTTP retrieval and predeploy browser artifacts used; no synthetic production events sent.
+- **Editorial/evidence boundary:** documented customization workflow with a proposed read-only Funding review view, explicitly not a standard screen or completed implementation. Six-step acceptance procedure preserves inputs and compares unchanged calculated outputs. Genuine browser demos are labeled separately; no fabricated host UI, completed ChatGPT/Claude test, host parity, numerical benchmark or background Claude runner claim. Current catalog, product direction and primary public sources reviewed. Refresh on schema, model, permission or host changes.
+
+This supersedes C7 source and merged-pending checkpoints. **28 published; 19 unfinished**, including owner-deferred A9. **Next eligible: D1, Best Cash Runway Software for Preclinical Biotech Startups**, subject to fresh queue, evidence, duplicate and claim checks. Only C7 was newly published in this run. Search indexing, rankings and assistant citations remain unverified.
