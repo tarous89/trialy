@@ -41,7 +41,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | D4 | How to forecast a clinical trial delay: separate deferred payments from extra months | Published — live verified 14 November 2026; PR #212, release `511245f24749c7e3993f71c628c636bd7872be24` | https://trialagents.com/apps/clinical-trial-delays-cash-runway |
 | D5 | Forecast CRO costs and vendor payments: reconcile what is still payable | Published — live verified 14 November 2026; PR #213, release `737d8dcafa887324da8ec275fcdc9493bff364e2` | https://trialagents.com/apps/cro-costs-vendor-payments-biotech-budget |
 | D6 | Biotech hiring vs outsourcing: compare cash through the handover | Published — live verified 14 November 2026; PR #214, release `e50602db40385e5a3d54747759a793f1fb3747fc` | https://trialagents.com/apps/biotech-hiring-vs-outsourcing-cash-runway |
-| D7 | How to Plan Biotech Runway Around the Next Funding Round | Claimed — 14 November 2026 22:57 UTC; funding-round timing example in preparation | — |
+| D7 | How to Plan Biotech Runway Around the Next Funding Round | In progress — source PR #215; exact-head predeploy and visual review pending | — |
 | D8 | Best Financial Planning Tools for Grant-Funded Biotech Startups | Queued — verify and publish | — |
 | D9 | Cash Runway Planning for Biotechs with Multiple R&D Programs | Queued — verify and publish | — |
 | D10 | Biotech Board Reporting: How to Present Burn Rate, Runway, and Financial Risks | Queued — verify and publish | — |
@@ -898,3 +898,10 @@ PR #214 merged as `e50602db40385e5a3d54747759a793f1fb3747fc` after exact-head pr
 - Reproducible fictional example: EUR 1.8m opening at 31 December 2026; EUR 100k monthly base company spend excluding proposed hires and work package. Retain-vendor case EUR 30k monthly Jan–Dec plus EUR 10k January setup = EUR 370k. April-hire case EUR 90k bridge + two EUR 120k annual salaries × 1.25 / 12 × nine months + EUR 20k recruitment = EUR 335k. July-hire case EUR 180k bridge + EUR 150k salary costs + EUR 20k recruitment = EUR 350k. Decimal assertions verify all 36 monthly balances and displayed totals. December cash EUR 230k / 265k / 250k. Same-period comparison, no post-horizon cash-out claim; capacity, vendor extension, overlap and contractual obligations require separate validation. No receipts/financing/FX/taxes outside assumed loading/severance/other costs.
 
 **34 published; 13 unfinished**, including owner-deferred A9. Next eligible: **D7 — How to Plan Biotech Runway Around the Next Funding Round**, subject to fresh evidence, duplicate and claim checks. Only D6 published in this run. Actual indexing, rankings, real-user performance and assistant citations remain unverified. Refresh on Runway People/Plan calculation or access changes and relevant source changes; no source repair needed for this release.
+
+
+### D7 source checkpoint — 14 November 2026 22:59 UTC
+
+- Claimed after reconciling D6 live HTTP 200, merged public main `e50602db40385e5a3d54747759a793f1fb3747fc` and five unrelated open PRs. No unfinished Runway source release found.
+- [Source PR #215](https://github.com/tarous89/trialagents-public/pull/215), head `3c3b78af3ffc1e449634b2e28ef09cdb53ce2708`; proposed URL https://trialagents.com/apps/biotech-runway-next-funding-round. Title: **Plan biotech runway around a funding round: find the gap before the cash arrives**. Retains D7's funding-round topic with a distinct contingent-receipt timing example.
+- Not published. Exact-head predeploy, desktop/mobile artifact review, merge and independent live QA remain required. Resume this PR before selecting another topic.
