@@ -432,3 +432,6 @@ Runway approved catalog life.cash-runway 2.1.0 blob `3bd4fdc73c5d2c36299b1569b05
 
 
 - **B5 visual-review revision:** initial predeploy `43530729155` passed, but artifact `14087741822` revealed white ProjectionHub logo text on white. Added a dark background without changing the official SVG. PR #199 current exact head `d6be6634357207ef6e2619d6fb256f6dba6c945d` must pass its new predeploy and revised artifact review before merge. Not published; 18 published, 29 unfinished.
+
+
+- **B5 merged; deployment pending/unverified — 14 November 2026, 01:10 CET:** PR #199 merged as `9a808396e45a4a91c558d559a514499af4161149` after revised exact head `d6be6634357207ef6e2619d6fb256f6dba6c945d` passed predeploy `43531535676`. Desktop/mobile artifact `14086789652` inspected; ProjectionHub logo now has readable contrast, genuine screenshots and final CTA render correctly, mobile comparison table retains its own scroll region. Await the existing GitHub-connected automatic build and verify https://trialagents.com/apps/liveplan-alternatives-biotech. Resume this release before another topic if interrupted. No tracking changes or synthetic production events.
