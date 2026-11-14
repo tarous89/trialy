@@ -38,7 +38,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | D1 | Cash runway software for preclinical biotech: fund the next evidence package | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/preclinical-biotech-cash-runway) |
 | D2 | Financial planning for clinical-stage biotechs: explain the monthly cash variance | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/clinical-stage-biotech-financial-planning) |
 | D3 | Budgeting software for biotechs under 20 employees: count each cost once | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/budgeting-software-small-biotech-teams) |
-| D4 | How to Forecast Clinical Trial Delays and Their Impact on Cash Runway | In progress — claimed 14 Nov 2026 19:55 UTC; source preparation | Distinct ongoing-trial extension versus payment deferral; no source PR yet. |
+| D4 | How to forecast a clinical trial delay: separate deferred payments from extra months | Merged — deployment pending/unverified | PR #212; release `511245f24749c7e3993f71c628c636bd7872be24`; 14 Nov 2026 20:05 UTC. |
 | D5 | How to Forecast CRO Costs and Vendor Payments in a Biotech Budget | Queued — verify and publish | — |
 | D6 | Biotech Hiring vs Outsourcing: How to Model the Impact on Cash Runway | Queued — verify and publish | — |
 | D7 | How to Plan Biotech Runway Around the Next Funding Round | Queued — verify and publish | — |
@@ -834,3 +834,8 @@ This supersedes D3 claim/source/merged-pending checkpoints. **31 published; 16 u
 ### D4 source checkpoint — 14 November 2026 19:57 UTC
 
 D4 is claimed in source PR [#212](https://github.com/tarous89/trialagents-public/pull/212), exact head `a3b54d32a5b18eb3b705374fa95808d276beab53`. Title: **How to forecast a clinical trial delay: separate deferred payments from extra months**. Intended URL: https://trialagents.com/apps/clinical-trial-delays-cash-runway. Current approved Runway 2.1 catalog and FDA clinical-research primary source reviewed. Distinct ongoing-trial extension, not the existing D11 whole-program shift. Decimal-checked fictional monthly cash example and two genuine browser-demo screenshots. Await full exact-head predeploy gate and visual artifacts before merge; not published. Resume this PR before choosing another topic. Count unchanged: 31 published, 16 unfinished.
+
+
+### D4 merge checkpoint — 14 November 2026 20:05 UTC
+
+PR #212 merged as `511245f24749c7e3993f71c628c636bd7872be24` at 20:05 UTC after full predeploy run 43634845150 succeeded on exact head `a3b54d32a5b18eb3b705374fa95808d276beab53`. Artifact 14129573439 desktop (1440px) and mobile (390px) inspected throughout: shell, headings, scroll-contained tables, genuine images, captions and final CTA pass. Existing automatic GitHub-to-CDN release now pending; verify https://trialagents.com/apps/clinical-trial-delays-cash-runway before marking Published. Resume this release before drafting another article. No Cloudflare dashboard action is required.
