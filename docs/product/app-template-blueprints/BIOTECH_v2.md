@@ -18,6 +18,7 @@
 | 01 Runway | [apps/RUNWAY.md](apps/RUNWAY.md) | `life.cash-runway` 2.1.0 published (#131) |
 | 02 Programs | [apps/PROGRAMS.md](apps/PROGRAMS.md) | `life.project-oversight` 2.1.0 published (#136), with manual cash forecast and Runway integration |
 | 03 Fundraise | [apps/FUNDRAISE.md](apps/FUNDRAISE.md) | Built in PR #137 (open) |
+| 09 Lab Inventory | [apps/LAB_INVENTORY.md](apps/LAB_INVENTORY.md) | Scope approved (14 Nov); replaces `life.inventory-management` 1.0.2 as 2.0.0; no platform work (one PR) |
 | 07 Partnerships | [apps/PARTNERSHIPS.md](apps/PARTNERSHIPS.md) | Scoped (14 Nov); replaces `life.partnership-tracker` 1.1.1 as 2.0.0; no platform work (one PR) |
 | 06 Investor Updates | [apps/INVESTOR_UPDATES.md](apps/INVESTOR_UPDATES.md) | Scoped (14 Nov); AI-native (assistant drafts on schedule, app approves, sends, tracks); build after Data Room PR A: PR A update extension ([§6](../EXTERNAL_EXCHANGE.md#6-update-extension-for-investor-updates)), PR B app |
 | 08 Data Room | [apps/DATA_ROOM.md](apps/DATA_ROOM.md) | Scope approved (13 Nov); hosted rooms (only) on external exchange + room extension ([§5](../EXTERNAL_EXCHANGE.md#5-room-extension-for-data-room)); build as PR A (platform) then PR B (app); includes Diligence Q&A (12) |
@@ -38,7 +39,7 @@ All apps follow [modular apps and shared data](../MODULAR_APPS_AND_SHARED_DATA.m
 | 6 | BT2-06 | **Investor Updates** | AI-drafted investor updates on a schedule: approve, send to the right contacts, track reads and asks. | CEO, CFO | Visible (+ Cabal for asks) | Core | **new** (split from Investor CRM) |
 | 7 | BT2-07 | **Partnerships** | Out-licensing, in-licensing and collaboration deals by asset: conferences, follow-ups and partner research. | CEO, BD | Inova (domain) + partneringONE practice + HubSpot (mechanics) | Core | replaces `partnership-tracker` (2.0.0) |
 | 8 | BT2-08 | **Data Room** | Prepare, share and track data rooms for financing, licensing, partnering and M&A, with diligence Q&A. | CEO, CFO, BD | ShareVault (domain) + DocSend/Papermark (mechanics) + Ansarada (Q&A) | Core | **new** (includes BT2-12) |
-| 9 | BT2-09 | **Lab Inventory** | Reagents and consumables, requests and reorders. | Lab managers, scientists | Quartzy | Core | adapt `inventory-management` |
+| 9 | BT2-09 | **Lab Inventory** | Reagents, consumables and research materials: stock, expiry, requests, approvals and reorders. | Lab managers, scientists | Quartzy | Core | replaces `inventory-management` (2.0.0) |
 | 10 | BT2-10 | **Landscape** | Competitor assets, trials, readouts and deals in your indications. | CEO, BD, CSO/CMO | Citeline Biomedtracker (alt. Evaluate) | Core · **TrialAgents edge** | **new** (absorbs `literature-radar` intent) |
 | 11 | BT2-11 | **Trial Finance** | Clinical budgets vs invoices and monthly accrual estimates. | CFO, ClinOps | Condor | Extended | **new** |
 | 12 | BT2-12 | ~~Diligence Q&A~~ | **Merged into Data Room (08)** on 13 Nov 2026: Q&A belongs to the room. Slot open. | — | — | — | — |
@@ -149,14 +150,9 @@ Format per app: users and job · reference app · scope (in / out) · records ·
 - **Final scope:** [apps/DATA_ROOM.md](apps/DATA_ROOM.md) (13 Nov 2026). It supersedes the earlier index-only brief: rooms are hosted on the platform external exchange, with per-person links, Non-confidential / Confidential / custom levels, a CDA entry step, view and download tracking, structured Q&A and email notifications. It writes `dataroom.v1` for Fundraise and Partnerships.
 
 ### BT2-09 — Lab Inventory (rank 9, Core)
-*Reagents and consumables, requests and reorders.*  
+*Reagents, consumables and research materials: stock, expiry, requests, approvals and reorders.*  
 *Long name: Lab Inventory & Ordering*
-- **Users / job:** track reagents and consumables, handle requests and reorder before items run out.
-- **Reference app:** Quartzy — lab inventory, requests and reordering.
-- **In scope:** items, locations, lots and expiry, stock levels, requests, approvals, orders, reorder points. **Out:** supplier punch-out, purchasing systems, human biospecimens.
-- **Records:** Item; Stock lot; Location; Request; Order. Shared: Organization (supplier), Program.
-- **Screens:** Stock overview · Inventory · Requests & approvals · Orders · Expiring & low stock.
-- **Assistant angle:** suggest reorders; summarise spend by program for 01.
+- **Final scope:** [apps/LAB_INVENTORY.md](apps/LAB_INVENTORY.md) (14 Nov 2026). Orders are tracked only. Approvals take one approver plus an optional amount threshold for a second. Usage tracking is simple ("Used one" / QR / tell the assistant / quick count). Standard categories come with it and users add their own. The assistant handles receiving from confirmations or label photos, requests from chat and reorder suggestions. There is a weekly digest.
 
 ### BT2-10 — Landscape (rank 10, Core · TrialAgents edge)
 *Competitor assets, trials, readouts and deals in your indications.*  
