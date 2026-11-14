@@ -5,7 +5,7 @@ export const foundationOperationSchema=z.union(genericOptions as [typeof generic
 const schemaOptions=operationSchema.options.filter(option=>['create_type','update_type','migrate_type','create_view','update_view','set_field_context'].includes(option.shape.kind.value));
 export const schemaChangeSchema=z.union(schemaOptions as [typeof schemaOptions[number],typeof schemaOptions[number],...typeof schemaOptions[number][]]);
 export const capabilityNames=['tables.list','entities.read','entities.search','entities.facts','records.read','records.aggregate','views.list','documents.list','documents.text','documents.search','changes.propose','schema.propose','test.echo'] as const;
-export const scopeSchema=z.object({capabilities:z.array(z.enum(capabilityNames)).max(20),typeIds:z.array(id).max(100),documents:z.boolean().default(false)}).strict();
+export const scopeSchema=z.object({capabilities:z.array(z.enum(capabilityNames)).max(20),typeIds:z.array(id).max(100),documents:z.boolean().default(false),appId:id.optional()}).strict().refine(s=>!s.appId||!s.documents&&s.capabilities.every(c=>['tables.list','entities.read','entities.search','entities.facts','records.read','records.aggregate','views.list'].includes(c)),'App-scoped helpers must be read-only without document access');
 export const contractSchema=z.object({type:z.enum(['object','array','string','number','boolean','null','any']),required:z.array(z.string().max(100)).max(100).default([])}).strict();
 const json=z.unknown().refine(v=>{try{return JSON.stringify(v??null).length<=262144;}catch{return false;}},'Input exceeds limit');
 export const TOOL_CATALOG='trialy-capabilities-v1';

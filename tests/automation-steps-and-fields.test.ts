@@ -1,3 +1,11 @@
+import {appFunction,readAppFunctions,validateAppFunctions} from '../src/workspace/app-functions-schema.js';
+import {Foundation} from '../src/foundation/service.js';
+import {runFoundation} from '../src/foundation/worker.js';
+import {dispatchNotificationBatch} from '../src/app-services/notifications.js';
+import {AppTemplates} from '../src/workspace/app-templates.js';
+import {trackerOperation} from '../src/workspace/tracker-template.js';
+import {prepareToolLayout} from '../src/workspace/tool-layout.js';
+import {standardTracker} from '../src/workspace/standard-tracker.js';
 /**
  * E5 (research + email in one automation) and E6 (research access resolved from the fields that exist at run time).
  * Readable fixture: one owner, one workspace, a "Signals" app with a `signals` table (title, detail, status, owner_note).
@@ -27,9 +35,20 @@ const weekly={kind:'calendar',frequency:'weekly',anchor:'2026-11-16',time:'07:00
 const research={objective:'Find new signals for the active scopes.',instructions:'Read the brief, save new signals with sources, then finish with findings.',sourcePolicy:'Named sources first; the web by default.'};
 /** E5: one automation, research then email. E6: every app field of the table except owner_note. */
 const scanDigest=automationRecipe.parse({key:'scan',name:'Signals scan + digest',description:'Weekly research that saves signals, then a digest email.',trigger:weekly,
- research:{...research,readBindings:[{role:'signals.items',fields:'all'}],writeBindings:[{role:'signals.items',fields:'all',exceptFields:['owner_note'],allowCreate:true,allowUpdate:true}]},
- email:{subject:'Signals digest',text:'{{run.summary}}'}});
-const alert=automationRecipe.parse({key:'alert',name:'Signals alert',description:'Email after the scan when it found something relevant.',trigger:{kind:'after',recipe:'scan',when:'meaningful'},email:{subject:'Signals alert',text:'Open Signals to review.'}});
+ research:{...research,briefBinding:'brief',readBindings:[{role:'signals.items',fields:'all'}],writeBindings:[{role:'signals.items',fields:'all',exceptFields:['owner_note'],allowCreate:true,allowUpdate:true}]},
+ email:{summaryBinding:'summary',subject:'Signals digest',text:'{{run.summary}}'}});
+const alert=automationRecipe.parse({key:'alert',name:'Signals alert',description:'Email after the scan when it found something relevant.',trigger:{kind:'after',recipe:'scan',when:'meaningful'},email:{summaryBinding:'summary',subject:'Signals alert',text:'Open Signals to review.'}});
+
+const functions=[appFunction.parse({name:'brief',purpose:'Prepare the research brief from current app data.',source:"const data=tools.call('records.read',{typeId:appRoles['signals.items']});return {context:JSON.stringify(data.rows)};",inputContract:{type:'object'},outputContract:{type:'object',required:['context']},scope:{capabilities:['records.read'],roles:['signals.items'],documents:false}}),appFunction.parse({name:'summary',purpose:'Summarize saved signals; skip empty updates.',source:"const data=tools.call('records.read',{typeId:appRoles['signals.items']});return {nonEmpty:data.rows.length>0,text:'Saved '+data.rows.length+' signals',subject:'App-written digest'};",inputContract:{type:'object'},outputContract:{type:'object',required:['nonEmpty','text']},scope:{capabilities:['records.read'],roles:['signals.items'],documents:false}})];
+test('E7 declarations reject unsafe or unbound code and expose metadata without source',()=>{
+ const value={functions,recommendedAutomations:[scanDigest,alert]};validateAppFunctions(value,['signals.items']);
+ for(const bad of [{...functions[0],scope:{...functions[0].scope,capabilities:['changes.propose']}},{...functions[0],scope:{...functions[0].scope,documents:true}},{...functions[0],scope:{...functions[0].scope,roles:['unknown']}}])assert.throws(()=>validateAppFunctions({functions:[bad]},['signals.items']));
+ assert.throws(()=>validateAppFunctions({functions:[functions[0],functions[0]]},['signals.items']),/duplicate/);
+ assert.throws(()=>validateAppFunctions({...value,functions:[]},['signals.items']),/Missing app function/);
+ assert.equal(readAppFunctions({functions:[{name:'broken'},functions[0]]}).functions.length,1);
+ // Custom apps can reference reviewed existing execution bindings without redeclaring their source.
+ validateAppFunctions({recommendedAutomations:[scanDigest,alert]},[],['brief','summary']);
+});
 
 test('E5/E6 declarations: combined steps and run-time fields validate; misuse is rejected',()=>{
  validateRecipeDeclarations({recommendedAutomations:[scanDigest,alert]});
@@ -61,7 +80,7 @@ test('E5 and E6 end to end on restricted roles',async t=>{
   const ai:Actor={...a,origin:'ai',connectionFamily:family,clientId:client};
 
   const fields=[{key:'title',name:'Title',kind:'text'},{key:'detail',name:'Detail',kind:'text'},{key:'status',name:'Status',kind:'text'},{key:'owner_note',name:'Owner note',kind:'text'}];
-  const payload=appTemplateEntry.parse({id:'test.signals',version:'1.0.0',name:'Signals',description:'Synthetic fixture',tags:[],whenToUse:'Tests',whenNotToUse:'Production',instructions:'Use the supplied bindings.',engine:'frontend-js',options:{tableMap:{type:'string',description:'Tables'}},source:"return {html:'<main><h1>Signals</h1></main>'};",recommendedAutomations:[scanDigest,alert]});
+  const payload=appTemplateEntry.parse({id:'test.signals',version:'1.0.0',name:'Signals',description:'Synthetic fixture',tags:[],whenToUse:'Tests',whenNotToUse:'Production',instructions:'Use the supplied bindings.',engine:'frontend-js',options:{tableMap:{type:'string',description:'Tables'}},source:"return {html:'<main><h1>Signals</h1></main>'};",functions,recommendedAutomations:[scanDigest,alert]});
   const digest=recipeDigest(payload);
   await pg.query("INSERT INTO app_template_catalog(template_id,version,status,digest,payload,install_schema) VALUES($1,$2,'approved',$3,$4,$5)",[payload.id,payload.version,digest,JSON.stringify(payload),JSON.stringify({'signals.items':{name:'Signals',fields,logicalFields:Object.fromEntries(fields.map(x=>[x.key,x.key]))}})]);
   const target={install:{templateId:payload.id,version:payload.version,digest,name:'Signals',requestKey:randomUUID(),createNew:true}},step=await dataAccessStep(f,a,w,target);
@@ -72,6 +91,9 @@ test('E5 and E6 end to end on restricted roles',async t=>{
   const setups=(await pg.query<any>('SELECT * FROM automation_recipe_setups WHERE app_id=$1',[installed.appId])).rows,scan=setups.find(r=>r.recipe_key==='scan'),alertSetup=setups.find(r=>r.recipe_key==='alert');
   assert.ok(setups.every(r=>r.status==='active'),JSON.stringify(setups.map(r=>[r.recipe_key,r.status,r.diagnostic])));
   const monitorId=scan.definition_id,stepId=scan.follow_up_id;
+  const installedApp=(await f.readComponent(a,w,installed.appId)).component;assert.equal(installedApp.execution.length,2);assert.ok(installedApp.execution.every((b:any)=>!b.grantId));
+  const catalog=new AppTemplates(undefined,db),metadata=await catalog.read({templateId:payload.id});assert.equal(metadata.functions[0].source,undefined);assert.ok((await catalog.read({templateId:payload.id,includeFunctionSource:true})).functions[0].source);
+  assert.equal(step.functions.length,2);
 
   await t.test('E5: one setup creates the research and its bound email step',async()=>{
    assert.equal(scan.definition_kind,'research');assert.ok(stepId,'the email step is recorded on the same setup');
@@ -108,8 +130,26 @@ test('E5 and E6 end to end on restricted roles',async t=>{
    const grant=(await monitoring.read(ai,w,monitorId)).config.writeScopes[0];
    const write=(data:Record<string,unknown>)=>withActor(ai,()=>f.maintain(ai,w,{scopeId:grant.scopeId,expectedScopeVersion:grant.version,requestKey:randomUUID(),sourceLabel:'https://example.org/signal',interpretation:'Synthetic signal',changes:[{kind:'create_record',typeId,data}]},undefined,false,claimed.runId));
    const finish=(summary:string)=>withActor(ai,()=>automation.finish(ai,w,{occurrenceId:occurrence,claimToken:claimed.claimToken,result:{status:'completed',summary,findings:[{title:'Signal',detail:summary,relevant:true}]}}));
+   assert.equal((await withActor(ai,()=>monitoring.brief(ai,w,claimed.runId))).state,'preparing');await worker(()=>runFoundation(db));const brief=await withActor(ai,()=>monitoring.brief(ai,w,claimed.runId));assert.equal(brief.state,'ready',JSON.stringify(brief));assert.ok(typeof brief.context==='string');
    return {write,finish};
   };
+
+  await t.test('E7: summary delivery uses app code and empty results create no delivery',async()=>{
+   const actions=new AppActions(db),binding=installedApp.execution.find((b:any)=>b.name==='summary');
+   const p=await actions.prepare(a,w,{config:{name:'E7 manual summary',appId:installed.appId,appVersion:0,trigger:{kind:'manual'},steps:[{id:'email',kind:'email',to:['owner@example.invalid'],subject:'Fallback',text:'Fallback prose',summary:{binding:binding.name,revisionId:binding.revisionId}}],expiresAt:new Date(Date.now()+86400000).toISOString()}}),action=await actions.confirm(a,w,p.id,p.digest);
+   const deliver=async()=>{const batch=await actions.runNow(a,w,action.id,randomUUID());const tick=async()=>{await pg.query('UPDATE app_notification_batches SET not_before=now() WHERE id=$1',[batch.id]);await worker(()=>dispatchNotificationBatch(db));};await tick();await worker(()=>runFoundation(db));await tick();return (await pg.query<any>('SELECT * FROM app_notification_batches WHERE id=$1',[batch.id])).rows[0];};
+   const empty=await deliver();assert.equal(empty.status,'cancelled');assert.equal(empty.diagnostic,'empty_summary');assert.equal((await pg.query('SELECT id FROM app_service_jobs WHERE app_id=$1',[installed.appId])).rows.length,0);
+   await save({kind:'create_record',typeId,data:{title:'Existing signal'}});
+   await deliver();const job=(await pg.query<any>('SELECT payload FROM app_service_jobs WHERE app_id=$1',[installed.appId])).rows[0];assert.equal(job.payload.message.text,'Saved 1 signals');assert.equal(job.payload.message.subject,'App-written digest');
+   await pg.query('UPDATE app_actions SET paused=true WHERE id=$1',[action.id]);
+  });
+  await t.test('E7: installation retries preserve revisions; second installations get fresh helpers',async()=>{
+   const next={install:{...target.install,name:'Second Signals',requestKey:randomUUID()}},step2=await dataAccessStep(f,a,w,next),input={...next,connections:{},access:[],stepDigest:step2.digest,automations:[]};
+   const second=await confirmDataAccess(f,a,w,input),c=(await f.readComponent(a,w,second.appId)).component;
+   assert.equal(c.execution.length,2);assert.ok(c.execution.every((b:any)=>!installedApp.execution.some((x:any)=>x.revisionId===b.revisionId)));assert.deepEqual(await confirmDataAccess(f,a,w,input),second);
+   const foundation=new Foundation(db);await assert.rejects(foundation.invoke(a,w,{revisionId:c.execution[0].revisionId,input:{}},randomUUID()),/exact app binding/);
+   await assert.rejects(foundation.invoke(a,w,{revisionId:c.execution[0].revisionId,input:{},componentContext:{id:installed.appId,version:0,binding:'brief'}},randomUUID()),/differs/);
+  });
 
   await t.test('E6: the scan writes only granted fields and never the excluded one',async()=>{
    const run=await claimRun();
@@ -119,7 +159,7 @@ test('E5 and E6 end to end on restricted roles',async t=>{
   });
 
   await t.test('E5: a completed run releases its email step exactly once',async()=>{
-   for(let i=0;i<2;i++){await pg.query('UPDATE app_actions SET next_at=now() WHERE id=$1',[stepId]);await worker(()=>dispatchAppActions(db));}
+   for(let i=0;i<2;i++){await pg.query("UPDATE app_actions SET next_at=now()-interval '1 day' WHERE id=$1",[stepId]);await worker(()=>dispatchAppActions(db));}
    assert.equal((await pg.query('SELECT * FROM app_notification_occurrences WHERE action_id=$1',[stepId])).rows.length,1);
   });
 
@@ -152,8 +192,47 @@ test('E5 and E6 end to end on restricted roles',async t=>{
 
   await t.test('E5: copying the app keeps the email step grouped and switched off',async()=>{
    const c=(await f.readComponent(a,w,installed.appId)).component,p=await f.preview(a,w,{kind:'copy_component',sourceComponentId:c.id,expectedVersion:c.version,projectId:c.project_id,name:'Signals copy',copyAutomations:true}),copy=await f.confirm(a,w,p.id,p.digest);
+   const cc=(await f.readComponent(a,w,copy.id)).component;assert.equal(cc.execution.length,2);assert.ok(cc.execution.every((b:any)=>!c.execution.some((x:any)=>x.revisionId===b.revisionId)));const copiedConfig=(await pg.query<any>('SELECT config FROM app_monitors WHERE app_id=$1',[copy.id])).rows[0].config;assert.equal(copiedConfig.brief.revisionId,cc.execution.find((b:any)=>b.name==='brief').revisionId);
    const monitor=(await pg.query<any>('SELECT id FROM app_monitors WHERE app_id=$1',[copy.id])).rows[0],steps=(await pg.query<any>('SELECT paused,follow_up_of FROM app_actions WHERE app_id=$1 AND follow_up_of IS NOT NULL',[copy.id])).rows;
    assert.equal(steps.length,1);assert.equal(steps[0].follow_up_of,monitor.id);assert.equal(steps[0].paused,true);
+  });
+  await t.test('E7: helper reads stay inside the app fields on a shared table and current Access denials apply',async()=>{
+   const type=(await pg.query<any>('SELECT * FROM entity_types WHERE id=$1',[typeId])).rows[0];await save({kind:'update_type',typeId,expectedVersion:type.version,name:type.name,fields:[...type.fields,{key:'private_note',name:'Private note',kind:'text'}]});
+   await save({kind:'create_record',typeId,data:{title:'Visible',private_note:'MUST_NOT_LEAK'}});
+   const c=(await f.readComponent(a,w,installed.appId)).component,foundation=new Foundation(db),args={revisionId:c.execution[0].revisionId,componentContext:{id:c.id,version:c.version,binding:c.execution[0].name},input:{}};
+   const run=await foundation.invoke(a,w,args,randomUUID());await worker(()=>runFoundation(db));const done=await foundation.run(a,w,run.id);assert.equal(done.status,'succeeded',JSON.stringify(done));assert.ok(!JSON.stringify(done.result).includes('MUST_NOT_LEAK'));
+   await pg.query('UPDATE workspaces SET permission_rules=$2 WHERE id=$1',[w,JSON.stringify([{subject:'chatgpt',kind:'tool',resourceId:c.id,read:'deny',write:'deny'}])]);await assert.rejects(foundation.invoke(a,w,args,randomUUID()));await pg.query("UPDATE workspaces SET permission_rules='[]' WHERE id=$1",[w]);
+  });
+  await t.test('E7: tracker layout and field additions preserve safe helper bindings',async()=>{
+   const built=await trackerOperation(f,a,w,{name:'Helper tracker',description:'',scope:'workspace',tabs:[{name:'Signals',typeId,columns:[{field:'title'}]}]});
+   Object.assign(built.content.manifest,{automationRoles:{'signals.items':typeId},functions});
+   const draft=await f.preview(a,w,built),saved=await f.confirm(a,w,draft.id,draft.digest);let c=(await f.readComponent(a,w,saved.id)).component;
+   const original=c.execution,config=standardTracker(c.source)!.config;
+   const tabs=config.tabs.map((tab:any,i:number)=>({originalIndex:i,typeId:tab.typeId,name:tab.name,visible:true,columns:tab.columns.map((col:any)=>({fieldId:col.fieldId,field:col.field,label:col.label,visible:col.visible!==false}))}));
+   const layout=await prepareToolLayout(f,a,w,{componentId:c.id,expectedVersion:c.version,name:'Renamed helper tracker',description:'',tabs});await f.confirm(a,w,layout.id,layout.digest);c=(await f.readComponent(a,w,c.id)).component;assert.deepEqual(c.execution,original);
+   const type=(await pg.query<any>('SELECT version FROM entity_types WHERE id=$1',[typeId])).rows[0];
+   const extended=await prepareToolLayout(f,a,w,{componentId:c.id,expectedVersion:c.version,name:c.name,description:'',tabs:[{...tabs[0],columns:[...tabs[0].columns,{field:'layout_extra',label:'Extra',visible:true}]}],extendTables:[{typeId,expectedVersion:type.version,newFields:[{key:'layout_extra',name:'Extra',kind:'text'}]}]});await f.confirm(a,w,extended.id,extended.digest);c=(await f.readComponent(a,w,c.id)).component;assert.deepEqual(c.execution,original);assert.ok(c.bindings[0].fields.includes('layout_extra'));
+  });
+  await t.test('E7: corrupt optional declarations and disabled assistants leave the app installable',async()=>{
+   const broken={...payload,id:'test.corrupt-functions',functions:[{name:'brief',scope:{documents:true}}]},hash=recipeDigest(broken);await pg.query("INSERT INTO app_template_catalog(template_id,version,status,digest,payload,install_schema) SELECT $1,version,status,$2,$3,install_schema FROM app_template_catalog WHERE template_id=$4",[broken.id,hash,JSON.stringify(broken),payload.id]);
+   assert.ok((await catalog.list()).templates.some(t=>t.id===broken.id));await s.setAi(a,w,false);
+   for(const [templateId,digest] of [[broken.id,hash],[payload.id,recipeDigest(payload)]]){const request={install:{templateId,version:payload.version,digest,name:'Inert code',requestKey:randomUUID(),createNew:true}},step=await dataAccessStep(f,a,w,request);const saved=await confirmDataAccess(f,a,w,{...request,connections:{},access:[],stepDigest:step.digest,automations:[]});const c=(await f.readComponent(a,w,saved.appId)).component;assert.equal(c.execution.length,templateId===broken.id?0:2);}
+   await s.setAi(a,w,true);
+  });
+  await t.test('E7: a helper persistence failure rolls back the core installation',async()=>{
+   const counts=async()=>Promise.all(['workspace_components','entity_types','foundation_functions'].map(async table=>(await pg.query<any>('SELECT count(*) AS n FROM '+table)).rows[0].n));const before=await counts();
+   await pg.exec("CREATE FUNCTION test_helper_failure() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'synthetic helper persistence failure'; END $$; CREATE TRIGGER test_helper_failure BEFORE INSERT ON foundation_revisions FOR EACH ROW EXECUTE FUNCTION test_helper_failure();");
+   try{const request={install:{...target.install,name:'Must roll back',requestKey:randomUUID()}},step=await dataAccessStep(f,a,w,request);await assert.rejects(confirmDataAccess(f,a,w,{...request,connections:{},access:[],stepDigest:step.digest,automations:[]}),/synthetic helper persistence failure/);assert.deepEqual(await counts(),before);}finally{await pg.exec('DROP TRIGGER test_helper_failure ON foundation_revisions; DROP FUNCTION test_helper_failure();');}
+  });
+  await t.test('E7: plain app saves and source restores retain helpers; removal retires brief and summary dependants',async()=>{
+   let c=(await f.readComponent(a,w,installed.appId)).component;
+   const p=await f.preview(a,w,{kind:'save_component',componentId:c.id,expectedVersion:c.version,projectId:c.project_id,content:{name:'Renamed Signals',format:c.format,source:c.source,bindings:c.bindings}});await f.confirm(a,w,p.id,p.digest);
+   c=(await f.readComponent(a,w,c.id)).component;assert.deepEqual(c.execution,installedApp.execution);
+   const r=await f.preview(a,w,{kind:'restore_component',componentId:c.id,expectedVersion:c.version,revisionVersion:0});await f.confirm(a,w,r.id,r.digest);
+   c=(await f.readComponent(a,w,c.id)).component;assert.deepEqual(c.execution,installedApp.execution);
+   const q=await f.preview(a,w,{kind:'save_component',componentId:c.id,expectedVersion:c.version,projectId:c.project_id,content:{name:c.name,format:c.format,source:c.source,bindings:c.bindings,manifest:c.manifest,execution:[]}});await f.confirm(a,w,q.id,q.digest);
+   assert.ok((await pg.query<any>('SELECT deleted_at FROM app_monitors WHERE id=$1',[monitorId])).rows[0].deleted_at);
+   assert.ok((await pg.query<any>('SELECT deleted_at FROM app_actions WHERE id=$1',[alertSetup.definition_id])).rows[0].deleted_at);const removed=(await f.readComponent(a,w,c.id)).component;const edit=await f.preview(a,w,{kind:'save_component',componentId:removed.id,expectedVersion:removed.version,projectId:removed.project_id,content:{name:'Still removed',format:removed.format,source:removed.source,bindings:removed.bindings}});await f.confirm(a,w,edit.id,edit.digest);assert.deepEqual((await f.readComponent(a,w,c.id)).component.execution,[]);
   });
  });}finally{delete process.env.APP_AUTOMATION_RECIPES_ENABLED;await pg.close();}
 });
