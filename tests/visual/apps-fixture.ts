@@ -17,6 +17,9 @@ import {connectorVault} from '../../src/connectors/secrets.js';
 import {randomBytes} from 'node:crypto';
 import {appUrl} from '../../src/shared/app-route.js';
 import express from 'express';
+import {prepareExchangeEmailBatch} from '../../src/domain/external-exchange.js';
+import {appPublicUrl} from '../../src/shared/public-url.js';
+import {UPDATE_TITLE,SERIES,updateContent,png} from '../fixtures/exchange-update.js';
 import path from 'node:path';
 export async function addAppsFixture(app:Express,db:Database,actor:Actor,w:any){
  await syncTemplateCatalog(db);
@@ -74,5 +77,16 @@ export async function addAppsFixture(app:Express,db:Database,actor:Actor,w:any){
  const teaserVersion=await roomDoc('Atlas teaser.pdf','application/pdf','%PDF-1.4 fixture teaser'),boardVersion=await roomDoc('Board summary.pdf','application/pdf','%PDF-1.4 fixture board summary');
  const roomPreview=await f.preview(actor,w.id,{kind:'create_exchange_group',config:{appId:saved.id,kind:'room',title:'Project Atlas data room',summary:'Welcome. The index lists everything shared with you; ask questions in Q&A.',verifyEmail:false,levels:[{key:'public',name:'Non-confidential',entry:'none'},{key:'board',name:'Board materials',entry:'click_through',text:'Board materials are strictly confidential.'}],documents:[{versionId:teaserVersion,section:{number:'1',title:'Overview'},level:'public'},{versionId:rfpVersion,title:'Process letter',section:{number:'2.1',title:'Process'},level:'public',viewOnly:true},{versionId:boardVersion,section:{number:'9',title:'Board'},level:'board'}]}}),exchangeRoom=(await f.confirm(actor,w.id,roomPreview.id,roomPreview.digest)).group;
  app.get('/fixture/room',async(_req,res)=>{const invitePreview=await f.preview(actor,w.id,{kind:'invite_exchange',groupId:exchangeRoom.id,recipients:[{emails:['pia@pharma.invalid'],name:'Pia Example',company:'Pharma Partner'}],levels:['public','board']}),invited=(await f.confirm(actor,w.id,invitePreview.id,invitePreview.digest)).exchanges[0];res.json({token:invited.url.split('#')[1]});});
+ // Update room (docs/product/EXTERNAL_EXCHANGE.md §6): content with a chart and asks, in a series whose earlier update was sent to the same person.
+ // The chart is an AI-readable platform document like every other fixture document; the content is the readable fixture in tests/fixtures/exchange-update.ts.
+ const chartPreview=await s.previewFile(actor,w.id,{filename:'Cash chart.png',mime:'image/png',bytes:png(1104,460),ai:true}),chartVersion=(await s.commit(actor,chartPreview.id,chartPreview.digest)).objects[0].versionId as string;
+ const updateGroup=async(title:string,appRef:string,content:any)=>{const p=await f.preview(actor,w.id,{kind:'create_exchange_group',config:{appId:saved.id,kind:'room',title,verifyEmail:false,levels:[{key:'board',name:'Board',entry:'none'}],content,series:SERIES.key,seriesName:SERIES.name,appRef}});return (await f.confirm(actor,w.id,p.id,p.digest)).group;};
+ const september=await updateGroup('Acme Bio — September 2026 board update','update:sep',{html:'<h1>September 2026 board update</h1><p>Enrolment reached 55%.</p>'});
+ const october=await updateGroup(UPDATE_TITLE,'update:oct',updateContent(chartVersion));
+ let updatePeople=0;
+ const invite=async(groupId:string,email:string)=>{const p=await f.preview(actor,w.id,{kind:'invite_exchange',groupId,recipients:[{emails:[email],name:'Pia Example',company:'Pharma Ventures'}]});return (await f.confirm(actor,w.id,p.id,p.digest)).exchanges[0];};
+ const sendUpdate=async(groupId:string,exchangeId:string)=>{const b=await prepareExchangeEmailBatch(db,actor,w.id,{groupId,emailType:'update',exchangeIds:[exchangeId]});const p=await f.preview(actor,w.id,{kind:'send_exchange_email',batchId:b.batchId,digest:b.digest});await f.confirm(actor,w.id,p.id,p.digest);return b.recipients[0];};
+ app.get('/fixture/update',async(_req,res)=>{const email=`pia+${++updatePeople}@pharma.invalid`;const earlier=await invite(september.id,email);await sendUpdate(september.id,earlier.id);const current=await invite(october.id,email);const mail=await sendUpdate(october.id,current.id);
+  res.json({token:current.url.split('#')[1],earlier:earlier.url.split('#')[1],email:{subject:mail.subject,html:mail.html,text:mail.text,clientChecks:mail.clientChecks},origin:new URL(appPublicUrl()).origin});});
  app.use(errors);
 }

@@ -99,3 +99,8 @@ GRANT SELECT,INSERT ON exchange_submissions,exchange_file_acceptances,exchange_a
 -- Exchange rooms (migration 065): visits and viewer sessions accumulate; questions, answers and tracked-table bindings are append-only.
 GRANT SELECT,INSERT,UPDATE ON exchange_visits,exchange_views,exchange_tracked_records,exchange_tracking_state TO trialy_runtime;
 GRANT SELECT,INSERT ON exchange_questions,exchange_answers,exchange_tracked_tables TO trialy_runtime;
+
+-- Exchange updates (migration 068): "I can help" responses are append-only; unsubscribes are recorded only
+-- through trialy_security.exchange_unsubscribe, so the runtime role reads them and never writes them directly.
+GRANT SELECT,INSERT ON exchange_ask_responses TO trialy_runtime;
+GRANT SELECT ON exchange_unsubscribes TO trialy_runtime;
