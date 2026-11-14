@@ -1090,9 +1090,11 @@
     "options": [
      "financing",
      "licensing",
+     "partnering",
      "m_and_a",
      "other"
-    ]
+    ],
+    "description": "Readers treat unknown values as other. partnering added 13 Nov 2026 (additive)."
    },
    {
     "key": "organization_id",

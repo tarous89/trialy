@@ -123,7 +123,7 @@ test('integration test, Fundraise first: manual engagement and milestones, then 
   const room=await x.dataRoom(w);
   await x.save(w,room['dataroom.access_grants'],{room_id:'r1',room_name:'Seed 2026 room (tracked)',room_purpose:'financing',organization_id:northlake,granted_on:'2026-11-03',status:'active',source:'tracked'});
   const providerGrant=(await x.pg.query<any>("SELECT id FROM records WHERE type_id=$1",[room['dataroom.access_grants']])).rows[0].id;
-  for(const d of ['2026-11-06','2026-11-08','2026-11-10'])await x.save(w,room['dataroom.engagement'],{grant_id:providerGrant,organization_id:northlake,document_ref:'doc-'+d,document_title:'Tracked doc '+d,first_viewed_on:d,last_viewed_on:d,view_count:1,source:'tracked',as_of:'2026-11-10'});
+  for(const d of [5,3,1].map(n=>new Date(Date.now()-n*86400000).toISOString().slice(0,10)))await x.save(w,room['dataroom.engagement'],{grant_id:providerGrant,organization_id:northlake,document_ref:'doc-'+d,document_title:'Tracked doc '+d,first_viewed_on:d,last_viewed_on:d,view_count:1,source:'tracked',as_of:d});
   o=await x.offers(w,id);assert.equal(o['dataroom.access_grants'].offer,'connect');assert.equal(o['dataroom.engagement'].offer,'connect');assert.equal(o['dataroom.access_grants'].provider,'Data Room');
   eng=(await x.open(w,id,{section:'engagement'})).html;
   assert.match(eng,/Data Room is in your workspace\. <button type="button" class="fr-linkbtn" data-trialy-integration="connect dataroom\.access_grants">Use its data<\/button>/);
