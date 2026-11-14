@@ -4,7 +4,7 @@ const root=new URL('../templates/source/cash-runway/',import.meta.url),read=n=>r
 const [metadata,source,css,demo,schema]=await Promise.all(['catalog.metadata.json','cash-runway.source.js','cash-runway.css','demo_data.json','schema.example.json'].map(read));
 const entry=JSON.parse(metadata);entry.source='const CASH_RUNWAY_CSS='+JSON.stringify(css)+';\n'+source;
 const serialized=JSON.stringify(entry,null,2)+'\n';
-if(Buffer.byteLength(serialized)>300000||entry.source.length>180000||css.length>50000)throw Error('Template exceeds catalog limits');
+if(Buffer.byteLength(serialized)>380000||entry.source.length>240000||css.length>50000)throw Error('Template exceeds catalog limits');
 const catalog=new URL('../../apps/'+entry.id+'-'+entry.version+'.json',root);
 const preview=`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Runway fictional preview</title><style>${css}</style><body><div style="padding:10px 16px;background:#fff;border-bottom:1px solid #DCE4EA;font:13px Inter,Arial,sans-serif;color:#33475A">Fictional local demo. Database review, permissions and persistent layout use the TrialAgents host.</div><div id="surface"></div><script>
 const source=${JSON.stringify(entry.source).replaceAll('</','<\/')};

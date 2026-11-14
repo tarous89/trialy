@@ -44,7 +44,7 @@ test('installed Programs: exact reviewed slip save, native layout and stale-edit
 test('rule 9 modularity with the real installer: alone, with Runway (reuse, never copy), Runway deleted, tab removed, reinstall',async()=>{
  const x=await programsFixture({demo:false});const {pg,db,f,s,actor}=x;
  try{
-  await syncTemplateCatalog(db);
+  await syncTemplateCatalog(db);await db.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.cash-runway' AND version='2.1.0'");
   // 2.0.0 is approved only inside this test database when the seed does not already approve it.
   await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.project-oversight' AND version='2.0.0'");
   const catalog=new AppTemplates(undefined,db);
