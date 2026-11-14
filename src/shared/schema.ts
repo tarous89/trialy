@@ -70,8 +70,10 @@ export const ASSISTANT_NAMES:Record<Assistant,string> = {chatgpt:'ChatGPT',claud
 export type Actor = {userId:string; origin:'human'|'ai'|'worker'; actionConfirmed?:boolean; accessToolId?:string; connectionFamily?:string; clientId?:string; assistant?:Assistant};
 export const assistantOf = (a:{assistant?:Assistant}):Assistant => a.assistant ?? 'chatgpt';
 export const isAssistant = (v:unknown):v is Assistant => v==='chatgpt'||v==='claude';
-export class AppError extends Error { constructor(public status:number, public code:string, message:string) {super(message);} }
+export class AppError extends Error { details?:Record<string,unknown>; constructor(public status:number, public code:string, message:string) {super(message);} }
 export function fail(status:number, code:string, message:string):never {throw new AppError(status,code,message);}
+/** fail() with structured details for callers (assistants get them in structuredContent.error.details). */
+export function failWith(status:number, code:string, message:string, details:Record<string,unknown>):never {const e=new AppError(status,code,message);e.details=details;throw e;}
 
 
 

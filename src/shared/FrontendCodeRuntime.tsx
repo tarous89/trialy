@@ -197,6 +197,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
    if(saveReceipt.current?.saved&&!['trialy.rendered','trialy.resize'].includes(e.data.kind))return;
    if(e.data.kind==='trialy.link'&&typeof e.data.href==='string')navigationRef.current?.navigate(e.data.href);
    else if(e.data.kind==='trialy.integration'&&typeof e.data.role==='string'&&current.current?.id)setIntegration({role:e.data.role});
+   else if(e.data.kind==='trialy.open'&&typeof e.data.role==='string'&&current.current?.id){const recordId=typeof e.data.recordId==='string'?e.data.recordId:undefined;void call('resolve_app_open',{appId:current.current.id,role:e.data.role.slice(0,81),...(recordId?{recordId}:{})}).then((r:any)=>{if(r?.kind==='app'&&navigationRef.current)navigationRef.current.navigate(r.href);else if(r?.href)window.location.assign(r.href);}).catch((err:any)=>setError((err as Error).message));}
    else if(e.data.kind==='trialy.document'&&e.data.action==='upload'&&current.current?.id&&!busyRef.current)setUpload({context:String(e.data.context??'').slice(0,200)});
    else if(e.data.kind==='trialy.dirty'){if(e.data.dirty)navigationRef.current?.setDirty(true);setCustomDirty(!!e.data.dirty);}
    else if(e.data.kind==='trialy.approve'&&output.current?.tracker&&['bound-batch','tracker:create','save-layout'].includes(e.data.action))approvedAction.current=e.data.action;
