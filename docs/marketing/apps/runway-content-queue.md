@@ -33,7 +33,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | C3 | How to Manage Biotech Cash Runway Using ChatGPT | Already covered / published | [Live article](https://trialagents.com/apps/manage-biotech-cash-runway-chatgpt) |
 | C4 | How to Use Claude for Biotech Cash Flow Forecasting | Published — live verified 14 November 2026; PR #205, release `0bb286174ad6c1a925fa427fb115de7640ef79f4` | https://trialagents.com/apps/biotech-cash-flow-forecasting-claude |
 | C5 | AI CFO vs AI-native financial planning app: what does a biotech startup need? | Published — live verified 14 November 2026; PR #206, release `3a7efd4acfc5578784bccd3c21e344dcbfa13c67` | https://trialagents.com/apps/ai-cfo-vs-financial-planning-app-biotech |
-| C6 | Best MCP-Connected Financial Planning Software for Biotech Teams | Queued — verify and publish | — |
+| C6 | MCP-connected financial planning software for biotech: check scope before writes | In progress — evidence and source preparation | — |
 | C7 | Can You Build a Custom Cash Runway App with ChatGPT or Claude? | Queued — verify and publish | — |
 | D1 | Best Cash Runway Software for Preclinical Biotech Startups | Queued — verify and publish | — |
 | D2 | Best Financial Planning Software for Clinical-Stage Biotechs | Queued — verify and publish | — |
@@ -660,3 +660,8 @@ PR #206 merged as `3a7efd4acfc5578784bccd3c21e344dcbfa13c67` at approximately 07
 - **Editorial/evidence:** distinct finance-responsibility decision framework, documented host boundaries and six-step hiring review. Python Decimal verified the fictional EUR 12k monthly people cost and displayed closing balances. Current primary cfo.ai and Claude sources linked inline. Genuine browser media is clearly separate from the exercise; no completed host/vendor test claimed. Refresh on vendor/host/catalog changes.
 
 This supersedes C5 source and merged-pending checkpoints. **26 published; 21 unfinished**, including owner-deferred A9. **Next eligible: C6, Best MCP-Connected Financial Planning Software for Biotech Teams**, subject to fresh evidence, duplicate and claim checks. Only C5 was newly published in this run. Search indexing, rankings and assistant citations remain unverified.
+
+
+### C6 execution claim — 14 November 2026
+
+C5 returns HTTP 200; public main is `3a7efd4acfc5578784bccd3c21e344dcbfa13c67`; no unfinished Runway source PR found. Claim C6 on `content/runway-c6-mcp-scope-20261114`. Retitle to MCP-connected financial planning software for biotech: check scope before writes, avoiding an unsupported best ranking. Distinct from C1/C2 host selection and C5 finance responsibilities: evaluate workspace/company scope, read/write authorization, retry safety and recovery before enabling finance actions. Current vendor/protocol evidence required; no live host acceptance test claimed. Totals remain 26 published, 21 unfinished.
