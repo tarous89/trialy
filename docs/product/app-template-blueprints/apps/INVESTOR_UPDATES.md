@@ -13,6 +13,7 @@
 - **Investor list.** Investors are firms (shared `organizations`) with one or more contacts each (shared `people`).
 - **Scheduled updates.** A scheduled update bundles a template, its data sources, its contacts and its frequency. On schedule an automation asks the assistant to draft the next update.
 - **Email built in.** Updates are sent from `no-reply@trialagents.com` as "<Organization> at TrialAgents" or "<First name> at TrialAgents" (editable). Every send is confirmed by a person. The full update goes in the email body, plus a personal "view online" link. Reading is measured on the online page; there are no hidden open pixels.
+- **Template toggles:** the **"I can help" button** and **reminders** (not-read reminders to contacts, cadence reminders to the owner) are template settings that the user turns on or off. Every scheduled update using the template inherits them.
 - **Defaults:** cadence is monthly for the board and lead investors and quarterly for all shareholders. Automatic drafts are on once a scheduled update is saved. The cap table is not in v1: the assistant may quote ownership only from a document the user provides.
 
 ---
@@ -104,8 +105,8 @@ Custom `frontend-js` app on the Vivid kit, theme **forest** (deal pack), declare
 | 2 | **Investors** (`investors`) | (1) Investor firms (shared organizations, `org_type` investor) with type, relationship (lead / board / shareholder / observer / advisor), status (active / exited). (2) Contacts per firm (shared people) with role, email, which updates they receive, and "primary". (3) Add a firm and its contacts manually, or have the assistant propose them from Fundraise committed investors or documents (reviewed). (4) Per contact: updates received, read history, ask responses. |
 | 3 | **Scheduled updates** (`schedules`) | (1) List of scheduled updates, e.g. "Board – monthly" or "Shareholders – quarterly", with next draft and send dates. (2) Editor: **template**, **data sources** (apps, documents, notes, exclusions), **contacts** (firms, contacts or relationship groups), **frequency and timing** (monthly / quarterly / half-yearly / yearly / one-off; draft on business day N; target send date; time zone), approvers, automatic drafts on or off. (3) "Draft now". (4) Pause, resume, archive. |
 | 4 | **Review & send** (`review`) | (1) Preview exactly as sent (email and online), per audience version. (2) Fact panel: claims and numbers with sources and check status; mismatches flagged. (3) Revise in chat or edit directly; compare with the previous update; promise-tracker notes. (4) Approve (one or two steps), then the send review (default email text, personalise, display name), then a confirmed send. Sent versions lock and get a PDF. |
-| 5 | **Engagement** (`engagement`) | (1) Per update: sent, delivered, read (first and last read, read count) per contact and firm. (2) Ask responses with message, owner and status (new / following up / done). (3) Not-read list and one-click follow-up email (confirmed). (4) Engagement summary for the next draft. |
-| 6 | **Templates & settings** (`settings`) | (1) Templates: sections, tone, length, design (logo, colours, block styles), rules ("always state runway to next milestone", "never mention unannounced deals"). Standard templates: Monthly board update, Quarterly shareholder update, Milestone flash. (2) Email default texts (update, follow-up, not-read reminder). (3) Approval defaults, confidentiality footer, sender display. (4) Links to Access and Automations. |
+| 5 | **Engagement** (`engagement`) | (1) Per update: sent, delivered, read (first and last read, read count) per contact and firm. (2) Ask responses with message, owner and status (new / following up / done). (3) Not-read list and reminder email (when the template's not-read reminder is on; confirmed or automatic). (4) Engagement summary for the next draft. |
+| 6 | **Templates & settings** (`settings`) | (1) Templates: sections, tone, length, design (logo, colours, block styles), rules ("always state runway to next milestone", "never mention unannounced deals"), and **on/off toggles**: "I can help" button; not-read reminder to contacts (after N days, confirm each time or send automatically); cadence reminder to the owner (N days before the send-by date, and when overdue). Standard templates: Monthly board update, Quarterly shareholder update, Milestone flash. (2) Email default texts (update, follow-up, not-read reminder). (3) Approval defaults, confidentiality footer, sender display. (4) Links to Access and Automations. |
 
 ---
 
@@ -132,7 +133,11 @@ Custom `frontend-js` app on the Vivid kit, theme **forest** (deal pack), declare
 6. **Engage:**
    - Reads and "I can help" responses arrive through the platform.
    - The owner assigns follow-ups; the next draft receives the engagement summary.
-7. **Missed cadence:** if no draft is approved 2 days before the target send date, the owner is reminded. If the target date passes, the scheduled update shows "overdue".
+7. **Missed cadence:** the scheduled update shows "overdue" after the send-by date. If the template's cadence reminder is on, the owner is also reminded N days before and when overdue.
+8. **Template toggles:**
+   - With "I can help" off, ask blocks render as plain text: no button online, no link in email, and no responses are collected.
+   - With the not-read reminder off, no non-reader list or follow-up is prepared.
+   - Changing a toggle applies to the next draft; sent updates keep the setting they were sent with.
 
 ---
 
@@ -189,12 +194,12 @@ Draft sources are read by the assistant under the user's access, not connected a
 
 | Table | Key fields (kind) |
 |---|---|
-| `investorupdates.settings` (one row) | sender_display (select: organization / first_name), approval_steps (select: one / two), confidentiality_footer (text), reminder_days (number, 2), default_timezone (text) |
+| `investorupdates.settings` (one row) | sender_display (select: organization / first_name), approval_steps (select: one / two), confidentiality_footer (text), default_timezone (text) |
 | `investorupdates.investors` | organization_id (text*), investor_type (select: specialist_ls_vc / generalist_vc / pharma_cvc / strategic / family_office / angel / public_fund / other), relationship (select*: lead / board / shareholder / observer / advisor), status (select*: active / exited), board_seat (boolean), notes (text), source (select: manual / assistant / fundraise), archived (boolean) |
 | `investorupdates.contacts` | investor_id (text*), person_id (text*), role (select: partner / principal / associate / operations / finance / other), primary (boolean), receives (boolean, true), unsubscribed_on (date), archived (boolean) |
-| `investorupdates.templates` | name (text*), kind (select*: monthly_board / quarterly_shareholder / milestone_flash / custom), sections (text, JSON), tone (text), length (select: short / standard / detailed), design (text, JSON: logo document id, colours, block styles), rules (text), confidential_sections (text), archived (boolean) |
+| `investorupdates.templates` | name (text*), kind (select*: monthly_board / quarterly_shareholder / milestone_flash / custom), sections (text, JSON), tone (text), length (select: short / standard / detailed), design (text, JSON: logo document id, colours, block styles), rules (text), confidential_sections (text), asks_enabled (boolean, true), not_read_reminder (boolean, false), not_read_after_days (number, 5), not_read_auto_send (boolean, false), cadence_reminder (boolean, true), cadence_reminder_days (number, 2), archived (boolean) |
 | `investorupdates.schedules` | name (text*), template_id (text*), sources (text*, JSON: apps, document ids, standing notes, exclusions), audience (text*, JSON: investor ids, contact ids, relationship groups), audience_versions (text, JSON: version name → audience + hidden sections), frequency (select*: monthly / quarterly / half_yearly / yearly / one_off), draft_business_day (number*, 3), send_by_day (number*, 7), timezone (text), approver_1 (text), approver_2 (text*), auto_draft (boolean, true), automation_id (text), next_period (text), status (select*: active / paused), archived (boolean) |
-| `investorupdates.updates` | schedule_id (text*), period (text*, e.g. "2026-10" or "2026-Q3"), title (text*), status (select*: drafting / in_review / approved / sent / cancelled), blocks (text*, JSON), facts (text*, JSON), asks (text, JSON), versions (text, JSON: per audience version, block list), drafted_by (select: claude / chatgpt / user), drafted_on (date), approved_1_by (text), approved_2_by (text), approved_on (date), sent_on (date), exchange_group_id (text), pdf_document_id (text), correction_of (text) |
+| `investorupdates.updates` | schedule_id (text*), period (text*, e.g. "2026-10" or "2026-Q3"), title (text*), status (select*: drafting / in_review / approved / sent / cancelled), blocks (text*, JSON), facts (text*, JSON), asks (text, JSON), versions (text, JSON: per audience version, block list), drafted_by (select: claude / chatgpt / user), drafted_on (date), approved_1_by (text), approved_2_by (text), approved_on (date), sent_on (date), exchange_group_id (text), pdf_document_id (text), correction_of (text), toggles (text, JSON: template toggles as sent) |
 | `investorupdates.deliveries` | update_id (text*), version (text*), contact_id (text*), investor_id (text*), email (text*), exchange_id (text), sent_on (date), status (select*: queued / sent / bounced / read / revoked), first_read_on (date), last_read_on (date), read_count (number) |
 | `investorupdates.ask_responses` | update_id (text*), ask_key (text*), contact_id (text*), investor_id (text*), responded_on (date*), message (text), status (select*: new / following_up / done), owner (text), follow_up_due (date) |
 
@@ -207,7 +212,7 @@ Draft sources are read by the assistant under the user's access, not connected a
 ## 9. Calculation and checking rules
 
 - **Next period and dates.** From the frequency and the anchor: the draft date is the Nth business day after the period end, the send-by date is day M, in the schedule's time zone.
-- **Overdue.** Not sent after the send-by date. **Reminder** when there is no approved draft `reminder_days` before the send-by date.
+- **Overdue.** Not sent after the send-by date. **Cadence reminder** (only when the template's `cadence_reminder` is on) when there is no approved draft `cadence_reminder_days` before the send-by date, and again when overdue.
 - **Fact check at review:**
   - A record-sourced fact is re-read; equal means ✓, different means "changed since draft" with both values shown.
   - A document-sourced fact is checked to exist (✓ if found).
@@ -232,9 +237,9 @@ Draft sources are read by the assistant under the user's access, not connected a
 ## 11. Automations
 
 1. **Scheduled draft** (one per scheduled update, research worker on the user's Claude or ChatGPT runner): writes the draft for the period from the brief and sources and notifies the owner. Required for automatic drafts; created on schedule save and confirmed once.
-2. **Cadence reminder** (email to the owner): no approved draft `reminder_days` before the send-by date, and again when overdue.
-3. **Not-read follow-up:** 5 days after send, a list of non-readers is prepared; the follow-up email is sent only after confirmation, or automatically if the owner pre-approved it on the schedule.
-4. **Ask responses** (email to the owner): an immediate notice per new "I can help".
+2. **Cadence reminder** (email to the owner, only if the template's `cadence_reminder` is on): no approved draft `cadence_reminder_days` before the send-by date, and again when overdue.
+3. **Not-read reminder** (only if the template's `not_read_reminder` is on): `not_read_after_days` after send, a list of non-readers is prepared. The reminder email is sent after confirmation, or automatically when `not_read_auto_send` is on (the owner pre-approves the text when turning it on).
+4. **Ask responses** (email to the owner, only if the template's `asks_enabled` is on): an immediate notice per new "I can help".
 
 ---
 
@@ -284,8 +289,9 @@ Investor Updates never writes another app's own tables.
 5. **Engagement:** two contacts read the update and one clicks "I can help" with a note. Deliveries and responses update without review and are not editable. The not-read follow-up goes out only after confirmation.
 6. **Promise tracker** flags a moved milestone date from the previous update.
 7. **Unsubscribe** excludes the contact from the next send.
-8. **Assistants** draft but cannot approve, send or see links; they read only the allowed sources.
-9. **Modularity and archiving:** the modularity test (rule 9) and archive-first checks pass. Archiving the app pauses its automations and stops the online links. Restoring re-enables them.
-10. **Layout:** desktop 1440 and mobile 390, for both the app and the recipient page; the email renders in common clients (Gmail, Outlook, Apple Mail).
+8. **Template toggles:** with "I can help" off, no button or link appears and no responses are possible. With the not-read reminder off, no follow-up is prepared. With it on and auto-send on, the reminder goes out on day N with the pre-approved text. With the cadence reminder off, the owner gets no reminder.
+9. **Assistants** draft but cannot approve, send or see links; they read only the allowed sources.
+10. **Modularity and archiving:** the modularity test (rule 9) and archive-first checks pass. Archiving the app pauses its automations and stops the online links. Restoring re-enables them.
+11. **Layout:** desktop 1440 and mobile 390, for both the app and the recipient page; the email renders in common clients (Gmail, Outlook, Apple Mail).
 
 **Open for design partners:** default templates and sections; whether boards want two-step approval; whether investors use "I can help".
