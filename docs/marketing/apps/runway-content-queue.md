@@ -37,7 +37,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | C7 | Can you build a custom cash runway app with ChatGPT or Claude? | Published — live verified 14 November 2026; PR #208, release `39af173ce6e7acb7ac95709f82eafa926f56b49e` | https://trialagents.com/apps/custom-cash-runway-app-chatgpt-claude |
 | D1 | Cash runway software for preclinical biotech: fund the next evidence package | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/preclinical-biotech-cash-runway) |
 | D2 | Financial planning for clinical-stage biotechs: explain the monthly cash variance | Published — live verified 14 November 2026 | [Live article](https://trialagents.com/apps/clinical-stage-biotech-financial-planning) |
-| D3 | Best Budgeting Software for Biotech Startups with Fewer Than 20 Employees | Queued — verify and publish | — |
+| D3 | Budgeting software for biotechs under 20 employees: count each cost once | Claimed — source preparation, 14 November 2026 | 12-person budget ownership and People/Plan reconciliation |
 | D4 | How to Forecast Clinical Trial Delays and Their Impact on Cash Runway | Queued — verify and publish | — |
 | D5 | How to Forecast CRO Costs and Vendor Payments in a Biotech Budget | Queued — verify and publish | — |
 | D6 | Biotech Hiring vs Outsourcing: How to Model the Impact on Cash Runway | Queued — verify and publish | — |
@@ -794,3 +794,8 @@ PR #210 merged as `5f6a0d2fe2e923f9e29c4b6af75c55d58cac7eda` at approximately 17
 - **Editorial boundary:** approved Runway 2.1 documentation and genuine media provenance reviewed; FDA clinical-research source supports protocol-design context only. Fictional all-EUR cash reconciliation independently checked: 500k January budget vs 380k paid, −120k spend variance, 2.62m closing cash from 3m opening. The remaining 120k stays due; February spend620k closes at2m, equal to the original two-month budget. No permanent saving, full cash-out date, accounting recommendation, automated bank/file integration, fabricated interface or completed app/host test claimed. Frozen budget/close and future forecast edits remain distinct. Refresh on model/catalog/permission changes.
 
 This supersedes D2 claim/source/merged-pending checkpoints. **30 published; 17 unfinished**, including owner-deferred A9. **Next eligible: D3, Best Budgeting Software for Biotech Startups with Fewer Than 20 Employees**, subject to fresh queue, claim, duplicate and evidence checks. Only D2 newly published in this run. Search indexing, rankings and assistant citations remain unverified.
+
+
+### D3 execution claim — 14 November 2026
+
+D2 rechecked HTTP 200; public main `5f6a0d2fe2e923f9e29c4b6af75c55d58cac7eda`; open PRs reconciled, no unfinished Runway release or competing D3 claim. Retitle D3 to Budgeting software for biotechs under 20 employees: count each cost once. Distinct 12-person budget ownership/People-versus-Plan reconciliation use case, avoiding unsupported best ranking and hiring-versus-outsourcing comparison reserved for D6. No salary benchmark, host test or real app execution. 30 published, 17 unfinished until live QA.
