@@ -48,6 +48,8 @@ export async function addAppsFixture(app:Express,db:Database,actor:Actor,w:any){
  // In-app integration: Programs 2.1.0 (draft, approved here only) with its own cash forecast, and Runway added afterwards.
  app.post('/fixture/programs-integration',async(_req,res)=>{
   await db.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.project-oversight' AND version='2.1.0'");
+  // The seed names Runway 2.2.0 since 14 November 2026; this fixture keeps exercising 2.1.0, approved in deployed catalogs.
+  await db.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.cash-runway' AND version='2.1.0'");
   const catalog=new AppTemplates(undefined,db),P=await catalog.read({templateId:'life.project-oversight',version:'2.1.0'}),R=await catalog.read({templateId:'life.cash-runway',version:'2.1.0'});
   const programs=await installCatalogApp(f,actor,w.id,{templateId:P.id,version:P.version,digest:P.digest,name:'Programs',requestKey:crypto.randomUUID(),createNew:true});
   const runway=await installCatalogApp(f,actor,w.id,{templateId:R.id,version:R.version,digest:R.digest,name:'Runway',requestKey:crypto.randomUUID(),createNew:true});
