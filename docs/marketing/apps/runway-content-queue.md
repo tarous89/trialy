@@ -990,4 +990,4 @@ PR #214 merged as `e50602db40385e5a3d54747759a793f1fb3747fc` after exact-head pr
 
 - PR #218 merged at 2026-11-15 02:04:53 UTC, release `75e16b6633534d28daac38917cc6b95ad2e67a02`.
 - Exact-head predeploy **43665391307** passed validate and seo-container on `a27064ae6381b3429166541b3d5861296ecb4b71`. Desktop 1440px/mobile 390px artifact **14141513272** visually inspected: all sections, standard horizontally scrollable tables, genuine images, shared shell and final CTA passed.
-- Waiting for existing automatic GitHub-to-CDN build and independent changed-URL verification. Initial HTTP 404 is pending propagation, not an authentication blocker. Resume this release before another topic until verified.
+- Waiting for existing automatic GitHub-to-CDN build and independent changed-URL verification. Initial HTTP attempt timed out after 30 seconds (curl 28, code 000); no HTTP status was obtained. Cloudflare check 132665600116 and production check 132665570784 are in progress. No authentication fault is evidenced. Resume this release before another topic until verified.
